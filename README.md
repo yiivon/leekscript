@@ -11,6 +11,29 @@ Demo
 https://leekscript.com
 
 
+Usage
+-----
+
+Run a LeekScript top-level
+```
+./LeekScript
+```
+
+Run the tests
+```
+./LeekScript -test
+```
+
+Execute a file
+```
+./LeekScript -f my_file.ls
+```
+
+Run a code, and get the result as JSON
+```
+./LeekScript -e "my code"
+```
+
 Building
 --------
 
