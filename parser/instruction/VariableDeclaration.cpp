@@ -94,7 +94,7 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 			} else {
 
 				globals_types.insert(pair<string, Type>(variables[i], Type::NULLL));
-				jit_value_t val = JIT_CREATE_CONST(F, JIT_INTEGER, (long) LSNull::null_var);
+				jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 				jit_insn_store(F, var, val);
 			}
 		} else {
@@ -116,11 +116,11 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 				}
 			} else {
 
-				jit_value_t val = JIT_CREATE_CONST(F, JIT_INTEGER, (long) LSNull::null_var);
+				jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 				jit_insn_store(F, var, val);
 				return val;
 			}
 		}
 	}
-	return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }

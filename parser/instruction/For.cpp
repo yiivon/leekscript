@@ -75,7 +75,7 @@ int for_is_true(LSValue* v) {
 jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
 	if (body->instructions.size() == 0 && condition == nullptr) {
-		return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) LSNull::null_var);
+		return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 	}
 
 	// Initialization
@@ -94,7 +94,7 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) cons
 			jit_value_t val = variablesValues.at(i)->compile_jit(c, F, Type::NEUTRAL);
 			jit_insn_store(F, var, val);
 		} else {
-			jit_value_t val = JIT_CREATE_CONST(F, JIT_INTEGER, (long int) LSNull::null_var);
+			jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 			jit_insn_store(F, var, val);
 		}
 	}
@@ -103,8 +103,8 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) cons
 	jit_label_t label_it = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 	jit_value_t const_true = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
-	jit_type_t args_types[1] = {jit_type_int};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
+	jit_type_t args_types[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 
 	c.enter_loop(&label_end, &label_it);
 
@@ -141,5 +141,5 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) cons
 
 	c.leave_loop();
 
-	return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F,LSNull::null_var);
 }

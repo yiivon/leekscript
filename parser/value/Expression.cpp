@@ -451,6 +451,8 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			break;
 		}
 		case TokenType::POWER: {
+			if (req_type.nature == Nature::POINTER)
+				use_jit_func = false;
 			jit_func = &jit_insn_pow;
 			ls_func = (void*) &jit_pow;
 			break;
@@ -503,7 +505,6 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 		jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
 		jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-
 		/*
 		jit_value_t is_int = jit_insn_eq(F,
 			jit_insn_and(F, x, jit_value_create_nint_constant(F, jit_type_int, 2147483648)),
@@ -534,8 +535,8 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 //		cout << "expression pointers" << endl;
 
-		jit_type_t args_types[2] = {JIT_INTEGER, JIT_INTEGER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 2, 0);
+		jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
 		if (args.size() == 0) {
 			args.push_back(v1->compile_jit(c, F, v1_conv));
@@ -548,3 +549,4 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		return v;
 	}
 }
+

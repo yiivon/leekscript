@@ -42,5 +42,5 @@ jit_value_t Body::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
 			instructions[i]->compile_jit(c, F, type);
 		}
 	}
-	return JIT_CREATE_CONST(F, JIT_INTEGER, (long) LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F,LSNull::null_var);
 }

@@ -125,14 +125,17 @@ jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type)
 			t = type.getArgumentType(i);
 		}
 //		cout << "func arg: " << t << endl;
-		params.push_back(t.raw_type == RawType::FLOAT ? JIT_FLOAT : JIT_INTEGER);
+		params.push_back(t.nature == Nature::POINTER ? JIT_POINTER :
+				(t.raw_type == RawType::FLOAT) ? JIT_FLOAT :
+				(t.raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
+				JIT_INTEGER);
 	}
 
-	jit_type_t return_type =
-			(type.getReturnType().raw_type == RawType::LONG
-					or type.getReturnType().raw_type == RawType::FUNCTION) ? JIT_INTEGER_LONG :
+	jit_type_t return_type = type.getReturnType().nature == Nature::POINTER ? JIT_POINTER : (
+			(type.getReturnType().raw_type == RawType::FUNCTION) ? JIT_POINTER :
+			(type.getReturnType().raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
 			(type.getReturnType().raw_type == RawType::FLOAT) ? JIT_FLOAT :
-			JIT_INTEGER;
+			JIT_INTEGER);
 
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
 
@@ -149,9 +152,9 @@ jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type)
 	if (req_type.nature == Nature::POINTER) {
 //		cout << "create function pointer " << endl;
 		LSFunction* fo = new LSFunction(f);
-		return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) fo);
+		return JIT_CREATE_CONST_POINTER(F, fo);
 	} else {
 //		cout << "create function value " << endl;
-		return JIT_CREATE_CONST_LONG(F, JIT_INTEGER_LONG, (long) f);
+		return JIT_CREATE_CONST_POINTER(F, f);
 	}
 }

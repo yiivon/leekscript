@@ -31,10 +31,9 @@ jit_value_t Number::compile_jit(Compiler& c, jit_function_t& F, Type req_type) c
 	if (req_type.nature == Nature::POINTER) {
 
 		LSNumber* n = new LSNumber(value);
-		return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) n);
+		return JIT_CREATE_CONST_POINTER(F, n);
 
 	} else {
-
 		bool isfloat = type.raw_type == RawType::FLOAT;
 		jit_type_t type = isfloat ? JIT_FLOAT : JIT_INTEGER;
 

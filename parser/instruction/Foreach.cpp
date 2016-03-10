@@ -83,8 +83,8 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	jit_value_t a = array->compile_jit(c, F, Type::NEUTRAL);
 
 	// Get array size
-	jit_type_t args_types[1] = {jit_type_int};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
+	jit_type_t args_types[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 	jit_value_t size = jit_insn_call_native(F, "size", (void*) get_array_size, sig, &a, 1, JIT_CALL_NOTHROW);
 
 
@@ -96,13 +96,16 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	jit_insn_branch_if(F, cmp, &label_end);
 
 	// Get array element (each value of array)
-	jit_type_t args_types_2[2] = {jit_type_int, jit_type_int};
-	jit_type_t sig2 = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types_2, 2, 0);
+	jit_type_t args_types_2[2] = {JIT_POINTER, JIT_INTEGER};
 	vector<jit_value_t> args = {a, i};
-
-	jit_value_t var = (var_type.nature == Nature::POINTER) ?
-	jit_insn_call_native(F, "get", (void*) get_array_elem, sig2, args.data(), 2, JIT_CALL_NOTHROW)
-	: jit_insn_call_native(F, "get", (void*) get_array_elem_int, sig2, args.data(), 2, JIT_CALL_NOTHROW);
+	jit_value_t var;
+	if (var_type.nature == Nature::POINTER) {
+		jit_type_t sig2 = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_2, 2, 0);
+		var = jit_insn_call_native(F, "get", (void*) get_array_elem, sig2, args.data(), 2, JIT_CALL_NOTHROW);
+	} else {
+		jit_type_t sig2 = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types_2, 2, 0);
+		var = jit_insn_call_native(F, "get", (void*) get_array_elem_int, sig2, args.data(), 2, JIT_CALL_NOTHROW);
+	}
 
 	globals.insert(pair<string, jit_value_t>(value, var));
 
@@ -110,7 +113,7 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	body->compile_jit(c, F, Type::NEUTRAL);
 
 	// i++
-	jit_insn_store(F, i, jit_insn_add(F, i, jit_value_create_nint_constant(F, jit_type_int, 1)));
+	jit_insn_store(F, i, jit_insn_add(F, i, JIT_CREATE_CONST(F, JIT_INTEGER, 1)));
 
 	// jump to cond
 	jit_insn_branch(F, &label_cond);
@@ -120,5 +123,5 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	c.leave_loop();
 
-	return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }
