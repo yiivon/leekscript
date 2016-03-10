@@ -16,7 +16,7 @@ Building
 ```
 make
 ```
-The executable "leekscript" is in the build/ folder.
+The executable `leekscript` is in the `build/` folder.
 
 Usage
 -----
