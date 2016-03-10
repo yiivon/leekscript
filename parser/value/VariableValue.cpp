@@ -61,27 +61,27 @@ jit_value_t VariableValue::compile_jit(Compiler&, jit_function_t& F, Type req_ty
 //	cout << "req type : " << req_type << endl;
 
 	if (name->content == "+") {
-		return jit_value_create_nint_constant(F, jit_type_int, (long int) new LSFunction((void*) &plus_function_int));
+		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &plus_function_int));
 	}
 	if (name->content == "-") {
-		return jit_value_create_nint_constant(F, jit_type_int, (long int) new LSFunction((void*) &minus_function_int));
+		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &minus_function_int));
 	}
 	if (name->content == "*") {
-		return jit_value_create_nint_constant(F, jit_type_int, (long int) new LSFunction((void*) &mul_function_int));
+		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &mul_function_int));
 	}
 	if (name->content == "/") {
-		return jit_value_create_nint_constant(F, jit_type_int, (long int) new LSFunction((void*) &div_function_int));
+		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &div_function_int));
 	}
 	if (name->content == "^") {
-		return jit_value_create_nint_constant(F, jit_type_int, (long int) new LSFunction((void*) &pow_function_int));
+		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &pow_function_int));
 	}
 	if (name->content == "%") {
-		return jit_value_create_nint_constant(F, jit_type_int, (long int) new LSFunction((void*) &mod_function_int));
+		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &mod_function_int));
 	}
 
 	if (var->scope == VarScope::INTERNAL) {
 
-		//cout << "internal" << endl;
+//		cout << "internal" << endl;
 
 		jit_value_t v = internals[name->content];
 		if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {

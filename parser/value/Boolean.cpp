@@ -22,7 +22,7 @@ jit_value_t Boolean::compile_jit(Compiler& c, jit_function_t& F, Type req_type) 
 
 	if (req_type.nature == Nature::POINTER) {
 		LSBoolean* b = new LSBoolean(value);
-		return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) b);
+		return JIT_CREATE_CONST_POINTER(F, b);
 	} else {
 		return JIT_CREATE_CONST(F, JIT_INTEGER, value);
 	}

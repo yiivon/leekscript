@@ -62,7 +62,7 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const unsig
 	return false;
 }
 
-LSValue* access(LSArray* array, LSValue* key) {
+LSValue* access_temp(LSArray* array, LSValue* key) {
 	return array->at(key);
 }
 
@@ -84,17 +84,17 @@ jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type) const
 
 	if (key2 == nullptr) {
 
-		jit_type_t args_types[2] = {jit_type_int, jit_type_int};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_types, 2, 0);
+		jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
 		jit_value_t k = key->compile_jit(c, F, Type::POINTER);
 		jit_value_t args[] = {a, k};
-		return jit_insn_call_native(F, "access", (void*) access, sig, args, 2, JIT_CALL_NOTHROW);
+		return jit_insn_call_native(F, "access", (void*) access_temp, sig, args, 2, JIT_CALL_NOTHROW);
 
 	} else {
 
-		jit_type_t args_types[3] = {jit_type_int, jit_type_int, jit_type_int};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_types, 3, 0);
+		jit_type_t args_types[3] = {JIT_POINTER, JIT_POINTER, JIT_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 3, 0);
 
 		jit_value_t start = key->compile_jit(c, F, Type::POINTER);
 		jit_value_t end = key2->compile_jit(c, F, Type::POINTER);
@@ -107,8 +107,8 @@ jit_value_t ArrayAccess::compile_jit_l(Compiler& c, jit_function_t& F, Type) con
 
 	jit_value_t a = array->compile_jit(c, F, Type::POINTER);
 
-	jit_type_t args_types[2] = {jit_type_int, jit_type_int};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_types, 2, 0);
+	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
 	jit_value_t k = key->compile_jit(c, F, Type::POINTER);
 	jit_value_t args[] = {a, k};

@@ -39,10 +39,10 @@ jit_value_t ObjectAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 	jit_value_t o = object->compile_jit(c, F, Type::POINTER);
 
-	jit_type_t args_types[2] = {jit_type_int, jit_type_int};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_types, 2, 0);
+	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
-	jit_value_t k = jit_value_create_nint_constant(F, jit_type_int, (long int) new LSString(field));
+	jit_value_t k = JIT_CREATE_CONST_POINTER(F,  new LSString(field));
 	jit_value_t args[] = {o, k};
 	return jit_insn_call_native(F, "access", (void*) object_access, sig, args, 2, JIT_CALL_NOTHROW);
 }
@@ -51,10 +51,10 @@ jit_value_t ObjectAccess::compile_jit_l(Compiler& c, jit_function_t& F, Type typ
 
 	jit_value_t o = object->compile_jit(c, F, Type::POINTER);
 
-	jit_type_t args_types[2] = {jit_type_int, jit_type_int};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_types, 2, 0);
+	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
-	jit_value_t k = jit_value_create_nint_constant(F, jit_type_int, (long int) new LSString(field));
+	jit_value_t k = JIT_CREATE_CONST_POINTER(F,  new LSString(field));
 	jit_value_t args[] = {o, k};
 	return jit_insn_call_native(F, "access_l", (void*) object_access_l, sig, args, 2, JIT_CALL_NOTHROW);
 }

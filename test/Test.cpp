@@ -480,7 +480,7 @@ void Test::test(string code, string result) {
 
 		// Create function signature and object. int (*)(int)
 		jit_type_t params[0] = {};
-		jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, jit_type_int, params, 0, 1);
+		jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, params, 0, 1);
 		jit_function_t F = jit_function_create(jit_context, signature);
 
 		program->compile_jit(c, F, context, false);

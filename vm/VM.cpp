@@ -82,7 +82,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 	jit_context_build_start(jit_context);
 
 	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, jit_type_int, params, 0, 1);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 1);
 	jit_function_t F = jit_function_create(jit_context, signature);
 
 	program->compile_jit(c, F, context, mode != ExecMode::NORMAL);
@@ -92,6 +92,8 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 
 	typedef LSValue* (*FF)();
 	FF fun = (FF) jit_function_to_closure(F);
+	double comp_time = (double(clock() - begin) / CLOCKS_PER_SEC) * 1000;
+
 
 	/*
 	 * Execute
@@ -102,8 +104,6 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 
 	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 	double exe_time_ms = (((double) exe_time_ns / 1000) / 1000);
-	double comp_time = (double(clock() - begin) / CLOCKS_PER_SEC) * 1000;
-
 	/*
 	 * Return results
 	 */
@@ -193,14 +193,12 @@ jit_value_t VM::value_to_pointer(jit_function_t& F, jit_value_t& v, Type type) {
 	}
 
 	jit_type_t args_types[1] = {
-		(type.raw_type == RawType::FUNCTION or type.raw_type == RawType::LONG)
-		? JIT_INTEGER_LONG :
-		(type.raw_type == RawType::FLOAT) ?
-		JIT_FLOAT :
-		JIT_INTEGER
+		(type.raw_type == RawType::FUNCTION) ? JIT_POINTER :
+		(type.raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
+		(type.raw_type == RawType::FLOAT) ?	JIT_FLOAT :
+			JIT_INTEGER
 	};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
-
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 	return jit_insn_call_native(F, "convert", (void*) fun, sig, &v, 1, JIT_CALL_NOTHROW);
 }
 /*
