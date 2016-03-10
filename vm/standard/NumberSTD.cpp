@@ -109,7 +109,7 @@ LSNumber* number_randInt(const LSNumber* min, const LSNumber* max) {
 }
 
 LSNumber* number_round(const LSNumber* number) {
-	return new LSNumber(round(number->value));
+	return LSNumber::get(round(number->value));
 }
 
 LSNumber* number_signum(const LSNumber* x) {

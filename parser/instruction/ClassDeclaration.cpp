@@ -22,5 +22,5 @@ void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_type)
 }
 
 jit_value_t ClassDeclaration::compile_jit(Compiler& c, jit_function_t& F, Type) const {
-	return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }

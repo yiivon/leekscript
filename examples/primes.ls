@@ -1,3 +1,33 @@
+let f = function(number) {
+
+	if ((number % 2 == 0) or (number < 2) or (number % 3 == 0 and number != 3)) {
+		return false;
+	}
+
+	for (let k = 1; 36 * k * k - 12 * k < number; k++) {
+		if ((number % (6 * k + 1) == 0) or (number % (6 * k - 1) == 0)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+let c = 1
+
+for (let i = 3; i < 1000000; i += 2) do
+	if (f(i)) {
+		c++
+	}
+end
+
+return c
+
+/*
+
+new Number(12)   ==>   new Number // params {12}
+
+[Number][0](12)
+
 var digits = [1]
 
 for p = 1; p <= 100; p++ {
@@ -28,36 +58,3 @@ for p = 1; p <= 100; p++ {
 }
 print(~digits)
 digits.sum()
-
-
-/*
-
-let f = function(number) {
-
-	if ((number % 2 == 0) or (number < 2) or (number % 3 == 0 and number != 3)) {
-		return false;
-	}
-
-	for (let k = 1; 36 * k * k - 12 * k < number; k++) {
-		if ((number % (6 * k + 1) == 0) or (number % (6 * k - 1) == 0)) {
-			return false;
-		}
-	}
-	return true;
-}
-
-let c = 1
-
-for (let i = 3; i < 1000000; i += 2) do
-	if (f(i)) {
-		c++
-	}
-end
-
-return c
-
-/*
-
-new Number(12)   ==>   new Number // params {12}
-
-[Number][0](12)

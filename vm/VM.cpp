@@ -18,22 +18,15 @@ map<string, jit_value_t> locals;
 
 string VM::execute(const string code, string ctx, ExecMode mode) {
 
-	clock_t begin = clock();
+	auto compile_start = chrono::high_resolution_clock::now();
 
-	// Do lexical analysis
+	// Lexical analysis
 	LexicalAnalyser lex;
 	vector<Token> tokens = lex.analyse(code);
-
-//	cout << endl << "Tokens:" << endl;
-//	for (Token token : tokens) {
-//		cout << token << " ";
-//	}
-//	cout << endl << endl;
 
 	// Syntaxical analysis
 	SyntaxicAnalyser syn;
 	Program* program = syn.analyse(tokens);
-
 
 	if (syn.getErrors().size() > 0) {
 		if (mode == ExecMode::COMMAND_JSON) {
@@ -53,6 +46,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 		}
 	}
 
+	// Semantic analysis
 	Compiler c;
 	Context context { ctx };
 
@@ -69,9 +63,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 		return ctx;
 	}
 
-	// program->print(cout);
-//	cout << "return type : " << (int) program->type << endl;
-
+	// Compilation
 	internals.clear();
 	globals.clear();
 	globals_types.clear();
@@ -82,7 +74,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 	jit_context_build_start(jit_context);
 
 	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, jit_type_int, params, 0, 1);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 1);
 	jit_function_t F = jit_function_create(jit_context, signature);
 
 	program->compile_jit(c, F, context, mode != ExecMode::NORMAL);
@@ -93,16 +85,20 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 	typedef LSValue* (*FF)();
 	FF fun = (FF) jit_function_to_closure(F);
 
+	auto compile_end = chrono::high_resolution_clock::now();
+
 	/*
 	 * Execute
 	 */
-	auto start = chrono::high_resolution_clock::now();
+	auto exe_start = chrono::high_resolution_clock::now();
 	LSValue* res = fun();
-	auto end = chrono::high_resolution_clock::now();
+	auto exe_end = chrono::high_resolution_clock::now();
 
-	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
+	long compile_time_ns = chrono::duration_cast<chrono::nanoseconds>(compile_end - compile_start).count();
+
 	double exe_time_ms = (((double) exe_time_ns / 1000) / 1000);
-	double comp_time = (double(clock() - begin) / CLOCKS_PER_SEC) * 1000;
+	double compile_time_ms = (((double) compile_time_ns / 1000) / 1000);
 
 	/*
 	 * Return results
@@ -133,7 +129,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 		if (mode == ExecMode::TOP_LEVEL) {
 			cout << res_string << endl;
 			// cout << "ctx: " << ctx << endl;
-			// cout << "(" << comp_time << "ms + " << exe_time_ms << " ms)" << endl;
+			cout << "(" << compile_time_ms << " ms + " << exe_time_ms << " ms)" << endl;
 			return ctx;
 		} else {
 			cout << "{\"success\":true,\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
@@ -148,7 +144,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 		res_string = oss.str();
 
 		cout << res_string << endl;
-		cout << "(" << comp_time << "ms + " << exe_time_ms << " ms)" << endl;
+		cout << "(" << compile_time_ms << "ms + " << exe_time_ms << " ms)" << endl;
 
 		return ctx;
 	}
@@ -193,14 +189,12 @@ jit_value_t VM::value_to_pointer(jit_function_t& F, jit_value_t& v, Type type) {
 	}
 
 	jit_type_t args_types[1] = {
-		(type.raw_type == RawType::FUNCTION or type.raw_type == RawType::LONG)
-		? JIT_INTEGER_LONG :
-		(type.raw_type == RawType::FLOAT) ?
-		JIT_FLOAT :
-		JIT_INTEGER
+		(type.raw_type == RawType::FUNCTION) ? JIT_POINTER :
+		(type.raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
+		(type.raw_type == RawType::FLOAT) ?	JIT_FLOAT :
+			JIT_INTEGER
 	};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
-
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 	return jit_insn_call_native(F, "convert", (void*) fun, sig, &v, 1, JIT_CALL_NOTHROW);
 }
 /*

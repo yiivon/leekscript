@@ -95,14 +95,14 @@ void LSArray_push(LSArray* array, LSValue* value) {
 
 jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, {}, 0, 0);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
 	jit_value_t array = jit_insn_call_native(F, "new", (void*) LSArray_create, sig, {}, 0, JIT_CALL_NOTHROW);
 
 	for (Value* val : expressions) {
 
 		jit_value_t v = val->compile_jit(c, F, Type::POINTER);
 
-		jit_type_t args[2] = {JIT_INTEGER, JIT_INTEGER};
+		jit_type_t args[2] = {JIT_POINTER, JIT_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 		jit_value_t args_v[] = {array, v};
 		jit_insn_call_native(F, "push", (void*) LSArray_push, sig, args_v, 2, JIT_CALL_NOTHROW);

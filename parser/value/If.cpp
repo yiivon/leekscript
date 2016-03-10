@@ -55,7 +55,7 @@ int is_true(LSValue* v) {
 
 jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
-	jit_value_t res = jit_value_create(F, JIT_INTEGER);
+	jit_value_t res = jit_value_create(F, JIT_INTEGER_LONG);
 	jit_label_t label_else = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 
@@ -65,8 +65,8 @@ jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const
 
 		jit_value_t const_true = jit_value_create_nint_constant(F, jit_type_int, 1);
 
-		jit_type_t args_types[1] = {jit_type_int};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_types, 1, 0);
+		jit_type_t args_types[1] = {JIT_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 		jit_value_t cond_bool = jit_insn_call_native(F, "is_true", (void*) is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
 
 		jit_value_t cmp = inversed ?

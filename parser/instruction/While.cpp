@@ -35,7 +35,7 @@ jit_value_t While::compile_jit(Compiler& c, jit_function_t& F, Type type) const 
 	jit_label_t label_cond = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 	jit_value_t const_true = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
-	jit_type_t args_types[1] = {jit_type_int};
+	jit_type_t args_types[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 
 	c.enter_loop(&label_end, &label_cond);
@@ -66,5 +66,5 @@ jit_value_t While::compile_jit(Compiler& c, jit_function_t& F, Type type) const 
 
 	c.leave_loop();
 
-	return JIT_CREATE_CONST(F, JIT_INTEGER, (long int) LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }

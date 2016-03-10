@@ -22,5 +22,5 @@ jit_value_t Break::compile_jit(Compiler& c, jit_function_t& F, Type type) const 
 
 	jit_insn_branch(F, c.get_current_loop_end_label());
 
-	return jit_value_create_nint_constant(F, jit_type_int, (long int) LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }

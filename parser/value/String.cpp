@@ -22,5 +22,5 @@ void String::analyse(SemanticAnalyser* analyser, const Type) {
 jit_value_t String::compile_jit(Compiler&, jit_function_t& F, Type type) const {
 
 	LSString* s = new LSString(value);
-	return JIT_CREATE_CONST(F, JIT_INTEGER, (long) s);
+	return JIT_CREATE_CONST_POINTER(F,  s);
 }
