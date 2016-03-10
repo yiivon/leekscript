@@ -8,7 +8,7 @@ OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
 all: makedirs leekscript
 
 build/%.o: %.cpp
-	g++ -c -std=c++11 -O3 -g3 -Wall -ljit -o "$@" "$<"
+	g++ -c -std=c++11 -O3 -g3 -Wall -Wextra -ljit -o "$@" "$<"
 
 makedirs: $(BUILD_DIR)
 
