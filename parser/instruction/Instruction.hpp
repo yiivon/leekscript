@@ -1,7 +1,6 @@
 #ifndef INSTRUCTION_HPP
 #define INSTRUCTION_HPP
 
-#include "../../vm/LeekCode.hpp"
 #include "../../Compiler.hpp"
 #include "../value/Value.hpp"
 class SemanticAnalyser;

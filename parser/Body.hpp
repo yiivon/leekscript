@@ -21,8 +21,6 @@ public:
 
 	void analyse(SemanticAnalyser* analyser, const Type& req_type);
 
-	void compile(LeekCode&) const;
-
 	jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const;
 };
 
