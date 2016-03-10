@@ -10,6 +10,13 @@ Demo
 
 https://leekscript.com
 
+Building
+--------
+
+```
+make
+```
+The executable "leekscript" is in the build/ folder.
 
 Usage
 -----
@@ -31,13 +38,9 @@ Execute a file
 
 Run a code, and get the result as JSON
 ```
-./LeekScript -e "my code"
+./leekscript -e "my code" "{}"
 ```
 
-Building
---------
-
-todo
 
 
 Libraries used
