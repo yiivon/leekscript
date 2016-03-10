@@ -23,17 +23,17 @@ Usage
 
 Run a LeekScript top-level
 ```
-./LeekScript
+./leekscript
 ```
 
 Run the tests
 ```
-./LeekScript -test
+./leekscript -test
 ```
 
 Execute a file
 ```
-./LeekScript -f my_file.ls
+./leekscript -f my_file.ls
 ```
 
 Run a code, and get the result as JSON
