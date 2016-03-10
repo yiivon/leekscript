@@ -83,12 +83,22 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) cons
 
 		SemanticVar* v = vars.at(variables.at(i));
 
-		jit_value_t var = jit_value_create(F, JIT_INTEGER);
+		jit_value_t var;
 
 		if (v->scope == VarScope::GLOBAL) {
-			globals.insert(pair<string, jit_value_t>(variables[i], var));
+			auto previous_var = globals.find(variables[i]);
+			if (previous_var == globals.end()) {
+				var = jit_value_create(F, JIT_INTEGER);
+				globals.insert(pair<string, jit_value_t>(variables[i], var));
+			} else
+				var = previous_var->second;
 		} else {
-			locals.insert(pair<string, jit_value_t>(variables[i], var));
+			auto previous_var = locals.find(variables[i]);
+			if (previous_var == locals.end()) {
+				var = jit_value_create(F, JIT_INTEGER);
+				locals.insert(pair<string, jit_value_t>(variables[i], var));
+			} else
+				var = previous_var->second;
 		}
 		if (variablesValues.at(i) != nullptr) {
 			jit_value_t val = variablesValues.at(i)->compile_jit(c, F, Type::NEUTRAL);
@@ -104,7 +114,7 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) cons
 	jit_label_t label_end = jit_label_undefined;
 	jit_value_t const_true = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
 	jit_type_t args_types[1] = {JIT_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 
 	c.enter_loop(&label_end, &label_it);
 

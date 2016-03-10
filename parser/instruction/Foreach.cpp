@@ -84,7 +84,7 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	// Get array size
 	jit_type_t args_types[1] = {JIT_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 	jit_value_t size = jit_insn_call_native(F, "size", (void*) get_array_size, sig, &a, 1, JIT_CALL_NOTHROW);
 
 

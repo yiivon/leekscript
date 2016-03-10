@@ -92,6 +92,8 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 
 	typedef LSValue* (*FF)();
 	FF fun = (FF) jit_function_to_closure(F);
+	double comp_time = (double(clock() - begin) / CLOCKS_PER_SEC) * 1000;
+
 
 	/*
 	 * Execute
@@ -102,8 +104,6 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 
 	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 	double exe_time_ms = (((double) exe_time_ns / 1000) / 1000);
-	double comp_time = (double(clock() - begin) / CLOCKS_PER_SEC) * 1000;
-
 	/*
 	 * Return results
 	 */
