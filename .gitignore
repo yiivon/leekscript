@@ -6,3 +6,4 @@ build/
 .metadata/
 .settings/
 .cproject
+.project
