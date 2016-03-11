@@ -1,7 +1,6 @@
 #ifndef VALUE_HPP
 #define VALUE_HPP
 
-#include "../../vm/LeekCode.hpp"
 #include "../../vm/VM.hpp"
 #include "../../Compiler.hpp"
 class SemanticAnalyser;

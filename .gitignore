@@ -1,6 +1,9 @@
 Debug/
 Release/
+build/
 *.o
 *.d
 .metadata/
 .settings/
+.cproject
+.project

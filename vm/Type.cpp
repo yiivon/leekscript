@@ -162,6 +162,7 @@ bool Type::operator != (const Type& type) const {
 }
 
 ostream& operator << (ostream& os, const Type& type) {
+
 	os << "[n: " << Type::get_nature_name(type.nature)
 	<< ", t: "<< Type::get_raw_type_name(type.raw_type);
 

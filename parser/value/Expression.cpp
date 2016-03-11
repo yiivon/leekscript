@@ -129,13 +129,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type req_info) {
 				vv->var->will_take(analyser, 0, Type::POINTER);
 				v2->type.setReturnType(vv->var->type.getReturnType());
 			}
+			type = Type::ARRAY;
 		}
 	}
-
-//	cout << "Expression type : " << type << endl;
-//	cout << "v1 type : " << v1->type << endl;
-//	cout << "v2 type : " << v2->type << endl;
-
 }
 
 LSValue* jit_not(LSValue* x) {
@@ -532,8 +528,6 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		return r;
 
 	} else {
-
-//		cout << "expression pointers" << endl;
 
 		jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);

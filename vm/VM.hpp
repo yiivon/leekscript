@@ -26,7 +26,7 @@ using namespace std;
 #define JIT_CREATE_CONST jit_value_create_nint_constant
 #define JIT_CREATE_CONST_LONG jit_value_create_long_constant
 #define JIT_CREATE_CONST_FLOAT jit_value_create_float64_constant
-#define JIT_CREATE_CONST_POINTER(F, X)  jit_value_create_constant((F),new jit_constant_t{JIT_POINTER,{(X)}})
+#define JIT_CREATE_CONST_POINTER(F, X) jit_value_create_constant((F), new jit_constant_t{ JIT_POINTER, {(X)} })
 
 enum class ExecMode {
 	NORMAL, TOP_LEVEL, COMMAND_JSON

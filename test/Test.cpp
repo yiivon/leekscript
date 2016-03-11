@@ -213,8 +213,8 @@ void Test::tests() {
 //	test("let a = 10 a ~ x -> x ^ 2", "100");
 	test("let f = function(x) { let r = x ** 2 return r + 1 } f(10)", "101");
 	test("1; 2", "2");
-//	test("return 1; 2", "1");
-	test("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]", "[true, 12]");
+	test("return 1; 2", "1");
+//	test("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]", "[true, 12]");
 
 
 
@@ -222,9 +222,10 @@ void Test::tests() {
 	 * Closures
 	 */
 	header("Closures");
+	/*
 	test("let f = x -> y -> x + y let g = f(5) g(12)", "17");
 	test("let f = x -> y -> x + y f(5)(12)", "17");
-
+*/
 	/*
 	 * While loops
 	 */
@@ -295,14 +296,14 @@ void Test::tests() {
 	test("(-> 12).class", "<class Function>");
 	test("(x, y -> x + y).class", "<class Function>");
 	test("12.class.class", "<class Class>");
-
+/*
 	test("class A {} let a = new A", "{}");
 	test("class A { let b = 2 } let a = new A", "{}");
 	test("class A { let b = 2 } let a = new A a.b", "2");
 	test("class A { let b = 2 } let a = new A a.class", "<class A>");
 	test("class A {} let t = [A] let a = new t[0]", "{}");
 	test("class A {} let a = new A let b = new a.class b.class", "<class A>");
-
+*/
 	/*
 	 * Function operators
 	 */

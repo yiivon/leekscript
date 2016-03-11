@@ -36,8 +36,6 @@ public:
 
 	void analyse_body(SemanticAnalyser*, const Type& req_type);
 
-	void pre_compile(LeekCode&);
-
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
 
