@@ -6,6 +6,8 @@
 #include "LSBoolean.hpp"
 #include <algorithm>
 
+using namespace std;
+
 LSValue* LSArray::array_class(new LSClass("Array"));
 
 LSArray::LSArray() {
@@ -778,12 +780,12 @@ std::ostream& LSArray::print(std::ostream& os) const {
 }
 
 std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
-    size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-    }
-    return str;
+	size_t start_pos = 0;
+	while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+	}
+	return str;
 }
 
 string LSArray::json() const {

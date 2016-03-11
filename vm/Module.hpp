@@ -6,7 +6,6 @@
 #include "Type.hpp"
 #include "../parser/semantic/SemanticAnalyser.hpp"
 #include "../parser/Program.hpp"
-using namespace std;
 
 class Module {
 public:

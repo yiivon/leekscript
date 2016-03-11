@@ -8,23 +8,22 @@
 #include "../value/Expression.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 class SemanticVar;
-using namespace std;
 
 class For : public Instruction {
 public:
 
-	vector<string> variables;
-	vector<Value*> variablesValues;
+	std::vector<std::string> variables;
+	std::vector<Value*> variablesValues;
 	Value* condition;
-	vector<Value*> iterations;
+	std::vector<Value*> iterations;
 	Body* body;
 
-	map<string, SemanticVar*> vars;
+	std::map<std::string, SemanticVar*> vars;
 
 	For();
 	virtual ~For();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
 

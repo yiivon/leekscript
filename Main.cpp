@@ -8,6 +8,8 @@
 #include "vm/VM.hpp"
 #include "test/Test.hpp"
 
+using namespace std;
+
 bool param_time = false;
 bool param_verbose = false;
 bool param_exec = false;

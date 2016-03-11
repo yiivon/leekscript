@@ -3,15 +3,14 @@
 
 #include <string>
 #include "../lexical/Token.hpp"
-using namespace std;
 
 class SyntaxicalError {
 public:
 
 	Token* token;
-	string message;
+	std::string message;
 
-	SyntaxicalError(Token* token, string message);
+	SyntaxicalError(Token* token, std::string message);
 	virtual ~SyntaxicalError();
 };
 

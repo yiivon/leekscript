@@ -7,13 +7,12 @@
 #include "../Body.hpp"
 #include "../value/Expression.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-using namespace std;
 
 class Foreach : public Instruction {
 public:
 
-	string key = "";
-	string value = "";
+	std::string key = "";
+	std::string value = "";
 	Value* array;
 	Body* body;
 	Type var_type;

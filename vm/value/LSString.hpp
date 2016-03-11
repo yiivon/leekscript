@@ -6,7 +6,6 @@
 #include "../LSValue.hpp"
 #include "../../lib/gason.h"
 #include "../Type.hpp"
-using namespace std;
 
 class LSString : public LSValue {
 public:
@@ -18,7 +17,7 @@ public:
 	LSString();
 	LSString(char);
 	LSString(const char*);
-	LSString(string);
+	LSString(std::string);
 	LSString(JsonValue&);
 
 	~LSString();
@@ -221,7 +220,7 @@ public:
 	LSValue* clone() const override;
 
 	std::ostream& print(std::ostream& os) const;
-	string json() const override;
+	std::string json() const override;
 
 	LSValue* getClass() const override;
 

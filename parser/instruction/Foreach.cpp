@@ -2,6 +2,8 @@
 #include "../value/Array.hpp"
 #include "../../vm/value/LSNull.hpp"
 
+using namespace std;
+
 Foreach::Foreach() {
 	body = nullptr;
 	array = nullptr;

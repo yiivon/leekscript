@@ -1,6 +1,8 @@
 #include "Token.hpp"
 #include <iostream>
 
+using namespace std;
+
 Token::Token() {
 	character = 0;
 	line = 0;

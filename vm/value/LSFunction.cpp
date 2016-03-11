@@ -3,6 +3,8 @@
 #include "LSClass.hpp"
 #include "LSNumber.hpp"
 
+using namespace std;
+
 LSClass* LSFunction::function_class = new LSClass("Function");
 
 LSFunction::LSFunction(void* function) {

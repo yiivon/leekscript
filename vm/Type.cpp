@@ -1,5 +1,7 @@
 #include "Type.hpp"
 
+using namespace std;
+
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
 
 const Type Type::NEUTRAL(RawType::UNKNOWN, Nature::VALUE);

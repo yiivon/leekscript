@@ -2,7 +2,6 @@
 #define FUNCTIONCALL_HPP
 
 #include <vector>
-using namespace std;
 
 #include "Value.hpp"
 
@@ -10,7 +9,7 @@ class FunctionCall : public Value {
 public:
 
 	Value* function;
-	vector<Value*> arguments;
+	std::vector<Value*> arguments;
 
 	bool is_native = false;
 	string native_func;

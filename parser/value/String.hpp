@@ -4,7 +4,6 @@
 #include <string>
 #include "../lexical/Token.hpp"
 #include "Value.hpp"
-using namespace std;
 
 class String : public Value {
 public:

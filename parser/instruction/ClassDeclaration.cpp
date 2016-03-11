@@ -2,6 +2,8 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSClass.hpp"
 
+using namespace std;
+
 ClassDeclaration::ClassDeclaration() {}
 
 ClassDeclaration::~ClassDeclaration() {}

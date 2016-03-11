@@ -2,15 +2,14 @@
 #define SEMANTICERROR_HPP_
 
 #include <string>
-using namespace std;
 
 class SemanticError {
 public:
 
 	int line;
-	string message;
+	std::string message;
 
-	SemanticError(int line, string message);
+	SemanticError(int line, std::string message);
 	virtual ~SemanticError();
 };
 

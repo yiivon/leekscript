@@ -2,7 +2,6 @@
 #define FUNCTION_HPP
 
 #include <vector>
-using namespace std;
 
 #include "Value.hpp"
 #include "../lexical/Ident.hpp"
@@ -14,13 +13,13 @@ class Function : public Value {
 public:
 
 	bool lambda = false;
-	vector<string> arguments;
-	vector<bool> references;
-	vector<Value*> defaultValues;
-	vector<string> captures;
+	std::vector<string> arguments;
+	std::vector<bool> references;
+	std::vector<Value*> defaultValues;
+	std::vector<std::string> captures;
 	Body* body;
 	int pos;
-	map<string, SemanticVar*> vars;
+	std::map<std::string, SemanticVar*> vars;
 	bool function_added;
 
 	Function();

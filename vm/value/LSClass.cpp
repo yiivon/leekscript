@@ -3,6 +3,8 @@
 #include "LSString.hpp"
 #include "LSNumber.hpp"
 
+using namespace std;
+
 LSValue* LSClass::class_class(new LSClass("Class"));
 
 LSClass::LSClass() : name("?") {
