@@ -17,6 +17,7 @@ LSArray* array_concat(const LSArray* array1, const LSArray* array2);
 LSArray* array_clear(const LSArray* array);
 LSValue* array_fill(const LSArray* array, const LSValue* value, const LSNumber* size);
 LSArray* array_filter(const LSArray* array, const LSFunction* function);
+LSValue* array_first(const LSArray* array);
 LSArray* array_flatten(const LSArray* array, const LSNumber* depth);
 LSValue* array_foldLeft(const LSArray* array, const LSFunction* function, LSValue* v0);
 LSValue* array_foldRight(const LSArray* array, const LSFunction* function, LSValue* v0);
@@ -26,6 +27,7 @@ LSValue* array_insert(const LSArray* array, const LSValue* element, const LSValu
 LSValue* array_isEmpty(const LSArray* array);
 LSValue* array_join(const LSArray* array, const LSString* glue);
 LSValue* array_keySort(const LSArray* array, const LSNumber* order);
+LSValue* array_last(const LSArray* array);
 LSArray* array_map(const LSArray* array, const LSFunction* fun);
 LSArray* array_map2(const LSArray* array, const LSArray* array2, const LSFunction* fun);
 LSValue* array_max(const LSArray* array);

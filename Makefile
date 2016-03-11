@@ -7,6 +7,9 @@ OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
 
 all: makedirs leekscript
 
+test: all
+	build/leekscript -test
+
 build/%.o: %.cpp
 	g++ -c -std=c++11 -O3 -g3 -Wall -Wextra -ljit -o "$@" "$<"
 
@@ -26,4 +29,4 @@ clean:
 	@echo "----------------"
 	@echo "Project cleaned."
 	@echo "----------------"
-	
+
