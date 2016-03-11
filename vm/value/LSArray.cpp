@@ -539,10 +539,10 @@ bool LSArray::operator == (const LSValue* v) const {
 bool LSArray::operator == (const LSNull* v) const {
 	return v->operator == (this);
 }
-bool LSArray::operator == (const LSBoolean* v) const {
+bool LSArray::operator == (const LSBoolean*) const {
 	return false;
 }
-bool LSArray::operator == (const LSNumber* v) const {
+bool LSArray::operator == (const LSNumber*) const {
 	return false;
 }
 bool LSArray::operator == (const LSString*) const {
@@ -558,26 +558,26 @@ bool LSArray::operator == (const LSArray* v) const {
 	}
 	return true;
 }
-bool LSArray::operator == (const LSObject* v) const {
+bool LSArray::operator == (const LSObject*) const {
 	return false;
 }
-bool LSArray::operator == (const LSFunction* v) const {
+bool LSArray::operator == (const LSFunction*) const {
 	return false;
 }
-bool LSArray::operator == (const LSClass* v) const {
+bool LSArray::operator == (const LSClass*) const {
 	return false;
 }
 
 bool LSArray::operator < (const LSValue* v) const {
 	return v->operator < (this);
 }
-bool LSArray::operator < (const LSNull* v) const {
+bool LSArray::operator < (const LSNull*) const {
 	return false;
 }
-bool LSArray::operator < (const LSBoolean* v) const {
+bool LSArray::operator < (const LSBoolean*) const {
 	return false;
 }
-bool LSArray::operator < (const LSNumber* v) const {
+bool LSArray::operator < (const LSNumber*) const {
 	return false;
 }
 bool LSArray::operator < (const LSString*) const {
@@ -586,13 +586,13 @@ bool LSArray::operator < (const LSString*) const {
 bool LSArray::operator < (const LSArray* v) const {
 	return this->values.size() < v->values.size();
 }
-bool LSArray::operator < (const LSObject* v) const {
+bool LSArray::operator < (const LSObject*) const {
 	return true;
 }
-bool LSArray::operator < (const LSFunction* v) const {
+bool LSArray::operator < (const LSFunction*) const {
 	return true;
 }
-bool LSArray::operator < (const LSClass* v) const {
+bool LSArray::operator < (const LSClass*) const {
 	return true;
 }
 
