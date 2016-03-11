@@ -5,13 +5,12 @@
 #include "../lexical/Ident.hpp"
 #include "VariableDeclaration.hpp"
 #include "Instruction.hpp"
-using namespace std;
 
 class ClassDeclaration : public Instruction {
 public:
 
-	string name;
-	vector<VariableDeclaration*> fields;
+	std::string name;
+	std::vector<VariableDeclaration*> fields;
 
 	ClassDeclaration();
 	virtual ~ClassDeclaration();

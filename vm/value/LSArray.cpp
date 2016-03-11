@@ -6,6 +6,8 @@
 #include "LSBoolean.hpp"
 #include <algorithm>
 
+using namespace std;
+
 LSValue* LSArray::array_class(new LSClass("Array"));
 
 LSArray::LSArray() {

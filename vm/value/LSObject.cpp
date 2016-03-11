@@ -3,6 +3,8 @@
 #include "LSString.hpp"
 #include "LSNumber.hpp"
 
+using namespace std;
+
 LSValue* LSObject::object_class(new LSClass("Object"));
 
 LSObject::LSObject() {

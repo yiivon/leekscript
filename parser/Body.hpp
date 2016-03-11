@@ -6,8 +6,6 @@
 #include "value/Value.hpp"
 #include "../Compiler.hpp"
 
-using namespace std;
-
 class Body {
 public:
 

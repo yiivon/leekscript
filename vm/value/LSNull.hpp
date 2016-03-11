@@ -5,7 +5,6 @@
 #include <string>
 #include "../LSValue.hpp"
 #include "../Type.hpp"
-using namespace std;
 
 class LSNull : public LSValue {
 public:
@@ -215,7 +214,7 @@ public:
 	LSValue* abso() const override;
 
 	std::ostream& print(std::ostream& os) const override;
-	string json() const override;
+    std::string json() const override;
 
 	LSValue* getClass() const override;
 

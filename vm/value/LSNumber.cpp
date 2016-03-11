@@ -4,6 +4,8 @@
 #include <math.h>
 #include "LSBoolean.hpp"
 
+using namespace std;
+
 LSClass* LSNumber::number_class = new LSClass("Number");
 
 LSNumber* LSNumber::cache[CACHE_HIGH - CACHE_LOW + 1];

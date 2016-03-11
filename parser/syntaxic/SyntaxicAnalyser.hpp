@@ -11,7 +11,6 @@
 #include "../instruction/For.hpp"
 #include "../instruction/Foreach.hpp"
 #include "../instruction/ClassDeclaration.hpp"
-using namespace std;
 
 class SyntaxicAnalyser {
 

@@ -7,6 +7,8 @@
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
 
+using namespace std;
+
 LSValue* LSString::string_class(new LSClass("String"));
 
 LSString::LSString() {}

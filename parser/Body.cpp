@@ -4,6 +4,8 @@
 #include "instruction/Return.hpp"
 #include "../vm/VM.hpp"
 
+using namespace std;
+
 Body::Body() {
 	type = Type::VALUE;
 }

@@ -3,6 +3,8 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Number.hpp"
 
+using namespace std;
+
 While::While() {
 	condition = nullptr;
 	body = nullptr;

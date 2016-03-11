@@ -7,7 +7,6 @@
 #include "LSClass.hpp"
 #include "../../lib/gason.h"
 #include "../Type.hpp"
-using namespace std;
 
 #define NUMBER_TYPE double
 #define USE_CACHE 0
@@ -232,8 +231,8 @@ public:
 	LSValue* clone() const override;
 
 	std::ostream& print(std::ostream& os) const override;
-	string json() const override;
-	string toString() const;
+    std::string json() const override;
+    std::string toString() const;
 
 	LSValue* getClass() const override;
 

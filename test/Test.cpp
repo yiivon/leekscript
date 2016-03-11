@@ -9,6 +9,8 @@
 #include "../parser/semantic/SemanticAnalyser.hpp"
 #include "../parser/semantic/SemanticError.hpp"
 
+using namespace std;
+
 Test::Test() {
 	total = 0;
 	success = 0;

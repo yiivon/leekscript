@@ -10,7 +10,7 @@ class LSObject : public LSValue {
 
 private:
 
-	map<string, LSValue*> values;
+    std::map<std::string, LSValue*> values;
 	LSClass* clazz;
 
 public:
@@ -18,13 +18,13 @@ public:
 	static LSValue* object_class;
 
 	LSObject();
-	LSObject(initializer_list<pair<string, LSValue*>>);
+    LSObject(std::initializer_list<std::pair<std::string, LSValue*>>);
 	LSObject(LSClass*);
 	LSObject(JsonValue& data);
 
 	virtual ~LSObject();
 
-	void addField(string name, LSValue* value);
+    void addField(std::string name, LSValue* value);
 
 	bool isTrue() const override;
 
@@ -224,7 +224,7 @@ public:
 	LSValue* clone() const override;
 
 	std::ostream& print(std::ostream& os) const override;
-	string json() const override;
+    std::string json() const override;
 
 	LSValue* getClass() const override;
 
