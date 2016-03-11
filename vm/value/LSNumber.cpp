@@ -487,6 +487,92 @@ bool LSNumber::operator < (const LSClass* v) const {
 	return true;
 }
 
+
+bool LSNumber::operator > (const LSValue* v) const {
+	return v->operator > (this);
+}
+bool LSNumber::operator > (const LSNull* v) const {
+	return true;
+}
+bool LSNumber::operator > (const LSBoolean* v) const {
+	return true;
+}
+bool LSNumber::operator > (const LSNumber* v) const {
+	return this->value > v->value;
+}
+bool LSNumber::operator > (const LSString*) const {
+	return false;
+}
+bool LSNumber::operator > (const LSArray*) const {
+	return false;
+}
+bool LSNumber::operator > (const LSObject* v) const {
+	return false;
+}
+bool LSNumber::operator > (const LSFunction* v) const {
+	return false;
+}
+bool LSNumber::operator > (const LSClass* v) const {
+	return false;
+}
+
+bool LSNumber::operator <= (const LSValue* v) const {
+	return v->operator <= (this);
+}
+bool LSNumber::operator <= (const LSNull* v) const {
+	return false;
+}
+bool LSNumber::operator <= (const LSBoolean* v) const {
+	return false;
+}
+bool LSNumber::operator <= (const LSNumber* v) const {
+	return this->value <= v->value;
+}
+bool LSNumber::operator <= (const LSString*) const {
+	return true;
+}
+bool LSNumber::operator <= (const LSArray*) const {
+	return true;
+}
+bool LSNumber::operator <= (const LSObject* v) const {
+	return true;
+}
+bool LSNumber::operator <= (const LSFunction* v) const {
+	return true;
+}
+bool LSNumber::operator <= (const LSClass* v) const {
+	return true;
+}
+
+
+bool LSNumber::operator >= (const LSValue* v) const {
+	return v->operator >= (this);
+}
+bool LSNumber::operator >= (const LSNull* v) const {
+	return true;
+}
+bool LSNumber::operator >= (const LSBoolean* v) const {
+	return true;
+}
+bool LSNumber::operator >= (const LSNumber* v) const {
+	return this->value >= v->value;
+}
+bool LSNumber::operator >= (const LSString*) const {
+	return false;
+}
+bool LSNumber::operator >= (const LSArray*) const {
+	return false;
+}
+bool LSNumber::operator >= (const LSObject* v) const {
+	return false;
+}
+bool LSNumber::operator >= (const LSFunction* v) const {
+	return false;
+}
+bool LSNumber::operator >= (const LSClass* v) const {
+	return false;
+}
+
 LSValue* LSNumber::at(const LSValue* value) const {
 	return LSNull::null_var;
 }

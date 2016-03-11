@@ -183,8 +183,17 @@ LSValue* jit_equals(LSValue* x, LSValue* y) {
 LSValue* jit_not_equals(LSValue* x, LSValue* y) {
 	return LSBoolean::get(x->operator != (y));
 }
-LSValue* jit_low(LSValue* x, LSValue* y) {
+LSValue* jit_lt(LSValue* x, LSValue* y) {
 	return LSBoolean::get(y->operator < (x));
+}
+LSValue* jit_le(LSValue* x, LSValue* y) {
+	return LSBoolean::get(y->operator <= (x));
+}
+LSValue* jit_gt(LSValue* x, LSValue* y) {
+	return LSBoolean::get(y->operator > (x));
+}
+LSValue* jit_ge(LSValue* x, LSValue* y) {
+	return LSBoolean::get(y->operator >= (x));
 }
 
 LSValue* jit_store(LSValue** x, LSValue* y) {
@@ -467,19 +476,25 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::LOWER: {
 			jit_func = &jit_insn_lt;
-			ls_func = (void*) &jit_low;
+			ls_func = (void*) &jit_lt;
 			conv_info = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::LOWER_EQUALS: {
 			jit_func = &jit_insn_le;
-			ls_func = (void*) &jit_low;
+			ls_func = (void*) &jit_le;
 			conv_info = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::GREATER: {
 			jit_func = &jit_insn_gt;
-			ls_func = (void*) &jit_low;
+			ls_func = (void*) &jit_gt;
+			conv_info = Type::BOOLEAN;
+			break;
+		}
+		case TokenType::GREATER_EQUALS: {
+			jit_func = &jit_insn_ge;
+			ls_func = (void*) &jit_ge;
 			conv_info = Type::BOOLEAN;
 			break;
 		}

@@ -418,29 +418,113 @@ bool LSBoolean::operator == (const LSClass*) const {
 bool LSBoolean::operator < (const LSValue* value) const {
 	return value->operator < (this);
 }
-bool LSBoolean::operator < (const LSNull* v) const {
+bool LSBoolean::operator < (const LSNull*) const {
 	return false;
 }
 bool LSBoolean::operator < (const LSBoolean* v) const {
 	return v->value < this->value;
 }
-bool LSBoolean::operator < (const LSNumber* v) const {
+bool LSBoolean::operator < (const LSNumber*) const {
 	return true;
 }
-bool LSBoolean::operator < (const LSString* v) const {
+bool LSBoolean::operator < (const LSString*) const {
 	return true;
 }
-bool LSBoolean::operator < (const LSArray* v) const {
+bool LSBoolean::operator < (const LSArray*) const {
 	return true;
 }
-bool LSBoolean::operator < (const LSFunction* v) const {
+bool LSBoolean::operator < (const LSFunction*) const {
 	return true;
 }
-bool LSBoolean::operator < (const LSObject* v) const {
+bool LSBoolean::operator < (const LSObject*) const {
 	return true;
 }
-bool LSBoolean::operator < (const LSClass* v) const {
+bool LSBoolean::operator < (const LSClass*) const {
 	return true;
+}
+
+bool LSBoolean::operator > (const LSValue* value) const {
+	return value->operator > (this);
+}
+bool LSBoolean::operator > (const LSNull*) const {
+	return true;
+}
+bool LSBoolean::operator > (const LSBoolean* v) const {
+	return v->value > this->value;
+}
+bool LSBoolean::operator > (const LSNumber*) const {
+	return false;
+}
+bool LSBoolean::operator > (const LSString*) const {
+	return false;
+}
+bool LSBoolean::operator > (const LSArray*) const {
+	return false;
+}
+bool LSBoolean::operator > (const LSFunction*) const {
+	return false;
+}
+bool LSBoolean::operator > (const LSObject*) const {
+	return false;
+}
+bool LSBoolean::operator > (const LSClass*) const {
+	return false;
+}
+
+bool LSBoolean::operator <= (const LSValue* value) const {
+	return value->operator <= (this);
+}
+bool LSBoolean::operator <= (const LSNull*) const {
+	return false;
+}
+bool LSBoolean::operator <= (const LSBoolean* v) const {
+	return v->value <= this->value;
+}
+bool LSBoolean::operator <= (const LSNumber*) const {
+	return true;
+}
+bool LSBoolean::operator <= (const LSString*) const {
+	return true;
+}
+bool LSBoolean::operator <= (const LSArray*) const {
+	return true;
+}
+bool LSBoolean::operator <= (const LSFunction*) const {
+	return true;
+}
+bool LSBoolean::operator <= (const LSObject*) const {
+	return true;
+}
+bool LSBoolean::operator <= (const LSClass*) const {
+	return true;
+}
+
+bool LSBoolean::operator >= (const LSValue* value) const {
+	return value->operator >= (this);
+}
+bool LSBoolean::operator >= (const LSNull*) const {
+	return true;
+}
+bool LSBoolean::operator >= (const LSBoolean* v) const {
+	return v->value >= this->value;
+}
+bool LSBoolean::operator >= (const LSNumber*) const {
+	return false;
+}
+bool LSBoolean::operator >= (const LSString*) const {
+	return false;
+}
+bool LSBoolean::operator >= (const LSArray*) const {
+	return false;
+}
+bool LSBoolean::operator >= (const LSFunction*) const {
+	return false;
+}
+bool LSBoolean::operator >= (const LSObject*) const {
+	return false;
+}
+bool LSBoolean::operator >= (const LSClass*) const {
+	return false;
 }
 
 LSValue* LSBoolean::at(const LSValue* value) const {

@@ -175,6 +175,36 @@ public:
 	virtual bool operator < (const LSObject*) const = 0;
 	virtual bool operator < (const LSClass*) const = 0;
 
+	virtual bool operator > (const LSValue*) const = 0;
+	virtual bool operator > (const LSNull*) const = 0;
+	virtual bool operator > (const LSBoolean*) const = 0;
+	virtual bool operator > (const LSNumber*) const = 0;
+	virtual bool operator > (const LSString*) const = 0;
+	virtual bool operator > (const LSArray*) const = 0;
+	virtual bool operator > (const LSFunction*) const = 0;
+	virtual bool operator > (const LSObject*) const = 0;
+	virtual bool operator > (const LSClass*) const = 0;
+
+	virtual bool operator <= (const LSValue*) const = 0;
+	virtual bool operator <= (const LSNull*) const = 0;
+	virtual bool operator <= (const LSBoolean*) const = 0;
+	virtual bool operator <= (const LSNumber*) const = 0;
+	virtual bool operator <= (const LSString*) const = 0;
+	virtual bool operator <= (const LSArray*) const = 0;
+	virtual bool operator <= (const LSFunction*) const = 0;
+	virtual bool operator <= (const LSObject*) const = 0;
+	virtual bool operator <= (const LSClass*) const = 0;
+
+	virtual bool operator >= (const LSValue*) const = 0;
+	virtual bool operator >= (const LSNull*) const = 0;
+	virtual bool operator >= (const LSBoolean*) const = 0;
+	virtual bool operator >= (const LSNumber*) const = 0;
+	virtual bool operator >= (const LSString*) const = 0;
+	virtual bool operator >= (const LSArray*) const = 0;
+	virtual bool operator >= (const LSFunction*) const = 0;
+	virtual bool operator >= (const LSObject*) const = 0;
+	virtual bool operator >= (const LSClass*) const = 0;
+
 	virtual LSValue* at(const LSValue* key) const = 0;
 	virtual LSValue** atL(const LSValue* key) = 0;
 

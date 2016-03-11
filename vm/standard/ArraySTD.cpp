@@ -25,6 +25,15 @@ void ArraySTD::include() {
 	map2_fun_type.setArgumentType(1, Type::POINTER);
 	map2_fun_type.setReturnType(Type::POINTER);
 	method("map2", Type::ARRAY, {Type::ARRAY, Type::ARRAY, map2_fun_type}, (void*) &array_map2);
+
+	method("iter", Type::POINTER, {Type::ARRAY, map_fun_type},(void*)&array_iter);
+	method("filter", Type::ARRAY, {Type::ARRAY, map_fun_type},(void*)&array_filter);
+	method("contains",Type::BOOLEAN_P, {Type::ARRAY, Type::POINTER}, (void*)&array_contains);
+	method("isEmpty",Type::BOOLEAN_P, {Type::ARRAY}, (void*)&array_isEmpty);
+	method("partition",Type::ARRAY, {Type::ARRAY, map_fun_type}, (void*)&array_partition);
+	method("first", Type::POINTER, {Type::ARRAY},(void*)&array_first);
+	method("last", Type::POINTER, {Type::ARRAY},(void*)&array_last);
+
 }
 
 LSValue* array_average(const LSArray* array) {
@@ -51,7 +60,24 @@ LSValue* array_fill(const LSArray* array, const LSValue* value, const LSNumber* 
 }
 
 LSArray* array_filter(const LSArray* array, const LSFunction* function) {
+	LSArray* new_array = new LSArray();
+	auto fun = (void* (*)(void*))function->function;
+	if (array->associative) {
+		for (auto v : array->values)
+			if (((LSValue *)fun(v.second))->isTrue()) new_array->pushKey(v.first, v.second);
 
+	} else {
+		for (auto v : array->values)
+			if (((LSValue *)fun(v.second))->isTrue()) new_array->push(v.second);
+	}
+	return new_array;
+}
+
+LSValue* array_first(const LSArray* array) {
+	auto first = array->values.begin();
+	if (first == array->values.end())
+		return LSNull::null_var;
+	return first->second->clone();
 }
 
 LSArray* array_flatten(const LSArray* array, const LSNumber* depth) {
@@ -67,11 +93,18 @@ LSValue* array_foldRight(const LSArray* array, const LSFunction* function, LSVal
 }
 
 LSValue* array_iter(const LSArray* array, const LSFunction* function) {
-
+	auto fun = (void* (*)(void*))function->function;
+	for (auto v : array->values)
+		fun(v.second);
+	return LSNull::null_var;
 }
 
 LSValue* array_contains(const LSArray* array, const LSValue* value) {
-
+	for (auto v : array->values) {
+		if (value->operator ==(v.second))
+			return LSBoolean::true_val;
+	}
+	return LSBoolean::false_val;
 }
 
 LSValue* array_insert(const LSArray* array, const LSValue* element, const LSValue* index) {
@@ -79,7 +112,7 @@ LSValue* array_insert(const LSArray* array, const LSValue* element, const LSValu
 }
 
 LSValue* array_isEmpty(const LSArray* array) {
-
+	return new LSBoolean(array->values.size() == 0);
 }
 
 LSValue* array_join(const LSArray* array, const LSString* glue) {
@@ -88,6 +121,13 @@ LSValue* array_join(const LSArray* array, const LSString* glue) {
 
 LSValue* array_keySort(const LSArray* array, const LSNumber* order) {
 
+}
+
+LSValue* array_last(const LSArray* array) {
+	auto last = array->values.rbegin();
+	if (last == array->values.rend())
+		return LSNull::null_var;
+	return last->second->clone();
 }
 
 LSArray* array_map(const LSArray* array, const LSFunction* function) {
@@ -144,7 +184,23 @@ LSValue* array_min(const LSArray* array) {
 }
 
 LSValue* array_partition(const LSArray* array, const LSFunction* callback) {
+	LSArray* new_array = new LSArray();
+	LSArray* array_true = new LSArray();
+	LSArray* array_false = new LSArray();
+	auto fun = (void* (*)(void*))callback->function;
+	if (array->associative) {
+		for (auto v : array->values)
+			if (((LSValue *)fun(v.second))->isTrue()) array_true->pushKey(v.first, v.second);
+			else array_false->pushKey(v.first, v.second);
 
+	} else {
+		for (auto v : array->values)
+			if (((LSValue *)fun(v.second))->isTrue()) array_true->push(v.second);
+			else array_false->push(v.second);
+	}
+	new_array->push(array_true);
+	new_array->push(array_false);
+	return new_array;
 }
 
 LSValue* array_pop(const LSArray* array) {

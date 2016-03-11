@@ -458,6 +458,91 @@ bool LSObject::operator < (const LSClass* v) const {
 	return true;
 }
 
+bool LSObject::operator > (const LSValue* value) const {
+	return value->operator > (this);
+}
+bool LSObject::operator > (const LSNull* v) const {
+	return true;
+}
+bool LSObject::operator > (const LSBoolean* v) const {
+	return true;
+}
+bool LSObject::operator > (const LSNumber* v) const {
+	return true;
+}
+bool LSObject::operator > (const LSString* v) const {
+	return true;
+}
+bool LSObject::operator > (const LSArray* v) const {
+	return true;
+}
+bool LSObject::operator > (const LSObject* v) const {
+	return values.size() > v->values.size();
+}
+bool LSObject::operator > (const LSFunction* v) const {
+	return false;
+}
+bool LSObject::operator > (const LSClass* v) const {
+	return false;
+}
+
+bool LSObject::operator <= (const LSValue* value) const {
+	return value->operator <= (this);
+}
+bool LSObject::operator <= (const LSNull* v) const {
+	return false;
+}
+bool LSObject::operator <= (const LSBoolean* v) const {
+	return false;
+}
+bool LSObject::operator <= (const LSNumber* v) const {
+	return false;
+}
+bool LSObject::operator <= (const LSString* v) const {
+	return false;
+}
+bool LSObject::operator <= (const LSArray* v) const {
+	return false;
+}
+bool LSObject::operator <= (const LSObject* v) const {
+	return values.size() <= v->values.size();
+}
+bool LSObject::operator <= (const LSFunction* v) const {
+	return true;
+}
+bool LSObject::operator <= (const LSClass* v) const {
+	return true;
+}
+
+bool LSObject::operator >= (const LSValue* value) const {
+	return value->operator >= (this);
+}
+bool LSObject::operator >= (const LSNull* v) const {
+	return true;
+}
+bool LSObject::operator >= (const LSBoolean* v) const {
+	return true;
+}
+bool LSObject::operator >= (const LSNumber* v) const {
+	return true;
+}
+bool LSObject::operator >= (const LSString* v) const {
+	return true;
+}
+bool LSObject::operator >= (const LSArray* v) const {
+	return true;
+}
+bool LSObject::operator >= (const LSObject* v) const {
+	return values.size() >= v->values.size();
+}
+bool LSObject::operator >= (const LSFunction* v) const {
+	return false;
+}
+bool LSObject::operator >= (const LSClass* v) const {
+	return false;
+}
+
+
 LSValue* LSObject::at (const LSValue* value) const {
 	return LSNull::null_var;
 }

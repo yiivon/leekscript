@@ -460,6 +460,90 @@ bool LSString::operator < (const LSClass*) const {
 	return true;
 }
 
+bool LSString::operator > (const LSValue* v) const {
+	return v->operator > (this);
+}
+bool LSString::operator > (const LSNull* v) const {
+	return true;
+}
+bool LSString::operator > (const LSBoolean* v) const {
+	return true;
+}
+bool LSString::operator > (const LSNumber* v) const {
+	return true;
+}
+bool LSString::operator > (const LSString* v) const {
+	return this->value > v->value;
+}
+bool LSString::operator > (const LSArray*) const {
+	return false;
+}
+bool LSString::operator > (const LSObject*) const {
+	return false;
+}
+bool LSString::operator > (const LSFunction*) const {
+	return false;
+}
+bool LSString::operator > (const LSClass*) const {
+	return false;
+}
+
+bool LSString::operator <= (const LSValue* v) const {
+	return v->operator <= (this);
+}
+bool LSString::operator <= (const LSNull* v) const {
+	return false;
+}
+bool LSString::operator <= (const LSBoolean* v) const {
+	return false;
+}
+bool LSString::operator <= (const LSNumber* v) const {
+	return false;
+}
+bool LSString::operator <= (const LSString* v) const {
+	return this->value <= v->value;
+}
+bool LSString::operator <= (const LSArray*) const {
+	return true;
+}
+bool LSString::operator <= (const LSObject*) const {
+	return true;
+}
+bool LSString::operator <= (const LSFunction*) const {
+	return true;
+}
+bool LSString::operator <= (const LSClass*) const {
+	return true;
+}
+
+bool LSString::operator >= (const LSValue* v) const {
+	return v->operator >= (this);
+}
+bool LSString::operator >= (const LSNull* v) const {
+	return true;
+}
+bool LSString::operator >= (const LSBoolean* v) const {
+	return true;
+}
+bool LSString::operator >= (const LSNumber* v) const {
+	return true;
+}
+bool LSString::operator >= (const LSString* v) const {
+	return this->value >= v->value;
+}
+bool LSString::operator >= (const LSArray*) const {
+	return false;
+}
+bool LSString::operator >= (const LSObject*) const {
+	return false;
+}
+bool LSString::operator >= (const LSFunction*) const {
+	return false;
+}
+bool LSString::operator >= (const LSClass*) const {
+	return false;
+}
+
 LSValue* LSString::at(const LSValue* key) const {
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		return new LSString(value[(int)n->value]);

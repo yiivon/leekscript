@@ -407,7 +407,6 @@ bool LSFunction::operator == (const LSClass*) const {
 	return false;
 }
 
-
 bool LSFunction::operator < (const LSValue* v) const {
 	return v->operator < (this);
 }
@@ -426,13 +425,97 @@ bool LSFunction::operator < (const LSString* v) const {
 bool LSFunction::operator < (const LSArray* v) const {
 	return false;
 }
-bool LSFunction::operator < (const LSFunction* v) const {
-	return false;
-}
 bool LSFunction::operator < (const LSObject* v) const {
 	return false;
 }
+bool LSFunction::operator < (const LSFunction* v) const {
+	return false;
+}
 bool LSFunction::operator < (const LSClass* v) const {
+	return true;
+}
+
+bool LSFunction::operator > (const LSValue* v) const {
+	return v->operator > (this);
+}
+bool LSFunction::operator > (const LSNull* v) const {
+	return true;
+}
+bool LSFunction::operator > (const LSBoolean* v) const {
+	return true;
+}
+bool LSFunction::operator > (const LSNumber* v) const {
+	return true;
+}
+bool LSFunction::operator > (const LSString* v) const {
+	return true;
+}
+bool LSFunction::operator > (const LSArray* v) const {
+	return true;
+}
+bool LSFunction::operator > (const LSObject* v) const {
+	return true;
+}
+bool LSFunction::operator > (const LSFunction* v) const {
+	return true;
+}
+bool LSFunction::operator > (const LSClass* v) const {
+	return false;
+}
+
+bool LSFunction::operator <= (const LSValue* v) const {
+	return v->operator <= (this);
+}
+bool LSFunction::operator <= (const LSNull* v) const {
+	return false;
+}
+bool LSFunction::operator <= (const LSBoolean* v) const {
+	return false;
+}
+bool LSFunction::operator <= (const LSNumber* v) const {
+	return false;
+}
+bool LSFunction::operator <= (const LSString* v) const {
+	return false;
+}
+bool LSFunction::operator <= (const LSArray* v) const {
+	return false;
+}
+bool LSFunction::operator <= (const LSObject* v) const {
+	return false;
+}
+bool LSFunction::operator <= (const LSFunction* v) const {
+	return false;
+}
+bool LSFunction::operator <= (const LSClass* v) const {
+	return true;
+}
+
+bool LSFunction::operator >= (const LSValue* v) const {
+	return v->operator >= (this);
+}
+bool LSFunction::operator >= (const LSNull* v) const {
+	return true;
+}
+bool LSFunction::operator >= (const LSBoolean* v) const {
+	return true;
+}
+bool LSFunction::operator >= (const LSNumber* v) const {
+	return true;
+}
+bool LSFunction::operator >= (const LSString* v) const {
+	return true;
+}
+bool LSFunction::operator >= (const LSArray* v) const {
+	return true;
+}
+bool LSFunction::operator >= (const LSObject* v) const {
+	return true;
+}
+bool LSFunction::operator >= (const LSFunction* v) const {
+	return true;
+}
+bool LSFunction::operator >= (const LSClass* v) const {
 	return false;
 }
 

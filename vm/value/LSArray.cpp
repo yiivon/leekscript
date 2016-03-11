@@ -596,6 +596,90 @@ bool LSArray::operator < (const LSClass* v) const {
 	return true;
 }
 
+bool LSArray::operator > (const LSValue* v) const {
+	return v->operator > (this);
+}
+bool LSArray::operator > (const LSNull* v) const {
+	return true;
+}
+bool LSArray::operator > (const LSBoolean* v) const {
+	return true;
+}
+bool LSArray::operator > (const LSNumber* v) const {
+	return true;
+}
+bool LSArray::operator > (const LSString*) const {
+	return true;
+}
+bool LSArray::operator > (const LSArray* v) const {
+	return this->values.size() > v->values.size();
+}
+bool LSArray::operator > (const LSObject* v) const {
+	return false;
+}
+bool LSArray::operator > (const LSFunction* v) const {
+	return false;
+}
+bool LSArray::operator > (const LSClass* v) const {
+	return false;
+}
+
+bool LSArray::operator <= (const LSValue* v) const {
+	return v->operator <= (this);
+}
+bool LSArray::operator <= (const LSNull* v) const {
+	return false;
+}
+bool LSArray::operator <= (const LSBoolean* v) const {
+	return false;
+}
+bool LSArray::operator <= (const LSNumber* v) const {
+	return false;
+}
+bool LSArray::operator <= (const LSString*) const {
+	return false;
+}
+bool LSArray::operator <= (const LSArray* v) const {
+	return this->values.size() <= v->values.size();
+}
+bool LSArray::operator <= (const LSObject* v) const {
+	return true;
+}
+bool LSArray::operator <= (const LSFunction* v) const {
+	return true;
+}
+bool LSArray::operator <= (const LSClass* v) const {
+	return true;
+}
+
+bool LSArray::operator >= (const LSValue* v) const {
+	return v->operator >= (this);
+}
+bool LSArray::operator >= (const LSNull* v) const {
+	return true;
+}
+bool LSArray::operator >= (const LSBoolean* v) const {
+	return true;
+}
+bool LSArray::operator >= (const LSNumber* v) const {
+	return true;
+}
+bool LSArray::operator >= (const LSString*) const {
+	return true;
+}
+bool LSArray::operator >= (const LSArray* v) const {
+	return this->values.size() >= v->values.size();
+}
+bool LSArray::operator >= (const LSObject* v) const {
+	return false;
+}
+bool LSArray::operator >= (const LSFunction* v) const {
+	return false;
+}
+bool LSArray::operator >= (const LSClass* v) const {
+	return false;
+}
+
 LSValue* LSArray::at(const LSValue* key) const {
 	try {
 		return (LSValue*) values.at((LSValue*) key);

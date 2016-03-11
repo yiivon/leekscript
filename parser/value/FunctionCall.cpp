@@ -253,9 +253,9 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 		for (int i = 0; i < arg_count - 1; ++i) {
 			args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
-			args_types.push_back(arguments[i]->type.nature == Nature::POINTER ? JIT_POINTER :
-				(arguments[i]->type.raw_type == RawType::FUNCTION)	? JIT_POINTER :
-				(arguments[i]->type.raw_type == RawType::FLOAT)	? JIT_FLOAT :
+			args_types.push_back(function->type.getArgumentType(i).nature == Nature::POINTER ? JIT_POINTER :
+				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION)	? JIT_POINTER :
+				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
 				JIT_INTEGER);
 		}
 
@@ -299,9 +299,9 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 	for (int i = 0; i < arg_count; ++i) {
 		args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
-		args_types.push_back(arguments[i]->type.nature == Nature::POINTER ? JIT_POINTER :
-				(arguments[i]->type.raw_type == RawType::FUNCTION)	? JIT_POINTER :
-				(arguments[i]->type.raw_type == RawType::FLOAT)	? JIT_FLOAT :
+		args_types.push_back(function->type.getArgumentType(i).nature == Nature::POINTER ? JIT_POINTER :
+				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION)	? JIT_POINTER :
+				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
 				JIT_INTEGER);
 	}
 
