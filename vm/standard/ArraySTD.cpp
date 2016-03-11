@@ -33,6 +33,8 @@ void ArraySTD::include() {
 	method("partition",Type::ARRAY, {Type::ARRAY, map_fun_type}, (void*)&array_partition);
 	method("first", Type::POINTER, {Type::ARRAY},(void*)&array_first);
 	method("last", Type::POINTER, {Type::ARRAY},(void*)&array_last);
+	method("foldLeft", Type::POINTER, {Type::ARRAY, map2_fun_type, Type::POINTER}, (void*)&array_foldLeft);
+	method("foldRight", Type::POINTER, {Type::ARRAY, map2_fun_type, Type::POINTER}, (void*)&array_foldRight);
 
 }
 
@@ -85,11 +87,19 @@ LSArray* array_flatten(const LSArray* array, const LSNumber* depth) {
 }
 
 LSValue* array_foldLeft(const LSArray* array, const LSFunction* function, LSValue* v0) {
-
+	auto fun = (LSValue* (*)(LSValue*,LSValue*))function->function;
+	LSValue* result = v0;
+	for (auto v : array->values)
+		result = fun(result, v.second);
+	return result;
 }
 
 LSValue* array_foldRight(const LSArray* array, const LSFunction* function, LSValue* v0) {
-
+	auto fun = (LSValue* (*)(LSValue*,LSValue*))function->function;
+	LSValue* result = v0;
+	for (auto it = array->values.rbegin(); it != array->values.rend(); it++)
+		result = fun(it->second, result);
+	return result;
 }
 
 LSValue* array_iter(const LSArray* array, const LSFunction* function) {

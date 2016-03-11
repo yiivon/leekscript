@@ -400,6 +400,9 @@ void Test::tests() {
 	test("['yo', 3, 4, 5].first()", "'yo'");
 	test("Array.last([1,2,3,10,true, 'yo',null])", "null");
 	test("['yo', 3, 4, 5].last()", "5");
+	test("Array.foldLeft([1,2,3,10,true, 'yo',null], x,y -> x + y, 'concat:')", "'concat:12310trueyonull'");
+	test("Array.foldRight([1,2,3,10,true, 'yo',null], x,y -> x + y, 'concat:')", "16");
+
 
 
 	header("Other");
