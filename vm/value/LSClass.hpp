@@ -10,21 +10,21 @@ class LSClass : public LSValue {
 public:
 
 	LSClass* parent;
-    std::string name;
-    std::map<std::string, LSValue*> methods;
-    std::map<std::string, LSValue*> static_fields;
+	std::string name;
+	std::map<std::string, LSValue*> methods;
+	std::map<std::string, LSValue*> static_fields;
 
 	static LSValue* class_class;
 
 	LSClass();
-    LSClass(std::string);
+	LSClass(std::string);
 	LSClass(JsonValue&);
 
 	virtual ~LSClass();
 
-    void addMethod(std::string, LSValue*);
-    void addStaticField(std::string, LSValue*);
-    LSValue* getMethod(std::string);
+	void addMethod(std::string, LSValue*);
+	void addStaticField(std::string, LSValue*);
+	LSValue* getMethod(std::string);
 
 	bool isTrue() const override;
 
@@ -224,7 +224,7 @@ public:
 	LSValue* clone() const;
 
 	std::ostream& print(std::ostream& os) const;
-    std::string json() const override;
+	std::string json() const override;
 
 	LSValue* getClass() const override;
 

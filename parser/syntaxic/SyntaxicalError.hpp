@@ -8,9 +8,9 @@ class SyntaxicalError {
 public:
 
 	Token* token;
-    std::string message;
+	std::string message;
 
-    SyntaxicalError(Token* token, std::string message);
+	SyntaxicalError(Token* token, std::string message);
 	virtual ~SyntaxicalError();
 };
 

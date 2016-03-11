@@ -16,11 +16,11 @@
 class LSNumber : public LSValue {
 public:
 
-	#if USE_CACHE
-		const NUMBER_TYPE value;
-	#else
-		NUMBER_TYPE value;
-	#endif
+#if USE_CACHE
+	const NUMBER_TYPE value;
+#else
+	NUMBER_TYPE value;
+#endif
 
 	static LSClass* number_class;
 	static LSNumber* cache[CACHE_HIGH - CACHE_LOW + 1];
@@ -231,8 +231,8 @@ public:
 	LSValue* clone() const override;
 
 	std::ostream& print(std::ostream& os) const override;
-    std::string json() const override;
-    std::string toString() const;
+	std::string json() const override;
+	std::string toString() const;
 
 	LSValue* getClass() const override;
 

@@ -17,7 +17,7 @@ public:
 	LSString();
 	LSString(char);
 	LSString(const char*);
-    LSString(std::string);
+	LSString(std::string);
 	LSString(JsonValue&);
 
 	~LSString();
@@ -220,7 +220,7 @@ public:
 	LSValue* clone() const override;
 
 	std::ostream& print(std::ostream& os) const;
-    std::string json() const override;
+	std::string json() const override;
 
 	LSValue* getClass() const override;
 

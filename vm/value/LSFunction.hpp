@@ -17,7 +17,7 @@ public:
 	static LSClass* function_class;
 
 	void* function;
-    std::map<std::string, LSValue*> values;
+	std::map<std::string, LSValue*> values;
 
 	LSFunction(void* function);
 	LSFunction(JsonValue& data);
@@ -220,7 +220,7 @@ public:
 	LSValue* clone() const;
 
 	std::ostream& print(std::ostream& os) const;
-    std::string json() const override;
+	std::string json() const override;
 
 	LSValue* getClass() const override;
 

@@ -214,7 +214,7 @@ public:
 	LSValue* abso() const override;
 
 	std::ostream& print(std::ostream& os) const override;
-    std::string json() const override;
+	std::string json() const override;
 
 	LSValue* getClass() const override;
 

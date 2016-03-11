@@ -12,12 +12,12 @@ enum class LetterType {
 class LexicalAnalyser {
 
 	LetterType getLetterType(char c);
-    std::vector<Token> parseTokens(std::string code);
+	std::vector<Token> parseTokens(std::string code);
 
 public:
 
 	LexicalAnalyser();
-    std::vector<Token> analyse(std::string code);
+	std::vector<Token> analyse(std::string code);
 
 };
 

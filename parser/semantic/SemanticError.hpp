@@ -7,9 +7,9 @@ class SemanticError {
 public:
 
 	int line;
-    std::string message;
+	std::string message;
 
-    SemanticError(int line, std::string message);
+	SemanticError(int line, std::string message);
 	virtual ~SemanticError();
 };
 

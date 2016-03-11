@@ -33,13 +33,13 @@ enum class ExecMode {
 class VM {
 public:
 
-    static std::map<int, void*> globals_vars;
+	static std::map<int, void*> globals_vars;
 	static void add_global_var(int, void*);
 
 	VM();
 	virtual ~VM();
 
-    std::string execute(const std::string code, std::string ctx, ExecMode mode);
+	std::string execute(const std::string code, std::string ctx, ExecMode mode);
 
 	static jit_value_t value_to_pointer(jit_function_t&, jit_value_t&, Type);
 	static jit_value_t new_array(jit_function_t&);

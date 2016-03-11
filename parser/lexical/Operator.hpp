@@ -7,13 +7,13 @@ class Operator {
 public:
 
 	TokenType type;
-    std::string character;
+	std::string character;
 	int priority;
 
 	Operator(Token* token);
 	virtual ~Operator();
 
-    void print(std::ostream&);
+	void print(std::ostream&);
 };
 
 #endif
