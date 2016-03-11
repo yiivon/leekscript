@@ -26,7 +26,11 @@ void ArraySTD::include() {
 	map2_fun_type.setReturnType(Type::POINTER);
 	method("map2", Type::ARRAY, {Type::ARRAY, Type::ARRAY, map2_fun_type}, (void*) &array_map2);
 
-	method("iter", Type::POINTER, {Type::ARRAY, map_fun_type},(void*)&array_iter);
+	Type iter_fun_type = Type::FUNCTION_P;
+	iter_fun_type.setArgumentType(0, Type::POINTER);
+	iter_fun_type.setReturnType(Type::POINTER);
+	method("iter", Type::POINTER, {Type::ARRAY, iter_fun_type},(void*)&array_iter);
+
 	method("filter", Type::ARRAY, {Type::ARRAY, map_fun_type},(void*)&array_filter);
 	method("contains",Type::BOOLEAN_P, {Type::ARRAY, Type::POINTER}, (void*)&array_contains);
 	method("isEmpty",Type::BOOLEAN_P, {Type::ARRAY}, (void*)&array_isEmpty);

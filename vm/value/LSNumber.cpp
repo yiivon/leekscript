@@ -573,6 +573,10 @@ bool LSNumber::operator >= (const LSClass* v) const {
 	return false;
 }
 
+bool LSNumber::in(const LSValue*) const {
+	return false;
+}
+
 LSValue* LSNumber::at(const LSValue* value) const {
 	return LSNull::null_var;
 }

@@ -38,7 +38,7 @@ public:
 	const vector<Type> getArgumentTypes() const;
 	const Type getElementType() const;
 	void setElementType(Type);
-	const bool isHomogeneous() const;
+	bool isHomogeneous() const;
 
 	string get_class_name() const;
 

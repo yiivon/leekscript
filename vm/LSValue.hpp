@@ -205,6 +205,8 @@ public:
 	virtual bool operator >= (const LSObject*) const = 0;
 	virtual bool operator >= (const LSClass*) const = 0;
 
+	virtual bool in(const LSValue*) const = 0;
+
 	virtual LSValue* at(const LSValue* key) const = 0;
 	virtual LSValue** atL(const LSValue* key) = 0;
 

@@ -124,6 +124,10 @@ void Test::tests() {
 	test("let a = [1, 2, 3] a[1] = 12 a", "[1, 12, 3]");
 	test("[1.2, 321.42, 23.15]", "[1.2, 321.42, 23.15]");
 	test("[1, 2, 3, 4, 5][1:3]", "[2, 3, 4]");
+	test("2 in [1, 2, 3]", "true");
+	test("4 in [1, 2, 3]", "false");
+	test("'yo' in ['ya', 'yu', 'yo']", "true");
+	test("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }", "'ok'");
 
 	// let a = [1..100]
 	// let a = [for let i = 0; i < 100; i++ do i end]
@@ -322,7 +326,7 @@ void Test::tests() {
 	test("let p = ^ p(2, 11)", "2048");
 	test("+", "<function>");
 	test("+.class", "<class Function>");
-//	test("let p = +; p.class", "Function");
+	test("let p = +; p.class", "<class Function>");
 
 	/*
 	 * Number standard library

@@ -100,10 +100,9 @@ void Type::setElementType(Type type) {
 	}
 }
 
-const bool Type::isHomogeneous() const {
+bool Type::isHomogeneous() const {
 	return homogeneous;
 }
-
 
 /*
  *

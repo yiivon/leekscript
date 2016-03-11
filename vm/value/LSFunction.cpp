@@ -519,6 +519,10 @@ bool LSFunction::operator >= (const LSClass* v) const {
 	return false;
 }
 
+bool LSFunction::in(const LSValue*) const {
+	return false;
+}
+
 LSValue* LSFunction::at(const LSValue* value) const {
 	return LSNull::null_var;
 }

@@ -527,6 +527,10 @@ bool LSBoolean::operator >= (const LSClass*) const {
 	return false;
 }
 
+bool LSBoolean::in(const LSValue* key) const {
+	return key->operator == (this);
+}
+
 LSValue* LSBoolean::at(const LSValue* value) const {
 	return LSNull::null_var;
 }
