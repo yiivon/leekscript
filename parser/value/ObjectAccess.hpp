@@ -5,8 +5,6 @@
 #include "Value.hpp"
 #include "LeftValue.hpp"
 
-using namespace std;
-
 class ObjectAccess : public LeftValue {
 public:
 

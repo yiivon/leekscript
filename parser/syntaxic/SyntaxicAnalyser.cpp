@@ -379,7 +379,7 @@ Value* SyntaxicAnalyser::eatExpression() {
 			t->type == TokenType::MODULO_EQUAL || t->type == TokenType::POWER_EQUAL ||
 			t->type == TokenType::SWAP || t->type == TokenType::TILDE ||
 			t->type == TokenType::TILDE_TILDE || t->type == TokenType::TILDE_EQUAL ||
-			t->type == TokenType::TILDE_TILDE_EQUAL) {
+			t->type == TokenType::TILDE_TILDE_EQUAL || t->type == TokenType::IN) {
 
 		if (t->type == TokenType::MINUS && t->line != lt->line && nt != nullptr && t->line == nt->line)
 			break;

@@ -3,23 +3,22 @@
 
 #include <string>
 #include "TokenType.hpp"
-using namespace std;
 
 class Token {
 
 public:
 
 	TokenType type;
-	string content;
+	std::string content;
 	unsigned character;
 	unsigned line;
 	unsigned size;
 
 	Token();
-	Token(TokenType type, int line, int character, string content);
+	Token(TokenType type, int line, int character, std::string content);
 	virtual ~Token();
 
-	string toString();
+	std::string toString();
 };
 
 std::ostream& operator << (std::ostream& os, Token& var);

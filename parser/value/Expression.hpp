@@ -5,8 +5,6 @@
 #include "Value.hpp"
 #include "../lexical/Operator.hpp"
 
-using namespace std;
-
 class Expression : public Value {
 public:
 
@@ -24,7 +22,7 @@ public:
 
 	void append(Operator*, Value*);
 
-	void print(ostream&) const override;
+	void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

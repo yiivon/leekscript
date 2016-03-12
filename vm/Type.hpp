@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <iostream>
-using namespace std;
 
 enum class RawType {
 	UNKNOWN, NULLL, BOOLEAN, INTEGER, LONG, FLOAT, STRING, OBJECT, ARRAY, FUNCTION, CLASS
@@ -19,11 +18,11 @@ public:
 
 	RawType raw_type;
 	Nature nature;
-	string clazz;
-	vector<Type> element_type;
+	std::string clazz;
+	std::vector<Type> element_type;
 	bool homogeneous;
-	vector<Type> return_types;
-	vector<Type> arguments_types;
+	std::vector<Type> return_types;
+	std::vector<Type> arguments_types;
 
 	Type();
 	Type(const Type& type);
@@ -35,12 +34,12 @@ public:
 	void addArgumentType(Type type);
 	void setArgumentType(const unsigned int index, Type type);
 	const Type getArgumentType(const unsigned int index) const;
-	const vector<Type> getArgumentTypes() const;
+	const std::vector<Type> getArgumentTypes() const;
 	const Type getElementType() const;
 	void setElementType(Type);
-	const bool isHomogeneous() const;
+	bool isHomogeneous() const;
 
-	string get_class_name() const;
+	std::string get_class_name() const;
 
 	bool will_take(const int i, const Type& arg_type);
 	Type mix(const Type& x) const;
@@ -68,10 +67,10 @@ public:
 	static const Type FUNCTION_P;
 	static const Type CLASS;
 
-	static string get_raw_type_name(const RawType& raw_type);
-	static string get_nature_name(const Nature& nature);
+	static std::string get_raw_type_name(const RawType& raw_type);
+	static std::string get_nature_name(const Nature& nature);
 };
 
-ostream& operator << (ostream&, const Type&);
+std::ostream& operator << (std::ostream&, const Type&);
 
 #endif

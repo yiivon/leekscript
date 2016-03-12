@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include "Token.hpp"
-using namespace std;
 
 enum class LetterType {
 	LETTER, NUMBER, QUOTE, DOUBLE_QUOTE, WHITE, OTHER
@@ -13,12 +12,12 @@ enum class LetterType {
 class LexicalAnalyser {
 
 	LetterType getLetterType(char c);
-	vector<Token> parseTokens(string code);
+	std::vector<Token> parseTokens(std::string code);
 
 public:
 
 	LexicalAnalyser();
-	vector<Token> analyse(string code);
+	std::vector<Token> analyse(std::string code);
 
 };
 

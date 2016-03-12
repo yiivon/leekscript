@@ -3,6 +3,8 @@
 #include "LSString.hpp"
 #include "LSNumber.hpp"
 
+using namespace std;
+
 LSValue* LSClass::class_class(new LSClass("Class"));
 
 LSClass::LSClass() : name("?") {
@@ -539,6 +541,10 @@ bool LSClass::operator >= (const LSFunction*) const {
 }
 bool LSClass::operator >= (const LSClass*) const {
 	return true;
+}
+
+bool LSClass::in(const LSValue*) const {
+	return false;
 }
 
 LSValue* LSClass::at(const LSValue* value) const {

@@ -2,6 +2,8 @@
 #include <regex>
 #include <iostream>
 
+using namespace std;
+
 static vector<string> type_literals[] = {
 
 	{ "" }, // Unknown

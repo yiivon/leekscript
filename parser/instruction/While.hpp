@@ -8,7 +8,6 @@
 #include "../value/Expression.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 class SemanticVar;
-using namespace std;
 
 class While : public Instruction {
 public:

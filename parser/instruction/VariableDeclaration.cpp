@@ -2,6 +2,8 @@
 #include "../../vm/VM.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 
+using namespace std;
+
 VariableDeclaration::VariableDeclaration() {
 	global = false;
 	return_value = false;

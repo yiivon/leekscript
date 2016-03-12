@@ -2,6 +2,8 @@
 #include "LSClass.hpp"
 #include "LSNumber.hpp"
 
+using namespace std;
+
 LSValue* LSNull::null_var = new LSNull();
 LSClass* LSNull::null_class = new LSClass("Null");
 
@@ -508,6 +510,10 @@ bool LSNull::operator >= (const LSObject* v) const {
 	return false;
 }
 bool LSNull::operator >= (const LSClass* v) const {
+	return false;
+}
+
+bool LSNull::in(const LSValue* v) const {
 	return false;
 }
 

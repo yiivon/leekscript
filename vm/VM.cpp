@@ -7,6 +7,8 @@
 #include <sstream>
 #include <chrono>
 
+using namespace std;
+
 VM::VM() {}
 
 VM::~VM() {}

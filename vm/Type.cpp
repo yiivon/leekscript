@@ -1,5 +1,7 @@
 #include "Type.hpp"
 
+using namespace std;
+
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
 
 const Type Type::NEUTRAL(RawType::UNKNOWN, Nature::VALUE);
@@ -100,10 +102,9 @@ void Type::setElementType(Type type) {
 	}
 }
 
-const bool Type::isHomogeneous() const {
+bool Type::isHomogeneous() const {
 	return homogeneous;
 }
-
 
 /*
  *

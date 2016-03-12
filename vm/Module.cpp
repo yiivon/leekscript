@@ -1,6 +1,8 @@
 #include "Module.hpp"
 #include "LSValue.hpp"
 
+using namespace std;
+
 Module::Module(string name) : name(name) {
 	analyser = nullptr;
 	program = nullptr;

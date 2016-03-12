@@ -7,7 +7,6 @@
 
 #include <map>
 #include <vector>
-using namespace std;
 
 #include "../LSValue.hpp"
 #include "../../lib/gason.h"
@@ -23,15 +22,15 @@ struct lsvalue_less {
 class LSArray : public LSValue {
 public:
 
-	map<LSValue*, LSValue*, lsvalue_less> values;
+	std::map<LSValue*, LSValue*, lsvalue_less> values;
 	bool associative;
 	int index;
 
 	static LSValue* array_class;
 
 	LSArray();
-	LSArray(initializer_list<LSValue*>);
-	LSArray(initializer_list<pair<LSValue*, LSValue*>>);
+	LSArray(std::initializer_list<LSValue*>);
+	LSArray(std::initializer_list<std::pair<LSValue*, LSValue*>>);
 	LSArray(JsonValue& data);
 
 	virtual ~LSArray();
@@ -221,6 +220,8 @@ public:
 	bool operator >= (const LSObject*) const override;
 	bool operator >= (const LSClass*) const override;
 
+	bool in(const LSValue*) const override;
+
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;
 
@@ -233,7 +234,7 @@ public:
 	LSValue* abso() const override;
 
 	std::ostream& print(std::ostream& os) const override;
-	string json() const override;
+	std::string json() const override;
 
 	LSValue* clone() const override;
 

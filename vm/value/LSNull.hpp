@@ -5,7 +5,6 @@
 #include <string>
 #include "../LSValue.hpp"
 #include "../Type.hpp"
-using namespace std;
 
 class LSNull : public LSValue {
 public:
@@ -201,6 +200,8 @@ public:
 	bool operator >= (const LSObject*) const override;
 	bool operator >= (const LSClass*) const override;
 
+	bool in(const LSValue*) const override;
+
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;
 
@@ -213,7 +214,7 @@ public:
 	LSValue* abso() const override;
 
 	std::ostream& print(std::ostream& os) const override;
-	string json() const override;
+	std::string json() const override;
 
 	LSValue* getClass() const override;
 

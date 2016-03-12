@@ -7,6 +7,6 @@ Ident::Ident(Token* token) {
 
 Ident::~Ident() {}
 
-void Ident::print(ostream& os) {
+void Ident::print(std::ostream& os) {
 	os << token->content;
 }

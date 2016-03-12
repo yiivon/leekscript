@@ -3,6 +3,8 @@
 #include "LSClass.hpp"
 #include "LSString.hpp"
 
+using namespace std;
+
 LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
 LSBoolean* LSBoolean::false_val(new LSBoolean(false));
 LSBoolean* LSBoolean::true_val(new LSBoolean(true));
@@ -525,6 +527,10 @@ bool LSBoolean::operator >= (const LSObject*) const {
 }
 bool LSBoolean::operator >= (const LSClass*) const {
 	return false;
+}
+
+bool LSBoolean::in(const LSValue* key) const {
+	return key->operator == (this);
 }
 
 LSValue* LSBoolean::at(const LSValue* value) const {

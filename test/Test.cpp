@@ -9,6 +9,8 @@
 #include "../parser/semantic/SemanticAnalyser.hpp"
 #include "../parser/semantic/SemanticError.hpp"
 
+using namespace std;
+
 Test::Test() {
 	total = 0;
 	success = 0;
@@ -124,6 +126,10 @@ void Test::tests() {
 	test("let a = [1, 2, 3] a[1] = 12 a", "[1, 12, 3]");
 	test("[1.2, 321.42, 23.15]", "[1.2, 321.42, 23.15]");
 	test("[1, 2, 3, 4, 5][1:3]", "[2, 3, 4]");
+	test("2 in [1, 2, 3]", "true");
+	test("4 in [1, 2, 3]", "false");
+	test("'yo' in ['ya', 'yu', 'yo']", "true");
+	test("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }", "'ok'");
 
 	// let a = [1..100]
 	// let a = [for let i = 0; i < 100; i++ do i end]
@@ -322,7 +328,7 @@ void Test::tests() {
 	test("let p = ^ p(2, 11)", "2048");
 	test("+", "<function>");
 	test("+.class", "<class Function>");
-//	test("let p = +; p.class", "Function");
+	test("let p = +; p.class", "<class Function>");
 
 	/*
 	 * Number standard library
@@ -386,23 +392,22 @@ void Test::tests() {
 	test("[3, 4, 5].map(x -> x ^ 2)", "[9, 16, 25]");
 	test("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))", "[13, 'yo 55', [9]]");
 	test("[321, 213, 121].map(x -> x ^ 2).size()", "3");
-	test("Array.filter([1,2,3,10,true, 'yo'],x-> x > 2)", "[3, 10, 'yo']");
+	test("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
 	test("[3, 4, 5].filter(x -> x > 6)", "[]");
-	test("Array.contains([1,2,3,10,1],1)", "true");
+	test("Array.contains([1, 2, 3, 10, 1], 1)", "true");
 	test("[3, 4, 5].contains(6)", "false");
 	test("Array.isEmpty([])", "true");
 	test("[3, 4, 5].isEmpty()", "false");
 	//test("let a = 0 Array.iter([1,2,3], x -> a += x) a", "6");
 	//test("let a = 2 [1,2,3].iter(x -> a *= x) a", "12");
-	test("Array.partition([1,2,3,10,true, 'yo'],x-> x > 2)", "[[3, 10, 'yo'], [1, 2, true]]");
+	test("Array.partition([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[[3, 10, 'yo'], [1, 2, true]]");
 	test("[3, 4, 5].partition(x -> x > 6)", "[[], [3, 4, 5]]");
-	test("Array.first([1,2,3,10,true, 'yo',null])", "1");
+	test("Array.first([1, 2, 3, 10, true, 'yo', null])", "1");
 	test("['yo', 3, 4, 5].first()", "'yo'");
-	test("Array.last([1,2,3,10,true, 'yo',null])", "null");
+	test("Array.last([1, 2, 3, 10, true, 'yo', null])", "null");
 	test("['yo', 3, 4, 5].last()", "5");
-	test("Array.foldLeft([1,2,3,10,true, 'yo',null], x,y -> x + y, 'concat:')", "'concat:12310trueyonull'");
-	test("Array.foldRight([1,2,3,10,true, 'yo',null], x,y -> x + y, 'concat:')", "16");
-
+	test("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "'concat:12310trueyonull'");
+	test("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "16");
 
 
 	header("Other");

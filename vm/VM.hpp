@@ -14,8 +14,6 @@
 #include "value/LSClass.hpp"
 #include "Type.hpp"
 
-using namespace std;
-
 #define USE_INTEGERS 1
 
 #define JIT_INTEGER jit_type_int
@@ -35,13 +33,13 @@ enum class ExecMode {
 class VM {
 public:
 
-	static map<int, void*> globals_vars;
+	static std::map<int, void*> globals_vars;
 	static void add_global_var(int, void*);
 
 	VM();
 	virtual ~VM();
 
-	string execute(const string code, string ctx, ExecMode mode);
+	std::string execute(const std::string code, std::string ctx, ExecMode mode);
 
 	static jit_value_t value_to_pointer(jit_function_t&, jit_value_t&, Type);
 	static jit_value_t new_array(jit_function_t&);

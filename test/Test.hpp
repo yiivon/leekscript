@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-using namespace std;
 
 class Test {
 
@@ -17,9 +16,9 @@ public:
 	virtual ~Test();
 
 	void tests();
-	void header(string);
+	void header(std::string);
 
-	void test(string code, string result);
+	void test(std::string code, std::string result);
 };
 
 #endif

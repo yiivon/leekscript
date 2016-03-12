@@ -3,6 +3,8 @@
 #include "LSClass.hpp"
 #include "LSNumber.hpp"
 
+using namespace std;
+
 LSClass* LSFunction::function_class = new LSClass("Function");
 
 LSFunction::LSFunction(void* function) {
@@ -516,6 +518,10 @@ bool LSFunction::operator >= (const LSFunction* v) const {
 	return true;
 }
 bool LSFunction::operator >= (const LSClass* v) const {
+	return false;
+}
+
+bool LSFunction::in(const LSValue*) const {
 	return false;
 }
 

@@ -11,15 +11,13 @@
 #include "../../lib/gason.h"
 #include "../Type.hpp"
 
-using namespace std;
-
 class LSFunction : public LSValue {
 public:
 
 	static LSClass* function_class;
 
 	void* function;
-	map<string, LSValue*> values;
+	std::map<std::string, LSValue*> values;
 
 	LSFunction(void* function);
 	LSFunction(JsonValue& data);
@@ -206,6 +204,8 @@ public:
 	bool operator >= (const LSObject*) const override;
 	bool operator >= (const LSClass*) const override;
 
+	bool in(const LSValue*) const override;
+
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;
 
@@ -220,7 +220,7 @@ public:
 	LSValue* clone() const;
 
 	std::ostream& print(std::ostream& os) const;
-	string json() const override;
+	std::string json() const override;
 
 	LSValue* getClass() const override;
 

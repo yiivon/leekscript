@@ -4,7 +4,6 @@
 #include <vector>
 #include "../lexical/Ident.hpp"
 #include "Expression.hpp"
-using namespace std;
 
 class Object : public Value {
 public:

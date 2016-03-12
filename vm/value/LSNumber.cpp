@@ -4,6 +4,8 @@
 #include <math.h>
 #include "LSBoolean.hpp"
 
+using namespace std;
+
 LSClass* LSNumber::number_class = new LSClass("Number");
 
 LSNumber* LSNumber::cache[CACHE_HIGH - CACHE_LOW + 1];
@@ -15,11 +17,11 @@ void LSNumber::build_cache() {
 }
 
 LSNumber* LSNumber::get(NUMBER_TYPE i) {
-	#if USE_CACHE
-		if ((i == (int) i) and i >= CACHE_LOW and i <= CACHE_HIGH) {
-			return cache[(int) (-CACHE_LOW + i)];
-		}
-	#endif
+#if USE_CACHE
+	if ((i == (int) i) and i >= CACHE_LOW and i <= CACHE_HIGH) {
+		return cache[(int) (-CACHE_LOW + i)];
+	}
+#endif
 	return new LSNumber(i);
 }
 
@@ -48,30 +50,30 @@ LSValue* LSNumber::operator ~ () const {
 }
 
 LSValue* LSNumber::operator ++ () {
-	#if !USE_CACHE
-		++value;
-	#endif
+#if !USE_CACHE
+	++value;
+#endif
 	return this;
 }
 LSValue* LSNumber::operator ++ (int) {
 	NUMBER_TYPE old = value;
-	#if !USE_CACHE
-		++value;
-	#endif
+#if !USE_CACHE
+	++value;
+#endif
 	return LSNumber::get(old);
 }
 
 LSValue* LSNumber::operator -- () {
-	#if !USE_CACHE
-		--value;
-	#endif
+#if !USE_CACHE
+	--value;
+#endif
 	return this;
 }
 LSValue* LSNumber::operator -- (int) {
 	NUMBER_TYPE old = value;
-	#if !USE_CACHE
-		--value;
-	#endif
+#if !USE_CACHE
+	--value;
+#endif
 	return LSNumber::get(old);
 }
 
@@ -110,9 +112,9 @@ LSValue* LSNumber::operator += (const LSNull*) {
 	return this;
 }
 LSValue* LSNumber::operator += (const LSNumber* number) {
-	#if !USE_CACHE
-		value += number->value;
-	#endif
+#if !USE_CACHE
+	value += number->value;
+#endif
 	return this;
 }
 LSValue* LSNumber::operator += (const LSBoolean*) {
@@ -173,9 +175,9 @@ LSValue* LSNumber::operator -= (const LSBoolean*) {
 	return this->clone();
 }
 LSValue* LSNumber::operator -= (const LSNumber* number) {
-	#if !USE_CACHE
-		value -= number->value;
-	#endif
+#if !USE_CACHE
+	value -= number->value;
+#endif
 	return this;
 }
 LSValue* LSNumber::operator -= (const LSString*) {
@@ -232,9 +234,9 @@ LSValue* LSNumber::operator *= (const LSBoolean* boolean) {
 	return LSNumber::get(value * boolean->value);
 }
 LSValue* LSNumber::operator *= (const LSNumber* number) {
-	#if !USE_CACHE
-		value *= number->value;
-	#endif
+#if !USE_CACHE
+	value *= number->value;
+#endif
 	return this;
 }
 LSValue* LSNumber::operator *= (const LSString*) {
@@ -291,9 +293,9 @@ LSValue* LSNumber::operator /= (LSValue* value) const {
 }
 
 LSValue* LSNumber::operator /= (const LSNumber* number) {
-	#if !USE_CACHE
-		value /= number->value;
-	#endif
+#if !USE_CACHE
+	value /= number->value;
+#endif
 	return this;
 }
 LSValue* LSNumber::operator /= (const LSString*) {
@@ -350,9 +352,9 @@ LSValue* LSNumber::pow_eq(const LSBoolean* value) {
 	return value->pow_eq(this);
 }
 LSValue* LSNumber::pow_eq(const LSNumber* number) {
-	#if !USE_CACHE
-		value = pow(value, number->value);
-	#endif
+#if !USE_CACHE
+	value = pow(value, number->value);
+#endif
 	return this;
 }
 LSValue* LSNumber::pow_eq(const LSString*) {
@@ -409,9 +411,9 @@ LSValue* LSNumber::operator %= (const LSBoolean*) {
 	return this->clone();
 }
 LSValue* LSNumber::operator %= (const LSNumber* number) {
-	#if !USE_CACHE
-		value = fmod(value, number->value);
-	#endif
+#if !USE_CACHE
+	value = fmod(value, number->value);
+#endif
 	return this;
 }
 LSValue* LSNumber::operator %= (const LSString*) {
@@ -573,6 +575,10 @@ bool LSNumber::operator >= (const LSClass* v) const {
 	return false;
 }
 
+bool LSNumber::in(const LSValue*) const {
+	return false;
+}
+
 LSValue* LSNumber::at(const LSValue* value) const {
 	return LSNull::null_var;
 }
@@ -591,11 +597,11 @@ LSValue* LSNumber::attr(const LSValue* key) const {
 	if (((LSString*) key)->value == "class") {
 		return getClass();
 	}
-//	if (key->operator == (new LSString("abs"))) {
-//		return new LSFunction([=](Context& ctx, vector<LSValue*> __args) -> LSValue* {
-//			return new LSNumber(abs((int)this->value));
-//		});
-//	}
+	//	if (key->operator == (new LSString("abs"))) {
+	//		return new LSFunction([=](Context& ctx, vector<LSValue*> __args) -> LSValue* {
+	//			return new LSNumber(abs((int)this->value));
+	//		});
+	//	}
 	return LSNull::null_var;
 }
 LSValue** LSNumber::attrL(const LSValue* key) {
@@ -615,19 +621,19 @@ bool LSNumber::isInteger() const {
 }
 
 void append_dbl2str(std::string &s, double d) {
-    size_t len = snprintf(0, 0, "%.10f", d);
-    size_t oldsize = s.size();
-    s.resize(oldsize + len + 1);
-    // technically non-portable
-    snprintf(&s[oldsize], len+1, "%.10f", d);
-    // remove nul terminator
-    s.pop_back();
-    // remove trailing zeros
-    s.erase(s.find_last_not_of('0') + 1, string::npos);
-    // remove trailing point
-    if (s.back() == '.') {
-        s.pop_back();
-    }
+	size_t len = snprintf(0, 0, "%.10f", d);
+	size_t oldsize = s.size();
+	s.resize(oldsize + len + 1);
+	// technically non-portable
+	snprintf(&s[oldsize], len+1, "%.10f", d);
+	// remove nul terminator
+	s.pop_back();
+	// remove trailing zeros
+	s.erase(s.find_last_not_of('0') + 1, string::npos);
+	// remove trailing point
+	if (s.back() == '.') {
+		s.pop_back();
+	}
 }
 
 string LSNumber::toString() const {
