@@ -235,7 +235,7 @@ LSArray* jit_tilde_tilde(LSArray* array, LSFunction* fun) {
 	FF f = (FF) fun->function;
 
 	for (auto key : array->values) {
-		new_array->push(LSNumber::get(f(key.second)));
+		new_array->pushClone(LSNumber::get(f(key.second)));
 	}
 	return new_array;
 }
@@ -248,7 +248,7 @@ LSArray* jit_tilde_tilde_pointer(LSArray* array, LSFunction* fun) {
 	FF f = (FF) fun->function;
 
 	for (auto key : array->values) {
-		new_array->push(f(key.second));
+		new_array->pushClone(f(key.second));
 	}
 	return new_array;
 }
