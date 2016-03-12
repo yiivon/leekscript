@@ -187,17 +187,17 @@ LSValue* LSArray::operator += (const LSNull* nulll) {
 }
 
 LSValue* LSArray::operator += (const LSBoolean* boolean) {
-	pushClone(boolean);
+	pushClone((LSValue*) boolean);
 	return this;
 }
 
 LSValue* LSArray::operator += (const LSNumber* number) {
-	pushClone(number);
+	pushClone((LSValue*) number);
 	return this;
 }
 
 LSValue* LSArray::operator += (const LSString* string) {
-	pushClone(string);
+	pushClone((LSValue*) string);
 	return this;
 }
 
