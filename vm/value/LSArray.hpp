@@ -35,6 +35,7 @@ public:
 
 	virtual ~LSArray();
 
+	LSValue* pop();
 	void push(LSValue* value);
 	void pushKey(LSValue* key, LSValue* var);
 

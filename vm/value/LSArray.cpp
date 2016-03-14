@@ -47,6 +47,16 @@ LSArray::LSArray(JsonValue& json) {
 
 LSArray::~LSArray() {}
 
+LSValue* LSArray::pop() {
+	auto last = this->values.rbegin();
+	if (last == this->values.rend())
+		return LSNull::null_var;
+	index--;
+	LSValue* val = last->second;
+	this->values.erase(last->first);
+	return val;
+}
+
 void LSArray::push(LSValue* value) {
 
 	LSValue* key = LSNumber::get(index++);

@@ -33,14 +33,14 @@ LSArray* array_map2(const LSArray* array, const LSArray* array2, const LSFunctio
 LSValue* array_max(const LSArray* array);
 LSValue* array_min(const LSArray* array);
 LSValue* array_partition(const LSArray* array, const LSFunction* callback);
-LSValue* array_pop(const LSArray* array);
-LSValue* array_push(const LSArray* array, LSValue* value);
-LSValue* array_pushAll(const LSArray* array, const LSArray* elements);
+LSValue* array_pop(LSArray* array);
+LSValue* array_push(LSArray* array, LSValue* value);
+LSValue* array_pushAll(LSArray* array, const LSArray* elements);
 LSValue* array_remove(const LSArray* array, const LSValue* index);
 LSValue* array_removeElement(const LSArray* array, const LSValue* element);
 LSValue* array_removeKey(const LSArray* array, const LSValue* index);
 LSValue* array_reverse(const LSArray* array);
-LSNumber* array_search(const LSArray* array, const LSValue* value, const LSValue* start);
+LSValue* array_search(const LSArray* array, const LSValue* value, const LSValue* start);
 LSValue* array_shift(const LSArray* array);
 LSArray* array_shuffle(const LSArray* array);
 LSValue* array_shift(const LSArray* array);

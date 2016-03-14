@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 		cout << "~~~ LeekScript v1.0 ~~~" << endl;
 		string ctx = "{}";
 
-		while (true) {
+		while (!std::cin.eof()) {
 
 			// Get a instruction
 			cout << ">> ";
