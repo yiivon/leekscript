@@ -8,6 +8,8 @@
 #include "../../vm/standard/ArraySTD.hpp"
 #include "../../vm/standard/ObjectSTD.hpp"
 
+using namespace std;
+
 SemanticAnalyser::SemanticAnalyser() {
 	program = nullptr;
 	in_function = false;

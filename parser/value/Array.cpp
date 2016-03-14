@@ -1,6 +1,8 @@
 #include "Array.hpp"
 #include "../../vm/VM.hpp"
 
+using namespace std;
+
 Array::Array() {
 	type = Type::ARRAY;
 }

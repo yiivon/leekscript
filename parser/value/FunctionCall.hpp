@@ -12,7 +12,7 @@ public:
 	std::vector<Value*> arguments;
 
 	bool is_native = false;
-	string native_func;
+	std::string native_func;
 
 	void* std_func;
 	Value* this_ptr;
@@ -20,7 +20,7 @@ public:
 	FunctionCall();
 	virtual ~FunctionCall();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

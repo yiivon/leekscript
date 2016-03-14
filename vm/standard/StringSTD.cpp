@@ -3,6 +3,8 @@
 #include <vector>
 #include <math.h>
 
+using namespace std;
+
 StringSTD::StringSTD() : Module("String") {}
 
 void StringSTD::include() {

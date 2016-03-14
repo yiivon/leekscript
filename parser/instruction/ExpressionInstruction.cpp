@@ -1,5 +1,7 @@
 #include "ExpressionInstruction.hpp"
 
+using namespace std;
+
 ExpressionInstruction::ExpressionInstruction(Value* value) {
 	this->value = value;
 }

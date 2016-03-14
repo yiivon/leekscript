@@ -1,6 +1,8 @@
 #include "Nulll.hpp"
 #include "../../vm/VM.hpp"
 
+using namespace std;
+
 Nulll::Nulll() {
 	type = Type::NULLL;
 	constant = true;

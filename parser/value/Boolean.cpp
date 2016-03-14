@@ -2,6 +2,8 @@
 #include "Boolean.hpp"
 #include "../../vm/value/LSBoolean.hpp"
 
+using namespace std;
+
 Boolean::Boolean(bool value) {
 	this->value = value;
 	type = Type::BOOLEAN;

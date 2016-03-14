@@ -1,5 +1,7 @@
 #include "NumberSTD.hpp"
 
+using namespace std;
+
 NumberSTD::NumberSTD() : Module("Number") {}
 
 void NumberSTD::include() {

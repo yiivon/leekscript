@@ -2,6 +2,8 @@
 #include "../vm/Context.hpp"
 #include "../vm/value/LSNull.hpp"
 
+using namespace std;
+
 Program::Program() {
 	body = nullptr;
 }

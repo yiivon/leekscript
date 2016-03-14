@@ -2,6 +2,8 @@
 #include "PostfixExpression.hpp"
 #include "LeftValue.hpp"
 
+using namespace std;
+
 PostfixExpression::PostfixExpression() {
 	expression = nullptr;
 	operatorr = nullptr;

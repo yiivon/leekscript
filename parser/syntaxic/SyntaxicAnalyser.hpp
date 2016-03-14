@@ -14,12 +14,12 @@
 
 class SyntaxicAnalyser {
 
-	vector<Token> tokens;
+	std::vector<Token> tokens;
 	Token* t;
 	Token* lt;
 	Token* nt;
 	unsigned i;
-	vector<SyntaxicalError*> errors;
+	std::vector<SyntaxicalError*> errors;
 	long time;
 
 public:
@@ -27,7 +27,7 @@ public:
 	SyntaxicAnalyser();
 	~SyntaxicAnalyser();
 
-	Program* analyse(vector<Token>&);
+	Program* analyse(std::vector<Token>&);
 
 	Token* eat();
 	Token* eat(TokenType type);
@@ -47,7 +47,7 @@ public:
 	Instruction* eatInstruction();
 
 	long getTime();
-	vector<SyntaxicalError*> getErrors();
+	std::vector<SyntaxicalError*> getErrors();
 };
 
 #endif

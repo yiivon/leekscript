@@ -5,6 +5,8 @@
 #include "Number.hpp"
 #include "Function.hpp"
 
+using namespace std;
+
 Expression::Expression() {
 	v1 = nullptr;
 	v2 = nullptr;

@@ -10,18 +10,18 @@
 class Module {
 public:
 
-	string name;
+	std::string name;
 	SemanticAnalyser* analyser;
 	Program* program;
 	LSClass* clazz;
 	SemanticVar* var;
 
-	Module(string name);
+	Module(std::string name);
 	virtual ~Module();
 
 	void init(SemanticAnalyser*, Program*);
 	virtual void include() = 0;
-	void method(string name, Type return_type, initializer_list<Type> args, void* addr);
+	void method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
 };
 
 #endif
