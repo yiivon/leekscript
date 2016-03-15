@@ -35,11 +35,11 @@ public:
 	Module(std::string name);
 	virtual ~Module();
 
-	void method(string name, Type return_type, initializer_list<Type> args, void* addr);
+	void method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
 	void attr(std::string name, Type type, std::string value);
 
 	void include(SemanticAnalyser*, Program*);
-	void generate_doc(ostream& os, JsonValue translation);
+	void generate_doc(std::ostream& os, JsonValue translation);
 };
 
 #endif
