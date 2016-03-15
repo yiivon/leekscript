@@ -8,13 +8,13 @@
 class Object : public Value {
 public:
 
-	vector<Ident*> keys;
-	vector<Value*> values;
+	std::vector<Ident*> keys;
+	std::vector<Value*> values;
 
 	Object();
 	virtual ~Object();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

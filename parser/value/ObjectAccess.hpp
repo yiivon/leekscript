@@ -9,14 +9,14 @@ class ObjectAccess : public LeftValue {
 public:
 
 	Value* object;
-	string field;
+	std::string field;
 
 	bool map = false;
 
 	ObjectAccess();
 	virtual ~ObjectAccess();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

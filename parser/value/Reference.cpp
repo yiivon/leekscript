@@ -2,6 +2,8 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSNumber.hpp"
 
+using namespace std;
+
 Reference::Reference() {
 	type = Type::VALUE;
 }

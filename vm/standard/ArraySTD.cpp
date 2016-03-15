@@ -68,11 +68,11 @@ LSArray* array_filter(const LSArray* array, const LSFunction* function) {
 	auto fun = (void* (*)(void*))function->function;
 	if (array->associative) {
 		for (auto v : array->values)
-			if (((LSValue *)fun(v.second))->isTrue()) new_array->pushKey(v.first, v.second);
+			if (((LSValue *)fun(v.second))->isTrue()) new_array->pushKeyClone(v.first, v.second);
 
 	} else {
 		for (auto v : array->values)
-			if (((LSValue *)fun(v.second))->isTrue()) new_array->push(v.second);
+			if (((LSValue *)fun(v.second))->isTrue()) new_array->pushClone(v.second);
 	}
 	return new_array;
 }
@@ -146,7 +146,7 @@ LSArray* array_map(const LSArray* array, const LSFunction* function) {
 	LSArray* new_array = new LSArray();
 	auto fun = (void* (*)(void*))function->function;
 	for (auto v : array->values) {
-		new_array->push((LSValue*) fun(v.second));
+		new_array->pushClone((LSValue*) fun(v.second));
 	}
 	return new_array;
 }
@@ -156,7 +156,7 @@ LSArray* array_map2(const LSArray* array, const LSArray* array2, const LSFunctio
 	auto fun = (void* (*)(void*, void*))function->function;
 	for (auto v : array->values) {
 		LSValue* v2 = ((LSArray*) array2)->values[v.first];
-		new_array->push((LSValue*) fun(v.second, v2));
+		new_array->pushClone((LSValue*) fun(v.second, v2));
 	}
 	return new_array;
 }
@@ -202,16 +202,16 @@ LSValue* array_partition(const LSArray* array, const LSFunction* callback) {
 	auto fun = (void* (*)(void*))callback->function;
 	if (array->associative) {
 		for (auto v : array->values)
-			if (((LSValue *)fun(v.second))->isTrue()) array_true->pushKey(v.first, v.second);
-			else array_false->pushKey(v.first, v.second);
+			if (((LSValue *)fun(v.second))->isTrue()) array_true->pushKeyClone(v.first, v.second);
+			else array_false->pushKeyClone(v.first, v.second);
 
 	} else {
 		for (auto v : array->values)
-			if (((LSValue *)fun(v.second))->isTrue()) array_true->push(v.second);
-			else array_false->push(v.second);
+			if (((LSValue *)fun(v.second))->isTrue()) array_true->pushClone(v.second);
+			else array_false->pushClone(v.second);
 	}
-	new_array->push(array_true);
-	new_array->push(array_false);
+	new_array->pushClone(array_true);
+	new_array->pushClone(array_false);
 	return new_array;
 }
 

@@ -230,11 +230,11 @@ LSArray* new_array() {
 }
 
 void push_array_value(LSArray* array, int value) {
-	array->push(LSNumber::get(value));
+	array->pushClone(LSNumber::get(value));
 }
 
 void push_array_pointer(LSArray* array, LSValue* value) {
-	array->push(value);
+	array->pushClone(value);
 }
 
 jit_value_t VM::new_array(jit_function_t& F) {

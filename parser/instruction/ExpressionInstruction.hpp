@@ -12,7 +12,7 @@ public:
 	ExpressionInstruction(Value* expression);
 	virtual ~ExpressionInstruction();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type& type) override;
 

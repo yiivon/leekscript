@@ -8,12 +8,12 @@
 class String : public Value {
 public:
 
-	string value;
+	std::string value;
 
-	String(string value);
+	String(std::string value);
 	virtual ~String();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

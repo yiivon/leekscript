@@ -13,15 +13,15 @@ class VariableDeclaration : public Instruction {
 public:
 
 	bool global;
-	vector<string> variables;
-	vector<Value*> expressions;
-	map<string, SemanticVar*> vars;
+	std::vector<std::string> variables;
+	std::vector<Value*> expressions;
+	std::map<std::string, SemanticVar*> vars;
 	bool return_value;
 
 	VariableDeclaration();
 	virtual ~VariableDeclaration();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
 

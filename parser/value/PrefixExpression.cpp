@@ -4,6 +4,8 @@
 #include "FunctionCall.hpp"
 #include "../../vm/VM.hpp"
 
+using namespace std;
+
 PrefixExpression::PrefixExpression() {
 	expression = nullptr;
 	operatorr = nullptr;

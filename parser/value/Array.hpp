@@ -4,14 +4,12 @@
 #include <vector>
 #include "Expression.hpp"
 
-using namespace std;
-
 class Array : public Value {
 public:
 
 	bool associative = false;
-	vector<Value*> keys;
-	vector<Value*> expressions;
+	std::vector<Value*> keys;
+	std::vector<Value*> expressions;
 	bool only_values = true;
 
 	Array();
@@ -19,7 +17,7 @@ public:
 
 	void addValue(Value* value, Value* key);
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

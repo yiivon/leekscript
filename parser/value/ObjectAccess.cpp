@@ -2,6 +2,8 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSString.hpp"
 
+using namespace std;
+
 ObjectAccess::ObjectAccess() {
 	object = nullptr;
 	type = Type::POINTER;

@@ -8,6 +8,8 @@
 #include "../../vm/standard/ArraySTD.hpp"
 #include "../../vm/standard/NumberSTD.hpp"
 
+using namespace std;
+
 FunctionCall::FunctionCall() {
 	function = nullptr;
 	type = Type::VALUE;

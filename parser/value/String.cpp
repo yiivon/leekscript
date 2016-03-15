@@ -1,6 +1,8 @@
 #include "String.hpp"
 #include "../../vm/VM.hpp"
 
+using namespace std;
+
 String::String(string value) {
 	this->value = value;
 	type = Type::STRING;

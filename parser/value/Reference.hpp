@@ -7,12 +7,12 @@
 class Reference : public Value {
 public:
 
-	string variable;
+	std::string variable;
 
 	Reference();
 	virtual ~Reference();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 
