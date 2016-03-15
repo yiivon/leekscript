@@ -1,5 +1,7 @@
 #include "AbsoluteValue.hpp"
 
+using namespace std;
+
 AbsoluteValue::AbsoluteValue() {
 	expression = nullptr;
 }

@@ -2,6 +2,8 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../../vm/VM.hpp"
 
+using namespace std;
+
 Function::Function() {
 	body = nullptr;
 	pos = 0;

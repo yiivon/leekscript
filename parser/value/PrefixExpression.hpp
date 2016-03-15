@@ -14,7 +14,7 @@ public:
 	PrefixExpression();
 	virtual ~PrefixExpression();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

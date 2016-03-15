@@ -2,6 +2,8 @@
 #include "Number.hpp"
 #include <limits.h>
 
+using namespace std;
+
 Number::Number(double value) {
 	this->value = value;
 	constant = true;

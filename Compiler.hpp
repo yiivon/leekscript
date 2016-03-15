@@ -3,13 +3,12 @@
 
 #include <jit/jit.h>
 #include <vector>
-using namespace std;
 
 class Compiler {
 public:
 
-	vector<jit_label_t*> loops_end_labels;
-	vector<jit_label_t*> loops_cond_labels;
+	std::vector<jit_label_t*> loops_end_labels;
+	std::vector<jit_label_t*> loops_cond_labels;
 
 	Compiler();
 	virtual ~Compiler();

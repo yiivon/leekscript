@@ -16,7 +16,7 @@ public:
 	VariableValue(Token* name);
 	virtual ~VariableValue();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 	void must_take(SemanticAnalyser* analyser, const Type& type);

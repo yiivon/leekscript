@@ -1,5 +1,7 @@
 #include "NumberSTD.hpp"
 
+using namespace std;
+
 NumberSTD::NumberSTD() : Module("Number") {
 
 	attr("pi", Type::FLOAT_P, "3.14159265359");

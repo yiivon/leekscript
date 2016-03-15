@@ -4,6 +4,8 @@
 #include "Function.hpp"
 #include "math.h"
 
+using namespace std;
+
 VariableValue::VariableValue(Token* name) {
 	this->name = name;
 	this->var = nullptr;

@@ -2,6 +2,8 @@
 #include "If.hpp"
 #include "Number.hpp"
 
+using namespace std;
+
 If::If() {
 	elze = nullptr;
 	condition = nullptr;
