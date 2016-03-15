@@ -1,0 +1,17 @@
+{
+	"pi": {
+		"desc": "Le nombre pi"
+	},	
+	"abs": {
+		"desc": "Renvoie la valeur absolue du nombre number.",
+		"args": {
+			"x": "Le nombre dont la valeur absolue sera calculée."
+		},
+		"return": "La valeur absolue du nombre "
+	},
+	"acos": {
+		"desc": "Calcule l'arc cosinus d', dans l'intervalle [0, #Number.pi].",
+		"args": {},
+		"return": ""
+	}
+}

@@ -1,8 +1,6 @@
 #include "ObjectSTD.hpp"
 
-ObjectSTD::ObjectSTD() : Module("Object") {}
-
-void ObjectSTD::include() {
+ObjectSTD::ObjectSTD() : Module("Object") {
 
 	method("map", Type::OBJECT, {Type::OBJECT}, (void*) &object_map);
 }

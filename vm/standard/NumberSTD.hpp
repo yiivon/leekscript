@@ -10,8 +10,6 @@
 class NumberSTD : public Module {
 public:
 	NumberSTD();
-
-	void include();
 };
 
 LSNumber* number_abs(const LSNumber* number);

@@ -162,6 +162,22 @@ bool Type::operator != (const Type& type) const {
 	return !this->operator == (type);
 }
 
+void Type::toJson(ostream& os) const {
+	os << "{\"type\":\"" << Type::get_json_raw_type_name(raw_type) << "\"";
+
+	if (raw_type == RawType::FUNCTION) {
+		os << ",\"args\":[";
+		for (int t = 0; t < arguments_types.size(); ++t) {
+			if (t > 0) os << ",";
+			arguments_types[t].toJson(os);
+		}
+		os << "]";
+		os << ",\"return\":";
+		getReturnType().toJson(os);
+	}
+	os << "}";
+}
+
 ostream& operator << (ostream& os, const Type& type) {
 
 	os << "[n: " << Type::get_nature_name(type.nature)
@@ -212,6 +228,33 @@ string Type::get_raw_type_name(const RawType& raw_type) {
 		return "UNKNOWN";
 	default:
 		return "??";
+	}
+}
+
+string Type::get_json_raw_type_name(const RawType& raw_type) {
+	switch (raw_type) {
+	case RawType::ARRAY:
+		return "array";
+	case RawType::BOOLEAN:
+		return "boolean";
+	case RawType::CLASS:
+		return "class";
+	case RawType::INTEGER:
+	case RawType::LONG:
+	case RawType::FLOAT:
+		return "number";
+	case RawType::FUNCTION:
+		return "function";
+	case RawType::NULLL:
+		return "null";
+	case RawType::OBJECT:
+		return "object";
+	case RawType::STRING:
+		return "string";
+	case RawType::UNKNOWN:
+		return "?";
+	default:
+		return "?";
 	}
 }
 

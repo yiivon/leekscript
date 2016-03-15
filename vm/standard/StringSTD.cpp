@@ -3,9 +3,7 @@
 #include <vector>
 #include <math.h>
 
-StringSTD::StringSTD() : Module("String") {}
-
-void StringSTD::include() {
+StringSTD::StringSTD() : Module("String") {
 
 	method("charAt", Type::INTEGER_P, {Type::STRING}, (void*) &string_size);
 	method("contains", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);

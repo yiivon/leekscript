@@ -1,4 +1,4 @@
-SRC_DIR := . vm vm/value vm/standard parser parser/lexical parser/syntaxic parser/semantic \
+SRC_DIR := . vm vm/value vm/standard vm/doc parser parser/lexical parser/syntaxic parser/semantic \
 parser/value parser/instruction lib benchmark test
 
 BUILD_DIR := $(addprefix build/,$(SRC_DIR))

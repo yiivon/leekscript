@@ -2,9 +2,7 @@
 #include "../value/LSArray.hpp"
 #include "../value/LSNumber.hpp"
 
-ArraySTD::ArraySTD() : Module("Array") {}
-
-void ArraySTD::include() {
+ArraySTD::ArraySTD() : Module("Array") {
 
 	method("average", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_average);
 

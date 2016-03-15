@@ -53,10 +53,10 @@ void SemanticAnalyser::analyse(Program* program, Context* context) {
 	print_type.setReturnType(Type::STRING);
 	add_var("print", print_type, nullptr);
 
-	NumberSTD().init(this, program);
-	StringSTD().init(this, program);
-	ArraySTD().init(this, program);
-	ObjectSTD().init(this, program);
+	NumberSTD().include(this, program);
+	StringSTD().include(this, program);
+	ArraySTD().include(this, program);
+	ObjectSTD().include(this, program);
 
 	in_program = true;
 
