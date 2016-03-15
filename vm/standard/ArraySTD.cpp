@@ -32,7 +32,10 @@ void ArraySTD::include() {
 	iter_fun_type.setReturnType(Type::POINTER);
 	method("iter", Type::POINTER, {Type::ARRAY, iter_fun_type},(void*)&array_iter);
 
-	method("filter", Type::ARRAY, {Type::ARRAY, map_fun_type},(void*)&array_filter);
+	Type filter_fun_type = Type::FUNCTION_P;
+	filter_fun_type.setArgumentType(0, Type::POINTER);
+	filter_fun_type.setReturnType(Type::POINTER);
+	method("filter", Type::ARRAY, {Type::ARRAY, filter_fun_type},(void*)&array_filter);
 	method("contains",Type::BOOLEAN_P, {Type::ARRAY, Type::POINTER}, (void*)&array_contains);
 	method("isEmpty",Type::BOOLEAN_P, {Type::ARRAY}, (void*)&array_isEmpty);
 	method("partition",Type::ARRAY, {Type::ARRAY, map_fun_type}, (void*)&array_partition);
@@ -49,6 +52,12 @@ void ArraySTD::include() {
 	method("pushAll", Type::ARRAY, {Type::ARRAY, Type::ARRAY}, (void*)&array_pushAll);
 	method("concat", Type::ARRAY, {Type::ARRAY, Type::ARRAY}, (void*)&array_concat);
 	method("join", Type::STRING, {Type::ARRAY, Type::STRING}, (void*)&array_join);
+	method("clear", Type::ARRAY, {Type::ARRAY}, (void*)&array_clear);
+	method("fill", Type::ARRAY, {Type::ARRAY, Type::POINTER, Type::INTEGER_P}, (void*)&array_fill);
+	method("insert", Type::ARRAY, {Type::ARRAY, Type::POINTER, Type::POINTER}, (void*)&array_insert);
+	method("remove", Type::POINTER, {Type::ARRAY, Type::POINTER}, (void*)&array_remove);
+	method("removeKey", Type::POINTER, {Type::ARRAY, Type::POINTER}, (void*)&array_removeKey);
+	method("removeElement", Type::ARRAY, {Type::ARRAY, Type::POINTER}, (void*)&array_removeElement);
 
 }
 
@@ -67,12 +76,17 @@ LSArray* array_concat(const LSArray* array1, const LSArray* array2) {
 	return (LSArray*) array1->operator +(array2);
 }
 
-LSArray* array_clear(const LSArray* array) {
-
+LSArray* array_clear(LSArray* array) {
+	array->clear();
+	return array;
 }
 
-LSValue* array_fill(const LSArray* array, const LSValue* value, const LSNumber* size) {
-
+LSValue* array_fill(LSArray* array, const LSValue* value, const LSNumber* size) {
+	array->clear();
+	for (int i = 0; i < (int) size->value; i++) {
+		array->push((LSValue*) value);
+	}
+	return array;
 }
 
 LSArray* array_filter(const LSArray* array, const LSFunction* function) {
@@ -131,8 +145,18 @@ LSValue* array_contains(const LSArray* array, const LSValue* value) {
 	return LSBoolean::false_val;
 }
 
-LSValue* array_insert(const LSArray* array, const LSValue* element, const LSValue* index) {
-
+LSValue* array_insert(LSArray* array, const LSValue* element, const LSValue* index) {
+	if (not array->associative and index->isInteger() and ((LSNumber*)index)->value <= array ->index and ((LSNumber*)index)->value >= 0) {
+		if ((int)((LSNumber*)index)->value == array ->index) {
+			array->push((LSValue*) element);
+		} else {
+			// TODO should move all elements after index to the right ? or replace the element
+			array->values[(LSValue*) index] = element->clone();
+		}
+	} else {
+		array->pushKey((LSValue*) index, (LSValue*) element);
+	}
+	return array;
 }
 
 LSValue* array_isEmpty(const LSArray* array) {
@@ -252,16 +276,30 @@ LSValue* array_pushAll(LSArray* array, const LSArray* elements) {
 	return array;
 }
 
-LSValue* array_remove(const LSArray* array, const LSValue* index) {
-
+LSValue* array_remove(LSArray* array, const LSValue* index) {
+	if (not array->associative and index->isInteger() and ((LSNumber*)index)->value < array ->index and ((LSNumber*)index)->value >= 0) {
+		return array->remove((LSNumber*) index);
+	} else {
+		return array->removeKey((LSValue*) index);
+	}
 }
 
-LSValue* array_removeElement(const LSArray* array, const LSValue* element) {
-
+LSValue* array_removeElement(LSArray* array, const LSValue* element) {
+	for (auto i = array->values.begin(); i != array->values.end(); i++) {
+		if (i->second->operator ==(element)){
+			if (array->associative) {
+				array->removeKey(i->first);
+			} else {
+				array->remove((LSNumber*) i->first);
+			}
+			break;
+		}
+	}
+	return array;
 }
 
-LSValue* array_removeKey(const LSArray* array, const LSValue* index) {
-
+LSValue* array_removeKey(LSArray* array, const LSValue* index) {
+	return array->removeKey((LSValue*) index);
 }
 
 LSValue* array_reverse(const LSArray* array) {

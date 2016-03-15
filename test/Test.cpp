@@ -433,6 +433,21 @@ void Test::tests() {
 	test("[].join('a')", "''");
 	test("['salut', 'ça', 'va'].join(' ')", "'salut ça va'");
 	test("[1, null, 'va'].join(' ')", "'1 null va'");
+	test("let a = [1, 2, 3] a.clear() a", "[]");
+	test("let a = [1, 2, 3] Array.clear(a)", "[]");
+	test("let a = [1, 2, 3] a.fill(-1, 4) a", "[-1, -1, -1, -1]");
+	test("let a = [1, 2, 3] Array.fill(a, 'test', 2)", "['test', 'test']");
+	test("let a = [1, 2, 3] Array.insert(a, 'test', 1)", "[1, 'test', 3]");
+	test("let a = [1, 2, 3] Array.insert(a, 'test', 6)", "[0: 1, 1: 2, 2: 3, 6: 'test']");
+	test("let a = [1, 2, 3] Array.insert(a, 'test', 'key')", "[0: 1, 1: 2, 2: 3, 'key': 'test']");
+	test("let a = [1, 2, 3] Array.remove(a, 1)", "2");
+	test("let a = [1, 2, 3] Array.remove(a, 1) a", "[0: 1, 2: 3]");
+	test("let a = [] Array.remove(a, 1)", "null");
+	test("let a = [] Array.removeKey(a, 'key')", "null");
+	test("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key')", "'test'");
+	test("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key') a", "[0: 1, 1: 2, 2: 3]");
+	test("let a = [1, 2, 3] a.removeElement(1)", "[1: 2, 2: 3]");
+	test("let a = [1, 2, 3] a.removeElement('key')", "[1, 2, 3]");
 
 
 	header("Other");

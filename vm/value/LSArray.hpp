@@ -35,6 +35,11 @@ public:
 
 	virtual ~LSArray();
 
+	void clear();
+
+	LSValue* remove(LSNumber* index);
+	LSValue* removeKey(LSValue* key);
+
 	LSValue* pop();
 	void push(LSValue* value);
 	void pushKey(LSValue* key, LSValue* var);

@@ -47,6 +47,31 @@ LSArray::LSArray(JsonValue& json) {
 
 LSArray::~LSArray() {}
 
+
+void LSArray::clear() {
+	associative = false;
+	index = 0;
+	values.clear();
+}
+
+
+LSValue* LSArray::remove(LSNumber* index) {
+	// TODO : move all indices after index to the left ?
+	// or transform the array into a associative one
+	return removeKey(index);
+}
+
+LSValue* LSArray::removeKey(LSValue* key) {
+	auto it = this->values.find(key);
+	if (it != this->values.end()) {
+		associative = true;
+		LSValue* val = it->second;
+		this->values.erase(it);
+		return val;
+	}
+	return LSNull::null_var;
+}
+
 LSValue* LSArray::pop() {
 	auto last = this->values.rbegin();
 	if (last == this->values.rend())
