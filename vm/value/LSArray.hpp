@@ -39,6 +39,10 @@ public:
 	void pushKeyNoClone(LSValue* key, LSValue* var);
 	void pushClone(LSValue* value);
 	void pushKeyClone(LSValue* key, LSValue* var);
+	void clear();
+	LSValue* remove(LSNumber* index);
+	LSValue* removeKey(LSValue* key);
+	LSValue* pop();
 
 	bool isTrue() const override;
 
