@@ -8,8 +8,6 @@
 class ArraySTD : public Module {
 public:
 	ArraySTD();
-
-	void include();
 };
 
 LSValue* array_average(const LSArray* array);

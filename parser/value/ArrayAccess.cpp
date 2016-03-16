@@ -3,6 +3,8 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSArray.hpp"
 
+using namespace std;
+
 ArrayAccess::ArrayAccess() {
 	array = nullptr;
 	key = nullptr;

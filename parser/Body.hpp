@@ -9,13 +9,13 @@
 class Body {
 public:
 
-	vector<Instruction*> instructions;
+	std::vector<Instruction*> instructions;
 	Type type;
 
 	Body();
 	virtual ~Body();
 
-	void print(ostream& os);
+	void print(std::ostream& os);
 
 	void analyse(SemanticAnalyser* analyser, const Type& req_type);
 

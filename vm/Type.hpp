@@ -47,6 +47,8 @@ public:
 	bool operator == (const Type&) const;
 	bool operator != (const Type&) const;
 
+	void toJson(std::ostream&) const;
+
 	static const Type NEUTRAL;
 	static const Type VALUE;
 	static const Type POINTER;
@@ -68,6 +70,7 @@ public:
 	static const Type CLASS;
 
 	static std::string get_raw_type_name(const RawType& raw_type);
+	static std::string get_json_raw_type_name(const RawType& raw_type);
 	static std::string get_nature_name(const Nature& nature);
 };
 

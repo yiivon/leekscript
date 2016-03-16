@@ -3,6 +3,8 @@
 #include "../../vm/value/LSString.hpp"
 #include "../../vm/value/LSObject.hpp"
 
+using namespace std;
+
 Object::Object() {
 	type = Type::OBJECT;
 }

@@ -11,8 +11,6 @@ class StringSTD : public Module {
 public:
 	StringSTD();
 	virtual ~StringSTD();
-
-	void include();
 };
 
 LSValue* string_charAt(LSString* string, LSNumber* index);

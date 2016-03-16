@@ -3,9 +3,9 @@
 #include <vector>
 #include <math.h>
 
-StringSTD::StringSTD() : Module("String") {}
+using namespace std;
 
-void StringSTD::include() {
+StringSTD::StringSTD() : Module("String") {
 
 	method("charAt", Type::INTEGER_P, {Type::STRING}, (void*) &string_size);
 	method("contains", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);
@@ -83,17 +83,17 @@ LSValue* string_split(LSString* string, LSString* delimiter) {
 	LSArray* parts = new LSArray();
 	if (delimiter->value == "") {
 		for (char c : string->value) {
-			parts->push(new LSString(c));
+			parts->pushNoClone(new LSString(c));
 		}
 		return parts;
 	} else {
 		size_t last = 0;
 		size_t pos = 0;
 		while ((pos = string->value.find(delimiter->value, last)) != std::string::npos) {
-			parts->push(new LSString(string->value.substr(last, pos - last)));
+			parts->pushNoClone(new LSString(string->value.substr(last, pos - last)));
 			last = pos + delimiter->value.size();
 		}
-		parts->push(new LSString(string->value.substr(last)));
+		parts->pushNoClone(new LSString(string->value.substr(last)));
 		return parts;
 	}
 }
@@ -112,7 +112,7 @@ LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length) {
 LSValue* string_toArray(const LSString* string) {
 	LSArray* parts = new LSArray();
 	for (char c : string->value) {
-		parts->push(new LSString(c));
+		parts->pushNoClone(new LSString(c));
 	}
 	return parts;
 }

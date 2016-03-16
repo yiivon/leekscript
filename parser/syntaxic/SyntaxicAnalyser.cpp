@@ -23,6 +23,8 @@
 #include "../instruction/Instruction.hpp"
 #include <math.h>
 
+using namespace std;
+
 SyntaxicAnalyser::SyntaxicAnalyser() {
 	time = 0;
 	lt = nullptr;

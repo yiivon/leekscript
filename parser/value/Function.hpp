@@ -13,7 +13,7 @@ class Function : public Value {
 public:
 
 	bool lambda = false;
-	std::vector<string> arguments;
+	std::vector<std::string> arguments;
 	std::vector<bool> references;
 	std::vector<Value*> defaultValues;
 	std::vector<std::string> captures;
@@ -25,9 +25,9 @@ public:
 	Function();
 	virtual ~Function();
 
-	void addArgument(string, bool reference, Value* defaultValue);
+	void addArgument(std::string, bool reference, Value* defaultValue);
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

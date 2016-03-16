@@ -3,6 +3,8 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Function.hpp"
 
+using namespace std;
+
 Return::Return() {
 	expression = nullptr;
 	function = nullptr;

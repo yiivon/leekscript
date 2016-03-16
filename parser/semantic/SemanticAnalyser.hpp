@@ -14,7 +14,7 @@ class SemanticVar {
 public:
 	VarScope scope;
 	Type type;
-	map<string, Type> attr_types;
+	std::map<std::string, Type> attr_types;
 	int index;
 	Value* value;
 	bool internal;
@@ -32,13 +32,13 @@ public:
 	bool in_program = false;
 	bool reanalyse = false;
 
-	map<string, SemanticVar*> internal_vars;
-	map<string, SemanticVar*> global_vars;
-	vector<map<string, SemanticVar*>> local_vars;
-	vector<map<string, SemanticVar*>> parameters;
+	std::map<std::string, SemanticVar*> internal_vars;
+	std::map<std::string, SemanticVar*> global_vars;
+	std::vector<std::map<std::string, SemanticVar*>> local_vars;
+	std::vector<std::map<std::string, SemanticVar*>> parameters;
 
-	vector<Function*> functions;
-	stack<Function*> functions_stack;
+	std::vector<Function*> functions;
+	std::stack<Function*> functions_stack;
 
 	SemanticAnalyser();
 	virtual ~SemanticAnalyser();
@@ -50,14 +50,14 @@ public:
 	void add_function(Function*);
 	Function* current_function() const;
 
-	SemanticVar* add_var(string, Type, Value*);
-	SemanticVar* add_var(string, Type, Value*, bool internal);
-	SemanticVar* add_parameter(string name, Type);
-	void add_global_var(string, Type, Value*);
+	SemanticVar* add_var(std::string, Type, Value*);
+	SemanticVar* add_var(std::string, Type, Value*, bool internal);
+	SemanticVar* add_parameter(std::string name, Type);
+	void add_global_var(std::string, Type, Value*);
 
 	SemanticVar* get_var(Token* name);
-	SemanticVar* get_var_direct(string name);
-	map<string, SemanticVar*>& get_local_vars();
+	SemanticVar* get_var_direct(std::string name);
+	std::map<std::string, SemanticVar*>& get_local_vars();
 
 };
 

@@ -2,6 +2,8 @@
 #include "../vm/Context.hpp"
 #include "../vm/value/LSNull.hpp"
 
+using namespace std;
+
 Program::Program() {
 	body = nullptr;
 }
@@ -25,22 +27,22 @@ LSArray* Program_create_array() {
 	return new LSArray();
 }
 void Program_push_null(LSArray* array, int value) {
-	array->push(LSNull::null_var);
+	array->pushClone(LSNull::null_var);
 }
 void Program_push_boolean(LSArray* array, int value) {
-	array->push(LSBoolean::get(value));
+	array->pushClone(LSBoolean::get(value));
 }
 void Program_push_integer(LSArray* array, int value) {
-	array->push(LSNumber::get(value));
+	array->pushClone(LSNumber::get(value));
 }
 void Program_push_float(LSArray* array, float value) {
-	array->push(LSNumber::get(value));
+	array->pushClone(LSNumber::get(value));
 }
 void Program_push_function(LSArray* array, void* value) {
-	array->push(new LSFunction(value));
+	array->pushClone(new LSFunction(value));
 }
 void Program_push_pointer(LSArray* array, LSValue* value) {
-	array->push(value);
+	array->pushClone(value);
 }
 
 void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool toplevel) {

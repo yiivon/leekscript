@@ -41,19 +41,17 @@ LSArray::LSArray(JsonValue& json) {
 	associative = false;
 
 	for (auto e : json) {
-		push(LSValue::parse(e->value));
+		pushClone(LSValue::parse(e->value));
 	}
 }
 
 LSArray::~LSArray() {}
-
 
 void LSArray::clear() {
 	associative = false;
 	index = 0;
 	values.clear();
 }
-
 
 LSValue* LSArray::remove(LSNumber* index) {
 	// TODO : move all indices after index to the left ?
@@ -82,21 +80,28 @@ LSValue* LSArray::pop() {
 	return val;
 }
 
-void LSArray::push(LSValue* value) {
+void LSArray::pushNoClone(LSValue *value) {
 
 	LSValue* key = LSNumber::get(index++);
-	LSValue* val = value->clone();
+	LSValue* val = value;
 
 	this->values.insert(pair<LSValue*, LSValue*> (key, val));
 }
 
-void LSArray::pushKey(LSValue* key, LSValue* var) {
-	LSValue** v = &this->values[key];
-	*v = var->clone();
+void LSArray::pushKeyNoClone(LSValue *key, LSValue *var) {
+	this->values[key] = var;
 	associative = true;
 	if (key->isInteger()) {
 		index = max(index, (int) ((LSNumber*)key)->value + 1);
 	}
+}
+
+void LSArray::pushClone(LSValue* value) {
+	pushNoClone(value->clone());
+}
+
+void LSArray::pushKeyClone(LSValue* key, LSValue* var) {
+	pushKeyNoClone(key, var->clone());
 }
 
 bool LSArray::isTrue() const {
@@ -114,7 +119,7 @@ LSValue* LSArray::operator ! () const {
 LSValue* LSArray::operator ~ () const {
 	LSArray* array = new LSArray();
 	for (auto i = values.rbegin(); i != values.rend(); ++i) {
-		array->push(i->second->clone());
+		array->pushClone(i->second);
 	}
 	return array;
 }
@@ -210,22 +215,22 @@ LSValue* LSArray::operator += (LSValue* value) const {
 }
 
 LSValue* LSArray::operator += (const LSNull* nulll) {
-	push((LSValue*) nulll);
+	pushClone((LSValue*) nulll);
 	return this;
 }
 
 LSValue* LSArray::operator += (const LSBoolean* boolean) {
-	push(boolean->clone());
+	pushClone((LSValue*) boolean);
 	return this;
 }
 
 LSValue* LSArray::operator += (const LSNumber* number) {
-	push(number->clone());
+	pushClone((LSValue*) number);
 	return this;
 }
 
 LSValue* LSArray::operator += (const LSString* string) {
-	push(string->clone());
+	pushClone((LSValue*) string);
 	return this;
 }
 
@@ -256,17 +261,17 @@ LSValue* LSArray::operator += (const LSArray* array) {
 }
 
 LSValue* LSArray::operator += (const LSObject* object) {
-	push((LSValue*) object);
+	pushClone((LSValue*) object);
 	return this;
 }
 
 LSValue* LSArray::operator += (const LSFunction* function) {
-	push((LSValue*) function);
+	pushClone((LSValue*) function);
 	return this;
 }
 
 LSValue* LSArray::operator += (const LSClass* clazz) {
-	push((LSValue*) clazz);
+	pushClone((LSValue*) clazz);
 	return this;
 }
 
@@ -754,7 +759,7 @@ LSValue* LSArray::range(const LSValue* start, const LSValue* end) const {
 		if (i->first->operator < (end)) break; // i > end
 		if (start->operator < (i->first)) continue; // i < start
 
-		range->push(i->second->clone());
+		range->pushClone(i->second);
 	}
 	return range;
 }

@@ -9,8 +9,6 @@
 class ObjectSTD : public Module {
 public:
 	ObjectSTD();
-
-	void include();
 };
 
 LSObject* object_map(const LSObject* object);

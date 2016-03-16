@@ -1,6 +1,8 @@
 #include "Break.hpp"
 #include "../../vm/value/LSNull.hpp"
 
+using namespace std;
+
 Break::Break() {
 	value = 1;
 }

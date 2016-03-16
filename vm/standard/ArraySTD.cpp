@@ -3,9 +3,9 @@
 #include "../value/LSArray.hpp"
 #include "../value/LSNumber.hpp"
 
-ArraySTD::ArraySTD() : Module("Array") {}
+using namespace std;
 
-void ArraySTD::include() {
+ArraySTD::ArraySTD() : Module("Array") {
 
 	method("average", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_average);
 
@@ -58,7 +58,6 @@ void ArraySTD::include() {
 	method("remove", Type::POINTER, {Type::ARRAY, Type::POINTER}, (void*)&array_remove);
 	method("removeKey", Type::POINTER, {Type::ARRAY, Type::POINTER}, (void*)&array_removeKey);
 	method("removeElement", Type::ARRAY, {Type::ARRAY, Type::POINTER}, (void*)&array_removeElement);
-
 }
 
 LSValue* array_average(const LSArray* array) {
@@ -84,7 +83,7 @@ LSArray* array_clear(LSArray* array) {
 LSValue* array_fill(LSArray* array, const LSValue* value, const LSNumber* size) {
 	array->clear();
 	for (int i = 0; i < (int) size->value; i++) {
-		array->push((LSValue*) value);
+		array->pushClone((LSValue*) value);
 	}
 	return array;
 }
@@ -94,11 +93,11 @@ LSArray* array_filter(const LSArray* array, const LSFunction* function) {
 	auto fun = (void* (*)(void*))function->function;
 	if (array->associative) {
 		for (auto v : array->values)
-			if (((LSValue *)fun(v.second))->isTrue()) new_array->pushKey(v.first, v.second);
+			if (((LSValue *)fun(v.second))->isTrue()) new_array->pushKeyClone(v.first, v.second);
 
 	} else {
 		for (auto v : array->values)
-			if (((LSValue *)fun(v.second))->isTrue()) new_array->push(v.second);
+			if (((LSValue *)fun(v.second))->isTrue()) new_array->pushClone(v.second);
 	}
 	return new_array;
 }
@@ -111,7 +110,7 @@ LSValue* array_first(const LSArray* array) {
 }
 
 LSArray* array_flatten(const LSArray* array, const LSNumber* depth) {
-
+	return new LSArray();
 }
 
 LSValue* array_foldLeft(const LSArray* array, const LSFunction* function, LSValue* v0) {
@@ -148,13 +147,13 @@ LSValue* array_contains(const LSArray* array, const LSValue* value) {
 LSValue* array_insert(LSArray* array, const LSValue* element, const LSValue* index) {
 	if (not array->associative and index->isInteger() and ((LSNumber*)index)->value <= array ->index and ((LSNumber*)index)->value >= 0) {
 		if ((int)((LSNumber*)index)->value == array ->index) {
-			array->push((LSValue*) element);
+			array->pushClone((LSValue*) element);
 		} else {
 			// TODO should move all elements after index to the right ? or replace the element
 			array->values[(LSValue*) index] = element->clone();
 		}
 	} else {
-		array->pushKey((LSValue*) index, (LSValue*) element);
+		array->pushKeyClone((LSValue*) index, (LSValue*) element);
 	}
 	return array;
 }
@@ -175,7 +174,7 @@ LSValue* array_join(const LSArray* array, const LSString* glue) {
 }
 
 LSValue* array_keySort(const LSArray* array, const LSNumber* order) {
-
+	return new LSArray();
 }
 
 LSValue* array_last(const LSArray* array) {
@@ -189,7 +188,7 @@ LSArray* array_map(const LSArray* array, const LSFunction* function) {
 	LSArray* new_array = new LSArray();
 	auto fun = (void* (*)(void*))function->function;
 	for (auto v : array->values) {
-		new_array->push((LSValue*) fun(v.second));
+		new_array->pushClone((LSValue*) fun(v.second));
 	}
 	return new_array;
 }
@@ -199,7 +198,7 @@ LSArray* array_map2(const LSArray* array, const LSArray* array2, const LSFunctio
 	auto fun = (void* (*)(void*, void*))function->function;
 	for (auto v : array->values) {
 		LSValue* v2 = ((LSArray*) array2)->values[v.first];
-		new_array->push((LSValue*) fun(v.second, v2));
+		new_array->pushClone((LSValue*) fun(v.second, v2));
 	}
 	return new_array;
 }
@@ -245,16 +244,16 @@ LSValue* array_partition(const LSArray* array, const LSFunction* callback) {
 	auto fun = (void* (*)(void*))callback->function;
 	if (array->associative) {
 		for (auto v : array->values)
-			if (((LSValue *)fun(v.second))->isTrue()) array_true->pushKey(v.first, v.second);
-			else array_false->pushKey(v.first, v.second);
+			if (((LSValue *)fun(v.second))->isTrue()) array_true->pushKeyClone(v.first, v.second);
+			else array_false->pushKeyClone(v.first, v.second);
 
 	} else {
 		for (auto v : array->values)
-			if (((LSValue *)fun(v.second))->isTrue()) array_true->push(v.second);
-			else array_false->push(v.second);
+			if (((LSValue *)fun(v.second))->isTrue()) array_true->pushClone(v.second);
+			else array_false->pushClone(v.second);
 	}
-	new_array->push(array_true);
-	new_array->push(array_false);
+	new_array->pushClone(array_true);
+	new_array->pushClone(array_false);
 	return new_array;
 }
 
@@ -263,14 +262,14 @@ LSValue* array_pop(LSArray* array) {
 }
 
 LSValue* array_push(LSArray* array, LSValue* value) {
-	array->push(value);
+	array->pushClone(value);
 	return array;
 }
 
 LSValue* array_pushAll(LSArray* array, const LSArray* elements) {
 	if (not (array->associative and elements->associative)) {
 		for (auto i = elements->values.begin(); i != elements->values.end(); ++i) {
-			array->push(i->second);
+			array->pushClone(i->second);
 		}
 	}
 	return array;
@@ -305,7 +304,7 @@ LSValue* array_removeKey(LSArray* array, const LSValue* index) {
 LSValue* array_reverse(const LSArray* array) {
 	LSArray* new_array = new LSArray();
 	for (auto it = array->values.rbegin(); it != array->values.rend(); it++) {
-		new_array->push(it->second);
+		new_array->pushClone(it->second);
 	}
 	return new_array;
 }
@@ -320,7 +319,7 @@ LSValue* array_search(const LSArray* array, const LSValue* value, const LSValue*
 }
 
 LSValue* array_shift(const LSArray* array) {
-
+	return new LSArray();
 }
 
 LSArray* array_shuffle(const LSArray* array) {
@@ -333,7 +332,7 @@ LSArray* array_shuffle(const LSArray* array) {
 	}
 	random_shuffle(shuffled_values.begin(), shuffled_values.end());
 	for (auto it = shuffled_values.begin(); it != shuffled_values.end(); it++) {
-		new_array->push(*it);
+		new_array->pushClone(*it);
 	}
 	return new_array;
 }
@@ -343,7 +342,7 @@ LSNumber* array_size(const LSArray* array) {
 }
 
 LSArray* array_sort(const LSArray* array, const LSNumber* order) {
-
+	return new LSArray();
 }
 
 LSValue* array_subArray(const LSArray* array, const LSNumber* start, const LSNumber* end) {
@@ -359,5 +358,5 @@ LSValue* array_sum(const LSArray* array) {
 }
 
 LSValue* array_unshift(const LSArray* array, const LSValue* value) {
-
+	return new LSArray();
 }

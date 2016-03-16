@@ -1,8 +1,12 @@
 #include "NumberSTD.hpp"
 
-NumberSTD::NumberSTD() : Module("Number") {}
+using namespace std;
 
-void NumberSTD::include() {
+NumberSTD::NumberSTD() : Module("Number") {
+
+	attr("pi", Type::FLOAT_P, "3.14159265359");
+	attr("e", Type::FLOAT_P, "2.71828182846");
+	attr("phi", Type::FLOAT_P, "1.61803398874");
 
 	method("abs", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_abs);
 	method("acos", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_acos);

@@ -15,7 +15,7 @@ public:
 	ClassDeclaration();
 	virtual ~ClassDeclaration();
 
-	virtual void print(ostream&) const override;
+	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
 

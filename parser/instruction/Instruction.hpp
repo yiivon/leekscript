@@ -12,7 +12,7 @@ public:
 
 	virtual ~Instruction() = 0;
 
-	virtual void print(ostream&) const = 0;
+	virtual void print(std::ostream&) const = 0;
 
 	virtual void analyse(SemanticAnalyser* analyser, const Type& type) = 0;
 

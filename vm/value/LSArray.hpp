@@ -35,14 +35,14 @@ public:
 
 	virtual ~LSArray();
 
+	void pushNoClone(LSValue* value);
+	void pushKeyNoClone(LSValue* key, LSValue* var);
+	void pushClone(LSValue* value);
+	void pushKeyClone(LSValue* key, LSValue* var);
 	void clear();
-
 	LSValue* remove(LSNumber* index);
 	LSValue* removeKey(LSValue* key);
-
 	LSValue* pop();
-	void push(LSValue* value);
-	void pushKey(LSValue* key, LSValue* var);
 
 	bool isTrue() const override;
 

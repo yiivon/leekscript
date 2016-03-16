@@ -241,13 +241,13 @@ LSValue* LSString::operator / (const LSString* s) const {
 	LSArray* array = new LSArray();
 	if (s->value.size() == 0) {
 		for (char c : value) {
-			array->push(new LSString(string({c})));
+			array->pushNoClone(new LSString(string({c})));
 		}
  	} else {
 		stringstream ss(value);
 		string item;
 		while (getline(ss, item, s->value[0])) {
-			array->push(new LSString(item));
+			array->pushNoClone(new LSString(item));
 		}
  	}
 	return array;

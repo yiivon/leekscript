@@ -9,7 +9,7 @@ class Value {
 public:
 
 	Type type;
-	map<string, Type> attr_types;
+	std::map<std::string, Type> attr_types;
 	bool constant;
 	bool parenthesis = false;
 
@@ -18,7 +18,7 @@ public:
 
 	virtual bool isLeftValue() const;
 
-	virtual void print(ostream&) const = 0;
+	virtual void print(std::ostream&) const = 0;
 
 	void analyse(SemanticAnalyser*);
 	virtual bool will_take(SemanticAnalyser*, const unsigned, const Type);

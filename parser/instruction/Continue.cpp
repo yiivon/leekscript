@@ -7,7 +7,7 @@ Continue::Continue() {
 
 Continue::~Continue() {}
 
-void Continue::print(ostream& os) const {
+void Continue::print(std::ostream& os) const {
 	os << "continue";
 	if (value > 1) {
 		os << " " << value;

@@ -1,6 +1,8 @@
 #include "Array.hpp"
 #include "../../vm/VM.hpp"
 
+using namespace std;
+
 Array::Array() {
 	type = Type::ARRAY;
 }
@@ -90,7 +92,7 @@ LSArray* LSArray_create() {
 	return new LSArray();
 }
 void LSArray_push(LSArray* array, LSValue* value) {
-	array->push(value);
+	array->pushClone(value);
 }
 
 jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {

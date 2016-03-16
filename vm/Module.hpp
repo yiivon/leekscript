@@ -7,21 +7,39 @@
 #include "../parser/semantic/SemanticAnalyser.hpp"
 #include "../parser/Program.hpp"
 
+class ModuleMethod {
+public:
+	std::string name;
+	Type type;
+	void* addr;
+	ModuleMethod(std::string name, Type type, void* addr)
+	: name(name), type(type), addr(addr) {}
+};
+
+class ModuleAttribute {
+public:
+	std::string name;
+	Type type;
+	std::string value;
+	ModuleAttribute(std::string name, Type type, std::string value)
+	: name(name), type(type), value(value) {}
+};
+
 class Module {
 public:
 
-	string name;
-	SemanticAnalyser* analyser;
-	Program* program;
-	LSClass* clazz;
-	SemanticVar* var;
+	std::string name;
+	std::vector<ModuleAttribute> attributes;
+	std::vector<ModuleMethod> methods;
 
-	Module(string name);
+	Module(std::string name);
 	virtual ~Module();
 
-	void init(SemanticAnalyser*, Program*);
-	virtual void include() = 0;
-	void method(string name, Type return_type, initializer_list<Type> args, void* addr);
+	void method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
+	void attr(std::string name, Type type, std::string value);
+
+	void include(SemanticAnalyser*, Program*);
+	void generate_doc(std::ostream& os, JsonValue translation);
 };
 
 #endif
