@@ -34,9 +34,13 @@ extern map<string, jit_value_t> internals;
 extern map<string, jit_value_t> globals;
 extern map<string, jit_value_t> locals;
 
-LSValue* plus_function(LSValue* x, LSValue* y) {
-	return y->operator + (x);
-}
+extern LSValue* jit_add(LSValue* x, LSValue* y);
+extern LSValue* jit_sub(LSValue* x, LSValue* y);
+extern LSValue* jit_mul(LSValue* x, LSValue* y);
+extern LSValue* jit_div(LSValue* x, LSValue* y);
+extern LSValue* jit_pow(LSValue* x, LSValue* y);
+extern LSValue* jit_mod(LSValue* x, LSValue* y);
+
 
 int plus_function_int(int x, int y) {
 	return x + y;
@@ -63,23 +67,48 @@ jit_value_t VariableValue::compile_jit(Compiler&, jit_function_t& F, Type req_ty
 //	cout << "req type : " << req_type << endl;
 
 	if (name->content == "+") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &plus_function_int));
+		if (req_type.getArgumentType(0).nature == Nature::POINTER and req_type.getArgumentType(1).nature == Nature::POINTER) {
+			return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &jit_add));
+		} else {
+			return JIT_CREATE_CONST_POINTER(F,  new LSFunction((void*) &plus_function_int));
+		}
 	}
 	if (name->content == "-") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &minus_function_int));
+		if (req_type.getArgumentType(0).nature == Nature::POINTER and req_type.getArgumentType(1).nature == Nature::POINTER) {
+			return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &jit_sub));
+		} else {
+			return JIT_CREATE_CONST_POINTER(F,  new LSFunction((void*) &minus_function_int));
+		}
 	}
 	if (name->content == "*") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &mul_function_int));
+		if (req_type.getArgumentType(0).nature == Nature::POINTER and req_type.getArgumentType(1).nature == Nature::POINTER) {
+			return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &jit_mul));
+		} else {
+			return JIT_CREATE_CONST_POINTER(F,  new LSFunction((void*) &mul_function_int));
+		}
 	}
 	if (name->content == "/") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &div_function_int));
+		if (req_type.getArgumentType(0).nature == Nature::POINTER and req_type.getArgumentType(1).nature == Nature::POINTER) {
+			return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &jit_div));
+		} else {
+			return JIT_CREATE_CONST_POINTER(F,  new LSFunction((void*) &div_function_int));
+		}
 	}
 	if (name->content == "^") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &pow_function_int));
+		if (req_type.getArgumentType(0).nature == Nature::POINTER and req_type.getArgumentType(1).nature == Nature::POINTER) {
+			return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &jit_pow));
+		} else {
+			return JIT_CREATE_CONST_POINTER(F,  new LSFunction((void*) &pow_function_int));
+		}
 	}
 	if (name->content == "%") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &mod_function_int));
+		if (req_type.getArgumentType(0).nature == Nature::POINTER and req_type.getArgumentType(1).nature == Nature::POINTER) {
+			return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &jit_mod));
+		} else {
+			return JIT_CREATE_CONST_POINTER(F,  new LSFunction((void*) &mod_function_int));
+		}
 	}
+
 
 	if (var->scope == VarScope::INTERNAL) {
 

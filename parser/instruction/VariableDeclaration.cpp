@@ -78,7 +78,7 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 
 //			cout << "add global var : " << variables[i] << endl;
 
-			jit_value_t var = jit_value_create(F, JIT_INTEGER_LONG);
+			jit_value_t var = jit_value_create(F, JIT_POINTER);
 			globals.insert(pair<string, jit_value_t>(variables[i], var));
 
 			if (i < expressions.size()) {
@@ -101,7 +101,12 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 			}
 		} else {
 
-			jit_value_t var = jit_value_create(F, JIT_INTEGER);
+			jit_value_t var = jit_value_create(F, JIT_POINTER);
+//			jit_value_t var = jit_value_create(F, i < expressions.size() ? JIT_POINTER :
+//					expressions[i]->type.nature != Nature::VALUE ? JIT_POINTER :
+//					expressions[i]->type.raw_type == RawType::FLOAT ? JIT_FLOAT :
+//					expressions[i]->type.raw_type == RawType::LONG ? JIT_INTEGER_LONG :
+//					JIT_INTEGER);
 			locals.insert(pair<string, jit_value_t>(variables[i], var));
 
 			if (i < expressions.size()) {

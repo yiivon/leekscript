@@ -38,17 +38,26 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("filter", Type::ARRAY, {Type::ARRAY, filter_fun_type},(void*)&array_filter);
 	method("contains",Type::BOOLEAN_P, {Type::ARRAY, Type::POINTER}, (void*)&array_contains);
 	method("isEmpty",Type::BOOLEAN_P, {Type::ARRAY}, (void*)&array_isEmpty);
-	method("partition",Type::ARRAY, {Type::ARRAY, map_fun_type}, (void*)&array_partition);
+
+	Type partition_fun_type = Type::FUNCTION_P;
+	partition_fun_type.setArgumentType(0, Type::POINTER);
+	partition_fun_type.setReturnType(Type::POINTER);
+	method("partition",Type::ARRAY, {Type::ARRAY, partition_fun_type}, (void*)&array_partition);
 	method("first", Type::POINTER, {Type::ARRAY}, (void*)&array_first);
 	method("last", Type::POINTER, {Type::ARRAY}, (void*)&array_last);
-	method("foldLeft", Type::POINTER, {Type::ARRAY, map2_fun_type, Type::POINTER}, (void*)&array_foldLeft);
-	method("foldRight", Type::POINTER, {Type::ARRAY, map2_fun_type, Type::POINTER}, (void*)&array_foldRight);
+
+	Type fold_fun_type = Type::FUNCTION_P;
+	fold_fun_type.setArgumentType(0, Type::POINTER);
+	fold_fun_type.setArgumentType(1, Type::POINTER);
+	fold_fun_type.setReturnType(Type::POINTER);
+	method("foldLeft", Type::POINTER, {Type::ARRAY, fold_fun_type, Type::POINTER}, (void*)&array_foldLeft);
+	method("foldRight", Type::POINTER, {Type::ARRAY, fold_fun_type, Type::POINTER}, (void*)&array_foldRight);
 	method("reverse", Type::ARRAY, {Type::ARRAY}, (void*)&array_reverse);
 	method("shuffle", Type::ARRAY, {Type::ARRAY}, (void*)&array_shuffle);
 	method("search", Type::POINTER, {Type::ARRAY, Type::POINTER, Type::POINTER}, (void*)&array_search);
 	method("subArray", Type::ARRAY, {Type::ARRAY, Type::POINTER, Type::POINTER}, (void*)&array_subArray);
 	method("pop", Type::POINTER, {Type::ARRAY}, (void*)&array_pop);
-	method("push", Type::ARRAY, {Type::ARRAY}, (void*)&array_push);
+	method("push", Type::ARRAY, {Type::ARRAY, Type::POINTER}, (void*)&array_push);
 	method("pushAll", Type::ARRAY, {Type::ARRAY, Type::ARRAY}, (void*)&array_pushAll);
 	method("concat", Type::ARRAY, {Type::ARRAY, Type::ARRAY}, (void*)&array_concat);
 	method("join", Type::STRING, {Type::ARRAY, Type::STRING}, (void*)&array_join);

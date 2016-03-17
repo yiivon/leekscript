@@ -41,7 +41,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context) {
 
 	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
 	op_type.setArgumentType(0, Type::INTEGER);
-	op_type.setArgumentType(0, Type::INTEGER);
+	op_type.setArgumentType(1, Type::INTEGER);
 	op_type.setReturnType(Type::INTEGER);
 	add_var("+", op_type, nullptr);
 	add_var("-", op_type, nullptr);

@@ -315,8 +315,11 @@ void Test::tests() {
 	 */
 	header("Function operators");
 	test("+(1, 2)", "3");
+	test("+([1], 2)", "[1, 2]");
+	test("+('test', 2)", "'test2'");
 //	test("-(9, 2)", "7");
 	test("*(5, 8)", "40");
+	test("*('test', 2)", "'testtest'");
 	test("/(48, 12)", "4");
 	test("^(2, 11)", "2048");
 	test("%(48, 5)", "3");
@@ -406,6 +409,7 @@ void Test::tests() {
 	test("['yo', 3, 4, 5].first()", "'yo'");
 	test("Array.last([1, 2, 3, 10, true, 'yo', null])", "null");
 	test("['yo', 3, 4, 5].last()", "5");
+	test("['yo', 3, 4, 5].foldLeft(+, 'concat:')", "'concat:yo345'");
 	test("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "'concat:12310trueyonull'");
 	test("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "16");
 //	test("Array.shuffle([1, 2, 3, 10, true, 'yo', null])", "test shuffle ?");
