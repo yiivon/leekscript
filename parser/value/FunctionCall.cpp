@@ -97,6 +97,30 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 		}
 	}
 
+	VariableValue* vv = dynamic_cast<VariableValue*>(function);
+	if (vv != nullptr) {
+		string name = vv->name->content;
+		if (name == "+" or name == "-" or name == "*" or name == "/" or name == "^" or name == "%") {
+			bool isByValue = true;
+			Type effectiveType;
+			for (Value* arg : arguments) {
+				arg->analyse(analyser, Type::NEUTRAL);
+				effectiveType = arg->type;
+				if (arg->type.nature != Nature::VALUE) {
+					isByValue = false;
+				}
+			}
+			if (isByValue) {
+				function->type.setArgumentType(0, effectiveType);
+				function->type.setArgumentType(1, effectiveType);
+				function->type.setReturnType(effectiveType);
+			}
+			type = function->type.getReturnType();
+
+			return;
+		}
+	}
+
 	int a = 0;
 	if (this_ptr != nullptr) {
 		a = 1; // Argument offset for standard functions
@@ -112,7 +136,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 	}
 
 	// The function is a variable
-	VariableValue* vv = dynamic_cast<VariableValue*>(function);
 	if (vv and vv->var->value != nullptr) {
 //		cout << "function call, fun is vv: " << vv->var << endl;
 		a = 0;
@@ -136,13 +159,6 @@ void func_print(LSValue* v) {
 void func_print_int(int v) {
 	cout << " >>> " << v << endl;
 }
-
-extern LSValue* jit_add(LSValue* x, LSValue* y);
-extern LSValue* jit_sub(LSValue* x, LSValue* y);
-extern LSValue* jit_mul(LSValue* x, LSValue* y);
-extern LSValue* jit_div(LSValue* x, LSValue* y);
-extern LSValue* jit_pow(LSValue* x, LSValue* y);
-extern LSValue* jit_mod(LSValue* x, LSValue* y);
 
 LSValue* create_float_object_3(double n) {
 	return LSNumber::get(n);
@@ -268,61 +284,31 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 			return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 		}
-		jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
-		void* ls_func = nullptr;
-		if (f->name->content == "+") {
-			if (arguments[0]->type.nature == Nature::VALUE and arguments[1]->type.nature == Nature::VALUE) {
+		if (function->type.getArgumentType(0).nature == Nature::VALUE and function->type.getArgumentType(1).nature == Nature::VALUE) {
+			jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
+			if (f->name->content == "+") {
 				jit_func = &jit_insn_add;
-			} else {
-				ls_func = (void*) &jit_add;
-			}
-		} else if (f->name->content == "-") {
-			if (arguments[0]->type.nature == Nature::VALUE and arguments[1]->type.nature == Nature::VALUE) {
+			} else if (f->name->content == "-") {
 				jit_func = &jit_insn_sub;
-			} else {
-				ls_func = (void*) &jit_sub;
-			}
-		} else if (f->name->content == "*") {
-			if (arguments[0]->type.nature == Nature::VALUE and arguments[1]->type.nature == Nature::VALUE) {
+			} else if (f->name->content == "*") {
 				jit_func = &jit_insn_mul;
-			} else {
-				ls_func = (void*) &jit_mul;
-			}
-		} else if (f->name->content == "/") {
-			if (arguments[0]->type.nature == Nature::VALUE and arguments[1]->type.nature == Nature::VALUE) {
+			} else if (f->name->content == "/") {
 				jit_func = &jit_insn_div;
-			} else {
-				ls_func = (void*) &jit_div;
-			}
-		} else if (f->name->content == "^") {
-			if (arguments[0]->type.nature == Nature::VALUE and arguments[1]->type.nature == Nature::VALUE) {
+			} else if (f->name->content == "^") {
 				jit_func = &jit_insn_pow;
-			} else {
-				ls_func = (void*) &jit_pow;
-			}
-		} else if (f->name->content == "%") {
-			if (arguments[0]->type.nature == Nature::VALUE and arguments[1]->type.nature == Nature::VALUE) {
+			} else if (f->name->content == "%") {
 				jit_func = &jit_insn_rem;
-			} else {
-				ls_func = (void*) &jit_mod;
+			}
+			if (jit_func != nullptr) {
+				jit_value_t v0 = arguments[0]->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t v1 = arguments[1]->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t ret = jit_func(F,v0,v1);
+				if (req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, ret, type);
+				}
+				return ret;
 			}
 		}
-		if (jit_func != nullptr) {
-			jit_value_t v0 = arguments[0]->compile_jit(c, F, Type::NEUTRAL);
-			jit_value_t v1 = arguments[1]->compile_jit(c, F, Type::NEUTRAL);
-			jit_value_t ret = jit_func(F,v0,v1);
-			if (req_type.nature == Nature::POINTER) {
-				return VM::value_to_pointer(F, ret, type);
-			}
-			return ret;
-		}
-		if (ls_func != nullptr) {
-			jit_value_t v[2] = {arguments[0]->compile_jit(c, F, Type::POINTER), arguments[1]->compile_jit(c, F, Type::POINTER)};
-			jit_type_t args[2] = {JIT_POINTER, JIT_POINTER};
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 2, 0);
-			return jit_insn_call_native(F, "op_pointer", ls_func, sig, v, 2, JIT_CALL_NOTHROW);
-		}
-
 	}
 
 	vector<jit_value_t> fun;
