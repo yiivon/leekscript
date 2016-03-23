@@ -34,52 +34,12 @@ extern map<string, jit_value_t> internals;
 extern map<string, jit_value_t> globals;
 extern map<string, jit_value_t> locals;
 
-LSValue* plus_function(LSValue* x, LSValue* y) {
-	return y->operator + (x);
-}
-
-int plus_function_int(int x, int y) {
-	return x + y;
-}
-int minus_function_int(int x, int y) {
-	return x - y;
-}
-int mul_function_int(int x, int y) {
-	return x * y;
-}
-int div_function_int(int x, int y) {
-	return x / y;
-}
-int pow_function_int(int x, int y) {
-	return pow(x, y);
-}
-int mod_function_int(int x, int y) {
-	return x % y;
-}
 
 jit_value_t VariableValue::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {
 
 //	cout << "compile vv " << name->content << " : " << type << endl;
 //	cout << "req type : " << req_type << endl;
 
-	if (name->content == "+") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &plus_function_int));
-	}
-	if (name->content == "-") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &minus_function_int));
-	}
-	if (name->content == "*") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &mul_function_int));
-	}
-	if (name->content == "/") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &div_function_int));
-	}
-	if (name->content == "^") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &pow_function_int));
-	}
-	if (name->content == "%") {
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction((void*) &mod_function_int));
-	}
 
 	if (var->scope == VarScope::INTERNAL) {
 

@@ -78,7 +78,6 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 
 			jit_value_t var = jit_value_create(F, JIT_INTEGER_LONG);
 			globals.insert(pair<string, jit_value_t>(variables[i]->content, var));
-
 			if (i < expressions.size()) {
 
 				jit_value_t val = expressions.at(i)->compile_jit(c, F, Type::NEUTRAL);

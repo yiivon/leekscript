@@ -117,7 +117,7 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	// Get array element (each value of array)
 	jit_value_t value_val;
 	if (var_type.nature == Nature::POINTER) {
-		cout << "compile pointer" << endl;
+//		cout << "compile pointer" << endl;
 		jit_type_t args_types[1] = {JIT_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 		value_val = jit_insn_call_native(F, "get", (void*) get_array_elem, sig, &it, 1, JIT_CALL_NOTHROW);

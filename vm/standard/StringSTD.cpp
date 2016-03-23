@@ -7,14 +7,14 @@ using namespace std;
 
 StringSTD::StringSTD() : Module("String") {
 
-	method("charAt", Type::INTEGER_P, {Type::STRING}, (void*) &string_size);
-	method("contains", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);
+	method("charAt", Type::STRING, {Type::STRING, Type::INTEGER_P}, (void*) &string_charAt);
+	method("contains", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_contains);
 	method("endsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_endsWith);
 	method("length", Type::INTEGER_P, {Type::STRING}, (void*) &string_length);
 	method("size", Type::INTEGER_P, {Type::STRING}, (void*) &string_size);
 	method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &string_replace);
 	method("reverse", Type::STRING, {Type::STRING}, (void*) &string_reverse);
-	method("replace", Type::STRING, {Type::STRING, Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
+	method("substring", Type::STRING, {Type::STRING, Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
 	method("toArray", Type::ARRAY, {Type::STRING}, (void*) &string_toArray);
 	method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
 	method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);

@@ -316,12 +316,16 @@ void Test::tests() {
 	 */
 	header("Function operators");
 	test("+(1, 2)", "3");
+	test("+([1], 2)", "[1, 2]");
+	test("+('test', 2)", "'test2'");
 //	test("-(9, 2)", "7");
 	test("*(5, 8)", "40");
+	test("*('test', 2)", "'testtest'");
 	test("/(48, 12)", "4");
 	test("^(2, 11)", "2048");
 	test("%(48, 5)", "3");
 	test("let p = + p(1, 2)", "3");
+	test("let p = + p('test', 2)", "'test2'");
 	//test("let p = -\n p(9, 2)", "7");
 	test("let p = * p(5, 8)", "40");
 	test("let p = / p(48, 12)", "4");
@@ -379,8 +383,8 @@ void Test::tests() {
 	test("String.split('salut', '')", "['s', 'a', 'l', 'u', 't']");
 	test("String.startsWith('salut ça va', 'salut')", "true");
 	test("String.toArray('salut')", "['s', 'a', 'l', 'u', 't']");
-	test("Array.average([1, 2, 3, 4, 5, 6])", "3.5");
-	test("Array.average([])", "0");
+	test("String.charAt('salut', 1)", "'a'");
+	test("'salut'.substring(3, 4)", "'ut'");
 
 	header("Array standard library");
 	test("Array", "<class Array>");
@@ -389,6 +393,8 @@ void Test::tests() {
 	test("new Array()", "[]");
 	test("Array.size([1, 'yo', true])", "3");
 	test("[1, 'yo', true].size()", "3");
+	test("Array.average([1, 2, 3, 4, 5, 6])", "3.5");
+	test("Array.average([])", "0");
 	test("Array.map([1, 2, 3], x -> x ^ 2)", "[1, 4, 9]");
 	test("[3, 4, 5].map(x -> x ^ 2)", "[9, 16, 25]");
 	test("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))", "[13, 'yo 55', [9]]");

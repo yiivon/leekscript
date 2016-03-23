@@ -30,6 +30,12 @@ void SemanticVar::will_take(SemanticAnalyser* analyser, unsigned pos, const Type
 	}
 }
 
+extern LSValue* jit_add(LSValue* x, LSValue* y);
+extern LSValue* jit_sub(LSValue* x, LSValue* y);
+extern LSValue* jit_mul(LSValue* x, LSValue* y);
+extern LSValue* jit_div(LSValue* x, LSValue* y);
+extern LSValue* jit_pow(LSValue* x, LSValue* y);
+extern LSValue* jit_mod(LSValue* x, LSValue* y);
 void SemanticAnalyser::analyse(Program* program, Context* context) {
 
 	this->program = program;
@@ -40,19 +46,25 @@ void SemanticAnalyser::analyse(Program* program, Context* context) {
 	}
 
 	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
-	op_type.setArgumentType(0, Type::INTEGER);
-	op_type.setArgumentType(0, Type::INTEGER);
-	op_type.setReturnType(Type::INTEGER);
+	op_type.setArgumentType(0, Type::POINTER);
+	op_type.setArgumentType(1, Type::POINTER);
+	op_type.setReturnType(Type::POINTER);
+	program->system_vars.insert(pair<string, LSValue*>("+", new LSFunction((void*) &jit_add)));
 	add_var(new Token("+"), op_type, nullptr);
+	program->system_vars.insert(pair<string, LSValue*>("-", new LSFunction((void*) &jit_sub)));
 	add_var(new Token("-"), op_type, nullptr);
+	program->system_vars.insert(pair<string, LSValue*>("*", new LSFunction((void*) &jit_mul)));
 	add_var(new Token("*"), op_type, nullptr);
+	program->system_vars.insert(pair<string, LSValue*>("/", new LSFunction((void*) &jit_div)));
 	add_var(new Token("/"), op_type, nullptr);
+	program->system_vars.insert(pair<string, LSValue*>("^", new LSFunction((void*) &jit_pow)));
 	add_var(new Token("^"), op_type, nullptr);
+	program->system_vars.insert(pair<string, LSValue*>("%", new LSFunction((void*) &jit_mod)));
 	add_var(new Token("%"), op_type, nullptr);
 
 	Type print_type = Type(RawType::FUNCTION, Nature::POINTER);
 	print_type.setArgumentType(0, Type::VALUE);
-	print_type.setReturnType(Type::STRING);
+	print_type.setReturnType(Type::POINTER);
 	add_var(new Token("print"), print_type, nullptr);
 
 	NumberSTD().include(this, program);
