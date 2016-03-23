@@ -2,14 +2,15 @@
 #define SEMANTICERROR_HPP_
 
 #include <string>
+#include "../lexical/Token.hpp"
 
 class SemanticError {
 public:
 
-	int line;
+	Token* token;
 	std::string message;
 
-	SemanticError(int line, std::string message);
+	SemanticError(Token* token, std::string message);
 	virtual ~SemanticError();
 };
 

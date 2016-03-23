@@ -36,24 +36,24 @@ void SemanticAnalyser::analyse(Program* program, Context* context) {
 
 	// Add context variables
 	for (auto var : context->vars) {
-		add_global_var(var.first, Type(var.second->getRawType(), Nature::POINTER), nullptr);
+		add_global_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr);
 	}
 
 	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
 	op_type.setArgumentType(0, Type::INTEGER);
 	op_type.setArgumentType(0, Type::INTEGER);
 	op_type.setReturnType(Type::INTEGER);
-	add_var("+", op_type, nullptr);
-	add_var("-", op_type, nullptr);
-	add_var("*", op_type, nullptr);
-	add_var("/", op_type, nullptr);
-	add_var("^", op_type, nullptr);
-	add_var("%", op_type, nullptr);
+	add_var(new Token("+"), op_type, nullptr);
+	add_var(new Token("-"), op_type, nullptr);
+	add_var(new Token("*"), op_type, nullptr);
+	add_var(new Token("/"), op_type, nullptr);
+	add_var(new Token("^"), op_type, nullptr);
+	add_var(new Token("%"), op_type, nullptr);
 
 	Type print_type = Type(RawType::FUNCTION, Nature::POINTER);
 	print_type.setArgumentType(0, Type::VALUE);
 	print_type.setReturnType(Type::STRING);
-	add_var("print", print_type, nullptr);
+	add_var(new Token("print"), print_type, nullptr);
 
 	NumberSTD().include(this, program);
 	StringSTD().include(this, program);
@@ -93,31 +93,31 @@ Function* SemanticAnalyser::current_function() const {
 	return functions_stack.top();
 }
 
-SemanticVar* SemanticAnalyser::add_parameter(string name, Type type) {
+SemanticVar* SemanticAnalyser::add_parameter(Token* v, Type type) {
 
-	SemanticVar* arg = new SemanticVar(VarScope::PARAMETER, type, parameters.back().size(), nullptr, false);
-	parameters.back().insert(pair<string, SemanticVar*>(name, arg));
+	SemanticVar* arg = new SemanticVar(VarScope::PARAMETER, type, parameters.back().size(), nullptr);
+	parameters.back().insert(pair<string, SemanticVar*>(v->content, arg));
 	return arg;
 }
 
-SemanticVar* SemanticAnalyser::get_var(Token* name) {
+SemanticVar* SemanticAnalyser::get_var(Token* v) {
 	try {
-		return internal_vars.at(name->content);
+		return internal_vars.at(v->content);
 		} catch (exception& e) {}
 	try {
-		return global_vars.at(name->content);
+		return global_vars.at(v->content);
 	} catch (exception& e) {}
 	try {
 		if (parameters.size() > 0) {
-			return parameters.back().at(name->content);
+			return parameters.back().at(v->content);
 		}
 	} catch (exception& e) {}
 	try {
 		if (local_vars.size() > 0) {
-			return local_vars.back().at(name->content);
+			return local_vars.back().at(v->content);
 		}
 	} catch (exception& e) {}
-	throw SemanticError(name->line, "Variable « " + name->content + " » is undefined!");
+	throw SemanticError(v, "Variable « " + v->content + " » is undefined!");
 }
 
 SemanticVar* SemanticAnalyser::get_var_direct(string name) {
@@ -132,44 +132,44 @@ SemanticVar* SemanticAnalyser::get_var_direct(string name) {
 	return nullptr;
 }
 
-SemanticVar* SemanticAnalyser::add_var(string v, Type type, Value* value) {
-	return add_var(v, type, value, false);
-}
-
-void SemanticAnalyser::add_global_var(string v, Type type, Value* value) {
+void SemanticAnalyser::add_global_var(Token* v, Type type, Value* value) {
 	global_vars.insert(pair<string, SemanticVar*>(
-		v,
-		new SemanticVar(VarScope::GLOBAL, type, 0, value, internal)
+		v->content,
+		new SemanticVar(VarScope::GLOBAL, type, 0, value)
 	));
 }
 
-SemanticVar* SemanticAnalyser::add_var(string v, Type type, Value* value, bool internal) {
+SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value) {
 
-//	cout << "add var" << endl;
+//	cout << "add var " << v << endl;
 
 	if (in_program) {
 
 		if (in_function) {
 	//		cout << "local" << endl;
 			local_vars.back().insert(pair<string, SemanticVar*>(
-				v,
-				new SemanticVar(VarScope::LOCAL, type, 0, value, internal)
+				v->content,
+				new SemanticVar(VarScope::LOCAL, type, 0, value)
 			));
-			return local_vars.back().at(v);
+			return local_vars.back().at(v->content);
 		} else {
-	//		cout << "global" << endl;
+//			cout << "global" << endl;
+
+			if (global_vars.find(v->content) != global_vars.end()) {
+				throw SemanticError(v, "Variable « " + v->content + " » is already defined!");
+			}
 			global_vars.insert(pair<string, SemanticVar*>(
-				v,
-				new SemanticVar(VarScope::GLOBAL, type, 0, value, internal)
+				v->content,
+				new SemanticVar(VarScope::GLOBAL, type, 0, value)
 			));
-			return global_vars.at(v);
+			return global_vars.at(v->content);
 		}
 	} else {
 		internal_vars.insert(pair<string, SemanticVar*>(
-			v,
-			new SemanticVar(VarScope::INTERNAL, type, 0, value, internal)
+			v->content,
+			new SemanticVar(VarScope::INTERNAL, type, 0, value)
 		));
-		return internal_vars.at(v);
+		return internal_vars.at(v->content);
 	}
 }
 

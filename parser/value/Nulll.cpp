@@ -14,11 +14,9 @@ void Nulll::print(ostream& os) const {
 	os << "null";
 }
 
-void Nulll::analyse(SemanticAnalyser* analyser, const Type) {
+void Nulll::analyse(SemanticAnalyser*, const Type) {}
 
-}
-
-jit_value_t Nulll::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t Nulll::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {
 
 	if (req_type.nature == Nature::POINTER) {
 		LSNull* n = new LSNull();

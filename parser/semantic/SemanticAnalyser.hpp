@@ -17,9 +17,8 @@ public:
 	std::map<std::string, Type> attr_types;
 	int index;
 	Value* value;
-	bool internal;
-	SemanticVar(VarScope scope, Type type, int index, Value* value, bool internal) :
-		scope(scope), type(type), index(index), value(value), internal(internal) {}
+	SemanticVar(VarScope scope, Type type, int index, Value* value) :
+		scope(scope), type(type), index(index), value(value) {}
 
 	void will_take(SemanticAnalyser*, unsigned, const Type&);
 };
@@ -50,10 +49,9 @@ public:
 	void add_function(Function*);
 	Function* current_function() const;
 
-	SemanticVar* add_var(std::string, Type, Value*);
-	SemanticVar* add_var(std::string, Type, Value*, bool internal);
-	SemanticVar* add_parameter(std::string name, Type);
-	void add_global_var(std::string, Type, Value*);
+	SemanticVar* add_var(Token*, Type, Value*);
+	SemanticVar* add_parameter(Token*, Type);
+	void add_global_var(Token*, Type, Value*);
 
 	SemanticVar* get_var(Token* name);
 	SemanticVar* get_var_direct(std::string name);

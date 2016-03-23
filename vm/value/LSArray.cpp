@@ -104,6 +104,18 @@ void LSArray::pushKeyClone(LSValue* key, LSValue* var) {
 	pushKeyNoClone(key, var->clone());
 }
 
+LSArrayIterator LSArray::begin() {
+	return values.begin();
+}
+
+LSArrayIterator LSArray::end() {
+	return values.end();
+}
+
+LSValue* LSArray::at(LSArrayIterator it) {
+	return it->second;
+}
+
 bool LSArray::isTrue() const {
 	return values.size() > 0;
 }

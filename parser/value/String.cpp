@@ -17,11 +17,9 @@ void String::print(ostream& os) const {
 	os << "'";
 }
 
-void String::analyse(SemanticAnalyser* analyser, const Type) {
+void String::analyse(SemanticAnalyser*, const Type) {}
 
-}
-
-jit_value_t String::compile_jit(Compiler&, jit_function_t& F, Type type) const {
+jit_value_t String::compile_jit(Compiler&, jit_function_t& F, Type) const {
 
 	LSString* s = new LSString(value);
 	return JIT_CREATE_CONST_POINTER(F,  s);

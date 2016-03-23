@@ -25,7 +25,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (argc > 1 && string(argv[1]) == "-doc") {
-
 		Documentation().generate(cout);
 		return 0;
 	}

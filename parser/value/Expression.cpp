@@ -85,7 +85,7 @@ void Expression::print(ostream& os) const {
 	os <<  "}";
 }
 
-void Expression::analyse(SemanticAnalyser* analyser, const Type req_info) {
+void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 
 	type = Type::VALUE;
 	constant = true;

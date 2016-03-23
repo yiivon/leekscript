@@ -37,7 +37,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 	function->analyse(analyser);
 
-//	cout << "Function call function type : " << function->type << endl;
+	// cout << "Function call function type : " << function->type << endl;
 
 	// Detect standard library functions
 	ObjectAccess* oa = dynamic_cast<ObjectAccess*>(function);

@@ -32,7 +32,7 @@ int while_is_true(LSValue* v) {
 	return v->isTrue();
 }
 
-jit_value_t While::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
+jit_value_t While::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	jit_label_t label_cond = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;

@@ -13,7 +13,7 @@ class Function : public Value {
 public:
 
 	bool lambda = false;
-	std::vector<std::string> arguments;
+	std::vector<Token*> arguments;
 	std::vector<bool> references;
 	std::vector<Value*> defaultValues;
 	std::vector<std::string> captures;
@@ -25,7 +25,7 @@ public:
 	Function();
 	virtual ~Function();
 
-	void addArgument(std::string, bool reference, Value* defaultValue);
+	void addArgument(Token* token, bool reference, Value* defaultValue);
 
 	virtual void print(std::ostream&) const override;
 

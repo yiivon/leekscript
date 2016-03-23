@@ -10,8 +10,8 @@ public:
 
 	Value* object;
 	std::string field;
-
-	bool map = false;
+	bool class_attr = false;
+	void* attr_addr;
 
 	ObjectAccess();
 	virtual ~ObjectAccess();

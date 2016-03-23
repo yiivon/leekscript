@@ -15,7 +15,7 @@ Function::Function() {
 
 Function::~Function() {}
 
-void Function::addArgument(string name, bool reference, Value* defaultValue) {
+void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
 	arguments.push_back(name);
 	references.push_back(reference);
 	defaultValues.push_back(defaultValue);

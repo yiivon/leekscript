@@ -2,8 +2,8 @@
 
 using namespace std;
 
-SemanticError::SemanticError(int line, string message) {
-	this->line = line;
+SemanticError::SemanticError(Token* token, string message) {
+	this->token = token;
 	this->message = message;
 }
 

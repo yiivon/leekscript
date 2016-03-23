@@ -27,7 +27,7 @@
 #define JIT_CREATE_CONST_POINTER(F, X) jit_value_create_constant((F), new jit_constant_t{ JIT_POINTER, {(X)} })
 
 enum class ExecMode {
-	NORMAL, TOP_LEVEL, COMMAND_JSON
+	NORMAL, TOP_LEVEL, COMMAND_JSON, TEST
 };
 
 class VM {

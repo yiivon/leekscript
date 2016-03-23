@@ -3,9 +3,11 @@
 
 #include <iostream>
 #include <string>
+#include "../vm/VM.hpp"
 
 class Test {
 
+	VM vm;
 	int total;
 	int success;
 	double exeTime;

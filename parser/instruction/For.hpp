@@ -12,12 +12,12 @@ class SemanticVar;
 class For : public Instruction {
 public:
 
-	std::vector<std::string> variables;
+	std::vector<Token*> variables;
 	std::vector<Value*> variablesValues;
+	std::vector<bool> declare_variables;
 	Value* condition;
 	std::vector<Value*> iterations;
 	Body* body;
-
 	std::map<std::string, SemanticVar*> vars;
 
 	For();

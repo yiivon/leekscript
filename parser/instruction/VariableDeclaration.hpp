@@ -13,7 +13,7 @@ class VariableDeclaration : public Instruction {
 public:
 
 	bool global;
-	std::vector<std::string> variables;
+	std::vector<Token*> variables;
 	std::vector<Value*> expressions;
 	std::map<std::string, SemanticVar*> vars;
 	bool return_value;

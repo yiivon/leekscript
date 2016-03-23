@@ -33,7 +33,7 @@ void Array::print(ostream& os) const {
 	os << "]";
 }
 
-void Array::analyse(SemanticAnalyser* analyser, const Type req_type) {
+void Array::analyse(SemanticAnalyser* analyser, const Type) {
 
 	constant = true;
 	only_values = true;

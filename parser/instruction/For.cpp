@@ -48,15 +48,24 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		variablesValues[i]->analyse(analyser);
 	}
 	for (unsigned i = 0; i < variables.size(); ++i) {
-		string var = variables[i];
+
+		Token* var = variables[i];
+
+		//cout << "var " << var->content << " : " << std::boolalpha <<  declare_variables[i] << endl;
+
 		Type info = Type::POINTER;
 		Value* value = nullptr;
 		if (i < variablesValues.size()) {
 			info = variablesValues[i]->type;
 			value = variablesValues[i];
 		}
-		SemanticVar* v = analyser->add_var(var, info, value);
-		vars.insert(pair<string, SemanticVar*>(var, v));
+		if (declare_variables[i]) {
+			SemanticVar* v = analyser->add_var(var, info, value);
+			vars.insert(pair<string, SemanticVar*>(var->content, v));
+		} else {
+			SemanticVar* v = analyser->get_var(var);
+			vars.insert(pair<string, SemanticVar*>(var->content, v));
+		}
 	}
 	if (condition != nullptr) {
 		condition->analyse(analyser);
@@ -74,7 +83,7 @@ int for_is_true(LSValue* v) {
 	return v->isTrue();
 }
 
-jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	if (body->instructions.size() == 0 && condition == nullptr) {
 		return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
@@ -83,24 +92,18 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) cons
 	// Initialization
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
-		SemanticVar* v = vars.at(variables.at(i));
+		SemanticVar* v = vars.at(variables.at(i)->content);
 
 		jit_value_t var;
-
-		if (v->scope == VarScope::GLOBAL) {
-			auto previous_var = globals.find(variables[i]);
-			if (previous_var == globals.end()) {
-				var = jit_value_create(F, JIT_INTEGER);
-				globals.insert(pair<string, jit_value_t>(variables[i], var));
-			} else
-				var = previous_var->second;
+		if (declare_variables[i]) {
+			var = jit_value_create(F, JIT_INTEGER);
+			globals.insert(pair<string, jit_value_t>(variables[i]->content, var));
 		} else {
-			auto previous_var = locals.find(variables[i]);
-			if (previous_var == locals.end()) {
-				var = jit_value_create(F, JIT_INTEGER);
-				locals.insert(pair<string, jit_value_t>(variables[i], var));
-			} else
-				var = previous_var->second;
+			if (v->scope == VarScope::GLOBAL) {
+				var = globals.at(variables[i]->content);
+			} else {
+				var = locals.at(variables[i]->content);
+			}
 		}
 		if (variablesValues.at(i) != nullptr) {
 			jit_value_t val = variablesValues.at(i)->compile_jit(c, F, Type::NEUTRAL);

@@ -14,11 +14,12 @@ void Reference::print(ostream& os) const {
 	os << "@" << variable;
 }
 
-void Reference::analyse(SemanticAnalyser* analyser, const Type) {
+void Reference::analyse(SemanticAnalyser*, const Type) {
+
 
 }
 
-jit_value_t Reference::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
+jit_value_t Reference::compile_jit(Compiler&, jit_function_t& F, Type type) const {
 
 	if (type.nature == Nature::VALUE) {
 		LSNumber* n = new LSNumber(0);

@@ -16,11 +16,11 @@ void Break::print(ostream& os) const {
 	}
 }
 
-void Break::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Break::analyse(SemanticAnalyser*, const Type&) {
 
 }
 
-jit_value_t Break::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
+jit_value_t Break::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	jit_insn_branch(F, c.get_current_loop_end_label());
 

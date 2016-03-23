@@ -4,9 +4,17 @@
 using namespace std;
 
 Token::Token() {
-	character = 0;
-	line = 0;
+	character = -1;
+	line = -1;
 	type = TokenType::UNKNOW;
+	size = 0;
+}
+
+Token::Token(std::string content) {
+	character = -1;
+	line = -1;
+	type = TokenType::UNKNOW;
+	this->content = content;
 	size = 0;
 }
 

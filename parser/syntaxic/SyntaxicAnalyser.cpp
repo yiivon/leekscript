@@ -191,10 +191,10 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 	}
 
 	if (t->type == TokenType::NEW) {
-		vd->variables.push_back(t->content);
+		vd->variables.push_back(t);
 		eat();
 	} else {
-		vd->variables.push_back(eatIdent()->token->content);
+		vd->variables.push_back(eatIdent()->token);
 	}
 
 	while (t->type == TokenType::COMMA) {
@@ -202,10 +202,10 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 		eat(TokenType::COMMA);
 
 		if (t->type == TokenType::NEW) {
-			vd->variables.push_back(t->content);
+			vd->variables.push_back(t);
 			eat();
 		} else {
-			vd->variables.push_back(eatIdent()->token->content);
+			vd->variables.push_back(eatIdent()->token);
 		}
 	}
 
@@ -459,7 +459,7 @@ Value* SyntaxicAnalyser::eatValue() {
 
 					Function* l = new Function();
 					l->lambda = true;
-					l->arguments.push_back(ident->token->content);
+					l->arguments.push_back(ident->token);
 					eat(TokenType::ARROW);
 					l->body = new Body();
 					l->body->instructions.push_back(new Return(eatExpression()));
@@ -488,10 +488,10 @@ Value* SyntaxicAnalyser::eatValue() {
 
 						Function* l = new Function();
 						l->lambda = true;
-						l->arguments.push_back(ident->token->content);
+						l->arguments.push_back(ident->token);
 						while (t->type == TokenType::COMMA) {
 							eat();
-							l->arguments.push_back(eatIdent()->token->content);
+							l->arguments.push_back(eatIdent()->token);
 						}
 
 						eat(TokenType::ARROW);
@@ -595,7 +595,7 @@ Value* SyntaxicAnalyser::eatValue() {
 					defaultValue = eatExpression();
 				}
 
-				f->addArgument(ident->token->content, reference, defaultValue);
+				f->addArgument(ident->token, reference, defaultValue);
 				if (t->type == TokenType::COMMA) {
 					eat();
 				}
@@ -707,12 +707,14 @@ Instruction* SyntaxicAnalyser::eatFor() {
 	}
 
 	bool forEach = true;
+	bool declare = false;
 	if (t->type == TokenType::SEMICOLON) {
 		forEach = false;
 	} else {
-		if (t->type == TokenType::LET)
+		if (t->type == TokenType::LET) {
 			eat();
-
+			declare = true;
+		}
 		Token* t3 = nextTokenAt(3);
 		Token* t4 = nextTokenAt(4);
 		forEach = (nt != nullptr && (nt->type == TokenType::COLON || nt->type == TokenType::IN))
@@ -724,13 +726,13 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		Foreach* f = new Foreach();
 
 		if (nt->type == TokenType::COMMA || nt->type == TokenType::COLON) {
-			f->key = eatIdent()->token->content;
+			f->key = eatIdent()->token;
 			eat();
 		}
 		if (t->type == TokenType::LET)
 			eat();
 
-		f->value = eatIdent()->token->content;
+		f->value = eatIdent()->token;
 
 		eat(TokenType::IN);
 
@@ -762,9 +764,12 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		For* f = new For();
 
 		while (t->type != TokenType::SEMICOLON) {
-			if (t->type == TokenType::LET)
+			if (t->type == TokenType::LET) {
 				eat();
-			f->variables.push_back(eatIdent()->token->content);
+				declare = true;
+			}
+			f->variables.push_back(eatIdent()->token);
+			f->declare_variables.push_back(declare);
 			if (t->type == TokenType::EQUAL) {
 				eat();
 				f->variablesValues.push_back(eatExpression());
@@ -774,6 +779,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 			if (t->type == TokenType::COMMA) {
 				eat();
 			}
+			declare = false;
 		}
 
 		eat(TokenType::SEMICOLON);

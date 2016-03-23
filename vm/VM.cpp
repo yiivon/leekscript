@@ -42,7 +42,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 
 		} else {
 			for (auto error : syn.getErrors()) {
-				cout << error->token->line << " : " <<  error->message << endl;
+				cout << "Line " << error->token->line << " : " <<  error->message << endl;
 			}
 			return ctx;
 		}
@@ -58,9 +58,12 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 	} catch (SemanticError& e) {
 
 		if (mode == ExecMode::COMMAND_JSON) {
-			cout << "{\"success\":false,\"errors\":[{\"line\":" << e.line << ",\"message\":\"" << e.message << "\"}]}" << endl;
+			cout << "{\"success\":false,\"errors\":[{\"line\":" << e.token->line << ",\"message\":\"" << e.message << "\"}]}" << endl;
 		} else {
-			cout << e.message << endl;
+			cout << "Line " << e.token->line << " : " << e.message << endl;
+		}
+		if (mode == ExecMode::TEST) {
+			return "<error>";
 		}
 		return ctx;
 	}
@@ -79,7 +82,8 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 1);
 	jit_function_t F = jit_function_create(jit_context, signature);
 
-	program->compile_jit(c, F, context, mode != ExecMode::NORMAL);
+	bool toplevel = mode != ExecMode::NORMAL && mode != ExecMode::TEST;
+	program->compile_jit(c, F, context, toplevel);
 
 	jit_function_compile(F);
 	jit_context_build_end(jit_context);
@@ -139,7 +143,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 			return ctx;
 		}
 
-	} else {
+	} else if (mode == ExecMode::NORMAL) {
 
 		ostringstream oss;
 		res->print(oss);
@@ -149,10 +153,19 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 		cout << "(" << compile_time_ms << "ms + " << exe_time_ms << " ms)" << endl;
 
 		return ctx;
+
+	} else if (mode == ExecMode::TEST) {
+
+		ostringstream oss;
+		res->print(oss);
+		res_string = oss.str();
+		return oss.str();
 	}
+
+	return ctx;
 }
 
-LSValue* create_null_object(int n) {
+LSValue* create_null_object(int) {
 	return LSNull::null_var;
 }
 LSValue* create_number_object(int n) {

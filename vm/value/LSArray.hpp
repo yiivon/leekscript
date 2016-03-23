@@ -7,6 +7,7 @@
 
 #include <map>
 #include <vector>
+#include <iterator>
 
 #include "../LSValue.hpp"
 #include "../../lib/gason.h"
@@ -18,6 +19,8 @@ struct lsvalue_less {
 		return rhs->operator < (lhs);
 	}
 };
+
+typedef std::map<LSValue*, LSValue*>::iterator LSArrayIterator;
 
 class LSArray : public LSValue {
 public:
@@ -43,6 +46,11 @@ public:
 	LSValue* remove(LSNumber* index);
 	LSValue* removeKey(LSValue* key);
 	LSValue* pop();
+	LSArrayIterator begin();
+	LSArrayIterator end();
+	LSValue* at(LSArrayIterator);
+
+	// ***** //
 
 	bool isTrue() const override;
 
@@ -250,5 +258,6 @@ public:
 
 	int typeID() const override;
 };
+
 
 #endif

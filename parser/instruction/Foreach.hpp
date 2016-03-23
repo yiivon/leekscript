@@ -11,11 +11,13 @@
 class Foreach : public Instruction {
 public:
 
-	std::string key = "";
-	std::string value = "";
+	Token* key;
+	Token* value;
 	Value* array;
 	Body* body;
 	Type var_type;
+	SemanticVar* value_var;
+	SemanticVar* key_var;
 
 	Foreach();
 	virtual ~Foreach();

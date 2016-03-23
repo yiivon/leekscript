@@ -17,12 +17,12 @@ void ClassDeclaration::print(ostream& os) const {
 	os << "}";
 }
 
-void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	for (VariableDeclaration* vd : fields) {
 		vd->analyse(analyser, Type::UNKNOWN);
 	}
 }
 
-jit_value_t ClassDeclaration::compile_jit(Compiler& c, jit_function_t& F, Type) const {
+jit_value_t ClassDeclaration::compile_jit(Compiler&, jit_function_t& F, Type) const {
 	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }

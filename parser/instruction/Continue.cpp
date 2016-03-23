@@ -14,7 +14,7 @@ void Continue::print(std::ostream& os) const {
 	}
 }
 
-void Continue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Continue::analyse(SemanticAnalyser*, const Type&) {
 
 }
 

@@ -556,12 +556,13 @@ LSValue* LSString::at(const LSValue* key) const {
 	}
 	return LSNull::null_var;
 }
-LSValue** LSString::atL(const LSValue* key) {
+
+LSValue** LSString::atL(const LSValue*) {
+	// TODO
 	return &LSNull::null_var;
 }
 
 LSValue* LSString::range(const LSValue* start, const LSValue* end) const {
-
 	if (const LSNumber* start_num = dynamic_cast<const LSNumber*>(start)) {
 		if (const LSNumber* end_num = dynamic_cast<const LSNumber*>(end)) {
 			return new LSString(value.substr(start_num->value, end_num->value - start_num->value + 1));
@@ -569,7 +570,8 @@ LSValue* LSString::range(const LSValue* start, const LSValue* end) const {
 	}
 	return LSNull::null_var;
 }
-LSValue* LSString::rangeL(const LSValue* start, const LSValue* end) {
+LSValue* LSString::rangeL(const LSValue*, const LSValue*) {
+	// TODO
 	return this;
 }
 
@@ -579,7 +581,8 @@ LSValue* LSString::attr(const LSValue* key) const {
 	}
 	return LSNull::null_var;
 }
-LSValue** LSString::attrL(const LSValue* key) {
+
+LSValue** LSString::attrL(const LSValue*) {
 	return &LSNull::null_var;
 }
 

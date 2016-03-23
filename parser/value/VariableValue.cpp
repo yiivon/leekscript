@@ -122,7 +122,7 @@ jit_value_t VariableValue::compile_jit(Compiler&, jit_function_t& F, Type req_ty
 	}
 }
 
-jit_value_t VariableValue::compile_jit_l(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t VariableValue::compile_jit_l(Compiler& c, jit_function_t& F, Type) const {
 
 	return compile_jit(c, F, type);
 }

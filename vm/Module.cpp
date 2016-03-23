@@ -11,7 +11,7 @@ void Module::include(SemanticAnalyser* analyser, Program* program) {
 
 	LSClass* clazz = new LSClass(name);
 	program->system_vars.insert(pair<string, LSValue*>(name, clazz));
-	SemanticVar* var = analyser->add_var(name, Type::CLASS, nullptr);
+	SemanticVar* var = analyser->add_var(new Token(name), Type::CLASS, nullptr);
 
 	for (auto m : methods) {
 		var->attr_types.insert(pair<string, Type>(m.name, m.type));

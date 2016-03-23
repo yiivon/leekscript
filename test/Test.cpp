@@ -251,8 +251,8 @@ void Test::tests() {
 	test("let s = 0 for let i = 0; i < 10; i += 2 do s += i end s", "20");
 	test("let i = 0 for i = 0; i < 10; i++ { } i", "10");
 	test("let i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i", "5");
-	test("let a = 0 for i = 0; i < 10; i++ { a++ } a", "10");
-	test("let a = 0 for i = 0; i < 10; i++ { if i < 5 { continue } a++ } a", "5");
+	test("let a = 0 for let i = 0; i < 10; i++ { a++ } a", "10");
+	test("let a = 0 for let i = 0; i < 10; i++ { if i < 5 { continue } a++ } a", "5");
 
 	/*
 	 * Foreach loops
@@ -260,6 +260,7 @@ void Test::tests() {
 	header("Foreach loops");
 	test("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
 	test("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
+	test("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
 
 	/*
 	 * Array operations
@@ -406,6 +407,10 @@ void Test::tests() {
 	test("['yo', 3, 4, 5].first()", "'yo'");
 	test("Array.last([1, 2, 3, 10, true, 'yo', null])", "null");
 	test("['yo', 3, 4, 5].last()", "5");
+
+	// TODO : the return type of first() must be the element type of the array if it's homogeneous
+//	test("[[321, 21], [23, 212], [654, 9876]].first().last()", "21");
+
 	test("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "'concat:12310trueyonull'");
 	test("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "16");
 //	test("Array.shuffle([1, 2, 3, 10, true, 'yo', null])", "test shuffle ?");
@@ -449,10 +454,22 @@ void Test::tests() {
 	test("let a = [1, 2, 3] a.removeElement(1)", "[1: 2, 2: 3]");
 	test("let a = [1, 2, 3] a.removeElement('key')", "[1, 2, 3]");
 
+	/*
+	 * Standard library general
+	 */
+	header("Standard library general");
+	test("let my_map = [].map; my_map([1, 2, 3], x -> x ^ 2)", "[1, 4, 9]");
+	test("[].map == [].map", "true");
+	test("{}.map == {}.map", "true");
+	test("[].map == {}.map", "false");
+	test("let a = [].map; a == [].map", "true");
 
+	/*
+	 * Other stuff
+	 */
 	header("Other");
-
 	test("var f = obj -> obj.a [f(12), f({a: 'yo'})]", "[null, 'yo']");
+
 /*
 	test("3 ~ x -> x ^ x", "27");
 	test("[1, 2, 3] ~ x -> x + 4", "[1, 2, 3, 4]");
@@ -502,75 +519,18 @@ void Test::header(string text) {
 	cout << "----------------" << endl;
 }
 
-extern map<string, jit_value_t> internals;
-extern map<string, jit_value_t> globals;
-extern map<string, jit_value_t> locals;
-
-void Test::test(string code, string result) {
+void Test::test(string code, string expected) {
 
 	total++;
 
-	LexicalAnalyser lex;
-	vector<Token> tokens = lex.analyse(code);
+	string res = vm.execute(code, "{}", ExecMode::TEST);
 
-	SyntaxicAnalyser syn;
-	Program* program = syn.analyse(tokens);
-
-	if (syn.getErrors().size() > 0) {
-		for (SyntaxicalError* error : syn.getErrors()) {
-			cout << error->message << endl;
-		}
+	if (res != expected) {
+		cout << "FAUX : " << code << "  =/=>  " << expected << "  got  " << res << endl;
 	} else {
-
-		Context context { "{}" };
-		Compiler c;
-
-		try {
-			SemanticAnalyser sem;
-			sem.analyse(program, &context);
-		} catch (SemanticError& e) {
-			cout << e.message << endl;
-			return;
-		}
-
-		internals.clear();
-		globals.clear();
-		locals.clear();
-
-		jit_init();
-		jit_context_t jit_context = jit_context_create();
-		jit_context_build_start(jit_context);
-
-		// Create function signature and object. int (*)(int)
-		jit_type_t params[0] = {};
-		jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, params, 0, 1);
-		jit_function_t F = jit_function_create(jit_context, signature);
-
-		program->compile_jit(c, F, context, false);
-
-		jit_function_compile(F);
-		jit_context_build_end(jit_context);
-
-		typedef LSValue* (*FF)();
-		FF fun = (FF) jit_function_to_closure(F);
-
-		clock_t begin = clock();
-		LSValue* res = fun();
-		exeTime += (clock() - begin);
-
-		ostringstream oss;
-		res->print(oss);
-		string r = oss.str();
-
-		if (result != r) {
-			cout << "FAUX : " << code << "  =/=>  " << result << "  got  " << r << endl;
-		} else {
-			cout << "OK   : " << code << "  ===>  " << result << endl;
-			success++;
-		}
+		cout << "OK   : " << code << "  ===>  " << expected << endl;
+		success++;
 	}
 }
 
-Test::~Test() {
-
-}
+Test::~Test() {}

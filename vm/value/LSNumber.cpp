@@ -80,7 +80,7 @@ LSValue* LSNumber::operator -- (int) {
 LSValue* LSNumber::operator + (const LSValue* v) const {
 	return v->operator + (this);
 }
-LSValue* LSNumber::operator + (const LSNull* nulll) const {
+LSValue* LSNumber::operator + (const LSNull*) const {
 	return this->clone();
 }
 LSValue* LSNumber::operator + (const LSBoolean* boolean) const {
@@ -317,35 +317,35 @@ LSValue* LSNumber::operator /= (const LSClass*) {
 LSValue* LSNumber::poww(const LSValue* value) const {
 	return value->poww(this);
 }
-LSValue* LSNumber::poww(const LSNull* value) const {
+LSValue* LSNumber::poww(const LSNull*) const {
 	return this->clone();
 }
-LSValue* LSNumber::poww(const LSBoolean* value) const {
+LSValue* LSNumber::poww(const LSBoolean*) const {
 	return this->clone();
 }
 LSValue* LSNumber::poww(const LSNumber* value) const {
 	return LSNumber::get((NUMBER_TYPE) pow(this->value, value->value));
 }
-LSValue* LSNumber::poww(const LSString* value) const {
+LSValue* LSNumber::poww(const LSString*) const {
 	return this->clone();
 }
-LSValue* LSNumber::poww(const LSArray* value) const {
+LSValue* LSNumber::poww(const LSArray*) const {
 	return this->clone();
 }
-LSValue* LSNumber::poww(const LSObject* value) const {
+LSValue* LSNumber::poww(const LSObject*) const {
 	return this->clone();
 }
-LSValue* LSNumber::poww(const LSFunction* value) const {
+LSValue* LSNumber::poww(const LSFunction*) const {
 	return this->clone();
 }
-LSValue* LSNumber::poww(const LSClass* value) const {
+LSValue* LSNumber::poww(const LSClass*) const {
 	return this->clone();
 }
 
 LSValue* LSNumber::pow_eq(LSValue* value) const {
 	return value->pow_eq(this);
 }
-LSValue* LSNumber::pow_eq(const LSNull* value) {
+LSValue* LSNumber::pow_eq(const LSNull*) {
 	return this->clone();
 }
 LSValue* LSNumber::pow_eq(const LSBoolean* value) {
@@ -376,28 +376,28 @@ LSValue* LSNumber::pow_eq(const LSClass*) {
 LSValue* LSNumber::operator % (const LSValue* value) const {
 	return value->operator % (this);
 }
-LSValue* LSNumber::operator % (const LSNull* value) const {
+LSValue* LSNumber::operator % (const LSNull*) const {
 	return LSNull::null_var;
 }
-LSValue* LSNumber::operator % (const LSBoolean* value) const {
+LSValue* LSNumber::operator % (const LSBoolean*) const {
 	return LSNull::null_var;
 }
 LSValue* LSNumber::operator % (const LSNumber* value) const {
 	return LSNumber::get(fmod(this->value, value->value));
 }
-LSValue* LSNumber::operator % (const LSString* value) const {
+LSValue* LSNumber::operator % (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSNumber::operator % (const LSArray* value) const {
+LSValue* LSNumber::operator % (const LSArray*) const {
 	return LSNull::null_var;
 }
-LSValue* LSNumber::operator % (const LSObject* value) const {
+LSValue* LSNumber::operator % (const LSObject*) const {
 	return LSNull::null_var;
 }
-LSValue* LSNumber::operator % (const LSFunction* value) const {
+LSValue* LSNumber::operator % (const LSFunction*) const {
 	return LSNull::null_var;
 }
-LSValue* LSNumber::operator % (const LSClass* value) const {
+LSValue* LSNumber::operator % (const LSClass*) const {
 	return LSNull::null_var;
 }
 
@@ -435,10 +435,10 @@ LSValue* LSNumber::operator %= (const LSClass*) {
 bool LSNumber::operator == (const LSValue* v) const {
 	return v->operator == (this);
 }
-bool LSNumber::operator == (const LSNull* v) const {
+bool LSNumber::operator == (const LSNull*) const {
 	return false;
 }
-bool LSNumber::operator == (const LSBoolean* v) const {
+bool LSNumber::operator == (const LSBoolean*) const {
 	return false;
 }
 bool LSNumber::operator == (const LSNumber* v) const {
@@ -447,16 +447,16 @@ bool LSNumber::operator == (const LSNumber* v) const {
 bool LSNumber::operator == (const LSString*) const {
 	return false;
 }
-bool LSNumber::operator == (const LSArray* v) const {
+bool LSNumber::operator == (const LSArray*) const {
 	return false;
 }
-bool LSNumber::operator == (const LSFunction* v) const {
+bool LSNumber::operator == (const LSFunction*) const {
 	return false;
 }
-bool LSNumber::operator == (const LSObject* v) const {
+bool LSNumber::operator == (const LSObject*) const {
 	return false;
 }
-bool LSNumber::operator == (const LSClass* v) const {
+bool LSNumber::operator == (const LSClass*) const {
 	return false;
 }
 
@@ -464,10 +464,10 @@ bool LSNumber::operator == (const LSClass* v) const {
 bool LSNumber::operator < (const LSValue* v) const {
 	return v->operator < (this);
 }
-bool LSNumber::operator < (const LSNull* v) const {
+bool LSNumber::operator < (const LSNull*) const {
 	return false;
 }
-bool LSNumber::operator < (const LSBoolean* v) const {
+bool LSNumber::operator < (const LSBoolean*) const {
 	return false;
 }
 bool LSNumber::operator < (const LSNumber* v) const {
@@ -479,13 +479,13 @@ bool LSNumber::operator < (const LSString*) const {
 bool LSNumber::operator < (const LSArray*) const {
 	return true;
 }
-bool LSNumber::operator < (const LSObject* v) const {
+bool LSNumber::operator < (const LSObject*) const {
 	return true;
 }
-bool LSNumber::operator < (const LSFunction* v) const {
+bool LSNumber::operator < (const LSFunction*) const {
 	return true;
 }
-bool LSNumber::operator < (const LSClass* v) const {
+bool LSNumber::operator < (const LSClass*) const {
 	return true;
 }
 
@@ -493,10 +493,10 @@ bool LSNumber::operator < (const LSClass* v) const {
 bool LSNumber::operator > (const LSValue* v) const {
 	return v->operator > (this);
 }
-bool LSNumber::operator > (const LSNull* v) const {
+bool LSNumber::operator > (const LSNull*) const {
 	return true;
 }
-bool LSNumber::operator > (const LSBoolean* v) const {
+bool LSNumber::operator > (const LSBoolean*) const {
 	return true;
 }
 bool LSNumber::operator > (const LSNumber* v) const {
@@ -508,23 +508,23 @@ bool LSNumber::operator > (const LSString*) const {
 bool LSNumber::operator > (const LSArray*) const {
 	return false;
 }
-bool LSNumber::operator > (const LSObject* v) const {
+bool LSNumber::operator > (const LSObject*) const {
 	return false;
 }
-bool LSNumber::operator > (const LSFunction* v) const {
+bool LSNumber::operator > (const LSFunction*) const {
 	return false;
 }
-bool LSNumber::operator > (const LSClass* v) const {
+bool LSNumber::operator > (const LSClass*) const {
 	return false;
 }
 
 bool LSNumber::operator <= (const LSValue* v) const {
 	return v->operator <= (this);
 }
-bool LSNumber::operator <= (const LSNull* v) const {
+bool LSNumber::operator <= (const LSNull*) const {
 	return false;
 }
-bool LSNumber::operator <= (const LSBoolean* v) const {
+bool LSNumber::operator <= (const LSBoolean*) const {
 	return false;
 }
 bool LSNumber::operator <= (const LSNumber* v) const {
@@ -536,13 +536,13 @@ bool LSNumber::operator <= (const LSString*) const {
 bool LSNumber::operator <= (const LSArray*) const {
 	return true;
 }
-bool LSNumber::operator <= (const LSObject* v) const {
+bool LSNumber::operator <= (const LSObject*) const {
 	return true;
 }
-bool LSNumber::operator <= (const LSFunction* v) const {
+bool LSNumber::operator <= (const LSFunction*) const {
 	return true;
 }
-bool LSNumber::operator <= (const LSClass* v) const {
+bool LSNumber::operator <= (const LSClass*) const {
 	return true;
 }
 
@@ -550,10 +550,10 @@ bool LSNumber::operator <= (const LSClass* v) const {
 bool LSNumber::operator >= (const LSValue* v) const {
 	return v->operator >= (this);
 }
-bool LSNumber::operator >= (const LSNull* v) const {
+bool LSNumber::operator >= (const LSNull*) const {
 	return true;
 }
-bool LSNumber::operator >= (const LSBoolean* v) const {
+bool LSNumber::operator >= (const LSBoolean*) const {
 	return true;
 }
 bool LSNumber::operator >= (const LSNumber* v) const {
@@ -565,13 +565,13 @@ bool LSNumber::operator >= (const LSString*) const {
 bool LSNumber::operator >= (const LSArray*) const {
 	return false;
 }
-bool LSNumber::operator >= (const LSObject* v) const {
+bool LSNumber::operator >= (const LSObject*) const {
 	return false;
 }
-bool LSNumber::operator >= (const LSFunction* v) const {
+bool LSNumber::operator >= (const LSFunction*) const {
 	return false;
 }
-bool LSNumber::operator >= (const LSClass* v) const {
+bool LSNumber::operator >= (const LSClass*)  const {
 	return false;
 }
 
@@ -579,17 +579,19 @@ bool LSNumber::in(const LSValue*) const {
 	return false;
 }
 
-LSValue* LSNumber::at(const LSValue* value) const {
+LSValue* LSNumber::at(const LSValue*) const {
 	return LSNull::null_var;
 }
-LSValue** LSNumber::atL(const LSValue* value) {
+
+LSValue** LSNumber::atL(const LSValue*) {
 	return &LSNull::null_var;
 }
 
-LSValue* LSNumber::range(const LSValue* start, const LSValue* end) const {
+LSValue* LSNumber::range(const LSValue*, const LSValue*) const {
 	return this->clone();
 }
-LSValue* LSNumber::rangeL(const LSValue* start, const LSValue* end) {
+
+LSValue* LSNumber::rangeL(const LSValue*, const LSValue*) {
 	return this;
 }
 
@@ -597,14 +599,9 @@ LSValue* LSNumber::attr(const LSValue* key) const {
 	if (((LSString*) key)->value == "class") {
 		return getClass();
 	}
-	//	if (key->operator == (new LSString("abs"))) {
-	//		return new LSFunction([=](Context& ctx, vector<LSValue*> __args) -> LSValue* {
-	//			return new LSNumber(abs((int)this->value));
-	//		});
-	//	}
 	return LSNull::null_var;
 }
-LSValue** LSNumber::attrL(const LSValue* key) {
+LSValue** LSNumber::attrL(const LSValue*) {
 	return &LSNull::null_var;
 }
 

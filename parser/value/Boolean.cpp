@@ -16,11 +16,9 @@ void Boolean::print(ostream& os) const {
 	os << (value ? "true" : "false");
 }
 
-void Boolean::analyse(SemanticAnalyser* analyser, const Type) {
+void Boolean::analyse(SemanticAnalyser*, const Type) {}
 
-}
-
-jit_value_t Boolean::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t Boolean::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {
 
 	if (req_type.nature == Nature::POINTER) {
 		LSBoolean* b = new LSBoolean(value);

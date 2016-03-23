@@ -26,7 +26,7 @@ extern map<string, Type> globals_types;
 LSArray* Program_create_array() {
 	return new LSArray();
 }
-void Program_push_null(LSArray* array, int value) {
+void Program_push_null(LSArray* array, int) {
 	array->pushClone(LSNull::null_var);
 }
 void Program_push_boolean(LSArray* array, int value) {

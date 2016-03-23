@@ -39,9 +39,6 @@ void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 jit_value_t Return::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
 
-//	if (info.return_nature == Nature::POINTER) {
-//		info.nature = Nature::POINTER;
-//	}
 	jit_value_t v = expression->compile_jit(c, F, type);
 	jit_insn_return(F, v);
 	return v;

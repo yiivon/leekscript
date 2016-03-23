@@ -34,7 +34,7 @@ void push_object(LSObject* o, LSString* k, LSValue* v) {
 	o->addField(k->value, v);
 }
 
-jit_value_t Object::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t Object::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	LSObject* o = new LSObject();
 	jit_value_t object = JIT_CREATE_CONST_POINTER(F, o);

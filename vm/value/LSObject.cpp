@@ -73,7 +73,7 @@ LSValue* LSObject::operator + (const LSValue* v) const {
 LSValue* LSObject::operator + (const LSNull*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator + (const LSBoolean* boolean) const {
+LSValue* LSObject::operator + (const LSBoolean*) const {
 	return LSNull::null_var;
 }
 LSValue* LSObject::operator + (const LSNumber*) const {
@@ -82,7 +82,7 @@ LSValue* LSObject::operator + (const LSNumber*) const {
 LSValue* LSObject::operator + (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator + (const LSArray* array) const {
+LSValue* LSObject::operator + (const LSArray*) const {
 	return LSNull::null_var;
 }
 LSValue* LSObject::operator + (const LSObject*) const {
@@ -294,28 +294,28 @@ LSValue* LSObject::operator /= (const LSClass*) {
 LSValue* LSObject::poww(const LSValue* value) const {
 	return value->poww(this);
 }
-LSValue* LSObject::poww(const LSNull* value) const {
+LSValue* LSObject::poww(const LSNull*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::poww(const LSBoolean* value) const {
+LSValue* LSObject::poww(const LSBoolean*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::poww(const LSNumber* value) const {
+LSValue* LSObject::poww(const LSNumber*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::poww(const LSString* value) const {
+LSValue* LSObject::poww(const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::poww(const LSArray* value) const {
+LSValue* LSObject::poww(const LSArray*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::poww(const LSObject* value) const {
+LSValue* LSObject::poww(const LSObject*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::poww(const LSFunction* value) const {
+LSValue* LSObject::poww(const LSFunction*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::poww(const LSClass* value) const {
+LSValue* LSObject::poww(const LSClass*) const {
 	return LSNull::null_var;
 }
 
@@ -350,28 +350,28 @@ LSValue* LSObject::pow_eq(const LSClass*) {
 LSValue* LSObject::operator % (const LSValue* value) const {
 	return value->operator % (this);
 }
-LSValue* LSObject::operator % (const LSNull* value) const {
+LSValue* LSObject::operator % (const LSNull*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator % (const LSBoolean* value) const {
+LSValue* LSObject::operator % (const LSBoolean*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator % (const LSNumber* value) const {
+LSValue* LSObject::operator % (const LSNumber*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator % (const LSString* value) const {
+LSValue* LSObject::operator % (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator % (const LSArray* value) const {
+LSValue* LSObject::operator % (const LSArray*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator % (const LSObject* value) const {
+LSValue* LSObject::operator % (const LSObject*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator % (const LSFunction* value) const {
+LSValue* LSObject::operator % (const LSFunction*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator % (const LSClass* value) const {
+LSValue* LSObject::operator % (const LSClass*) const {
 	return LSNull::null_var;
 }
 
@@ -407,10 +407,10 @@ LSValue* LSObject::operator %= (const LSClass*) {
 bool LSObject::operator == (const LSValue* value) const {
 	return value->operator == (this);
 }
-bool LSObject::operator == (const LSNull* v) const {
+bool LSObject::operator == (const LSNull*) const {
 	return false;
 }
-bool LSObject::operator == (const LSBoolean* v) const {
+bool LSObject::operator == (const LSBoolean*) const {
 	return false;
 }
 bool LSObject::operator == (const LSNumber*) const {
@@ -428,35 +428,35 @@ bool LSObject::operator == (const LSFunction*) const {
 bool LSObject::operator == (const LSObject*) const {
 	return false;
 }
-bool LSObject::operator == (const LSClass* v) const {
+bool LSObject::operator == (const LSClass*) const {
 	return false;
 }
 
 bool LSObject::operator < (const LSValue* value) const {
 	return value->operator < (this);
 }
-bool LSObject::operator < (const LSNull* v) const {
+bool LSObject::operator < (const LSNull*) const {
 	return false;
 }
-bool LSObject::operator < (const LSBoolean* v) const {
+bool LSObject::operator < (const LSBoolean*) const {
 	return false;
 }
-bool LSObject::operator < (const LSNumber* v) const {
+bool LSObject::operator < (const LSNumber*) const {
 	return false;
 }
-bool LSObject::operator < (const LSString* v) const {
+bool LSObject::operator < (const LSString*) const {
 	return false;
 }
-bool LSObject::operator < (const LSArray* v) const {
+bool LSObject::operator < (const LSArray*) const {
 	return false;
 }
 bool LSObject::operator < (const LSObject* v) const {
 	return values.size() < v->values.size();
 }
-bool LSObject::operator < (const LSFunction* v) const {
+bool LSObject::operator < (const LSFunction*) const {
 	return true;
 }
-bool LSObject::operator < (const LSClass* v) const {
+bool LSObject::operator < (const LSClass*) const {
 	return true;
 }
 
@@ -475,7 +475,7 @@ bool LSObject::operator > (const LSNumber*) const {
 bool LSObject::operator > (const LSString*) const {
 	return true;
 }
-bool LSObject::operator > (const LSArray* v) const {
+bool LSObject::operator > (const LSArray*) const {
 	return true;
 }
 bool LSObject::operator > (const LSObject* v) const {
@@ -551,10 +551,10 @@ LSValue** LSObject::atL (const LSValue*) {
 	return &LSNull::null_var;
 }
 
-LSValue* LSObject::range(const LSValue* start, const LSValue* end) const {
+LSValue* LSObject::range(const LSValue*, const LSValue*) const {
 	return this->clone();
 }
-LSValue* LSObject::rangeL(const LSValue* start, const LSValue* end) {
+LSValue* LSObject::rangeL(const LSValue*, const LSValue*) {
 	return this;
 }
 
@@ -617,6 +617,7 @@ std::ostream& LSObject::print(std::ostream& os) const {
 	os << "}";
 	return os;
 }
+
 string LSObject::json() const {
 	string res = "{";
 	for (auto i = values.begin(); i != values.end(); i++) {

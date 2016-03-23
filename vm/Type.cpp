@@ -167,7 +167,7 @@ void Type::toJson(ostream& os) const {
 
 	if (raw_type == RawType::FUNCTION) {
 		os << ",\"args\":[";
-		for (int t = 0; t < arguments_types.size(); ++t) {
+		for (unsigned t = 0; t < arguments_types.size(); ++t) {
 			if (t > 0) os << ",";
 			arguments_types[t].toJson(os);
 		}
@@ -180,13 +180,14 @@ void Type::toJson(ostream& os) const {
 
 ostream& operator << (ostream& os, const Type& type) {
 
-	os << "[n: " << Type::get_nature_name(type.nature)
+	os << "{n: " << Type::get_nature_name(type.nature)
 	<< ", t: "<< Type::get_raw_type_name(type.raw_type);
 
 	if (type.raw_type == RawType::FUNCTION) {
 		os << ", args: [";
-		for (auto t : type.arguments_types) {
-			os << t << " ";
+		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
+			if (t > 0) os << ", ";
+			os << type.arguments_types[t];
 		}
 		os << "]";
 		os << ", returns: " << type.getReturnType();
@@ -198,7 +199,7 @@ ostream& operator << (ostream& os, const Type& type) {
 			os << ", heterogeneous";
 		}
 	}
-	os << "]";
+	os << "}";
 	return os;
 }
 
@@ -295,6 +296,8 @@ string Type::get_class_name() const {
 		return "Class";
 	case RawType::FUNCTION:
 		return "Function";
+	case RawType::UNKNOWN:
+		return "?";
 	}
-	return "";
+	return "?";
 }

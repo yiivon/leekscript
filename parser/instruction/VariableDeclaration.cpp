@@ -33,7 +33,7 @@ void VariableDeclaration::print(ostream& os) const {
 	}
 }
 
-void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	type = Type::VALUE;
 	for (unsigned i = 0; i < expressions.size(); ++i) {
@@ -43,23 +43,21 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_ty
 		}
 	}
 	for (unsigned i = 0; i < variables.size(); ++i) {
-		string var = variables[i];
+
+		Token* var = variables[i];
 		Type type = Type::NEUTRAL;
 		Value* value = nullptr;
 		if (i < expressions.size()) {
 			type = expressions[i]->type;
 			value = expressions[i];
 		}
-//		cout << "Add var : " << var << endl;
-		if (analyser->get_var_direct(var)) {
-//			cout << "Already exists !!!!!!!" << endl;
-//			cout << var << " : " << sv->type << endl;
-		} else {
-	//		cout << "val: " << value << endl;
+
+		// Global Variable already defined ? We don't define another time
+		if (vars.find(var->content) == vars.end() || vars.at(var->content)->scope != VarScope::GLOBAL) {
 			SemanticVar* v = analyser->add_var(var, type, value);
-	//		cout << "var: " << v << endl;
-			vars.insert(pair<string, SemanticVar*>(var, v));
+			vars.insert(pair<string, SemanticVar*>(var->content, v));
 		}
+		vars.at(var->content)->type = type;
 	}
 	this->return_value = return_value;
 }
@@ -72,19 +70,19 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
-		SemanticVar* v = vars.at(variables.at(i));
+		SemanticVar* v = vars.at(variables.at(i)->content);
 
 		if (v->scope == VarScope::GLOBAL) {
 
 //			cout << "add global var : " << variables[i] << endl;
 
 			jit_value_t var = jit_value_create(F, JIT_INTEGER_LONG);
-			globals.insert(pair<string, jit_value_t>(variables[i], var));
+			globals.insert(pair<string, jit_value_t>(variables[i]->content, var));
 
 			if (i < expressions.size()) {
 
 				jit_value_t val = expressions.at(i)->compile_jit(c, F, Type::NEUTRAL);
-				globals_types.insert(pair<string, Type>(variables[i], expressions[i]->type));
+				globals_types.insert(pair<string, Type>(variables[i]->content, expressions[i]->type));
 				jit_insn_store(F, var, val);
 
 				if (i == expressions.size() - 1) {
@@ -95,14 +93,14 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 				}
 			} else {
 
-				globals_types.insert(pair<string, Type>(variables[i], Type::NULLL));
+				globals_types.insert(pair<string, Type>(variables[i]->content, Type::NULLL));
 				jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 				jit_insn_store(F, var, val);
 			}
 		} else {
 
 			jit_value_t var = jit_value_create(F, JIT_INTEGER);
-			locals.insert(pair<string, jit_value_t>(variables[i], var));
+			locals.insert(pair<string, jit_value_t>(variables[i]->content, var));
 
 			if (i < expressions.size()) {
 
