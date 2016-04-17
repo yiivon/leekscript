@@ -3,6 +3,8 @@
 
 class Program;
 #include <stack>
+#include <vector>
+class Module;
 class Function;
 #include "../../parser/value/VariableValue.hpp"
 
@@ -42,7 +44,7 @@ public:
 	SemanticAnalyser();
 	virtual ~SemanticAnalyser();
 
-	void analyse(Program*, Context*);
+	void analyse(Program*, Context*, std::vector<Module*>&);
 
 	void enter_function(Function*);
 	void leave_function();

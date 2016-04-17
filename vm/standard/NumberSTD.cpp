@@ -4,36 +4,36 @@ using namespace std;
 
 NumberSTD::NumberSTD() : Module("Number") {
 
-	attr("pi", Type::FLOAT_P, "3.14159265359");
-	attr("e", Type::FLOAT_P, "2.71828182846");
-	attr("phi", Type::FLOAT_P, "1.61803398874");
+	static_field("pi", Type::FLOAT_P, "3.14159265359");
+	static_field("e", Type::FLOAT_P, "2.71828182846");
+	static_field("phi", Type::FLOAT_P, "1.61803398874");
 
-	method("abs", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_abs);
-	method("acos", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_acos);
-	method("asin", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_asin);
-	method("atan", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_atan);
-	method("atan2", Type::FLOAT_P, {Type::FLOAT_P, Type::FLOAT_P}, (void*) &number_atan2);
-	method("cbrt", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_cbrt);
-	method("ceil", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_ceil);
-	method("cos", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_cos);
-	method("exp", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_exp);
-	method("floor", Type::INTEGER_P, {Type::FLOAT_P}, (void*) &number_floor);
-	method("hypot", Type::FLOAT_P, {Type::FLOAT_P, Type::FLOAT_P}, (void*) &number_hypot);
-	method("log", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_log);
-	method("log10", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_log10);
-	method("max", Type::FLOAT_P, {Type::FLOAT_P, Type::FLOAT_P}, (void*) &number_max);
-	method("min", Type::FLOAT_P, {Type::FLOAT_P, Type::FLOAT_P}, (void*) &number_min);
-	method("pow", Type::FLOAT_P, {Type::FLOAT_P, Type::FLOAT_P}, (void*) &number_pow);
+	method("abs", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_abs);
+	method("acos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_acos);
+	method("asin", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_asin);
+	method("atan", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_atan);
+	method("atan2", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_atan2);
+	method("cbrt", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_cbrt);
+	method("ceil", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_ceil);
+	method("cos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_cos);
+	method("exp", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_exp);
+	method("floor", Type::INTEGER_P, {Type::NUMBER}, (void*) &number_floor);
+	method("hypot", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_hypot);
+	method("log", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_log);
+	method("log10", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_log10);
+	method("max", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_max);
+	method("min", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_min);
+	method("pow", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_pow);
 	method("rand", Type::FLOAT_P, {}, (void*) &number_rand);
-	method("randFloat", Type::FLOAT_P, {Type::FLOAT_P, Type::FLOAT_P}, (void*) &number_randFloat);
-	method("randInt", Type::FLOAT_P, {Type::FLOAT_P, Type::FLOAT_P}, (void*) &number_randInt);
-	method("round", Type::INTEGER_P, {Type::FLOAT_P}, (void*) &number_round);
-	method("signum", Type::INTEGER_P, {Type::FLOAT_P}, (void*) &number_signum);
-	method("sin", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_sin);
-	method("sqrt", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_sqrt);
-	method("tan", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_tan);
-	method("toDegrees", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_toDegrees);
-	method("toRadians", Type::FLOAT_P, {Type::FLOAT_P}, (void*) &number_toRadians);
+	method("randFloat", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat);
+	method("randInt", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_randInt);
+	method("round", Type::INTEGER_P, {Type::NUMBER}, (void*) &number_round);
+	method("signum", Type::INTEGER_P, {Type::NUMBER}, (void*) &number_signum);
+	method("sin", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_sin);
+	method("sqrt", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_sqrt);
+	method("tan", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_tan);
+	method("toDegrees", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toDegrees);
+	method("toRadians", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toRadians);
 }
 
 LSNumber* number_abs(const LSNumber* number) {

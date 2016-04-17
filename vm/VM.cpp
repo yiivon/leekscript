@@ -18,6 +18,57 @@ map<string, jit_value_t> globals;
 map<string, Type> globals_types;
 map<string, jit_value_t> locals;
 
+void VM::add_module(Module* m) {
+	modules.push_back(m);
+}
+
+void* VM::compile(const string code) {
+
+	LexicalAnalyser lex;
+	vector<Token> tokens = lex.analyse(code);
+
+	SyntaxicAnalyser syn;
+	Program* program = syn.analyse(tokens);
+
+	if (syn.getErrors().size() > 0) {
+		for (auto error : syn.getErrors()) {
+			cout << "Line " << error->token->line << " : " <<  error->message << endl;
+		}
+		return nullptr;
+	}
+
+	Compiler c;
+	Context context { "{}" };
+
+	try {
+		SemanticAnalyser sem;
+		sem.analyse(program, &context, modules);
+	} catch (SemanticError& e) {
+		cout << "Line " << e.token->line << " : " << e.message << endl;
+		return nullptr;
+	}
+
+	internals.clear();
+	globals.clear();
+	globals_types.clear();
+	locals.clear();
+
+	jit_init();
+	jit_context_t jit_context = jit_context_create();
+	jit_context_build_start(jit_context);
+
+	jit_type_t params[0] = {};
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 1);
+	jit_function_t F = jit_function_create(jit_context, signature);
+
+	program->compile_jit(c, F, context, false);
+
+	jit_function_compile(F);
+	jit_context_build_end(jit_context);
+
+	return jit_function_to_closure(F);
+}
+
 string VM::execute(const string code, string ctx, ExecMode mode) {
 
 	auto compile_start = chrono::high_resolution_clock::now();
@@ -54,7 +105,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 
 	try {
 		SemanticAnalyser sem;
-		sem.analyse(program, &context);
+		sem.analyse(program, &context, modules);
 	} catch (SemanticError& e) {
 
 		if (mode == ExecMode::COMMAND_JSON) {
@@ -182,16 +233,22 @@ LSValue* create_float_object(double n) {
 }
 
 void* get_conv_fun(Type type) {
-	switch (type.raw_type) {
-		case RawType::NULLL: return (void*) &create_null_object;
-		case RawType::INTEGER: return (void*) &create_number_object;
-		case RawType::FLOAT: return (void*) &create_float_object;
-		case RawType::BOOLEAN: return (void*) &create_bool_object;
-		case RawType::FUNCTION: return (void*) &create_func_object;
-		default: {
-			return (void*) &create_number_object;
-		}
+	if (type.raw_type == RawType::NULLL) {
+		return (void*) &create_null_object;
 	}
+	if (type.raw_type == RawType::INTEGER) {
+		return (void*) &create_number_object;
+	}
+	if (type.raw_type == RawType::FLOAT) {
+		return (void*) &create_float_object;
+	}
+	if (type.raw_type == RawType::BOOLEAN) {
+		return (void*) &create_bool_object;
+	}
+	if (type.raw_type == RawType::FUNCTION) {
+		return (void*) &create_func_object;
+	}
+	return (void*) &create_number_object;
 }
 
 jit_value_t VM::value_to_pointer(jit_function_t& F, jit_value_t& v, Type type) {
@@ -230,15 +287,7 @@ bool VM::get_number(jit_function_t& F, jit_value_t& val) {
 	return false;
 }*/
 
-map<int, void*> VM::globals_vars;
-
-void VM::add_global_var(int index, void* value) {
-	cout << "add_global_var " << index << " : " << value << endl;
-	globals_vars.insert(pair<int, void*>(index, value));
-}
-
 LSArray* new_array() {
-	cout << "lol" << endl;
 	return new LSArray();
 }
 

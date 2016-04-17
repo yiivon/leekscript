@@ -1,17 +1,31 @@
 #include "Module.hpp"
 #include "LSValue.hpp"
-
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
 using namespace std;
 
-Module::Module(string name) : name(name) {}
+Module::Module(string name) : name(name) {
+	clazz = new LSClass(name);
+}
 
 Module::~Module() {}
 
 void Module::include(SemanticAnalyser* analyser, Program* program) {
 
-	LSClass* clazz = new LSClass(name);
 	program->system_vars.insert(pair<string, LSValue*>(name, clazz));
 	SemanticVar* var = analyser->add_var(new Token(name), Type::CLASS, nullptr);
+
+	for (auto f : fields) {
+		//var->attr_types.insert(pair<string, Type>(f.name, f.type));
+		clazz->addField(f.name, f.type);
+	}
+
+	for (auto f : static_fields) {
+		//var->attr_types.insert(pair<string, Type>(f.name, f.type));
+		clazz->addStaticField(f.name, LSNumber::get(std::stoi(f.value)));
+	}
 
 	for (auto m : methods) {
 		var->attr_types.insert(pair<string, Type>(m.name, m.type));
@@ -19,9 +33,14 @@ void Module::include(SemanticAnalyser* analyser, Program* program) {
 	}
 }
 
-void Module::attr(std::string name, Type type, std::string value) {
+void Module::field(std::string name, Type type) {
 
-	attributes.push_back(ModuleAttribute(name, type, value));
+	fields.push_back(ModuleField(name, type));
+}
+
+void Module::static_field(std::string name, Type type, std::string value) {
+
+	static_fields.push_back(ModuleStaticField(name, type, value));
 }
 
 void Module::method(string name, Type return_type, initializer_list<Type> args, void* addr) {
@@ -35,7 +54,23 @@ void Module::method(string name, Type return_type, initializer_list<Type> args, 
 	methods.push_back(ModuleMethod(name, type, addr));
 }
 
-void Module::generate_doc(ostream& os, JsonValue translation) {
+void Module::generate_doc(ostream& os, string translation_file) {
+
+	ifstream f;
+	f.open(translation_file);
+	stringstream j;
+	j << f.rdbuf();
+	string str = j.str();
+	f.close();
+
+	// Erase tabs
+	str.erase(std::remove(str.begin(), str.end(), '	'), str.end());
+
+	// Parse json
+	char *endptr;
+	JsonValue translation(JSON_NULL, nullptr);
+	JsonAllocator allocator;
+	jsonParse((char*) str.c_str(), &endptr, &translation, allocator);
 
 	map<string, JsonValue> translation_map;
 	if (translation.getTag() == JSON_OBJECT) {
@@ -47,8 +82,8 @@ void Module::generate_doc(ostream& os, JsonValue translation) {
 	os << "\"" << name << "\":{";
 
 	os << "\"attributes\":{";
-	for (unsigned e = 0; e < attributes.size(); ++e) {
-		ModuleAttribute& a = attributes[e];
+	for (unsigned e = 0; e < static_fields.size(); ++e) {
+		ModuleStaticField& a = static_fields[e];
 
 		string desc = (translation_map.find(a.name) != translation_map.end()) ?
 				translation_map[a.name].toNode()->value.toString() : "";

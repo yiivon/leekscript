@@ -36,7 +36,8 @@ extern LSValue* jit_mul(LSValue* x, LSValue* y);
 extern LSValue* jit_div(LSValue* x, LSValue* y);
 extern LSValue* jit_pow(LSValue* x, LSValue* y);
 extern LSValue* jit_mod(LSValue* x, LSValue* y);
-void SemanticAnalyser::analyse(Program* program, Context* context) {
+
+void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<Module*>& modules) {
 
 	this->program = program;
 
@@ -71,6 +72,9 @@ void SemanticAnalyser::analyse(Program* program, Context* context) {
 	StringSTD().include(this, program);
 	ArraySTD().include(this, program);
 	ObjectSTD().include(this, program);
+	for (Module* module : modules) {
+		module->include(this, program);
+	}
 
 	in_program = true;
 

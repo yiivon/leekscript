@@ -254,7 +254,7 @@ public:
 
 	LSValue* getClass() const override;
 
-	virtual RawType getRawType() const override;
+	virtual const BaseRawType* getRawType() const override;
 
 	int typeID() const override;
 };

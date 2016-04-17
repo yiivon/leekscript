@@ -574,6 +574,6 @@ int LSFunction::typeID() const {
 	return 7;
 }
 
-RawType LSFunction::getRawType() const {
+const BaseRawType* LSFunction::getRawType() const {
 	return RawType::FUNCTION;
 }

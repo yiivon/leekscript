@@ -565,6 +565,6 @@ int LSNull::typeID() const {
 	return 1;
 }
 
-RawType LSNull::getRawType() const {
+const BaseRawType* LSNull::getRawType() const {
 	return RawType::NULLL;
 }

@@ -16,30 +16,42 @@ public:
 	: name(name), type(type), addr(addr) {}
 };
 
-class ModuleAttribute {
+class ModuleStaticField {
 public:
 	std::string name;
 	Type type;
 	std::string value;
-	ModuleAttribute(std::string name, Type type, std::string value)
+	ModuleStaticField(std::string name, Type type, std::string value)
 	: name(name), type(type), value(value) {}
 };
 
-class Module {
+class ModuleField {
+public:
+	std::string name;
+	Type type;
+	ModuleField(std::string name, Type type) : name(name), type(type) {}
+};
+
+
+class Module : public Type {
 public:
 
 	std::string name;
-	std::vector<ModuleAttribute> attributes;
+	LSClass* clazz;
+	std::vector<ModuleField> fields;
 	std::vector<ModuleMethod> methods;
+	std::vector<ModuleStaticField> static_fields;
+	std::vector<ModuleMethod> static_methods;
 
 	Module(std::string name);
 	virtual ~Module();
 
 	void method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
-	void attr(std::string name, Type type, std::string value);
+	void field(std::string name, Type type);
+	void static_field(std::string name, Type type, std::string value);
 
 	void include(SemanticAnalyser*, Program*);
-	void generate_doc(std::ostream& os, JsonValue translation);
+	void generate_doc(std::ostream& os, std::string translation);
 };
 
 #endif

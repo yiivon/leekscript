@@ -583,6 +583,6 @@ int LSBoolean::typeID() const {
 	return 2;
 }
 
-RawType LSBoolean::getRawType() const {
+const BaseRawType* LSBoolean::getRawType() const {
 	return RawType::BOOLEAN;
 }

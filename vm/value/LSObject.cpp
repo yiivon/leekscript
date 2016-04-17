@@ -9,6 +9,7 @@ LSValue* LSObject::object_class(new LSClass("Object"));
 
 LSObject::LSObject() {
 	clazz = nullptr;
+	readonly = false;
 }
 
 LSObject::LSObject(initializer_list<pair<string, LSValue*>> values) {
@@ -21,6 +22,7 @@ LSObject::LSObject(initializer_list<pair<string, LSValue*>> values) {
 
 LSObject::LSObject(LSClass* clazz) {
 	this->clazz = clazz;
+	readonly = false;
 }
 
 LSObject::LSObject(JsonValue& json) {
@@ -585,6 +587,9 @@ LSValue* LSObject::attr(const LSValue* key) const {
 	}
 }
 LSValue** LSObject::attrL(const LSValue* key) {
+	if (readonly) {
+		return &LSNull::null_var;
+	}
 	try {
 		return &values.at(((LSString*) key)->value);
 	} catch (exception& e) {
@@ -638,6 +643,6 @@ int LSObject::typeID() const {
 	return 6;
 }
 
-RawType LSObject::getRawType() const {
+const BaseRawType* LSObject::getRawType() const {
 	return RawType::OBJECT;
 }

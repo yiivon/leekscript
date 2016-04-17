@@ -858,6 +858,6 @@ int LSArray::typeID() const {
 	return 5;
 }
 
-RawType LSArray::getRawType() const {
+const BaseRawType* LSArray::getRawType() const {
 	return RawType::ARRAY;
 }

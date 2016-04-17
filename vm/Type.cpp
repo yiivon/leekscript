@@ -2,6 +2,19 @@
 
 using namespace std;
 
+const BaseRawType* const RawType::UNKNOWN = new BaseRawType();
+const NullRawType* const RawType::NULLL = new NullRawType();
+const BooleanRawType* const RawType::BOOLEAN = new BooleanRawType();
+const NumberRawType* const RawType::NUMBER = new NumberRawType();
+const IntegerRawType* const RawType::INTEGER = new IntegerRawType();
+const LongRawType* const RawType::LONG = new LongRawType();
+const FloatRawType* const RawType::FLOAT = new FloatRawType();
+const StringRawType* const RawType::STRING = new StringRawType();
+const ArrayRawType* const RawType::ARRAY = new ArrayRawType();
+const ObjectRawType* const RawType::OBJECT = new ObjectRawType();
+const FunctionRawType* const RawType::FUNCTION = new FunctionRawType();
+const ClassRawType* const RawType::CLASS = new ClassRawType();
+
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
 
 const Type Type::NEUTRAL(RawType::UNKNOWN, Nature::VALUE);
@@ -11,6 +24,7 @@ const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
 const Type Type::NULLL(RawType::NULLL, Nature::VALUE);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
 const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
+const Type Type::NUMBER(RawType::NUMBER, Nature::POINTER);
 const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
 const Type Type::INTEGER_P(RawType::INTEGER, Nature::POINTER);
 const Type Type::LONG(RawType::LONG, Nature::VALUE);
@@ -23,10 +37,12 @@ const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
 const Type Type::CLASS(RawType::CLASS, Nature::POINTER);
 
+
+
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
 	nature = Nature::UNKNOWN;
-	clazz = get_class_name();
+	clazz = "?";
 	homogeneous = true;
 }
 
@@ -35,15 +51,15 @@ Type::Type(const Type& type) {
 	this->nature = type.nature;
 	this->return_types = type.return_types;
 	this->arguments_types = type.arguments_types;
-	this->clazz = get_class_name();
+	this->clazz = raw_type->getName();
 	this->element_type = type.element_type;
 	this->homogeneous = type.homogeneous;
 }
 
-Type::Type(RawType raw_type, Nature nature) {
+Type::Type(const BaseRawType* raw_type, Nature nature) {
 	this->raw_type = raw_type;
 	this->nature = nature;
-	this->clazz = get_class_name();
+	this->clazz = raw_type->getName();
 	this->homogeneous = true;
 }
 
@@ -163,7 +179,7 @@ bool Type::operator != (const Type& type) const {
 }
 
 void Type::toJson(ostream& os) const {
-	os << "{\"type\":\"" << Type::get_json_raw_type_name(raw_type) << "\"";
+	os << "{\"type\":\"" << raw_type->getJsonName() << "\"";
 
 	if (raw_type == RawType::FUNCTION) {
 		os << ",\"args\":[";
@@ -181,7 +197,7 @@ void Type::toJson(ostream& os) const {
 ostream& operator << (ostream& os, const Type& type) {
 
 	os << "{n: " << Type::get_nature_name(type.nature)
-	<< ", t: "<< Type::get_raw_type_name(type.raw_type);
+	<< ", t: "<< type.raw_type->getName();
 
 	if (type.raw_type == RawType::FUNCTION) {
 		os << ", args: [";
@@ -203,62 +219,6 @@ ostream& operator << (ostream& os, const Type& type) {
 	return os;
 }
 
-string Type::get_raw_type_name(const RawType& raw_type) {
-	switch (raw_type) {
-	case RawType::ARRAY:
-		return "ARRAY";
-	case RawType::BOOLEAN:
-		return "BOOLEAN";
-	case RawType::CLASS:
-		return "CLASS";
-	case RawType::FLOAT:
-		return "FLOAT";
-	case RawType::FUNCTION:
-		return "FUNCTION";
-	case RawType::INTEGER:
-		return "INTEGER";
-	case RawType::LONG:
-		return "LONG";
-	case RawType::NULLL:
-		return "NULL";
-	case RawType::OBJECT:
-		return "OBJECT";
-	case RawType::STRING:
-		return "STRING";
-	case RawType::UNKNOWN:
-		return "UNKNOWN";
-	default:
-		return "??";
-	}
-}
-
-string Type::get_json_raw_type_name(const RawType& raw_type) {
-	switch (raw_type) {
-	case RawType::ARRAY:
-		return "array";
-	case RawType::BOOLEAN:
-		return "boolean";
-	case RawType::CLASS:
-		return "class";
-	case RawType::INTEGER:
-	case RawType::LONG:
-	case RawType::FLOAT:
-		return "number";
-	case RawType::FUNCTION:
-		return "function";
-	case RawType::NULLL:
-		return "null";
-	case RawType::OBJECT:
-		return "object";
-	case RawType::STRING:
-		return "string";
-	case RawType::UNKNOWN:
-		return "?";
-	default:
-		return "?";
-	}
-}
-
 string Type::get_nature_name(const Nature& nature) {
 	switch (nature) {
 	case Nature::MIXED:
@@ -274,30 +234,4 @@ string Type::get_nature_name(const Nature& nature) {
 	default:
 		return "??";
 	}
-}
-
-string Type::get_class_name() const {
-	switch (raw_type) {
-	case RawType::NULLL:
-		return "Null";
-	case RawType::BOOLEAN:
-		return "Boolean";
-	case RawType::INTEGER:
-	case RawType::FLOAT:
-	case RawType::LONG:
-		return "Number";
-	case RawType::STRING:
-		return "String";
-	case RawType::ARRAY:
-		return "Array";
-	case RawType::OBJECT:
-		return "Object";
-	case RawType::CLASS:
-		return "Class";
-	case RawType::FUNCTION:
-		return "Function";
-	case RawType::UNKNOWN:
-		return "?";
-	}
-	return "?";
 }

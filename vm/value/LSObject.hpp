@@ -8,12 +8,11 @@
 
 class LSObject : public LSValue {
 
-private:
+public:
 
 	std::map<std::string, LSValue*> values;
 	LSClass* clazz;
-
-public:
+	bool readonly;
 
 	static LSValue* object_class;
 
@@ -230,7 +229,7 @@ public:
 
 	int typeID() const override;
 
-	virtual RawType getRawType() const override;
+	virtual const BaseRawType* getRawType() const override;
 };
 
 #endif

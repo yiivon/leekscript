@@ -11,6 +11,8 @@ public:
 
 	LSClass* parent;
 	std::string name;
+
+	std::map<std::string, Type> fields;
 	std::map<std::string, LSValue*> methods;
 	std::map<std::string, LSValue*> static_fields;
 
@@ -23,6 +25,7 @@ public:
 	virtual ~LSClass();
 
 	void addMethod(std::string, LSValue*);
+	void addField(std::string, Type);
 	void addStaticField(std::string, LSValue*);
 	LSValue* getMethod(std::string);
 
@@ -230,7 +233,7 @@ public:
 
 	int typeID() const override;
 
-	virtual RawType getRawType() const override;
+	virtual const BaseRawType* getRawType() const override;
 };
 
 #endif

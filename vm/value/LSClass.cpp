@@ -26,6 +26,10 @@ void LSClass::addMethod(string name, LSValue* method) {
 	methods.insert(pair<string, LSValue*>(name, method));
 }
 
+void LSClass::addField(string name, Type type) {
+	fields.insert(pair<string, Type>(name, type));
+}
+
 void LSClass::addStaticField(string name, LSValue* value) {
 	static_fields.insert(pair<string, LSValue*>(name, value));
 }
@@ -606,6 +610,6 @@ int LSClass::typeID() const {
 	return 8;
 }
 
-RawType LSClass::getRawType() const {
+const BaseRawType* LSClass::getRawType() const {
 	return RawType::CLASS;
 }

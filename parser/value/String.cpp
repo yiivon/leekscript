@@ -17,7 +17,10 @@ void String::print(ostream& os) const {
 	os << "'";
 }
 
-void String::analyse(SemanticAnalyser*, const Type) {}
+void String::analyse(SemanticAnalyser*, const Type) {
+	//cout << "analyse string " << this->value << endl;
+	//cout << "type : " << type << endl;
+}
 
 jit_value_t String::compile_jit(Compiler&, jit_function_t& F, Type) const {
 

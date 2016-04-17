@@ -1,5 +1,6 @@
 let f = function(number) {
-	for (let k = 1; 36 * k * k - 12 * k < number; k++) {
+	let k = 1;
+	for (; 36 * k * k - 12 * k < number; k++) {
 		if ((number % (6 * k + 1) == 0) or (number % (6 * k - 1) == 0)) {
 			return false
 		}

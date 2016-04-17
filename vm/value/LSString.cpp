@@ -615,6 +615,6 @@ int LSString::typeID() const {
 	return 4;
 }
 
-RawType LSString::getRawType() const {
+const BaseRawType* LSString::getRawType() const {
 	return RawType::STRING;
 }

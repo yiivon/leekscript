@@ -12,6 +12,7 @@
 #include "value/LSObject.hpp"
 #include "value/LSFunction.hpp"
 #include "value/LSClass.hpp"
+class Module;
 #include "Type.hpp"
 
 #define USE_INTEGERS 1
@@ -33,13 +34,15 @@ enum class ExecMode {
 class VM {
 public:
 
-	static std::map<int, void*> globals_vars;
-	static void add_global_var(int, void*);
+	std::vector<Module*> modules;
 
 	VM();
 	virtual ~VM();
 
+	void add_module(Module* m);
+
 	std::string execute(const std::string code, std::string ctx, ExecMode mode);
+	void* compile(const std::string code);
 
 	static jit_value_t value_to_pointer(jit_function_t&, jit_value_t&, Type);
 	static jit_value_t new_array(jit_function_t&);

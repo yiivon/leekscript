@@ -30,23 +30,9 @@ void Documentation::generate(ostream& os) {
 		if (m > 0) os << ",";
 
 		Module* mod = modules[m];
-		ifstream f;
-		f.open("vm/doc/" + mod->name + "_" + lang + ".json");
-		stringstream j;
-		j << f.rdbuf();
-		string str = j.str();
-		f.close();
+		string file = "vm/doc/" + mod->name + "_" + lang + ".json";
 
-		// Erase tabs
-		str.erase(std::remove(str.begin(), str.end(), '	'), str.end());
-
-		// Parse json
-		char *endptr;
-		JsonValue value(JSON_NULL, nullptr);
-		JsonAllocator allocator;
-		jsonParse((char*) str.c_str(), &endptr, &value, allocator);
-
-		mod->generate_doc(os, value);
+		mod->generate_doc(os, file);
 	}
 
 	os << "}\n";

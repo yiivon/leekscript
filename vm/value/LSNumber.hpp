@@ -240,7 +240,7 @@ public:
 
 	int typeID() const override;
 
-	virtual RawType getRawType() const override;
+	virtual const BaseRawType* getRawType() const override;
 };
 
 #endif

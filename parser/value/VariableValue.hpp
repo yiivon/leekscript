@@ -2,7 +2,7 @@
 #define VARIABLEVALUE_HPP
 
 #include "../lexical/Ident.hpp"
-#include "Value.hpp"
+class Value;
 #include "LeftValue.hpp"
 #include "../../Compiler.hpp"
 class SemanticVar;

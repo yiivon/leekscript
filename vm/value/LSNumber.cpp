@@ -656,6 +656,6 @@ int LSNumber::typeID() const {
 	return 3;
 }
 
-RawType LSNumber::getRawType() const {
+const BaseRawType* LSNumber::getRawType() const {
 	return RawType::INTEGER;
 }

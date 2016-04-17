@@ -232,7 +232,7 @@ public:
 
 	virtual int typeID() const = 0;
 
-	virtual RawType getRawType() const = 0;
+	virtual const BaseRawType* getRawType() const = 0;
 
 	static LSValue* parse(JsonValue& json);
 };
