@@ -18,6 +18,12 @@ make
 ```
 The executable `leekscript` is in the `build/` folder.
 
+Export as shared library
+```
+make lib
+```
+`libleekscript.so` will be in `build/` folder. You can `make install` to copy it in `/usr/lib`.
+
 Usage
 -----
 
@@ -40,12 +46,6 @@ Run a code, and get the result as JSON
 ```
 ./leekscript -e "my code" "{}"
 ```
-
-Export as shared library
-```
-make lib
-```
-`libleekscript.so` will be in `build/` folder. You can `make install` to copy it in `/usr/lib`.
 
 
 Libraries used
