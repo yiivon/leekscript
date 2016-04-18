@@ -51,7 +51,9 @@ static vector<string> type_literals[] = {
 
 	{ "~" }, { "~=" }, { "~~" }, { "~~=" },
 
-	{ "π" }
+	{ "π" },
+
+	{ ".." }, { "..." }
 };
 
 LexicalAnalyser::LexicalAnalyser() {}
@@ -261,7 +263,10 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						word += c;
 					} else if (other) {
 
-						if (string("([{}]),;.").find(c) != string::npos || string("([{}]),;.").find(word) != string::npos
+						if (c == '.' && (word == "." || word == "..")) {
+							word += c;
+
+						} else if (string("([{}]),;.").find(c) != string::npos || string("([{}]),;.").find(word) != string::npos
 								|| (word == "!" && c == '!')) {
 
 							tokens.push_back(Token(TokenType::UNKNOW, line, character, word));

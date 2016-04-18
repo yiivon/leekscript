@@ -522,10 +522,44 @@ Value* SyntaxicAnalyser::eatValue() {
 			eat();
 			Array* a = new Array();
 
+			// Empty array
+			if (t->type == TokenType::CLOSING_BRACKET) {
+				eat();
+				return a;
+			}
+
+			Value* key = nullptr;
+			Value* value = eatExpression();
+
+			if (t->type == TokenType::TWO_DOTS) {
+				eat();
+
+				a->interval = true;
+				a->addValue(value, nullptr);
+
+				Value* value2 = eatExpression();
+
+				a->addValue(value2, nullptr);
+
+				eat(TokenType::CLOSING_BRACKET);
+
+				return a;
+			}
+
+			if (t->type == TokenType::COLON) {
+				eat(TokenType::COLON);
+				key = value;
+				value = eatExpression();
+			}
+			a->addValue(value, key);
+
+			if (t->type == TokenType::COMMA) {
+				eat();
+			}
+
 			while (t->type != TokenType::CLOSING_BRACKET) {
 
-				Value* key = nullptr;
-				Value* value = eatExpression();
+				value = eatExpression();
 
 				if (t->type == TokenType::COLON) {
 					eat(TokenType::COLON);

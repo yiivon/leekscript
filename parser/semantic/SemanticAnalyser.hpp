@@ -23,12 +23,14 @@ public:
 		scope(scope), type(type), index(index), value(value) {}
 
 	void will_take(SemanticAnalyser*, unsigned, const Type&);
+	void must_be_pointer(SemanticAnalyser*);
 };
 
 class SemanticAnalyser {
 public:
 
 	Program* program;
+	bool in_block = false;
 	bool in_function = false;
 	bool in_program = false;
 	bool reanalyse = false;
@@ -48,6 +50,8 @@ public:
 
 	void enter_function(Function*);
 	void leave_function();
+	void enter_block();
+	void leave_block();
 	void add_function(Function*);
 	Function* current_function() const;
 

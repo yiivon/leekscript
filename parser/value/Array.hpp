@@ -11,6 +11,7 @@ public:
 	std::vector<Value*> keys;
 	std::vector<Value*> expressions;
 	bool only_values = true;
+	bool interval = false;
 
 	Array();
 	virtual ~Array();

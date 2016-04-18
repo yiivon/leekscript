@@ -84,7 +84,9 @@ enum class TokenType {
 	TILDE_EQUAL,
 	TILDE_TILDE,
 	TILDE_TILDE_EQUAL,
-	PI
+	PI,
+	TWO_DOTS,
+	THREE_DOTS
 };
 
 #endif

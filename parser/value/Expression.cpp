@@ -115,10 +115,19 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 
 	if (v1 != nullptr and v2 != nullptr) {
 
-		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS
-			or op->type == TokenType::TIMES or op->type == TokenType::MINUS) {
+		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
+			or op->type == TokenType::PLUS or op->type == TokenType::TIMES
+			or op->type == TokenType::MINUS) {
 
 			type = v1->type.mix(v2->type);
+
+			if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL) {
+				VariableValue* vv = dynamic_cast<VariableValue*>(v1);
+				if (vv != nullptr and vv->var->value != nullptr) {
+					// TODO not working
+					//vv->var->must_be_pointer(analyser);
+				}
+			}
 		}
 
 		if (op->type == TokenType::TILDE_TILDE) {

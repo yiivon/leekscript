@@ -1,5 +1,6 @@
 #include "Array.hpp"
 #include "../../vm/VM.hpp"
+#include <math.h>
 
 using namespace std;
 
@@ -91,24 +92,44 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const unsigned pos, c
 LSArray* LSArray_create() {
 	return new LSArray();
 }
+LSArray* LSArray_create_interval(LSValue* a, LSValue* b) {
+	LSArray* interval = new LSArray(true);
+	interval->a = LSNumber::get(floor(((LSNumber*) a)->value));
+	interval->b = LSNumber::get(floor(((LSNumber*) b)->value));
+	return interval;
+}
 void LSArray_push(LSArray* array, LSValue* value) {
 	array->pushClone(value);
 }
 
 jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
-	jit_value_t array = jit_insn_call_native(F, "new", (void*) LSArray_create, sig, {}, 0, JIT_CALL_NOTHROW);
+	if (interval) {
 
-	for (Value* val : expressions) {
+		jit_value_t a = expressions[0]->compile_jit(c, F, Type::POINTER);
+		jit_value_t b = expressions[1]->compile_jit(c, F, Type::POINTER);
 
-		jit_value_t v = val->compile_jit(c, F, Type::POINTER);
+		jit_type_t args[3] = {JIT_POINTER, JIT_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 2, 0);
+		jit_value_t args_v[] = {a, b};
 
-		jit_type_t args[2] = {JIT_POINTER, JIT_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
-		jit_value_t args_v[] = {array, v};
-		jit_insn_call_native(F, "push", (void*) LSArray_push, sig, args_v, 2, JIT_CALL_NOTHROW);
+		return jit_insn_call_native(F, "new", (void*) LSArray_create_interval, sig, args_v, 2, JIT_CALL_NOTHROW);
+
+	} else {
+
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
+		jit_value_t array = jit_insn_call_native(F, "new", (void*) LSArray_create, sig, {}, 0, JIT_CALL_NOTHROW);
+
+		for (Value* val : expressions) {
+
+			jit_value_t v = val->compile_jit(c, F, Type::POINTER);
+
+			jit_type_t args[2] = {JIT_POINTER, JIT_POINTER};
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
+			jit_value_t args_v[] = {array, v};
+			jit_insn_call_native(F, "push", (void*) LSArray_push, sig, args_v, 2, JIT_CALL_NOTHROW);
+		}
+
+		return array;
 	}
-
-	return array;
 }

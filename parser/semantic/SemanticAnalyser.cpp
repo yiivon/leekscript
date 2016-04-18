@@ -30,6 +30,17 @@ void SemanticVar::will_take(SemanticAnalyser* analyser, unsigned pos, const Type
 	}
 }
 
+void SemanticVar::must_be_pointer(SemanticAnalyser* analyser) {
+	if (value != nullptr) {
+		bool changed = value->must_be_pointer(analyser);
+		this->type.nature = Nature::POINTER;
+		if (changed) {
+			analyser->reanalyse = true;
+//			cout << "REANALYSE" << endl;
+		}
+	}
+}
+
 extern LSValue* jit_add(LSValue* x, LSValue* y);
 extern LSValue* jit_sub(LSValue* x, LSValue* y);
 extern LSValue* jit_mul(LSValue* x, LSValue* y);
@@ -79,6 +90,9 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	in_program = true;
 
 	do {
+		local_vars.clear();
+		parameters.clear();
+		functions.clear();
 //		cout << "--------" << endl << "Analyse" << endl << "--------" << endl;
 		reanalyse = false;
 		program->body->analyse(this, Type::POINTER);
@@ -100,6 +114,16 @@ void SemanticAnalyser::leave_function() {
 	local_vars.pop_back();
 	parameters.pop_back();
 	functions_stack.pop();
+}
+
+void SemanticAnalyser::enter_block() {
+	in_block = true;
+	local_vars.push_back(map<string, SemanticVar*> {});
+}
+
+void SemanticAnalyser::leave_block() {
+	in_block = false;
+	local_vars.pop_back();
 }
 
 Function* SemanticAnalyser::current_function() const {

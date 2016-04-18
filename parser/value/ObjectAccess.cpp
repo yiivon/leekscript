@@ -24,8 +24,8 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 
 	object->analyse(analyser);
 
-	cout << "Analyse oo : " << field << " => ";
-	cout << object->type << endl;
+	//cout << "Analyse oo : " << field << " => ";
+	//cout << object->type << endl;
 
 	// Search direct attributes
 	try {
@@ -37,20 +37,20 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 	// Search class attributes
 	string clazz = object->type.clazz;
 
-	cout << "Classe : " << clazz << endl;
+	//cout << "Classe : " << clazz << endl;
 
 	LSClass* std_class = (LSClass*) analyser->program->system_vars[clazz];
 
 	if (std_class) {
 
-		cout << "Classe ! ";
-		std_class->print(cout);
-		cout << endl;
+		//cout << "Classe ! ";
+		//std_class->print(cout);
+		//cout << endl;
 
 		try {
 			type = std_class->fields[field];
-			cout << "Field " << field << " in class " << clazz << " found." << endl;
-			cout << "(type " << type << ")" << endl;
+			//cout << "Field " << field << " in class " << clazz << " found." << endl;
+			//cout << "(type " << type << ")" << endl;
 		} catch (exception& e) {
 
 		}
@@ -66,7 +66,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 		}
 	}
 
-	cout << "final : " << type << endl;
+	//cout << "final : " << type << endl;
 }
 
 LSValue* object_access(LSValue* o, LSString* k) {

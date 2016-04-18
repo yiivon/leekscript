@@ -27,11 +27,15 @@ public:
 
 	std::map<LSValue*, LSValue*, lsvalue_less> values;
 	bool associative;
+	bool interval;
 	int index;
+	LSNumber* a = nullptr;
+	LSNumber* b = nullptr;
 
 	static LSValue* array_class;
 
 	LSArray();
+	LSArray(bool interval);
 	LSArray(std::initializer_list<LSValue*>);
 	LSArray(std::initializer_list<std::pair<LSValue*, LSValue*>>);
 	LSArray(JsonValue& data);

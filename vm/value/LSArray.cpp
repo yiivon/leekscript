@@ -11,6 +11,13 @@ using namespace std;
 LSValue* LSArray::array_class(new LSClass("Array"));
 
 LSArray::LSArray() {
+	interval = false;
+	associative = false;
+	index = 0;
+}
+
+LSArray::LSArray(bool interval) {
+	this->interval = interval;
 	associative = false;
 	index = 0;
 }
@@ -735,19 +742,27 @@ bool LSArray::operator >= (const LSClass*) const {
 }
 
 bool LSArray::in(const LSValue* key) const {
-	for (auto i = values.begin(); i != values.end(); i++) {
-		if (i->second->operator == (key)) {
-			return true;
+	if (interval) {
+		return key->operator >= (a) and key->operator <= (b);
+	} else {
+		for (auto i = values.begin(); i != values.end(); i++) {
+			if (i->second->operator == (key)) {
+				return true;
+			}
 		}
+		return false;
 	}
-	return false;
 }
 
 LSValue* LSArray::at(const LSValue* key) const {
-	try {
-		return (LSValue*) values.at((LSValue*) key);
-	} catch (exception& e) {
-		return LSNull::null_var;
+	if (interval) {
+		return LSNumber::get(a->value + ((LSNumber*) key)->value);
+	} else {
+		try {
+			return (LSValue*) values.at((LSValue*) key);
+		} catch (exception& e) {
+			return LSNull::null_var;
+		}
 	}
 }
 
@@ -801,7 +816,11 @@ LSValue** LSArray::attrL(const LSValue*) {
 }
 
 LSValue* LSArray::abso() const {
-	return LSNumber::get(values.size());
+	if (interval) {
+		return LSNumber::get(b->value - a->value + 1);
+	} else {
+		return LSNumber::get(values.size());
+	}
 }
 
 LSValue* LSArray::clone() const {
@@ -809,6 +828,9 @@ LSValue* LSArray::clone() const {
 	LSArray* newArray = new LSArray();
 	newArray->associative = associative;
 	newArray->index = index;
+	newArray->interval = interval;
+	newArray->a = a;
+	newArray->b = b;
 
 	for (auto i = values.begin(); i != values.end(); i++) {
 		LSValue** v = &newArray->values[i->first];
@@ -818,16 +840,25 @@ LSValue* LSArray::clone() const {
 }
 
 std::ostream& LSArray::print(std::ostream& os) const {
-	os << "[";
-	for (auto i = values.begin(); i != values.end(); i++) {
-		if (i != values.begin()) os << ", ";
-		if (associative) {
-			i->first->print(os);
-			os << ": ";
+
+	if (interval) {
+		os << "[";
+		a->print(os);
+		os << "..";
+		b->print(os);
+		os << "]";
+	} else {
+		os << "[";
+		for (auto i = values.begin(); i != values.end(); i++) {
+			if (i != values.begin()) os << ", ";
+			if (associative) {
+				i->first->print(os);
+				os << ": ";
+			}
+			i->second->print(os);
 		}
-		i->second->print(os);
+		os << "]";
 	}
-	os << "]";
 	return os;
 }
 

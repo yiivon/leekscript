@@ -76,6 +76,12 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 	// Lexical analysis
 	LexicalAnalyser lex;
 	vector<Token> tokens = lex.analyse(code);
+	/*
+	for (auto t : tokens) {
+		cout << t << " ";
+	}
+	cout << endl;
+	*/
 
 	// Syntaxical analysis
 	SyntaxicAnalyser syn;

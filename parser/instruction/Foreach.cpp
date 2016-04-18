@@ -38,6 +38,8 @@ void Foreach::print(ostream& os) const {
 
 void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
+	//analyser->enter_block();
+
 	array->analyse(analyser, Type::NEUTRAL);
 
 	var_type = Type::POINTER;
@@ -56,6 +58,8 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	value_var = analyser->add_var(value, var_type, nullptr);
 
 	body->analyse(analyser, req_type);
+
+	//analyser->leave_block();
 }
 
 extern map<string, jit_value_t> globals;

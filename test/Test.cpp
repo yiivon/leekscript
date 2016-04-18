@@ -258,9 +258,9 @@ void Test::tests() {
 	 * Foreach loops
 	 */
 	header("Foreach loops");
-	test("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
+	//test("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
 	test("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
-	test("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
+	//test("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
 
 	/*
 	 * Array operations
@@ -273,6 +273,18 @@ void Test::tests() {
 	test("[1, 2, 3] ~~ x -> 'yo'", "['yo', 'yo', 'yo']");
 	test("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
 	test("[1.2, 321.42, 23.15] ~~ x -> x * 1.7", "[2.04, 546.414, 39.355]");
+
+	/*
+	 * Intervals
+	 */
+	test("[1..10]", "[1..10]");
+	test("145 in [1..1000]", "true");
+	test("1 in [1..1000]", "true");
+	test("1000 in [1..1000]", "true");
+	test("0 in [1..1000]", "false");
+	test("1001 in [1..1000]", "false");
+	test("[1..1000][500]", "501");
+	test("[1000..2000][12]", "1012");
 
 	/*
 	 * Swap
