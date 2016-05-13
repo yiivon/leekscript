@@ -1,6 +1,7 @@
 #include "Program.hpp"
 #include "../vm/Context.hpp"
 #include "../vm/value/LSNull.hpp"
+#include "../vm/value/LSArray.hpp"
 
 using namespace std;
 
@@ -23,26 +24,26 @@ extern map<string, jit_value_t> internals;
 extern map<string, jit_value_t> globals;
 extern map<string, Type> globals_types;
 
-LSArray* Program_create_array() {
-	return new LSArray();
+LSArray<LSValue*>* Program_create_array() {
+	return new LSArray<LSValue*>();
 }
-void Program_push_null(LSArray* array, int) {
-	array->pushClone(LSNull::null_var);
+void Program_push_null(LSArray<LSValue*>* array, int) {
+	array->push_clone(LSNull::null_var);
 }
-void Program_push_boolean(LSArray* array, int value) {
-	array->pushClone(LSBoolean::get(value));
+void Program_push_boolean(LSArray<LSValue*>* array, int value) {
+	array->push_clone(LSBoolean::get(value));
 }
-void Program_push_integer(LSArray* array, int value) {
-	array->pushClone(LSNumber::get(value));
+void Program_push_integer(LSArray<LSValue*>* array, int value) {
+	array->push_clone(LSNumber::get(value));
 }
-void Program_push_float(LSArray* array, float value) {
-	array->pushClone(LSNumber::get(value));
+void Program_push_float(LSArray<LSValue*>* array, float value) {
+	array->push_clone(LSNumber::get(value));
 }
-void Program_push_function(LSArray* array, void* value) {
-	array->pushClone(new LSFunction(value));
+void Program_push_function(LSArray<LSValue*>* array, void* value) {
+	array->push_clone(new LSFunction(value));
 }
-void Program_push_pointer(LSArray* array, LSValue* value) {
-	array->pushClone(value);
+void Program_push_pointer(LSArray<LSValue*>* array, LSValue* value) {
+	array->push_clone(value);
 }
 
 void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool toplevel) {

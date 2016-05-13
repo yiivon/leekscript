@@ -1,9 +1,13 @@
-#include "Module.hpp"
-#include "LSValue.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+
+#include "Module.hpp"
+#include "LSValue.hpp"
+#include "value/LSClass.hpp"
+#include "value/LSNumber.hpp"
+
 using namespace std;
 
 Module::Module(string name) : name(name) {
@@ -28,30 +32,37 @@ void Module::include(SemanticAnalyser* analyser, Program* program) {
 	}
 
 	for (auto m : methods) {
-		var->attr_types.insert(pair<string, Type>(m.name, m.type));
-		clazz->addStaticField(m.name, new LSFunction(m.addr));
+		clazz->addMethod(m.name, m.impl);
+	}
+
+	for (auto m : static_methods) {
+		var->attr_types.insert(pair<string, Type>(m.name, m.impl[0].type));
+		clazz->addStaticMethod(m.name, m.impl);
 	}
 }
 
 void Module::field(std::string name, Type type) {
-
 	fields.push_back(ModuleField(name, type));
 }
 
 void Module::static_field(std::string name, Type type, std::string value) {
-
 	static_fields.push_back(ModuleStaticField(name, type, value));
 }
 
+void Module::method(string name, initializer_list<Method> impl) {
+	methods.push_back(ModuleMethod(name, impl));
+}
+
 void Module::method(string name, Type return_type, initializer_list<Type> args, void* addr) {
+	methods.push_back(ModuleMethod(name, {{return_type, args, addr}}));
+}
 
-	Type type(RawType::FUNCTION, Nature::POINTER);
-	type.setReturnType(return_type);
+void Module::static_method(string name, initializer_list<Method> impl) {
+	static_methods.push_back(ModuleMethod(name, impl));
+}
 
-	for (Type arg : args) {
-		type.addArgumentType(arg);
-	}
-	methods.push_back(ModuleMethod(name, type, addr));
+void Module::static_method(string name, Type return_type, initializer_list<Type> args, void* addr) {
+	static_methods.push_back(ModuleMethod(name, {{return_type, args, addr}}));
 }
 
 void Module::generate_doc(ostream& os, string translation_file) {
@@ -102,7 +113,7 @@ void Module::generate_doc(ostream& os, string translation_file) {
 
 		if (e > 0) os << ",";
 		os << "\"" << m.name << "\":{\"type\":";
-		m.type.toJson(os);
+		m.impl[0].type.toJson(os);
 
 		if (translation_map.find(m.name) != translation_map.end()) {
 			JsonNode* json = translation_map[m.name].toNode();

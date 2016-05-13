@@ -1,11 +1,14 @@
+#include <sstream>
+#include <chrono>
+
 #include "VM.hpp"
 #include "Context.hpp"
 #include "../parser/lexical/LexicalAnalyser.hpp"
 #include "../parser/syntaxic/SyntaxicAnalyser.hpp"
 #include "../parser/semantic/SemanticAnalyser.hpp"
 #include "../parser/semantic/SemanticError.hpp"
-#include <sstream>
-#include <chrono>
+#include "value/LSNumber.hpp"
+#include "value/LSArray.hpp"
 
 using namespace std;
 
@@ -170,7 +173,7 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 
 	if (mode == ExecMode::COMMAND_JSON || mode == ExecMode::TOP_LEVEL) {
 
-		LSArray* res_array = (LSArray*) res;
+		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
 
 		ostringstream oss;
 		res_array->at(LSNumber::get(0))->print(oss);
@@ -275,6 +278,21 @@ jit_value_t VM::value_to_pointer(jit_function_t& F, jit_value_t& v, Type type) {
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 	return jit_insn_call_native(F, "convert", (void*) fun, sig, &v, 1, JIT_CALL_NOTHROW);
 }
+
+int boolean_to_value(LSBoolean* b) {
+	return b->value;
+}
+
+jit_value_t VM::pointer_to_value(jit_function_t& F, jit_value_t& v, Type type) {
+
+	if (type == Type::BOOLEAN) {
+		jit_type_t args_types[1] = {JIT_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
+		return jit_insn_call_native(F, "convert", (void*) boolean_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
+	}
+	return JIT_CREATE_CONST(F, JIT_INTEGER, 0);
+}
+
 /*
 bool VM::get_number(jit_function_t& F, jit_value_t& val) {
 
@@ -293,16 +311,16 @@ bool VM::get_number(jit_function_t& F, jit_value_t& val) {
 	return false;
 }*/
 
-LSArray* new_array() {
-	return new LSArray();
+LSArray<LSValue*>* new_array() {
+	return new LSArray<LSValue*>();
 }
 
-void push_array_value(LSArray* array, int value) {
-	array->pushClone(LSNumber::get(value));
+void push_array_value(LSArray<LSValue*>* array, int value) {
+	array->push_clone(LSNumber::get(value));
 }
 
-void push_array_pointer(LSArray* array, LSValue* value) {
-	array->pushClone(value);
+void push_array_pointer(LSArray<LSValue*>* array, LSValue* value) {
+	array->push_clone(value);
 }
 
 jit_value_t VM::new_array(jit_function_t& F) {

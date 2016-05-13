@@ -1,6 +1,6 @@
 #include "Function.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-#include "../../vm/VM.hpp"
+#include "../../vm/value/LSFunction.hpp"
 
 using namespace std;
 
@@ -61,6 +61,8 @@ void Function::print(ostream& os) const {
 
 void Function::analyse(SemanticAnalyser* analyser, const Type req_type) {
 
+//	cout << "Function req_type " << req_type << endl;
+
 	if (!function_added) {
 		analyser->add_function(this);
 		function_added = true;
@@ -101,7 +103,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 
 	body->analyse(analyser, req_type);
 
-	//cout << "body type: " << body->type << endl;
+//	cout << "body type: " << body->type << endl;
 
 	type.setReturnType(body->type);
 
@@ -142,6 +144,8 @@ jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type)
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
 
 	jit_function_t function = jit_function_create(context, signature);
+
+//	cout << "return type : " << type.getReturnType() << endl;
 
 	jit_value_t res = body->compile_jit(c, function, type.getReturnType());
 	jit_insn_return(function, res);

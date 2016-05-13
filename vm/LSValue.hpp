@@ -12,7 +12,7 @@ class LSNull;
 class LSBoolean;
 class LSNumber;
 class LSString;
-class LSArray;
+template <class T> class LSArray;
 class LSFunction;
 class LSObject;
 class LSClass;
@@ -40,17 +40,18 @@ public:
 	virtual LSValue* operator + (const LSBoolean*) const = 0;
 	virtual LSValue* operator + (const LSNumber*) const = 0;
 	virtual LSValue* operator + (const LSString*) const = 0;
-	virtual LSValue* operator + (const LSArray*) const = 0;
+	virtual LSValue* operator + (const LSArray<LSValue*>*) const = 0;
+	virtual LSValue* operator + (const LSArray<int>*) const = 0;
 	virtual LSValue* operator + (const LSObject*) const = 0;
 	virtual LSValue* operator + (const LSFunction*) const = 0;
 	virtual LSValue* operator + (const LSClass*) const = 0;
 
-	virtual LSValue* operator += (LSValue*) const = 0;
+	virtual LSValue* operator += (LSValue*) = 0;
 	virtual LSValue* operator += (const LSNull*) = 0;
 	virtual LSValue* operator += (const LSBoolean*) = 0;
 	virtual LSValue* operator += (const LSNumber*) = 0;
 	virtual LSValue* operator += (const LSString*) = 0;
-	virtual LSValue* operator += (const LSArray*) = 0;
+	virtual LSValue* operator += (const LSArray<LSValue*>*) = 0;
 	virtual LSValue* operator += (const LSObject*) = 0;
 	virtual LSValue* operator += (const LSFunction*) = 0;
 	virtual LSValue* operator += (const LSClass*) = 0;
@@ -60,17 +61,17 @@ public:
 	virtual LSValue* operator - (const LSBoolean*) const = 0;
 	virtual LSValue* operator - (const LSNumber*) const = 0;
 	virtual LSValue* operator - (const LSString*) const = 0;
-	virtual LSValue* operator - (const LSArray*) const = 0;
+	virtual LSValue* operator - (const LSArray<LSValue*>*) const = 0;
 	virtual LSValue* operator - (const LSObject*) const = 0;
 	virtual LSValue* operator - (const LSFunction*) const = 0;
 	virtual LSValue* operator - (const LSClass*) const = 0;
 
-	virtual LSValue* operator -= (LSValue*) const = 0;
+	virtual LSValue* operator -= (LSValue*) = 0;
 	virtual LSValue* operator -= (const LSNull*) = 0;
 	virtual LSValue* operator -= (const LSBoolean*) = 0;
 	virtual LSValue* operator -= (const LSNumber*) = 0;
 	virtual LSValue* operator -= (const LSString*) = 0;
-	virtual LSValue* operator -= (const LSArray*) = 0;
+	virtual LSValue* operator -= (const LSArray<LSValue*>*) = 0;
 	virtual LSValue* operator -= (const LSObject*) = 0;
 	virtual LSValue* operator -= (const LSFunction*) = 0;
 	virtual LSValue* operator -= (const LSClass*) = 0;
@@ -80,17 +81,17 @@ public:
 	virtual LSValue* operator * (const LSBoolean*) const = 0;
 	virtual LSValue* operator * (const LSNumber*) const = 0;
 	virtual LSValue* operator * (const LSString*) const = 0;
-	virtual LSValue* operator * (const LSArray*) const = 0;
+	virtual LSValue* operator * (const LSArray<LSValue*>*) const = 0;
 	virtual LSValue* operator * (const LSObject*) const = 0;
 	virtual LSValue* operator * (const LSFunction*) const = 0;
 	virtual LSValue* operator * (const LSClass*) const = 0;
 
-	virtual LSValue* operator *= (LSValue*) const = 0;
+	virtual LSValue* operator *= (LSValue*) = 0;
 	virtual LSValue* operator *= (const LSNull*) = 0;
 	virtual LSValue* operator *= (const LSBoolean*) = 0;
 	virtual LSValue* operator *= (const LSNumber*) = 0;
 	virtual LSValue* operator *= (const LSString*) = 0;
-	virtual LSValue* operator *= (const LSArray*) = 0;
+	virtual LSValue* operator *= (const LSArray<LSValue*>*) = 0;
 	virtual LSValue* operator *= (const LSObject*) = 0;
 	virtual LSValue* operator *= (const LSFunction*) = 0;
 	virtual LSValue* operator *= (const LSClass*) = 0;
@@ -100,17 +101,17 @@ public:
 	virtual LSValue* operator / (const LSBoolean*) const = 0;
 	virtual LSValue* operator / (const LSNumber*) const = 0;
 	virtual LSValue* operator / (const LSString*) const = 0;
-	virtual LSValue* operator / (const LSArray*) const = 0;
+	virtual LSValue* operator / (const LSArray<LSValue*>*) const = 0;
 	virtual LSValue* operator / (const LSObject*) const = 0;
 	virtual LSValue* operator / (const LSFunction*) const = 0;
 	virtual LSValue* operator / (const LSClass*) const = 0;
 
-	virtual LSValue* operator /= (LSValue*) const = 0;
+	virtual LSValue* operator /= (LSValue*) = 0;
 	virtual LSValue* operator /= (const LSNull*) = 0;
 	virtual LSValue* operator /= (const LSBoolean*) = 0;
 	virtual LSValue* operator /= (const LSNumber*) = 0;
 	virtual LSValue* operator /= (const LSString*) = 0;
-	virtual LSValue* operator /= (const LSArray*) = 0;
+	virtual LSValue* operator /= (const LSArray<LSValue*>*) = 0;
 	virtual LSValue* operator /= (const LSObject*) = 0;
 	virtual LSValue* operator /= (const LSFunction*) = 0;
 	virtual LSValue* operator /= (const LSClass*) = 0;
@@ -120,17 +121,17 @@ public:
 	virtual LSValue* poww(const LSBoolean*) const = 0;
 	virtual LSValue* poww(const LSNumber*) const = 0;
 	virtual LSValue* poww(const LSString*) const = 0;
-	virtual LSValue* poww(const LSArray*) const = 0;
+	virtual LSValue* poww(const LSArray<LSValue*>*) const = 0;
 	virtual LSValue* poww(const LSObject*) const = 0;
 	virtual LSValue* poww(const LSFunction*) const = 0;
 	virtual LSValue* poww(const LSClass*) const = 0;
 
-	virtual LSValue* pow_eq(LSValue*) const = 0;
+	virtual LSValue* pow_eq(LSValue*) = 0;
 	virtual LSValue* pow_eq(const LSNull*) = 0;
 	virtual LSValue* pow_eq(const LSBoolean*) = 0;
 	virtual LSValue* pow_eq(const LSNumber*) = 0;
 	virtual LSValue* pow_eq(const LSString*) = 0;
-	virtual LSValue* pow_eq(const LSArray*) = 0;
+	virtual LSValue* pow_eq(const LSArray<LSValue*>*) = 0;
 	virtual LSValue* pow_eq(const LSObject*) = 0;
 	virtual LSValue* pow_eq(const LSFunction*) = 0;
 	virtual LSValue* pow_eq(const LSClass*) = 0;
@@ -140,17 +141,17 @@ public:
 	virtual LSValue* operator % (const LSBoolean*) const = 0;
 	virtual LSValue* operator % (const LSNumber*) const = 0;
 	virtual LSValue* operator % (const LSString*) const = 0;
-	virtual LSValue* operator % (const LSArray*) const = 0;
+	virtual LSValue* operator % (const LSArray<LSValue*>*) const = 0;
 	virtual LSValue* operator % (const LSObject*) const = 0;
 	virtual LSValue* operator % (const LSFunction*) const = 0;
 	virtual LSValue* operator % (const LSClass*) const = 0;
 
-	virtual LSValue* operator %= (LSValue*) const = 0;
+	virtual LSValue* operator %= (LSValue*) = 0;
 	virtual LSValue* operator %= (const LSNull*) = 0;
 	virtual LSValue* operator %= (const LSBoolean*) = 0;
 	virtual LSValue* operator %= (const LSNumber*) = 0;
 	virtual LSValue* operator %= (const LSString*) = 0;
-	virtual LSValue* operator %= (const LSArray*) = 0;
+	virtual LSValue* operator %= (const LSArray<LSValue*>*) = 0;
 	virtual LSValue* operator %= (const LSObject*) = 0;
 	virtual LSValue* operator %= (const LSFunction*) = 0;
 	virtual LSValue* operator %= (const LSClass*) = 0;
@@ -160,7 +161,7 @@ public:
 	virtual bool operator == (const LSBoolean*) const = 0;
 	virtual bool operator == (const LSNumber*) const = 0;
 	virtual bool operator == (const LSString*) const = 0;
-	virtual bool operator == (const LSArray*) const = 0;
+	virtual bool operator == (const LSArray<LSValue*>*) const = 0;
 	virtual bool operator == (const LSFunction*) const = 0;
 	virtual bool operator == (const LSObject*) const = 0;
 	virtual bool operator == (const LSClass*) const = 0;
@@ -170,7 +171,7 @@ public:
 	virtual bool operator < (const LSBoolean*) const = 0;
 	virtual bool operator < (const LSNumber*) const = 0;
 	virtual bool operator < (const LSString*) const = 0;
-	virtual bool operator < (const LSArray*) const = 0;
+	virtual bool operator < (const LSArray<LSValue*>*) const = 0;
 	virtual bool operator < (const LSFunction*) const = 0;
 	virtual bool operator < (const LSObject*) const = 0;
 	virtual bool operator < (const LSClass*) const = 0;
@@ -180,7 +181,7 @@ public:
 	virtual bool operator > (const LSBoolean*) const = 0;
 	virtual bool operator > (const LSNumber*) const = 0;
 	virtual bool operator > (const LSString*) const = 0;
-	virtual bool operator > (const LSArray*) const = 0;
+	virtual bool operator > (const LSArray<LSValue*>*) const = 0;
 	virtual bool operator > (const LSFunction*) const = 0;
 	virtual bool operator > (const LSObject*) const = 0;
 	virtual bool operator > (const LSClass*) const = 0;
@@ -190,7 +191,7 @@ public:
 	virtual bool operator <= (const LSBoolean*) const = 0;
 	virtual bool operator <= (const LSNumber*) const = 0;
 	virtual bool operator <= (const LSString*) const = 0;
-	virtual bool operator <= (const LSArray*) const = 0;
+	virtual bool operator <= (const LSArray<LSValue*>*) const = 0;
 	virtual bool operator <= (const LSFunction*) const = 0;
 	virtual bool operator <= (const LSObject*) const = 0;
 	virtual bool operator <= (const LSClass*) const = 0;
@@ -200,7 +201,7 @@ public:
 	virtual bool operator >= (const LSBoolean*) const = 0;
 	virtual bool operator >= (const LSNumber*) const = 0;
 	virtual bool operator >= (const LSString*) const = 0;
-	virtual bool operator >= (const LSArray*) const = 0;
+	virtual bool operator >= (const LSArray<LSValue*>*) const = 0;
 	virtual bool operator >= (const LSFunction*) const = 0;
 	virtual bool operator >= (const LSObject*) const = 0;
 	virtual bool operator >= (const LSClass*) const = 0;
@@ -213,8 +214,8 @@ public:
 	virtual LSValue* attr(const LSValue* key) const = 0;
 	virtual LSValue** attrL(const LSValue* key) = 0;
 
-	virtual LSValue* range(const LSValue* start, const LSValue* end) const = 0;
-	virtual LSValue* rangeL(const LSValue* start, const LSValue* end) = 0;
+	virtual LSValue* range(int start, int end) const = 0;
+	virtual LSValue* rangeL(int start, int end) = 0;
 
 	virtual LSValue* abso() const = 0;
 

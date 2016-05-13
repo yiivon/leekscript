@@ -5,6 +5,9 @@ class Benchmark {
 public:
 	Benchmark();
 	virtual ~Benchmark();
+
+	static void arrays();
+	static void primes();
 };
 
 #endif

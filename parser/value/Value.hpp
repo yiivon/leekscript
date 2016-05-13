@@ -1,6 +1,8 @@
 #ifndef VALUE_HPP
 #define VALUE_HPP
 
+#include <map>
+
 #include "../../vm/VM.hpp"
 #include "../../Compiler.hpp"
 class SemanticAnalyser;
@@ -22,6 +24,7 @@ public:
 
 	void analyse(SemanticAnalyser*);
 	virtual bool will_take(SemanticAnalyser*, const unsigned, const Type);
+	virtual bool will_take_element(SemanticAnalyser*, const Type);
 	virtual bool must_be_pointer(SemanticAnalyser*);
 	virtual void analyse(SemanticAnalyser*, const Type) = 0;
 

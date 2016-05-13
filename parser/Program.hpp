@@ -4,6 +4,7 @@
 #include "Body.hpp"
 #include "value/Function.hpp"
 #include "semantic/SemanticAnalyser.hpp"
+class LSValue;
 
 class Program {
 

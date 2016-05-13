@@ -5,7 +5,8 @@
 #include "../../parser/semantic/SemanticAnalyser.hpp"
 #include "../../parser/Program.hpp"
 #include "../Module.hpp"
-#include <math.h>
+class LSString;
+class LSNumber;
 
 class StringSTD : public Module {
 public:
@@ -18,7 +19,7 @@ LSValue* string_contains(LSString* haystack, LSString* needle);
 LSValue* string_endsWith(LSString* string, LSString* ending);
 LSValue* string_indexOf(LSString* haystack, LSString* needle);
 LSValue* string_length(LSString* string);
-LSValue* string_map(const LSString* string, const LSFunction* fun);
+LSValue* string_map(const LSString* string, void* fun);
 LSValue* string_replace(LSString* string, LSString* from, LSString* to);
 LSValue* string_reverse(LSString* string);
 LSValue* string_size(LSString* string);

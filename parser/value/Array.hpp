@@ -10,7 +10,6 @@ public:
 	bool associative = false;
 	std::vector<Value*> keys;
 	std::vector<Value*> expressions;
-	bool only_values = true;
 	bool interval = false;
 
 	Array();

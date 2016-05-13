@@ -1,5 +1,5 @@
 #include "Nulll.hpp"
-#include "../../vm/VM.hpp"
+#include "../../vm/value/LSNull.hpp"
 
 using namespace std;
 

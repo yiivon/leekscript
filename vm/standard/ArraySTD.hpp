@@ -1,7 +1,6 @@
 #ifndef VM_STANDARD_ARRAYSTD_HPP_
 #define VM_STANDARD_ARRAYSTD_HPP_
 
-#include "../value/LSArray.hpp"
 #include "../value/LSFunction.hpp"
 #include "../Module.hpp"
 
@@ -10,43 +9,36 @@ public:
 	ArraySTD();
 };
 
-LSValue* array_average(const LSArray* array);
-LSArray* array_concat(const LSArray* array1, const LSArray* array2);
-LSArray* array_clear(LSArray* array);
-LSValue* array_fill(LSArray* array, const LSValue* value, const LSNumber* size);
-LSArray* array_filter(const LSArray* array, const LSFunction* function);
-LSValue* array_first(const LSArray* array);
-LSArray* array_flatten(const LSArray* array, const LSNumber* depth);
-LSValue* array_foldLeft(const LSArray* array, const LSFunction* function, LSValue* v0);
-LSValue* array_foldRight(const LSArray* array, const LSFunction* function, LSValue* v0);
-LSValue* array_iter(const LSArray* array, const LSFunction* function);
-LSValue* array_contains(const LSArray* array, const LSValue* value);
-LSValue* array_insert(LSArray* array, const LSValue* element, const LSValue* index);
-LSValue* array_isEmpty(const LSArray* array);
-LSValue* array_join(const LSArray* array, const LSString* glue);
-LSValue* array_keySort(const LSArray* array, const LSNumber* order);
-LSValue* array_last(const LSArray* array);
-LSArray* array_map(const LSArray* array, const LSFunction* fun);
-LSArray* array_map2(const LSArray* array, const LSArray* array2, const LSFunction* fun);
-LSValue* array_max(const LSArray* array);
-LSValue* array_min(const LSArray* array);
-LSValue* array_partition(const LSArray* array, const LSFunction* callback);
-LSValue* array_pop(LSArray* array);
-LSValue* array_push(LSArray* array, LSValue* value);
-LSValue* array_pushAll(LSArray* array, const LSArray* elements);
-LSValue* array_remove(LSArray* array, const LSValue* index);
-LSValue* array_removeElement(LSArray* array, const LSValue* element);
-LSValue* array_removeKey(LSArray* array, const LSValue* index);
-LSValue* array_reverse(const LSArray* array);
-LSValue* array_search(const LSArray* array, const LSValue* value, const LSValue* start);
-LSValue* array_shift(const LSArray* array);
-LSArray* array_shuffle(const LSArray* array);
-LSValue* array_shift(const LSArray* array);
-LSNumber* array_size(const LSArray* array);
-LSArray* array_sort(const LSArray* array, const LSNumber* order);
-LSValue* array_subArray(const LSArray* array, const LSNumber* start, const LSNumber* end);
-LSValue* array_sum(const LSArray* array);
-LSValue* array_unshift(const LSArray* array, const LSValue* value);
+LSArray<LSValue*>* array_concat(const LSArray<LSValue*>* array1, const LSArray<LSValue*>* array2);
+LSArray<LSValue*>* array_clear(LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_filter(const LSArray<LSValue*>* array, const void* function);
+LSValue* array_first(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_flatten(const LSArray<LSValue*>* array, const LSNumber* depth);
+LSValue* array_foldLeft(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0);
+LSValue* array_foldRight(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0);
+LSValue* array_iter(LSArray<LSValue*>* array, const LSFunction* function);
+LSValue* array_contains(const LSArray<LSValue*>* array, const LSValue* value);
+LSValue* array_contains_int(const LSArray<int>* array, int value);
+LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LSValue* index);
+LSValue* array_isEmpty(const LSArray<LSValue*>* array);
+LSValue* array_keySort(const LSArray<LSValue*>* array, const LSNumber* order);
+LSValue* array_last(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_map(const LSArray<int>* array, const void* fun);
+LSValue* array_max(const LSArray<LSValue*>* array);
+LSValue* array_min(const LSArray<LSValue*>* array);
+LSValue* array_push(LSArray<LSValue*>* array, LSValue* value);
+LSValue* array_pushAll(LSArray<LSValue*>* array, const LSArray<LSValue*>* elements);
+LSValue* array_remove(LSArray<LSValue*>* array, const LSValue* index);
+LSValue* array_removeElement(LSArray<LSValue*>* array, const LSValue* element);
+LSValue* array_removeKey(LSArray<LSValue*>* array, const LSValue* index);
+LSValue* array_reverse(const LSArray<LSValue*>* array);
+LSValue* array_shift(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>* array);
+LSValue* array_shift(const LSArray<LSValue*>* array);
+LSNumber* array_size(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_sort(const LSArray<LSValue*>* array, const LSNumber* order);
+LSValue* array_sum(const LSArray<LSValue*>* array);
+LSValue* array_unshift(const LSArray<LSValue*>* array, const LSValue* value);
 
 
 #endif

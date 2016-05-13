@@ -1,4 +1,5 @@
 #include "NumberSTD.hpp"
+#include "../value/LSNumber.hpp"
 
 using namespace std;
 

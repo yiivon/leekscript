@@ -33,6 +33,8 @@ const Type Type::FLOAT_P(RawType::FLOAT, Nature::POINTER);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
+const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
+
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
 const Type Type::CLASS(RawType::CLASS, Nature::POINTER);
@@ -61,6 +63,14 @@ Type::Type(const BaseRawType* raw_type, Nature nature) {
 	this->nature = nature;
 	this->clazz = raw_type->getName();
 	this->homogeneous = true;
+}
+
+Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type) {
+	this->raw_type = raw_type;
+	this->nature = nature;
+	this->clazz = raw_type->getName();
+	this->homogeneous = true;
+	this->setElementType(elements_type);
 }
 
 Type Type::getReturnType() const {
@@ -151,6 +161,22 @@ bool Type::will_take(const int i, const Type& arg_type) {
 	return false;
 }
 
+bool Type::will_take_element(const Type& element_type) {
+
+	if (raw_type != RawType::ARRAY) {
+		return false;
+	}
+
+	Type current = getElementType();
+
+	if (current == element_type) {
+		return false;
+	}
+
+	setElementType(element_type);
+	return true;
+}
+
 Type Type::mix(const Type& x) const {
 
 	Type type(*this);
@@ -174,8 +200,98 @@ bool Type::operator == (const Type& type) const {
 	return true;
 }
 
+bool Type::compatible(const Type& type) const {
+
+//	cout << "COMPATIBLE : " << type << " with " << *this << endl;
+
+	if (this->nature == Nature::VALUE && type.nature == Nature::POINTER) return false;
+
+	if (this->raw_type != type.raw_type) {
+
+		if (this->raw_type == RawType::UNKNOWN) return true;
+		if (this->raw_type == RawType::NUMBER and (
+			type.raw_type == RawType::INTEGER or
+			type.raw_type == RawType::LONG or
+			type.raw_type == RawType::FLOAT
+		)) return true;
+
+		return false;
+	}
+
+	if (this->raw_type == RawType::ARRAY) {
+		return this->getElementType().compatible(type.getElementType());
+	}
+
+	return true;
+}
+
+
 bool Type::operator != (const Type& type) const {
 	return !this->operator == (type);
+}
+
+bool Type::list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual) {
+
+	if (expected.size() != actual.size()) return false;
+
+	for (unsigned a = 0; a < expected.size(); ++a) {
+
+		if (not expected.at(a).compatible(actual.at(a))) return false;
+//		cout << "YES" << endl;
+	}
+	return true;
+}
+
+bool Type::more_specific(const Type& neww, const Type& old) {
+
+//	cout << "MORE SPECIFIC : " << neww << " than " << old << endl;
+
+	if (neww.raw_type != old.raw_type and neww.raw_type->derived_from(old.raw_type)) {
+//		cout << "DERIVED" << endl;
+		return true;
+	}
+
+	if (neww.raw_type == RawType::ARRAY and old.raw_type == RawType::ARRAY) {
+
+//		cout << "new element type : " << neww.getElementType() << endl;
+//		cout << "old element type : " << old.getElementType() << endl;
+
+		if (Type::more_specific(neww.getElementType(), old.getElementType())) {
+//			cout << "YES" << endl;
+			return true;
+		}
+	}
+
+	if (neww.raw_type == RawType::FUNCTION and old.raw_type == RawType::FUNCTION) {
+
+//		cout << "more_specific function" << endl;
+//		cout << "new element type : " << neww.getArgumentType(0) << endl;
+//		cout << "old element type : " << old.getArgumentType(0) << endl;
+
+		// TODO only the first arg
+		if (Type::more_specific(neww.getArgumentType(0), old.getArgumentType(0))) {
+//			cout << "YES" << endl;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww) {
+
+//	cout << "MORE SPECIFIC" << endl;
+//	cout << "[TEST] " << Type::more_specific(Type::INTEGER, Type::UNKNOWN) << endl;
+
+	if (old.size() != neww.size()) return false;
+
+	for (unsigned a = 0; a < old.size(); ++a) {
+//		cout << "CHECK : " << neww.at(a) << " ||| " << old.at(a) << endl;
+		if (Type::more_specific(neww.at(a), old.at(a))) {
+//			cout << "MORE SPECIFIC : " << neww.at(a) << " ||| " << old.at(a) << endl;
+			return true;
+		}
+	}
+	return false;
 }
 
 void Type::toJson(ostream& os) const {

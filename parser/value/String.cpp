@@ -1,5 +1,5 @@
 #include "String.hpp"
-#include "../../vm/VM.hpp"
+#include "../../vm/value/LSString.hpp"
 
 using namespace std;
 

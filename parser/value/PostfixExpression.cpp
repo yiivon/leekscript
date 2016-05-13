@@ -1,4 +1,4 @@
-#include "../../vm/VM.hpp"
+#include "../../vm/LSValue.hpp"
 #include "PostfixExpression.hpp"
 #include "LeftValue.hpp"
 

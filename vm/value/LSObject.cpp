@@ -84,7 +84,10 @@ LSValue* LSObject::operator + (const LSNumber*) const {
 LSValue* LSObject::operator + (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator + (const LSArray*) const {
+LSValue* LSObject::operator + (const LSArray<LSValue*>*) const {
+	return LSNull::null_var;
+}
+LSValue* LSObject::operator + (const LSArray<int>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSObject::operator + (const LSObject*) const {
@@ -97,7 +100,7 @@ LSValue* LSObject::operator + (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSObject::operator += (LSValue* value) const {
+LSValue* LSObject::operator += (LSValue* value) {
 	return value->operator += (this);
 }
 LSValue* LSObject::operator += (const LSNull*) {
@@ -112,7 +115,7 @@ LSValue* LSObject::operator += (const LSBoolean*) {
 LSValue* LSObject::operator += (const LSString*) {
 	return this->clone();
 }
-LSValue* LSObject::operator += (const LSArray*) {
+LSValue* LSObject::operator += (const LSArray<LSValue*>*) {
 	return this->clone();
 }
 LSValue* LSObject::operator += (const LSObject*) {
@@ -140,7 +143,7 @@ LSValue* LSObject::operator - (const LSNumber*) const {
 LSValue* LSObject::operator - (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator - (const LSArray*) const {
+LSValue* LSObject::operator - (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSObject::operator - (const LSObject*) const {
@@ -153,7 +156,7 @@ LSValue* LSObject::operator - (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSObject::operator -= (LSValue* value) const {
+LSValue* LSObject::operator -= (LSValue* value) {
 	return value->operator -= (this);
 }
 LSValue* LSObject::operator -= (const LSNull*) {
@@ -168,7 +171,7 @@ LSValue* LSObject::operator -= (const LSBoolean*) {
 LSValue* LSObject::operator -= (const LSString*) {
 	return this->clone();
 }
-LSValue* LSObject::operator -= (const LSArray*) {
+LSValue* LSObject::operator -= (const LSArray<LSValue*>*) {
 	return this->clone();
 }
 LSValue* LSObject::operator -= (const LSObject*) {
@@ -196,7 +199,7 @@ LSValue* LSObject::operator * (const LSNumber*) const {
 LSValue* LSObject::operator * (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator * (const LSArray*) const {
+LSValue* LSObject::operator * (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSObject::operator * (const LSObject*) const {
@@ -209,7 +212,7 @@ LSValue* LSObject::operator * (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSObject::operator *= (LSValue* value) const {
+LSValue* LSObject::operator *= (LSValue* value) {
 	return value->operator *= (this);
 }
 LSValue* LSObject::operator *= (const LSNull*) {
@@ -224,7 +227,7 @@ LSValue* LSObject::operator *= (const LSNumber*) {
 LSValue* LSObject::operator *= (const LSString*) {
 	return this->clone();
 }
-LSValue* LSObject::operator *= (const LSArray*) {
+LSValue* LSObject::operator *= (const LSArray<LSValue*>*) {
 	return this->clone();
 }
 LSValue* LSObject::operator *= (const LSObject*) {
@@ -252,7 +255,7 @@ LSValue* LSObject::operator / (const LSNumber*) const {
 LSValue* LSObject::operator / (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator / (const LSArray*) const {
+LSValue* LSObject::operator / (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSObject::operator / (const LSObject*) const {
@@ -265,7 +268,7 @@ LSValue* LSObject::operator / (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSObject::operator /= (LSValue* value) const {
+LSValue* LSObject::operator /= (LSValue* value) {
 	return value->operator / (this);
 }
 LSValue* LSObject::operator /= (const LSNull*) {
@@ -280,7 +283,7 @@ LSValue* LSObject::operator /= (const LSNumber*) {
 LSValue* LSObject::operator /= (const LSString*) {
 	return this->clone();
 }
-LSValue* LSObject::operator /= (const LSArray*) {
+LSValue* LSObject::operator /= (const LSArray<LSValue*>*) {
 	return this->clone();
 }
 LSValue* LSObject::operator /= (const LSObject*) {
@@ -308,7 +311,7 @@ LSValue* LSObject::poww(const LSNumber*) const {
 LSValue* LSObject::poww(const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::poww(const LSArray*) const {
+LSValue* LSObject::poww(const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSObject::poww(const LSObject*) const {
@@ -321,7 +324,7 @@ LSValue* LSObject::poww(const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSObject::pow_eq(LSValue* value) const {
+LSValue* LSObject::pow_eq(LSValue* value) {
 	return value->pow_eq(this);
 }
 LSValue* LSObject::pow_eq(const LSNull*) {
@@ -336,7 +339,7 @@ LSValue* LSObject::pow_eq(const LSNumber*) {
 LSValue* LSObject::pow_eq(const LSString*) {
 	return this->clone();
 }
-LSValue* LSObject::pow_eq(const LSArray*) {
+LSValue* LSObject::pow_eq(const LSArray<LSValue*>*) {
 	return this->clone();
 }
 LSValue* LSObject::pow_eq(const LSObject*) {
@@ -364,7 +367,7 @@ LSValue* LSObject::operator % (const LSNumber*) const {
 LSValue* LSObject::operator % (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSObject::operator % (const LSArray*) const {
+LSValue* LSObject::operator % (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSObject::operator % (const LSObject*) const {
@@ -378,7 +381,7 @@ LSValue* LSObject::operator % (const LSClass*) const {
 }
 
 
-LSValue* LSObject::operator %= (LSValue* value) const {
+LSValue* LSObject::operator %= (LSValue* value) {
 	return value->operator %= (this);
 }
 LSValue* LSObject::operator %= (const LSNull*) {
@@ -393,7 +396,7 @@ LSValue* LSObject::operator %= (const LSNumber*) {
 LSValue* LSObject::operator %= (const LSString*) {
 	return this->clone();
 }
-LSValue* LSObject::operator %= (const LSArray*) {
+LSValue* LSObject::operator %= (const LSArray<LSValue*>*) {
 	return this->clone();
 }
 LSValue* LSObject::operator %= (const LSObject*) {
@@ -421,7 +424,7 @@ bool LSObject::operator == (const LSNumber*) const {
 bool LSObject::operator == (const LSString*) const {
 	return false;
 }
-bool LSObject::operator == (const LSArray*) const {
+bool LSObject::operator == (const LSArray<LSValue*>*) const {
 	return false;
 }
 bool LSObject::operator == (const LSFunction*) const {
@@ -449,7 +452,7 @@ bool LSObject::operator < (const LSNumber*) const {
 bool LSObject::operator < (const LSString*) const {
 	return false;
 }
-bool LSObject::operator < (const LSArray*) const {
+bool LSObject::operator < (const LSArray<LSValue*>*) const {
 	return false;
 }
 bool LSObject::operator < (const LSObject* v) const {
@@ -477,7 +480,7 @@ bool LSObject::operator > (const LSNumber*) const {
 bool LSObject::operator > (const LSString*) const {
 	return true;
 }
-bool LSObject::operator > (const LSArray*) const {
+bool LSObject::operator > (const LSArray<LSValue*>*) const {
 	return true;
 }
 bool LSObject::operator > (const LSObject* v) const {
@@ -505,7 +508,7 @@ bool LSObject::operator <= (const LSNumber*) const {
 bool LSObject::operator <= (const LSString*) const {
 	return false;
 }
-bool LSObject::operator <= (const LSArray*) const {
+bool LSObject::operator <= (const LSArray<LSValue*>*) const {
 	return false;
 }
 bool LSObject::operator <= (const LSObject* v) const {
@@ -533,7 +536,7 @@ bool LSObject::operator >= (const LSNumber*) const {
 bool LSObject::operator >= (const LSString*) const {
 	return true;
 }
-bool LSObject::operator >= (const LSArray*) const {
+bool LSObject::operator >= (const LSArray<LSValue*>*) const {
 	return true;
 }
 bool LSObject::operator >= (const LSObject* v) const {
@@ -553,10 +556,10 @@ LSValue** LSObject::atL (const LSValue*) {
 	return &LSNull::null_var;
 }
 
-LSValue* LSObject::range(const LSValue*, const LSValue*) const {
+LSValue* LSObject::range(int, int) const {
 	return this->clone();
 }
-LSValue* LSObject::rangeL(const LSValue*, const LSValue*) {
+LSValue* LSObject::rangeL(int, int) {
 	return this;
 }
 
@@ -578,9 +581,9 @@ LSValue* LSObject::attr(const LSValue* key) const {
 	} catch (exception& e) {
 		if (clazz != nullptr) {
 			string name = ((LSString*) key)->value;
-			LSValue* attr = clazz->getMethod(name);
+			LSFunction* attr = clazz->getDefaultMethod(name);
 			if (attr != nullptr) {
-				return attr;
+				return (LSValue*) attr;
 			}
 		}
 		return LSNull::null_var;

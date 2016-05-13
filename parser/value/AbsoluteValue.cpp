@@ -1,4 +1,5 @@
 #include "AbsoluteValue.hpp"
+#include "../../vm/LSValue.hpp"
 
 using namespace std;
 

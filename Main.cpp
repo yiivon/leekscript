@@ -5,9 +5,11 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
+
 #include "vm/VM.hpp"
 #include "test/Test.hpp"
 #include "vm/doc/Documentation.hpp"
+#include "benchmark/Benchmark.hpp"
 
 using namespace std;
 
@@ -17,6 +19,9 @@ bool param_exec = false;
 bool param_file = false;
 
 int main(int argc, char* argv[]) {
+
+//	Benchmark::arrays();
+//	Benchmark::primes();
 
 	if (argc > 1 && string(argv[1]) == "-test") {
 		Test test;

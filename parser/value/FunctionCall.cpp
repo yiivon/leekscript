@@ -1,12 +1,16 @@
+#include <math.h>
+
 #include "../../vm/VM.hpp"
 #include "FunctionCall.hpp"
 #include "VariableValue.hpp"
 #include "Function.hpp"
 #include "ObjectAccess.hpp"
-#include <math.h>
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../../vm/standard/ArraySTD.hpp"
 #include "../../vm/standard/NumberSTD.hpp"
+#include "../../vm/value/LSClass.hpp"
+#include "../../vm/value/LSNumber.hpp"
+#include "../../vm/value/LSArray.hpp"
 
 using namespace std;
 
@@ -36,6 +40,12 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 	constant = false;
 
 	function->analyse(analyser);
+
+	int a = 0;
+	for (Value* arg : arguments) {
+//		cout << "ANALYSE arg " << a << " : " << function->type.getArgumentType(a) << endl;
+		arg->analyse(analyser, function->type.getArgumentType(a++));
+	}
 
 	//cout << "Function call function type : " << function->type << endl;
 
@@ -81,19 +91,55 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 				function->type.setReturnType(Type::FLOAT);
 			}
 			native_func = oa->field;
-		}
 
-		string clazz = oa->object->type.clazz;
+		} else {
 
-		LSClass* std_class = (LSClass*) analyser->program->system_vars[clazz];
+//			cout << "oa : " << oa->field << endl;
 
-		if (std_class) {
+			Type object_type = oa->object->type;
 
-			this_ptr = oa->object;
+			vector<Type> arg_types;
+			for (auto arg : arguments) arg_types.push_back(arg->type);
 
-			std_func = ((LSFunction*) std_class->static_fields[oa->field])->function;
+			if (arg_types.size() > 1) {
+//			cout << "ARG : " << arg_types[0] << endl;
+//			cout << "ARG : " << arg_types[1] << endl;
+			}
+			if (object_type.raw_type == RawType::CLASS) {
+				// String.size("salut")
 
-			function->type = analyser->internal_vars[clazz]->attr_types[oa->field];
+//				cout << "object_type : " << object_type << endl;
+//				cout << "object field : " << oa->field << endl;
+
+				string clazz = ((VariableValue*) oa->object)->name->content;
+
+				LSClass* object_class = (LSClass*) analyser->program->system_vars[clazz];
+
+				Method* m = object_class->getStaticMethod(oa->field, arg_types);
+
+				if (m != nullptr) {
+//					cout << "method : " << m->addr << endl;
+					std_func = m->addr;
+					function->type = m->type;
+				} else {
+					throw new runtime_error("No static method found !");
+				}
+
+			} else { // "salut".size()
+
+				LSClass* object_class = (LSClass*) analyser->program->system_vars[object_type.clazz];
+
+				Method* m = object_class->getMethod(oa->field, arg_types);
+
+				if (m != nullptr) {
+//					cout << "method : " << m->addr << " : " << m->type << endl;
+					this_ptr = oa->object;
+					std_func = m->addr;
+					function->type = m->type;
+				} else {
+					throw new runtime_error("No method found !");
+				}
+			}
 		}
 	}
 
@@ -121,10 +167,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 		}
 	}
 
-	int a = 0;
-	if (this_ptr != nullptr) {
-		a = 1; // Argument offset for standard functions
-	}
+	a = 0;
 	for (Value* arg : arguments) {
 		arg->analyse(analyser, function->type.getArgumentType(a));
 		a++;
@@ -152,12 +195,12 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 }
 
 void func_print(LSValue* v) {
-	cout << " >>> ";
+	cout << " p>>> ";
 	v->print(cout);
 	cout << endl;
 }
 void func_print_int(int v) {
-	cout << " >>> " << v << endl;
+	cout << " i>>> " << v << endl;
 }
 
 LSValue* create_float_object_3(double n) {
@@ -191,7 +234,7 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 			return JIT_CREATE_CONST_POINTER(F, new LSString(""));
 		}
 		if (vv->name->content == "Array") {
-			return JIT_CREATE_CONST_POINTER(F, new LSArray());
+			return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
 		}
 	}
 
@@ -248,12 +291,15 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	 */
 	if (this_ptr != nullptr) {
 
+//		cout << "compile std function" << endl;
+
 		int arg_count = arguments.size() + 1;
 		vector<jit_value_t> args = { this_ptr->compile_jit(c, F, Type::POINTER) };
 		vector<jit_type_t> args_types = { JIT_POINTER };
 
-		for (int i = 1; i < arg_count; ++i) {
-			args.push_back(arguments[i-1]->compile_jit(c, F, function->type.getArgumentType(i)));
+		for (int i = 0; i < arg_count - 1; ++i) {
+//			cout << "arg " << i << " : " << function->type.getArgumentType(i) << endl;
+			args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
 			args_types.push_back(function->type.getArgumentType(i).nature!= Nature::VALUE ? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION)	? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
@@ -261,9 +307,49 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 				JIT_INTEGER);
 		}
 
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types.data(), arg_count, 0);
+		jit_type_t ret_type = type.raw_type == RawType::FLOAT ? JIT_FLOAT : JIT_POINTER;
 
-		return jit_insn_call_native(F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
+
+		jit_value_t res = jit_insn_call_native(F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
+
+		if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
+			return VM::value_to_pointer(F, res, type);
+		}
+		return res;
+	}
+
+	/*
+	 * Static standard function call
+	 */
+	if (std_func != nullptr) {
+
+//		cout << "compile static std function" << endl;
+
+		int arg_count = arguments.size();
+		vector<jit_value_t> args;
+		vector<jit_type_t> args_types;
+
+		for (int i = 0; i < arg_count; ++i) {
+//			cout << "arg " << i << " : " << function->type.getArgumentType(i) << endl;
+			args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
+			args_types.push_back(function->type.getArgumentType(i).nature!= Nature::VALUE ? JIT_POINTER :
+				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION)	? JIT_POINTER :
+				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
+				(function->type.getArgumentType(i).raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
+				JIT_INTEGER);
+		}
+
+		jit_type_t ret_type = type.raw_type == RawType::FLOAT ? JIT_FLOAT : JIT_POINTER;
+
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
+
+		jit_value_t res = jit_insn_call_native(F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
+
+		if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
+			return VM::value_to_pointer(F, res, type);
+		}
+		return res;
 	}
 
 

@@ -30,6 +30,17 @@ void SemanticVar::will_take(SemanticAnalyser* analyser, unsigned pos, const Type
 	}
 }
 
+void SemanticVar::will_take_element(SemanticAnalyser* analyser, const Type& type) {
+	if (value != nullptr) {
+		bool changed = value->will_take_element(analyser, type);
+		this->type.will_take_element(type);
+		if (changed) {
+			//analyser->reanalyse = true;
+//			cout << "REANALYSE" << endl;
+		}
+	}
+}
+
 void SemanticVar::must_be_pointer(SemanticAnalyser* analyser) {
 	if (value != nullptr) {
 		bool changed = value->must_be_pointer(analyser);
@@ -97,6 +108,12 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 		reanalyse = false;
 		program->body->analyse(this, Type::POINTER);
 	} while (reanalyse);
+
+	/*
+	for (auto v : global_vars) {
+		cout << v.first << " : " << v.second->type << endl;
+	}
+	*/
 
 	program->functions = functions;
 	program->global_vars = global_vars;

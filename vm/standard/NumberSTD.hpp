@@ -6,6 +6,7 @@
 #include "../../parser/Program.hpp"
 #include "../Module.hpp"
 #include <math.h>
+class LSNumber;
 
 class NumberSTD : public Module {
 public:

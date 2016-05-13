@@ -2,7 +2,8 @@
 #include "LeftValue.hpp"
 #include "VariableValue.hpp"
 #include "FunctionCall.hpp"
-#include "../../vm/VM.hpp"
+#include "../../vm/value/LSNumber.hpp"
+#include "../../vm/value/LSArray.hpp"
 
 using namespace std;
 
@@ -119,10 +120,10 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 					return n;
 				}
 				if (vv->name->content == "String") {
-					return JIT_CREATE_CONST_POINTER(F,  new LSString(""));
+					return JIT_CREATE_CONST_POINTER(F, new LSString(""));
 				}
 				if (vv->name->content == "Array") {
-					return JIT_CREATE_CONST_POINTER(F,  new LSArray());
+					return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
 				}
 			}
 
@@ -146,7 +147,7 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 						return JIT_CREATE_CONST_POINTER(F, new LSString(""));
 					}
 					if (vv->name->content == "Array") {
-						return JIT_CREATE_CONST_POINTER(F, new LSArray());
+						return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
 					}
 				}
 			}

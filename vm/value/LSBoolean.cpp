@@ -67,7 +67,10 @@ LSValue* LSBoolean::operator + (const LSNumber*) const {
 LSValue* LSBoolean::operator + (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator + (const LSArray*) const {
+LSValue* LSBoolean::operator + (const LSArray<LSValue*>*) const {
+	return LSNull::null_var;
+}
+LSValue* LSBoolean::operator + (const LSArray<int>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator + (const LSObject*) const {
@@ -80,7 +83,7 @@ LSValue* LSBoolean::operator + (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSBoolean::operator += (LSValue* value) const {
+LSValue* LSBoolean::operator += (LSValue* value) {
 	return value->operator += (this);
 }
 LSValue* LSBoolean::operator += (const LSNull*) {
@@ -95,7 +98,7 @@ LSValue* LSBoolean::operator += (const LSBoolean*) {
 LSValue* LSBoolean::operator += (const LSString*) {
 	return this->clone();
 }
-LSValue* LSBoolean::operator += (const LSArray*) {
+LSValue* LSBoolean::operator += (const LSArray<LSValue*>*) {
 	return this->clone();
 }
 LSValue* LSBoolean::operator += (const LSObject*) {
@@ -123,7 +126,7 @@ LSValue* LSBoolean::operator - (const LSNumber*) const {
 LSValue* LSBoolean::operator - (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator - (const LSArray*) const {
+LSValue* LSBoolean::operator - (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator - (const LSObject*) const {
@@ -136,7 +139,7 @@ LSValue* LSBoolean::operator - (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSBoolean::operator -= (LSValue* value) const {
+LSValue* LSBoolean::operator -= (LSValue* value) {
 	return value->operator -= (this);
 }
 LSValue* LSBoolean::operator -= (const LSNull*) {
@@ -151,7 +154,7 @@ LSValue* LSBoolean::operator -= (const LSNumber*) {
 LSValue* LSBoolean::operator -= (const LSString*) {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator -= (const LSArray*) {
+LSValue* LSBoolean::operator -= (const LSArray<LSValue*>*) {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator -= (const LSObject*) {
@@ -179,7 +182,7 @@ LSValue* LSBoolean::operator * (const LSNumber*) const {
 LSValue* LSBoolean::operator * (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator * (const LSArray*) const {
+LSValue* LSBoolean::operator * (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator * (const LSObject*) const {
@@ -192,7 +195,7 @@ LSValue* LSBoolean::operator * (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSBoolean::operator *= (LSValue* value) const {
+LSValue* LSBoolean::operator *= (LSValue* value) {
 	return value->operator *= (this);
 }
 LSValue* LSBoolean::operator *= (const LSNull*) {
@@ -207,7 +210,7 @@ LSValue* LSBoolean::operator *= (const LSNumber*) {
 LSValue* LSBoolean::operator *= (const LSString*) {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator *= (const LSArray*) {
+LSValue* LSBoolean::operator *= (const LSArray<LSValue*>*) {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator *= (const LSObject*) {
@@ -235,7 +238,7 @@ LSValue* LSBoolean::operator / (const LSNumber*) const {
 LSValue* LSBoolean::operator / (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator / (const LSArray*) const {
+LSValue* LSBoolean::operator / (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator / (const LSObject*) const {
@@ -248,7 +251,7 @@ LSValue* LSBoolean::operator / (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSBoolean::operator /= (LSValue* value) const {
+LSValue* LSBoolean::operator /= (LSValue* value) {
 	return value->operator /= (this);
 }
 LSValue* LSBoolean::operator /= (const LSNull*) {
@@ -263,7 +266,7 @@ LSValue* LSBoolean::operator /= (const LSNumber*) {
 LSValue* LSBoolean::operator /= (const LSString*) {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator /= (const LSArray*) {
+LSValue* LSBoolean::operator /= (const LSArray<LSValue*>*) {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator /= (const LSObject*) {
@@ -291,7 +294,7 @@ LSValue* LSBoolean::poww(const LSNumber*) const {
 LSValue* LSBoolean::poww(const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::poww(const LSArray*) const {
+LSValue* LSBoolean::poww(const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::poww(const LSObject*) const {
@@ -305,7 +308,7 @@ LSValue* LSBoolean::poww(const LSClass*) const {
 }
 
 
-LSValue* LSBoolean::pow_eq(LSValue* value) const {
+LSValue* LSBoolean::pow_eq(LSValue* value) {
 	return value->operator /= (this);
 }
 LSValue* LSBoolean::pow_eq(const LSNull*) {
@@ -320,7 +323,7 @@ LSValue* LSBoolean::pow_eq(const LSNumber*) {
 LSValue* LSBoolean::pow_eq(const LSString*) {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::pow_eq(const LSArray*) {
+LSValue* LSBoolean::pow_eq(const LSArray<LSValue*>*) {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::pow_eq(const LSObject*) {
@@ -348,7 +351,7 @@ LSValue* LSBoolean::operator % (const LSNumber*) const {
 LSValue* LSBoolean::operator % (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator % (const LSArray*) const {
+LSValue* LSBoolean::operator % (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator % (const LSObject*) const {
@@ -361,7 +364,7 @@ LSValue* LSBoolean::operator % (const LSClass*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSBoolean::operator %= (LSValue* value) const {
+LSValue* LSBoolean::operator %= (LSValue* value) {
 	return value->operator %= (this);
 }
 LSValue* LSBoolean::operator %= (const LSNull*) {
@@ -376,7 +379,7 @@ LSValue* LSBoolean::operator %= (const LSNumber*) {
 LSValue* LSBoolean::operator %= (const LSString*) {
 	return LSNull::null_var;
 }
-LSValue* LSBoolean::operator %= (const LSArray*) {
+LSValue* LSBoolean::operator %= (const LSArray<LSValue*>*) {
 	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator %= (const LSObject*) {
@@ -404,7 +407,7 @@ bool LSBoolean::operator == (const LSNumber*) const {
 bool LSBoolean::operator == (const LSString*) const {
 	return false;
 }
-bool LSBoolean::operator == (const LSArray*) const {
+bool LSBoolean::operator == (const LSArray<LSValue*>*) const {
 	return false;
 }
 bool LSBoolean::operator == (const LSFunction*) const {
@@ -432,7 +435,7 @@ bool LSBoolean::operator < (const LSNumber*) const {
 bool LSBoolean::operator < (const LSString*) const {
 	return true;
 }
-bool LSBoolean::operator < (const LSArray*) const {
+bool LSBoolean::operator < (const LSArray<LSValue*>*) const {
 	return true;
 }
 bool LSBoolean::operator < (const LSFunction*) const {
@@ -460,7 +463,7 @@ bool LSBoolean::operator > (const LSNumber*) const {
 bool LSBoolean::operator > (const LSString*) const {
 	return false;
 }
-bool LSBoolean::operator > (const LSArray*) const {
+bool LSBoolean::operator > (const LSArray<LSValue*>*) const {
 	return false;
 }
 bool LSBoolean::operator > (const LSFunction*) const {
@@ -488,7 +491,7 @@ bool LSBoolean::operator <= (const LSNumber*) const {
 bool LSBoolean::operator <= (const LSString*) const {
 	return true;
 }
-bool LSBoolean::operator <= (const LSArray*) const {
+bool LSBoolean::operator <= (const LSArray<LSValue*>*) const {
 	return true;
 }
 bool LSBoolean::operator <= (const LSFunction*) const {
@@ -516,7 +519,7 @@ bool LSBoolean::operator >= (const LSNumber*) const {
 bool LSBoolean::operator >= (const LSString*) const {
 	return false;
 }
-bool LSBoolean::operator >= (const LSArray*) const {
+bool LSBoolean::operator >= (const LSArray<LSValue*>*) const {
 	return false;
 }
 bool LSBoolean::operator >= (const LSFunction*) const {
@@ -540,11 +543,11 @@ LSValue** LSBoolean::atL(const LSValue*) {
 	return &LSNull::null_var;
 }
 
-LSValue* LSBoolean::range(const LSValue*, const LSValue*) const {
+LSValue* LSBoolean::range(int, int) const {
 	return this->clone();
 }
 
-LSValue* LSBoolean::rangeL(const LSValue*, const LSValue*) {
+LSValue* LSBoolean::rangeL(int, int) {
 	return this;
 }
 

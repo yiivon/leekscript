@@ -1,5 +1,6 @@
 #include "Array.hpp"
 #include "../../vm/VM.hpp"
+#include "../../vm/value/LSInterval.hpp"
 #include <math.h>
 
 using namespace std;
@@ -37,7 +38,6 @@ void Array::print(ostream& os) const {
 void Array::analyse(SemanticAnalyser* analyser, const Type) {
 
 	constant = true;
-	only_values = true;
 
 	for (Expression key : keys) {
 		key.analyse(analyser, Type::NEUTRAL);
@@ -51,9 +51,6 @@ void Array::analyse(SemanticAnalyser* analyser, const Type) {
 
 		if (ex->constant == false) {
 			constant = false;
-		}
-		if (ex->type.nature != Nature::VALUE) {
-			only_values = false;
 		}
 		if (i > 0 && expressions[i - 1]->type != ex->type) {
 			type.homogeneous = false;
@@ -72,7 +69,6 @@ void Array::analyse(SemanticAnalyser* analyser, const Type) {
 		}
 	}
 
-//	cout << "Array only values : " << only_values << endl;
 //	cout << "Array type : " << type << endl;
 }
 
@@ -89,17 +85,28 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const unsigned pos, c
 	}
 }
 
-LSArray* LSArray_create() {
-	return new LSArray();
+LSArray<LSValue*>* LSArray_create() {
+	return new LSArray<LSValue*>();
 }
-LSArray* LSArray_create_interval(LSValue* a, LSValue* b) {
-	LSArray* interval = new LSArray(true);
-	interval->a = LSNumber::get(floor(((LSNumber*) a)->value));
-	interval->b = LSNumber::get(floor(((LSNumber*) b)->value));
+
+LSArray<int>* LSArray_create_integer() {
+//	cout << "create int array" << endl;
+	return new LSArray<int>();
+}
+
+LSInterval* LSArray_create_interval(LSValue* a, LSValue* b) {
+	LSInterval* interval = new LSInterval();
+	interval->a = floor(((LSNumber*) a)->value);
+	interval->b = floor(((LSNumber*) b)->value);
 	return interval;
 }
-void LSArray_push(LSArray* array, LSValue* value) {
-	array->pushClone(value);
+
+void LSArray_push(LSArray<LSValue*>* array, LSValue* value) {
+	array->push_clone(value);
+}
+
+void LSArray_push_value(LSArray<int>* array, int value) {
+	array->push_clone(value);
 }
 
 jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
@@ -118,16 +125,26 @@ jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	} else {
 
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
-		jit_value_t array = jit_insn_call_native(F, "new", (void*) LSArray_create, sig, {}, 0, JIT_CALL_NOTHROW);
+
+//		cout << type.getElementType() << endl;
+
+		void* create = type.getElementType() == Type::INTEGER ?
+				(void*) LSArray_create_integer : (void*) LSArray_create;
+		void* push = type.getElementType() == Type::INTEGER ?
+				(void*) LSArray_push_value : (void*) LSArray_push;
+		Type t = type.getElementType() == Type::INTEGER ?
+				Type::NEUTRAL : Type::POINTER;
+
+		jit_value_t array = jit_insn_call_native(F, "new", create, sig, {}, 0, JIT_CALL_NOTHROW);
 
 		for (Value* val : expressions) {
 
-			jit_value_t v = val->compile_jit(c, F, Type::POINTER);
+			jit_value_t v = val->compile_jit(c, F, t);
 
 			jit_type_t args[2] = {JIT_POINTER, JIT_POINTER};
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 			jit_value_t args_v[] = {array, v};
-			jit_insn_call_native(F, "push", (void*) LSArray_push, sig, args_v, 2, JIT_CALL_NOTHROW);
+			jit_insn_call_native(F, "push", push, sig, args_v, 2, JIT_CALL_NOTHROW);
 		}
 
 		return array;

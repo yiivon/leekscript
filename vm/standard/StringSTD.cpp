@@ -1,30 +1,48 @@
-#include "StringSTD.hpp"
 #include <sstream>
 #include <vector>
 #include <math.h>
+
+#include "StringSTD.hpp"
+#include "../value/LSNumber.hpp"
+#include "../value/LSArray.hpp"
 
 using namespace std;
 
 StringSTD::StringSTD() : Module("String") {
 
-	method("charAt", Type::STRING, {Type::STRING, Type::INTEGER_P}, (void*) &string_charAt);
-	method("contains", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_contains);
-	method("endsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_endsWith);
-	method("length", Type::INTEGER_P, {Type::STRING}, (void*) &string_length);
-	method("size", Type::INTEGER_P, {Type::STRING}, (void*) &string_size);
-	method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &string_replace);
-	method("reverse", Type::STRING, {Type::STRING}, (void*) &string_reverse);
-	method("substring", Type::STRING, {Type::STRING, Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
-	method("toArray", Type::ARRAY, {Type::STRING}, (void*) &string_toArray);
-	method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
-	method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);
-	method("split", Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_split);
-	method("startsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_startsWith);
+	method("charAt", Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);
+	method("contains", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);
+	method("endsWith", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_endsWith);
+	method("length", Type::INTEGER_P, {}, (void*) &string_length);
+	method("size", Type::INTEGER_P, {}, (void*) &string_size);
+	method("replace", Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
+	method("reverse", Type::STRING, {}, (void*) &string_reverse);
+	method("substring", Type::STRING, {Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
+	method("toArray", Type::ARRAY, {}, (void*) &string_toArray);
+	method("toLower", Type::STRING, {}, (void*) &string_toLower);
+	method("toUpper", Type::STRING, {}, (void*) &string_toUpper);
+	method("split", Type::STRING, {Type::STRING}, (void*) &string_split);
+	method("startsWith", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_startsWith);
 
-	Type map_fun_type = Type::FUNCTION_P;
-	map_fun_type.setArgumentType(0, Type::POINTER);
+	Type map_fun_type = Type::FUNCTION;
+	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
-	method("map", Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map);
+	method("map", Type::STRING, {map_fun_type}, (void*) &string_map);
+
+	static_method("charAt", Type::STRING, {Type::STRING, Type::INTEGER_P}, (void*) &string_charAt);
+	static_method("contains", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_contains);
+	static_method("endsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_endsWith);
+	static_method("length", Type::INTEGER_P, {Type::STRING}, (void*) &string_length);
+	static_method("size", Type::INTEGER_P, {Type::STRING}, (void*) &string_size);
+	static_method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &string_replace);
+	static_method("reverse", Type::STRING, {Type::STRING}, (void*) &string_reverse);
+	static_method("substring", Type::STRING, {Type::STRING, Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
+	static_method("toArray", Type::ARRAY, {Type::STRING}, (void*) &string_toArray);
+	static_method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
+	static_method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);
+	static_method("split", Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_split);
+	static_method("startsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_startsWith);
+	static_method("map", Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map);
 }
 
 StringSTD::~StringSTD() {}
@@ -52,9 +70,9 @@ LSValue* string_length(LSString* string) {
 	return new LSNumber(string->value.size());
 }
 
-LSValue* string_map(const LSString* s, const LSFunction* function) {
+LSValue* string_map(const LSString* s, void* function) {
 	std::string new_string = string("");
-	auto fun = (void* (*)(void*))function->function;
+	auto fun = (void* (*)(void*)) function;
 	for (char v : s->value) {
 		new_string += ((LSString*) fun(new LSString(v)))->value;
 	}
@@ -80,20 +98,20 @@ LSValue* string_size(LSString* string) {
 }
 
 LSValue* string_split(LSString* string, LSString* delimiter) {
-	LSArray* parts = new LSArray();
+	LSArray<LSString*>* parts = new LSArray<LSString*>();
 	if (delimiter->value == "") {
 		for (char c : string->value) {
-			parts->pushNoClone(new LSString(c));
+			parts->push_no_clone(new LSString(c));
 		}
 		return parts;
 	} else {
 		size_t last = 0;
 		size_t pos = 0;
 		while ((pos = string->value.find(delimiter->value, last)) != std::string::npos) {
-			parts->pushNoClone(new LSString(string->value.substr(last, pos - last)));
+			parts->push_no_clone(new LSString(string->value.substr(last, pos - last)));
 			last = pos + delimiter->value.size();
 		}
-		parts->pushNoClone(new LSString(string->value.substr(last)));
+		parts->push_no_clone(new LSString(string->value.substr(last)));
 		return parts;
 	}
 }
@@ -110,9 +128,9 @@ LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length) {
 }
 
 LSValue* string_toArray(const LSString* string) {
-	LSArray* parts = new LSArray();
+	LSArray<LSValue*>* parts = new LSArray<LSValue*>();
 	for (char c : string->value) {
-		parts->pushNoClone(new LSString(c));
+		parts->push_no_clone(new LSString(c));
 	}
 	return parts;
 }

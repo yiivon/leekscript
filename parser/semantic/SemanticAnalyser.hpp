@@ -1,12 +1,19 @@
 #ifndef SEMANTICANALYSER_H_
 #define SEMANTICANALYSER_H_
 
-class Program;
 #include <stack>
 #include <vector>
+#include <map>
+
+class Program;
 class Module;
 class Function;
-#include "../../parser/value/VariableValue.hpp"
+class VariableValue;
+class Context;
+class Value;
+class SemanticAnalyser;
+class Token;
+#include "../../vm/Type.hpp"
 
 enum class VarScope {
 	INTERNAL, GLOBAL, LOCAL, PARAMETER
@@ -23,6 +30,7 @@ public:
 		scope(scope), type(type), index(index), value(value) {}
 
 	void will_take(SemanticAnalyser*, unsigned, const Type&);
+	void will_take_element(SemanticAnalyser*, const Type&);
 	void must_be_pointer(SemanticAnalyser*);
 };
 

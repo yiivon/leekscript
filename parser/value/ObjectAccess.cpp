@@ -1,6 +1,8 @@
 #include "ObjectAccess.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSString.hpp"
+#include "../../vm/value/LSFunction.hpp"
+#include "../../vm/value/LSClass.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../Program.hpp"
 
@@ -24,14 +26,16 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 
 	object->analyse(analyser);
 
-	//cout << "Analyse oo : " << field << " => ";
-	//cout << object->type << endl;
+//	cout << "Analyse oa : " << field << " => ";
+//	cout << object->type << endl;
 
 	// Search direct attributes
 	try {
-		type = object->attr_types.at(field);
+		//type = object->attr_types.at(field);
 		//cout << "Type of " << field << " : " << type << endl;
 	} catch (exception&) {}
+
+//	cout << type << endl;
 
 
 	// Search class attributes
@@ -56,13 +60,20 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 		}
 
 		auto types = analyser->internal_vars[clazz]->attr_types;
+
+//		cout << "search type of " << field << endl;
+
 		if (types.find(field) != types.end()) {
 
-			type = types[field];
-			class_attr = true;
+//			cout << " oa " << field << endl;
+
+			//type = types[field];
+			//class_attr = true;
 
 			// TODO : the attr must be a function here, not working with other types
-			attr_addr = ((LSFunction*) std_class->static_fields[field])->function;
+			//attr_addr = ((LSFunction*) std_class->static_fields[field])->function;
+
+			//attr_addr = std_class->getDefaultMethod(field)->function;
 		}
 	}
 

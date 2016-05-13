@@ -4,6 +4,7 @@
 #include "Foreach.hpp"
 #include "../value/Array.hpp"
 #include "../../vm/value/LSNull.hpp"
+#include "../../vm/value/LSArray.hpp"
 
 using namespace std;
 
@@ -64,28 +65,28 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 extern map<string, jit_value_t> globals;
 
-LSArrayIterator get_array_begin(LSArray* a) {
+LSArrayIterator<LSValue*> get_array_begin(LSArray<LSValue*>* a) {
 	return a->begin();
 }
 
-LSArrayIterator get_array_end(LSArray* a) {
+LSArrayIterator<LSValue*> get_array_end(LSArray<LSValue*>* a) {
 	return a->end();
 }
 
-LSValue* get_array_elem(LSArrayIterator it) {
-	return it->second;
+LSValue* get_array_elem(LSArrayIterator<LSValue*> it) {
+	return *it;
 }
 
-LSValue* get_array_key(LSArrayIterator it) {
-	return it->first;
+LSValue* get_array_key(LSArrayIterator<LSValue*> it) {
+	return *it;
 }
 
-int get_array_elem_int(LSArray* a, int i) {
+int get_array_elem_int(LSArray<LSValue*>* a, int i) {
 	LSValue* v = a->at(LSNumber::get(i));
 	return (int) ((LSNumber*) v)->value;
 }
 
-LSArrayIterator iterator_inc(LSArrayIterator it) {
+LSArrayIterator<LSValue*> iterator_inc(LSArrayIterator<LSValue*> it) {
 	return ++it;
 }
 

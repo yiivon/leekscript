@@ -1,4 +1,5 @@
 #include "ObjectSTD.hpp"
+#include "../value/LSObject.hpp"
 
 ObjectSTD::ObjectSTD() : Module("Object") {
 

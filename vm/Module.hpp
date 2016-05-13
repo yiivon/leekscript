@@ -6,14 +6,28 @@
 #include "Type.hpp"
 #include "../parser/semantic/SemanticAnalyser.hpp"
 #include "../parser/Program.hpp"
+class LSClass;
+
+class Method {
+public:
+	Type type;
+	void* addr;
+	Method(Type return_type, std::initializer_list<Type> args, void* addr) {
+		this->addr = addr;
+		type = {RawType::FUNCTION, Nature::POINTER};
+		type.setReturnType(return_type);
+		for (Type arg : args) {
+			type.addArgumentType(arg);
+		}
+	}
+};
 
 class ModuleMethod {
 public:
 	std::string name;
-	Type type;
-	void* addr;
-	ModuleMethod(std::string name, Type type, void* addr)
-	: name(name), type(type), addr(addr) {}
+	std::vector<Method> impl;
+	ModuleMethod(std::string name, std::vector<Method> impl)
+	: name(name), impl(impl) {}
 };
 
 class ModuleStaticField {
@@ -46,7 +60,12 @@ public:
 	Module(std::string name);
 	virtual ~Module();
 
+	void method(std::string name, std::initializer_list<Method>);
 	void method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
+
+	void static_method(std::string name, std::initializer_list<Method>);
+	void static_method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
+
 	void field(std::string name, Type type);
 	void static_field(std::string name, Type type, std::string value);
 

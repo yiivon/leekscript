@@ -1,9 +1,12 @@
-#include "../../vm/VM.hpp"
+#include "../../vm/LSValue.hpp"
+#include "../../vm/value/LSBoolean.hpp"
+#include "../../vm/value/LSArray.hpp"
 #include "Expression.hpp"
 #include "VariableValue.hpp"
 #include "LeftValue.hpp"
 #include "Number.hpp"
 #include "Function.hpp"
+#include "ArrayAccess.hpp"
 
 using namespace std;
 
@@ -115,6 +118,22 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 
 	if (v1 != nullptr and v2 != nullptr) {
 
+		if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
+			op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
+			op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
+			op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
+
+			type = Type::BOOLEAN;
+		}
+
+		// Array += element
+		if (op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
+			VariableValue* vv = dynamic_cast<VariableValue*>(v1);
+			if (vv->type.raw_type == RawType::ARRAY) {
+				vv->var->will_take_element(analyser, v2->type);
+			}
+		}
+
 		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 			or op->type == TokenType::PLUS or op->type == TokenType::TIMES
 			or op->type == TokenType::MINUS) {
@@ -143,6 +162,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 			type = Type::ARRAY;
 		}
 	}
+
+//	cout << "exp type " << type << endl;
 }
 
 LSValue* jit_not(LSValue* x) {
@@ -153,6 +174,10 @@ LSValue* jit_minus(LSValue* x) {
 }
 LSValue* jit_add(LSValue* x, LSValue* y) {
 	return y->operator + (x);
+}
+LSValue* jit_int_array_add(LSArray<int>* x, LSArray<int>* y) {
+	cout << endl;
+	return x->operator + (y);
 }
 LSValue* jit_sub(LSValue* x, LSValue* y) {
 	return y->operator - (x);
@@ -212,6 +237,11 @@ LSValue* jit_store(LSValue** x, LSValue* y) {
 	return *x = y;
 }
 
+int jit_store_value(int* x, int y) {
+//	cout << "store" << endl;
+	return *x = y;
+}
+
 LSValue* jit_swap(LSValue** x, LSValue** y) {
 	LSValue* tmp = *x;
 	*x = *y;
@@ -221,6 +251,9 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 
 LSValue* jit_add_equal(LSValue* x, LSValue* y) {
 	return y->operator += (x);
+}
+int jit_add_equal_value(int* x, int y) {
+	return *x += y;
 }
 LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
 	return y->operator -= (x);
@@ -237,30 +270,37 @@ LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return y->pow_eq(x);
 }
+int jit_array_add_value(LSArray<int>* x, int v) {
+	x->push_clone(v);
+	return v;
+}
 
-LSArray* jit_tilde_tilde(LSArray* array, LSFunction* fun) {
+LSArray<LSValue*>* jit_tilde_tilde(LSArray<LSValue*>* array, LSFunction* fun) {
 
-	LSArray* new_array = new LSArray();
+	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 
 	typedef int (*FF)(LSValue*);
 	FF f = (FF) fun->function;
-
+/*
+ * TODO
 	for (auto key : array->values) {
 		new_array->pushClone(LSNumber::get(f(key.second)));
 	}
+	*/
 	return new_array;
 }
 
-LSArray* jit_tilde_tilde_pointer(LSArray* array, LSFunction* fun) {
+LSArray<LSValue*>* jit_tilde_tilde_pointer(LSArray<LSValue*>* array, LSFunction* fun) {
 
-	LSArray* new_array = new LSArray();
+	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 
 	typedef LSValue* (*FF)(LSValue*);
 	FF f = (FF) fun->function;
-
+	/*
 	for (auto key : array->values) {
 		new_array->pushClone(f(key.second));
 	}
+	*/
 	return new_array;
 }
 
@@ -274,6 +314,8 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		return v1->compile_jit(c, F, req_type);
 	}
 
+//	cout << "v1 : " << v1->type << ", v2 : " << v2->type << endl;
+
 	jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
 	void* ls_func;
 	bool use_jit_func = v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE;
@@ -284,14 +326,29 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 	switch (op->type) {
 		case TokenType::EQUAL: {
+
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_insn_store(F, x, y);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, y, req_type);
+
+				if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
+
+//					cout << "array access" << endl;
+
+					args.push_back(l1->compile_jit_l(c, F, Type::NEUTRAL));
+					args.push_back(v2->compile_jit(c, F, Type::NEUTRAL));
+					ls_func = (void*) &jit_store_value;
+					v2_conv = Type::NEUTRAL;
+					use_jit_func = false;
+
+				} else {
+
+					jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
+					jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+					jit_insn_store(F, x, y);
+					if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+						return VM::value_to_pointer(F, y, req_type);
+					}
+					return y;
 				}
-				return y;
 			} else if (v1->type.nature == Nature::POINTER) {
 				if (dynamic_cast<VariableValue*>(v1)) {
 					jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
@@ -304,11 +361,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 					ls_func = (void*) &jit_store;
 				}
 			} else {
-				cout << "!!!!!!!!!!" << endl;
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::POINTER);
-				jit_insn_store(F, x, y);
-				return y;
+				throw new runtime_error("value = pointer !");
 			}
 			break;
 		}
@@ -331,6 +384,23 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			break;
 		}
 		case TokenType::PLUS_EQUAL: {
+
+			if (v1->type.raw_type == RawType::ARRAY) {
+//				cout << "Array add " << endl;
+				ls_func = (void*) jit_array_add_value;
+				v2_conv = Type::NEUTRAL;
+				break;
+			}
+
+			if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
+
+				args.push_back(l1->compile_jit_l(c, F, Type::NEUTRAL));
+				args.push_back(v2->compile_jit(c, F, Type::NEUTRAL));
+				ls_func = (void*) &jit_add_equal_value;
+				v2_conv = Type::NEUTRAL;
+				use_jit_func = false;
+				break;
+			}
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
@@ -442,7 +512,11 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::PLUS: {
 			jit_func = &jit_insn_add;
-			ls_func = (void*) &jit_add;
+			if (v1->type == Type::INT_ARRAY and v2->type == Type::INT_ARRAY) {
+				ls_func = (void*) &jit_int_array_add;
+			} else {
+				ls_func = (void*) &jit_add;
+			}
 			break;
 		}
 		case TokenType::MINUS: {
@@ -530,27 +604,9 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 		jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
 		jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-		/*
-		jit_value_t is_int = jit_insn_eq(F,
-			jit_insn_and(F, x, jit_value_create_nint_constant(F, jit_type_int, 2147483648)),
-			jit_value_create_nint_constant(F, jit_type_int, 0)
-		);*/
-/*
-		jit_value_t is_int = jit_insn_eq(F,
-			x,
-			jit_value_create_nint_constant(F, jit_type_int, -55)
-		);
 
-		jit_label_t label_end = jit_label_undefined;
-*/
 		jit_value_t r = jit_func(F, x, y);
-/*
-		jit_insn_branch_if_not(F, is_int, &label_end);
 
-		jit_insn_store(F, x, y);
-
-		jit_insn_label(F, &label_end);
-*/
 		if (req_type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(F, r, conv_info);
 		}
@@ -568,6 +624,10 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		jit_value_t v = jit_insn_call_native(F, "", ls_func, sig, args.data(), 2, JIT_CALL_NOTHROW);
 		if (v1->type.nature == Nature::VALUE and op->type == TokenType::PLUS_EQUAL) {
 			jit_insn_store(F, args[0], v);
+		}
+
+		if (type == Type::BOOLEAN and req_type == Type::BOOLEAN) {
+			return VM::pointer_to_value(F, v, Type::BOOLEAN);
 		}
 		return v;
 	}

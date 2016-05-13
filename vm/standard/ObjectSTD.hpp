@@ -5,6 +5,7 @@
 #include "../../parser/semantic/SemanticAnalyser.hpp"
 #include "../../parser/Program.hpp"
 #include "../Module.hpp"
+class LSObject;
 
 class ObjectSTD : public Module {
 public:

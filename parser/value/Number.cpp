@@ -1,6 +1,7 @@
 #include "../../vm/VM.hpp"
 #include "Number.hpp"
 #include <limits.h>
+#include "../../vm/value/LSNumber.hpp"
 
 using namespace std;
 

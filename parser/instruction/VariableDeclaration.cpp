@@ -1,5 +1,6 @@
 #include "VariableDeclaration.hpp"
-#include "../../vm/VM.hpp"
+#include "../../vm/LSValue.hpp"
+#include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 
 using namespace std;

@@ -4,14 +4,6 @@
 #include <string>
 #include <jit/jit.h>
 
-#include "value/LSNull.hpp"
-#include "value/LSBoolean.hpp"
-#include "value/LSNumber.hpp"
-#include "value/LSString.hpp"
-#include "value/LSArray.hpp"
-#include "value/LSObject.hpp"
-#include "value/LSFunction.hpp"
-#include "value/LSClass.hpp"
 class Module;
 #include "Type.hpp"
 
@@ -45,6 +37,7 @@ public:
 	void* compile(const std::string code);
 
 	static jit_value_t value_to_pointer(jit_function_t&, jit_value_t&, Type);
+	static jit_value_t pointer_to_value(jit_function_t&, jit_value_t&, Type);
 	static jit_value_t new_array(jit_function_t&);
 	// static bool is_number(void* v);
 	static void push_array_value(jit_function_t&, jit_value_t&, jit_value_t&);
