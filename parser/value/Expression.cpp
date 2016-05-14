@@ -176,7 +176,6 @@ LSValue* jit_add(LSValue* x, LSValue* y) {
 	return y->operator + (x);
 }
 LSValue* jit_int_array_add(LSArray<int>* x, LSArray<int>* y) {
-	cout << endl;
 	return x->operator + (y);
 }
 LSValue* jit_sub(LSValue* x, LSValue* y) {
@@ -275,33 +274,12 @@ int jit_array_add_value(LSArray<int>* x, int v) {
 	return v;
 }
 
-LSArray<LSValue*>* jit_tilde_tilde(LSArray<LSValue*>* array, LSFunction* fun) {
-
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-
-	typedef int (*FF)(LSValue*);
-	FF f = (FF) fun->function;
-/*
- * TODO
-	for (auto key : array->values) {
-		new_array->pushClone(LSNumber::get(f(key.second)));
-	}
-	*/
-	return new_array;
+LSArray<LSValue*>* jit_tilde_tilde_int(LSArray<int>* array, LSFunction* fun) {
+	return array->map(fun->function);
 }
 
 LSArray<LSValue*>* jit_tilde_tilde_pointer(LSArray<LSValue*>* array, LSFunction* fun) {
-
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-
-	typedef LSValue* (*FF)(LSValue*);
-	FF f = (FF) fun->function;
-	/*
-	for (auto key : array->values) {
-		new_array->pushClone(f(key.second));
-	}
-	*/
-	return new_array;
+	return array->map(fun->function);
 }
 
 LSValue* jit_in(LSValue* x, LSValue* y) {
@@ -582,8 +560,8 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			break;
 		}
 		case TokenType::TILDE_TILDE: {
-			if (v2->type.getReturnType().nature == Nature::VALUE) {
-				ls_func = (void*) &jit_tilde_tilde;
+			if (v1->type.getElementType() == Type::INTEGER) {
+				ls_func = (void*) &jit_tilde_tilde_int;
 			} else {
 				ls_func = (void*) &jit_tilde_tilde_pointer;
 			}

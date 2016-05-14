@@ -1,5 +1,5 @@
-#ifndef LSMAP_HPP
-#define LSMAP_HPP
+#ifndef LS_MAP_BASE
+#define LS_MAP_BASE
 
 #include "LSArray.hpp"
 
@@ -12,7 +12,7 @@ struct lsvalue_less {
 template <typename T>
 using LSMapIterator = typename std::map<LSValue*, T>::iterator;
 
-template <class T>
+template <typename T>
 class LSMap : public LSArray<T> {
 public:
 
@@ -68,5 +68,9 @@ public:
 
 	std::string json() const override;
 };
+
+#ifndef _GLIBCXX_EXPORT_TEMPLATE
+#include "LSMap.tcc"
+#endif
 
 #endif

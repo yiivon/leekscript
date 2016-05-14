@@ -1,5 +1,5 @@
-#ifndef LS_A_TCC
-#define LS_A_TCC
+#ifndef LS_ARRAY_TCC
+#define LS_ARRAY_TCC
 
 #include "LSNull.hpp"
 #include "LSNumber.hpp"
@@ -323,8 +323,6 @@ LSArray<LSArray<T>*>* LSArray<T>::partition(const void* function) const {
 template <>
 inline LSArray<LSArray<int>*>* LSArray<int>::partition(const void* function) const {
 
-//	std::cout << "partition int" << std::endl;
-
 	LSArray<int>* array_true = new LSArray<int>();
 	LSArray<int>* array_false = new LSArray<int>();
 	auto fun = (bool (*)(int)) function;
@@ -399,7 +397,7 @@ template <class T>
 int LSArray<T>::search(const LSValue* value, const int start) const {
 
 	for (unsigned i = 0; i < this->size(); i++) {
-		if (i < start) continue; // i < start
+		if (i < (unsigned) start) continue; // i < start
 		if (value->operator == (this->operator[] (i))) {
 			return i;
 		}
@@ -412,7 +410,7 @@ inline int LSArray<int>::search(const LSValue* value, const int start) const {
 
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(value)) {
 		for (unsigned i = 0; i < this->size(); i++) {
-			if (i < start) continue; // i < start
+			if (i < (unsigned) start) continue; // i < start
 			if (n->value == this->operator[] (i)) {
 				return i;
 			}
@@ -582,16 +580,12 @@ LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
 template <>
 inline LSValue* LSArray<int>::operator + (const LSArray<LSValue*>*) const {
 
-//	std::cout << "<int> operator + (LSArray<LSValue*>)" << std::endl;
-
 	LSArray<int>* new_array = new LSArray<int>();
 	return new_array;
 }
 
 template <class T>
 LSValue* LSArray<T>::operator + (const LSArray<int>*) const {
-
-//	std::cout << "<T> operator + (LSArray<int>)" << std::endl;
 
 	LSArray<int>* new_array = new LSArray<int>();
 	/*
@@ -603,8 +597,6 @@ LSValue* LSArray<T>::operator + (const LSArray<int>*) const {
 
 template <>
 inline LSValue* LSArray<int>::operator + (const LSArray<int>* array) const {
-
-//	std::cout << "<int> operator + (LSArray<int>)" << std::endl;
 
 	LSArray<int>* new_array = new LSArray<int>();
 	new_array->insert(new_array->end(), this->begin(), this->end());

@@ -1,6 +1,7 @@
 #include "Array.hpp"
 #include "../../vm/VM.hpp"
 #include "../../vm/value/LSInterval.hpp"
+#include "../../vm/value/LSMap.hpp"
 #include <math.h>
 
 using namespace std;
@@ -90,8 +91,11 @@ LSArray<LSValue*>* LSArray_create() {
 }
 
 LSArray<int>* LSArray_create_integer() {
-//	cout << "create int array" << endl;
 	return new LSArray<int>();
+}
+
+LSMap<LSValue*>* LSArray_create_map() {
+	return new LSMap<LSValue*>();
 }
 
 LSInterval* LSArray_create_interval(LSValue* a, LSValue* b) {
@@ -109,6 +113,10 @@ void LSArray_push_value(LSArray<int>* array, int value) {
 	array->push_clone(value);
 }
 
+void Array_push_map(LSMap<LSValue*>* map, LSValue* key, LSValue* value) {
+	map->push_key_clone(key, value);
+}
+
 jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	if (interval) {
@@ -122,11 +130,28 @@ jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 		return jit_insn_call_native(F, "new", (void*) LSArray_create_interval, sig, args_v, 2, JIT_CALL_NOTHROW);
 
-	} else {
+	} else if (associative) {
 
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
 
-//		cout << type.getElementType() << endl;
+		jit_value_t array = jit_insn_call_native(F, "new", (void*) LSArray_create_map, sig, {}, 0, JIT_CALL_NOTHROW);
+
+		for (unsigned i = 0; i < expressions.size(); ++i) {
+
+			jit_value_t v = expressions[i]->compile_jit(c, F, Type::POINTER);
+			jit_value_t k = keys[i]->compile_jit(c, F, Type::POINTER);
+
+			jit_type_t args[3] = {JIT_POINTER, JIT_POINTER, JIT_POINTER};
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 0);
+			jit_value_t args_v[] = {array, k, v};
+			jit_insn_call_native(F, "push", (void*) Array_push_map, sig, args_v, 3, JIT_CALL_NOTHROW);
+		}
+
+		return array;
+
+	} else {
+
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
 
 		void* create = type.getElementType() == Type::INTEGER ?
 				(void*) LSArray_create_integer : (void*) LSArray_create;

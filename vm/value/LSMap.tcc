@@ -1,9 +1,5 @@
-/*
- * LSMap.cpp
- *
- *  Created on: 5 mai 2016
- *      Author: pierre
- */
+#ifndef LS_MAP_TCC
+#define LS_MAP_TCC
 
 #include <exception>
 
@@ -21,6 +17,7 @@ LSMap<T>::LSMap() {
 
 template <class T>
 LSMap<T>::LSMap(initializer_list<pair<LSValue*, T>> values) {
+	cout << "init LSMap" << endl;
 	index = 0;
 	for (auto i : values) {
 		if (i.first->isInteger()) {
@@ -91,6 +88,25 @@ size_t LSMap<T>::size() const {
 }
 
 template <class T>
+double LSMap<T>::sum() const {
+	double sum = 0;
+	for (auto v : this->values) {
+		sum += ((LSNumber*) v.second)->value;
+	}
+	return sum;
+}
+
+template <class T>
+double LSMap<T>::average() const {
+	if (size() == 0) return 0;
+	return this->sum() / size();
+}
+
+
+/*
+ * LSValue common methods
+ */
+template <class T>
 bool LSMap<T>::isTrue() const {
 	return values.size() > 0;
 }
@@ -102,29 +118,29 @@ LSValue* LSMap<T>::operator ! () const {
 
 template <class T>
 LSValue* LSMap<T>::operator + (const LSNull* nulll) const {
-	LSMap* new_map = (LSMap*) this->clone();
-	new_map->push_clone(nulll);
+	LSMap<LSValue*>* new_map = (LSMap<LSValue*>*) this->clone();
+	new_map->push_clone((T) nulll);
 	return new_map;
 }
 
 template <class T>
 LSValue* LSMap<T>::operator + (const LSBoolean* boolean) const {
-	LSMap* new_map = (LSMap*) this->clone();
-	new_map->push_clone(boolean);
+	LSMap<LSValue*>* new_map = (LSMap<LSValue*>*) this->clone();
+	new_map->push_clone((T) boolean);
 	return new_map;
 }
 
 template <class T>
 LSValue* LSMap<T>::operator + (const LSNumber* number) const {
-	LSMap* new_map = (LSMap*) this->clone();
-	new_map->push_clone(number);
+	LSMap<LSValue*>* new_map = (LSMap<LSValue*>*) this->clone();
+	new_map->push_clone((T) number);
 	return new_map;
 }
 
 template <class T>
 LSValue* LSMap<T>::operator + (const LSString* string) const {
-	LSMap* new_map = (LSMap*) this->clone();
-	new_map->push_clone(string);
+	LSMap<LSValue*>* new_map = (LSMap<LSValue*>*) this->clone();
+	new_map->push_clone((T) string);
 	return new_map;
 }
 
@@ -259,7 +275,7 @@ LSValue* LSMap<T>::abso() const {
 template <class T>
 LSValue* LSMap<T>::clone() const {
 
-	LSArray<T>* new_map = new LSArray<T>();
+	LSMap<T>* new_map = new LSMap<T>();
 	new_map->index = index;
 
 	for (auto i = values.begin(); i != values.end(); i++) {
@@ -293,3 +309,4 @@ string LSMap<T>::json() const {
 	return res + "]";
 }
 
+#endif

@@ -148,9 +148,9 @@ void Test::tests() {
 	test("'salut' * 3", "'salutsalutsalut'");
 	test("|'salut'|", "5");
 	test("~'bonjour'", "'ruojnob'");
-	//test("'bonjour'[3]", "'j'");
+	test("'bonjour'[3]", "'j'");
 	test("~('salut' + ' ca va ?')", "'? av ac tulas'");
-	//test("'bonjour'[2:5]", "'njou'");
+	test("'bonjour'[2:5]", "'njou'");
 
 	/*
 	 * Objects
@@ -192,17 +192,17 @@ void Test::tests() {
 	test("(x, y -> x + y)(12, 5)", "17");
 	test("( -> [])()", "[]");
 	test("( -> 12)()", "12");
-	/*
-	test("[-> 12][0]()", "12");
-	test("[-> 12, 'toto'][0]()", "12");
-	test("(x -> x + 12.12)(1.01)", "13.13");
-	test("(x -> x + 12)(1.01)", "13.01");
-	test("[x -> x ^ 2][0](12)", "144");
-	test("[[x -> x ^ 2]][0][0](12)", "144");
-	test("[[[x -> x ^ 2]]][0][0][0](12)", "144");
-	test("[[[[[[[x -> x ^ 2]]]]]]][0][0][0][0][0][0][0](12)", "144");
 
+//	test("[-> 12][0]()", "12");
+//	test("[-> 12, 'toto'][0]()", "12");
+//	test("(x -> x + 12.12)(1.01)", "13.13");
+//	test("(x -> x + 12)(1.01)", "13.01");
+//	test("[x -> x ^ 2][0](12)", "144");
+//	test("[[x -> x ^ 2]][0][0](12)", "144");
+//	test("[[[x -> x ^ 2]]][0][0][0](12)", "144");
+//	test("[[[[[[[x -> x ^ 2]]]]]]][0][0][0][0][0][0][0](12)", "144");
 
+/*
 	test("let a = 5 let f = -> a f()", "5");
 
 	test("let f = x -> x (-> f(12))()", "12");
@@ -267,7 +267,6 @@ void Test::tests() {
 	 * Array operations
 	 */
 	header("Array operations");
-	/*
 	test("[1, 2, 3, 4, 5] ~~ x -> x ^ 2", "[1, 4, 9, 16, 25]");
 	test("[1, 2, 3, 4, 5] ~~ (x -> x ^ 2)", "[1, 4, 9, 16, 25]");
 	test("['yo', 'toto', 'salut'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
@@ -275,7 +274,7 @@ void Test::tests() {
 	test("[1, 2, 3] ~~ x -> 'yo'", "['yo', 'yo', 'yo']");
 	test("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
 	test("[1.2, 321.42, 23.15] ~~ x -> x * 1.7", "[2.04, 546.414, 39.355]");
-	*/
+
 
 	/*
 	 * Intervals
@@ -446,12 +445,15 @@ void Test::tests() {
 
 	test("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "'concat:12310trueyonull'");
 	test("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "16");
+
 //	test("Array.shuffle([1, 2, 3, 10, true, 'yo', null])", "test shuffle ?");
+
 	test("Array.reverse([1, 2, 3, 10, true, 'yo', null])", "[null, 'yo', true, 10, 3, 2, 1]");
 	test("[null].reverse()", "[null]");
 	test("[].reverse()", "[]");
-
+//	test("[1, 2, 3].reverse()", "[3, 2, 1");
 	test("Array.search([1, 2, 3, 10, true, 'yo', null], 10, 0)", "3");
+
 	test("Array.search([1, 2, 3, 4, 5], 5, 0)", "4");
 	test("Array.search([1, 2, 3, 10, true, 'yo', null], 3, 3)", "-1");
 	test("[1, 2, 3, 10, true, 'yo', null].search('yo', 0)", "5");
@@ -497,6 +499,8 @@ void Test::tests() {
 
 	test("let a = [1, 2, 3] a.removeElement(1) a", "[2, 3]");
 	test("let a = [1, 2, 3] a.removeElement('key') a", "[1, 2, 3]");
+
+//	test("let m = {}")
 
 	/*
 	 * Standard library general
