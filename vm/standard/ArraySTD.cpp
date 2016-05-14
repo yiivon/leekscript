@@ -8,20 +8,26 @@ using namespace std;
 ArraySTD::ArraySTD() : Module("Array") {
 
 	method("average", {
-		{Type::FLOAT, {}, (void*) &LSArray<LSValue*>::average}
+		{Type::ARRAY, Type::FLOAT, {}, (void*) &LSArray<LSValue*>::average},
+		{Type::INT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<int>::average}
 	});
 
-	method("max", Type::INTEGER_P, {}, (void*) &array_max);
-	method("min", Type::INTEGER_P, {}, (void*) &array_min);
+	method("max", {
+		{Type::ARRAY, Type::INTEGER_P, {}, (void*) &array_max}
+	});
 
-	method("size", Type::INTEGER_P, {}, (void*) &array_size);
+	method("min", {
+		{Type::ARRAY, Type::INTEGER_P, {}, (void*) &array_min}
+	});
 
-	method("sum", Type::INTEGER_P, {}, (void*) &array_sum);
+	method("size", Type::ARRAY, Type::INTEGER_P, {}, (void*) &array_size);
+
+	method("sum", Type::ARRAY, Type::INTEGER_P, {}, (void*) &array_sum);
 
 	Type map_fun_type = Type::FUNCTION;
 	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
-	method("map", Type::ARRAY, {map_fun_type}, (void*) &array_map);
+	method("map", Type::ARRAY, Type::ARRAY, {map_fun_type}, (void*) &array_map);
 
 	Type map2_fun_type = Type::FUNCTION;
 	map2_fun_type.setArgumentType(0, Type::POINTER);
@@ -34,14 +40,14 @@ ArraySTD::ArraySTD() : Module("Array") {
 	map2_fun_type_int.setReturnType(Type::POINTER);
 
 	method("map2", {
-		{Type::ARRAY, {Type::ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::map2},
-		{Type::ARRAY, {Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::map2_int},
+		{Type::ARRAY, Type::ARRAY, {Type::ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::map2},
+		{Type::ARRAY, Type::ARRAY, {Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::map2_int},
 	});
 
 	Type iter_fun_type = Type::FUNCTION_P;
 	iter_fun_type.setArgumentType(0, Type::POINTER);
 	iter_fun_type.setReturnType(Type::POINTER);
-	method("iter", Type::POINTER, {iter_fun_type},(void*) &array_iter);
+	method("iter", Type::ARRAY, Type::POINTER, {iter_fun_type},(void*) &array_iter);
 
 	Type filter_fun_type = Type::FUNCTION;
 	filter_fun_type.setArgumentType(0, Type::POINTER);
@@ -50,16 +56,16 @@ ArraySTD::ArraySTD() : Module("Array") {
 	filter_fun_type_int.setArgumentType(0, Type::INTEGER);
 	filter_fun_type_int.setReturnType(Type::BOOLEAN);
 	method("filter", {
-		{Type::ARRAY, {filter_fun_type}, (void*) &LSArray<LSValue*>::filter},
-		{Type::ARRAY, {filter_fun_type_int}, (void*) &LSArray<int>::filter},
+		{Type::ARRAY, Type::ARRAY, {filter_fun_type}, (void*) &LSArray<LSValue*>::filter},
+		{Type::ARRAY, Type::ARRAY, {filter_fun_type_int}, (void*) &LSArray<int>::filter},
 	});
 
 	method("contains", {
-		{Type::BOOLEAN, {Type::POINTER}, (void*) &LSArray<LSValue*>::contains},
-		{Type::BOOLEAN, {Type::INTEGER}, (void*) &LSArray<int>::contains_int}
+		{Type::ARRAY, Type::BOOLEAN, {Type::POINTER}, (void*) &LSArray<LSValue*>::contains},
+		{Type::ARRAY, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSArray<int>::contains_int}
 	});
 
-	method("isEmpty",Type::BOOLEAN_P, {}, (void*) &array_isEmpty);
+	method("isEmpty", Type::ARRAY, Type::BOOLEAN_P, {}, (void*) &array_isEmpty);
 
 	Type partition_fun_type = Type::FUNCTION;
 	partition_fun_type.setArgumentType(0, Type::POINTER);
@@ -70,12 +76,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 	partition_fun_type_int.setReturnType(Type::BOOLEAN);
 
 	method("partition", {
-		{Type::ARRAY, {partition_fun_type}, (void*) &LSArray<LSValue*>::partition},
-		{Type::INT_ARRAY, {partition_fun_type_int}, (void*) &LSArray<int>::partition}
+		{Type::ARRAY, Type::ARRAY, {partition_fun_type}, (void*) &LSArray<LSValue*>::partition},
+		{Type::ARRAY, Type::INT_ARRAY, {partition_fun_type_int}, (void*) &LSArray<int>::partition}
 	});
 
-	method("first", Type::POINTER, {}, (void*) &array_first);
-	method("last", Type::POINTER, {}, (void*) &array_last);
+	method("first", Type::ARRAY, Type::POINTER, {}, (void*) &array_first);
+	method("last", Type::ARRAY, Type::POINTER, {}, (void*) &array_last);
 
 	Type fold_fun_type = Type::FUNCTION_P;
 	fold_fun_type.setArgumentType(0, Type::POINTER);
@@ -86,64 +92,64 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_fun_type_int.setArgumentType(1, Type::POINTER);
 	fold_fun_type_int.setReturnType(Type::POINTER);
 	method("foldLeft", {
-		{Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::foldLeft},
-		{Type::POINTER, {fold_fun_type_int, Type::POINTER}, (void*) &array_foldLeft}
+		{Type::ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::foldLeft},
+		{Type::ARRAY, Type::POINTER, {fold_fun_type_int, Type::POINTER}, (void*) &array_foldLeft}
 	});
-	method("foldRight", Type::POINTER, {fold_fun_type, Type::POINTER}, (void*)&array_foldRight);
+	method("foldRight", Type::ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*)&array_foldRight);
 
-	method("shuffle", Type::ARRAY, {}, (void*)&array_shuffle);
+	method("shuffle", Type::ARRAY, Type::ARRAY, {}, (void*)&array_shuffle);
 
 	method("search", {
-		{Type::INTEGER, {Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::search},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::search_int}
+		{Type::ARRAY, Type::INTEGER, {Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::search},
+		{Type::ARRAY, Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::search_int}
 	});
 
 	method("pop", {
-		{Type::POINTER, {}, (void*) &LSArray<LSValue*>::pop}
+		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::pop}
 	});
 
 	method("push", {
-		{Type::ARRAY, {Type::POINTER}, (void*) &LSArray<LSValue*>::push}
+		{Type::ARRAY, Type::ARRAY, {Type::POINTER}, (void*) &LSArray<LSValue*>::push}
 	});
 
 	method("pushAll", {
-		{Type::ARRAY, {Type::ARRAY}, (void*) &LSArray<LSValue*>::push_all},
-		{Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::push_all_int}
+		{Type::ARRAY, Type::ARRAY, {Type::ARRAY}, (void*) &LSArray<LSValue*>::push_all},
+		{Type::ARRAY, Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::push_all_int}
 	});
 
 	method("join", {
-		{Type::STRING, {Type::STRING}, (void*) &LSArray<LSValue*>::join},
+		{Type::ARRAY, Type::STRING, {Type::STRING}, (void*) &LSArray<LSValue*>::join},
 //		{Type::STRING, {Type::STRING}, (void*) &LSArray<int>::join}
 	});
 
-	method("clear", Type::ARRAY, {}, (void*)&array_clear);
+	method("clear", Type::ARRAY, Type::ARRAY, {}, (void*)&array_clear);
 
 	method("fill", {
-		{Type::ARRAY, {Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::fill},
-		{Type::INT_ARRAY, {Type::INTEGER_P, Type::INTEGER}, (void*) &LSArray<int>::fill}
+		{Type::ARRAY, Type::ARRAY, {Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::fill},
+		{Type::ARRAY, Type::INT_ARRAY, {Type::INTEGER_P, Type::INTEGER}, (void*) &LSArray<int>::fill}
 	});
 
 	method("insert", {
-		{Type::ARRAY, {Type::POINTER, Type::POINTER}, (void*) &LSArray<LSValue*>::insert_v},
-		{Type::INT_ARRAY, {Type::INTEGER, Type::POINTER}, (void*) &LSArray<int>::insert_v}
+		{Type::ARRAY, Type::ARRAY, {Type::POINTER, Type::POINTER}, (void*) &LSArray<LSValue*>::insert_v},
+		{Type::ARRAY, Type::INT_ARRAY, {Type::INTEGER, Type::POINTER}, (void*) &LSArray<int>::insert_v}
 	});
 
 	method("remove", {
-		{Type::POINTER, {Type::POINTER}, (void*)&LSArray<LSValue*>::remove}
+		{Type::ARRAY, Type::POINTER, {Type::POINTER}, (void*)&LSArray<LSValue*>::remove}
 	});
 
 	method("removeKey", {
-		{Type::POINTER, {Type::POINTER}, (void*)&LSArray<LSValue*>::remove_key}
+		{Type::ARRAY, Type::POINTER, {Type::POINTER}, (void*)&LSArray<LSValue*>::remove_key}
 	});
 
 	method("removeElement", {
-		{Type::POINTER, {Type::POINTER}, (void*)&LSArray<LSValue*>::remove_element},
-		{Type::INTEGER, {Type::INTEGER}, (void*)&LSArray<int>::remove_element},
+		{Type::ARRAY, Type::POINTER, {Type::POINTER}, (void*)&LSArray<LSValue*>::remove_element},
+		{Type::ARRAY, Type::INTEGER, {Type::INTEGER}, (void*)&LSArray<int>::remove_element},
 	});
 
 	method("reverse", {
-		{Type::ARRAY, {}, (void*) &LSArray<LSValue*>::reverse},
-		{Type::INT_ARRAY, {}, (void*) &LSArray<int>::reverse},
+		{Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::reverse},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::reverse},
 	});
 
 	/*

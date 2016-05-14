@@ -10,25 +10,28 @@ using namespace std;
 
 StringSTD::StringSTD() : Module("String") {
 
-	method("charAt", Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);
-	method("contains", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);
-	method("endsWith", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_endsWith);
-	method("length", Type::INTEGER_P, {}, (void*) &string_length);
-	method("size", Type::INTEGER_P, {}, (void*) &string_size);
-	method("replace", Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
-	method("reverse", Type::STRING, {}, (void*) &string_reverse);
-	method("substring", Type::STRING, {Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
-	method("toArray", Type::ARRAY, {}, (void*) &string_toArray);
-	method("toLower", Type::STRING, {}, (void*) &string_toLower);
-	method("toUpper", Type::STRING, {}, (void*) &string_toUpper);
-	method("split", Type::STRING, {Type::STRING}, (void*) &string_split);
-	method("startsWith", Type::BOOLEAN_P, {Type::STRING}, (void*) &string_startsWith);
+	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);
+	method("contains", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);
+	method("endsWith", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_endsWith);
+	method("length", Type::STRING, Type::INTEGER_P, {}, (void*) &string_length);
+	method("size", Type::STRING, Type::INTEGER_P, {}, (void*) &string_size);
+	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
+	method("reverse", Type::STRING, Type::STRING, {}, (void*) &string_reverse);
+	method("substring", Type::STRING, Type::STRING, {Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
+	method("toArray", Type::STRING, Type::ARRAY, {}, (void*) &string_toArray);
+	method("toLower", Type::STRING, Type::STRING, {}, (void*) &string_toLower);
+	method("toUpper", Type::STRING, Type::STRING, {}, (void*) &string_toUpper);
+	method("split", Type::STRING, Type::STRING, {Type::STRING}, (void*) &string_split);
+	method("startsWith", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_startsWith);
 
 	Type map_fun_type = Type::FUNCTION;
 	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
-	method("map", Type::STRING, {map_fun_type}, (void*) &string_map);
+	method("map", Type::STRING, Type::STRING, {map_fun_type}, (void*) &string_map);
 
+	/*
+	 * Static methods
+	 */
 	static_method("charAt", Type::STRING, {Type::STRING, Type::INTEGER_P}, (void*) &string_charAt);
 	static_method("contains", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_contains);
 	static_method("endsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_endsWith);

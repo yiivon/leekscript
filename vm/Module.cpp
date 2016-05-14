@@ -53,16 +53,16 @@ void Module::method(string name, initializer_list<Method> impl) {
 	methods.push_back(ModuleMethod(name, impl));
 }
 
-void Module::method(string name, Type return_type, initializer_list<Type> args, void* addr) {
-	methods.push_back(ModuleMethod(name, {{return_type, args, addr}}));
+void Module::method(string name, Type obj_type, Type return_type, initializer_list<Type> args, void* addr) {
+	methods.push_back(ModuleMethod(name, {{obj_type, return_type, args, addr}}));
 }
 
-void Module::static_method(string name, initializer_list<Method> impl) {
-	static_methods.push_back(ModuleMethod(name, impl));
+void Module::static_method(string name, initializer_list<StaticMethod> impl) {
+	static_methods.push_back(ModuleStaticMethod(name, impl));
 }
 
 void Module::static_method(string name, Type return_type, initializer_list<Type> args, void* addr) {
-	static_methods.push_back(ModuleMethod(name, {{return_type, args, addr}}));
+	static_methods.push_back(ModuleStaticMethod(name, {{return_type, args, addr}}));
 }
 
 void Module::generate_doc(ostream& os, string translation_file) {

@@ -1558,8 +1558,9 @@ inline LSValue* LSArray<int>::operator += (const LSNumber* number) {
 }
 
 template <class T>
-double LSArray<T>::sum() const {
-	double sum = 0;
+T LSArray<T>::sum() const {
+	if (size() == 0) return new T();
+	T sum;
 	for (auto v : *this) {
 		sum += ((LSNumber*) v)->value;
 	}
@@ -1567,8 +1568,8 @@ double LSArray<T>::sum() const {
 }
 
 template <>
-inline double LSArray<int>::sum() const {
-	double sum = 0;
+inline int LSArray<int>::sum() const {
+	int sum = 0;
 	for (auto v : *this) {
 		sum += v;
 	}

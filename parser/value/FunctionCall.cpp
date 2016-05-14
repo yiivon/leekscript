@@ -115,7 +115,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 				LSClass* object_class = (LSClass*) analyser->program->system_vars[clazz];
 
-				Method* m = object_class->getStaticMethod(oa->field, arg_types);
+				StaticMethod* m = object_class->getStaticMethod(oa->field, arg_types);
 
 				if (m != nullptr) {
 //					cout << "method : " << m->addr << endl;
@@ -127,9 +127,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 			} else { // "salut".size()
 
+//				cout << "obj type : " << object_type << endl;
+
 				LSClass* object_class = (LSClass*) analyser->program->system_vars[object_type.clazz];
 
-				Method* m = object_class->getMethod(oa->field, arg_types);
+				Method* m = object_class->getMethod(oa->field, object_type, arg_types);
 
 				if (m != nullptr) {
 //					cout << "method : " << m->addr << " : " << m->type << endl;

@@ -42,7 +42,7 @@ public:
 	T remove_element(T element);
 	LSValue* pop();
 	virtual size_t size() const;
-	virtual double sum() const;
+	virtual T sum() const;
 	virtual double average() const;
 	virtual T first() const;
 	virtual T last() const;

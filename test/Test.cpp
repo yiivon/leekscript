@@ -411,14 +411,26 @@ void Test::tests() {
 	test("Array()", "[]");
 	test("new Array", "[]");
 	test("new Array()", "[]");
+
 	test("Array.size([1, 'yo', true])", "3");
+	test("Array.size([6, 4, 3, 2, -11])", "5");
 	test("[1, 'yo', true].size()", "3");
+	test("[1, -2, 3, -12, -6].size()", "5");
+
 	test("Array.average([1, 2, 3, 4, 5, 6])", "3.5");
 	test("Array.average([])", "0");
+
+	test("Array.sum([10, -5, 30, 66])", "101");
+	test("[10, -5, 30, 66].sum()", "101");
+//	test("Array.sum(['ab', 'cd', 'ef'])", "'abcdef'");
+//	test("['ab', 'cd', 'ef'].sum()", "'abcdef'");
+
 	test("Array.map([1, 2, 3], x -> x ^ 2)", "[1, 4, 9]");
 	test("[3, 4, 5].map(x -> x ^ 2)", "[9, 16, 25]");
-	test("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))", "[13, 'yo 55', [9]]");
 	test("[321, 213, 121].map(x -> x ^ 2).size()", "3");
+
+	test("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))", "[13, 'yo 55', [9]]");
+
 	test("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
 	test("[3, 4, 5].filter(x -> x > 6)", "[]");
 	test("Array.contains([1, 2, 3, 10, 1], 1)", "true");
@@ -451,7 +463,7 @@ void Test::tests() {
 	test("Array.reverse([1, 2, 3, 10, true, 'yo', null])", "[null, 'yo', true, 10, 3, 2, 1]");
 	test("[null].reverse()", "[null]");
 	test("[].reverse()", "[]");
-//	test("[1, 2, 3].reverse()", "[3, 2, 1");
+	test("[1, 2, 3].reverse()", "[3, 2, 1]");
 	test("Array.search([1, 2, 3, 10, true, 'yo', null], 10, 0)", "3");
 
 	test("Array.search([1, 2, 3, 4, 5], 5, 0)", "4");

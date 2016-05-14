@@ -28,7 +28,7 @@ void LSClass::addMethod(string& name, vector<Method>& method) {
 	methods.insert({name, method});
 }
 
-void LSClass::addStaticMethod(string& name, vector<Method>& method) {
+void LSClass::addStaticMethod(string& name, vector<StaticMethod>& method) {
 	static_methods.insert({name, method});
 
 	// Add first implementation as default method
@@ -44,16 +44,20 @@ void LSClass::addStaticField(string name, LSValue* value) {
 	static_fields.insert({name, value});
 }
 
-Method* LSClass::getMethod(string& name, vector<Type>& args) {
+Method* LSClass::getMethod(string& name, Type obj_type, vector<Type>& args) {
 	try {
 		vector<Method>& impl = methods.at(name);
 		Method* best = nullptr;
 		for (auto& m : impl) {
 //			cout << "Test impl : " << m.type << endl;
-			if (Type::list_compatible(m.type.arguments_types, args)) {
+
+			if (m.obj_type.compatible(obj_type) and Type::list_compatible(m.type.arguments_types, args)) {
 //				cout << "Impl good : " << m.type << endl;
-				if (best == nullptr or Type::list_more_specific(best->type.arguments_types, m.type.arguments_types)) {
+				if (best == nullptr or
+					Type::list_more_specific(best->type.arguments_types, m.type.arguments_types) or
+					Type::more_specific(m.obj_type, best->obj_type)) {
 					best = &m;
+//					cout << "best : " << m.type << endl;
 				}
 			}
 		}
@@ -63,10 +67,10 @@ Method* LSClass::getMethod(string& name, vector<Type>& args) {
 	}
 }
 
-Method* LSClass::getStaticMethod(string& name, vector<Type>& args) {
+StaticMethod* LSClass::getStaticMethod(string& name, vector<Type>& args) {
 	try {
-		vector<Method>& impl = static_methods.at(name);
-		Method* best = nullptr;
+		vector<StaticMethod>& impl = static_methods.at(name);
+		StaticMethod* best = nullptr;
 		for (auto& m : impl) {
 //			cout << "Test impl : " << m.type << endl;
 			if (Type::list_compatible(m.type.arguments_types, args)) {
