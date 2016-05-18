@@ -88,18 +88,20 @@ size_t LSMap<T>::size() const {
 }
 
 template <class T>
-double LSMap<T>::sum() const {
-	double sum = 0;
-	for (auto v : this->values) {
-		sum += ((LSNumber*) v.second)->value;
-	}
-	return sum;
+T LSMap<T>::sum() const {
+//	double sum = 0;
+//	for (auto v : this->values) {
+//		sum += ((LSNumber*) v.second)->value;
+//	}
+//	return sum;
+	return (T) LSNull::null_var;
 }
 
 template <class T>
 double LSMap<T>::average() const {
 	if (size() == 0) return 0;
-	return this->sum() / size();
+//	return this->sum() / size();
+	return 0;
 }
 
 

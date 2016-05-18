@@ -10,6 +10,20 @@
 
 using namespace std;
 
+int LSValue::obj_count = 0;
+int LSValue::obj_deleted = 0;
+
+LSValue::LSValue() {
+//	cout << "LSValue()" << endl;
+	obj_count++;
+}
+
+LSValue::~LSValue() {
+//	cout << "~LSValue()" << endl;
+	obj_count--;
+	obj_deleted++;
+}
+
 std::ostream& operator << (std::ostream& os, LSValue& value) {
 	cout << "print LSValue" << endl;
 	value.print(os);

@@ -9,6 +9,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	method("average", {
 		{Type::ARRAY, Type::FLOAT, {}, (void*) &LSArray<LSValue*>::average},
+		{Type::FLOAT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<double>::average},
 		{Type::INT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<int>::average}
 	});
 
@@ -22,7 +23,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	method("size", Type::ARRAY, Type::INTEGER_P, {}, (void*) &array_size);
 
-	method("sum", Type::ARRAY, Type::INTEGER_P, {}, (void*) &array_sum);
+	method("sum", {
+		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::sum},
+		{Type::FLOAT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<double>::sum},
+		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::sum}
+	});
 
 	Type map_fun_type = Type::FUNCTION;
 	map_fun_type.setArgumentType(0, Type::STRING);
@@ -156,13 +161,19 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Static methods
 	 */
 	static_method("average", {
-		{Type::FLOAT, {Type::ARRAY}, (void*) &LSArray<LSValue*>::average}
+		{Type::FLOAT, {Type::ARRAY}, (void*) &LSArray<LSValue*>::average},
+		{Type::FLOAT, {Type::INT_ARRAY}, (void*) &LSArray<int>::average}
 	});
 
 	static_method("max", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_max);
 	static_method("min", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_min);
 	static_method("size", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_size);
-	static_method("sum", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_sum);
+
+	static_method("sum", {
+		{Type::POINTER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::sum},
+		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::sum}
+	});
+
 	static_method("map", Type::ARRAY, {Type::ARRAY, map_fun_type}, (void*) &array_map);
 
 	static_method("map2", {
@@ -190,14 +201,17 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	static_method("first", Type::POINTER, {Type::ARRAY}, (void*)&array_first);
 	static_method("last", Type::POINTER, {Type::ARRAY}, (void*)&array_last);
+
 	static_method("foldLeft", {
 		{Type::POINTER, {Type::ARRAY, fold_fun_type, Type::POINTER}, (void*) &array_foldLeft},
 		{Type::POINTER, {Type::ARRAY, fold_fun_type_int, Type::POINTER}, (void*) &array_foldLeft}
 	});
+
 	static_method("foldRight", {
 		{Type::POINTER, {Type::ARRAY, fold_fun_type, Type::POINTER}, (void*)&array_foldRight},
 		{Type::POINTER, {Type::ARRAY, fold_fun_type_int, Type::POINTER}, (void*)&array_foldRight}
 	});
+
 	static_method("reverse", Type::ARRAY, {Type::ARRAY}, (void*) &array_reverse);
 	static_method("shuffle", Type::ARRAY, {Type::ARRAY}, (void*)&array_shuffle);
 
@@ -328,7 +342,7 @@ LSArray<LSValue*>* array_map(const LSArray<int>* array, const void* function) {
 	return array->map(function);
 }
 
-LSValue* array_max(const LSArray<LSValue*>* array) {
+LSValue* array_max(const LSArray<LSValue*>*) {
 	/*
 	if (array->values.size() == 0) {
 		return LSNumber::get(0);
@@ -348,7 +362,7 @@ LSValue* array_max(const LSArray<LSValue*>* array) {
 	return LSNumber::get(0);
 }
 
-LSValue* array_min(const LSArray<LSValue*>* array) {
+LSValue* array_min(const LSArray<LSValue*>*) {
 	/*
 	if (array->values.size() == 0) {
 		return LSNumber::get(0);
@@ -373,7 +387,7 @@ LSValue* array_pushAll(LSArray<LSValue*>* array, const LSArray<LSValue*>* elemen
 	return array;
 }
 
-LSValue* array_remove(LSArray<LSValue*>* array, const LSValue* index) {
+LSValue* array_remove(LSArray<LSValue*>*, const LSValue*) {
 	/*
 	if (not array->associative and index->isInteger() and ((LSNumber*)index)->value < array ->index and ((LSNumber*)index)->value >= 0) {
 		return array->remove((LSNumber*) index);
@@ -384,7 +398,7 @@ LSValue* array_remove(LSArray<LSValue*>* array, const LSValue* index) {
 	return LSNull::null_var;
 }
 
-LSValue* array_removeElement(LSArray<LSValue*>* array, const LSValue* element) {
+LSValue* array_removeElement(LSArray<LSValue*>*, const LSValue*) {
 	/*
 	for (auto i = array->values.begin(); i != array->values.end(); i++) {
 		if (i->second->operator ==(element)){
@@ -397,7 +411,7 @@ LSValue* array_removeElement(LSArray<LSValue*>* array, const LSValue* element) {
 		}
 	}
 	*/
-	return array;
+	return LSNull::null_var;
 }
 
 LSValue* array_removeKey(LSArray<LSValue*>* array, const LSValue* index) {
@@ -408,7 +422,7 @@ LSValue* array_reverse(const LSArray<LSValue*>* array) {
 	return array->reverse();
 }
 
-LSValue* array_search(const LSArray<LSValue*>* array, const LSValue* value, const LSValue* start) {
+LSValue* array_search(const LSArray<LSValue*>*, const LSValue*, const LSValue*) {
 	/*
 	for (auto i = array->values.begin(); i != array->values.end(); i++) {
 		if (start->operator < (i->first)) continue; // i < start
@@ -424,7 +438,7 @@ LSValue* array_shift(const LSArray<LSValue*>*) {
 	return new LSArray<LSValue*>();
 }
 
-LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>* array) {
+LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>*) {
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	/*
 	if (array->values.empty()) {
@@ -451,8 +465,9 @@ LSArray<LSValue*>* array_sort(const LSArray<LSValue*>*, const LSNumber*) {
 	return new LSArray<LSValue*>();
 }
 
-LSValue* array_sum(const LSArray<LSValue*>* array) {
-	return LSNumber::get(array->sum());
+LSValue* array_sum(const LSArray<LSValue*>*) {
+//	return LSNumber::get(array->sum());
+	return LSNumber::get(0);
 }
 
 LSValue* array_unshift(const LSArray<LSValue*>*, const LSValue*) {

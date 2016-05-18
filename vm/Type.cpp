@@ -34,6 +34,7 @@ const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
+const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
@@ -45,7 +46,6 @@ Type::Type() {
 	raw_type = RawType::UNKNOWN;
 	nature = Nature::UNKNOWN;
 	clazz = "?";
-	homogeneous = true;
 }
 
 Type::Type(const Type& type) {
@@ -55,21 +55,18 @@ Type::Type(const Type& type) {
 	this->arguments_types = type.arguments_types;
 	this->clazz = raw_type->getName();
 	this->element_type = type.element_type;
-	this->homogeneous = type.homogeneous;
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->clazz = raw_type->getName();
-	this->homogeneous = true;
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->clazz = raw_type->getName();
-	this->homogeneous = true;
 	this->setElementType(elements_type);
 }
 
@@ -126,10 +123,6 @@ void Type::setElementType(Type type) {
 	} else {
 		element_type[0] = type;
 	}
-}
-
-bool Type::isHomogeneous() const {
-	return homogeneous;
 }
 
 /*
@@ -193,7 +186,6 @@ bool Type::operator == (const Type& type) const {
 	if (this->return_types != type.return_types) return false;
 	if (this->arguments_types != type.arguments_types) return false;
 
-	if (this->homogeneous != type.homogeneous) return false;
 	if (this->element_type.size() > 0 and type.element_type.size() > 0 and
 		this->element_type != type.element_type) return false;
 
@@ -204,11 +196,24 @@ bool Type::compatible(const Type& type) const {
 
 //	cout << "COMPATIBLE : " << type << " with " << *this << endl;
 
-	if (this->nature == Nature::VALUE && type.nature == Nature::POINTER) return false;
+	// A pointer type is not compatible with a value type
+	if (this->nature == Nature::VALUE && type.nature == Nature::POINTER) {
+		return false;
+	}
 
 	if (this->raw_type != type.raw_type) {
 
-		if (this->raw_type == RawType::UNKNOWN) return true;
+		// Every type is compatible with 'Unknown' type
+		if (this->raw_type == RawType::UNKNOWN) {
+			return true;
+		}
+
+		// 'Integer' is compatible with 'Float'
+		if (this->raw_type == RawType::FLOAT and type.raw_type == RawType::INTEGER) {
+			return true;
+		}
+
+		// All numbers types are compatible with the base 'Number' type
 		if (this->raw_type == RawType::NUMBER and (
 			type.raw_type == RawType::INTEGER or
 			type.raw_type == RawType::LONG or
@@ -294,6 +299,27 @@ bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Ty
 	return false;
 }
 
+Type Type::get_compatible_type(Type& t1, Type& t2) {
+
+	if (t1 == t2) {
+		return t1;
+	}
+
+	if (t1.raw_type == RawType::UNKNOWN) {
+		return t2;
+	}
+	if (t2.raw_type == RawType::UNKNOWN) {
+		return t1;
+	}
+	if (t1.compatible(t2)) {
+		return t1;
+	}
+	if (t2.compatible(t1)) {
+		return t2;
+	}
+	return Type::POINTER;
+}
+
 void Type::toJson(ostream& os) const {
 	os << "{\"type\":\"" << raw_type->getJsonName() << "\"";
 
@@ -325,11 +351,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		os << ", returns: " << type.getReturnType();
 	}
 	if (type.raw_type == RawType::ARRAY) {
-		if (type.homogeneous) {
-			os << ", elements: " << type.getElementType();
-		} else {
-			os << ", heterogeneous";
-		}
+		os << ", elements: " << type.getElementType();
 	}
 	os << "}";
 	return os;

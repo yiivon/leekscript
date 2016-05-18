@@ -31,9 +31,8 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type) {
 	key->analyse(analyser);
 	constant = array->constant and key->constant;
 
-	if (array->type.raw_type == RawType::ARRAY and array->type.homogeneous) {
+	if (array->type.raw_type == RawType::ARRAY) {
 		type = array->type.getElementType();
-//		type.nature = Nature::POINTER;
 	}
 
 //	cout << "array access " << type << endl;

@@ -34,7 +34,7 @@ public:
 	LSValue* remove_key(LSValue* key);
 	virtual void clear();
 	size_t size() const override;
-	double sum() const override;
+	T sum() const override;
 	double average() const override;
 
 	/*

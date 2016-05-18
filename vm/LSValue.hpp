@@ -21,7 +21,11 @@ class Context;
 class LSValue {
 public:
 
-	virtual ~LSValue() = 0;
+	static int obj_count;
+	static int obj_deleted;
+
+	LSValue();
+	virtual ~LSValue();
 
 	virtual bool isTrue() const = 0;
 
@@ -237,8 +241,6 @@ public:
 
 	static LSValue* parse(JsonValue& json);
 };
-
-inline LSValue::~LSValue() { }
 
 #endif
 

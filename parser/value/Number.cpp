@@ -41,6 +41,7 @@ jit_value_t Number::compile_jit(Compiler&, jit_function_t& F, Type req_type) con
 		jit_type_t type = isfloat ? JIT_FLOAT : JIT_INTEGER;
 
 		if (isfloat) {
+//			cout << "number float " << value << endl;
 			return JIT_CREATE_CONST_FLOAT(F, type, value);
 		} else {
 			return JIT_CREATE_CONST(F, type, value);

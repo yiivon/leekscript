@@ -113,6 +113,7 @@ void Test::tests() {
 	test("[]", "[]");
 	test("[1]", "[1]");
 	test("[1, 2, 3]", "[1, 2, 3]");
+	test("[1.21, -5, 4.55, 12, -6.7]", "[1.21, -5, 4.55, 12, -6.7]");
 	test("[1, 2, 3] + [4, 5, 6]", "[1, 2, 3, 4, 5, 6]");
 	test("[] + 1", "[1]");
 	test("[] + 1 + 2 + 3", "[1, 2, 3]");
@@ -272,8 +273,8 @@ void Test::tests() {
 	test("['yo', 'toto', 'salut'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
 	test("[1, 2, 3] ~~ x -> [x]", "[[1], [2], [3]]");
 	test("[1, 2, 3] ~~ x -> 'yo'", "['yo', 'yo', 'yo']");
-	test("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
-	test("[1.2, 321.42, 23.15] ~~ x -> x * 1.7", "[2.04, 546.414, 39.355]");
+//	test("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
+//	test("[1.2, 321.42, 23.15] ~~ x -> x * 1.7", "[2.04, 546.414, 39.355]");
 
 
 	/*
@@ -419,11 +420,17 @@ void Test::tests() {
 
 	test("Array.average([1, 2, 3, 4, 5, 6])", "3.5");
 	test("Array.average([])", "0");
+	test("[1, 2, 3, 4, 5, 6].average()", "3.5");
+	test("[].average()", "0");
+	test("['salut', true, []].average()", "0");
+	test("[10, -5.7, 30.89, 66].average()", "25.2975");
 
 	test("Array.sum([10, -5, 30, 66])", "101");
 	test("[10, -5, 30, 66].sum()", "101");
-//	test("Array.sum(['ab', 'cd', 'ef'])", "'abcdef'");
-//	test("['ab', 'cd', 'ef'].sum()", "'abcdef'");
+	test("Array.sum(['ab', 'cd', 'ef'])", "'abcdef'");
+	test("['ab', 'cd', 'ef'].sum()", "'abcdef'");
+	test("['abc', true, 12, [1, 2]].sum()", "'abctrue12<array>'");
+	test("[10, -5.7, 30.89, 66].sum()", "101.19");
 
 	test("Array.map([1, 2, 3], x -> x ^ 2)", "[1, 4, 9]");
 	test("[3, 4, 5].map(x -> x ^ 2)", "[9, 16, 25]");
@@ -571,6 +578,9 @@ void Test::tests() {
 	cout << "Total : " << total << ", succès : " << success << ", erreurs : " << (total - success) << endl;
 	cout << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms" << endl;
 	cout << "------------------------------------------------" << endl;
+
+	cout << "Obj count: " << LSValue::obj_count << endl;
+	cout << "Obj deleted: " << LSValue::obj_deleted << endl;
 }
 
 void Test::header(string text) {

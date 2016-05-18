@@ -19,6 +19,11 @@ inline void LSArray<int>::push_clone(const int value) {
 	this->push_back(value);
 }
 
+template <>
+inline void LSArray<double>::push_clone(const double value) {
+	this->push_back(value);
+}
+
 template <class T>
 LSArray<T>::LSArray() {}
 
@@ -59,14 +64,14 @@ T LSArray<T>::remove(const int index) {
 }
 
 template <class T>
-T LSArray<T>::remove_key(LSValue* key) {
+T LSArray<T>::remove_key(LSValue*) {
 	// TODO : move all indices after index to the left ?
 	// or transform the array into a associative one
 	return LSNull::null_var;
 }
 
 template <class T>
-T LSArray<T>::remove_element(T element) {
+T LSArray<T>::remove_element(T) {
 	// TODO : move all indices after index to the left ?
 	// or transform the array into a associative one
 	return LSNull::null_var;
@@ -89,9 +94,48 @@ inline size_t LSArray<T>::size() const {
 }
 
 template <class T>
+T LSArray<T>::sum() const {
+	if (size() == 0) return (T) LSNumber::get(0);
+	LSValue* sum = this->operator [] (0);
+	for (unsigned i = 1; i < this->size(); ++i) {
+		sum = this->operator [] (i)->operator + (sum);
+	}
+	return (T) sum;
+}
+
+template <>
+inline int LSArray<int>::sum() const {
+	int sum = 0;
+	for (auto v : *this) {
+		sum += v;
+	}
+	return sum;
+}
+
+template <>
+inline double LSArray<double>::sum() const {
+	double sum = 0;
+	for (auto v : *this) {
+		sum += v;
+	}
+	return sum;
+}
+
+template <class T>
 double LSArray<T>::average() const {
+	return 0; // No average for a no integer array
+}
+
+template <>
+inline double LSArray<double>::average() const {
 	if (size() == 0) return 0;
 	return this->sum() / size();
+}
+
+template <>
+inline double LSArray<int>::average() const {
+	if (size() == 0) return 0;
+	return (double) this->sum() / size();
 }
 
 template <class T>
@@ -423,7 +467,7 @@ template <>
 inline int LSArray<int>::search_int(const int value, const int start) const {
 
 	for (unsigned i = 0; i < this->size(); i++) {
-		if (i < start) continue; // i < start
+		if (i < (unsigned) start) continue; // i < start
 		if (value == (this->operator[] (i))) {
 			return i;
 		}
@@ -540,6 +584,11 @@ inline LSValue* LSArray<int>::operator + (const LSNull*) const {
 	return clone();
 }
 
+template <>
+inline LSValue* LSArray<double>::operator + (const LSNull*) const {
+	return clone();
+}
+
 template <class T>
 LSValue* LSArray<T>::operator + (const LSBoolean*) const {
 	LSArray* new_array = (LSArray*) clone();
@@ -556,6 +605,13 @@ LSValue* LSArray<T>::operator + (const LSNumber* v) const {
 
 template <>
 inline LSValue* LSArray<int>::operator + (const LSNumber* number) const {
+	LSArray* new_array = (LSArray*) clone();
+	new_array->push_clone(number->value);
+	return new_array;
+}
+
+template <>
+inline LSValue* LSArray<double>::operator + (const LSNumber* number) const {
 	LSArray* new_array = (LSArray*) clone();
 	new_array->push_clone(number->value);
 	return new_array;
@@ -579,6 +635,13 @@ LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
 
 template <>
 inline LSValue* LSArray<int>::operator + (const LSArray<LSValue*>*) const {
+
+	LSArray<int>* new_array = new LSArray<int>();
+	return new_array;
+}
+
+template <>
+inline LSValue* LSArray<double>::operator + (const LSArray<LSValue*>*) const {
 
 	LSArray<int>* new_array = new LSArray<int>();
 	return new_array;
@@ -714,9 +777,13 @@ LSValue* LSArray<T>::operator - (const LSNumber* number) const {
 
 template <>
 inline LSValue* LSArray<int>::operator - (const LSNumber*) const {
-
 	LSArray<int>* copy = (LSArray<int>*) clone();
+	return copy;
+}
 
+template <>
+inline LSValue* LSArray<double>::operator - (const LSNumber*) const {
+	LSArray<int>* copy = (LSArray<int>*) clone();
 	return copy;
 }
 
@@ -1210,6 +1277,23 @@ inline bool LSArray<int>::operator == (const LSArray<LSValue*>* v) const {
 	return true;
 }
 
+template <>
+inline bool LSArray<double>::operator == (const LSArray<LSValue*>* v) const {
+
+	if (this->size() != v->size()) {
+		return false;
+	}
+	auto i = this->begin();
+	auto j = v->begin();
+
+	for (; i != this->end(); i++, j++) {
+		const LSNumber* n = dynamic_cast<const LSNumber*>(*j);
+		if (!n) return false;
+		if (n->value != *i) return false;
+	}
+	return true;
+}
+
 template <class T>
 bool LSArray<T>::operator == (const LSObject*) const {
 	return false;
@@ -1404,6 +1488,18 @@ inline bool LSArray<int>::in(const LSValue* key) const {
 }
 
 template <>
+inline bool LSArray<double>::in(const LSValue* key) const {
+	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+		for (auto i = this->begin(); i != this->end(); i++) {
+			if ((*i) == n->value) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+template <>
 inline int LSArray<int>::atv(int i) {
 	return this->operator[] (i);
 }
@@ -1480,6 +1576,17 @@ inline std::ostream& LSArray<int>::print(std::ostream& os) const {
 	return os;
 }
 
+template <>
+inline std::ostream& LSArray<double>::print(std::ostream& os) const {
+	os << "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) os << ", ";
+		os << (*i);
+	}
+	os << "]";
+	return os;
+}
+
 template <class T>
 std::string LSArray<T>::json() const {
 	std::string res = "[";
@@ -1493,6 +1600,17 @@ std::string LSArray<T>::json() const {
 
 template <>
 inline std::string LSArray<int>::json() const {
+	std::string res = "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) res += ",";
+		std::string json = std::to_string(*i);
+		res += json;
+	}
+	return res + "]";
+}
+
+template <>
+inline std::string LSArray<double>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) res += ",";
@@ -1552,29 +1670,24 @@ inline LSValue* LSArray<int>::at(const LSValue* key) const {
 }
 
 template <>
+inline LSValue* LSArray<double>::at(const LSValue* key) const {
+
+	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+		try {
+			return LSNumber::get(this->operator[] ((int) n->value));
+		} catch (std::exception& e) {
+			return LSNull::null_var;
+		}
+	}
+	return LSNull::null_var;
+}
+
+template <>
 inline LSValue* LSArray<int>::operator += (const LSNumber* number) {
 	push_clone(number->value);
 	return this;
 }
 
-template <class T>
-T LSArray<T>::sum() const {
-	if (size() == 0) return new T();
-	T sum;
-	for (auto v : *this) {
-		sum += ((LSNumber*) v)->value;
-	}
-	return sum;
-}
-
-template <>
-inline int LSArray<int>::sum() const {
-	int sum = 0;
-	for (auto v : *this) {
-		sum += v;
-	}
-	return sum;
-}
 
 template <>
 inline LSArray<LSValue*>* LSArray<int>::map(const void* function) const {

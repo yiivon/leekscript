@@ -351,7 +351,7 @@ LSValue* LSNumber::pow_eq(LSValue* value) {
 LSValue* LSNumber::pow_eq(const LSNull*) {
 	return this->clone();
 }
-LSValue* LSNumber::pow_eq(const LSBoolean* value) {
+LSValue* LSNumber::pow_eq(const LSBoolean*) {
 	return this->clone();
 }
 LSValue* LSNumber::pow_eq(const LSNumber* number) {

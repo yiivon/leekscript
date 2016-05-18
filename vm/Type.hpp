@@ -157,7 +157,6 @@ public:
 	Nature nature;
 	std::string clazz;
 	std::vector<Type> element_type;
-	bool homogeneous;
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
 
@@ -207,6 +206,7 @@ public:
 	static const Type OBJECT;
 	static const Type ARRAY;
 	static const Type INT_ARRAY;
+	static const Type FLOAT_ARRAY;
 	static const Type FUNCTION;
 	static const Type FUNCTION_P;
 	static const Type CLASS;
@@ -215,6 +215,7 @@ public:
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww);
 	static bool more_specific(const Type& old, const Type& neww);
+	static Type get_compatible_type(Type& t1, Type& t2);
 };
 
 std::ostream& operator << (std::ostream&, const Type&);
