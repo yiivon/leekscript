@@ -87,7 +87,7 @@ LSValue* LSNumber::operator + (const LSBoolean* boolean) const {
 	return LSNumber::get(value + boolean->value);
 }
 LSValue* LSNumber::operator + (const LSString* string) const {
-	return new LSString(toString() + string->value);
+	return new LSString(toString() + *string);
 }
 LSValue* LSNumber::operator + (const LSNumber* number) const {
 	return LSNumber::get(this->value + number->value);
@@ -152,7 +152,7 @@ LSValue* LSNumber::operator - (const LSNumber* number) const {
 	return LSNumber::get(this->value - number->value);
 }
 LSValue* LSNumber::operator - (const LSString* value) const {
-	return new LSString(value->value + to_string(this->value));
+	return new LSString(*value + to_string(this->value));
 }
 LSValue* LSNumber::operator - (const LSArray<LSValue*>*) const {
 	return clone();
@@ -212,7 +212,7 @@ LSValue* LSNumber::operator * (const LSNumber* number) const {
 	return LSNumber::get(this->value * number->value);
 }
 LSValue* LSNumber::operator * (const LSString* value) const {
-	return new LSString(value->value + to_string(this->value));
+	return new LSString(*value + to_string(this->value));
 }
 LSValue* LSNumber::operator * (const LSArray<LSValue*>*) const {
 	return this->clone();
@@ -271,7 +271,7 @@ LSValue* LSNumber::operator / (const LSNumber* number) const {
 	return LSNumber::get(this->value / number->value);
 }
 LSValue* LSNumber::operator / (const LSString* value) const {
-	return new LSString(value->value + to_string(this->value));
+	return new LSString(*value + to_string(this->value));
 }
 LSValue* LSNumber::operator / (const LSArray<LSValue*>*) const {
 	return this->clone();
@@ -599,7 +599,7 @@ LSValue* LSNumber::rangeL(int, int) {
 }
 
 LSValue* LSNumber::attr(const LSValue* key) const {
-	if (((LSString*) key)->value == "class") {
+	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
 	return LSNull::null_var;

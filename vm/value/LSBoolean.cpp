@@ -552,7 +552,7 @@ LSValue* LSBoolean::rangeL(int, int) {
 }
 
 LSValue* LSBoolean::attr(const LSValue* key) const {
-	if (((LSString*) key)->value == "class") {
+	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
 	return LSNull::null_var;

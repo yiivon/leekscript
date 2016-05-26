@@ -544,7 +544,7 @@ LSValue* LSFunction::rangeL(int, int) {
 }
 
 LSValue* LSFunction::attr(const LSValue* key) const {
-	if (((LSString*) key)->value == "class") {
+	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
 	return LSNull::null_var;

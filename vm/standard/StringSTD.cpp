@@ -51,43 +51,43 @@ StringSTD::StringSTD() : Module("String") {
 StringSTD::~StringSTD() {}
 
 LSValue* string_charAt(LSString* string, LSNumber* index) {
-	return new LSString(string->value[index->value]);
+	return new LSString(string->operator[] (index->value));
 }
 
 LSValue* string_contains(LSString* haystack, LSString* needle) {
-	return LSBoolean::get(haystack->value.find(needle->value) != string::npos);
+	return LSBoolean::get(haystack->find(*needle) != string::npos);
 }
 
 LSValue* string_endsWith(LSString* string, LSString* ending) {
-	if (ending->value.size() > string->value.size()) {
+	if (ending->size() > string->size()) {
 		return LSBoolean::false_val;
 	}
-	return LSBoolean::get(std::equal(ending->value.rbegin(), ending->value.rend(), string->value.rbegin()));
+	return LSBoolean::get(std::equal(ending->rbegin(), ending->rend(), string->rbegin()));
 }
 
 LSValue* string_indexOf(LSString* haystack, LSString* needle) {
-	return LSNumber::get(haystack->value.find(needle->value));
+	return LSNumber::get(haystack->find(*needle));
 }
 
 LSValue* string_length(LSString* string) {
-	return new LSNumber(string->value.size());
+	return new LSNumber(string->size());
 }
 
 LSValue* string_map(const LSString* s, void* function) {
 	std::string new_string = string("");
 	auto fun = (void* (*)(void*)) function;
-	for (char v : s->value) {
-		new_string += ((LSString*) fun(new LSString(v)))->value;
+	for (char v : *s) {
+		new_string += *((LSString*) fun(new LSString(v)));
 	}
 	return new LSString(new_string);
 }
 
 LSValue* string_replace(LSString* string, LSString* from, LSString* to) {
-	std::string str(string->value);
+	std::string str(*string);
 	size_t start_pos = 0;
-	while((start_pos = str.find(from->value, start_pos)) != std::string::npos) {
-		str.replace(start_pos, from->value.length(), to->value);
-		start_pos += to->value.length();
+	while((start_pos = str.find(*from, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from->length(), *to);
+		start_pos += to->length();
 	}
 	return new LSString(str);
 }
@@ -97,55 +97,55 @@ LSValue* string_reverse(LSString* string) {
 }
 
 LSValue* string_size(LSString* string) {
-	return new LSNumber(string->value.size());
+	return new LSNumber(string->size());
 }
 
 LSValue* string_split(LSString* string, LSString* delimiter) {
 	LSArray<LSString*>* parts = new LSArray<LSString*>();
-	if (delimiter->value == "") {
-		for (char c : string->value) {
+	if (*delimiter == "") {
+		for (char c : *string) {
 			parts->push_no_clone(new LSString(c));
 		}
 		return parts;
 	} else {
 		size_t last = 0;
 		size_t pos = 0;
-		while ((pos = string->value.find(delimiter->value, last)) != std::string::npos) {
-			parts->push_no_clone(new LSString(string->value.substr(last, pos - last)));
-			last = pos + delimiter->value.size();
+		while ((pos = string->find(*delimiter, last)) != std::string::npos) {
+			parts->push_no_clone(new LSString(string->substr(last, pos - last)));
+			last = pos + delimiter->size();
 		}
-		parts->push_no_clone(new LSString(string->value.substr(last)));
+		parts->push_no_clone(new LSString(string->substr(last)));
 		return parts;
 	}
 }
 
 LSValue* string_startsWith(const LSString* string, const LSString* starting) {
-	if (starting->value.size() > string->value.size()) {
+	if (starting->size() > string->size()) {
 		return LSBoolean::false_val;
 	}
-	return LSBoolean::get(std::equal(starting->value.begin(), starting->value.end(), string->value.begin()));
+	return LSBoolean::get(std::equal(starting->begin(), starting->end(), string->begin()));
 }
 
 LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length) {
-	return new LSString(string->value.substr(start->value, length->value));
+	return new LSString(string->substr(start->value, length->value));
 }
 
 LSValue* string_toArray(const LSString* string) {
 	LSArray<LSValue*>* parts = new LSArray<LSValue*>();
-	for (char c : string->value) {
+	for (char c : *string) {
 		parts->push_no_clone(new LSString(c));
 	}
 	return parts;
 }
 
 LSValue* string_toLower(LSString* s) {
-	string new_s = string(s->value);
+	string new_s = string(*s);
 	for (auto& c : new_s) c = tolower(c);
 	return new LSString(new_s);
 }
 
 LSValue* string_toUpper(LSString* s) {
-	string new_s = string(s->value);
+	string new_s = string(*s);
 	for (auto& c : new_s) c = toupper(c);
 	return new LSString(new_s);
 }

@@ -31,7 +31,7 @@ void Object::analyse(SemanticAnalyser* analyser, const Type) {
 }
 
 void push_object(LSObject* o, LSString* k, LSValue* v) {
-	o->addField(k->value, v);
+	o->addField(*k, v);
 }
 
 jit_value_t Object::compile_jit(Compiler& c, jit_function_t& F, Type) const {

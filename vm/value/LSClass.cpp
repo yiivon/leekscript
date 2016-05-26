@@ -628,14 +628,14 @@ LSValue* LSClass::rangeL(int, int) {
 }
 
 LSValue* LSClass::attr(const LSValue* key) const {
-	if (((LSString*) key)->value == "class") {
+	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
 	if (key->operator == (new LSString("name"))) {
 		return new LSString(name);
 	}
 	try {
-		return static_fields.at(((LSString*) key)->value);
+		return static_fields.at(*((LSString*) key));
 	} catch (exception& e) {}
 	return LSNull::null_var;
 }

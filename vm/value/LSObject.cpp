@@ -573,14 +573,14 @@ bool LSObject::in(const LSValue* v) const {
 }
 
 LSValue* LSObject::attr(const LSValue* key) const {
-	if (((LSString*) key)->value == "class") {
+	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
 	try {
-		return values.at(((LSString*) key)->value);
+		return values.at(*((LSString*) key));
 	} catch (exception& e) {
 		if (clazz != nullptr) {
-			string name = ((LSString*) key)->value;
+			string name = *((LSString*) key);
 			LSFunction* attr = clazz->getDefaultMethod(name);
 			if (attr != nullptr) {
 				return (LSValue*) attr;
@@ -594,10 +594,10 @@ LSValue** LSObject::attrL(const LSValue* key) {
 		return &LSNull::null_var;
 	}
 	try {
-		return &values.at(((LSString*) key)->value);
+		return &values.at(*((LSString*) key));
 	} catch (exception& e) {
-		values.insert(pair<string, LSValue*>(((LSString*) key)->value, LSNull::null_var));
-		return &values[((LSString*) key)->value];
+		values.insert(pair<string, LSValue*>(*((LSString*) key), LSNull::null_var));
+		return &values[*((LSString*) key)];
 	}
 }
 

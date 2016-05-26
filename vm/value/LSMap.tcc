@@ -258,7 +258,7 @@ LSValue* LSMap<T>::attr(const LSValue* key) const {
 	if (key->operator == (new LSString("size"))) {
 		return LSNumber::get(this->values.size());
 	}
-	if (((LSString*) key)->value == "class") {
+	if (*((LSString*) key) == "class") {
 		return this->getClass();
 	}
 

@@ -12,16 +12,16 @@ using namespace std;
 LSValue* LSString::string_class(new LSClass("String"));
 
 LSString::LSString() {}
-LSString::LSString(const char value) : value(string(1, value)) {}
-LSString::LSString(const char* value) : value(value) {}
-LSString::LSString(std::string value) : value(value) {}
-LSString::LSString(JsonValue& json) : value(json.toString()) {}
+LSString::LSString(const char value) : string(string(1, value)) {}
+LSString::LSString(const char* value) : string(value) {}
+LSString::LSString(std::string value) : string(value) {}
+LSString::LSString(JsonValue& json) : string(json.toString()) {}
 
 LSString::~LSString() {}
 
 
 LSString* LSString::charAt(int index) const {
-	return new LSString(value[index]);
+	return new LSString(this->operator[] (index));
 }
 
 
@@ -29,7 +29,7 @@ LSString* LSString::charAt(int index) const {
  * LSValue methods
  */
 bool LSString::isTrue() const {
-	return value.size() > 0;
+	return size() > 0;
 }
 
 LSValue* LSString::operator - () const {
@@ -37,11 +37,11 @@ LSValue* LSString::operator - () const {
 }
 
 LSValue* LSString::operator ! () const {
-	return LSBoolean::get(value.size() == 0);
+	return LSBoolean::get(size() == 0);
 }
 
 LSValue* LSString::operator ~ () const {
-	string copy = value;
+	string copy = *this;
 	reverse(copy.begin(), copy.end());
 	return new LSString(copy);
 }
@@ -64,31 +64,31 @@ LSValue* LSString::operator + (const LSValue* v) const {
 	return v->operator + (this);
 }
 LSValue* LSString::operator + (const LSNull*) const {
-	return new LSString(this->value + "null");
+	return new LSString(*this + "null");
 }
 LSValue* LSString::operator + (const LSBoolean* boolean) const {
-	return new LSString(this->value + (boolean->value ? "true" : "false"));
+	return new LSString(*this + (boolean->value ? "true" : "false"));
 }
 LSValue* LSString::operator + (const LSNumber* value) const {
-	return new LSString(this->value + value->toString());
+	return new LSString(*this + value->toString());
 }
 LSValue* LSString::operator + (const LSString* string) const {
-	return new LSString(this->value + string->value);
+	return new LSString(*this + *string);
 }
 LSValue* LSString::operator + (const LSArray<LSValue*>*) const {
-	return new LSString(this->value + "<array>");
+	return new LSString(*this + "<array>");
 }
 LSValue* LSString::operator + (const LSArray<int>*) const {
-	return new LSString(this->value + "<array>");
+	return new LSString(*this + "<array>");
 }
 LSValue* LSString::operator + (const LSObject* ) const {
-	return new LSString(this->value + "<object>");
+	return new LSString(*this + "<object>");
 }
 LSValue* LSString::operator + (const LSFunction*) const {
-	return new LSString(this->value + "<function>");
+	return new LSString(*this + "<function>");
 }
 LSValue* LSString::operator + (const LSClass*) const {
-	return new LSString(this->value + "<class>");
+	return new LSString(*this + "<class>");
 }
 
 LSValue* LSString::operator += (LSValue* value) {
@@ -104,7 +104,7 @@ LSValue* LSString::operator += (const LSNumber*) {
 	return this;
 }
 LSValue* LSString::operator += (const LSString* string) {
-	this->value += string->value;
+	((std::string*) this)->operator += (*string);
 	return this;
 }
 LSValue* LSString::operator += (const LSArray<LSValue*>*) {
@@ -130,10 +130,10 @@ LSValue* LSString::operator - (const LSBoolean*) const {
 	return LSNull::null_var;
 }
 LSValue* LSString::operator - (const LSNumber* value) const {
-	return new LSString(to_string(value->value) + this->value);
+	return new LSString(to_string(value->value) + *this);
 }
 LSValue* LSString::operator - (const LSString* string) const {
-	return new LSString(string->value + this->value);
+	return new LSString(*string + *this);
 }
 LSValue* LSString::operator - (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
@@ -188,12 +188,12 @@ LSValue* LSString::operator * (const LSBoolean*) const {
 LSValue* LSString::operator * (const LSNumber* value) const {
 	string res = "";
 	for (int i = 0; i < value->value; ++i) {
-		res += this->value;
+		res += *this;
 	}
 	return new LSString(res);
 }
 LSValue* LSString::operator * (const LSString* string) const {
-	return new LSString(string->value);
+	return new LSString(*string);
 }
 LSValue* LSString::operator * (const LSArray<LSValue*>*) const {
 	return LSNull::null_var;
@@ -251,14 +251,14 @@ LSValue* LSString::operator / (const LSNumber*) const {
 
 LSValue* LSString::operator / (const LSString* s) const {
 	LSArray<LSValue*>* array = new LSArray<LSValue*>();
-	if (s->value.size() == 0) {
-		for (char c : value) {
+	if (s->size() == 0) {
+		for (char c : *this) {
 			array->push_no_clone(new LSString(string({c})));
 		}
  	} else {
-		stringstream ss(value);
+		stringstream ss(*this);
 		string item;
-		while (getline(ss, item, s->value[0])) {
+		while (getline(ss, item, s->operator[] (0))) {
 			array->push_no_clone(new LSString(item));
 		}
  	}
@@ -431,7 +431,7 @@ bool LSString::operator == (const LSNumber*) const {
 	return false;
 }
 bool LSString::operator == (const LSString* v) const {
-	return this->value == v->value;
+	return *this == *v;
 }
 bool LSString::operator == (const LSArray<LSValue*>*) const {
 	return false;
@@ -459,7 +459,7 @@ bool LSString::operator < (const LSNumber*) const {
 	return false;
 }
 bool LSString::operator < (const LSString* v) const {
-	return this->value < v->value;
+	return *this < *v;
 }
 bool LSString::operator < (const LSArray<LSValue*>*) const {
 	return true;
@@ -487,7 +487,7 @@ bool LSString::operator > (const LSNumber*) const {
 	return true;
 }
 bool LSString::operator > (const LSString* v) const {
-	return this->value > v->value;
+	return *this > *v;
 }
 bool LSString::operator > (const LSArray<LSValue*>*) const {
 	return false;
@@ -515,7 +515,7 @@ bool LSString::operator <= (const LSNumber*) const {
 	return false;
 }
 bool LSString::operator <= (const LSString* v) const {
-	return this->value <= v->value;
+	return *this <= *v;
 }
 bool LSString::operator <= (const LSArray<LSValue*>*) const {
 	return true;
@@ -543,7 +543,7 @@ bool LSString::operator >= (const LSNumber*) const {
 	return true;
 }
 bool LSString::operator >= (const LSString* v) const {
-	return this->value >= v->value;
+	return *this >= *v;
 }
 bool LSString::operator >= (const LSArray<LSValue*>*) const {
 	return false;
@@ -564,7 +564,7 @@ bool LSString::in(const LSValue*) const {
 
 LSValue* LSString::at(const LSValue* key) const {
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		return new LSString(value[(int)n->value]);
+		return new LSString(this->operator[] ((int) n->value));
 	}
 	return LSNull::null_var;
 }
@@ -575,7 +575,7 @@ LSValue** LSString::atL(const LSValue*) {
 }
 
 LSValue* LSString::range(int start, int end) const {
-	return new LSString(value.substr(start, end - start + 1));
+	return new LSString(this->substr(start, end - start + 1));
 }
 LSValue* LSString::rangeL(int, int) {
 	// TODO
@@ -583,7 +583,7 @@ LSValue* LSString::rangeL(int, int) {
 }
 
 LSValue* LSString::attr(const LSValue* key) const {
-	if (((LSString*) key)->value == "class") {
+	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
 	return LSNull::null_var;
@@ -594,23 +594,23 @@ LSValue** LSString::attrL(const LSValue*) {
 }
 
 LSValue* LSString::abso() const {
-	return LSNumber::get(value.size());
+	return LSNumber::get(size());
 }
 
 std::ostream& LSString::print(std::ostream& os) const {
-	os << "'" << value << "'";
+	os << "'" << *this << "'";
 	return os;
 }
 string LSString::json() const {
-	return "\"" + value + "\"";
+	return "\"" + *this + "\"";
 }
 
 LSValue* LSString::clone() const {
-	return new LSString(value);
+	return new LSString(*this);
 }
 
-std::ostream& operator<<(std::ostream& os, const LSString& obj) {
-	os << obj.value;
+std::ostream& operator << (std::ostream& os, const LSString& obj) {
+	os << obj;
 	return os;
 }
 

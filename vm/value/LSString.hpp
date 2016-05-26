@@ -8,10 +8,8 @@
 #include "../../lib/gason.h"
 #include "../Type.hpp"
 
-class LSString : public LSValue {
+class LSString : public LSValue, public std::string {
 public:
-
-	std::string value;
 
 	static LSValue* string_class;
 

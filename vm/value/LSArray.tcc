@@ -96,7 +96,7 @@ inline size_t LSArray<T>::size() const {
 template <class T>
 T LSArray<T>::sum() const {
 	if (size() == 0) return (T) LSNumber::get(0);
-	LSValue* sum = this->operator [] (0);
+	LSValue* sum = this->operator [] (0)->clone();
 	for (unsigned i = 1; i < this->size(); ++i) {
 		sum = this->operator [] (i)->operator + (sum);
 	}
@@ -496,7 +496,7 @@ inline LSString* LSArray<int>::join(const LSString* glue) const {
 	unsigned i = 0;
 	std::string result = std::to_string(this->operator[] (i));
 	for (i++; i < this->size(); i++) {
-		result = std::to_string(this->operator[] (i)) + glue->value + result;
+		result = std::to_string(this->operator[] (i)) + *glue + result;
 	}
 	return new LSString(result);
 }
@@ -628,8 +628,10 @@ template <class T>
 LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	new_array->insert(new_array->end(), this->begin(), this->end());
-	new_array->insert(new_array->end(), ((LSArray<T>*) array)->begin(), ((LSArray<T>*) array)->end());
+	for (auto v : *this) {
+		new_array->push_back((LSValue*) v);
+	}
+	new_array->insert(new_array->end(), array->begin(), array->end());
 	return new_array;
 }
 
@@ -1648,7 +1650,7 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		try {
-			return this->operator[] ((int) n->value);
+			return (LSValue*) this->operator[] ((int) n->value);
 		} catch (std::exception& e) {
 			return LSNull::null_var;
 		}
@@ -1724,7 +1726,7 @@ LSValue* LSArray<T>::attr(const LSValue* key) const {
 	if (key->operator == (new LSString("size"))) {
 		return LSNumber::get(this->size());
 	}
-	if (((LSString*) key)->value == "class") {
+	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
 	return LSNull::null_var;
