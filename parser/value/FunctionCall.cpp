@@ -14,6 +14,8 @@
 
 using namespace std;
 
+namespace ls {
+
 FunctionCall::FunctionCall() {
 	function = nullptr;
 	type = Type::VALUE;
@@ -442,3 +444,4 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	return ret;
 }
 
+}

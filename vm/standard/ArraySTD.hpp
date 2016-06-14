@@ -4,6 +4,8 @@
 #include "../value/LSFunction.hpp"
 #include "../Module.hpp"
 
+namespace ls {
+
 class ArraySTD : public Module {
 public:
 	ArraySTD();
@@ -40,5 +42,6 @@ LSArray<LSValue*>* array_sort(const LSArray<LSValue*>* array, const LSNumber* or
 LSValue* array_sum(const LSArray<LSValue*>* array);
 LSValue* array_unshift(const LSArray<LSValue*>* array, const LSValue* value);
 
+}
 
 #endif

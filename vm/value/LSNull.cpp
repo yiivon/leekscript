@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace ls {
+
 LSValue* LSNull::null_var = new LSNull();
 LSClass* LSNull::null_class = new LSClass("Null");
 
@@ -570,4 +572,6 @@ int LSNull::typeID() const {
 
 const BaseRawType* LSNull::getRawType() const {
 	return RawType::NULLL;
+}
+
 }

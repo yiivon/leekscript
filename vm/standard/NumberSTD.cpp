@@ -3,6 +3,8 @@
 
 using namespace std;
 
+namespace ls {
+
 NumberSTD::NumberSTD() : Module("Number") {
 
 	static_field("pi", Type::FLOAT_P, "3.14159265359");
@@ -164,4 +166,6 @@ LSNumber* number_toDegrees(const LSNumber* x) {
 
 LSNumber* number_toRadians(const LSNumber* x) {
 	return LSNumber::get((x->value * M_PI) / 180);
+}
+
 }

@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace ls {
+
 PostfixExpression::PostfixExpression() {
 	expression = nullptr;
 	operatorr = nullptr;
@@ -75,4 +77,6 @@ jit_value_t PostfixExpression::compile_jit(Compiler& c, jit_function_t& F, Type	
 		}
 	}
 	return jit_insn_call_native(F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
+}
+
 }

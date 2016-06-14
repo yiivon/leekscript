@@ -5,6 +5,8 @@
 #include <ostream>
 #include "../Module.hpp"
 
+namespace ls {
+
 class Documentation {
 public:
 
@@ -13,5 +15,7 @@ public:
 
 	void generate(std::ostream& os);
 };
+
+}
 
 #endif

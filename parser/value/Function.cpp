@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Function::Function() {
 	body = nullptr;
 	pos = 0;
@@ -163,4 +165,6 @@ jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type)
 //		cout << "create function value " << endl;
 		return JIT_CREATE_CONST_POINTER(F, f);
 	}
+}
+
 }

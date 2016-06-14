@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace ls {
+
 enum class TokenType {
 
 	UNKNOW,
@@ -88,5 +90,7 @@ enum class TokenType {
 	TWO_DOTS,
 	THREE_DOTS
 };
+
+}
 
 #endif

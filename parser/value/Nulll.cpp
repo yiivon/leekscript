@@ -3,6 +3,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Nulll::Nulll() {
 	type = Type::NULLL;
 	constant = true;
@@ -24,4 +26,6 @@ jit_value_t Nulll::compile_jit(Compiler&, jit_function_t& F, Type req_type) cons
 	} else {
 		return JIT_CREATE_CONST(F, JIT_INTEGER, 0);
 	}
+}
+
 }

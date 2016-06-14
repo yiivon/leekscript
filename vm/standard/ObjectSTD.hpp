@@ -5,6 +5,9 @@
 #include "../../parser/semantic/SemanticAnalyser.hpp"
 #include "../../parser/Program.hpp"
 #include "../Module.hpp"
+
+namespace ls {
+
 class LSObject;
 
 class ObjectSTD : public Module {
@@ -13,5 +16,7 @@ public:
 };
 
 LSObject* object_map(const LSObject* object);
+
+}
 
 #endif

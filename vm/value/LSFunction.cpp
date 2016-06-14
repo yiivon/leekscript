@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 LSClass* LSFunction::function_class = new LSClass("Function");
 
 LSFunction::LSFunction(void* function) {
@@ -579,4 +581,6 @@ int LSFunction::typeID() const {
 
 const BaseRawType* LSFunction::getRawType() const {
 	return RawType::FUNCTION;
+}
+
 }

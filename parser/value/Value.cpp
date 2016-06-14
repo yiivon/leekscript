@@ -1,5 +1,7 @@
 #include "Value.hpp"
 
+namespace ls {
+
 Value::Value() {
 	type = Type::NEUTRAL;
 	constant = false;
@@ -31,3 +33,4 @@ bool Value::isLeftValue() const {
 	return false;
 }
 
+}

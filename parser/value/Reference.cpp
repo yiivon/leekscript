@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Reference::Reference() {
 	type = Type::VALUE;
 }
@@ -27,4 +29,6 @@ jit_value_t Reference::compile_jit(Compiler&, jit_function_t& F, Type type) cons
 	} else {
 		return jit_value_create_nint_constant(F, jit_type_void_ptr, 0);
 	}
+}
+
 }

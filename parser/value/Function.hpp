@@ -7,6 +7,9 @@
 #include "../lexical/Ident.hpp"
 #include "../Body.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
+
+namespace ls {
+
 class SemanticVar;
 
 class Function : public Value {
@@ -37,5 +40,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

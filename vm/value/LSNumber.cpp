@@ -6,6 +6,8 @@
 
 using namespace std;
 
+namespace ls {
+
 LSClass* LSNumber::number_class = new LSClass("Number");
 
 LSNumber* LSNumber::cache[CACHE_HIGH - CACHE_LOW + 1];
@@ -661,4 +663,6 @@ int LSNumber::typeID() const {
 
 const BaseRawType* LSNumber::getRawType() const {
 	return RawType::INTEGER;
+}
+
 }

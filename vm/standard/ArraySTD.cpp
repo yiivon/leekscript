@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 ArraySTD::ArraySTD() : Module("Array") {
 
 	method("average", {
@@ -473,4 +475,6 @@ LSValue* array_sum(const LSArray<LSValue*>*) {
 LSValue* array_unshift(const LSArray<LSValue*>*, const LSValue*) {
 	// TODO
 	return new LSArray<LSValue*>();
+}
+
 }

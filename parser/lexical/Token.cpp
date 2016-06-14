@@ -3,6 +3,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Token::Token() {
 	character = -1;
 	line = -1;
@@ -38,4 +40,6 @@ Token::~Token() {}
 std::ostream& operator << (std::ostream& os, Token& token) {
 	os << "[" << token.line << ":" << token.character << " " << (int)token.type << " " << token.content << "]";
 	return os;
+}
+
 }

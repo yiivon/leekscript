@@ -10,6 +10,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Module::Module(string name) : name(name) {
 	clazz = new LSClass(name);
 }
@@ -127,4 +129,6 @@ void Module::generate_doc(ostream& os, string translation_file) {
 		os << "}";
 	}
 	os << "}}";
+}
+
 }

@@ -5,6 +5,10 @@
 #include <vector>
 #include <map>
 
+#include "../../vm/Type.hpp"
+
+namespace ls {
+
 class Program;
 class Module;
 class Function;
@@ -13,7 +17,6 @@ class Context;
 class Value;
 class SemanticAnalyser;
 class Token;
-#include "../../vm/Type.hpp"
 
 enum class VarScope {
 	INTERNAL, GLOBAL, LOCAL, PARAMETER
@@ -72,5 +75,7 @@ public:
 	std::map<std::string, SemanticVar*>& get_local_vars();
 
 };
+
+}
 
 #endif

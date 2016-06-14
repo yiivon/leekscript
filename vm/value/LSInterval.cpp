@@ -13,6 +13,8 @@
 
 using namespace std;
 
+namespace ls {
+
 LSInterval::LSInterval() {}
 
 LSInterval::~LSInterval() {}
@@ -51,4 +53,6 @@ LSValue* LSInterval::clone() const {
 std::ostream& LSInterval::print(std::ostream& os) const {
 	os << "[" << a << ".." << b << "]";
 	return os;
+}
+
 }

@@ -4,6 +4,8 @@
 #include "Value.hpp"
 #include "../lexical/Ident.hpp"
 
+namespace ls {
+
 class Reference : public Value {
 public:
 
@@ -18,5 +20,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

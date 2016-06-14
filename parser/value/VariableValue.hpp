@@ -2,9 +2,12 @@
 #define VARIABLEVALUE_HPP
 
 #include "../lexical/Ident.hpp"
-class Value;
 #include "LeftValue.hpp"
 #include "../../Compiler.hpp"
+
+namespace ls {
+
+class Value;
 class SemanticVar;
 
 class VariableValue : public LeftValue {
@@ -24,5 +27,7 @@ public:
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 	virtual jit_value_t compile_jit_l(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

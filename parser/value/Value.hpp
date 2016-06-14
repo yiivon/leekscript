@@ -5,6 +5,9 @@
 
 #include "../../vm/VM.hpp"
 #include "../../Compiler.hpp"
+
+namespace ls {
+
 class SemanticAnalyser;
 
 class Value {
@@ -30,5 +33,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const = 0;
 };
+
+}
 
 #endif

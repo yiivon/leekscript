@@ -6,6 +6,8 @@
 #include "../lib/gason.h"
 using namespace std;
 
+namespace ls {
+
 std::vector<std::string> split(const std::string &s, string delim) {
 	vector<string> v;
 	auto start = 0U;
@@ -28,9 +30,11 @@ Context::Context(std::string ctx) {
 	for (auto i : value) {
 		string name =  i->key;
 		JsonValue var = i->value;
-		vars.insert(pair<string, LSValue*>(name, LSValue::parse(var)));
+		vars.insert(pair<string, LSValue*>(name, ls::LSValue::parse(var)));
 	}
 }
 
 Context::~Context() {}
+
+}
 

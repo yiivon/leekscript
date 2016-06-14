@@ -5,6 +5,8 @@
 #include "../value/Expression.hpp"
 #include "../value/Function.hpp"
 
+namespace ls {
+
 class Return : public Instruction {
 public:
 
@@ -22,5 +24,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

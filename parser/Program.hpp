@@ -4,6 +4,9 @@
 #include "Body.hpp"
 #include "value/Function.hpp"
 #include "semantic/SemanticAnalyser.hpp"
+
+namespace ls {
+
 class LSValue;
 
 class Program {
@@ -22,5 +25,7 @@ public:
 
 	void compile_jit(Compiler&, jit_function_t&, Context&, bool);
 };
+
+}
 
 #endif

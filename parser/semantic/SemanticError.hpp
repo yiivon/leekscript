@@ -4,6 +4,8 @@
 #include <string>
 #include "../lexical/Token.hpp"
 
+namespace ls {
+
 class SemanticError {
 public:
 
@@ -13,5 +15,7 @@ public:
 	SemanticError(Token* token, std::string message);
 	virtual ~SemanticError();
 };
+
+}
 
 #endif

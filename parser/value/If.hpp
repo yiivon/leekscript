@@ -4,6 +4,8 @@
 #include "Expression.hpp"
 #include "../Body.hpp"
 
+namespace ls {
+
 class If : public Value {
 public:
 
@@ -21,5 +23,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

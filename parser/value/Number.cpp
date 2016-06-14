@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Number::Number(double value) {
 	this->value = value;
 	constant = true;
@@ -47,4 +49,6 @@ jit_value_t Number::compile_jit(Compiler&, jit_function_t& F, Type req_type) con
 			return JIT_CREATE_CONST(F, type, value);
 		}
 	}
+}
+
 }

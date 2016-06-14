@@ -7,6 +7,8 @@
 
 using namespace std;
 
+namespace ls {
+
 LSValue* LSClass::class_class(new LSClass("Class"));
 
 LSClass::LSClass() : name("?") {
@@ -671,4 +673,6 @@ int LSClass::typeID() const {
 
 const BaseRawType* LSClass::getRawType() const {
 	return RawType::CLASS;
+}
+
 }

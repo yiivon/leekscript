@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 VariableDeclaration::VariableDeclaration() {
 	global = false;
 	return_value = false;
@@ -123,4 +125,6 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 		}
 	}
 	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+}
+
 }

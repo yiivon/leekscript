@@ -8,6 +8,8 @@
 
 using namespace std;
 
+namespace ls {
+
 ObjectAccess::ObjectAccess() {
 	object = nullptr;
 	type = Type::POINTER;
@@ -120,3 +122,4 @@ jit_value_t ObjectAccess::compile_jit_l(Compiler& c, jit_function_t& F, Type) co
 	return jit_insn_call_native(F, "access_l", (void*) object_access_l, sig, args, 2, JIT_CALL_NOTHROW);
 }
 
+}

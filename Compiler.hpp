@@ -4,6 +4,8 @@
 #include <jit/jit.h>
 #include <vector>
 
+namespace ls {
+
 class Compiler {
 public:
 
@@ -19,5 +21,7 @@ public:
 	jit_label_t* get_current_loop_end_label() const;
 	jit_label_t* get_current_loop_cond_label() const;
 };
+
+}
 
 #endif

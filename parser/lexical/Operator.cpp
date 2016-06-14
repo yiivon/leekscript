@@ -3,6 +3,8 @@
 #include <iostream>
 using namespace std;
 
+namespace ls {
+
 /*
  * Binary operators precedence
  * ------------------
@@ -65,4 +67,6 @@ Operator::~Operator() {
 
 void Operator::print(ostream& os) {
 	os << character;
+}
+
 }

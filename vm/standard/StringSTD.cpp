@@ -8,6 +8,8 @@
 
 using namespace std;
 
+namespace ls {
+
 StringSTD::StringSTD() : Module("String") {
 
 	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);
@@ -148,4 +150,6 @@ LSValue* string_toUpper(LSString* s) {
 	string new_s = string(*s);
 	for (auto& c : new_s) c = toupper(c);
 	return new LSString(new_s);
+}
+
 }

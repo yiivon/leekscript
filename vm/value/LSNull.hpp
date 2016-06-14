@@ -6,6 +6,8 @@
 #include "../LSValue.hpp"
 #include "../Type.hpp"
 
+namespace ls {
+
 class LSNull : public LSValue {
 public:
 
@@ -223,5 +225,7 @@ public:
 
 	virtual const BaseRawType* getRawType() const override;
 };
+
+}
 
 #endif

@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Return::Return() {
 	expression = nullptr;
 	function = nullptr;
@@ -42,4 +44,6 @@ jit_value_t Return::compile_jit(Compiler& c, jit_function_t& F, Type type) const
 	jit_value_t v = expression->compile_jit(c, F, type);
 	jit_insn_return(F, v);
 	return v;
+}
+
 }

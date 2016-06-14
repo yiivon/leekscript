@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 ArrayAccess::ArrayAccess() {
 	array = nullptr;
 	key = nullptr;
@@ -138,4 +140,6 @@ jit_value_t ArrayAccess::compile_jit_l(Compiler& c, jit_function_t& F, Type) con
 	jit_value_t args[] = {a, k};
 //	return jit_insn_call_native(F, "access_l", (void*) access_l, sig, args, 2, JIT_CALL_NOTHROW);
 	return jit_insn_call_native(F, "access_l", (void*) access_l_value, sig, args, 2, JIT_CALL_NOTHROW);
+}
+
 }

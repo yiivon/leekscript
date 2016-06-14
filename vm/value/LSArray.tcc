@@ -6,6 +6,8 @@
 #include "LSBoolean.hpp"
 #include "LSFunction.hpp"
 
+namespace ls {
+
 template <class T>
 LSValue* LSArray<T>::array_class(new LSClass("Array"));
 
@@ -1755,6 +1757,8 @@ template <class T>
 LSValue* LSArray<T>::abso() const {
 	return LSNumber::get(size());
 }
+
+} // end of namespace ls
 
 #endif
 

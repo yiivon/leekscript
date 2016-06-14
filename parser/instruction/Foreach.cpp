@@ -8,6 +8,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Foreach::Foreach() {
 	key = nullptr;
 	value = nullptr;
@@ -165,4 +167,6 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	c.leave_loop();
 
 	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+}
+
 }

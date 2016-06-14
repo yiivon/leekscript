@@ -3,6 +3,8 @@
 
 using namespace std;
 
+namespace ls {
+
 AbsoluteValue::AbsoluteValue() {
 	expression = nullptr;
 }
@@ -32,4 +34,6 @@ jit_value_t AbsoluteValue::compile_jit(Compiler& c, jit_function_t& F, Type) con
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 
 	return jit_insn_call_native(F, "abso", (void*) abso, sig, &ex, 1, JIT_CALL_NOTHROW);
+}
+
 }

@@ -14,6 +14,8 @@
 #define CACHE_LOW -128
 #define CACHE_HIGH 1000
 
+namespace ls {
+
 class LSNumber : public LSValue {
 public:
 
@@ -244,5 +246,7 @@ public:
 
 	virtual const BaseRawType* getRawType() const override;
 };
+
+}
 
 #endif

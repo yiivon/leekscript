@@ -4,6 +4,8 @@
 #include <string>
 #include "../lexical/Token.hpp"
 
+namespace ls {
+
 class SyntaxicalError {
 public:
 
@@ -13,5 +15,7 @@ public:
 	SyntaxicalError(Token* token, std::string message);
 	virtual ~SyntaxicalError();
 };
+
+}
 
 #endif

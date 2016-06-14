@@ -6,6 +6,8 @@
 #include "value/Value.hpp"
 #include "../Compiler.hpp"
 
+namespace ls {
+
 class Body {
 public:
 
@@ -21,5 +23,7 @@ public:
 
 	jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const;
 };
+
+}
 
 #endif

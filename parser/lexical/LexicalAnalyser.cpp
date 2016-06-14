@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace ls {
+
 static vector<string> type_literals[] = {
 
 	{ "" }, // Unknown
@@ -289,3 +291,4 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 	return tokens;
 }
 
+}

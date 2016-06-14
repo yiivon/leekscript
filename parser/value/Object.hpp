@@ -5,6 +5,8 @@
 #include "../lexical/Ident.hpp"
 #include "Expression.hpp"
 
+namespace ls {
+
 class Object : public Value {
 public:
 
@@ -20,5 +22,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

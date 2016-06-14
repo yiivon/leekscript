@@ -7,7 +7,7 @@
 
 class Test {
 
-	VM vm;
+	ls::VM vm;
 	int total;
 	int success;
 	double exeTime;

@@ -4,6 +4,8 @@
 #include "Instruction.hpp"
 #include "../value/Expression.hpp"
 
+namespace ls {
+
 class Continue : public Instruction {
 public:
 
@@ -18,6 +20,8 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif
 

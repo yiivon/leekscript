@@ -2,6 +2,8 @@
 
 using namespace std;
 
+namespace ls {
+
 const BaseRawType* const RawType::UNKNOWN = new BaseRawType();
 const NullRawType* const RawType::NULLL = new NullRawType();
 const BooleanRawType* const RawType::BOOLEAN = new BooleanRawType();
@@ -372,4 +374,6 @@ string Type::get_nature_name(const Nature& nature) {
 	default:
 		return "??";
 	}
+}
+
 }

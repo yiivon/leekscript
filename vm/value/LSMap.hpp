@@ -3,6 +3,8 @@
 
 #include "LSArray.hpp"
 
+namespace ls {
+
 struct lsvalue_less {
 	bool operator() (const LSValue* lhs, const LSValue* rhs) const {
 		return rhs->operator < (lhs);
@@ -72,5 +74,7 @@ public:
 #ifndef _GLIBCXX_EXPORT_TEMPLATE
 #include "LSMap.tcc"
 #endif
+
+}
 
 #endif

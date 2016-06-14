@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Boolean::Boolean(bool value) {
 	this->value = value;
 	type = Type::BOOLEAN;
@@ -26,4 +28,6 @@ jit_value_t Boolean::compile_jit(Compiler&, jit_function_t& F, Type req_type) co
 	} else {
 		return JIT_CREATE_CONST(F, JIT_INTEGER, value);
 	}
+}
+
 }

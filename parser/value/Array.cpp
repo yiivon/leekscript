@@ -6,6 +6,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Array::Array() {
 	type = Type::ARRAY;
 }
@@ -189,4 +191,6 @@ jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 		return array;
 	}
+}
+
 }

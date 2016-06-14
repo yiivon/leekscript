@@ -6,6 +6,9 @@
 #include "Type.hpp"
 #include "../parser/semantic/SemanticAnalyser.hpp"
 #include "../parser/Program.hpp"
+
+namespace ls {
+
 class LSClass;
 
 class StaticMethod {
@@ -96,5 +99,7 @@ public:
 	void include(SemanticAnalyser*, Program*);
 	void generate_doc(std::ostream& os, std::string translation);
 };
+
+}
 
 #endif

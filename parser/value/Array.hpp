@@ -4,6 +4,8 @@
 #include <vector>
 #include "Expression.hpp"
 
+namespace ls {
+
 class Array : public Value {
 public:
 
@@ -25,5 +27,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

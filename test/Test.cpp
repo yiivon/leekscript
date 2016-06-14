@@ -580,8 +580,8 @@ void Test::tests() {
 	cout << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms" << endl;
 	cout << "------------------------------------------------" << endl;
 
-	cout << "Obj count: " << LSValue::obj_count << endl;
-	cout << "Obj deleted: " << LSValue::obj_deleted << endl;
+	cout << "Obj count: " << ls::LSValue::obj_count << endl;
+	cout << "Obj deleted: " << ls::LSValue::obj_deleted << endl;
 }
 
 void Test::header(string text) {
@@ -594,7 +594,7 @@ void Test::test(string code, string expected) {
 
 	total++;
 
-	string res = vm.execute(code, "{}", ExecMode::TEST);
+	string res = vm.execute(code, "{}", ls::ExecMode::TEST);
 
 	if (res != expected) {
 		cout << "FAUX : " << code << "  =/=>  " << expected << "  got  " << res << endl;

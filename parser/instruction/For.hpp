@@ -7,6 +7,9 @@
 #include "../Body.hpp"
 #include "../value/Expression.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
+
+namespace ls {
+
 class SemanticVar;
 
 class For : public Instruction {
@@ -29,5 +32,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

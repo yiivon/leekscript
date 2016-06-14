@@ -2,6 +2,8 @@
 
 using namespace std;
 
+namespace ls {
+
 ExpressionInstruction::ExpressionInstruction(Value* value) {
 	this->value = value;
 }
@@ -21,4 +23,6 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 
 jit_value_t ExpressionInstruction::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 	return value->compile_jit(c, F, req_type);
+}
+
 }

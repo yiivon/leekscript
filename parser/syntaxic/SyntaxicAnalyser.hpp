@@ -12,6 +12,8 @@
 #include "../instruction/Foreach.hpp"
 #include "../instruction/ClassDeclaration.hpp"
 
+namespace ls {
+
 class SyntaxicAnalyser {
 
 	std::vector<Token> tokens;
@@ -49,5 +51,7 @@ public:
 	long getTime();
 	std::vector<SyntaxicalError*> getErrors();
 };
+
+}
 
 #endif

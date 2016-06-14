@@ -4,6 +4,8 @@
 #include "Value.hpp"
 #include "../../Compiler.hpp"
 
+namespace ls {
+
 class LeftValue : public Value {
 public:
 
@@ -14,5 +16,7 @@ public:
 
 	virtual jit_value_t compile_jit_l(Compiler&, jit_function_t&, Type) const = 0;
 };
+
+}
 
 #endif

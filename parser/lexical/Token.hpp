@@ -4,6 +4,8 @@
 #include <string>
 #include "TokenType.hpp"
 
+namespace ls {
+
 class Token {
 
 public:
@@ -23,5 +25,7 @@ public:
 };
 
 std::ostream& operator << (std::ostream& os, Token& var);
+
+}
 
 #endif

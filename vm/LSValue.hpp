@@ -7,6 +7,8 @@
 #include "../lib/gason.h"
 #include "Type.hpp"
 
+namespace ls {
+
 class LSVar;
 class LSNull;
 class LSBoolean;
@@ -241,6 +243,8 @@ public:
 
 	static LSValue* parse(JsonValue& json);
 };
+
+}
 
 #endif
 

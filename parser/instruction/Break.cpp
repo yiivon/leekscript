@@ -3,6 +3,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Break::Break() {
 	value = 1;
 }
@@ -25,4 +27,6 @@ jit_value_t Break::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	jit_insn_branch(F, c.get_current_loop_end_label());
 
 	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+}
+
 }

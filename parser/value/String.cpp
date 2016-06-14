@@ -3,6 +3,8 @@
 
 using namespace std;
 
+namespace ls {
+
 String::String(string value) {
 	this->value = value;
 	type = Type::STRING;
@@ -26,4 +28,6 @@ jit_value_t String::compile_jit(Compiler&, jit_function_t& F, Type) const {
 
 	LSString* s = new LSString(value);
 	return JIT_CREATE_CONST_POINTER(F,  s);
+}
+
 }

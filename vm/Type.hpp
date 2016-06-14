@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 
+namespace ls {
+
 /*
 enum class RawType {
 	UNKNOWN, NULLL, BOOLEAN, NUMBER, INTEGER, LONG, FLOAT, STRING, OBJECT, ARRAY, FUNCTION, CLASS
@@ -219,5 +221,7 @@ public:
 };
 
 std::ostream& operator << (std::ostream&, const Type&);
+
+}
 
 #endif

@@ -9,6 +9,8 @@
 
 using namespace std;
 
+namespace ls {
+
 LSValue* LSString::string_class(new LSClass("String"));
 
 LSString::LSString() {}
@@ -624,4 +626,6 @@ int LSString::typeID() const {
 
 const BaseRawType* LSString::getRawType() const {
 	return RawType::STRING;
+}
+
 }

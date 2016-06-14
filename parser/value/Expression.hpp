@@ -5,6 +5,8 @@
 #include "Value.hpp"
 #include "../lexical/Operator.hpp"
 
+namespace ls {
+
 class Expression : public Value {
 public:
 
@@ -28,5 +30,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

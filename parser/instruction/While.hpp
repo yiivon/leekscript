@@ -9,6 +9,8 @@
 #include "../semantic/SemanticAnalyser.hpp"
 class SemanticVar;
 
+namespace ls {
+
 class While : public Instruction {
 public:
 
@@ -24,5 +26,7 @@ public:
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

@@ -10,6 +10,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Expression::Expression() {
 	v1 = nullptr;
 	v2 = nullptr;
@@ -609,5 +611,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		return v;
 	}
+}
+
 }
 

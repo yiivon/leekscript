@@ -5,6 +5,8 @@
 #include <string>
 #include "Token.hpp"
 
+namespace ls {
+
 enum class LetterType {
 	LETTER, NUMBER, QUOTE, DOUBLE_QUOTE, WHITE, OTHER
 };
@@ -18,7 +20,8 @@ public:
 
 	LexicalAnalyser();
 	std::vector<Token> analyse(std::string code);
-
 };
+
+}
 
 #endif

@@ -10,6 +10,8 @@
 #include "../standard/StringSTD.hpp"
 using namespace std;
 
+namespace ls {
+
 Documentation::Documentation() {}
 
 Documentation::~Documentation() {}
@@ -36,4 +38,6 @@ void Documentation::generate(ostream& os) {
 	}
 
 	os << "}\n";
+}
+
 }

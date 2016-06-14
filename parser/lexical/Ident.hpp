@@ -3,6 +3,8 @@
 
 #include "../lexical/Token.hpp"
 
+namespace ls {
+
 class Ident {
 public:
 
@@ -13,5 +15,7 @@ public:
 
 	void print(std::ostream& os);
 };
+
+}
 
 #endif

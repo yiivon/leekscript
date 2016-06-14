@@ -8,6 +8,8 @@
 #include "../../lib/gason.h"
 #include "../Type.hpp"
 
+namespace ls {
+
 class LSString : public LSValue, public std::string {
 public:
 
@@ -233,5 +235,6 @@ public:
 	virtual const BaseRawType* getRawType() const override;
 };
 
+}
 
 #endif

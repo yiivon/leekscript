@@ -25,6 +25,8 @@
 
 using namespace std;
 
+namespace ls {
+
 SyntaxicAnalyser::SyntaxicAnalyser() {
 	time = 0;
 	lt = nullptr;
@@ -954,4 +956,6 @@ vector<SyntaxicalError*> SyntaxicAnalyser::getErrors() {
 
 long SyntaxicAnalyser::getTime() {
 	return time;
+}
+
 }

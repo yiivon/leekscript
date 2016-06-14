@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace ls {
+
 If::If() {
 	elze = nullptr;
 	condition = nullptr;
@@ -96,4 +98,6 @@ jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const
 	jit_insn_label(F, &label_end);
 
 	return res;
+}
+
 }

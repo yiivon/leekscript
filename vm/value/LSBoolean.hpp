@@ -6,6 +6,8 @@
 #include "../LSValue.hpp"
 #include "../Type.hpp"
 
+namespace ls {
+
 class LSBoolean : public LSValue {
 public:
 
@@ -229,5 +231,7 @@ public:
 
 	virtual const BaseRawType* getRawType() const override;
 };
+
+}
 
 #endif

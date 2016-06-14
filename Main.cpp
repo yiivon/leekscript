@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (argc > 1 && string(argv[1]) == "-doc") {
-		Documentation().generate(cout);
+		ls::Documentation().generate(cout);
 		return 0;
 	}
 
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	string code;
-	VM vm;
+	ls::VM vm;
 
 	if (param_file) {
 
@@ -62,14 +62,14 @@ int main(int argc, char* argv[]) {
 		ifs.close();
 
 		// Execute
-		vm.execute(code, "{}", ExecMode::NORMAL);
+		vm.execute(code, "{}", ls::ExecMode::NORMAL);
 
 	} else if (param_exec) {
 
 		string code = argv[2];
 		string context = argv[3];
 
-		vm.execute(code, context, ExecMode::COMMAND_JSON);
+		vm.execute(code, context, ls::ExecMode::COMMAND_JSON);
 
 	} else {
 
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 			std::getline(std::cin, code);
 
 			// Execute
-			ctx = vm.execute(code, ctx, ExecMode::TOP_LEVEL);
+			ctx = vm.execute(code, ctx, ls::ExecMode::TOP_LEVEL);
 		}
 	}
 	return 0;

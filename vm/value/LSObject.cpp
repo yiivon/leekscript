@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 LSValue* LSObject::object_class(new LSClass("Object"));
 
 LSObject::LSObject() {
@@ -648,4 +650,6 @@ int LSObject::typeID() const {
 
 const BaseRawType* LSObject::getRawType() const {
 	return RawType::OBJECT;
+}
+
 }

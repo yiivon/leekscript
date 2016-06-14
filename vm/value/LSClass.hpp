@@ -5,6 +5,9 @@
 #include <string>
 #include <map>
 #include "../Type.hpp"
+
+namespace ls {
+
 class Method;
 class StaticMethod;
 
@@ -242,5 +245,7 @@ public:
 
 	virtual const BaseRawType* getRawType() const override;
 };
+
+}
 
 #endif

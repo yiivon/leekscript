@@ -4,7 +4,6 @@
 #include <string>
 #include <jit/jit.h>
 
-class Module;
 #include "Type.hpp"
 
 #define USE_INTEGERS 1
@@ -18,6 +17,10 @@ class Module;
 #define JIT_CREATE_CONST_LONG jit_value_create_long_constant
 #define JIT_CREATE_CONST_FLOAT jit_value_create_float64_constant
 #define JIT_CREATE_CONST_POINTER(F, X) jit_value_create_constant((F), new jit_constant_t{ JIT_POINTER, {(X)} })
+
+namespace ls {
+
+class Module;
 
 enum class ExecMode {
 	NORMAL, TOP_LEVEL, COMMAND_JSON, TEST
@@ -43,5 +46,7 @@ public:
 	static void push_array_value(jit_function_t&, jit_value_t&, jit_value_t&);
 	static void push_array_pointer(jit_function_t&, jit_value_t&, jit_value_t&);
 };
+
+}
 
 #endif

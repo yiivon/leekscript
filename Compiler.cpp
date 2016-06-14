@@ -1,5 +1,7 @@
 #include "Compiler.hpp"
 
+namespace ls {
+
 Compiler::Compiler() {}
 
 Compiler::~Compiler() {}
@@ -20,4 +22,6 @@ jit_label_t* Compiler::get_current_loop_end_label() const {
 
 jit_label_t* Compiler::get_current_loop_cond_label() const {
 	return loops_cond_labels.back();
+}
+
 }

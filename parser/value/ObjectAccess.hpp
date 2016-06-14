@@ -5,6 +5,8 @@
 #include "Value.hpp"
 #include "LeftValue.hpp"
 
+namespace ls {
+
 class ObjectAccess : public LeftValue {
 public:
 
@@ -24,5 +26,7 @@ public:
 
 	virtual jit_value_t compile_jit_l(Compiler&, jit_function_t&, Type) const override;
 };
+
+}
 
 #endif

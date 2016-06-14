@@ -1,6 +1,5 @@
 /*
- * Describe an array variable in LeekScript
- * can be associative or not
+ * Describe an array in LeekScript
  */
 #ifndef LS_ARRAY_BASE
 #define LS_ARRAY_BASE
@@ -15,6 +14,8 @@
 #include "../LSValue.hpp"
 #include "../../lib/gason.h"
 #include "LSClass.hpp"
+
+namespace ls {
 
 template <typename T>
 using LSArrayIterator = typename std::vector<T>::iterator;
@@ -278,6 +279,8 @@ public:
 
 	int typeID() const override;
 };
+
+}
 
 #ifndef _GLIBCXX_EXPORT_TEMPLATE
 #include "LSArray.tcc"

@@ -6,6 +6,9 @@
 #include "../../parser/Program.hpp"
 #include "../Module.hpp"
 #include <math.h>
+
+namespace ls {
+
 class LSNumber;
 
 class NumberSTD : public Module {
@@ -40,5 +43,6 @@ LSNumber* number_tan(const LSNumber* number);
 LSNumber* number_toDegrees(const LSNumber* number);
 LSNumber* number_toRadians(const LSNumber* number);
 
+}
 
 #endif

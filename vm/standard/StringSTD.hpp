@@ -5,6 +5,9 @@
 #include "../../parser/semantic/SemanticAnalyser.hpp"
 #include "../../parser/Program.hpp"
 #include "../Module.hpp"
+
+namespace ls {
+
 class LSString;
 class LSNumber;
 
@@ -29,5 +32,7 @@ LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length);
 LSValue* string_toLower(LSString* string);
 LSValue* string_toUpper(LSString* string);
 LSValue* string_toArray(const LSString* string);
+
+}
 
 #endif

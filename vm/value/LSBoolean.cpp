@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
 LSBoolean* LSBoolean::false_val(new LSBoolean(false));
 LSBoolean* LSBoolean::true_val(new LSBoolean(true));
@@ -588,4 +590,6 @@ int LSBoolean::typeID() const {
 
 const BaseRawType* LSBoolean::getRawType() const {
 	return RawType::BOOLEAN;
+}
+
 }

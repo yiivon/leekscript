@@ -10,6 +10,8 @@
 
 #include "LSArray.hpp"
 
+namespace ls {
+
 class LSInterval : public LSArray<int> {
 public:
 
@@ -27,5 +29,7 @@ public:
 	virtual LSValue* clone() const override;
 	std::ostream& print(std::ostream& os) const override;
 };
+
+}
 
 #endif

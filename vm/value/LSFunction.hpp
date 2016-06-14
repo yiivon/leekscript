@@ -11,6 +11,8 @@
 #include "../../lib/gason.h"
 #include "../Type.hpp"
 
+namespace ls {
+
 class LSFunction : public LSValue {
 public:
 
@@ -229,5 +231,7 @@ public:
 
 	virtual const BaseRawType* getRawType() const override;
 };
+
+}
 
 #endif

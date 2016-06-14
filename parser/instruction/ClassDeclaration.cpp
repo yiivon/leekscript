@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace ls {
+
 ClassDeclaration::ClassDeclaration() {}
 
 ClassDeclaration::~ClassDeclaration() {}
@@ -25,4 +27,6 @@ void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 jit_value_t ClassDeclaration::compile_jit(Compiler&, jit_function_t& F, Type) const {
 	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+}
+
 }

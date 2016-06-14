@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Program::Program() {
 	body = nullptr;
 }
@@ -157,4 +159,6 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 	} else {
 		jit_insn_return(F, res);
 	}
+}
+
 }

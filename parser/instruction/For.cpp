@@ -6,6 +6,8 @@
 
 using namespace std;
 
+namespace ls {
+
 For::For() {
 	condition = nullptr;
 	body = nullptr;
@@ -158,4 +160,6 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	c.leave_loop();
 
 	return JIT_CREATE_CONST_POINTER(F,LSNull::null_var);
+}
+
 }

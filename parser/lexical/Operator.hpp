@@ -3,6 +3,8 @@
 
 #include "../lexical/Token.hpp"
 
+namespace ls {
+
 class Operator {
 public:
 
@@ -15,5 +17,7 @@ public:
 
 	void print(std::ostream&);
 };
+
+}
 
 #endif

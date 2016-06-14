@@ -10,6 +10,8 @@
 
 using namespace std;
 
+namespace ls {
+
 SemanticAnalyser::SemanticAnalyser() {
 	program = nullptr;
 	in_function = false;
@@ -236,4 +238,6 @@ void SemanticAnalyser::add_function(Function* l) {
 
 map<string, SemanticVar*>& SemanticAnalyser::get_local_vars() {
 	return local_vars.back();
+}
+
 }

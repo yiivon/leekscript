@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Object::Object() {
 	type = Type::OBJECT;
 }
@@ -50,4 +52,6 @@ jit_value_t Object::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	}
 
 	return object;
+}
+
 }

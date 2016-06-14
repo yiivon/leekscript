@@ -6,6 +6,8 @@
 
 using namespace std;
 
+namespace ls {
+
 Body::Body() {
 	type = Type::VALUE;
 }
@@ -45,4 +47,6 @@ jit_value_t Body::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
 		}
 	}
 	return JIT_CREATE_CONST_POINTER(F,LSNull::null_var);
+}
+
 }

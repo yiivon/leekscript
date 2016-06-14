@@ -12,6 +12,8 @@
 
 using namespace std;
 
+namespace ls {
+
 VM::VM() {}
 
 VM::~VM() {}
@@ -342,4 +344,6 @@ void VM::push_array_pointer(jit_function_t& F, jit_value_t& array, jit_value_t& 
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 	jit_value_t args_v[] = {array, value};
 	jit_insn_call_native(F, "push", (void*) push_array_pointer, sig, args_v, 2, JIT_CALL_NOTHROW);
+}
+
 }

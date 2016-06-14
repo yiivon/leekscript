@@ -9,6 +9,7 @@
 #include "VM.hpp"
 
 using namespace std;
+using namespace ls;
 
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
