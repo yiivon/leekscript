@@ -22,7 +22,10 @@ public:
 	std::map<std::string, LSValue*> values;
 
 	LSFunction(void* function);
+	LSFunction(void* function, int refs);
 	LSFunction(JsonValue& data);
+
+	virtual ~LSFunction();
 
 	bool isTrue() const override;
 

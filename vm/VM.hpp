@@ -45,6 +45,11 @@ public:
 	// static bool is_number(void* v);
 	static void push_array_value(jit_function_t&, jit_value_t&, jit_value_t&);
 	static void push_array_pointer(jit_function_t&, jit_value_t&, jit_value_t&);
+
+	static jit_value_t get_refs(jit_function_t& F, jit_value_t& obj);
+	static void inc_refs(jit_function_t& F, jit_value_t& obj);
+	static void delete_obj(jit_function_t& F, jit_value_t& obj);
+	static void delete_temporary(jit_function_t& F, jit_value_t& obj);
 };
 
 }

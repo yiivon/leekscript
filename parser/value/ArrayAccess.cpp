@@ -108,6 +108,11 @@ jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_ty
 		jit_value_t args[] = {a, k};
 		jit_value_t res = jit_insn_call_native(F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
 
+		if (t.nature == Nature::POINTER) {
+			VM::delete_temporary(F, k);
+		}
+		VM::delete_temporary(F, a);
+
 		if (type.nature == Nature::VALUE and req_type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(F, res, type);
 		}
@@ -121,7 +126,12 @@ jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_ty
 		jit_value_t start = key->compile_jit(c, F, Type::INTEGER);
 		jit_value_t end = key2->compile_jit(c, F, Type::INTEGER);
 		jit_value_t args[] = {a, start, end};
-		return jit_insn_call_native(F, "range", (void*) range, sig, args, 3, JIT_CALL_NOTHROW);
+
+		jit_value_t result = jit_insn_call_native(F, "range", (void*) range, sig, args, 3, JIT_CALL_NOTHROW);
+
+		VM::delete_temporary(F, a);
+
+		return result;
 	}
 }
 

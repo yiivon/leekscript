@@ -26,6 +26,7 @@ public:
 
 	LSClass();
 	LSClass(std::string);
+	LSClass(std::string, int refs);
 	LSClass(JsonValue&);
 
 	virtual ~LSClass();

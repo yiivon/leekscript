@@ -20,7 +20,8 @@ public:
 	LSString(const char*);
 	LSString(std::string);
 	LSString(JsonValue&);
-	~LSString();
+
+	virtual ~LSString();
 
 	LSString* charAt(int index) const;
 

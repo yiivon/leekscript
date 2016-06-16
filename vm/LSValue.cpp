@@ -21,7 +21,6 @@ LSValue::LSValue() {
 
 LSValue::~LSValue() {
 //	cout << "~LSValue()" << endl;
-	obj_count--;
 	obj_deleted++;
 }
 
@@ -65,4 +64,12 @@ LSValue* LSValue::parse(JsonValue& json) {
 
 string LSValue::to_json() const {
 	return "{\"t\":" + to_string(typeID()) + ",\"v\":" + json() + "}";
+}
+
+void LSValue::delete_val(LSValue* value) {
+	value->refs--;
+	if (value->refs <= 0) {
+		//cout << "delete LSValue" << endl;
+		delete value;
+	}
 }

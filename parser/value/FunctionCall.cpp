@@ -304,7 +304,7 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 		for (int i = 0; i < arg_count - 1; ++i) {
 //			cout << "arg " << i << " : " << function->type.getArgumentType(i) << endl;
 			args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
-			args_types.push_back(function->type.getArgumentType(i).nature!= Nature::VALUE ? JIT_POINTER :
+			args_types.push_back(function->type.getArgumentType(i).nature != Nature::VALUE ? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION)	? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
 				(function->type.getArgumentType(i).raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
@@ -316,6 +316,15 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
 
 		jit_value_t res = jit_insn_call_native(F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
+
+		// Destroy temporary arguments
+		for (int i = 0; i < arg_count - 1; ++i) {
+			if (function->type.getArgumentType(i).nature == Nature::POINTER) {
+				VM::delete_temporary(F, args[i + 1]);
+			}
+		}
+
+		VM::delete_temporary(F, args[0]);
 
 		if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
 			return VM::value_to_pointer(F, res, type);
@@ -337,8 +346,8 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 		for (int i = 0; i < arg_count; ++i) {
 //			cout << "arg " << i << " : " << function->type.getArgumentType(i) << endl;
 			args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
-			args_types.push_back(function->type.getArgumentType(i).nature!= Nature::VALUE ? JIT_POINTER :
-				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION)	? JIT_POINTER :
+			args_types.push_back(function->type.getArgumentType(i).nature != Nature::VALUE ? JIT_POINTER :
+				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION) ? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
 				(function->type.getArgumentType(i).raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
 				JIT_INTEGER);
@@ -349,6 +358,13 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
 
 		jit_value_t res = jit_insn_call_native(F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
+
+		// Destroy temporary arguments
+		for (int i = 0; i < arg_count; ++i) {
+			if (function->type.getArgumentType(i).nature == Nature::POINTER) {
+				VM::delete_temporary(F, args[i]);
+			}
+		}
 
 		if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
 			return VM::value_to_pointer(F, res, type);
@@ -405,7 +421,7 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 	if (function->type.nature == Nature::POINTER) {
 		jit_value_t fun_addr = function->compile_jit(c, F, Type::NEUTRAL);
-		fun.push_back(jit_insn_load_relative(F, fun_addr, 8, JIT_POINTER));
+		fun.push_back(jit_insn_load_relative(F, fun_addr, 16, JIT_POINTER));
 	} else {
 		fun.push_back(function->compile_jit(c, F, Type::NEUTRAL));
 	}
@@ -437,9 +453,18 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 	//cout << "function call type " << type << endl;
 
+	// Destroy temporary arguments
+	for (int i = 0; i < arg_count; ++i) {
+		if (function->type.getArgumentType(i).nature == Nature::POINTER) {
+			VM::delete_temporary(F, args[i]);
+		}
+	}
+
 	if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
 		return VM::value_to_pointer(F, ret, type);
 	}
+
+
 
 	return ret;
 }

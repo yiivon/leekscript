@@ -79,7 +79,11 @@ LSValue* string_map(const LSString* s, void* function) {
 	std::string new_string = string("");
 	auto fun = (void* (*)(void*)) function;
 	for (char v : *s) {
-		new_string += *((LSString*) fun(new LSString(v)));
+		LSString* ch = new LSString(v);
+		ch->refs = 1;
+		LSString* res = (LSString*) fun(ch);
+		new_string += *res;
+//		LSValue::delete_val(res);
 	}
 	return new LSString(new_string);
 }

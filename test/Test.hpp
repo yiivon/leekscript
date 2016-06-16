@@ -11,6 +11,8 @@ class Test {
 	int total;
 	int success;
 	double exeTime;
+	int obj_created;
+	int obj_deleted;
 
 public:
 

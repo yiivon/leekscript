@@ -76,6 +76,9 @@ void* VM::compile(const string code) {
 
 string VM::execute(const string code, string ctx, ExecMode mode) {
 
+	LSValue::obj_count = 0;
+	LSValue::obj_deleted = 0;
+
 	auto compile_start = chrono::high_resolution_clock::now();
 
 	// Lexical analysis
@@ -114,6 +117,8 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 	Compiler c;
 	Context context { ctx };
 
+	//cout << "VM analyse" << endl;
+
 	try {
 		SemanticAnalyser sem;
 		sem.analyse(program, &context, modules);
@@ -129,6 +134,8 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 		}
 		return ctx;
 	}
+
+//	cout << "VM compile" << endl;
 
 	// Compilation
 	internals.clear();
@@ -155,6 +162,8 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 
 	auto compile_end = chrono::high_resolution_clock::now();
 
+//	cout << "VM execute" << endl;
+
 	/*
 	 * Execute
 	 */
@@ -171,60 +180,72 @@ string VM::execute(const string code, string ctx, ExecMode mode) {
 	/*
 	 * Return results
 	 */
-	string res_string;
+	string result;
 
 	if (mode == ExecMode::COMMAND_JSON || mode == ExecMode::TOP_LEVEL) {
 
 		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
 
 		ostringstream oss;
-		res_array->at(LSNumber::get(0))->print(oss);
-		res_string = oss.str();
+		res_array->operator[] (0)->print(oss);
+		result = oss.str();
 
 		string ctx = "{";
 
 		unsigned i = 0;
 		for (auto g : globals) {
 
-			LSValue* v = res_array->at(LSNumber::get(i + 1));
+			LSValue* v = res_array->operator[] (i + 1);
 			ctx += "\"" + g.first + "\":" + v->to_json();
 			if (i < globals.size() - 1) ctx += ",";
 			i++;
 		}
-
 		ctx += "}";
+		delete res_array;
 
 		if (mode == ExecMode::TOP_LEVEL) {
-			cout << res_string << endl;
+			cout << result << endl;
+			//cout << LSValue::obj_deleted << " / " << LSValue::obj_count << " ";
 			// cout << "ctx: " << ctx << endl;
 			cout << "(" << compile_time_ms << " ms + " << exe_time_ms << " ms)" << endl;
-			return ctx;
+			result = ctx;
 		} else {
 			cout << "{\"success\":true,\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
-					<< res_string << "\"}" << endl;
-			return ctx;
+					<< result << "\"}" << endl;
+			result = ctx;
 		}
 
 	} else if (mode == ExecMode::NORMAL) {
 
 		ostringstream oss;
 		res->print(oss);
-		res_string = oss.str();
+		LSValue::delete_val(res);
+		string res_string = oss.str();
 
 		cout << res_string << endl;
 		cout << "(" << compile_time_ms << "ms + " << exe_time_ms << " ms)" << endl;
 
-		return ctx;
+		result = ctx;
 
 	} else if (mode == ExecMode::TEST) {
 
 		ostringstream oss;
 		res->print(oss);
-		res_string = oss.str();
-		return oss.str();
+		result = oss.str();
+
+		LSValue::delete_val(res);
 	}
 
-	return ctx;
+	/*
+	 * Cleaning
+	 */
+	delete program;
+
+	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
+		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << endl;
+	}
+
+	return result;
 }
 
 LSValue* create_null_object(int) {
@@ -344,6 +365,50 @@ void VM::push_array_pointer(jit_function_t& F, jit_value_t& array, jit_value_t& 
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 	jit_value_t args_v[] = {array, value};
 	jit_insn_call_native(F, "push", (void*) push_array_pointer, sig, args_v, 2, JIT_CALL_NOTHROW);
+}
+
+int VM_get_refs(LSValue* val) {
+	return val->refs;
+}
+
+jit_value_t VM::get_refs(jit_function_t& F, jit_value_t& obj) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
+	return jit_insn_call_native(F, "get_refs", (void*) VM_get_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
+}
+
+void VM_inc_refs(LSValue* val) {
+	val->refs++;
+}
+
+void VM::inc_refs(jit_function_t& F, jit_value_t& obj) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+	jit_insn_call_native(F, "inc_refs", (void*) VM_inc_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
+}
+
+void VM_delete(LSValue* ptr) {
+	LSValue::delete_val(ptr);
+}
+
+void VM::delete_obj(jit_function_t& F, jit_value_t& obj) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+	jit_insn_call_native(F, "delete", (void*) VM_delete, sig, &obj, 1, JIT_CALL_NOTHROW);
+}
+
+void VM_delete_temporary(LSValue* val) {
+	if (val->refs == 0) {
+		//val->print(cout);
+		//cout << " " << val << " deleted" << endl;
+		delete val;
+	}
+}
+
+void VM::delete_temporary(jit_function_t& F, jit_value_t& obj) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+	jit_insn_call_native(F, "delete_temporary", (void*) VM_delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 }

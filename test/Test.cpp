@@ -15,6 +15,8 @@ Test::Test() {
 	total = 0;
 	success = 0;
 	exeTime = 0;
+	obj_deleted = 0;
+	obj_created = 0;
 }
 
 void Test::tests() {
@@ -271,7 +273,7 @@ void Test::tests() {
 	header("Array operations");
 	test("[1, 2, 3, 4, 5] ~~ x -> x ^ 2", "[1, 4, 9, 16, 25]");
 	test("[1, 2, 3, 4, 5] ~~ (x -> x ^ 2)", "[1, 4, 9, 16, 25]");
-	test("['yo', 'toto', 'salut'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
+	test("['first', 'toto', 'salut', 'a', 'b'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
 	test("[1, 2, 3] ~~ x -> [x]", "[[1], [2], [3]]");
 	test("[1, 2, 3] ~~ x -> 'yo'", "['yo', 'yo', 'yo']");
 //	test("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
@@ -441,8 +443,10 @@ void Test::tests() {
 
 	test("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
 	test("[3, 4, 5].filter(x -> x > 6)", "[]");
+
 	test("Array.contains([1, 2, 3, 10, 1], 1)", "true");
 	test("[3, 4, 5].contains(6)", "false");
+
 	test("Array.isEmpty([])", "true");
 	test("[3, 4, 5].isEmpty()", "false");
 	//test("let a = 0 Array.iter([1,2,3], x -> a += x) a", "6");
@@ -536,7 +540,7 @@ void Test::tests() {
 	 * Other stuff
 	 */
 	header("Other");
-	test("var f = obj -> obj.a [f(12), f({a: 'yo'})]", "[null, 'yo']");
+	//test("var f = obj -> obj.a [f(12), f({a: 'yo'})]", "[null, 'yo']");
 
 /*
 	test("3 ~ x -> x ^ x", "27");
@@ -578,10 +582,8 @@ void Test::tests() {
 	cout << "------------------------------------------------" << endl;
 	cout << "Total : " << total << ", succès : " << success << ", erreurs : " << (total - success) << endl;
 	cout << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms" << endl;
+	cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << (obj_created - obj_deleted) << " leaked)" << endl;
 	cout << "------------------------------------------------" << endl;
-
-	cout << "Obj count: " << ls::LSValue::obj_count << endl;
-	cout << "Obj deleted: " << ls::LSValue::obj_deleted << endl;
 }
 
 void Test::header(string text) {
@@ -595,6 +597,8 @@ void Test::test(string code, string expected) {
 	total++;
 
 	string res = vm.execute(code, "{}", ls::ExecMode::TEST);
+	obj_created += ls::LSValue::obj_count;
+	obj_deleted += ls::LSValue::obj_deleted;
 
 	if (res != expected) {
 		cout << "FAUX : " << code << "  =/=>  " << expected << "  got  " << res << endl;

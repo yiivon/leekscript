@@ -14,7 +14,8 @@ public:
 	static LSValue* null_var;
 	static LSClass* null_class;
 
-	LSNull() {}
+	LSNull();
+	LSNull(int refs);
 
 	~LSNull() {}
 

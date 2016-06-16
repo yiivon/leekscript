@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ls {
 
-LSClass* LSNumber::number_class = new LSClass("Number");
+LSClass* LSNumber::number_class = new LSClass("Number", 1);
 
 LSNumber* LSNumber::cache[CACHE_HIGH - CACHE_LOW + 1];
 
@@ -24,6 +24,7 @@ LSNumber* LSNumber::get(NUMBER_TYPE i) {
 		return cache[(int) (-CACHE_LOW + i)];
 	}
 #endif
+//	std::cout << "Number() " << i << endl;
 	return new LSNumber(i);
 }
 
@@ -33,7 +34,9 @@ LSNumber::LSNumber(NUMBER_TYPE value) : value(value) {}
 
 LSNumber::LSNumber(JsonValue& json) : value(json.toNumber()) {}
 
-LSNumber::~LSNumber() {}
+LSNumber::~LSNumber() {
+//	cout << "delete LSNumber : " << value << endl;
+}
 
 bool LSNumber::isTrue() const {
 	return value != 0;

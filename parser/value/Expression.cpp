@@ -238,9 +238,9 @@ LSValue* jit_store(LSValue** x, LSValue* y) {
 	return *x = y;
 }
 
-int jit_store_value(int* x, int y) {
+LSValue* jit_store_value(int* x, int y) {
 //	cout << "store" << endl;
-	return *x = y;
+	return LSNumber::get(*x = y);
 }
 
 LSValue* jit_swap(LSValue** x, LSValue** y) {
@@ -253,8 +253,8 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 LSValue* jit_add_equal(LSValue* x, LSValue* y) {
 	return y->operator += (x);
 }
-int jit_add_equal_value(int* x, int y) {
-	return *x += y;
+LSValue* jit_add_equal_value(int* x, int y) {
+	return LSNumber::get(*x += y);
 }
 LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
 	return y->operator -= (x);
@@ -311,11 +311,11 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 				if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
 
-//					cout << "array access" << endl;
-
 					args.push_back(l1->compile_jit_l(c, F, Type::NEUTRAL));
 					args.push_back(v2->compile_jit(c, F, Type::NEUTRAL));
+
 					ls_func = (void*) &jit_store_value;
+					v1_conv = Type::NEUTRAL;
 					v2_conv = Type::NEUTRAL;
 					use_jit_func = false;
 
@@ -330,7 +330,17 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 					return y;
 				}
 			} else if (v1->type.nature == Nature::POINTER) {
-				if (dynamic_cast<VariableValue*>(v1)) {
+
+				if (dynamic_cast<ArrayAccess*>(v1)) {
+
+					args.push_back(((LeftValue*) v1)->compile_jit_l(c, F, Type::POINTER));
+					args.push_back(v2->compile_jit(c, F, Type::POINTER));
+
+					VM::inc_refs(F, args[1]);
+
+					ls_func = (void*) &jit_store;
+
+				} else if (dynamic_cast<VariableValue*>(v1)) {
 					jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
 					jit_value_t y = v2->compile_jit(c, F, Type::POINTER);
 					jit_insn_store(F, x, y);
@@ -377,6 +387,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 				args.push_back(l1->compile_jit_l(c, F, Type::NEUTRAL));
 				args.push_back(v2->compile_jit(c, F, Type::NEUTRAL));
 				ls_func = (void*) &jit_add_equal_value;
+				v1_conv = Type::NEUTRAL;
 				v2_conv = Type::NEUTRAL;
 				use_jit_func = false;
 				break;
@@ -604,6 +615,14 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		jit_value_t v = jit_insn_call_native(F, "", ls_func, sig, args.data(), 2, JIT_CALL_NOTHROW);
 		if (v1->type.nature == Nature::VALUE and op->type == TokenType::PLUS_EQUAL) {
 			jit_insn_store(F, args[0], v);
+		}
+
+		// Delete operands
+		if (v1_conv.nature == Nature::POINTER) {
+			VM::delete_temporary(F, args[0]);
+		}
+		if (v2_conv.nature == Nature::POINTER) {
+			VM::delete_temporary(F, args[1]);
 		}
 
 		if (type == Type::BOOLEAN and req_type == Type::BOOLEAN) {

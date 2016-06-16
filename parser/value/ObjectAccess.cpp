@@ -45,9 +45,9 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 
 	//cout << "Classe : " << clazz << endl;
 
-	LSClass* std_class = (LSClass*) analyser->program->system_vars[clazz];
+	if (analyser->program->system_vars.find(clazz) != analyser->program->system_vars.end()) {
 
-	if (std_class) {
+		LSClass* std_class = (LSClass*) analyser->program->system_vars[clazz];
 
 		//cout << "Classe ! ";
 		//std_class->print(cout);
@@ -94,6 +94,7 @@ jit_value_t ObjectAccess::compile_jit(Compiler& c, jit_function_t& F, Type) cons
 
 	if (class_attr) {
 
+
 		// TODO : only functions!
 		return JIT_CREATE_CONST_POINTER(F, new LSFunction(attr_addr));
 
@@ -106,7 +107,12 @@ jit_value_t ObjectAccess::compile_jit(Compiler& c, jit_function_t& F, Type) cons
 
 		jit_value_t k = JIT_CREATE_CONST_POINTER(F,  new LSString(field));
 		jit_value_t args[] = {o, k};
-		return jit_insn_call_native(F, "access", (void*) object_access, sig, args, 2, JIT_CALL_NOTHROW);
+
+		jit_value_t res = jit_insn_call_native(F, "access", (void*) object_access, sig, args, 2, JIT_CALL_NOTHROW);
+
+		VM::delete_temporary(F, o);
+		VM::delete_temporary(F, k);
+		return res;
 	}
 }
 

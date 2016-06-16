@@ -7,15 +7,22 @@ using namespace std;
 
 namespace ls {
 
-LSClass* LSFunction::function_class = new LSClass("Function");
+LSClass* LSFunction::function_class = new LSClass("Function", 1);
 
 LSFunction::LSFunction(void* function) {
 	this->function = function;
 }
 
+LSFunction::LSFunction(void* function, int refs) {
+	this->function = function;
+	this->refs = refs;
+}
+
 LSFunction::LSFunction(JsonValue&) {
 	// TODO
 }
+
+LSFunction::~LSFunction() {}
 
 bool LSFunction::isTrue() const {
 	return true;

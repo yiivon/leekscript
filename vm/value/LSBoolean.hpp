@@ -20,6 +20,7 @@ public:
 
 	LSBoolean();
 	LSBoolean(bool value);
+	LSBoolean(bool value, int refs);
 	LSBoolean(JsonValue& data);
 
 	virtual ~LSBoolean();

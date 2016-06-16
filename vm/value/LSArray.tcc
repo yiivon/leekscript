@@ -9,11 +9,13 @@
 namespace ls {
 
 template <class T>
-LSValue* LSArray<T>::array_class(new LSClass("Array"));
+LSValue* LSArray<T>::array_class(new LSClass("Array", 1));
 
 template <class T>
 void LSArray<T>::push_clone(const T value) {
-	this->push_back((T) value->clone());
+	T val = (T) value->clone();
+	val->refs++;
+	this->push_back(val);
 }
 
 template <>
@@ -51,7 +53,24 @@ LSArray<T>::LSArray(JsonValue& json) {
 }
 
 template <class T>
-LSArray<T>::~LSArray() {}
+LSArray<T>::~LSArray() {
+//	std::cout << "~LSArray<T>" << std::endl;
+	for (auto v : *this) {
+//		std::cout << "delete ";
+//		v->print(std::cout);
+//		std::cout << " " << v->refs << std::endl;
+		LSValue::delete_val(v);
+	}
+}
+
+template <>
+inline LSArray<int>::~LSArray() {
+//	std::cout << "~LSArray<int>" << std::endl;
+}
+template <>
+inline LSArray<double>::~LSArray() {
+//	std::cout << "~LSArray<double>" << std::endl;
+}
 
 template <class T>
 void LSArray<T>::clear() {
@@ -100,7 +119,9 @@ T LSArray<T>::sum() const {
 	if (size() == 0) return (T) LSNumber::get(0);
 	LSValue* sum = this->operator [] (0)->clone();
 	for (unsigned i = 1; i < this->size(); ++i) {
-		sum = this->operator [] (i)->operator + (sum);
+		LSValue* new_sum = this->operator [] (i)->operator + (sum);
+//		LSValue::delete_val(sum);
+		sum = new_sum;
 	}
 	return (T) sum;
 }
@@ -175,6 +196,16 @@ inline LSValue* LSArray<int>::pop() {
 template <class T>
 void LSArray<T>::push_no_clone(T value) {
 	this->push_back(value);
+	value->refs++;
+}
+
+template <>
+inline void LSArray<int>::push_no_clone(int value) {
+	this->push_back(value);
+}
+template <>
+inline void LSArray<double>::push_no_clone(double value) {
+	this->push_back(value);
 }
 
 template <class T>
@@ -183,7 +214,12 @@ LSArray<LSValue*>* LSArray<T>::map(const void* function) const {
 	auto fun = (void* (*)(void*)) function;
 
 	for (auto v : *this) {
-		new_array->push_clone((LSValue*) fun((void*) v));
+//		v->print(std::cout);
+//		std::cout << std::endl;
+		LSValue* res = (LSValue*) fun((void*) v);
+//		res->print(std::cout);
+//		std::cout << std::endl;
+		new_array->push_clone(res);
 	}
 	return new_array;
 }
@@ -228,6 +264,7 @@ inline int LSArray<int>::contains_int(int val) const {
 template <class T>
 LSArray<T>* LSArray<T>::push(const T val) {
 	push_clone(val);
+	if (this->refs == 0) refs = 1;
 	return this;
 }
 
@@ -236,6 +273,7 @@ LSArray<T>* LSArray<T>::push_all(const LSArray<LSValue*>* array) {
 	for (auto v : *array) {
 		push_clone((T) v);
 	}
+	if (this->refs == 0) refs = 1;
 	return this;
 }
 
@@ -244,6 +282,7 @@ inline const LSArray<int>* LSArray<int>::push_all_int(const LSArray<int>* array)
 	for (auto v : *array) {
 		push_clone(v);
 	}
+	if (this->refs == 0) refs = 1;
 	return this;
 }
 
@@ -267,6 +306,7 @@ inline LSArray<int>* LSArray<int>::reverse() const {
 
 template <class T>
 LSArray<T>* LSArray<T>::filter(const void* function) const {
+	this->print(std::cout);
 	LSArray<T>* new_array = new LSArray<T>();
 	auto fun = (bool (*)(void*)) function;
 	for (auto v : *this) {
@@ -631,9 +671,11 @@ LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	for (auto v : *this) {
-		new_array->push_back((LSValue*) v);
+		new_array->push_clone(v);
 	}
-	new_array->insert(new_array->end(), array->begin(), array->end());
+	for (auto v : *array) {
+		new_array->push_clone(v);
+	}
 	return new_array;
 }
 
@@ -1564,6 +1606,8 @@ std::ostream& LSArray<T>::print(std::ostream& os) const {
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
 		(*i)->print(os);
+//		os << " " << *i;
+//		os << " " << (*i)->refs;
 	}
 	os << "]";
 	return os;
@@ -1699,7 +1743,7 @@ inline LSArray<LSValue*>* LSArray<int>::map(const void* function) const {
 	auto fun = (void* (*)(void*)) function;
 
 	for (auto v : *this) {
-		new_array->push_clone((LSValue*) fun((void*) LSNumber::get(v)));
+		new_array->push_no_clone((LSValue*) fun((void*) LSNumber::get(v)));
 	}
 	return new_array;
 }

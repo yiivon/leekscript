@@ -11,7 +11,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSString::string_class(new LSClass("String"));
+LSValue* LSString::string_class(new LSClass("String", 1));
 
 LSString::LSString() {}
 LSString::LSString(const char value) : string(string(1, value)) {}
@@ -19,13 +19,13 @@ LSString::LSString(const char* value) : string(value) {}
 LSString::LSString(std::string value) : string(value) {}
 LSString::LSString(JsonValue& json) : string(json.toString()) {}
 
-LSString::~LSString() {}
-
+LSString::~LSString() {
+//	cout << "delete LSString : '" << *this << "'" << endl;
+}
 
 LSString* LSString::charAt(int index) const {
 	return new LSString(this->operator[] (index));
 }
-
 
 /*
  * LSValue methods
@@ -601,6 +601,7 @@ LSValue* LSString::abso() const {
 
 std::ostream& LSString::print(std::ostream& os) const {
 	os << "'" << *this << "'";
+//	os << " µ" << this->refs;
 	return os;
 }
 string LSString::json() const {
@@ -608,7 +609,7 @@ string LSString::json() const {
 }
 
 LSValue* LSString::clone() const {
-	return new LSString(*this);
+	return new LSString((std::string) *this);
 }
 
 std::ostream& operator << (std::ostream& os, const LSString& obj) {

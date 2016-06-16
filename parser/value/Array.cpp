@@ -109,6 +109,7 @@ LSInterval* LSArray_create_interval(LSValue* a, LSValue* b) {
 void LSArray_push(LSArray<LSValue*>* array, LSValue* value) {
 //	cout << "push" << endl;
 	array->push_clone(value);
+	LSValue::delete_val(value);
 }
 
 void LSArray_push_integer(LSArray<int>* array, int value) {
@@ -137,7 +138,12 @@ jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 2, 0);
 		jit_value_t args_v[] = {a, b};
 
-		return jit_insn_call_native(F, "new", (void*) LSArray_create_interval, sig, args_v, 2, JIT_CALL_NOTHROW);
+		jit_value_t interval = jit_insn_call_native(F, "new", (void*) LSArray_create_interval, sig, args_v, 2, JIT_CALL_NOTHROW);
+
+		VM::delete_temporary(F, a);
+		VM::delete_temporary(F, b);
+
+		return interval;
 
 	} else if (associative) {
 
@@ -183,12 +189,15 @@ jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 			jit_value_t v = val->compile_jit(c, F, t);
 
+			if (t.nature == Nature::POINTER) {
+				VM::inc_refs(F, v);
+			}
+
 			jit_type_t args[2] = {JIT_POINTER, elem_type};
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 			jit_value_t args_v[] = {array, v};
 			jit_insn_call_native(F, "push", push, sig, args_v, 2, JIT_CALL_NOTHROW);
 		}
-
 		return array;
 	}
 }

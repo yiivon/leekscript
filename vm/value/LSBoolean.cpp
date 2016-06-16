@@ -7,9 +7,9 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
-LSBoolean* LSBoolean::false_val(new LSBoolean(false));
-LSBoolean* LSBoolean::true_val(new LSBoolean(true));
+LSValue* LSBoolean::boolean_class(new LSClass("Boolean", 1));
+LSBoolean* LSBoolean::false_val(new LSBoolean(false, 1));
+LSBoolean* LSBoolean::true_val(new LSBoolean(true, 1));
 
 LSBoolean* LSBoolean::get(bool value) {
 	return value ? true_val : false_val;
@@ -18,6 +18,10 @@ LSBoolean* LSBoolean::get(bool value) {
 LSBoolean::LSBoolean() : value(true) {}
 
 LSBoolean::LSBoolean(bool value) : value(value) {}
+
+LSBoolean::LSBoolean(bool value, int refs) : value(value) {
+	this->refs = refs;
+}
 
 LSBoolean::LSBoolean(JsonValue& json) : value(json.getTag() == JSON_TRUE) {}
 

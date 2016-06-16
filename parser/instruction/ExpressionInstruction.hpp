@@ -10,6 +10,7 @@ class ExpressionInstruction : public Instruction {
 public:
 
 	Value* value;
+	bool ret;
 
 	ExpressionInstruction(Value* expression);
 	virtual ~ExpressionInstruction();

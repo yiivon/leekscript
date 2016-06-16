@@ -43,10 +43,13 @@ jit_value_t Body::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
 		if (i == instructions.size() - 1) {
 			return instructions[i]->compile_jit(c, F, type);
 		} else {
-			instructions[i]->compile_jit(c, F, type);
+			jit_value_t res = instructions[i]->compile_jit(c, F, type);
+			if (type.nature == Nature::POINTER) {
+				VM::delete_temporary(F, res);
+			}
 		}
 	}
-	return JIT_CREATE_CONST_POINTER(F,LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }
 
 }

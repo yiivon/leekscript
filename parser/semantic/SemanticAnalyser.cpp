@@ -3,7 +3,9 @@
 #include "../Program.hpp"
 #include "SemanticError.hpp"
 #include "../../vm/Context.hpp"
+#include "../../vm/standard/NullSTD.hpp"
 #include "../../vm/standard/NumberSTD.hpp"
+#include "../../vm/standard/BooleanSTD.hpp"
 #include "../../vm/standard/StringSTD.hpp"
 #include "../../vm/standard/ArraySTD.hpp"
 #include "../../vm/standard/ObjectSTD.hpp"
@@ -19,7 +21,9 @@ SemanticAnalyser::SemanticAnalyser() {
 	reanalyse = false;
 }
 
-SemanticAnalyser::~SemanticAnalyser() {}
+SemanticAnalyser::~SemanticAnalyser() {
+
+}
 
 void SemanticVar::will_take(SemanticAnalyser* analyser, unsigned pos, const Type& type) {
 	if (value != nullptr) {
@@ -74,17 +78,17 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	op_type.setArgumentType(0, Type::POINTER);
 	op_type.setArgumentType(1, Type::POINTER);
 	op_type.setReturnType(Type::POINTER);
-	program->system_vars.insert(pair<string, LSValue*>("+", new LSFunction((void*) &jit_add)));
+	program->system_vars.insert(pair<string, LSValue*>("+", new LSFunction((void*) &jit_add, 1)));
 	add_var(new Token("+"), op_type, nullptr);
-	program->system_vars.insert(pair<string, LSValue*>("-", new LSFunction((void*) &jit_sub)));
+	program->system_vars.insert(pair<string, LSValue*>("-", new LSFunction((void*) &jit_sub, 1)));
 	add_var(new Token("-"), op_type, nullptr);
-	program->system_vars.insert(pair<string, LSValue*>("*", new LSFunction((void*) &jit_mul)));
+	program->system_vars.insert(pair<string, LSValue*>("*", new LSFunction((void*) &jit_mul, 1)));
 	add_var(new Token("*"), op_type, nullptr);
-	program->system_vars.insert(pair<string, LSValue*>("/", new LSFunction((void*) &jit_div)));
+	program->system_vars.insert(pair<string, LSValue*>("/", new LSFunction((void*) &jit_div, 1)));
 	add_var(new Token("/"), op_type, nullptr);
-	program->system_vars.insert(pair<string, LSValue*>("^", new LSFunction((void*) &jit_pow)));
+	program->system_vars.insert(pair<string, LSValue*>("^", new LSFunction((void*) &jit_pow, 1)));
 	add_var(new Token("^"), op_type, nullptr);
-	program->system_vars.insert(pair<string, LSValue*>("%", new LSFunction((void*) &jit_mod)));
+	program->system_vars.insert(pair<string, LSValue*>("%", new LSFunction((void*) &jit_mod, 1)));
 	add_var(new Token("%"), op_type, nullptr);
 
 	Type print_type = Type(RawType::FUNCTION, Nature::POINTER);
@@ -92,10 +96,13 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	print_type.setReturnType(Type::POINTER);
 	add_var(new Token("print"), print_type, nullptr);
 
+	NullSTD().include(this, program);
 	NumberSTD().include(this, program);
+	BooleanSTD().include(this, program);
 	StringSTD().include(this, program);
 	ArraySTD().include(this, program);
 	ObjectSTD().include(this, program);
+
 	for (Module* module : modules) {
 		module->include(this, program);
 	}

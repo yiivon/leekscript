@@ -7,7 +7,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSObject::object_class(new LSClass("Object"));
+LSValue* LSObject::object_class(new LSClass("Object", 1));
 
 LSObject::LSObject() {
 	clazz = nullptr;
@@ -35,10 +35,15 @@ LSObject::LSObject(JsonValue& json) {
 	}
 }
 
-LSObject::~LSObject() {}
+LSObject::~LSObject() {
+	for (auto v : values) {
+		LSValue::delete_val(v.second);
+	}
+}
 
 void LSObject::addField(string name, LSValue* var) {
-	this->values.insert(pair<string, LSValue*>(name, var));
+	this->values.insert({name, var});
+	var->refs++;
 }
 
 bool LSObject::isTrue() const {

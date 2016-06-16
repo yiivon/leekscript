@@ -26,8 +26,10 @@ public:
 	static int obj_count;
 	static int obj_deleted;
 
+	int refs = 0;
+
 	LSValue();
-	virtual ~LSValue();
+	virtual ~LSValue() = 0;
 
 	virtual bool isTrue() const = 0;
 
@@ -242,6 +244,8 @@ public:
 	virtual const BaseRawType* getRawType() const = 0;
 
 	static LSValue* parse(JsonValue& json);
+
+	static void delete_val(LSValue* value);
 };
 
 }

@@ -160,7 +160,13 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 
 		}
 	}
-	return jit_insn_call_native(F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
+	jit_value_t result = jit_insn_call_native(F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
+
+	if (expression->type.nature == Nature::POINTER) {
+		VM::delete_temporary(F, args[0]);
+	}
+
+	return result;
 }
 
 }

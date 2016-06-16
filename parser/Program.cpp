@@ -15,6 +15,10 @@ Program::~Program() {
 	if (body != nullptr) {
 		delete body;
 	}
+	for (auto v : system_vars) {
+		//cout << "delete " << v.first << endl;
+		LSValue::delete_val(v.second);
+	}
 }
 
 void Program::print(ostream& os) {
@@ -78,7 +82,7 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 	if (toplevel) {
 		for (auto var : context.vars) {
 
-//			cout << "context var " << var.first << endl;
+			cout << "context var " << var.first << endl;
 
 			string name = var.first;
 			LSValue* value = var.second;
@@ -91,12 +95,15 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 
 			globals.insert(pair<string, jit_value_t>(name, jit_var));
 			globals_types.insert(pair<string, Type>(name, Type(value->getRawType(), Nature::POINTER)));
+
+			value->refs++;
 		}
 	}
 
 //	cout << "execute" << endl;
 
 	jit_value_t res = body->compile_jit(c, F, Type::POINTER);
+	VM::inc_refs(F, res);
 
 //	cout << "body type : " << body->type << endl;
 
@@ -114,6 +121,7 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 		jit_value_t push_args[2] = {array, res};
 		jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, push_args, 2, 0);
 
+		VM::delete_obj(F, res);
 
 //		cout << "GLOBALS : " << globals.size() << endl;
 
@@ -131,6 +139,8 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 
 //				cout << "save pointer" << endl;
 				jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, var_args, 2, 0);
+
+				VM::delete_obj(F, g.second);
 
 			} else {
 //				cout << "save value" << endl;
@@ -156,7 +166,19 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 			}
 		}
 		jit_insn_return(F, array);
+
 	} else {
+
+		for (auto g : globals) {
+
+			Type type = globals_types[g.first];
+
+			if (type.nature == Nature::POINTER) {
+//				cout << "delete global " << g.first << endl;
+				VM::delete_obj(F, g.second);
+			}
+		}
+
 		jit_insn_return(F, res);
 	}
 }

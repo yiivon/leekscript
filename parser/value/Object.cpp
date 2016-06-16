@@ -49,6 +49,8 @@ jit_value_t Object::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 		jit_value_t v = values[i]->compile_jit(c, F, Type::POINTER);
 		jit_value_t args[] = {object, k, v};
 		jit_insn_call_native(F, "push", (void*) push_object, sig, args, 3, JIT_CALL_NOTHROW);
+
+		VM::delete_obj(F, k);
 	}
 
 	return object;

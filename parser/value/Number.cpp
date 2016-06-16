@@ -35,8 +35,10 @@ jit_value_t Number::compile_jit(Compiler&, jit_function_t& F, Type req_type) con
 
 	if (req_type.nature == Nature::POINTER) {
 
-		LSNumber* n = LSNumber::get(value);
-		return JIT_CREATE_CONST_POINTER(F, n);
+//		LSNumber* n = LSNumber::get(value);
+//		return JIT_CREATE_CONST_POINTER(F, n);
+		jit_value_t val = JIT_CREATE_CONST_FLOAT(F, JIT_FLOAT, value);
+		return VM::value_to_pointer(F, val, Type::FLOAT);
 
 	} else {
 		bool isfloat = type.raw_type == RawType::FLOAT;

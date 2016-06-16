@@ -6,8 +6,14 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSNull::null_var = new LSNull();
-LSClass* LSNull::null_class = new LSClass("Null");
+LSValue* LSNull::null_var = new LSNull(1);
+LSClass* LSNull::null_class = new LSClass("Null", 1);
+
+LSNull::LSNull() {}
+
+LSNull::LSNull(int refs) {
+	this->refs = refs;
+}
 
 bool LSNull::isTrue() const {
 	return false;
@@ -551,7 +557,7 @@ LSValue* LSNull::abso() const {
 }
 
 LSValue* LSNull::clone() const {
-	return LSNull::null_var;
+	return (LSValue*) this;
 }
 
 std::ostream& LSNull::print(std::ostream& os) const {

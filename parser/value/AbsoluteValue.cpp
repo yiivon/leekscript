@@ -33,7 +33,11 @@ jit_value_t AbsoluteValue::compile_jit(Compiler& c, jit_function_t& F, Type) con
 	jit_type_t args_types[2] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 
-	return jit_insn_call_native(F, "abso", (void*) abso, sig, &ex, 1, JIT_CALL_NOTHROW);
+	jit_value_t absolute_value = jit_insn_call_native(F, "abso", (void*) abso, sig, &ex, 1, JIT_CALL_NOTHROW);
+
+	VM::delete_temporary(F, ex);
+
+	return absolute_value;
 }
 
 }

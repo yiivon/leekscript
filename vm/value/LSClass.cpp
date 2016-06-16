@@ -9,7 +9,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSClass::class_class(new LSClass("Class"));
+LSValue* LSClass::class_class(new LSClass("Class", 1));
 
 LSClass::LSClass() : name("?") {
 	parent = nullptr;
@@ -19,12 +19,21 @@ LSClass::LSClass(string name) : name(name) {
 	parent = nullptr;
 }
 
+LSClass::LSClass(string name, int refs) : name(name) {
+	parent = nullptr;
+	this->refs = refs;
+}
+
 LSClass::LSClass(JsonValue&) {
 	parent = nullptr;
 	// TODO
 }
 
-LSClass::~LSClass() {}
+LSClass::~LSClass() {
+	for (auto s : static_fields) {
+		LSValue::delete_val(s.second);
+	}
+}
 
 void LSClass::addMethod(string& name, vector<Method>& method) {
 	methods.insert({name, method});

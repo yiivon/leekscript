@@ -86,6 +86,9 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 				jit_value_t val = expressions.at(i)->compile_jit(c, F, Type::NEUTRAL);
 				globals_types.insert(pair<string, Type>(variables[i]->content, expressions[i]->type));
 				jit_insn_store(F, var, val);
+				if (expressions.at(i)->type.nature == Nature::POINTER) {
+					VM::inc_refs(F, val);
+				}
 
 				if (i == expressions.size() - 1) {
 					if (expressions[i]->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
@@ -98,6 +101,7 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 				globals_types.insert(pair<string, Type>(variables[i]->content, Type::NULLL));
 				jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 				jit_insn_store(F, var, val);
+				VM::inc_refs(F, val);
 			}
 		} else {
 
@@ -109,6 +113,9 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 				jit_value_t val = expressions.at(i)->compile_jit(c, F, Type::NEUTRAL);
 
 				jit_insn_store(F, var, val);
+				if (expressions.at(i)->type.nature == Nature::POINTER) {
+					VM::inc_refs(F, val);
+				}
 
 				if (i == variables.size() - 1) {
 					if (expressions[i]->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
@@ -120,6 +127,7 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 
 				jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 				jit_insn_store(F, var, val);
+				VM::inc_refs(F, val);
 				return val;
 			}
 		}
