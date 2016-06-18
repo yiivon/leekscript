@@ -1,5 +1,6 @@
-SRC_DIR := . vm vm/value vm/standard vm/doc parser parser/lexical parser/syntaxic parser/semantic \
-parser/value parser/instruction lib benchmark test
+SRC_DIR := . src src/vm src/vm/value src/vm/standard src/vm/doc \
+src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic \
+src/compiler/value src/compiler/instruction lib benchmark test
 
 BUILD_DIR := $(addprefix build/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/shared/,$(SRC_DIR))
@@ -7,7 +8,7 @@ SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
 OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 
-FLAGS := -std=c++11 -O0 -g3 -Wall -Wextra -Wno-pmf-conversions
+FLAGS := -std=c++11 -O3 -g3 -Wall -Wextra -Wno-pmf-conversions
 LIBS := -ljit
 
 all: makedirs leekscript

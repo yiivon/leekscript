@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include "../vm/VM.hpp"
+
+#include "../leekscript.h"
 
 class Test {
 

@@ -3,11 +3,11 @@
 #include <sstream>
 
 #include "Test.hpp"
-#include "../vm/Context.hpp"
-#include "../parser/lexical/LexicalAnalyser.hpp"
-#include "../parser/syntaxic/SyntaxicAnalyser.hpp"
-#include "../parser/semantic/SemanticAnalyser.hpp"
-#include "../parser/semantic/SemanticError.hpp"
+#include "../src/vm/Context.hpp"
+#include "../src/compiler/lexical/LexicalAnalyser.hpp"
+#include "../src/compiler/syntaxic/SyntaxicAnalyser.hpp"
+#include "../src/compiler/semantic/SemanticAnalyser.hpp"
+#include "../src/compiler/semantic/SemanticError.hpp"
 
 using namespace std;
 
@@ -44,6 +44,9 @@ void Test::tests() {
 	test("let a", "null");
 	test("let a a = 12 a", "12");
 	test("let a = 1 let b = (a = 12)", "12");
+	test("let état = 12", "12");
+	test("let 韭 = 'leek'", "'leek'");
+	test("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ^ 🐨", "25");
 
 	/*
 	 * Booléens
@@ -96,8 +99,8 @@ void Test::tests() {
 	test("12 == (24 / 2)", "true");
 	test("2.5 + 4.7", "7.2");
 	test("2.5 × 4.7", "11.75");
-	// test("12344532132423", "12344532132423");
 	test("π", "3.1415926536");
+	// test("12344532132423", "12344532132423"); large number
 
 	/*
 	 * Opérations
@@ -137,7 +140,6 @@ void Test::tests() {
 	test("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }", "'ok'");
 
 	// let a = [for let i = 0; i < 100; i++ do i end]
-
 	// a[10:*]
 	// a[] = 12 (a += 12)
 
@@ -155,6 +157,20 @@ void Test::tests() {
 	test("'bonjour'[3]", "'j'");
 	test("~('salut' + ' ca va ?')", "'? av ac tulas'");
 	test("'bonjour'[2:5]", "'njou'");
+	test("'韭'", "'韭'");
+	test("'♫☯🐖👽'", "'♫☯🐖👽'");
+	test("'a♫b☯c🐖d👽'", "'a♫b☯c🐖d👽'");
+	test("var hello = '你好，世界'", "'你好，世界'");
+	test("'♫☯🐖👽'[3]", "'👽'");
+	test("'韭' + '♫'", "'韭♫'");
+	test("'♫👽'.size()", "2");
+	test("|'♫👽'|", "2");
+	test("'☣🦆🧀𑚉𒒫𑓇𐏊'.size()", "7");
+	test("'௵௵a௵௵' / 'a'", "['௵௵', '௵௵']");
+	test("'a☂a' / '☂'", "['a', 'a']");
+	test("~'∑∬∰∜∷⋙∳⌘⊛'", "'⊛⌘∳⋙∷∜∰∬∑'");
+	test("'ↂↂ' × 3", "'ↂↂↂↂↂↂ'");
+	test("'ḀḂḈḊḖḞḠḦḮḰḸḾṊṎṖ'[5:9]", "'ḞḠḦḮḰ'");
 
 	/*
 	 * Objects
@@ -205,16 +221,10 @@ void Test::tests() {
 //	test("[[x -> x ^ 2]][0][0](12)", "144");
 //	test("[[[x -> x ^ 2]]][0][0][0](12)", "144");
 //	test("[[[[[[[x -> x ^ 2]]]]]]][0][0][0][0][0][0][0](12)", "144");
-
-/*
-	test("let a = 5 let f = -> a f()", "5");
-
-	test("let f = x -> x (-> f(12))()", "12");
-
-	test("let f = x -> x let g = x -> f(x) g(12)", "12");
-
-	test("let g = x -> x ^ 2 let f = x, y -> g(x + y) f(6, 2)", "64");
-*/
+//	test("let a = 5 let f = -> a f()", "5");
+//	test("let f = x -> x (-> f(12))()", "12");
+//	test("let f = x -> x let g = x -> f(x) g(12)", "12");
+//	test("let g = x -> x ^ 2 let f = x, y -> g(x + y) f(6, 2)", "64");
 
 	test("(-> -> 12)()()", "12");
 	test("let f = -> -> 12 f()()", "12");
@@ -227,16 +237,12 @@ void Test::tests() {
 	test("return 1; 2", "1");
 //	test("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]", "[true, 12]");
 
-
-
 	/*
 	 * Closures
 	 */
 	header("Closures");
-	/*
-	test("let f = x -> y -> x + y let g = f(5) g(12)", "17");
-	test("let f = x -> y -> x + y f(5)(12)", "17");
-*/
+//	test("let f = x -> y -> x + y let g = f(5) g(12)", "17");
+//	test("let f = x -> y -> x + y f(5)(12)", "17");
 	/*
 	 * While loops
 	 */
@@ -273,10 +279,10 @@ void Test::tests() {
 	header("Array operations");
 	test("[1, 2, 3, 4, 5] ~~ x -> x ^ 2", "[1, 4, 9, 16, 25]");
 	test("[1, 2, 3, 4, 5] ~~ (x -> x ^ 2)", "[1, 4, 9, 16, 25]");
-	test("['first', 'toto', 'salut', 'a', 'b'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
+	test("['yo', 'toto', 'salut'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
 	test("[1, 2, 3] ~~ x -> [x]", "[[1], [2], [3]]");
 	test("[1, 2, 3] ~~ x -> 'yo'", "['yo', 'yo', 'yo']");
-//	test("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
+	test("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
 //	test("[1.2, 321.42, 23.15] ~~ x -> x * 1.7", "[2.04, 546.414, 39.355]");
 
 
@@ -399,6 +405,8 @@ void Test::tests() {
 	test("String.reverse('salut')", "'tulas'");
 	test("String.replace('bonjour à tous', 'o', '_')", "'b_nj_ur à t_us'");
 	test("String.map('salut', x -> '(' + x + ')')", "'(s)(a)(l)(u)(t)'");
+	test("'salut'.map(char -> char + '.')", "'s.a.l.u.t.'");
+	test("'♫☯🐖👽韭'.map(u -> u + ' ')", "'♫ ☯ 🐖 👽 韭 '");
 	test("String.split('bonjour ça va', ' ')", "['bonjour', 'ça', 'va']");
 	test("String.split('bonjour_*_ça_*_va', '_*_')", "['bonjour', 'ça', 'va']");
 	test("String.split('salut', '')", "['s', 'a', 'l', 'u', 't']");
