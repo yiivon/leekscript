@@ -13,9 +13,13 @@ LSValue* LSArray<T>::array_class(new LSClass("Array", 1));
 
 template <class T>
 void LSArray<T>::push_clone(const T value) {
-	T val = (T) value->clone();
-	val->refs++;
-	this->push_back(val);
+	if (value->native) {
+		this->push_back(value); // no clone if native value
+	} else {
+		T val = (T) value->clone();
+		((LSValue*) val)->refs++;
+		this->push_back(val);
+	}
 }
 
 template <>
@@ -59,7 +63,7 @@ LSArray<T>::~LSArray() {
 //		std::cout << "delete ";
 //		v->print(std::cout);
 //		std::cout << " " << v->refs << std::endl;
-		LSValue::delete_val(v);
+		LSValue::delete_val((LSValue*) v);
 	}
 }
 
@@ -671,7 +675,7 @@ LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	for (auto v : *this) {
-		new_array->push_clone(v);
+		new_array->push_clone((LSValue*) v);
 	}
 	for (auto v : *array) {
 		new_array->push_clone(v);

@@ -190,7 +190,7 @@ jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 			jit_value_t v = val->compile_jit(c, F, t);
 
-			if (t.nature == Nature::POINTER) {
+			if (t.must_manage_memory()) {
 				VM::inc_refs(F, v);
 			}
 

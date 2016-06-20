@@ -23,6 +23,7 @@ VM::~VM() {}
 map<string, jit_value_t> internals;
 map<string, jit_value_t> globals;
 map<string, Type> globals_types;
+map<string, bool> globals_ref;
 map<string, jit_value_t> locals;
 
 void VM::add_module(Module* m) {
@@ -182,7 +183,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 		unsigned i = 0;
 		for (auto g : globals) {
-
+			if (globals_ref[g.first]) continue;
 			LSValue* v = res_array->operator[] (i + 1);
 			ctx += "\"" + g.first + "\":" + v->to_json();
 			if (i < globals.size() - 1) ctx += ",";
@@ -365,6 +366,8 @@ jit_value_t VM::get_refs(jit_function_t& F, jit_value_t& obj) {
 }
 
 void VM_inc_refs(LSValue* val) {
+//	val->print(cout);
+//	cout << " inc refs" << endl;
 	val->refs++;
 }
 
@@ -382,10 +385,12 @@ void VM::delete_obj(jit_function_t& F, jit_value_t& obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "delete", (void*) VM_delete, sig, &obj, 1, JIT_CALL_NOTHROW);
+//	jit_insn_store(F, obj, JIT_CREATE_CONST(F, JIT_INTEGER, 0));
 }
 
 void VM_delete_temporary(LSValue* val) {
 	if (val->refs == 0) {
+//		cout << "delete temporary" << endl;
 		delete val;
 	}
 }

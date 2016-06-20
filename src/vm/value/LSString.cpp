@@ -7,8 +7,6 @@
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
 #include <string.h>
-#include <codecvt>
-#include <locale>
 #include "../../../lib/utf8.h"
 
 using namespace std;
@@ -23,7 +21,9 @@ LSString::LSString(const char* value) : string(value) {}
 LSString::LSString(std::string value) : string(value) {}
 LSString::LSString(JsonValue& json) : string(json.toString()) {}
 
-LSString::~LSString() {}
+LSString::~LSString() {
+//	cout << "~LSString " << *this << " " << refs << endl;
+}
 
 LSString* LSString::charAt(int index) const {
 	return new LSString(this->operator[] (index));
@@ -52,15 +52,16 @@ LSValue* LSString::operator ~ () const {
 
 	// reverse(copy.begin(), copy.end());
 
-	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-
+	char buff[5];
 	char* string_chars = (char*) this->c_str();
 	int i = 0;
 	int l = strlen(string_chars);
 	string reversed = "";
 	while (i < l) {
-		int c = u8_nextchar(string_chars, &i);
-		reversed = converter.to_bytes(c) + reversed;
+		u_int32_t c = u8_nextchar(string_chars, &i);
+
+		u8_toutf8(buff, 5, &c, 1);
+		reversed = buff + reversed;
 	}
 	return new LSString(reversed);
 }
@@ -270,8 +271,7 @@ LSValue* LSString::operator / (const LSNumber*) const {
 
 LSValue* LSString::operator / (const LSString* s) const {
 
-	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-
+	char buff[5];
 	char* string_chars = (char*) this->c_str();
 
 	LSArray<LSValue*>* array = new LSArray<LSValue*>();
@@ -283,8 +283,9 @@ LSValue* LSString::operator / (const LSString* s) const {
 		int i = 0;
 		int l = strlen(string_chars);
 		while (i < l) {
-			int c = u8_nextchar(string_chars, &i);
-			LSString* ch = new LSString(converter.to_bytes(c));
+			u_int32_t c = u8_nextchar(string_chars, &i);
+			u8_toutf8(buff, 5, &c, 1);
+			LSString* ch = new LSString(buff);
 			array->push_no_clone(ch);
 		}
  	} else {
@@ -294,12 +295,13 @@ LSValue* LSString::operator / (const LSString* s) const {
 		int l = strlen(string_chars);
 		std::string item = "";
 		while (i < l) {
-			int c = u8_nextchar(string_chars, &i);
+			u_int32_t c = u8_nextchar(string_chars, &i);
 			if (c == separator) {
 				array->push_no_clone(new LSString(item));
 				item = "";
 			} else {
-				item += converter.to_bytes(c);
+				u8_toutf8(buff, 5, &c, 1);
+				item += buff;
 			}
 		}
 		if (item.size() > 0) {
@@ -612,12 +614,12 @@ bool LSString::in(const LSValue*) const {
 	return false;
 }
 
-char32_t LSString::u8_char_at(char* s, int pos) {
+u_int32_t LSString::u8_char_at(char* s, int pos) {
 	int i = 0;
 	int j = 0;
 	int l = strlen(s);
 	while (i < l) {
-		int c = u8_nextchar(s, &i);
+		u_int32_t c = u8_nextchar(s, &i);
 		if (j++ == pos) return c;
 	}
 	return 0;
@@ -626,8 +628,11 @@ char32_t LSString::u8_char_at(char* s, int pos) {
 LSValue* LSString::at(const LSValue* key) const {
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 //		return new LSString(this->operator[] ((int) n->value));
-		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-		return new LSString(converter.to_bytes(u8_char_at((char*) this->c_str(), (int) n->value)));
+		char buff[5];
+		u_int32_t c = u8_char_at((char*) this->c_str(), (int) n->value);
+		cout << c << endl;
+		u8_toutf8(buff, 5, &c, 1);
+		return new LSString(buff);
 	}
 	return LSNull::null_var;
 }
@@ -639,8 +644,7 @@ LSValue** LSString::atL(const LSValue*) {
 
 LSValue* LSString::range(int start, int end) const {
 
-	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-
+	char buff[5];
 	char* string_chars = (char*) this->c_str();
 	std::string new_string;
 
@@ -649,9 +653,10 @@ LSValue* LSString::range(int start, int end) const {
 	int l = strlen(string_chars);
 	while (i < l) {
 		j++;
-		int c = u8_nextchar(string_chars, &i);
+		u_int32_t c = u8_nextchar(string_chars, &i);
 		if (j <= start) continue;
-		new_string += converter.to_bytes(c);
+		u8_toutf8(buff, 5, &c, 1);
+		new_string += buff;
 		if (j > end) break;
 	}
 	return new LSString(new_string);

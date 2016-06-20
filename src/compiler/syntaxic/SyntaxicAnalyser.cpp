@@ -517,7 +517,7 @@ Value* SyntaxicAnalyser::eatValue() {
 		case TokenType::AROBASE: {
 			eat();
 			Reference* r = new Reference();
-			r->variable = eatIdent()->token->content;
+			r->variable = eatIdent()->token;
 			return r;
 		}
 

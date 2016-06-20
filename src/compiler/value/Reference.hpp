@@ -6,10 +6,13 @@
 
 namespace ls {
 
+class SemanticVar;
+
 class Reference : public Value {
 public:
 
-	std::string variable;
+	Token* variable;
+	SemanticVar* var;
 
 	Reference();
 	virtual ~Reference();

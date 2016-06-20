@@ -28,6 +28,7 @@ public:
 	static int obj_deleted;
 
 	int refs = 0;
+	bool native;
 
 	LSValue();
 	virtual ~LSValue() = 0;

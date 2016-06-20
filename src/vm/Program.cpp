@@ -21,6 +21,11 @@ Program::~Program() {
 	}
 }
 
+void Program::execute() {
+	auto fun = (void* (*)()) function;
+	fun();
+}
+
 void Program::print(ostream& os) {
 	body->print(os);
 	cout << endl;
@@ -29,6 +34,7 @@ void Program::print(ostream& os) {
 extern map<string, jit_value_t> internals;
 extern map<string, jit_value_t> globals;
 extern map<string, Type> globals_types;
+extern map<string, bool> globals_ref;
 
 LSArray<LSValue*>* Program_create_array() {
 	return new LSArray<LSValue*>();
@@ -130,6 +136,11 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 			string name = g.first;
 			Type type = globals_types[name];
 
+			if (globals_ref[name] == true) {
+//				cout << name << " is ref, continue" << endl;
+				continue;
+			}
+
 //			cout << "save in context : " << name << ", type: " << type << endl;
 //			cout << "jit_val: " << g.second << endl;
 
@@ -140,7 +151,10 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 //				cout << "save pointer" << endl;
 				jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, var_args, 2, 0);
 
-				VM::delete_obj(F, g.second);
+//				cout << "delete global " << g.first << endl;
+				if (type.must_manage_memory()) {
+					VM::delete_obj(F, g.second);
+				}
 
 			} else {
 //				cout << "save value" << endl;
@@ -169,11 +183,21 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 
 	} else {
 
+		/*
+		 * var a = '2'
+		 * var b = @a
+		 * a = '5' <= '5' must
+		 *
+		 */
+
 		for (auto g : globals) {
 
+			if (globals_ref[g.first] == true) {
+				continue;
+			}
 			Type type = globals_types[g.first];
 
-			if (type.nature == Nature::POINTER) {
+			if (type.must_manage_memory()) {
 //				cout << "delete global " << g.first << endl;
 				VM::delete_obj(F, g.second);
 			}

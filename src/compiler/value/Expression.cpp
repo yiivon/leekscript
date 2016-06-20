@@ -245,7 +245,8 @@ LSValue* jit_ge(LSValue* x, LSValue* y) {
 }
 
 LSValue* jit_store(LSValue** x, LSValue* y) {
-//	cout << "store" << endl;
+	cout << "store" << endl;
+	y->refs++;
 	return *x = y;
 }
 
@@ -347,15 +348,26 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 					args.push_back(((LeftValue*) v1)->compile_jit_l(c, F, Type::POINTER));
 					args.push_back(v2->compile_jit(c, F, Type::POINTER));
 
-					VM::inc_refs(F, args[1]);
+					if (v1->type.must_manage_memory()) {
+						VM::inc_refs(F, args[1]);
+					}
 
 					ls_func = (void*) &jit_store;
 
 				} else if (dynamic_cast<VariableValue*>(v1)) {
+
 					jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
 					jit_value_t y = v2->compile_jit(c, F, Type::POINTER);
+
+					if (v2->type.must_manage_memory()) {
+						VM::inc_refs(F, y);
+					}
+					if (v2->type.must_manage_memory()) {
+						VM::delete_obj(F, x);
+					}
 					jit_insn_store(F, x, y);
 					return y;
+
 				} else {
 					args.push_back(((LeftValue*) v1)->compile_jit_l(c, F, Type::POINTER));
 					args.push_back(v2->compile_jit(c, F, Type::POINTER));

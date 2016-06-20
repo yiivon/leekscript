@@ -157,6 +157,7 @@ public:
 
 	const BaseRawType* raw_type;
 	Nature nature;
+	bool native; // A C++ objects, memory management is done outside the language
 	std::string clazz;
 	std::vector<Type> element_type;
 	std::vector<Type> return_types;
@@ -165,7 +166,11 @@ public:
 	Type();
 	Type(const Type& type);
 	Type(const BaseRawType* raw_type, Nature nature);
+	Type(const BaseRawType* raw_type, Nature nature, bool native);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type);
+	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native);
+
+	bool must_manage_memory();
 
 	Type getReturnType() const;
 	void setReturnType(Type type);

@@ -67,6 +67,17 @@ std::string LSValue::to_json() const {
 }
 
 void LSValue::delete_val(LSValue* value) {
+
+	if (value->native) return;
+
+//	cout << "delete " << value << endl;
+
+	if (value == nullptr) return;
+
+//	cout << "LSValue::delete_val ";
+//	value->print(cout);
+//	cout << " " << value->refs << endl;
+
 	value->refs--;
 	if (value->refs <= 0) {
 		//cout << "delete LSValue" << endl;

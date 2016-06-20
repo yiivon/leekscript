@@ -37,7 +37,6 @@ extern map<string, jit_value_t> internals;
 extern map<string, jit_value_t> globals;
 extern map<string, jit_value_t> locals;
 
-
 jit_value_t VariableValue::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {
 
 //	cout << "compile vv " << name->content << " : " << type << endl;

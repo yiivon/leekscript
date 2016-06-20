@@ -116,7 +116,7 @@ LSValue* string_reverse(LSString* string) {
 }
 
 LSValue* string_size(LSString* string) {
-	return new LSNumber(string->unicode_length());
+	return LSNumber::get(string->unicode_length());
 }
 
 LSValue* string_split(LSString* string, LSString* delimiter) {

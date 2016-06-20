@@ -14,7 +14,7 @@ class LSString : public LSValue, public std::string {
 public:
 
 	static LSValue* string_class;
-	static char32_t u8_char_at(char* s, int pos);
+	static u_int32_t u8_char_at(char* s, int pos);
 
 	LSString();
 	LSString(char);

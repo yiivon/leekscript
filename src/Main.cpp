@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
+#include "../lib/utf8.h"
 
 #include "../leekscript.h"
 
