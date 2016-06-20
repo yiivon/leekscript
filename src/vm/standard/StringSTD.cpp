@@ -2,8 +2,6 @@
 #include <vector>
 #include <math.h>
 #include <string.h>
-#include <locale>
-#include <codecvt>
 #include "../../../lib/utf8.h"
 
 #include "StringSTD.hpp"
@@ -81,8 +79,7 @@ LSValue* string_length(LSString* string) {
 
 LSValue* string_map(const LSString* s, void* function) {
 
-	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-
+	char buff[5];
 	std::string new_string = string("");
 	auto fun = (void* (*)(void*)) function;
 
@@ -91,8 +88,9 @@ LSValue* string_map(const LSString* s, void* function) {
 	int l = strlen(string_chars);
 
 	while (i < l) {
-		int c = u8_nextchar(string_chars, &i);
-		LSString* ch = new LSString(converter.to_bytes(c));
+		u_int32_t c = u8_nextchar(string_chars, &i);
+		u8_toutf8(buff, 5, &c, 1);
+		LSString* ch = new LSString(buff);
 		ch->refs = 1;
 		LSString* res = (LSString*) fun(ch);
 		new_string += *res;

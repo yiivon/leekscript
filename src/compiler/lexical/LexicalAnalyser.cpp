@@ -2,8 +2,6 @@
 
 #include <iostream>
 #include "../../../lib/utf8.h"
-#include <codecvt>
-#include <locale>
 #include <string.h>
 
 using namespace std;
@@ -121,8 +119,7 @@ vector<Token> LexicalAnalyser::analyse(std::string code) {
 
 vector<Token> LexicalAnalyser::parseTokens(string code) {
 
-	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-
+	char buff[5];
 	char* string_chars = (char*) code.c_str();
 
 	vector<Token> tokens;
@@ -145,9 +142,9 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 
 		character++;
 
-		int c = u8_nextchar(string_chars, &i);
+		u_int32_t c = u8_nextchar(string_chars, &i);
 		int oldi = i;
-		int nc = u8_nextchar(string_chars, &i);
+		u_int32_t nc = u8_nextchar(string_chars, &i);
 		i = oldi;
 
 		LetterType type = getLetterType(c);
@@ -178,7 +175,8 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
 						number = false;
 					} else if (string1 || string2) {
-						word += converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word += buff;
 					} else if (other) {
 						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
 						other = false;
@@ -186,7 +184,8 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 
 				} else if (type == LetterType::LETTER) {
 					if (ident || string1 || string2) {
-						word += converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word += buff;
 					} else if (number) {
 						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
 						number = false;
@@ -194,22 +193,27 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
 						other = false;
 						ident = true;
-						word = converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word = buff;
 					} else {
 						ident = true;
-						word = converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word = buff;
 					}
 				} else if (type == LetterType::NUMBER) {
 					if (number || ident || string1 || string2) {
-						word += converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word += buff;
 					} else if (other) {
 						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
 						other = false;
 						number = true;
-						word = converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word = buff;
 					} else {
 						number = true;
-						word = converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word = buff;
 					}
 				} else if (type == LetterType::QUOTE) {
 					if (ident) {
@@ -226,7 +230,8 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(TokenType::STRING, line, character, word));
 						string1 = false;
 					} else if (string2) {
-						word += converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word += buff;
 					} else if (other) {
 						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
 						other = false;
@@ -248,7 +253,8 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						string2 = true;
 						word = "";
 					} else if (string1) {
-						word += converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word += buff;
 					} else if (string2) {
 						tokens.push_back(Token(TokenType::STRING, line, character, word));
 						string2 = false;
@@ -266,33 +272,41 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(TokenType::IDENT, line, character, word));
 						ident = false;
 						other = true;
-						word = converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word = buff;
 					} else if (number) {
 						if (c == '.' && word.find('.') == string::npos && getLetterType(nc) == LetterType::NUMBER) {
-							word += converter.to_bytes(c);
+							u8_toutf8(buff, 5, &c, 1);
+							word += buff;
 						} else {
 							tokens.push_back(Token(TokenType::NUMBER, line, character, word));
 							number = false;
 							other = true;
-							word = converter.to_bytes(c);
+							u8_toutf8(buff, 5, &c, 1);
+							word = buff;
 						}
 					} else if (string1 || string2) {
-						word += converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word += buff;
 					} else if (other) {
 
 						if (c == '.' && (word == "." || word == "..")) {
-							word += converter.to_bytes(c);
+							u8_toutf8(buff, 5, &c, 1);
+							word += buff;
 
 						} else if (string("([{}]),;.").find(c) != string::npos || string("([{}]),;.").find(word) != string::npos
 								|| (word == "!" && c == '!')) {
 
 							tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
-							word = converter.to_bytes(c);
+							u8_toutf8(buff, 5, &c, 1);
+							word = buff;
 						} else {
-							word += converter.to_bytes(c);
+							u8_toutf8(buff, 5, &c, 1);
+							word += buff;
 						}
 					} else {
-						word = converter.to_bytes(c);
+						u8_toutf8(buff, 5, &c, 1);
+						word = buff;
 						other = true;
 					}
 				}
