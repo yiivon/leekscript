@@ -92,10 +92,11 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		}
 	}
 
-	os << "\"" << name << L"\":{";
+	os << "\"" << name << "\":{";
 
-	os << L"\"attributes\":{";
+	os << "\"attributes\":{";
 	for (unsigned e = 0; e < static_fields.size(); ++e) {
+
 		ModuleStaticField& a = static_fields[e];
 
 		std::string desc = (translation_map.find(a.name) != translation_map.end()) ?
@@ -127,6 +128,25 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		}
 		os << "}";
 	}
+
+	os << "},\"static_methods\":{";
+		for (unsigned e = 0; e < static_methods.size(); ++e) {
+			ModuleStaticMethod& m = static_methods[e];
+
+			if (e > 0) os << ",";
+			os << "\"" << m.name << "\":{\"type\":";
+			m.impl[0].type.toJson(os);
+
+			if (translation_map.find(m.name) != translation_map.end()) {
+				JsonNode* json = translation_map[m.name].toNode();
+				std::string desc = json->value.toString();
+				std::string return_desc = json->next->next->value.toString();
+
+				os << ",\"desc\":\"" << desc << "\"";
+				os << ",\"return\":\"" << return_desc << "\"";
+			}
+			os << "}";
+		}
 	os << "}}";
 }
 

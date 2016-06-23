@@ -1,0 +1,35 @@
+{
+	"static/pi": {
+		"desc": "Le nombre pi. Peut s'écrire 'π' au lieu de Number.pi"
+	},	
+	"abs": {
+		"desc": "Renvoie la valeur absolue du nombre number.",
+		"args": {
+			"x": "Le nombre dont la valeur absolue sera calculée."
+		},
+		"return": "La valeur absolue du nombre "
+	},
+	"acos": {
+		"desc": "Calcule l'arc cosinus du nombre, dans l'intervalle [0, #Number.pi].",
+		"args": {},
+		"return": "L'arc cosinus du nombre."
+	},
+	"acos": {
+		"desc": "Calcule l'arc sinus d'argument, dans l'intervalle [0, PI].",
+		"args": {},
+		"return": "L'arc sinus du nombre."
+	},
+	"atan": {
+		"desc": "Calcule l'arc tangente d'argument, dans l'intervalle [0, PI].",
+		"args": {},
+		"return": "L'arc tangente d'argument."
+	},
+	"atan2": {
+		"desc": "Convertit les coordonnées cartésiennes (x, y) en coordonnées polaires (r, theta). Cette fonction retourne l'angle theta entre -PI et PI en utilisant les signes des arguments.",
+		"args": {
+			"y": "Coordonnée en y."
+			"x": "Coordonnée en x."
+		},
+		"return": "L'angle theta en coordonnées polaires du point (x, y)."
+	}
+}

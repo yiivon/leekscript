@@ -230,7 +230,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	delete program;
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
-		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << endl;
+		//cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << endl;
 	}
 
 	return result;

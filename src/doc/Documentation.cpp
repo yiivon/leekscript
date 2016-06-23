@@ -4,10 +4,11 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include "../standard/ArraySTD.hpp"
-#include "../standard/NumberSTD.hpp"
-#include "../standard/ObjectSTD.hpp"
-#include "../standard/StringSTD.hpp"
+#include "../vm/standard/ArraySTD.hpp"
+#include "../vm/standard/BooleanSTD.hpp"
+#include "../vm/standard/NumberSTD.hpp"
+#include "../vm/standard/ObjectSTD.hpp"
+#include "../vm/standard/StringSTD.hpp"
 using namespace std;
 
 namespace ls {
@@ -22,6 +23,7 @@ void Documentation::generate(ostream& os) {
 
 	vector<Module*> modules;
 	modules.push_back(new ArraySTD());
+	modules.push_back(new BooleanSTD());
 	modules.push_back(new NumberSTD());
 	modules.push_back(new ObjectSTD());
 	modules.push_back(new StringSTD());
@@ -32,7 +34,7 @@ void Documentation::generate(ostream& os) {
 		if (m > 0) os << ",";
 
 		Module* mod = modules[m];
-		string file = "vm/doc/" + mod->name + "_" + lang + ".json";
+		string file = "src/doc/" + mod->name + "_" + lang + ".json";
 
 		mod->generate_doc(os, file);
 	}

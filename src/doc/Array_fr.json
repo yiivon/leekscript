@@ -1,0 +1,27 @@
+{	
+	"average": {
+		"desc": "Calcule la moyenne du tableau",
+		"args": {},
+		"return": "La moyenne du tableau : la somme de toutes les valeurs divisé par la taille du tableau"
+	},
+	"clear": {
+		"desc": "Supprime tous les éléments du tableau",
+		"args": {},
+		"return": "Le tableau lui-même"
+	},
+	"contains": {
+		"desc": "Vérifie si le tableau contient une valeur <b>value</b>",
+		"args": {
+			"value" : "La valeur à rechercher"
+		},
+		"return": "true si le tableau contient la valeur <b>value</b>, false sinon"
+	},
+	"fill": {
+		"desc": "Redimensionne le tableau array à la taille size et remplit toutes ses cases avec value.",
+		"args": {
+			"value": " La valeur pour chaque case du tableau",
+			"size": "Le nombre de cases"
+		},
+		"return": "Le tableau lui-même"
+	}
+}

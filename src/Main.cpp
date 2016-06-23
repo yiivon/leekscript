@@ -10,7 +10,7 @@
 #include "../leekscript.h"
 
 #include "../test/Test.hpp"
-#include "vm/doc/Documentation.hpp"
+#include "doc/Documentation.hpp"
 #include "../benchmark/Benchmark.hpp"
 
 using namespace std;
