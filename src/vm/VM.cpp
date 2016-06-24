@@ -209,7 +209,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 			cout << "(" << VM::operations << " ops, " << compile_time_ms << " ms + " << exe_time_ms << " ms)" << endl;
 			result = ctx;
 		} else {
-			cout << "{\"success\":true,\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
+			cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
 					<< result << "\"}" << endl;
 			result = ctx;
 		}
@@ -234,6 +234,11 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		result = oss.str();
 
 		LSValue::delete_val(res);
+
+	} else if (mode == ExecMode::TEST_OPS) {
+
+		LSValue::delete_val(res);
+		return to_string(VM::operations);
 	}
 
 	/*

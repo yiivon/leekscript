@@ -26,7 +26,7 @@ class Module;
 class Program;
 
 enum class ExecMode {
-	NORMAL, TOP_LEVEL, COMMAND_JSON, TEST
+	NORMAL, TOP_LEVEL, COMMAND_JSON, TEST, TEST_OPS
 };
 
 class vm_operation_exception : public std::exception {

@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-
 #include "../leekscript.h"
 
 class Test {
@@ -20,10 +19,13 @@ public:
 	Test();
 	virtual ~Test();
 
-	void tests();
+	void all();
 	void header(std::string);
-
 	void test(std::string code, std::string result);
+	void ops(std::string code, int operations);
+
+	void test_general();
+	void test_operations();
 };
 
 #endif

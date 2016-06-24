@@ -9,9 +9,9 @@
 
 #include "../leekscript.h"
 
-#include "../test/Test.hpp"
 #include "doc/Documentation.hpp"
 #include "../benchmark/Benchmark.hpp"
+#include "../test/Test.hpp"
 
 using namespace std;
 
@@ -25,12 +25,17 @@ int main(int argc, char* argv[]) {
 //	Benchmark::arrays();
 //	Benchmark::primes();
 
+	/*
+	 * Launch tests
+	 */
 	if (argc > 1 && string(argv[1]) == "-test") {
-		Test test;
-		test.tests();
+		Test().all();
 		return 0;
 	}
 
+	/*
+	 * Generate the standard functions documentation
+	 */
 	if (argc > 1 && string(argv[1]) == "-doc") {
 		ls::Documentation().generate(cout);
 		return 0;
