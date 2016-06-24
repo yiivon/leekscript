@@ -144,14 +144,15 @@ jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type)
 			(type.getReturnType().raw_type == RawType::FLOAT) ? JIT_FLOAT :
 			JIT_INTEGER);
 
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
-
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 0);
 	jit_function_t function = jit_function_create(context, signature);
 
 //	cout << "return type : " << type.getReturnType() << endl;
 
 	jit_value_t res = body->compile_jit(c, function, type.getReturnType());
 	jit_insn_return(function, res);
+
+	jit_insn_rethrow_unhandled(function);
 
 	jit_function_compile(function);
 	jit_context_build_end(context);

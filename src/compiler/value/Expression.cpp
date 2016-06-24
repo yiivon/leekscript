@@ -105,6 +105,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 
 	type = Type::VALUE;
 	constant = true;
+	operations = 1;
 
 	Type v1_type = Type::NEUTRAL;
 	Type v2_type = Type::NEUTRAL;
@@ -173,6 +174,19 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 				v2->type.setReturnType(vv->var->type.getReturnType());
 			}
 			type = Type::ARRAY;
+		}
+
+		// Merge operations count
+		// (2 + 3) × 4    ->  2 ops for the × directly
+		if (op->type != TokenType::OR or op->type == TokenType::AND) {
+			if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
+				operations += ex1->operations;
+				ex1->operations = 0;
+			}
+			if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
+				operations += ex2->operations;
+				ex2->operations = 0;
+			}
 		}
 	}
 
@@ -304,6 +318,10 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 	if (op == nullptr) {
 		return v1->compile_jit(c, F, req_type);
+	}
+
+	if (VM::enable_operations && operations > 0) {
+		VM::inc_ops(F, operations);
 	}
 
 //	cout << "v1 : " << v1->type << ", v2 : " << v2->type << endl;

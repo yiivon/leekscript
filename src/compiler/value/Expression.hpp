@@ -19,6 +19,8 @@ public:
 	bool ignorev2;
 	bool no_op;
 
+	int operations;
+
 	Expression();
 	Expression(Value*);
 	virtual ~Expression();

@@ -183,13 +183,6 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 
 	} else {
 
-		/*
-		 * var a = '2'
-		 * var b = @a
-		 * a = '5' <= '5' must
-		 *
-		 */
-
 		for (auto g : globals) {
 
 			if (globals_ref[g.first] == true) {
@@ -202,6 +195,8 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 				VM::delete_obj(F, g.second);
 			}
 		}
+
+//		VM::get_operations(F);
 
 		jit_insn_return(F, res);
 	}

@@ -450,7 +450,7 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, args_types.data(), arg_count, 0);
 
-	jit_value_t ret = jit_insn_call_indirect(F, fun[0], sig, args.data(), arg_count, JIT_CALL_NOTHROW);
+	jit_value_t ret = jit_insn_call_indirect(F, fun[0], sig, args.data(), arg_count, 0);
 
 	//cout << "function call type " << type << endl;
 

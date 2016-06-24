@@ -20,6 +20,10 @@ VM::VM() {}
 
 VM::~VM() {}
 
+unsigned int VM::operations = 0;
+const bool VM::enable_operations = true;
+const unsigned int VM::operation_limit = 2000000000;
+
 map<string, jit_value_t> internals;
 map<string, jit_value_t> globals;
 map<string, Type> globals_types;
@@ -139,11 +143,17 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	jit_context_build_start(jit_context);
 
 	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 1);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 0);
 	jit_function_t F = jit_function_create(jit_context, signature);
+	jit_insn_uses_catcher(F);
 
 	bool toplevel = mode != ExecMode::NORMAL && mode != ExecMode::TEST;
 	program->compile_jit(c, F, context, toplevel);
+
+	// catch (ex) {
+	jit_value_t ex = jit_insn_start_catcher(F);
+	VM::print_int(F, ex);
+	jit_insn_return(F, JIT_CREATE_CONST_POINTER(F, LSNull::null_var));
 
 	jit_function_compile(F);
 	jit_context_build_end(jit_context);
@@ -156,6 +166,8 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	/*
 	 * Execute
 	 */
+	operations = 0;
+
 	auto exe_start = chrono::high_resolution_clock::now();
 	LSValue* res = fun();
 	auto exe_end = chrono::high_resolution_clock::now();
@@ -194,7 +206,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 		if (mode == ExecMode::TOP_LEVEL) {
 			cout << result << endl;
-			cout << "(" << compile_time_ms << " ms + " << exe_time_ms << " ms)" << endl;
+			cout << "(" << VM::operations << " ops, " << compile_time_ms << " ms + " << exe_time_ms << " ms)" << endl;
 			result = ctx;
 		} else {
 			cout << "{\"success\":true,\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
@@ -211,7 +223,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 		cout << res_string << endl;
 		cout << LSValue::obj_deleted << " / " << LSValue::obj_count << " ";
-		cout << "(" << compile_time_ms << "ms + " << exe_time_ms << " ms)" << endl;
+		cout << "(" << VM::operations << " ops, " << compile_time_ms << "ms + " << exe_time_ms << " ms)" << endl;
 
 		result = ctx;
 
@@ -399,6 +411,45 @@ void VM::delete_temporary(jit_function_t& F, jit_value_t& obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "delete_temporary", (void*) VM_delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
+}
+
+void VM_operation_exception() {
+	throw vm_operation_exception();
+}
+
+void VM::inc_ops(jit_function_t& F, int add) {
+
+	// Variable counter pointer
+	jit_value_t jit_ops_ptr = jit_value_create_long_constant(F, jit_type_void_ptr, (long int) &VM::operations);
+
+	// Increment counter
+	jit_value_t jit_ops = jit_insn_load_relative(F, jit_ops_ptr, 0, jit_type_uint);
+	jit_insn_store_relative(F, jit_ops_ptr, 0, jit_insn_add(F, jit_ops, jit_value_create_nint_constant(F, jit_type_uint, add)));
+
+	// Compare to the limit
+	jit_value_t compare = jit_insn_gt(F, jit_ops, jit_value_create_nint_constant(F, jit_type_uint, VM::operation_limit));
+	jit_label_t label_end = jit_label_undefined;
+	jit_insn_branch_if_not(F, compare, &label_end);
+
+	// If greater than the limit, throw exception
+//	jit_type_t args[1] = {JIT_INTEGER};
+//	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+//	jit_insn_call_native(F, "throw_exception", (void*) VM_operation_exception, sig, &jit_ops, 1, JIT_CALL_NOTHROW);
+	jit_insn_throw(F, jit_value_create_nint_constant(F, jit_type_int, 12));
+
+	// End
+	jit_insn_label(F, &label_end);
+}
+
+void VM_print_int(int val) {
+//	cout << val << endl;
+	cout << "Execution ended, too much operations: " << VM::operations << " (" << val << ")" << endl;
+}
+
+void VM::print_int(jit_function_t& F, jit_value_t& val) {
+	jit_type_t args[1] = {JIT_INTEGER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+	jit_insn_call_native(F, "print_int", (void*) VM_print_int, sig, &val, 1, JIT_CALL_NOTHROW);
 }
 
 }
