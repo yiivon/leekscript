@@ -159,6 +159,9 @@ jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type)
 
 	void* f = jit_function_to_closure(function);
 
+	// Create a function : 1 op
+	VM::inc_ops(F, 1);
+
 	if (req_type.nature == Nature::POINTER) {
 //		cout << "create function pointer " << endl;
 		LSFunction* fo = new LSFunction(f);

@@ -226,6 +226,9 @@ LSValue* jit_and(LSValue* x, LSValue* y) {
 LSValue* jit_or(LSValue* x, LSValue* y) {
 	return LSBoolean::get(x->isTrue() or y->isTrue());
 }
+LSValue* jit_xor(LSValue* x, LSValue* y) {
+	return LSBoolean::get(x->isTrue() xor y->isTrue());
+}
 LSValue* jit_inc(LSValue* x) {
 	return x->operator ++ (1);
 }
@@ -539,6 +542,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		case TokenType::OR: {
 			jit_func = &jit_insn_or;
 			ls_func = (void*) &jit_or;
+			conv_info = Type::BOOLEAN;
+			break;
+		}
+		case TokenType::XOR: {
+			jit_func = &jit_insn_xor;
+			ls_func = (void*) &jit_xor;
 			conv_info = Type::BOOLEAN;
 			break;
 		}

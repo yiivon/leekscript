@@ -461,11 +461,12 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 		}
 	}
 
+	// Custom function call : 1 op
+	VM::inc_ops(F, 1);
+
 	if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
 		return VM::value_to_pointer(F, ret, type);
 	}
-
-
 
 	return ret;
 }

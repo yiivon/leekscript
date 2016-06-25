@@ -199,6 +199,10 @@ jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 			jit_value_t args_v[] = {array, v};
 			jit_insn_call_native(F, "push", push, sig, args_v, 2, JIT_CALL_NOTHROW);
 		}
+
+		// size of the array + 1 operations
+		VM::inc_ops(F, expressions.size() + 1);
+
 		return array;
 	}
 }

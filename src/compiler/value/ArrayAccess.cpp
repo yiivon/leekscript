@@ -114,6 +114,9 @@ jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_ty
 		}
 		VM::delete_temporary(F, a);
 
+		// Array access : 2 operations
+		VM::inc_ops(F, 2);
+
 		if (type.nature == Nature::VALUE and req_type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(F, res, type);
 		}
