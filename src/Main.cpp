@@ -19,6 +19,7 @@ bool param_time = false;
 bool param_verbose = false;
 bool param_exec = false;
 bool param_file = false;
+bool param_json = false;
 
 int main(int argc, char* argv[]) {
 
@@ -51,13 +52,14 @@ int main(int argc, char* argv[]) {
 			else if (c == 'v') param_verbose = true;
 			else if (c == 'e') param_exec = true;
 			else if (c == 'f') param_file = true;
+			else if (c == 'j') param_json = true;
 		}
 	}
 
 	std::string code;
 	ls::VM vm;
 
-	if (param_file) {
+	if (param_file || param_json) {
 
 		string file("");
 		if (argc > 2) file = argv[2];
@@ -69,7 +71,11 @@ int main(int argc, char* argv[]) {
 		ifs.close();
 
 		// Execute
-		vm.execute(code, "{}", ls::ExecMode::NORMAL);
+		if (param_file) {
+			vm.execute(code, "{}", ls::ExecMode::NORMAL);
+		} else if (param_json) {
+			vm.execute(code, "{}", ls::ExecMode::FILE_JSON);
+		}
 
 	} else if (param_exec) {
 

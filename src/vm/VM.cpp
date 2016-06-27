@@ -214,6 +214,16 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 			result = ctx;
 		}
 
+	} else if (mode == ExecMode::FILE_JSON) {
+
+		ostringstream oss;
+		res->print(oss);
+		LSValue::delete_val(res);
+
+		cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns
+			 << ",\"ctx\":" << ctx << ",\"res\":\"" << oss.str() << "\"}" << endl;
+
+
 	} else if (mode == ExecMode::NORMAL) {
 
 		ostringstream oss;
