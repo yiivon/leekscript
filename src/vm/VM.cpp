@@ -216,12 +216,16 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 	} else if (mode == ExecMode::FILE_JSON) {
 
+		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
+
 		ostringstream oss;
-		res->print(oss);
+		res_array->operator[] (0)->print(oss);
+		result = oss.str();
+
 		LSValue::delete_val(res);
 
 		cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns
-			 << ",\"ctx\":" << ctx << ",\"res\":\"" << oss.str() << "\"}" << endl;
+			 << ",\"ctx\":" << ctx << ",\"res\":\"" << result << "\"}" << endl;
 
 
 	} else if (mode == ExecMode::NORMAL) {

@@ -15,4 +15,4 @@ for let i = 5; i < 1000000; i += 6 do
 	if f(i + 2) c++
 end
 
-return c
+c
