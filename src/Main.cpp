@@ -30,8 +30,7 @@ int main(int argc, char* argv[]) {
 	 * Launch tests
 	 */
 	if (argc > 1 && string(argv[1]) == "-test") {
-		Test().all();
-		return 0;
+		return Test().all();
 	}
 
 	/*

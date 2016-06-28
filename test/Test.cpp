@@ -10,7 +10,7 @@ Test::Test() {
 
 Test::~Test() {}
 
-void Test::all() {
+int Test::all() {
 
 	clock_t begin = clock();
 	exeTime = 0;
@@ -21,13 +21,16 @@ void Test::all() {
 	test_operations();
 
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
+	int errors = (total - success);
 
 	std::cout << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
-	std::cout << "Total : " << total << ", succès : " << success << ", erreurs : " << (total - success) << std::endl;
+	std::cout << "Total : " << total << ", succès : " << success << ", erreurs : " << errors << std::endl;
 	std::cout << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
 	std::cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << (obj_created - obj_deleted) << " leaked)" << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
+
+	return errors;
 }
 
 void Test::header(std::string text) {

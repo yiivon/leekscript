@@ -11,10 +11,12 @@ OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 FLAGS := -std=c++11 -O3 -g3 -Wall -Wextra -Wno-pmf-conversions
 LIBS := -ljit
 
+.PHONY: test
+
 all: makedirs leekscript
 
-test: all
-	build/leekscript -test
+test:
+	@build/leekscript -test
 
 build/%.o: %.cpp
 	g++ -c $(FLAGS) -o "$@" "$<"
