@@ -20,4 +20,4 @@ before_install:
 - pushd /tmp/libjit/ && ./bootstrap && ./configure && make && sudo make install && popd
 
 script:
-- make
+- make && make test
