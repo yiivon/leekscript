@@ -5,14 +5,6 @@ language: cpp
 compiler:
 - gcc
 
-install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-- git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
-- cd /tmp/libjit/ && ./bootstrap && ./configure && make && make install
-
-script:
-- make
-
 addons:
   sources:
     - ubuntu-toolchain-r-test
@@ -20,3 +12,12 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
+    - texinfo
+
+install:
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+- git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
+- cd /tmp/libjit/ && ./bootstrap && ./configure && make && make install
+
+script:
+- make
