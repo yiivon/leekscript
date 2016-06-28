@@ -26,6 +26,8 @@ public:
 
 	void test_general();
 	void test_operations();
+	void test_operators();
+	void test_references();
 };
 
 #endif

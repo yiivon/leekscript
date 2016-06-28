@@ -236,7 +236,6 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		string res_string = oss.str();
 
 		cout << res_string << endl;
-		cout << LSValue::obj_deleted << " / " << LSValue::obj_count << " ";
 		cout << "(" << VM::operations << " ops, " << compile_time_ms << "ms + " << exe_time_ms << " ms)" << endl;
 
 		result = ctx;
@@ -252,7 +251,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	} else if (mode == ExecMode::TEST_OPS) {
 
 		LSValue::delete_val(res);
-		return to_string(VM::operations);
+		result = to_string(VM::operations);
 	}
 
 	/*
@@ -261,7 +260,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	delete program;
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
-		//cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << endl;
+		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << endl;
 	}
 
 	return result;
@@ -437,6 +436,8 @@ void VM_operation_exception() {
 }
 
 void VM::inc_ops(jit_function_t& F, int add) {
+
+	if (!enable_operations) return;
 
 	// Variable counter pointer
 	jit_value_t jit_ops_ptr = jit_value_create_long_constant(F, jit_type_void_ptr, (long int) &VM::operations);

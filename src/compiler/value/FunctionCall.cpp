@@ -24,7 +24,12 @@ FunctionCall::FunctionCall() {
 	this_ptr = nullptr;
 }
 
-FunctionCall::~FunctionCall() {}
+FunctionCall::~FunctionCall() {
+	delete function;
+	for (auto arg : arguments) {
+		delete arg;
+	}
+}
 
 void FunctionCall::print(std::ostream& os) const {
 	function->print(os);
@@ -207,6 +212,12 @@ void func_print(LSValue* v) {
 void func_print_int(int v) {
 	cout << " i>>> " << v << endl;
 }
+void func_print_bool(bool v) {
+	cout << " b>>> " << std::boolalpha << v << endl;
+}
+void func_print_float(double v) {
+	cout << " f>>> " << v << endl;
+}
 
 LSValue* create_float_object_3(double n) {
 	return LSNumber::get(n);
@@ -379,14 +390,22 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	if (f != nullptr) {
 		if (f->name->content == "print") {
 			jit_value_t v = arguments[0]->compile_jit(c, F, Type::NEUTRAL);
-			if (arguments[0]->type.nature == Nature::VALUE) {
+			if (arguments[0]->type == Type::INTEGER) {
 				jit_type_t args[1] = {JIT_INTEGER};
 				jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-				jit_insn_call_native(F, "lol", (void*) func_print_int, sig, &v, 1, JIT_CALL_NOTHROW);
+				jit_insn_call_native(F, "print", (void*) func_print_int, sig, &v, 1, JIT_CALL_NOTHROW);
+			} else if (arguments[0]->type == Type::FLOAT) {
+				jit_type_t args[1] = {JIT_FLOAT};
+				jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+				jit_insn_call_native(F, "print", (void*) func_print_float, sig, &v, 1, JIT_CALL_NOTHROW);
+			} else if (arguments[0]->type == Type::BOOLEAN) {
+				jit_type_t args[1] = {JIT_INTEGER};
+				jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+				jit_insn_call_native(F, "print", (void*) func_print_bool, sig, &v, 1, JIT_CALL_NOTHROW);
 			} else {
 				jit_type_t args[1] = {JIT_POINTER};
 				jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-				jit_insn_call_native(F, "lol", (void*) func_print, sig, &v, 1, JIT_CALL_NOTHROW);
+				jit_insn_call_native(F, "print", (void*) func_print, sig, &v, 1, JIT_CALL_NOTHROW);
 			}
 
 			return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);

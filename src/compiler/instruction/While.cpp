@@ -14,7 +14,10 @@ While::While() {
 	body = nullptr;
 }
 
-While::~While() {}
+While::~While() {
+	delete condition;
+	delete body;
+}
 
 void While::print(ostream& os) const {
 	os << "while ";

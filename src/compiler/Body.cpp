@@ -10,7 +10,7 @@ using namespace std;
 namespace ls {
 
 Body::Body() {
-	type = Type::VALUE;
+	type = Type::UNKNOWN;
 }
 
 Body::~Body() {
@@ -26,6 +26,10 @@ void Body::print(ostream& os) {
 		os << endl;
 	}
 	os << "}";
+}
+
+void Body::can_return(Type type) {
+
 }
 
 void Body::analyse(SemanticAnalyser* analyser, const Type& req_type) {

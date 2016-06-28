@@ -10,7 +10,9 @@ AbsoluteValue::AbsoluteValue() {
 	expression = nullptr;
 }
 
-AbsoluteValue::~AbsoluteValue() {}
+AbsoluteValue::~AbsoluteValue() {
+	delete expression;
+}
 
 void AbsoluteValue::print(std::ostream& os) const {
 	os << "|";

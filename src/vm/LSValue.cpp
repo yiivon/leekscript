@@ -16,6 +16,7 @@ int LSValue::obj_deleted = 0;
 
 LSValue::LSValue() {
 //	cout << "LSValue()" << endl;
+	native = false;
 	obj_count++;
 }
 
@@ -69,8 +70,6 @@ std::string LSValue::to_json() const {
 void LSValue::delete_val(LSValue* value) {
 
 	if (value->native) return;
-
-//	cout << "delete " << value << endl;
 
 	if (value == nullptr) return;
 

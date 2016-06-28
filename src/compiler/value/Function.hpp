@@ -29,6 +29,7 @@ public:
 	virtual ~Function();
 
 	void addArgument(Token* token, bool reference, Value* defaultValue);
+	void can_return(Type type);
 
 	virtual void print(std::ostream&) const override;
 

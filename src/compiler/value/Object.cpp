@@ -12,7 +12,11 @@ Object::Object() {
 	type = Type::OBJECT;
 }
 
-Object::~Object() {}
+Object::~Object() {
+	for (auto ex : values) {
+		delete ex;
+	}
+}
 
 void Object::print(ostream& os) const {
 	os << "{";

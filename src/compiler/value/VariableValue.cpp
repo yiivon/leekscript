@@ -49,17 +49,17 @@ jit_value_t VariableValue::compile_jit(Compiler&, jit_function_t& F, Type req_ty
 
 		jit_value_t v = internals[name->content];
 		if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, v, req_type);
+			return VM::value_to_pointer(F, v, var->type);
 		}
 		return v;
 
 	} else if (var->scope == VarScope::GLOBAL) {
 
-//		cout << "global var : " << name->content << endl;
+//		cout << "global var : " << name->content << " " << var->type << endl;
 
 		jit_value_t v = globals[name->content];
 		if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, v, req_type);
+			return VM::value_to_pointer(F, v, var->type);
 		}
 		return v;
 
@@ -67,8 +67,8 @@ jit_value_t VariableValue::compile_jit(Compiler&, jit_function_t& F, Type req_ty
 
 		jit_value_t v = locals[name->content];
 		if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-			cout << "convert local" << endl;
-			return VM::value_to_pointer(F, v, req_type);
+//			cout << "convert local" << endl;
+			return VM::value_to_pointer(F, v, var->type);
 		}
 		return v;
 
@@ -78,7 +78,7 @@ jit_value_t VariableValue::compile_jit(Compiler&, jit_function_t& F, Type req_ty
 
 		jit_value_t v = jit_value_get_param(F, var->index);
 		if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, v, req_type);
+			return VM::value_to_pointer(F, v, var->type);
 		}
 		return v;
 	}

@@ -13,7 +13,10 @@ PostfixExpression::PostfixExpression() {
 	return_value = true;
 }
 
-PostfixExpression::~PostfixExpression() {}
+PostfixExpression::~PostfixExpression() {
+	delete expression;
+	delete operatorr;
+}
 
 void PostfixExpression::print(ostream& os) const {
 	expression->print(os);

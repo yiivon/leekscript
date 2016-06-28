@@ -25,7 +25,7 @@ void Reference::analyse(SemanticAnalyser* analyser, const Type) {
 	var = analyser->get_var(variable);
 	type = var->type;
 
-	cout << "ref " << variable->content << " : " << type << endl;
+//	cout << "ref " << variable->content << " : " << type << endl;
 }
 
 extern map<string, jit_value_t> internals;
@@ -33,6 +33,8 @@ extern map<string, jit_value_t> globals;
 extern map<string, jit_value_t> locals;
 
 jit_value_t Reference::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {
+
+//	cout << "Reference compile()" << endl;
 
 	/*
 	jit_value_t v;

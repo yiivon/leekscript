@@ -15,7 +15,13 @@ ArrayAccess::ArrayAccess() {
 	type = Type::POINTER;
 }
 
-ArrayAccess::~ArrayAccess() {}
+ArrayAccess::~ArrayAccess() {
+	delete array;
+	delete key;
+	if (key2 != nullptr) {
+		delete key2;
+	}
+}
 
 void ArrayAccess::print(std::ostream& os) const {
 	array->print(os);

@@ -25,6 +25,16 @@ public:
 	virtual bool derived_from(const BaseRawType*) const { return false; }
 };
 
+class VoidRawType : public BaseRawType {
+public:
+	~VoidRawType() {};
+	virtual const std::string getName() const { return "Void"; };
+	virtual const std::string getJsonName() const { return "void"; };
+	virtual bool operator == (const BaseRawType*) { return false; }
+	bool operator == (const VoidRawType*) { return true; }
+	virtual bool derived_from(const BaseRawType*) const { return true; }
+};
+
 class NullRawType : public BaseRawType {
 public:
 	~NullRawType() {};
@@ -139,6 +149,7 @@ public:
 class RawType {
 public:
 	static const BaseRawType* const UNKNOWN;
+	static const VoidRawType* const VOID;
 	static const NullRawType* const NULLL;
 	static const BooleanRawType* const BOOLEAN;
 	static const NumberRawType* const NUMBER;
@@ -195,6 +206,7 @@ public:
 
 	void toJson(std::ostream&) const;
 
+	static const Type VOID;
 	static const Type NEUTRAL;
 	static const Type VALUE;
 	static const Type POINTER;

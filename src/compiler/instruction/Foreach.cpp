@@ -20,7 +20,10 @@ Foreach::Foreach() {
 	value_var = nullptr;
 }
 
-Foreach::~Foreach() {}
+Foreach::~Foreach() {
+	delete array;
+	delete body;
+}
 
 void Foreach::print(ostream& os) const {
 	os << "for ";

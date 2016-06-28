@@ -18,7 +18,9 @@ ObjectAccess::ObjectAccess() {
 	attr_addr = nullptr;
 }
 
-ObjectAccess::~ObjectAccess() {}
+ObjectAccess::~ObjectAccess() {
+	delete object;
+}
 
 void ObjectAccess::print(ostream& os) const {
 	object->print(os);

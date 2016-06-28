@@ -15,7 +15,11 @@ VariableDeclaration::VariableDeclaration() {
 	type = Type::VALUE;
 }
 
-VariableDeclaration::~VariableDeclaration() {}
+VariableDeclaration::~VariableDeclaration() {
+	for (auto ex : expressions) {
+		delete ex;
+	}
+}
 
 void VariableDeclaration::print(ostream& os) const {
 
@@ -95,9 +99,8 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 					globals[name] = val;
 					globals_ref[name] = true;
 					globals_types[name] = globals_types[ref->variable->content];
-
 				} else {
-					val = ex->compile_jit(c, F, Type::NEUTRAL);
+					val = ex->compile_jit(c, F, expressions.at(i)->type);
 					globals_types.insert({name, ex->type});
 					jit_insn_store(F, var, val);
 					if (expressions.at(i)->type.must_manage_memory()) {

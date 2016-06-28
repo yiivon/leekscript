@@ -630,7 +630,6 @@ LSValue* LSString::at(const LSValue* key) const {
 //		return new LSString(this->operator[] ((int) n->value));
 		char buff[5];
 		u_int32_t c = u8_char_at((char*) this->c_str(), (int) n->value);
-		cout << c << endl;
 		u8_toutf8(buff, 5, &c, 1);
 		return new LSString(buff);
 	}

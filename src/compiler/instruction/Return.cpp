@@ -21,7 +21,7 @@ Return::Return(Value* v) {
 }
 
 Return::~Return() {
-
+	delete expression;
 }
 
 void Return::print(ostream& os) const {
@@ -36,6 +36,7 @@ void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (f != nullptr) {
 		function = f;
 		in_function = true;
+//		f->can_return(expression->type);
 	}
 	type = expression->type;
 }

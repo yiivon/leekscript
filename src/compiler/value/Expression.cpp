@@ -13,14 +13,7 @@ using namespace std;
 
 namespace ls {
 
-Expression::Expression() {
-	v1 = nullptr;
-	v2 = nullptr;
-	op = nullptr;
-	fast = false;
-	ignorev2 = false;
-	no_op = false;
-}
+Expression::Expression() : Expression(nullptr) {}
 
 Expression::Expression(Value* v) {
 	v1 = v;
@@ -29,6 +22,7 @@ Expression::Expression(Value* v) {
 	fast = false;
 	ignorev2 = false;
 	no_op = false;
+	operations = 0;
 }
 
 Expression::~Expression() {
@@ -46,7 +40,7 @@ Expression::~Expression() {
 void Expression::append(Operator* op, Value* exp) {
 
 	/*
-	 * Single expression (2, 'toto', ...), just add the operator
+	 * Single expression (2, 'hello', ...), just add the operator
 	 */
 	if (this->op == nullptr) {
 		this->op = op;
@@ -268,7 +262,6 @@ LSValue* jit_store(LSValue** x, LSValue* y) {
 }
 
 LSValue* jit_store_value(int* x, int y) {
-//	cout << "store" << endl;
 	return LSNumber::get(*x = y);
 }
 
@@ -546,9 +539,23 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			break;
 		}
 		case TokenType::XOR: {
-			jit_func = &jit_insn_xor;
-			ls_func = (void*) &jit_xor;
-			conv_info = Type::BOOLEAN;
+			if (use_jit_func) {
+				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+				x = jit_insn_to_not_bool(F, x);
+				y = jit_insn_to_not_bool(F, y);
+				jit_value_t r = jit_insn_or(F,
+					jit_insn_and(F, x, jit_insn_not(F, y)),
+					jit_insn_and(F, y, jit_insn_not(F, x))
+				);
+				if (req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, r, Type::BOOLEAN);
+				}
+				return r;
+			} else {
+				ls_func = (void*) &jit_xor;
+				conv_info = Type::BOOLEAN;
+			}
 			break;
 		}
 		case TokenType::PLUS: {

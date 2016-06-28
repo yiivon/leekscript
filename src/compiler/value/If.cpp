@@ -14,7 +14,13 @@ If::If() {
 	inversed = false;
 }
 
-If::~If() {}
+If::~If() {
+	delete condition;
+	delete then;
+	if (elze != nullptr) {
+		delete elze;
+	}
+}
 
 void If::print(ostream& os) const {
 	os << "if ";

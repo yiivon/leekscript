@@ -124,7 +124,8 @@ T LSArray<T>::sum() const {
 	LSValue* sum = this->operator [] (0)->clone();
 	for (unsigned i = 1; i < this->size(); ++i) {
 		LSValue* new_sum = this->operator [] (i)->operator + (sum);
-//		LSValue::delete_val(sum);
+		new_sum->refs++;
+		LSValue::delete_val(sum);
 		sum = new_sum;
 	}
 	return (T) sum;
@@ -529,7 +530,10 @@ LSString* LSArray<T>::join(const LSString* glue) const {
 	auto it = this->begin();
 	LSValue* result = (*it)->operator + (new LSString());
 	for (it++; it != this->end(); it++) {
-		result = (*it)->operator + (glue->operator + (result));
+		LSValue* n = (*it)->operator + (glue->operator + (result));
+		n->refs++;
+		LSValue::delete_val(result);
+		result = n;
 	}
 	return (LSString*) result;
 }

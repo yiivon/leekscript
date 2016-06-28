@@ -16,6 +16,8 @@ void Test::all() {
 	exeTime = 0;
 
 	test_general();
+	test_operators();
+	test_references();
 	test_operations();
 
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
@@ -57,7 +59,6 @@ void Test::ops(std::string code, int expected) {
 	std::string res = vm.execute(code, "{}", ls::ExecMode::TEST_OPS);
 	obj_created += ls::LSValue::obj_count;
 	obj_deleted += ls::LSValue::obj_deleted;
-
 
 	int ops = std::stoi(res);
 	if (ops != expected) {

@@ -7,6 +7,7 @@ namespace ls {
 
 class Nulll : public Value {
 public:
+
 	Nulll();
 	virtual ~Nulll();
 

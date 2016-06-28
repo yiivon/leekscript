@@ -151,7 +151,7 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 //				cout << "save pointer" << endl;
 				jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, var_args, 2, 0);
 
-//				cout << "delete global " << g.first << endl;
+				cout << "delete global " << g.first << endl;
 				if (type.must_manage_memory()) {
 					VM::delete_obj(F, g.second);
 				}
@@ -195,9 +195,6 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 				VM::delete_obj(F, g.second);
 			}
 		}
-
-//		VM::get_operations(F);
-
 		jit_insn_return(F, res);
 	}
 }

@@ -94,7 +94,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 
 	Type print_type = Type(RawType::FUNCTION, Nature::POINTER);
 	print_type.setArgumentType(0, Type::VALUE);
-	print_type.setReturnType(Type::POINTER);
+	print_type.setReturnType(Type::VOID);
 	add_var(new Token("print"), print_type, nullptr);
 
 	NullSTD().include(this, program);

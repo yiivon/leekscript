@@ -33,6 +33,7 @@ void Test::test_general() {
 	test("let a", "null");
 	test("let a a = 12 a", "12");
 	test("let a = 1 let b = (a = 12)", "12");
+	test("let s = 'hello'", "'hello'");
 	test("let état = 12", "12");
 	test("let 韭 = 'leek'", "'leek'");
 	test("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ^ 🐨", "25");
@@ -53,6 +54,13 @@ void Test::test_general() {
 	test("true or false", "true");
 	test("false or true", "true");
 	test("false or false", "false");
+	test("true xor true", "false");
+	test("true xor false", "true");
+	test("false xor true", "true");
+	test("false xor false", "false");
+	test("12 xor 5", "false");
+	test("12 xor 0", "true");
+	test("false xor 99", "true");
 
 	/*
 	 * Numbers
@@ -109,6 +117,7 @@ void Test::test_general() {
 	test("[1, 2, 3]", "[1, 2, 3]");
 	test("[1.21, -5, 4.55, 12, -6.7]", "[1.21, -5, 4.55, 12, -6.7]");
 	test("[true, false, true]", "[true, false, true]");
+	test("[23, true, '', {}, 123]", "[23, true, '', {}, 123]");
 	test("[1, 2, 3] + [4, 5, 6]", "[1, 2, 3, 4, 5, 6]");
 	test("[] + 1", "[1]");
 	test("[] + 1 + 2 + 3", "[1, 2, 3]");
@@ -181,7 +190,7 @@ void Test::test_general() {
 	test("let a = 2 let b = @a let c = @b a = 7 c", "7");
 	test("let a = 2 let b = @a let c = @b c = 8 a", "8");
 	test("let a = 'hello' let b = @a a = 'world' b", "'world'");
-	//test("let a = true let b = @a b = false b", "false");
+	test("let a = true let b = @a b = false b", "false");
 	test("let v = 10 let a = [v] a[0]++ v", "10");
 	//test("let v = 10 let a = [@v] a[0]++ v", "11");
 
@@ -193,6 +202,10 @@ void Test::test_general() {
 	test("if false then 12 else 5 end", "5");
 	test("if (true) { 12 } else { 5 }", "12");
 	test("if (false) { 12 } else { 5 }", "5");
+	test("let a = if (false) { 12 } else { 5 } a", "5");
+	test("let a = if (true) { 'yo' } else { 'hello' } a", "'yo'");
+	test("let a = if (true) { 12 } else { 'hello' } a", "12");
+	test("let a = if (true) { 'hello' } else { 12 } a", "'hello'");
 
 	/*
 	 * Functions / Lambdas
@@ -215,7 +228,7 @@ void Test::test_general() {
 //	test("[[x -> x ^ 2]][0][0](12)", "144");
 //	test("[[[x -> x ^ 2]]][0][0][0](12)", "144");
 //	test("[[[[[[[x -> x ^ 2]]]]]]][0][0][0][0][0][0][0](12)", "144");
-//	test("let a = 5 let f = -> a f()", "5");
+
 //	test("let f = x -> x (-> f(12))()", "12");
 //	test("let f = x -> x let g = x -> f(x) g(12)", "12");
 //	test("let g = x -> x ^ 2 let f = x, y -> g(x + y) f(6, 2)", "64");
@@ -235,6 +248,7 @@ void Test::test_general() {
 	 * Closures
 	 */
 	header("Closures");
+//	test("let a = 5 let f = -> a f()", "5");
 //	test("let f = x -> y -> x + y let g = f(5) g(12)", "17");
 //	test("let f = x -> y -> x + y f(5)(12)", "17");
 	/*

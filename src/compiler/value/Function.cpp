@@ -12,11 +12,12 @@ Function::Function() {
 	pos = 0;
 	constant = true;
 	type = Type::FUNCTION;
-
-//	cout << "function:" << this << endl;
+	function_added = false;
 }
 
-Function::~Function() {}
+Function::~Function() {
+	delete body;
+}
 
 void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
 	arguments.push_back(name);

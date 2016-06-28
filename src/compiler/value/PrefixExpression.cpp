@@ -15,7 +15,10 @@ PrefixExpression::PrefixExpression() {
 	operatorr = nullptr;
 }
 
-PrefixExpression::~PrefixExpression() {}
+PrefixExpression::~PrefixExpression() {
+	delete expression;
+	delete operatorr;
+}
 
 void PrefixExpression::print(ostream& os) const {
 	operatorr->print(os);

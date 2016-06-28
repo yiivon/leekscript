@@ -5,6 +5,7 @@ using namespace std;
 namespace ls {
 
 const BaseRawType* const RawType::UNKNOWN = new BaseRawType();
+const VoidRawType* const RawType::VOID = new VoidRawType();
 const NullRawType* const RawType::NULLL = new NullRawType();
 const BooleanRawType* const RawType::BOOLEAN = new BooleanRawType();
 const NumberRawType* const RawType::NUMBER = new NumberRawType();
@@ -19,6 +20,7 @@ const ClassRawType* const RawType::CLASS = new ClassRawType();
 
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
 
+const Type Type::VOID(RawType::VOID, Nature::VALUE);
 const Type Type::NEUTRAL(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::VALUE(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
@@ -324,23 +326,28 @@ bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Ty
 	return false;
 }
 
-Type Type::get_compatible_type(Type& t1, Type& t2) {
+Type Type::get_compatible_type(Type& old_type, Type& new_type) {
 
-	if (t1 == t2) {
-		return t1;
+	if (old_type == new_type) {
+		return old_type;
 	}
 
-	if (t1.raw_type == RawType::UNKNOWN) {
-		return t2;
+	if (old_type.nature == Nature::POINTER and new_type.nature == Nature::VALUE) {
+		return old_type;
 	}
-	if (t2.raw_type == RawType::UNKNOWN) {
-		return t1;
+
+	if (old_type.raw_type == RawType::UNKNOWN) {
+		return new_type;
 	}
-	if (t1.compatible(t2)) {
-		return t1;
+	if (new_type.raw_type == RawType::UNKNOWN) {
+		return old_type;
 	}
-	if (t2.compatible(t1)) {
-		return t2;
+
+	if (old_type.compatible(new_type)) {
+		return old_type;
+	}
+	if (new_type.compatible(old_type)) {
+		return new_type;
 	}
 	return Type::POINTER;
 }

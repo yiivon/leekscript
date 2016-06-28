@@ -22,7 +22,14 @@ void Array::addValue(Value* value, Value* key) {
 	}
 }
 
-Array::~Array() {}
+Array::~Array() {
+	for (auto ex : keys) {
+		delete ex;
+	}
+	for (auto ex : expressions) {
+		delete ex;
+	}
+}
 
 void Array::print(std::ostream& os) const {
 	os << "[";
@@ -47,24 +54,26 @@ void Array::analyse(SemanticAnalyser* analyser, const Type) {
 		key.analyse(analyser, Type::NEUTRAL);
 	}
 
-	Type element_type = Type::UNKNOWN;
+	if (expressions.size() > 0) {
 
-	for (unsigned i = 0; i < expressions.size(); ++i) {
+		Type element_type = Type::UNKNOWN;
 
-		Value* ex = expressions[i];
+		for (unsigned i = 0; i < expressions.size(); ++i) {
 
-		ex->analyse(analyser, Type::NEUTRAL);
+			Value* ex = expressions[i];
+			ex->analyse(analyser, Type::NEUTRAL);
 
-		if (ex->constant == false) {
-			constant = false;
+			if (ex->constant == false) {
+				constant = false;
+			}
+			if (i == 0) {
+				element_type = ex->type;
+			} else {
+				element_type = Type::get_compatible_type(element_type, ex->type);
+			}
 		}
-
-//		cout << "Element : " << ex->type << endl;
-
-		element_type = Type::get_compatible_type(element_type, ex->type);
+		type.setElementType(element_type);
 	}
-
-	type.setElementType(element_type);
 
 //	cout << "Array type : " << type << endl;
 }

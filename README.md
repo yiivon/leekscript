@@ -22,7 +22,7 @@ Export as shared library
 ```
 make lib
 ```
-`libleekscript.so` will be in `build/` folder. You can `make install` to copy it in `/usr/lib`.
+`libleekscript.so` will be in `build/` folder. You can `make install` to copy it in `/usr/lib/`.
 
 Usage
 -----

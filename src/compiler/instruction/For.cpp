@@ -14,7 +14,18 @@ For::For() {
 	body = nullptr;
 }
 
-For::~For() {}
+For::~For() {
+	for (auto v : variablesValues) {
+		delete v;
+	}
+	if (condition != nullptr) {
+		delete condition;
+	}
+	for (auto i : iterations) {
+		delete i;
+	}
+	delete body;
+}
 
 void For::print(ostream& os) const {
 	os << "for ";
@@ -32,8 +43,9 @@ void For::print(ostream& os) const {
 		}
 	}
 	os << "; ";
-	if (condition != nullptr)
-	condition->print(os);
+	if (condition != nullptr) {
+		condition->print(os);
+	}
 	os << "; ";
 	for (unsigned i = 0; i < iterations.size(); ++i) {
 		iterations.at(i)->print(os);

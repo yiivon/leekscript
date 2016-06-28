@@ -19,6 +19,8 @@ public:
 
 	void print(std::ostream& os);
 
+	void can_return(Type type);
+
 	void analyse(SemanticAnalyser* analyser, const Type& req_type);
 
 	jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const;
