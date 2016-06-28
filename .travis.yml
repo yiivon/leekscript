@@ -1,4 +1,6 @@
-sudo: false
+sudo: required
+dist: trusty
+
 language: cpp
 
 compiler:
@@ -11,6 +13,8 @@ script:
 - make
 
 addons:
+  sources:
+    - ubuntu-toolchain-r-test
   apt:
     packages:
     - gcc-4.8
