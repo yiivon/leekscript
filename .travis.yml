@@ -17,7 +17,7 @@ addons:
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 - git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
-- cd /tmp/libjit/ && ./bootstrap && ./configure && make && make install
+- cd /tmp/libjit/ && ./bootstrap && ./configure && make && sudo make install
 
 script:
 - make
