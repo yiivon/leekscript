@@ -1,0 +1,23 @@
+sudo: required
+dist: trusty
+language: cpp
+
+compiler:
+- gcc
+
+addons:
+  sources:
+    - ubuntu-toolchain-r-test
+  apt:
+    packages:
+    - gcc-4.8
+    - g++-4.8
+    - texinfo
+
+before_install:
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+- git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
+- pushd /tmp/libjit/ && ./bootstrap && ./configure && make && sudo make install && popd
+
+script:
+- make

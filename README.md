@@ -1,6 +1,8 @@
 LeekScript language
 ===================
 
+[![Build Status](https://travis-ci.org/leek-wars/leekscript.svg?branch=master)](https://travis-ci.org/leek-wars/leekscript)
+
 LeekScript is a language initially designed for Leek Wars.
 The project is still in development, and shouldn't be used for the moment.
 
