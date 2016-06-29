@@ -1704,7 +1704,7 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		try {
-			return (LSValue*) this->operator[] ((int) n->value);
+			return (LSValue*) this->operator[] ((int) n->value)->clone();
 		} catch (std::exception& e) {
 			return LSNull::null_var;
 		}

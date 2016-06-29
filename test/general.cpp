@@ -513,6 +513,10 @@ void Test::test_general() {
 	test("let a = [1, 2, 3] Array.push(a, 4)", "[1, 2, 3, 4]");
 	test("[].push([])", "[[]]");
 	test("[0].pushAll([1, 2, 3])", "[0, 1, 2, 3]");
+	test("let a = [1, 2] a.push(3) a", "[1, 2, 3]");
+//	test("let a = [1, 2] a.push(3.5) a", "[1, 2, 3.5]");
+	test("let a = [1.5, -2.9] a.push(3.5) a", "[1.5, -2.9, 3.5]");
+
 	test("Array.concat([], [true, 'yo'])", "[true, 'yo']");
 
 	test("[].join('a')", "''");

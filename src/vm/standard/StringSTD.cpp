@@ -17,6 +17,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);
 	method("contains", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);
 	method("endsWith", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_endsWith);
+	method("indexOf", Type::STRING, Type::INTEGER, {Type::STRING}, (void*) &string_indexOf);
 	method("length", Type::STRING, Type::INTEGER_P, {}, (void*) &string_length);
 	method("size", Type::STRING, Type::INTEGER_P, {}, (void*) &string_size);
 	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
@@ -69,8 +70,11 @@ LSValue* string_endsWith(LSString* string, LSString* ending) {
 	return LSBoolean::get(std::equal(ending->rbegin(), ending->rend(), string->rbegin()));
 }
 
-LSValue* string_indexOf(LSString* haystack, LSString* needle) {
-	return LSNumber::get(haystack->find(*needle));
+int string_indexOf(LSString* string, LSString* needle) {
+	if (needle->size() > string->size()) {
+		return -1;
+	}
+	return string->find(*needle);
 }
 
 LSValue* string_length(LSString* string) {

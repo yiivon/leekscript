@@ -116,7 +116,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("push", {
-		{Type::ARRAY, Type::ARRAY, {Type::POINTER}, (void*) &LSArray<LSValue*>::push}
+		{Type::ARRAY, Type::ARRAY, {Type::POINTER}, (void*) &LSArray<LSValue*>::push},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {Type::FLOAT}, (void*) &LSArray<double>::push},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::push},
 	});
 
 	method("pushAll", {

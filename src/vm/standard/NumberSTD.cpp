@@ -50,9 +50,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("max", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_max);
 	static_method("min", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_min);
 	static_method("pow", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_pow);
-	static_method("rand", Type::FLOAT_P, {}, (void*) &number_rand);
+	static_method("rand", Type::FLOAT, {}, (void*) &number_rand);
 	static_method("randFloat", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat);
-	static_method("randInt", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_randInt);
+	static_method("randInt", Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &number_randInt);
 	static_method("round", Type::INTEGER_P, {Type::NUMBER}, (void*) &number_round);
 	static_method("signum", Type::INTEGER_P, {Type::NUMBER}, (void*) &number_signum);
 	static_method("sin", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_sin);
@@ -126,16 +126,16 @@ LSNumber* number_pow(const LSNumber* x, const LSNumber* y) {
 	return LSNumber::get(pow(x->value, y->value));
 }
 
-LSNumber* number_rand() {
-	return LSNumber::get((double) rand() / RAND_MAX);
+double number_rand() {
+	return (double) rand() / RAND_MAX;
 }
 
 LSNumber* number_randFloat(const LSNumber* min, const LSNumber* max) {
 	return LSNumber::get(min->value + ((double) rand() / RAND_MAX) * max->value);
 }
 
-LSNumber* number_randInt(const LSNumber* min, const LSNumber* max) {
-	return LSNumber::get(floor(min->value + ((double) rand() / RAND_MAX) * max->value));
+int number_randInt(int min, int max) {
+	return floor(min + ((double) rand() / RAND_MAX) * (max - min));
 }
 
 LSNumber* number_round(const LSNumber* number) {

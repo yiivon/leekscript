@@ -23,8 +23,7 @@ bool param_json = false;
 
 int main(int argc, char* argv[]) {
 
-//	Benchmark::arrays();
-//	Benchmark::primes();
+	srand(time(0));
 
 	/*
 	 * Launch tests

@@ -63,44 +63,55 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 		VariableValue* vv = dynamic_cast<VariableValue*>(oa->object);
 		if (vv != nullptr and vv->name->content == "Number") {
-			is_native = true;
+
 			if (oa->field == "abs") {
 				function->type.setArgumentType(0, Type::INTEGER);
 				function->type.setReturnType(Type::INTEGER);
+				is_native = true;
 			} else if (oa->field == "floor") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::INTEGER);
+				is_native = true;
 			} else if (oa->field == "round") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
+				is_native = true;
 			} else if (oa->field == "ceil") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::INTEGER);
+				is_native = true;
 			} else if (oa->field == "cos") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
+				is_native = true;
 			} else if (oa->field == "sin") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
+				is_native = true;
 			} else if (oa->field == "max") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setArgumentType(1, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
+				is_native = true;
 			} else if (oa->field == "min") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setArgumentType(1, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
+				is_native = true;
 			} else if (oa->field == "sqrt") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
+				is_native = true;
 			} else if (oa->field == "pow") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setArgumentType(1, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
+				is_native = true;
 			}
 			native_func = oa->field;
+		}
 
-		} else {
+		if (!is_native) {
 
 //			cout << "oa : " << oa->field << endl;
 
@@ -259,7 +270,9 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	 */
 	if (is_native) {
 
-		jit_value_t res;
+//		cout << "function call number" << endl;
+
+		jit_value_t res = nullptr;
 
 		if (native_func == "abs") {
 			jit_value_t v = arguments[0]->compile_jit(c, F, Type::VALUE);
@@ -296,10 +309,13 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 			res = jit_insn_pow(F, v1, v2);
 		}
 
-		if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
-			return VM::value_to_pointer(F, res, type);
+		if (res != nullptr) {
+//			cout << "function call native number" << endl;
+			if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
+				return VM::value_to_pointer(F, res, type);
+			}
+			return res;
 		}
-		return res;
 	}
 
 	/*
@@ -307,7 +323,7 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	 */
 	if (this_ptr != nullptr) {
 
-//		cout << "compile std function" << endl;
+//		cout << "compile std function " << function->type << endl;
 
 		int arg_count = arguments.size() + 1;
 		vector<jit_value_t> args = { this_ptr->compile_jit(c, F, Type::POINTER) };

@@ -1,0 +1,10 @@
+let gcd = function(a, b) {
+	while b > 0 {
+		let c = a % b
+		a = b
+		b = c
+	}
+	return a
+}
+
+gcd(163231, 135749)

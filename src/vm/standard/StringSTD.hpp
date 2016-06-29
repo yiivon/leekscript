@@ -20,7 +20,7 @@ public:
 LSValue* string_charAt(LSString* string, LSNumber* index);
 LSValue* string_contains(LSString* haystack, LSString* needle);
 LSValue* string_endsWith(LSString* string, LSString* ending);
-LSValue* string_indexOf(LSString* haystack, LSString* needle);
+int string_indexOf(LSString* haystack, LSString* needle);
 LSValue* string_length(LSString* string);
 LSValue* string_map(const LSString* string, void* fun);
 LSValue* string_replace(LSString* string, LSString* from, LSString* to);
