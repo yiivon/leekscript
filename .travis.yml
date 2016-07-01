@@ -7,14 +7,9 @@ language: cpp
 
 before_install:
 - docker pull gcc:5.3
-- docker run -p 127.0.0.1:80:4567 gcc:5.3 /bin/sh -c "gcc -v"
-- docker ps -a
-
-- git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
-- pushd /tmp/libjit/ && ./bootstrap && ./configure && make && sudo make install && popd
-- sudo cp /usr/local/lib/libjit* /usr/lib/
+- docker run gcc
+- docker cp build.sh gcc:/build.sh
+- docker exec gcc build.sh
 
 script:
-- sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-5 /usr/bin/gcc
-- gcc --version
 - make && make test
