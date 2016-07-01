@@ -9,7 +9,6 @@ before_install:
 - docker pull ubuntu:16.04
 - docker run -d -p 127.0.0.1:80:4567 ubuntu:16.04 /bin/sh -c "apt-get install gcc; gcc -v"
 - docker ps -a
-- docker run ubuntu:16.04 /bin/sh -c "gcc -v"
 
 - git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
 - pushd /tmp/libjit/ && ./bootstrap && ./configure && make && sudo make install && popd
