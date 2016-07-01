@@ -1,5 +1,7 @@
 #!/bin/bash
 
+apt-get install texinfo
+
 git clone git://git.savannah.gnu.org/libjit.git libjit/
 cd libjit/
 ./bootstrap
