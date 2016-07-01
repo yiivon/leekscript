@@ -15,10 +15,12 @@ addons:
     - texinfo
 
 before_install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+- if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
 - git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
 - pushd /tmp/libjit/ && ./bootstrap && ./configure && make && sudo make install && popd
 - sudo cp /usr/local/lib/libjit* /usr/lib/
 
 script:
+- sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-5 /usr/bin/gcc
+- gcc --version
 - make && make test
