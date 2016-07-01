@@ -3,7 +3,7 @@
 
 #include "../LSValue.hpp"
 #include "LSClass.hpp"
-#include "../../../lib/gason.h"
+#include "../../../lib/json.hpp"
 #include "../Type.hpp"
 
 namespace ls {
@@ -21,12 +21,17 @@ public:
 	LSObject();
 	LSObject(std::initializer_list<std::pair<std::string, LSValue*>>);
 	LSObject(LSClass*);
-	LSObject(JsonValue& data);
+	LSObject(Json& data);
 
 	virtual ~LSObject();
 
 	void addField(std::string name, LSValue* value);
+	LSArray<LSString*>* get_keys() const;
+	LSArray<LSValue*>* get_values() const;
 
+	/*
+	 * LSValue methods
+	 */
 	bool isTrue() const override;
 
 	LSValue* operator - () const override;

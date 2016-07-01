@@ -5,6 +5,7 @@
 
 #include "../../compiler/value/LeftValue.hpp"
 #include "../../compiler/value/Value.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 
@@ -12,7 +13,9 @@ class ObjectAccess : public LeftValue {
 public:
 
 	Value* object;
-	std::string field;
+	Token* field;
+	std::string object_class;
+	std::string class_name;
 	bool class_attr = false;
 	void* attr_addr;
 

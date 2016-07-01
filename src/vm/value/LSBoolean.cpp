@@ -23,7 +23,7 @@ LSBoolean::LSBoolean(bool value, int refs) : value(value) {
 	this->refs = refs;
 }
 
-LSBoolean::LSBoolean(JsonValue& json) : value(json.getTag() == JSON_TRUE) {}
+LSBoolean::LSBoolean(Json& json) : value(json) {}
 
 LSBoolean::~LSBoolean() {}
 

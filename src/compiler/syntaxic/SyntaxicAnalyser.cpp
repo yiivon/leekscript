@@ -327,15 +327,15 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 				oa->object = e;
 
 				if (t->type == TokenType::NEW || t->type == TokenType::CLASS) {
-					oa->field = t->content;
+					oa->field = t;
 					eat();
 				} else if (t->type == TokenType::NUMBER) {
-					oa->field = t->content;
+					oa->field = t;
 //					oa->isNumber = true;
 					eat();
 				} else {
 					Ident* ident = eatIdent();
-					oa->field = ident->token->content;
+					oa->field = ident->token;
 				}
 				e = oa;
 				break;

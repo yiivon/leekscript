@@ -1,6 +1,6 @@
 SRC_DIR := . src src/vm src/vm/value src/vm/standard src/doc \
 src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic \
-src/compiler/value src/compiler/instruction lib benchmark test
+src/compiler/value src/compiler/instruction src/util lib benchmark test
 
 BUILD_DIR := $(addprefix build/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/shared/,$(SRC_DIR))

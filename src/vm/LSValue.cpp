@@ -42,7 +42,7 @@ bool LSValue::isInteger() const {
 	return false;
 }
 
-LSValue* get_value(int type, JsonValue& json) {
+LSValue* get_value(int type, Json& json) {
 	switch (type) {
 	case 1: return new LSNull();
 	case 2: return new LSBoolean(json);
@@ -56,10 +56,10 @@ LSValue* get_value(int type, JsonValue& json) {
 	return new LSNull();
 }
 
-LSValue* LSValue::parse(JsonValue& json) {
+LSValue* LSValue::parse(Json& json) {
 
-	int type = json.toNode()->value.toNumber();
-	JsonValue data = json.toNode()->next->value;
+	int type = json["t"];
+	Json data = json["v"];
 	return get_value(type, data);
 }
 

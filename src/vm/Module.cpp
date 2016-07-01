@@ -30,7 +30,7 @@ void Module::include(SemanticAnalyser* analyser, Program* program) {
 
 	for (auto f : static_fields) {
 		//var->attr_types.insert(pair<string, Type>(f.name, f.type));
-		clazz->addStaticField(f.name, LSNumber::get(std::stoi(f.value)));
+		clazz->addStaticField(f.name, f.type, LSNumber::get(std::stoi(f.value)));
 	}
 
 	for (auto m : methods) {
@@ -80,16 +80,12 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 	str.erase(std::remove(str.begin(), str.end(), '	'), str.end());
 
 	// Parse json
-	char *endptr;
-	JsonValue translation(JSON_NULL, nullptr);
-	JsonAllocator allocator;
-	jsonParse((char*) str.c_str(), &endptr, &translation, allocator);
+	Json translation = Json::parse(str);
 
-	map<std::string, JsonValue> translation_map;
-	if (translation.getTag() == JSON_OBJECT) {
-		for (auto i : translation) {
-			translation_map.insert({i->key, i->value});
-		}
+	map<std::string, Json> translation_map;
+
+	for (Json::iterator it = translation.begin(); it != translation.end(); ++it) {
+		translation_map.insert({it.key(), it.value()});
 	}
 
 	os << "\"" << name << "\":{";
@@ -100,7 +96,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		ModuleStaticField& a = static_fields[e];
 
 		std::string desc = (translation_map.find(a.name) != translation_map.end()) ?
-				translation_map[a.name].toNode()->value.toString() : "";
+				translation_map[a.name] : "";
 
 		if (e > 0) os << ",";
 		os << "\"" << a.name << "\":{\"type\":";
@@ -119,9 +115,9 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		m.impl[0].type.toJson(os);
 
 		if (translation_map.find(m.name) != translation_map.end()) {
-			JsonNode* json = translation_map[m.name].toNode();
-			std::string desc = json->value.toString();
-			std::string return_desc = json->next->next->value.toString();
+			Json json = translation_map[m.name];
+			std::string desc = json["desc"];
+			std::string return_desc = json["return"];
 
 			os << ",\"desc\":\"" << desc << "\"";
 			os << ",\"return\":\"" << return_desc << "\"";
@@ -138,9 +134,9 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 			m.impl[0].type.toJson(os);
 
 			if (translation_map.find(m.name) != translation_map.end()) {
-				JsonNode* json = translation_map[m.name].toNode();
-				std::string desc = json->value.toString();
-				std::string return_desc = json->next->next->value.toString();
+				Json json = translation_map[m.name];
+				std::string desc = json["desc"];
+				std::string return_desc = json["return"];
 
 				os << ",\"desc\":\"" << desc << "\"";
 				os << ",\"return\":\"" << return_desc << "\"";

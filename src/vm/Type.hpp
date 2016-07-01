@@ -226,6 +226,7 @@ public:
 	static const Type ARRAY;
 	static const Type INT_ARRAY;
 	static const Type FLOAT_ARRAY;
+	static const Type STRING_ARRAY;
 	static const Type FUNCTION;
 	static const Type FUNCTION_P;
 	static const Type CLASS;

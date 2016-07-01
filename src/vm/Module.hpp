@@ -63,8 +63,12 @@ public:
 	std::string name;
 	Type type;
 	std::string value;
+	LSValue* lsvalue = nullptr;
+	ModuleStaticField() {};
 	ModuleStaticField(std::string name, Type type, std::string value)
-	: name(name), type(type), value(value) {}
+	: name(name), type(type), value(value), lsvalue(nullptr) {}
+	ModuleStaticField(std::string name, Type type, std::string value, LSValue* lsvalue)
+	: name(name), type(type), value(value), lsvalue(lsvalue) {}
 };
 
 class ModuleField {

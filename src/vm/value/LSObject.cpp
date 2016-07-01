@@ -2,6 +2,7 @@
 #include "LSNull.hpp"
 #include "LSString.hpp"
 #include "LSNumber.hpp"
+#include "LSArray.hpp"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ LSObject::LSObject(initializer_list<pair<std::string, LSValue*>> values) {
 		this->values.insert({i.first, i.second->clone()});
 	}
 	clazz = nullptr;
+	readonly = false;
 }
 
 LSObject::LSObject(LSClass* clazz) {
@@ -27,12 +29,12 @@ LSObject::LSObject(LSClass* clazz) {
 	readonly = false;
 }
 
-LSObject::LSObject(JsonValue& json) {
+LSObject::LSObject(Json& json) {
+
 	clazz = nullptr;
 
-	for (auto e : json) {
-		std::string s(e->key);
-		addField(s, LSValue::parse(e->value));
+	for (Json::iterator it = json.begin(); it != json.end(); ++it) {
+		addField(it.key(), LSValue::parse(it.value()));
 	}
 }
 
@@ -46,6 +48,26 @@ void LSObject::addField(string name, LSValue* var) {
 	this->values.insert({name, var});
 	var->refs++;
 }
+
+LSArray<LSString*>* LSObject::get_keys() const {
+	LSArray<LSString*>* keys = new LSArray<LSString*>();
+	for (auto i = values.begin(); i != values.end(); i++) {
+		keys->push_no_clone(new LSString(i->first));
+	}
+	return keys;
+}
+
+LSArray<LSValue*>* LSObject::get_values() const {
+	LSArray<LSValue*>* v = new LSArray<LSValue*>();
+	for (auto i = values.begin(); i != values.end(); i++) {
+		v->push_clone(i->second);
+	}
+	return v;
+}
+
+/*
+ * LSValue methods
+ */
 
 bool LSObject::isTrue() const {
 	return values.size() > 0;

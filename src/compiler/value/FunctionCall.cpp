@@ -7,6 +7,7 @@
 #include "../../compiler/value/VariableValue.hpp"
 #include "../../vm/VM.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticException.hpp"
 #include "../../vm/standard/ArraySTD.hpp"
 #include "../../vm/standard/NumberSTD.hpp"
 #include "../../vm/value/LSClass.hpp"
@@ -63,52 +64,52 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 		VariableValue* vv = dynamic_cast<VariableValue*>(oa->object);
 		if (vv != nullptr and vv->name->content == "Number") {
-
-			if (oa->field == "abs") {
+			string field_name = oa->field->content;
+			if (field_name == "abs") {
 				function->type.setArgumentType(0, Type::INTEGER);
 				function->type.setReturnType(Type::INTEGER);
 				is_native = true;
-			} else if (oa->field == "floor") {
+			} else if (field_name == "floor") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::INTEGER);
 				is_native = true;
-			} else if (oa->field == "round") {
+			} else if (field_name == "round") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
 				is_native = true;
-			} else if (oa->field == "ceil") {
+			} else if (field_name == "ceil") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::INTEGER);
 				is_native = true;
-			} else if (oa->field == "cos") {
+			} else if (field_name == "cos") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
 				is_native = true;
-			} else if (oa->field == "sin") {
+			} else if (field_name == "sin") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
 				is_native = true;
-			} else if (oa->field == "max") {
+			} else if (field_name == "max") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setArgumentType(1, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
 				is_native = true;
-			} else if (oa->field == "min") {
+			} else if (field_name == "min") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setArgumentType(1, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
 				is_native = true;
-			} else if (oa->field == "sqrt") {
+			} else if (field_name == "sqrt") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
 				is_native = true;
-			} else if (oa->field == "pow") {
+			} else if (field_name == "pow") {
 				function->type.setArgumentType(0, Type::FLOAT);
 				function->type.setArgumentType(1, Type::FLOAT);
 				function->type.setReturnType(Type::FLOAT);
 				is_native = true;
 			}
-			native_func = oa->field;
+			native_func = field_name;
 		}
 
 		if (!is_native) {
@@ -120,8 +121,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 			vector<Type> arg_types;
 			for (auto arg : arguments) arg_types.push_back(arg->type);
 
-			if (arg_types.size() > 1) {
-//			cout << "ARG : " << arg_types[0] << endl;
+			if (arg_types.size() > 0) {
+			cout << "ARG : " << arg_types[0] << endl;
 //			cout << "ARG : " << arg_types[1] << endl;
 			}
 			if (object_type.raw_type == RawType::CLASS) {
@@ -134,14 +135,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 				LSClass* object_class = (LSClass*) analyser->program->system_vars[clazz];
 
-				StaticMethod* m = object_class->getStaticMethod(oa->field, arg_types);
+				StaticMethod* m = object_class->getStaticMethod(oa->field->content, arg_types);
 
 				if (m != nullptr) {
 //					cout << "method : " << m->addr << endl;
 					std_func = m->addr;
 					function->type = m->type;
 				} else {
-					throw new runtime_error("No static method found !");
+					throw SemanticException(SemanticException::Type::STATIC_METHOD_NOT_FOUND, oa->field);
 				}
 
 			} else { // "salut".size()
@@ -150,7 +151,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 				LSClass* object_class = (LSClass*) analyser->program->system_vars[object_type.clazz];
 
-				Method* m = object_class->getMethod(oa->field, object_type, arg_types);
+				Method* m = object_class->getMethod(oa->field->content, object_type, arg_types);
 
 				if (m != nullptr) {
 //					cout << "method : " << m->addr << " : " << m->type << endl;
@@ -158,7 +159,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 					std_func = m->addr;
 					function->type = m->type;
 				} else {
-					throw new runtime_error("No method found !");
+					throw SemanticException(SemanticException::Type::METHOD_NOT_FOUND, oa->field);
 				}
 			}
 		}

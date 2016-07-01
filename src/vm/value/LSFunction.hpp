@@ -8,7 +8,7 @@
 #include "../LSValue.hpp"
 #include <map>
 #include <jit/jit.h>
-#include "../../../lib/gason.h"
+#include "../../../lib/json.hpp"
 #include "../Type.hpp"
 
 namespace ls {
@@ -23,7 +23,7 @@ public:
 
 	LSFunction(void* function);
 	LSFunction(void* function, int refs);
-	LSFunction(JsonValue& data);
+	LSFunction(Json& data);
 
 	virtual ~LSFunction();
 

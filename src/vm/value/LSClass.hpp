@@ -4,12 +4,14 @@
 #include "../LSValue.hpp"
 #include <string>
 #include <map>
+#include "../../../lib/json.hpp"
 #include "../Type.hpp"
 
 namespace ls {
 
 class Method;
 class StaticMethod;
+class ModuleStaticField;
 
 class LSClass : public LSValue {
 public:
@@ -20,20 +22,20 @@ public:
 	std::map<std::string, Type> fields;
 	std::map<std::string, std::vector<Method>> methods;
 	std::map<std::string, std::vector<StaticMethod>> static_methods;
-	std::map<std::string, LSValue*> static_fields;
+	std::map<std::string, ModuleStaticField> static_fields;
 
 	static LSValue* class_class;
 
 	LSClass();
 	LSClass(std::string);
 	LSClass(std::string, int refs);
-	LSClass(JsonValue&);
+	LSClass(Json&);
 
 	virtual ~LSClass();
 
 	void addMethod(std::string&, std::vector<Method>&);
 	void addField(std::string, Type);
-	void addStaticField(std::string, LSValue*);
+	void addStaticField(std::string, Type type, LSValue*);
 	Method* getMethod(std::string&, Type obj_type, std::vector<Type>&);
 	void addStaticMethod(std::string& name, std::vector<StaticMethod>& method);
 	LSFunction* getDefaultMethod(std::string& name);

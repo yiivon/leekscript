@@ -1,7 +1,6 @@
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
 
 #include "../../compiler/instruction/ExpressionInstruction.hpp"
-#include "../../compiler/semantic/SemanticError.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Context.hpp"
 #include "../../vm/standard/NullSTD.hpp"
@@ -10,6 +9,8 @@
 #include "../../vm/standard/StringSTD.hpp"
 #include "../../vm/standard/ArraySTD.hpp"
 #include "../../vm/standard/ObjectSTD.hpp"
+#include "../../vm/standard/SystemSTD.hpp"
+#include "SemanticException.hpp"
 
 using namespace std;
 
@@ -103,6 +104,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	StringSTD().include(this, program);
 	ArraySTD().include(this, program);
 	ObjectSTD().include(this, program);
+	SystemSTD().include(this, program);
 
 	for (Module* module : modules) {
 		module->include(this, program);
@@ -184,7 +186,7 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 			return local_vars.back().at(v->content);
 		}
 	} catch (exception& e) {}
-	throw SemanticError(v, "Variable « " + v->content + " » is undefined!");
+	throw SemanticException(SemanticException::Type::UNDEFINED_VARIABLE, v);
 }
 
 SemanticVar* SemanticAnalyser::get_var_direct(std::string name) {
@@ -223,7 +225,7 @@ SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value) {
 //			cout << "global" << endl;
 
 			if (global_vars.find(v->content) != global_vars.end()) {
-				throw SemanticError(v, "Variable « " + v->content + " » is already defined!");
+				throw SemanticException(SemanticException::Type::VARIABLE_ALREADY_DEFINED, v);
 			}
 			global_vars.insert(pair<string, SemanticVar*>(
 				v->content,

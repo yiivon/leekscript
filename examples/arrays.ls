@@ -6,10 +6,6 @@ for (var i = 0; i < n; ++i) {
 }
 
 
-
-
-
-
 //a = a.map(x -> x + 1)
 
 return 'done'

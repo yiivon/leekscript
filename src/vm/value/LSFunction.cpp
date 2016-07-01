@@ -18,7 +18,7 @@ LSFunction::LSFunction(void* function, int refs) {
 	this->refs = refs;
 }
 
-LSFunction::LSFunction(JsonValue&) {
+LSFunction::LSFunction(Json&) {
 	// TODO
 }
 

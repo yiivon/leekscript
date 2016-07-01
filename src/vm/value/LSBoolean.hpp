@@ -2,7 +2,7 @@
 #define LSBOOLEAN_HPP_
 
 #include <string>
-#include "../../../lib/gason.h"
+#include "../../../lib/json.hpp"
 #include "../LSValue.hpp"
 #include "../Type.hpp"
 
@@ -21,7 +21,7 @@ public:
 	LSBoolean();
 	LSBoolean(bool value);
 	LSBoolean(bool value, int refs);
-	LSBoolean(JsonValue& data);
+	LSBoolean(Json& data);
 
 	virtual ~LSBoolean();
 

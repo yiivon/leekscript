@@ -24,14 +24,14 @@ LSClass::LSClass(string name, int refs) : name(name) {
 	this->refs = refs;
 }
 
-LSClass::LSClass(JsonValue&) {
+LSClass::LSClass(Json&) {
 	parent = nullptr;
 	// TODO
 }
 
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
-		LSValue::delete_val(s.second);
+		LSValue::delete_val(s.second.lsvalue);
 	}
 }
 
@@ -44,15 +44,15 @@ void LSClass::addStaticMethod(string& name, vector<StaticMethod>& method) {
 
 	// Add first implementation as default method
 	LSFunction* fun = new LSFunction(method[0].addr);
-	static_fields.insert({name, fun});
+	static_fields.insert({name, ModuleStaticField(name, Type::FUNCTION_P, "", fun)});
 }
 
 void LSClass::addField(std::string name, Type type) {
 	fields.insert({name, type});
 }
 
-void LSClass::addStaticField(std::string name, LSValue* value) {
-	static_fields.insert({name, value});
+void LSClass::addStaticField(std::string name, Type type, LSValue* value) {
+	static_fields.insert({name, ModuleStaticField(name, type, "", value)});
 }
 
 Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args) {
@@ -646,7 +646,7 @@ LSValue* LSClass::attr(const LSValue* key) const {
 		return new LSString(name);
 	}
 	try {
-		return static_fields.at(*((LSString*) key));
+		return static_fields.at(*((LSString*) key)).lsvalue;
 	} catch (exception& e) {}
 	return LSNull::null_var;
 }

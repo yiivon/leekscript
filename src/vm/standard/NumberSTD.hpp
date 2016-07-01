@@ -42,7 +42,7 @@ LSNumber* number_sqrt(const LSNumber* number);
 LSNumber* number_tan(const LSNumber* number);
 LSNumber* number_toDegrees(const LSNumber* number);
 LSNumber* number_toRadians(const LSNumber* number);
-
+bool number_isInteger(const LSNumber* number);
 }
 
 #endif

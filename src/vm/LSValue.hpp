@@ -5,7 +5,7 @@
 #include <string>
 #include <cstddef>
 
-#include "../../lib/gason.h"
+#include "../../lib/json.hpp"
 #include "Type.hpp"
 
 namespace ls {
@@ -245,7 +245,7 @@ public:
 
 	virtual const BaseRawType* getRawType() const = 0;
 
-	static LSValue* parse(JsonValue& json);
+	static LSValue* parse(Json& json);
 
 	static void delete_val(LSValue* value);
 };

@@ -5,7 +5,7 @@
 #include <string>
 
 #include "../LSValue.hpp"
-#include "../../../lib/gason.h"
+#include "../../../lib/json.hpp"
 #include "../Type.hpp"
 
 namespace ls {
@@ -20,7 +20,7 @@ public:
 	LSString(char);
 	LSString(const char*);
 	LSString(std::string);
-	LSString(JsonValue&);
+	LSString(Json&);
 
 	virtual ~LSString();
 

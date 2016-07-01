@@ -50,9 +50,16 @@ LSArray<T>::LSArray(const std::vector<T>& vec) {
 }
 
 template <class T>
-LSArray<T>::LSArray(JsonValue& json) {
-	for (auto e : json) {
-		push_clone((T) LSValue::parse(e->value));
+LSArray<T>::LSArray(Json& json) {
+	for (Json::iterator it = json.begin(); it != json.end(); ++it) {
+		push_clone((T) LSValue::parse(it.value()));
+	}
+}
+
+template <>
+inline LSArray<int>::LSArray(Json& json) {
+	for (Json::iterator it = json.begin(); it != json.end(); ++it) {
+		push_clone(((LSNumber*) LSValue::parse(it.value()))->value);
 	}
 }
 
@@ -1690,14 +1697,6 @@ template <class T>
 const BaseRawType* LSArray<T>::getRawType() const {
 	return RawType::ARRAY;
 }
-
-template <>
-inline LSArray<int>::LSArray(JsonValue& json) {
-	for (auto e : json) {
-		push_clone(((LSNumber*) LSValue::parse(e->value))->value);
-	}
-}
-
 
 template <class T>
 LSValue* LSArray<T>::at(const LSValue* key) const {

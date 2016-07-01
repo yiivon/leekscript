@@ -7,7 +7,7 @@
 #include "../LSValue.hpp"
 #include "LSString.hpp"
 #include "LSClass.hpp"
-#include "../../../lib/gason.h"
+#include "../../../lib/json.hpp"
 #include "../Type.hpp"
 
 #define USE_CACHE 0
@@ -32,7 +32,7 @@ public:
 
 	LSNumber();
 	LSNumber(NUMBER_TYPE value);
-	LSNumber(JsonValue& data);
+	LSNumber(Json& data);
 
 	virtual ~LSNumber();
 

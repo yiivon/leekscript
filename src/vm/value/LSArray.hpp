@@ -12,7 +12,7 @@
 #include <string>
 
 #include "../LSValue.hpp"
-#include "../../../lib/gason.h"
+#include "../../../lib/json.hpp"
 #include "LSClass.hpp"
 
 namespace ls {
@@ -28,7 +28,7 @@ public:
 	LSArray();
 	LSArray(std::initializer_list<T>);
 	LSArray(const std::vector<T>&);
-	LSArray(JsonValue& data);
+	LSArray(Json& data);
 
 	virtual ~LSArray();
 

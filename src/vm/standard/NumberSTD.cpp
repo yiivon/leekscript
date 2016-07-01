@@ -33,6 +33,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("tan", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_tan);
 	method("toDegrees", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toDegrees);
 	method("toRadians", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toRadians);
+	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
 
 	static_method("abs", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_abs);
 	static_method("acos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_acos);
@@ -166,6 +167,11 @@ LSNumber* number_toDegrees(const LSNumber* x) {
 
 LSNumber* number_toRadians(const LSNumber* x) {
 	return LSNumber::get((x->value * M_PI) / 180);
+}
+
+bool number_isInteger(const LSNumber* x) {
+	double _;
+	return modf(x->value, &_) == 0;
 }
 
 }

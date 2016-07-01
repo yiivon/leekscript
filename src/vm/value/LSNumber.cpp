@@ -32,7 +32,7 @@ LSNumber::LSNumber() : value(0) {}
 
 LSNumber::LSNumber(NUMBER_TYPE value) : value(value) {}
 
-LSNumber::LSNumber(JsonValue& json) : value(json.toNumber()) {}
+LSNumber::LSNumber(Json& json) : value(json) {}
 
 LSNumber::~LSNumber() {
 //	cout << "delete LSNumber : " << value << endl;

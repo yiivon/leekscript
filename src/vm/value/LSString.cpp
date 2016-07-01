@@ -19,7 +19,7 @@ LSString::LSString() {}
 LSString::LSString(const char value) : string(string(1, value)) {}
 LSString::LSString(const char* value) : string(value) {}
 LSString::LSString(std::string value) : string(value) {}
-LSString::LSString(JsonValue& json) : string(json.toString()) {}
+LSString::LSString(Json& json) : string(json.get<std::string>()) {}
 
 LSString::~LSString() {
 //	cout << "~LSString " << *this << " " << refs << endl;

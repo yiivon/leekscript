@@ -3,7 +3,7 @@
 #include <string.h>
 #include <vector>
 #include "VM.hpp"
-#include "../../lib/gason.h"
+#include "../../lib/json.hpp"
 using namespace std;
 
 namespace ls {
@@ -22,17 +22,10 @@ std::vector<std::string> split(const std::string &s, std::string delim) {
 
 Context::Context(std::string ctx) {
 
-	char *endptr;
-	JsonValue value;
-	JsonAllocator allocator;
-	jsonParse((char*) ctx.c_str(), &endptr, &value, allocator);
+	Json value = Json::parse(ctx);
 
-	for (auto i : value) {
-		std::string name_s = i->key;
-		std::string name;
-		name.assign(name_s.begin(), name_s.end());
-		JsonValue var = i->value;
-		vars.insert({name, ls::LSValue::parse(var)});
+	for (Json::iterator it = value.begin(); it != value.end(); ++it) {
+		vars.insert({it.key(), ls::LSValue::parse(it.value())});
 	}
 }
 
