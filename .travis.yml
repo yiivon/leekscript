@@ -10,8 +10,8 @@ addons:
     - ubuntu-toolchain-r-test
   apt:
     packages:
-    - gcc-4.8
-    - g++-4.8
+    - gcc-5.3
+    - g++-5.3
     - texinfo
 
 before_install:
