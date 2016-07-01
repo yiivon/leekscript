@@ -7,9 +7,9 @@ language: cpp
 
 before_install:
 - docker pull gcc:5.3
-- docker run gcc
-- docker cp build.sh gcc:/build.sh
-- docker exec gcc build.sh
+- docker run --name builder gcc:5.3
+- docker cp build.sh builder:/build.sh
+- docker exec builder /build.sh
 
 script:
 - make && make test
