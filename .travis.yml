@@ -1,20 +1,16 @@
 sudo: required
+
+services:
+  - docker
+
 language: cpp
 
-compiler:
-- gcc
-
-addons:
-  sources:
-    - ubuntu-toolchain-r-test
-  apt:
-    packages:
-    - gcc-5
-    - g++-5
-    - texinfo
-
 before_install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+- docker pull ubuntu:16.04
+- docker run -d -p 127.0.0.1:80:4567 ubuntu:16.04 /bin/sh -c "bundle exec foreman start;"
+- docker ps -a
+- docker run ubuntu:16.04 /bin/sh -c "bundle exec rake test"
+
 - git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
 - pushd /tmp/libjit/ && ./bootstrap && ./configure && make && sudo make install && popd
 - sudo cp /usr/local/lib/libjit* /usr/lib/
