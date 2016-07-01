@@ -4,7 +4,8 @@ LeekScript language
 [![Build Status](https://travis-ci.org/leek-wars/leekscript.svg?branch=master)](https://travis-ci.org/leek-wars/leekscript)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
 
-LeekScript is a language initially designed for Leek Wars.
+LeekScript is a language initially designed for Leek Wars, and for games in general. Design to be simple to use for beginners, but with rich syntax and functionnalities, and a good speed thanks to an optimized JIT compiler.
+
 The project is still in development, and shouldn't be used for the moment.
 
 
