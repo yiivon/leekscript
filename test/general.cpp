@@ -388,6 +388,7 @@ void Test::test_general() {
 	success("Number.sin(π)", "0");
 	success("Number.sin(π / 2)", "1");
 	success("Number.sin(- π / 2)", "-1");
+//	success("12.sqrt()", "");
 
 	/*
 	 * Number standard library
