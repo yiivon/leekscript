@@ -1,24 +1,17 @@
 sudo: required
-dist: trusty
+
+services:
+  - docker
+
 language: cpp
 
-compiler:
-- gcc
-
-addons:
-  sources:
-    - ubuntu-toolchain-r-test
-  apt:
-    packages:
-    - gcc-4.8
-    - g++-4.8
-    - texinfo
-
 before_install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-- git clone git://git.savannah.gnu.org/libjit.git /tmp/libjit/
-- pushd /tmp/libjit/ && ./bootstrap && ./configure && make && sudo make install && popd
-- sudo cp /usr/local/lib/libjit* /usr/lib/
+- docker pull gcc:5.3
+- docker run --name builder gcc:5.3
+- docker start builder
+- docker ps -a
+- docker cp build.sh builder:/build.sh
+- docker exec builder /build.sh
 
 script:
 - make && make test
