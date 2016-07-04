@@ -11,5 +11,5 @@ RUN git clone git://git.savannah.gnu.org/libjit.git libjit
 RUN cd libjit; ./bootstrap; ./configure; make; make install
 RUN cp /usr/local/lib64/libjit* /usr/lib
 
-# RUN git clone https://github.com/leek-wars/leekscript leekscript
+# Copy project files
 COPY . leekscript
