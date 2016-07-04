@@ -6,12 +6,7 @@ services:
 language: cpp
 
 before_install:
-- docker pull gcc:5.3
-- docker run --name builder gcc:5.3
-- docker start builder
-- docker ps -a
-- docker cp build.sh builder:/build.sh
-- docker exec builder /build.sh
+- docker build -t leekscript .
 
 script:
-- make && make test
+- docker run leekscript /bin/sh -c "cd leekscript; make && make test"
