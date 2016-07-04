@@ -51,6 +51,6 @@ clean:
 	@echo "Project cleaned."
 	@echo "----------------"
 
-docker:
+travis:
 	docker build -t leekscript .
 	docker run leekscript /bin/sh -c "cd leekscript; make -j4 && make test"
