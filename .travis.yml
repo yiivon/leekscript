@@ -1,12 +1,9 @@
 sudo: required
 
-services:
-  - docker
-
 language: cpp
 
 before_install:
 - docker build -t leekscript .
 
 script:
-- docker run leekscript /bin/sh -c "cd leekscript; make && make test"
+- docker run leekscript /bin/sh -c "cd leekscript; make -j4 && make test"
