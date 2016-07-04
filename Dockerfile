@@ -1,4 +1,4 @@
-FROM pilow/leekscript:latest
+FROM pilow/leekscript-builder:latest
 
 MAINTAINER Leek Wars "https://github.com/leek-wars"
 
