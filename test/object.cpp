@@ -15,4 +15,6 @@ void Test::test_objects() {
 
 	success("{}.values()", "[]");
 	success("{a: 5, b: 'toto', c: true, d: -> 5}.values()", "[5, 'toto', true, <function>]");
+
+//	success("var f = obj -> obj.a [f(12), f({a: 'yo'})]", "[null, 'yo']");
 }

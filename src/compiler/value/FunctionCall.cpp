@@ -122,7 +122,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 			for (auto arg : arguments) arg_types.push_back(arg->type);
 
 			if (arg_types.size() > 0) {
-			cout << "ARG : " << arg_types[0] << endl;
+//			cout << "ARG : " << arg_types[0] << endl;
 //			cout << "ARG : " << arg_types[1] << endl;
 			}
 			if (object_type.raw_type == RawType::CLASS) {

@@ -23,4 +23,24 @@ void Test::test_operators() {
 	success("[] xor 777", "true");
 	success("[1, 2, 3] xor [4, 5, 6]", "false");
 	success("[] xor [4, 5, 6]", "true");
+
+	/*
+	 * Swap
+	 */
+	header("Swap");
+	success("let a = 2 let b = 5 a <=> b [a, b]", "[5, 2]");
+//	success("let a = [1, 2, 3, 4] a[0] <=> a[3] a", "[4, 2, 3, 1]");
+	success("let a = 12 let b = 5 let s = a <=> b", "5");
+
+	/*
+	a ~~ b => (a ~~ b)
+	a ~ ~b => a ~ (~b)
+	~~a => ~(~a)
+	a; ~~b
+	*/
+	/*
+	var dist = [...]
+	dist ~*= 5
+	var newdist = dist ~* 5
+	*/
 }
