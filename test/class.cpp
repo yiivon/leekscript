@@ -20,7 +20,7 @@ void Test::test_classes() {
 	success("(-> 12).class", "<class Function>");
 	success("(x, y -> x + y).class", "<class Function>");
 	success("12.class.class", "<class Class>");
-	
+
 	success("12 instanceof Number", "true");
 	success("'yo' instanceof Number", "false");
 	success("'yo' instanceof String", "true");
