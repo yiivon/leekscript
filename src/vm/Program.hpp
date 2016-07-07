@@ -1,7 +1,7 @@
 #ifndef PROGRAM_HPP
 #define PROGRAM_HPP
 
-#include "../compiler/Body.hpp"
+#include "../compiler/value/Block.hpp"
 #include "../compiler/value/Function.hpp"
 #include "../compiler/semantic/SemanticAnalyser.hpp"
 
@@ -14,9 +14,8 @@ class Program {
 public:
 
 	std::vector<Function*> functions;
-	std::map<std::string, SemanticVar*> global_vars;
 	std::map<std::string, LSValue*> system_vars;
-	Body* body;
+	Value* body;
 
 	void* function;
 

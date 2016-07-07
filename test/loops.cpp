@@ -14,6 +14,17 @@ void Test::test_loops() {
 	success("let a = if (true) { 'yo' } else { 'hello' } a", "'yo'");
 	success("let a = if (true) { 12 } else { 'hello' } a", "12");
 	success("let a = if (true) { 'hello' } else { 12 } a", "'hello'");
+	success("if (true) {} else {}", "null");
+	success("if (true) { {} } else {}", "{}");
+	success("if (true) null else {}", "null");
+//	success("if true", "null"); crash
+//	success("if true else", "null"); crash
+//	success("if (true) {a: 12} else {b: 5}", "{a: 12}"); error
+	success("if (true) { {a: 12} } else { {b: 5} }", "{a: 12}");
+	success("if (true) 12 else 5", "12");
+	success("if (false) 12 else 5", "5");
+	success("if (true) 12", "12");
+	success("if (false) 12", "null");
 
 	/*
 	 * While loops
@@ -36,6 +47,7 @@ void Test::test_loops() {
 	success("let i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i", "5");
 	success("let a = 0 for let i = 0; i < 10; i++ { a++ } a", "10");
 	success("let a = 0 for let i = 0; i < 10; i++ { if i < 5 { continue } a++ } a", "5");
+//	 success("let c = 0 for var t = []; t.size() < 10; t += 'x' { c++ } c", "10"),
 
 	/*
 	 * Foreach loops

@@ -310,6 +310,10 @@ LSValue* jit_in(LSValue* x, LSValue* y) {
 	return LSBoolean::get(y->in(x));
 }
 
+LSValue* jit_instanceof(LSValue* x, LSValue* y) {
+	return LSBoolean::get(((LSClass*)x->getClass())->name == ((LSClass*) y)->name);
+}
+
 jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
 	if (op == nullptr) {
@@ -641,6 +645,11 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		case TokenType::IN: {
 			use_jit_func = false;
 			ls_func = (void*) &jit_in;
+			break;
+		}
+		case TokenType::INSTANCEOF: {
+			use_jit_func = false;
+			ls_func = (void*) &jit_instanceof;
 			break;
 		}
 		default: {

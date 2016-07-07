@@ -4,6 +4,11 @@ void Test::test_objects() {
 
 	header("Objects");
 
+	success("{}", "{}");
+	success("{a: 12}", "{a: 12}");
+	success("{a: 12, b: 5}", "{a: 12, b: 5}");
+	success("{a: {}, b: []}", "{a: {}, b: []}");
+
 	success("let a = {}", "{}");
 	success("let a = {b: 12, c: 5} a", "{b: 12, c: 5}");
 	success("let a = {b: 12, c: 5} a.b", "12");

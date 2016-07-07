@@ -7,10 +7,11 @@
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
 #include "../../compiler/value/Expression.hpp"
 #include "../../compiler/value/Value.hpp"
-#include "../Body.hpp"
+#include "Instruction.hpp"
 
 namespace ls {
 
+class Block;
 class SemanticVar;
 
 class For : public Instruction {
@@ -21,7 +22,7 @@ public:
 	std::vector<bool> declare_variables;
 	Value* condition;
 	std::vector<Value*> iterations;
-	Body* body;
+	Block* body;
 	std::map<std::string, SemanticVar*> vars;
 
 	For();

@@ -2,7 +2,7 @@
 #define IF_HPP_
 
 #include "../../compiler/value/Expression.hpp"
-#include "../Body.hpp"
+#include "../value/Block.hpp"
 
 namespace ls {
 
@@ -10,8 +10,8 @@ class If : public Value {
 public:
 
 	Value* condition;
-	Body* then;
-	Body* elze;
+	Block* then;
+	Block* elze;
 	bool inversed;
 
 	If();

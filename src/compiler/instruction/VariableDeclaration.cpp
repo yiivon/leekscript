@@ -62,19 +62,14 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		}
 
 		// Global Variable already defined ? We don't define another time
-		if (vars.find(var->content) == vars.end() || vars.at(var->content)->scope != VarScope::GLOBAL) {
+//		if (vars.find(var->content) == vars.end()) {
 			SemanticVar* v = analyser->add_var(var, type, value);
 			vars.insert(pair<string, SemanticVar*>(var->content, v));
-		}
+//		}
 		vars.at(var->content)->type = type;
 	}
 	this->return_value = return_value;
 }
-
-extern map<string, jit_value_t> globals;
-extern map<string, Type> globals_types;
-extern map<string, jit_value_t> locals;
-extern map<string, bool> globals_ref;
 
 jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
@@ -83,70 +78,39 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 		std::string name = variables.at(i)->content;
 		SemanticVar* v = vars.at(name);
 
-		if (v->scope == VarScope::GLOBAL) {
+		jit_value_t var = jit_value_create(F, JIT_INTEGER_LONG);
+		c.add_var(name, var, v->type, false);
 
-			jit_value_t var = jit_value_create(F, JIT_INTEGER_LONG);
-			globals.insert({name, var});
-			globals_ref[name] = false;
+		if (i < expressions.size()) {
 
-			if (i < expressions.size()) {
+			Value* ex = expressions[i];
 
-				Value* ex = expressions[i];
+			jit_value_t val;
+			if (Reference* ref = dynamic_cast<Reference*>(ex)) {
 
-				jit_value_t val;
-				if (Reference* ref = dynamic_cast<Reference*>(ex)) {
-					val = globals[ref->variable->content];
-					globals[name] = val;
-					globals_ref[name] = true;
-					globals_types[name] = globals_types[ref->variable->content];
-				} else {
-					val = ex->compile_jit(c, F, expressions.at(i)->type);
-					globals_types.insert({name, ex->type});
-					jit_insn_store(F, var, val);
-					if (expressions.at(i)->type.must_manage_memory()) {
-						VM::inc_refs(F, val);
-					}
-				}
-				if (i == expressions.size() - 1) {
-					if (ex->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-						return VM::value_to_pointer(F, val, req_type);
-					}
-					return val;
-				}
+				val = c.get_var(ref->variable->content).value;
+				c.add_var(name, val, v->type, true);
+
 			} else {
-
-				globals_types.insert(pair<string, Type>(name, Type::NULLL));
-				jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+				val = ex->compile_jit(c, F, expressions.at(i)->type);
+				c.set_var_type(name, ex->type);
 				jit_insn_store(F, var, val);
-				VM::inc_refs(F, val);
+				if (expressions.at(i)->type.must_manage_memory()) {
+					VM::inc_refs(F, val);
+				}
+			}
+			if (i == expressions.size() - 1) {
+				if (ex->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, val, req_type);
+				}
+				return val;
 			}
 		} else {
 
-			jit_value_t var = jit_value_create(F, JIT_INTEGER);
-			locals.insert({name, var});
-
-			if (i < expressions.size()) {
-
-				jit_value_t val = expressions.at(i)->compile_jit(c, F, Type::NEUTRAL);
-
-				jit_insn_store(F, var, val);
-				if (expressions.at(i)->type.nature == Nature::POINTER) {
-					VM::inc_refs(F, val);
-				}
-
-				if (i == variables.size() - 1) {
-					if (expressions[i]->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-						return VM::value_to_pointer(F, val, req_type);
-					}
-					return val;
-				}
-			} else {
-
-				jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
-				jit_insn_store(F, var, val);
-				VM::inc_refs(F, val);
-				return val;
-			}
+			c.set_var_type(name, Type::NULLL);
+			jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+			jit_insn_store(F, var, val);
+			VM::inc_refs(F, val);
 		}
 	}
 	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);

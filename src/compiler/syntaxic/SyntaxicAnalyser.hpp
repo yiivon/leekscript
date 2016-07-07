@@ -3,17 +3,24 @@
 
 #include <vector>
 
-#include "../../compiler/instruction/ClassDeclaration.hpp"
-#include "../../compiler/instruction/For.hpp"
-#include "../../compiler/instruction/Foreach.hpp"
-#include "../../compiler/instruction/VariableDeclaration.hpp"
-#include "../../compiler/lexical/Token.hpp"
-#include "../../compiler/syntaxic/SyntaxicalError.hpp"
-#include "../../compiler/value/If.hpp"
-#include "../../vm/Program.hpp"
-#include "../value/Value.hpp"
+#include "SyntaxicalError.hpp"
 
 namespace ls {
+
+class Token;
+enum class TokenType;
+class Ident;
+class Instruction;
+class Value;
+class ClassDeclaration;
+class VariableDeclaration;
+class If;
+class For;
+class Foreach;
+class Program;
+class Block;
+class Object;
+class Array;
 
 class SyntaxicAnalyser {
 
@@ -36,11 +43,16 @@ public:
 	Token* eat(TokenType type);
 	Token* nextTokenAt(int pos);
 
+	Block* eatMain();
 	Ident* eatIdent();
 	Value* eatExpression();
 	Value* eatSimpleExpression();
 	Value* eatValue();
-	Body* eatBody();
+	bool isObject();
+	Value* eatBlockOrObject();
+	Block* eatBlock();
+	Object* eatObject();
+	Array* eatArray();
 	If* eatIf();
 	Instruction* eatFor();
 	Instruction* eatWhile();

@@ -57,7 +57,9 @@ static vector<string> type_literals[] = {
 
 	{ "π" },
 
-	{ ".." }, { "..." }
+	{ ".." }, { "..." },
+
+	{ "instanceof" }
 };
 
 LexicalAnalyser::LexicalAnalyser() {}

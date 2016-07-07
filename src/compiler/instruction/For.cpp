@@ -1,9 +1,10 @@
-#include "../../compiler/instruction/For.hpp"
+#include "For.hpp"
 
-#include "../../compiler/value/Number.hpp"
+#include "../value/Number.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
+#include "../value/Block.hpp"
 
 using namespace std;
 
@@ -34,7 +35,7 @@ void For::print(ostream& os) const {
 	}
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		os << variables.at(i);
-		if ((Value*)variablesValues.at(i) != nullptr) {
+		if ((Value*) variablesValues.at(i) != nullptr) {
 			os << " = ";
 			variablesValues.at(i)->print(os);
 		}
@@ -92,9 +93,6 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	body->analyse(analyser, req_type);
 }
 
-extern map<string, jit_value_t> globals;
-extern map<string, jit_value_t> locals;
-
 int for_is_true(LSValue* v) {
 	return v->isTrue();
 }
@@ -108,18 +106,15 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	// Initialization
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
-		SemanticVar* v = vars.at(variables.at(i)->content);
+		std::string& name = variables.at(i)->content;
+		SemanticVar* v = vars.at(name);
 
 		jit_value_t var;
 		if (declare_variables[i]) {
-			var = jit_value_create(F, JIT_INTEGER);
-			globals.insert(pair<string, jit_value_t>(variables[i]->content, var));
+			var = jit_value_create(F, JIT_INTEGER_LONG);
+			c.add_var(name, var, v->type, false);
 		} else {
-			if (v->scope == VarScope::GLOBAL) {
-				var = globals.at(variables[i]->content);
-			} else {
-				var = locals.at(variables[i]->content);
-			}
+			var = c.get_var(name).value;
 		}
 		if (variablesValues.at(i) != nullptr) {
 			jit_value_t val = variablesValues.at(i)->compile_jit(c, F, Type::NEUTRAL);

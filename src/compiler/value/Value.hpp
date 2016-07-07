@@ -5,6 +5,7 @@
 
 #include "../../vm/VM.hpp"
 #include "../Compiler.hpp"
+#include "../../vm/Type.hpp"
 
 namespace ls {
 

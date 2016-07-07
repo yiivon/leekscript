@@ -1,4 +1,5 @@
-#include "../../compiler/value/Value.hpp"
+#include "Value.hpp"
+#include "../../vm/Type.hpp"
 
 namespace ls {
 

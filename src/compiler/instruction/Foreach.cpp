@@ -69,8 +69,6 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	//analyser->leave_block();
 }
 
-extern map<string, jit_value_t> globals;
-
 LSArrayIterator<LSValue*> get_array_begin(LSArray<LSValue*>* a) {
 	return a->begin();
 }
@@ -128,7 +126,6 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	// Get array element (each value of array)
 	jit_value_t value_val;
 	if (var_type.nature == Nature::POINTER) {
-//		cout << "compile pointer" << endl;
 		jit_type_t args_types[1] = {JIT_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 		value_val = jit_insn_call_native(F, "get", (void*) get_array_elem, sig, &it, 1, JIT_CALL_NOTHROW);
@@ -140,7 +137,7 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	jit_value_t value_var = jit_value_create(F, JIT_POINTER);
 	jit_insn_store(F, value_var, value_val);
-	globals.insert(pair<string, jit_value_t>(value->content, value_var));
+	c.add_var(value->content, value_var, var_type, false);
 
 	// Key
 	if (key != nullptr) {
@@ -151,7 +148,7 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 		jit_value_t key_var = jit_value_create(F, JIT_POINTER);
 		jit_insn_store(F, key_var, key_val);
-		globals.insert(pair<string, jit_value_t>(key->content, key_var));
+		c.add_var(key->content, key_var, Type::POINTER, false);
 	}
 
 	// body

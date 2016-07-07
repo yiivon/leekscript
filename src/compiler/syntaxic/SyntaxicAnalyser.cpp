@@ -1,28 +1,38 @@
-#include "../../compiler/syntaxic/SyntaxicAnalyser.hpp"
+#include "SyntaxicAnalyser.hpp"
 
 #include <string>
+#include <math.h>
+
 #include "../value/Function.hpp"
 #include "../instruction/Instruction.hpp"
-#include <math.h>
-#include "../../compiler/instruction/Break.hpp"
-#include "../../compiler/instruction/Continue.hpp"
-#include "../../compiler/instruction/ExpressionInstruction.hpp"
-#include "../../compiler/instruction/Return.hpp"
-#include "../../compiler/instruction/While.hpp"
-#include "../../compiler/value/AbsoluteValue.hpp"
-#include "../../compiler/value/Array.hpp"
-#include "../../compiler/value/ArrayAccess.hpp"
-#include "../../compiler/value/Boolean.hpp"
-#include "../../compiler/value/FunctionCall.hpp"
-#include "../../compiler/value/Nulll.hpp"
-#include "../../compiler/value/Number.hpp"
-#include "../../compiler/value/Object.hpp"
-#include "../../compiler/value/ObjectAccess.hpp"
-#include "../../compiler/value/PostfixExpression.hpp"
-#include "../../compiler/value/PrefixExpression.hpp"
-#include "../../compiler/value/Reference.hpp"
-#include "../../compiler/value/String.hpp"
-#include "../../compiler/value/VariableValue.hpp"
+#include "../value/Block.hpp"
+#include "../instruction/Break.hpp"
+#include "../instruction/Foreach.hpp"
+#include "../instruction/For.hpp"
+#include "../value/If.hpp"
+#include "../instruction/Continue.hpp"
+#include "../instruction/ExpressionInstruction.hpp"
+#include "../instruction/ClassDeclaration.hpp"
+#include "../instruction/VariableDeclaration.hpp"
+#include "../instruction/Return.hpp"
+#include "../instruction/While.hpp"
+#include "../value/AbsoluteValue.hpp"
+#include "../value/Array.hpp"
+#include "../value/ArrayAccess.hpp"
+#include "../value/Boolean.hpp"
+#include "../value/FunctionCall.hpp"
+#include "../value/Nulll.hpp"
+#include "../value/Number.hpp"
+#include "../value/Object.hpp"
+#include "../value/ObjectAccess.hpp"
+#include "../value/PostfixExpression.hpp"
+#include "../value/PrefixExpression.hpp"
+#include "../value/Reference.hpp"
+#include "../value/String.hpp"
+#include "../value/VariableValue.hpp"
+#include "../../vm/Program.hpp"
+#include "SyntaxicalError.hpp"
+#include "../lexical/Token.hpp"
 
 using namespace std;
 
@@ -47,50 +57,95 @@ Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 	this->tokens = tokens;
 	this->lt = nullptr;
 	this->t = &tokens.at(0);
-	this->nt = nullptr;
+	this->nt = tokens.size() > 1 ? &tokens.at(1) : nullptr;
 	this->i = 0;
 
-//	time = System.nanoTime();
-
 	Program* program = new Program();
-	program->body = eatBody();
-
-//	if (program->body->instructions.size() > 0) {
-//		Instruction* last = program->body->instructions[program->body->instructions.size() - 1];
-//		if (dynamic_cast<Return*>(last) == nullptr) {
-//			if (dynamic_cast<ExpressionInstruction*>(last) != nullptr) {
-//				Return* ret = new Return();
-//				ret->expression = ((ExpressionInstruction*) last)->expression;
-//				program->body->instructions[program->body->instructions.size() - 1] = ret;
-//			} else {
-//				Return* ret = new Return();
-//				ret->expression = new Nulll();
-//				program->body->instructions.push_back(ret);
-//			}
-//		}
-//	}
-//
-//	if (program->body->instructions.size() == 0) {
-//		Return* ret = new Return();
-//		ret->expression = new Nulll();
-//		program->body->instructions.push_back(ret);
-//	}
-
-//	time = System.nanoTime() - time;
+	program->body = eatMain();
 
 	return program;
 }
 
-Body* SyntaxicAnalyser::eatBody() {
+Block* SyntaxicAnalyser::eatMain() {
 
-	Body* body = new Body();
+	Block* block = new Block();
 
 	Instruction* ins;
 	while ((ins = eatInstruction()) != nullptr) {
-		body->instructions.push_back(ins);
+		block->instructions.push_back(ins);
+	}
+	return block;
+}
+
+/*
+ * Detects whether a opening brace is an object or a block
+ *
+ * {} => object
+ * {a: 12} => object
+ * { 12 } => block
+ */
+bool SyntaxicAnalyser::isObject() {
+
+	if (nt != nullptr and nt->type == TokenType::CLOSING_BRACE) {
+		return true;
 	}
 
-	return body;
+	auto nnt = nextTokenAt(2);
+	if (nt != nullptr and nt->type == TokenType::IDENT
+		and nnt != nullptr and nnt->type == TokenType::COLON) {
+		return true;
+	}
+	return false;
+}
+
+Value* SyntaxicAnalyser::eatBlockOrObject() {
+	if (isObject()) {
+		return eatObject();
+	} else {
+		return eatBlock();
+	}
+}
+
+Block* SyntaxicAnalyser::eatBlock() {
+
+	Block* block = new Block();
+
+	bool brace = false;
+	if (t->type == TokenType::OPEN_BRACE) {
+		brace = true;
+		eat();
+	}
+
+	Instruction* ins;
+	while ((ins = eatInstruction()) != nullptr) {
+		block->instructions.push_back(ins);
+	}
+
+	if (brace) {
+		eat(TokenType::CLOSING_BRACE);
+	}
+	return block;
+}
+
+Object* SyntaxicAnalyser::eatObject() {
+
+	eat(TokenType::OPEN_BRACE);
+
+	Object* o = new Object();
+
+	while (t->type == TokenType::IDENT) {
+
+		o->keys.push_back(eatIdent());
+		eat(TokenType::COLON);
+		o->values.push_back(eatExpression());
+
+		if (t->type == TokenType::COMMA) {
+			eat();
+		}
+	}
+	eat(TokenType::CLOSING_BRACE);
+
+	return o;
 }
 
 Instruction* SyntaxicAnalyser::eatInstruction() {
@@ -105,6 +160,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::GLOBAL: {
 			return eatVariableDeclaration();
 		}
+
 		case TokenType::NUMBER:
 		case TokenType::PI:
 		case TokenType::TRUE:
@@ -384,7 +440,8 @@ Value* SyntaxicAnalyser::eatExpression() {
 			t->type == TokenType::MODULO_EQUAL || t->type == TokenType::POWER_EQUAL ||
 			t->type == TokenType::SWAP || t->type == TokenType::TILDE ||
 			t->type == TokenType::TILDE_TILDE || t->type == TokenType::TILDE_EQUAL ||
-			t->type == TokenType::TILDE_TILDE_EQUAL || t->type == TokenType::IN) {
+			t->type == TokenType::TILDE_TILDE_EQUAL || t->type == TokenType::IN ||
+			t->type == TokenType::INSTANCEOF) {
 
 		if (t->type == TokenType::MINUS && t->line != lt->line && nt != nullptr && t->line == nt->line)
 			break;
@@ -464,7 +521,7 @@ Value* SyntaxicAnalyser::eatValue() {
 					l->lambda = true;
 					l->arguments.push_back(ident->token);
 					eat(TokenType::ARROW);
-					l->body = new Body();
+					l->body = new Block();
 					l->body->instructions.push_back(new Return(eatExpression()));
 
 					return l;
@@ -498,7 +555,7 @@ Value* SyntaxicAnalyser::eatValue() {
 						}
 
 						eat(TokenType::ARROW);
-						l->body = new Body();
+						l->body = new Block();
 						l->body->instructions.push_back(new Return(eatExpression()));
 
 						return l;
@@ -522,84 +579,11 @@ Value* SyntaxicAnalyser::eatValue() {
 		}
 
 		case TokenType::OPEN_BRACKET: {
-			eat();
-			Array* a = new Array();
-
-			// Empty array
-			if (t->type == TokenType::CLOSING_BRACKET) {
-				eat();
-				return a;
-			}
-
-			Value* key = nullptr;
-			Value* value = eatExpression();
-
-			if (t->type == TokenType::TWO_DOTS) {
-				eat();
-
-				a->interval = true;
-				a->addValue(value, nullptr);
-
-				Value* value2 = eatExpression();
-
-				a->addValue(value2, nullptr);
-
-				eat(TokenType::CLOSING_BRACKET);
-
-				return a;
-			}
-
-			if (t->type == TokenType::COLON) {
-				eat(TokenType::COLON);
-				key = value;
-				value = eatExpression();
-			}
-			a->addValue(value, key);
-
-			if (t->type == TokenType::COMMA) {
-				eat();
-			}
-
-			while (t->type != TokenType::CLOSING_BRACKET) {
-
-				value = eatExpression();
-
-				if (t->type == TokenType::COLON) {
-					eat(TokenType::COLON);
-					key = value;
-					value = eatExpression();
-				}
-
-				a->addValue(value, key);
-
-				if (t->type == TokenType::COMMA) {
-					eat();
-				} else {
-					break;
-				}
-			}
-			eat(TokenType::CLOSING_BRACKET);
-
-			return a;
+			return eatArray();
 		}
 
 		case TokenType::OPEN_BRACE: {
-
-			eat();
-			Object* od = new Object();
-
-			while (t->type == TokenType::IDENT) {
-				od->keys.push_back(eatIdent());
-				eat(TokenType::COLON);
-				od->values.push_back(eatExpression());
-
-				if (t->type == TokenType::COMMA) {
-					eat();
-				}
-			}
-			eat(TokenType::CLOSING_BRACE);
-
-			return od;
+			return eatBlockOrObject();
 		}
 
 		case TokenType::IF: {
@@ -615,8 +599,6 @@ Value* SyntaxicAnalyser::eatValue() {
 			eat(TokenType::OPEN_PARENTHESIS);
 
 			while (t->type != TokenType::FINISHED and t->type != TokenType::CLOSING_PARENTHESIS) {
-
-
 
 				bool reference = false;
 				if (t->type == TokenType::AROBASE) {
@@ -645,7 +627,7 @@ Value* SyntaxicAnalyser::eatValue() {
 				braces = true;
 			}
 
-			f->body = eatBody();
+			f->body = eatBlock();
 
 			if (braces)
 				eat(TokenType::CLOSING_BRACE);
@@ -660,7 +642,7 @@ Value* SyntaxicAnalyser::eatValue() {
 			Function* l = new Function();
 			l->lambda = true;
 			eat(TokenType::ARROW);
-			l->body = new Body();
+			l->body = new Block();
 			l->body->instructions.push_back(new Return(eatExpression()));
 			return l;
 		}
@@ -670,6 +652,70 @@ Value* SyntaxicAnalyser::eatValue() {
 	errors.push_back(new SyntaxicalError(t, "Expected value, got <" + to_string((int)t->type) + "> (" + t->content + ")"));
 	eat();
 	return new Nulll();
+}
+
+Array* SyntaxicAnalyser::eatArray() {
+
+	eat(TokenType::OPEN_BRACKET);
+
+	Array* a = new Array();
+
+	// Empty array
+	if (t->type == TokenType::CLOSING_BRACKET) {
+		eat();
+		return a;
+	}
+
+	Value* key = nullptr;
+	Value* value = eatExpression();
+
+	if (t->type == TokenType::TWO_DOTS) {
+		eat();
+
+		a->interval = true;
+		a->addValue(value, nullptr);
+
+		Value* value2 = eatExpression();
+
+		a->addValue(value2, nullptr);
+
+		eat(TokenType::CLOSING_BRACKET);
+
+		return a;
+	}
+
+	if (t->type == TokenType::COLON) {
+		eat(TokenType::COLON);
+		key = value;
+		value = eatExpression();
+	}
+	a->addValue(value, key);
+
+	if (t->type == TokenType::COMMA) {
+		eat();
+	}
+
+	while (t->type != TokenType::CLOSING_BRACKET) {
+
+		value = eatExpression();
+
+		if (t->type == TokenType::COLON) {
+			eat(TokenType::COLON);
+			key = value;
+			value = eatExpression();
+		}
+
+		a->addValue(value, key);
+
+		if (t->type == TokenType::COMMA) {
+			eat();
+		} else {
+			break;
+		}
+	}
+	eat(TokenType::CLOSING_BRACKET);
+
+	return a;
 }
 
 If* SyntaxicAnalyser::eatIf() {
@@ -683,7 +729,7 @@ If* SyntaxicAnalyser::eatIf() {
 	bool braces = false;
 	bool then = false;
 	if (t->type == TokenType::OPEN_BRACE) {
-		eat(TokenType::OPEN_BRACE);
+//		eat(TokenType::OPEN_BRACE);
 		braces = true;
 	} else if (t->type == TokenType::THEN) {
 		eat(TokenType::THEN);
@@ -691,15 +737,15 @@ If* SyntaxicAnalyser::eatIf() {
 	}
 
 	if (then or braces) {
-		iff->then = eatBody();
+		iff->then = eatBlock();
 	} else {
-		Body* body = new Body();
-		body->instructions.push_back(eatInstruction());
-		iff->then = body;
+		Block* block = new Block();
+		block->instructions.push_back(eatInstruction());
+		iff->then = block;
 	}
 
 	if (braces) {
-		eat(TokenType::CLOSING_BRACE);
+//		eat(TokenType::CLOSING_BRACE);
 	} else if (then) {
 		if (t->type != TokenType::ELSE) {
 			eat(TokenType::END);
@@ -711,20 +757,20 @@ If* SyntaxicAnalyser::eatIf() {
 
 		bool bracesElse = false;
 		if (t->type == TokenType::OPEN_BRACE) {
-			eat(TokenType::OPEN_BRACE);
+//			eat(TokenType::OPEN_BRACE);
 			bracesElse = true;
 		}
 
 		if (then or bracesElse) {
-			iff->elze = eatBody();
+			iff->elze = eatBlock();
 		} else {
-			Body* body = new Body();
+			Block* body = new Block();
 			body->instructions.push_back(eatInstruction());
 			iff->elze = body;
 		}
 
 		if (bracesElse) {
-			eat(TokenType::CLOSING_BRACE);
+//			eat(TokenType::CLOSING_BRACE);
 		} else if (then) {
 			eat(TokenType::END);
 		}
@@ -786,7 +832,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 			eat(TokenType::DO);
 		}
 
-		f->body = eatBody();
+		f->body = eatBlock();
 
 		if (braces) {
 			eat(TokenType::CLOSING_BRACE);
@@ -849,7 +895,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 			eat(TokenType::DO);
 		}
 
-		f->body = eatBody();
+		f->body = eatBlock();
 
 		if (braces) {
 			eat(TokenType::CLOSING_BRACE);
@@ -887,7 +933,7 @@ Instruction* SyntaxicAnalyser::eatWhile() {
 		eat(TokenType::DO);
 	}
 
-	w->body = eatBody();
+	w->body = eatBlock();
 
 	if (braces) {
 		eat(TokenType::CLOSING_BRACE);

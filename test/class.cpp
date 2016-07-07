@@ -20,6 +20,17 @@ void Test::test_classes() {
 	success("(-> 12).class", "<class Function>");
 	success("(x, y -> x + y).class", "<class Function>");
 	success("12.class.class", "<class Class>");
+	
+	success("12 instanceof Number", "true");
+	success("'yo' instanceof Number", "false");
+	success("'yo' instanceof String", "true");
+	success("[1, 2, 3] instanceof Array", "true");
+	success("{a: 12} instanceof Object", "true");
+	success("(-> 12) instanceof Function", "true");
+	success("null instanceof Null", "true");
+	success("true instanceof Boolean", "true");
+	success("Number instanceof Class", "true");
+
 /*
 	success("class A {} let a = new A", "{}");
 	success("class A { let b = 2 } let a = new A", "{}");

@@ -1,10 +1,9 @@
 #ifndef VM_HPP
 #define VM_HPP
 
+#include <vector>
 #include <string>
 #include <jit/jit.h>
-
-#include "Type.hpp"
 
 #define USE_INTEGERS 1
 
@@ -22,6 +21,7 @@
 
 namespace ls {
 
+class Type;
 class Module;
 class Program;
 

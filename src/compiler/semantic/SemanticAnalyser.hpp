@@ -47,8 +47,7 @@ public:
 	bool reanalyse = false;
 
 	std::map<std::string, SemanticVar*> internal_vars;
-	std::map<std::string, SemanticVar*> global_vars;
-	std::vector<std::map<std::string, SemanticVar*>> local_vars;
+	std::vector<std::map<std::string, SemanticVar*>> variables;
 	std::vector<std::map<std::string, SemanticVar*>> parameters;
 
 	std::vector<Function*> functions;
@@ -68,7 +67,6 @@ public:
 
 	SemanticVar* add_var(Token*, Type, Value*);
 	SemanticVar* add_parameter(Token*, Type);
-	void add_global_var(Token*, Type, Value*);
 
 	SemanticVar* get_var(Token* name);
 	SemanticVar* get_var_direct(std::string name);

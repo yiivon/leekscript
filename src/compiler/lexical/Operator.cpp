@@ -16,7 +16,7 @@ namespace ls {
  * ------------------
  * 3| + -
  * ------------------
- * 4| < <= > >=
+ * 4| < <= > >= instanceof
  * ------------------
  * 5| == != === !===
  * ------------------
@@ -50,7 +50,9 @@ static int operator_priorities[] = {
 	8, 8, /* ^= %= */
 	2, /* % */
 	0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0 /* ~ ~~ ~= ~~= */
+	0, 0, 0, 0, /* ~ ~~ ~= ~~= */
+	0, 0, 0,
+	4 /* instanceof */
 };
 
 Operator::Operator(Token* token) {
@@ -62,8 +64,7 @@ Operator::Operator(Token* token) {
 //	cout << "operator " << character << " (" << (int)token->type << ") : " << priority << endl;
 }
 
-Operator::~Operator() {
-}
+Operator::~Operator() {}
 
 void Operator::print(std::ostream& os) {
 	os << character;

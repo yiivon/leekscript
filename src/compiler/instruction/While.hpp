@@ -7,7 +7,7 @@
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
 #include "../../compiler/value/Expression.hpp"
 #include "../../compiler/value/Value.hpp"
-#include "../Body.hpp"
+#include "../value/Block.hpp"
 class SemanticVar;
 
 namespace ls {
@@ -16,7 +16,7 @@ class While : public Instruction {
 public:
 
 	Value* condition;
-	Body* body;
+	Block* body;
 
 	While();
 	virtual ~While();

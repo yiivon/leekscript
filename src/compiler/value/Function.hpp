@@ -6,7 +6,7 @@
 #include "../../compiler/lexical/Ident.hpp"
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
 #include "../../compiler/value/Value.hpp"
-#include "../Body.hpp"
+#include "../value/Block.hpp"
 
 namespace ls {
 
@@ -20,7 +20,7 @@ public:
 	std::vector<bool> references;
 	std::vector<Value*> defaultValues;
 	std::vector<std::string> captures;
-	Body* body;
+	Block* body;
 	int pos;
 	std::map<std::string, SemanticVar*> vars;
 	bool function_added;

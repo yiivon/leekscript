@@ -2,6 +2,7 @@
 
 #include "../../compiler/value/Number.hpp"
 #include "../../vm/LSValue.hpp"
+#include "../../vm/value/LSNull.hpp"
 
 using namespace std;
 
@@ -100,6 +101,13 @@ jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const
 	if (elze != nullptr) {
 		jit_value_t else_v = elze->compile_jit(c, F, req_type);
 		jit_insn_store(F, res, else_v);
+	} else {
+		if (req_type.nature == Nature::POINTER) {
+			LSValue* n = LSNull::null_var;
+			jit_insn_store(F, res, JIT_CREATE_CONST_POINTER(F, n));
+		} else {
+			jit_insn_store(F, res, jit_value_create_nint_constant(F, JIT_INTEGER, 12));
+		}
 	}
 
 	jit_insn_label(F, &label_end);

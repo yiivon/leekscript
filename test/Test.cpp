@@ -16,7 +16,6 @@ int Test::all() {
 	exeTime = 0;
 
 	test_general();
-
 	test_booleans();
 	test_numbers();
 	test_strings();
@@ -25,7 +24,6 @@ int Test::all() {
 	test_functions();
 	test_classes();
 	test_loops();
-
 	test_operators();
 	test_references();
 	test_operations();
@@ -53,8 +51,12 @@ void Test::header(std::string text) {
 void Test::success(std::string code, std::string expected) {
 
 	total++;
-
-	std::string res = vm.execute(code, "{}", ls::ExecMode::TEST);
+	std::string res;
+	try {
+		res = vm.execute(code, "{}", ls::ExecMode::TEST);
+	} catch (ls::SemanticException& e) {
+		res = e.message();
+	}
 	obj_created += ls::LSValue::obj_count;
 	obj_deleted += ls::LSValue::obj_deleted;
 
@@ -70,7 +72,12 @@ void Test::ops(std::string code, int expected) {
 
 	total++;
 
-	std::string res = vm.execute(code, "{}", ls::ExecMode::TEST_OPS);
+	std::string res;
+	try {
+		res = vm.execute(code, "{}", ls::ExecMode::TEST_OPS);
+	} catch (ls::SemanticException& e) {
+		res = e.message();
+	}
 	obj_created += ls::LSValue::obj_count;
 	obj_deleted += ls::LSValue::obj_deleted;
 
@@ -87,20 +94,29 @@ void Test::sem_err(std::string code, ls::SemanticException::Type expected_type, 
 
 	total++;
 
+	bool exception = false;
+	std::string expected_message = ls::SemanticException::build_message(expected_type, token);
+
 	try {
 		vm.execute(code, "{}", ls::ExecMode::TEST);
 
 	} catch (ls::SemanticException& e) {
-
+		exception = true;
 		if (expected_type != e.type or token != e.token->content) {
 
-			std::string expected_message = ls::SemanticException::build_message(expected_type, token);
+
 			std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << e.message() << std::endl;
 
 		} else {
 			std::cout << "OK   : " << code << "  ===> " << e.message() <<  std::endl;
 			success_count++;
 		}
+	} catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
+	}
+
+	if (!exception) {
+		std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << "(no exception)" << std::endl;
 	}
 
 	obj_created += ls::LSValue::obj_count;

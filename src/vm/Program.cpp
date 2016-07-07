@@ -32,9 +32,9 @@ void Program::print(ostream& os) {
 }
 
 extern map<string, jit_value_t> internals;
-extern map<string, jit_value_t> globals;
-extern map<string, Type> globals_types;
-extern map<string, bool> globals_ref;
+//extern map<string, jit_value_t> globals;
+//extern map<string, Type> globals_types;
+//extern map<string, bool> globals_ref;
 
 LSArray<LSValue*>* Program_create_array() {
 	return new LSArray<LSValue*>();
@@ -60,35 +60,19 @@ void Program_push_pointer(LSArray<LSValue*>* array, LSValue* value) {
 
 void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool toplevel) {
 
-//	cout << endl << "COMPILE" << endl << endl;
-
-	// System global variables
+	// System internal variables
 	for (auto var : system_vars) {
 
 		string name = var.first;
 		LSValue* value = var.second;
 
-		//cout << "Add " << name << endl;
-
-//		jit_value_t jit_var = jit_value_create(F, JIT_INTEGER_LONG);
-
 		jit_value_t jit_val = JIT_CREATE_CONST_POINTER(F, value);
-
-		//cout << value << endl;
-
 		internals.insert(pair<string, jit_value_t>(name, jit_val));
-
-//		globals_infos.insert(pair<string, Info>(name, Info::pointer));
-//		jit_insn_store(F, jit_var, jit_val);
-
-		//cout << "var : " << jit_val << endl;
 	}
 
 	// User context variables
 	if (toplevel) {
 		for (auto var : context.vars) {
-
-//			cout << "context var " << var.first << endl;
 
 			string name = var.first;
 			LSValue* value = var.second;
@@ -97,22 +81,16 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 			jit_value_t jit_val = JIT_CREATE_CONST_POINTER(F, value);
 			jit_insn_store(F, jit_var, jit_val);
 
-//			cout << jit_var << endl;
-
-			globals.insert(pair<string, jit_value_t>(name, jit_var));
-			globals_types.insert(pair<string, Type>(name, Type(value->getRawType(), Nature::POINTER)));
+			c.add_var(name, jit_var, Type(value->getRawType(), Nature::POINTER), false);
 
 			value->refs++;
 		}
 	}
 
-//	cout << "execute" << endl;
-
 	jit_value_t res = body->compile_jit(c, F, Type::POINTER);
 	VM::inc_refs(F, res);
 
 //	cout << "body type : " << body->type << endl;
-
 //	cout << "res : " << res << endl;
 
 	if (toplevel) {
@@ -131,7 +109,8 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 
 //		cout << "GLOBALS : " << globals.size() << endl;
 
-		for (auto g : globals) {
+		/*
+		for (auto g : c.get_vars()) {
 
 			string name = g.first;
 			Type type = globals_types[name];
@@ -179,10 +158,11 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 				}
 			}
 		}
+		*/
 		jit_insn_return(F, array);
 
 	} else {
-
+		/*
 		for (auto g : globals) {
 
 			if (globals_ref[g.first] == true) {
@@ -195,6 +175,7 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 				VM::delete_obj(F, g.second);
 			}
 		}
+		*/
 		jit_insn_return(F, res);
 	}
 }

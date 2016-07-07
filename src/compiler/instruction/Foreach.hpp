@@ -7,7 +7,7 @@
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
 #include "../../compiler/value/Expression.hpp"
 #include "../../compiler/value/Value.hpp"
-#include "../Body.hpp"
+#include "../value/Block.hpp"
 
 namespace ls {
 
@@ -17,7 +17,7 @@ public:
 	Token* key;
 	Token* value;
 	Value* array;
-	Body* body;
+	Block* body;
 	Type var_type;
 	SemanticVar* value_var;
 	SemanticVar* key_var;

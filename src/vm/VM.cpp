@@ -25,10 +25,6 @@ const bool VM::enable_operations = true;
 const unsigned int VM::operation_limit = 2000000000;
 
 map<string, jit_value_t> internals;
-map<string, jit_value_t> globals;
-map<string, Type> globals_types;
-map<string, bool> globals_ref;
-map<string, jit_value_t> locals;
 
 void VM::add_module(Module* m) {
 	modules.push_back(m);
@@ -61,9 +57,6 @@ Program* VM::compile(const std::string code) {
 	}
 
 	internals.clear();
-	globals.clear();
-	globals_types.clear();
-	locals.clear();
 
 	jit_init();
 	jit_context_t jit_context = jit_context_create();
@@ -140,9 +133,6 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 	// Compilation
 	internals.clear();
-	globals.clear();
-	globals_types.clear();
-	locals.clear();
 
 	jit_init();
 	jit_context_t jit_context = jit_context_create();
@@ -200,6 +190,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		string ctx = "{";
 
 		unsigned i = 0;
+/*
 		for (auto g : globals) {
 			if (globals_ref[g.first]) continue;
 			LSValue* v = res_array->operator[] (i + 1);
@@ -207,6 +198,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 			if (i < globals.size() - 1) ctx += ",";
 			i++;
 		}
+		*/
 		ctx += "}";
 		delete res_array;
 

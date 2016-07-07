@@ -20,6 +20,9 @@ void Test::test_general() {
 	success("true", "true");
 	success("false", "false");
 	success("'toto'", "'toto'");
+	success("[]", "[]");
+	success("{}", "{}");
+	success("{a: 12}", "{a: 12}");
 
 	header("Variables");
 	success("let a = 2", "2");
@@ -35,6 +38,9 @@ void Test::test_general() {
 	sem_err("a", ls::SemanticException::Type::UNDEFINED_VARIABLE, "a");
 	sem_err("let a = 2 let a = 5", ls::SemanticException::Type::VARIABLE_ALREADY_DEFINED, "a");
 
+	success("let a = 12 { let a = 5 } a", "12");
+	success("let a = 12 let b = 0 { let a = 5 b = a } b", "5");
+	sem_err("{let a = 5} a", ls::SemanticException::Type::UNDEFINED_VARIABLE, "a");
 }
 
 

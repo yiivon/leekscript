@@ -1,11 +1,14 @@
 #ifndef INSTRUCTION_HPP
 #define INSTRUCTION_HPP
 
-#include "../../compiler/value/Value.hpp"
+#include <ostream>
 #include "../Compiler.hpp"
-class SemanticAnalyser;
+#include "../../vm/Type.hpp"
 
 namespace ls {
+
+class Value;
+class SemanticAnalyser;
 
 class Instruction {
 public:
