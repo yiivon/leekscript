@@ -29,6 +29,10 @@ void Test::test_arrays() {
 	success("'yo' in ['ya', 'yu', 'yo']", "true");
 	success("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }", "'ok'");
 
+	success("[1 2 3]", "[1, 2, 3]");
+	success("['yo' 'ya' 'yu']", "['yo', 'ya', 'yu']");
+	success("[true false true true]", "[true, false, true, true]");
+
 	/*
 	 * Array operations
 	 */

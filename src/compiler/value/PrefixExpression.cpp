@@ -26,15 +26,30 @@ void PrefixExpression::print(ostream& os) const {
 }
 
 void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type) {
+
 	expression->analyse(analyser);
-	type = expression->type;
+
+	if (operatorr->type == TokenType::PLUS_PLUS
+		or operatorr->type == TokenType::MINUS_MINUS
+		or operatorr->type == TokenType::MINUS) {
+		type = expression->type;
+	} else if (operatorr->type == TokenType::NOT) {
+		type = Type::BOOLEAN;
+	}
 }
 
-extern LSValue* jit_not(LSValue*);
-extern LSValue* jit_minus(LSValue*);
-extern LSValue* jit_pre_inc(LSValue*);
-extern LSValue* jit_pre_dec(LSValue*);
-
+LSValue* jit_not(LSValue* x) {
+	return x->operator ! ();
+}
+LSValue* jit_minus(LSValue* x) {
+	return x->operator - ();
+}
+LSValue* jit_pre_inc(LSValue* x) {
+	return x->operator ++ ();
+}
+LSValue* jit_pre_dec(LSValue* x) {
+	return x->operator -- ();
+}
 LSValue* jit_pre_tilde(LSValue* v) {
 	return v->operator ~ ();
 }

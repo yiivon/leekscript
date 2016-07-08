@@ -3,6 +3,7 @@
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticException.hpp"
 #include "../value/Reference.hpp"
 
 using namespace std;
@@ -59,6 +60,10 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (i < expressions.size()) {
 			type = expressions[i]->type;
 			value = expressions[i];
+		}
+
+		if (type == Type::VOID) {
+			throw SemanticException(SemanticException::Type::CANT_ASSIGN_VOID, var);
 		}
 
 		// Global Variable already defined ? We don't define another time

@@ -15,6 +15,7 @@ public:
 		VARIABLE_ALREADY_DEFINED,
 		METHOD_NOT_FOUND,
 		STATIC_METHOD_NOT_FOUND,
+		CANT_ASSIGN_VOID
 	};
 
 	static bool translation_loaded;

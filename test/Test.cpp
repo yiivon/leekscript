@@ -68,6 +68,28 @@ void Test::success(std::string code, std::string expected) {
 	}
 }
 
+void Test::success_almost(std::string code, long expected, long delta) {
+
+	total++;
+	std::string res;
+	try {
+		res = vm.execute(code, "{}", ls::ExecMode::TEST);
+	} catch (ls::SemanticException& e) {
+		res = e.message();
+	}
+	obj_created += ls::LSValue::obj_count;
+	obj_deleted += ls::LSValue::obj_deleted;
+
+	long res_num = std::stol(res);
+
+	if (std::abs(res_num - expected) > delta) {
+		std::cout << "FAUX : " << code << "  =/=>  " << expected << "  got  " << res << std::endl;
+	} else {
+		std::cout << "OK   : " << code << "  ===>  " << res << " (perfect: " << expected << ")" << std::endl;
+		success_count++;
+	}
+}
+
 void Test::ops(std::string code, int expected) {
 
 	total++;

@@ -57,12 +57,21 @@ void Test::test_numbers() {
 	success("Number.round(5.4)", "5");
 	success("Number.ceil(5.1)", "6");
 	success("Number.max(5, 12)", "12");
+
 	success("Number.cos(0)", "1");
 	success("Number.cos(π)", "-1");
 	success("Number.cos(π / 2)", "0");
+
 	success("Number.sin(0)", "0");
 	success("Number.sin(π)", "0");
 	success("Number.sin(π / 2)", "1");
 	success("Number.sin(- π / 2)", "-1");
 //	success("12.sqrt()", "");
+
+	success("Number.isInteger(12)", "true");
+	success("Number.isInteger(0)", "true");
+	success("Number.isInteger(-5)", "true");
+	success("Number.isInteger(12.9)", "false");
+	success("Number.isInteger(-5.2)", "false");
+	success("Number.isInteger(π)", "false");
 }

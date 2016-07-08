@@ -2,5 +2,6 @@
 	"UNDEFINED_VARIABLE" : "Variable « %s » non définie",
 	"VARIABLE_ALREADY_DEFINED" : "Variable « %s » déjà définie",
 	"METHOD_NOT_FOUND" : "Cette méthode « %s » n'existe pas",
-	"STATIC_METHOD_NOT_FOUND" : "Cette méthode statique « %s » n'existe pas"
+	"STATIC_METHOD_NOT_FOUND" : "Cette méthode statique « %s » n'existe pas",
+	"CANT_ASSIGN_VOID" : "Impossible d'assigner une valeur void à la variable « %s »"
 }

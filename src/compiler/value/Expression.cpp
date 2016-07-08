@@ -19,7 +19,6 @@ Expression::Expression(Value* v) {
 	v1 = v;
 	v2 = nullptr;
 	op = nullptr;
-	fast = false;
 	ignorev2 = false;
 	no_op = false;
 	operations = 0;
@@ -101,15 +100,19 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 	constant = true;
 	operations = 1;
 
+	if (op == nullptr) {
+		v1->analyse(analyser, Type::NEUTRAL);
+		type = v1->type;
+		return;
+	}
+
 	Type v1_type = Type::NEUTRAL;
 	Type v2_type = Type::NEUTRAL;
 
-	if (op != nullptr) {
-		if (op->type == TokenType::DIVIDE) {
-			type.raw_type = RawType::FLOAT;
-			v1_type = Type::FLOAT;
-			v2_type = Type::FLOAT;
-		}
+	if (op->type == TokenType::DIVIDE) {
+		type.raw_type = RawType::FLOAT;
+		v1_type = Type::FLOAT;
+		v2_type = Type::FLOAT;
 	}
 
 	if (v1 != nullptr) {
@@ -117,12 +120,12 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 		if (v1->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
 		if (v1->constant == false) constant = false;
 	}
+
 	if (v2 != nullptr) {
 		v2->analyse(analyser, v2_type);
 		if (v2->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
 		if (v2->constant == false) constant = false;
 	}
-	this->fast = fast;
 
 	if (v1 != nullptr and v2 != nullptr) {
 
@@ -183,16 +186,10 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 			}
 		}
 	}
-
 //	cout << "exp type " << type << endl;
 }
 
-LSValue* jit_not(LSValue* x) {
-	return x->operator ! ();
-}
-LSValue* jit_minus(LSValue* x) {
-	return x->operator - ();
-}
+
 LSValue* jit_add(LSValue* x, LSValue* y) {
 	return y->operator + (x);
 }
@@ -229,12 +226,6 @@ LSValue* jit_inc(LSValue* x) {
 LSValue* jit_dec(LSValue* x) {
 	return x->operator -- (1);
 }
-LSValue* jit_pre_inc(LSValue* x) {
-	return x->operator ++ ();
-}
-LSValue* jit_pre_dec(LSValue* x) {
-	return x->operator -- ();
-}
 
 LSValue* jit_equals(LSValue* x, LSValue* y) {
 	return LSBoolean::get(x->operator == (y));
@@ -256,7 +247,6 @@ LSValue* jit_ge(LSValue* x, LSValue* y) {
 }
 
 LSValue* jit_store(LSValue** x, LSValue* y) {
-	cout << "store" << endl;
 	y->refs++;
 	return *x = y;
 }

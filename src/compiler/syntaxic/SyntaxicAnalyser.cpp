@@ -709,8 +709,6 @@ Array* SyntaxicAnalyser::eatArray() {
 
 		if (t->type == TokenType::COMMA) {
 			eat();
-		} else {
-			break;
 		}
 	}
 	eat(TokenType::CLOSING_BRACKET);

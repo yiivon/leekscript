@@ -50,8 +50,10 @@ void Array::analyse(SemanticAnalyser* analyser, const Type) {
 
 	constant = true;
 
-	for (Expression key : keys) {
-		key.analyse(analyser, Type::NEUTRAL);
+	for (Value* key : keys) {
+		if (key != nullptr) {
+			key->analyse(analyser, Type::NEUTRAL);
+		}
 	}
 
 	if (expressions.size() > 0) {

@@ -61,6 +61,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("tan", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_tan);
 	static_method("toDegrees", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toDegrees);
 	static_method("toRadians", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toRadians);
+	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
 }
 
 LSNumber* number_abs(const LSNumber* number) {

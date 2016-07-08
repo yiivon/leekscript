@@ -1,5 +1,7 @@
 #include "Compiler.hpp"
 
+#include "../vm/VM.hpp"
+
 namespace ls {
 
 Compiler::Compiler() {}
@@ -10,7 +12,28 @@ void Compiler::enter_block() {
 	variables.push_back(std::map<std::string, CompilerVar> {});
 }
 
-void Compiler::leave_block() {
+void Compiler::leave_block(jit_function_t& F) {
+
+	if (variables.size() > 1) {
+
+		auto vars = variables.back();
+
+		for (auto var : vars) {
+
+			std::cout << "delete " << var.first  << std::endl;
+			/*
+			if (var.second.reference == true) {
+				continue;
+			}
+			Type type = var.second.type;
+
+			if (type.must_manage_memory()) {
+				VM::delete_obj(F, var.second.value);
+			}
+	*/
+		}
+	}
+
 	variables.pop_back();
 }
 

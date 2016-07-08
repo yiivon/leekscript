@@ -54,7 +54,7 @@ jit_value_t Block::compile_jit(Compiler& c, jit_function_t& F, Type type) const 
 
 		if (i == instructions.size() - 1) {
 			jit_value_t val = instructions[i]->compile_jit(c, F, type);
-			c.leave_block();
+			c.leave_block(F);
 			return val;
 		} else {
 			jit_value_t res = instructions[i]->compile_jit(c, F, type);
@@ -63,7 +63,7 @@ jit_value_t Block::compile_jit(Compiler& c, jit_function_t& F, Type type) const 
 			}
 		}
 	}
-	c.leave_block();
+	c.leave_block(F);
 	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }
 

@@ -15,7 +15,6 @@ public:
 	Value* v2;
 	Operator* op;
 
-	bool fast;
 	bool ignorev2;
 	bool no_op;
 

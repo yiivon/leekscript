@@ -258,7 +258,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	delete program;
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
-		//cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
+		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
 	}
 
 	return result;
@@ -267,7 +267,10 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 LSValue* create_null_object(int) {
 	return LSNull::null_var;
 }
-LSValue* create_number_object(int n) {
+LSValue* create_number_object_int(int n) {
+	return LSNumber::get(n);
+}
+LSValue* create_number_object_long(long n) {
 	return LSNumber::get(n);
 }
 LSValue* create_bool_object(bool n) {
@@ -285,7 +288,10 @@ void* get_conv_fun(Type type) {
 		return (void*) &create_null_object;
 	}
 	if (type.raw_type == RawType::INTEGER) {
-		return (void*) &create_number_object;
+		return (void*) &create_number_object_int;
+	}
+	if (type.raw_type == RawType::LONG) {
+		return (void*) &create_number_object_long;
 	}
 	if (type.raw_type == RawType::FLOAT) {
 		return (void*) &create_float_object;
@@ -296,7 +302,7 @@ void* get_conv_fun(Type type) {
 	if (type.raw_type == RawType::FUNCTION) {
 		return (void*) &create_func_object;
 	}
-	return (void*) &create_number_object;
+	return (void*) &create_number_object_int;
 }
 
 jit_value_t VM::value_to_pointer(jit_function_t& F, jit_value_t& v, Type type) {

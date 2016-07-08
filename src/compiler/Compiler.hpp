@@ -30,7 +30,7 @@ public:
 	virtual ~Compiler();
 
 	void enter_block();
-	void leave_block();
+	void leave_block(jit_function_t& F);
 
 	void add_var(std::string& name, jit_value_t& value, const Type& type, bool ref);
 	CompilerVar& get_var(std::string& name);

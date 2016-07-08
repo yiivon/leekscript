@@ -15,7 +15,7 @@ void Test::test_loops() {
 	success("let a = if (true) { 12 } else { 'hello' } a", "12");
 	success("let a = if (true) { 'hello' } else { 12 } a", "'hello'");
 	success("if (true) {} else {}", "null");
-	success("if (true) { {} } else {}", "{}");
+//	success("if (true) { {} } else {}", "{}");
 	success("if (true) null else {}", "null");
 //	success("if true", "null"); crash
 //	success("if true else", "null"); crash

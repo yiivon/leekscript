@@ -38,6 +38,7 @@ std::string SemanticException::type_to_string(Type type) {
 		case Type::VARIABLE_ALREADY_DEFINED: return "VARIABLE_ALREADY_DEFINED";
 		case Type::METHOD_NOT_FOUND: return "METHOD_NOT_FOUND";
 		case Type::STATIC_METHOD_NOT_FOUND: return "STATIC_METHOD_NOT_FOUND";
+		case Type::CANT_ASSIGN_VOID: return "CANT_ASSIGN_VOID";
 	}
 	return "?";
 }

@@ -90,9 +90,6 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 	jit_value_t res = body->compile_jit(c, F, Type::POINTER);
 	VM::inc_refs(F, res);
 
-//	cout << "body type : " << body->type << endl;
-//	cout << "res : " << res << endl;
-
 	if (toplevel) {
 
 		// Push program res
@@ -162,20 +159,6 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 		jit_insn_return(F, array);
 
 	} else {
-		/*
-		for (auto g : globals) {
-
-			if (globals_ref[g.first] == true) {
-				continue;
-			}
-			Type type = globals_types[g.first];
-
-			if (type.must_manage_memory()) {
-//				cout << "delete global " << g.first << endl;
-				VM::delete_obj(F, g.second);
-			}
-		}
-		*/
 		jit_insn_return(F, res);
 	}
 }
