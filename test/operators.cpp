@@ -42,5 +42,7 @@ void Test::test_operators() {
 	var dist = [...]
 	dist ~*= 5
 	var newdist = dist ~* 5
+
+	res ?? 12 // res ? res : 12
 	*/
 }
