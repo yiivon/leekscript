@@ -607,7 +607,7 @@ LSValue* LSObject::attr(const LSValue* key) const {
 		return getClass();
 	}
 	try {
-		return values.at(*((LSString*) key));
+		return values.at(*((LSString*) key))->clone();
 	} catch (exception& e) {
 		if (clazz != nullptr) {
 			string name = *((LSString*) key);

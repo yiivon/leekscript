@@ -1703,7 +1703,7 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		try {
-			return (LSValue*) this->operator[] ((int) n->value)->clone();
+			return (LSValue*) ((std::vector<T>*) this)->at((int) n->value)->clone();
 		} catch (std::exception& e) {
 			return LSNull::null_var;
 		}
@@ -1716,7 +1716,7 @@ inline LSValue* LSArray<int>::at(const LSValue* key) const {
 
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		try {
-			return LSNumber::get(this->operator[] ((int) n->value));
+			return LSNumber::get(((std::vector<int>*) this)->at((int) n->value));
 		} catch (std::exception& e) {
 			return LSNull::null_var;
 		}
@@ -1729,7 +1729,7 @@ inline LSValue* LSArray<double>::at(const LSValue* key) const {
 
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		try {
-			return LSNumber::get(this->operator[] ((int) n->value));
+			return LSNumber::get(((std::vector<double>*) this)->at((int) n->value));
 		} catch (std::exception& e) {
 			return LSNull::null_var;
 		}

@@ -95,11 +95,6 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	program->system_vars.insert(pair<string, LSValue*>("%", new LSFunction((void*) &jit_mod, 1)));
 	add_var(new Token("%"), op_type, nullptr);
 
-	Type print_type = Type(RawType::FUNCTION, Nature::POINTER);
-	print_type.setArgumentType(0, Type::VALUE);
-	print_type.setReturnType(Type::VOID);
-	add_var(new Token("print"), print_type, nullptr);
-
 	NullSTD().include(this, program);
 	BooleanSTD().include(this, program);
 	NumberSTD().include(this, program);

@@ -27,7 +27,7 @@ void Test::test_system() {
 	long nano_time = get_nano_time();
 	success_almost("System.nanoTime", nano_time, 100000000);
 
-	sem_err("let a = print(12)", ls::SemanticException::Type::CANT_ASSIGN_VOID, "a");
+	sem_err("let a = System.print(12)", ls::SemanticException::Type::CANT_ASSIGN_VOID, "a");
 }
 
 long get_sec_time() {
