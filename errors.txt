@@ -25,9 +25,9 @@ null * 5			| should be null, not act like 0 (confusing)
 array[]				| returns the last element of the array
 {}.size()			| get the number of attrs in object
 print(+2)			| crash
-'salut'['':'']		| must throw a semantic error
+'salut'['':'']	  	| must throw a semantic error
 12.sqrt()			| crash
-Number.sqrt("foo")	| should throw a semantic error
+Number.sqrt("foo")	  | should throw a semantic error
 "salut"()			| crash
 12()				| crash
 (x -> x)()			| crash
