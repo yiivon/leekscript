@@ -23,6 +23,7 @@ void Test::test_general() {
 	success("[]", "[]");
 	success("{}", "{}");
 	success("{a: 12}", "{a: 12}");
+	success("{;}", "null");
 
 	header("Variables");
 	success("let a = 2", "2");
