@@ -67,13 +67,20 @@ Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 }
 
 Block* SyntaxicAnalyser::eatMain() {
-
 	Block* block = new Block();
 
-	Instruction* ins;
-	while ((ins = eatInstruction()) != nullptr) {
-		block->instructions.push_back(ins);
+	while (true) {
+		if (t->type == TokenType::FINISHED) {
+			eat();
+			break;
+		} else if (t->type == TokenType::SEMICOLON) {
+			eat();
+		} else {
+			Instruction* ins = eatInstruction();
+			if (ins) block->instructions.push_back(ins);
+		}
 	}
+
 	return block;
 }
 
@@ -116,14 +123,26 @@ Block* SyntaxicAnalyser::eatBlock() {
 		eat();
 	}
 
-	Instruction* ins;
-	while ((ins = eatInstruction()) != nullptr) {
-		block->instructions.push_back(ins);
+	while (true) {
+		if (t->type == TokenType::CLOSING_BRACE) {
+			eat();
+			if (!brace) {
+				errors.push_back(new SyntaxicalError(t, "Unexpected closing brace, forgot to open it ?"));
+			}
+			break;
+		} else if (t->type == TokenType::FINISHED || t->type == TokenType::ELSE || t->type == TokenType::END) {
+			if (brace) {
+				errors.push_back(new SyntaxicalError(t, "Expecting closing brace at end of the block"));
+			}
+			break;
+		} else if (t->type == TokenType::SEMICOLON) {
+			eat();
+		} else {
+			Instruction* ins = eatInstruction();
+			if (ins) block->instructions.push_back(ins);
+		}
 	}
 
-	if (brace) {
-		eat(TokenType::CLOSING_BRACE);
-	}
 	return block;
 }
 
@@ -224,12 +243,6 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::WHILE: {
 			return eatWhile();
 		}
-
-		case TokenType::CLOSING_BRACE:
-		case TokenType::FINISHED:
-		case TokenType::ELSE:
-		case TokenType::END:
-			return nullptr;
 
 		default:
 			errors.push_back(new SyntaxicalError(t, "Unexpected token <" + to_string((int)t->type) + "> (" + t->content + ")"));
@@ -623,15 +636,12 @@ Value* SyntaxicAnalyser::eatValue() {
 
 			bool braces = false;
 			if (t->type == TokenType::OPEN_BRACE) {
-				eat(TokenType::OPEN_BRACE);
 				braces = true;
 			}
 
 			f->body = eatBlock();
 
-			if (braces)
-				eat(TokenType::CLOSING_BRACE);
-			else
+			if (!braces)
 				eat(TokenType::END);
 
 			return f;
@@ -727,7 +737,6 @@ If* SyntaxicAnalyser::eatIf() {
 	bool braces = false;
 	bool then = false;
 	if (t->type == TokenType::OPEN_BRACE) {
-//		eat(TokenType::OPEN_BRACE);
 		braces = true;
 	} else if (t->type == TokenType::THEN) {
 		eat(TokenType::THEN);
@@ -742,9 +751,7 @@ If* SyntaxicAnalyser::eatIf() {
 		iff->then = block;
 	}
 
-	if (braces) {
-//		eat(TokenType::CLOSING_BRACE);
-	} else if (then) {
+	if (then) {
 		if (t->type != TokenType::ELSE) {
 			eat(TokenType::END);
 		}
@@ -755,7 +762,6 @@ If* SyntaxicAnalyser::eatIf() {
 
 		bool bracesElse = false;
 		if (t->type == TokenType::OPEN_BRACE) {
-//			eat(TokenType::OPEN_BRACE);
 			bracesElse = true;
 		}
 
@@ -767,9 +773,7 @@ If* SyntaxicAnalyser::eatIf() {
 			iff->elze = body;
 		}
 
-		if (bracesElse) {
-//			eat(TokenType::CLOSING_BRACE);
-		} else if (then) {
+		if (then) {
 			eat(TokenType::END);
 		}
 	}
@@ -824,7 +828,6 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 		bool braces = false;
 		if (t->type == TokenType::OPEN_BRACE) {
-			eat();
 			braces = true;
 		} else {
 			eat(TokenType::DO);
@@ -832,9 +835,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 		f->body = eatBlock();
 
-		if (braces) {
-			eat(TokenType::CLOSING_BRACE);
-		} else {
+		if (!braces) {
 			eat(TokenType::END);
 		}
 
@@ -887,7 +888,6 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 		bool braces = false;
 		if (t->type == TokenType::OPEN_BRACE) {
-			eat();
 			braces = true;
 		} else {
 			eat(TokenType::DO);
@@ -895,9 +895,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 		f->body = eatBlock();
 
-		if (braces) {
-			eat(TokenType::CLOSING_BRACE);
-		} else {
+		if (!braces) {
 			eat(TokenType::END);
 		}
 
@@ -925,7 +923,7 @@ Instruction* SyntaxicAnalyser::eatWhile() {
 		eat(TokenType::CLOSING_PARENTHESIS);
 	}
 	if (t->type == TokenType::OPEN_BRACE) {
-		eat();
+		//eat();
 		braces = true;
 	} else {
 		eat(TokenType::DO);
@@ -933,9 +931,7 @@ Instruction* SyntaxicAnalyser::eatWhile() {
 
 	w->body = eatBlock();
 
-	if (braces) {
-		eat(TokenType::CLOSING_BRACE);
-	} else {
+	if (!braces) {
 		eat(TokenType::END);
 	}
 
