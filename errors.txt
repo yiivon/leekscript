@@ -11,7 +11,6 @@ print()				| crash
 return				| syntaxical error but should work
 break				| crash
 continue			| crash
-}				| works, but shouldn't
 '				| workds, but should be a lexical error
 "				| idem
 '\''				| produces (\) but should be (') 

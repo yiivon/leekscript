@@ -67,14 +67,7 @@ Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 }
 
 Block* SyntaxicAnalyser::eatMain() {
-
-	Block* block = new Block();
-
-	Instruction* ins;
-	while ((ins = eatInstruction()) != nullptr) {
-		block->instructions.push_back(ins);
-	}
-	return block;
+	return eatBlock();
 }
 
 /*
@@ -116,14 +109,27 @@ Block* SyntaxicAnalyser::eatBlock() {
 		eat();
 	}
 
-	Instruction* ins;
-	while ((ins = eatInstruction()) != nullptr) {
-		block->instructions.push_back(ins);
+	while (true) {
+		if (t->type == TokenType::CLOSING_BRACE) {
+			eat();
+			if (!brace) {
+				errors.push_back(new SyntaxicalError(t, "Unexpected closing brace, forgot to open it ?"));
+			}
+			break;
+		} else if (t->type == TokenType::FINISHED) {
+			eat();
+			if (brace) {
+				errors.push_back(new SyntaxicalError(t, "Expecting closing brace at end of the block"));
+			}
+			break;
+		} else if (t->type == TokenType::SEMICOLON) {
+			eat();
+		} else {
+			Instruction* ins = eatInstruction();
+			if (ins) block->instructions.push_back(ins);
+		}
 	}
 
-	if (brace) {
-		eat(TokenType::CLOSING_BRACE);
-	}
 	return block;
 }
 
@@ -224,12 +230,6 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::WHILE: {
 			return eatWhile();
 		}
-
-		case TokenType::CLOSING_BRACE:
-		case TokenType::FINISHED:
-		case TokenType::ELSE:
-		case TokenType::END:
-			return nullptr;
 
 		default:
 			errors.push_back(new SyntaxicalError(t, "Unexpected token <" + to_string((int)t->type) + "> (" + t->content + ")"));
