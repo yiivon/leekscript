@@ -705,7 +705,7 @@ Array* SyntaxicAnalyser::eatArray() {
 		eat();
 	}
 
-	while (t->type != TokenType::CLOSING_BRACKET && errors.size() == 0) {
+	while (t->type != TokenType::CLOSING_BRACKET && t->type != TokenType::FINISHED) {
 
 		value = eatExpression();
 
@@ -845,7 +845,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 		For* f = new For();
 
-		while (t->type != TokenType::SEMICOLON && errors.size() == 0) {
+		while (t->type != TokenType::SEMICOLON && t->type != TokenType::FINISHED) {
 			if (t->type == TokenType::LET) {
 				eat();
 				declare = true;
@@ -873,7 +873,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		eat(TokenType::SEMICOLON);
 
 		while (parenthesis ? (t->type != TokenType::CLOSING_PARENTHESIS) :
-				(t->type != TokenType::DO && t->type != TokenType::OPEN_BRACE) && errors.size() == 0) {
+				(t->type != TokenType::DO && t->type != TokenType::OPEN_BRACE) && t->type != TokenType::FINISHED) {
 
 			if (t->type != TokenType::FINISHED) {
 //				System.out.println(t);
