@@ -67,7 +67,7 @@ int is_true(LSValue* v) {
 
 jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
-	jit_value_t res = jit_value_create(F, JIT_INTEGER_LONG);
+	jit_value_t res = jit_value_create(F, JIT_INTEGER);
 	jit_label_t label_else = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 

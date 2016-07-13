@@ -402,7 +402,7 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 				jit_func = &jit_insn_mul;
 			} else if (f->name->content == "/") {
 				jit_func = &jit_insn_div;
-			} else if (f->name->content == "^") {
+			} else if (f->name->content == "**") {
 				jit_func = &jit_insn_pow;
 			} else if (f->name->content == "%") {
 				jit_func = &jit_insn_rem;

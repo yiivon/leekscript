@@ -4,21 +4,27 @@ void Test::test_numbers() {
 
 	header("Numbers");
 
+	// basic numbers
 	success("0", "0");
 	success("-1", "-1");
 	success("-(-1)", "1");
+	success("π", "3.1415926536");
+
+	// basic operations
 	success("0 + 5", "5");
 	success("5 + 5", "10");
 	success("10 - 3", "7");
 	success("5 * 5", "25");
 	success("15 / 3", "5");
 	success("15 / 2", "7.5");
-	success("12 ^ 2", "144");
-	success("2 ^ 5", "32");
+	success("12 ** 2", "144");
+	success("2 ** 5", "32");
 	success("2 < 5", "true");
 	success("12 < 5", "false");
 	success("5 == 12", "false");
 	success("12 == 12", "true");
+
+	// with variables
 	success("let a = 2 a++", "2");
 	success("let a = 2; ++a", "3");
 	success("let a = 2 a--", "2");
@@ -28,16 +34,65 @@ void Test::test_numbers() {
 	success("let a = 2 a *= 5", "10");
 	success("let a = 100 a /= 5", "20");
 	success("let a = 56 a %= 17", "5");
-	success("let a = 15 a ^= 2", "225");
+	success("let a = 15 a **= 2", "225");
+
+	// multiple operations
 	success("(33 - 2) / 2", "15.5");
 	success("12 < (45 / 4)", "false");
 	success("12 == (24 / 2)", "true");
 	success("2.5 + 4.7", "7.2");
 	success("2.5 × 4.7", "11.75");
-	success("π", "3.1415926536");
 	success("5 * 2 + 3 * 4", "22");
 
-	// success("12344532132423", "12344532132423"); large number
+	// binary
+	success("0 & 0", "0");
+	success("1 & 0", "0");
+	success("1 & 1", "1");
+	success("5 & 12", "4");
+	success("87619 & 18431", "17987");
+	success("let a = 87619 a &= 18431", "17987");
+	success("let a = 87619 a &= 18431 a", "17987");
+	success("0 | 0", "0");
+	success("1 | 0", "1");
+	success("1 | 1", "1");
+	success("5 | 12", "13");
+	success("87619 | 18431", "88063");
+	success("let a = 87619 a |= 18431", "88063");
+	success("let a = 87619 a |= 18431 a", "88063");
+	success("0 ^ 0", "0");
+	success("1 ^ 0", "1");
+	success("1 ^ 1", "0");
+	success("5 ^ 12", "9");
+	success("87619 ^ 18431", "70076");
+	success("let a = 87619 a ^= 18431", "70076");
+	success("let a = 87619 a ^= 18431 a", "70076");
+	success("0 << 0", "0");
+	success("1 << 0", "1");
+	success("123456 << 0", "123456");
+	success("0 << 1", "0");
+	success("0 << 12", "0");
+	success("1 << 8", "256");
+	success("123 << 12", "503808");
+	success("let a = 123 a <<= 11", "251904");
+	success("let a = 123 a <<= 13 a", "1007616");
+	success("0 >> 0", "0");
+	success("1 >> 0", "1");
+	success("123456 >> 0", "123456");
+	success("0 >> 1", "0");
+	success("0 >> 12", "0");
+	success("155 >> 3", "19");
+	success("-155 >> 3", "-20");
+	success("12345 >> 8", "48");
+	success("123123123 >> 5", "3847597");
+	success("let a = 123123123 a >>= 6", "1923798");
+	success("let a = 123123123 a >>= 7 a", "961899");
+	success("155 >>> 3", "19");
+	success("-155 >>> 3", "536870892");
+	success("let a = -155 a >>>= 4", "268435446");
+	success("let a = -155 a >>>= 5 a", "134217723");
+
+	// large numbers
+	// success("12344532132423", "12344532132423");
 
 	/*
 	 * Number standard library

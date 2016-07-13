@@ -20,7 +20,7 @@ void Compiler::leave_block(jit_function_t& F) {
 
 		for (auto var : vars) {
 
-			std::cout << "delete " << var.first  << std::endl;
+			//std::cout << "delete " << var.first  << std::endl;
 			/*
 			if (var.second.reference == true) {
 				continue;

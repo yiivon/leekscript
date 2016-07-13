@@ -90,8 +90,8 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	add_var(new Token("*"), op_type, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("/", new LSFunction((void*) &jit_div, 1)));
 	add_var(new Token("/"), op_type, nullptr);
-	program->system_vars.insert(pair<string, LSValue*>("^", new LSFunction((void*) &jit_pow, 1)));
-	add_var(new Token("^"), op_type, nullptr);
+	program->system_vars.insert(pair<string, LSValue*>("**", new LSFunction((void*) &jit_pow, 1)));
+	add_var(new Token("**"), op_type, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("%", new LSFunction((void*) &jit_mod, 1)));
 	add_var(new Token("%"), op_type, nullptr);
 

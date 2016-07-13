@@ -311,7 +311,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 
 		eat();
 		AbsoluteValue* av = new AbsoluteValue();
-		av->expression = eatExpression();
+		av->expression = eatExpression(true);
 		eat(TokenType::PIPE);
 		e = new Expression(av);
 
@@ -433,28 +433,37 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 	return e;
 }
 
-Value* SyntaxicAnalyser::eatExpression() {
+Value* SyntaxicAnalyser::eatExpression(bool pipe_opened) {
 
 	Expression* ex = nullptr;
 	Value* e = eatSimpleExpression();
 
 	// Opérateurs binaires
 	while (t->type == TokenType::PLUS || t->type == TokenType::MINUS ||
-			t->type == TokenType::TIMES || t->type == TokenType::DIVIDE ||
-			t->type == TokenType::MODULO || t->type == TokenType::AND ||
-			t->type == TokenType::OR || t->type == TokenType::XOR ||
-			t->type == TokenType::EQUAL || t->type == TokenType::POWER ||
-			t->type == TokenType::DOUBLE_EQUAL || t->type == TokenType::DIFFERENT ||
-			t->type == TokenType::TRIPLE_EQUAL || t->type == TokenType::TRIPLE_DIFFERENT ||
-			t->type == TokenType::GREATER || t->type == TokenType::LOWER ||
-			t->type == TokenType::GREATER_EQUALS || t->type == TokenType::LOWER_EQUALS ||
-			t->type == TokenType::TIMES_EQUAL || t->type == TokenType::PLUS_EQUAL ||
-			t->type == TokenType::MINUS_EQUAL || t->type == TokenType::DIVIDE_EQUAL ||
-			t->type == TokenType::MODULO_EQUAL || t->type == TokenType::POWER_EQUAL ||
-			t->type == TokenType::SWAP || t->type == TokenType::TILDE ||
-			t->type == TokenType::TILDE_TILDE || t->type == TokenType::TILDE_EQUAL ||
-			t->type == TokenType::TILDE_TILDE_EQUAL || t->type == TokenType::IN ||
-			t->type == TokenType::INSTANCEOF) {
+		t->type == TokenType::TIMES || t->type == TokenType::DIVIDE ||
+		t->type == TokenType::MODULO || t->type == TokenType::AND ||
+		t->type == TokenType::OR || t->type == TokenType::XOR ||
+		t->type == TokenType::EQUAL || t->type == TokenType::POWER ||
+		t->type == TokenType::DOUBLE_EQUAL || t->type == TokenType::DIFFERENT ||
+		t->type == TokenType::TRIPLE_EQUAL || t->type == TokenType::TRIPLE_DIFFERENT ||
+		t->type == TokenType::GREATER || t->type == TokenType::LOWER ||
+		t->type == TokenType::GREATER_EQUALS || t->type == TokenType::LOWER_EQUALS ||
+		t->type == TokenType::TIMES_EQUAL || t->type == TokenType::PLUS_EQUAL ||
+		t->type == TokenType::MINUS_EQUAL || t->type == TokenType::DIVIDE_EQUAL ||
+		t->type == TokenType::MODULO_EQUAL || t->type == TokenType::POWER_EQUAL ||
+		t->type == TokenType::SWAP || t->type == TokenType::TILDE ||
+		t->type == TokenType::TILDE_TILDE || t->type == TokenType::TILDE_EQUAL ||
+		t->type == TokenType::TILDE_TILDE_EQUAL || t->type == TokenType::IN ||
+		t->type == TokenType::INSTANCEOF ||
+		t->type == TokenType::BIT_AND || t->type == TokenType::BIT_AND_EQUALS ||
+		(!pipe_opened and t->type == TokenType::PIPE) || t->type == TokenType::BIT_OR_EQUALS ||
+		t->type == TokenType::BIT_XOR || t->type == TokenType::BIT_XOR_EQUALS ||
+		t->type == TokenType::BIT_SHIFT_LEFT ||	t->type == TokenType::BIT_SHIFT_LEFT_EQUALS ||
+		t->type == TokenType::BIT_SHIFT_RIGHT || t->type == TokenType::BIT_SHIFT_RIGHT_EQUALS ||
+		t->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED || t->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS ||
+		t->type == TokenType::BIT_ROTATE_LEFT || t->type == TokenType::BIT_ROTATE_LEFT_EQUALS ||
+		t->type == TokenType::BIT_ROTATE_RIGHT || t->type == TokenType::BIT_ROTATE_RIGHT_EQUALS
+	) {
 
 		if (t->type == TokenType::MINUS && t->line != lt->line && nt != nullptr && t->line == nt->line)
 			break;
