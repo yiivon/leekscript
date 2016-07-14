@@ -58,4 +58,14 @@ void Test::test_strings() {
 	success("String.toArray('salut')", "['s', 'a', 'l', 'u', 't']");
 	success("String.charAt('salut', 1)", "'a'");
 	success("'salut'.substring(3, 4)", "'ut'");
+
+	// Integer conversions
+	success("'A'.code()", "65");
+	success("'ABC'.code(2)", "67");
+	success("'©'.code()", "169");
+	success("'é'.code()", "233");
+	success("'♫'.code()", "9835");
+	success("'🐨'.code()", "128040");
+	success("String.code('🐨')", "128040");
+	success("String.code('ABC', 2)", "67");
 }

@@ -91,6 +91,12 @@ void Test::test_numbers() {
 	success("let a = -155 a >>>= 4", "268435446");
 	success("let a = -155 a >>>= 5 a", "134217723");
 
+	// string conversions
+	success("65.char()", "'A'");
+	success("Number.char(65)", "'A'");
+	success("126.char()", "'~'");
+	success("Number.char(128040)", "'🐨'");
+
 	// large numbers
 	// success("12344532132423", "12344532132423");
 

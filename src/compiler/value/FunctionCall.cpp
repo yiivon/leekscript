@@ -147,7 +147,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 			} else { // "salut".size()
 
-//				cout << "obj type : " << object_type << endl;
+				//cout << "obj type : " << object_type << endl;
 
 				LSClass* object_class = (LSClass*) analyser->program->system_vars[object_type.clazz];
 
