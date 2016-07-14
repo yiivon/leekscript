@@ -15,10 +15,8 @@ continue			| crash
 "				| idem
 '\''				| produces (\) but should be (') 
 "\""				| idem
-[				| infinite loop
 ×				| should be like *
 ÷				| should be like /
-for 				| infinite loop
 let a = 2 a = ""	  | exception, a transforms into a string, and was a integer at declaration
 (non-break. space)	  | should be like a classic space
 null * 5			| should be null, not act like 0 (confusing)
