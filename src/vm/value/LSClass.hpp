@@ -35,6 +35,7 @@ public:
 
 	void addMethod(std::string&, std::vector<Method>&);
 	void addField(std::string, Type);
+	void addStaticField(ModuleStaticField& f);
 	void addStaticField(std::string, Type type, LSValue*);
 	Method* getMethod(std::string&, Type obj_type, std::vector<Type>&);
 	void addStaticMethod(std::string& name, std::vector<StaticMethod>& method);

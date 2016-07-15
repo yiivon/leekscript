@@ -8,9 +8,14 @@ namespace ls {
 
 NumberSTD::NumberSTD() : Module("Number") {
 
+	static_field("pi", Type::FLOAT_P, nullptr);
+	static_field("e", Type::FLOAT_P, nullptr);
+	static_field("phi", Type::FLOAT_P, nullptr);
+	/*
 	static_field("pi", Type::FLOAT_P, "3.14159265359");
 	static_field("e", Type::FLOAT_P, "2.71828182846");
 	static_field("phi", Type::FLOAT_P, "1.61803398874");
+	*/
 
 	method("abs", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_abs);
 	method("acos", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_acos);

@@ -28,10 +28,6 @@ void Body::print(ostream& os) {
 	os << "}";
 }
 
-void Body::can_return(Type type) {
-
-}
-
 void Body::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		instructions[i]->analyse(analyser, req_type);

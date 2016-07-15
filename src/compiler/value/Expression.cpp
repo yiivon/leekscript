@@ -304,40 +304,40 @@ LSValue* jit_instanceof(LSValue* x, LSValue* y) {
 	return LSBoolean::get(((LSClass*)x->getClass())->name == ((LSClass*) y)->name);
 }
 
-LSValue* jit_bit_and(LSValue* x, LSValue* y) {
+LSValue* jit_bit_and(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_and_equal(LSValue* x, LSValue* y) {
+LSValue* jit_bit_and_equal(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_or(LSValue* x, LSValue* y) {
+LSValue* jit_bit_or(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_or_equal(LSValue* x, LSValue* y) {
+LSValue* jit_bit_or_equal(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_xor(LSValue* x, LSValue* y) {
+LSValue* jit_bit_xor(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_xor_equal(LSValue* x, LSValue* y) {
+LSValue* jit_bit_xor_equal(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_shl(LSValue* x, LSValue* y) {
+LSValue* jit_bit_shl(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_shl_equal(LSValue* x, LSValue* y) {
+LSValue* jit_bit_shl_equal(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_shr(LSValue* x, LSValue* y) {
+LSValue* jit_bit_shr(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_shr_equal(LSValue* x, LSValue* y) {
+LSValue* jit_bit_shr_equal(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_shr_unsigned(LSValue* x, LSValue* y) {
+LSValue* jit_bit_shr_unsigned(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
-LSValue* jit_bit_shr_unsigned_equal(LSValue* x, LSValue* y) {
+LSValue* jit_bit_shr_unsigned_equal(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
 

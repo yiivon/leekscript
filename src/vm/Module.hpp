@@ -62,13 +62,16 @@ class ModuleStaticField {
 public:
 	std::string name;
 	Type type;
-	std::string value;
-	LSValue* lsvalue = nullptr;
-	ModuleStaticField() {};
-	ModuleStaticField(std::string name, Type type, std::string value)
-	: name(name), type(type), value(value), lsvalue(nullptr) {}
-	ModuleStaticField(std::string name, Type type, std::string value, LSValue* lsvalue)
-	: name(name), type(type), value(value), lsvalue(lsvalue) {}
+	void* fun = nullptr;
+	LSValue* value = nullptr;
+
+	ModuleStaticField() {}
+	ModuleStaticField(const ModuleStaticField& f)
+	: name(f.name), type(f.type), fun(f.fun), value(f.value) {}
+	ModuleStaticField(std::string name, Type type, LSValue* value)
+	: name(name), type(type), value(value) {}
+	ModuleStaticField(std::string name, Type type, void* fun)
+	: name(name), type(type), fun(fun) {}
 };
 
 class ModuleField {
@@ -99,7 +102,7 @@ public:
 	void static_method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
 
 	void field(std::string name, Type type);
-	void static_field(std::string name, Type type, std::string value);
+	void static_field(std::string name, Type type, void* fun);
 
 	void include(SemanticAnalyser*, Program*);
 	void generate_doc(std::ostream& os, std::string translation);

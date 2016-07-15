@@ -12,7 +12,7 @@ void Compiler::enter_block() {
 	variables.push_back(std::map<std::string, CompilerVar> {});
 }
 
-void Compiler::leave_block(jit_function_t& F) {
+void Compiler::leave_block(jit_function_t&) {
 
 	if (variables.size() > 1) {
 

@@ -30,7 +30,9 @@ void Module::include(SemanticAnalyser* analyser, Program* program) {
 
 	for (auto f : static_fields) {
 		//var->attr_types.insert(pair<string, Type>(f.name, f.type));
-		clazz->addStaticField(f.name, f.type, LSNumber::get(std::stoi(f.value)));
+		// clazz->addStaticField(f.name, f.type, LSNumber::get(std::stoi(f.value)));
+		//clazz->addStaticField(f.name, f.type, nullptr);
+		clazz->addStaticField(f);
 	}
 
 	for (auto m : methods) {
@@ -47,8 +49,8 @@ void Module::field(std::string name, Type type) {
 	fields.push_back(ModuleField(name, type));
 }
 
-void Module::static_field(std::string name, Type type, std::string value) {
-	static_fields.push_back(ModuleStaticField(name, type, value));
+void Module::static_field(std::string name, Type type, void* fun) {
+	static_fields.push_back(ModuleStaticField(name, type, fun));
 }
 
 void Module::method(std::string name, initializer_list<Method> impl) {
@@ -101,7 +103,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		if (e > 0) os << ",";
 		os << "\"" << a.name << "\":{\"type\":";
 		a.type.toJson(os);
-		os << ",\"value\":\"" << a.value << "\"";
+		//os << ",\"value\":\"" << a.value << "\"";
 		os << ",\"desc\":\"" << desc << "\"";
 		os << "}";
 	}

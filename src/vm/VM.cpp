@@ -189,7 +189,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 		string ctx = "{";
 
-		unsigned i = 0;
+//		unsigned i = 0;
 /*
 		for (auto g : globals) {
 			if (globals_ref[g.first]) continue;

@@ -17,7 +17,6 @@ public:
 
 	bool ignorev2;
 	bool no_op;
-
 	int operations;
 
 	Expression();
