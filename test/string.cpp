@@ -68,4 +68,6 @@ void Test::test_strings() {
 	success("'🐨'.code()", "128040");
 	success("String.code('🐨')", "128040");
 	success("String.code('ABC', 2)", "67");
+
+	success("'hello'.map(x -> if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end)", "'8 5 12 12 15 '");
 }

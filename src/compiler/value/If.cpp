@@ -71,7 +71,7 @@ jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const
 	jit_label_t label_else = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 
-	jit_value_t cond = condition->compile_jit(c, F, Type::NEUTRAL);
+	jit_value_t cond = condition->compile_jit(c, F, Type::BOOLEAN);
 
 	if (condition->type.nature == Nature::POINTER) {
 
@@ -81,15 +81,12 @@ jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 		jit_value_t cond_bool = jit_insn_call_native(F, "is_true", (void*) is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
 
-		jit_value_t cmp = inversed ?
-				jit_insn_eq(F, cond_bool, const_true) :
-				jit_insn_ne(F, cond_bool, const_true);
+		jit_value_t cmp = inversed ? jit_insn_eq(F, cond_bool, const_true) : jit_insn_ne(F, cond_bool, const_true);
 		jit_insn_branch_if(F, cmp, &label_else);
 
 	} else {
 
-		inversed ? jit_insn_branch_if(F, cond, &label_else) :
-				   jit_insn_branch_if_not(F, cond, &label_else);
+		inversed ? jit_insn_branch_if(F, cond, &label_else) : jit_insn_branch_if_not(F, cond, &label_else);
 	}
 
 	jit_value_t then_v = then->compile_jit(c, F, req_type);

@@ -26,7 +26,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("toArray", Type::STRING, Type::ARRAY, {}, (void*) &string_toArray);
 	method("toLower", Type::STRING, Type::STRING, {}, (void*) &string_toLower);
 	method("toUpper", Type::STRING, Type::STRING, {}, (void*) &string_toUpper);
-	method("split", Type::STRING, Type::STRING, {Type::STRING}, (void*) &string_split);
+	method("split", Type::STRING, Type::STRING_ARRAY, {Type::STRING}, (void*) &string_split);
 	method("startsWith", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_startsWith);
 	method("code", {
 		{Type::STRING, Type::INTEGER, {}, (void*) &string_begin_code},
@@ -52,7 +52,7 @@ StringSTD::StringSTD() : Module("String") {
 	static_method("toArray", Type::ARRAY, {Type::STRING}, (void*) &string_toArray);
 	static_method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
 	static_method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);
-	static_method("split", Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_split);
+	static_method("split", Type::STRING_ARRAY, {Type::STRING, Type::STRING}, (void*) &string_split);
 	static_method("startsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_startsWith);
 	static_method("map", Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map);
 	static_method("code", {

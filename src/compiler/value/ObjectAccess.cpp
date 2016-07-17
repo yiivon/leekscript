@@ -36,7 +36,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 
 	object->analyse(analyser);
 
-//	cout << "Analyse oa : " << field << " => ";
+//	cout << "Analyse oa : " << field->content << " => ";
 //	cout << object->type << endl;
 
 	// Search direct attributes
@@ -66,20 +66,20 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 	// Search class attributes
 	object_class = object->type.clazz;
 
-//	cout << "Classe : " << clazz << endl;
+//	cout << "Classe : " << object_class << endl;
 
 	if (analyser->program->system_vars.find(object_class) != analyser->program->system_vars.end()) {
 
-		// LSClass* std_class = (LSClass*) analyser->program->system_vars[object_class];
+//		LSClass* std_class = (LSClass*) analyser->program->system_vars[object_class];
 
 //		cout << "Classe ! ";
 //		std_class->print(cout);
 //		cout << endl;
 
 		try {
-			//type = std_class->fields[field->content];
-//			cout << "Field " << field << " in class " << clazz << " found." << endl;
-			//cout << "(type " << type << ")" << endl;
+//			type = std_class->fields[field->content];
+//			cout << "Field " << field->content << " in class " << std_class << " found." << endl;
+//			cout << "(type " << type << ")" << endl;
 		} catch (exception& e) {
 
 		}

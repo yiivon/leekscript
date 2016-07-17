@@ -838,6 +838,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			VM::delete_temporary(F, args[1]);
 		}
 
+		// Convert to value
 		if (type == Type::BOOLEAN and req_type == Type::BOOLEAN) {
 			return VM::pointer_to_value(F, v, Type::BOOLEAN);
 		}
