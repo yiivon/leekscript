@@ -7,7 +7,7 @@ void Test::test_functions() {
 	 */
 	header("Functions / Lambdas");
 	success("let f = x -> x f(12)", "12");
-	success("let f = x -> x ^ 2 f(12)", "144");
+	success("let f = x -> x ** 2 f(12)", "144");
 	success("let f = x, y -> x + y f(5, 12)", "17");
 	success("let f = -> 12 f()", "12");
 	success("(x -> x)(12)", "12");
@@ -60,7 +60,7 @@ void Test::test_functions() {
 	success("*(5, 8)", "40");
 	success("*('test', 2)", "'testtest'");
 	success("/(48, 12)", "4");
-	success("^(2, 11)", "2048");
+	success("**(2, 11)", "2048");
 	success("%(48, 5)", "3");
 	success("let p = + p(1, 2)", "3");
 	success("let p = + p('test', 2)", "'test2'");
@@ -68,7 +68,7 @@ void Test::test_functions() {
 	success("let p = * p(5, 8)", "40");
 	success("let p = / p(48, 12)", "4");
 	success("let p = % p(48, 5)", "3");
-	success("let p = ^ p(2, 11)", "2048");
+	success("let p = ** p(2, 11)", "2048");
 	success("+", "<function>");
 	success("+.class", "<class Function>");
 	success("let p = +; p.class", "<class Function>");

@@ -18,6 +18,7 @@ public:
 	std::string class_name;
 	bool class_attr = false;
 	void* attr_addr;
+	void* access_function = nullptr;
 
 	ObjectAccess();
 	virtual ~ObjectAccess();

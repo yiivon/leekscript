@@ -34,7 +34,7 @@ void Test::test_general() {
 	success("let s = 'hello'", "'hello'");
 	success("let état = 12", "12");
 	success("let 韭 = 'leek'", "'leek'");
-	success("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ^ 🐨", "25");
+	success("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ** 🐨", "25");
 
 	sem_err("a", ls::SemanticException::Type::UNDEFINED_VARIABLE, "a");
 	sem_err("let a = 2 let a = 5", ls::SemanticException::Type::VARIABLE_ALREADY_DEFINED, "a");

@@ -304,6 +304,43 @@ LSValue* jit_instanceof(LSValue* x, LSValue* y) {
 	return LSBoolean::get(((LSClass*)x->getClass())->name == ((LSClass*) y)->name);
 }
 
+LSValue* jit_bit_and(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_and_equal(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_or(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_or_equal(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_xor(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_xor_equal(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_shl(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_shl_equal(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_shr(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_shr_equal(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_shr_unsigned(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+LSValue* jit_bit_shr_unsigned_equal(LSValue*, LSValue*) {
+	return LSNull::null_var;
+}
+
 jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
 	if (op == nullptr) {
@@ -642,6 +679,126 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			ls_func = (void*) &jit_instanceof;
 			break;
 		}
+		case TokenType::BIT_AND: {
+			jit_func = &jit_insn_and;
+			ls_func = (void*) &jit_bit_and;
+			break;
+		}
+		case TokenType::BIT_AND_EQUALS: {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t a = jit_insn_and(F, x, y);
+				jit_insn_store(F, x, a);
+				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, a, req_type);
+				}
+				return a;
+			} else {
+				ls_func = (void*) &jit_bit_and_equal;
+			}
+			break;
+		}
+		case TokenType::PIPE: {
+			jit_func = &jit_insn_or;
+			ls_func = (void*) &jit_bit_or;
+			break;
+		}
+		case TokenType::BIT_OR_EQUALS: {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t o = jit_insn_or(F, x, y);
+				jit_insn_store(F, x, o);
+				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, o, req_type);
+				}
+				return o;
+			} else {
+				ls_func = (void*) &jit_bit_or_equal;
+			}
+			break;
+		}
+		case TokenType::BIT_XOR: {
+			jit_func = &jit_insn_xor;
+			ls_func = (void*) &jit_bit_xor;
+			break;
+		}
+		case TokenType::BIT_XOR_EQUALS: {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t a = jit_insn_xor(F, x, y);
+				jit_insn_store(F, x, a);
+				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, a, req_type);
+				}
+				return a;
+			} else {
+				ls_func = (void*) &jit_bit_xor_equal;
+			}
+			break;
+		}
+		case TokenType::BIT_SHIFT_LEFT : {
+			jit_func = &jit_insn_shl;
+			ls_func = (void*) &jit_bit_shl;
+			break;
+		}
+		case TokenType::BIT_SHIFT_LEFT_EQUALS : {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t a = jit_insn_shl(F, x, y);
+				jit_insn_store(F, x, a);
+				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, a, req_type);
+				}
+				return a;
+			} else {
+				ls_func = (void*) &jit_bit_shl_equal;
+			}
+			break;
+		}
+		case TokenType::BIT_SHIFT_RIGHT : {
+			jit_func = &jit_insn_shr;
+			ls_func = (void*) &jit_bit_shr;
+			break;
+		}
+		case TokenType::BIT_SHIFT_RIGHT_EQUALS : {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t a = jit_insn_shr(F, x, y);
+				jit_insn_store(F, x, a);
+				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, a, req_type);
+				}
+				return a;
+			} else {
+				ls_func = (void*) &jit_bit_shr_equal;
+			}
+			break;
+		}
+		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED : {
+			jit_func = &jit_insn_ushr;
+			ls_func = (void*) &jit_bit_shr_unsigned;
+			break;
+		}
+		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS : {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+				jit_value_t a = jit_insn_ushr(F, x, y);
+				jit_insn_store(F, x, a);
+				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, a, req_type);
+				}
+				return a;
+			} else {
+				ls_func = (void*) &jit_bit_shr_unsigned_equal;
+			}
+			break;
+		}
 		default: {
 			throw new exception();
 		}
@@ -681,6 +838,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			VM::delete_temporary(F, args[1]);
 		}
 
+		// Convert to value
 		if (type == Type::BOOLEAN and req_type == Type::BOOLEAN) {
 			return VM::pointer_to_value(F, v, Type::BOOLEAN);
 		}

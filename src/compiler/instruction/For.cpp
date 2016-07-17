@@ -111,7 +111,7 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 		jit_value_t var;
 		if (declare_variables[i]) {
-			var = jit_value_create(F, JIT_INTEGER_LONG);
+			var = jit_value_create(F, JIT_INTEGER);
 			c.add_var(name, var, v->type, false);
 		} else {
 			var = c.get_var(name).value;
@@ -167,7 +167,7 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	c.leave_loop();
 
-	return JIT_CREATE_CONST_POINTER(F,LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
 }
 
 }

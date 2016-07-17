@@ -68,7 +68,7 @@ public:
 class IntegerRawType : public NumberRawType {
 public:
 	~IntegerRawType() {}
-	const std::string getName() const { return "Integer"; };
+	const std::string getName() const { return "Number"; };
 	const std::string getJsonName() const { return "number"; };
 	bool operator == (const BaseRawType*) { return false; }
 	bool operator == (const IntegerRawType*) { return true; }

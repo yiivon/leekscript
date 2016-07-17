@@ -26,8 +26,12 @@ StringSTD::StringSTD() : Module("String") {
 	method("toArray", Type::STRING, Type::ARRAY, {}, (void*) &string_toArray);
 	method("toLower", Type::STRING, Type::STRING, {}, (void*) &string_toLower);
 	method("toUpper", Type::STRING, Type::STRING, {}, (void*) &string_toUpper);
-	method("split", Type::STRING, Type::STRING, {Type::STRING}, (void*) &string_split);
+	method("split", Type::STRING, Type::STRING_ARRAY, {Type::STRING}, (void*) &string_split);
 	method("startsWith", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_startsWith);
+	method("code", {
+		{Type::STRING, Type::INTEGER, {}, (void*) &string_begin_code},
+		{Type::STRING, Type::INTEGER, {Type::INTEGER}, (void*) &string_code},
+	});
 
 	Type map_fun_type = Type::FUNCTION;
 	map_fun_type.setArgumentType(0, Type::STRING);
@@ -48,9 +52,13 @@ StringSTD::StringSTD() : Module("String") {
 	static_method("toArray", Type::ARRAY, {Type::STRING}, (void*) &string_toArray);
 	static_method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
 	static_method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);
-	static_method("split", Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_split);
+	static_method("split", Type::STRING_ARRAY, {Type::STRING, Type::STRING}, (void*) &string_split);
 	static_method("startsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_startsWith);
 	static_method("map", Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map);
+	static_method("code", {
+		{Type::INTEGER, {Type::STRING}, (void*) &string_begin_code},
+		{Type::INTEGER, {Type::STRING, Type::INTEGER}, (void*) &string_code},
+	});
 }
 
 StringSTD::~StringSTD() {}
@@ -169,6 +177,14 @@ LSValue* string_toUpper(LSString* s) {
 	string new_s = string(*s);
 	for (auto& c : new_s) c = toupper(c);
 	return new LSString(new_s);
+}
+
+int string_begin_code(const LSString* v) {
+	return LSString::u8_char_at((char*) v->c_str(), 0);
+}
+
+int string_code(const LSString* v, int pos) {
+	return LSString::u8_char_at((char*) v->c_str(), pos);
 }
 
 }

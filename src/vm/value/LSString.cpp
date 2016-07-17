@@ -290,7 +290,7 @@ LSValue* LSString::operator / (const LSString* s) const {
 		}
  	} else {
 
- 		int separator = u8_char_at((char*) s->c_str(), 0);
+ 		u_int32_t separator = u8_char_at((char*) s->c_str(), 0);
 		int i = 0;
 		int l = strlen(string_chars);
 		std::string item = "";

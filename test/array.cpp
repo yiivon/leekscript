@@ -19,7 +19,7 @@ void Test::test_arrays() {
 	success("let a = [1, 2, 3] a[0] = 5 a[0]", "5");
 	success("let a = [1, 2, 3] a[0] += 5 a[0]", "6");
 	success("let v = 12 let a = [v, 2, 3] a[0] += 5 a[0]", "17");
-	success("let a = [23, 23, true, '', [], 123] |a|", "6");
+	success("let a = [23, 23, true, '', [], 123]; |a|", "6");
 	success("let a = [1, 2, 3]; ~a", "[3, 2, 1]");
 	success("let a = [1, 2, 3] a[1] = 12 a", "[1, 12, 3]");
 	success("[1.2, 321.42, 23.15]", "[1.2, 321.42, 23.15]");
@@ -37,8 +37,8 @@ void Test::test_arrays() {
 	 * Array operations
 	 */
 	header("Array operations");
-	success("[1, 2, 3, 4, 5] ~~ x -> x ^ 2", "[1, 4, 9, 16, 25]");
-	success("[1, 2, 3, 4, 5] ~~ (x -> x ^ 2)", "[1, 4, 9, 16, 25]");
+	success("[1, 2, 3, 4, 5] ~~ x -> x ** 2", "[1, 4, 9, 16, 25]");
+	success("[1, 2, 3, 4, 5] ~~ (x -> x ** 2)", "[1, 4, 9, 16, 25]");
 	success("['yo', 'toto', 'salut'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
 	success("[1, 2, 3] ~~ x -> [x]", "[[1], [2], [3]]");
 	success("[1, 2, 3] ~~ x -> 'yo'", "['yo', 'yo', 'yo']");
@@ -89,9 +89,9 @@ void Test::test_arrays() {
 	success("['abc', true, 12, [1, 2]].sum()", "'abctrue12<array>'");
 	success("[10, -5.7, 30.89, 66].sum()", "101.19");
 
-	success("Array.map([1, 2, 3], x -> x ^ 2)", "[1, 4, 9]");
-	success("[3, 4, 5].map(x -> x ^ 2)", "[9, 16, 25]");
-	success("[321, 213, 121].map(x -> x ^ 2).size()", "3");
+	success("Array.map([1, 2, 3], x -> x ** 2)", "[1, 4, 9]");
+	success("[3, 4, 5].map(x -> x ** 2)", "[9, 16, 25]");
+	success("[321, 213, 121].map(x -> x ** 2).size()", "3");
 
 	success("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))", "[13, 'yo 55', [9]]");
 

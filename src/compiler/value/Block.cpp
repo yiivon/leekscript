@@ -28,10 +28,6 @@ void Block::print(ostream& os) const {
 	os << "}";
 }
 
-void Block::can_return(Type type) {
-
-}
-
 void Block::analyse(SemanticAnalyser* analyser, const Type req_type) {
 
 	analyser->enter_block();

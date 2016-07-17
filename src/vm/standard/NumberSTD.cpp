@@ -1,5 +1,6 @@
 #include "NumberSTD.hpp"
 #include "../value/LSNumber.hpp"
+#include "../../../lib/utf8.h"
 
 using namespace std;
 
@@ -7,9 +8,14 @@ namespace ls {
 
 NumberSTD::NumberSTD() : Module("Number") {
 
+	static_field("pi", Type::FLOAT_P, nullptr);
+	static_field("e", Type::FLOAT_P, nullptr);
+	static_field("phi", Type::FLOAT_P, nullptr);
+	/*
 	static_field("pi", Type::FLOAT_P, "3.14159265359");
 	static_field("e", Type::FLOAT_P, "2.71828182846");
 	static_field("phi", Type::FLOAT_P, "1.61803398874");
+	*/
 
 	method("abs", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_abs);
 	method("acos", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_acos);
@@ -34,6 +40,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("toDegrees", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toDegrees);
 	method("toRadians", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toRadians);
 	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
+	method("char", Type::NUMBER, Type::STRING, {}, (void*) &number_char);
 
 	static_method("abs", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_abs);
 	static_method("acos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_acos);
@@ -62,6 +69,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("toDegrees", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toDegrees);
 	static_method("toRadians", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toRadians);
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
+	static_method("char", Type::STRING, {Type::NUMBER}, (void*) &number_char);
 }
 
 LSNumber* number_abs(const LSNumber* number) {
@@ -173,6 +181,13 @@ LSNumber* number_toRadians(const LSNumber* x) {
 bool number_isInteger(const LSNumber* x) {
 	double _;
 	return modf(x->value, &_) == 0;
+}
+
+LSString* number_char(const LSNumber* number) {
+	unsigned int n = number->value;
+	char dest[5];
+	u8_toutf8(dest, 5, &n, 1);
+	return new LSString(dest);
 }
 
 }

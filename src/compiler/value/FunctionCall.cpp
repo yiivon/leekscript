@@ -50,6 +50,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 	function->analyse(analyser);
 
+//	cout << "function call type " << function->type << endl;
+
 	int a = 0;
 	for (Value* arg : arguments) {
 //		cout << "ANALYSE arg " << a << " : " << function->type.getArgumentType(a) << endl;
@@ -119,14 +121,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 			Type object_type = oa->object->type;
 
 			vector<Type> arg_types;
-			for (auto arg : arguments) arg_types.push_back(arg->type);
-
-			if (arg_types.size() > 0) {
-//			cout << "ARG : " << arg_types[0] << endl;
-//			cout << "ARG : " << arg_types[1] << endl;
+			for (auto arg : arguments) {
+				arg_types.push_back(arg->type);
 			}
-			if (object_type.raw_type == RawType::CLASS) {
-				// String.size("salut")
+
+			if (object_type.raw_type == RawType::CLASS) { // String.size("salut")
 
 //				cout << "object_type : " << object_type << endl;
 //				cout << "object field : " << oa->field << endl;
@@ -149,17 +148,22 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 //				cout << "obj type : " << object_type << endl;
 
-				LSClass* object_class = (LSClass*) analyser->program->system_vars[object_type.clazz];
+				if (object_type.raw_type != RawType::UNKNOWN) {
 
-				Method* m = object_class->getMethod(oa->field->content, object_type, arg_types);
+					LSClass* object_class = (LSClass*) analyser->program->system_vars[object_type.clazz];
 
-				if (m != nullptr) {
-//					cout << "method : " << m->addr << " : " << m->type << endl;
-					this_ptr = oa->object;
-					std_func = m->addr;
-					function->type = m->type;
-				} else {
-					throw SemanticException(SemanticException::Type::METHOD_NOT_FOUND, oa->field);
+//					cout << "class : " << object_class << endl;
+
+					Method* m = object_class->getMethod(oa->field->content, object_type, arg_types);
+
+					if (m != nullptr) {
+//						cout << "method : " << m->addr << " : " << m->type << endl;
+						this_ptr = oa->object;
+						std_func = m->addr;
+						function->type = m->type;
+					} else {
+						throw SemanticException(SemanticException::Type::METHOD_NOT_FOUND, oa->field);
+					}
 				}
 			}
 		}
@@ -402,7 +406,7 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 				jit_func = &jit_insn_mul;
 			} else if (f->name->content == "/") {
 				jit_func = &jit_insn_div;
-			} else if (f->name->content == "^") {
+			} else if (f->name->content == "**") {
 				jit_func = &jit_insn_pow;
 			} else if (f->name->content == "%") {
 				jit_func = &jit_insn_rem;

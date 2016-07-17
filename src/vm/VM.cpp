@@ -189,7 +189,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 		string ctx = "{";
 
-		unsigned i = 0;
+//		unsigned i = 0;
 /*
 		for (auto g : globals) {
 			if (globals_ref[g.first]) continue;
@@ -258,7 +258,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	delete program;
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
-		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
+		//cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
 	}
 
 	return result;

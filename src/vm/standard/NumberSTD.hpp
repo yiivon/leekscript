@@ -5,6 +5,7 @@
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
 #include "../../vm/Program.hpp"
 #include "../Module.hpp"
+#include "../../vm/value/LSString.hpp"
 #include <math.h>
 
 namespace ls {
@@ -43,6 +44,7 @@ LSNumber* number_tan(const LSNumber* number);
 LSNumber* number_toDegrees(const LSNumber* number);
 LSNumber* number_toRadians(const LSNumber* number);
 bool number_isInteger(const LSNumber* number);
+LSString* number_char(const LSNumber* number);
 }
 
 #endif
