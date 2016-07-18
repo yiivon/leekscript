@@ -306,7 +306,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 							word += buff;
 
 						} else if (string("([{}]),;.").find(c) != string::npos || string("([{}]),;.").find(word) != string::npos
-								|| (word == "!" && c == '!')) {
+								|| (word == "!" && c == '!') || (word == "|" && c != '=' && c != '|')) {
 
 							tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
 							u8_toutf8(buff, 5, &c, 1);

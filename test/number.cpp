@@ -23,6 +23,7 @@ void Test::test_numbers() {
 	success("12 < 5", "false");
 	success("5 == 12", "false");
 	success("12 == 12", "true");
+	success("|-12|", "12");
 
 	// with variables
 	success("let a = 2 a++", "2");
