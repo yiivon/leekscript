@@ -1,5 +1,7 @@
 #include "Test.hpp"
 
+
+
 Test::Test() {
 	total = 0;
 	success_count = 0;
@@ -68,7 +70,11 @@ void Test::success(std::string code, std::string expected) {
 	}
 }
 
-void Test::success_almost(std::string code, long expected, long delta) {
+template void Test::success_almost(std::string code, long expected, long delta = 0);
+template void Test::success_almost(std::string code, double expected, double delta = std::numeric_limits<double>::epsilon());
+
+template <typename T>
+void Test::success_almost(std::string code, T expected, T delta) {
 
 	total++;
 	std::string res;
@@ -80,7 +86,9 @@ void Test::success_almost(std::string code, long expected, long delta) {
 	obj_created += ls::LSValue::obj_count;
 	obj_deleted += ls::LSValue::obj_deleted;
 
-	long res_num = std::stol(res);
+	T res_num;
+	std::stringstream ss(res);
+	ss >> res_num;
 
 	if (std::abs(res_num - expected) > delta) {
 		std::cout << "FAUX : " << code << "  =/=>  " << expected << "  got  " << res << std::endl;

@@ -80,14 +80,14 @@ void Test::test_arrays() {
 	success("[1, 2, 3, 4, 5, 6].average()", "3.5");
 	success("[].average()", "0");
 	success("['salut', true, []].average()", "0");
-	success("[10, -5.7, 30.89, 66].average()", "25.2975");
+	success_almost("[10, -5.7, 30.89, 66].average()", 25.2975);
 
 	success("Array.sum([10, -5, 30, 66])", "101");
 	success("[10, -5, 30, 66].sum()", "101");
 	success("Array.sum(['ab', 'cd', 'ef'])", "'abcdef'");
 	success("['ab', 'cd', 'ef'].sum()", "'abcdef'");
 	success("['abc', true, 12, [1, 2]].sum()", "'abctrue12<array>'");
-	success("[10, -5.7, 30.89, 66].sum()", "101.19");
+	success_almost("[10, -5.7, 30.89, 66].sum()", 101.19);
 
 	success("Array.map([1, 2, 3], x -> x ** 2)", "[1, 4, 9]");
 	success("[3, 4, 5].map(x -> x ** 2)", "[9, 16, 25]");

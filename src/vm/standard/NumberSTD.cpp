@@ -8,14 +8,10 @@ namespace ls {
 
 NumberSTD::NumberSTD() : Module("Number") {
 
-	static_field("pi", Type::FLOAT_P, nullptr);
-	static_field("e", Type::FLOAT_P, nullptr);
-	static_field("phi", Type::FLOAT_P, nullptr);
-	/*
-	static_field("pi", Type::FLOAT_P, "3.14159265359");
-	static_field("e", Type::FLOAT_P, "2.71828182846");
-	static_field("phi", Type::FLOAT_P, "1.61803398874");
-	*/
+	static_field("pi", Type::FLOAT, (void*) &Number_pi);
+	static_field("e", Type::FLOAT, (void*) &Number_e);
+	static_field("phi", Type::FLOAT, (void*) &Number_phi);
+	static_field("epsilon", Type::FLOAT, (void*) &Number_epsilon);
 
 	method("abs", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_abs);
 	method("acos", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_acos);
@@ -70,6 +66,19 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("toRadians", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toRadians);
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
 	static_method("char", Type::STRING, {Type::NUMBER}, (void*) &number_char);
+}
+
+jit_value_t Number_e(jit_function_t& F) {
+	return jit_value_create_float64_constant(F, jit_type_float64, M_E);
+}
+jit_value_t Number_phi(jit_function_t& F) {
+	return jit_value_create_float64_constant(F, jit_type_float64, 1.61803398874989484820);
+}
+jit_value_t Number_pi(jit_function_t& F) {
+	return jit_value_create_float64_constant(F, jit_type_float64, 3.14159265358979323846);
+}
+jit_value_t Number_epsilon(jit_function_t& F) {
+	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
 LSNumber* number_abs(const LSNumber* number) {

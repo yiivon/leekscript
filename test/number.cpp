@@ -8,7 +8,7 @@ void Test::test_numbers() {
 	success("0", "0");
 	success("-1", "-1");
 	success("-(-1)", "1");
-	success("π", "3.1415926536");
+	success("π", "3.141592653589793116");
 
 	// basic operations
 	success("0 + 5", "5");
@@ -23,6 +23,7 @@ void Test::test_numbers() {
 	success("12 < 5", "false");
 	success("5 == 12", "false");
 	success("12 == 12", "true");
+	success("0.2 + 0.1", "0.300000000000000044");
 
 	// with variables
 	success("let a = 2 a++", "2");
@@ -35,12 +36,13 @@ void Test::test_numbers() {
 	success("let a = 100 a /= 5", "20");
 	success("let a = 56 a %= 17", "5");
 	success("let a = 15 a **= 2", "225");
+	success("let a = 1.5 a * 0.5", "0.75");
 
 	// multiple operations
 	success("(33 - 2) / 2", "15.5");
 	success("12 < (45 / 4)", "false");
 	success("12 == (24 / 2)", "true");
-	success("2.5 + 4.7", "7.2");
+	success("2.5 + 4.7", "7.200000000000000178");
 	success("2.5 × 4.7", "11.75");
 	success("5 * 2 + 3 * 4", "22");
 
@@ -109,6 +111,14 @@ void Test::test_numbers() {
 	success("new Number", "0");
 	success("new Number()", "0");
 	success("new Number(12)", "12");
+
+	// constants
+	success("Number.pi", "3.141592653589793116");
+	success("2 × Number.pi", "6.283185307179586232");
+	success("Number.e", "2.718281828459045091");
+	success("Number.phi", "1.618033988749894903");
+	success("Number.epsilon", "0.000000000000000222");
+
 //	success("Number.abs", "<function>");
 	success("Number.abs(-12)", "12");
 	success("Number.floor(5.9)", "5");
@@ -121,10 +131,10 @@ void Test::test_numbers() {
 
 	success("Number.cos(0)", "1");
 	success("Number.cos(π)", "-1");
-	success("Number.cos(π / 2)", "0");
+	success_almost("Number.cos(π / 2)", 0.0, std::numeric_limits<double>::epsilon());
 
 	success("Number.sin(0)", "0");
-	success("Number.sin(π)", "0");
+	success_almost("Number.sin(π)", 0.0, std::numeric_limits<double>::epsilon());
 	success("Number.sin(π / 2)", "1");
 	success("Number.sin(- π / 2)", "-1");
 //	success("12.sqrt()", "");

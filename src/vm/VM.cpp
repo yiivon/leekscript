@@ -264,6 +264,22 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	return result;
 }
 
+jit_type_t VM::get_jit_type(const Type& type) {
+	if (type.nature == Nature::POINTER) {
+		return ls_jit_pointer;
+	}
+	if (type.raw_type == RawType::INTEGER || type.raw_type == RawType::BOOLEAN) {
+		return ls_jit_integer;
+	}
+	if (type.raw_type == RawType::LONG or type.raw_type == RawType::FUNCTION) {
+		return ls_jit_long;
+	}
+	if (type.raw_type == RawType::FLOAT) {
+		return ls_jit_real;
+	}
+	return ls_jit_integer;
+}
+
 LSValue* create_null_object(int) {
 	return LSNull::null_var;
 }

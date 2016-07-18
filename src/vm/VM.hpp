@@ -12,6 +12,11 @@
 #define JIT_FLOAT jit_type_float64
 #define JIT_POINTER jit_type_void_ptr
 
+#define ls_jit_integer jit_type_int
+#define ls_jit_real jit_type_float64
+#define ls_jit_long jit_type_long
+#define ls_jit_pointer jit_type_void_ptr
+
 #define JIT_CREATE_CONST jit_value_create_nint_constant
 #define JIT_CREATE_CONST_LONG jit_value_create_long_constant
 #define JIT_CREATE_CONST_FLOAT jit_value_create_float64_constant
@@ -53,6 +58,7 @@ public:
 	std::string execute(const std::string code, std::string ctx, ExecMode mode);
 	Program* compile(const std::string code);
 
+	static jit_type_t get_jit_type(const Type& type);
 	static jit_value_t value_to_pointer(jit_function_t&, jit_value_t&, Type);
 	static jit_value_t pointer_to_value(jit_function_t&, jit_value_t&, Type);
 	static jit_value_t new_array(jit_function_t&);

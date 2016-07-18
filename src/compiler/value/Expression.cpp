@@ -115,75 +115,70 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 		v2_type = Type::FLOAT;
 	}
 
-	if (v1 != nullptr) {
-		v1->analyse(analyser, v1_type);
-		if (v1->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
-		if (v1->constant == false) constant = false;
+
+	v1->analyse(analyser, v1_type);
+	if (v1->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
+	if (v1->constant == false) constant = false;
+
+	v2->analyse(analyser, v2_type);
+	if (v2->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
+	if (v2->constant == false) constant = false;
+
+
+	if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
+		op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
+		op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
+		op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
+
+		type = Type::BOOLEAN;
 	}
 
-	if (v2 != nullptr) {
-		v2->analyse(analyser, v2_type);
-		if (v2->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
-		if (v2->constant == false) constant = false;
-	}
-
-	if (v1 != nullptr and v2 != nullptr) {
-
-		if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
-			op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
-			op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
-			op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
-
-			type = Type::BOOLEAN;
+	// Array += element
+	if (op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
+		VariableValue* vv = dynamic_cast<VariableValue*>(v1);
+		if (vv->type.raw_type == RawType::ARRAY) {
+			vv->var->will_take_element(analyser, v2->type);
 		}
+	}
 
-		// Array += element
-		if (op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
+	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
+		or op->type == TokenType::PLUS or op->type == TokenType::TIMES
+		or op->type == TokenType::MINUS) {
+
+		type = v1->type.mix(v2->type);
+
+		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL) {
 			VariableValue* vv = dynamic_cast<VariableValue*>(v1);
-			if (vv->type.raw_type == RawType::ARRAY) {
-				vv->var->will_take_element(analyser, v2->type);
-			}
-		}
-
-		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
-			or op->type == TokenType::PLUS or op->type == TokenType::TIMES
-			or op->type == TokenType::MINUS) {
-
-			type = v1->type.mix(v2->type);
-
-			if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL) {
-				VariableValue* vv = dynamic_cast<VariableValue*>(v1);
-				if (vv != nullptr and vv->var->value != nullptr) {
-					// TODO not working
-					//vv->var->must_be_pointer(analyser);
-				}
-			}
-		}
-
-		if (op->type == TokenType::TILDE_TILDE) {
-
-			v2->will_take(analyser, 0, Type::POINTER);
-
-			VariableValue* vv = dynamic_cast<VariableValue*>(v2);
 			if (vv != nullptr and vv->var->value != nullptr) {
-
-				vv->var->will_take(analyser, 0, Type::POINTER);
-				v2->type.setReturnType(vv->var->type.getReturnType());
+				// TODO not working
+				//vv->var->must_be_pointer(analyser);
 			}
-			type = Type::ARRAY;
 		}
+	}
 
-		// Merge operations count
-		// (2 + 3) × 4    ->  2 ops for the × directly
-		if (op->type != TokenType::OR or op->type == TokenType::AND) {
-			if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
-				operations += ex1->operations;
-				ex1->operations = 0;
-			}
-			if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
-				operations += ex2->operations;
-				ex2->operations = 0;
-			}
+	if (op->type == TokenType::TILDE_TILDE) {
+
+		v2->will_take(analyser, 0, Type::POINTER);
+
+		VariableValue* vv = dynamic_cast<VariableValue*>(v2);
+		if (vv != nullptr and vv->var->value != nullptr) {
+
+			vv->var->will_take(analyser, 0, Type::POINTER);
+			v2->type.setReturnType(vv->var->type.getReturnType());
+		}
+		type = Type::ARRAY;
+	}
+
+	// Merge operations count
+	// (2 + 3) × 4    ->  2 ops for the × directly
+	if (op->type != TokenType::OR or op->type == TokenType::AND) {
+		if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
+			operations += ex1->operations;
+			ex1->operations = 0;
+		}
+		if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
+			operations += ex2->operations;
+			ex2->operations = 0;
 		}
 	}
 //	cout << "exp type " << type << endl;

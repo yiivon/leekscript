@@ -87,10 +87,7 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 
 			Value* ex = expressions[i];
 
-			jit_type_t type = ex->type.raw_type == RawType::FUNCTION ?
-				JIT_INTEGER_LONG : JIT_INTEGER;
-
-			jit_value_t var = jit_value_create(F, type);
+			jit_value_t var = jit_value_create(F, VM::get_jit_type(ex->type));
 			c.add_var(name, var, v->type, false);
 
 			jit_value_t val;
