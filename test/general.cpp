@@ -43,6 +43,16 @@ void Test::test_general() {
 	success("let a = 12 { let a = 5 } a", "12");
 	success("let a = 12 let b = 0 { let a = 5 b = a } b", "5");
 	sem_err("{let a = 5} a", ls::SemanticException::Type::UNDEFINED_VARIABLE, "a");
+
+	success("'foo' ?? 'bar'", "'foo'");
+	success("null ?? 'bar'", "'bar'");
+	success("let a = 'foo' a ?? 'bar'", "'foo'");
+	success("let a = null a ?? 'bar'", "'bar'");
+	success("[] ?? [12]", "[]");
+	success("null ?? [12]", "[12]");
+	success("{} ?? 'default'", "{}");
+	success("null ?? 'default'", "'default'");
+	success("let a = null let b = null a ?? b ?? ':)'", "':)'");
 }
 
 

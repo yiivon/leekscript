@@ -110,7 +110,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 		v2_type = Type::FLOAT;
 	}
 
-
 	v1->analyse(analyser, v1_type);
 	if (v1->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
 	if (v1->constant == false) constant = false;
@@ -162,6 +161,10 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 			v2->type.setReturnType(vv->var->type.getReturnType());
 		}
 		type = Type::ARRAY;
+	}
+
+	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
+		type = Type::POINTER;
 	}
 
 	// Merge operations count
@@ -330,6 +333,9 @@ LSValue* jit_bit_shr_unsigned(LSValue*, LSValue*) {
 LSValue* jit_bit_shr_unsigned_equal(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
+bool jit_is_null(LSValue* v) {
+	return v->typeID() == 1;
+}
 
 jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
@@ -337,7 +343,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		return v1->compile_jit(c, F, req_type);
 	}
 
-	if (VM::enable_operations && operations > 0) {
+	if (operations > 0) {
 		VM::inc_ops(F, operations);
 	}
 
@@ -787,6 +793,34 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			} else {
 				ls_func = (void*) &jit_bit_shr_unsigned_equal;
 			}
+			break;
+		}
+		case TokenType::DOUBLE_QUESTION_MARK: {
+
+			// x ?? y ==> if (x == null) { y } else { x }
+
+			jit_label_t label_end = jit_label_undefined;
+			jit_label_t label_else = jit_label_undefined;
+			jit_value_t v = jit_value_create(F, ls_jit_pointer);
+
+			jit_type_t args_types[2] = {ls_jit_pointer};
+			jit_value_t x = v1->compile_jit(c, F, Type::POINTER);
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ls_jit_integer, args_types, 1, 0);
+			jit_value_t r = jit_insn_call_native(F, "is_null", (void*) jit_is_null, sig, &x, 1, JIT_CALL_NOTHROW);
+
+			jit_insn_branch_if_not(F, r, &label_else);
+
+			jit_value_t y = v2->compile_jit(c, F, Type::POINTER);
+			jit_insn_store(F, v, y);
+
+			jit_insn_branch(F, &label_end);
+			jit_insn_label(F, &label_else);
+
+			jit_insn_store(F, v, x);
+
+			jit_insn_label(F, &label_end);
+
+			return v;
 			break;
 		}
 		default: {

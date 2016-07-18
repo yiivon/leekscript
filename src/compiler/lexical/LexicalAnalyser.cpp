@@ -68,7 +68,9 @@ static vector<string> type_literals[] = {
 	{ ">>" }, { ">>=" },
 	{ ">>>" }, { ">>>=" },
 	{ "^<" }, { "^<=" },
-	{ "^>" }, { "^>=" }
+	{ "^>" }, { "^>=" },
+
+	{ "??" }
 };
 
 LexicalAnalyser::LexicalAnalyser() {}

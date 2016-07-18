@@ -70,8 +70,8 @@ void Test::success(std::string code, std::string expected) {
 	}
 }
 
-template void Test::success_almost(std::string code, long expected, long delta = 0);
-template void Test::success_almost(std::string code, double expected, double delta = std::numeric_limits<double>::epsilon());
+template void Test::success_almost(std::string code, long expected, long delta);
+template void Test::success_almost(std::string code, double expected, double delta);
 
 template <typename T>
 void Test::success_almost(std::string code, T expected, T delta) {

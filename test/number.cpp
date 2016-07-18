@@ -23,7 +23,7 @@ void Test::test_numbers() {
 	success("12 < 5", "false");
 	success("5 == 12", "false");
 	success("12 == 12", "true");
-	success("0.2 + 0.1", "0.300000000000000044");
+	success_almost("0.2 + 0.1", 0.3);
 	success("|-12|", "12");
 
 	// with variables
@@ -43,7 +43,7 @@ void Test::test_numbers() {
 	success("(33 - 2) / 2", "15.5");
 	success("12 < (45 / 4)", "false");
 	success("12 == (24 / 2)", "true");
-	success("2.5 + 4.7", "7.200000000000000178");
+	success_almost("2.5 + 4.7", 7.2);
 	success("2.5 × 4.7", "11.75");
 	success("5 * 2 + 3 * 4", "22");
 
@@ -132,10 +132,10 @@ void Test::test_numbers() {
 
 	success("Number.cos(0)", "1");
 	success("Number.cos(π)", "-1");
-	success_almost("Number.cos(π / 2)", 0.0, std::numeric_limits<double>::epsilon());
+	success_almost("Number.cos(π / 2)", 0.0);
 
 	success("Number.sin(0)", "0");
-	success_almost("Number.sin(π)", 0.0, std::numeric_limits<double>::epsilon());
+	success_almost("Number.sin(π)", 0.0);
 	success("Number.sin(π / 2)", "1");
 	success("Number.sin(- π / 2)", "-1");
 //	success("12.sqrt()", "");
