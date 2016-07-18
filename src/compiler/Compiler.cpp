@@ -38,7 +38,7 @@ void Compiler::leave_block(jit_function_t&) {
 }
 
 void Compiler::add_var(std::string& name, jit_value_t& value, const Type& type, bool ref) {
-	variables.back().insert({name, {value, type, ref}});
+	variables.back()[name] = {value, type, ref};
 }
 
 CompilerVar& Compiler::get_var(std::string& name) {

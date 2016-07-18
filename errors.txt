@@ -1,14 +1,8 @@
 ----------------------------------------
 Crashes and bugs
 ----------------------------------------
-{x: 12}.x			| crash
-print()				| crash
-()				| should return null
-[][0]				| crash, should throw an exception (and maybe detect the error before)
-{x: 12}.y			| workds, should throw an exception
-'x' in {x: 12}			| doesn't work, returns false
-|-12|				| lexical analyser
-return				| syntaxical error but should work
+
+
 break				| crash
 continue			| crash
 '				| workds, but should be a lexical error
@@ -24,7 +18,7 @@ null * 5			| should be null, not act like 0 (confusing)
 [] = 5				| same but crash in this case
 array[]				| returns the last element of the array
 {}.size()			| get the number of attrs in object
-print(+2)			| crash
+
 'salut'['':'']	  	| must throw a semantic error
 12.sqrt()			| crash
 Number.sqrt("foo")	  | should throw a semantic error
