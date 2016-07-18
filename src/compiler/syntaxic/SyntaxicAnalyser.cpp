@@ -298,14 +298,20 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 
 Value* SyntaxicAnalyser::eatSimpleExpression() {
 
-	Value* e = new Expression();
+	Value* e = nullptr;
 
 	if (t->type == TokenType::OPEN_PARENTHESIS) {
 
 		eat();
-		e = eatExpression();
-		e->parenthesis = true;
-		eat(TokenType::CLOSING_PARENTHESIS);
+
+		if (t->type == TokenType::CLOSING_PARENTHESIS) {
+			eat();
+			e = new Nulll();
+		} else {
+			e = eatExpression();
+			e->parenthesis = true;
+			eat(TokenType::CLOSING_PARENTHESIS);
+		}
 
 	} else if (t->type == TokenType::PIPE) {
 
@@ -334,14 +340,14 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 				ex->operatorr = new Operator(op);
 				ex->expression = eatSimpleExpression();
 
-				((Expression*) e)->v1 = ex;
+				e = new Expression(ex);
 			}
 
 		} else {
-
 			e = eatValue();
 		}
 	}
+
 
 	while (t->type == TokenType::OPEN_BRACKET || t->type == TokenType::OPEN_PARENTHESIS
 			|| t->type == TokenType::DOT) {

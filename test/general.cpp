@@ -16,6 +16,7 @@ void Test::test_general() {
 	header("General");
 	success("", "null");
 	success("null", "null");
+	success("()", "null");
 	success("12", "12");
 	success("true", "true");
 	success("false", "false");

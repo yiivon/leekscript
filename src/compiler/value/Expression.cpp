@@ -15,14 +15,9 @@ namespace ls {
 
 Expression::Expression() : Expression(nullptr) {}
 
-Expression::Expression(Value* v) {
-	v1 = v;
-	v2 = nullptr;
-	op = nullptr;
-	ignorev2 = false;
-	no_op = false;
-	operations = 0;
-}
+Expression::Expression(Value* v) :
+	v1(v), v2(nullptr), op(nullptr), ignorev2(false), no_op(false), operations(0)
+{}
 
 Expression::~Expression() {
 	if (v1 != nullptr) {
