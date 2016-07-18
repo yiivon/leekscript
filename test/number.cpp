@@ -24,6 +24,7 @@ void Test::test_numbers() {
 	success("5 == 12", "false");
 	success("12 == 12", "true");
 	success("0.2 + 0.1", "0.300000000000000044");
+	success("|-12|", "12");
 
 	// with variables
 	success("let a = 2 a++", "2");
