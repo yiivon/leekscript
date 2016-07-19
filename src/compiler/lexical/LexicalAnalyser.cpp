@@ -8,15 +8,15 @@ using namespace std;
 
 namespace ls {
 
-static vector<string> type_literals[] = {
+static vector<vector<string>> type_literals = {
 
-	{ "" }, // Unknown
-	{ "" }, // Finished
-	{ "" }, // Don't care
+	{}, // Unknown
+	{}, // Finished
+	{}, // Don't care
 
-	{ "" }, // Number
-	{ "" }, // Ident
-	{ "" }, // String
+	{}, // Number
+	{}, // Ident
+	{}, // String
 
 	{ "let", "var" }, { "global" }, { "function" }, { "return" },
 	{ "break" }, { "continue" },
@@ -96,34 +96,27 @@ LetterType LexicalAnalyser::getLetterType(char32_t c) {
 	return LetterType::OTHER;
 }
 
+TokenType LexicalAnalyser::getTokenType(string word, TokenType by_default)
+{
+	for (size_t j = 0; j < type_literals.size(); ++j) {
+		for (string text : type_literals[j]) {
+			if (word == text) return (TokenType) j;
+		}
+	}
+	return by_default;
+}
+
 vector<Token> LexicalAnalyser::analyse(std::string code) {
 
 	vector<Token> tokens = LexicalAnalyser::parseTokens(code + " ");
 
 	tokens.push_back(Token(TokenType::FINISHED, 0, 1, ""));
 
-	for (unsigned i = 0; i < tokens.size(); ++i) {
-
-		Token& token = tokens.at(i);
-
-		if (i < tokens.size() - 1 && token.content == "is" && tokens.at(i + 1).content == "not") {
-			token.type = TokenType::DIFFERENT;
-			token.content = "is not";
+	for (size_t i = 0; i < tokens.size(); ++i) {
+		if (i + 1 < tokens.size() && tokens[i].content == "is" && tokens[i+1].content == "not") {
+			tokens[i].type = TokenType::DIFFERENT;
+			tokens[i].content = "is not";
 			tokens.erase(tokens.begin() + i + 1);
-		}
-
-		if (token.type == TokenType::UNKNOW || token.type == TokenType::IDENT) {
-
-			int i = 0;
-			for (auto type : type_literals) {
-				for (string text : type) {
-					if (text.size() > 0 && token.content == text) {
-						token.type = (TokenType) i;
-						break;
-					}
-				}
-				i++;
-			}
 		}
 	}
 
@@ -182,7 +175,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 				if (type == LetterType::WHITE) {
 
 					if (ident) {
-						tokens.push_back(Token(TokenType::IDENT, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
 					} else if (number) {
 						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
@@ -191,11 +184,12 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (other) {
-						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
 					}
 
 				} else if (type == LetterType::LETTER) {
+
 					if (ident || string1 || string2) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
@@ -203,7 +197,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
 						number = false;
 					} else if (other) {
-						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
 						ident = true;
 						u8_toutf8(buff, 5, &c, 1);
@@ -213,12 +207,14 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 					}
+
 				} else if (type == LetterType::NUMBER) {
+
 					if (number || ident || string1 || string2) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (other) {
-						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
 						number = true;
 						u8_toutf8(buff, 5, &c, 1);
@@ -228,9 +224,11 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 					}
+
 				} else if (type == LetterType::QUOTE) {
+
 					if (ident) {
-						tokens.push_back(Token(TokenType::IDENT, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
 						string1 = true;
 						word = "";
@@ -246,7 +244,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (other) {
-						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
 						string1 = true;
 						word = "";
@@ -254,9 +252,11 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						string1 = true;
 						word = "";
 					}
+
 				} else if (type == LetterType::DOUBLE_QUOTE) {
+
 					if (ident) {
-						tokens.push_back(Token(TokenType::IDENT, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
 						string2 = true;
 						word = "";
@@ -272,7 +272,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(TokenType::STRING, line, character, word));
 						string2 = false;
 					} else if (other) {
-						tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
 						string2 = true;
 						word = "";
@@ -280,9 +280,11 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						string2 = true;
 						word = "";
 					}
+
 				} else if (type == LetterType::OTHER) {
+
 					if (ident) {
-						tokens.push_back(Token(TokenType::IDENT, line, character, word));
+						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
 						other = true;
 						u8_toutf8(buff, 5, &c, 1);
@@ -302,26 +304,31 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (other) {
+						bool is_longer = false;
+						for (size_t j = 0; j < type_literals.size() && !is_longer; ++j) {
+							for (string text : type_literals[j]) {
+								if (text.size() > word.size() && text.compare(0, word.size(), word) == 0 && text[word.size()] == (char) c) {
+									is_longer = true;
+									break;
+								}
+							}
+						}
 
-						if (c == '.' && (word == "." || word == "..")) {
-							u8_toutf8(buff, 5, &c, 1);
-							word += buff;
-
-						} else if (string("([{}]),;.").find(c) != string::npos || string("([{}]),;.").find(word) != string::npos
-								|| (word == "!" && c == '!') || (word == "|" && c != '=' && c != '|')) {
-
-							tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
+						if (!is_longer) {
+							tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 							u8_toutf8(buff, 5, &c, 1);
 							word = buff;
 						} else {
 							u8_toutf8(buff, 5, &c, 1);
 							word += buff;
 						}
+
 					} else {
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 						other = true;
 					}
+
 				}
 			}
 		}

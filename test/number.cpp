@@ -14,6 +14,7 @@ void Test::test_numbers() {
 	success("0 + 5", "5");
 	success("5 + 5", "10");
 	success("10 - 3", "7");
+	success("-2 + 3", "1");
 	success("5 * 5", "25");
 	success("15 / 3", "5");
 	success("15 / 2", "7.5");

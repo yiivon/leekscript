@@ -15,6 +15,7 @@ enum class LetterType {
 class LexicalAnalyser {
 
 	LetterType getLetterType(char32_t c);
+	TokenType getTokenType(std::string word, TokenType by_default);
 	std::vector<Token> parseTokens(std::string code);
 
 public:
