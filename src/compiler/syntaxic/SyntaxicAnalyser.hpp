@@ -21,6 +21,7 @@ class Program;
 class Block;
 class Object;
 class Array;
+class Function;
 
 class SyntaxicAnalyser {
 
@@ -44,7 +45,7 @@ public:
 	Token* nextTokenAt(int pos);
 
 	Block* eatMain();
-	Ident* eatIdent();
+	Token* eatIdent();
 	Value* eatExpression(bool pipe_opened = false);
 	Value* eatSimpleExpression();
 	Value* eatValue();
@@ -59,6 +60,8 @@ public:
 	Foreach* eatForeach();
 	ClassDeclaration* eatClassDeclaration();
 	VariableDeclaration* eatVariableDeclaration();
+	Function* eatFunction();
+	VariableDeclaration *eatFunctionDeclaration();
 	Instruction* eatInstruction();
 
 	long getTime();

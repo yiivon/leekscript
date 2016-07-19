@@ -15,6 +15,7 @@ public:
 	SemanticVar* var;
 
 	Reference();
+	Reference(Token* variable);
 	virtual ~Reference();
 
 	virtual void print(std::ostream&) const override;
