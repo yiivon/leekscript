@@ -2,6 +2,9 @@
 
 void Test::test_functions() {
 
+	header("Functions");
+	success("function foo(x, y) { x+y } foo(1,2)", "3");
+
 	/*
 	 * Functions / Lambdas
 	 */

@@ -14,6 +14,12 @@ Reference::Reference() {
 	var = nullptr;
 }
 
+Reference::Reference(Token *variable)
+	: Value(), variable(variable), var(nullptr)
+{
+	type = Type::VALUE;
+}
+
 Reference::~Reference() {}
 
 void Reference::print(ostream& os) const {

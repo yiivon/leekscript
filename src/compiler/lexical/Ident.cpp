@@ -8,7 +8,9 @@ Ident::Ident(Token* token) {
 	this->token = token;
 }
 
-Ident::~Ident() {}
+Ident::~Ident() {
+	// Do not own the token
+}
 
 void Ident::print(std::ostream& os) {
 	os << token->content;
