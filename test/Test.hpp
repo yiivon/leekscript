@@ -24,7 +24,8 @@ public:
 	void header(std::string);
 
 	void success(std::string code, std::string result);
-	void success_almost(std::string code, long result, long delta);
+	template <typename T>
+	void success_almost(std::string code, T result, T delta = std::numeric_limits<T>::epsilon());
 	void sem_err(std::string code, ls::SemanticException::Type type, std::string token);
 	void ops(std::string code, int operations);
 

@@ -298,14 +298,20 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 
 Value* SyntaxicAnalyser::eatSimpleExpression() {
 
-	Value* e = new Expression();
+	Value* e = nullptr;
 
 	if (t->type == TokenType::OPEN_PARENTHESIS) {
 
 		eat();
-		e = eatExpression();
-		e->parenthesis = true;
-		eat(TokenType::CLOSING_PARENTHESIS);
+
+		if (t->type == TokenType::CLOSING_PARENTHESIS) {
+			eat();
+			e = new Nulll();
+		} else {
+			e = eatExpression();
+			e->parenthesis = true;
+			eat(TokenType::CLOSING_PARENTHESIS);
+		}
 
 	} else if (t->type == TokenType::PIPE) {
 
@@ -334,14 +340,14 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 				ex->operatorr = new Operator(op);
 				ex->expression = eatSimpleExpression();
 
-				((Expression*) e)->v1 = ex;
+				e = new Expression(ex);
 			}
 
 		} else {
-
 			e = eatValue();
 		}
 	}
+
 
 	while (t->type == TokenType::OPEN_BRACKET || t->type == TokenType::OPEN_PARENTHESIS
 			|| t->type == TokenType::DOT) {
@@ -462,7 +468,8 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened) {
 		t->type == TokenType::BIT_SHIFT_RIGHT || t->type == TokenType::BIT_SHIFT_RIGHT_EQUALS ||
 		t->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED || t->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS ||
 		t->type == TokenType::BIT_ROTATE_LEFT || t->type == TokenType::BIT_ROTATE_LEFT_EQUALS ||
-		t->type == TokenType::BIT_ROTATE_RIGHT || t->type == TokenType::BIT_ROTATE_RIGHT_EQUALS
+		t->type == TokenType::BIT_ROTATE_RIGHT || t->type == TokenType::BIT_ROTATE_RIGHT_EQUALS ||
+		t->type == TokenType::DOUBLE_QUESTION_MARK
 	) {
 
 		if (t->type == TokenType::MINUS && t->line != lt->line && nt != nullptr && t->line == nt->line)

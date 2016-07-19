@@ -15,14 +15,9 @@ namespace ls {
 
 Expression::Expression() : Expression(nullptr) {}
 
-Expression::Expression(Value* v) {
-	v1 = v;
-	v2 = nullptr;
-	op = nullptr;
-	ignorev2 = false;
-	no_op = false;
-	operations = 0;
-}
+Expression::Expression(Value* v) :
+	v1(v), v2(nullptr), op(nullptr), ignorev2(false), no_op(false), operations(0)
+{}
 
 Expression::~Expression() {
 	if (v1 != nullptr) {
@@ -115,75 +110,73 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 		v2_type = Type::FLOAT;
 	}
 
-	if (v1 != nullptr) {
-		v1->analyse(analyser, v1_type);
-		if (v1->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
-		if (v1->constant == false) constant = false;
+	v1->analyse(analyser, v1_type);
+	if (v1->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
+	if (v1->constant == false) constant = false;
+
+	v2->analyse(analyser, v2_type);
+	if (v2->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
+	if (v2->constant == false) constant = false;
+
+
+	if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
+		op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
+		op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
+		op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
+
+		type = Type::BOOLEAN;
 	}
 
-	if (v2 != nullptr) {
-		v2->analyse(analyser, v2_type);
-		if (v2->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
-		if (v2->constant == false) constant = false;
-	}
-
-	if (v1 != nullptr and v2 != nullptr) {
-
-		if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
-			op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
-			op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
-			op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
-
-			type = Type::BOOLEAN;
+	// Array += element
+	if (op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
+		VariableValue* vv = dynamic_cast<VariableValue*>(v1);
+		if (vv->type.raw_type == RawType::ARRAY) {
+			vv->var->will_take_element(analyser, v2->type);
 		}
+	}
 
-		// Array += element
-		if (op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
+	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
+		or op->type == TokenType::PLUS or op->type == TokenType::TIMES
+		or op->type == TokenType::MINUS) {
+
+		type = v1->type.mix(v2->type);
+
+		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL) {
 			VariableValue* vv = dynamic_cast<VariableValue*>(v1);
-			if (vv->type.raw_type == RawType::ARRAY) {
-				vv->var->will_take_element(analyser, v2->type);
-			}
-		}
-
-		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
-			or op->type == TokenType::PLUS or op->type == TokenType::TIMES
-			or op->type == TokenType::MINUS) {
-
-			type = v1->type.mix(v2->type);
-
-			if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL) {
-				VariableValue* vv = dynamic_cast<VariableValue*>(v1);
-				if (vv != nullptr and vv->var->value != nullptr) {
-					// TODO not working
-					//vv->var->must_be_pointer(analyser);
-				}
-			}
-		}
-
-		if (op->type == TokenType::TILDE_TILDE) {
-
-			v2->will_take(analyser, 0, Type::POINTER);
-
-			VariableValue* vv = dynamic_cast<VariableValue*>(v2);
 			if (vv != nullptr and vv->var->value != nullptr) {
-
-				vv->var->will_take(analyser, 0, Type::POINTER);
-				v2->type.setReturnType(vv->var->type.getReturnType());
+				// TODO not working
+				//vv->var->must_be_pointer(analyser);
 			}
-			type = Type::ARRAY;
 		}
+	}
 
-		// Merge operations count
-		// (2 + 3) × 4    ->  2 ops for the × directly
-		if (op->type != TokenType::OR or op->type == TokenType::AND) {
-			if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
-				operations += ex1->operations;
-				ex1->operations = 0;
-			}
-			if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
-				operations += ex2->operations;
-				ex2->operations = 0;
-			}
+	if (op->type == TokenType::TILDE_TILDE) {
+
+		v2->will_take(analyser, 0, Type::POINTER);
+
+		VariableValue* vv = dynamic_cast<VariableValue*>(v2);
+		if (vv != nullptr and vv->var->value != nullptr) {
+
+			vv->var->will_take(analyser, 0, Type::POINTER);
+			v2->type.setReturnType(vv->var->type.getReturnType());
+		}
+		type = Type::ARRAY;
+	}
+
+	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
+		type = Type::POINTER;
+	}
+
+	// Merge operations count
+	// (2 + 3) × 4    ->  2 ops for the × directly
+	if (op->type != TokenType::OR or op->type == TokenType::AND) {
+		if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
+			operations += ex1->operations;
+			ex1->operations = 0;
+		}
+		if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
+			operations += ex2->operations;
+			ex2->operations = 0;
 		}
 	}
 //	cout << "exp type " << type << endl;
@@ -340,6 +333,9 @@ LSValue* jit_bit_shr_unsigned(LSValue*, LSValue*) {
 LSValue* jit_bit_shr_unsigned_equal(LSValue*, LSValue*) {
 	return LSNull::null_var;
 }
+bool jit_is_null(LSValue* v) {
+	return v->typeID() == 1;
+}
 
 jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
@@ -347,7 +343,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		return v1->compile_jit(c, F, req_type);
 	}
 
-	if (VM::enable_operations && operations > 0) {
+	if (operations > 0) {
 		VM::inc_ops(F, operations);
 	}
 
@@ -797,6 +793,34 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			} else {
 				ls_func = (void*) &jit_bit_shr_unsigned_equal;
 			}
+			break;
+		}
+		case TokenType::DOUBLE_QUESTION_MARK: {
+
+			// x ?? y ==> if (x == null) { y } else { x }
+
+			jit_label_t label_end = jit_label_undefined;
+			jit_label_t label_else = jit_label_undefined;
+			jit_value_t v = jit_value_create(F, ls_jit_pointer);
+
+			jit_type_t args_types[2] = {ls_jit_pointer};
+			jit_value_t x = v1->compile_jit(c, F, Type::POINTER);
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ls_jit_integer, args_types, 1, 0);
+			jit_value_t r = jit_insn_call_native(F, "is_null", (void*) jit_is_null, sig, &x, 1, JIT_CALL_NOTHROW);
+
+			jit_insn_branch_if_not(F, r, &label_else);
+
+			jit_value_t y = v2->compile_jit(c, F, Type::POINTER);
+			jit_insn_store(F, v, y);
+
+			jit_insn_branch(F, &label_end);
+			jit_insn_label(F, &label_else);
+
+			jit_insn_store(F, v, x);
+
+			jit_insn_label(F, &label_end);
+
+			return v;
 			break;
 		}
 		default: {
