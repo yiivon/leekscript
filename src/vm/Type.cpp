@@ -45,8 +45,6 @@ const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
 const Type Type::CLASS(RawType::CLASS, Nature::POINTER);
 
-
-
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
 	nature = Nature::UNKNOWN;

@@ -96,8 +96,7 @@ LetterType LexicalAnalyser::getLetterType(char32_t c) {
 	return LetterType::OTHER;
 }
 
-TokenType LexicalAnalyser::getTokenType(string word, TokenType by_default)
-{
+TokenType LexicalAnalyser::getTokenType(string word, TokenType by_default) {
 	for (size_t j = 0; j < type_literals.size(); ++j) {
 		for (string text : type_literals[j]) {
 			if (word == text) return (TokenType) j;
@@ -313,7 +312,6 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 								}
 							}
 						}
-
 						if (!is_longer) {
 							tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 							u8_toutf8(buff, 5, &c, 1);
@@ -322,13 +320,11 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 							u8_toutf8(buff, 5, &c, 1);
 							word += buff;
 						}
-
 					} else {
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 						other = true;
 					}
-
 				}
 			}
 		}

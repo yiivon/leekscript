@@ -31,10 +31,18 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::sum}
 	});
 
+	Type map_int_fun_type = Type::FUNCTION;
+	map_int_fun_type.setArgumentType(0, Type::INTEGER);
+	map_int_fun_type.setReturnType(Type::POINTER);
+
 	Type map_fun_type = Type::FUNCTION;
-	map_fun_type.setArgumentType(0, Type::STRING);
-	map_fun_type.setReturnType(Type::STRING);
-	method("map", Type::ARRAY, Type::ARRAY, {map_fun_type}, (void*) &array_map);
+	map_fun_type.setArgumentType(0, Type::POINTER);
+	map_fun_type.setReturnType(Type::POINTER);
+
+	method("map", {
+		{Type::INT_ARRAY, Type::ARRAY, {map_int_fun_type}, (void*) &LSArray<int>::map},
+		{Type::ARRAY, Type::ARRAY, {map_fun_type}, (void*) &LSArray<LSValue*>::map},
+	});
 
 	Type map2_fun_type = Type::FUNCTION;
 	map2_fun_type.setArgumentType(0, Type::POINTER);
@@ -178,7 +186,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::sum}
 	});
 
-	static_method("map", Type::ARRAY, {Type::ARRAY, map_fun_type}, (void*) &array_map);
+	static_method("map", {
+		{Type::ARRAY, {Type::INT_ARRAY, map_int_fun_type}, (void*) &LSArray<int>::map},
+		{Type::ARRAY, {Type::ARRAY, map_fun_type}, (void*) &LSArray<LSValue*>::map},
+	});
 
 	static_method("map2", {
 		{Type::ARRAY, {Type::ARRAY, Type::ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::map2},
@@ -340,10 +351,6 @@ LSValue* array_keySort(const LSArray<LSValue*>*, const LSNumber*) {
 
 LSValue* array_last(const LSArray<LSValue*>* array) {
 	return array->last()->clone();
-}
-
-LSArray<LSValue*>* array_map(const LSArray<int>* array, const void* function) {
-	return array->map(function);
 }
 
 LSValue* array_max(const LSArray<LSValue*>*) {

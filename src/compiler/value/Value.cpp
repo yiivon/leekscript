@@ -30,6 +30,10 @@ bool Value::must_be_pointer(SemanticAnalyser*) {
 	return true;
 }
 
+void Value::must_return(SemanticAnalyser*, const Type& ret_type) {
+	type.setReturnType(ret_type);
+}
+
 bool Value::isLeftValue() const {
 	return false;
 }

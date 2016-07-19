@@ -3,7 +3,8 @@
 void Test::test_booleans() {
 
 	header("Booléens");
-
+	success("new Boolean", "false");
+	success("new Boolean()", "false");
 	success("true", "true");
 	success("false", "false");
 	success("!true", "false");

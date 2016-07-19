@@ -25,7 +25,6 @@ LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LS
 LSValue* array_isEmpty(const LSArray<LSValue*>* array);
 LSValue* array_keySort(const LSArray<LSValue*>* array, const LSNumber* order);
 LSValue* array_last(const LSArray<LSValue*>* array);
-LSArray<LSValue*>* array_map(const LSArray<int>* array, const void* fun);
 LSValue* array_max(const LSArray<LSValue*>* array);
 LSValue* array_min(const LSArray<LSValue*>* array);
 LSValue* array_push(LSArray<LSValue*>* array, LSValue* value);

@@ -30,6 +30,7 @@ public:
 	virtual bool will_take(SemanticAnalyser*, const unsigned, const Type);
 	virtual bool will_take_element(SemanticAnalyser*, const Type);
 	virtual bool must_be_pointer(SemanticAnalyser*);
+	virtual void must_return(SemanticAnalyser*, const Type&);
 	virtual void analyse(SemanticAnalyser*, const Type) = 0;
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const = 0;

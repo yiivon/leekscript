@@ -1,8 +1,17 @@
-var e = 1.5
-System.print(e * 0.5)
+var l = 0.1
+var ll = 0.1
+var e = 1.00001
+var i
 
-for (var i = 0; i < 100; ++i) {
-	System.print(e + 0.0001)
+for (i = 0; i < 2000; ++i) {
+	if (e == l) {
+		System.print("Epsilon found: ")
+		System.print(ll)
+		break
+	}
+	ll = l
+	l = e
 	e *= 0.5
-	
 }
+
+"after " + i + " steps"

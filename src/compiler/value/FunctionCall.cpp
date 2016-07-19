@@ -166,6 +166,28 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 					}
 				}
 			}
+			/*
+			if (object_type == Type::ARRAY) {
+				cout << "array" << endl;
+
+				cout << "type before: " << function->type << endl;
+
+				for (unsigned int i = 0; i < function->type.arguments_types.size(); ++i) {
+					cout << "arg " << i << " type : " << function->type.getArgumentType(i) << endl;
+					Type arg = function->type.getArgumentType(i);
+					if (arg.raw_type == RawType::FUNCTION) {
+						for (unsigned int j = 0; j < arg.getArgumentTypes().size(); ++j) {
+							if (arg.getArgumentType(j) == Type::ARRAY_ELEMENT) {
+								cout << "set arg " << j << " : " << object_type.getElementType() << endl;
+								arg.setArgumentType(j, object_type.getElementType());
+								function->type.setArgumentType(i, arg);
+							}
+						}
+					}
+				}
+				cout << "type after: " << function->type << endl;
+			}
+			*/
 		}
 	}
 
@@ -237,6 +259,13 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	 */
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
+		if (vv->name->content == "Boolean") {
+			jit_value_t n = jit_value_create_nint_constant(F, JIT_INTEGER, 0);
+			if (req_type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(F, n, Type::BOOLEAN);
+			}
+			return n;
+		}
 		if (vv->name->content == "Number") {
 			jit_value_t n = jit_value_create_nint_constant(F, JIT_INTEGER, 0);
 			if (req_type.nature == Nature::POINTER) {
