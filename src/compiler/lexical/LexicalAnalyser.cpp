@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ls {
 
-static vector<string> type_literals[] = {
+static vector<vector<string>> type_literals = {
 
 	{ "" }, // Unknown
 	{ "" }, // Finished
@@ -102,27 +102,37 @@ vector<Token> LexicalAnalyser::analyse(std::string code) {
 
 	tokens.push_back(Token(TokenType::FINISHED, 0, 1, ""));
 
-	for (unsigned i = 0; i < tokens.size(); ++i) {
+	for (size_t i = 0; i < tokens.size(); ++i) {
 
-		Token& token = tokens.at(i);
+		Token& token = tokens[i];
 
-		if (i < tokens.size() - 1 && token.content == "is" && tokens.at(i + 1).content == "not") {
+		if (i + 1 < tokens.size() && token.content == "is" && tokens[i+1].content == "not") {
 			token.type = TokenType::DIFFERENT;
 			token.content = "is not";
 			tokens.erase(tokens.begin() + i + 1);
 		}
 
 		if (token.type == TokenType::UNKNOW || token.type == TokenType::IDENT) {
-
-			int i = 0;
-			for (auto type : type_literals) {
-				for (string text : type) {
+			for (size_t j = 0; j < type_literals.size(); ++j) {
+				for (string text : type_literals[j]) {
 					if (text.size() > 0 && token.content == text) {
-						token.type = (TokenType) i;
-						break;
+						token.type = (TokenType) j;
 					}
 				}
-				i++;
+			}
+		}
+
+		// Let's try to split the token in two
+		if (token.type == TokenType::UNKNOW) {
+			for (size_t j = 0; j < type_literals.size(); ++j) {
+				for (string text : type_literals[j]) {
+					if (text.size() > 0 && token.content.substr(0, text.size()) == text) {
+						token.type = (TokenType) j;
+
+						tokens.insert(tokens.begin() + i + 1, Token(TokenType::UNKNOW, tokens[i].line, tokens[i].character + text.size(), tokens[i].content.substr(text.size())));
+						tokens[i].content = text;
+					}
+				}
 			}
 		}
 	}
@@ -307,12 +317,11 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 							u8_toutf8(buff, 5, &c, 1);
 							word += buff;
 
-						} else if (string("([{}]),;.").find(c) != string::npos || string("([{}]),;.").find(word) != string::npos
-								|| (word == "!" && c == '!') || (word == "|" && c != '=' && c != '|')) {
+						/*} else if (string("([{}]),;.").find(c) != string::npos || string("([{}]),;.").find(word) != string::npos) {
 
 							tokens.push_back(Token(TokenType::UNKNOW, line, character, word));
 							u8_toutf8(buff, 5, &c, 1);
-							word = buff;
+							word = buff;*/
 						} else {
 							u8_toutf8(buff, 5, &c, 1);
 							word += buff;
