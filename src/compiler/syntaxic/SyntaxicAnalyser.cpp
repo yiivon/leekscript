@@ -99,7 +99,7 @@ bool SyntaxicAnalyser::isObject() {
 
 	auto nnt = nextTokenAt(2);
 	if (nt != nullptr and nt->type == TokenType::IDENT
-		and nnt != nullptr and nnt->type == TokenType::COLON) {
+			and nnt != nullptr and nnt->type == TokenType::COLON) {
 		return true;
 	}
 	return false;
@@ -154,7 +154,7 @@ Object* SyntaxicAnalyser::eatObject() {
 
 	while (t->type == TokenType::IDENT) {
 
-		o->keys.push_back(eatIdent());
+		o->keys.push_back(new Ident(eatIdent()));
 		eat(TokenType::COLON);
 		o->values.push_back(eatExpression());
 
@@ -167,18 +167,13 @@ Object* SyntaxicAnalyser::eatObject() {
 	return o;
 }
 
-Instruction* SyntaxicAnalyser::eatInstruction() {
-
-	while (t->type == TokenType::SEMICOLON) {
-		eat();
-	}
-
+Instruction* SyntaxicAnalyser::eatInstruction()
+{
 	switch (t->type) {
 
 		case TokenType::LET:
-		case TokenType::GLOBAL: {
+		case TokenType::GLOBAL:
 			return eatVariableDeclaration();
-		}
 
 		case TokenType::NUMBER:
 		case TokenType::PI:
@@ -204,45 +199,32 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::POWER:
 		case TokenType::MODULO:
 		case TokenType::PIPE:
-		case TokenType::FUNCTION:
 		case TokenType::TILDE:
-		{
 			return new ExpressionInstruction(eatExpression());
-		}
 
-		case TokenType::RETURN: {
+		case TokenType::FUNCTION:
+			return eatFunctionDeclaration();
 
+		case TokenType::RETURN:
 			eat();
-			Return* r = new Return();
-			r->expression = eatExpression();
-			return r;
-		}
+			return new Return(eatExpression());
 
-		case TokenType::BREAK: {
-
+		case TokenType::BREAK:
 			eat();
-			Break* r = new Break();
-			return r;
-		}
+			return new Break();
 
-		case TokenType::CONTINUE: {
-
+		case TokenType::CONTINUE:
 			eat();
-			Continue* r = new Continue();
-			return r;
-		}
+			return new Continue();
 
-		case TokenType::CLASS: {
+		case TokenType::CLASS:
 			return eatClassDeclaration();
-		}
 
-		case TokenType::FOR: {
+		case TokenType::FOR:
 			return eatFor();
-		}
 
-		case TokenType::WHILE: {
+		case TokenType::WHILE:
 			return eatWhile();
-		}
 
 		default:
 			errors.push_back(new SyntaxicalError(t, "Unexpected token <" + to_string((int)t->type) + "> (" + t->content + ")"));
@@ -266,7 +248,7 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 		vd->variables.push_back(t);
 		eat();
 	} else {
-		vd->variables.push_back(eatIdent()->token);
+		vd->variables.push_back(eatIdent());
 	}
 
 	while (t->type == TokenType::COMMA) {
@@ -277,7 +259,7 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 			vd->variables.push_back(t);
 			eat();
 		} else {
-			vd->variables.push_back(eatIdent()->token);
+			vd->variables.push_back(eatIdent());
 		}
 	}
 
@@ -292,6 +274,64 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 			vd->expressions.push_back(eatExpression());
 		}
 	}
+
+	return vd;
+}
+
+Function *SyntaxicAnalyser::eatFunction()
+{
+	if (t->type == TokenType::FUNCTION)
+		eat();
+
+	Function* f = new Function();
+
+	eat(TokenType::OPEN_PARENTHESIS);
+
+	while (t->type != TokenType::FINISHED && t->type != TokenType::CLOSING_PARENTHESIS) {
+
+		bool reference = false;
+		if (t->type == TokenType::AROBASE) {
+			eat();
+			reference = true;
+		}
+
+		Token* ident = eatIdent();
+
+		Value* defaultValue = nullptr;
+		if (t->type == TokenType::EQUAL) {
+			eat();
+			defaultValue = eatExpression();
+		}
+
+		f->addArgument(ident, reference, defaultValue);
+
+		if (t->type == TokenType::COMMA)
+			eat();
+	}
+	eat(TokenType::CLOSING_PARENTHESIS);
+
+	bool braces = false;
+	if (t->type == TokenType::OPEN_BRACE) {
+		braces = true;
+	}
+
+	f->body = eatBlock();
+
+	if (!braces)
+		eat(TokenType::END);
+
+	return f;
+}
+
+VariableDeclaration *SyntaxicAnalyser::eatFunctionDeclaration()
+{
+	eat(TokenType::FUNCTION);
+
+	VariableDeclaration* vd = new VariableDeclaration();
+	vd->global = true;
+
+	vd->variables.push_back(eatIdent());
+	vd->expressions.push_back(eatFunction());
 
 	return vd;
 }
@@ -350,7 +390,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 
 
 	while (t->type == TokenType::OPEN_BRACKET || t->type == TokenType::OPEN_PARENTHESIS
-			|| t->type == TokenType::DOT) {
+		   || t->type == TokenType::DOT) {
 
 		if (t->character != lt->character + lt->size)
 			break;
@@ -406,11 +446,10 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 					eat();
 				} else if (t->type == TokenType::NUMBER) {
 					oa->field = t;
-//					oa->isNumber = true;
+					//					oa->isNumber = true;
 					eat();
 				} else {
-					Ident* ident = eatIdent();
-					oa->field = ident->token;
+					oa->field = eatIdent();
 				}
 				e = oa;
 				break;
@@ -446,31 +485,31 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened) {
 
 	// Opérateurs binaires
 	while (t->type == TokenType::PLUS || t->type == TokenType::MINUS ||
-		t->type == TokenType::TIMES || t->type == TokenType::DIVIDE ||
-		t->type == TokenType::MODULO || t->type == TokenType::AND ||
-		t->type == TokenType::OR || t->type == TokenType::XOR ||
-		t->type == TokenType::EQUAL || t->type == TokenType::POWER ||
-		t->type == TokenType::DOUBLE_EQUAL || t->type == TokenType::DIFFERENT ||
-		t->type == TokenType::TRIPLE_EQUAL || t->type == TokenType::TRIPLE_DIFFERENT ||
-		t->type == TokenType::GREATER || t->type == TokenType::LOWER ||
-		t->type == TokenType::GREATER_EQUALS || t->type == TokenType::LOWER_EQUALS ||
-		t->type == TokenType::TIMES_EQUAL || t->type == TokenType::PLUS_EQUAL ||
-		t->type == TokenType::MINUS_EQUAL || t->type == TokenType::DIVIDE_EQUAL ||
-		t->type == TokenType::MODULO_EQUAL || t->type == TokenType::POWER_EQUAL ||
-		t->type == TokenType::SWAP || t->type == TokenType::TILDE ||
-		t->type == TokenType::TILDE_TILDE || t->type == TokenType::TILDE_EQUAL ||
-		t->type == TokenType::TILDE_TILDE_EQUAL || t->type == TokenType::IN ||
-		t->type == TokenType::INSTANCEOF ||
-		t->type == TokenType::BIT_AND || t->type == TokenType::BIT_AND_EQUALS ||
-		(!pipe_opened and t->type == TokenType::PIPE) || t->type == TokenType::BIT_OR_EQUALS ||
-		t->type == TokenType::BIT_XOR || t->type == TokenType::BIT_XOR_EQUALS ||
-		t->type == TokenType::BIT_SHIFT_LEFT ||	t->type == TokenType::BIT_SHIFT_LEFT_EQUALS ||
-		t->type == TokenType::BIT_SHIFT_RIGHT || t->type == TokenType::BIT_SHIFT_RIGHT_EQUALS ||
-		t->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED || t->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS ||
-		t->type == TokenType::BIT_ROTATE_LEFT || t->type == TokenType::BIT_ROTATE_LEFT_EQUALS ||
-		t->type == TokenType::BIT_ROTATE_RIGHT || t->type == TokenType::BIT_ROTATE_RIGHT_EQUALS ||
-		t->type == TokenType::DOUBLE_QUESTION_MARK
-	) {
+		   t->type == TokenType::TIMES || t->type == TokenType::DIVIDE ||
+		   t->type == TokenType::MODULO || t->type == TokenType::AND ||
+		   t->type == TokenType::OR || t->type == TokenType::XOR ||
+		   t->type == TokenType::EQUAL || t->type == TokenType::POWER ||
+		   t->type == TokenType::DOUBLE_EQUAL || t->type == TokenType::DIFFERENT ||
+		   t->type == TokenType::TRIPLE_EQUAL || t->type == TokenType::TRIPLE_DIFFERENT ||
+		   t->type == TokenType::GREATER || t->type == TokenType::LOWER ||
+		   t->type == TokenType::GREATER_EQUALS || t->type == TokenType::LOWER_EQUALS ||
+		   t->type == TokenType::TIMES_EQUAL || t->type == TokenType::PLUS_EQUAL ||
+		   t->type == TokenType::MINUS_EQUAL || t->type == TokenType::DIVIDE_EQUAL ||
+		   t->type == TokenType::MODULO_EQUAL || t->type == TokenType::POWER_EQUAL ||
+		   t->type == TokenType::SWAP || t->type == TokenType::TILDE ||
+		   t->type == TokenType::TILDE_TILDE || t->type == TokenType::TILDE_EQUAL ||
+		   t->type == TokenType::TILDE_TILDE_EQUAL || t->type == TokenType::IN ||
+		   t->type == TokenType::INSTANCEOF ||
+		   t->type == TokenType::BIT_AND || t->type == TokenType::BIT_AND_EQUALS ||
+		   (!pipe_opened and t->type == TokenType::PIPE) || t->type == TokenType::BIT_OR_EQUALS ||
+		   t->type == TokenType::BIT_XOR || t->type == TokenType::BIT_XOR_EQUALS ||
+		   t->type == TokenType::BIT_SHIFT_LEFT ||	t->type == TokenType::BIT_SHIFT_LEFT_EQUALS ||
+		   t->type == TokenType::BIT_SHIFT_RIGHT || t->type == TokenType::BIT_SHIFT_RIGHT_EQUALS ||
+		   t->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED || t->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS ||
+		   t->type == TokenType::BIT_ROTATE_LEFT || t->type == TokenType::BIT_ROTATE_LEFT_EQUALS ||
+		   t->type == TokenType::BIT_ROTATE_RIGHT || t->type == TokenType::BIT_ROTATE_RIGHT_EQUALS ||
+		   t->type == TokenType::DOUBLE_QUESTION_MARK
+		   ) {
 
 		if (t->type == TokenType::MINUS && t->line != lt->line && nt != nullptr && t->line == nt->line)
 			break;
@@ -505,42 +544,46 @@ Value* SyntaxicAnalyser::eatValue() {
 		case TokenType::TIMES:
 		case TokenType::DIVIDE:
 		case TokenType::POWER:
-		case TokenType::TERNARY: {
-
+		case TokenType::TERNARY:
+		{
 			VariableValue* v = new VariableValue(t);
 			eat();
 			return v;
 		}
 
-		case TokenType::NUMBER: {
+		case TokenType::NUMBER:
+		{
 			Number* n = new Number(stod(t->content));
 			eat();
 			return n;
 		}
-		case TokenType::PI: {
-			Number* n = new Number(M_PI);
+
+		case TokenType::PI:
 			eat();
-			return n;
-		}
-		case TokenType::STRING: {
+			return new Number(M_PI);
+
+		case TokenType::STRING:
+		{
 			String* v = new String(t->content);
 			eat();
 			return v;
 		}
+
 		case TokenType::TRUE:
-		case TokenType::FALSE: {
-			Boolean* bv = new Boolean(t->content == "true");
+		case TokenType::FALSE:
+		{
+			Boolean* bv = new Boolean(t->type == TokenType::TRUE);
 			eat();
 			return bv;
 		}
-		case TokenType::NULLL: {
+
+		case TokenType::NULLL:
 			eat();
 			return new Nulll();
-		}
 
-		case TokenType::IDENT: {
-
-			Ident* ident = eatIdent();
+		case TokenType::IDENT:
+		{
+			Token* ident = eatIdent();
 
 			switch (t->type) {
 
@@ -548,7 +591,7 @@ Value* SyntaxicAnalyser::eatValue() {
 
 					Function* l = new Function();
 					l->lambda = true;
-					l->arguments.push_back(ident->token);
+					l->arguments.push_back(ident);
 					eat(TokenType::ARROW);
 					l->body = new Block();
 					l->body->instructions.push_back(new Return(eatExpression()));
@@ -577,10 +620,10 @@ Value* SyntaxicAnalyser::eatValue() {
 
 						Function* l = new Function();
 						l->lambda = true;
-						l->arguments.push_back(ident->token);
+						l->arguments.push_back(ident);
 						while (t->type == TokenType::COMMA) {
 							eat();
-							l->arguments.push_back(eatIdent()->token);
+							l->arguments.push_back(eatIdent());
 						}
 
 						eat(TokenType::ARROW);
@@ -590,81 +633,35 @@ Value* SyntaxicAnalyser::eatValue() {
 						return l;
 
 					} else {
-						return new VariableValue(ident->token);
+						return new VariableValue(ident);
 					}
 				}
 				default: {
-					return new VariableValue(ident->token);
+					return new VariableValue(ident);
 				}
 			}
 			break;
 		}
 
-		case TokenType::AROBASE: {
+		case TokenType::AROBASE:
 			eat();
-			Reference* r = new Reference();
-			r->variable = eatIdent()->token;
-			return r;
-		}
+			return new Reference(eatIdent());
 
-		case TokenType::OPEN_BRACKET: {
+		case TokenType::OPEN_BRACKET:
 			return eatArray();
-		}
 
-		case TokenType::OPEN_BRACE: {
+		case TokenType::OPEN_BRACE:
 			return eatBlockOrObject();
-		}
 
-		case TokenType::IF: {
+		case TokenType::IF:
 			return eatIf();
-		}
 
-		case TokenType::FUNCTION: {
+		case TokenType::FUNCTION:
+			return eatFunction();
 
-			eat();
 
-			Function* f = new Function();
-
-			eat(TokenType::OPEN_PARENTHESIS);
-
-			while (t->type != TokenType::FINISHED and t->type != TokenType::CLOSING_PARENTHESIS) {
-
-				bool reference = false;
-				if (t->type == TokenType::AROBASE) {
-					eat();
-					reference = true;
-				}
-
-				Ident* ident = eatIdent();
-
-				Value* defaultValue = nullptr;
-				if (t->type == TokenType::EQUAL) {
-					eat();
-					defaultValue = eatExpression();
-				}
-
-				f->addArgument(ident->token, reference, defaultValue);
-				if (t->type == TokenType::COMMA) {
-					eat();
-				}
-			}
-			eat(TokenType::CLOSING_PARENTHESIS);
-
-			bool braces = false;
-			if (t->type == TokenType::OPEN_BRACE) {
-				braces = true;
-			}
-
-			f->body = eatBlock();
-
-			if (!braces)
-				eat(TokenType::END);
-
-			return f;
-		}
-
-		case TokenType::ARROW: {
-
+		case TokenType::ARROW:
+		{
 			Function* l = new Function();
 			l->lambda = true;
 			eat(TokenType::ARROW);
@@ -672,7 +669,9 @@ Value* SyntaxicAnalyser::eatValue() {
 			l->body->instructions.push_back(new Return(eatExpression()));
 			return l;
 		}
-		default: {}
+
+		default:
+			break;
 	}
 
 	errors.push_back(new SyntaxicalError(t, "Expected value, got <" + to_string((int)t->type) + "> (" + t->content + ")"));
@@ -827,13 +826,13 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		Foreach* f = new Foreach();
 
 		if (nt->type == TokenType::COMMA || nt->type == TokenType::COLON) {
-			f->key = eatIdent()->token;
+			f->key = eatIdent();
 			eat();
 		}
 		if (t->type == TokenType::LET)
 			eat();
 
-		f->value = eatIdent()->token;
+		f->value = eatIdent();
 
 		eat(TokenType::IN);
 
@@ -866,7 +865,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 				eat();
 				declare = true;
 			}
-			f->variables.push_back(eatIdent()->token);
+			f->variables.push_back(eatIdent());
 			f->declare_variables.push_back(declare);
 			if (t->type == TokenType::EQUAL) {
 				eat();
@@ -889,10 +888,10 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		eat(TokenType::SEMICOLON);
 
 		while (parenthesis ? (t->type != TokenType::CLOSING_PARENTHESIS) :
-				(t->type != TokenType::DO && t->type != TokenType::OPEN_BRACE) && t->type != TokenType::FINISHED) {
+			   (t->type != TokenType::DO && t->type != TokenType::OPEN_BRACE) && t->type != TokenType::FINISHED) {
 
 			if (t->type != TokenType::FINISHED) {
-//				System.out.println(t);
+				//				System.out.println(t);
 			}
 			f->iterations.push_back(eatExpression());
 			if (t->type == TokenType::COMMA)
@@ -959,7 +958,7 @@ ClassDeclaration* SyntaxicAnalyser::eatClassDeclaration() {
 	ClassDeclaration* cd = new ClassDeclaration();
 
 	eat(TokenType::CLASS);
-	cd->name = eatIdent()->token->content;
+	cd->name = eatIdent()->content;
 	eat(TokenType::OPEN_BRACE);
 
 	while (t->type == TokenType::LET) {
@@ -971,8 +970,8 @@ ClassDeclaration* SyntaxicAnalyser::eatClassDeclaration() {
 	return cd;
 }
 
-Ident* SyntaxicAnalyser::eatIdent() {
-	return new Ident(eat(TokenType::IDENT));
+Token* SyntaxicAnalyser::eatIdent() {
+	return eat(TokenType::IDENT);
 }
 
 Token* SyntaxicAnalyser::eat() {

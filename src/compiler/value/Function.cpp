@@ -17,6 +17,9 @@ Function::Function() {
 
 Function::~Function() {
 	delete body;
+	for (auto value : defaultValues) {
+		delete value;
+	}
 }
 
 void Function::addArgument(Token* name, bool reference, Value* defaultValue) {

@@ -13,6 +13,9 @@ Object::Object() {
 }
 
 Object::~Object() {
+	for (auto key : keys) {
+		delete key;
+	}
 	for (auto ex : values) {
 		delete ex;
 	}
