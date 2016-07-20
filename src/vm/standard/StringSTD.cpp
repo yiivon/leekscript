@@ -95,7 +95,7 @@ LSValue* string_map(const LSString* s, void* function) {
 	std::string new_string = string("");
 	auto fun = (void* (*)(void*)) function;
 
-	char* string_chars = (char*) s->c_str();
+	const char* string_chars = s->c_str();
 	int i = 0;
 	int l = strlen(string_chars);
 

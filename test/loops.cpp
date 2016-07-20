@@ -14,12 +14,13 @@ void Test::test_loops() {
 	success("let a = if (true) { 'yo' } else { 'hello' } a", "'yo'");
 	success("let a = if (true) { 12 } else { 'hello' } a", "12");
 	success("let a = if (true) { 'hello' } else { 12 } a", "'hello'");
-	success("if (true) {} else {}", "null");
-//	success("if (true) { {} } else {}", "{}");
+	success("if (true) {} else {}", "{}");
+	success("if (true) {;} else {}", "null");
+	success("if (true) { {} } else {}", "{}");
 	success("if (true) null else {}", "null");
-//	success("if true", "null"); crash
+//	success("if true", "null");
 //	success("if true else", "null"); crash
-//	success("if (true) {a: 12} else {b: 5}", "{a: 12}"); error
+	success("if (true) {a: 12} else {b: 5}", "{a: 12}");
 	success("if (true) { {a: 12} } else { {b: 5} }", "{a: 12}");
 	success("if (true) 12 else 5", "12");
 	success("if (false) 12 else 5", "5");
@@ -53,7 +54,8 @@ void Test::test_loops() {
 	 * Foreach loops
 	 */
 	header("Foreach loops");
-	//success("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
+	success("for v in [1, 2, 3, 4] {}", "null");
+//	success("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
 	success("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
 	//success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
 }

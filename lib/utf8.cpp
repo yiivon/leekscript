@@ -195,7 +195,7 @@ int u8_charnum(char *s, int offset)
 }
 
 /* number of characters */
-int u8_strlen(char *s)
+int u8_strlen(const char *s)
 {
     int count = 0;
     int i = 0;
@@ -207,7 +207,7 @@ int u8_strlen(char *s)
 }
 
 /* reads the next utf-8 sequence out of a string, updating an index */
-u_int32_t u8_nextchar(char *s, int *i)
+u_int32_t u8_nextchar(const char *s, int *i)
 {
     u_int32_t ch = 0;
     int sz = 0;

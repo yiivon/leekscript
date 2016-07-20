@@ -19,7 +19,7 @@ int u8_offset(char *str, int charnum);
 int u8_charnum(char *s, int offset);
 
 /* return next character, updating an index variable */
-u_int32_t u8_nextchar(char *s, int *i);
+u_int32_t u8_nextchar(const char *s, int *i);
 
 /* move to next character */
 void u8_inc(char *s, int *i);
@@ -60,7 +60,7 @@ char *u8_strchr(char *s, u_int32_t ch, int *charn);
 char *u8_memchr(char *s, u_int32_t ch, size_t sz, int *charn);
 
 /* count the number of characters in a UTF-8 string */
-int u8_strlen(char *s);
+int u8_strlen(const char *s);
 
 int u8_is_locale_utf8(char *locale);
 

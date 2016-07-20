@@ -10,8 +10,8 @@ class If : public Value {
 public:
 
 	Value* condition;
-	Block* then;
-	Block* elze;
+	Value* then;
+	Value* elze;
 	bool inversed;
 
 	If();

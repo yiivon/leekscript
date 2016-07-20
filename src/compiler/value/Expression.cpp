@@ -1,6 +1,7 @@
 #include "../../compiler/value/Expression.hpp"
 
 #include "../../compiler/value/ArrayAccess.hpp"
+#include "../../compiler/value/ObjectAccess.hpp"
 #include "../../compiler/value/Function.hpp"
 #include "../../compiler/value/LeftValue.hpp"
 #include "../../compiler/value/Number.hpp"
@@ -293,7 +294,7 @@ LSValue* jit_in(LSValue* x, LSValue* y) {
 }
 
 LSValue* jit_instanceof(LSValue* x, LSValue* y) {
-	return LSBoolean::get(((LSClass*)x->getClass())->name == ((LSClass*) y)->name);
+	return LSBoolean::get(((LSClass*) x->getClass())->name == ((LSClass*) y)->name);
 }
 
 LSValue* jit_bit_and(LSValue*, LSValue*) {
@@ -489,6 +490,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		case TokenType::TIMES_EQUAL: {
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+
 				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
 				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
 				jit_value_t sum = jit_insn_mul(F, x, y);

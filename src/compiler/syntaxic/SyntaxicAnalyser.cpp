@@ -759,7 +759,7 @@ If* SyntaxicAnalyser::eatIf() {
 	}
 
 	if (then or braces) {
-		iff->then = eatBlock();
+		iff->then = eatBlockOrObject();
 	} else {
 		Block* block = new Block();
 		block->instructions.push_back(eatInstruction());
@@ -781,7 +781,7 @@ If* SyntaxicAnalyser::eatIf() {
 		}
 
 		if (then or bracesElse) {
-			iff->elze = eatBlock();
+			iff->elze = eatBlockOrObject();
 		} else {
 			Block* body = new Block();
 			body->instructions.push_back(eatInstruction());
