@@ -51,12 +51,6 @@ Run a code, and get the result as JSON
 ./leekscript -e "my code" "{}"
 ```
 
-Contribute
-----------
-The remaining work is defined on the Trello
-https://trello.com/b/22M3G4h5/leekscript
-
-
 Libraries used
 --------------
 * libjit, by Rhys Weatherley, under GPL license
