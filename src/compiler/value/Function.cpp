@@ -68,7 +68,7 @@ void Function::print(std::ostream& os) const {
 
 void Function::analyse(SemanticAnalyser* analyser, const Type req_type) {
 
-//	cout << "Function req_type " << req_type << endl;
+//	cout << "Function analyse req_type " << req_type << endl;
 
 	if (!function_added) {
 		analyser->add_function(this);
@@ -100,11 +100,19 @@ bool Function::will_take(SemanticAnalyser* analyser, const unsigned pos, const T
 	return changed;
 }
 
+void Function::must_return(SemanticAnalyser*, const Type& ret_type) {
+
+//	cout << "Function::must_return : " << ret_type << endl;
+
+	type.setReturnType(ret_type);
+}
+
 void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 
 	analyser->enter_function(this);
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
+//		cout << "arg " << i << " type : " << type.getArgumentType(i) << endl;
 		analyser->add_parameter(arguments[i], type.getArgumentType(i));
 	}
 
@@ -112,7 +120,9 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 
 //	cout << "body type: " << body->type << endl;
 
-	type.setReturnType(body->type);
+	if (type.getReturnType() == Type::UNKNOWN) {
+		type.setReturnType(body->type);
+	}
 
 	vars = analyser->get_local_vars();
 

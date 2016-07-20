@@ -22,7 +22,7 @@ public:
 	virtual void print(std::ostream&) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
-	void must_take(SemanticAnalyser* analyser, const Type& type);
+	void must_return(SemanticAnalyser* analyser, const Type& type) override;
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 	virtual jit_value_t compile_jit_l(Compiler&, jit_function_t&, Type) const override;

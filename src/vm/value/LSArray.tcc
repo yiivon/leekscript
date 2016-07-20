@@ -224,14 +224,29 @@ template <class T>
 LSArray<LSValue*>* LSArray<T>::map(const void* function) const {
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	auto fun = (void* (*)(void*)) function;
-
 	for (auto v : *this) {
-//		v->print(std::cout);
-//		std::cout << std::endl;
 		LSValue* res = (LSValue*) fun((void*) v);
-//		res->print(std::cout);
-//		std::cout << std::endl;
 		new_array->push_clone(res);
+	}
+	return new_array;
+}
+
+template <>
+inline LSArray<LSValue*>* LSArray<int>::map(const void* function) const {
+	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	auto fun = (void* (*)(int)) function;
+	for (auto v : *this) {
+		new_array->push_no_clone((LSValue*) fun(v));
+	}
+	return new_array;
+}
+
+template <>
+inline LSArray<LSValue*>* LSArray<double>::map(const void* function) const {
+	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	auto fun = (void* (*)(double)) function;
+	for (auto v : *this) {
+		new_array->push_no_clone((LSValue*) fun(v));
 	}
 	return new_array;
 }
@@ -1744,16 +1759,7 @@ inline LSValue* LSArray<int>::operator += (const LSNumber* number) {
 }
 
 
-template <>
-inline LSArray<LSValue*>* LSArray<int>::map(const void* function) const {
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	auto fun = (void* (*)(void*)) function;
 
-	for (auto v : *this) {
-		new_array->push_no_clone((LSValue*) fun((void*) LSNumber::get(v)));
-	}
-	return new_array;
-}
 
 template <>
 inline LSArray<int>* LSArray<int>::push_all(const LSArray<LSValue*>* array) {

@@ -152,14 +152,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 
 	if (op->type == TokenType::TILDE_TILDE) {
 
-		v2->will_take(analyser, 0, Type::POINTER);
+		v2->will_take(analyser, 0, v1->type.getElementType());
+		v2->must_return(analyser, Type::POINTER);
 
-		VariableValue* vv = dynamic_cast<VariableValue*>(v2);
-		if (vv != nullptr and vv->var->value != nullptr) {
-
-			vv->var->will_take(analyser, 0, Type::POINTER);
-			v2->type.setReturnType(vv->var->type.getReturnType());
-		}
 		type = Type::ARRAY;
 	}
 
@@ -282,6 +277,10 @@ int jit_array_add_value(LSArray<int>* x, int v) {
 }
 
 LSArray<LSValue*>* jit_tilde_tilde_int(LSArray<int>* array, LSFunction* fun) {
+	return array->map(fun->function);
+}
+
+LSArray<LSValue*>* jit_tilde_tilde_real(LSArray<double>* array, LSFunction* fun) {
 	return array->map(fun->function);
 }
 
@@ -659,6 +658,8 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.getElementType() == Type::INTEGER) {
 				ls_func = (void*) &jit_tilde_tilde_int;
+			} else if (v1->type.getElementType() == Type::FLOAT) {
+				ls_func = (void*) &jit_tilde_tilde_real;
 			} else {
 				ls_func = (void*) &jit_tilde_tilde_pointer;
 			}

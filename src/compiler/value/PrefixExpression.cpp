@@ -140,6 +140,13 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 					}
 					return n;
 				}
+				if (vv->name->content == "Boolean") {
+					jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
+					if (req_type.nature == Nature::POINTER) {
+						return VM::value_to_pointer(F, n, Type::BOOLEAN);
+					}
+					return n;
+				}
 				if (vv->name->content == "String") {
 					return JIT_CREATE_CONST_POINTER(F, new LSString(""));
 				}
@@ -160,6 +167,13 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 							}
 							return n;
 						}
+					}
+					if (vv->name->content == "Boolean") {
+						jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
+						if (req_type.nature == Nature::POINTER) {
+							return VM::value_to_pointer(F, n, Type::BOOLEAN);
+						}
+						return n;
 					}
 					if (vv->name->content == "String") {
 						if (fc->arguments.size() > 0) {

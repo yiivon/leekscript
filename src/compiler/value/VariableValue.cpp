@@ -33,6 +33,13 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type) {
 //		cout << t.first << " : " << t.second << endl;
 }
 
+void VariableValue::must_return(SemanticAnalyser* analyser, const Type& ret_type) {
+
+	var->value->must_return(analyser, ret_type);
+
+	type.setReturnType(ret_type);
+}
+
 extern map<string, jit_value_t> internals;
 
 jit_value_t VariableValue::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {

@@ -37,6 +37,8 @@ public:
 
 	bool will_take(SemanticAnalyser*, const unsigned pos, const Type) override;
 
+	void must_return(SemanticAnalyser*, const Type&) override;
+
 	void analyse_body(SemanticAnalyser*, const Type& req_type);
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;

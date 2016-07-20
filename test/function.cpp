@@ -2,11 +2,14 @@
 
 void Test::test_functions() {
 
+	/*
+	 * Functions
+	 */
 	header("Functions");
-	success("function foo(x, y) { x+y } foo(1,2)", "3");
+	success("function foo(x, y) { x + y } foo(1, 2)", "3");
 
 	/*
-	 * Functions / Lambdas
+	 * Lambdas
 	 */
 	header("Functions / Lambdas");
 	success("let f = x -> x f(12)", "12");
