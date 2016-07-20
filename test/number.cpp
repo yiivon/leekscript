@@ -139,7 +139,6 @@ void Test::test_numbers() {
 	success_almost("Number.sin(π)", 0.0);
 	success("Number.sin(π / 2)", "1");
 	success("Number.sin(- π / 2)", "-1");
-//	success("12.sqrt()", "");
 
 	success("Number.isInteger(12)", "true");
 	success("Number.isInteger(0)", "true");
@@ -147,4 +146,28 @@ void Test::test_numbers() {
 	success("Number.isInteger(12.9)", "false");
 	success("Number.isInteger(-5.2)", "false");
 	success("Number.isInteger(π)", "false");
+
+	// Object-like calls
+	success("(-12).abs()", "12");
+	success("π.cos()", "-1");
+	success("(π / 2).sin()", "1");
+	success("12.sqrt()", "3.464101615137754386");
+	success("12.8.floor()", "12");
+	success("-12.8.floor()", "-12");
+	success("(-12.8).floor()", "-13");
+	success("12.2.ceil()", "13");
+	success("12.8.round()", "13");
+	success("-12.8.round()", "-13");
+	success("2.pow(10)", "1024");
+	success("0.isInteger()", "true");
+	success("56.7.isInteger()", "false");
+	success("(-56.7).isInteger()", "false");
+	success("3.max(5)", "5");
+	success("5.max(3)", "5");
+
+	// Combinated
+	success("3.max(5).min(2)", "2");
+	success("3.max(5).max(10).max(12)", "12");
+	success("10.max(5).max(8.7).max(-3.91)", "10");
+	success("10.sqrt().cos()", "-0.99978607287932586");
 }

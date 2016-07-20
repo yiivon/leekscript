@@ -57,7 +57,7 @@ Type::Type(const Type& type) {
 	this->nature = type.nature;
 	this->return_types = type.return_types;
 	this->arguments_types = type.arguments_types;
-	this->clazz = raw_type->getName();
+	this->clazz = raw_type->getClass();
 	this->element_type = type.element_type;
 	native = false;
 }
@@ -65,21 +65,21 @@ Type::Type(const Type& type) {
 Type::Type(const BaseRawType* raw_type, Nature nature) {
 	this->raw_type = raw_type;
 	this->nature = nature;
-	this->clazz = raw_type->getName();
+	this->clazz = raw_type->getClass();
 	native = false;
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature, bool native) {
 	this->raw_type = raw_type;
 	this->nature = nature;
-	this->clazz = raw_type->getName();
+	this->clazz = raw_type->getClass();
 	this->native = native;
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type) {
 	this->raw_type = raw_type;
 	this->nature = nature;
-	this->clazz = raw_type->getName();
+	this->clazz = raw_type->getClass();
 	this->setElementType(elements_type);
 	native = false;
 }
@@ -87,7 +87,7 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type
 Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native) {
 	this->raw_type = raw_type;
 	this->nature = nature;
-	this->clazz = raw_type->getName();
+	this->clazz = raw_type->getClass();
 	this->setElementType(elements_type);
 	this->native = native;
 }

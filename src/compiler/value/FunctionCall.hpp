@@ -14,6 +14,7 @@ public:
 	std::vector<Value*> arguments;
 
 	bool is_native = false;
+	bool is_static_native = false;
 	std::string native_func;
 
 	void* std_func;
