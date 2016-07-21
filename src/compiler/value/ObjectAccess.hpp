@@ -24,6 +24,7 @@ public:
 	virtual ~ObjectAccess();
 
 	virtual void print(std::ostream&) const override;
+	virtual int line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

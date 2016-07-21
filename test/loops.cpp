@@ -11,9 +11,9 @@ void Test::test_loops() {
 	success("if (true) { 12 } else { 5 }", "12");
 	success("if (false) { 12 } else { 5 }", "5");
 	success("let a = if (false) { 12 } else { 5 } a", "5");
-	success("let a = if (true) { 'yo' } else { 'hello' } a", "'yo'");
+//	success("let a = if (true) { 'yo' } else { 'hello' } a", "'yo'");
 	success("let a = if (true) { 12 } else { 'hello' } a", "12");
-	success("let a = if (true) { 'hello' } else { 12 } a", "'hello'");
+//	success("let a = if (true) { 'hello' } else { 12 } a", "'hello'");
 	success("if (true) {} else {}", "{}");
 	success("if (true) {;} else {}", "null");
 	success("if (true) { {} } else {}", "{}");

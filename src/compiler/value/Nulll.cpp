@@ -17,7 +17,13 @@ void Nulll::print(ostream& os) const {
 	os << "null";
 }
 
-void Nulll::analyse(SemanticAnalyser*, const Type) {}
+int Nulll::line() const {
+	return 0;
+}
+
+void Nulll::analyse(SemanticAnalyser*, const Type) {
+	// nothing to do
+}
 
 LSValue* Null_create() {
 	return new LSNull();

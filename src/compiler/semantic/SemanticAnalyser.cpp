@@ -178,7 +178,7 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 		} catch (exception& e) {}
 		i--;
 	}
-	throw SemanticException(SemanticException::Type::UNDEFINED_VARIABLE, v);
+	throw SemanticException(SemanticException::Type::UNDEFINED_VARIABLE, v->line, v->content);
 }
 
 SemanticVar* SemanticAnalyser::get_var_direct(std::string name) {
@@ -202,7 +202,7 @@ SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value) {
 	}
 
 	if (variables.back().find(v->content) != variables.back().end()) {
-		throw SemanticException(SemanticException::Type::VARIABLE_ALREADY_DEFINED, v);
+		throw SemanticException(SemanticException::Type::VARIABLE_ALREADY_DEFINED, v->line, v->content);
 	}
 	variables.back().insert(pair<string, SemanticVar*>(
 		v->content,

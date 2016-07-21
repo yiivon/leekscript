@@ -26,6 +26,10 @@ void Reference::print(ostream& os) const {
 	os << "@" << variable;
 }
 
+int Reference::line() const {
+	return 0;
+}
+
 void Reference::analyse(SemanticAnalyser* analyser, const Type) {
 
 	var = analyser->get_var(variable);

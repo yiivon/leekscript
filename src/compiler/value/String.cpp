@@ -6,8 +6,9 @@ using namespace std;
 
 namespace ls {
 
-String::String(string value) {
+String::String(string& value, Token* token) {
 	this->value = value;
+	this->token = token;
 	type = Type::STRING;
 	constant = true;
 	ls_string = new LSString(value);
@@ -23,10 +24,11 @@ void String::print(ostream& os) const {
 	os << "'";
 }
 
-void String::analyse(SemanticAnalyser*, const Type) {
-	//cout << "analyse string " << this->value << endl;
-	//cout << "type : " << type << endl;
+int String::line() const {
+	return token->line;
 }
+
+void String::analyse(SemanticAnalyser*, const Type) {}
 
 LSValue* String_create(LSString* s) {
 	return s->clone();

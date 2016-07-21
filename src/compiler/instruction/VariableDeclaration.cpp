@@ -63,7 +63,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		}
 
 		if (type == Type::VOID) {
-			throw SemanticException(SemanticException::Type::CANT_ASSIGN_VOID, var);
+			throw SemanticException(SemanticException::Type::CANT_ASSIGN_VOID, var->line, var->content);
 		}
 
 		// Global Variable already defined ? We don't define another time

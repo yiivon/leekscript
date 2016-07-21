@@ -8,6 +8,11 @@ void Test::test_functions() {
 	header("Functions");
 	success("function foo(x, y) { x + y } foo(1, 2)", "3");
 
+	sem_err("null()", ls::SemanticException::Type::CANNOT_CALL_VALUE, "null");
+	sem_err("12()", ls::SemanticException::Type::CANNOT_CALL_VALUE, "12");
+	sem_err("'hello'()", ls::SemanticException::Type::CANNOT_CALL_VALUE, "'hello'");
+	sem_err("[1, 2, 3]()", ls::SemanticException::Type::CANNOT_CALL_VALUE, "[1, 2, 3]");
+
 	/*
 	 * Lambdas
 	 */

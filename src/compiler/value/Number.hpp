@@ -9,12 +9,14 @@ namespace ls {
 class Number : public Value {
 public:
 
+	Token* token;
 	double value;
 
-	Number(double value);
+	Number(double value, Token* token);
 	virtual ~Number();
 
 	virtual void print(std::ostream&) const override;
+	virtual int line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

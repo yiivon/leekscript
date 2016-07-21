@@ -90,6 +90,10 @@ void Expression::print(std::ostream& os) const {
 	os << "}";
 }
 
+int Expression::line() const {
+	return 0;
+}
+
 void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 
 	type = Type::VALUE;

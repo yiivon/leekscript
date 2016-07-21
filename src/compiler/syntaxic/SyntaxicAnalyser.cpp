@@ -558,18 +558,18 @@ Value* SyntaxicAnalyser::eatValue() {
 
 		case TokenType::NUMBER:
 		{
-			Number* n = new Number(stod(t->content));
+			Number* n = new Number(stod(t->content), t);
 			eat();
 			return n;
 		}
 
 		case TokenType::PI:
 			eat();
-			return new Number(M_PI);
+			return new Number(M_PI, t);
 
 		case TokenType::STRING:
 		{
-			String* v = new String(t->content);
+			String* v = new String(t->content, t);
 			eat();
 			return v;
 		}

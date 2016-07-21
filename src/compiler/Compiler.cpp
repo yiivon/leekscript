@@ -41,7 +41,7 @@ void Compiler::add_var(std::string& name, jit_value_t& value, const Type& type, 
 	variables.back()[name] = {value, type, ref};
 }
 
-CompilerVar& Compiler::get_var(std::string& name) {
+CompilerVar& Compiler::get_var(const std::string& name) {
 	int i = variables.size() - 1;
 	while (i >= 0) {
 		try {

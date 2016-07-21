@@ -34,6 +34,10 @@ void ArrayAccess::print(std::ostream& os) const {
 	os << "]";
 }
 
+int ArrayAccess::line() const {
+	return 0;
+}
+
 void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type) {
 
 	array->analyse(analyser);

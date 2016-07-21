@@ -13,13 +13,15 @@ class SemanticVar;
 class VariableValue : public LeftValue {
 public:
 
-	Token* name;
+	std::string name;
+	Token* token;
 	SemanticVar* var;
 
-	VariableValue(Token* name);
+	VariableValue(Token* token);
 	virtual ~VariableValue();
 
 	virtual void print(std::ostream&) const override;
+	virtual int line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 	void must_return(SemanticAnalyser* analyser, const Type& type) override;

@@ -52,7 +52,7 @@ Program* VM::compile(const std::string code) {
 		SemanticAnalyser sem;
 		sem.analyse(program, &context, modules);
 	} catch (SemanticException& e) {
-		cout << "Line " << e.token->line << " : " << e.message() << endl;
+		cout << "Line " << e.line << " : " << e.message() << endl;
 		return nullptr;
 	}
 
@@ -116,14 +116,14 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	} catch (SemanticException& e) {
 
 		if (mode == ExecMode::COMMAND_JSON) {
-			cout << "{\"success\":false,\"errors\":[{\"line\":" << e.token->line << ",\"message\":\"" << e.message() << "\"}]}" << endl;
+			cout << "{\"success\":false,\"errors\":[{\"line\":" << e.line << ",\"message\":\"" << e.message() << "\"}]}" << endl;
 		} else if (mode == ExecMode::TEST) {
 
 			delete program;
 			throw e;
 //			return std::to_string(e.type);
 		} else {
-			cout << "Line " << e.token->line << " : " << e.message() << endl;
+			cout << "Line " << e.line << " : " << e.message() << endl;
 		}
 		if (mode == ExecMode::TEST) {
 			return "<error>";

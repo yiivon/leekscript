@@ -19,6 +19,10 @@ void Boolean::print(std::ostream& os) const {
 	os << (value ? "true" : "false");
 }
 
+int Boolean::line() const {
+	return 0;
+}
+
 void Boolean::analyse(SemanticAnalyser*, const Type) {}
 
 jit_value_t Boolean::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {

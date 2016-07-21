@@ -15,7 +15,8 @@ public:
 		VARIABLE_ALREADY_DEFINED,
 		METHOD_NOT_FOUND,
 		STATIC_METHOD_NOT_FOUND,
-		CANT_ASSIGN_VOID
+		CANT_ASSIGN_VOID,
+		CANNOT_CALL_VALUE
 	};
 
 	static bool translation_loaded;
@@ -24,9 +25,10 @@ public:
 	static std::string build_message(Type, std::string);
 
 	Type type;
-	Token* token;
+	int line;
+	std::string content;
 
-	SemanticException(Type type, Token* token);
+	SemanticException(Type type, int line, std::string& content);
 	virtual ~SemanticException();
 
 	std::string message() const;

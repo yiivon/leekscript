@@ -132,11 +132,8 @@ void Test::sem_err(std::string code, ls::SemanticException::Type expected_type, 
 
 	} catch (ls::SemanticException& e) {
 		exception = true;
-		if (expected_type != e.type or token != e.token->content) {
-
-
+		if (expected_type != e.type or token != e.content) {
 			std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << e.message() << std::endl;
-
 		} else {
 			std::cout << "OK   : " << code << "  ===> " << e.message() <<  std::endl;
 			success_count++;

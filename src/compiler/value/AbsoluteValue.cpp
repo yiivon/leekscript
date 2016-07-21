@@ -20,6 +20,10 @@ void AbsoluteValue::print(std::ostream& os) const {
 	os << "|";
 }
 
+int AbsoluteValue::line() const {
+	return 0;
+}
+
 void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type) {
 	expression->analyse(analyser);
 	constant = expression->constant;
