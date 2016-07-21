@@ -13,6 +13,7 @@
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../../vm/value/LSObject.hpp"
 
 using namespace std;
 
@@ -317,6 +318,9 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 		}
 		if (vv->name->content == "Array") {
 			return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
+		}
+		if (vv->name->content == "Object") {
+			return JIT_CREATE_CONST_POINTER(F, new LSObject());
 		}
 	}
 

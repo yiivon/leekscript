@@ -4,6 +4,9 @@ void Test::test_objects() {
 
 	header("Objects");
 
+	success("Object()", "{}");
+	success("new Object", "{}");
+	success("new Object()", "{}");
 	success("{}", "{}");
 	success("{a: 12}", "{a: 12}");
 	success("{a: 12, b: 5}", "{a: 12, b: 5}");

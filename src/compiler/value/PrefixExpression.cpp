@@ -5,6 +5,7 @@
 #include "../../compiler/value/VariableValue.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../../vm/value/LSObject.hpp"
 
 using namespace std;
 
@@ -153,6 +154,9 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 				if (vv->name->content == "Array") {
 					return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
 				}
+				if (vv->name->content == "Object") {
+					return JIT_CREATE_CONST_POINTER(F, new LSObject());
+				}
 			}
 
 			if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
@@ -183,6 +187,9 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 					}
 					if (vv->name->content == "Array") {
 						return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
+					}
+					if (vv->name->content == "Object") {
+						return JIT_CREATE_CONST_POINTER(F, new LSObject());
 					}
 				}
 			}
