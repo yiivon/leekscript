@@ -557,7 +557,7 @@ LSValue* LSNull::abso() const {
 }
 
 LSValue* LSNull::clone() const {
-	return (LSValue*) this;
+	return new LSNull();
 }
 
 std::ostream& LSNull::print(std::ostream& os) const {

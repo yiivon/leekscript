@@ -25,6 +25,8 @@ void Test::test_general() {
 	success("{}", "{}");
 	success("{a: 12}", "{a: 12}");
 	success("{;}", "null");
+	success("return 12", "12");
+	success("return", "null");
 
 	header("Variables");
 	success("let a = 2", "2");

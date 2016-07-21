@@ -205,10 +205,15 @@ Instruction* SyntaxicAnalyser::eatInstruction()
 		case TokenType::FUNCTION:
 			return eatFunctionDeclaration();
 
-		case TokenType::RETURN:
+		case TokenType::RETURN: {
 			eat();
-			return new Return(eatExpression());
-
+			if (t->type == TokenType::FINISHED or t->type == TokenType::CLOSING_BRACE
+				or t->type == TokenType::ELSE or t->type == TokenType::END) {
+				return new Return(new Nulll());
+			} else {
+				return new Return(eatExpression());
+			}
+		}
 		case TokenType::BREAK:
 			eat();
 			return new Break();
