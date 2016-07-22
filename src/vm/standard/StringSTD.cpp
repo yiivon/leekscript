@@ -32,6 +32,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::STRING, Type::INTEGER, {}, (void*) &string_begin_code},
 		{Type::STRING, Type::INTEGER, {Type::INTEGER}, (void*) &string_code},
 	});
+	method("number", Type::STRING, Type::LONG, {}, (void*) &string_number);
 
 	Type map_fun_type = Type::FUNCTION;
 	map_fun_type.setArgumentType(0, Type::STRING);
@@ -59,6 +60,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::INTEGER, {Type::STRING}, (void*) &string_begin_code},
 		{Type::INTEGER, {Type::STRING, Type::INTEGER}, (void*) &string_code},
 	});
+	static_method("number", Type::LONG, {Type::STRING}, (void*) &string_number);
 }
 
 StringSTD::~StringSTD() {}
@@ -185,6 +187,10 @@ int string_begin_code(const LSString* v) {
 
 int string_code(const LSString* v, int pos) {
 	return LSString::u8_char_at((char*) v->c_str(), pos);
+}
+
+long string_number(const LSString* s) {
+	return stol(*s);
 }
 
 }

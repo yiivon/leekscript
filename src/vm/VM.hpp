@@ -7,15 +7,15 @@
 
 #define USE_INTEGERS 1
 
-#define JIT_INTEGER jit_type_int
-#define JIT_INTEGER_LONG jit_type_long
-#define JIT_FLOAT jit_type_float64
-#define JIT_POINTER jit_type_void_ptr
-
 #define ls_jit_integer jit_type_int
 #define ls_jit_real jit_type_float64
 #define ls_jit_long jit_type_long
 #define ls_jit_pointer jit_type_void_ptr
+
+#define JIT_INTEGER ls_jit_integer
+#define JIT_INTEGER_LONG ls_jit_long
+#define JIT_FLOAT ls_jit_real
+#define JIT_POINTER ls_jit_pointer
 
 #define JIT_CREATE_CONST jit_value_create_nint_constant
 #define JIT_CREATE_CONST_LONG jit_value_create_long_constant
