@@ -52,6 +52,7 @@ public:
 
 	std::vector<Function*> functions;
 	std::stack<Function*> functions_stack;
+	std::stack<int> loops;
 
 	SemanticAnalyser();
 	virtual ~SemanticAnalyser();
@@ -64,6 +65,10 @@ public:
 	void leave_block();
 	void add_function(Function*);
 	Function* current_function() const;
+
+	void enter_loop();
+	void leave_loop();
+	bool in_loop() const;
 
 	SemanticVar* add_var(Token*, Type, Value*);
 	SemanticVar* add_parameter(Token*, Type);

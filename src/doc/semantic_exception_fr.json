@@ -5,5 +5,8 @@
 	"STATIC_METHOD_NOT_FOUND" : "Cette méthode statique « %s » n'existe pas",
 	"CANT_ASSIGN_VOID" : "Impossible d'assigner une valeur void à la variable « %s »",
 	"CANNOT_CALL_VALUE" : "Impossible d'appeller l'expression « %s », elle n'est pas une fonction ou une classe",
+	"BREAK_MUST_BE_IN_LOOP" : "L'instruction « break » doit se trouver à l'intérieur d'une boucle",
+	"CONTINUE_MUST_BE_IN_LOOP" : "L'instruction « continue » doit se trouver à l'intérieur d'une boucle",
+	
 	"UNKNOWN_ERROR" : "Erreur inconnue"
 }

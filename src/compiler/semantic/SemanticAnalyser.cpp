@@ -23,6 +23,7 @@ SemanticAnalyser::SemanticAnalyser() {
 	in_function = false;
 	in_program = false;
 	reanalyse = false;
+	loops.push(0);
 }
 
 SemanticAnalyser::~SemanticAnalyser() {
@@ -127,6 +128,7 @@ void SemanticAnalyser::enter_function(Function* f) {
 	in_function = true;
 	variables.push_back(map<std::string, SemanticVar*> {});
 	parameters.push_back(map<std::string, SemanticVar*> {});
+	loops.push(0);
 	functions_stack.push(f);
 }
 
@@ -135,6 +137,7 @@ void SemanticAnalyser::leave_function() {
 	variables.pop_back();
 	parameters.pop_back();
 	functions_stack.pop();
+	loops.pop();
 }
 
 void SemanticAnalyser::enter_block() {
@@ -152,6 +155,18 @@ Function* SemanticAnalyser::current_function() const {
 		return nullptr;
 	}
 	return functions_stack.top();
+}
+
+void SemanticAnalyser::enter_loop() {
+	loops.top()++;
+}
+
+void SemanticAnalyser::leave_loop() {
+	loops.top()--;
+}
+
+bool SemanticAnalyser::in_loop() const {
+	return loops.top() > 0;
 }
 
 SemanticVar* SemanticAnalyser::add_parameter(Token* v, Type type) {

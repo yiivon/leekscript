@@ -32,7 +32,9 @@ void While::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (condition != nullptr) {
 		condition->analyse(analyser);
 	}
+	analyser->enter_loop();
 	body->analyse(analyser, req_type);
+	analyser->leave_loop();
 }
 
 int while_is_true(LSValue* v) {

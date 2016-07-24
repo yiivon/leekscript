@@ -1,6 +1,8 @@
 #include "../../compiler/instruction/Break.hpp"
 
 #include "../../vm/value/LSNull.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticException.hpp"
 
 using namespace std;
 
@@ -19,8 +21,12 @@ void Break::print(ostream& os) const {
 	}
 }
 
-void Break::analyse(SemanticAnalyser*, const Type&) {
+void Break::analyse(SemanticAnalyser* analyser, const Type&) {
 
+	// break must be in a loop
+	if (!analyser->in_loop()) {
+		throw SemanticException(SemanticException::Type::BREAK_MUST_BE_IN_LOOP, 0);
+	}
 }
 
 jit_value_t Break::compile_jit(Compiler& c, jit_function_t& F, Type) const {

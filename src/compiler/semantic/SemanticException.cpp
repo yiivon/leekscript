@@ -8,6 +8,12 @@ namespace ls {
 bool SemanticException::translation_loaded = false;
 Json SemanticException::translation;
 
+SemanticException::SemanticException(Type type, int line) {
+	this->type = type;
+	this->line = line;
+	this->content = "";
+}
+
 SemanticException::SemanticException(Type type, int line, std::string& content) {
 	this->type = type;
 	this->line = line;
@@ -43,6 +49,8 @@ std::string SemanticException::type_to_string(Type type) {
 		case Type::STATIC_METHOD_NOT_FOUND: return "STATIC_METHOD_NOT_FOUND";
 		case Type::CANT_ASSIGN_VOID: return "CANT_ASSIGN_VOID";
 		case Type::CANNOT_CALL_VALUE: return "CANNOT_CALL_VALUE";
+		case Type::BREAK_MUST_BE_IN_LOOP: return "BREAK_MUST_BE_IN_LOOP";
+		case Type::CONTINUE_MUST_BE_IN_LOOP: return "CONTINUE_MUST_BE_IN_LOOP";
 		default:
 			return "UNKNOWN_ERROR";
 	}

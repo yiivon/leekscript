@@ -65,7 +65,9 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	value_var = analyser->add_var(value, var_type, nullptr);
 
+	analyser->enter_loop();
 	body->analyse(analyser, req_type);
+	analyser->leave_loop();
 
 	//analyser->leave_block();
 }

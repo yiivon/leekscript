@@ -1,5 +1,3 @@
-break				| crash
-continue			| crash
 '				| workds, but should be a lexical error
 "				| idem
 '\''				| produces (\) but should be (') 

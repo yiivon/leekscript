@@ -16,7 +16,9 @@ public:
 		METHOD_NOT_FOUND,
 		STATIC_METHOD_NOT_FOUND,
 		CANT_ASSIGN_VOID,
-		CANNOT_CALL_VALUE
+		CANNOT_CALL_VALUE,
+		BREAK_MUST_BE_IN_LOOP,
+		CONTINUE_MUST_BE_IN_LOOP,
 	};
 
 	static bool translation_loaded;
@@ -28,6 +30,7 @@ public:
 	int line;
 	std::string content;
 
+	SemanticException(Type type, int line);
 	SemanticException(Type type, int line, std::string& content);
 	virtual ~SemanticException();
 

@@ -90,7 +90,9 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (auto it : iterations) {
 		it->analyse(analyser);
 	}
+	analyser->enter_loop();
 	body->analyse(analyser, req_type);
+	analyser->leave_loop();
 }
 
 int for_is_true(LSValue* v) {
