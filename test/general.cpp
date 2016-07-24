@@ -15,6 +15,9 @@ void Test::test_general() {
 
 	header("General");
 	success("", "null");
+	success(" ", "null"); // classic space
+	success(" ", "null"); // unbreakable space
+	success("	", "null"); // tab
 	success("null", "null");
 	success("()", "null");
 	success("12", "12");

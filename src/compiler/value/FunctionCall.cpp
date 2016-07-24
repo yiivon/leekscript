@@ -529,9 +529,9 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 				jit_func = &jit_insn_add;
 			} else if (f->name == "-") {
 				jit_func = &jit_insn_sub;
-			} else if (f->name == "*") {
+			} else if (f->name == "*" or f->name == "×") {
 				jit_func = &jit_insn_mul;
-			} else if (f->name == "/") {
+			} else if (f->name == "/" or f->name == "÷") {
 				jit_func = &jit_insn_div;
 			} else if (f->name == "**") {
 				jit_func = &jit_insn_pow;

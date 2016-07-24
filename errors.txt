@@ -5,7 +5,6 @@
 ×				| should be like *
 ÷				| should be like /
 let a = 2 a = ""	  | exception, a transforms into a string, and was a integer at declaration
-(non-break. space)	  | should be like a classic space
 null * 5			| should be null, not act like 0 (confusing)
 2 = 5				| should throw semantic exception as 2 is not an l-value
 [] = 5				| same but crash in this case
