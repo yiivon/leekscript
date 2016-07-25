@@ -9,4 +9,3 @@ null * 5			| should be null, not act like 0 (confusing)
 {}.size()			| get the number of attrs in object
 'salut'['':'']	  	| must throw a semantic error
 Number.sqrt("foo")	  | should throw a semantic error
-(x -> x)()			| crash
