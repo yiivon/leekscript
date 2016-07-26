@@ -9,8 +9,9 @@ using namespace std;
 
 namespace ls {
 
-VariableValue::VariableValue(Token* name) {
-	this->name = name;
+VariableValue::VariableValue(Token* token) {
+	this->name = token->content;
+	this->token = token;
 	this->var = nullptr;
 	constant = false;
 }
@@ -18,12 +19,16 @@ VariableValue::VariableValue(Token* name) {
 VariableValue::~VariableValue() {}
 
 void VariableValue::print(ostream& os) const {
-	os << name->content;
+	os << token->content;
+}
+
+int VariableValue::line() const {
+	return token->line;
 }
 
 void VariableValue::analyse(SemanticAnalyser* analyser, const Type) {
 
-	var = analyser->get_var(name);
+	var = analyser->get_var(token);
 	type = var->type;
 	attr_types = var->attr_types;
 
@@ -47,34 +52,25 @@ jit_value_t VariableValue::compile_jit(Compiler& c, jit_function_t& F, Type req_
 //	cout << "compile vv " << name->content << " : " << type << endl;
 //	cout << "req type : " << req_type << endl;
 
+	jit_value_t v;
+
 	if (var->scope == VarScope::INTERNAL) {
 
-//		cout << "internal" << endl;
-
-		jit_value_t v = internals[name->content];
-		if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, v, var->type);
-		}
-		return v;
+		v = internals[name];
 
 	} else if (var->scope == VarScope::LOCAL) {
 
-//		cout << "get local var " << name->content << endl;
+		v = c.get_var(name).value;
 
-		jit_value_t v = c.get_var(name->content).value;
-		if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, v, var->type);
-		}
-		return v;
+	} else { // Parameter
 
-	} else { // var->scope == VarScope::PARAMETER
-
-		jit_value_t v = jit_value_get_param(F, var->index);
-		if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, v, var->type);
-		}
-		return v;
+		v = jit_value_get_param(F, var->index);
 	}
+
+	if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+		return VM::value_to_pointer(F, v, var->type);
+	}
+	return v;
 }
 
 jit_value_t VariableValue::compile_jit_l(Compiler& c, jit_function_t& F, Type) const {

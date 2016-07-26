@@ -50,6 +50,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	array->analyse(analyser, Type::NEUTRAL);
 
 	var_type = Type::POINTER;
+//			array->type.getElementType();
 	/*
 	if (Array* a = dynamic_cast<Array*>(array)) {
 		if (a->only_values) {
@@ -64,7 +65,9 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	value_var = analyser->add_var(value, var_type, nullptr);
 
+	analyser->enter_loop();
 	body->analyse(analyser, req_type);
+	analyser->leave_loop();
 
 	//analyser->leave_block();
 }

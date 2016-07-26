@@ -10,14 +10,15 @@ class If : public Value {
 public:
 
 	Value* condition;
-	Block* then;
-	Block* elze;
+	Value* then;
+	Value* elze;
 	bool inversed;
 
 	If();
 	virtual ~If();
 
 	virtual void print(std::ostream&) const override;
+	virtual int line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

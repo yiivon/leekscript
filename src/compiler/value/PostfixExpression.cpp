@@ -23,6 +23,10 @@ void PostfixExpression::print(ostream& os) const {
 	operatorr->print(os);
 }
 
+int PostfixExpression::line() const {
+	return 0;
+}
+
 void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type) {
 	expression->analyse(analyser);
 	type = expression->type;

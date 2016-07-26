@@ -30,7 +30,7 @@ LSString* LSString::charAt(int index) const {
 }
 
 int LSString::unicode_length() const {
-	return u8_strlen((char*) this->c_str());
+	return u8_strlen(this->c_str());
 }
 
 /*

@@ -35,6 +35,10 @@ void If::print(ostream& os) const {
 	os << "end";
 }
 
+int If::line() const {
+	return 0;
+}
+
 void If::analyse(SemanticAnalyser* analyser, const Type req_type) {
 
 	type = Type::UNKNOWN;

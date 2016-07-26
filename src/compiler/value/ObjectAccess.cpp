@@ -32,6 +32,10 @@ void ObjectAccess::print(ostream& os) const {
 	os << "." << field->content;
 }
 
+int ObjectAccess::line() const {
+	return 0;
+}
+
 void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 
 	object->analyse(analyser);
@@ -51,7 +55,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 	VariableValue* vv = dynamic_cast<VariableValue*>(object);
 	if (object->type == Type::CLASS and vv != nullptr) {
 
-		class_name = vv->name->content;
+		class_name = vv->name;
 
 		LSClass* std_class = (LSClass*) analyser->program->system_vars[class_name];
 

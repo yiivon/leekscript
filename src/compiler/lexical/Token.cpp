@@ -21,7 +21,7 @@ Token::Token(std::string content) {
 	size = 0;
 }
 
-Token::Token(TokenType type, int line, int character, string content) {
+Token::Token(TokenType type, unsigned int line, unsigned int character, string content) {
 
 	this->type = type;
 	this->character = character - content.size() - 1;

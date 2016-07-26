@@ -5,6 +5,7 @@
 #include "../../compiler/value/VariableValue.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../../vm/value/LSObject.hpp"
 
 using namespace std;
 
@@ -23,6 +24,10 @@ PrefixExpression::~PrefixExpression() {
 void PrefixExpression::print(ostream& os) const {
 	operatorr->print(os);
 	expression->print(os);
+}
+
+int PrefixExpression::line() const {
+	return 0;
 }
 
 void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type) {
@@ -133,31 +138,34 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
 
-				if (vv->name->content == "Number") {
+				if (vv->name == "Number") {
 					jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
 					if (req_type.nature == Nature::POINTER) {
 						return VM::value_to_pointer(F, n, Type::INTEGER);
 					}
 					return n;
 				}
-				if (vv->name->content == "Boolean") {
+				if (vv->name == "Boolean") {
 					jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
 					if (req_type.nature == Nature::POINTER) {
 						return VM::value_to_pointer(F, n, Type::BOOLEAN);
 					}
 					return n;
 				}
-				if (vv->name->content == "String") {
+				if (vv->name == "String") {
 					return JIT_CREATE_CONST_POINTER(F, new LSString(""));
 				}
-				if (vv->name->content == "Array") {
+				if (vv->name == "Array") {
 					return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
+				}
+				if (vv->name == "Object") {
+					return JIT_CREATE_CONST_POINTER(F, new LSObject());
 				}
 			}
 
 			if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 				if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
-					if (vv->name->content == "Number") {
+					if (vv->name == "Number") {
 						if (fc->arguments.size() > 0) {
 							return fc->arguments[0]->compile_jit(c, F, Type::POINTER);
 						} else {
@@ -168,21 +176,24 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 							return n;
 						}
 					}
-					if (vv->name->content == "Boolean") {
+					if (vv->name == "Boolean") {
 						jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
 						if (req_type.nature == Nature::POINTER) {
 							return VM::value_to_pointer(F, n, Type::BOOLEAN);
 						}
 						return n;
 					}
-					if (vv->name->content == "String") {
+					if (vv->name == "String") {
 						if (fc->arguments.size() > 0) {
 							return fc->arguments[0]->compile_jit(c, F, Type::POINTER);
 						}
 						return JIT_CREATE_CONST_POINTER(F, new LSString(""));
 					}
-					if (vv->name->content == "Array") {
+					if (vv->name == "Array") {
 						return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
+					}
+					if (vv->name == "Object") {
+						return JIT_CREATE_CONST_POINTER(F, new LSObject());
 					}
 				}
 			}

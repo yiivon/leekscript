@@ -34,7 +34,7 @@ LSValue* string_toUpper(LSString* string);
 LSValue* string_toArray(const LSString* string);
 int string_begin_code(const LSString*);
 int string_code(const LSString*, int pos);
-
+long string_number(const LSString*);
 }
 
 #endif

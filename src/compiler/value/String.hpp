@@ -13,12 +13,14 @@ class String : public Value {
 public:
 
 	std::string value;
+	Token* token;
 	LSString* ls_string;
 
-	String(std::string value);
+	String(std::string& value, Token* token);
 	virtual ~String();
 
 	virtual void print(std::ostream&) const override;
+	virtual int line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 

@@ -7,7 +7,7 @@
 #include <string>
 #include "../lib/utf8.h"
 
-#include "../leekscript.h"
+#include "leekscript.h"
 
 #include "doc/Documentation.hpp"
 #include "../benchmark/Benchmark.hpp"

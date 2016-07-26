@@ -13,6 +13,7 @@
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../../vm/value/LSObject.hpp"
 
 using namespace std;
 
@@ -44,11 +45,23 @@ void FunctionCall::print(std::ostream& os) const {
 	os << ")";
 }
 
+int FunctionCall::line() const {
+	return 0;
+}
+
 void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 	constant = false;
 
 	function->analyse(analyser);
+
+	if (function->type.raw_type != RawType::UNKNOWN and function->type.raw_type != RawType::FUNCTION
+		and function->type.raw_type != RawType::CLASS) {
+		std::ostringstream oss;
+		function->print(oss);
+		std::string content = oss.str();
+		throw SemanticException(SemanticException::Type::CANNOT_CALL_VALUE, function->line(), content);
+	}
 
 	int a = 0;
 	for (Value* arg : arguments) {
@@ -62,7 +75,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 		string field_name = oa->field->content;
 
 		VariableValue* vv = dynamic_cast<VariableValue*>(oa->object);
-		if (vv != nullptr and vv->name->content == "Number") {
+		if (vv != nullptr and vv->name == "Number") {
 
 			if (field_name == "abs") {
 				function->type.setArgumentType(0, Type::INTEGER);
@@ -122,7 +135,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 			if (object_type.raw_type == RawType::CLASS) { // String.size("salut")
 
-				string clazz = ((VariableValue*) oa->object)->name->content;
+				string clazz = ((VariableValue*) oa->object)->name;
 
 				LSClass* object_class = (LSClass*) analyser->program->system_vars[clazz];
 
@@ -132,7 +145,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 					std_func = m->addr;
 					function->type = m->type;
 				} else {
-					throw SemanticException(SemanticException::Type::STATIC_METHOD_NOT_FOUND, oa->field);
+					throw SemanticException(SemanticException::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, oa->field->content);
 				}
 
 			} else { // "salut".size()
@@ -198,7 +211,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 						std_func = m->addr;
 						function->type = m->type;
 					} else {
-						throw SemanticException(SemanticException::Type::METHOD_NOT_FOUND, oa->field);
+						throw SemanticException(SemanticException::Type::METHOD_NOT_FOUND, oa->field->line, oa->field->content);
 					}
 				}
 			}
@@ -229,7 +242,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
-		string name = vv->name->content;
+		string name = vv->name;
 		if (name == "+" or name == "-" or name == "*" or name == "/" or name == "^" or name == "%") {
 			bool isByValue = true;
 			Type effectiveType;
@@ -295,28 +308,31 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	 */
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
-		if (vv->name->content == "Boolean") {
+		if (vv->name == "Boolean") {
 			jit_value_t n = jit_value_create_nint_constant(F, JIT_INTEGER, 0);
 			if (req_type.nature == Nature::POINTER) {
 				return VM::value_to_pointer(F, n, Type::BOOLEAN);
 			}
 			return n;
 		}
-		if (vv->name->content == "Number") {
+		if (vv->name == "Number") {
 			jit_value_t n = jit_value_create_nint_constant(F, JIT_INTEGER, 0);
 			if (req_type.nature == Nature::POINTER) {
 				return VM::value_to_pointer(F, n, Type::INTEGER);
 			}
 			return n;
 		}
-		if (vv->name->content == "String") {
+		if (vv->name == "String") {
 			if (arguments.size() > 0) {
 				return arguments[0]->compile_jit(c, F, Type::POINTER);
 			}
 			return JIT_CREATE_CONST_POINTER(F, new LSString(""));
 		}
-		if (vv->name->content == "Array") {
+		if (vv->name == "Array") {
 			return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
+		}
+		if (vv->name == "Object") {
+			return JIT_CREATE_CONST_POINTER(F, new LSObject());
 		}
 	}
 
@@ -509,17 +525,17 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	if (f != nullptr) {
 		if (function->type.getArgumentType(0).nature == Nature::VALUE and function->type.getArgumentType(1).nature == Nature::VALUE) {
 			jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
-			if (f->name->content == "+") {
+			if (f->name == "+") {
 				jit_func = &jit_insn_add;
-			} else if (f->name->content == "-") {
+			} else if (f->name == "-") {
 				jit_func = &jit_insn_sub;
-			} else if (f->name->content == "*") {
+			} else if (f->name == "*" or f->name == "×") {
 				jit_func = &jit_insn_mul;
-			} else if (f->name->content == "/") {
+			} else if (f->name == "/" or f->name == "÷") {
 				jit_func = &jit_insn_div;
-			} else if (f->name->content == "**") {
+			} else if (f->name == "**") {
 				jit_func = &jit_insn_pow;
-			} else if (f->name->content == "%") {
+			} else if (f->name == "%") {
 				jit_func = &jit_insn_rem;
 			}
 			if (jit_func != nullptr) {

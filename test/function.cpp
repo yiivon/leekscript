@@ -8,6 +8,11 @@ void Test::test_functions() {
 	header("Functions");
 	success("function foo(x, y) { x + y } foo(1, 2)", "3");
 
+	sem_err("null()", ls::SemanticException::Type::CANNOT_CALL_VALUE, "null");
+	sem_err("12()", ls::SemanticException::Type::CANNOT_CALL_VALUE, "12");
+	sem_err("'hello'()", ls::SemanticException::Type::CANNOT_CALL_VALUE, "'hello'");
+	sem_err("[1, 2, 3]()", ls::SemanticException::Type::CANNOT_CALL_VALUE, "[1, 2, 3]");
+
 	/*
 	 * Lambdas
 	 */
@@ -65,14 +70,21 @@ void Test::test_functions() {
 //	success("-(9, 2)", "7");
 	success("*(5, 8)", "40");
 	success("*('test', 2)", "'testtest'");
+	success("×(5, 8)", "40");
+	success("×('test', 2)", "'testtest'");
 	success("/(48, 12)", "4");
+	success("/('banana', 'n')", "['ba', 'a', 'a']");
+	success("÷(48, 12)", "4");
+	success("÷('banana', 'n')", "['ba', 'a', 'a']");
 	success("**(2, 11)", "2048");
 	success("%(48, 5)", "3");
 	success("let p = + p(1, 2)", "3");
 	success("let p = + p('test', 2)", "'test2'");
-	//success("let p = -\n p(9, 2)", "7");
+	//success("let p = -; p(9, 2)", "7");
 	success("let p = * p(5, 8)", "40");
+	success("let p = × p(5, 8)", "40");
 	success("let p = / p(48, 12)", "4");
+	success("let p = ÷ p(48, 12)", "4");
 	success("let p = % p(48, 5)", "3");
 	success("let p = ** p(2, 11)", "2048");
 	success("+", "<function>");

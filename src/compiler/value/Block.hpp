@@ -17,6 +17,7 @@ public:
 	virtual ~Block();
 
 	virtual void print(std::ostream&) const override;
+	virtual int line() const override;
 
 	void can_return(Type type);
 

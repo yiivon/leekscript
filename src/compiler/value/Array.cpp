@@ -46,6 +46,10 @@ void Array::print(std::ostream& os) const {
 	os << "]";
 }
 
+int Array::line() const {
+	return 0;
+}
+
 void Array::analyse(SemanticAnalyser* analyser, const Type) {
 
 	constant = true;

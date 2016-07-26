@@ -205,10 +205,15 @@ Instruction* SyntaxicAnalyser::eatInstruction()
 		case TokenType::FUNCTION:
 			return eatFunctionDeclaration();
 
-		case TokenType::RETURN:
+		case TokenType::RETURN: {
 			eat();
-			return new Return(eatExpression());
-
+			if (t->type == TokenType::FINISHED or t->type == TokenType::CLOSING_BRACE
+				or t->type == TokenType::ELSE or t->type == TokenType::END) {
+				return new Return(new Nulll());
+			} else {
+				return new Return(eatExpression());
+			}
+		}
 		case TokenType::BREAK:
 			eat();
 			return new Break();
@@ -553,18 +558,18 @@ Value* SyntaxicAnalyser::eatValue() {
 
 		case TokenType::NUMBER:
 		{
-			Number* n = new Number(stod(t->content));
+			Number* n = new Number(stod(t->content), t);
 			eat();
 			return n;
 		}
 
 		case TokenType::PI:
 			eat();
-			return new Number(M_PI);
+			return new Number(M_PI, t);
 
 		case TokenType::STRING:
 		{
-			String* v = new String(t->content);
+			String* v = new String(t->content, t);
 			eat();
 			return v;
 		}
@@ -759,7 +764,7 @@ If* SyntaxicAnalyser::eatIf() {
 	}
 
 	if (then or braces) {
-		iff->then = eatBlock();
+		iff->then = eatBlockOrObject();
 	} else {
 		Block* block = new Block();
 		block->instructions.push_back(eatInstruction());
@@ -781,7 +786,7 @@ If* SyntaxicAnalyser::eatIf() {
 		}
 
 		if (then or bracesElse) {
-			iff->elze = eatBlock();
+			iff->elze = eatBlockOrObject();
 		} else {
 			Block* body = new Block();
 			body->instructions.push_back(eatInstruction());

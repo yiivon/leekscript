@@ -28,6 +28,10 @@ void Block::print(ostream& os) const {
 	os << "}";
 }
 
+int Block::line() const {
+	return 0;
+}
+
 void Block::analyse(SemanticAnalyser* analyser, const Type req_type) {
 
 	analyser->enter_block();

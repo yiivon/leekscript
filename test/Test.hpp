@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include "../leekscript.h"
+#include "../src/leekscript.h"
 #include "../src/compiler/semantic/SemanticException.hpp"
 
 class Test {

@@ -86,7 +86,7 @@ LetterType LexicalAnalyser::getLetterType(char32_t c) {
 	if (c >= '0' && c <= '9') {
 		return LetterType::NUMBER;
 	}
-	if (c == ' ' || c == '	' || c == '\n') {
+	if (c == ' ' || c == '	' || c == '\n' || c == 0x00A0 /* unbreakable space */) {
 		return LetterType::WHITE;
 	}
 	if (c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c >= 0xc0) {
@@ -125,7 +125,7 @@ vector<Token> LexicalAnalyser::analyse(std::string code) {
 vector<Token> LexicalAnalyser::parseTokens(string code) {
 
 	char buff[5];
-	char* string_chars = (char*) code.c_str();
+	const char* string_chars = code.c_str();
 
 	vector<Token> tokens;
 

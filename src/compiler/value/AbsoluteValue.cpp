@@ -8,6 +8,7 @@ namespace ls {
 
 AbsoluteValue::AbsoluteValue() {
 	expression = nullptr;
+	type = Type::INTEGER;
 }
 
 AbsoluteValue::~AbsoluteValue() {
@@ -18,6 +19,10 @@ void AbsoluteValue::print(std::ostream& os) const {
 	os << "|";
 	expression->print(os);
 	os << "|";
+}
+
+int AbsoluteValue::line() const {
+	return 0;
 }
 
 void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type) {

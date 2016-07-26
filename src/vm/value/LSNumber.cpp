@@ -123,6 +123,7 @@ LSValue* LSNumber::operator += (const LSNumber* number) {
 #if !USE_CACHE
 	value += number->value;
 #endif
+	refs++;
 	return this;
 }
 LSValue* LSNumber::operator += (const LSBoolean*) {
@@ -186,6 +187,7 @@ LSValue* LSNumber::operator -= (const LSNumber* number) {
 #if !USE_CACHE
 	value -= number->value;
 #endif
+	refs++;
 	return this;
 }
 LSValue* LSNumber::operator -= (const LSString*) {
@@ -245,6 +247,7 @@ LSValue* LSNumber::operator *= (const LSNumber* number) {
 #if !USE_CACHE
 	value *= number->value;
 #endif
+	refs++;
 	return this;
 }
 LSValue* LSNumber::operator *= (const LSString*) {
@@ -304,6 +307,7 @@ LSValue* LSNumber::operator /= (const LSNumber* number) {
 #if !USE_CACHE
 	value /= number->value;
 #endif
+	refs++;
 	return this;
 }
 LSValue* LSNumber::operator /= (const LSString*) {
@@ -363,6 +367,7 @@ LSValue* LSNumber::pow_eq(const LSNumber* number) {
 #if !USE_CACHE
 	value = pow(value, number->value);
 #endif
+	refs++;
 	return this;
 }
 LSValue* LSNumber::pow_eq(const LSString*) {
@@ -422,6 +427,7 @@ LSValue* LSNumber::operator %= (const LSNumber* number) {
 #if !USE_CACHE
 	value = fmod(value, number->value);
 #endif
+	refs++;
 	return this;
 }
 LSValue* LSNumber::operator %= (const LSString*) {

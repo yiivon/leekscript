@@ -66,6 +66,10 @@ void Function::print(std::ostream& os) const {
 	}
 }
 
+int Function::line() const {
+	return 0;
+}
+
 void Function::analyse(SemanticAnalyser* analyser, const Type req_type) {
 
 //	cout << "Function analyse req_type " << req_type << endl;

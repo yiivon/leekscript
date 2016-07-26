@@ -1,6 +1,8 @@
 #include "../../compiler/instruction/Continue.hpp"
 
 #include "../../vm/value/LSNull.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticException.hpp"
 
 namespace ls {
 
@@ -17,8 +19,12 @@ void Continue::print(std::ostream& os) const {
 	}
 }
 
-void Continue::analyse(SemanticAnalyser*, const Type&) {
+void Continue::analyse(SemanticAnalyser* analyser, const Type&) {
 
+	// continue must be in a loop
+	if (!analyser->in_loop()) {
+		throw SemanticException(SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, 0);
+	}
 }
 
 jit_value_t Continue::compile_jit(Compiler& c, jit_function_t& F, Type) const {

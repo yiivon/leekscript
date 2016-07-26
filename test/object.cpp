@@ -4,6 +4,9 @@ void Test::test_objects() {
 
 	header("Objects");
 
+	success("Object()", "{}");
+	success("new Object", "{}");
+	success("new Object()", "{}");
 	success("{}", "{}");
 	success("{a: 12}", "{a: 12}");
 	success("{a: 12, b: 5}", "{a: 12, b: 5}");
@@ -12,7 +15,13 @@ void Test::test_objects() {
 	success("let a = {}", "{}");
 	success("let a = {b: 12, c: 5} a", "{b: 12, c: 5}");
 	success("let a = {b: 12, c: 5} a.b", "12");
-	//success("let a = {b: 12, c: 5} a.b *= 10", "120");
+
+	success("let a = {b: 12} a.b += 10", "22");
+	success("let a = {b: 12} a.b -= 10", "2");
+	success("let a = {b: 12} a.b *= 10", "120");
+	success_almost("let a = {b: 12} a.b /= 10", 1.2);
+	success("let a = {b: 12} a.b %= 10", "2");
+
 	success("let a = {a: 32, b: 'toto', c: false}; |a|", "3");
 
 	success("{}.keys()", "[]");

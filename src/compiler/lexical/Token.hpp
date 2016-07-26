@@ -19,7 +19,7 @@ public:
 
 	Token();
 	Token(std::string content);
-	Token(TokenType type, int line, int character, std::string content);
+	Token(TokenType type, unsigned int line, unsigned int character, std::string content);
 	virtual ~Token();
 
 	std::string toString();

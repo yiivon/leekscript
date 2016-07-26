@@ -23,6 +23,7 @@ SemanticAnalyser::SemanticAnalyser() {
 	in_function = false;
 	in_program = false;
 	reanalyse = false;
+	loops.push(0);
 }
 
 SemanticAnalyser::~SemanticAnalyser() {
@@ -88,8 +89,12 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	add_var(new Token("-"), op_type, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("*", new LSFunction((void*) &jit_mul, 1)));
 	add_var(new Token("*"), op_type, nullptr);
+	program->system_vars.insert(pair<string, LSValue*>("×", new LSFunction((void*) &jit_mul, 1)));
+	add_var(new Token("×"), op_type, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("/", new LSFunction((void*) &jit_div, 1)));
 	add_var(new Token("/"), op_type, nullptr);
+	program->system_vars.insert(pair<string, LSValue*>("÷", new LSFunction((void*) &jit_div, 1)));
+	add_var(new Token("÷"), op_type, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("**", new LSFunction((void*) &jit_pow, 1)));
 	add_var(new Token("**"), op_type, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("%", new LSFunction((void*) &jit_mod, 1)));
@@ -127,6 +132,7 @@ void SemanticAnalyser::enter_function(Function* f) {
 	in_function = true;
 	variables.push_back(map<std::string, SemanticVar*> {});
 	parameters.push_back(map<std::string, SemanticVar*> {});
+	loops.push(0);
 	functions_stack.push(f);
 }
 
@@ -135,6 +141,7 @@ void SemanticAnalyser::leave_function() {
 	variables.pop_back();
 	parameters.pop_back();
 	functions_stack.pop();
+	loops.pop();
 }
 
 void SemanticAnalyser::enter_block() {
@@ -152,6 +159,18 @@ Function* SemanticAnalyser::current_function() const {
 		return nullptr;
 	}
 	return functions_stack.top();
+}
+
+void SemanticAnalyser::enter_loop() {
+	loops.top()++;
+}
+
+void SemanticAnalyser::leave_loop() {
+	loops.top()--;
+}
+
+bool SemanticAnalyser::in_loop() const {
+	return loops.top() > 0;
 }
 
 SemanticVar* SemanticAnalyser::add_parameter(Token* v, Type type) {
@@ -178,7 +197,7 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 		} catch (exception& e) {}
 		i--;
 	}
-	throw SemanticException(SemanticException::Type::UNDEFINED_VARIABLE, v);
+	throw SemanticException(SemanticException::Type::UNDEFINED_VARIABLE, v->line, v->content);
 }
 
 SemanticVar* SemanticAnalyser::get_var_direct(std::string name) {
@@ -202,7 +221,7 @@ SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value) {
 	}
 
 	if (variables.back().find(v->content) != variables.back().end()) {
-		throw SemanticException(SemanticException::Type::VARIABLE_ALREADY_DEFINED, v);
+		throw SemanticException(SemanticException::Type::VARIABLE_ALREADY_DEFINED, v->line, v->content);
 	}
 	variables.back().insert(pair<string, SemanticVar*>(
 		v->content,
