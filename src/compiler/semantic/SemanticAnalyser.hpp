@@ -6,6 +6,7 @@
 #include <map>
 
 #include "../../vm/Type.hpp"
+#include "SemanticException.hpp"
 
 namespace ls {
 
@@ -17,6 +18,7 @@ class Context;
 class Value;
 class SemanticAnalyser;
 class Token;
+class VariableDeclaration;
 
 enum class VarScope {
 	INTERNAL, GLOBAL, LOCAL, PARAMETER
@@ -29,8 +31,10 @@ public:
 	std::map<std::string, Type> attr_types;
 	int index;
 	Value* value;
-	SemanticVar(VarScope scope, Type type, int index, Value* value) :
-		scope(scope), type(type), index(index), value(value) {}
+	VariableDeclaration* vd;
+
+	SemanticVar(VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd) :
+		scope(scope), type(type), index(index), value(value), vd(vd) {}
 
 	void will_take(SemanticAnalyser*, unsigned, const Type&);
 	void will_take_element(SemanticAnalyser*, const Type&);
@@ -54,6 +58,8 @@ public:
 	std::stack<Function*> functions_stack;
 	std::stack<int> loops;
 
+	std::vector<SemanticException> errors;
+
 	SemanticAnalyser();
 	virtual ~SemanticAnalyser();
 
@@ -70,12 +76,14 @@ public:
 	void leave_loop();
 	bool in_loop() const;
 
-	SemanticVar* add_var(Token*, Type, Value*);
+	SemanticVar* add_var(Token*, Type, Value*, VariableDeclaration*);
 	SemanticVar* add_parameter(Token*, Type);
 
 	SemanticVar* get_var(Token* name);
 	SemanticVar* get_var_direct(std::string name);
 	std::map<std::string, SemanticVar*>& get_local_vars();
+
+	void add_error(SemanticException ex);
 
 };
 

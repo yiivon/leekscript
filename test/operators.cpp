@@ -2,6 +2,17 @@
 
 void Test::test_operators() {
 
+	header("Operator =");
+
+	//success("let a a = 2", "2");
+	//success("let a a = 2 a", "2");
+	sem_err("2 = 2", ls::SemanticException::Type::VALUE_MUST_BE_A_LVALUE, "<v>");
+	sem_err("'hello' = 2", ls::SemanticException::Type::VALUE_MUST_BE_A_LVALUE, "<v>");
+	sem_err("[] = 2", ls::SemanticException::Type::VALUE_MUST_BE_A_LVALUE, "<v>");
+	sem_err("true = []", ls::SemanticException::Type::VALUE_MUST_BE_A_LVALUE, "<v>");
+	sem_err("null = x -> x", ls::SemanticException::Type::VALUE_MUST_BE_A_LVALUE, "<v>");
+	sem_err("{} = 2.class", ls::SemanticException::Type::VALUE_MUST_BE_A_LVALUE, "<v>");
+
 	header("Operator xor");
 
 	success("true xor true", "false");

@@ -10,7 +10,6 @@ let f = function(number) {
 let c = 2
 
 for let i = 5; i < 1000000; i += 6 do
-
 	if f(i) c++
 	if f(i + 2) c++
 end

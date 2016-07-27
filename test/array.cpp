@@ -33,6 +33,7 @@ void Test::test_arrays() {
 	success("['yo' 'ya' 'yu']", "['yo', 'ya', 'yu']");
 	success("[true false true true]", "[true, false, true, true]");
 
+
 	/*
 	 * Array operations
 	 */
@@ -93,6 +94,7 @@ void Test::test_arrays() {
 	success("Array.map([1, 2, 3], x -> x ** 2)", "[1, 4, 9]");
 	success("[3, 4, 5].map(x -> x ** 2)", "[9, 16, 25]");
 	success("[321, 213, 121].map(x -> x ** 2).size()", "3");
+	success("['a' 'b' 'c'].map(x -> x)", "['a', 'b', 'c']");
 	success("[65 66 67].map(x -> x.char()).join('')", "'ABC'");
 
 	success("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))", "[13, 'yo 55', [9]]");

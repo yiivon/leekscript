@@ -22,7 +22,8 @@ while (i++) {
 
     for (var g in groups) {
 
-        if (is_perm(String.number(g[0]), String.number(c)) == true) {
+        if (is_perm(String.number(g[0]), 
+        String.number(c)) == true) {
 
             Array.push(g, c)
             added = true
@@ -34,5 +35,11 @@ while (i++) {
     }
     if (added == false) {
         Array.push(groups, [c])
+    }
+}
+
+for var g in groups {
+    if Array.size(g) >= 2 {
+        System.print(g)
     }
 }

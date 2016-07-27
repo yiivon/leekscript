@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cstddef>
+#include <map>
 
 #include "../../lib/json.hpp"
 #include "Type.hpp"

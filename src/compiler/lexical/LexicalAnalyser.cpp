@@ -112,7 +112,7 @@ vector<Token> LexicalAnalyser::analyse(std::string code) {
 	tokens.push_back(Token(TokenType::FINISHED, 0, 1, ""));
 
 	for (size_t i = 0; i < tokens.size(); ++i) {
-		if (i + 1 < tokens.size() && tokens[i].content == "is" && tokens[i+1].content == "not") {
+		if (i + 1 < tokens.size() && tokens[i].content == "is" && tokens[i + 1].content == "not") {
 			tokens[i].type = TokenType::DIFFERENT;
 			tokens[i].content = "is not";
 			tokens.erase(tokens.begin() + i + 1);
@@ -333,6 +333,11 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 			character = 0;
 		}
 	}
+
+	if (string1 or string2) {
+		errors.push_back({LexicalError::Type::UNTERMINATED_STRING, line, character});
+	}
+
 	return tokens;
 }
 

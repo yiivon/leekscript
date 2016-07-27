@@ -5,6 +5,7 @@
 
 #include "../../compiler/value/LeftValue.hpp"
 #include "../../compiler/value/Value.hpp"
+#include "../../vm/value/LSString.hpp"
 #include "../lexical/Token.hpp"
 
 namespace ls {
@@ -19,6 +20,7 @@ public:
 	bool class_attr = false;
 	void* attr_addr;
 	void* access_function = nullptr;
+	LSString* field_string = nullptr;
 
 	ObjectAccess();
 	virtual ~ObjectAccess();
@@ -27,6 +29,7 @@ public:
 	virtual int line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
+	virtual void change_type(SemanticAnalyser*, const Type&) override;
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
 

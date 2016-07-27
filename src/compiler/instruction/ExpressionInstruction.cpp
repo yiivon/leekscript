@@ -21,6 +21,7 @@ void ExpressionInstruction::print(ostream& os) const {
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	value->analyse(analyser, req_type);
 	type = value->type;
+	can_return = value->can_return;
 }
 
 jit_value_t ExpressionInstruction::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {

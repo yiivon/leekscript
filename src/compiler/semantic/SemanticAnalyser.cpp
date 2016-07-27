@@ -13,6 +13,7 @@
 #include "../../vm/standard/FunctionSTD.hpp"
 #include "../../vm/standard/ClassSTD.hpp"
 #include "SemanticException.hpp"
+#include "../instruction/VariableDeclaration.hpp"
 
 using namespace std;
 
@@ -76,7 +77,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 
 	// Add context variables
 	for (auto var : context->vars) {
-		add_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr);
+		add_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr, nullptr);
 	}
 
 	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
@@ -84,21 +85,21 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	op_type.setArgumentType(1, Type::POINTER);
 	op_type.setReturnType(Type::POINTER);
 	program->system_vars.insert(pair<string, LSValue*>("+", new LSFunction((void*) &jit_add, 1)));
-	add_var(new Token("+"), op_type, nullptr);
+	add_var(new Token("+"), op_type, nullptr, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("-", new LSFunction((void*) &jit_sub, 1)));
-	add_var(new Token("-"), op_type, nullptr);
+	add_var(new Token("-"), op_type, nullptr, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("*", new LSFunction((void*) &jit_mul, 1)));
-	add_var(new Token("*"), op_type, nullptr);
+	add_var(new Token("*"), op_type, nullptr, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("×", new LSFunction((void*) &jit_mul, 1)));
-	add_var(new Token("×"), op_type, nullptr);
+	add_var(new Token("×"), op_type, nullptr, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("/", new LSFunction((void*) &jit_div, 1)));
-	add_var(new Token("/"), op_type, nullptr);
+	add_var(new Token("/"), op_type, nullptr, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("÷", new LSFunction((void*) &jit_div, 1)));
-	add_var(new Token("÷"), op_type, nullptr);
+	add_var(new Token("÷"), op_type, nullptr, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("**", new LSFunction((void*) &jit_pow, 1)));
-	add_var(new Token("**"), op_type, nullptr);
+	add_var(new Token("**"), op_type, nullptr, nullptr);
 	program->system_vars.insert(pair<string, LSValue*>("%", new LSFunction((void*) &jit_mod, 1)));
-	add_var(new Token("%"), op_type, nullptr);
+	add_var(new Token("%"), op_type, nullptr, nullptr);
 
 	NullSTD().include(this, program);
 	BooleanSTD().include(this, program);
@@ -175,7 +176,7 @@ bool SemanticAnalyser::in_loop() const {
 
 SemanticVar* SemanticAnalyser::add_parameter(Token* v, Type type) {
 
-	SemanticVar* arg = new SemanticVar(VarScope::PARAMETER, type, parameters.back().size(), nullptr);
+	SemanticVar* arg = new SemanticVar(VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr);
 	parameters.back().insert(pair<string, SemanticVar*>(v->content, arg));
 	return arg;
 }
@@ -197,7 +198,8 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 		} catch (exception& e) {}
 		i--;
 	}
-	throw SemanticException(SemanticException::Type::UNDEFINED_VARIABLE, v->line, v->content);
+	add_error({SemanticException::Type::UNDEFINED_VARIABLE, v->line, v->content});
+	return nullptr;
 }
 
 SemanticVar* SemanticAnalyser::get_var_direct(std::string name) {
@@ -209,23 +211,23 @@ SemanticVar* SemanticAnalyser::get_var_direct(std::string name) {
 	return nullptr;
 }
 
-SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value) {
+SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
 
 	// Internal variable, before execution
 	if (!in_program) {
 		internal_vars.insert(pair<string, SemanticVar*>(
 			v->content,
-			new SemanticVar(VarScope::INTERNAL, type, 0, value)
+			new SemanticVar(VarScope::INTERNAL, type, 0, value, vd)
 		));
 		return internal_vars.at(v->content);
 	}
 
 	if (variables.back().find(v->content) != variables.back().end()) {
-		throw SemanticException(SemanticException::Type::VARIABLE_ALREADY_DEFINED, v->line, v->content);
+		add_error({SemanticException::Type::VARIABLE_ALREADY_DEFINED, v->line, v->content});
 	}
 	variables.back().insert(pair<string, SemanticVar*>(
 		v->content,
-		new SemanticVar(VarScope::LOCAL, type, 0, value)
+		new SemanticVar(VarScope::LOCAL, type, 0, value, vd)
 	));
 	return variables.back().at(v->content);
 }
@@ -238,4 +240,8 @@ map<string, SemanticVar*>& SemanticAnalyser::get_local_vars() {
 	return variables.back();
 }
 
+void SemanticAnalyser::add_error(SemanticException ex) {
+	errors.push_back(ex);
 }
+
+} // end of namespace ls

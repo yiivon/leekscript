@@ -131,7 +131,6 @@ T LSArray<T>::sum() const {
 	LSValue* sum = this->operator [] (0)->clone();
 	for (unsigned i = 1; i < this->size(); ++i) {
 		LSValue* new_sum = this->operator [] (i)->operator + (sum);
-		new_sum->refs++;
 		LSValue::delete_val(sum);
 		sum = new_sum;
 	}
@@ -222,11 +221,15 @@ inline void LSArray<double>::push_no_clone(double value) {
 
 template <class T>
 LSArray<LSValue*>* LSArray<T>::map(const void* function) const {
+
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	auto fun = (void* (*)(void*)) function;
+
 	for (auto v : *this) {
 		LSValue* res = (LSValue*) fun((void*) v);
 		new_array->push_clone(res);
+		res->refs++;
+		LSValue::delete_val(res);
 	}
 	return new_array;
 }
@@ -333,7 +336,7 @@ inline LSArray<int>* LSArray<int>::reverse() const {
 
 template <class T>
 LSArray<T>* LSArray<T>::filter(const void* function) const {
-//	this->print(std::cout);
+
 	LSArray<T>* new_array = new LSArray<T>();
 	auto fun = (bool (*)(void*)) function;
 	for (auto v : *this) {
@@ -459,7 +462,9 @@ LSArray<LSValue*>* LSArray<T>::map2(const LSArray<LSValue*>* array, const void* 
 	for (unsigned i = 0; i < this->size(); ++i) {
 		LSValue* v1 = this->operator [] (i);
 		LSValue* v2 = ((LSArray<LSValue*>*) array)->operator [] (i);
-		new_array->push_clone((LSValue*) fun(v1, v2));
+		LSValue* res = (LSValue*) fun(v1, v2);
+		new_array->push_clone(res);
+		LSValue::delete_val(res);
 	}
 	return new_array;
 }
@@ -550,11 +555,14 @@ LSString* LSArray<T>::join(const LSString* glue) const {
 		return new LSString();
 	}
 	auto it = this->begin();
-	LSValue* result = (*it)->operator + (new LSString());
+	LSString* empty = new LSString();
+	LSValue* result = (*it)->operator + (empty);
+	LSValue::delete_val(empty);
 	for (it++; it != this->end(); it++) {
-		LSValue* n = (*it)->operator + (glue->operator + (result));
-		n->refs++;
+		LSValue* n1 = glue->operator + (result);
+		LSValue* n = (*it)->operator + (n1);
 		LSValue::delete_val(result);
+		LSValue::delete_val(n1);
 		result = n;
 	}
 	return (LSString*) result;
@@ -1758,9 +1766,6 @@ inline LSValue* LSArray<int>::operator += (const LSNumber* number) {
 	return this;
 }
 
-
-
-
 template <>
 inline LSArray<int>* LSArray<int>::push_all(const LSArray<LSValue*>* array) {
 	for (auto v : *array) {
@@ -1782,7 +1787,7 @@ const LSArray<T>* LSArray<T>::push_all_int(const LSArray<int>* array) {
 template <class T>
 LSValue* LSArray<T>::attr(const LSValue* key) const {
 
-	if (key->operator == (new LSString("size"))) {
+	if (*((LSString*) key) == "size") {
 		return LSNumber::get(this->size());
 	}
 	if (*((LSString*) key) == "class") {

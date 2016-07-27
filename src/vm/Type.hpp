@@ -218,6 +218,12 @@ public:
 
 	void toJson(std::ostream&) const;
 
+	bool isNumber() const;
+	bool derived_from(const Type& type);
+
+	/*
+	 * Static part
+	 */
 	static const Type VOID;
 	static const Type NEUTRAL;
 	static const Type VALUE;
