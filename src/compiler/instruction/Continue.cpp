@@ -8,6 +8,7 @@ namespace ls {
 
 Continue::Continue() {
 	value = 1;
+	can_return = false;
 }
 
 Continue::~Continue() {}
@@ -23,7 +24,7 @@ void Continue::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	// continue must be in a loop
 	if (!analyser->in_loop()) {
-		throw SemanticException(SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, 0);
+		analyser->add_error({SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, 0});
 	}
 }
 

@@ -45,37 +45,27 @@ void Foreach::print(ostream& os) const {
 
 void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	//analyser->enter_block();
+	analyser->enter_block();
 
 	array->analyse(analyser, Type::NEUTRAL);
 
-	var_type = Type::POINTER;
-//			array->type.getElementType();
-	/*
-	if (Array* a = dynamic_cast<Array*>(array)) {
-		if (a->only_values) {
-			var_type = Type::VALUE;
-		}
-	}
-	*/
+	var_type = array->type.getElementType();
 
 	if (key != nullptr) {
-		key_var = analyser->add_var(key, Type::POINTER, nullptr);
+		key_var = analyser->add_var(key, Type::POINTER, nullptr, nullptr);
 	}
 
-	value_var = analyser->add_var(value, var_type, nullptr);
+	value_var = analyser->add_var(value, var_type, nullptr, nullptr);
 
 	analyser->enter_loop();
 	body->analyse(analyser, req_type);
 	analyser->leave_loop();
-
-	//analyser->leave_block();
+	analyser->leave_block();
 }
 
 LSArrayIterator<LSValue*> get_array_begin(LSArray<LSValue*>* a) {
 	return a->begin();
 }
-
 LSArrayIterator<LSValue*> get_array_end(LSArray<LSValue*>* a) {
 	return a->end();
 }
@@ -83,17 +73,26 @@ LSArrayIterator<LSValue*> get_array_end(LSArray<LSValue*>* a) {
 LSValue* get_array_elem(LSArrayIterator<LSValue*> it) {
 	return *it;
 }
-
 LSValue* get_array_key(LSArrayIterator<LSValue*> it) {
 	return *it;
 }
-
-int get_array_elem_int(LSArray<LSValue*>* a, int i) {
-	LSValue* v = a->at(LSNumber::get(i));
-	return (int) ((LSNumber*) v)->value;
+int get_array_elem_int(LSArrayIterator<int> it) {
+	return *it;
+}
+int get_array_key_int(LSArrayIterator<int> it) {
+	return *it;
+}
+double get_array_elem_real(LSArrayIterator<double> it) {
+	return *it;
 }
 
 LSArrayIterator<LSValue*> iterator_inc(LSArrayIterator<LSValue*> it) {
+	return ++it;
+}
+LSArrayIterator<int> iterator_inc_int(LSArrayIterator<int> it) {
+	return ++it;
+}
+LSArrayIterator<double> iterator_inc_real(LSArrayIterator<double> it) {
 	return ++it;
 }
 
@@ -128,25 +127,27 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	// Get array element (each value of array)
 	jit_value_t value_val;
+	jit_type_t args_types_val[1] = {JIT_POINTER};
 	if (var_type.nature == Nature::POINTER) {
-		jit_type_t args_types[1] = {JIT_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_val, 1, 0);
 		value_val = jit_insn_call_native(F, "get", (void*) get_array_elem, sig, &it, 1, JIT_CALL_NOTHROW);
-	} else {
-		jit_type_t args_types[2] = {JIT_POINTER, JIT_INTEGER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 2, 0);
-		value_val = jit_insn_call_native(F, "get", (void*) get_array_elem_int, sig, &it, 2, JIT_CALL_NOTHROW);
+	} else if (var_type.raw_type == RawType::INTEGER) {
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types_val, 1, 0);
+		value_val = jit_insn_call_native(F, "get", (void*) get_array_elem_int, sig, &it, 1, JIT_CALL_NOTHROW);
+	} else if (var_type.raw_type == RawType::FLOAT) {
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ls_jit_real, args_types_val, 1, 0);
+		value_val = jit_insn_call_native(F, "get", (void*) get_array_elem_real, sig, &it, 1, JIT_CALL_NOTHROW);
 	}
 
-	jit_value_t value_var = jit_value_create(F, JIT_POINTER);
+	jit_value_t value_var = jit_value_create(F, VM::get_jit_type(var_type));
 	jit_insn_store(F, value_var, value_val);
-	c.add_var(value->content, value_var, var_type, false);
+	c.add_var(value->content, value_var, var_type, true);
 
 	// Key
 	if (key != nullptr) {
 
-		jit_type_t args_types[1] = {JIT_POINTER};
-		jit_type_t sig2 = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
+		jit_type_t args_types_key[1] = {JIT_POINTER};
+		jit_type_t sig2 = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_key, 1, 0);
 		jit_value_t key_val = jit_insn_call_native(F, "get", (void*) get_array_key, sig2, &it, 1, JIT_CALL_NOTHROW);
 
 		jit_value_t key_var = jit_value_create(F, JIT_POINTER);
@@ -155,12 +156,18 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	}
 
 	// body
-	body->compile_jit(c, F, Type::NEUTRAL);
+	body->compile_jit(c, F, Type::VOID);
 
 	// it++
 	jit_type_t args_types_3[1] = {JIT_POINTER};
 	jit_type_t sig3 = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_3, 1, 0);
-	jit_insn_store(F, it, jit_insn_call_native(F, "inc", (void*) iterator_inc, sig3, &it, 1, JIT_CALL_NOTHROW));
+	void* inc_func = (void*) iterator_inc;
+	if (var_type.raw_type == RawType::INTEGER) {
+		inc_func = (void*) iterator_inc_int;
+	} else if (var_type.raw_type == RawType::FLOAT) {
+		inc_func = (void*) iterator_inc_real;
+	}
+	jit_insn_store(F, it, jit_insn_call_native(F, "inc", inc_func, sig3, &it, 1, JIT_CALL_NOTHROW));
 
 	// jump to cond
 	jit_insn_branch(F, &label_cond);
@@ -170,7 +177,9 @@ jit_value_t Foreach::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	c.leave_loop();
 
-	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+	VM::delete_temporary(F, a);
+
+	return VM::create_null(F);
 }
 
 }

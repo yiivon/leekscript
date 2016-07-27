@@ -145,12 +145,27 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 		or op->type == TokenType::MINUS) {
 
 		type = v1->type.mix(v2->type);
+	}
 
-		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL) {
-			VariableValue* vv = dynamic_cast<VariableValue*>(v1);
-			if (vv != nullptr and vv->var->value != nullptr) {
-				// TODO not working
-				//vv->var->must_be_pointer(analyser);
+	// A = B, A += B, etc. A must be a l-value
+	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
+		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
+		or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::MODULO_EQUAL
+		or op->type == TokenType::POWER_EQUAL) {
+		// TODO other operators like |= ^= &=
+
+		// Check if A is a l-value
+		bool is_left_value = true;
+		if (dynamic_cast<LeftValue*>(v1) == nullptr) {
+			std::string c = "<v>";
+			analyser->add_error({SemanticException::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), c});
+			is_left_value = false;
+		}
+
+		// A += B, A -= B
+		if (is_left_value and (op->type == TokenType::PLUS_EQUAL or op->type == TokenType::MINUS_EQUAL)) {
+			if (v1->type == Type::INTEGER and v2->type == Type::FLOAT) {
+				((LeftValue*) v1)->change_type(analyser, Type::FLOAT);
 			}
 		}
 	}
@@ -179,7 +194,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 			ex2->operations = 0;
 		}
 	}
-//	cout << "exp type " << type << endl;
 }
 
 
@@ -241,11 +255,13 @@ LSValue* jit_ge(LSValue* x, LSValue* y) {
 
 LSValue* jit_store(LSValue** x, LSValue* y) {
 	y->refs++;
-	return *x = y;
+	LSValue* r = *x = y;
+	LSValue::delete_val(y);
+	return r;
 }
 
-LSValue* jit_store_value(int* x, int y) {
-	return LSNumber::get(*x = y);
+int jit_store_value(int* x, int y) {
+	return *x = y;
 }
 
 LSValue* jit_swap(LSValue** x, LSValue** y) {
@@ -258,8 +274,8 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 LSValue* jit_add_equal(LSValue* x, LSValue* y) {
 	return y->operator += (x);
 }
-LSValue* jit_add_equal_value(int* x, int y) {
-	return LSNumber::get(*x += y);
+int jit_add_equal_value(int* x, int y) {
+	return *x += y;
 }
 LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
 	return y->operator -= (x);
@@ -371,11 +387,14 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 					args.push_back(l1->compile_jit_l(c, F, Type::NEUTRAL));
 					args.push_back(v2->compile_jit(c, F, Type::NEUTRAL));
 
-					ls_func = (void*) &jit_store_value;
-					v1_conv = Type::NEUTRAL;
-					v2_conv = Type::NEUTRAL;
-					use_jit_func = false;
+					jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+					jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 2, 0);
+					jit_value_t v = jit_insn_call_native(F, "", (void*) jit_store_value, sig, args.data(), 2, JIT_CALL_NOTHROW);
 
+					if (req_type.nature == Nature::POINTER) {
+						return VM::value_to_pointer(F, v, req_type);
+					}
+					return v;
 				} else {
 
 					jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
@@ -454,11 +473,15 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 				args.push_back(l1->compile_jit_l(c, F, Type::NEUTRAL));
 				args.push_back(v2->compile_jit(c, F, Type::NEUTRAL));
-				ls_func = (void*) &jit_add_equal_value;
-				v1_conv = Type::NEUTRAL;
-				v2_conv = Type::NEUTRAL;
-				use_jit_func = false;
-				break;
+
+				jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+				jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 2, 0);
+				jit_value_t v = jit_insn_call_native(F, "", (void*) jit_add_equal_value, sig, args.data(), 2, JIT_CALL_NOTHROW);
+
+				if (req_type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(F, v, req_type);
+				}
+				return v;
 			}
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
@@ -819,13 +842,18 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 			jit_value_t y = v2->compile_jit(c, F, Type::POINTER);
 			jit_insn_store(F, v, y);
+//			VM::inc_refs(F, y);
 
 			jit_insn_branch(F, &label_end);
 			jit_insn_label(F, &label_else);
 
 			jit_insn_store(F, v, x);
+			VM::inc_refs(F, x);
 
 			jit_insn_label(F, &label_end);
+
+			VM::delete_temporary(F, x);
+
 
 			return v;
 			break;

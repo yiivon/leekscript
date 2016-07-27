@@ -7,6 +7,8 @@
 	"CANNOT_CALL_VALUE" : "Impossible d'appeller l'expression « %s », elle n'est pas une fonction ou une classe",
 	"BREAK_MUST_BE_IN_LOOP" : "L'instruction « break » doit se trouver à l'intérieur d'une boucle",
 	"CONTINUE_MUST_BE_IN_LOOP" : "L'instruction « continue » doit se trouver à l'intérieur d'une boucle",
+	"ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER" : "Cette clé d'accès au tableau « %s » doit être un nombre",
+	"VALUE_MUST_BE_A_LVALUE" : "Cette valeur « %s » doit être une l-value",
 	
 	"UNKNOWN_ERROR" : "Erreur inconnue"
 }

@@ -63,15 +63,13 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		}
 
 		if (type == Type::VOID) {
-			throw SemanticException(SemanticException::Type::CANT_ASSIGN_VOID, var->line, var->content);
+			analyser->add_error({SemanticException::Type::CANT_ASSIGN_VOID, var->line, var->content});
 		}
 
-		// Global Variable already defined ? We don't define another time
-//		if (vars.find(var->content) == vars.end()) {
-			SemanticVar* v = analyser->add_var(var, type, value);
-			vars.insert(pair<string, SemanticVar*>(var->content, v));
-//		}
-		vars.at(var->content)->type = type;
+		SemanticVar* v = analyser->add_var(var, type, value, this);
+
+		vars.insert(pair<string, SemanticVar*>(var->content, v));
+		vars.at(var->content)->type = v->type;
 	}
 	this->return_value = return_value;
 }
@@ -87,7 +85,7 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 
 			Value* ex = expressions[i];
 
-			jit_value_t var = jit_value_create(F, VM::get_jit_type(ex->type));
+			jit_value_t var = jit_value_create(F, VM::get_jit_type(v->type));
 			c.add_var(name, var, v->type, false);
 
 			jit_value_t val;
@@ -106,22 +104,22 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 			}
 
 			if (i == expressions.size() - 1) {
-				if (ex->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
+				if (v->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
 					return VM::value_to_pointer(F, val, req_type);
 				}
 				return val;
 			}
 		} else {
 
-			jit_value_t var = jit_value_create(F, JIT_INTEGER);
+			jit_value_t var = jit_value_create(F, JIT_POINTER);
 			c.add_var(name, var, Type::NULLL, false);
 
-			jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+			jit_value_t val = VM::create_null(F);
 			jit_insn_store(F, var, val);
 			VM::inc_refs(F, val);
 		}
 	}
-	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+	return VM::create_null(F);
 }
 
 }

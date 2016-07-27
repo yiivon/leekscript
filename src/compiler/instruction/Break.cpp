@@ -10,6 +10,7 @@ namespace ls {
 
 Break::Break() {
 	value = 1;
+	can_return = false;
 }
 
 Break::~Break() {}
@@ -25,7 +26,7 @@ void Break::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	// break must be in a loop
 	if (!analyser->in_loop()) {
-		throw SemanticException(SemanticException::Type::BREAK_MUST_BE_IN_LOOP, 0);
+		analyser->add_error({SemanticException::Type::BREAK_MUST_BE_IN_LOOP, 0});
 	}
 }
 

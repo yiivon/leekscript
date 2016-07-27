@@ -40,7 +40,8 @@ jit_value_t String::compile_jit(Compiler&, jit_function_t& F, Type) const {
 
 	jit_type_t args_types[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
-	return jit_insn_call_native(F, "convert", (void*) String_create, sig, &base, 1, JIT_CALL_NOTHROW);
+
+	return jit_insn_call_native(F, "create", (void*) String_create, sig, &base, 1, JIT_CALL_NOTHROW);
 }
 
 }

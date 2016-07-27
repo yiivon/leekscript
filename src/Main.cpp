@@ -12,6 +12,7 @@
 #include "doc/Documentation.hpp"
 #include "../benchmark/Benchmark.hpp"
 #include "../test/Test.hpp"
+#include "vm/LSValue.hpp"
 
 using namespace std;
 
@@ -20,6 +21,10 @@ bool param_verbose = false;
 bool param_exec = false;
 bool param_file = false;
 bool param_json = false;
+
+namespace ls {
+	std::map<LSValue*, LSValue*> objs;
+}
 
 int main(int argc, char* argv[]) {
 

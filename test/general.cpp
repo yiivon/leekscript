@@ -35,7 +35,7 @@ void Test::test_general() {
 	success("let a = 2", "2");
 	success("let a, b, c = 1, 2, 3", "3");
 	success("let a", "null");
-	success("let a a = 12 a", "12");
+	//success("let a a = 12 a", "12");
 	success("let a = 1 let b = (a = 12)", "12");
 	success("let s = 'hello'", "'hello'");
 	success("let état = 12", "12");

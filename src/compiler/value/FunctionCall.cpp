@@ -60,7 +60,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 		std::ostringstream oss;
 		function->print(oss);
 		std::string content = oss.str();
-		throw SemanticException(SemanticException::Type::CANNOT_CALL_VALUE, function->line(), content);
+		analyser->add_error({SemanticException::Type::CANNOT_CALL_VALUE, function->line(), content});
 	}
 
 	int a = 0;
@@ -145,7 +145,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 					std_func = m->addr;
 					function->type = m->type;
 				} else {
-					throw SemanticException(SemanticException::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, oa->field->content);
+					analyser->add_error({SemanticException::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, oa->field->content});
 				}
 
 			} else { // "salut".size()
@@ -211,7 +211,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 						std_func = m->addr;
 						function->type = m->type;
 					} else {
-						throw SemanticException(SemanticException::Type::METHOD_NOT_FOUND, oa->field->line, oa->field->content);
+						analyser->add_error({SemanticException::Type::METHOD_NOT_FOUND, oa->field->line, oa->field->content});
 					}
 				}
 			}

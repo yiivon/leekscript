@@ -25,7 +25,7 @@ const Type Type::NEUTRAL(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::VALUE(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
 
-const Type Type::NULLL(RawType::NULLL, Nature::VALUE);
+const Type Type::NULLL(RawType::NULLL, Nature::POINTER);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
 const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
 const Type Type::NUMBER(RawType::NUMBER, Nature::POINTER);
@@ -365,6 +365,11 @@ void Type::toJson(ostream& os) const {
 		getReturnType().toJson(os);
 	}
 	os << "}";
+}
+
+bool Type::isNumber() const {
+	return raw_type == RawType::NUMBER or
+		dynamic_cast<const NumberRawType*>(raw_type) != nullptr;
 }
 
 ostream& operator << (ostream& os, const Type& type) {

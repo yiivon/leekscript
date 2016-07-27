@@ -20,13 +20,11 @@ public:
 	virtual int line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
-
 	virtual bool will_take(SemanticAnalyser* analyser, const unsigned, const Type);
-
 	bool array_access_will_take(SemanticAnalyser* analyser, const unsigned, const Type, int level);
+	virtual void change_type(SemanticAnalyser*, const Type&) override;
 
 	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
-
 	virtual jit_value_t compile_jit_l(Compiler&, jit_function_t&, Type) const override;
 };
 

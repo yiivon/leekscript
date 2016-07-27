@@ -8,16 +8,13 @@ using namespace std;
 
 namespace ls {
 
-Return::Return() {
-	expression = nullptr;
-	function = nullptr;
-	in_function = false;
-}
+Return::Return() : Return(nullptr) {}
 
 Return::Return(Value* v) {
 	expression = v;
 	function = nullptr;
 	in_function = false;
+	can_return = true;
 }
 
 Return::~Return() {

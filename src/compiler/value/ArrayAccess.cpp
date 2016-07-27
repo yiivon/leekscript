@@ -3,6 +3,8 @@
 #include "../../compiler/value/Array.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticException.hpp"
 
 using namespace std;
 
@@ -48,6 +50,21 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type) {
 		type = array->type.getElementType();
 	}
 
+	// Range array access : array[4:12], check if the values are numbers
+	if (key != nullptr and key2 != nullptr) {
+
+		key2->analyse(analyser);
+
+		if (not key->type.isNumber()) {
+			std::string k = "<key 1>";
+			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
+		}
+		if (not key2->type.isNumber()) {
+			std::string k = "<key 2>";
+			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
+		}
+	}
+
 //	cout << "array access " << type << endl;
 }
 
@@ -77,6 +94,10 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const unsig
 	}
 
 	return false;
+}
+
+void ArrayAccess::change_type(SemanticAnalyser*, const Type&) {
+	// TODO
 }
 
 LSValue* access_temp(LSArray<LSValue*>* array, LSValue* key) {

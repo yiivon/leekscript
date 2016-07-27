@@ -27,6 +27,10 @@ void Test::test_numbers() {
 	success_almost("0.2 + 0.1", 0.3);
 	success("|-12|", "12");
 
+	// null must not be considered as 0
+	success("null + 5", "null");
+	success("null * 5", "null");
+
 	// with variables
 	success("let a = 2 a++", "2");
 	success("let a = 2; ++a", "3");

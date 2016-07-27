@@ -25,6 +25,7 @@ ObjectAccess::ObjectAccess() {
 
 ObjectAccess::~ObjectAccess() {
 	delete object;
+	LSValue::delete_val(field_string);
 }
 
 void ObjectAccess::print(ostream& os) const {
@@ -37,6 +38,10 @@ int ObjectAccess::line() const {
 }
 
 void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
+
+	if (field_string == nullptr) {
+		field_string = new LSString(field->content);
+	}
 
 	object->analyse(analyser);
 
@@ -109,6 +114,10 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 //	cout << "object_access '" << field->content << "' type : " << type << endl;
 }
 
+void ObjectAccess::change_type(SemanticAnalyser*, const Type&) {
+	// nothing to do since object attributes are pointers
+}
+
 LSValue* object_access(LSValue* o, LSString* k) {
 	return o->attr(k);
 }
@@ -116,7 +125,6 @@ LSValue* object_access(LSValue* o, LSString* k) {
 LSValue** object_access_l(LSValue* o, LSString* k) {
 	return o->attrL(k);
 }
-
 
 jit_value_t ObjectAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
@@ -144,13 +152,12 @@ jit_value_t ObjectAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 		jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
-		jit_value_t k = JIT_CREATE_CONST_POINTER(F, new LSString(field->content));
+		jit_value_t k = JIT_CREATE_CONST_POINTER(F, field_string);
 		jit_value_t args[] = {o, k};
 
 		jit_value_t res = jit_insn_call_native(F, "access", (void*) object_access, sig, args, 2, JIT_CALL_NOTHROW);
 
 		VM::delete_temporary(F, o);
-		VM::delete_temporary(F, k);
 		return res;
 	}
 }
@@ -162,9 +169,12 @@ jit_value_t ObjectAccess::compile_jit_l(Compiler& c, jit_function_t& F, Type) co
 	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
-	jit_value_t k = JIT_CREATE_CONST_POINTER(F, new LSString(field->content));
+	jit_value_t k = JIT_CREATE_CONST_POINTER(F, field_string);
 	jit_value_t args[] = {o, k};
-	return jit_insn_call_native(F, "access_l", (void*) object_access_l, sig, args, 2, JIT_CALL_NOTHROW);
+
+	jit_value_t res = jit_insn_call_native(F, "access_l", (void*) object_access_l, sig, args, 2, JIT_CALL_NOTHROW);
+
+	return res;
 }
 
 }

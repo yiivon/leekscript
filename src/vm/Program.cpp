@@ -88,7 +88,7 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 	}
 
 	jit_value_t res = body->compile_jit(c, F, Type::POINTER);
-	VM::inc_refs(F, res);
+//	VM::inc_refs(F, res);
 
 	if (toplevel) {
 

@@ -56,7 +56,8 @@ void Test::test_loops() {
 	 */
 	header("Foreach loops");
 	success("for v in [1, 2, 3, 4] {}", "null");
-//	success("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
+	success("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
+	success_almost("let s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s", 10.969999999999998863);
 	success("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
 	//success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
 

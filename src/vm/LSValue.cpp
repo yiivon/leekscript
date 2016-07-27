@@ -9,20 +9,24 @@
 #include "VM.hpp"
 
 using namespace std;
-using namespace ls;
+
+namespace ls {
 
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
+extern std::map<LSValue*, LSValue*> objs;
 
 LSValue::LSValue() {
 //	cout << "LSValue()" << endl;
 	native = false;
 	obj_count++;
+	objs.insert({this, this});
 }
 
 LSValue::~LSValue() {
 //	cout << "~LSValue()" << endl;
 	obj_deleted++;
+	objs.erase(this);
 }
 
 std::ostream& operator << (std::ostream& os, LSValue& value) {
@@ -82,4 +86,6 @@ void LSValue::delete_val(LSValue* value) {
 		//cout << "delete LSValue" << endl;
 		delete value;
 	}
+}
+
 }

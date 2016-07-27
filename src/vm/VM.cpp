@@ -48,11 +48,14 @@ Program* VM::compile(const std::string code) {
 	Compiler c;
 	Context context { "{}" };
 
-	try {
-		SemanticAnalyser sem;
-		sem.analyse(program, &context, modules);
-	} catch (SemanticException& e) {
-		cout << "Line " << e.line << " : " << e.message() << endl;
+
+	SemanticAnalyser sem;
+	sem.analyse(program, &context, modules);
+
+	if (sem.errors.size()) {
+		for (auto e : sem.errors) {
+			cout << "Line " << e.line << " : " << e.message() << endl;
+		}
 		return nullptr;
 	}
 
@@ -75,10 +78,13 @@ Program* VM::compile(const std::string code) {
 	return program;
 }
 
+extern std::map<LSValue*, LSValue*> objs;
+
 string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
+	objs = {};
 
 	auto compile_start = chrono::high_resolution_clock::now();
 
@@ -109,24 +115,21 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	Compiler c;
 	Context context { ctx };
 
-	try {
-		SemanticAnalyser sem;
-		sem.analyse(program, &context, modules);
 
-	} catch (SemanticException& e) {
+	SemanticAnalyser sem;
+	sem.analyse(program, &context, modules);
+
+	if (sem.errors.size()) {
 
 		if (mode == ExecMode::COMMAND_JSON) {
-			cout << "{\"success\":false,\"errors\":[{\"line\":" << e.line << ",\"message\":\"" << e.message() << "\"}]}" << endl;
+			cout << "{\"success\":false,\"errors\":[]}" << endl;
 		} else if (mode == ExecMode::TEST) {
-
 			delete program;
-			throw e;
-//			return std::to_string(e.type);
+			throw sem.errors[0];
 		} else {
-			cout << "Line " << e.line << " : " << e.message() << endl;
-		}
-		if (mode == ExecMode::TEST) {
-			return "<error>";
+			for (auto e : sem.errors) {
+				cout << "Line " << e.line << " : " << e.message() << endl;
+			}
 		}
 		return ctx;
 	}
@@ -258,7 +261,11 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	delete program;
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
-		//cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
+		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
+		for (auto o : objs) {
+			o.second->print(cout);
+			cout << " (" << o.second->refs << " refs)" << endl;
+		}
 	}
 
 	return result;
@@ -490,6 +497,15 @@ void VM::print_int(jit_function_t& F, jit_value_t& val) {
 	jit_type_t args[1] = {JIT_INTEGER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "print_int", (void*) VM_print_int, sig, &val, 1, JIT_CALL_NOTHROW);
+}
+
+LSValue* VM_create_null() {
+	return LSNull::null_var->clone();
+}
+
+jit_value_t VM::create_null(jit_function_t& F) {
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, {}, 0, 0);
+	return jit_insn_call_native(F, "create_null", (void*) VM_create_null, sig, {}, 0, JIT_CALL_NOTHROW);
 }
 
 }

@@ -14,6 +14,7 @@ class Instruction {
 public:
 
 	Type type;
+	bool can_return = false;
 
 	virtual ~Instruction() = 0;
 

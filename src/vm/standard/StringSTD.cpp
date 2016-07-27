@@ -109,6 +109,7 @@ LSValue* string_map(const LSString* s, void* function) {
 		LSString* res = (LSString*) fun(ch);
 		new_string += *res;
 		LSValue::delete_val(res);
+		LSValue::delete_val(ch);
 	}
 	return new LSString(new_string);
 }

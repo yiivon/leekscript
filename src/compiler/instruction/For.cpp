@@ -77,7 +77,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			value = variablesValues[i];
 		}
 		if (declare_variables[i]) {
-			SemanticVar* v = analyser->add_var(var, info, value);
+			SemanticVar* v = analyser->add_var(var, info, value, nullptr);
 			vars.insert(pair<string, SemanticVar*>(var->content, v));
 		} else {
 			SemanticVar* v = analyser->get_var(var);
@@ -152,7 +152,7 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 	}
 
 	// body
-	body->compile_jit(c, F, Type::NEUTRAL);
+	body->compile_jit(c, F, Type::VOID);
 
 	jit_insn_label(F, &label_it);
 
@@ -169,7 +169,7 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	c.leave_loop();
 
-	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+	return VM::create_null(F);
 }
 
 }

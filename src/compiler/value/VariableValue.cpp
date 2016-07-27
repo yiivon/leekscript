@@ -2,8 +2,9 @@
 
 #include "../../vm/VM.hpp"
 #include "math.h"
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
-#include "../../compiler/value/Function.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../value/Function.hpp"
+#include "../instruction/VariableDeclaration.hpp"
 
 using namespace std;
 
@@ -29,9 +30,10 @@ int VariableValue::line() const {
 void VariableValue::analyse(SemanticAnalyser* analyser, const Type) {
 
 	var = analyser->get_var(token);
-	type = var->type;
-	attr_types = var->attr_types;
-
+	if (var != nullptr) {
+		type = var->type;
+		attr_types = var->attr_types;
+	}
 //	cout << "VV " << name->content << " : " << type << endl;
 //	cout << "var scope : " << (int)var->scope << endl;
 //	for (auto t : attr_types)
@@ -43,6 +45,19 @@ void VariableValue::must_return(SemanticAnalyser* analyser, const Type& ret_type
 	var->value->must_return(analyser, ret_type);
 
 	type.setReturnType(ret_type);
+}
+
+/*
+ * let a = 12 // integer
+ * a = 5.6 // float
+ * a = 12 // integer
+ * a += 1.2 // float at the previous assignment
+ */
+void VariableValue::change_type(SemanticAnalyser* analyser, const Type& type) {
+	if (var != nullptr) {
+		var->type = type;
+		this->type = type;
+	}
 }
 
 extern map<string, jit_value_t> internals;
