@@ -3,7 +3,4 @@
 '\''				| produces (\) but should be (') 
 "\""				| idem
 let a = 2 a = ""	  | exception, a transforms into a string, and was a integer at declaration
-null * 5			| should be null, not act like 0 (confusing)
-[] = 5				| same but crash in this case
-'salut'['':'']	  	| must throw a semantic error
 Number.sqrt("foo")	  | should throw a semantic error
