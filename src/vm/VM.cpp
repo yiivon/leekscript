@@ -91,6 +91,13 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	LexicalAnalyser lex;
 	vector<Token> tokens = lex.analyse(code);
 
+	if (lex.errors.size()) {
+		for (auto error : lex.errors) {
+			cout << "Line " << error.line << " : " <<  error.message() << endl;
+		}
+		return ctx;
+	}
+
 	SyntaxicAnalyser syn;
 	Program* program = syn.analyse(tokens);
 

@@ -74,6 +74,7 @@ jit_value_t Block::compile_jit(Compiler& c, jit_function_t& F, Type type) const 
 	if (type != Type::VOID) {
 		return VM::create_null(F);
 	}
+	return jit_value_create_nint_constant(F, jit_type_int, 0);
 }
 
 }
