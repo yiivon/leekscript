@@ -58,10 +58,10 @@ void Test::test_arrays() {
 	success("1000 in [1..1000]", "true");
 	success("0 in [1..1000]", "false");
 	success("1001 in [1..1000]", "false");
-	/*
-	success("[1..1000][500]", "501");
-	success("[1000..2000][12]", "1012");
-	*/
+
+//	success("[1..1000][500]", "501");
+//	success("[1000..2000][12]", "1012");
+
 
 	/*
 	 * Array standard library

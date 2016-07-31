@@ -125,6 +125,17 @@ public:
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
+class IntervalRawType : public BaseRawType {
+public:
+	~IntervalRawType() {}
+	const std::string getName() const { return "Interval"; };
+	const std::string getClass() const { return "Array"; };
+	const std::string getJsonName() const { return "array"; };
+	virtual bool operator == (const BaseRawType*) { return false; }
+	bool operator == (const IntervalRawType*) { return true; }
+	virtual bool derived_from(const ArrayRawType*) const { return true; }
+};
+
 class ObjectRawType : public BaseRawType {
 public:
 	~ObjectRawType() {}

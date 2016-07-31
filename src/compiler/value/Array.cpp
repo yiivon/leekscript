@@ -115,10 +115,10 @@ LSMap<LSValue*>* LSArray_create_map() {
 	return new LSMap<LSValue*>();
 }
 
-LSInterval* LSArray_create_interval(LSValue* a, LSValue* b) {
+LSInterval* LSArray_create_interval(int a, int b) {
 	LSInterval* interval = new LSInterval();
-	interval->a = floor(((LSNumber*) a)->value);
-	interval->b = floor(((LSNumber*) b)->value);
+	interval->a = a;
+	interval->b = b;
 	return interval;
 }
 
@@ -147,17 +147,14 @@ jit_value_t Array::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	if (interval) {
 
-		jit_value_t a = expressions[0]->compile_jit(c, F, Type::POINTER);
-		jit_value_t b = expressions[1]->compile_jit(c, F, Type::POINTER);
+		jit_value_t a = expressions[0]->compile_jit(c, F, Type::INTEGER);
+		jit_value_t b = expressions[1]->compile_jit(c, F, Type::INTEGER);
 
-		jit_type_t args[3] = {JIT_POINTER, JIT_POINTER};
+		jit_type_t args[3] = {JIT_INTEGER, JIT_INTEGER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 2, 0);
 		jit_value_t args_v[] = {a, b};
 
 		jit_value_t interval = jit_insn_call_native(F, "new", (void*) LSArray_create_interval, sig, args_v, 2, JIT_CALL_NOTHROW);
-
-		VM::delete_temporary(F, a);
-		VM::delete_temporary(F, b);
 
 		return interval;
 
