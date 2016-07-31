@@ -1,10 +1,3 @@
-/*
- * LSInterval.cpp
- *
- *  Created on: 5 mai 2016
- *      Author: pierre
- */
-
 #include <exception>
 
 #include "LSInterval.hpp"
