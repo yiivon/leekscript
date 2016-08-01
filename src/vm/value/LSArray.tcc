@@ -262,6 +262,7 @@ inline LSArray<LSArray<T>*>* LSArray<T>::chunk(int size) const {
 	if (size <= 0) size = 1;
 
 	LSArray<LSArray<T>*>* new_array = new LSArray<LSArray<T>*>();
+
 	new_array->reserve(this->size() / size + 1);
 
 	size_t i = 0;
@@ -554,7 +555,9 @@ inline LSArray<LSValue*>* LSArray<int>::map2(const LSArray<LSValue*>* array, con
 	for (unsigned i = 0; i < this->size(); ++i) {
 		LSValue* v1 = LSNumber::get(this->operator [] (i));
 		LSValue* v2 = array->operator [] (i);
-		new_array->push_clone((LSValue*) fun(v1, v2));
+		LSValue* res = (LSValue*) fun(v1, v2);
+		new_array->push_clone(res);
+		LSValue::delete_val(res);
 	}
 	return new_array;
 }
@@ -569,7 +572,9 @@ LSArray<LSValue*>* LSArray<T>::map2_int(const LSArray<int>* array, const void* f
 	for (unsigned i = 0; i < this->size(); ++i) {
 		LSValue* v1 = this->operator [] (i);
 		int v2 = array->operator [] (i);
-		new_array->push_clone((LSValue*) fun(v1, v2));
+		LSValue* res = (LSValue*) fun(v1, v2);
+		new_array->push_clone(res);
+		LSValue::delete_val(res);
 	}
 	return new_array;
 }
@@ -584,7 +589,9 @@ inline LSArray<LSValue*>* LSArray<int>::map2_int(const LSArray<int>* array, cons
 	for (unsigned i = 0; i < this->size(); ++i) {
 		int v1 = this->operator [] (i);
 		int v2 = array->operator [] (i);
-		new_array->push_clone((LSValue*) fun(v1, v2));
+		LSValue* res = (LSValue*) fun(v1, v2);
+		new_array->push_clone(res);
+		LSValue::delete_val(res);
 	}
 	return new_array;
 }
@@ -1659,7 +1666,7 @@ inline bool LSArray<double>::in(const LSValue* key) const {
 }
 
 template <>
-inline int LSArray<int>::atv(int i) {
+inline int LSArray<int>::atv(const int i) {
 	return this->operator[] (i);
 }
 

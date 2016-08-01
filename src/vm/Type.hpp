@@ -181,6 +181,7 @@ public:
 	static const FloatRawType* const FLOAT;
 	static const StringRawType* const STRING;
 	static const ArrayRawType* const ARRAY;
+	static const IntervalRawType* const INTERVAL;
 	static const ObjectRawType* const OBJECT;
 	static const FunctionRawType* const FUNCTION;
 	static const ClassRawType* const CLASS;
@@ -204,7 +205,7 @@ public:
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native);
 
-	bool must_manage_memory();
+	bool must_manage_memory() const;
 
 	Type getReturnType() const;
 	void setReturnType(Type type);
@@ -256,6 +257,7 @@ public:
 	static const Type INT_ARRAY;
 	static const Type FLOAT_ARRAY;
 	static const Type STRING_ARRAY;
+	static const Type INTERVAL;
 	static const Type FUNCTION;
 	static const Type FUNCTION_P;
 	static const Type CLASS;

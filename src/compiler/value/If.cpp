@@ -105,14 +105,17 @@ jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const
 
 	if (elze != nullptr) {
 		jit_value_t else_v = elze->compile_jit(c, F, req_type);
-
+		if (req_type != Type::VOID) {
 		jit_insn_store(F, res, else_v);
+		}
 
 	} else {
+		if (req_type != Type::VOID) {
 		if (req_type.nature == Nature::POINTER) {
 			jit_insn_store(F, res, VM::create_null(F));
 		} else {
 			jit_insn_store(F, res, jit_value_create_nint_constant(F, JIT_INTEGER, 55555555));
+		}
 		}
 	}
 

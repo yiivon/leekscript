@@ -54,26 +54,26 @@ ArraySTD::ArraySTD() : Module("Array") {
 	float_array_array.setElementType(Type::FLOAT_ARRAY);
 
 	method("chunk", {
-			   {Type::ARRAY, array_array, {}, (void*) &LSArray<LSValue*>::chunk_1},
-			   {Type::FLOAT_ARRAY, float_array_array, {}, (void*) &LSArray<double>::chunk_1},
-			   {Type::INT_ARRAY, int_array_array, {}, (void*) &LSArray<int>::chunk_1},
+		{Type::ARRAY, array_array, {}, (void*) &LSArray<LSValue*>::chunk_1},
+		{Type::FLOAT_ARRAY, float_array_array, {}, (void*) &LSArray<double>::chunk_1},
+		{Type::INT_ARRAY, int_array_array, {}, (void*) &LSArray<int>::chunk_1},
 
-			   {Type::ARRAY, array_array, {Type::INTEGER}, (void*) &LSArray<LSValue*>::chunk},
-			   {Type::FLOAT_ARRAY, float_array_array, {Type::INTEGER}, (void*) &LSArray<double>::chunk},
-			   {Type::INT_ARRAY, int_array_array, {Type::INTEGER}, (void*) &LSArray<int>::chunk},
-		   });
+		{Type::ARRAY, array_array, {Type::INTEGER}, (void*) &LSArray<LSValue*>::chunk},
+		{Type::FLOAT_ARRAY, float_array_array, {Type::INTEGER}, (void*) &LSArray<double>::chunk},
+		{Type::INT_ARRAY, int_array_array, {Type::INTEGER}, (void*) &LSArray<int>::chunk},
+	});
 
 	method("unique", {
-			   {Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::unique},
-			   {Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::unique},
-			   {Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::unique},
-		   });
+		{Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::unique},
+		{Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::unique},
+		{Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::unique},
+	});
 
 	method("sort", {
-			   {Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::sort},
-			   {Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::sort},
-			   {Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::sort},
-		   });
+		{Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::sort},
+		{Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::sort},
+		{Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::sort},
+	});
 
 	Type map2_fun_type = Type::FUNCTION;
 	map2_fun_type.setArgumentType(0, Type::POINTER);

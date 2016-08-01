@@ -573,6 +573,9 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 				(function->type.getArgumentType(i).raw_type == RawType::FLOAT) ? JIT_FLOAT :
 				(function->type.getArgumentType(i).raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
 				JIT_INTEGER);
+		if (function->type.getArgumentType(i).must_manage_memory()) {
+			VM::inc_refs(F, args[i]);
+		}
 	}
 
 	//cout << "function call return type : " << info << endl;
@@ -591,8 +594,8 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 	// Destroy temporary arguments
 	for (int i = 0; i < arg_count; ++i) {
-		if (function->type.getArgumentType(i).nature == Nature::POINTER) {
-			VM::delete_temporary(F, args[i]);
+		if (function->type.getArgumentType(i).must_manage_memory()) {
+			VM::delete_obj(F, args[i]);
 		}
 	}
 

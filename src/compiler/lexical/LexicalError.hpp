@@ -3,6 +3,8 @@
 
 #include <string>
 
+namespace ls {
+
 class LexicalError {
 public:
 
@@ -18,6 +20,10 @@ public:
 	virtual ~LexicalError();
 
 	std::string message() const;
+
+	static std::string build_message(Type type);
 };
+
+}
 
 #endif

@@ -241,6 +241,7 @@ LSValue* jit_not_equals(LSValue* x, LSValue* y) {
 	return LSBoolean::get(x->operator != (y));
 }
 LSValue* jit_lt(LSValue* x, LSValue* y) {
+
 	return LSBoolean::get(y->operator < (x));
 }
 LSValue* jit_le(LSValue* x, LSValue* y) {

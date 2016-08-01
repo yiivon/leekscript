@@ -65,8 +65,9 @@ jit_value_t Block::compile_jit(Compiler& c, jit_function_t& F, Type type) const 
 			c.leave_block(F);
 			return val;
 		} else {
-			jit_value_t res = instructions[i]->compile_jit(c, F, Type::POINTER);
-			VM::delete_temporary(F, res);
+			//jit_value_t res = instructions[i]->compile_jit(c, F, Type::POINTER);
+			//VM::delete_temporary(F, res);
+			jit_value_t res = instructions[i]->compile_jit(c, F, Type::VOID);
 		}
 	}
 	c.leave_block(F);

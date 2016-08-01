@@ -92,6 +92,9 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	vector<Token> tokens = lex.analyse(code);
 
 	if (lex.errors.size()) {
+		if (mode == ExecMode::TEST) {
+			throw lex.errors[0];
+		}
 		for (auto error : lex.errors) {
 			cout << "Line " << error.line << " : " <<  error.message() << endl;
 		}
@@ -270,8 +273,8 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
 		for (auto o : objs) {
-//			o.second->print(cout);
-//			cout << " (" << o.second->refs << " refs)" << endl;
+			o.second->print(cout);
+			cout << " (" << o.second->refs << " refs)" << endl;
 		}
 	}
 
@@ -430,8 +433,6 @@ jit_value_t VM::get_refs(jit_function_t& F, jit_value_t& obj) {
 }
 
 void VM_inc_refs(LSValue* val) {
-//	val->print(cout);
-//	cout << " inc refs" << endl;
 	val->refs++;
 }
 
@@ -439,6 +440,16 @@ void VM::inc_refs(jit_function_t& F, jit_value_t& obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "inc_refs", (void*) VM_inc_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
+}
+
+void VM_dec_refs(LSValue* val) {
+	val->refs--;
+}
+
+void VM::dec_refs(jit_function_t& F, jit_value_t& obj) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+	jit_insn_call_native(F, "dec_refs", (void*) VM_dec_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 void VM_delete(LSValue* ptr) {
@@ -449,12 +460,10 @@ void VM::delete_obj(jit_function_t& F, jit_value_t& obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "delete", (void*) VM_delete, sig, &obj, 1, JIT_CALL_NOTHROW);
-//	jit_insn_store(F, obj, JIT_CREATE_CONST(F, JIT_INTEGER, 0));
 }
 
 void VM_delete_temporary(LSValue* val) {
 	if (val->refs == 0) {
-//		cout << "delete temporary" << endl;
 		delete val;
 	}
 }

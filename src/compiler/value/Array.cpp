@@ -54,33 +54,39 @@ void Array::analyse(SemanticAnalyser* analyser, const Type) {
 
 	constant = true;
 
-	for (Value* key : keys) {
-		if (key != nullptr) {
-			key->analyse(analyser, Type::NEUTRAL);
-		}
-	}
+	if (interval) {
 
-	if (expressions.size() > 0) {
+		type = Type::INTERVAL;
 
-		Type element_type = Type::UNKNOWN;
+	} else {
 
-		for (unsigned i = 0; i < expressions.size(); ++i) {
-
-			Value* ex = expressions[i];
-			ex->analyse(analyser, Type::NEUTRAL);
-
-			if (ex->constant == false) {
-				constant = false;
-			}
-			if (i == 0) {
-				element_type = ex->type;
-			} else {
-				element_type = Type::get_compatible_type(element_type, ex->type);
+		for (Value* key : keys) {
+			if (key != nullptr) {
+				key->analyse(analyser, Type::NEUTRAL);
 			}
 		}
-		type.setElementType(element_type);
-	}
 
+		if (expressions.size() > 0) {
+
+			Type element_type = Type::UNKNOWN;
+
+			for (unsigned i = 0; i < expressions.size(); ++i) {
+
+				Value* ex = expressions[i];
+				ex->analyse(analyser, Type::NEUTRAL);
+
+				if (ex->constant == false) {
+					constant = false;
+				}
+				if (i == 0) {
+					element_type = ex->type;
+				} else {
+					element_type = Type::get_compatible_type(element_type, ex->type);
+				}
+			}
+			type.setElementType(element_type);
+		}
+	}
 //	cout << "Array type : " << type << endl;
 }
 

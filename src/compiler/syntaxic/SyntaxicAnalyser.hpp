@@ -47,7 +47,7 @@ public:
 	Block* eatMain();
 	Token* eatIdent();
 	Value* eatExpression(bool pipe_opened = false);
-	Value* eatSimpleExpression();
+	Value* eatSimpleExpression(bool pipe_opened = false);
 	Value* eatValue();
 	bool isObject();
 	Value* eatBlockOrObject();

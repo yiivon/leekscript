@@ -21,6 +21,9 @@
 #include <alloca.h>
 #endif
 
+#include <string>
+#include <iostream>
+
 #include "utf8.h"
 
 static const u_int32_t offsetsFromUTF8[6] = {
@@ -195,31 +198,33 @@ int u8_charnum(char *s, int offset)
 }
 
 /* number of characters */
-int u8_strlen(const char *s)
-{
-    int count = 0;
-    int i = 0;
-
-    while (u8_nextchar(s, &i) != 0)
+size_t u8_strlen(const char* s) {
+    size_t count = 0;
+    size_t i = 0, lasti;
+    while (1) {
+        lasti = i;
+        while (s[i] > 0) i++;
+        count += (i - lasti);
+        if (s[i++] == 0) break;
+        (void)(isutf(s[++i]) || isutf(s[++i]) || ++i);
         count++;
-
+    }
     return count;
 }
 
 /* reads the next utf-8 sequence out of a string, updating an index */
 u_int32_t u8_nextchar(const char *s, int *i)
 {
-    u_int32_t ch = 0;
-    int sz = 0;
+	u_int32_t ch = 0;
+	size_t sz = 0;
+	do {
+		ch <<= 6;
+		ch += (unsigned char) s[(*i)];
+		sz++;
+	} while (s[*i] && (++(*i)) && !isutf(s[*i]));
+	ch -= offsetsFromUTF8[sz - 1];
 
-    do {
-        ch <<= 6;
-        ch += (unsigned char)s[(*i)++];
-        sz++;
-    } while (s[*i] && !isutf(s[*i]));
-    ch -= offsetsFromUTF8[sz-1];
-
-    return ch;
+	return ch;
 }
 
 void u8_inc(char *s, int *i)

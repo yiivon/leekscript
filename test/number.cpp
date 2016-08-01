@@ -26,6 +26,12 @@ void Test::test_numbers() {
 	success("12 == 12", "true");
 	success_almost("0.2 + 0.1", 0.3);
 	success("|-12|", "12");
+	success("-12 * 2", "-24");
+	success("(-12) * 2", "-24");
+	success("-12 ** 2", "-144");
+	success("-12 ** 2", "-144");
+	success("(-12) ** 2", "144");
+	success("-12 + 2", "-10");
 
 	// null must not be considered as 0
 	success("null + 5", "null");

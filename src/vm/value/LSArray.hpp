@@ -47,7 +47,7 @@ public:
 	virtual double average() const;
 	virtual T first() const;
 	virtual T last() const;
-	int atv(int i);
+	int atv(const int i);
 	int* atLv(int i);
 	LSArray<LSValue*>* map(const void*) const;
 	LSArray<LSArray<T>*>* chunk(int size = 1) const;
