@@ -50,6 +50,8 @@ public:
 	int atv(int i);
 	int* atLv(int i);
 	LSArray<LSValue*>* map(const void*) const;
+	LSArray<LSValue*>* chunk(int size = 1) const;
+	LSArray<LSValue*>* chunk_1() const;
 	void iter(const LSFunction*) const;
 	int contains(const LSValue*) const;
 	int contains_int(int) const;

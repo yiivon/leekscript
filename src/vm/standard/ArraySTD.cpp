@@ -44,6 +44,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::ARRAY, Type::ARRAY, {map_fun_type}, (void*) &LSArray<LSValue*>::map},
 	});
 
+	method("chunk", {
+			   {Type::INT_ARRAY, Type::ARRAY, {}, (void*) &LSArray<int>::chunk_1},
+			   {Type::FLOAT_ARRAY, Type::ARRAY, {}, (void*) &LSArray<double>::chunk_1},
+			   {Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::chunk_1},
+			   {Type::INT_ARRAY, Type::ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::chunk},
+			   {Type::FLOAT_ARRAY, Type::ARRAY, {Type::INTEGER}, (void*) &LSArray<double>::chunk},
+			   {Type::ARRAY, Type::ARRAY, {Type::INTEGER}, (void*) &LSArray<LSValue*>::chunk}
+		   });
+
 	Type map2_fun_type = Type::FUNCTION;
 	map2_fun_type.setArgumentType(0, Type::POINTER);
 	map2_fun_type.setArgumentType(1, Type::POINTER);
