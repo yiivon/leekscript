@@ -5,6 +5,7 @@
 #include <string>
 #include "../src/leekscript.h"
 #include "../src/compiler/semantic/SemanticException.hpp"
+#include "../src/compiler/lexical/LexicalError.hpp"
 
 class Test {
 
@@ -27,6 +28,7 @@ public:
 	template <typename T>
 	void success_almost(std::string code, T result, T delta = std::numeric_limits<T>::epsilon());
 	void sem_err(std::string code, ls::SemanticException::Type type, std::string token);
+	void lex_err(std::string code, ls::LexicalError::Type type);
 	void ops(std::string code, int operations);
 
 	void test_general();

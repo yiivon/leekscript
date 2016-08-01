@@ -3,6 +3,7 @@
 #include "../../compiler/value/Array.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../../vm/value/LSInterval.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticException.hpp"
 
@@ -46,7 +47,8 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type) {
 	key->analyse(analyser);
 	constant = array->constant and key->constant;
 
-	if (array->type.raw_type == RawType::ARRAY) {
+
+	if (array->type.raw_type == RawType::ARRAY || array->type.raw_type == RawType::INTERVAL) {
 		type = array->type.getElementType();
 	}
 
@@ -62,6 +64,12 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type) {
 		if (not key2->type.isNumber()) {
 			std::string k = "<key 2>";
 			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
+		}
+	} else {
+
+		if (not key->type.isNumber()) {
+			std::string k = "<key 1>";
+			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, k});
 		}
 	}
 
@@ -120,6 +128,10 @@ LSValue* range(LSArray<LSValue*>* array, int start, int end) {
 	return array->range(start, end);
 }
 
+int interval_access(const LSInterval* interval, int pos) {
+	return interval->atv(pos);
+}
+
 jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
 //	cout << "aa " << type << endl;
@@ -128,30 +140,53 @@ jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_ty
 
 	if (key2 == nullptr) {
 
-		jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
+		if (array->type == Type::INTERVAL) {
 
-		Type t = type == Type::INTEGER ? Type::VALUE : Type::POINTER;
+			jit_type_t args_types[2] = {ls_jit_pointer, ls_jit_integer};
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ls_jit_integer, args_types, 2, 0);
 
-		jit_value_t k = key->compile_jit(c, F, t);
+			jit_value_t k = key->compile_jit(c, F, Type::INTEGER);
 
-		void* func = type == Type::INTEGER ? (void*) access_temp_value : (void*) access_temp;
+			jit_value_t args[] = {a, k};
+			jit_value_t res = jit_insn_call_native(F, "access", (void*) interval_access, sig, args, 2, JIT_CALL_NOTHROW);
 
-		jit_value_t args[] = {a, k};
-		jit_value_t res = jit_insn_call_native(F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
+			VM::delete_temporary(F, a);
 
-		if (t.nature == Nature::POINTER) {
-			VM::delete_temporary(F, k);
+			// Array access : 2 operations
+			VM::inc_ops(F, 2);
+
+			if (type.nature == Nature::VALUE and req_type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(F, res, type);
+			}
+			return res;
+
+		} else {
+
+			jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
+
+			Type t = type == Type::INTEGER ? Type::VALUE : Type::POINTER;
+
+			jit_value_t k = key->compile_jit(c, F, t);
+
+			void* func = type == Type::INTEGER ? (void*) access_temp_value : (void*) access_temp;
+
+			jit_value_t args[] = {a, k};
+			jit_value_t res = jit_insn_call_native(F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
+
+			if (t.nature == Nature::POINTER) {
+				VM::delete_temporary(F, k);
+			}
+			VM::delete_temporary(F, a);
+
+			// Array access : 2 operations
+			VM::inc_ops(F, 2);
+
+			if (type.nature == Nature::VALUE and req_type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(F, res, type);
+			}
+			return res;
 		}
-		VM::delete_temporary(F, a);
-
-		// Array access : 2 operations
-		VM::inc_ops(F, 2);
-
-		if (type.nature == Nature::VALUE and req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, res, type);
-		}
-		return res;
 
 	} else {
 

@@ -99,7 +99,7 @@ int for_is_true(LSValue* v) {
 	return v->isTrue();
 }
 
-jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
+jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
 
 	if (body->instructions.size() == 0 && condition == nullptr) {
 		return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
@@ -169,7 +169,10 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type) const {
 
 	c.leave_loop();
 
-	return VM::create_null(F);
+	if (req_type != Type::VOID) {
+		return VM::create_null(F);
+	}
+	return jit_value_create_nint_constant(F, jit_type_int, 0);
 }
 
 }

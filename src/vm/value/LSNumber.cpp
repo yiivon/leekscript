@@ -493,6 +493,12 @@ bool LSNumber::operator < (const LSString*) const {
 bool LSNumber::operator < (const LSArray<LSValue*>*) const {
 	return true;
 }
+bool LSNumber::operator < (const LSArray<int>* v) const {
+	return true;
+}
+bool LSNumber::operator < (const LSArray<double>* v) const {
+	return true;
+}
 bool LSNumber::operator < (const LSObject*) const {
 	return true;
 }

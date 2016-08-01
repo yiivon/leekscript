@@ -430,6 +430,12 @@ bool LSNull::operator < (const LSString*) const {
 bool LSNull::operator < (const LSArray<LSValue*>*) const {
 	return true;
 }
+bool LSNull::operator < (const LSArray<int>* v) const {
+	return true;
+}
+bool LSNull::operator < (const LSArray<double>* v) const {
+	return true;
+}
 bool LSNull::operator < (const LSFunction*) const {
 	return true;
 }

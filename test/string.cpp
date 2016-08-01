@@ -5,6 +5,10 @@ void Test::test_strings() {
 	header("Strings");
 
 	// General
+	lex_err("'", ls::LexicalError::Type::UNTERMINATED_STRING);
+	lex_err("\"", ls::LexicalError::Type::UNTERMINATED_STRING);
+	lex_err("'hello world", ls::LexicalError::Type::UNTERMINATED_STRING);
+
 	success("'salut ' + 'ça va ?'", "'salut ça va ?'");
 	success("'salut' + 12", "'salut12'");
 	success("'salut' + true", "'saluttrue'");
@@ -13,6 +17,7 @@ void Test::test_strings() {
 	success("|'salut'|", "5");
 	success("~'bonjour'", "'ruojnob'");
 	success("'bonjour'[3]", "'j'");
+	sem_err("'bonjour'['hello']", ls::SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, "<key 1>");
 	success("~('salut' + ' ca va ?')", "'? av ac tulas'");
 	success("'bonjour'[2:5]", "'njou'");
 	sem_err("'bonjour'['a':5]", ls::SemanticException::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, "<key 1>");
@@ -28,8 +33,9 @@ void Test::test_strings() {
 	success("var hello = '你好，世界'", "'你好，世界'");
 	success("'♫☯🐖👽'[3]", "'👽'");
 	success("'韭' + '♫'", "'韭♫'");
-	success("'♫👽'.size()", "2");
 	success("|'♫👽'|", "2");
+	success("'♫👽'.size()", "2");
+
 	success("'☣🦆🧀𑚉𒒫𑓇𐏊'.size()", "7");
 	success("'௵௵a௵௵' / 'a'", "['௵௵', '௵௵']");
 	success("'a☂a' / '☂'", "['a', 'a']");

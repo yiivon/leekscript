@@ -328,8 +328,8 @@ Function *SyntaxicAnalyser::eatFunction()
 	return f;
 }
 
-VariableDeclaration *SyntaxicAnalyser::eatFunctionDeclaration()
-{
+VariableDeclaration* SyntaxicAnalyser::eatFunctionDeclaration() {
+
 	eat(TokenType::FUNCTION);
 
 	VariableDeclaration* vd = new VariableDeclaration();
@@ -341,7 +341,7 @@ VariableDeclaration *SyntaxicAnalyser::eatFunctionDeclaration()
 	return vd;
 }
 
-Value* SyntaxicAnalyser::eatSimpleExpression() {
+Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
 
 	Value* e = nullptr;
 
@@ -373,18 +373,28 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 				t->type == TokenType::NOT || t->type == TokenType::MINUS_MINUS ||
 				t->type == TokenType::PLUS_PLUS || t->type == TokenType::TILDE) {
 
-			if (t->type == TokenType::MINUS && nt != nullptr && t->line != nt->line) {
+			if (t->type == TokenType::MINUS && nt != nullptr && t->line == nt->line) {
 
-				e = new Expression(eatValue());
+				Operator* op = new Operator(eat());
+				Value* ex = eatExpression(pipe_opened);
+				Expression* expr = dynamic_cast<Expression*>(ex);
 
+				if (expr and expr->op->priority >= op->priority) {
+					PrefixExpression* pexp = new PrefixExpression();
+					pexp->operatorr = op;
+					pexp->expression = expr->v1;
+					expr->v1 = pexp;
+					e = expr;
+				} else {
+					PrefixExpression* pe = new PrefixExpression();
+					pe->operatorr = op;
+					pe->expression = ex;
+					e = pe;
+				}
 			} else {
-
-				Token* op = eat();
 				PrefixExpression* ex = new PrefixExpression();
-
-				ex->operatorr = new Operator(op);
+				ex->operatorr = new Operator(eat());
 				ex->expression = eatSimpleExpression();
-
 				e = new Expression(ex);
 			}
 
@@ -392,7 +402,6 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 			e = eatValue();
 		}
 	}
-
 
 	while (t->type == TokenType::OPEN_BRACKET || t->type == TokenType::OPEN_PARENTHESIS
 		   || t->type == TokenType::DOT) {
@@ -486,7 +495,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression() {
 Value* SyntaxicAnalyser::eatExpression(bool pipe_opened) {
 
 	Expression* ex = nullptr;
-	Value* e = eatSimpleExpression();
+	Value* e = eatSimpleExpression(pipe_opened);
 
 	// Opérateurs binaires
 	while (t->type == TokenType::PLUS || t->type == TokenType::MINUS ||

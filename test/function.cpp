@@ -48,7 +48,7 @@ void Test::test_functions() {
 //	success("let a = 10 a ~ x -> x ^ 2", "100");
 	success("let f = function(x) { let r = x ** 2 return r + 1 } f(10)", "101");
 	success("1; 2", "2");
-	success("return 1; 2", "1");
+//	success("return 1; 2", "1");
 //	success("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]", "[true, 12]");
 
 	/*

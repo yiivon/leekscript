@@ -149,3 +149,33 @@ void Test::sem_err(std::string code, ls::SemanticException::Type expected_type, 
 	obj_created += ls::LSValue::obj_count;
 	obj_deleted += ls::LSValue::obj_deleted;
 }
+
+void Test::lex_err(std::string code, ls::LexicalError::Type expected_type) {
+
+	total++;
+
+	bool exception = false;
+	std::string expected_message = ls::LexicalError::build_message(expected_type);
+
+	try {
+		vm.execute(code, "{}", ls::ExecMode::TEST);
+
+	} catch (ls::LexicalError& e) {
+		exception = true;
+		if (expected_type != e.type) {
+			std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << e.message() << std::endl;
+		} else {
+			std::cout << "OK   : " << code << "  ===> " << e.message() <<  std::endl;
+			success_count++;
+		}
+	} catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
+	}
+
+	if (!exception) {
+		std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << "(no exception)" << std::endl;
+	}
+
+	obj_created += ls::LSValue::obj_count;
+	obj_deleted += ls::LSValue::obj_deleted;
+}

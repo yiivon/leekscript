@@ -21,9 +21,7 @@ LSString::LSString(const char* value) : string(value) {}
 LSString::LSString(std::string value) : string(value) {}
 LSString::LSString(Json& json) : string(json.get<std::string>()) {}
 
-LSString::~LSString() {
-//	cout << "~LSString " << *this << " " << refs << endl;
-}
+LSString::~LSString() {}
 
 LSString* LSString::charAt(int index) const {
 	return new LSString(this->operator[] (index));
@@ -516,6 +514,12 @@ bool LSString::operator < (const LSString* v) const {
 bool LSString::operator < (const LSArray<LSValue*>*) const {
 	return true;
 }
+bool LSString::operator < (const LSArray<int>* v) const {
+	return true;
+}
+bool LSString::operator < (const LSArray<double>* v) const {
+	return true;
+}
 bool LSString::operator < (const LSObject*) const {
 	return true;
 }
@@ -683,7 +687,6 @@ LSValue* LSString::abso() const {
 
 std::ostream& LSString::print(std::ostream& os) const {
 	os << "'" << *this << "'";
-//	os << " µ" << this->refs;
 	return os;
 }
 string LSString::json() const {

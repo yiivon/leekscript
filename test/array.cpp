@@ -28,7 +28,6 @@ void Test::test_arrays() {
 	success("4 in [1, 2, 3]", "false");
 	success("'yo' in ['ya', 'yu', 'yo']", "true");
 	success("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }", "'ok'");
-
 	success("[1 2 3]", "[1, 2, 3]");
 	success("['yo' 'ya' 'yu']", "['yo', 'ya', 'yu']");
 	success("[true false true true]", "[true, false, true, true]");
@@ -47,6 +46,7 @@ void Test::test_arrays() {
 	success("[1.2, 321.42] ~~ x -> x * 1.7", "[2.040000000000000036, 546.413999999999987267]");
 	success("[1, 2, 3, 4, 5] ~~ x -> x.max(3)", "[3, 3, 3, 4, 5]");
 	success("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)", "[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
+//	success("[1] < [1, 2]", "true");
 
 	/*
 	 * Intervals
@@ -58,10 +58,11 @@ void Test::test_arrays() {
 	success("1000 in [1..1000]", "true");
 	success("0 in [1..1000]", "false");
 	success("1001 in [1..1000]", "false");
-
-//	success("[1..1000][500]", "501");
-//	success("[1000..2000][12]", "1012");
-
+	success("[0..1000][500]", "500");
+	success("[1..1000][500]", "501");
+	success("[1000..2000][12]", "1012");
+	sem_err("[1..10]['hello']", ls::SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, "<key 1>");
+	// success("[1..10][-10]", ""); must throw exception
 
 	/*
 	 * Array standard library
@@ -102,6 +103,13 @@ void Test::test_arrays() {
 	success("let x = [1,2,3,4]; x.chunk(2)", "[[1, 2], [3, 4]]");
 	success("let x = [1,2,3,4]; x.chunk(3)", "[[1, 2, 3], [4]]");
 	success("let x = [1,2,3,4]; x.chunk()", "[[1], [2], [3], [4]]");
+
+	success("let x = [1,1,2,2,1]; x.unique(); x", "[1, 2, 1]");
+	success("let x = ['a','a','b']; x.unique(); x", "['a', 'b']");
+
+	success("let x = [3, 1, 2]; x.sort(); x", "[1, 2, 3]");
+	success("let x = ['foo', 'yop', 'abc']; x.sort(); x", "['abc', 'foo', 'yop']");
+	success("let x = [[[]], [[], [], []], [[], []]]; x.sort(); x", "[[[]], [[], []], [[], [], []]]");
 
 	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
 	success("[3, 4, 5].filter(x -> x > 6)", "[]");

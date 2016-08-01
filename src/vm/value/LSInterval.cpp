@@ -21,6 +21,10 @@ bool LSInterval::in(const LSValue* key) const {
 	return false;
 }
 
+int LSInterval::atv(const int key) const {
+	return a + key;
+}
+
 LSValue* LSInterval::at(const LSValue* key) const {
 
 	return LSNumber::get(a + ((LSNumber*) key)->value);
