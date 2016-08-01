@@ -63,6 +63,18 @@ ArraySTD::ArraySTD() : Module("Array") {
 			   {Type::INT_ARRAY, int_array_array, {Type::INTEGER}, (void*) &LSArray<int>::chunk},
 		   });
 
+	method("unique", {
+			   {Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::unique},
+			   {Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::unique},
+			   {Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::unique},
+		   });
+
+	method("sort", {
+			   {Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::sort},
+			   {Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::sort},
+			   {Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::sort},
+		   });
+
 	Type map2_fun_type = Type::FUNCTION;
 	map2_fun_type.setArgumentType(0, Type::POINTER);
 	map2_fun_type.setArgumentType(1, Type::POINTER);
