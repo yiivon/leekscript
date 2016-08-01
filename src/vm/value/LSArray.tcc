@@ -287,8 +287,7 @@ inline LSArray<LSArray<T>*>* LSArray<T>::chunk_1() const {
 
 template <>
 inline void LSArray<LSValue*>::unique() {
-	auto it = std::unique(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool
-	{
+	auto it = std::unique(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
 		return a->operator ==(b);
 	});
 	for (auto i = it; i != this->end(); ++i) {
@@ -311,9 +310,8 @@ inline void LSArray<double>::unique() {
 
 template <>
 inline void LSArray<LSValue*>::sort() {
-	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool
-	{
-		return a->operator <(b);
+	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
+		return a->operator > (b);
 	});
 }
 
@@ -1477,7 +1475,7 @@ bool LSArray<T>::operator == (const LSClass*) const {
 
 template <class T>
 bool LSArray<T>::operator < (const LSValue* v) const {
-	return v->operator >= (this);
+	return v->operator < (this);
 }
 
 template <class T>
@@ -1502,6 +1500,14 @@ bool LSArray<T>::operator < (const LSString*) const {
 
 template <class T>
 bool LSArray<T>::operator < (const LSArray<LSValue*>* v) const {
+	return this->size() < v->size();
+}
+template <class T>
+bool LSArray<T>::operator < (const LSArray<int>* v) const {
+	return this->size() < v->size();
+}
+template <class T>
+bool LSArray<T>::operator < (const LSArray<double>* v) const {
 	return this->size() < v->size();
 }
 

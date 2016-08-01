@@ -444,6 +444,12 @@ bool LSBoolean::operator < (const LSString*) const {
 bool LSBoolean::operator < (const LSArray<LSValue*>*) const {
 	return true;
 }
+bool LSBoolean::operator < (const LSArray<int>* v) const {
+	return true;
+}
+bool LSBoolean::operator < (const LSArray<double>* v) const {
+	return true;
+}
 bool LSBoolean::operator < (const LSFunction*) const {
 	return true;
 }

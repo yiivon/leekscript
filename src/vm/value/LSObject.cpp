@@ -485,6 +485,12 @@ bool LSObject::operator < (const LSString*) const {
 bool LSObject::operator < (const LSArray<LSValue*>*) const {
 	return false;
 }
+bool LSObject::operator < (const LSArray<int>* v) const {
+	return false;
+}
+bool LSObject::operator < (const LSArray<double>* v) const {
+	return false;
+}
 bool LSObject::operator < (const LSObject* v) const {
 	return values.size() < v->values.size();
 }
