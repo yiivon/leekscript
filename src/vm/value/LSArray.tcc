@@ -255,6 +255,30 @@ inline LSArray<LSValue*>* LSArray<double>::map(const void* function) const {
 }
 
 template <class T>
+inline LSArray<LSArray<T>*>* LSArray<T>::chunk(int size) const {
+	if (size <= 0) size = 1;
+
+	LSArray<LSArray<T>*>* new_array = new LSArray<LSArray<T>*>();
+	size_t i = 0;
+	while (i < this->size()) {
+		LSArray<T>* sub_array = new LSArray<T>();
+
+		size_t j = std::min(i + size, this->size());
+		for (; i < j; ++i) {
+			sub_array->push_clone((*this)[i]);
+		}
+
+		new_array->push_no_clone(sub_array);
+	}
+	return new_array;
+}
+
+template <class T>
+inline LSArray<LSArray<T>*>* LSArray<T>::chunk_1() const {
+	return this->chunk(1);
+}
+
+template <class T>
 void LSArray<T>::iter(const LSFunction* function) const {
 
 	auto fun = (void* (*)(void*)) function->function;

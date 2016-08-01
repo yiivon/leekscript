@@ -99,6 +99,10 @@ void Test::test_arrays() {
 
 	success("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))", "[13, 'yo 55', [9]]");
 
+	success("let x = [1,2,3,4]; x.chunk(2)", "[[1, 2], [3, 4]]");
+	success("let x = [1,2,3,4]; x.chunk(3)", "[[1, 2, 3], [4]]");
+	success("let x = [1,2,3,4]; x.chunk()", "[[1], [2], [3], [4]]");
+
 	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
 	success("[3, 4, 5].filter(x -> x > 6)", "[]");
 
