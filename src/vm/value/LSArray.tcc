@@ -255,10 +255,10 @@ inline LSArray<LSValue*>* LSArray<double>::map(const void* function) const {
 }
 
 template <class T>
-inline LSArray<LSValue*>* LSArray<T>::chunk(int size) const {
+inline LSArray<LSArray<T>*>* LSArray<T>::chunk(int size) const {
 	if (size <= 0) size = 1;
 
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	LSArray<LSArray<T>*>* new_array = new LSArray<LSArray<T>*>();
 	size_t i = 0;
 	while (i < this->size()) {
 		LSArray<T>* sub_array = new LSArray<T>();
@@ -274,7 +274,7 @@ inline LSArray<LSValue*>* LSArray<T>::chunk(int size) const {
 }
 
 template <class T>
-inline LSArray<LSValue*>* LSArray<T>::chunk_1() const {
+inline LSArray<LSArray<T>*>* LSArray<T>::chunk_1() const {
 	return this->chunk(1);
 }
 
