@@ -223,6 +223,7 @@ template <class T>
 LSArray<LSValue*>* LSArray<T>::map(const void* function) const {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	new_array->reserve(this->size());
 	auto fun = (void* (*)(void*)) function;
 
 	for (auto v : *this) {
@@ -237,6 +238,7 @@ LSArray<LSValue*>* LSArray<T>::map(const void* function) const {
 template <>
 inline LSArray<LSValue*>* LSArray<int>::map(const void* function) const {
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	new_array->reserve(this->size());
 	auto fun = (void* (*)(int)) function;
 	for (auto v : *this) {
 		new_array->push_no_clone((LSValue*) fun(v));
@@ -247,6 +249,7 @@ inline LSArray<LSValue*>* LSArray<int>::map(const void* function) const {
 template <>
 inline LSArray<LSValue*>* LSArray<double>::map(const void* function) const {
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	new_array->reserve(this->size());
 	auto fun = (void* (*)(double)) function;
 	for (auto v : *this) {
 		new_array->push_no_clone((LSValue*) fun(v));
@@ -259,9 +262,12 @@ inline LSArray<LSArray<T>*>* LSArray<T>::chunk(int size) const {
 	if (size <= 0) size = 1;
 
 	LSArray<LSArray<T>*>* new_array = new LSArray<LSArray<T>*>();
+	new_array->reserve(this->size() / size + 1);
+
 	size_t i = 0;
 	while (i < this->size()) {
 		LSArray<T>* sub_array = new LSArray<T>();
+		sub_array->reserve(size);
 
 		size_t j = std::min(i + size, this->size());
 		for (; i < j; ++i) {
@@ -276,6 +282,48 @@ inline LSArray<LSArray<T>*>* LSArray<T>::chunk(int size) const {
 template <class T>
 inline LSArray<LSArray<T>*>* LSArray<T>::chunk_1() const {
 	return this->chunk(1);
+}
+
+template <>
+inline void LSArray<LSValue*>::unique() {
+	auto it = std::unique(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool
+	{
+		return a->operator ==(b);
+	});
+	for (auto i = it; i != this->end(); ++i) {
+		//LSValue::delete_val(*i);
+	}
+	this->resize(std::distance(this->begin(), it));
+}
+
+template <>
+inline void LSArray<int>::unique() {
+	auto it = std::unique(this->begin(), this->end());
+	this->resize(std::distance(this->begin(), it));
+}
+
+template <>
+inline void LSArray<double>::unique() {
+	auto it = std::unique(this->begin(), this->end());
+	this->resize(std::distance(this->begin(), it));
+}
+
+template <>
+inline void LSArray<LSValue*>::sort() {
+	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool
+	{
+		return a->operator <(b);
+	});
+}
+
+template <>
+inline void LSArray<int>::sort() {
+	std::sort(this->begin(), this->end());
+}
+
+template <>
+inline void LSArray<double>::sort() {
+	std::sort(this->begin(), this->end());
 }
 
 template <class T>
@@ -343,6 +391,7 @@ inline const LSArray<int>* LSArray<int>::push_all_int(const LSArray<int>* array)
 template <class T>
 LSArray<T>* LSArray<T>::reverse() const {
 	LSArray<T>* new_array = new LSArray<T>();
+	new_array->reserve(this->size());
 	for (auto it = this->rbegin(); it != this->rend(); it++) {
 		new_array->push_clone(*it);
 	}
@@ -352,6 +401,7 @@ LSArray<T>* LSArray<T>::reverse() const {
 template <>
 inline LSArray<int>* LSArray<int>::reverse() const {
 	LSArray<int>* new_array = new LSArray<int>();
+	new_array->reserve(this->size());
 	for (auto it = this->rbegin(); it != this->rend(); it++) {
 		new_array->push_clone(*it);
 	}
@@ -360,8 +410,8 @@ inline LSArray<int>* LSArray<int>::reverse() const {
 
 template <class T>
 LSArray<T>* LSArray<T>::filter(const void* function) const {
-
 	LSArray<T>* new_array = new LSArray<T>();
+	new_array->reserve(this->size());
 	auto fun = (bool (*)(void*)) function;
 	for (auto v : *this) {
 		if (fun(v)) new_array->push_clone(v);
@@ -372,6 +422,7 @@ LSArray<T>* LSArray<T>::filter(const void* function) const {
 template <>
 inline LSArray<int>* LSArray<int>::filter(const void* function) const {
 	LSArray<int>* new_array = new LSArray<int>();
+	new_array->reserve(this->size());
 	auto fun = (int (*)(int)) function;
 	for (auto v : *this) {
 		if (fun(v)) {
@@ -479,15 +530,15 @@ inline LSArray<LSArray<int>*>* LSArray<int>::partition(const void* function) con
 
 template <class T>
 LSArray<LSValue*>* LSArray<T>::map2(const LSArray<LSValue*>* array, const void* function) const {
-
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	new_array->reserve(this->size());
 	auto fun = (void* (*)(void*, void*)) function;
 
 	for (unsigned i = 0; i < this->size(); ++i) {
 		LSValue* v1 = this->operator [] (i);
 		LSValue* v2 = ((LSArray<LSValue*>*) array)->operator [] (i);
 		LSValue* res = (LSValue*) fun(v1, v2);
-		new_array->push_clone(res);
+		new_array->push_clone(res); // push_no_clone ?
 		LSValue::delete_val(res);
 	}
 	return new_array;
@@ -497,6 +548,7 @@ template <>
 inline LSArray<LSValue*>* LSArray<int>::map2(const LSArray<LSValue*>* array, const void* function) const {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	new_array->reserve(this->size());
 	auto fun = (void* (*)(void*, void*)) function;
 
 	for (unsigned i = 0; i < this->size(); ++i) {
@@ -511,6 +563,7 @@ template <class T>
 LSArray<LSValue*>* LSArray<T>::map2_int(const LSArray<int>* array, const void* function) const {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	new_array->reserve(this->size());
 	auto fun = (void* (*)(void*, int)) function;
 
 	for (unsigned i = 0; i < this->size(); ++i) {
@@ -525,6 +578,7 @@ template <>
 inline LSArray<LSValue*>* LSArray<int>::map2_int(const LSArray<int>* array, const void* function) const {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+	new_array->reserve(this->size());
 	auto fun = (void* (*)(int, int)) function;
 
 	for (unsigned i = 0; i < this->size(); ++i) {
@@ -645,6 +699,7 @@ LSValue* LSArray<T>::operator ! () const {
 template <class T>
 LSValue* LSArray<T>::operator ~ () const {
 	LSArray<T>* array = new LSArray<T>();
+	array->reserve(this->size());
 	for (auto i = this->rbegin(); i != this->rend(); ++i) {
 		array->push_clone(*i);
 	}
@@ -730,11 +785,8 @@ LSValue* LSArray<T>::operator + (const LSString*) const {
 
 template <class T>
 LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
-
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	for (auto v : *this) {
-		new_array->push_clone((LSValue*) v);
-	}
+	LSArray<LSValue*>* new_array = (LSArray<LSValue*>*) this->clone();
+	new_array->reserve(new_array->size() + array->size());
 	for (auto v : *array) {
 		new_array->push_clone(v);
 	}
@@ -768,7 +820,6 @@ LSValue* LSArray<T>::operator + (const LSArray<int>*) const {
 
 template <>
 inline LSValue* LSArray<int>::operator + (const LSArray<int>* array) const {
-
 	LSArray<int>* new_array = new LSArray<int>();
 	new_array->insert(new_array->end(), this->begin(), this->end());
 	new_array->insert(new_array->end(), array->begin(), array->end());
@@ -1419,7 +1470,7 @@ bool LSArray<T>::operator == (const LSClass*) const {
 
 template <class T>
 bool LSArray<T>::operator < (const LSValue* v) const {
-	return v->operator < (this);
+	return v->operator >= (this);
 }
 
 template <class T>
@@ -1653,8 +1704,8 @@ LSValue* LSArray<T>::rangeL(int, int) {
 
 template <class T>
 LSValue* LSArray<T>::clone() const {
-
 	LSArray<T>* new_array = new LSArray<T>();
+	new_array->reserve(this->size());
 
 	for (auto i = this->begin(); i != this->end(); i++) {
 		new_array->push_clone(*i);
