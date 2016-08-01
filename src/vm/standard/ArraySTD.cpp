@@ -44,13 +44,23 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::ARRAY, Type::ARRAY, {map_fun_type}, (void*) &LSArray<LSValue*>::map},
 	});
 
+	Type array_array = Type::ARRAY;
+	array_array.setElementType(Type::ARRAY);
+
+	Type int_array_array = Type::ARRAY;
+	int_array_array.setElementType(Type::INT_ARRAY);
+
+	Type float_array_array = Type::ARRAY;
+	float_array_array.setElementType(Type::FLOAT_ARRAY);
+
 	method("chunk", {
-			   {Type::INT_ARRAY, Type::ARRAY, {}, (void*) &LSArray<int>::chunk_1},
-			   {Type::FLOAT_ARRAY, Type::ARRAY, {}, (void*) &LSArray<double>::chunk_1},
-			   {Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::chunk_1},
-			   {Type::INT_ARRAY, Type::ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::chunk},
-			   {Type::FLOAT_ARRAY, Type::ARRAY, {Type::INTEGER}, (void*) &LSArray<double>::chunk},
-			   {Type::ARRAY, Type::ARRAY, {Type::INTEGER}, (void*) &LSArray<LSValue*>::chunk}
+			   {Type::ARRAY, array_array, {}, (void*) &LSArray<LSValue*>::chunk_1},
+			   {Type::FLOAT_ARRAY, float_array_array, {}, (void*) &LSArray<double>::chunk_1},
+			   {Type::INT_ARRAY, int_array_array, {}, (void*) &LSArray<int>::chunk_1},
+
+			   {Type::ARRAY, array_array, {Type::INTEGER}, (void*) &LSArray<LSValue*>::chunk},
+			   {Type::FLOAT_ARRAY, float_array_array, {Type::INTEGER}, (void*) &LSArray<double>::chunk},
+			   {Type::INT_ARRAY, int_array_array, {Type::INTEGER}, (void*) &LSArray<int>::chunk},
 		   });
 
 	Type map2_fun_type = Type::FUNCTION;
