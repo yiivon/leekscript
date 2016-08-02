@@ -81,8 +81,6 @@ public:
 	bool operator >= (const LSObject*) const override;
 	bool operator >= (const LSClass*) const override;
 
-	bool in(const LSValue*) const override;
-
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;
 
@@ -91,8 +89,6 @@ public:
 
 	LSValue* attr(const LSValue* key) const override;
 	LSValue** attrL(const LSValue* key) override;
-
-	LSValue* abso() const override;
 
 	std::ostream& print(std::ostream& os) const override;
 	std::string json() const override;

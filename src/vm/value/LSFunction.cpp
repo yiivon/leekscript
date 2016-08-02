@@ -190,10 +190,6 @@ bool LSFunction::operator >= (const LSClass*) const {
 	return false;
 }
 
-bool LSFunction::in(const LSValue*) const {
-	return false;
-}
-
 LSValue* LSFunction::at(const LSValue*) const {
 	return LSNull::null_var;
 }
@@ -216,10 +212,6 @@ LSValue* LSFunction::attr(const LSValue* key) const {
 }
 LSValue** LSFunction::attrL(const LSValue*) {
 	return &LSNull::null_var;
-}
-
-LSValue* LSFunction::abso() const {
-	return LSNumber::get(0);
 }
 
 LSValue* LSFunction::clone() const {

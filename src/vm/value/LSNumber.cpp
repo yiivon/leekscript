@@ -324,10 +324,10 @@ bool LSNumber::operator < (const LSString*) const {
 bool LSNumber::operator < (const LSArray<LSValue*>*) const {
 	return true;
 }
-bool LSNumber::operator < (const LSArray<int>* v) const {
+bool LSNumber::operator < (const LSArray<int>*) const {
 	return true;
 }
-bool LSNumber::operator < (const LSArray<double>* v) const {
+bool LSNumber::operator < (const LSArray<double>*) const {
 	return true;
 }
 bool LSNumber::operator < (const LSObject*) const {
@@ -423,10 +423,6 @@ bool LSNumber::operator >= (const LSFunction*) const {
 	return false;
 }
 bool LSNumber::operator >= (const LSClass*)  const {
-	return false;
-}
-
-bool LSNumber::in(const LSValue*) const {
 	return false;
 }
 

@@ -102,8 +102,6 @@ public:
 	LSValue* attr(const LSValue* key) const override;
 	LSValue** attrL(const LSValue* key) override;
 
-	LSValue* abso() const override;
-
 	LSValue* clone() const;
 
 	std::ostream& print(std::ostream& os) const;

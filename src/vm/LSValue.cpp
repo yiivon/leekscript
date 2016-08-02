@@ -229,6 +229,8 @@ bool LSValue::operator == (const LSFunction*) const { return false; }
 bool LSValue::operator == (const LSObject*) const { return false; }
 bool LSValue::operator == (const LSClass*) const { return false; }
 
+bool LSValue::in(const LSValue*) const { return false; }
+LSValue* LSValue::abso() const { return LSNull::null_var; }
 
 }
 

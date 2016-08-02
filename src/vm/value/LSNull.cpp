@@ -181,10 +181,6 @@ bool LSNull::operator >= (const LSClass*) const {
 	return false;
 }
 
-bool LSNull::in(const LSValue*) const {
-	return false;
-}
-
 LSValue* LSNull::at(const LSValue*) const {
 	return LSNull::null_var;
 }
@@ -207,10 +203,6 @@ LSValue* LSNull::attr(const LSValue* key) const {
 }
 LSValue** LSNull::attrL(const LSValue*) {
 	return &LSNull::null_var;
-}
-
-LSValue* LSNull::abso() const {
-	return LSNumber::get(0);
 }
 
 LSValue* LSNull::clone() const {

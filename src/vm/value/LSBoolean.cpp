@@ -242,10 +242,6 @@ LSValue** LSBoolean::attrL(const LSValue*) {
 	return &LSNull::null_var;
 }
 
-LSValue* LSBoolean::abso() const {
-	return (LSValue*) this;
-}
-
 LSValue* LSBoolean::clone() const {
 	return (LSValue*) this;
 }

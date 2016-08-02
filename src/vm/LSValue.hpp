@@ -220,7 +220,7 @@ public:
 	virtual bool operator >= (const LSObject*) const = 0;
 	virtual bool operator >= (const LSClass*) const = 0;
 
-	virtual bool in(const LSValue*) const = 0;
+	virtual bool in(const LSValue*) const;
 
 	virtual LSValue* at(const LSValue* key) const = 0;
 	virtual LSValue** atL(const LSValue* key) = 0;
@@ -231,7 +231,7 @@ public:
 	virtual LSValue* range(int start, int end) const = 0;
 	virtual LSValue* rangeL(int start, int end) = 0;
 
-	virtual LSValue* abso() const = 0;
+	virtual LSValue* abso() const;
 
 	virtual std::ostream& print(std::ostream&) const = 0;
 	virtual std::string json() const = 0;
