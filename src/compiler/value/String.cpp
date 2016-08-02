@@ -24,7 +24,7 @@ void String::print(ostream& os) const {
 	os << "'";
 }
 
-int String::line() const {
+unsigned String::line() const {
 	return token->line;
 }
 

@@ -90,7 +90,7 @@ void Expression::print(std::ostream& os) const {
 	os << "}";
 }
 
-int Expression::line() const {
+unsigned Expression::line() const {
 	return 0;
 }
 
@@ -828,7 +828,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::DOUBLE_QUESTION_MARK: {
 
-			// x ?? y ==> if (x == null) { y } else { x }
+			// x ?? y ==> if (x == null) { y } else { x }
 
 			jit_label_t label_end = jit_label_undefined;
 			jit_label_t label_else = jit_label_undefined;

@@ -19,7 +19,7 @@ void Boolean::print(std::ostream& os) const {
 	os << (value ? "true" : "false");
 }
 
-int Boolean::line() const {
+unsigned Boolean::line() const {
 	return 0;
 }
 

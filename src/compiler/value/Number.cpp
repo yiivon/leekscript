@@ -21,7 +21,7 @@ void Number::print(ostream& os) const {
 	os << value;
 }
 
-int Number::line() const {
+unsigned Number::line() const {
 	return token->line;
 }
 

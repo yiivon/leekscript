@@ -46,7 +46,7 @@ void Array::print(std::ostream& os) const {
 	os << "]";
 }
 
-int Array::line() const {
+unsigned Array::line() const {
 	return 0;
 }
 

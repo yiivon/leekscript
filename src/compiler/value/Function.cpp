@@ -66,7 +66,7 @@ void Function::print(std::ostream& os) const {
 	}
 }
 
-int Function::line() const {
+unsigned Function::line() const {
 	return 0;
 }
 

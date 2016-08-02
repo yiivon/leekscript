@@ -26,7 +26,7 @@ void Reference::print(ostream& os) const {
 	os << "@" << variable;
 }
 
-int Reference::line() const {
+unsigned Reference::line() const {
 	return 0;
 }
 

@@ -17,7 +17,7 @@ public:
 	virtual ~ArrayAccess();
 
 	virtual void print(std::ostream&) const override;
-	virtual int line() const override;
+	virtual unsigned line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type) override;
 	virtual bool will_take(SemanticAnalyser* analyser, const unsigned, const Type);

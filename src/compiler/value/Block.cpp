@@ -28,7 +28,7 @@ void Block::print(ostream& os) const {
 	os << "}";
 }
 
-int Block::line() const {
+unsigned Block::line() const {
 	return 0;
 }
 

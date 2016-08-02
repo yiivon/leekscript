@@ -17,7 +17,7 @@ void Nulll::print(ostream& os) const {
 	os << "null";
 }
 
-int Nulll::line() const {
+unsigned Nulll::line() const {
 	return 0;
 }
 

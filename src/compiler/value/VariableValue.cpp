@@ -23,7 +23,7 @@ void VariableValue::print(ostream& os) const {
 	os << token->content;
 }
 
-int VariableValue::line() const {
+unsigned VariableValue::line() const {
 	return token->line;
 }
 
@@ -53,7 +53,7 @@ void VariableValue::must_return(SemanticAnalyser* analyser, const Type& ret_type
  * a = 12 // integer
  * a += 1.2 // float at the previous assignment
  */
-void VariableValue::change_type(SemanticAnalyser* analyser, const Type& type) {
+void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	if (var != nullptr) {
 		var->type = type;
 		this->type = type;

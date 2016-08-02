@@ -26,7 +26,7 @@ public:
 	virtual bool isLeftValue() const;
 
 	virtual void print(std::ostream&) const = 0;
-	virtual int line() const = 0;
+	virtual unsigned line() const = 0;
 
 	virtual bool will_take(SemanticAnalyser*, const unsigned, const Type);
 	virtual bool will_take_element(SemanticAnalyser*, const Type);

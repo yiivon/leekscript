@@ -33,7 +33,7 @@ void ObjectAccess::print(ostream& os) const {
 	os << "." << field->content;
 }
 
-int ObjectAccess::line() const {
+unsigned ObjectAccess::line() const {
 	return 0;
 }
 
