@@ -62,27 +62,6 @@ bool LSNull::operator == (const LSValue* v) const {
 bool LSNull::operator == (const LSNull*) const {
 	return true;
 }
-bool LSNull::operator == (const LSBoolean*) const {
-	return false;
-}
-bool LSNull::operator == (const LSNumber*) const {
-	return false;
-}
-bool LSNull::operator == (const LSString*) const {
-	return false;
-}
-bool LSNull::operator == (const LSArray<LSValue*>*) const {
-	return false;
-}
-bool LSNull::operator == (const LSFunction*) const {
-	return false;
-}
-bool LSNull::operator == (const LSObject*) const {
-	return false;
-}
-bool LSNull::operator == (const LSClass*) const {
-	return false;
-}
 
 bool LSNull::operator < (const LSValue* v) const {
 	return v->operator < (this);

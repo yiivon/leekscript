@@ -90,30 +90,10 @@ LSValue* LSBoolean::operator %= (LSValue* value) {
 bool LSBoolean::operator == (const LSValue* value) const {
 	return value->operator == (this);
 }
-bool LSBoolean::operator == (const LSNull*) const {
-	return false;
-}
 bool LSBoolean::operator == (const LSBoolean* v) const {
 	return v->value == this->value;
 }
-bool LSBoolean::operator == (const LSNumber*) const {
-	return false;
-}
-bool LSBoolean::operator == (const LSString*) const {
-	return false;
-}
-bool LSBoolean::operator == (const LSArray<LSValue*>*) const {
-	return false;
-}
-bool LSBoolean::operator == (const LSFunction*) const {
-	return false;
-}
-bool LSBoolean::operator == (const LSObject*) const {
-	return false;
-}
-bool LSBoolean::operator == (const LSClass*) const {
-	return false;
-}
+
 
 bool LSBoolean::operator < (const LSValue* value) const {
 	return value->operator < (this);

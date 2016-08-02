@@ -1034,26 +1034,6 @@ bool LSArray<T>::operator == (const LSValue* v) const {
 }
 
 template <class T>
-bool LSArray<T>::operator == (const LSNull* v) const {
-	return v->operator == (this);
-}
-
-template <class T>
-bool LSArray<T>::operator == (const LSBoolean*) const {
-	return false;
-}
-
-template <class T>
-bool LSArray<T>::operator == (const LSNumber*) const {
-	return false;
-}
-
-template <class T>
-bool LSArray<T>::operator == (const LSString*) const {
-	return false;
-}
-
-template <class T>
 bool LSArray<T>::operator == (const LSArray<LSValue*>* v) const {
 
 	if (this->size() != v->size()) {
@@ -1100,21 +1080,6 @@ inline bool LSArray<double>::operator == (const LSArray<LSValue*>* v) const {
 		if (n->value != *i) return false;
 	}
 	return true;
-}
-
-template <class T>
-bool LSArray<T>::operator == (const LSObject*) const {
-	return false;
-}
-
-template <class T>
-bool LSArray<T>::operator == (const LSFunction*) const {
-	return false;
-}
-
-template <class T>
-bool LSArray<T>::operator == (const LSClass*) const {
-	return false;
 }
 
 template <class T>

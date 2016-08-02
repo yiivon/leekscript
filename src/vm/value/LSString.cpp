@@ -227,29 +227,8 @@ LSValue* LSString::operator %= (LSValue* value) {
 bool LSString::operator == (const LSValue* v) const {
 	return v->operator == (this);
 }
-bool LSString::operator == (const LSNull*) const {
-	return false;
-}
-bool LSString::operator == (const LSBoolean*) const {
-	return false;
-}
-bool LSString::operator == (const LSNumber*) const {
-	return false;
-}
 bool LSString::operator == (const LSString* v) const {
 	return *this == *v;
-}
-bool LSString::operator == (const LSArray<LSValue*>*) const {
-	return false;
-}
-bool LSString::operator == (const LSFunction*) const {
-	return false;
-}
-bool LSString::operator == (const LSObject*) const {
-	return false;
-}
-bool LSString::operator == (const LSClass*) const {
-	return false;
 }
 
 bool LSString::operator < (const LSValue* v) const {

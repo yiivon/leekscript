@@ -77,14 +77,7 @@ public:
 	LSValue* operator %= (LSValue*) override;
 
 	bool operator == (const LSValue*) const override;
-	bool operator == (const LSNull*) const override;
-	bool operator == (const LSBoolean*) const override;
-	bool operator == (const LSNumber*) const override;
 	bool operator == (const LSString*) const override;
-	bool operator == (const LSArray<LSValue*>*) const override;
-	bool operator == (const LSFunction*) const override;
-	bool operator == (const LSObject*) const override;
-	bool operator == (const LSClass*) const override;
 
 	bool operator < (const LSValue*) const override;
 	bool operator < (const LSNull*) const override;

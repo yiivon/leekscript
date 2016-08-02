@@ -169,14 +169,14 @@ public:
 	virtual LSValue* operator %= (const LSClass*);
 
 	virtual bool operator == (const LSValue*) const = 0;
-	virtual bool operator == (const LSNull*) const = 0;
-	virtual bool operator == (const LSBoolean*) const = 0;
-	virtual bool operator == (const LSNumber*) const = 0;
-	virtual bool operator == (const LSString*) const = 0;
-	virtual bool operator == (const LSArray<LSValue*>*) const = 0;
-	virtual bool operator == (const LSFunction*) const = 0;
-	virtual bool operator == (const LSObject*) const = 0;
-	virtual bool operator == (const LSClass*) const = 0;
+	virtual bool operator == (const LSNull*) const;
+	virtual bool operator == (const LSBoolean*) const;
+	virtual bool operator == (const LSNumber*) const;
+	virtual bool operator == (const LSString*) const;
+	virtual bool operator == (const LSArray<LSValue*>*) const;
+	virtual bool operator == (const LSFunction*) const;
+	virtual bool operator == (const LSObject*) const;
+	virtual bool operator == (const LSClass*) const;
 
 	virtual bool operator < (const LSValue*) const = 0;
 	virtual bool operator < (const LSNull*) const = 0;

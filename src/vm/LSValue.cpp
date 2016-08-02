@@ -220,5 +220,15 @@ LSValue* LSValue::operator %= (const LSObject*) { return LSNull::null_var; }
 LSValue* LSValue::operator %= (const LSFunction*) { return LSNull::null_var; }
 LSValue* LSValue::operator %= (const LSClass*) { return LSNull::null_var; }
 
+bool LSValue::operator == (const LSNull*) const { return false; }
+bool LSValue::operator == (const LSBoolean*) const { return false; }
+bool LSValue::operator == (const LSNumber*) const { return false; }
+bool LSValue::operator == (const LSString*) const { return false; }
+bool LSValue::operator == (const LSArray<LSValue*>*) const { return false; }
+bool LSValue::operator == (const LSFunction*) const { return false; }
+bool LSValue::operator == (const LSObject*) const { return false; }
+bool LSValue::operator == (const LSClass*) const { return false; }
+
+
 }
 
