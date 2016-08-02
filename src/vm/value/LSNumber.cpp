@@ -108,13 +108,15 @@ LSValue* LSNumber::operator += (const LSNumber* number) {
 #if !USE_CACHE
 	value += number->value;
 #endif
-	return LSNull::null_var;
+	this->refs++;
+	return this;
 }
 LSValue* LSNumber::operator += (const LSBoolean* boolean) {
 #if !USE_CACHE
 	value -= boolean->value;
 #endif
-	return LSNull::null_var;
+	this->refs++;
+	return this;
 }
 LSValue* LSNumber::operator += (const LSString*) {
 	return LSNull::null_var;
@@ -150,7 +152,8 @@ LSValue* LSNumber::operator -= (const LSNumber* number) {
 #if !USE_CACHE
 	value -= number->value;
 #endif
-	return LSNull::null_var;
+	this->refs++;
+	return this;
 }
 LSValue* LSNumber::operator -= (const LSString*) {
 	return LSNull::null_var;
@@ -179,7 +182,8 @@ LSValue* LSNumber::operator *= (const LSNull*) {
 #if !USE_CACHE
 	value = 0;
 #endif
-	return LSNull::null_var;
+	this->refs++;
+	return this;
 }
 LSValue* LSNumber::operator *= (const LSBoolean*) {
 	return LSNull::null_var;
@@ -188,7 +192,8 @@ LSValue* LSNumber::operator *= (const LSNumber* number) {
 #if !USE_CACHE
 	value *= number->value;
 #endif
-	return LSNull::null_var;
+	this->refs++;
+	return this;
 }
 LSValue* LSNumber::operator *= (const LSString*) {
 	return LSNull::null_var;
@@ -223,7 +228,8 @@ LSValue* LSNumber::operator /= (const LSNumber* number) {
 #if !USE_CACHE
 	value /= number->value;
 #endif
-	return LSNull::null_var;
+	this->refs++;
+	return this;
 }
 LSValue* LSNumber::operator /= (const LSString*) {
 	return LSNull::null_var;
@@ -293,7 +299,8 @@ LSValue* LSNumber::operator %= (const LSNumber* number) {
 #if !USE_CACHE
 	value = fmod(value, number->value);
 #endif
-	return LSNull::null_var;
+	this->refs++;
+	return this;
 }
 LSValue* LSNumber::operator %= (const LSString*) {
 	return LSNull::null_var;

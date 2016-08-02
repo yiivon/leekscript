@@ -16,11 +16,11 @@ void Test::test_objects() {
 	success("let a = {b: 12, c: 5} a", "{b: 12, c: 5}");
 	success("let a = {b: 12, c: 5} a.b", "12");
 
-	success("let a = {b: 12} a.b += 10; a.b", "22");
-	success("let a = {b: 12} a.b -= 10; a.b", "2");
-	success("let a = {b: 12} a.b *= 10; a.b", "120");
-	success_almost("let a = {b: 12} a.b /= 10; a.b", 1.2);
-	success("let a = {b: 12} a.b %= 10; a.b", "2");
+	success("let a = {b: 12} a.b += 10", "22");
+	success("let a = {b: 12} a.b -= 10", "2");
+	success("let a = {b: 12} a.b *= 10", "120");
+	success_almost("let a = {b: 12} a.b /= 10", 1.2);
+	success("let a = {b: 12} a.b %= 10", "2");
 
 	success("let a = {a: 32, b: 'toto', c: false}; |a|", "3");
 
