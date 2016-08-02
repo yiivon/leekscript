@@ -29,7 +29,7 @@ void Reference::print(ostream& os, bool debug) const {
 	}
 }
 
-int Reference::line() const {
+unsigned Reference::line() const {
 	return 0;
 }
 

@@ -23,7 +23,7 @@ void PostfixExpression::print(ostream& os, bool debug) const {
 	operatorr->print(os);
 }
 
-int PostfixExpression::line() const {
+unsigned PostfixExpression::line() const {
 	return 0;
 }
 

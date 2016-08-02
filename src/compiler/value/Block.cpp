@@ -29,7 +29,7 @@ void Block::print(ostream& os, bool debug) const {
 	os << "}";
 }
 
-int Block::line() const {
+unsigned Block::line() const {
 	return 0;
 }
 

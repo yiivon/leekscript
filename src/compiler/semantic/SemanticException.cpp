@@ -8,13 +8,13 @@ namespace ls {
 bool SemanticException::translation_loaded = false;
 Json SemanticException::translation;
 
-SemanticException::SemanticException(Type type, int line) {
+SemanticException::SemanticException(Type type, unsigned line) {
 	this->type = type;
 	this->line = line;
 	this->content = "";
 }
 
-SemanticException::SemanticException(Type type, int line, std::string& content) {
+SemanticException::SemanticException(Type type, unsigned line, std::string& content) {
 	this->type = type;
 	this->line = line;
 	this->content = content;

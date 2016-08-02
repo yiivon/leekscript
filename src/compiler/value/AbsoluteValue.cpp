@@ -21,7 +21,7 @@ void AbsoluteValue::print(std::ostream& os, bool debug) const {
 	os << "|";
 }
 
-int AbsoluteValue::line() const {
+unsigned AbsoluteValue::line() const {
 	return 0;
 }
 

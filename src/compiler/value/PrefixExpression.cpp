@@ -27,7 +27,7 @@ void PrefixExpression::print(ostream& os, bool debug) const {
 	os << " " << type;
 }
 
-int PrefixExpression::line() const {
+unsigned PrefixExpression::line() const {
 	return 0;
 }
 

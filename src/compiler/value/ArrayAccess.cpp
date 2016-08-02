@@ -37,7 +37,7 @@ void ArrayAccess::print(std::ostream& os, bool debug) const {
 	os << "]";
 }
 
-int ArrayAccess::line() const {
+unsigned ArrayAccess::line() const {
 	return 0;
 }
 
