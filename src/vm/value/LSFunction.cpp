@@ -28,32 +28,6 @@ bool LSFunction::isTrue() const {
 	return true;
 }
 
-LSValue* LSFunction::operator - () const {
-	return LSNull::null_var;
-}
-
-LSValue* LSFunction::operator ! () const {
-	return LSNull::null_var;
-}
-
-LSValue* LSFunction::operator ~ () const {
-	return LSNull::null_var;
-}
-
-LSValue* LSFunction::operator ++ () {
-	return LSNull::null_var;
-}
-LSValue* LSFunction::operator ++ (int) {
-	return LSNull::null_var;
-}
-
-LSValue* LSFunction::operator -- () {
-	return LSNull::null_var;
-}
-LSValue* LSFunction::operator -- (int) {
-	return LSNull::null_var;
-}
-
 LSValue* LSFunction::operator + (const LSValue* v) const {
 	return v->operator + (this);
 }

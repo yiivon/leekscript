@@ -32,31 +32,12 @@ bool LSBoolean::isTrue() const {
 	return value;
 }
 
-LSValue* LSBoolean::operator - () const {
-	return LSNull::null_var;
-}
-
 LSValue* LSBoolean::operator ! () const {
 	return LSBoolean::get(!value);
 }
 
 LSValue* LSBoolean::operator ~ () const {
 	return LSBoolean::get(!value);
-}
-
-LSValue* LSBoolean::operator ++ () {
-	return LSNull::null_var;
-}
-
-LSValue* LSBoolean::operator ++ (int) {
-	return LSNull::null_var;
-}
-
-LSValue* LSBoolean::operator -- () {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator -- (int) {
-	return LSNull::null_var;
 }
 
 LSValue* LSBoolean::operator + (const LSValue* v) const {

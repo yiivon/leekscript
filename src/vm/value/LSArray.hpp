@@ -78,15 +78,8 @@ public:
 	 */
 	bool isTrue() const override;
 
-	LSValue* operator - () const override;
 	LSValue* operator ! () const override;
 	LSValue* operator ~ () const override;
-
-	LSValue* operator ++ () override;
-	LSValue* operator ++ (int) override;
-
-	LSValue* operator -- () override;
-	LSValue* operator -- (int) override;
 
 	LSValue* operator + (const LSValue*) const override;
 	LSValue* operator + (const LSNull*) const override;

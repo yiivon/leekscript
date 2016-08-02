@@ -19,32 +19,6 @@ bool LSNull::isTrue() const {
 	return false;
 }
 
-LSValue* LSNull::operator - () const {
-	return LSNull::null_var;
-}
-
-LSValue* LSNull::operator ! () const {
-	return LSNull::null_var;
-}
-
-LSValue* LSNull::operator ~ () const {
-	return LSNull::null_var;
-}
-
-LSValue* LSNull::operator ++ () {
-	return this;
-}
-LSValue* LSNull::operator ++ (int) {
-	return LSNull::null_var;
-}
-
-LSValue* LSNull::operator -- () {
-	return this;
-}
-LSValue* LSNull::operator -- (int) {
-	return LSNull::null_var;
-}
-
 LSValue* LSNull::operator + (const LSValue* v) const {
 	return v->operator + (this);
 }

@@ -38,10 +38,6 @@ bool LSString::isTrue() const {
 	return size() > 0;
 }
 
-LSValue* LSString::operator - () const {
-	return this->clone();
-}
-
 LSValue* LSString::operator ! () const {
 	return LSBoolean::get(size() == 0);
 }
@@ -62,20 +58,6 @@ LSValue* LSString::operator ~ () const {
 		reversed = buff + reversed;
 	}
 	return new LSString(reversed);
-}
-
-LSValue* LSString::operator ++ () {
-	return this;
-}
-LSValue* LSString::operator ++ (int) {
-	return this;
-}
-
-LSValue* LSString::operator -- () {
-	return this;
-}
-LSValue* LSString::operator -- (int) {
-	return this;
 }
 
 LSValue* LSString::operator + (const LSValue* v) const {

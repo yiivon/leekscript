@@ -36,15 +36,15 @@ public:
 
 	virtual bool isTrue() const = 0;
 
-	virtual LSValue* operator - () const = 0;
-	virtual LSValue* operator ! () const = 0;
-	virtual LSValue* operator ~ () const = 0;
+	virtual LSValue* operator - () const;
+	virtual LSValue* operator ! () const;
+	virtual LSValue* operator ~ () const;
 
-	virtual LSValue* operator ++ () = 0;
-	virtual LSValue* operator ++ (int) = 0;
+	virtual LSValue* operator ++ ();
+	virtual LSValue* operator ++ (int);
 
-	virtual LSValue* operator -- () = 0;
-	virtual LSValue* operator -- (int) = 0;
+	virtual LSValue* operator -- ();
+	virtual LSValue* operator -- (int);
 
 	virtual LSValue* operator + (const LSValue*) const = 0;
 	virtual LSValue* operator + (const LSNull*) const;

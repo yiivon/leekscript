@@ -119,32 +119,6 @@ bool LSClass::isTrue() const {
 	return false;
 }
 
-LSValue* LSClass::operator - () const {
-	return (LSValue*) this;
-}
-
-LSValue* LSClass::operator ! () const {
-	return (LSValue*) this;
-}
-
-LSValue* LSClass::operator ~ () const {
-	return (LSValue*) this;
-}
-
-LSValue* LSClass::operator ++ () {
-	return this;
-}
-LSValue* LSClass::operator ++ (int) {
-	return this;
-}
-
-LSValue* LSClass::operator -- () {
-	return this;
-}
-LSValue* LSClass::operator -- (int) {
-	return this;
-}
-
 LSValue* LSClass::operator + (const LSValue* v) const {
 	return v->operator + (this);
 }

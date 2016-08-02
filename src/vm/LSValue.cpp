@@ -20,7 +20,7 @@ LSValue::LSValue() {
 //	cout << "LSValue()" << endl;
 	native = false;
 	obj_count++;
-	//objs.insert({this, this});
+	objs.insert({this, this});
 }
 
 LSValue::~LSValue() {
@@ -87,6 +87,16 @@ void LSValue::delete_val(LSValue* value) {
 		delete value;
 	}
 }
+
+LSValue* LSValue::operator - () const { return LSNull::null_var; }
+LSValue* LSValue::operator ! () const { return LSNull::null_var; }
+LSValue* LSValue::operator ~ () const { return LSNull::null_var; }
+
+LSValue* LSValue::operator ++ () { return LSNull::null_var; }
+LSValue* LSValue::operator ++ (int) { return LSNull::null_var; }
+
+LSValue* LSValue::operator -- () { return LSNull::null_var; }
+LSValue* LSValue::operator -- (int) { return LSNull::null_var; }
 
 //LSValue* LSValue::operator + (const LSValue*) const { return LSNull::null_var; }
 LSValue* LSValue::operator + (const LSNull*) const { return LSNull::null_var; }

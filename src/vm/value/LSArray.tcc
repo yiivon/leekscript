@@ -692,11 +692,6 @@ bool LSArray<T>::isTrue() const {
 }
 
 template <class T>
-LSValue* LSArray<T>::operator - () const {
-	return LSNull::null_var;
-}
-
-template <class T>
 LSValue* LSArray<T>::operator ! () const {
 	return LSBoolean::get(this->size() == 0);
 }
@@ -709,26 +704,6 @@ LSValue* LSArray<T>::operator ~ () const {
 		array->push_clone(*i);
 	}
 	return array;
-}
-
-template <class T>
-LSValue* LSArray<T>::operator ++ () {
-	return LSNull::null_var;
-}
-
-template <class T>
-LSValue* LSArray<T>::operator ++ (int) {
-	return LSNull::null_var;
-}
-
-template <class T>
-LSValue* LSArray<T>::operator -- () {
-	return LSNull::null_var;
-}
-
-template <class T>
-LSValue* LSArray<T>::operator -- (int) {
-	return LSNull::null_var;
 }
 
 
