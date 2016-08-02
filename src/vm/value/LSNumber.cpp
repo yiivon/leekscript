@@ -245,7 +245,7 @@ LSValue* LSNumber::poww(const LSString*) const {
 	return LSNull::null_var;
 }
 
-LSValue* LSNumber::pow_eq(LSValue* value) {
+LSValue* LSNumber::pow_eq(LSValue*) {
 	return LSNull::null_var;
 }
 LSValue* LSNumber::pow_eq(const LSNull*) {

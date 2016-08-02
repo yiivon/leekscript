@@ -90,10 +90,10 @@ bool LSFunction::operator < (const LSString*) const {
 bool LSFunction::operator < (const LSArray<LSValue*>*) const {
 	return false;
 }
-bool LSFunction::operator < (const LSArray<int>* v) const {
+bool LSFunction::operator < (const LSArray<int>*) const {
 	return false;
 }
-bool LSFunction::operator < (const LSArray<double>* v) const {
+bool LSFunction::operator < (const LSArray<double>*) const {
 	return false;
 }
 bool LSFunction::operator < (const LSObject*) const {
