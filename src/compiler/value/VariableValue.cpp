@@ -19,22 +19,25 @@ VariableValue::VariableValue(Token* token) {
 
 VariableValue::~VariableValue() {}
 
-void VariableValue::print(ostream& os) const {
+void VariableValue::print(ostream& os, bool debug) const {
 	os << token->content;
 }
 
-int VariableValue::line() const {
+unsigned VariableValue::line() const {
 	return token->line;
 }
 
-void VariableValue::analyse(SemanticAnalyser* analyser, const Type) {
+void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	var = analyser->get_var(token);
 	if (var != nullptr) {
 		type = var->type;
 		attr_types = var->attr_types;
 	}
-//	cout << "VV " << name->content << " : " << type << endl;
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
+//	cout << "VV " << name << " : " << type << endl;
 //	cout << "var scope : " << (int)var->scope << endl;
 //	for (auto t : attr_types)
 //		cout << t.first << " : " << t.second << endl;
@@ -43,7 +46,6 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type) {
 void VariableValue::must_return(SemanticAnalyser* analyser, const Type& ret_type) {
 
 	var->value->must_return(analyser, ret_type);
-
 	type.setReturnType(ret_type);
 }
 
@@ -53,7 +55,7 @@ void VariableValue::must_return(SemanticAnalyser* analyser, const Type& ret_type
  * a = 12 // integer
  * a += 1.2 // float at the previous assignment
  */
-void VariableValue::change_type(SemanticAnalyser* analyser, const Type& type) {
+void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	if (var != nullptr) {
 		var->type = type;
 		this->type = type;
@@ -62,7 +64,7 @@ void VariableValue::change_type(SemanticAnalyser* analyser, const Type& type) {
 
 extern map<string, jit_value_t> internals;
 
-jit_value_t VariableValue::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t VariableValue::compile(Compiler& c) const {
 
 //	cout << "compile vv " << name->content << " : " << type << endl;
 //	cout << "req type : " << req_type << endl;
@@ -79,18 +81,17 @@ jit_value_t VariableValue::compile_jit(Compiler& c, jit_function_t& F, Type req_
 
 	} else { // Parameter
 
-		v = jit_value_get_param(F, var->index);
+		v = jit_value_get_param(c.F, var->index);
 	}
 
-	if (var->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-		return VM::value_to_pointer(F, v, var->type);
+	if (var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+		return VM::value_to_pointer(c.F, v, var->type);
 	}
 	return v;
 }
 
-jit_value_t VariableValue::compile_jit_l(Compiler& c, jit_function_t& F, Type) const {
-
-	return compile_jit(c, F, type);
+jit_value_t VariableValue::compile_l(Compiler& c) const {
+	return compile(c);
 }
 
 }

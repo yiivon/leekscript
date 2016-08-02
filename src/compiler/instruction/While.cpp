@@ -19,11 +19,11 @@ While::~While() {
 	delete body;
 }
 
-void While::print(ostream& os) const {
+void While::print(ostream& os, bool debug) const {
 	os << "while ";
-	condition->print(os);
+	condition->print(os, debug);
 	os << " do" << endl;
-	body->print(os);
+	body->print(os, debug);
 	os << "end";
 }
 
@@ -41,43 +41,43 @@ int while_is_true(LSValue* v) {
 	return v->isTrue();
 }
 
-jit_value_t While::compile_jit(Compiler& c, jit_function_t& F, Type) const {
+jit_value_t While::compile(Compiler& c) const {
 
 	jit_label_t label_cond = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
-	jit_value_t const_true = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
+	jit_value_t const_true = JIT_CREATE_CONST(c.F, JIT_INTEGER, 1);
 	jit_type_t args_types[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 
 	c.enter_loop(&label_end, &label_cond);
 
 	// cond label:
-	jit_insn_label(F, &label_cond);
+	jit_insn_label(c.F, &label_cond);
 
 	// condition
-	jit_value_t cond = condition->compile_jit(c, F, Type::NEUTRAL);
+	jit_value_t cond = condition->compile(c);
 
 	// goto end si !condition
 	if (condition->type.nature == Nature::VALUE) {
-		jit_insn_branch_if_not(F, cond, &label_end);
+		jit_insn_branch_if_not(c.F, cond, &label_end);
 	} else {
-		jit_value_t cond_bool = jit_insn_call_native(F, "is_true", (void*) while_is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
-		jit_value_t cmp = jit_insn_ne(F, cond_bool, const_true);
-		jit_insn_branch_if(F, cmp, &label_end);
+		jit_value_t cond_bool = jit_insn_call_native(c.F, "is_true", (void*) while_is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
+		jit_value_t cmp = jit_insn_ne(c.F, cond_bool, const_true);
+		jit_insn_branch_if(c.F, cmp, &label_end);
 	}
 
 	// body
-	body->compile_jit(c, F, Type::NEUTRAL);
+	body->compile(c);
 
 	// jump to cond
-	jit_insn_branch(F, &label_cond);
+	jit_insn_branch(c.F, &label_cond);
 
 	// end label:
-	jit_insn_label(F, &label_end);
+	jit_insn_label(c.F, &label_end);
 
 	c.leave_loop();
 
-	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
 }
 
 }

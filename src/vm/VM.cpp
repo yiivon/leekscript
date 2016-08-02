@@ -48,7 +48,6 @@ Program* VM::compile(const std::string code) {
 	Compiler c;
 	Context context { "{}" };
 
-
 	SemanticAnalyser sem;
 	sem.analyse(program, &context, modules);
 
@@ -144,6 +143,10 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		return ctx;
 	}
 
+	// Debug
+//	cout << "Program: ";
+//	program->print(cout);
+
 	// Compilation
 	internals.clear();
 
@@ -155,6 +158,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 0);
 	jit_function_t F = jit_function_create(jit_context, signature);
 	jit_insn_uses_catcher(F);
+	c.enter_function(F);
 
 	bool toplevel = mode != ExecMode::NORMAL && mode != ExecMode::TEST;
 	program->compile_jit(c, F, context, toplevel);

@@ -4,6 +4,7 @@
 #include <jit/jit.h>
 #include <vector>
 #include <map>
+#include <stack>
 
 #include "../vm/Type.hpp"
 
@@ -22,6 +23,9 @@ public:
 class Compiler {
 public:
 
+	jit_function_t F = nullptr;
+	std::stack<jit_function_t> functions;
+
 	std::vector<jit_label_t*> loops_end_labels;
 	std::vector<jit_label_t*> loops_cond_labels;
 	std::vector<std::map<std::string, CompilerVar>> variables;
@@ -31,6 +35,8 @@ public:
 
 	void enter_block();
 	void leave_block(jit_function_t& F);
+	void enter_function(jit_function_t& F);
+	void leave_function();
 
 	void add_var(std::string& name, jit_value_t& value, const Type& type, bool ref);
 	CompilerVar& get_var(const std::string& name);

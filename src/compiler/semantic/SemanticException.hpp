@@ -30,11 +30,11 @@ public:
 	static std::string build_message(Type, std::string);
 
 	Type type;
-	int line;
+	unsigned line;
 	std::string content;
 
-	SemanticException(Type type, int line);
-	SemanticException(Type type, int line, std::string& content);
+	SemanticException(Type type, unsigned line);
+	SemanticException(Type type, unsigned line, std::string& content);
 	virtual ~SemanticException();
 
 	std::string message() const;

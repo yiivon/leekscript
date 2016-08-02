@@ -18,25 +18,27 @@ PostfixExpression::~PostfixExpression() {
 	delete operatorr;
 }
 
-void PostfixExpression::print(ostream& os) const {
-	expression->print(os);
+void PostfixExpression::print(ostream& os, bool debug) const {
+	expression->print(os, debug);
 	operatorr->print(os);
 }
 
-int PostfixExpression::line() const {
+unsigned PostfixExpression::line() const {
 	return 0;
 }
 
-void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type) {
+void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	expression->analyse(analyser);
 	type = expression->type;
 	this->return_value = return_value;
+
+	type.nature = req_type.nature;
 }
 
 extern LSValue* jit_inc(LSValue*);
 extern LSValue* jit_dec(LSValue*);
 
-jit_value_t PostfixExpression::compile_jit(Compiler& c, jit_function_t& F, Type	req_type) const {
+jit_value_t PostfixExpression::compile(Compiler& c) const {
 
 	jit_type_t args_types[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
@@ -48,43 +50,41 @@ jit_value_t PostfixExpression::compile_jit(Compiler& c, jit_function_t& F, Type	
 
 		case TokenType::PLUS_PLUS: {
 			if (expression->type.nature == Nature::VALUE) {
-				jit_value_t x = expression->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t ox = jit_insn_load(F, x);
-				jit_value_t y = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
-				jit_value_t sum = jit_insn_add(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, ox, req_type);
+				jit_value_t x = expression->compile(c);
+				jit_value_t ox = jit_insn_load(c.F, x);
+				jit_value_t y = JIT_CREATE_CONST(c.F, JIT_INTEGER, 1);
+				jit_value_t sum = jit_insn_add(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, ox, type);
 				}
 				return ox;
 			} else {
-				args.push_back(expression->compile_jit(c, F, Type::NEUTRAL));
+				args.push_back(expression->compile(c));
 				func = (void*) jit_inc;
 			}
 			break;
 		}
 		case TokenType::MINUS_MINUS: {
 			if (expression->type.nature == Nature::VALUE) {
-				jit_value_t x = expression->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t ox = jit_insn_load(F, x);
-				jit_value_t y = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
-				jit_value_t sum = jit_insn_sub(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, ox, req_type);
+				jit_value_t x = expression->compile(c);
+				jit_value_t ox = jit_insn_load(c.F, x);
+				jit_value_t y = JIT_CREATE_CONST(c.F, JIT_INTEGER, 1);
+				jit_value_t sum = jit_insn_sub(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, ox, type);
 				}
 				return ox;
 			} else {
-				args.push_back(expression->compile_jit(c, F, Type::NEUTRAL));
+				args.push_back(expression->compile(c));
 				func = (void*) jit_dec;
 			}
 			break;
 		}
-		default: {
-
-		}
+		default: {}
 	}
-	return jit_insn_call_native(F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
+	return jit_insn_call_native(c.F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
 }
 
 }

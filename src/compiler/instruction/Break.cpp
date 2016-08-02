@@ -15,7 +15,7 @@ Break::Break() {
 
 Break::~Break() {}
 
-void Break::print(ostream& os) const {
+void Break::print(ostream& os, bool debug) const {
 	os << "break";
 	if (value > 1) {
 		os << " " << value;
@@ -30,11 +30,11 @@ void Break::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 }
 
-jit_value_t Break::compile_jit(Compiler& c, jit_function_t& F, Type) const {
+jit_value_t Break::compile(Compiler& c) const {
 
-	jit_insn_branch(F, c.get_current_loop_end_label());
+	jit_insn_branch(c.F, c.get_current_loop_end_label());
 
-	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
 }
 
 }

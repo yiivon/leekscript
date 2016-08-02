@@ -63,7 +63,7 @@ void Test::test_functions() {
 	 * Function operators
 	 */
 	header("Function operators");
-
+/*
 	success("+(1, 2)", "3");
 	success("+([1], 2)", "[1, 2]");
 	success("+('test', 2)", "'test2'");
@@ -90,7 +90,6 @@ void Test::test_functions() {
 	success("+", "<function>");
 	success("+.class", "<class Function>");
 	success("let p = +; p.class", "<class Function>");
-
-
+*/
 
 }

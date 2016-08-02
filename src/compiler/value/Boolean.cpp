@@ -15,23 +15,27 @@ Boolean::Boolean(bool value) {
 
 Boolean::~Boolean() {}
 
-void Boolean::print(std::ostream& os) const {
+void Boolean::print(std::ostream& os, bool) const {
 	os << (value ? "true" : "false");
 }
 
-int Boolean::line() const {
+unsigned Boolean::line() const {
 	return 0;
 }
 
-void Boolean::analyse(SemanticAnalyser*, const Type) {}
-
-jit_value_t Boolean::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {
-
+void Boolean::analyse(SemanticAnalyser*, const Type& req_type) {
 	if (req_type.nature == Nature::POINTER) {
+		type = Type::BOOLEAN_P;
+	}
+}
+
+jit_value_t Boolean::compile(Compiler& c) const {
+
+	if (type.nature == Nature::POINTER) {
 		LSBoolean* b = new LSBoolean(value);
-		return JIT_CREATE_CONST_POINTER(F, b);
+		return JIT_CREATE_CONST_POINTER(c.F, b);
 	} else {
-		return JIT_CREATE_CONST(F, JIT_INTEGER, value);
+		return JIT_CREATE_CONST(c.F, JIT_INTEGER, value);
 	}
 }
 

@@ -16,12 +16,12 @@ public:
 	Block();
 	virtual ~Block();
 
-	virtual void print(std::ostream&) const override;
-	virtual int line() const override;
+	virtual void print(std::ostream&, bool debug) const override;
+	virtual unsigned line() const override;
 
-	void analyse(SemanticAnalyser* analyser, const Type req_type);
+	void analyse(SemanticAnalyser* analyser, const Type& req_type);
 
-	jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const;
+	jit_value_t compile(Compiler&) const;
 
 };
 

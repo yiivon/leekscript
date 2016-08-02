@@ -13,20 +13,20 @@ Nulll::Nulll() {
 
 Nulll::~Nulll() {}
 
-void Nulll::print(ostream& os) const {
+void Nulll::print(ostream& os, bool debug) const {
 	os << "null";
 }
 
-int Nulll::line() const {
+unsigned Nulll::line() const {
 	return 0;
 }
 
-void Nulll::analyse(SemanticAnalyser*, const Type) {
-	// nothing to do
+void Nulll::analyse(SemanticAnalyser*, const Type&) {
+	// nothing to do, always a pointer
 }
 
-jit_value_t Nulll::compile_jit(Compiler&, jit_function_t& F, Type) const {
-	return VM::create_null(F);
+jit_value_t Nulll::compile(Compiler& c) const {
+	return VM::create_null(c.F);
 }
 
 }

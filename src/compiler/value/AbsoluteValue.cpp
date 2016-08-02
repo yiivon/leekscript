@@ -15,35 +15,38 @@ AbsoluteValue::~AbsoluteValue() {
 	delete expression;
 }
 
-void AbsoluteValue::print(std::ostream& os) const {
+void AbsoluteValue::print(std::ostream& os, bool debug) const {
 	os << "|";
-	expression->print(os);
+	expression->print(os, debug);
 	os << "|";
 }
 
-int AbsoluteValue::line() const {
+unsigned AbsoluteValue::line() const {
 	return 0;
 }
 
-void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type) {
-	expression->analyse(analyser);
+void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+
+	expression->analyse(analyser, Type::POINTER);
 	constant = expression->constant;
+
+	type.nature = req_type.nature;
 }
 
 LSValue* abso(LSValue* v) {
 	return v->abso();
 }
 
-jit_value_t AbsoluteValue::compile_jit(Compiler& c, jit_function_t& F, Type) const {
+jit_value_t AbsoluteValue::compile(Compiler& c) const {
 
-	jit_value_t ex = expression->compile_jit(c, F, Type::POINTER);
+	jit_value_t ex = expression->compile(c);
 
 	jit_type_t args_types[2] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
 
-	jit_value_t absolute_value = jit_insn_call_native(F, "abso", (void*) abso, sig, &ex, 1, JIT_CALL_NOTHROW);
+	jit_value_t absolute_value = jit_insn_call_native(c.F, "abso", (void*) abso, sig, &ex, 1, JIT_CALL_NOTHROW);
 
-	VM::delete_temporary(F, ex);
+	VM::delete_temporary(c.F, ex);
 
 	return absolute_value;
 }

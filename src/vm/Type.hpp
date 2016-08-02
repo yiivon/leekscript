@@ -13,7 +13,7 @@ enum class RawType {
 */
 
 enum class Nature {
-	UNKNOWN, MIXED, VALUE, POINTER, REFERENCE
+	UNKNOWN, VALUE, POINTER, VOID
 };
 
 class BaseRawType {

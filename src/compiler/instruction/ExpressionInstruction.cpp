@@ -12,10 +12,8 @@ ExpressionInstruction::~ExpressionInstruction() {
 	delete this->value;
 }
 
-void ExpressionInstruction::print(ostream& os) const {
-	cout << "ExpInst {";
-	value->print(os);
-	cout << "}";
+void ExpressionInstruction::print(ostream& os, bool debug) const {
+	value->print(os, debug);
 }
 
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -24,8 +22,8 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 	can_return = value->can_return;
 }
 
-jit_value_t ExpressionInstruction::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
-	return value->compile_jit(c, F, req_type);
+jit_value_t ExpressionInstruction::compile(Compiler& c) const {
+	return value->compile(c);
 }
 
 }

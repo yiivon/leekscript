@@ -117,14 +117,14 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 
 	in_program = true;
 
-	do {
+//	do {
 		variables.clear();
 		parameters.clear();
 		functions.clear();
 //		cout << "--------" << endl << "Analyse" << endl << "--------" << endl;
 		reanalyse = false;
 		program->body->analyse(this, Type::POINTER);
-	} while (reanalyse);
+//	} while (reanalyse);
 
 	program->functions = functions;
 }

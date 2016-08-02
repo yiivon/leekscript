@@ -97,80 +97,45 @@ LSValue* LSNumber::operator + (const LSString* string) const {
 LSValue* LSNumber::operator + (const LSNumber* number) const {
 	return LSNumber::get(this->value + number->value);
 }
-LSValue* LSNumber::operator + (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSNumber::operator + (const LSArray<int>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSNumber::operator + (const LSObject*) const {
-	return LSNull::null_var;
-}
-LSValue* LSNumber::operator + (const LSFunction*) const {
-	return LSNull::null_var;
-}
-LSValue* LSNumber::operator + (const LSClass*) const {
-	return LSNull::null_var;
-}
 
 LSValue* LSNumber::operator += (LSValue* value) {
 	return value->operator += (this);
 }
 LSValue* LSNumber::operator += (const LSNull*) {
-	return this;
+	return LSNull::null_var;
 }
 LSValue* LSNumber::operator += (const LSNumber* number) {
 #if !USE_CACHE
 	value += number->value;
 #endif
-	refs++;
+	this->refs++;
 	return this;
 }
-LSValue* LSNumber::operator += (const LSBoolean*) {
-	return this->clone();
+LSValue* LSNumber::operator += (const LSBoolean* boolean) {
+#if !USE_CACHE
+	value -= boolean->value;
+#endif
+	this->refs++;
+	return this;
 }
 LSValue* LSNumber::operator += (const LSString*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator += (const LSArray<LSValue*>*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator += (const LSObject*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator += (const LSFunction*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator += (const LSClass*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 
 LSValue* LSNumber::operator - (const LSValue* value) const {
 	return value->operator - (this);
 }
 LSValue* LSNumber::operator - (const LSNull*) const {
-	return clone();
+	return LSNull::null_var;
 }
-LSValue* LSNumber::operator - (const LSBoolean*) const {
-	return clone();
+LSValue* LSNumber::operator - (const LSBoolean* boolean) const {
+	return LSNumber::get(this->value - boolean->value);
 }
 LSValue* LSNumber::operator - (const LSNumber* number) const {
 	return LSNumber::get(this->value - number->value);
 }
 LSValue* LSNumber::operator - (const LSString* value) const {
-	return new LSString(*value + to_string(this->value));
-}
-LSValue* LSNumber::operator - (const LSArray<LSValue*>*) const {
-	return clone();
-}
-LSValue* LSNumber::operator - (const LSObject*) const {
-	return clone();
-}
-LSValue* LSNumber::operator - (const LSFunction*) const {
-	return clone();
-}
-LSValue* LSNumber::operator - (const LSClass*) const {
-	return clone();
+	return new LSString(*value + this->toString());
 }
 
 
@@ -178,120 +143,80 @@ LSValue* LSNumber::operator -= (LSValue* value) {
 	return value->operator -= (this);
 }
 LSValue* LSNumber::operator -= (const LSNull*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::operator -= (const LSBoolean*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::operator -= (const LSNumber* number) {
 #if !USE_CACHE
 	value -= number->value;
 #endif
-	refs++;
+	this->refs++;
 	return this;
 }
 LSValue* LSNumber::operator -= (const LSString*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator -= (const LSArray<LSValue*>*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator -= (const LSObject*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator -= (const LSFunction*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator -= (const LSClass*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 
 LSValue* LSNumber::operator * (const LSValue* value) const {
 	return value->operator * (this);
 }
 LSValue* LSNumber::operator * (const LSNull*) const {
-	return this->clone();
+	return LSNull::null_var;
 }
-LSValue* LSNumber::operator * (const LSBoolean*) const {
-	return this->clone();
+LSValue* LSNumber::operator * (const LSBoolean* boolean) const {
+	return LSNumber::get(this->value * boolean->value);
 }
 LSValue* LSNumber::operator * (const LSNumber* number) const {
 	return LSNumber::get(this->value * number->value);
 }
 LSValue* LSNumber::operator * (const LSString* value) const {
-	return new LSString(*value + to_string(this->value));
-}
-LSValue* LSNumber::operator * (const LSArray<LSValue*>*) const {
-	return this->clone();
-}
-LSValue* LSNumber::operator * (const LSObject*) const {
-	return this->clone();
-}
-LSValue* LSNumber::operator * (const LSFunction*) const {
-	return this->clone();
-}
-LSValue* LSNumber::operator * (const LSClass*) const {
-	return this->clone();
+	return value->operator *(this);
 }
 
 LSValue* LSNumber::operator *= (LSValue* value) {
 	return value->operator *= (this);
 }
 LSValue* LSNumber::operator *= (const LSNull*) {
-	return LSNumber::get(0);
+#if !USE_CACHE
+	value = 0;
+#endif
+	this->refs++;
+	return this;
 }
-LSValue* LSNumber::operator *= (const LSBoolean* boolean) {
-	return LSNumber::get(value * boolean->value);
+LSValue* LSNumber::operator *= (const LSBoolean*) {
+	return LSNull::null_var;
 }
 LSValue* LSNumber::operator *= (const LSNumber* number) {
 #if !USE_CACHE
 	value *= number->value;
 #endif
-	refs++;
+	this->refs++;
 	return this;
 }
 LSValue* LSNumber::operator *= (const LSString*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator *= (const LSArray<LSValue*>*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator *= (const LSObject*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator *= (const LSFunction*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator *= (const LSClass*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 
 LSValue* LSNumber::operator / (const LSValue* value) const {
 	return value->operator / (this);
 }
 LSValue* LSNumber::operator / (const LSNull*) const {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::operator / (const LSBoolean*) const {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::operator / (const LSNumber* number) const {
 	return LSNumber::get(this->value / number->value);
 }
-LSValue* LSNumber::operator / (const LSString* value) const {
-	return new LSString(*value + to_string(this->value));
+LSValue* LSNumber::operator / (const LSString*) const {
+	return LSNull::null_var;
 }
-LSValue* LSNumber::operator / (const LSArray<LSValue*>*) const {
-	return this->clone();
-}
-LSValue* LSNumber::operator / (const LSObject*) const {
-	return this->clone();
-}
-LSValue* LSNumber::operator / (const LSFunction*) const {
-	return this->clone();
-}
-LSValue* LSNumber::operator / (const LSClass*) const {
-	return this->clone();
+
+LSValue* LSNumber::operator /= (LSValue* value) {
+	return value->operator /= (this);
 }
 LSValue* LSNumber::operator /= (const LSNull*) {
 	return this->clone();
@@ -299,91 +224,50 @@ LSValue* LSNumber::operator /= (const LSNull*) {
 LSValue* LSNumber::operator /= (const LSBoolean*) {
 	return this->clone();
 }
-LSValue* LSNumber::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-
 LSValue* LSNumber::operator /= (const LSNumber* number) {
 #if !USE_CACHE
 	value /= number->value;
 #endif
-	refs++;
+	this->refs++;
 	return this;
 }
 LSValue* LSNumber::operator /= (const LSString*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator /= (const LSArray<LSValue*>*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator /= (const LSObject*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator /= (const LSFunction*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator /= (const LSClass*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 
 LSValue* LSNumber::poww(const LSValue* value) const {
 	return value->poww(this);
 }
 LSValue* LSNumber::poww(const LSNull*) const {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::poww(const LSBoolean*) const {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::poww(const LSNumber* value) const {
 	return LSNumber::get((NUMBER_TYPE) pow(this->value, value->value));
 }
 LSValue* LSNumber::poww(const LSString*) const {
-	return this->clone();
-}
-LSValue* LSNumber::poww(const LSArray<LSValue*>*) const {
-	return this->clone();
-}
-LSValue* LSNumber::poww(const LSObject*) const {
-	return this->clone();
-}
-LSValue* LSNumber::poww(const LSFunction*) const {
-	return this->clone();
-}
-LSValue* LSNumber::poww(const LSClass*) const {
-	return this->clone();
+	return LSNull::null_var;
 }
 
-LSValue* LSNumber::pow_eq(LSValue* value) {
-	return value->pow_eq(this);
+LSValue* LSNumber::pow_eq(LSValue*) {
+	return LSNull::null_var;
 }
 LSValue* LSNumber::pow_eq(const LSNull*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::pow_eq(const LSBoolean*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::pow_eq(const LSNumber* number) {
 #if !USE_CACHE
 	value = pow(value, number->value);
 #endif
-	refs++;
-	return this;
+	return LSNull::null_var;
 }
 LSValue* LSNumber::pow_eq(const LSString*) {
-	return this->clone();
-}
-LSValue* LSNumber::pow_eq(const LSArray<LSValue*>*) {
-	return this->clone();
-}
-LSValue* LSNumber::pow_eq(const LSObject*) {
-	return this->clone();
-}
-LSValue* LSNumber::pow_eq(const LSFunction*) {
-	return this->clone();
-}
-LSValue* LSNumber::pow_eq(const LSClass*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 
 LSValue* LSNumber::operator % (const LSValue* value) const {
@@ -401,79 +285,33 @@ LSValue* LSNumber::operator % (const LSNumber* value) const {
 LSValue* LSNumber::operator % (const LSString*) const {
 	return LSNull::null_var;
 }
-LSValue* LSNumber::operator % (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSNumber::operator % (const LSObject*) const {
-	return LSNull::null_var;
-}
-LSValue* LSNumber::operator % (const LSFunction*) const {
-	return LSNull::null_var;
-}
-LSValue* LSNumber::operator % (const LSClass*) const {
-	return LSNull::null_var;
-}
 
 LSValue* LSNumber::operator %= (LSValue* value) {
 	return value->operator %= (this);
 }
 LSValue* LSNumber::operator %= (const LSNull*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::operator %= (const LSBoolean*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 LSValue* LSNumber::operator %= (const LSNumber* number) {
 #if !USE_CACHE
 	value = fmod(value, number->value);
 #endif
-	refs++;
+	this->refs++;
 	return this;
 }
 LSValue* LSNumber::operator %= (const LSString*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator %= (const LSArray<LSValue*>*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator %= (const LSObject*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator %= (const LSFunction*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator %= (const LSClass*) {
-	return this->clone();
+	return LSNull::null_var;
 }
 
 bool LSNumber::operator == (const LSValue* v) const {
 	return v->operator == (this);
 }
-bool LSNumber::operator == (const LSNull*) const {
-	return false;
-}
-bool LSNumber::operator == (const LSBoolean*) const {
-	return false;
-}
 bool LSNumber::operator == (const LSNumber* v) const {
 	return this->value == v->value;
 }
-bool LSNumber::operator == (const LSString*) const {
-	return false;
-}
-bool LSNumber::operator == (const LSArray<LSValue*>*) const {
-	return false;
-}
-bool LSNumber::operator == (const LSFunction*) const {
-	return false;
-}
-bool LSNumber::operator == (const LSObject*) const {
-	return false;
-}
-bool LSNumber::operator == (const LSClass*) const {
-	return false;
-}
-
 
 bool LSNumber::operator < (const LSValue* v) const {
 	return v->operator < (this);
@@ -493,10 +331,10 @@ bool LSNumber::operator < (const LSString*) const {
 bool LSNumber::operator < (const LSArray<LSValue*>*) const {
 	return true;
 }
-bool LSNumber::operator < (const LSArray<int>* v) const {
+bool LSNumber::operator < (const LSArray<int>*) const {
 	return true;
 }
-bool LSNumber::operator < (const LSArray<double>* v) const {
+bool LSNumber::operator < (const LSArray<double>*) const {
 	return true;
 }
 bool LSNumber::operator < (const LSObject*) const {
@@ -592,10 +430,6 @@ bool LSNumber::operator >= (const LSFunction*) const {
 	return false;
 }
 bool LSNumber::operator >= (const LSClass*)  const {
-	return false;
-}
-
-bool LSNumber::in(const LSValue*) const {
 	return false;
 }
 
