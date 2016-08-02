@@ -28,7 +28,7 @@ void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
 	defaultValues.push_back(defaultValue);
 }
 
-void Function::print(std::ostream& os) const {
+void Function::print(std::ostream& os, bool debug) const {
 
 	if (lambda) {
 
@@ -40,7 +40,7 @@ void Function::print(std::ostream& os) const {
 			}
 		}
 		os << " -> ";
-		body->instructions[0]->print(os);
+		body->instructions[0]->print(os, debug);
 		cout << ")";
 
 	} else {
@@ -61,7 +61,7 @@ void Function::print(std::ostream& os) const {
 		}
 
 		os << ")" << endl;
-		body->print(os);
+		body->print(os, debug);
 		os << "end";
 	}
 }
