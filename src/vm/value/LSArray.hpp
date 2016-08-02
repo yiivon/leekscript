@@ -37,6 +37,7 @@ public:
 	 */
 	void push_no_clone(T value);
 	void push_clone(const T value);
+
 	void clear();
 	T remove(const int index);
 	T remove_key(LSValue* key);

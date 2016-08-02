@@ -33,6 +33,21 @@ inline void LSArray<double>::push_clone(const double value) {
 }
 
 template <class T>
+void LSArray<T>::push_no_clone(T value) {
+	this->push_back(value);
+	value->refs++;
+}
+
+template <>
+inline void LSArray<int>::push_no_clone(int value) {
+	this->push_back(value);
+}
+template <>
+inline void LSArray<double>::push_no_clone(double value) {
+	this->push_back(value);
+}
+
+template <class T>
 LSArray<T>::LSArray() {}
 
 template <class T>
@@ -202,21 +217,6 @@ inline LSValue* LSArray<int>::pop() {
 		return LSNumber::get(last);
 	}
 	return LSNull::null_var;
-}
-
-template <class T>
-void LSArray<T>::push_no_clone(T value) {
-	this->push_back(value);
-	value->refs++;
-}
-
-template <>
-inline void LSArray<int>::push_no_clone(int value) {
-	this->push_back(value);
-}
-template <>
-inline void LSArray<double>::push_no_clone(double value) {
-	this->push_back(value);
 }
 
 template <class T>
