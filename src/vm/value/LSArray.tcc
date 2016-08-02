@@ -287,11 +287,21 @@ inline LSArray<LSArray<T>*>* LSArray<T>::chunk_1() const {
 
 template <>
 inline void LSArray<LSValue*>::unique() {
-	auto it = std::unique(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
-		return a->operator ==(b);
-	});
-	for (auto i = it; i != this->end(); ++i) {
-		//LSValue::delete_val(*i);
+	if (this->empty()) return;
+
+	auto it = this->begin();
+	auto next = it;
+
+	while (true) {
+		++next;
+		while (next != this->end() && (*next)->operator ==(*it)) {
+			LSValue::delete_val(*next++);
+		}
+		++it;
+		if (next == this->end()) {
+			break;
+		}
+		*it = *next;
 	}
 	this->resize(std::distance(this->begin(), it));
 }

@@ -104,8 +104,11 @@ void Test::test_arrays() {
 	success("let x = [1,2,3,4]; x.chunk(3)", "[[1, 2, 3], [4]]");
 	success("let x = [1,2,3,4]; x.chunk()", "[[1], [2], [3], [4]]");
 
+	success("let x = []; x.unique(); x", "[]");
 	success("let x = [1,1,2,2,1]; x.unique(); x", "[1, 2, 1]");
-	success("let x = ['a','a','b']; x.unique(); x", "['a', 'b']");
+	success("let x = ['a', 'a', 'b']; x.unique(); x", "['a', 'b']");
+	success("let x = ['a', 'b', 'c']; x.unique(); x", "['a', 'b', 'c']");
+	success("let x = ['a', 'a', 'b', 'a', 'a']; x.unique(); x", "['a', 'b', 'a']");
 
 	success("let x = [3, 1, 2]; x.sort(); x", "[1, 2, 3]");
 	success("let x = ['foo', 'yop', 'abc']; x.sort(); x", "['abc', 'foo', 'yop']");
