@@ -34,7 +34,7 @@ void Object::print(ostream& os, bool debug) const {
 	os << "}";
 }
 
-int Object::line() const {
+unsigned Object::line() const {
 	return 0;
 }
 

@@ -23,7 +23,7 @@ void VariableValue::print(ostream& os, bool debug) const {
 	os << token->content;
 }
 
-int VariableValue::line() const {
+unsigned VariableValue::line() const {
 	return token->line;
 }
 

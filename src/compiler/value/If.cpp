@@ -35,7 +35,7 @@ void If::print(ostream& os, bool debug) const {
 	os << "end";
 }
 
-int If::line() const {
+unsigned If::line() const {
 	return 0;
 }
 

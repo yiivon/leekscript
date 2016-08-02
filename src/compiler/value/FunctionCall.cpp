@@ -53,7 +53,7 @@ void FunctionCall::print(std::ostream& os, bool debug) const {
 	os << ")";
 }
 
-int FunctionCall::line() const {
+unsigned FunctionCall::line() const {
 	return 0;
 }
 

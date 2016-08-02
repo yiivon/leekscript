@@ -17,7 +17,7 @@ public:
 	virtual ~Block();
 
 	virtual void print(std::ostream&, bool debug) const override;
-	virtual int line() const override;
+	virtual unsigned line() const override;
 
 	void analyse(SemanticAnalyser* analyser, const Type& req_type);
 
