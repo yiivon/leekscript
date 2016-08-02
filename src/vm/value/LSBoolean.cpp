@@ -2,6 +2,7 @@
 #include "LSNull.hpp"
 #include "LSClass.hpp"
 #include "LSString.hpp"
+#include "LSNumber.hpp"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ bool LSBoolean::isTrue() const {
 }
 
 LSValue* LSBoolean::operator - () const {
-	return (LSValue*) this;
+	return LSNull::null_var;
 }
 
 LSValue* LSBoolean::operator ! () const {
@@ -44,359 +45,66 @@ LSValue* LSBoolean::operator ~ () const {
 }
 
 LSValue* LSBoolean::operator ++ () {
-	return this;
+	return LSNull::null_var;
 }
 
 LSValue* LSBoolean::operator ++ (int) {
-	return this;
+	return LSNull::null_var;
 }
 
 LSValue* LSBoolean::operator -- () {
-	return this;
+	return LSNull::null_var;
 }
 LSValue* LSBoolean::operator -- (int) {
-	return this;
+	return LSNull::null_var;
 }
 
 LSValue* LSBoolean::operator + (const LSValue* v) const {
 	return v->operator + (this);
 }
-LSValue* LSBoolean::operator + (const LSNull*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator + (const LSBoolean*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator + (const LSNumber*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator + (const LSString*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator + (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator + (const LSArray<int>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator + (const LSObject*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator + (const LSFunction*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator + (const LSClass*) const {
-	return LSNull::null_var;
+LSValue* LSBoolean::operator + (const LSNumber*n) const {
+	return LSNumber::get(this->value + n->value);
 }
 
 LSValue* LSBoolean::operator += (LSValue* value) {
 	return value->operator += (this);
 }
-LSValue* LSBoolean::operator += (const LSNull*) {
-	return this->clone();
-}
-LSValue* LSBoolean::operator += (const LSNumber*) {
-	return this->clone();
-}
-LSValue* LSBoolean::operator += (const LSBoolean*) {
-	return this->clone();
-}
-LSValue* LSBoolean::operator += (const LSString*) {
-	return this->clone();
-}
-LSValue* LSBoolean::operator += (const LSArray<LSValue*>*) {
-	return this->clone();
-}
-LSValue* LSBoolean::operator += (const LSObject*) {
-	return this->clone();
-}
-LSValue* LSBoolean::operator += (const LSFunction*) {
-	return this->clone();
-}
-LSValue* LSBoolean::operator += (const LSClass*) {
-	return this->clone();
-}
 
 LSValue* LSBoolean::operator - (const LSValue* value) const {
 	return value->operator - (this);
 }
-LSValue* LSBoolean::operator - (const LSNull*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator - (const LSBoolean*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator - (const LSNumber*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator - (const LSString*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator - (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator - (const LSObject*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator - (const LSFunction*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator - (const LSClass*) const {
-	return LSNull::null_var;
+LSValue* LSBoolean::operator - (const LSNumber*n) const {
+	return LSNumber::get(this->value - n->value);
 }
 
 LSValue* LSBoolean::operator -= (LSValue* value) {
 	return value->operator -= (this);
 }
-LSValue* LSBoolean::operator -= (const LSNull*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator -= (const LSBoolean*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator -= (const LSNumber*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator -= (const LSString*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator -= (const LSArray<LSValue*>*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator -= (const LSObject*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator -= (const LSFunction*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator -= (const LSClass*) {
-	return LSNull::null_var;
-}
-
 LSValue* LSBoolean::operator * (const LSValue* value) const {
 	return value->operator * (this);
 }
-LSValue* LSBoolean::operator * (const LSNull*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator * (const LSBoolean*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator * (const LSNumber*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator * (const LSString*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator * (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator * (const LSObject*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator * (const LSFunction*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator * (const LSClass*) const {
-	return LSNull::null_var;
-}
-
 LSValue* LSBoolean::operator *= (LSValue* value) {
 	return value->operator *= (this);
 }
-LSValue* LSBoolean::operator *= (const LSNull*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator *= (const LSBoolean*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator *= (const LSNumber*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator *= (const LSString*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator *= (const LSArray<LSValue*>*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator *= (const LSObject*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator *= (const LSFunction*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator *= (const LSClass*) {
-	return LSNull::null_var;
-}
-
 LSValue* LSBoolean::operator / (const LSValue* value) const {
 	return value->operator / (this);
 }
-LSValue* LSBoolean::operator / (const LSNull*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator / (const LSBoolean*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator / (const LSNumber*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator / (const LSString*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator / (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator / (const LSObject*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator / (const LSFunction*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator / (const LSClass*) const {
-	return LSNull::null_var;
-}
-
 LSValue* LSBoolean::operator /= (LSValue* value) {
 	return value->operator /= (this);
 }
-LSValue* LSBoolean::operator /= (const LSNull*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator /= (const LSBoolean*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator /= (const LSNumber*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator /= (const LSString*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator /= (const LSArray<LSValue*>*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator /= (const LSObject*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator /= (const LSFunction*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator /= (const LSClass*) {
-	return LSNull::null_var;
-}
-
 LSValue* LSBoolean::poww(const LSValue* value) const {
 	return value->poww(this);
 }
-LSValue* LSBoolean::poww(const LSNull*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::poww(const LSBoolean*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::poww(const LSNumber*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::poww(const LSString*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::poww(const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::poww(const LSObject*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::poww(const LSFunction*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::poww(const LSClass*) const {
-	return LSNull::null_var;
-}
-
-
 LSValue* LSBoolean::pow_eq(LSValue* value) {
 	return value->operator /= (this);
 }
-LSValue* LSBoolean::pow_eq(const LSNull*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::pow_eq(const LSBoolean*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::pow_eq(const LSNumber*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::pow_eq(const LSString*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::pow_eq(const LSArray<LSValue*>*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::pow_eq(const LSObject*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::pow_eq(const LSFunction*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::pow_eq(const LSClass*) {
-	return LSNull::null_var;
-}
-
 LSValue* LSBoolean::operator % (const LSValue* value) const {
 	return value->operator % (this);
 }
-LSValue* LSBoolean::operator % (const LSNull*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator % (const LSBoolean*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator % (const LSNumber*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator % (const LSString*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator % (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator % (const LSObject*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator % (const LSFunction*) const {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator % (const LSClass*) const {
-	return LSNull::null_var;
-}
-
 LSValue* LSBoolean::operator %= (LSValue* value) {
 	return value->operator %= (this);
 }
-LSValue* LSBoolean::operator %= (const LSNull*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator %= (const LSBoolean*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator %= (const LSNumber*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator %= (const LSString*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator %= (const LSArray<LSValue*>*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator %= (const LSObject*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator %= (const LSFunction*) {
-	return LSNull::null_var;
-}
-LSValue* LSBoolean::operator %= (const LSClass*) {
-	return LSNull::null_var;
-}
+
 
 bool LSBoolean::operator == (const LSValue* value) const {
 	return value->operator == (this);

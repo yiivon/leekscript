@@ -20,7 +20,7 @@ LSValue::LSValue() {
 //	cout << "LSValue()" << endl;
 	native = false;
 	obj_count++;
-	objs.insert({this, this});
+	//objs.insert({this, this});
 }
 
 LSValue::~LSValue() {
@@ -88,4 +88,127 @@ void LSValue::delete_val(LSValue* value) {
 	}
 }
 
+//LSValue* LSValue::operator + (const LSValue*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSNull*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSBoolean*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSNumber*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSString*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSArray<LSValue*>*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSArray<int>*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSArray<double>*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSObject*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSFunction*) const { return LSNull::null_var; }
+LSValue* LSValue::operator + (const LSClass*) const { return LSNull::null_var; }
+
+//LSValue* LSValue::operator += (LSValue*) { return LSNull::null_var; }
+LSValue* LSValue::operator += (const LSNull*) { return LSNull::null_var; }
+LSValue* LSValue::operator += (const LSBoolean*) { return LSNull::null_var; }
+LSValue* LSValue::operator += (const LSNumber*) { return LSNull::null_var; }
+LSValue* LSValue::operator += (const LSString*) { return LSNull::null_var; }
+LSValue* LSValue::operator += (const LSArray<LSValue*>*) { return LSNull::null_var; }
+LSValue* LSValue::operator += (const LSObject*) { return LSNull::null_var; }
+LSValue* LSValue::operator += (const LSFunction*) { return LSNull::null_var; }
+LSValue* LSValue::operator += (const LSClass*) { return LSNull::null_var; }
+
+//LSValue* LSValue::operator - (const LSValue*) const { return LSNull::null_var; }
+LSValue* LSValue::operator - (const LSNull*) const { return LSNull::null_var; }
+LSValue* LSValue::operator - (const LSBoolean*) const { return LSNull::null_var; }
+LSValue* LSValue::operator - (const LSNumber*) const { return LSNull::null_var; }
+LSValue* LSValue::operator - (const LSString*) const { return LSNull::null_var; }
+LSValue* LSValue::operator - (const LSArray<LSValue*>*) const { return LSNull::null_var; }
+LSValue* LSValue::operator - (const LSObject*) const { return LSNull::null_var; }
+LSValue* LSValue::operator - (const LSFunction*) const { return LSNull::null_var; }
+LSValue* LSValue::operator - (const LSClass*) const { return LSNull::null_var; }
+
+//LSValue* LSValue::operator -= (LSValue*) { return LSNull::null_var; }
+LSValue* LSValue::operator -= (const LSNull*) { return LSNull::null_var; }
+LSValue* LSValue::operator -= (const LSBoolean*) { return LSNull::null_var; }
+LSValue* LSValue::operator -= (const LSNumber*) { return LSNull::null_var; }
+LSValue* LSValue::operator -= (const LSString*) { return LSNull::null_var; }
+LSValue* LSValue::operator -= (const LSArray<LSValue*>*) { return LSNull::null_var; }
+LSValue* LSValue::operator -= (const LSObject*) { return LSNull::null_var; }
+LSValue* LSValue::operator -= (const LSFunction*) { return LSNull::null_var; }
+LSValue* LSValue::operator -= (const LSClass*) { return LSNull::null_var; }
+
+//LSValue* LSValue::operator * (const LSValue*) const { return LSNull::null_var; }
+LSValue* LSValue::operator * (const LSNull*) const { return LSNull::null_var; }
+LSValue* LSValue::operator * (const LSBoolean*) const { return LSNull::null_var; }
+LSValue* LSValue::operator * (const LSNumber*) const { return LSNull::null_var; }
+LSValue* LSValue::operator * (const LSString*) const { return LSNull::null_var; }
+LSValue* LSValue::operator * (const LSArray<LSValue*>*) const { return LSNull::null_var; }
+LSValue* LSValue::operator * (const LSObject*) const { return LSNull::null_var; }
+LSValue* LSValue::operator * (const LSFunction*) const { return LSNull::null_var; }
+LSValue* LSValue::operator * (const LSClass*) const { return LSNull::null_var; }
+
+//LSValue* LSValue::operator *= (LSValue*) { return LSNull::null_var; }
+LSValue* LSValue::operator *= (const LSNull*) { return LSNull::null_var; }
+LSValue* LSValue::operator *= (const LSBoolean*) { return LSNull::null_var; }
+LSValue* LSValue::operator *= (const LSNumber*) { return LSNull::null_var; }
+LSValue* LSValue::operator *= (const LSString*) { return LSNull::null_var; }
+LSValue* LSValue::operator *= (const LSArray<LSValue*>*) { return LSNull::null_var; }
+LSValue* LSValue::operator *= (const LSObject*) { return LSNull::null_var; }
+LSValue* LSValue::operator *= (const LSFunction*) { return LSNull::null_var; }
+LSValue* LSValue::operator *= (const LSClass*) { return LSNull::null_var; }
+
+//LSValue* LSValue::operator / (const LSValue*) const { return LSNull::null_var; }
+LSValue* LSValue::operator / (const LSNull*) const { return LSNull::null_var; }
+LSValue* LSValue::operator / (const LSBoolean*) const { return LSNull::null_var; }
+LSValue* LSValue::operator / (const LSNumber*) const { return LSNull::null_var; }
+LSValue* LSValue::operator / (const LSString*) const { return LSNull::null_var; }
+LSValue* LSValue::operator / (const LSArray<LSValue*>*) const { return LSNull::null_var; }
+LSValue* LSValue::operator / (const LSObject*) const { return LSNull::null_var; }
+LSValue* LSValue::operator / (const LSFunction*) const { return LSNull::null_var; }
+LSValue* LSValue::operator / (const LSClass*) const { return LSNull::null_var; }
+
+//LSValue* LSValue::operator /= (LSValue*) { return LSNull::null_var; }
+LSValue* LSValue::operator /= (const LSNull*) { return LSNull::null_var; }
+LSValue* LSValue::operator /= (const LSBoolean*) { return LSNull::null_var; }
+LSValue* LSValue::operator /= (const LSNumber*) { return LSNull::null_var; }
+LSValue* LSValue::operator /= (const LSString*) { return LSNull::null_var; }
+LSValue* LSValue::operator /= (const LSArray<LSValue*>*) { return LSNull::null_var; }
+LSValue* LSValue::operator /= (const LSObject*) { return LSNull::null_var; }
+LSValue* LSValue::operator /= (const LSFunction*) { return LSNull::null_var; }
+LSValue* LSValue::operator /= (const LSClass*) { return LSNull::null_var; }
+
+//LSValue* LSValue::poww(const LSValue*) const { return LSNull::null_var; }
+LSValue* LSValue::poww(const LSNull*) const { return LSNull::null_var; }
+LSValue* LSValue::poww(const LSBoolean*) const { return LSNull::null_var; }
+LSValue* LSValue::poww(const LSNumber*) const { return LSNull::null_var; }
+LSValue* LSValue::poww(const LSString*) const { return LSNull::null_var; }
+LSValue* LSValue::poww(const LSArray<LSValue*>*) const { return LSNull::null_var; }
+LSValue* LSValue::poww(const LSObject*) const { return LSNull::null_var; }
+LSValue* LSValue::poww(const LSFunction*) const { return LSNull::null_var; }
+LSValue* LSValue::poww(const LSClass*) const { return LSNull::null_var; }
+
+//LSValue* LSValue::pow_eq(LSValue*) { return LSNull::null_var; }
+LSValue* LSValue::pow_eq(const LSNull*) { return LSNull::null_var; }
+LSValue* LSValue::pow_eq(const LSBoolean*) { return LSNull::null_var; }
+LSValue* LSValue::pow_eq(const LSNumber*) { return LSNull::null_var; }
+LSValue* LSValue::pow_eq(const LSString*) { return LSNull::null_var; }
+LSValue* LSValue::pow_eq(const LSArray<LSValue*>*) { return LSNull::null_var; }
+LSValue* LSValue::pow_eq(const LSObject*) { return LSNull::null_var; }
+LSValue* LSValue::pow_eq(const LSFunction*) { return LSNull::null_var; }
+LSValue* LSValue::pow_eq(const LSClass*) { return LSNull::null_var; }
+
+//LSValue* LSValue::operator % (const LSValue*) const { return LSNull::null_var; }
+LSValue* LSValue::operator % (const LSNull*) const { return LSNull::null_var; }
+LSValue* LSValue::operator % (const LSBoolean*) const { return LSNull::null_var; }
+LSValue* LSValue::operator % (const LSNumber*) const { return LSNull::null_var; }
+LSValue* LSValue::operator % (const LSString*) const { return LSNull::null_var; }
+LSValue* LSValue::operator % (const LSArray<LSValue*>*) const { return LSNull::null_var; }
+LSValue* LSValue::operator % (const LSObject*) const { return LSNull::null_var; }
+LSValue* LSValue::operator % (const LSFunction*) const { return LSNull::null_var; }
+LSValue* LSValue::operator % (const LSClass*) const { return LSNull::null_var; }
+
+//LSValue* LSValue::operator %= (LSValue*) { return LSNull::null_var; }
+LSValue* LSValue::operator %= (const LSNull*) { return LSNull::null_var; }
+LSValue* LSValue::operator %= (const LSBoolean*) { return LSNull::null_var; }
+LSValue* LSValue::operator %= (const LSNumber*) { return LSNull::null_var; }
+LSValue* LSValue::operator %= (const LSString*) { return LSNull::null_var; }
+LSValue* LSValue::operator %= (const LSArray<LSValue*>*) { return LSNull::null_var; }
+LSValue* LSValue::operator %= (const LSObject*) { return LSNull::null_var; }
+LSValue* LSValue::operator %= (const LSFunction*) { return LSNull::null_var; }
+LSValue* LSValue::operator %= (const LSClass*) { return LSNull::null_var; }
+
 }
+
