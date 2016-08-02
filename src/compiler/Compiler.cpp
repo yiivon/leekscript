@@ -36,6 +36,18 @@ void Compiler::leave_block(jit_function_t& F) {
 	variables.pop_back();
 }
 
+void Compiler::enter_function(jit_function_t& F) {
+	variables.push_back(std::map<std::string, CompilerVar> {});
+	functions.push(F);
+	this->F = F;
+}
+
+void Compiler::leave_function() {
+	variables.pop_back();
+	functions.pop();
+	this->F = functions.top();
+}
+
 void Compiler::add_var(std::string& name, jit_value_t& value, const Type& type, bool ref) {
 	variables.back()[name] = {value, type, ref};
 }

@@ -19,10 +19,11 @@ Block::~Block() {
 	}
 }
 
-void Block::print(ostream& os) const {
-	os << "Block {" << endl;
+void Block::print(ostream& os, bool debug) const {
+	os << "{" << endl;
 	for (Instruction* instruction : instructions) {
-		instruction->print(os);
+		os << "    ";
+		instruction->print(os, debug);
 		os << endl;
 	}
 	os << "}";
@@ -32,50 +33,56 @@ int Block::line() const {
 	return 0;
 }
 
-void Block::analyse(SemanticAnalyser* analyser, const Type req_type) {
+void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	analyser->enter_block();
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 
-		instructions[i]->analyse(analyser, req_type);
-		if (instructions[i]->can_return) {
-			can_return = true;
+		if (i == instructions.size() - 1) {
+			instructions[i]->analyse(analyser, req_type);
+			type = instructions[i]->type;
+		} else {
+			instructions[i]->analyse(analyser, Type::VOID);
 		}
 
-		if (i == instructions.size() - 1) {
-			type = instructions[i]->type;
+		if (instructions[i]->can_return) {
+			can_return = true;
 		}
 	}
 
 	analyser->leave_block();
+
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
 }
 
-jit_value_t Block::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
+jit_value_t Block::compile(Compiler& c) const {
 
 	c.enter_block();
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 
 		if (i == instructions.size() - 1) {
-			jit_value_t val = instructions[i]->compile_jit(c, F, type);
+			jit_value_t val = instructions[i]->compile(c);
 			if (type.must_manage_memory()) {
-				VM::inc_refs(F, val);
+				VM::inc_refs(c.F, val);
 			}
-			c.leave_block(F);
+			c.leave_block(c.F);
 			return val;
 		} else {
 			//jit_value_t res = instructions[i]->compile_jit(c, F, Type::POINTER);
 			//VM::delete_temporary(F, res);
-			jit_value_t res = instructions[i]->compile_jit(c, F, Type::VOID);
+			instructions[i]->compile(c);
 		}
 	}
-	c.leave_block(F);
+	c.leave_block(c.F);
 
-	if (type != Type::VOID) {
-		return VM::create_null(F);
+	if (type.nature != Nature::VOID) {
+		return VM::create_null(c.F);
 	}
-	return jit_value_create_nint_constant(F, jit_type_int, 0);
+	return jit_value_create_nint_constant(c.F, jit_type_int, 0);
 }
 
 }

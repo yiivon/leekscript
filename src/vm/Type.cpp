@@ -21,7 +21,7 @@ const ClassRawType* const RawType::CLASS = new ClassRawType();
 
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
 
-const Type Type::VOID(RawType::VOID, Nature::VALUE);
+const Type Type::VOID(RawType::VOID, Nature::VOID);
 const Type Type::NEUTRAL(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::VALUE(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
@@ -171,6 +171,7 @@ bool Type::will_take(const int i, const Type& arg_type) {
 
 	if (current_type.nature == Nature::UNKNOWN) {
 		setArgumentType(i, arg_type);
+		return true;
 	} else {
 		if (current_type.nature == Nature::VALUE and arg_type.nature == Nature::POINTER) {
 			setArgumentType(i, Type(RawType::UNKNOWN, Nature::POINTER));
@@ -397,16 +398,14 @@ ostream& operator << (ostream& os, const Type& type) {
 
 string Type::get_nature_name(const Nature& nature) {
 	switch (nature) {
-	case Nature::MIXED:
-		return "MIXED";
 	case Nature::POINTER:
 		return "POINTER";
-	case Nature::REFERENCE:
-		return "REFERENCE";
 	case Nature::UNKNOWN:
 		return "UNKNOWN";
 	case Nature::VALUE:
 		return "VALUE";
+	case Nature::VOID:
+		return "VOID";
 	default:
 		return "??";
 	}

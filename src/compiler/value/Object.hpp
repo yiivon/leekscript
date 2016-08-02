@@ -17,12 +17,12 @@ public:
 	Object();
 	virtual ~Object();
 
-	virtual void print(std::ostream&) const override;
+	virtual void print(std::ostream&, bool debug) const override;
 	virtual int line() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type) override;
+	virtual void analyse(SemanticAnalyser*, const Type&) override;
 
-	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
+	virtual jit_value_t compile(Compiler&) const override;
 };
 
 }

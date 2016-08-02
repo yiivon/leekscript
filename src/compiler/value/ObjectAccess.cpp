@@ -28,8 +28,8 @@ ObjectAccess::~ObjectAccess() {
 	LSValue::delete_val(field_string);
 }
 
-void ObjectAccess::print(ostream& os) const {
-	object->print(os);
+void ObjectAccess::print(ostream& os, bool debug) const {
+	object->print(os, debug);
 	os << "." << field->content;
 }
 
@@ -37,16 +37,13 @@ int ObjectAccess::line() const {
 	return 0;
 }
 
-void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
+void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (field_string == nullptr) {
 		field_string = new LSString(field->content);
 	}
 
 	object->analyse(analyser);
-
-//	cout << "Analyse oa : " << field->content << " => ";
-//	cout << object->type << endl;
 
 	// Search direct attributes
 	try {
@@ -58,7 +55,8 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 
 	// Static attribute
 	VariableValue* vv = dynamic_cast<VariableValue*>(object);
-	if (object->type == Type::CLASS and vv != nullptr) {
+
+	if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
 
 		class_name = vv->name;
 
@@ -111,11 +109,19 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type) {
 		}
 	}
 
+	if (not access_function and not class_attr) {
+		object->analyse(analyser, Type::POINTER);
+	}
+
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
+
 //	cout << "object_access '" << field->content << "' type : " << type << endl;
 }
 
-void ObjectAccess::change_type(SemanticAnalyser*, const Type&) {
-	// nothing to do since object attributes are pointers
+void ObjectAccess::change_type(SemanticAnalyser*, const Type& req_type) {
+	type = req_type;
 }
 
 LSValue* object_access(LSValue* o, LSString* k) {
@@ -126,16 +132,16 @@ LSValue** object_access_l(LSValue* o, LSString* k) {
 	return o->attrL(k);
 }
 
-jit_value_t ObjectAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t ObjectAccess::compile(Compiler& c) const {
 
 	// Special case for custom attributes, accessible via a function
 	if (access_function != nullptr) {
 
 		auto fun = (jit_value_t (*)(jit_function_t&)) access_function;
-		jit_value_t res = fun(F);
+		jit_value_t res = fun(c.F);
 
-		if (req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, res, type);
+		if (type.nature == Nature::POINTER) {
+			return VM::value_to_pointer(c.F, res, type);
 		}
 		return res;
 	}
@@ -143,36 +149,36 @@ jit_value_t ObjectAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	if (class_attr) {
 
 		// TODO : only functions!
-		return JIT_CREATE_CONST_POINTER(F, new LSFunction(attr_addr));
+		return JIT_CREATE_CONST_POINTER(c.F, new LSFunction(attr_addr));
 
 	} else {
 
-		jit_value_t o = object->compile_jit(c, F, Type::POINTER);
+		jit_value_t o = object->compile(c);
 
 		jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
-		jit_value_t k = JIT_CREATE_CONST_POINTER(F, field_string);
+		jit_value_t k = JIT_CREATE_CONST_POINTER(c.F, field_string);
 		jit_value_t args[] = {o, k};
 
-		jit_value_t res = jit_insn_call_native(F, "access", (void*) object_access, sig, args, 2, JIT_CALL_NOTHROW);
+		jit_value_t res = jit_insn_call_native(c.F, "access", (void*) object_access, sig, args, 2, JIT_CALL_NOTHROW);
 
-		VM::delete_temporary(F, o);
+		VM::delete_temporary(c.F, o);
 		return res;
 	}
 }
 
-jit_value_t ObjectAccess::compile_jit_l(Compiler& c, jit_function_t& F, Type) const {
+jit_value_t ObjectAccess::compile_l(Compiler& c) const {
 
-	jit_value_t o = object->compile_jit(c, F, Type::POINTER);
+	jit_value_t o = object->compile(c);
 
 	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
-	jit_value_t k = JIT_CREATE_CONST_POINTER(F, field_string);
+	jit_value_t k = JIT_CREATE_CONST_POINTER(c.F, field_string);
 	jit_value_t args[] = {o, k};
 
-	jit_value_t res = jit_insn_call_native(F, "access_l", (void*) object_access_l, sig, args, 2, JIT_CALL_NOTHROW);
+	jit_value_t res = jit_insn_call_native(c.F, "access_l", (void*) object_access_l, sig, args, 2, JIT_CALL_NOTHROW);
 
 	return res;
 }

@@ -17,15 +17,18 @@ Number::Number(double value, Token* token) {
 Number::~Number() {
 }
 
-void Number::print(ostream& os) const {
+void Number::print(ostream& os, bool debug) const {
 	os << value;
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 int Number::line() const {
 	return token->line;
 }
 
-void Number::analyse(SemanticAnalyser*, const Type req_type) {
+void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 
 	if (value != (int) value or req_type.raw_type == RawType::FLOAT) {
 		type = Type::FLOAT;
@@ -33,17 +36,17 @@ void Number::analyse(SemanticAnalyser*, const Type req_type) {
 		type = Type::INTEGER;
 	}
 
-	if (req_type.nature == Nature::POINTER) {
-		type.nature = Nature::POINTER;
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
 	}
 }
 
-jit_value_t Number::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {
+jit_value_t Number::compile(Compiler& c) const {
 
-	if (req_type.nature == Nature::POINTER) {
+	if (type.nature == Nature::POINTER) {
 
-		jit_value_t val = JIT_CREATE_CONST_FLOAT(F, ls_jit_real, value);
-		return VM::value_to_pointer(F, val, Type::FLOAT);
+		jit_value_t val = JIT_CREATE_CONST_FLOAT(c.F, ls_jit_real, value);
+		return VM::value_to_pointer(c.F, val, Type::FLOAT);
 
 	} else {
 
@@ -51,9 +54,9 @@ jit_value_t Number::compile_jit(Compiler&, jit_function_t& F, Type req_type) con
 		jit_type_t type = isfloat ? ls_jit_real : ls_jit_integer;
 
 		if (isfloat) {
-			return JIT_CREATE_CONST_FLOAT(F, type, value);
+			return JIT_CREATE_CONST_FLOAT(c.F, type, value);
 		} else {
-			return JIT_CREATE_CONST(F, type, value);
+			return JIT_CREATE_CONST(c.F, type, value);
 		}
 	}
 }

@@ -12,20 +12,21 @@ public:
 	Value* array;
 	Value* key;
 	Value* key2;
+	Type array_element_type;
 
 	ArrayAccess();
 	virtual ~ArrayAccess();
 
-	virtual void print(std::ostream&) const override;
+	virtual void print(std::ostream&, bool debug) const override;
 	virtual int line() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type) override;
+	virtual void analyse(SemanticAnalyser*, const Type&) override;
 	virtual bool will_take(SemanticAnalyser* analyser, const unsigned, const Type);
 	bool array_access_will_take(SemanticAnalyser* analyser, const unsigned, const Type, int level);
 	virtual void change_type(SemanticAnalyser*, const Type&) override;
 
-	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
-	virtual jit_value_t compile_jit_l(Compiler&, jit_function_t&, Type) const override;
+	virtual jit_value_t compile(Compiler&) const override;
+	virtual jit_value_t compile_l(Compiler&) const override;
 };
 
 }

@@ -286,7 +286,7 @@ inline LSArray<LSArray<T>*>* LSArray<T>::chunk_1() const {
 }
 
 template <>
-inline void LSArray<LSValue*>::unique() {
+inline LSArray<LSValue*>* LSArray<LSValue*>::unique() {
 	auto it = std::unique(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
 		return a->operator ==(b);
 	});
@@ -294,35 +294,41 @@ inline void LSArray<LSValue*>::unique() {
 		//LSValue::delete_val(*i);
 	}
 	this->resize(std::distance(this->begin(), it));
+	return this;
 }
 
 template <>
-inline void LSArray<int>::unique() {
+inline LSArray<int>* LSArray<int>::unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
+	return this;
 }
 
 template <>
-inline void LSArray<double>::unique() {
+inline LSArray<double>* LSArray<double>::unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
+	return this;
 }
 
 template <>
-inline void LSArray<LSValue*>::sort() {
+inline LSArray<LSValue*>* LSArray<LSValue*>::sort() {
 	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
 		return a->operator > (b);
 	});
+	return this;
 }
 
 template <>
-inline void LSArray<int>::sort() {
+inline LSArray<int>* LSArray<int>::sort() {
 	std::sort(this->begin(), this->end());
+	return this;
 }
 
 template <>
-inline void LSArray<double>::sort() {
+inline LSArray<double>* LSArray<double>::sort() {
 	std::sort(this->begin(), this->end());
+	return this;
 }
 
 template <class T>

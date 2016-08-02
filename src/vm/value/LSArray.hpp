@@ -52,8 +52,8 @@ public:
 	LSArray<LSValue*>* map(const void*) const;
 	LSArray<LSArray<T>*>* chunk(int size = 1) const;
 	LSArray<LSArray<T>*>* chunk_1() const;
-	void unique();
-	void sort();
+	LSArray<T>* unique();
+	LSArray<T>* sort();
 	void iter(const LSFunction*) const;
 	int contains(const LSValue*) const;
 	int contains_int(int) const;

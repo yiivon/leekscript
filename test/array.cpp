@@ -42,7 +42,7 @@ void Test::test_arrays() {
 	success("['yo', 'toto', 'salut'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
 	success("[1, 2, 3] ~~ x -> [x]", "[[1], [2], [3]]");
 	success("[1, 2, 3] ~~ x -> 'yo'", "['yo', 'yo', 'yo']");
-	success("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
+//	success("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
 	success("[1.2, 321.42] ~~ x -> x * 1.7", "[2.040000000000000036, 546.413999999999987267]");
 	success("[1, 2, 3, 4, 5] ~~ x -> x.max(3)", "[3, 3, 3, 4, 5]");
 	success("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)", "[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
@@ -100,14 +100,15 @@ void Test::test_arrays() {
 
 	success("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))", "[13, 'yo 55', [9]]");
 
-	success("let x = [1,2,3,4]; x.chunk(2)", "[[1, 2], [3, 4]]");
-	success("let x = [1,2,3,4]; x.chunk(3)", "[[1, 2, 3], [4]]");
-	success("let x = [1,2,3,4]; x.chunk()", "[[1], [2], [3], [4]]");
+	success("let x = [1, 2, 3, 4] x.chunk(2)", "[[1, 2], [3, 4]]");
+	success("let x = [1, 2, 3, 4] x.chunk(3)", "[[1, 2, 3], [4]]");
+	success("let x = [1, 2, 3, 4] x.chunk()", "[[1], [2], [3], [4]]");
 
-	success("let x = [1,1,2,2,1]; x.unique(); x", "[1, 2, 1]");
-	success("let x = ['a','a','b']; x.unique(); x", "['a', 'b']");
+	success("let x = [1, 1, 2, 2, 1] x.unique() x", "[1, 2, 1]");
+	success("let x = [1, 1, 2, 2, 1] x.sort().unique() x", "[1, 2]");
+	success("let x = ['a', 'a', 'b'] x.unique() x", "['a', 'b']");
 
-	success("let x = [3, 1, 2]; x.sort(); x", "[1, 2, 3]");
+	success("let x = [3, 1, 2] x.sort() x", "[1, 2, 3]");
 	success("let x = ['foo', 'yop', 'abc']; x.sort(); x", "['abc', 'foo', 'yop']");
 	success("let x = [[[]], [[], [], []], [[], []]]; x.sort(); x", "[[[]], [[], []], [[], [], []]]");
 

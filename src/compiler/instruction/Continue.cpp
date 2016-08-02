@@ -28,11 +28,11 @@ void Continue::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 }
 
-jit_value_t Continue::compile_jit(Compiler& c, jit_function_t& F, Type) const {
+jit_value_t Continue::compile(Compiler& c) const {
 
-	jit_insn_branch(F, c.get_current_loop_cond_label());
+	jit_insn_branch(c.F, c.get_current_loop_cond_label());
 
-	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+	return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
 }
 
 }

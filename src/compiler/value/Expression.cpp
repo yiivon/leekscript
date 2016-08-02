@@ -17,8 +17,10 @@ namespace ls {
 Expression::Expression() : Expression(nullptr) {}
 
 Expression::Expression(Value* v) :
-	v1(v), v2(nullptr), op(nullptr), ignorev2(false), no_op(false), operations(0)
-{}
+	v1(v), v2(nullptr), op(nullptr), ignorev2(false), no_op(false), operations(0) {
+	type = Type::VALUE;
+	operations = 1;
+}
 
 Expression::~Expression() {
 	if (v1 != nullptr) {
@@ -72,42 +74,40 @@ void Expression::append(Operator* op, Value* exp) {
 	}
 }
 
-void Expression::print(std::ostream& os) const {
+void Expression::print(std::ostream& os, bool debug) const {
 
-	os << "Exp {";
+	os << "(";
 
 	if (v1 != nullptr) {
 
-		v1->print(os);
+		v1->print(os, debug);
 
 		if (op != nullptr) {
 			os << " ";
 			op->print(os);
 			os << " ";
-			v2->print(os);
+			v2->print(os,debug);
 		}
 	}
-	os << "}";
+	os << ") " << type;
 }
 
 int Expression::line() const {
 	return 0;
 }
 
-void Expression::analyse(SemanticAnalyser* analyser, const Type) {
+void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	type = Type::VALUE;
-	constant = true;
-	operations = 1;
-
+	// No operator : just analyse v1 and return
 	if (op == nullptr) {
-		v1->analyse(analyser, Type::NEUTRAL);
+		v1->analyse(analyser, req_type);
 		type = v1->type;
 		return;
 	}
 
-	Type v1_type = Type::NEUTRAL;
-	Type v2_type = Type::NEUTRAL;
+	// Require float type for a division
+	Type v1_type = Type::UNKNOWN;
+	Type v2_type = Type::UNKNOWN;
 
 	if (op->type == TokenType::DIVIDE) {
 		type.raw_type = RawType::FLOAT;
@@ -115,15 +115,19 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 		v2_type = Type::FLOAT;
 	}
 
+	// First analyse of v1 and v2
 	v1->analyse(analyser, v1_type);
-	if (v1->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
-	if (v1->constant == false) constant = false;
-
+	if (v1->type.nature == Nature::POINTER) {
+		type.nature = Nature::POINTER;
+	}
 	v2->analyse(analyser, v2_type);
-	if (v2->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
-	if (v2->constant == false) constant = false;
+	if (v2->type.nature == Nature::POINTER) {
+		type.nature = Nature::POINTER;
+	}
+	constant = v1->constant and v2->constant;
 
 
+	// Boolean operators
 	if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
 		op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
 		op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
@@ -140,6 +144,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 		}
 	}
 
+	// A = B, A += B, etc. mix types
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::PLUS or op->type == TokenType::TIMES
 		or op->type == TokenType::MINUS) {
@@ -170,16 +175,34 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 		}
 	}
 
+	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
-
+		v2->analyse(analyser, Type::POINTER);
 		v2->will_take(analyser, 0, v1->type.getElementType());
 		v2->must_return(analyser, Type::POINTER);
-
 		type = Type::ARRAY;
 	}
 
+	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
 		type = Type::POINTER;
+	}
+
+	if (op->type == TokenType::INSTANCEOF) {
+		v1->analyse(analyser, Type::POINTER);
+	}
+	if (op->type == TokenType::IN) {
+		v1->analyse(analyser, Type::POINTER);
+	}
+
+	// Set the correct type nature for the two members
+	if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
+		v1->analyse(analyser, Type::POINTER);
+		type.nature = Nature::POINTER;
+	}
+	if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
+		v2->analyse(analyser, Type::POINTER);
+		type.nature = Nature::POINTER;
 	}
 
 	// Merge operations count
@@ -193,6 +216,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type) {
 			operations += ex2->operations;
 			ex2->operations = 0;
 		}
+	}
+
+	// At the end the require nature is taken into account
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
 	}
 }
 
@@ -358,14 +386,16 @@ bool jit_is_null(LSValue* v) {
 	return v->typeID() == 1;
 }
 
-jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t Expression::compile(Compiler& c) const {
 
+	// No operator : compile v1 and return
 	if (op == nullptr) {
-		return v1->compile_jit(c, F, req_type);
+		return v1->compile(c);
 	}
 
+	// Increment operations
 	if (operations > 0) {
-		VM::inc_ops(F, operations);
+		VM::inc_ops(c.F, operations);
 	}
 
 //	cout << "v1 : " << v1->type << ", v2 : " << v2->type << endl;
@@ -374,7 +404,7 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 	void* ls_func;
 	bool use_jit_func = v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE;
 	vector<jit_value_t> args;
-	Type conv_info = req_type;
+	Type conv_info = Type::UNKNOWN;
 	Type v1_conv = Type::POINTER;
 	Type v2_conv = Type::POINTER;
 
@@ -385,24 +415,24 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 				if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
 
-					args.push_back(l1->compile_jit_l(c, F, Type::NEUTRAL));
-					args.push_back(v2->compile_jit(c, F, Type::NEUTRAL));
+					args.push_back(l1->compile_l(c));
+					args.push_back(v2->compile(c));
 
 					jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 					jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 2, 0);
-					jit_value_t v = jit_insn_call_native(F, "", (void*) jit_store_value, sig, args.data(), 2, JIT_CALL_NOTHROW);
+					jit_value_t v = jit_insn_call_native(c.F, "", (void*) jit_store_value, sig, args.data(), 2, JIT_CALL_NOTHROW);
 
-					if (req_type.nature == Nature::POINTER) {
-						return VM::value_to_pointer(F, v, req_type);
+					if (type.nature == Nature::POINTER) {
+						return VM::value_to_pointer(c.F, v, type);
 					}
 					return v;
 				} else {
 
-					jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-					jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-					jit_insn_store(F, x, y);
-					if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-						return VM::value_to_pointer(F, y, req_type);
+					jit_value_t x = v1->compile(c);
+					jit_value_t y = v2->compile(c);
+					jit_insn_store(c.F, x, y);
+					if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+						return VM::value_to_pointer(c.F, y, type);
 					}
 					return y;
 				}
@@ -410,53 +440,56 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 				if (dynamic_cast<ArrayAccess*>(v1)) {
 
-					args.push_back(((LeftValue*) v1)->compile_jit_l(c, F, Type::POINTER));
-					args.push_back(v2->compile_jit(c, F, Type::POINTER));
+					args.push_back(((LeftValue*) v1)->compile_l(c));
+					args.push_back(v2->compile(c));
 
 					if (v1->type.must_manage_memory()) {
-						VM::inc_refs(F, args[1]);
+						VM::inc_refs(c.F, args[1]);
 					}
 
 					ls_func = (void*) &jit_store;
 
 				} else if (dynamic_cast<VariableValue*>(v1)) {
 
-					jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-					jit_value_t y = v2->compile_jit(c, F, Type::POINTER);
+					jit_value_t x = v1->compile(c);
+					jit_value_t y = v2->compile(c);
 
 					if (v2->type.must_manage_memory()) {
-						VM::inc_refs(F, y);
+						VM::inc_refs(c.F, y);
 					}
 					if (v2->type.must_manage_memory()) {
-						VM::delete_obj(F, x);
+						VM::delete_obj(c.F, x);
 					}
-					jit_insn_store(F, x, y);
+					jit_insn_store(c.F, x, y);
 					return y;
 
 				} else {
-					args.push_back(((LeftValue*) v1)->compile_jit_l(c, F, Type::POINTER));
-					args.push_back(v2->compile_jit(c, F, Type::POINTER));
+					args.push_back(((LeftValue*) v1)->compile_l(c));
+					args.push_back(v2->compile(c));
 					ls_func = (void*) &jit_store;
 				}
 			} else {
+				cout << "type : " << type << endl;
+				cout << "v1: " << v1->type << endl;
+				cout << "v2: " << v2->type << endl;
 				throw new runtime_error("value = pointer !");
 			}
 			break;
 		}
 		case TokenType::SWAP: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t t = jit_insn_load(F, x);
-				jit_insn_store(F, x, y);
-				jit_insn_store(F, y, t);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, x, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t t = jit_insn_load(c.F, x);
+				jit_insn_store(c.F, x, y);
+				jit_insn_store(c.F, y, t);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, x, type);
 				}
 				return x;
 			} else {
-				args.push_back(((LeftValue*) v1)->compile_jit_l(c, F, Type::POINTER));
-				args.push_back(((LeftValue*) v2)->compile_jit_l(c, F, Type::POINTER));
+				args.push_back(((LeftValue*) v1)->compile_l(c));
+				args.push_back(((LeftValue*) v2)->compile_l(c));
 				ls_func = (void*) &jit_swap;
 			}
 			break;
@@ -472,26 +505,26 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 			if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
 
-				args.push_back(l1->compile_jit_l(c, F, Type::NEUTRAL));
-				args.push_back(v2->compile_jit(c, F, Type::NEUTRAL));
+				args.push_back(l1->compile_l(c));
+				args.push_back(v2->compile(c));
 
 				jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 				jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 2, 0);
-				jit_value_t v = jit_insn_call_native(F, "", (void*) jit_add_equal_value, sig, args.data(), 2, JIT_CALL_NOTHROW);
+				jit_value_t v = jit_insn_call_native(c.F, "", (void*) jit_add_equal_value, sig, args.data(), 2, JIT_CALL_NOTHROW);
 
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, v, req_type);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, v, type);
 				}
 				return v;
 			}
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t sum = jit_insn_add(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, sum, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t sum = jit_insn_add(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, sum, type);
 				}
 				return sum;
 			} else {
@@ -502,12 +535,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		case TokenType::MINUS_EQUAL: {
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t sum = jit_insn_sub(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, sum, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t sum = jit_insn_sub(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, sum, type);
 				}
 				return sum;
 			} else {
@@ -519,12 +552,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t sum = jit_insn_mul(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, sum, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t sum = jit_insn_mul(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, sum, type);
 				}
 				return sum;
 			} else {
@@ -535,14 +568,14 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		case TokenType::DIVIDE_EQUAL: {
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t xf = jit_value_create(F, JIT_FLOAT);
-				jit_insn_store(F, xf, x);
-				jit_value_t sum = jit_insn_div(F, xf, y);
-				jit_insn_store(F, x, sum);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, sum, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t xf = jit_value_create(c.F, JIT_FLOAT);
+				jit_insn_store(c.F, xf, x);
+				jit_value_t sum = jit_insn_div(c.F, xf, y);
+				jit_insn_store(c.F, x, sum);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, sum, type);
 				}
 				return sum;
 			} else {
@@ -553,12 +586,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		case TokenType::MODULO_EQUAL: {
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t sum = jit_insn_rem(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, sum, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t sum = jit_insn_rem(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, sum, type);
 				}
 				return sum;
 			} else {
@@ -569,12 +602,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		case TokenType::POWER_EQUAL: {
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t sum = jit_insn_pow(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, sum, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t sum = jit_insn_pow(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, sum, type);
 				}
 				return sum;
 			} else {
@@ -596,16 +629,16 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::XOR: {
 			if (use_jit_func) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				x = jit_insn_to_not_bool(F, x);
-				y = jit_insn_to_not_bool(F, y);
-				jit_value_t r = jit_insn_or(F,
-					jit_insn_and(F, x, jit_insn_not(F, y)),
-					jit_insn_and(F, y, jit_insn_not(F, x))
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				x = jit_insn_to_not_bool(c.F, x);
+				y = jit_insn_to_not_bool(c.F, y);
+				jit_value_t r = jit_insn_or(c.F,
+					jit_insn_and(c.F, x, jit_insn_not(c.F, y)),
+					jit_insn_and(c.F, y, jit_insn_not(c.F, x))
 				);
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, r, Type::BOOLEAN);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, r, Type::BOOLEAN);
 				}
 				return r;
 			} else {
@@ -693,7 +726,6 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 			} else {
 				ls_func = (void*) &jit_tilde_tilde_pointer;
 			}
-			v2_conv = Type(RawType::FUNCTION, Nature::POINTER);
 			break;
 		}
 		case TokenType::IN: {
@@ -713,12 +745,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::BIT_AND_EQUALS: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t a = jit_insn_and(F, x, y);
-				jit_insn_store(F, x, a);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, a, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t a = jit_insn_and(c.F, x, y);
+				jit_insn_store(c.F, x, a);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, a, type);
 				}
 				return a;
 			} else {
@@ -733,12 +765,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::BIT_OR_EQUALS: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t o = jit_insn_or(F, x, y);
-				jit_insn_store(F, x, o);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, o, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t o = jit_insn_or(c.F, x, y);
+				jit_insn_store(c.F, x, o);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, o, type);
 				}
 				return o;
 			} else {
@@ -753,12 +785,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::BIT_XOR_EQUALS: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t a = jit_insn_xor(F, x, y);
-				jit_insn_store(F, x, a);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, a, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t a = jit_insn_xor(c.F, x, y);
+				jit_insn_store(c.F, x, a);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, a, type);
 				}
 				return a;
 			} else {
@@ -773,12 +805,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::BIT_SHIFT_LEFT_EQUALS : {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t a = jit_insn_shl(F, x, y);
-				jit_insn_store(F, x, a);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, a, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t a = jit_insn_shl(c.F, x, y);
+				jit_insn_store(c.F, x, a);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, a, type);
 				}
 				return a;
 			} else {
@@ -793,12 +825,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::BIT_SHIFT_RIGHT_EQUALS : {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t a = jit_insn_shr(F, x, y);
-				jit_insn_store(F, x, a);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, a, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t a = jit_insn_shr(c.F, x, y);
+				jit_insn_store(c.F, x, a);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, a, type);
 				}
 				return a;
 			} else {
@@ -813,12 +845,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		}
 		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS : {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t a = jit_insn_ushr(F, x, y);
-				jit_insn_store(F, x, a);
-				if (v2->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, a, req_type);
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t a = jit_insn_ushr(c.F, x, y);
+				jit_insn_store(c.F, x, a);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, a, type);
 				}
 				return a;
 			} else {
@@ -832,28 +864,28 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 			jit_label_t label_end = jit_label_undefined;
 			jit_label_t label_else = jit_label_undefined;
-			jit_value_t v = jit_value_create(F, ls_jit_pointer);
+			jit_value_t v = jit_value_create(c.F, ls_jit_pointer);
 
 			jit_type_t args_types[2] = {ls_jit_pointer};
-			jit_value_t x = v1->compile_jit(c, F, Type::POINTER);
+			jit_value_t x = v1->compile(c);
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ls_jit_integer, args_types, 1, 0);
-			jit_value_t r = jit_insn_call_native(F, "is_null", (void*) jit_is_null, sig, &x, 1, JIT_CALL_NOTHROW);
+			jit_value_t r = jit_insn_call_native(c.F, "is_null", (void*) jit_is_null, sig, &x, 1, JIT_CALL_NOTHROW);
 
-			jit_insn_branch_if_not(F, r, &label_else);
+			jit_insn_branch_if_not(c.F, r, &label_else);
 
-			jit_value_t y = v2->compile_jit(c, F, Type::POINTER);
-			jit_insn_store(F, v, y);
+			jit_value_t y = v2->compile(c);
+			jit_insn_store(c.F, v, y);
 //			VM::inc_refs(F, y);
 
-			jit_insn_branch(F, &label_end);
-			jit_insn_label(F, &label_else);
+			jit_insn_branch(c.F, &label_end);
+			jit_insn_label(c.F, &label_else);
 
-			jit_insn_store(F, v, x);
-			VM::inc_refs(F, x);
+			jit_insn_store(c.F, v, x);
+			VM::inc_refs(c.F, x);
 
-			jit_insn_label(F, &label_end);
+			jit_insn_label(c.F, &label_end);
 
-			VM::delete_temporary(F, x);
+			VM::delete_temporary(c.F, x);
 
 
 			return v;
@@ -866,13 +898,12 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 
 	if (use_jit_func) {
 
-		jit_value_t x = v1->compile_jit(c, F, Type::NEUTRAL);
-		jit_value_t y = v2->compile_jit(c, F, Type::NEUTRAL);
+		jit_value_t x = v1->compile(c);
+		jit_value_t y = v2->compile(c);
+		jit_value_t r = jit_func(c.F, x, y);
 
-		jit_value_t r = jit_func(F, x, y);
-
-		if (req_type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(F, r, conv_info);
+		if (type.nature == Nature::POINTER) {
+			return VM::value_to_pointer(c.F, r, conv_info);
 		}
 		return r;
 
@@ -882,25 +913,25 @@ jit_value_t Expression::compile_jit(Compiler& c, jit_function_t& F, Type req_typ
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
 		if (args.size() == 0) {
-			args.push_back(v1->compile_jit(c, F, v1_conv));
-			args.push_back(v2->compile_jit(c, F, v2_conv));
+			args.push_back(v1->compile(c));
+			args.push_back(v2->compile(c));
 		}
-		jit_value_t v = jit_insn_call_native(F, "", ls_func, sig, args.data(), 2, JIT_CALL_NOTHROW);
+		jit_value_t v = jit_insn_call_native(c.F, "", ls_func, sig, args.data(), 2, JIT_CALL_NOTHROW);
 		if (v1->type.nature == Nature::VALUE and op->type == TokenType::PLUS_EQUAL) {
-			jit_insn_store(F, args[0], v);
+			jit_insn_store(c.F, args[0], v);
 		}
 
 		// Delete operands
-		if (v1_conv.nature == Nature::POINTER) {
-			VM::delete_temporary(F, args[0]);
+		if (v1->type.nature == Nature::POINTER) {
+			VM::delete_temporary(c.F, args[0]);
 		}
-		if (v2_conv.nature == Nature::POINTER) {
-			VM::delete_temporary(F, args[1]);
+		if (v2->type.nature == Nature::POINTER) {
+			VM::delete_temporary(c.F, args[1]);
 		}
 
 		// Convert to value
-		if (type == Type::BOOLEAN and req_type == Type::BOOLEAN) {
-			return VM::pointer_to_value(F, v, Type::BOOLEAN);
+		if (type == Type::BOOLEAN) {
+			return VM::pointer_to_value(c.F, v, Type::BOOLEAN);
 		}
 		return v;
 	}

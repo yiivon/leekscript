@@ -21,16 +21,17 @@ PrefixExpression::~PrefixExpression() {
 	delete operatorr;
 }
 
-void PrefixExpression::print(ostream& os) const {
+void PrefixExpression::print(ostream& os, bool debug) const {
 	operatorr->print(os);
-	expression->print(os);
+	expression->print(os, debug);
+	os << " " << type;
 }
 
 int PrefixExpression::line() const {
 	return 0;
 }
 
-void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type) {
+void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	expression->analyse(analyser);
 
@@ -40,6 +41,10 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type) {
 		type = expression->type;
 	} else if (operatorr->type == TokenType::NOT) {
 		type = Type::BOOLEAN;
+	}
+
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
 	}
 }
 
@@ -59,7 +64,7 @@ LSValue* jit_pre_tilde(LSValue* v) {
 	return v->operator ~ ();
 }
 
-jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t PrefixExpression::compile(Compiler& c) const {
 
 	jit_type_t args_types[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
@@ -71,66 +76,66 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 
 		case TokenType::PLUS_PLUS: {
 			if (expression->type.nature == Nature::VALUE) {
-				jit_value_t x = expression->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
-				jit_value_t sum = jit_insn_add(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, sum, req_type);
+				jit_value_t x = expression->compile(c);
+				jit_value_t y = JIT_CREATE_CONST(c.F, JIT_INTEGER, 1);
+				jit_value_t sum = jit_insn_add(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, sum, type);
 				}
 				return sum;
 			} else {
-				args.push_back(expression->compile_jit(c, F, Type::NEUTRAL));
+				args.push_back(expression->compile(c));
 				func = (void*) jit_pre_inc;
 			}
 			break;
 		}
 		case TokenType::MINUS_MINUS: {
 			if (expression->type.nature == Nature::VALUE) {
-				jit_value_t x = expression->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t y = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
-				jit_value_t sum = jit_insn_sub(F, x, y);
-				jit_insn_store(F, x, sum);
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, sum, req_type);
+				jit_value_t x = expression->compile(c);
+				jit_value_t y = JIT_CREATE_CONST(c.F, JIT_INTEGER, 1);
+				jit_value_t sum = jit_insn_sub(c.F, x, y);
+				jit_insn_store(c.F, x, sum);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, sum, type);
 				}
 				return sum;
 			} else {
-				args.push_back(expression->compile_jit(c, F, Type::NEUTRAL));
+				args.push_back(expression->compile(c));
 				func = (void*) jit_pre_dec;
 			}
 			break;
 		}
 		case TokenType::NOT: {
 			if (expression->type.nature == Nature::VALUE) {
-				jit_value_t x = expression->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t r = jit_insn_to_not_bool(F, x);
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, r, Type::BOOLEAN);
+				jit_value_t x = expression->compile(c);
+				jit_value_t r = jit_insn_to_not_bool(c.F, x);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, r, Type::BOOLEAN);
 				}
 				return r;
 			} else {
-				args.push_back(expression->compile_jit(c, F, Type::NEUTRAL));
+				args.push_back(expression->compile(c));
 				func = (void*) jit_not;
 			}
 			break;
 		}
 		case TokenType::MINUS: {
 			if (expression->type.nature == Nature::VALUE) {
-				jit_value_t x = expression->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t r = jit_insn_neg(F, x);
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, r, req_type);
+				jit_value_t x = expression->compile(c);
+				jit_value_t r = jit_insn_neg(c.F, x);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, r, type);
 				}
 				return r;
 			} else {
-				args.push_back(expression->compile_jit(c, F, Type::NEUTRAL));
+				args.push_back(expression->compile(c));
 				func = (void*) jit_minus;
 			}
 			break;
 		}
 		case TokenType::TILDE: {
-			args.push_back(expression->compile_jit(c, F, Type::POINTER));
+			args.push_back(expression->compile(c));
 			func = (void*) jit_pre_tilde;
 			break;
 		}
@@ -139,27 +144,27 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
 
 				if (vv->name == "Number") {
-					jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
-					if (req_type.nature == Nature::POINTER) {
-						return VM::value_to_pointer(F, n, Type::INTEGER);
+					jit_value_t n = JIT_CREATE_CONST(c.F, JIT_INTEGER, 0);
+					if (type.nature == Nature::POINTER) {
+						return VM::value_to_pointer(c.F, n, Type::INTEGER);
 					}
 					return n;
 				}
 				if (vv->name == "Boolean") {
-					jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
-					if (req_type.nature == Nature::POINTER) {
-						return VM::value_to_pointer(F, n, Type::BOOLEAN);
+					jit_value_t n = JIT_CREATE_CONST(c.F, JIT_INTEGER, 0);
+					if (type.nature == Nature::POINTER) {
+						return VM::value_to_pointer(c.F, n, Type::BOOLEAN);
 					}
 					return n;
 				}
 				if (vv->name == "String") {
-					return JIT_CREATE_CONST_POINTER(F, new LSString(""));
+					return JIT_CREATE_CONST_POINTER(c.F, new LSString(""));
 				}
 				if (vv->name == "Array") {
-					return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
+					return JIT_CREATE_CONST_POINTER(c.F, new LSArray<LSValue*>());
 				}
 				if (vv->name == "Object") {
-					return JIT_CREATE_CONST_POINTER(F, new LSObject());
+					return JIT_CREATE_CONST_POINTER(c.F, new LSObject());
 				}
 			}
 
@@ -167,33 +172,36 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 				if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
 					if (vv->name == "Number") {
 						if (fc->arguments.size() > 0) {
-							return fc->arguments[0]->compile_jit(c, F, Type::POINTER);
+							jit_value_t n = fc->arguments[0]->compile(c);
+							if (type.nature == Nature::POINTER) {
+								return VM::value_to_pointer(c.F, n, Type::INTEGER);
+							}
 						} else {
-							jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
-							if (req_type.nature == Nature::POINTER) {
-								return VM::value_to_pointer(F, n, Type::INTEGER);
+							jit_value_t n = JIT_CREATE_CONST(c.F, JIT_INTEGER, 0);
+							if (type.nature == Nature::POINTER) {
+								return VM::value_to_pointer(c.F, n, Type::INTEGER);
 							}
 							return n;
 						}
 					}
 					if (vv->name == "Boolean") {
-						jit_value_t n = JIT_CREATE_CONST(F, JIT_INTEGER, 0);
-						if (req_type.nature == Nature::POINTER) {
-							return VM::value_to_pointer(F, n, Type::BOOLEAN);
+						jit_value_t n = JIT_CREATE_CONST(c.F, JIT_INTEGER, 0);
+						if (type.nature == Nature::POINTER) {
+							return VM::value_to_pointer(c.F, n, Type::BOOLEAN);
 						}
 						return n;
 					}
 					if (vv->name == "String") {
 						if (fc->arguments.size() > 0) {
-							return fc->arguments[0]->compile_jit(c, F, Type::POINTER);
+							return fc->arguments[0]->compile(c);
 						}
-						return JIT_CREATE_CONST_POINTER(F, new LSString(""));
+						return JIT_CREATE_CONST_POINTER(c.F, new LSString(""));
 					}
 					if (vv->name == "Array") {
-						return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
+						return JIT_CREATE_CONST_POINTER(c.F, new LSArray<LSValue*>());
 					}
 					if (vv->name == "Object") {
-						return JIT_CREATE_CONST_POINTER(F, new LSObject());
+						return JIT_CREATE_CONST_POINTER(c.F, new LSObject());
 					}
 				}
 			}
@@ -204,10 +212,10 @@ jit_value_t PrefixExpression::compile_jit(Compiler& c, jit_function_t& F, Type r
 
 		}
 	}
-	jit_value_t result = jit_insn_call_native(F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
+	jit_value_t result = jit_insn_call_native(c.F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
 
 	if (expression->type.nature == Nature::POINTER) {
-		VM::delete_temporary(F, args[0]);
+		VM::delete_temporary(c.F, args[0]);
 	}
 
 	return result;

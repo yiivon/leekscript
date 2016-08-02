@@ -61,18 +61,18 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::ARRAY, array_array, {Type::INTEGER}, (void*) &LSArray<LSValue*>::chunk},
 		{Type::FLOAT_ARRAY, float_array_array, {Type::INTEGER}, (void*) &LSArray<double>::chunk},
 		{Type::INT_ARRAY, int_array_array, {Type::INTEGER}, (void*) &LSArray<int>::chunk},
-	});
+    });
 
 	method("unique", {
-		{Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::unique},
-		{Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::unique},
-		{Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::unique},
+		{Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::unique},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) &LSArray<double>::unique},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::unique},
 	});
 
 	method("sort", {
-		{Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::sort},
-		{Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::sort},
-		{Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::sort},
+		{Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::sort},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) &LSArray<double>::sort},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::sort},
 	});
 
 	Type map2_fun_type = Type::FUNCTION;

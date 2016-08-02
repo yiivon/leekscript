@@ -22,12 +22,12 @@ VariableDeclaration::~VariableDeclaration() {
 	}
 }
 
-void VariableDeclaration::print(ostream& os) const {
+void VariableDeclaration::print(ostream& os, bool debug) const {
 
 	os << (global ? "global " : "let ");
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
-		os << variables.at(i);
+		os << variables.at(i)->content;
 		if (i < variables.size() - 1) {
 			os << ", ";
 		}
@@ -36,45 +36,44 @@ void VariableDeclaration::print(ostream& os) const {
 		os << " = ";
 	}
 	for (unsigned i = 0; i < expressions.size(); ++i) {
-		expressions.at(i)->print(os);
+		expressions.at(i)->print(os, debug);
 		if (i < expressions.size() - 1) {
 			os << ", ";
 		}
 	}
 }
 
-void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
+void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	type = Type::VALUE;
-	for (unsigned i = 0; i < expressions.size(); ++i) {
-		expressions[i]->analyse(analyser, Type::NEUTRAL);
-		if (i == expressions.size() - 1 and expressions[i]->type.nature == Nature::POINTER) {
-			type = Type::POINTER;
-		}
-	}
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
 		Token* var = variables[i];
 		Type type = Type::NEUTRAL;
 		Value* value = nullptr;
+
+		SemanticVar* v = analyser->add_var(var, Type::FUNCTION, value, this);
+
 		if (i < expressions.size()) {
-			type = expressions[i]->type;
-			value = expressions[i];
+			expressions[i]->analyse(analyser, Type::UNKNOWN);
+			v->type = expressions[i]->type;
+			v->value = expressions[i];
 		}
 
-		if (type == Type::VOID) {
+		if (v->type == Type::VOID) {
 			analyser->add_error({SemanticException::Type::CANT_ASSIGN_VOID, var->line, var->content});
 		}
-
-		SemanticVar* v = analyser->add_var(var, type, value, this);
 
 		vars.insert(pair<string, SemanticVar*>(var->content, v));
 		vars.at(var->content)->type = v->type;
 	}
 	this->return_value = return_value;
+
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
 }
 
-jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t VariableDeclaration::compile(Compiler& c) const {
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
@@ -85,41 +84,38 @@ jit_value_t VariableDeclaration::compile_jit(Compiler& c, jit_function_t& F, Typ
 
 			Value* ex = expressions[i];
 
-			jit_value_t var = jit_value_create(F, VM::get_jit_type(v->type));
+			jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v->type));
 			c.add_var(name, var, v->type, false);
 
 			jit_value_t val;
 			if (Reference* ref = dynamic_cast<Reference*>(ex)) {
-
 				val = c.get_var(ref->variable->content).value;
 				c.add_var(name, val, v->type, true);
-
 			} else {
-				val = ex->compile_jit(c, F, expressions.at(i)->type);
+				val = ex->compile(c);
 				c.set_var_type(name, ex->type);
-				jit_insn_store(F, var, val);
+				jit_insn_store(c.F, var, val);
 				if (expressions.at(i)->type.must_manage_memory()) {
-					VM::inc_refs(F, val);
+					VM::inc_refs(c.F, val);
 				}
 			}
-
 			if (i == expressions.size() - 1) {
-				if (v->type.nature != Nature::POINTER and req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, val, req_type);
+				if (v->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, val, type);
 				}
 				return val;
 			}
 		} else {
 
-			jit_value_t var = jit_value_create(F, JIT_POINTER);
+			jit_value_t var = jit_value_create(c.F, JIT_POINTER);
 			c.add_var(name, var, Type::NULLL, false);
 
-			jit_value_t val = VM::create_null(F);
-			jit_insn_store(F, var, val);
-			VM::inc_refs(F, val);
+			jit_value_t val = VM::create_null(c.F);
+			jit_insn_store(c.F, var, val);
+			VM::inc_refs(c.F, val);
 		}
 	}
-	return VM::create_null(F);
+	return VM::create_null(c.F);
 }
 
 }

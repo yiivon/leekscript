@@ -13,10 +13,10 @@ ClassDeclaration::ClassDeclaration() {
 
 ClassDeclaration::~ClassDeclaration() {}
 
-void ClassDeclaration::print(ostream& os) const {
+void ClassDeclaration::print(ostream& os, bool debug) const {
 	os << "class " << name << " {" << endl;
 	for (VariableDeclaration* vd : fields) {
-		vd->print(os);
+		vd->print(os, debug);
 		os << endl;
 	}
 	os << "}";
@@ -28,8 +28,8 @@ void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 }
 
-jit_value_t ClassDeclaration::compile_jit(Compiler&, jit_function_t& F, Type) const {
-	return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+jit_value_t ClassDeclaration::compile(Compiler& c) const {
+	return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
 }
 
 }

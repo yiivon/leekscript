@@ -28,7 +28,7 @@ For::~For() {
 	delete body;
 }
 
-void For::print(ostream& os) const {
+void For::print(ostream& os, bool debug) const {
 	os << "for ";
 	if (variables.size() > 0) {
 		os << "let ";
@@ -37,7 +37,7 @@ void For::print(ostream& os) const {
 		os << variables.at(i);
 		if ((Value*) variablesValues.at(i) != nullptr) {
 			os << " = ";
-			variablesValues.at(i)->print(os);
+			variablesValues.at(i)->print(os, debug);
 		}
 		if (i < variables.size() - 1) {
 			os << ", ";
@@ -45,17 +45,17 @@ void For::print(ostream& os) const {
 	}
 	os << "; ";
 	if (condition != nullptr) {
-		condition->print(os);
+		condition->print(os, debug);
 	}
 	os << "; ";
 	for (unsigned i = 0; i < iterations.size(); ++i) {
-		iterations.at(i)->print(os);
+		iterations.at(i)->print(os, debug);
 		if (i < iterations.size() - 1) {
 			os << ", ";
 		}
 	}
 	os << " do" << endl;
-	body->print(os);
+	body->print(os, debug);
 	os << "end";
 }
 
@@ -91,18 +91,20 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		it->analyse(analyser);
 	}
 	analyser->enter_loop();
-	body->analyse(analyser, req_type);
+	body->analyse(analyser, Type::VOID);
 	analyser->leave_loop();
+
+	type = req_type;
 }
 
 int for_is_true(LSValue* v) {
 	return v->isTrue();
 }
 
-jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t For::compile(Compiler& c) const {
 
 	if (body->instructions.size() == 0 && condition == nullptr) {
-		return JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
+		return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
 	}
 
 	// Initialization
@@ -113,66 +115,66 @@ jit_value_t For::compile_jit(Compiler& c, jit_function_t& F, Type req_type) cons
 
 		jit_value_t var;
 		if (declare_variables[i]) {
-			var = jit_value_create(F, JIT_INTEGER);
+			var = jit_value_create(c.F, JIT_INTEGER);
 			c.add_var(name, var, v->type, false);
 		} else {
 			var = c.get_var(name).value;
 		}
 		if (variablesValues.at(i) != nullptr) {
-			jit_value_t val = variablesValues.at(i)->compile_jit(c, F, Type::NEUTRAL);
-			jit_insn_store(F, var, val);
+			jit_value_t val = variablesValues.at(i)->compile(c);
+			jit_insn_store(c.F, var, val);
 		} else {
-			jit_value_t val = JIT_CREATE_CONST_POINTER(F, LSNull::null_var);
-			jit_insn_store(F, var, val);
+			jit_value_t val = JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
+			jit_insn_store(c.F, var, val);
 		}
 	}
 
 	jit_label_t label_cond = jit_label_undefined;
 	jit_label_t label_it = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
-	jit_value_t const_true = JIT_CREATE_CONST(F, JIT_INTEGER, 1);
+	jit_value_t const_true = JIT_CREATE_CONST(c.F, JIT_INTEGER, 1);
 	jit_type_t args_types[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 
 	c.enter_loop(&label_end, &label_it);
 
 	// condition label:
-	jit_insn_label(F, &label_cond);
+	jit_insn_label(c.F, &label_cond);
 
 	// condition
-	jit_value_t cond = condition->compile_jit(c, F, Type::NEUTRAL);
+	jit_value_t cond = condition->compile(c);
 
 	// goto end if !condition
 	if (condition->type.nature == Nature::VALUE) {
-		jit_insn_branch_if_not(F, cond, &label_end);
+		jit_insn_branch_if_not(c.F, cond, &label_end);
 	} else {
-		jit_value_t cond_bool = jit_insn_call_native(F, "is_true", (void*) for_is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
-		jit_value_t cmp = jit_insn_ne(F, cond_bool, const_true);
-		jit_insn_branch_if(F, cmp, &label_end);
+		jit_value_t cond_bool = jit_insn_call_native(c.F, "is_true", (void*) for_is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
+		jit_value_t cmp = jit_insn_ne(c.F, cond_bool, const_true);
+		jit_insn_branch_if(c.F, cmp, &label_end);
 	}
 
 	// body
-	body->compile_jit(c, F, Type::VOID);
+	body->compile(c);
 
-	jit_insn_label(F, &label_it);
+	jit_insn_label(c.F, &label_it);
 
 	// iterations
 	for (Value* it : iterations) {
-		it->compile_jit(c, F, Type::NEUTRAL);
+		it->compile(c);
 	}
 
 	// jump to condition
-	jit_insn_branch(F, &label_cond);
+	jit_insn_branch(c.F, &label_cond);
 
 	// end label:
-	jit_insn_label(F, &label_end);
+	jit_insn_label(c.F, &label_end);
 
 	c.leave_loop();
 
-	if (req_type != Type::VOID) {
-		return VM::create_null(F);
+	if (type != Type::VOID) {
+		return VM::create_null(c.F);
 	}
-	return jit_value_create_nint_constant(F, jit_type_int, 0);
+	return jit_value_create_nint_constant(c.F, jit_type_int, 0);
 }
 
 }

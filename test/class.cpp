@@ -9,7 +9,7 @@ void Test::test_classes() {
 	success("false.class", "<class Boolean>");
 	success("0.class", "<class Number>");
 	success("12.class", "<class Number>");
-	success("-5.class", "<class Number>");
+	success("(-5).class", "<class Number>");
 	success("12.5234.class", "<class Number>");
 	success("''.class", "<class String>");
 	success("'salut'.class", "<class String>");

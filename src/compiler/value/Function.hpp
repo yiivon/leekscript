@@ -31,10 +31,10 @@ public:
 	void addArgument(Token* token, bool reference, Value* defaultValue);
 	void can_return(Type type);
 
-	virtual void print(std::ostream&) const override;
+	virtual void print(std::ostream&, bool debug) const override;
 	virtual int line() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type) override;
+	virtual void analyse(SemanticAnalyser*, const Type&) override;
 
 	bool will_take(SemanticAnalyser*, const unsigned pos, const Type) override;
 
@@ -42,7 +42,7 @@ public:
 
 	void analyse_body(SemanticAnalyser*, const Type& req_type);
 
-	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
+	virtual jit_value_t compile(Compiler&) const override;
 };
 
 }

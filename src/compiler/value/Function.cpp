@@ -70,45 +70,49 @@ int Function::line() const {
 	return 0;
 }
 
-void Function::analyse(SemanticAnalyser* analyser, const Type req_type) {
+void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-//	cout << "Function analyse req_type " << req_type << endl;
+//	cout << "Function::analyse req_type " << req_type << endl;
 
 	if (!function_added) {
 		analyser->add_function(this);
 		function_added = true;
 	}
 
-	for (auto t : req_type.getArgumentTypes()) {
-		type.addArgumentType(t);
+	for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
+		type.setArgumentType(i, req_type.getArgumentType(i));
 	}
 	type.setReturnType(req_type.getReturnType());
 
-	analyse_body(analyser, req_type);
+	analyse_body(analyser, req_type.getReturnType());
+
+	type.nature = req_type.nature;
 
 //	cout << "Function type: " << type << endl;
 }
 
 bool Function::will_take(SemanticAnalyser* analyser, const unsigned pos, const Type arg_type) {
 
-//	cout << "function will_take " << type << endl;
+//	cout << "Function::will_take " << arg_type << " at " << pos << endl;
 
 	bool changed = type.will_take(pos, arg_type);
 
 	//cout << "function after will_take " << type << endl;
 
-//	if (changed) {
-		analyse_body(analyser, type);
-//	}
+	if (changed) {
+		analyse_body(analyser, type.getReturnType());
+	}
 
 	return changed;
 }
 
-void Function::must_return(SemanticAnalyser*, const Type& ret_type) {
+void Function::must_return(SemanticAnalyser* analyser, const Type& ret_type) {
 
 //	cout << "Function::must_return : " << ret_type << endl;
 
 	type.setReturnType(ret_type);
+
+	analyse_body(analyser, ret_type);
 }
 
 void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
@@ -124,20 +128,18 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 
 //	cout << "body type: " << body->type << endl;
 
-	if (type.getReturnType() == Type::UNKNOWN) {
-		type.setReturnType(body->type);
-	}
+	type.setReturnType(body->type);
 
 	vars = analyser->get_local_vars();
 
 	analyser->leave_function();
 
-//	cout << "function return : " << type.getReturnType() << endl;
+//	cout << "function analyse body : " << type << endl;
 }
 
-jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t Function::compile(Compiler& c) const {
 
-//	cout << "compile fun: " << type << endl;
+//	cout << "Function::compile : " << type << endl;
 
 	jit_context_t context = jit_context_create();
 	jit_context_build_start(context);
@@ -167,7 +169,9 @@ jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type)
 
 //	cout << "return type : " << type.getReturnType() << endl;
 
-	jit_value_t res = body->compile_jit(c, function, type.getReturnType());
+	c.enter_function(function);
+
+	jit_value_t res = body->compile(c);
 	jit_insn_return(function, res);
 
 	jit_insn_rethrow_unhandled(function);
@@ -177,16 +181,20 @@ jit_value_t Function::compile_jit(Compiler& c, jit_function_t& F, Type req_type)
 
 	void* f = jit_function_to_closure(function);
 
-	// Create a function : 1 op
-	VM::inc_ops(F, 1);
+//	cout << "function : " << f << endl;
 
-	if (req_type.nature == Nature::POINTER) {
+	c.leave_function();
+
+	// Create a function : 1 op
+	VM::inc_ops(c.F, 1);
+
+	if (type.nature == Nature::POINTER) {
 //		cout << "create function pointer " << endl;
 		LSFunction* fo = new LSFunction(f);
-		return JIT_CREATE_CONST_POINTER(F, fo);
+		return JIT_CREATE_CONST_POINTER(c.F, fo);
 	} else {
 //		cout << "create function value " << endl;
-		return JIT_CREATE_CONST_POINTER(F, f);
+		return JIT_CREATE_CONST_POINTER(c.F, f);
 	}
 }
 

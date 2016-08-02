@@ -23,14 +23,14 @@ If::~If() {
 	}
 }
 
-void If::print(ostream& os) const {
+void If::print(ostream& os, bool debug) const {
 	os << "if ";
-	condition->print(os);
+	condition->print(os, debug);
 	os << " then" << endl;
-	then->print(os);
+	then->print(os, debug);
 	if (elze != nullptr) {
 		os << "else" << endl;
-		elze->print(os);
+		elze->print(os, debug);
 	}
 	os << "end";
 }
@@ -39,11 +39,11 @@ int If::line() const {
 	return 0;
 }
 
-void If::analyse(SemanticAnalyser* analyser, const Type req_type) {
+void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	type = Type::UNKNOWN;
 
-	condition->analyse(analyser);
+	condition->analyse(analyser, Type::BOOLEAN);
 	then->analyse(analyser, req_type);
 
 	if (then->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
@@ -63,63 +63,64 @@ void If::analyse(SemanticAnalyser* analyser, const Type req_type) {
 			}
 		}
 	}
+	type.nature = req_type.nature;
 }
 
 int is_true(LSValue* v) {
 	return v->isTrue();
 }
 
-jit_value_t If::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t If::compile(Compiler& c) const {
 
-	jit_value_t res = jit_value_create(F, JIT_INTEGER);
+	jit_value_t res = jit_value_create(c.F, JIT_INTEGER);
 	jit_label_t label_else = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 
-	jit_value_t cond = condition->compile_jit(c, F, Type::BOOLEAN);
+	jit_value_t cond = condition->compile(c);
 
 	if (condition->type.nature == Nature::POINTER) {
 
-		jit_value_t const_true = jit_value_create_nint_constant(F, jit_type_int, 1);
+		jit_value_t const_true = jit_value_create_nint_constant(c.F, jit_type_int, 1);
 
 		jit_type_t args_types[1] = {JIT_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
-		jit_value_t cond_bool = jit_insn_call_native(F, "is_true", (void*) is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
+		jit_value_t cond_bool = jit_insn_call_native(c.F, "is_true", (void*) is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
 
-		jit_value_t cmp = inversed ? jit_insn_eq(F, cond_bool, const_true) : jit_insn_ne(F, cond_bool, const_true);
-		jit_insn_branch_if(F, cmp, &label_else);
+		jit_value_t cmp = inversed ? jit_insn_eq(c.F, cond_bool, const_true) : jit_insn_ne(c.F, cond_bool, const_true);
+		jit_insn_branch_if(c.F, cmp, &label_else);
 
 	} else {
 
-		inversed ? jit_insn_branch_if(F, cond, &label_else) : jit_insn_branch_if_not(F, cond, &label_else);
+		inversed ? jit_insn_branch_if(c.F, cond, &label_else) : jit_insn_branch_if_not(c.F, cond, &label_else);
 	}
 
-	jit_value_t then_v = then->compile_jit(c, F, req_type);
-	jit_insn_store(F, res, then_v);
-	jit_insn_branch(F, &label_end);
+	jit_value_t then_v = then->compile(c);
+	jit_insn_store(c.F, res, then_v);
+	jit_insn_branch(c.F, &label_end);
 
-	jit_insn_label(F, &label_else);
+	jit_insn_label(c.F, &label_else);
 
 	if (then->type.must_manage_memory()) {
-		VM::delete_temporary(F, then_v);
+		VM::delete_temporary(c.F, then_v);
 	}
 
 	if (elze != nullptr) {
-		jit_value_t else_v = elze->compile_jit(c, F, req_type);
-		if (req_type != Type::VOID) {
-		jit_insn_store(F, res, else_v);
+		jit_value_t else_v = elze->compile(c);
+		if (type != Type::VOID) {
+			jit_insn_store(c.F, res, else_v);
 		}
 
 	} else {
-		if (req_type != Type::VOID) {
-		if (req_type.nature == Nature::POINTER) {
-			jit_insn_store(F, res, VM::create_null(F));
-		} else {
-			jit_insn_store(F, res, jit_value_create_nint_constant(F, JIT_INTEGER, 55555555));
-		}
+		if (type != Type::VOID) {
+			if (type.nature == Nature::POINTER) {
+				jit_insn_store(c.F, res, VM::create_null(c.F));
+			} else {
+				jit_insn_store(c.F, res, jit_value_create_nint_constant(c.F, JIT_INTEGER, 55555555));
+			}
 		}
 	}
 
-	jit_insn_label(F, &label_end);
+	jit_insn_label(c.F, &label_end);
 
 	return res;
 }

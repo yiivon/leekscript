@@ -26,13 +26,13 @@ ArrayAccess::~ArrayAccess() {
 	}
 }
 
-void ArrayAccess::print(std::ostream& os) const {
-	array->print(os);
+void ArrayAccess::print(std::ostream& os, bool debug) const {
+	array->print(os, debug);
 	os << "[";
-	key->print(os);
+	key->print(os, debug);
 	if (key2 != nullptr) {
 		os << ":";
-		key2->print(os);
+		key2->print(os, debug);
 	}
 	os << "]";
 }
@@ -41,21 +41,26 @@ int ArrayAccess::line() const {
 	return 0;
 }
 
-void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type) {
+void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	array->analyse(analyser);
 	key->analyse(analyser);
 	constant = array->constant and key->constant;
 
-
 	if (array->type.raw_type == RawType::ARRAY || array->type.raw_type == RawType::INTERVAL) {
-		type = array->type.getElementType();
+		array_element_type = array->type.getElementType();
+		type = array_element_type;
+	}
+
+	if (array->type == Type::INTERVAL) {
+		key->analyse(analyser, Type::INTEGER);
 	}
 
 	// Range array access : array[4:12], check if the values are numbers
 	if (key != nullptr and key2 != nullptr) {
 
-		key2->analyse(analyser);
+		key->analyse(analyser, Type::INTEGER);
+		key2->analyse(analyser, Type::INTEGER);
 
 		if (not key->type.isNumber()) {
 			std::string k = "<key 1>";
@@ -71,6 +76,16 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type) {
 			std::string k = "<key 1>";
 			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, k});
 		}
+
+		if (array_element_type == Type::INTEGER) {
+			key->analyse(analyser, Type::INTEGER);
+		} else {
+			key->analyse(analyser, Type::POINTER);
+		}
+	}
+
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
 	}
 
 //	cout << "array access " << type << endl;
@@ -132,11 +147,11 @@ int interval_access(const LSInterval* interval, int pos) {
 	return interval->atv(pos);
 }
 
-jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t ArrayAccess::compile(Compiler& c) const {
 
 //	cout << "aa " << type << endl;
 
-	jit_value_t a = array->compile_jit(c, F, Type::POINTER);
+	jit_value_t a = array->compile(c);
 
 	if (key2 == nullptr) {
 
@@ -145,18 +160,18 @@ jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_ty
 			jit_type_t args_types[2] = {ls_jit_pointer, ls_jit_integer};
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ls_jit_integer, args_types, 2, 0);
 
-			jit_value_t k = key->compile_jit(c, F, Type::INTEGER);
+			jit_value_t k = key->compile(c);
 
 			jit_value_t args[] = {a, k};
-			jit_value_t res = jit_insn_call_native(F, "access", (void*) interval_access, sig, args, 2, JIT_CALL_NOTHROW);
+			jit_value_t res = jit_insn_call_native(c.F, "access", (void*) interval_access, sig, args, 2, JIT_CALL_NOTHROW);
 
-			VM::delete_temporary(F, a);
+			VM::delete_temporary(c.F, a);
 
 			// Array access : 2 operations
-			VM::inc_ops(F, 2);
+			VM::inc_ops(c.F, 2);
 
-			if (type.nature == Nature::VALUE and req_type.nature == Nature::POINTER) {
-				return VM::value_to_pointer(F, res, type);
+			if (type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(c.F, res, type);
 			}
 			return res;
 
@@ -165,25 +180,23 @@ jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_ty
 			jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
-			Type t = type == Type::INTEGER ? Type::VALUE : Type::POINTER;
+			jit_value_t k = key->compile(c);
 
-			jit_value_t k = key->compile_jit(c, F, t);
-
-			void* func = type == Type::INTEGER ? (void*) access_temp_value : (void*) access_temp;
+			void* func = array_element_type == Type::INTEGER ? (void*) access_temp_value : (void*) access_temp;
 
 			jit_value_t args[] = {a, k};
-			jit_value_t res = jit_insn_call_native(F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
+			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
 
-			if (t.nature == Nature::POINTER) {
-				VM::delete_temporary(F, k);
+			if (key->type.nature == Nature::POINTER) {
+				VM::delete_temporary(c.F, k);
 			}
-			VM::delete_temporary(F, a);
+			VM::delete_temporary(c.F, a);
 
 			// Array access : 2 operations
-			VM::inc_ops(F, 2);
+			VM::inc_ops(c.F, 2);
 
-			if (type.nature == Nature::VALUE and req_type.nature == Nature::POINTER) {
-				return VM::value_to_pointer(F, res, type);
+			if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(c.F, res, type);
 			}
 			return res;
 		}
@@ -193,33 +206,29 @@ jit_value_t ArrayAccess::compile_jit(Compiler& c, jit_function_t& F, Type req_ty
 		jit_type_t args_types[3] = {JIT_POINTER, JIT_INTEGER, JIT_INTEGER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 3, 0);
 
-		jit_value_t start = key->compile_jit(c, F, Type::INTEGER);
-		jit_value_t end = key2->compile_jit(c, F, Type::INTEGER);
+		jit_value_t start = key->compile(c);
+		jit_value_t end = key2->compile(c);
 		jit_value_t args[] = {a, start, end};
 
-		jit_value_t result = jit_insn_call_native(F, "range", (void*) range, sig, args, 3, JIT_CALL_NOTHROW);
+		jit_value_t result = jit_insn_call_native(c.F, "range", (void*) range, sig, args, 3, JIT_CALL_NOTHROW);
 
-		VM::delete_temporary(F, a);
+		VM::delete_temporary(c.F, a);
 
 		return result;
 	}
 }
 
-jit_value_t ArrayAccess::compile_jit_l(Compiler& c, jit_function_t& F, Type) const {
+jit_value_t ArrayAccess::compile_l(Compiler& c) const {
 
-//	cout << "aal " << type << endl;
-
-	jit_value_t a = array->compile_jit(c, F, Type::POINTER);
+	jit_value_t a = array->compile(c);
 
 	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
 
-//	jit_value_t k = key->compile_jit(c, F, Type::POINTER);
-	jit_value_t k = key->compile_jit(c, F, Type::NEUTRAL);
+	jit_value_t k = key->compile(c);
 
 	jit_value_t args[] = {a, k};
-//	return jit_insn_call_native(F, "access_l", (void*) access_l, sig, args, 2, JIT_CALL_NOTHROW);
-	return jit_insn_call_native(F, "access_l", (void*) access_l_value, sig, args, 2, JIT_CALL_NOTHROW);
+	return jit_insn_call_native(c.F, "access_l", (void*) access_l_value, sig, args, 2, JIT_CALL_NOTHROW);
 }
 
 }

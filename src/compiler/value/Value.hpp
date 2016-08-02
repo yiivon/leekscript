@@ -25,7 +25,7 @@ public:
 
 	virtual bool isLeftValue() const;
 
-	virtual void print(std::ostream&) const = 0;
+	virtual void print(std::ostream&, bool debug = false) const = 0;
 	virtual int line() const = 0;
 
 	virtual bool will_take(SemanticAnalyser*, const unsigned, const Type);
@@ -33,9 +33,9 @@ public:
 	virtual bool must_be_pointer(SemanticAnalyser*);
 	virtual void must_return(SemanticAnalyser*, const Type&);
 	void analyse(SemanticAnalyser*);
-	virtual void analyse(SemanticAnalyser*, const Type) = 0;
+	virtual void analyse(SemanticAnalyser*, const Type&) = 0;
 
-	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const = 0;
+	virtual jit_value_t compile(Compiler&) const = 0;
 };
 
 }

@@ -22,27 +22,30 @@ Reference::Reference(Token *variable)
 
 Reference::~Reference() {}
 
-void Reference::print(ostream& os) const {
-	os << "@" << variable;
+void Reference::print(ostream& os, bool debug) const {
+	os << "@" << variable->content;
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 int Reference::line() const {
 	return 0;
 }
 
-void Reference::analyse(SemanticAnalyser* analyser, const Type) {
+void Reference::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	var = analyser->get_var(variable);
 	type = var->type;
 
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
+
 //	cout << "ref " << variable->content << " : " << type << endl;
 }
 
-extern map<string, jit_value_t> internals;
-extern map<string, jit_value_t> globals;
-extern map<string, jit_value_t> locals;
-
-jit_value_t Reference::compile_jit(Compiler&, jit_function_t& F, Type req_type) const {
+jit_value_t Reference::compile(Compiler& c) const {
 
 //	cout << "Reference compile()" << endl;
 
@@ -71,11 +74,11 @@ jit_value_t Reference::compile_jit(Compiler&, jit_function_t& F, Type req_type) 
 	return v;
 	*/
 
-	if (req_type.nature == Nature::POINTER) {
+	if (type.nature == Nature::POINTER) {
 		LSValue* n = LSNull::null_var;
-		return JIT_CREATE_CONST_POINTER(F, n);
+		return JIT_CREATE_CONST_POINTER(c.F, n);
 	} else {
-		return JIT_CREATE_CONST(F, JIT_INTEGER, 0);
+		return JIT_CREATE_CONST(c.F, JIT_INTEGER, 0);
 	}
 }
 

@@ -16,6 +16,7 @@ public:
 	bool is_native = false;
 	bool is_static_native = false;
 	std::string native_func;
+	Type return_type;
 
 	void* std_func;
 	Value* this_ptr;
@@ -23,12 +24,12 @@ public:
 	FunctionCall();
 	virtual ~FunctionCall();
 
-	virtual void print(std::ostream&) const override;
+	virtual void print(std::ostream&, bool debug) const override;
 	virtual int line() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type) override;
+	virtual void analyse(SemanticAnalyser*, const Type&) override;
 
-	virtual jit_value_t compile_jit(Compiler&, jit_function_t&, Type) const override;
+	virtual jit_value_t compile(Compiler&) const override;
 };
 
 }

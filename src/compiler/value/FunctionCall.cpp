@@ -1,19 +1,27 @@
-#include "../../compiler/value/FunctionCall.hpp"
+#include "FunctionCall.hpp"
 
-#include <math.h>
+#include <jit/jit-common.h>
+#include <jit/jit-insn.h>
+#include <jit/jit-type.h>
+#include <jit/jit-value.h>
+#include <sstream>
+#include <string>
 
-#include "../../compiler/value/Function.hpp"
-#include "../../compiler/value/ObjectAccess.hpp"
-#include "../../compiler/value/VariableValue.hpp"
-#include "../../vm/VM.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
-#include "../semantic/SemanticException.hpp"
-#include "../../vm/standard/ArraySTD.hpp"
-#include "../../vm/standard/NumberSTD.hpp"
+#include "../../vm/Module.hpp"
+#include "../../vm/Program.hpp"
+#include "../../vm/Type.hpp"
+#include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/value/LSNumber.hpp"
-#include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSObject.hpp"
+#include "../../vm/value/LSString.hpp"
+#include "../../vm/VM.hpp"
+#include "../Compiler.hpp"
+#include "../lexical/Token.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticException.hpp"
+#include "ObjectAccess.hpp"
+#include "VariableValue.hpp"
 
 using namespace std;
 
@@ -33,11 +41,11 @@ FunctionCall::~FunctionCall() {
 	}
 }
 
-void FunctionCall::print(std::ostream& os) const {
-	function->print(os);
+void FunctionCall::print(std::ostream& os, bool debug) const {
+	function->print(os, debug);
 	os << "(";
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		arguments.at(i)->print(os);
+		arguments.at(i)->print(os, debug);
 		if (i < arguments.size() - 1) {
 			os << ", ";
 		}
@@ -49,7 +57,9 @@ int FunctionCall::line() const {
 	return 0;
 }
 
-void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
+void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+
+//	cout << "function call analyse : " << req_type << endl;
 
 	constant = false;
 
@@ -198,7 +208,9 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 						is_native = true;
 					}
 					native_func = field_name;
+					oa->object->analyse(analyser, Type(object_type.raw_type, Nature::VALUE));
 				}
+
 
 				if (!is_native and object_type.raw_type != RawType::UNKNOWN) {
 
@@ -207,9 +219,13 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 					Method* m = object_class->getMethod(oa->field->content, object_type, arg_types);
 
 					if (m != nullptr) {
+
 						this_ptr = oa->object;
+						this_ptr->analyse(analyser, Type::POINTER);
+
 						std_func = m->addr;
 						function->type = m->type;
+
 					} else {
 						analyser->add_error({SemanticException::Type::METHOD_NOT_FOUND, oa->field->line, oa->field->content});
 					}
@@ -259,8 +275,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 				function->type.setReturnType(effectiveType);
 			}
 			type = function->type.getReturnType();
-
-			return;
 		}
 	}
 
@@ -288,7 +302,13 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type) {
 		type = function->type.getReturnType();
 	}
 
-//	cout << "Function call function type : " << function->type << endl;
+	return_type = type;
+
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
+
+//	cout << "Function call function type : " << type << endl;
 }
 
 LSValue* create_float_object_3(double n) {
@@ -298,10 +318,9 @@ LSValue* create_int_object_3(int n) {
 	return LSNumber::get(n);
 }
 
-jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_type) const {
+jit_value_t FunctionCall::compile(Compiler& c) const {
 
-//	cout << "compile function call" << endl;
-//	cout << type << endl;
+//	cout << "compile function call" << type << endl;
 
 	/*
 	 * Standard library constructors
@@ -309,83 +328,86 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		if (vv->name == "Boolean") {
-			jit_value_t n = jit_value_create_nint_constant(F, JIT_INTEGER, 0);
-			if (req_type.nature == Nature::POINTER) {
-				return VM::value_to_pointer(F, n, Type::BOOLEAN);
+			jit_value_t n = jit_value_create_nint_constant(c.F, JIT_INTEGER, 0);
+			if (type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(c.F, n, Type::BOOLEAN);
 			}
 			return n;
 		}
 		if (vv->name == "Number") {
-			jit_value_t n = jit_value_create_nint_constant(F, JIT_INTEGER, 0);
-			if (req_type.nature == Nature::POINTER) {
-				return VM::value_to_pointer(F, n, Type::INTEGER);
+			jit_value_t n = jit_value_create_nint_constant(c.F, JIT_INTEGER, 0);
+			if (type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(c.F, n, Type::INTEGER);
 			}
 			return n;
 		}
 		if (vv->name == "String") {
 			if (arguments.size() > 0) {
-				return arguments[0]->compile_jit(c, F, Type::POINTER);
+				return arguments[0]->compile(c);
 			}
-			return JIT_CREATE_CONST_POINTER(F, new LSString(""));
+			return JIT_CREATE_CONST_POINTER(c.F, new LSString(""));
 		}
 		if (vv->name == "Array") {
-			return JIT_CREATE_CONST_POINTER(F, new LSArray<LSValue*>());
+			return JIT_CREATE_CONST_POINTER(c.F, new LSArray<LSValue*>());
 		}
 		if (vv->name == "Object") {
-			return JIT_CREATE_CONST_POINTER(F, new LSObject());
+			return JIT_CREATE_CONST_POINTER(c.F, new LSObject());
 		}
 	}
 
 	/*
-	 * Compile native static standard functions
+	 * Compile native static standard functions : Number.abs(12)
 	 */
 	if (is_static_native) {
 
 		jit_value_t res = nullptr;
 
 		if (native_func == "abs") {
-			jit_value_t v = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_abs(F, v);
+			jit_value_t v = arguments[0]->compile(c);
+			res = jit_insn_abs(c.F, v);
 		} else if (native_func == "floor") {
-			jit_value_t v = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_floor(F, v);
+			jit_value_t v = arguments[0]->compile(c);
+			res = jit_insn_floor(c.F, v);
 		} else if (native_func == "round") {
-			jit_value_t v = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_round(F, v);
+			jit_value_t v = arguments[0]->compile(c);
+			res = jit_insn_round(c.F, v);
 		} else if (native_func == "ceil") {
-			jit_value_t v = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_ceil(F, v);
+			jit_value_t v = arguments[0]->compile(c);
+			res = jit_insn_ceil(c.F, v);
 		} else if (native_func == "cos") {
-			jit_value_t v = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_cos(F, v);
+			jit_value_t v = arguments[0]->compile(c);
+			res = jit_insn_cos(c.F, v);
 		} else if (native_func == "sin") {
-			jit_value_t v = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_sin(F, v);
+			jit_value_t v = arguments[0]->compile(c);
+			res = jit_insn_sin(c.F, v);
 		} else if (native_func == "max") {
-			jit_value_t v1 = arguments[0]->compile_jit(c, F, Type::VALUE);
-			jit_value_t v2 = arguments[1]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_max(F, v1, v2);
+			jit_value_t v1 = arguments[0]->compile(c);
+			jit_value_t v2 = arguments[1]->compile(c);
+			res = jit_insn_max(c.F, v1, v2);
 		} else if (native_func == "min") {
-			jit_value_t v1 = arguments[0]->compile_jit(c, F, Type::VALUE);
-			jit_value_t v2 = arguments[1]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_min(F, v1, v2);
+			jit_value_t v1 = arguments[0]->compile(c);
+			jit_value_t v2 = arguments[1]->compile(c);
+			res = jit_insn_min(c.F, v1, v2);
 		} else if (native_func == "sqrt") {
-			jit_value_t v1 = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_sqrt(F, v1);
+			jit_value_t v1 = arguments[0]->compile(c);
+			res = jit_insn_sqrt(c.F, v1);
 		} else if (native_func == "pow") {
-			jit_value_t v1 = arguments[0]->compile_jit(c, F, Type::VALUE);
-			jit_value_t v2 = arguments[1]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_pow(F, v1, v2);
+			jit_value_t v1 = arguments[0]->compile(c);
+			jit_value_t v2 = arguments[1]->compile(c);
+			res = jit_insn_pow(c.F, v1, v2);
 		}
 
 		if (res != nullptr) {
-			if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
-				return VM::value_to_pointer(F, res, type);
+			if (type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(c.F, res, type);
 			}
 			return res;
 		}
 	}
 
+	/*
+	 * Native standard function call on object : 12.abs()
+	 */
 	if (is_native) {
 
 		Value* object = ((ObjectAccess*) function)->object;
@@ -393,43 +415,43 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 		jit_value_t res = nullptr;
 
 		if (native_func == "abs") {
-			jit_value_t v = object->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_abs(F, v);
+			jit_value_t v = object->compile(c);
+			res = jit_insn_abs(c.F, v);
 		} else if (native_func == "floor") {
-			jit_value_t v = object->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_floor(F, v);
+			jit_value_t v = object->compile(c);
+			res = jit_insn_floor(c.F, v);
 		} else if (native_func == "round") {
-			jit_value_t v = object->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_round(F, v);
+			jit_value_t v = object->compile(c);
+			res = jit_insn_round(c.F, v);
 		} else if (native_func == "ceil") {
-			jit_value_t v = object->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_ceil(F, v);
+			jit_value_t v = object->compile(c);
+			res = jit_insn_ceil(c.F, v);
 		} else if (native_func == "cos") {
-			jit_value_t v = object->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_cos(F, v);
+			jit_value_t v = object->compile(c);
+			res = jit_insn_cos(c.F, v);
 		} else if (native_func == "sin") {
-			jit_value_t v = object->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_sin(F, v);
+			jit_value_t v = object->compile(c);
+			res = jit_insn_sin(c.F, v);
 		} else if (native_func == "max") {
-			jit_value_t v1 = object->compile_jit(c, F, Type::VALUE);
-			jit_value_t v2 = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_max(F, v1, v2);
+			jit_value_t v1 = object->compile(c);
+			jit_value_t v2 = arguments[0]->compile(c);
+			res = jit_insn_max(c.F, v1, v2);
 		} else if (native_func == "min") {
-			jit_value_t v1 = object->compile_jit(c, F, Type::VALUE);
-			jit_value_t v2 = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_min(F, v1, v2);
+			jit_value_t v1 = object->compile(c);
+			jit_value_t v2 = arguments[0]->compile(c);
+			res = jit_insn_min(c.F, v1, v2);
 		} else if (native_func == "sqrt") {
-			jit_value_t v1 = object->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_sqrt(F, v1);
+			jit_value_t v1 = object->compile(c);
+			res = jit_insn_sqrt(c.F, v1);
 		} else if (native_func == "pow") {
-			jit_value_t v1 = object->compile_jit(c, F, Type::VALUE);
-			jit_value_t v2 = arguments[0]->compile_jit(c, F, Type::VALUE);
-			res = jit_insn_pow(F, v1, v2);
+			jit_value_t v1 = object->compile(c);
+			jit_value_t v2 = arguments[0]->compile(c);
+			res = jit_insn_pow(c.F, v1, v2);
 		}
 
 		if (res != nullptr) {
-			if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
-				return VM::value_to_pointer(F, res, type);
+			if (type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(c.F, res, type);
 			}
 			return res;
 		}
@@ -443,12 +465,14 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 //		cout << "compile std function " << function->type << endl;
 
 		int arg_count = arguments.size() + 1;
-		vector<jit_value_t> args = { this_ptr->compile_jit(c, F, Type::POINTER) };
+		vector<jit_value_t> args = { this_ptr->compile(c) };
 		vector<jit_type_t> args_types = { JIT_POINTER };
 
 		for (int i = 0; i < arg_count - 1; ++i) {
 //			cout << "arg " << i << " : " << function->type.getArgumentType(i) << endl;
-			args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
+//			args.push_back(arguments[i]->compile(c, function->type.getArgumentType(i)));
+			args.push_back(arguments[i]->compile(c));
+
 			args_types.push_back(function->type.getArgumentType(i).nature != Nature::VALUE ? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION)	? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
@@ -460,19 +484,19 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
 
-		jit_value_t res = jit_insn_call_native(F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
+		jit_value_t res = jit_insn_call_native(c.F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
 
 		// Destroy temporary arguments
 		for (int i = 0; i < arg_count - 1; ++i) {
 			if (function->type.getArgumentType(i).nature == Nature::POINTER) {
-				VM::delete_temporary(F, args[i + 1]);
+				VM::delete_temporary(c.F, args[i + 1]);
 			}
 		}
 
-		VM::delete_temporary(F, args[0]);
+		VM::delete_temporary(c.F, args[0]);
 
-		if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
-			return VM::value_to_pointer(F, res, type);
+		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
+			return VM::value_to_pointer(c.F, res, type);
 		}
 		return res;
 	}
@@ -490,7 +514,10 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 
 		for (int i = 0; i < arg_count; ++i) {
 //			cout << "arg " << i << " : " << function->type.getArgumentType(i) << endl;
-			args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
+
+//			args.push_back(arguments[i]->compile(c, function->type.getArgumentType(i)));
+			args.push_back(arguments[i]->compile(c));
+
 			args_types.push_back(function->type.getArgumentType(i).nature != Nature::VALUE ? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION) ? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
@@ -498,21 +525,21 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 				JIT_INTEGER);
 		}
 
-		jit_type_t ret_type = type.raw_type == RawType::FLOAT ? JIT_FLOAT : JIT_POINTER;
+		jit_type_t ret_type = return_type.raw_type == RawType::FLOAT ? JIT_FLOAT : JIT_POINTER;
 
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
 
-		jit_value_t res = jit_insn_call_native(F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
+		jit_value_t res = jit_insn_call_native(c.F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
 
 		// Destroy temporary arguments
 		for (int i = 0; i < arg_count; ++i) {
 			if (function->type.getArgumentType(i).nature == Nature::POINTER) {
-				VM::delete_temporary(F, args[i]);
+				VM::delete_temporary(c.F, args[i]);
 			}
 		}
 
-		if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
-			return VM::value_to_pointer(F, res, type);
+		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
+			return VM::value_to_pointer(c.F, res, type);
 		}
 		return res;
 	}
@@ -523,7 +550,9 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	VariableValue* f = dynamic_cast<VariableValue*>(function);
 
 	if (f != nullptr) {
-		if (function->type.getArgumentType(0).nature == Nature::VALUE and function->type.getArgumentType(1).nature == Nature::VALUE) {
+		if (function->type.getArgumentType(0).nature == Nature::VALUE
+			and function->type.getArgumentType(1).nature == Nature::VALUE) {
+
 			jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
 			if (f->name == "+") {
 				jit_func = &jit_insn_add;
@@ -539,11 +568,12 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 				jit_func = &jit_insn_rem;
 			}
 			if (jit_func != nullptr) {
-				jit_value_t v0 = arguments[0]->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t v1 = arguments[1]->compile_jit(c, F, Type::NEUTRAL);
-				jit_value_t ret = jit_func(F, v0, v1);
-				if (req_type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(F, ret, type);
+				jit_value_t v0 = arguments[0]->compile(c);
+				jit_value_t v1 = arguments[1]->compile(c);
+				jit_value_t ret = jit_func(c.F, v0, v1);
+
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, ret, type);
 				}
 				return ret;
 			}
@@ -556,10 +586,10 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	vector<jit_value_t> fun;
 
 	if (function->type.nature == Nature::POINTER) {
-		jit_value_t fun_addr = function->compile_jit(c, F, Type::NEUTRAL);
-		fun.push_back(jit_insn_load_relative(F, fun_addr, 16, JIT_POINTER));
+		jit_value_t fun_addr = function->compile(c);
+		fun.push_back(jit_insn_load_relative(c.F, fun_addr, 16, JIT_POINTER));
 	} else {
-		fun.push_back(function->compile_jit(c, F, Type::NEUTRAL));
+		fun.push_back(function->compile(c));
 	}
 
 	int arg_count = arguments.size();
@@ -567,43 +597,46 @@ jit_value_t FunctionCall::compile_jit(Compiler& c, jit_function_t& F, Type req_t
 	vector<jit_type_t> args_types;
 
 	for (int i = 0; i < arg_count; ++i) {
-		args.push_back(arguments[i]->compile_jit(c, F, function->type.getArgumentType(i)));
+
+		//args.push_back(arguments[i]->compile(c, function->type.getArgumentType(i)));
+		args.push_back(arguments[i]->compile(c));
+
 		args_types.push_back(function->type.getArgumentType(i).nature != Nature::VALUE ? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION) ? JIT_POINTER :
 				(function->type.getArgumentType(i).raw_type == RawType::FLOAT) ? JIT_FLOAT :
 				(function->type.getArgumentType(i).raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
 				JIT_INTEGER);
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			VM::inc_refs(F, args[i]);
+			VM::inc_refs(c.F, args[i]);
 		}
 	}
 
 	//cout << "function call return type : " << info << endl;
 
-	jit_type_t return_type = type.nature != Nature::VALUE ? JIT_POINTER :
+	jit_type_t jit_return_type = type.nature != Nature::VALUE ? JIT_POINTER :
 			(type.raw_type == RawType::FUNCTION) ? JIT_POINTER :
 			(type.raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
 			(type.raw_type == RawType::FLOAT) ? JIT_FLOAT :
 			JIT_INTEGER;
 
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, args_types.data(), arg_count, 0);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), arg_count, 0);
 
-	jit_value_t ret = jit_insn_call_indirect(F, fun[0], sig, args.data(), arg_count, 0);
+	jit_value_t ret = jit_insn_call_indirect(c.F, fun[0], sig, args.data(), arg_count, 0);
 
 	//cout << "function call type " << type << endl;
 
 	// Destroy temporary arguments
 	for (int i = 0; i < arg_count; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			VM::delete_obj(F, args[i]);
+			VM::delete_obj(c.F, args[i]);
 		}
 	}
 
 	// Custom function call : 1 op
-	VM::inc_ops(F, 1);
+	VM::inc_ops(c.F, 1);
 
-	if (req_type.nature == Nature::POINTER && type.nature == Nature::VALUE) {
-		return VM::value_to_pointer(F, ret, type);
+	if (return_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+		return VM::value_to_pointer(c.F, ret, type);
 	}
 
 	return ret;

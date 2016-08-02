@@ -21,9 +21,9 @@ Return::~Return() {
 	delete expression;
 }
 
-void Return::print(ostream& os) const {
+void Return::print(ostream& os, bool debug) const {
 	os << "return ";
-	expression->print(os);
+	expression->print(os, debug);
 }
 
 void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -38,10 +38,10 @@ void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	type = expression->type;
 }
 
-jit_value_t Return::compile_jit(Compiler& c, jit_function_t& F, Type type) const {
+jit_value_t Return::compile(Compiler& c) const {
 
-	jit_value_t v = expression->compile_jit(c, F, type);
-	jit_insn_return(F, v);
+	jit_value_t v = expression->compile(c);
+	jit_insn_return(c.F, v);
 	return v;
 }
 
