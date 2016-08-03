@@ -73,9 +73,6 @@ jit_value_t Match::compile(Compiler &c) const
 {
 	jit_value_t v = value->compile(c);
 
-	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 0);
-
 	jit_value_t res = jit_value_create(c.F, JIT_INTEGER);
 	jit_label_t label_next = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
@@ -92,6 +89,8 @@ jit_value_t Match::compile(Compiler &c) const
 		if (value->type.nature == Nature::VALUE) {
 			cond = jit_insn_eq(c.F, v, p);
 		} else {
+			jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 0);
 			jit_value_t args[2] = { v, p };
 			cond = jit_insn_call_native(c.F, "", (void*) jit_equals_, sig, args, 2, JIT_CALL_NOTHROW);
 		}
