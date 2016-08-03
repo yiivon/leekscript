@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "SyntaxicalError.hpp"
+#include "../value/Match.hpp"
 
 namespace ls {
 
@@ -15,7 +16,6 @@ class Value;
 class ClassDeclaration;
 class VariableDeclaration;
 class If;
-class Match;
 class For;
 class Foreach;
 class Program;
@@ -57,6 +57,7 @@ public:
 	Array* eatArray();
 	If* eatIf();
 	Match* eatMatch(bool force_value);
+	Match::Pattern eatMatchPattern();
 	Instruction* eatFor();
 	Instruction* eatWhile();
 	Foreach* eatForeach();

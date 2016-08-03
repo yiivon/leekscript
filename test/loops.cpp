@@ -74,12 +74,21 @@ void Test::test_loops() {
 	 */
 	header("Match");
 	success("match 3 { 1 : 1 2 : 2 3 : 3 }", "3");
-	success("match 3 { 1 : 1 2 : 2 default : 3 }", "3");
-	success("match 'a' { 'a' : 1 'b' : 2 default : 3 }", "1");
+	success("match 3 { 1 : 1 2 : 2 .. : 3 }", "3");
+	success("match 'a' { 'a' : 1 'b' : 2 .. : 3 }", "1");
 	success("match 4 { 1 : 1 2 : 2 3 : 3 }", "null");
 	success("match 'a' { 1 : 1 'a' : 'a' }", "'a'");
 	success("match 1 { 1 : 1 'a' : 'a' }", "1");
 	success("match 1 { 1|2 : 1 'a'|[]|{} : 'a' }", "1");
 	success("match 1 { (4-2)|2| |-1| : 1 'a'|[]|{} : 'a' }", "1");
 	success("match 1+5 { (4+1)|2|8 : 1 'a'|[]|{} : 'a' }", "null");
+	success("match 50 { 0..50: 1 50..100: 2 }", "2");
+	success("match 50 { ..50: 1 50..: 2 }", "2");
+	success("match 50 { ..10: 1 ..100: 2 }", "2");
+	success("match 50 { ..100: 1 ..100: 2 }", "1");
+
+	success("match 'e' { ..'b': 1 ..'z': 2 }", "2");
+	success("match 'e' { 'z'..: 1 'b'..: 2 }", "2");
+	success("match [1] { ..[]: 1 ..[2, 2]: 2 }", "2");
+	success("match [1] { [2, 2]..: 1 []..: 2 }", "2");
 }

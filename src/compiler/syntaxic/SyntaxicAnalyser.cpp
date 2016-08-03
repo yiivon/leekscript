@@ -827,30 +827,14 @@ Match *SyntaxicAnalyser::eatMatch(bool force_value)
 
 	eat(TokenType::OPEN_BRACE);
 
-	while (t->type != TokenType::DEFAULT && (force_value || t->type != TokenType::CLOSING_BRACE) && t->type != TokenType::FINISHED) {
-		vector<Value*> patterns;
-		patterns.push_back(eatSimpleExpression());
+	while (t->type != TokenType::CLOSING_BRACE && t->type != TokenType::FINISHED) {
+		vector<Match::Pattern> patterns;
+		patterns.push_back(eatMatchPattern());
 		while (t->type == TokenType::PIPE) {
 			eat();
-			patterns.push_back(eatSimpleExpression());
+			patterns.push_back(eatMatchPattern());
 		}
-		match->patterns.push_back(patterns);
-		eat(TokenType::COLON);
-		if (t->type == TokenType::OPEN_BRACE) {
-			match->returns.push_back(eatBlockOrObject());
-		} else if (force_value) {
-			match->returns.push_back(eatExpression());
-		} else {
-			Block* body = new Block();
-			body->instructions.push_back(eatInstruction());
-			match->returns.push_back(body);
-		}
-
-		while (t->type == TokenType::SEMICOLON) eat();
-	}
-
-	if (force_value || t->type == TokenType::DEFAULT) {
-		eat(TokenType::DEFAULT);
+		match->pattern_list.push_back(patterns);
 		eat(TokenType::COLON);
 		if (t->type == TokenType::OPEN_BRACE) {
 			match->returns.push_back(eatBlockOrObject());
@@ -867,6 +851,32 @@ Match *SyntaxicAnalyser::eatMatch(bool force_value)
 
 	eat(TokenType::CLOSING_BRACE);
 	return match;
+}
+
+Match::Pattern SyntaxicAnalyser::eatMatchPattern()
+{
+	if (t->type == TokenType::TWO_DOTS) {
+		eat();
+
+		if (t->type == TokenType::COLON) {
+			return Match::Pattern(nullptr, nullptr);
+		} else {
+			return Match::Pattern(nullptr, eatSimpleExpression());
+		}
+	}
+
+	Value* value = eatSimpleExpression();
+
+	if (t->type == TokenType::TWO_DOTS) {
+		eat();
+		if (t->type == TokenType::COLON) {
+			return Match::Pattern(value, nullptr);
+		} else {
+			return Match::Pattern(value, eatSimpleExpression());
+		}
+	} else {
+		return Match::Pattern(value);
+	}
 }
 
 Instruction* SyntaxicAnalyser::eatFor() {

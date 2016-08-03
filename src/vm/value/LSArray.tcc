@@ -1176,6 +1176,14 @@ bool LSArray<T>::operator > (const LSArray<LSValue*>* v) const {
 	return this->size() > v->size();
 }
 template <class T>
+bool LSArray<T>::operator > (const LSArray<int>* v) const {
+	return this->size() < v->size();
+}
+template <class T>
+bool LSArray<T>::operator > (const LSArray<double>* v) const {
+	return this->size() < v->size();
+}
+template <class T>
 bool LSArray<T>::operator > (const LSObject*) const {
 	return false;
 }
@@ -1213,6 +1221,14 @@ bool LSArray<T>::operator <= (const LSArray<LSValue*>* v) const {
 	return this->size() <= v->size();
 }
 template <class T>
+bool LSArray<T>::operator <= (const LSArray<int>* v) const {
+	return this->size() <= v->size();
+}
+template <class T>
+bool LSArray<T>::operator <= (const LSArray<double>* v) const {
+	return this->size() <= v->size();
+}
+template <class T>
 bool LSArray<T>::operator <= (const LSObject*) const {
 	return true;
 }
@@ -1247,6 +1263,14 @@ bool LSArray<T>::operator >= (const LSString*) const {
 }
 template <class T>
 bool LSArray<T>::operator >= (const LSArray<LSValue*>* v) const {
+	return this->size() >= v->size();
+}
+template <class T>
+bool LSArray<T>::operator >= (const LSArray<int>* v) const {
+	return this->size() >= v->size();
+}
+template <class T>
+bool LSArray<T>::operator >= (const LSArray<double>* v) const {
 	return this->size() >= v->size();
 }
 template <class T>

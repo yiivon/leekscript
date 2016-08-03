@@ -184,8 +184,8 @@ public:
 	virtual bool operator < (const LSNumber*) const = 0;
 	virtual bool operator < (const LSString*) const = 0;
 	virtual bool operator < (const LSArray<LSValue*>*) const = 0;
-	virtual bool operator < (const LSArray<int>*) const = 0;
-	virtual bool operator < (const LSArray<double>*) const = 0;
+	virtual bool operator < (const LSArray<int>*) const { return false; }
+	virtual bool operator < (const LSArray<double>*) const { return false; }
 	virtual bool operator < (const LSFunction*) const = 0;
 	virtual bool operator < (const LSObject*) const = 0;
 	virtual bool operator < (const LSClass*) const = 0;
@@ -196,6 +196,8 @@ public:
 	virtual bool operator > (const LSNumber*) const = 0;
 	virtual bool operator > (const LSString*) const = 0;
 	virtual bool operator > (const LSArray<LSValue*>*) const = 0;
+	virtual bool operator > (const LSArray<int>*) const { return false; }
+	virtual bool operator > (const LSArray<double>*) const { return false; }
 	virtual bool operator > (const LSFunction*) const = 0;
 	virtual bool operator > (const LSObject*) const = 0;
 	virtual bool operator > (const LSClass*) const = 0;
@@ -206,6 +208,8 @@ public:
 	virtual bool operator <= (const LSNumber*) const = 0;
 	virtual bool operator <= (const LSString*) const = 0;
 	virtual bool operator <= (const LSArray<LSValue*>*) const = 0;
+	virtual bool operator <= (const LSArray<int>*) const { return false; }
+	virtual bool operator <= (const LSArray<double>*) const { return false; }
 	virtual bool operator <= (const LSFunction*) const = 0;
 	virtual bool operator <= (const LSObject*) const = 0;
 	virtual bool operator <= (const LSClass*) const = 0;
@@ -216,6 +220,8 @@ public:
 	virtual bool operator >= (const LSNumber*) const = 0;
 	virtual bool operator >= (const LSString*) const = 0;
 	virtual bool operator >= (const LSArray<LSValue*>*) const = 0;
+	virtual bool operator >= (const LSArray<int>*) const { return false; }
+	virtual bool operator >= (const LSArray<double>*) const { return false; }
 	virtual bool operator >= (const LSFunction*) const = 0;
 	virtual bool operator >= (const LSObject*) const = 0;
 	virtual bool operator >= (const LSClass*) const = 0;
