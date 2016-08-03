@@ -51,8 +51,8 @@ public:
 	bool operator < (const LSNumber*) const override;
 	bool operator < (const LSString*) const override;
 	bool operator < (const LSArray<LSValue*>*) const override;
-	bool operator < (const LSArray<double>*) const override;
 	bool operator < (const LSArray<int>*) const override;
+	bool operator < (const LSArray<double>*) const override;
 	bool operator < (const LSFunction*) const override;
 	bool operator < (const LSObject*) const override;
 	bool operator < (const LSClass*) const override;
@@ -63,6 +63,8 @@ public:
 	bool operator > (const LSNumber*) const override;
 	bool operator > (const LSString*) const override;
 	bool operator > (const LSArray<LSValue*>*) const override;
+	bool operator > (const LSArray<int>*) const override;
+	bool operator > (const LSArray<double>*) const override;
 	bool operator > (const LSFunction*) const override;
 	bool operator > (const LSObject*) const override;
 	bool operator > (const LSClass*) const override;
@@ -73,6 +75,8 @@ public:
 	bool operator <= (const LSNumber*) const override;
 	bool operator <= (const LSString*) const override;
 	bool operator <= (const LSArray<LSValue*>*) const override;
+	bool operator <= (const LSArray<int>*) const override;
+	bool operator <= (const LSArray<double>*) const override;
 	bool operator <= (const LSFunction*) const override;
 	bool operator <= (const LSObject*) const override;
 	bool operator <= (const LSClass*) const override;
@@ -83,6 +87,8 @@ public:
 	bool operator >= (const LSNumber*) const override;
 	bool operator >= (const LSString*) const override;
 	bool operator >= (const LSArray<LSValue*>*) const override;
+	bool operator >= (const LSArray<int>*) const override;
+	bool operator >= (const LSArray<double>*) const override;
 	bool operator >= (const LSFunction*) const override;
 	bool operator >= (const LSObject*) const override;
 	bool operator >= (const LSClass*) const override;
