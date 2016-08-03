@@ -15,6 +15,7 @@ class Value;
 class ClassDeclaration;
 class VariableDeclaration;
 class If;
+class Match;
 class For;
 class Foreach;
 class Program;
@@ -55,6 +56,7 @@ public:
 	Object* eatObject();
 	Array* eatArray();
 	If* eatIf();
+	Match* eatMatch(bool force_value);
 	Instruction* eatFor();
 	Instruction* eatWhile();
 	Foreach* eatForeach();

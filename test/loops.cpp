@@ -69,5 +69,11 @@ void Test::test_loops() {
 	sem_err("while (true) { x -> {x break} }", ls::SemanticException::Type::BREAK_MUST_BE_IN_LOOP, "");
 	sem_err("while (true) { x -> {x continue} }", ls::SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, "");
 
-
+	/*
+	 * Match
+	 */
+	header("Match");
+	success("match 3 { 1 : 1 2 : 2 3 : 3 }", "3");
+	success("match 3 { 1 : 1 2 : 2 default : 3 }", "3");
+	success("match 'a' { 'a' : 1 'b' : 2 default : 3 }", "1");
 }

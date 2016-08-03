@@ -10,6 +10,7 @@
 #include "../instruction/Foreach.hpp"
 #include "../instruction/For.hpp"
 #include "../value/If.hpp"
+#include "../value/Match.hpp"
 #include "../instruction/Continue.hpp"
 #include "../instruction/ExpressionInstruction.hpp"
 #include "../instruction/ClassDeclaration.hpp"
@@ -201,6 +202,9 @@ Instruction* SyntaxicAnalyser::eatInstruction()
 		case TokenType::PIPE:
 		case TokenType::TILDE:
 			return new ExpressionInstruction(eatExpression());
+
+		case TokenType::MATCH:
+			return new ExpressionInstruction(eatMatch(false));
 
 		case TokenType::FUNCTION:
 			return eatFunctionDeclaration();
@@ -670,6 +674,9 @@ Value* SyntaxicAnalyser::eatValue() {
 		case TokenType::IF:
 			return eatIf();
 
+		case TokenType::MATCH:
+			return eatMatch(true);
+
 		case TokenType::FUNCTION:
 			return eatFunction();
 
@@ -808,6 +815,52 @@ If* SyntaxicAnalyser::eatIf() {
 	}
 
 	return iff;
+}
+
+Match *SyntaxicAnalyser::eatMatch(bool force_value)
+{
+	Match* match = new Match();
+
+	eat(TokenType::MATCH);
+
+	match->value = eatExpression();
+
+	eat(TokenType::OPEN_BRACE);
+
+	while (t->type != TokenType::DEFAULT && (force_value || t->type != TokenType::CLOSING_BRACE) && t->type != TokenType::FINISHED) {
+		match->patterns.push_back(eatExpression());
+		eat(TokenType::COLON);
+		if (t->type == TokenType::OPEN_BRACE) {
+			match->returns.push_back(eatBlockOrObject());
+		} else if (force_value) {
+			match->returns.push_back(eatExpression());
+		} else {
+			Block* body = new Block();
+			body->instructions.push_back(eatInstruction());
+			match->returns.push_back(body);
+		}
+
+		while (t->type == TokenType::SEMICOLON) eat();
+	}
+
+	if (force_value || t->type == TokenType::DEFAULT) {
+		eat(TokenType::DEFAULT);
+		eat(TokenType::COLON);
+		if (t->type == TokenType::OPEN_BRACE) {
+			match->returns.push_back(eatBlockOrObject());
+		} else if (force_value) {
+			match->returns.push_back(eatExpression());
+		} else {
+			Block* body = new Block();
+			body->instructions.push_back(eatInstruction());
+			match->returns.push_back(body);
+		}
+
+		while (t->type == TokenType::SEMICOLON) eat();
+	}
+
+	eat(TokenType::CLOSING_BRACE);
+	return match;
 }
 
 Instruction* SyntaxicAnalyser::eatFor() {

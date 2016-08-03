@@ -61,6 +61,8 @@ enum class TokenType {
 	COLON,
 	IF,
 	ELSE,
+	MATCH,
+	DEFAULT,
 	FOR,
 	IN,
 	WHILE,
