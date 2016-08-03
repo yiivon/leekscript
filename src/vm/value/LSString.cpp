@@ -280,6 +280,12 @@ bool LSString::operator > (const LSString* v) const {
 bool LSString::operator > (const LSArray<LSValue*>*) const {
 	return false;
 }
+bool LSString::operator > (const LSArray<int>*) const {
+	return false;
+}
+bool LSString::operator > (const LSArray<double>*) const {
+	return false;
+}
 bool LSString::operator > (const LSObject*) const {
 	return false;
 }
@@ -308,6 +314,12 @@ bool LSString::operator <= (const LSString* v) const {
 bool LSString::operator <= (const LSArray<LSValue*>*) const {
 	return true;
 }
+bool LSString::operator <= (const LSArray<int>*) const {
+	return true;
+}
+bool LSString::operator <= (const LSArray<double>*) const {
+	return true;
+}
 bool LSString::operator <= (const LSObject*) const {
 	return true;
 }
@@ -334,6 +346,12 @@ bool LSString::operator >= (const LSString* v) const {
 	return *this >= *v;
 }
 bool LSString::operator >= (const LSArray<LSValue*>*) const {
+	return false;
+}
+bool LSString::operator >= (const LSArray<int>*) const {
+	return false;
+}
+bool LSString::operator >= (const LSArray<double>*) const {
 	return false;
 }
 bool LSString::operator >= (const LSObject*) const {

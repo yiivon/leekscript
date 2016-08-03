@@ -10,6 +10,7 @@
 #include "../instruction/Foreach.hpp"
 #include "../instruction/For.hpp"
 #include "../value/If.hpp"
+#include "../value/Match.hpp"
 #include "../instruction/Continue.hpp"
 #include "../instruction/ExpressionInstruction.hpp"
 #include "../instruction/ClassDeclaration.hpp"
@@ -201,6 +202,9 @@ Instruction* SyntaxicAnalyser::eatInstruction()
 		case TokenType::PIPE:
 		case TokenType::TILDE:
 			return new ExpressionInstruction(eatExpression());
+
+		case TokenType::MATCH:
+			return new ExpressionInstruction(eatMatch(false));
 
 		case TokenType::FUNCTION:
 			return eatFunctionDeclaration();
@@ -670,6 +674,9 @@ Value* SyntaxicAnalyser::eatValue() {
 		case TokenType::IF:
 			return eatIf();
 
+		case TokenType::MATCH:
+			return eatMatch(true);
+
 		case TokenType::FUNCTION:
 			return eatFunction();
 
@@ -822,6 +829,68 @@ If* SyntaxicAnalyser::eatIf() {
 	}
 
 	return iff;
+}
+
+Match *SyntaxicAnalyser::eatMatch(bool force_value)
+{
+	Match* match = new Match();
+
+	eat(TokenType::MATCH);
+
+	match->value = eatExpression();
+
+	eat(TokenType::OPEN_BRACE);
+
+	while (t->type != TokenType::CLOSING_BRACE && t->type != TokenType::FINISHED) {
+		vector<Match::Pattern> patterns;
+		patterns.push_back(eatMatchPattern());
+		while (t->type == TokenType::PIPE) {
+			eat();
+			patterns.push_back(eatMatchPattern());
+		}
+		match->pattern_list.push_back(patterns);
+		eat(TokenType::COLON);
+		if (t->type == TokenType::OPEN_BRACE) {
+			match->returns.push_back(eatBlockOrObject());
+		} else if (force_value) {
+			match->returns.push_back(eatExpression());
+		} else {
+			Block* body = new Block();
+			body->instructions.push_back(eatInstruction());
+			match->returns.push_back(body);
+		}
+
+		while (t->type == TokenType::SEMICOLON) eat();
+	}
+
+	eat(TokenType::CLOSING_BRACE);
+	return match;
+}
+
+Match::Pattern SyntaxicAnalyser::eatMatchPattern()
+{
+	if (t->type == TokenType::TWO_DOTS) {
+		eat();
+
+		if (t->type == TokenType::COLON || t->type == TokenType::PIPE) {
+			return Match::Pattern(nullptr, nullptr);
+		} else {
+			return Match::Pattern(nullptr, eatSimpleExpression());
+		}
+	}
+
+	Value* value = eatSimpleExpression();
+
+	if (t->type == TokenType::TWO_DOTS) {
+		eat();
+		if (t->type == TokenType::COLON || t->type == TokenType::PIPE) {
+			return Match::Pattern(value, nullptr);
+		} else {
+			return Match::Pattern(value, eatSimpleExpression());
+		}
+	} else {
+		return Match::Pattern(value);
+	}
 }
 
 Instruction* SyntaxicAnalyser::eatFor() {

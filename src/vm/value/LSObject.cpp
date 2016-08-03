@@ -169,6 +169,12 @@ bool LSObject::operator > (const LSString*) const {
 bool LSObject::operator > (const LSArray<LSValue*>*) const {
 	return true;
 }
+bool LSObject::operator > (const LSArray<int>*) const {
+	return true;
+}
+bool LSObject::operator > (const LSArray<double>*) const {
+	return true;
+}
 bool LSObject::operator > (const LSObject* v) const {
 	return values.size() > v->values.size();
 }
@@ -197,6 +203,12 @@ bool LSObject::operator <= (const LSString*) const {
 bool LSObject::operator <= (const LSArray<LSValue*>*) const {
 	return false;
 }
+bool LSObject::operator <= (const LSArray<int>*) const {
+	return false;
+}
+bool LSObject::operator <= (const LSArray<double>*) const {
+	return false;
+}
 bool LSObject::operator <= (const LSObject* v) const {
 	return values.size() <= v->values.size();
 }
@@ -220,6 +232,12 @@ bool LSObject::operator >= (const LSNumber*) const {
 	return true;
 }
 bool LSObject::operator >= (const LSString*) const {
+	return true;
+}
+bool LSObject::operator >= (const LSArray<int>*) const {
+	return true;
+}
+bool LSObject::operator >= (const LSArray<double>*) const {
 	return true;
 }
 bool LSObject::operator >= (const LSArray<LSValue*>*) const {
