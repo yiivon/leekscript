@@ -19,7 +19,7 @@ public:
 		Pattern(Value* begin, Value* end);
 		~Pattern();
 
-		void print(std::ostream&, bool debug) const;
+		void print(std::ostream&, int indent, bool debug) const;
 		jit_value_t match(Compiler &c, jit_value_t v) const;
 	};
 
@@ -30,7 +30,7 @@ public:
 	Match();
 	virtual ~Match();
 
-	virtual void print(std::ostream&, bool debug = false) const override;
+	virtual void print(std::ostream&, int indent, bool debug = false) const override;
 	virtual unsigned line() const override;
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 	virtual jit_value_t compile(Compiler&) const override;
