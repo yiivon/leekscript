@@ -41,6 +41,7 @@ unsigned If::line() const {
 
 void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
+	cout << req_type << endl;
 	type = Type::UNKNOWN;
 
 	condition->analyse(analyser, Type::BOOLEAN);
