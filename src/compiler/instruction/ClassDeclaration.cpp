@@ -13,10 +13,10 @@ ClassDeclaration::ClassDeclaration() {
 
 ClassDeclaration::~ClassDeclaration() {}
 
-void ClassDeclaration::print(ostream& os, bool debug) const {
+void ClassDeclaration::print(ostream& os, int indent, bool debug) const {
 	os << "class " << name << " {" << endl;
 	for (VariableDeclaration* vd : fields) {
-		vd->print(os, debug);
+		vd->print(os, indent + 1, debug);
 		os << endl;
 	}
 	os << "}";

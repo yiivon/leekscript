@@ -21,7 +21,7 @@ public:
 	While();
 	virtual ~While();
 
-	virtual void print(std::ostream&, bool debug) const override;
+	virtual void print(std::ostream&, int indent, bool debug) const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
 

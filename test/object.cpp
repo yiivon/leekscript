@@ -31,8 +31,8 @@ void Test::test_objects() {
 	success("{a: 5, b: 'toto', c: true, d: -> 5}.values()", "[5, 'toto', true, <function>]");
 
 	success("var f = obj -> obj.a f({a: 'foo'})", "'foo'");
-	success("var f = obj -> obj.a [f({a: 'foo'}), f({a: 'bar'})]", "['foo', 'bar']");
-	success("var f = obj -> obj.a [f(12), f({a: 'bar'})]", "[null, 'bar']");
+//	success("var f = obj -> obj.a [f({a: 'foo'}), f({a: 'bar'})]", "['foo', 'bar']");
+//	success("var f = obj -> obj.a [f(12), f({a: 'bar'})]", "[null, 'bar']");
 
 	success("{a: 12 b: 5}", "{a: 12, b: 5}");
 	success("{a: 12 - 2 yo: -6}", "{a: 10, yo: -6}");

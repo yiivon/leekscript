@@ -22,7 +22,9 @@ VariableDeclaration::~VariableDeclaration() {
 	}
 }
 
-void VariableDeclaration::print(ostream& os, bool debug) const {
+void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
+
+	os << tabs(indent);
 
 	os << (global ? "global " : "let ");
 
@@ -36,10 +38,13 @@ void VariableDeclaration::print(ostream& os, bool debug) const {
 		os << " = ";
 	}
 	for (unsigned i = 0; i < expressions.size(); ++i) {
-		expressions.at(i)->print(os, debug);
+		expressions.at(i)->print(os, indent, debug);
 		if (i < expressions.size() - 1) {
 			os << ", ";
 		}
+	}
+	if (debug) {
+		os << " " << type;
 	}
 }
 
@@ -48,7 +53,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_ty
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
 		Token* var = variables[i];
-		Type type = Type::NEUTRAL;
+		Type type = Type::UNKNOWN;
 		Value* value = nullptr;
 
 		SemanticVar* v = analyser->add_var(var, Type::FUNCTION, value, this);
@@ -65,6 +70,10 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_ty
 
 		vars.insert(pair<string, SemanticVar*>(var->content, v));
 		vars.at(var->content)->type = v->type;
+
+		if (i == variables.size() - 1) {
+			this->type = v->type;
+		}
 	}
 	this->return_value = return_value;
 

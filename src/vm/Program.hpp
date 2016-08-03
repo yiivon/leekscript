@@ -15,19 +15,20 @@ public:
 
 	std::vector<Function*> functions;
 	std::map<std::string, LSValue*> system_vars;
-	Value* body;
-
-	void* function;
+	Block* body;
+	void* closure;
 
 	Program();
 	virtual ~Program();
 
-	void execute();
+	void compile(Context&);
+	LSValue* execute();
+	void compile_jit(Compiler&, Context&, bool);
 
-	void print(std::ostream& os);
-
-	void compile_jit(Compiler&, jit_function_t&, Context&, bool);
+	void print(std::ostream& os, bool debug = false) const;
 };
+
+std::ostream& operator << (std::ostream& os, const Program* program);
 
 }
 

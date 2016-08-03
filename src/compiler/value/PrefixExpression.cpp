@@ -21,10 +21,15 @@ PrefixExpression::~PrefixExpression() {
 	delete operatorr;
 }
 
-void PrefixExpression::print(ostream& os, bool debug) const {
+void PrefixExpression::print(ostream& os, int indent, bool debug) const {
 	operatorr->print(os);
-	expression->print(os, debug);
-	os << " " << type;
+	if (operatorr->type == TokenType::NEW) {
+		os << " ";
+	}
+	expression->print(os, indent, debug);
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned PrefixExpression::line() const {
@@ -38,9 +43,38 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 	if (operatorr->type == TokenType::PLUS_PLUS
 		or operatorr->type == TokenType::MINUS_MINUS
 		or operatorr->type == TokenType::MINUS) {
+
 		type = expression->type;
+
 	} else if (operatorr->type == TokenType::NOT) {
+
 		type = Type::BOOLEAN;
+
+	} else if (operatorr->type == TokenType::NEW) {
+
+		if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
+			if (vv->name == "Number") type = Type::INTEGER;
+			if (vv->name == "Boolean") type = Type::BOOLEAN;
+			if (vv->name == "String") type = Type::STRING;
+			if (vv->name == "Array") type = Type::ARRAY;
+			if (vv->name == "Object") type = Type::OBJECT;
+		}
+		if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
+			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
+				if (vv->name == "Number") {
+					if (fc->arguments.size() > 0) {
+						fc->arguments[0]->analyse(analyser);
+						type = fc->arguments[0]->type;
+					} else {
+						type = Type::INTEGER;
+					}
+				}
+				if (vv->name == "Boolean") type = Type::BOOLEAN;
+				if (vv->name == "String") type = Type::STRING;
+				if (vv->name == "Array") type = Type::ARRAY;
+				if (vv->name == "Object") type = Type::OBJECT;
+			}
+		}
 	}
 
 	if (req_type.nature != Nature::UNKNOWN) {
@@ -176,6 +210,7 @@ jit_value_t PrefixExpression::compile(Compiler& c) const {
 							if (type.nature == Nature::POINTER) {
 								return VM::value_to_pointer(c.F, n, Type::INTEGER);
 							}
+							return n;
 						} else {
 							jit_value_t n = JIT_CREATE_CONST(c.F, JIT_INTEGER, 0);
 							if (type.nature == Nature::POINTER) {

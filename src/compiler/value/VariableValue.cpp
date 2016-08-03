@@ -19,8 +19,11 @@ VariableValue::VariableValue(Token* token) {
 
 VariableValue::~VariableValue() {}
 
-void VariableValue::print(ostream& os, bool debug) const {
+void VariableValue::print(ostream& os, int indent, bool debug) const {
 	os << token->content;
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned VariableValue::line() const {
@@ -33,6 +36,10 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (var != nullptr) {
 		type = var->type;
 		attr_types = var->attr_types;
+
+		if (var->function != analyser->current_function()) {
+			analyser->current_function()->capture(var);
+  		}
 	}
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
@@ -41,6 +48,15 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "var scope : " << (int)var->scope << endl;
 //	for (auto t : attr_types)
 //		cout << t.first << " : " << t.second << endl;
+}
+
+bool VariableValue::will_take(SemanticAnalyser* analyser, unsigned pos, const Type type) {
+
+	if (var != nullptr and var->value != nullptr) {
+		var->value->will_take(analyser, pos, type);
+		this->type = var->value->type;
+	}
+	return false;
 }
 
 void VariableValue::must_return(SemanticAnalyser* analyser, const Type& ret_type) {

@@ -22,7 +22,6 @@ const ClassRawType* const RawType::CLASS = new ClassRawType();
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
 
 const Type Type::VOID(RawType::VOID, Nature::VOID);
-const Type Type::NEUTRAL(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::VALUE(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
 
@@ -328,7 +327,7 @@ bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Ty
 	return false;
 }
 
-Type Type::get_compatible_type(Type& old_type, Type& new_type) {
+Type Type::get_compatible_type(const Type& old_type, const Type& new_type) {
 
 	if (old_type == new_type) {
 		return old_type;
@@ -377,20 +376,23 @@ bool Type::isNumber() const {
 
 ostream& operator << (ostream& os, const Type& type) {
 
-	os << "{n: " << Type::get_nature_name(type.nature)
-	<< ", t: "<< type.raw_type->getName();
+	if (type.nature == Nature::VOID) {
+		os << "{void}";
+		return os;
+	}
+
+	os << "{" << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 
 	if (type.raw_type == RawType::FUNCTION) {
-		os << ", args: [";
+		os << " (";
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
 			os << type.arguments_types[t];
 		}
-		os << "]";
-		os << ", returns: " << type.getReturnType();
+		os << ") → " << type.getReturnType();
 	}
 	if (type.raw_type == RawType::ARRAY) {
-		os << ", elements: " << type.getElementType();
+		os << " of " << type.getElementType();
 	}
 	os << "}";
 	return os;
@@ -408,6 +410,21 @@ string Type::get_nature_name(const Nature& nature) {
 		return "VOID";
 	default:
 		return "??";
+	}
+}
+
+string Type::get_nature_symbol(const Nature& nature) {
+	switch (nature) {
+	case Nature::POINTER:
+		return "*";
+	case Nature::UNKNOWN:
+		return "?";
+	case Nature::VALUE:
+		return "";
+	case Nature::VOID:
+		return "void";
+	default:
+		return "???";
 	}
 }
 

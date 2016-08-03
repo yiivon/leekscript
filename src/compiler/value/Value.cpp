@@ -4,14 +4,14 @@
 namespace ls {
 
 Value::Value() {
-	type = Type::NEUTRAL;
+	type = Type::UNKNOWN;
 	constant = false;
 }
 
 Value::~Value() {}
 
 void Value::analyse(SemanticAnalyser* analyser) {
-	analyse(analyser, Type::NEUTRAL);
+	analyse(analyser, Type::UNKNOWN);
 }
 
 bool Value::will_take(SemanticAnalyser*, const unsigned i, const Type arg_type) {
@@ -36,6 +36,10 @@ void Value::must_return(SemanticAnalyser*, const Type& ret_type) {
 
 bool Value::isLeftValue() const {
 	return false;
+}
+
+std::string Value::tabs(int indent) {
+	return std::string(indent * 4, ' ');
 }
 
 }

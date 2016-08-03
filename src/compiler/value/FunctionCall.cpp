@@ -41,16 +41,20 @@ FunctionCall::~FunctionCall() {
 	}
 }
 
-void FunctionCall::print(std::ostream& os, bool debug) const {
-	function->print(os, debug);
+void FunctionCall::print(std::ostream& os, int indent, bool debug) const {
+
+	function->print(os, indent, debug);
 	os << "(";
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		arguments.at(i)->print(os, debug);
+		arguments.at(i)->print(os, indent, debug);
 		if (i < arguments.size() - 1) {
 			os << ", ";
 		}
 	}
 	os << ")";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned FunctionCall::line() const {
@@ -76,6 +80,16 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	int a = 0;
 	for (Value* arg : arguments) {
 		arg->analyse(analyser, function->type.getArgumentType(a++));
+	}
+
+	// Standard library constructors
+	VariableValue* vv = dynamic_cast<VariableValue*>(function);
+	if (vv != nullptr) {
+		if (vv->name == "Number") type = Type::INTEGER;
+		if (vv->name == "Boolean") type = Type::BOOLEAN;
+		if (vv->name == "String") type = Type::STRING;
+		if (vv->name == "Array") type = Type::ARRAY;
+		if (vv->name == "Object") type = Type::OBJECT;
 	}
 
 	// Detect standard library functions
@@ -256,14 +270,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	VariableValue* vv = dynamic_cast<VariableValue*>(function);
+	vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		string name = vv->name;
 		if (name == "+" or name == "-" or name == "*" or name == "/" or name == "^" or name == "%") {
 			bool isByValue = true;
 			Type effectiveType;
 			for (Value* arg : arguments) {
-				arg->analyse(analyser, Type::NEUTRAL);
+				arg->analyse(analyser);
 				effectiveType = arg->type;
 				if (arg->type.nature != Nature::VALUE) {
 					isByValue = false;
@@ -297,9 +311,15 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //			cout << "arg " << a << " " << arg->type << endl;
 			vv->var->will_take(analyser, a++, arg->type);
 		}
-		type = vv->var->value->type.getReturnType();
+		Type ret_type = vv->var->value->type.getReturnType();
+		if (ret_type.raw_type != RawType::UNKNOWN) {
+			type = ret_type;
+		}
 	} else {
-		type = function->type.getReturnType();
+		Type ret_type =function->type.getReturnType();
+		if (ret_type.raw_type != RawType::UNKNOWN) {
+			type = ret_type;
+		}
 	}
 
 	return_type = type;

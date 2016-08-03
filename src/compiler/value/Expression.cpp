@@ -74,22 +74,29 @@ void Expression::append(Operator* op, Value* exp) {
 	}
 }
 
-void Expression::print(std::ostream& os, bool debug) const {
+void Expression::print(std::ostream& os, int indent, bool debug) const {
 
-	os << "(";
+	if (parenthesis or debug) {
+		os << "(";
+	}
 
 	if (v1 != nullptr) {
 
-		v1->print(os, debug);
+		v1->print(os, indent, debug);
 
 		if (op != nullptr) {
 			os << " ";
 			op->print(os);
 			os << " ";
-			v2->print(os,debug);
+			v2->print(os, indent, debug);
 		}
 	}
-	os << ") " << type;
+	if (parenthesis or debug) {
+		os << ")";
+	}
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned Expression::line() const {
@@ -126,16 +133,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	constant = v1->constant and v2->constant;
 
-
-	// Boolean operators
-	if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
-		op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
-		op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
-		op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
-
-		type = Type::BOOLEAN;
-	}
-
 	// Array += element
 	if (op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
 		VariableValue* vv = dynamic_cast<VariableValue*>(v1);
@@ -145,11 +142,49 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// A = B, A += B, etc. mix types
-	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
-		or op->type == TokenType::PLUS or op->type == TokenType::TIMES
-		or op->type == TokenType::MINUS) {
+	if (op->type == TokenType::EQUAL or op->type == TokenType::XOR
+		or op->type == TokenType::PLUS or op->type == TokenType::PLUS_EQUAL
+		or op->type == TokenType::TIMES or op->type == TokenType::TIMES_EQUAL
+		or op->type == TokenType::DIVIDE or op->type == TokenType::DIVIDE_EQUAL
+		or op->type == TokenType::MINUS or op->type == TokenType::MINUS_EQUAL
+		or op->type == TokenType::POWER or op->type == TokenType::POWER_EQUAL
+		or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL
+		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
+		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
+		or op->type == TokenType::SWAP) {
 
 		type = v1->type.mix(v2->type);
+
+		// Set the correct type nature for the two members
+		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
+			v1->analyse(analyser, Type::POINTER);
+			type.nature = Nature::POINTER;
+		}
+		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
+			v2->analyse(analyser, Type::POINTER);
+			type.nature = Nature::POINTER;
+		}
+	}
+
+	// Boolean operators : result is a boolean
+	if (op->type == TokenType::AND or op->type == TokenType::OR or op->type == TokenType::XOR or
+		op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
+		op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
+		op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
+		op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
+
+		type = Type::BOOLEAN;
+	}
+
+	// Bitwise operators : result is a integer
+	if (op->type == TokenType::BIT_AND or op->type == TokenType::PIPE
+		or op->type == TokenType::BIT_XOR or op->type == TokenType::BIT_AND_EQUALS
+		or op->type == TokenType::BIT_OR_EQUALS or op->type == TokenType::BIT_XOR_EQUALS
+		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
+		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
+		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
+
+		type = Type::INTEGER;
 	}
 
 	// A = B, A += B, etc. A must be a l-value
@@ -177,10 +212,12 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
-		v2->analyse(analyser, Type::POINTER);
+		v2->analyse(analyser, Type::VALUE);
 		v2->will_take(analyser, 0, v1->type.getElementType());
-		v2->must_return(analyser, Type::POINTER);
+
+//		v2->must_return(analyser, Type::POINTER);
 		type = Type::ARRAY;
+		type.setElementType(v2->type.getReturnType());
 	}
 
 	// object ?? default
@@ -193,16 +230,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	if (op->type == TokenType::IN) {
 		v1->analyse(analyser, Type::POINTER);
-	}
-
-	// Set the correct type nature for the two members
-	if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
-		v1->analyse(analyser, Type::POINTER);
-		type.nature = Nature::POINTER;
-	}
-	if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
-		v2->analyse(analyser, Type::POINTER);
-		type.nature = Nature::POINTER;
 	}
 
 	// Merge operations count
@@ -324,18 +351,6 @@ LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 int jit_array_add_value(LSArray<int>* x, int v) {
 	x->push_clone(v);
 	return v;
-}
-
-LSArray<LSValue*>* jit_tilde_tilde_int(LSArray<int>* array, LSFunction* fun) {
-	return array->map(fun->function);
-}
-
-LSArray<LSValue*>* jit_tilde_tilde_real(LSArray<double>* array, LSFunction* fun) {
-	return array->map(fun->function);
-}
-
-LSArray<LSValue*>* jit_tilde_tilde_pointer(LSArray<LSValue*>* array, LSFunction* fun) {
-	return array->map(fun->function);
 }
 
 LSValue* jit_in(LSValue* x, LSValue* y) {
@@ -499,7 +514,6 @@ jit_value_t Expression::compile(Compiler& c) const {
 			if (v1->type.raw_type == RawType::ARRAY) {
 //				cout << "Array add " << endl;
 				ls_func = (void*) jit_array_add_value;
-				v2_conv = Type::NEUTRAL;
 				break;
 			}
 
@@ -720,11 +734,23 @@ jit_value_t Expression::compile(Compiler& c) const {
 		}
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.getElementType() == Type::INTEGER) {
-				ls_func = (void*) &jit_tilde_tilde_int;
+				if (type.getElementType() == Type::INTEGER) {
+					ls_func = (void*) &LSArray<int>::map_int;
+				} else if (type.getElementType() == Type::FLOAT) {
+					ls_func = (void*) &LSArray<int>::map_real;
+				} else {
+					ls_func = (void*) &LSArray<int>::map;
+				}
 			} else if (v1->type.getElementType() == Type::FLOAT) {
-				ls_func = (void*) &jit_tilde_tilde_real;
+				if (type.getElementType() == Type::FLOAT) {
+					ls_func = (void*) &LSArray<double>::map_real;
+				} else if (type.getElementType() == Type::INTEGER) {
+					ls_func = (void*) &LSArray<double>::map_int;
+				} else {
+					ls_func = (void*) &LSArray<double>::map;
+				}
 			} else {
-				ls_func = (void*) &jit_tilde_tilde_pointer;
+				ls_func = (void*) &LSArray<LSValue*>::map;
 			}
 			break;
 		}

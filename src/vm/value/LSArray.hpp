@@ -51,6 +51,8 @@ public:
 	int atv(const int i);
 	int* atLv(int i);
 	LSArray<LSValue*>* map(const void*) const;
+	LSArray<int>* map_int(const void*) const;
+	LSArray<double>* map_real(const void*) const;
 	LSArray<LSArray<T>*>* chunk(int size = 1) const;
 	LSArray<LSArray<T>*>* chunk_1() const;
 	LSArray<T>* unique();
@@ -137,6 +139,8 @@ public:
 	bool operator > (const LSNumber*) const override;
 	bool operator > (const LSString*) const override;
 	bool operator > (const LSArray<LSValue*>*) const override;
+	bool operator > (const LSArray<int>*) const override;
+	bool operator > (const LSArray<double>*) const override;
 	bool operator > (const LSFunction*) const override;
 	bool operator > (const LSObject*) const override;
 	bool operator > (const LSClass*) const override;
@@ -147,6 +151,8 @@ public:
 	bool operator <= (const LSNumber*) const override;
 	bool operator <= (const LSString*) const override;
 	bool operator <= (const LSArray<LSValue*>*) const override;
+	bool operator <= (const LSArray<int>*) const override;
+	bool operator <= (const LSArray<double>*) const override;
 	bool operator <= (const LSFunction*) const override;
 	bool operator <= (const LSObject*) const override;
 	bool operator <= (const LSClass*) const override;
@@ -157,6 +163,8 @@ public:
 	bool operator >= (const LSNumber*) const override;
 	bool operator >= (const LSString*) const override;
 	bool operator >= (const LSArray<LSValue*>*) const override;
+	bool operator >= (const LSArray<int>*) const override;
+	bool operator >= (const LSArray<double>*) const override;
 	bool operator >= (const LSFunction*) const override;
 	bool operator >= (const LSObject*) const override;
 	bool operator >= (const LSClass*) const override;
