@@ -1177,11 +1177,11 @@ bool LSArray<T>::operator > (const LSArray<LSValue*>* v) const {
 }
 template <class T>
 bool LSArray<T>::operator > (const LSArray<int>* v) const {
-	return this->size() < v->size();
+	return this->size() > v->size();
 }
 template <class T>
 bool LSArray<T>::operator > (const LSArray<double>* v) const {
-	return this->size() < v->size();
+	return this->size() > v->size();
 }
 template <class T>
 bool LSArray<T>::operator > (const LSObject*) const {
