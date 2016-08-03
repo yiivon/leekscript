@@ -43,11 +43,23 @@ void Match::analyse(ls::SemanticAnalyser *analyser, const Type &req_type)
 {
 	type = req_type;
 
+	bool any_pointer = false;
+
 	value->analyse(analyser, Type::UNKNOWN);
+	if (value->type.nature == Nature::POINTER) any_pointer = true;
 
 	for (size_t i = 0; i < patterns.size(); ++i) {
-		patterns[i]->analyse(analyser, value->type);
+		patterns[i]->analyse(analyser, Type::UNKNOWN);
+		if (patterns[i]->type.nature == Nature::POINTER) any_pointer = true;
 	}
+
+	if (any_pointer) {
+		value->analyse(analyser, Type::POINTER);
+		for (size_t i = 0; i < patterns.size(); ++i) {
+			patterns[i]->analyse(analyser, Type::POINTER);
+		}
+	}
+
 	for (size_t i = 0; i < returns.size(); ++i) {
 		returns[i]->analyse(analyser, req_type);
 	}
@@ -77,7 +89,7 @@ jit_value_t Match::compile(Compiler &c) const
 		jit_value_t cond;
 		jit_value_t p = patterns[i]->compile(c);
 
-		if (value->type.nature == Nature::VALUE && patterns[i]->type.nature == Nature::VALUE) {
+		if (value->type.nature == Nature::VALUE) {
 			cond = jit_insn_eq(c.F, v, p);
 		} else {
 			jit_value_t args[2] = { v, p };
