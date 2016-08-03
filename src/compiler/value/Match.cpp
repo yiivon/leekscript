@@ -26,7 +26,6 @@ void Match::print(std::ostream &os, bool debug) const
 		patterns[i]->print(os, debug);
 		os << " : ";
 		returns[i]->print(os, debug);
-		os << ", ";
 	}
 	if (returns.size() > patterns.size()) {
 		os << "default : ";
