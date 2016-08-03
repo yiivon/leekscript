@@ -13,7 +13,7 @@ Match::Match()
 Match::~Match()
 {
 	delete value;
-	for (auto x : patterns) delete x;
+	for (auto& x : patterns) for (auto y : x) delete y;
 	for (auto x : returns) delete x;
 }
 
@@ -23,7 +23,12 @@ void Match::print(std::ostream &os, bool debug) const
 	value->print(os, debug);
 	os << " { ";
 	for (size_t i = 0; i < patterns.size(); ++i) {
-		patterns[i]->print(os, debug);
+		for (size_t j = 0; j < patterns[i].size(); ++j) {
+			if (j > 0) {
+				os << "|";
+			}
+			patterns[i][j]->print(os, debug);
+		}
 		os << " : ";
 		returns[i]->print(os, debug);
 	}
@@ -43,30 +48,33 @@ void Match::analyse(ls::SemanticAnalyser *analyser, const Type &req_type)
 {
 	type = req_type;
 
-	bool any_pointer = false;
+	any_pointer = false;
 
 	value->analyse(analyser, Type::UNKNOWN);
 	if (value->type.nature == Nature::POINTER) any_pointer = true;
 
-	for (size_t i = 0; i < patterns.size(); ++i) {
-		patterns[i]->analyse(analyser, Type::UNKNOWN);
-		if (patterns[i]->type.nature == Nature::POINTER) any_pointer = true;
+	for (auto& ps : patterns) {
+		for (Value* p : ps) {
+			if (any_pointer) break;
+
+			p->analyse(analyser, Type::UNKNOWN);
+
+			if (p->type.nature == Nature::POINTER) any_pointer = true;
+		}
 	}
 
 	if (any_pointer) {
 		value->analyse(analyser, Type::POINTER);
-		for (size_t i = 0; i < patterns.size(); ++i) {
-			patterns[i]->analyse(analyser, Type::POINTER);
+		for (auto& ps : patterns) {
+			for (Value* p : ps) {
+				p->analyse(analyser, Type::POINTER);
+			}
 		}
 	}
 
 	for (size_t i = 0; i < returns.size(); ++i) {
 		returns[i]->analyse(analyser, req_type);
 	}
-}
-
-bool jit_equals_(LSValue* x, LSValue* y) {
-	return x->operator == (y);
 }
 
 jit_value_t Match::compile(Compiler &c) const
@@ -83,19 +91,20 @@ jit_value_t Match::compile(Compiler &c) const
 			label_next = jit_label_undefined;
 		}
 
-		jit_value_t cond;
-		jit_value_t p = patterns[i]->compile(c);
-
-		if (value->type.nature == Nature::VALUE) {
-			cond = jit_insn_eq(c.F, v, p);
+		if (patterns[i].size() == 1) {
+			jit_value_t cond = match(c, v, patterns[i][0]);
+			jit_insn_branch_if_not(c.F, cond, &label_next);
 		} else {
-			jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 0);
-			jit_value_t args[2] = { v, p };
-			cond = jit_insn_call_native(c.F, "", (void*) jit_equals_, sig, args, 2, JIT_CALL_NOTHROW);
-		}
+			jit_label_t label_match = jit_label_undefined;
 
-		jit_insn_branch_if_not(c.F, cond, &label_next);
+			for (Value* pat : patterns[i]) {
+				jit_value_t cond = match(c, v, pat);
+				jit_insn_branch_if(c.F, cond, &label_match);
+			}
+
+			jit_insn_branch(c.F, &label_next);
+			jit_insn_label(c.F, &label_match);
+		}
 
 		jit_value_t ret = returns[i]->compile(c);
 		jit_insn_store(c.F, res, ret);
@@ -112,6 +121,26 @@ jit_value_t Match::compile(Compiler &c) const
 
 	jit_insn_label(c.F, &label_end);
 	return res;
+}
+
+bool jit_equals_(LSValue* x, LSValue* y) {
+	return x->operator == (y);
+}
+
+jit_value_t Match::match(Compiler &c, jit_value_t v, Value *pattern) const
+{
+	jit_value_t cond;
+	jit_value_t p = pattern->compile(c);
+
+	if (!any_pointer) {
+		cond = jit_insn_eq(c.F, v, p);
+	} else {
+		jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 0);
+		jit_value_t args[2] = { v, p };
+		cond = jit_insn_call_native(c.F, "", (void*) jit_equals_, sig, args, 2, JIT_CALL_NOTHROW);
+	}
+	return cond;
 }
 
 }

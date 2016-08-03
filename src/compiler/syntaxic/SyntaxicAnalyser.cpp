@@ -828,7 +828,13 @@ Match *SyntaxicAnalyser::eatMatch(bool force_value)
 	eat(TokenType::OPEN_BRACE);
 
 	while (t->type != TokenType::DEFAULT && (force_value || t->type != TokenType::CLOSING_BRACE) && t->type != TokenType::FINISHED) {
-		match->patterns.push_back(eatExpression());
+		vector<Value*> patterns;
+		patterns.push_back(eatSimpleExpression());
+		while (t->type == TokenType::PIPE) {
+			eat();
+			patterns.push_back(eatSimpleExpression());
+		}
+		match->patterns.push_back(patterns);
 		eat(TokenType::COLON);
 		if (t->type == TokenType::OPEN_BRACE) {
 			match->returns.push_back(eatBlockOrObject());

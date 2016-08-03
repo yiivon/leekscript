@@ -10,7 +10,7 @@ class Match : public Value
 {
 public:
 	Value* value;
-	std::vector<Value*> patterns;
+	std::vector<std::vector<Value*>> patterns;
 	std::vector<Value*> returns;
 
 	Match();
@@ -20,6 +20,10 @@ public:
 	virtual unsigned line() const override;
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 	virtual jit_value_t compile(Compiler&) const override;
+
+private:
+	bool any_pointer;
+	jit_value_t match(Compiler &c, jit_value_t v, Value* pattern) const;
 };
 
 }

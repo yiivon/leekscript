@@ -79,4 +79,7 @@ void Test::test_loops() {
 	success("match 4 { 1 : 1 2 : 2 3 : 3 }", "null");
 	success("match 'a' { 1 : 1 'a' : 'a' }", "'a'");
 	success("match 1 { 1 : 1 'a' : 'a' }", "1");
+	success("match 1 { 1|2 : 1 'a'|[]|{} : 'a' }", "1");
+	success("match 1 { (4-2)|2| |-1| : 1 'a'|[]|{} : 'a' }", "1");
+	success("match 1+5 { (4+1)|2|8 : 1 'a'|[]|{} : 'a' }", "null");
 }
