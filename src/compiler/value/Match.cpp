@@ -95,6 +95,8 @@ jit_value_t Match::compile(Compiler &c) const
 	if (returns.size() > patterns.size()) {
 		jit_value_t ret = returns[patterns.size()]->compile(c);
 		jit_insn_store(c.F, res, ret);
+	} else {
+		jit_insn_store(c.F, res, VM::create_null(c.F));
 	}
 
 	jit_insn_label(c.F, &label_end);
