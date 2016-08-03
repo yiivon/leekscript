@@ -858,7 +858,7 @@ Match::Pattern SyntaxicAnalyser::eatMatchPattern()
 	if (t->type == TokenType::TWO_DOTS) {
 		eat();
 
-		if (t->type == TokenType::COLON) {
+		if (t->type == TokenType::COLON || t->type == TokenType::PIPE) {
 			return Match::Pattern(nullptr, nullptr);
 		} else {
 			return Match::Pattern(nullptr, eatSimpleExpression());
@@ -869,7 +869,7 @@ Match::Pattern SyntaxicAnalyser::eatMatchPattern()
 
 	if (t->type == TokenType::TWO_DOTS) {
 		eat();
-		if (t->type == TokenType::COLON) {
+		if (t->type == TokenType::COLON || t->type == TokenType::PIPE) {
 			return Match::Pattern(value, nullptr);
 		} else {
 			return Match::Pattern(value, eatSimpleExpression());
