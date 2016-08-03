@@ -5,13 +5,9 @@ using namespace std;
 
 namespace ls {
 
-Match::Match()
-{
+Match::Match() {}
 
-}
-
-Match::~Match()
-{
+Match::~Match() {
 	delete value;
 	for (auto& ps : pattern_list) {
 		for (Pattern p : ps) {
@@ -22,23 +18,27 @@ Match::~Match()
 	for (auto x : returns) delete x;
 }
 
-void Match::print(std::ostream &os, bool debug) const
-{
+void Match::print(std::ostream &os, int indent, bool debug) const {
 	os << "match ";
 	value->print(os, debug);
-	os << " { ";
 	for (size_t i = 0; i < pattern_list.size(); ++i) {
+
+		os << endl << tabs(indent);
+
 		const vector<Pattern>& list = pattern_list[i];
 		for (size_t j = 0; j < list.size(); ++j) {
 			if (j > 0) {
 				os << "|";
 			}
-			list[j].print(os, debug);
+			list[j].print(os, indent, debug);
 		}
 		os << " : ";
-		returns[i]->print(os, debug);
+		returns[i]->print(os, indent, debug);
 	}
 	os << " }";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned Match::line() const
@@ -48,7 +48,6 @@ unsigned Match::line() const
 
 void Match::analyse(ls::SemanticAnalyser *analyser, const Type &req_type)
 {
-	type = req_type;
 
 	bool any_pointer = false;
 
@@ -84,8 +83,17 @@ void Match::analyse(ls::SemanticAnalyser *analyser, const Type &req_type)
 		}
 	}
 
+	type = Type::UNKNOWN;
+
 	for (size_t i = 0; i < returns.size(); ++i) {
-		returns[i]->analyse(analyser, req_type);
+		returns[i]->analyse(analyser);
+		returns[i]->print(cout);
+		cout << " type : " << returns[i]->type << endl;
+		type = Type::get_compatible_type(type, returns[i]->type);
+	}
+
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
 	}
 }
 
@@ -93,7 +101,7 @@ jit_value_t Match::compile(Compiler &c) const
 {
 	jit_value_t v = value->compile(c);
 
-	jit_value_t res = jit_value_create(c.F, JIT_INTEGER);
+	jit_value_t res = jit_value_create(c.F, JIT_POINTER);
 	jit_label_t label_next = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 
@@ -147,14 +155,14 @@ Match::Pattern::~Pattern()
 {
 }
 
-void Match::Pattern::print(ostream &os, bool debug) const
+void Match::Pattern::print(ostream &os, int indent, bool debug) const
 {
 	if (interval) {
-		if (begin) begin->print(os, debug);
+		if (begin) begin->print(os, indent, debug);
 		os << "..";
-		if (end) end->print(os, debug);
+		if (end) end->print(os, indent, debug);
 	} else {
-		begin->print(os, debug);
+		begin->print(os, indent, debug);
 	}
 }
 

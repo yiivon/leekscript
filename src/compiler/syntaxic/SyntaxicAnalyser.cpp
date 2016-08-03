@@ -831,8 +831,8 @@ If* SyntaxicAnalyser::eatIf() {
 	return iff;
 }
 
-Match *SyntaxicAnalyser::eatMatch(bool force_value)
-{
+Match* SyntaxicAnalyser::eatMatch(bool force_value) {
+
 	Match* match = new Match();
 
 	eat(TokenType::MATCH);
@@ -867,8 +867,8 @@ Match *SyntaxicAnalyser::eatMatch(bool force_value)
 	return match;
 }
 
-Match::Pattern SyntaxicAnalyser::eatMatchPattern()
-{
+Match::Pattern SyntaxicAnalyser::eatMatchPattern() {
+
 	if (t->type == TokenType::TWO_DOTS) {
 		eat();
 

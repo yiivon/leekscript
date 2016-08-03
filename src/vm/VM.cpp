@@ -97,8 +97,8 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	/*
 	 * Debug
 	 */
-//	cout << "Program: ";
-//	program->print(cout, true);
+	cout << "Program: ";
+	program->print(cout, true);
 
 
 	// Compilation
