@@ -21,7 +21,7 @@ Object::~Object() {
 	}
 }
 
-void Object::print(ostream& os, bool debug) const {
+void Object::print(ostream& os, bool) const {
 	os << "{";
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		os << keys.at(i)->token->content;

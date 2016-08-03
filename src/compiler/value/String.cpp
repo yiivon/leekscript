@@ -18,7 +18,7 @@ String::~String() {
 	LSValue::delete_val(ls_string);
 }
 
-void String::print(ostream& os, bool debug) const {
+void String::print(ostream& os, bool) const {
 	os << "'";
 	os << value;
 	os << "'";
