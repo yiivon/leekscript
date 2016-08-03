@@ -103,8 +103,6 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	SyntaxicAnalyser syn;
 	Program* program = syn.analyse(tokens);
 
-	program->print(cout);
-
 	if (syn.getErrors().size() > 0) {
 		if (mode == ExecMode::COMMAND_JSON) {
 
