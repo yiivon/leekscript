@@ -13,8 +13,11 @@ Nulll::Nulll() {
 
 Nulll::~Nulll() {}
 
-void Nulll::print(ostream& os, bool debug) const {
+void Nulll::print(ostream& os, int, bool debug) const {
 	os << "null";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned Nulll::line() const {

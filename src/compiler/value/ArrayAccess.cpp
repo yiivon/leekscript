@@ -26,15 +26,18 @@ ArrayAccess::~ArrayAccess() {
 	}
 }
 
-void ArrayAccess::print(std::ostream& os, bool debug) const {
-	array->print(os, debug);
+void ArrayAccess::print(std::ostream& os, int indent, bool debug) const {
+	array->print(os, indent, debug);
 	os << "[";
-	key->print(os, debug);
+	key->print(os, indent, debug);
 	if (key2 != nullptr) {
 		os << ":";
-		key2->print(os, debug);
+		key2->print(os, indent, debug);
 	}
 	os << "]";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned ArrayAccess::line() const {
@@ -70,6 +73,9 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			std::string k = "<key 2>";
 			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
 		}
+
+		type = array->type;
+
 	} else {
 
 		if (not key->type.isNumber()) {

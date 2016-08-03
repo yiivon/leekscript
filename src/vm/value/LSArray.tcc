@@ -247,6 +247,50 @@ inline LSArray<LSValue*>* LSArray<int>::map(const void* function) const {
 }
 
 template <>
+inline LSArray<int>* LSArray<int>::map_int(const void* function) const {
+	LSArray<int>* new_array = new LSArray<int>();
+	new_array->reserve(this->size());
+	auto fun = (int (*)(int)) function;
+	for (auto v : *this) {
+		new_array->push_no_clone(fun(v));
+	}
+	return new_array;
+}
+
+template <>
+inline LSArray<double>* LSArray<int>::map_real(const void* function) const {
+	LSArray<double>* new_array = new LSArray<double>();
+	new_array->reserve(this->size());
+	auto fun = (double (*)(int)) function;
+	for (auto v : *this) {
+		new_array->push_no_clone(fun(v));
+	}
+	return new_array;
+}
+
+template <>
+inline LSArray<int>* LSArray<double>::map_int(const void* function) const {
+	LSArray<int>* new_array = new LSArray<int>();
+	new_array->reserve(this->size());
+	auto fun = (int (*)(double)) function;
+	for (auto v : *this) {
+		new_array->push_no_clone(fun(v));
+	}
+	return new_array;
+}
+
+template <>
+inline LSArray<double>* LSArray<double>::map_real(const void* function) const {
+	LSArray<double>* new_array = new LSArray<double>();
+	new_array->reserve(this->size());
+	auto fun = (double (*)(double)) function;
+	for (auto v : *this) {
+		new_array->push_no_clone(fun(v));
+	}
+	return new_array;
+}
+
+template <>
 inline LSArray<LSValue*>* LSArray<double>::map(const void* function) const {
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size());

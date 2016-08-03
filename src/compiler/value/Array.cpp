@@ -31,19 +31,23 @@ Array::~Array() {
 	}
 }
 
-void Array::print(std::ostream& os, bool debug) const {
+void Array::print(std::ostream& os, int indent, bool debug) const {
 	os << "[";
 	for (unsigned i = 0; i < expressions.size(); ++i) {
 		if (associative && (Value*)keys.at(i) != nullptr) {
-			keys.at(i)->print(os, debug);
+			keys.at(i)->print(os, indent, debug);
 			os << " : ";
 		}
-		expressions.at(i)->print(os, debug);
+		expressions.at(i)->print(os, indent, debug);
 		if (i < expressions.size() - 1) {
 			os << ", ";
 		}
 	}
 	os << "]";
+
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned Array::line() const {
@@ -62,7 +66,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 
 		for (Value* key : keys) {
 			if (key != nullptr) {
-				key->analyse(analyser, Type::NEUTRAL);
+				key->analyse(analyser, Type::UNKNOWN);
 			}
 		}
 
@@ -73,7 +77,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			for (unsigned i = 0; i < expressions.size(); ++i) {
 
 				Value* ex = expressions[i];
-				ex->analyse(analyser, Type::NEUTRAL);
+				ex->analyse(analyser, Type::UNKNOWN);
 
 				if (ex->constant == false) {
 					constant = false;
@@ -88,12 +92,13 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 
 			// Native elements types supported : integer, double and pointer
 			supported_type = element_type == Type::INTEGER || element_type == Type::FLOAT ?
-				Type::NEUTRAL : Type::POINTER;
+				element_type : Type::POINTER;
 
 			// Re-analyze expressions with the supported type
 			for (unsigned i = 0; i < expressions.size(); ++i) {
 				expressions[i]->analyse(analyser, supported_type);
 			}
+			type.setElementType(supported_type);
 		}
 	}
 
@@ -201,7 +206,8 @@ jit_value_t Array::compile(Compiler& c) const {
 			type.getElementType() == Type::FLOAT ? (void*) LSArray_push_float :
 			(void*) LSArray_push;
 
-	jit_type_t elem_type = type.getElementType() == Type::FLOAT ? JIT_FLOAT : JIT_POINTER;
+	jit_type_t elem_type = type.getElementType() == Type::INTEGER ? JIT_INTEGER :
+			type.getElementType() == Type::FLOAT ? JIT_FLOAT : JIT_POINTER;
 
 	jit_value_t array = jit_insn_call_native(c.F, "new", create, sig, {}, 0, JIT_CALL_NOTHROW);
 

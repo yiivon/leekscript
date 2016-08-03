@@ -18,10 +18,11 @@ String::~String() {
 	LSValue::delete_val(ls_string);
 }
 
-void String::print(ostream& os, bool debug) const {
-	os << "'";
-	os << value;
-	os << "'";
+void String::print(ostream& os, int, bool debug) const {
+	os << "'" << value << "'";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned String::line() const {

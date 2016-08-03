@@ -44,8 +44,6 @@ LSValue* LSString::operator ! () const {
 
 LSValue* LSString::operator ~ () const {
 
-	// reverse(copy.begin(), copy.end());
-
 	char buff[5];
 	char* string_chars = (char*) this->c_str();
 	int i = 0;
@@ -53,7 +51,6 @@ LSValue* LSString::operator ~ () const {
 	string reversed = "";
 	while (i < l) {
 		u_int32_t c = u8_nextchar(string_chars, &i);
-
 		u8_toutf8(buff, 5, &c, 1);
 		reversed = buff + reversed;
 	}

@@ -13,10 +13,13 @@ Continue::Continue() {
 
 Continue::~Continue() {}
 
-void Continue::print(std::ostream& os, bool debug) const {
-	os << "continue";
+void Continue::print(std::ostream& os, int indent, bool debug) const {
+	os << tabs(indent) << "continue";
 	if (value > 1) {
 		os << " " << value;
+	}
+	if (debug) {
+		os << " " << type;
 	}
 }
 

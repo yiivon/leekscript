@@ -21,46 +21,33 @@ namespace ls {
 
 SemanticAnalyser::SemanticAnalyser() {
 	program = nullptr;
-	in_function = false;
 	in_program = false;
-	reanalyse = false;
 	loops.push(0);
+	variables.push_back(vector<map<std::string, SemanticVar*>> {});
+	functions_stack.push(nullptr); // The first function is the main function of the program
+	parameters.push_back(map<std::string, SemanticVar*> {});
 }
 
-SemanticAnalyser::~SemanticAnalyser() {
-
-}
+SemanticAnalyser::~SemanticAnalyser() {}
 
 void SemanticVar::will_take(SemanticAnalyser* analyser, unsigned pos, const Type& type) {
 	if (value != nullptr) {
-		bool changed = value->will_take(analyser, pos, type);
+		value->will_take(analyser, pos, type);
 		this->type.will_take(pos, type);
-		if (changed) {
-			analyser->reanalyse = true;
-//			cout << "REANALYSE" << endl;
-		}
 	}
 }
 
 void SemanticVar::will_take_element(SemanticAnalyser* analyser, const Type& type) {
 	if (value != nullptr) {
-		bool changed = value->will_take_element(analyser, type);
+		value->will_take_element(analyser, type);
 		this->type.will_take_element(type);
-		if (changed) {
-			//analyser->reanalyse = true;
-//			cout << "REANALYSE" << endl;
-		}
 	}
 }
 
 void SemanticVar::must_be_pointer(SemanticAnalyser* analyser) {
 	if (value != nullptr) {
-		bool changed = value->must_be_pointer(analyser);
+		value->must_be_pointer(analyser);
 		this->type.nature = Nature::POINTER;
-		if (changed) {
-			analyser->reanalyse = true;
-//			cout << "REANALYSE" << endl;
-		}
 	}
 }
 
@@ -117,28 +104,26 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 
 	in_program = true;
 
-//	do {
-		variables.clear();
-		parameters.clear();
-		functions.clear();
-//		cout << "--------" << endl << "Analyse" << endl << "--------" << endl;
-		reanalyse = false;
-		program->body->analyse(this, Type::POINTER);
-//	} while (reanalyse);
+	program->body->analyse(this, Type::UNKNOWN);
 
 	program->functions = functions;
 }
 
 void SemanticAnalyser::enter_function(Function* f) {
-	in_function = true;
-	variables.push_back(map<std::string, SemanticVar*> {});
+
+	// Create function scope
+	variables.push_back(vector<map<std::string, SemanticVar*>> {});
+	// First function block
+	variables.back().push_back(map<std::string, SemanticVar*> {});
+	// Parameters
 	parameters.push_back(map<std::string, SemanticVar*> {});
+
 	loops.push(0);
 	functions_stack.push(f);
 }
 
 void SemanticAnalyser::leave_function() {
-	in_function = false;
+
 	variables.pop_back();
 	parameters.pop_back();
 	functions_stack.pop();
@@ -147,12 +132,12 @@ void SemanticAnalyser::leave_function() {
 
 void SemanticAnalyser::enter_block() {
 	in_block = true;
-	variables.push_back(map<std::string, SemanticVar*> {});
+	variables.back().push_back(map<std::string, SemanticVar*> {});
 }
 
 void SemanticAnalyser::leave_block() {
 	in_block = false;
-	variables.pop_back();
+	variables.back().pop_back();
 }
 
 Function* SemanticAnalyser::current_function() const {
@@ -176,27 +161,35 @@ bool SemanticAnalyser::in_loop() const {
 
 SemanticVar* SemanticAnalyser::add_parameter(Token* v, Type type) {
 
-	SemanticVar* arg = new SemanticVar(VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr);
+	SemanticVar* arg = new SemanticVar(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function());
 	parameters.back().insert(pair<string, SemanticVar*>(v->content, arg));
 	return arg;
 }
 
 SemanticVar* SemanticAnalyser::get_var(Token* v) {
+
+	// Search in interval variables : global for the program
 	try {
 		return internal_vars.at(v->content);
 	} catch (exception& e) {}
-	try {
-		if (parameters.size() > 0) {
-			return parameters.back().at(v->content);
-		}
-	} catch (exception& e) {}
 
-	int i = variables.size() - 1;
-	while (i >= 0) {
+	// Search recursively in the functions
+	int f = functions_stack.size() - 1;
+	while (f >= 0) {
+		// Search in the function parameters
 		try {
-			return variables[i].at(v->content);
+			return parameters.at(f).at(v->content);
 		} catch (exception& e) {}
-		i--;
+
+		// Search in the local variables of the function
+		int b = variables.at(f).size() - 1;
+		while (b >= 0) {
+			try {
+				return variables.at(f).at(b).at(v->content);
+			} catch (exception& e) {}
+			b--;
+		}
+		f--;
 	}
 	add_error({SemanticException::Type::UNDEFINED_VARIABLE, v->line, v->content});
 	return nullptr;
@@ -205,7 +198,7 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 SemanticVar* SemanticAnalyser::get_var_direct(std::string name) {
 	try {
 		if (variables.size() > 0) {
-			return variables.back().at(name);
+			return variables.back().back().at(name);
 		}
 	} catch (exception& e) {}
 	return nullptr;
@@ -217,19 +210,19 @@ SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, Variab
 	if (!in_program) {
 		internal_vars.insert(pair<string, SemanticVar*>(
 			v->content,
-			new SemanticVar(VarScope::INTERNAL, type, 0, value, vd)
+			new SemanticVar(v->content, VarScope::INTERNAL, type, 0, value, vd, current_function())
 		));
 		return internal_vars.at(v->content);
 	}
 
-	if (variables.back().find(v->content) != variables.back().end()) {
+	if (variables.back().back().find(v->content) != variables.back().back().end()) {
 		add_error({SemanticException::Type::VARIABLE_ALREADY_DEFINED, v->line, v->content});
 	}
-	variables.back().insert(pair<string, SemanticVar*>(
+	variables.back().back().insert(pair<string, SemanticVar*>(
 		v->content,
-		new SemanticVar(VarScope::LOCAL, type, 0, value, vd)
+		new SemanticVar(v->content, VarScope::LOCAL, type, 0, value, vd, current_function())
 	));
-	return variables.back().at(v->content);
+	return variables.back().back().at(v->content);
 }
 
 void SemanticAnalyser::add_function(Function* l) {
@@ -237,7 +230,7 @@ void SemanticAnalyser::add_function(Function* l) {
 }
 
 map<string, SemanticVar*>& SemanticAnalyser::get_local_vars() {
-	return variables.back();
+	return variables.back().back();
 }
 
 void SemanticAnalyser::add_error(SemanticException ex) {

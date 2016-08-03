@@ -13,6 +13,7 @@ namespace ls {
 For::For() {
 	condition = nullptr;
 	body = nullptr;
+	type = Type::VOID;
 }
 
 For::~For() {
@@ -28,16 +29,18 @@ For::~For() {
 	delete body;
 }
 
-void For::print(ostream& os, bool debug) const {
-	os << "for ";
+void For::print(ostream& os, int indent, bool debug) const {
+
+	os << tabs(indent) << "for (";
+
 	if (variables.size() > 0) {
 		os << "let ";
 	}
 	for (unsigned i = 0; i < variables.size(); ++i) {
-		os << variables.at(i);
+		os << variables.at(i)->content;
 		if ((Value*) variablesValues.at(i) != nullptr) {
 			os << " = ";
-			variablesValues.at(i)->print(os, debug);
+			variablesValues.at(i)->print(os, indent, debug);
 		}
 		if (i < variables.size() - 1) {
 			os << ", ";
@@ -45,18 +48,17 @@ void For::print(ostream& os, bool debug) const {
 	}
 	os << "; ";
 	if (condition != nullptr) {
-		condition->print(os, debug);
+		condition->print(os, indent, debug);
 	}
 	os << "; ";
 	for (unsigned i = 0; i < iterations.size(); ++i) {
-		iterations.at(i)->print(os, debug);
+		iterations.at(i)->print(os, indent, debug);
 		if (i < iterations.size() - 1) {
 			os << ", ";
 		}
 	}
-	os << " do" << endl;
-	body->print(os, debug);
-	os << "end";
+	os << ") ";
+	body->print(os, indent, debug);
 }
 
 void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -93,8 +95,6 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->enter_loop();
 	body->analyse(analyser, Type::VOID);
 	analyser->leave_loop();
-
-	type = req_type;
 }
 
 int for_is_true(LSValue* v) {

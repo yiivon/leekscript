@@ -17,7 +17,7 @@ Number::Number(double value, Token* token) {
 Number::~Number() {
 }
 
-void Number::print(ostream& os, bool debug) const {
+void Number::print(ostream& os, int, bool debug) const {
 	os << value;
 	if (debug) {
 		os << " " << type;

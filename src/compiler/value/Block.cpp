@@ -10,7 +10,7 @@ using namespace std;
 namespace ls {
 
 Block::Block() {
-	type = Type::UNKNOWN;
+	type = Type::NULLL;
 }
 
 Block::~Block() {
@@ -19,14 +19,16 @@ Block::~Block() {
 	}
 }
 
-void Block::print(ostream& os, bool debug) const {
+void Block::print(ostream& os, int indent, bool debug) const {
 	os << "{" << endl;
 	for (Instruction* instruction : instructions) {
-		os << "    ";
-		instruction->print(os, debug);
+		instruction->print(os, indent + 1, debug);
 		os << endl;
 	}
-	os << "}";
+	os << tabs(indent) << "}";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned Block::line() const {
@@ -72,8 +74,6 @@ jit_value_t Block::compile(Compiler& c) const {
 			c.leave_block(c.F);
 			return val;
 		} else {
-			//jit_value_t res = instructions[i]->compile_jit(c, F, Type::POINTER);
-			//VM::delete_temporary(F, res);
 			instructions[i]->compile(c);
 		}
 	}

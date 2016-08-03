@@ -21,9 +21,12 @@ Return::~Return() {
 	delete expression;
 }
 
-void Return::print(ostream& os, bool debug) const {
-	os << "return ";
+void Return::print(ostream& os, int indent, bool debug) const {
+	os << tabs(indent) << "return ";
 	expression->print(os, debug);
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {

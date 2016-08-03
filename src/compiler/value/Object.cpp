@@ -21,17 +21,20 @@ Object::~Object() {
 	}
 }
 
-void Object::print(ostream& os, bool debug) const {
+void Object::print(ostream& os, int indent, bool debug) const {
 	os << "{";
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		os << keys.at(i)->token->content;
 		os << ": ";
-		values.at(i)->print(os);
+		values.at(i)->print(os, indent);
 		if (i < keys.size() - 1) {
 			os << ", ";
 		}
 	}
 	os << "}";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned Object::line() const {

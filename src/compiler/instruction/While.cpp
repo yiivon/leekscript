@@ -12,6 +12,7 @@ namespace ls {
 While::While() {
 	condition = nullptr;
 	body = nullptr;
+	type = Type::VOID;
 }
 
 While::~While() {
@@ -19,21 +20,20 @@ While::~While() {
 	delete body;
 }
 
-void While::print(ostream& os, bool debug) const {
-	os << "while ";
+void While::print(ostream& os, int indent, bool debug) const {
+	os << tabs(indent) << "while ";
 	condition->print(os, debug);
-	os << " do" << endl;
-	body->print(os, debug);
-	os << "end";
+	os << " ";
+	body->print(os, indent, debug);
 }
 
-void While::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void While::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	if (condition != nullptr) {
 		condition->analyse(analyser);
 	}
 	analyser->enter_loop();
-	body->analyse(analyser, req_type);
+	body->analyse(analyser, Type::VOID);
 	analyser->leave_loop();
 }
 

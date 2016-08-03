@@ -38,15 +38,16 @@ void Test::test_arrays() {
 	 */
 	header("Array operations");
 	success("[1, 2, 3, 4, 5] ~~ x -> x ** 2", "[1, 4, 9, 16, 25]");
+	success("[1.5, 2.5, 3.5] ~~ x -> x.floor()", "[1, 2, 3]");
 	success("[1, 2, 3, 4, 5] ~~ (x -> x ** 2)", "[1, 4, 9, 16, 25]");
 	success("['yo', 'toto', 'salut'] ~~ x -> x + ' !'", "['yo !', 'toto !', 'salut !']");
 	success("[1, 2, 3] ~~ x -> [x]", "[[1], [2], [3]]");
 	success("[1, 2, 3] ~~ x -> 'yo'", "['yo', 'yo', 'yo']");
-//	success("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
-	success("[1.2, 321.42] ~~ x -> x * 1.7", "[2.040000000000000036, 546.413999999999987267]");
+	success("let f = x -> x * 10 [1, 2, 3] ~~ f", "[10, 20, 30]");
+	success("[1.2, 321.42] ~~ x -> x * 1.7", "[2.04, 546.414]");
 	success("[1, 2, 3, 4, 5] ~~ x -> x.max(3)", "[3, 3, 3, 4, 5]");
 	success("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)", "[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
-//	success("[1] < [1, 2]", "true");
+	success("[1] < [1, 2]", "true");
 
 	/*
 	 * Intervals
@@ -111,8 +112,8 @@ void Test::test_arrays() {
 	success("let x = ['a', 'a', 'b', 'a', 'a'] x.unique() x", "['a', 'b', 'a']");
 
 	success("let x = [3, 1, 2] x.sort() x", "[1, 2, 3]");
-	success("let x = ['foo', 'yop', 'abc']; x.sort(); x", "['abc', 'foo', 'yop']");
-	success("let x = [[[]], [[], [], []], [[], []]]; x.sort(); x", "[[[]], [[], []], [[], [], []]]");
+	success("let x = ['foo', 'yop', 'abc'] x.sort() x", "['abc', 'foo', 'yop']");
+	success("let x = [[[]], [[], [], []], [[], []]]; x.sort() x", "[[[]], [[], []], [[], [], []]]");
 
 	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
 	success("[3, 4, 5].filter(x -> x > 6)", "[]");

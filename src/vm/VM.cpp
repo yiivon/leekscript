@@ -30,53 +30,6 @@ void VM::add_module(Module* m) {
 	modules.push_back(m);
 }
 
-Program* VM::compile(const std::string code) {
-
-	LexicalAnalyser lex;
-	vector<Token> tokens = lex.analyse(code);
-
-	SyntaxicAnalyser syn;
-	Program* program = syn.analyse(tokens);
-
-	if (syn.getErrors().size() > 0) {
-		for (auto error : syn.getErrors()) {
-			cout << "Line " << error->token->line << " : " <<  error->message << endl;
-		}
-		return nullptr;
-	}
-
-	Compiler c;
-	Context context { "{}" };
-
-	SemanticAnalyser sem;
-	sem.analyse(program, &context, modules);
-
-	if (sem.errors.size()) {
-		for (auto e : sem.errors) {
-			cout << "Line " << e.line << " : " << e.message() << endl;
-		}
-		return nullptr;
-	}
-
-	internals.clear();
-
-	jit_init();
-	jit_context_t jit_context = jit_context_create();
-	jit_context_build_start(jit_context);
-
-	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 1);
-	jit_function_t F = jit_function_create(jit_context, signature);
-
-	program->compile_jit(c, F, context, false);
-
-	jit_function_compile(F);
-	jit_context_build_end(jit_context);
-
-	program->function = jit_function_to_closure(F);
-	return program;
-}
-
 extern std::map<LSValue*, LSValue*> objs;
 
 string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
@@ -121,9 +74,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		}
 	}
 
-	Compiler c;
 	Context context { ctx };
-
 
 	SemanticAnalyser sem;
 	sem.analyse(program, &context, modules);
@@ -143,36 +94,17 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		return ctx;
 	}
 
-	// Debug
+	/*
+	 * Debug
+	 */
 //	cout << "Program: ";
-//	program->print(cout);
+//	program->print(cout, true);
+
 
 	// Compilation
 	internals.clear();
 
-	jit_init();
-	jit_context_t jit_context = jit_context_create();
-	jit_context_build_start(jit_context);
-
-	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER_LONG, params, 0, 0);
-	jit_function_t F = jit_function_create(jit_context, signature);
-	jit_insn_uses_catcher(F);
-	c.enter_function(F);
-
-	bool toplevel = mode != ExecMode::NORMAL && mode != ExecMode::TEST;
-	program->compile_jit(c, F, context, toplevel);
-
-	// catch (ex) {
-	jit_value_t ex = jit_insn_start_catcher(F);
-	VM::print_int(F, ex);
-	jit_insn_return(F, JIT_CREATE_CONST_POINTER(F, LSNull::null_var));
-
-	jit_function_compile(F);
-	jit_context_build_end(jit_context);
-
-	typedef LSValue* (*FF)();
-	FF fun = (FF) jit_function_to_closure(F);
+	program->compile(context);
 
 	auto compile_end = chrono::high_resolution_clock::now();
 
@@ -182,7 +114,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	operations = 0;
 
 	auto exe_start = chrono::high_resolution_clock::now();
-	LSValue* res = fun();
+	LSValue* res = program->execute();
 	auto exe_end = chrono::high_resolution_clock::now();
 
 	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
@@ -520,7 +452,7 @@ void VM::print_int(jit_function_t& F, jit_value_t& val) {
 }
 
 LSValue* VM_create_null() {
-	return LSNull::null_var->clone();
+	return new LSNull();
 }
 
 jit_value_t VM::create_null(jit_function_t& F) {

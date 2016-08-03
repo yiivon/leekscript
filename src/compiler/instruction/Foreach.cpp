@@ -25,29 +25,28 @@ Foreach::~Foreach() {
 	delete body;
 }
 
-void Foreach::print(ostream& os, bool debug) const {
-	os << "for ";
+void Foreach::print(ostream& os, int indent, bool debug) const {
+	os << tabs(indent) << "for ";
 
 	os << "let ";
 	if (key != nullptr) {
-		os << key;
+		os << key->content;
 		os << " : let ";
 	}
-	os << value;
+	os << value->content;
 
 	os << " in ";
 	array->print(os, debug);
 
-	os << " do" << endl;
-	body->print(os, debug);
-	os << "end";
+	os << " ";
+	body->print(os, indent, debug);
 }
 
 void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	analyser->enter_block();
 
-	array->analyse(analyser, Type::NEUTRAL);
+	array->analyse(analyser);
 
 	var_type = array->type.getElementType();
 

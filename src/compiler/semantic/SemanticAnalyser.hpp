@@ -21,20 +21,23 @@ class Token;
 class VariableDeclaration;
 
 enum class VarScope {
-	INTERNAL, GLOBAL, LOCAL, PARAMETER
+	INTERNAL, LOCAL, PARAMETER
 };
 
 class SemanticVar {
 public:
+	std::string name;
 	VarScope scope;
 	Type type;
 	std::map<std::string, Type> attr_types;
 	int index;
 	Value* value;
 	VariableDeclaration* vd;
+	Function* function; // In which function the variable is declared
 
-	SemanticVar(VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd) :
-		scope(scope), type(type), index(index), value(value), vd(vd) {}
+	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value,
+		VariableDeclaration* vd, Function* function) :
+		name(name), scope(scope), type(type), index(index), value(value), vd(vd), function(function) {}
 
 	void will_take(SemanticAnalyser*, unsigned, const Type&);
 	void will_take_element(SemanticAnalyser*, const Type&);
@@ -46,12 +49,10 @@ public:
 
 	Program* program;
 	bool in_block = false;
-	bool in_function = false;
 	bool in_program = false;
-	bool reanalyse = false;
 
 	std::map<std::string, SemanticVar*> internal_vars;
-	std::vector<std::map<std::string, SemanticVar*>> variables;
+	std::vector<std::vector<std::map<std::string, SemanticVar*>>> variables;
 	std::vector<std::map<std::string, SemanticVar*>> parameters;
 
 	std::vector<Function*> functions;

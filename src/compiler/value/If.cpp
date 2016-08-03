@@ -13,6 +13,7 @@ If::If() {
 	condition = nullptr;
 	then = nullptr;
 	inversed = false;
+	type = Type::UNKNOWN;
 }
 
 If::~If() {
@@ -23,16 +24,18 @@ If::~If() {
 	}
 }
 
-void If::print(ostream& os, bool debug) const {
+void If::print(ostream& os, int indent, bool debug) const {
 	os << "if ";
-	condition->print(os, debug);
-	os << " then" << endl;
-	then->print(os, debug);
+	condition->print(os, indent, debug);
+	os << " ";
+	then->print(os, indent, debug);
 	if (elze != nullptr) {
-		os << "else" << endl;
-		elze->print(os, debug);
+		os << " else ";
+		elze->print(os, indent, debug);
 	}
-	os << "end";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned If::line() const {
@@ -41,16 +44,23 @@ unsigned If::line() const {
 
 void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	type = Type::UNKNOWN;
-
 	condition->analyse(analyser, Type::BOOLEAN);
 	then->analyse(analyser, req_type);
 
-	if (then->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
-
 	if (elze != nullptr) {
+
 		elze->analyse(analyser, req_type);
-		if (elze->type.nature == Nature::POINTER) type.nature = Nature::POINTER;
+
+		type = Type::get_compatible_type(then->type, elze->type);
+		if (then->type != type) {
+			then->analyse(analyser, type);
+		}
+		if (elze->type != type) {
+			elze->analyse(analyser, type);
+		}
+	} else {
+		type = Type::POINTER; // Pointer because the else will give null
+		then->analyse(analyser, Type::POINTER);
 	}
 
 	if (Expression* cond_ex = dynamic_cast<Expression*>(condition)) {
@@ -63,7 +73,10 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			}
 		}
 	}
-	type.nature = req_type.nature;
+
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
 }
 
 int is_true(LSValue* v) {
@@ -112,11 +125,7 @@ jit_value_t If::compile(Compiler& c) const {
 
 	} else {
 		if (type != Type::VOID) {
-			if (type.nature == Nature::POINTER) {
-				jit_insn_store(c.F, res, VM::create_null(c.F));
-			} else {
-				jit_insn_store(c.F, res, jit_value_create_nint_constant(c.F, JIT_INTEGER, 55555555));
-			}
+			jit_insn_store(c.F, res, VM::create_null(c.F));
 		}
 	}
 

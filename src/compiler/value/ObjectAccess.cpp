@@ -28,9 +28,12 @@ ObjectAccess::~ObjectAccess() {
 	LSValue::delete_val(field_string);
 }
 
-void ObjectAccess::print(ostream& os, bool debug) const {
+void ObjectAccess::print(ostream& os, int indent, bool debug) const {
 	object->print(os, debug);
 	os << "." << field->content;
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned ObjectAccess::line() const {

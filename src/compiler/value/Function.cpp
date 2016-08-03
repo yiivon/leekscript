@@ -28,41 +28,36 @@ void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
 	defaultValues.push_back(defaultValue);
 }
 
-void Function::print(std::ostream& os, bool debug) const {
+void Function::print(std::ostream& os, int indent, bool debug) const {
 
-	if (lambda) {
-
-		cout << "(";
-		for (unsigned i = 0; i < arguments.size(); ++i) {
-			os << arguments.at(i);
-			if (i < arguments.size() - 1) {
-				os << ", ";
-			}
+	if (captures.size() > 0) {
+		os << "[";
+		for (unsigned c = 0; c < captures.size(); ++c) {
+			if (c > 0) os << ", ";
+			os << captures[c]->name;
 		}
-		os << " -> ";
-		body->instructions[0]->print(os, debug);
-		cout << ")";
+		os << "] ";
+	}
 
-	} else {
+	os << "(";
+	for (unsigned i = 0; i < arguments.size(); ++i) {
+		if (i > 0) os << ", ";
+//		if (references.at(i)) {
+//			os << "@";
+//		}
+		os << arguments.at(i)->content;
+//
+//		if ((Value*)defaultValues.at(i) != nullptr) {
+//			os << " = ";
+//			defaultValues.at(i)->print(os);
+//		}
+	}
 
-		os << "function(";
-		for (unsigned i = 0; i < arguments.size(); ++i) {
-			if (references.at(i)) {
-				os << "@";
-			}
-			os << arguments.at(i);
-			if ((Value*)defaultValues.at(i) != nullptr) {
-				os << " = ";
-				defaultValues.at(i)->print(os);
-			}
-			if (i < arguments.size() - 1) {
-				os << ", ";
-			}
-		}
+	os << ") → ";
+	body->print(os, indent, debug);
 
-		os << ")" << endl;
-		body->print(os, debug);
-		os << "end";
+	if (debug) {
+		os << " " << type;
 	}
 }
 
@@ -73,6 +68,8 @@ unsigned Function::line() const {
 void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 //	cout << "Function::analyse req_type " << req_type << endl;
+
+	parent = analyser->current_function();
 
 	if (!function_added) {
 		analyser->add_function(this);
@@ -135,6 +132,19 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->leave_function();
 
 //	cout << "function analyse body : " << type << endl;
+}
+
+void Function::capture(SemanticVar* var) {
+
+	if (std::find(captures.begin(), captures.end(), var) == captures.end()) {
+//		cout << "Function::capture " << var->name << endl;
+
+		captures.push_back(var);
+
+		if (var->function != parent) {
+			parent->capture(var);
+		}
+	}
 }
 
 jit_value_t Function::compile(Compiler& c) const {

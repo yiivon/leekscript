@@ -12,8 +12,9 @@ ExpressionInstruction::~ExpressionInstruction() {
 	delete this->value;
 }
 
-void ExpressionInstruction::print(ostream& os, bool debug) const {
-	value->print(os, debug);
+void ExpressionInstruction::print(ostream& os, int indent, bool debug) const {
+	os << tabs(indent);
+	value->print(os, indent, debug);
 }
 
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {

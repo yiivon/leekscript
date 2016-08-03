@@ -15,8 +15,11 @@ Boolean::Boolean(bool value) {
 
 Boolean::~Boolean() {}
 
-void Boolean::print(std::ostream& os, bool) const {
+void Boolean::print(std::ostream& os, int, bool debug) const {
 	os << (value ? "true" : "false");
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned Boolean::line() const {

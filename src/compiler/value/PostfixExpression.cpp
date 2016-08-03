@@ -18,9 +18,12 @@ PostfixExpression::~PostfixExpression() {
 	delete operatorr;
 }
 
-void PostfixExpression::print(ostream& os, bool debug) const {
+void PostfixExpression::print(ostream& os, int indent, bool debug) const {
 	expression->print(os, debug);
 	operatorr->print(os);
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 unsigned PostfixExpression::line() const {
@@ -32,7 +35,9 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 	type = expression->type;
 	this->return_value = return_value;
 
-	type.nature = req_type.nature;
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
 }
 
 extern LSValue* jit_inc(LSValue*);

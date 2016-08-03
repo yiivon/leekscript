@@ -608,7 +608,7 @@ Value* SyntaxicAnalyser::eatValue() {
 					l->arguments.push_back(ident);
 					eat(TokenType::ARROW);
 					l->body = new Block();
-					l->body->instructions.push_back(new Return(eatExpression()));
+					l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
 
 					return l;
 				}
@@ -773,7 +773,14 @@ If* SyntaxicAnalyser::eatIf() {
 	}
 
 	if (then or braces) {
-		iff->then = eatBlockOrObject();
+		Value* v = eatBlockOrObject();
+		if (dynamic_cast<Block*>(v)) {
+			iff->then = (Block*) v;
+		} else {
+			Block* block = new Block();
+			block->instructions.push_back(new ExpressionInstruction(v));
+			iff->then = block;
+		}
 	} else {
 		Block* block = new Block();
 		block->instructions.push_back(eatInstruction());
@@ -795,7 +802,14 @@ If* SyntaxicAnalyser::eatIf() {
 		}
 
 		if (then or bracesElse) {
-			iff->elze = eatBlockOrObject();
+			Value* v = eatBlockOrObject();
+			if (dynamic_cast<Block*>(v)) {
+				iff->elze = (Block*) v;
+			} else {
+				Block* block = new Block();
+				block->instructions.push_back(new ExpressionInstruction(v));
+				iff->elze = block;
+			}
 		} else {
 			Block* body = new Block();
 			body->instructions.push_back(eatInstruction());

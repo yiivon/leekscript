@@ -56,7 +56,6 @@ public:
 	void add_module(Module* m);
 
 	std::string execute(const std::string code, std::string ctx, ExecMode mode);
-	Program* compile(const std::string code);
 
 	static jit_type_t get_jit_type(const Type& type);
 	static jit_value_t value_to_pointer(jit_function_t&, jit_value_t&, Type);

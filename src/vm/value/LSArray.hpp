@@ -51,6 +51,8 @@ public:
 	int atv(const int i);
 	int* atLv(int i);
 	LSArray<LSValue*>* map(const void*) const;
+	LSArray<int>* map_int(const void*) const;
+	LSArray<double>* map_real(const void*) const;
 	LSArray<LSArray<T>*>* chunk(int size = 1) const;
 	LSArray<LSArray<T>*>* chunk_1() const;
 	LSArray<T>* unique();

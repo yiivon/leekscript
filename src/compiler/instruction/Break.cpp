@@ -11,12 +11,13 @@ namespace ls {
 Break::Break() {
 	value = 1;
 	can_return = false;
+	type = Type::NULLL;
 }
 
 Break::~Break() {}
 
-void Break::print(ostream& os, bool debug) const {
-	os << "break";
+void Break::print(ostream& os, int indent, bool) const {
+	os << tabs(indent) << "break";
 	if (value > 1) {
 		os << " " << value;
 	}

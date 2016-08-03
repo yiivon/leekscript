@@ -9,7 +9,7 @@ namespace ls {
 
 Program::Program() {
 	body = nullptr;
-	function = nullptr;
+	closure = nullptr;
 }
 
 Program::~Program() {
@@ -21,20 +21,69 @@ Program::~Program() {
 	}
 }
 
-void Program::execute() {
-	auto fun = (void* (*)()) function;
-	fun();
+void Program::compile(Context& context) {
+
+	Compiler c;
+
+	jit_init();
+	jit_context_t jit_context = jit_context_create();
+	jit_context_build_start(jit_context);
+
+	jit_type_t params[0] = {};
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(body->type), params, 0, 0);
+	jit_function_t F = jit_function_create(jit_context, signature);
+	jit_insn_uses_catcher(F);
+	c.enter_function(F);
+
+	compile_jit(c, context, false);
+
+	// catch (ex) {
+	jit_value_t ex = jit_insn_start_catcher(F);
+	VM::print_int(F, ex);
+	jit_insn_return(F, JIT_CREATE_CONST_POINTER(F, LSNull::null_var));
+
+	jit_function_compile(F);
+	jit_context_build_end(jit_context);
+
+	closure = jit_function_to_closure(F);
 }
 
-void Program::print(ostream& os) {
-	body->print(os);
+LSValue* Program::execute() {
+
+	if (body->type == Type::BOOLEAN) {
+		auto fun = (bool (*)()) closure;
+		return new LSBoolean(fun());
+	}
+	if (body->type == Type::INTEGER) {
+		auto fun = (int (*)()) closure;
+		return LSNumber::get((double) fun());
+	}
+	if (body->type == Type::FLOAT) {
+		cout << "program float" << endl;
+		auto fun = (double (*)()) closure;
+		double x = fun();
+		cout << x << endl;
+		return LSNumber::get(x);
+	}
+	if (body->type == Type::LONG) {
+		auto fun = (long (*)()) closure;
+		return LSNumber::get(fun());
+	}
+	auto fun = (LSValue* (*)()) closure;
+	return fun();
+}
+
+void Program::print(ostream& os, bool debug) const {
+	body->print(os, 0, debug);
 	cout << endl;
 }
 
+std::ostream& operator << (std::ostream& os, const Program* program) {
+	program->print(os, false);
+	return os;
+}
+
 extern map<string, jit_value_t> internals;
-//extern map<string, jit_value_t> globals;
-//extern map<string, Type> globals_types;
-//extern map<string, bool> globals_ref;
 
 LSArray<LSValue*>* Program_create_array() {
 	return new LSArray<LSValue*>();
@@ -48,9 +97,6 @@ void Program_push_boolean(LSArray<LSValue*>* array, int value) {
 void Program_push_integer(LSArray<LSValue*>* array, int value) {
 	array->push_clone(LSNumber::get(value));
 }
-void Program_push_float(LSArray<LSValue*>* array, float value) {
-	array->push_clone(LSNumber::get(value));
-}
 void Program_push_function(LSArray<LSValue*>* array, void* value) {
 	array->push_clone(new LSFunction(value));
 }
@@ -58,7 +104,7 @@ void Program_push_pointer(LSArray<LSValue*>* array, LSValue* value) {
 	array->push_clone(value);
 }
 
-void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool toplevel) {
+void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 
 	// System internal variables
 	for (auto var : system_vars) {
@@ -66,7 +112,7 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 		string name = var.first;
 		LSValue* value = var.second;
 
-		jit_value_t jit_val = JIT_CREATE_CONST_POINTER(F, value);
+		jit_value_t jit_val = JIT_CREATE_CONST_POINTER(c.F, value);
 		internals.insert(pair<string, jit_value_t>(name, jit_val));
 	}
 
@@ -77,9 +123,9 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 			string name = var.first;
 			LSValue* value = var.second;
 
-			jit_value_t jit_var = jit_value_create(F, JIT_POINTER);
-			jit_value_t jit_val = JIT_CREATE_CONST_POINTER(F, value);
-			jit_insn_store(F, jit_var, jit_val);
+			jit_value_t jit_var = jit_value_create(c.F, JIT_POINTER);
+			jit_value_t jit_val = JIT_CREATE_CONST_POINTER(c.F, value);
+			jit_insn_store(c.F, jit_var, jit_val);
 
 			c.add_var(name, jit_var, Type(value->getRawType(), Nature::POINTER), false);
 
@@ -88,8 +134,15 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 	}
 
 	jit_value_t res = body->compile(c);
-//	VM::inc_refs(F, res);
 
+	// Return null instead of void
+	if (body->type.nature == Nature::VOID) {
+		jit_insn_return(c.F, VM::create_null(c.F));
+	} else {
+		jit_insn_return(c.F, res);
+	}
+
+	/*
 	if (toplevel) {
 
 		// Push program res
@@ -106,7 +159,6 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 
 //		cout << "GLOBALS : " << globals.size() << endl;
 
-		/*
 		for (auto g : c.get_vars()) {
 
 			string name = g.first;
@@ -155,12 +207,9 @@ void Program::compile_jit(Compiler& c, jit_function_t& F, Context& context, bool
 				}
 			}
 		}
-		*/
 		jit_insn_return(F, array);
-
-	} else {
-		jit_insn_return(F, res);
 	}
+	*/
 }
 
 }

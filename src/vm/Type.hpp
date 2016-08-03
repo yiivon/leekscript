@@ -29,7 +29,7 @@ public:
 class VoidRawType : public BaseRawType {
 public:
 	~VoidRawType() {};
-	virtual const std::string getName() const { return "Void"; };
+	virtual const std::string getName() const { return "void"; };
 	virtual const std::string getJsonName() const { return "void"; };
 	virtual bool operator == (const BaseRawType*) { return false; }
 	bool operator == (const VoidRawType*) { return true; }
@@ -39,7 +39,7 @@ public:
 class NullRawType : public BaseRawType {
 public:
 	~NullRawType() {};
-	virtual const std::string getName() const { return "Null"; };
+	virtual const std::string getName() const { return "null"; };
 	virtual const std::string getClass() const { return "Null"; };
 	virtual const std::string getJsonName() const { return "null"; };
 	virtual bool operator == (const BaseRawType*) { return false; }
@@ -50,7 +50,7 @@ public:
 class BooleanRawType : public BaseRawType {
 public:
 	~BooleanRawType() {}
-	virtual const std::string getName() const { return "Boolean"; };
+	virtual const std::string getName() const { return "bool"; };
 	virtual const std::string getClass() const { return "Boolean"; };
 	virtual const std::string getJsonName() const { return "boolean"; };
 	bool operator == (const BaseRawType*) { return false; }
@@ -61,7 +61,7 @@ public:
 class NumberRawType : public BaseRawType {
 public:
 	~NumberRawType() {}
-	const std::string getName() const { return "Number"; };
+	const std::string getName() const { return "number"; };
 	const std::string getClass() const { return "Number"; };
 	const std::string getJsonName() const { return "number"; };
 	bool operator == (const BaseRawType*) { return false; }
@@ -72,7 +72,7 @@ public:
 class IntegerRawType : public NumberRawType {
 public:
 	~IntegerRawType() {}
-	const std::string getName() const { return "Integer"; };
+	const std::string getName() const { return "int"; };
 	const std::string getClass() const { return "Number"; };
 	const std::string getJsonName() const { return "number"; };
 	bool operator == (const BaseRawType*) { return false; }
@@ -84,7 +84,7 @@ public:
 class LongRawType : public NumberRawType {
 public:
 	~LongRawType() {}
-	const std::string getName() const { return "Long"; };
+	const std::string getName() const { return "long"; };
 	const std::string getClass() const { return "Number"; };
 	const std::string getJsonName() const { return "number"; };
 	bool operator == (const BaseRawType*) { return false; }
@@ -95,7 +95,7 @@ public:
 class FloatRawType : public NumberRawType {
 public:
 	~FloatRawType() {}
-	const std::string getName() const { return "Float"; };
+	const std::string getName() const { return "real"; };
 	const std::string getClass() const { return "Number"; };
 	const std::string getJsonName() const { return "number"; };
 	bool operator == (const BaseRawType*) { return false; }
@@ -106,7 +106,7 @@ public:
 class StringRawType : public BaseRawType {
 public:
 	~StringRawType() {}
-	virtual const std::string getName() const { return "String"; };
+	virtual const std::string getName() const { return "string"; };
 	const std::string getClass() const { return "String"; };
 	virtual const std::string getJsonName() const { return "string"; };
 	bool operator == (const BaseRawType*) { return false; }
@@ -117,7 +117,7 @@ public:
 class ArrayRawType : public BaseRawType {
 public:
 	~ArrayRawType() {}
-	const std::string getName() const { return "Array"; };
+	const std::string getName() const { return "array"; };
 	const std::string getClass() const { return "Array"; };
 	const std::string getJsonName() const { return "array"; };
 	virtual bool operator == (const BaseRawType*) { return false; }
@@ -128,7 +128,7 @@ public:
 class IntervalRawType : public BaseRawType {
 public:
 	~IntervalRawType() {}
-	const std::string getName() const { return "Interval"; };
+	const std::string getName() const { return "interval"; };
 	const std::string getClass() const { return "Array"; };
 	const std::string getJsonName() const { return "array"; };
 	virtual bool operator == (const BaseRawType*) { return false; }
@@ -139,7 +139,7 @@ public:
 class ObjectRawType : public BaseRawType {
 public:
 	~ObjectRawType() {}
-	const std::string getName() const { return "Object"; };
+	const std::string getName() const { return "object"; };
 	const std::string getClass() const { return "Object"; };
 	const std::string getJsonName() const { return "object"; };
 	virtual bool operator == (const BaseRawType*) { return false; }
@@ -150,7 +150,7 @@ public:
 class FunctionRawType : public BaseRawType {
 public:
 	~FunctionRawType() {}
-	const std::string getName() const { return "Function"; };
+	const std::string getName() const { return "function"; };
 	const std::string getClass() const { return "Function"; };
 	const std::string getJsonName() const { return "function"; };
 	bool operator == (const BaseRawType*) { return false; }
@@ -161,7 +161,7 @@ public:
 class ClassRawType : public BaseRawType {
 public:
 	~ClassRawType() {}
-	const std::string getName() const { return "Class"; };
+	const std::string getName() const { return "class"; };
 	const std::string getClass() const { return "Class"; };
 	const std::string getJsonName() const { return "class"; };
 	bool operator == (const BaseRawType*) { return false; }
@@ -237,7 +237,6 @@ public:
 	 * Static part
 	 */
 	static const Type VOID;
-	static const Type NEUTRAL;
 	static const Type VALUE;
 	static const Type POINTER;
 
@@ -263,10 +262,11 @@ public:
 	static const Type CLASS;
 
 	static std::string get_nature_name(const Nature& nature);
+	static std::string get_nature_symbol(const Nature& nature);
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww);
 	static bool more_specific(const Type& old, const Type& neww);
-	static Type get_compatible_type(Type& t1, Type& t2);
+	static Type get_compatible_type(const Type& t1, const Type& t2);
 };
 
 std::ostream& operator << (std::ostream&, const Type&);
