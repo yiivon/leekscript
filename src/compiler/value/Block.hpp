@@ -11,7 +11,6 @@ class Block : public Value {
 public:
 
 	std::vector<Instruction*> instructions;
-	Type type;
 
 	Block();
 	virtual ~Block();

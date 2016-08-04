@@ -851,14 +851,7 @@ Match* SyntaxicAnalyser::eatMatch(bool force_value) {
 		match->pattern_list.push_back(patterns);
 		eat(TokenType::COLON);
 		if (t->type == TokenType::OPEN_BRACE) {
-			Value* v = eatBlockOrObject();
-			if (dynamic_cast<Block*>(v)) {
-				match->returns.push_back((Block*) v);
-			} else {
-				Block* block = new Block();
-				block->instructions.push_back(new ExpressionInstruction(v));
-				match->returns.push_back(block);
-			}
+			match->returns.push_back(eatBlockOrObject());
 		} else if (force_value) {
 			Block* block = new Block();
 			block->instructions.push_back(new ExpressionInstruction(eatExpression()));

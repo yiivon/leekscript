@@ -25,7 +25,7 @@ public:
 
 	Value* value;
 	std::vector<std::vector<Pattern>> pattern_list;
-	std::vector<Block*> returns;
+	std::vector<Value*> returns;
 
 	Match();
 	virtual ~Match();
