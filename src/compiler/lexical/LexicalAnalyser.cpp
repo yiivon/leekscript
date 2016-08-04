@@ -137,6 +137,9 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 	bool string1 = false;
 	bool string2 = false;
 	bool other = false;
+	bool escape = false;
+	bool hex = false;
+	bool bin = false;
 	int comment = 0;
 	bool lineComment = false;
 
@@ -177,9 +180,16 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
 					} else if (number) {
+						if ((bin || hex) && word.size() == 2) {
+							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
+						}
 						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
-						number = false;
+						number = bin = hex = false;
 					} else if (string1 || string2) {
+						if (escape) {
+							escape = false;
+							errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
+						}
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (other) {
@@ -190,11 +200,39 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 				} else if (type == LetterType::LETTER) {
 
 					if (ident || string1 || string2) {
-						u8_toutf8(buff, 5, &c, 1);
-						word += buff;
+						if (escape) {
+							escape = false;
+							if (c == 'b') {
+								word += '\b';
+							} else if (c == 'f') {
+								word += '\f';
+							} else if (c == 'n') {
+								word += '\n';
+							} else if (c == 'r') {
+								word += '\r';
+							} else if (c == 't') {
+								word += '\t';
+							} else {
+								errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
+							}
+						} else {
+							u8_toutf8(buff, 5, &c, 1);
+							word += buff;
+						}
 					} else if (number) {
-						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
-						number = false;
+						if (word == "0" && (c == 'x' || c == 'b')) {
+							hex = c == 'x';
+							bin = c == 'b';
+							u8_toutf8(buff, 5, &c, 1);
+							word += buff;
+						} else if (hex && (c <= 'F' || (c >= 'a' && c <= 'f'))) {
+							u8_toutf8(buff, 5, &c, 1);
+							word += buff;
+						} else {
+							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
+							tokens.push_back(Token(TokenType::NUMBER, line, character, word));
+							number = bin = hex = false;
+						}
 					} else if (other) {
 						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
@@ -209,7 +247,18 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 
 				} else if (type == LetterType::NUMBER) {
 
-					if (number || ident || string1 || string2) {
+					if (number) {
+						if (bin && c > '1') {
+							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
+						} else {
+							u8_toutf8(buff, 5, &c, 1);
+							word += buff;
+						}
+					} else if (ident || string1 || string2) {
+						if (escape) {
+							escape = false;
+							errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
+						}
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (other) {
@@ -232,16 +281,24 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						string1 = true;
 						word = "";
 					} else if (number) {
+						if ((bin || hex) && word.size() == 2) {
+							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
+						}
 						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
-						number = false;
+						number = bin = hex = false;
 						string1 = true;
 						word = "";
-					} else if (string1) {
-						tokens.push_back(Token(TokenType::STRING, line, character, word));
-						string1 = false;
-					} else if (string2) {
+					} else if (string2 || (string1 && escape)) {
+						escape = false;
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
+					} else if (string1) {
+						if (escape) {
+							escape = false;
+							errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
+						}
+						tokens.push_back(Token(TokenType::STRING, line, character, word));
+						string1 = false;
 					} else if (other) {
 						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
@@ -260,14 +317,22 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						string2 = true;
 						word = "";
 					} else if (number) {
+						if ((bin || hex) && word.size() == 2) {
+							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
+						}
 						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
-						number = false;
+						number = bin = hex = false;
 						string2 = true;
 						word = "";
-					} else if (string1) {
+					} else if (string1 || (string2 && escape)) {
+						escape = false;
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (string2) {
+						if (escape) {
+							escape = false;
+							errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
+						}
 						tokens.push_back(Token(TokenType::STRING, line, character, word));
 						string2 = false;
 					} else if (other) {
@@ -289,19 +354,31 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 					} else if (number) {
-						if (c == '.' && word.find('.') == string::npos && getLetterType(nc) == LetterType::NUMBER) {
+						if (!hex && !bin && c == '.' && word.find('.') == string::npos && getLetterType(nc) == LetterType::NUMBER) {
 							u8_toutf8(buff, 5, &c, 1);
 							word += buff;
 						} else {
+							if ((bin || hex) && word.size() == 2) {
+								errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
+							}
 							tokens.push_back(Token(TokenType::NUMBER, line, character, word));
-							number = false;
+							number = bin = hex = false;
 							other = true;
 							u8_toutf8(buff, 5, &c, 1);
 							word = buff;
 						}
 					} else if (string1 || string2) {
-						u8_toutf8(buff, 5, &c, 1);
-						word += buff;
+						if (escape && c != '\\') {
+							escape = false;
+							errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
+						}
+						if (!escape && c == '\\') {
+							escape = true;
+						} else {
+							escape = false;
+							u8_toutf8(buff, 5, &c, 1);
+							word += buff;
+						}
 					} else if (other) {
 						bool is_longer = false;
 						for (size_t j = 0; j < type_literals.size() && !is_longer; ++j) {
