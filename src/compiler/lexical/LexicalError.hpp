@@ -9,7 +9,9 @@ class LexicalError {
 public:
 
 	enum Type {
-		UNTERMINATED_STRING
+		UNTERMINATED_STRING,
+		UNKNOWN_ESCAPE_SEQUENCE,
+		NUMBER_INVALID_REPRESENTATION
 	};
 
 	Type type;
