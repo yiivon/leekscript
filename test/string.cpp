@@ -9,6 +9,11 @@ void Test::test_strings() {
 	lex_err("\"", ls::LexicalError::Type::UNTERMINATED_STRING);
 	lex_err("'hello world", ls::LexicalError::Type::UNTERMINATED_STRING);
 
+//	success("'\\''", "'''");
+	success("\"\\\"\"", "'\"'");
+//	success("'aujourd\\'hui'", "'aujourd'hui'");
+	success("\"aujourd\\\"hui\"", "'aujourd\"hui'");
+
 	success("'salut ' + 'ça va ?'", "'salut ça va ?'");
 	success("'salut' + 12", "'salut12'");
 	success("'salut' + true", "'saluttrue'");

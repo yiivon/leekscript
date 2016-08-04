@@ -50,7 +50,7 @@ unsigned Match::line() const {
 	return 0;
 }
 
-void Match::analyse(ls::SemanticAnalyser* analyser, const Type& req_type) {
+void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 
 	bool any_pointer = false;
 
@@ -88,7 +88,7 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Return type is always pointer because in the default case, null is return
 	type = Type::POINTER;
-	for (Block* r : returns) {
+	for (Value* r : returns) {
 		r->analyse(analyser, Type::POINTER);
 	}
 }

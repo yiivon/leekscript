@@ -144,6 +144,7 @@ public:
 
 	std::ostream& print(std::ostream& os) const;
 	std::string json() const override;
+	std::string escaped(char quote) const;
 
 	LSValue* getClass() const override;
 

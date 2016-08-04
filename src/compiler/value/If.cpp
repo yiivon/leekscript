@@ -113,16 +113,15 @@ jit_value_t If::compile(Compiler& c) const {
 
 	jit_insn_label(c.F, &label_else);
 
-	if (then->type.must_manage_memory()) {
-		VM::delete_temporary(c.F, then_v);
-	}
+//	if (then->type.must_manage_memory()) {
+//		VM::delete_temporary(c.F, then_v);
+//	}
 
 	if (elze != nullptr) {
 		jit_value_t else_v = elze->compile(c);
 		if (type != Type::VOID) {
 			jit_insn_store(c.F, res, else_v);
 		}
-
 	} else {
 		if (type != Type::VOID) {
 			jit_insn_store(c.F, res, VM::create_null(c.F));

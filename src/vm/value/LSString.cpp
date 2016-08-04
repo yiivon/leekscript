@@ -436,11 +436,42 @@ LSValue* LSString::abso() const {
 }
 
 std::ostream& LSString::print(std::ostream& os) const {
-	os << "'" << *this << "'";
+	os << "'" << escaped('\'') << "'";
 	return os;
 }
 string LSString::json() const {
-	return "\"" + *this + "\"";
+	return "\"" + escaped('"') + "\"";
+}
+
+string LSString::escaped(char quote) const {
+
+	char buff[5];
+	char* string_chars = (char*) this->c_str();
+	std::string new_string;
+
+	int i = 0;
+	int l = strlen(string_chars);
+	while (i < l) {
+		u_int32_t c = u8_nextchar(string_chars, &i);
+		if (c == '\b') {
+			new_string += "\\b";
+		} else if (c == '\f') {
+			new_string += "\\f";
+		} else if (c == '\n') {
+			new_string += "\\n";
+		} else if (c == '\r') {
+			new_string += "\\r";
+		} else if (c == '\t') {
+			new_string += "\\t";
+		} else if (c == (u_int32_t)quote) {
+			new_string += '\\';
+			new_string += quote;
+		} else {
+			u8_toutf8(buff, 5, &c, 1);
+			new_string += buff;
+		}
+	}
+	return new_string;
 }
 
 LSValue* LSString::clone() const {

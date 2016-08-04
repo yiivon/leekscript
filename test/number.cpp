@@ -33,6 +33,19 @@ void Test::test_numbers() {
 	success("(-12) ** 2", "144");
 	success("-12 + 2", "-10");
 
+	// Hexadecimal representation
+	success("0x0", "0");
+	success("0x00000000", "0");
+	success("0x1", "1");
+	success("0x00000001", "1");
+	success("0xf", "15");
+	success("0x0000000f", "15");
+	success("-0xf", "-15");
+	success("0xff", "255");
+	success("0x10", "16");
+	success("-0xffff", "-65535");
+	success("0xffffffff", "4294967295");
+
 	// null must not be considered as 0
 	success("null + 5", "null");
 	success("null * 5", "null");

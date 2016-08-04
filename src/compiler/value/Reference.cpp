@@ -22,7 +22,7 @@ Reference::Reference(Token *variable)
 
 Reference::~Reference() {}
 
-void Reference::print(ostream& os, int indent, bool debug) const {
+void Reference::print(ostream& os, int, bool debug) const {
 	os << "@" << variable->content;
 	if (debug) {
 		os << " " << type;

@@ -19,7 +19,7 @@ PostfixExpression::~PostfixExpression() {
 }
 
 void PostfixExpression::print(ostream& os, int indent, bool debug) const {
-	expression->print(os, debug);
+	expression->print(os, indent, debug);
 	operatorr->print(os);
 	if (debug) {
 		os << " " << type;

@@ -552,6 +552,20 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened) {
 	return e;
 }
 
+double stod_(string str) {
+
+	if (str.size() > 2 && str[0] == '0' && str[1] == 'b') {
+		double x = 0.0;
+		for (size_t i = 2; i < str.size(); ++i) {
+			x *= 2.0;
+			if (str[i] == '1') x += 1.0;
+		}
+		return x;
+	} else {
+		return stod(str);
+	}
+}
+
 Value* SyntaxicAnalyser::eatValue() {
 
 	switch (t->type) {
@@ -571,7 +585,7 @@ Value* SyntaxicAnalyser::eatValue() {
 
 		case TokenType::NUMBER:
 		{
-			Number* n = new Number(stod(t->content), t);
+			Number* n = new Number(stod_(t->content), t);
 			eat();
 			return n;
 		}
@@ -851,14 +865,7 @@ Match* SyntaxicAnalyser::eatMatch(bool force_value) {
 		match->pattern_list.push_back(patterns);
 		eat(TokenType::COLON);
 		if (t->type == TokenType::OPEN_BRACE) {
-			Value* v = eatBlockOrObject();
-			if (dynamic_cast<Block*>(v)) {
-				match->returns.push_back((Block*) v);
-			} else {
-				Block* block = new Block();
-				block->instructions.push_back(new ExpressionInstruction(v));
-				match->returns.push_back(block);
-			}
+			match->returns.push_back(eatBlockOrObject());
 		} else if (force_value) {
 			Block* block = new Block();
 			block->instructions.push_back(new ExpressionInstruction(eatExpression()));
