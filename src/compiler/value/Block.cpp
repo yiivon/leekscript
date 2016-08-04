@@ -43,7 +43,6 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (i == instructions.size() - 1) {
 			instructions[i]->analyse(analyser, req_type);
-			cout << "instru type : " << instructions[i]->type << endl;
 			type = instructions[i]->type;
 		} else {
 			instructions[i]->analyse(analyser, Type::VOID);
@@ -59,7 +58,6 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}
-	cout << "block type : " << type << endl;
 }
 
 jit_value_t Block::compile(Compiler& c) const {

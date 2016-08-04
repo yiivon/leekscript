@@ -19,7 +19,7 @@ VariableValue::VariableValue(Token* token) {
 
 VariableValue::~VariableValue() {}
 
-void VariableValue::print(ostream& os, int indent, bool debug) const {
+void VariableValue::print(ostream& os, int, bool debug) const {
 	os << token->content;
 	if (debug) {
 		os << " " << type;

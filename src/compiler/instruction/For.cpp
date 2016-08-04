@@ -61,7 +61,7 @@ void For::print(ostream& os, int indent, bool debug) const {
 	body->print(os, indent, debug);
 }
 
-void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void For::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	for (unsigned i = 0; i < variablesValues.size(); ++i) {
 		variablesValues[i]->analyse(analyser);

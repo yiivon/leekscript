@@ -19,7 +19,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual unsigned line() const override;
 
-	void analyse(SemanticAnalyser* analyser, const Type& req_type);
+	virtual void analyse(SemanticAnalyser* analyser, const Type& req_type) override;
 
 	jit_value_t compile(Compiler&) const;
 
