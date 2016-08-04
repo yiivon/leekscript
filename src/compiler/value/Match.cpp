@@ -50,7 +50,7 @@ unsigned Match::line() const {
 	return 0;
 }
 
-void Match::analyse(ls::SemanticAnalyser* analyser, const Type& req_type) {
+void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 
 	bool any_pointer = false;
 
