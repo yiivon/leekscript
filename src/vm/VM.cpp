@@ -133,7 +133,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
 
 		ostringstream oss;
-		res_array->operator[] (0)->print(oss);
+		res->print(oss);
 		result = oss.str();
 
 		string ctx = "{";
