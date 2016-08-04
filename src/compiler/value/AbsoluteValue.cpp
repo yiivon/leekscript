@@ -15,7 +15,7 @@ AbsoluteValue::~AbsoluteValue() {
 	delete expression;
 }
 
-void AbsoluteValue::print(std::ostream& os, int indent, bool debug) const {
+void AbsoluteValue::print(std::ostream& os, int, bool debug) const {
 	os << "|";
 	expression->print(os, debug);
 	os << "|";

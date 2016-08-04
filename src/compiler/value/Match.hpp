@@ -2,12 +2,12 @@
 #define MATCH_HPP_
 
 #include "../../compiler/value/Value.hpp"
+#include "../../compiler/value/Block.hpp"
 #include <vector>
 
 namespace ls {
 
-class Match : public Value
-{
+class Match : public Value {
 public:
 	class Pattern {
 	public:
@@ -25,13 +25,14 @@ public:
 
 	Value* value;
 	std::vector<std::vector<Pattern>> pattern_list;
-	std::vector<Value*> returns;
+	std::vector<Block*> returns;
 
 	Match();
 	virtual ~Match();
 
 	virtual void print(std::ostream&, int indent, bool debug = false) const override;
 	virtual unsigned line() const override;
+
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 	virtual jit_value_t compile(Compiler&) const override;
 };

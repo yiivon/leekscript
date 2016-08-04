@@ -5,7 +5,9 @@ using namespace std;
 
 namespace ls {
 
-Match::Match() {}
+Match::Match() {
+	value = nullptr;
+}
 
 Match::~Match() {
 	delete value;
@@ -15,39 +17,40 @@ Match::~Match() {
 			delete p.end;
 		}
 	}
-	for (auto x : returns) delete x;
+	for (auto x : returns) {
+		delete x;
+	}
 }
 
-void Match::print(std::ostream &os, int indent, bool debug) const {
+void Match::print(std::ostream& os, int indent, bool debug) const {
 	os << "match ";
-	value->print(os, debug);
+	value->print(os, indent, debug);
+	os << " {";
 	for (size_t i = 0; i < pattern_list.size(); ++i) {
 
-		os << endl << tabs(indent);
+		os << endl << tabs(indent + 1);
 
 		const vector<Pattern>& list = pattern_list[i];
 		for (size_t j = 0; j < list.size(); ++j) {
 			if (j > 0) {
 				os << "|";
 			}
-			list[j].print(os, indent, debug);
+			list[j].print(os, indent + 1, debug);
 		}
 		os << " : ";
-		returns[i]->print(os, indent, debug);
+		returns[i]->print(os, indent + 1, debug);
 	}
-	os << " }";
+	os << endl << tabs(indent) << "}";
 	if (debug) {
 		os << " " << type;
 	}
 }
 
-unsigned Match::line() const
-{
+unsigned Match::line() const {
 	return 0;
 }
 
-void Match::analyse(ls::SemanticAnalyser *analyser, const Type &req_type)
-{
+void Match::analyse(ls::SemanticAnalyser* analyser, const Type& req_type) {
 
 	bool any_pointer = false;
 
@@ -83,22 +86,15 @@ void Match::analyse(ls::SemanticAnalyser *analyser, const Type &req_type)
 		}
 	}
 
-	type = Type::UNKNOWN;
-
-	for (size_t i = 0; i < returns.size(); ++i) {
-		returns[i]->analyse(analyser);
-		returns[i]->print(cout);
-		cout << " type : " << returns[i]->type << endl;
-		type = Type::get_compatible_type(type, returns[i]->type);
-	}
-
-	if (req_type.nature != Nature::UNKNOWN) {
-		type.nature = req_type.nature;
+	// Return type is always pointer because in the default case, null is return
+	type = Type::POINTER;
+	for (Block* r : returns) {
+		r->analyse(analyser, Type::POINTER);
 	}
 }
 
-jit_value_t Match::compile(Compiler &c) const
-{
+jit_value_t Match::compile(Compiler& c) const {
+
 	jit_value_t v = value->compile(c);
 
 	jit_value_t res = jit_value_create(c.F, JIT_POINTER);
@@ -141,22 +137,15 @@ jit_value_t Match::compile(Compiler &c) const
 	return res;
 }
 
-Match::Pattern::Pattern(Value *value)
-	: interval(false), begin(value), end(nullptr)
-{
-}
+Match::Pattern::Pattern(Value* value)
+	: interval(false), begin(value), end(nullptr) {}
 
-Match::Pattern::Pattern(Value *begin, Value *end)
-	: interval(true), begin(begin), end(end)
-{
-}
+Match::Pattern::Pattern(Value* begin, Value* end)
+	: interval(true), begin(begin), end(end) {}
 
-Match::Pattern::~Pattern()
-{
-}
+Match::Pattern::~Pattern() {}
 
-void Match::Pattern::print(ostream &os, int indent, bool debug) const
-{
+void Match::Pattern::print(ostream &os, int indent, bool debug) const {
 	if (interval) {
 		if (begin) begin->print(os, indent, debug);
 		os << "..";
@@ -176,8 +165,8 @@ bool jit_greater_equal_(LSValue* x, LSValue* y) {
 	return y->operator >= (x);
 }
 
-jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const
-{
+jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
+
 	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 0);
 
