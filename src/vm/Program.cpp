@@ -17,7 +17,7 @@ Program::~Program() {
 		delete body;
 	}
 	for (auto v : system_vars) {
-		LSValue::delete_val(v.second);
+		delete v.second;
 	}
 }
 
@@ -40,7 +40,7 @@ void Program::compile(Context& context) {
 	// catch (ex) {
 	jit_value_t ex = jit_insn_start_catcher(F);
 	VM::print_int(F, ex);
-	jit_insn_return(F, JIT_CREATE_CONST_POINTER(F, LSNull::null_var));
+	jit_insn_return(F, JIT_CREATE_CONST_POINTER(F, LSNull::get()));
 
 	jit_function_compile(F);
 	jit_context_build_end(jit_context);
@@ -52,22 +52,23 @@ LSValue* Program::execute() {
 
 	if (body->type == Type::BOOLEAN) {
 		auto fun = (bool (*)()) closure;
-		return new LSBoolean(fun());
+		return LSBoolean::get(fun());
 	}
 	if (body->type == Type::INTEGER) {
 		auto fun = (int (*)()) closure;
 		return LSNumber::get((double) fun());
 	}
 	if (body->type == Type::FLOAT) {
-		cout << "program float" << endl;
 		auto fun = (double (*)()) closure;
-		double x = fun();
-		cout << x << endl;
-		return LSNumber::get(x);
+		return LSNumber::get(fun());
 	}
 	if (body->type == Type::LONG) {
 		auto fun = (long (*)()) closure;
 		return LSNumber::get(fun());
+	}
+	if (body->type.raw_type == RawType::FUNCTION and body->type.nature == Nature::VALUE) {
+		auto fun = (void* (*)()) closure;
+		return new LSFunction(fun());
 	}
 	auto fun = (LSValue* (*)()) closure;
 	return fun();
@@ -89,7 +90,7 @@ LSArray<LSValue*>* Program_create_array() {
 	return new LSArray<LSValue*>();
 }
 void Program_push_null(LSArray<LSValue*>* array, int) {
-	array->push_clone(LSNull::null_var);
+	array->push_clone(LSNull::get());
 }
 void Program_push_boolean(LSArray<LSValue*>* array, int value) {
 	array->push_clone(LSBoolean::get(value));

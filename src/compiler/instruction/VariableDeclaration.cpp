@@ -12,8 +12,6 @@ namespace ls {
 
 VariableDeclaration::VariableDeclaration() {
 	global = false;
-	return_value = false;
-	type = Type::VALUE;
 }
 
 VariableDeclaration::~VariableDeclaration() {
@@ -43,12 +41,9 @@ void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 			os << ", ";
 		}
 	}
-	if (debug) {
-		os << " " << type;
-	}
 }
 
-void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
@@ -56,7 +51,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_ty
 		Type type = Type::UNKNOWN;
 		Value* value = nullptr;
 
-		SemanticVar* v = analyser->add_var(var, Type::FUNCTION, value, this);
+		SemanticVar* v = analyser->add_var(var, Type::UNKNOWN, value, this);
 
 		if (i < expressions.size()) {
 			expressions[i]->analyse(analyser, Type::UNKNOWN);
@@ -70,15 +65,6 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type& req_ty
 
 		vars.insert(pair<string, SemanticVar*>(var->content, v));
 		vars.at(var->content)->type = v->type;
-
-		if (i == variables.size() - 1) {
-			this->type = v->type;
-		}
-	}
-	this->return_value = return_value;
-
-	if (req_type.nature != Nature::UNKNOWN) {
-		type.nature = req_type.nature;
 	}
 }
 
@@ -101,18 +87,13 @@ jit_value_t VariableDeclaration::compile(Compiler& c) const {
 				val = c.get_var(ref->variable->content).value;
 				c.add_var(name, val, v->type, true);
 			} else {
+
 				val = ex->compile(c);
-				c.set_var_type(name, ex->type);
-				jit_insn_store(c.F, var, val);
 				if (expressions.at(i)->type.must_manage_memory()) {
 					VM::inc_refs(c.F, val);
 				}
-			}
-			if (i == expressions.size() - 1) {
-				if (v->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(c.F, val, type);
-				}
-				return val;
+				c.set_var_type(name, ex->type);
+				jit_insn_store(c.F, var, val);
 			}
 		} else {
 
@@ -121,10 +102,10 @@ jit_value_t VariableDeclaration::compile(Compiler& c) const {
 
 			jit_value_t val = VM::create_null(c.F);
 			jit_insn_store(c.F, var, val);
-			VM::inc_refs(c.F, val);
+//			VM::inc_refs(c.F, val);
 		}
 	}
-	return VM::create_null(c.F);
+	return nullptr;
 }
 
 }

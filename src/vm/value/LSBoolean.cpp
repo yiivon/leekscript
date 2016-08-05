@@ -8,23 +8,22 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSBoolean::boolean_class(new LSClass("Boolean", 1));
-LSBoolean* LSBoolean::false_val(new LSBoolean(false, 1));
-LSBoolean* LSBoolean::true_val(new LSBoolean(true, 1));
+LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
+LSBoolean* LSBoolean::false_val(new LSBoolean(false));
+LSBoolean* LSBoolean::true_val(new LSBoolean(true));
 
 LSBoolean* LSBoolean::get(bool value) {
 	return value ? true_val : false_val;
 }
 
-LSBoolean::LSBoolean() : value(true) {}
+LSBoolean::LSBoolean() : LSBoolean(true) {}
 
-LSBoolean::LSBoolean(bool value) : value(value) {}
-
-LSBoolean::LSBoolean(bool value, int refs) : value(value) {
-	this->refs = refs;
+LSBoolean::LSBoolean(bool value) : value(value) {
+	native = true;
+	refs = 1;
 }
 
-LSBoolean::LSBoolean(Json& json) : value(json) {}
+LSBoolean::LSBoolean(Json& json) : LSBoolean((bool) json) {}
 
 LSBoolean::~LSBoolean() {}
 
@@ -33,11 +32,11 @@ bool LSBoolean::isTrue() const {
 }
 
 LSValue* LSBoolean::operator ! () const {
-	return LSBoolean::get(!value);
+	return LSBoolean::get(not value);
 }
 
 LSValue* LSBoolean::operator ~ () const {
-	return LSBoolean::get(!value);
+	return LSBoolean::get(not value);
 }
 
 LSValue* LSBoolean::operator + (const LSValue* v) const {
@@ -129,117 +128,17 @@ bool LSBoolean::operator < (const LSClass*) const {
 	return true;
 }
 
-bool LSBoolean::operator > (const LSValue* value) const {
-	return value->operator > (this);
-}
-bool LSBoolean::operator > (const LSNull*) const {
-	return true;
-}
-bool LSBoolean::operator > (const LSBoolean* v) const {
-	return v->value > this->value;
-}
-bool LSBoolean::operator > (const LSNumber*) const {
-	return false;
-}
-bool LSBoolean::operator > (const LSString*) const {
-	return false;
-}
-bool LSBoolean::operator > (const LSArray<LSValue*>*) const {
-	return false;
-}
-bool LSBoolean::operator > (const LSArray<int>*) const {
-	return false;
-}
-bool LSBoolean::operator > (const LSArray<double>*) const {
-	return false;
-}
-bool LSBoolean::operator > (const LSFunction*) const {
-	return false;
-}
-bool LSBoolean::operator > (const LSObject*) const {
-	return false;
-}
-bool LSBoolean::operator > (const LSClass*) const {
-	return false;
-}
 
-bool LSBoolean::operator <= (const LSValue* value) const {
-	return value->operator <= (this);
-}
-bool LSBoolean::operator <= (const LSNull*) const {
-	return false;
-}
-bool LSBoolean::operator <= (const LSBoolean* v) const {
-	return v->value <= this->value;
-}
-bool LSBoolean::operator <= (const LSNumber*) const {
-	return true;
-}
-bool LSBoolean::operator <= (const LSString*) const {
-	return true;
-}
-bool LSBoolean::operator <= (const LSArray<LSValue*>*) const {
-	return true;
-}
-bool LSBoolean::operator <= (const LSArray<int>*) const {
-	return true;
-}
-bool LSBoolean::operator <= (const LSArray<double>*) const {
-	return true;
-}
-bool LSBoolean::operator <= (const LSFunction*) const {
-	return true;
-}
-bool LSBoolean::operator <= (const LSObject*) const {
-	return true;
-}
-bool LSBoolean::operator <= (const LSClass*) const {
-	return true;
-}
-
-bool LSBoolean::operator >= (const LSValue* v) const {
-	return v->operator >= (this);
-}
-bool LSBoolean::operator >= (const LSNull*) const {
-	return true;
-}
-bool LSBoolean::operator >= (const LSBoolean* v) const {
-	return v->value >= this->value;
-}
-bool LSBoolean::operator >= (const LSNumber*) const {
-	return false;
-}
-bool LSBoolean::operator >= (const LSString*) const {
-	return false;
-}
-bool LSBoolean::operator >= (const LSArray<LSValue*>*) const {
-	return false;
-}
-bool LSBoolean::operator >= (const LSArray<int>*) const {
-	return false;
-}
-bool LSBoolean::operator >= (const LSArray<double>*) const {
-	return false;
-}
-bool LSBoolean::operator >= (const LSFunction*) const {
-	return false;
-}
-bool LSBoolean::operator >= (const LSObject*) const {
-	return false;
-}
-bool LSBoolean::operator >= (const LSClass*) const {
-	return false;
-}
 
 bool LSBoolean::in(const LSValue* key) const {
 	return key->operator == (this);
 }
 
 LSValue* LSBoolean::at(const LSValue*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSBoolean::atL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSBoolean::range(int, int) const {
@@ -254,10 +153,10 @@ LSValue* LSBoolean::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSBoolean::attrL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSBoolean::clone() const {

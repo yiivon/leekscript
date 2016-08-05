@@ -11,7 +11,6 @@ namespace ls {
 Break::Break() {
 	value = 1;
 	can_return = false;
-	type = Type::NULLL;
 }
 
 Break::~Break() {}
@@ -35,7 +34,7 @@ jit_value_t Break::compile(Compiler& c) const {
 
 	jit_insn_branch(c.F, c.get_current_loop_end_label());
 
-	return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
+	return nullptr;
 }
 
 }

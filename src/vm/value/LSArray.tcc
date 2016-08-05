@@ -6,10 +6,12 @@
 #include "LSBoolean.hpp"
 #include "LSFunction.hpp"
 
+#include <algorithm>
+
 namespace ls {
 
 template <class T>
-LSValue* LSArray<T>::array_class(new LSClass("Array", 1));
+LSValue* LSArray<T>::array_class(new LSClass("Array"));
 
 template <class T>
 void LSArray<T>::push_clone(const T value) {
@@ -114,14 +116,14 @@ template <class T>
 T LSArray<T>::remove_key(LSValue*) {
 	// TODO : move all indices after index to the left ?
 	// or transform the array into a associative one
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
 T LSArray<T>::remove_element(T) {
 	// TODO : move all indices after index to the left ?
 	// or transform the array into a associative one
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <>
@@ -201,7 +203,7 @@ T LSArray<T>::last() const {
 
 template <class T>
 LSValue* LSArray<T>::pop() {
-	LSValue* last = LSNull::null_var;
+	LSValue* last = LSNull::get();
 	if (this->size() > 0) {
 		last = this->back();
 		this->pop_back();
@@ -216,32 +218,28 @@ inline LSValue* LSArray<int>::pop() {
 		this->pop_back();
 		return LSNumber::get(last);
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
 LSArray<LSValue*>* LSArray<T>::map(const void* function) const {
-
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size());
-	auto fun = (void* (*)(void*)) function;
-
+	auto fun = (LSValue* (*)(void*)) function;
 	for (auto v : *this) {
-		LSValue* res = (LSValue*) fun((void*) v);
-		new_array->push_clone(res);
-		res->refs++;
-		LSValue::delete_val(res);
+		new_array->push_back(LSValue::move(fun(v)));
 	}
 	return new_array;
 }
 
 template <>
 inline LSArray<LSValue*>* LSArray<int>::map(const void* function) const {
+
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size());
-	auto fun = (void* (*)(int)) function;
+	auto fun = (LSValue* (*)(int)) function;
 	for (auto v : *this) {
-		new_array->push_no_clone((LSValue*) fun(v));
+		new_array->push_back(LSValue::move(fun(v)));
 	}
 	return new_array;
 }
@@ -252,7 +250,7 @@ inline LSArray<int>* LSArray<int>::map_int(const void* function) const {
 	new_array->reserve(this->size());
 	auto fun = (int (*)(int)) function;
 	for (auto v : *this) {
-		new_array->push_no_clone(fun(v));
+		new_array->push_back(fun(v));
 	}
 	return new_array;
 }
@@ -263,7 +261,7 @@ inline LSArray<double>* LSArray<int>::map_real(const void* function) const {
 	new_array->reserve(this->size());
 	auto fun = (double (*)(int)) function;
 	for (auto v : *this) {
-		new_array->push_no_clone(fun(v));
+		new_array->push_back(fun(v));
 	}
 	return new_array;
 }
@@ -294,9 +292,9 @@ template <>
 inline LSArray<LSValue*>* LSArray<double>::map(const void* function) const {
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size());
-	auto fun = (void* (*)(double)) function;
+	auto fun = (LSValue* (*)(double)) function;
 	for (auto v : *this) {
-		new_array->push_no_clone((LSValue*) fun(v));
+		new_array->push_back(LSValue::move(fun(v)));
 	}
 	return new_array;
 }
@@ -782,11 +780,11 @@ inline LSValue* LSArray<T>::operator + (const LSNull* v) const {
 }
 template <>
 inline LSValue* LSArray<int>::operator + (const LSNull*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator + (const LSNull*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
@@ -797,11 +795,11 @@ inline LSValue* LSArray<T>::operator + (const LSBoolean* boolean) const {
 }
 template <>
 inline LSValue* LSArray<int>::operator + (const LSBoolean*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator + (const LSBoolean*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
@@ -831,11 +829,11 @@ inline LSValue* LSArray<T>::operator + (const LSString* string) const {
 }
 template <>
 inline LSValue* LSArray<int>::operator + (const LSString*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator + (const LSString*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
@@ -849,15 +847,15 @@ inline LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
 }
 template <>
 inline LSValue* LSArray<int>::operator + (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator + (const LSArray<LSValue*>*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <class T>
 inline LSValue* LSArray<T>::operator + (const LSArray<int>*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<int>::operator + (const LSArray<int>* array) const {
@@ -868,7 +866,7 @@ inline LSValue* LSArray<int>::operator + (const LSArray<int>* array) const {
 }
 template <class T>
 inline LSValue* LSArray<T>::operator + (const LSArray<double>*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator + (const LSArray<double>* array) const {
@@ -886,11 +884,11 @@ inline LSValue* LSArray<T>::operator + (const LSObject* object) const {
 }
 template <>
 inline LSValue* LSArray<int>::operator + (const LSObject*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator + (const LSObject*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
@@ -901,11 +899,11 @@ inline LSValue* LSArray<T>::operator + (const LSFunction* fun) const {
 }
 template <>
 inline LSValue* LSArray<int>::operator + (const LSFunction*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator + (const LSFunction*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
@@ -916,11 +914,11 @@ inline LSValue* LSArray<T>::operator + (const LSClass* clazz) const {
 }
 template <>
 inline LSValue* LSArray<int>::operator + (const LSClass*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator + (const LSClass*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 
@@ -934,57 +932,57 @@ LSValue* LSArray<T>::operator += (LSValue* value) {
 template <class T>
 inline LSValue* LSArray<T>::operator += (const LSNull* null) {
 	push_clone((T) null);
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<int>::operator += (const LSNull*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator += (const LSNull*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
 inline LSValue* LSArray<T>::operator += (const LSBoolean* boolean) {
 	push_clone((T) boolean);
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<int>::operator += (const LSBoolean*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator += (const LSBoolean*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
 inline LSValue* LSArray<T>::operator += (const LSNumber* num) {
 	push_clone((T) num);
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<int>::operator += (const LSNumber*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator += (const LSNumber*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
 inline LSValue* LSArray<T>::operator += (const LSString* string) {
 	push_clone((T) string);
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<int>::operator += (const LSString*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator += (const LSString*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
@@ -1001,49 +999,49 @@ inline LSValue* LSArray<T>::operator += (const LSArray<LSValue*>* array) {
 	if (array == (void*)this) {
 		delete arr;
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
 inline LSValue* LSArray<T>::operator += (const LSObject* object) {
 	push_clone((T) object);
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<int>::operator += (const LSObject*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator += (const LSObject*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
 inline LSValue* LSArray<T>::operator += (const LSFunction* fun) {
 	push_clone((T) fun);
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<int>::operator += (const LSFunction*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator += (const LSFunction*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
 inline LSValue* LSArray<T>::operator += (const LSClass* clazz) {
 	push_clone((T) clazz);
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<int>::operator += (const LSClass*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 template <>
 inline LSValue* LSArray<double>::operator += (const LSClass*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 
@@ -1195,140 +1193,6 @@ bool LSArray<T>::operator < (const LSClass*) const {
 	return true;
 }
 
-template <class T>
-bool LSArray<T>::operator > (const LSValue* v) const {
-	return v->operator > (this);
-}
-template <class T>
-bool LSArray<T>::operator > (const LSNull*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator > (const LSBoolean*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator > (const LSNumber*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator > (const LSString*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator > (const LSArray<LSValue*>* v) const {
-	return this->size() > v->size();
-}
-template <class T>
-bool LSArray<T>::operator > (const LSArray<int>* v) const {
-	return this->size() > v->size();
-}
-template <class T>
-bool LSArray<T>::operator > (const LSArray<double>* v) const {
-	return this->size() > v->size();
-}
-template <class T>
-bool LSArray<T>::operator > (const LSObject*) const {
-	return false;
-}
-template <class T>
-bool LSArray<T>::operator > (const LSFunction*) const {
-	return false;
-}
-template <class T>
-bool LSArray<T>::operator > (const LSClass*) const {
-	return false;
-}
-
-template <class T>
-bool LSArray<T>::operator <= (const LSValue* v) const {
-	return v->operator <= (this);
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSNull*) const {
-	return false;
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSBoolean*) const {
-	return false;
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSNumber*) const {
-	return false;
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSString*) const {
-	return false;
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSArray<LSValue*>* v) const {
-	return this->size() <= v->size();
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSArray<int>* v) const {
-	return this->size() <= v->size();
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSArray<double>* v) const {
-	return this->size() <= v->size();
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSObject*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSFunction*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator <= (const LSClass*) const {
-	return true;
-}
-
-template <class T>
-bool LSArray<T>::operator >= (const LSValue* v) const {
-	return v->operator >= (this);
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSNull*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSBoolean*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSNumber*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSString*) const {
-	return true;
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSArray<LSValue*>* v) const {
-	return this->size() >= v->size();
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSArray<int>* v) const {
-	return this->size() >= v->size();
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSArray<double>* v) const {
-	return this->size() >= v->size();
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSObject*) const {
-	return false;
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSFunction*) const {
-	return false;
-}
-template <class T>
-bool LSArray<T>::operator >= (const LSClass*) const {
-	return false;
-}
 
 template <class T>
 bool LSArray<T>::in(const LSValue* key) const {
@@ -1509,10 +1373,10 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 		try {
 			return (LSValue*) ((std::vector<T>*) this)->at((int) n->value)->clone();
 		} catch (std::exception& e) {
-			return LSNull::null_var;
+			return LSNull::get();
 		}
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <>
@@ -1522,10 +1386,10 @@ inline LSValue* LSArray<int>::at(const LSValue* key) const {
 		try {
 			return LSNumber::get(((std::vector<int>*) this)->at((int) n->value));
 		} catch (std::exception& e) {
-			return LSNull::null_var;
+			return LSNull::get();
 		}
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <>
@@ -1535,10 +1399,10 @@ inline LSValue* LSArray<double>::at(const LSValue* key) const {
 		try {
 			return LSNumber::get(((std::vector<double>*) this)->at((int) n->value));
 		} catch (std::exception& e) {
-			return LSNull::null_var;
+			return LSNull::get();
 		}
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 //template <>
@@ -1574,7 +1438,7 @@ LSValue* LSArray<T>::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 
@@ -1585,15 +1449,15 @@ LSValue** LSArray<T>::atL(const LSValue* key) {
 			LSValue** v = (LSValue**) &(((std::vector<T>*)this)->at((int) n->value));
 			return v;
 		} catch (std::exception& e) {
-			return &LSNull::null_var;
+			return nullptr;
 		}
 	}
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 template <class T>
 LSValue** LSArray<T>::attrL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 template <class T>

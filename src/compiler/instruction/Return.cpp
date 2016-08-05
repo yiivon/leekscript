@@ -23,10 +23,7 @@ Return::~Return() {
 
 void Return::print(ostream& os, int indent, bool debug) const {
 	os << tabs(indent) << "return ";
-	expression->print(os, debug);
-	if (debug) {
-		os << " " << type;
-	}
+	expression->print(os, indent, debug);
 }
 
 void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -39,6 +36,7 @@ void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //		f->can_return(expression->type);
 	}
 	type = expression->type;
+	can_return = true;
 }
 
 jit_value_t Return::compile(Compiler& c) const {

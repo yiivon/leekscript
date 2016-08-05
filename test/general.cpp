@@ -32,14 +32,16 @@ void Test::test_general() {
 	success("return", "null");
 
 	header("Variables");
-	success("let a = 2", "2");
-	success("let a, b, c = 1, 2, 3", "3");
+	success("let a = 2 a", "2");
+	success("let a, b, c = 1, 2, 3 c", "3");
 	success("let a", "null");
+	success("let a a", "null");
 	//success("let a a = 12 a", "12");
-	success("let a = 1 let b = (a = 12)", "12");
-	success("let s = 'hello'", "'hello'");
-	success("let état = 12", "12");
-	success("let 韭 = 'leek'", "'leek'");
+	success("let a = 1 let b = (a = 12) b", "12");
+	success("let s = 'hello'", "null");
+	success("let s = 'hello' s", "'hello'");
+	success("let état = 12 état", "12");
+	success("let 韭 = 'leek' 韭", "'leek'");
 	success("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ** 🐨", "25");
 
 	sem_err("a", ls::SemanticException::Type::UNDEFINED_VARIABLE, "a");

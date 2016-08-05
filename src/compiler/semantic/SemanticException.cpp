@@ -14,7 +14,7 @@ SemanticException::SemanticException(Type type, unsigned line) {
 	this->content = "";
 }
 
-SemanticException::SemanticException(Type type, unsigned line, std::string& content) {
+SemanticException::SemanticException(Type type, unsigned line, const string& content) {
 	this->type = type;
 	this->line = line;
 	this->content = content;
@@ -53,6 +53,7 @@ std::string SemanticException::type_to_string(Type type) {
 		case Type::CONTINUE_MUST_BE_IN_LOOP: return "CONTINUE_MUST_BE_IN_LOOP";
 		case Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER: return "ARRAY_ACCESS_KEY_MUST_BE_NUMBER";
 		case Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER: return "ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER";
+		case Type::INVALID_MAP_KEY: return "INVALID_MAP_KEY";
 		case Type::VALUE_MUST_BE_A_LVALUE: return "VALUE_MUST_BE_A_LVALUE";
 
 		default:

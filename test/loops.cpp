@@ -33,8 +33,8 @@ void Test::test_loops() {
 	header("While loops");
 	success("let i = 0 while (i < 10) { i++ } i", "10");
 	success("let i = 0 let s = 0 while (i < 10) { s += i i++ } s", "45");
-//	success("let i = 0 while (i < 100) { i++ if (i == 50) break } i", "50");
-//	success("let i = 0 let a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a", "3");
+	success("let i = 0 while (i < 100) { i++ if (i == 50) break } i", "50");
+	success("let i = 0 let a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a", "3");
 	success("while (true) { break }", "null");
 
 	/*
@@ -46,9 +46,9 @@ void Test::test_loops() {
 	success("let s = 0 for let i = 0; i < 5; i++ do s += i end s", "10");
 	success("let s = 0 for let i = 0; i < 10; i += 2 do s += i end s", "20");
 	success("let i = 0 for i = 0; i < 10; i++ { } i", "10");
-//	success("let i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i", "5");
+	success("let i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i", "5");
 	success("let a = 0 for let i = 0; i < 10; i++ { a++ } a", "10");
-//	success("let a = 0 for let i = 0; i < 10; i++ { if i < 5 { continue } a++ } a", "5");
+	success("let a = 0 for let i = 0; i < 10; i++ { if i < 5 { continue } a++ } a", "5");
 //	 success("let c = 0 for var t = []; t.size() < 10; t += 'x' { c++ } c", "10"),
 
 	/*
@@ -58,8 +58,8 @@ void Test::test_loops() {
 	success("for v in [1, 2, 3, 4] {}", "null");
 	success("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
 	success_almost("let s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s", 10.969999999999998863);
-	//success("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
-	//success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
+	success("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
+//	success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
 
 	/*
 	 * Break & continue

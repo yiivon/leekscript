@@ -10,16 +10,12 @@ namespace ls {
 class Array : public Value {
 public:
 
-	bool associative = false;
-	std::vector<Value*> keys;
 	std::vector<Value*> expressions;
 	bool interval = false;
 	Type supported_type;
 
 	Array();
 	virtual ~Array();
-
-	void addValue(Value* value, Value* key);
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual unsigned line() const override;

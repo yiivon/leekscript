@@ -19,6 +19,7 @@
 #include "../instruction/While.hpp"
 #include "../value/AbsoluteValue.hpp"
 #include "../value/Array.hpp"
+#include "../value/Map.hpp"
 #include "../value/ArrayAccess.hpp"
 #include "../value/Boolean.hpp"
 #include "../value/FunctionCall.hpp"
@@ -68,6 +69,7 @@ Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 }
 
 Block* SyntaxicAnalyser::eatMain() {
+
 	Block* block = new Block();
 
 	while (true) {
@@ -78,7 +80,9 @@ Block* SyntaxicAnalyser::eatMain() {
 			eat();
 		} else {
 			Instruction* ins = eatInstruction();
-			if (ins) block->instructions.push_back(ins);
+			if (ins) {
+				block->instructions.push_back(ins);
+			}
 		}
 	}
 
@@ -127,7 +131,7 @@ Block* SyntaxicAnalyser::eatBlock() {
 	while (true) {
 		if (t->type == TokenType::CLOSING_BRACE) {
 			eat();
-			if (!brace) {
+			if (not brace) {
 				errors.push_back(new SyntaxicalError(t, "Unexpected closing brace, forgot to open it ?"));
 			}
 			break;
@@ -287,10 +291,11 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 	return vd;
 }
 
-Function *SyntaxicAnalyser::eatFunction()
-{
-	if (t->type == TokenType::FUNCTION)
+Function* SyntaxicAnalyser::eatFunction() {
+
+	if (t->type == TokenType::FUNCTION) {
 		eat();
+	}
 
 	Function* f = new Function();
 
@@ -314,8 +319,9 @@ Function *SyntaxicAnalyser::eatFunction()
 
 		f->addArgument(ident, reference, defaultValue);
 
-		if (t->type == TokenType::COMMA)
+		if (t->type == TokenType::COMMA) {
 			eat();
+		}
 	}
 	eat(TokenType::CLOSING_PARENTHESIS);
 
@@ -326,8 +332,9 @@ Function *SyntaxicAnalyser::eatFunction()
 
 	f->body = eatBlock();
 
-	if (!braces)
+	if (!braces) {
 		eat(TokenType::END);
+	}
 
 	return f;
 }
@@ -680,7 +687,7 @@ Value* SyntaxicAnalyser::eatValue() {
 			return new Reference(eatIdent());
 
 		case TokenType::OPEN_BRACKET:
-			return eatArray();
+			return eatArrayOrMap();
 
 		case TokenType::OPEN_BRACE:
 			return eatBlockOrObject();
@@ -714,66 +721,62 @@ Value* SyntaxicAnalyser::eatValue() {
 	return new Nulll();
 }
 
-Array* SyntaxicAnalyser::eatArray() {
+Value* SyntaxicAnalyser::eatArrayOrMap() {
 
 	eat(TokenType::OPEN_BRACKET);
 
-	Array* a = new Array();
 
 	// Empty array
 	if (t->type == TokenType::CLOSING_BRACKET) {
 		eat();
-		return a;
+		return new Array();
 	}
 
-	Value* key = nullptr;
 	Value* value = eatExpression();
 
+	// eatInterval
 	if (t->type == TokenType::TWO_DOTS) {
+
+		Array* interval = new Array();
+		interval->interval = true;
+		interval->expressions.push_back(value);
 		eat();
-
-		a->interval = true;
-		a->addValue(value, nullptr);
-
-		Value* value2 = eatExpression();
-
-		a->addValue(value2, nullptr);
+		interval->expressions.push_back(eatExpression());
 
 		eat(TokenType::CLOSING_BRACKET);
-
-		return a;
+		return interval;
 	}
 
+	// eatMap
 	if (t->type == TokenType::COLON) {
-		eat(TokenType::COLON);
-		key = value;
-		value = eatExpression();
-	}
-	a->addValue(value, key);
 
-	if (t->type == TokenType::COMMA) {
+		Map* map = new Map();
+		map->keys.push_back(value);
 		eat();
+		map->values.push_back(eatExpression());
+
+		while (t->type != TokenType::CLOSING_BRACKET && t->type != TokenType::FINISHED) {
+			if (t->type == TokenType::COMMA)
+				eat();
+			map->keys.push_back(eatExpression());
+			eat(TokenType::COLON);
+			map->values.push_back(eatExpression());
+		}
+		eat(TokenType::CLOSING_BRACKET);
+		return map;
 	}
+
+	// eatArray
+	Array* array = new Array();
+	array->expressions.push_back(value);
 
 	while (t->type != TokenType::CLOSING_BRACKET && t->type != TokenType::FINISHED) {
-
-		value = eatExpression();
-
-		if (t->type == TokenType::COLON) {
-			eat(TokenType::COLON);
-			key = value;
-			value = eatExpression();
-		}
-
-		a->addValue(value, key);
-
-		if (t->type == TokenType::COMMA) {
+		if (t->type == TokenType::COMMA)
 			eat();
-		}
+		array->expressions.push_back(eatExpression());
 	}
 	eat(TokenType::CLOSING_BRACKET);
-
-	return a;
+	return array;
 }
 
 If* SyntaxicAnalyser::eatIf() {

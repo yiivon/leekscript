@@ -17,6 +17,7 @@ class LSBoolean;
 class LSNumber;
 class LSString;
 template <class T> class LSArray;
+template <class K, class T> class LSMap;
 class LSFunction;
 class LSObject;
 class LSClass;
@@ -178,64 +179,42 @@ public:
 	virtual bool operator == (const LSObject*) const;
 	virtual bool operator == (const LSClass*) const;
 
+	inline bool operator != (const LSValue* value) const {
+		return not this->operator ==(value);
+	}
+
 	virtual bool operator < (const LSValue*) const = 0;
-	virtual bool operator < (const LSNull*) const = 0;
-	virtual bool operator < (const LSBoolean*) const = 0;
-	virtual bool operator < (const LSNumber*) const = 0;
-	virtual bool operator < (const LSString*) const = 0;
-	virtual bool operator < (const LSArray<LSValue*>*) const = 0;
-	virtual bool operator < (const LSArray<int>*) const = 0;
-	virtual bool operator < (const LSArray<double>*) const = 0;
-	virtual bool operator < (const LSFunction*) const = 0;
-	virtual bool operator < (const LSObject*) const = 0;
-	virtual bool operator < (const LSClass*) const = 0;
+	virtual bool operator < (const LSNull*) const;
+	virtual bool operator < (const LSBoolean*) const;
+	virtual bool operator < (const LSNumber*) const;
+	virtual bool operator < (const LSString*) const;
+	virtual bool operator < (const LSArray<LSValue*>*) const;
+	virtual bool operator < (const LSArray<int>*) const;
+	virtual bool operator < (const LSArray<double>*) const;
+	virtual bool operator < (const LSFunction*) const;
+	virtual bool operator < (const LSObject*) const;
+	virtual bool operator < (const LSClass*) const;
 
-	virtual bool operator > (const LSValue*) const = 0;
-	virtual bool operator > (const LSNull*) const = 0;
-	virtual bool operator > (const LSBoolean*) const = 0;
-	virtual bool operator > (const LSNumber*) const = 0;
-	virtual bool operator > (const LSString*) const = 0;
-	virtual bool operator > (const LSArray<LSValue*>*) const = 0;
-	virtual bool operator > (const LSArray<int>*) const = 0;
-	virtual bool operator > (const LSArray<double>*) const = 0;
-	virtual bool operator > (const LSFunction*) const = 0;
-	virtual bool operator > (const LSObject*) const = 0;
-	virtual bool operator > (const LSClass*) const = 0;
-
-	virtual bool operator <= (const LSValue*) const = 0;
-	virtual bool operator <= (const LSNull*) const = 0;
-	virtual bool operator <= (const LSBoolean*) const = 0;
-	virtual bool operator <= (const LSNumber*) const = 0;
-	virtual bool operator <= (const LSString*) const = 0;
-	virtual bool operator <= (const LSArray<LSValue*>*) const = 0;
-	virtual bool operator <= (const LSArray<int>*) const = 0;
-	virtual bool operator <= (const LSArray<double>*) const = 0;
-	virtual bool operator <= (const LSFunction*) const = 0;
-	virtual bool operator <= (const LSObject*) const = 0;
-	virtual bool operator <= (const LSClass*) const = 0;
-
-	virtual bool operator >= (const LSValue*) const = 0;
-	virtual bool operator >= (const LSNull*) const = 0;
-	virtual bool operator >= (const LSBoolean*) const = 0;
-	virtual bool operator >= (const LSNumber*) const = 0;
-	virtual bool operator >= (const LSString*) const = 0;
-	virtual bool operator >= (const LSArray<LSValue*>*) const = 0;
-	virtual bool operator >= (const LSArray<int>*) const = 0;
-	virtual bool operator >= (const LSArray<double>*) const = 0;
-	virtual bool operator >= (const LSFunction*) const = 0;
-	virtual bool operator >= (const LSObject*) const = 0;
-	virtual bool operator >= (const LSClass*) const = 0;
+	inline bool operator >(const LSValue* value) const {
+		return not this->operator <(value) and not this->operator ==(value);
+	}
+	inline bool operator <=(const LSValue* value) const {
+		return this->operator <(value) || this->operator ==(value);
+	}
+	inline bool operator >=(const LSValue*value) const {
+		return not this->operator <(value);
+	}
 
 	virtual bool in(const LSValue*) const;
 
-	virtual LSValue* at(const LSValue* key) const = 0;
-	virtual LSValue** atL(const LSValue* key) = 0;
+	virtual LSValue* at(const LSValue* key) const;
+	virtual LSValue** atL(const LSValue* key);
 
-	virtual LSValue* attr(const LSValue* key) const = 0;
-	virtual LSValue** attrL(const LSValue* key) = 0;
+	virtual LSValue* attr(const LSValue* key) const;
+	virtual LSValue** attrL(const LSValue* key);
 
-	virtual LSValue* range(int start, int end) const = 0;
-	virtual LSValue* rangeL(int start, int end) = 0;
+	virtual LSValue* range(int start, int end) const;
+	virtual LSValue* rangeL(int start, int end);
 
 	virtual LSValue* abso() const;
 
@@ -247,8 +226,6 @@ public:
 
 	virtual LSValue* getClass() const = 0;
 
-	bool operator != (const LSValue*) const;
-
 	bool isInteger() const;
 
 	virtual int typeID() const = 0;
@@ -258,6 +235,7 @@ public:
 	static LSValue* parse(Json& json);
 
 	static void delete_val(LSValue* value);
+	static LSValue* move(LSValue* value);
 };
 
 }

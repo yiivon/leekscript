@@ -47,9 +47,12 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	condition->analyse(analyser, Type::BOOLEAN);
 	then->analyse(analyser, req_type);
 
+	can_return = can_return or then->can_return;
+
 	if (elze != nullptr) {
 
 		elze->analyse(analyser, req_type);
+		can_return = can_return or elze->can_return;
 
 		type = Type::get_compatible_type(then->type, elze->type);
 		if (then->type != type) {
@@ -60,21 +63,22 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	} else {
 		type = Type::POINTER; // Pointer because the else will give null
+
 		then->analyse(analyser, Type::POINTER);
 	}
 
-	if (Expression* cond_ex = dynamic_cast<Expression*>(condition)) {
-		if (cond_ex->op->type == TokenType::DOUBLE_EQUAL) {
-			if (Number* v2n = dynamic_cast<Number*>(cond_ex->v2)) {
-				if (v2n->value == 0) {
-					inversed = true;
-					condition = cond_ex->v1;
-				}
-			}
-		}
-	}
+//	if (Expression* cond_ex = dynamic_cast<Expression*>(condition)) {
+//		if (cond_ex->op->type == TokenType::DOUBLE_EQUAL) {
+//			if (Number* v2n = dynamic_cast<Number*>(cond_ex->v2)) {
+//				if (v2n->value == 0) {
+//					inversed = true;
+//					condition = cond_ex->v1;
+//				}
+//			}
+//		}
+//	}
 
-	if (req_type.nature != Nature::UNKNOWN) {
+	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
 	}
 }

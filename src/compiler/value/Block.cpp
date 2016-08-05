@@ -39,17 +39,17 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	analyser->enter_block();
 
+	type = Type::UNKNOWN;
+
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 
-		if (i == instructions.size() - 1) {
-			instructions[i]->analyse(analyser, req_type);
-			type = instructions[i]->type;
-		} else {
-			instructions[i]->analyse(analyser, Type::VOID);
-		}
+		instructions[i]->analyse(analyser, req_type);
 
-		if (instructions[i]->can_return) {
-			can_return = true;
+		can_return = can_return or instructions[i]->can_return;
+
+		bool can_return = instructions[i]->can_return or (i == instructions.size() - 1);
+		if (can_return) {
+			type = Type::get_compatible_type(type, instructions[i]->type);
 		}
 	}
 
@@ -68,7 +68,7 @@ jit_value_t Block::compile(Compiler& c) const {
 
 		if (i == instructions.size() - 1) {
 			jit_value_t val = instructions[i]->compile(c);
-			if (type.must_manage_memory()) {
+			if (type.nature != Nature::VOID and type.must_manage_memory()) {
 				VM::inc_refs(c.F, val);
 			}
 			c.leave_block(c.F);
@@ -82,7 +82,7 @@ jit_value_t Block::compile(Compiler& c) const {
 	if (type.nature != Nature::VOID) {
 		return VM::create_null(c.F);
 	}
-	return jit_value_create_nint_constant(c.F, jit_type_int, 0);
+	return nullptr;
 }
 
 }

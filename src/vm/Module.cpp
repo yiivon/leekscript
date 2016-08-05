@@ -13,7 +13,7 @@ using namespace std;
 namespace ls {
 
 Module::Module(std::string name) : name(name) {
-	clazz = new LSClass(name, 1);
+	clazz = new LSClass(name);
 }
 
 Module::~Module() {}

@@ -40,7 +40,10 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (var->function != analyser->current_function()) {
 			analyser->current_function()->capture(var);
   		}
+	} else {
+		type = Type::POINTER;
 	}
+
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}

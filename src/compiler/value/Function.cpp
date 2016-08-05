@@ -9,6 +9,7 @@ namespace ls {
 
 Function::Function() {
 	body = nullptr;
+	parent = nullptr;
 	pos = 0;
 	constant = true;
 	type = Type::FUNCTION;
@@ -76,14 +77,21 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		function_added = true;
 	}
 
+	for (unsigned int i = 0; i < arguments.size(); ++i) {
+		type.setArgumentType(i, Type::UNKNOWN);
+	}
+
 	for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
 		type.setArgumentType(i, req_type.getArgumentType(i));
 	}
-	type.setReturnType(req_type.getReturnType());
+
+//	type.setReturnType(return_type);
 
 	analyse_body(analyser, req_type.getReturnType());
 
-	type.nature = req_type.nature;
+	if (req_type.nature != Nature::UNKNOWN) {
+		type.nature = req_type.nature;
+	}
 
 //	cout << "Function type: " << type << endl;
 }
@@ -94,11 +102,9 @@ bool Function::will_take(SemanticAnalyser* analyser, const unsigned pos, const T
 
 	bool changed = type.will_take(pos, arg_type);
 
-	//cout << "function after will_take " << type << endl;
+	analyse_body(analyser, type.getReturnType());
 
-	if (changed) {
-		analyse_body(analyser, type.getReturnType());
-	}
+//	cout << "Function::will_take type after " << type << endl;
 
 	return changed;
 }

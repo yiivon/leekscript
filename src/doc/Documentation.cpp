@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include "../vm/standard/ArraySTD.hpp"
+#include "../vm/standard/MapSTD.hpp"
 #include "../vm/standard/BooleanSTD.hpp"
 #include "../vm/standard/NumberSTD.hpp"
 #include "../vm/standard/ObjectSTD.hpp"
@@ -23,6 +24,7 @@ void Documentation::generate(ostream& os) {
 
 	vector<Module*> modules;
 	modules.push_back(new ArraySTD());
+	modules.push_back(new MapSTD());
 	modules.push_back(new BooleanSTD());
 	modules.push_back(new NumberSTD());
 	modules.push_back(new ObjectSTD());

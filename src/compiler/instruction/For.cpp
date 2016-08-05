@@ -13,7 +13,6 @@ namespace ls {
 For::For() {
 	condition = nullptr;
 	body = nullptr;
-	type = Type::VOID;
 }
 
 For::~For() {
@@ -90,7 +89,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type&) {
 		condition->analyse(analyser);
 	}
 	for (auto it : iterations) {
-		it->analyse(analyser);
+		it->analyse(analyser, Type::VOID);
 	}
 	analyser->enter_loop();
 	body->analyse(analyser, Type::VOID);
@@ -104,7 +103,7 @@ int for_is_true(LSValue* v) {
 jit_value_t For::compile(Compiler& c) const {
 
 	if (body->instructions.size() == 0 && condition == nullptr) {
-		return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
+		return nullptr;
 	}
 
 	// Initialization
@@ -124,7 +123,7 @@ jit_value_t For::compile(Compiler& c) const {
 			jit_value_t val = variablesValues.at(i)->compile(c);
 			jit_insn_store(c.F, var, val);
 		} else {
-			jit_value_t val = JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
+			jit_value_t val = JIT_CREATE_CONST_POINTER(c.F, LSNull::get());
 			jit_insn_store(c.F, var, val);
 		}
 	}
@@ -171,10 +170,7 @@ jit_value_t For::compile(Compiler& c) const {
 
 	c.leave_loop();
 
-	if (type != Type::VOID) {
-		return VM::create_null(c.F);
-	}
-	return jit_value_create_nint_constant(c.F, jit_type_int, 0);
+	return nullptr;
 }
 
 }

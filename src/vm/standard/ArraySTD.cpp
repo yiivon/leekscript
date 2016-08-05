@@ -23,7 +23,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::ARRAY, Type::INTEGER_P, {}, (void*) &array_min}
 	});
 
-	method("size", Type::ARRAY, Type::INTEGER_P, {}, (void*) &array_size);
+	method("size", {
+		{Type::ARRAY, Type::INTEGER, {}, (void*) &LSArray<LSValue*>::size},
+		{Type::FLOAT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<float>::size},
+		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::size}
+	});
 
 	method("sum", {
 		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::sum},
@@ -210,7 +214,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	static_method("max", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_max);
 	static_method("min", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_min);
-	static_method("size", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_size);
+
+	static_method("size", {
+		{Type::INTEGER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::size},
+		{Type::INTEGER, {Type::FLOAT_ARRAY}, (void*) &LSArray<float>::size},
+		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::size}
+	});
 
 	static_method("sum", {
 		{Type::POINTER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::sum},
@@ -372,7 +381,7 @@ LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LS
 }
 
 LSValue* array_isEmpty(const LSArray<LSValue*>* array) {
-	return new LSBoolean(array->size() == 0);
+	return LSBoolean::get(array->size() == 0);
 }
 
 LSValue* array_keySort(const LSArray<LSValue*>*, const LSNumber*) {
@@ -437,7 +446,7 @@ LSValue* array_remove(LSArray<LSValue*>*, const LSValue*) {
 		return array->removeKey((LSValue*) index);
 	}
 	*/
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* array_removeElement(LSArray<LSValue*>*, const LSValue*) {
@@ -453,7 +462,7 @@ LSValue* array_removeElement(LSArray<LSValue*>*, const LSValue*) {
 		}
 	}
 	*/
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* array_removeKey(LSArray<LSValue*>* array, const LSValue* index) {
@@ -472,7 +481,7 @@ LSValue* array_search(const LSArray<LSValue*>*, const LSValue*, const LSValue*) 
 			return i->first->clone();
 	}
 	*/
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* array_shift(const LSArray<LSValue*>*) {
@@ -496,10 +505,6 @@ LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>*) {
 	}
 	*/
 	return new_array;
-}
-
-LSNumber* array_size(const LSArray<LSValue*>* array) {
-	return LSNumber::get(array->size());
 }
 
 LSArray<LSValue*>* array_sort(const LSArray<LSValue*>*, const LSNumber*) {

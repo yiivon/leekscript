@@ -36,7 +36,7 @@ void Foreach::print(ostream& os, int indent, bool debug) const {
 	os << value->content;
 
 	os << " in ";
-	array->print(os, debug);
+	array->print(os, indent, debug);
 
 	os << " ";
 	body->print(os, indent, debug);
@@ -178,10 +178,7 @@ jit_value_t Foreach::compile(Compiler& c) const {
 
 	VM::delete_temporary(c.F, a);
 
-	if (type != Type::VOID) {
-		return VM::create_null(c.F);
-	}
-	return jit_value_create_nint_constant(c.F, jit_type_int, 0);
+	return nullptr;
 }
 
 }

@@ -4,23 +4,18 @@
 #ifndef LS_ARRAY_BASE
 #define LS_ARRAY_BASE
 
-#include <map>
 #include <vector>
 #include <iterator>
-#include <algorithm>
-#include <type_traits>
-#include <string>
 
 #include "../LSValue.hpp"
-#include "../../../lib/json.hpp"
-#include "LSClass.hpp"
 
 namespace ls {
 
 template <typename T>
 using LSArrayIterator = typename std::vector<T>::iterator;
 
-template <typename T> class LSArray : public LSValue, public std::vector<T> {
+template <typename T>
+class LSArray : public LSValue, public std::vector<T> {
 public:
 
 	static LSValue* array_class;
@@ -133,41 +128,6 @@ public:
 	bool operator < (const LSObject*) const override;
 	bool operator < (const LSClass*) const override;
 
-	bool operator > (const LSValue*) const override;
-	bool operator > (const LSNull*) const override;
-	bool operator > (const LSBoolean*) const override;
-	bool operator > (const LSNumber*) const override;
-	bool operator > (const LSString*) const override;
-	bool operator > (const LSArray<LSValue*>*) const override;
-	bool operator > (const LSArray<int>*) const override;
-	bool operator > (const LSArray<double>*) const override;
-	bool operator > (const LSFunction*) const override;
-	bool operator > (const LSObject*) const override;
-	bool operator > (const LSClass*) const override;
-
-	bool operator <= (const LSValue*) const override;
-	bool operator <= (const LSNull*) const override;
-	bool operator <= (const LSBoolean*) const override;
-	bool operator <= (const LSNumber*) const override;
-	bool operator <= (const LSString*) const override;
-	bool operator <= (const LSArray<LSValue*>*) const override;
-	bool operator <= (const LSArray<int>*) const override;
-	bool operator <= (const LSArray<double>*) const override;
-	bool operator <= (const LSFunction*) const override;
-	bool operator <= (const LSObject*) const override;
-	bool operator <= (const LSClass*) const override;
-
-	bool operator >= (const LSValue*) const override;
-	bool operator >= (const LSNull*) const override;
-	bool operator >= (const LSBoolean*) const override;
-	bool operator >= (const LSNumber*) const override;
-	bool operator >= (const LSString*) const override;
-	bool operator >= (const LSArray<LSValue*>*) const override;
-	bool operator >= (const LSArray<int>*) const override;
-	bool operator >= (const LSArray<double>*) const override;
-	bool operator >= (const LSFunction*) const override;
-	bool operator >= (const LSObject*) const override;
-	bool operator >= (const LSClass*) const override;
 
 	bool in(const LSValue*) const override;
 

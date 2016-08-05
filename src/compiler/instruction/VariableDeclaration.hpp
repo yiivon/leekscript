@@ -20,7 +20,6 @@ public:
 	std::vector<Token*> variables;
 	std::vector<Value*> expressions;
 	std::map<std::string, SemanticVar*> vars;
-	bool return_value;
 
 	VariableDeclaration();
 	virtual ~VariableDeclaration();

@@ -35,7 +35,7 @@ void Boolean::analyse(SemanticAnalyser*, const Type& req_type) {
 jit_value_t Boolean::compile(Compiler& c) const {
 
 	if (type.nature == Nature::POINTER) {
-		LSBoolean* b = new LSBoolean(value);
+		LSBoolean* b = LSBoolean::get(value);
 		return JIT_CREATE_CONST_POINTER(c.F, b);
 	} else {
 		return JIT_CREATE_CONST(c.F, JIT_INTEGER, value);
