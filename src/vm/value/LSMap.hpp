@@ -6,18 +6,20 @@
 
 namespace ls {
 
-struct lsvalue_less {
-	bool operator() (const LSValue* lhs, const LSValue* rhs) const {
-		return rhs->operator < (lhs);
-	}
+template <typename K>
+struct lsmap_less {
+	bool operator() (K lhs, K rhs) const;
 };
 
-template <typename T>
-using LSMapIterator = typename std::map<LSValue*, T>::iterator;
+template <typename K, typename T>
+using LSMapIterator = typename std::map<K, T>::iterator;
 
-template <typename T>
-class LSMap : public LSValue, public std::map<LSValue*, T, lsvalue_less> {
+template <typename K, typename T>
+class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
 public:
+
+	static LSValue* map_class;
+
 	LSMap();
 	LSMap(std::initializer_list<std::pair<LSValue*, T>>);
 	virtual ~LSMap();
@@ -29,6 +31,8 @@ public:
 	/*
 	 * LSValue methods;
 	 */
+	bool isTrue() const override;
+
 	LSValue* operator + (const LSValue*) const override;
 	LSValue* operator += (LSValue*) override;
 	LSValue* operator - (const LSValue*) const override;
@@ -42,7 +46,21 @@ public:
 	LSValue* operator % (const LSValue*) const override;
 	LSValue* operator %= (LSValue*) override;
 	bool operator == (const LSValue*) const override;
+	//bool operator == (const LSMap<LSValue*>*) const override;
 
+	virtual bool operator < (const LSValue*) const override;
+	//virtual bool operator < (const LSMap*) const override;
+
+	virtual LSValue* at(const LSValue* key) const override;
+	virtual LSValue** atL(const LSValue* key) override;
+	int atv(const LSValue* key);
+	int* atLv(const LSValue* key);
+	virtual std::ostream& print(std::ostream&) const override;
+	virtual std::string json() const override;
+	virtual LSValue* clone() const override;
+	virtual LSValue* getClass() const override;
+	virtual int typeID() const override;
+	virtual const BaseRawType* getRawType() const override;
 };
 
 }

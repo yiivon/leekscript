@@ -747,14 +747,14 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 		Map* map = new Map();
 		map->keys.push_back(value);
 		eat();
-		map->expressions.push_back(eatExpression());
+		map->values.push_back(eatExpression());
 
 		while (t->type != TokenType::CLOSING_BRACKET && t->type != TokenType::FINISHED) {
 			if (t->type == TokenType::COMMA)
 				eat();
 			map->keys.push_back(eatExpression());
 			eat(TokenType::COLON);
-			map->expressions.push_back(eatExpression());
+			map->values.push_back(eatExpression());
 		}
 		eat(TokenType::CLOSING_BRACKET);
 		return map;

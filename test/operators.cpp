@@ -56,4 +56,94 @@ void Test::test_operators() {
 
 	res ?? 12 // res ? res : 12
 	*/
+
+
+	/*
+	 * Compare
+	 */
+
+	header("Comparison");
+	success("null < null", "false");
+	success("null < true", "true");
+	success("null < 1", "true");
+	success("null < 'a'", "true");
+	success("null < []", "true");
+	success("null < {}", "true");
+
+	success("true < null", "false");
+	success("true < true", "false");
+	//success("true < 1", "true");
+	success("true < 'a'", "true");
+	success("true < []", "true");
+	success("true < {}", "true");
+
+	success("1 < null", "false");
+	success("1 < true", "false");
+	success("1 < 1", "false");
+	success("1 < 'a'", "true");
+	success("1 < []", "true");
+	success("1 < {}", "true");
+
+	success("'a' < null", "false");
+	success("'a' < true", "false");
+	success("'a' < 1", "false");
+	success("'a' < 'a'", "false");
+	success("'a' < []", "true");
+	success("'a' < {}", "true");
+
+	success("[] < null", "false");
+	success("[] < true", "false");
+	success("[] < 1", "false");
+	success("[] < 'a'", "false");
+	success("[] < []", "false");
+	success("[] < {}", "true");
+
+	success("{} < null", "false");
+	success("{} < true", "false");
+	success("{} < 1", "false");
+	success("{} < 'a'", "false");
+	success("{} < []", "false");
+	success("{} < {}", "false");
+
+	success("null >= null", "true");
+	success("null >= false", "false");
+	success("null >= 1", "false");
+	success("null >= 'a'", "false");
+	success("null >= []", "false");
+	success("null >= {}", "false");
+
+	success("false >= null", "true");
+	success("false >= false", "true");
+	success("false >= 1", "false");
+	success("false >= 'a'", "false");
+	success("false >= []", "false");
+	success("false >= {}", "false");
+
+	success("1 >= null", "true");
+	success("1 >= false", "true");
+	success("1 >= 1", "true");
+	success("1 >= 'a'", "false");
+	success("1 >= []", "false");
+	success("1 >= {}", "false");
+
+	success("'a' >= null", "true");
+	success("'a' >= false", "true");
+	success("'a' >= 1", "true");
+	success("'a' >= 'a'", "true");
+	success("'a' >= []", "false");
+	success("'a' >= {}", "false");
+
+	success("[] >= null", "true");
+	success("[] >= false", "true");
+	success("[] >= 1", "true");
+	success("[] >= 'a'", "true");
+	success("[] >= []", "true");
+	success("[] >= {}", "false");
+
+	success("{} >= null", "true");
+	success("{} >= false", "true");
+	success("{} >= 1", "true");
+	success("{} >= 'a'", "true");
+	success("{} >= []", "true");
+	success("{} >= {}", "true");
 }

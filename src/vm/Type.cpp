@@ -14,6 +14,7 @@ const LongRawType* const RawType::LONG = new LongRawType();
 const FloatRawType* const RawType::FLOAT = new FloatRawType();
 const StringRawType* const RawType::STRING = new StringRawType();
 const ArrayRawType* const RawType::ARRAY = new ArrayRawType();
+const MapRawType* const RawType::MAP = new MapRawType();
 const IntervalRawType* const RawType::INTERVAL = new IntervalRawType();
 const ObjectRawType* const RawType::OBJECT = new ObjectRawType();
 const FunctionRawType* const RawType::FUNCTION = new FunctionRawType();
@@ -37,6 +38,7 @@ const Type Type::FLOAT_P(RawType::FLOAT, Nature::POINTER);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
+const Type Type::MAP(RawType::MAP, Nature::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
@@ -94,7 +96,7 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type
 }
 
 bool Type::must_manage_memory() const {
-	return nature == Nature::POINTER and not native;
+	return nature == Nature::POINTER && !native;
 }
 
 Type Type::getReturnType() const {

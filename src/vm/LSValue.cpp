@@ -35,10 +35,6 @@ std::ostream& operator << (std::ostream& os, LSValue& value) {
 	return os;
 }
 
-bool LSValue::operator != (const LSValue* value) const {
-	return !value->operator == (this);
-}
-
 bool LSValue::isInteger() const {
 	if (const LSNumber* v = dynamic_cast<const LSNumber*>(this)) {
 		return v->isInteger();
@@ -229,7 +225,66 @@ bool LSValue::operator == (const LSFunction*) const { return false; }
 bool LSValue::operator == (const LSObject*) const { return false; }
 bool LSValue::operator == (const LSClass*) const { return false; }
 
+bool LSValue::operator < (const LSNull*) const {
+	return typeID() < 1;
+}
+bool LSValue::operator < (const LSBoolean*) const {
+	return typeID() < 2;
+}
+bool LSValue::operator < (const LSNumber*) const {
+	return typeID() < 3;
+}
+bool LSValue::operator < (const LSString*) const {
+	return typeID() < 4;
+}
+bool LSValue::operator < (const LSArray<LSValue*>*) const {
+	return typeID() < 5;
+}
+bool LSValue::operator < (const LSArray<int>*) const {
+	return typeID() < 5;
+}
+bool LSValue::operator < (const LSArray<double>*) const {
+	return typeID() < 5;
+}
+bool LSValue::operator < (const LSFunction*) const {
+	return typeID() < 8;
+}
+bool LSValue::operator < (const LSObject*) const {
+	return typeID() < 9;
+}
+bool LSValue::operator < (const LSClass*) const {
+	return typeID() < 10;
+}
+
 bool LSValue::in(const LSValue*) const { return false; }
+
+LSValue* LSValue::at(const LSValue*) const {
+	return LSNull::null_var;
+}
+
+LSValue** LSValue::atL(const LSValue*) {
+	return &LSNull::null_var;
+}
+
+LSValue* LSValue::attr(const LSValue* key) const {
+	if (*((LSString*) key) == "class") {
+		return getClass();
+	}
+	return LSNull::null_var;
+}
+
+LSValue** LSValue::attrL(const LSValue*) {
+	return &LSNull::null_var;
+}
+
+LSValue* LSValue::range(int, int) const {
+	return clone();
+}
+
+LSValue* LSValue::rangeL(int, int) {
+	return this;
+}
+
 LSValue* LSValue::abso() const { return LSNull::null_var; }
 
 }

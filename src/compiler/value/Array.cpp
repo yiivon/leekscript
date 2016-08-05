@@ -1,8 +1,7 @@
-#include "../../compiler/value/Array.hpp"
-
+#include "Array.hpp"
 #include "../../vm/VM.hpp"
+#include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSInterval.hpp"
-#include "../../vm/value/LSMap.hpp"
 #include <math.h>
 
 using namespace std;
