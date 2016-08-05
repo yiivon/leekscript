@@ -20,7 +20,7 @@ LSValue::LSValue() {
 //	cout << "LSValue()" << endl;
 	native = false;
 	obj_count++;
-	objs.insert({this, this});
+	//objs.insert({this, this});
 }
 
 LSValue::~LSValue() {
@@ -33,10 +33,6 @@ std::ostream& operator << (std::ostream& os, LSValue& value) {
 	cout << "print LSValue" << endl;
 	value.print(os);
 	return os;
-}
-
-bool LSValue::operator != (const LSValue* value) const {
-	return !value->operator == (this);
 }
 
 bool LSValue::isInteger() const {
@@ -242,8 +238,69 @@ bool LSValue::operator == (const LSFunction*) const { return false; }
 bool LSValue::operator == (const LSObject*) const { return false; }
 bool LSValue::operator == (const LSClass*) const { return false; }
 
+bool LSValue::operator < (const LSNull*) const {
+	return typeID() < 1;
+}
+bool LSValue::operator < (const LSBoolean*) const {
+	return typeID() < 2;
+}
+bool LSValue::operator < (const LSNumber*) const {
+	return typeID() < 3;
+}
+bool LSValue::operator < (const LSString*) const {
+	return typeID() < 4;
+}
+bool LSValue::operator < (const LSArray<LSValue*>*) const {
+	return typeID() < 5;
+}
+bool LSValue::operator < (const LSArray<int>*) const {
+	return typeID() < 5;
+}
+bool LSValue::operator < (const LSArray<double>*) const {
+	return typeID() < 5;
+}
+bool LSValue::operator < (const LSFunction*) const {
+	return typeID() < 8;
+}
+bool LSValue::operator < (const LSObject*) const {
+	return typeID() < 9;
+}
+bool LSValue::operator < (const LSClass*) const {
+	return typeID() < 10;
+}
+
 bool LSValue::in(const LSValue*) const { return false; }
-LSValue* LSValue::abso() const { return LSNull::get(); }
+
+LSValue* LSValue::at(const LSValue*) const {
+	return LSNull::get();
+}
+
+LSValue** LSValue::atL(const LSValue*) {
+	return nullptr;
+}
+
+LSValue* LSValue::attr(const LSValue* key) const {
+	if (*((LSString*) key) == "class") {
+		return getClass();
+	}
+	return LSNull::get();
+}
+
+LSValue** LSValue::attrL(const LSValue*) {
+	return nullptr;
+}
+
+LSValue* LSValue::range(int, int) const {
+	return clone();
+}
+
+LSValue* LSValue::rangeL(int, int) {
+	return this;
+}
+
+LSValue* LSValue::abso() const {
+	return LSNull::get();
+}
 
 }
 

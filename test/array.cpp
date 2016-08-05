@@ -49,6 +49,8 @@ void Test::test_arrays() {
 	success("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)", "[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
 	success("[1] < [1, 2]", "true");
 
+//	let f=x->x[0]; [f([1]), f([0..3])]
+
 	/*
 	 * Intervals
 	 */
