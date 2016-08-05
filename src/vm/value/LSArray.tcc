@@ -6,6 +6,8 @@
 #include "LSBoolean.hpp"
 #include "LSFunction.hpp"
 
+#include <algorithm>
+
 namespace ls {
 
 template <class T>

@@ -4,23 +4,18 @@
 #ifndef LS_ARRAY_BASE
 #define LS_ARRAY_BASE
 
-#include <map>
 #include <vector>
 #include <iterator>
-#include <algorithm>
-#include <type_traits>
-#include <string>
 
 #include "../LSValue.hpp"
-#include "../../../lib/json.hpp"
-#include "LSClass.hpp"
 
 namespace ls {
 
 template <typename T>
 using LSArrayIterator = typename std::vector<T>::iterator;
 
-template <typename T> class LSArray : public LSValue, public std::vector<T> {
+template <typename T>
+class LSArray : public LSValue, public std::vector<T> {
 public:
 
 	static LSValue* array_class;

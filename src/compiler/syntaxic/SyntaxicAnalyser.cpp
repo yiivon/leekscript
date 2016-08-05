@@ -19,6 +19,7 @@
 #include "../instruction/While.hpp"
 #include "../value/AbsoluteValue.hpp"
 #include "../value/Array.hpp"
+#include "../value/Map.hpp"
 #include "../value/ArrayAccess.hpp"
 #include "../value/Boolean.hpp"
 #include "../value/FunctionCall.hpp"
@@ -680,7 +681,7 @@ Value* SyntaxicAnalyser::eatValue() {
 			return new Reference(eatIdent());
 
 		case TokenType::OPEN_BRACKET:
-			return eatArray();
+			return eatArrayOrMap();
 
 		case TokenType::OPEN_BRACE:
 			return eatBlockOrObject();
@@ -714,66 +715,62 @@ Value* SyntaxicAnalyser::eatValue() {
 	return new Nulll();
 }
 
-Array* SyntaxicAnalyser::eatArray() {
+Value* SyntaxicAnalyser::eatArrayOrMap() {
 
 	eat(TokenType::OPEN_BRACKET);
 
-	Array* a = new Array();
 
 	// Empty array
 	if (t->type == TokenType::CLOSING_BRACKET) {
 		eat();
-		return a;
+		return new Array();
 	}
 
-	Value* key = nullptr;
 	Value* value = eatExpression();
 
+	// eatInterval
 	if (t->type == TokenType::TWO_DOTS) {
+
+		Array* interval = new Array();
+		interval->interval = true;
+		interval->expressions.push_back(value);
 		eat();
-
-		a->interval = true;
-		a->addValue(value, nullptr);
-
-		Value* value2 = eatExpression();
-
-		a->addValue(value2, nullptr);
+		interval->expressions.push_back(eatExpression());
 
 		eat(TokenType::CLOSING_BRACKET);
-
-		return a;
+		return interval;
 	}
 
+	// eatMap
 	if (t->type == TokenType::COLON) {
-		eat(TokenType::COLON);
-		key = value;
-		value = eatExpression();
-	}
-	a->addValue(value, key);
 
-	if (t->type == TokenType::COMMA) {
+		Map* map = new Map();
+		map->keys.push_back(value);
 		eat();
+		map->expressions.push_back(eatExpression());
+
+		while (t->type != TokenType::CLOSING_BRACKET && t->type != TokenType::FINISHED) {
+			if (t->type == TokenType::COMMA)
+				eat();
+			map->keys.push_back(eatExpression());
+			eat(TokenType::COLON);
+			map->expressions.push_back(eatExpression());
+		}
+		eat(TokenType::CLOSING_BRACKET);
+		return map;
 	}
+
+	// eatArray
+	Array* array = new Array();
+	array->expressions.push_back(value);
 
 	while (t->type != TokenType::CLOSING_BRACKET && t->type != TokenType::FINISHED) {
-
-		value = eatExpression();
-
-		if (t->type == TokenType::COLON) {
-			eat(TokenType::COLON);
-			key = value;
-			value = eatExpression();
-		}
-
-		a->addValue(value, key);
-
-		if (t->type == TokenType::COMMA) {
+		if (t->type == TokenType::COMMA)
 			eat();
-		}
+		array->expressions.push_back(eatExpression());
 	}
 	eat(TokenType::CLOSING_BRACKET);
-
-	return a;
+	return array;
 }
 
 If* SyntaxicAnalyser::eatIf() {
