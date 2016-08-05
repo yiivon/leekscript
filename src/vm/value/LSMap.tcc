@@ -10,8 +10,8 @@ using namespace std;
 
 namespace ls {
 
-template<>
-class LSMap<LSValue*, LSValue*> {};
+//template<>
+//class LSMap<LSValue*, LSValue*> {};
 
 template <class K>
 inline bool lsmap_less<K>::operator()(K lhs, K rhs) const {
@@ -60,7 +60,7 @@ inline LSMap<int, double>* LSMap<int, double>::insert(const int key, const doubl
 	if (refs == 0) refs = 1;
 	return this;
 }
-
+/*
 template <>
 inline LSMap<LSValue*, LSValue*>* LSMap<LSValue*, LSValue*>::insert(const LSValue* key, const LSValue* value) {
 	emplace(key->clone(), value->clone());
@@ -85,7 +85,7 @@ inline LSMap<int, LSValue*>* LSMap<int, LSValue*>::insert(const int key, const L
 	if (refs == 0) refs = 1;
 	return this;
 }
-
+*/
 
 /*
  * LSValue methods
