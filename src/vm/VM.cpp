@@ -408,7 +408,7 @@ void VM_operation_exception() {
 
 void VM::inc_ops(jit_function_t& F, int add) {
 
-	if (!enable_operations) return;
+	if (not enable_operations) return;
 
 	// Variable counter pointer
 	jit_value_t jit_ops_ptr = jit_value_create_long_constant(F, jit_type_void_ptr, (long int) &VM::operations);

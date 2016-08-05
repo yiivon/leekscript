@@ -48,7 +48,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	array->analyse(analyser);
 	key->analyse(analyser);
-	constant = array->constant and key->constant;
+	constant = array->constant && key->constant;
 
 	if (array->type.raw_type == RawType::ARRAY || array->type.raw_type == RawType::INTERVAL) {
 		array_element_type = array->type.getElementType();

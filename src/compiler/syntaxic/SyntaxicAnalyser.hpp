@@ -54,7 +54,7 @@ public:
 	Value* eatBlockOrObject();
 	Block* eatBlock();
 	Object* eatObject();
-	Array* eatArray();
+	Value* eatArrayOrMap();
 	If* eatIf();
 	Match* eatMatch(bool force_value);
 	Match::Pattern eatMatchPattern();

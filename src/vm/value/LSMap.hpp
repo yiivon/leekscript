@@ -1,80 +1,71 @@
 #ifndef LS_MAP_BASE
 #define LS_MAP_BASE
 
-#include "LSArray.hpp"
+#include "../LSValue.hpp"
+#include <map>
 
 namespace ls {
 
-struct lsvalue_less {
-	bool operator() (const LSValue* lhs, const LSValue* rhs) const {
-		return rhs->operator < (lhs);
-	}
+template <class K>
+struct lsmap_less {
+	bool operator() (K lhs, K rhs) const;
 };
 
-template <typename T>
-using LSMapIterator = typename std::map<LSValue*, T>::iterator;
+template <class K, class T>
+using LSMapIterator = typename std::map<K, T>::iterator;
 
-template <typename T>
-class LSMap : public LSArray<T> {
+template <class K, class T>
+class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
 public:
 
-	int index = 0;
-	std::map<LSValue*, T, lsvalue_less> values;
+	static LSValue* map_class;
 
 	LSMap();
 	LSMap(std::initializer_list<std::pair<LSValue*, T>>);
 	virtual ~LSMap();
 
 	/*
-	 * Map methods
+	 * Map methods;
 	 */
-	LSValue* pop();
-	void push_clone(const T value);
-	void push_no_clone(T value);
-	void push_key_clone(LSValue* key, const T var);
-	void push_key_no_clone(LSValue* key, T var);
-	LSValue* remove_key(LSValue* key);
-	virtual void clear();
-	size_t size() const override;
-	T sum() const override;
-	double average() const override;
+	LSMap<K, T>* insert(const K key, const T value);
 
 	/*
 	 * LSValue methods;
 	 */
-	virtual bool isTrue() const override;
-	virtual LSValue* operator ! () const override;
+	bool isTrue() const override;
 
-	LSValue* operator + (const LSNull* nulll) const;
-	LSValue* operator + (const LSBoolean* boolean) const;
-	LSValue* operator + (const LSNumber* number) const;
-	LSValue* operator + (const LSString* string) const;
-	LSValue* operator + (const LSArray<LSValue*>* array) const;
-	LSValue* operator + (const LSMap<LSValue*>* map) const;
+	LSValue* operator + (const LSValue*) const override;
+	LSValue* operator += (LSValue*) override;
+	LSValue* operator - (const LSValue*) const override;
+	LSValue* operator -= (LSValue*) override;
+	LSValue* operator * (const LSValue*) const override;
+	LSValue* operator *= (LSValue*) override;
+	LSValue* operator / (const LSValue*) const override;
+	LSValue* operator /= (LSValue*) override;
+	LSValue* poww(const LSValue*) const override;
+	LSValue* pow_eq(LSValue*) override;
+	LSValue* operator % (const LSValue*) const override;
+	LSValue* operator %= (LSValue*) override;
+	bool operator == (const LSValue*) const override;
+	//bool operator == (const LSMap<LSValue*>*) const override;
 
-	LSValue* operator += (const LSMap<LSValue*>* array);
+	virtual bool operator < (const LSValue*) const override;
+	//virtual bool operator < (const LSMap*) const override;
 
-	bool operator == (const LSMap<LSValue*>* v) const;
-
-	virtual bool in(const LSValue* key) const override;
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;
-
-	LSValue* range(int, int end) const override;
-
-	LSValue* attr(const LSValue* key) const override;
-	LSValue* abso() const override;
-
-	LSValue* clone() const override;
-	std::ostream& print(std::ostream& os) const override;
-
-	std::string json() const override;
+	virtual std::ostream& print(std::ostream&) const override;
+	virtual std::string json() const override;
+	virtual LSValue* clone() const override;
+	virtual LSValue* getClass() const override;
+	virtual int typeID() const override;
+	virtual const BaseRawType* getRawType() const override;
 };
+
+}
 
 #ifndef _GLIBCXX_EXPORT_TEMPLATE
 #include "LSMap.tcc"
 #endif
-
-}
 
 #endif
