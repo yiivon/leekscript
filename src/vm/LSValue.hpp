@@ -180,7 +180,7 @@ public:
 	virtual bool operator == (const LSClass*) const;
 
 	inline bool operator != (const LSValue* value) const {
-		return !this->operator ==(value);
+		return not this->operator ==(value);
 	}
 
 	virtual bool operator < (const LSValue*) const = 0;
@@ -196,13 +196,13 @@ public:
 	virtual bool operator < (const LSClass*) const;
 
 	inline bool operator >(const LSValue* value) const {
-		return !this->operator <(value) && !this->operator ==(value);
+		return not this->operator <(value) and not this->operator ==(value);
 	}
 	inline bool operator <=(const LSValue* value) const {
 		return this->operator <(value) || this->operator ==(value);
 	}
 	inline bool operator >=(const LSValue*value) const {
-		return !this->operator <(value);
+		return not this->operator <(value);
 	}
 
 	virtual bool in(const LSValue*) const;

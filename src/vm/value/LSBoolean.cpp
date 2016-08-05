@@ -33,11 +33,11 @@ bool LSBoolean::isTrue() const {
 }
 
 LSValue* LSBoolean::operator ! () const {
-	return LSBoolean::get(!value);
+	return LSBoolean::get(not value);
 }
 
 LSValue* LSBoolean::operator ~ () const {
-	return LSBoolean::get(!value);
+	return LSBoolean::get(not value);
 }
 
 LSValue* LSBoolean::operator + (const LSValue* v) const {

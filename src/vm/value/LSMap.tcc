@@ -44,7 +44,7 @@ LSMap<K,T>::~LSMap() {}
 
 template <typename K, typename T>
 bool LSMap<K,T>::isTrue() const {
-	return !this->empty();
+	return not this->empty();
 }
 
 template <typename K, typename T>
@@ -255,15 +255,76 @@ std::ostream& LSMap<int,double>::print(std::ostream& os) const {
 	os << "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) os << " ";
-		it->first->print(os);
 		os << it->first << " : " << it->second;
 	}
 	return os << "]";
 }
 
-template <typename K, typename T>
-std::string LSMap<K,T>::json() const {
-	return "this is a map";
+template <>
+std::string LSMap<LSValue*,LSValue*>::json() const {
+	string res = "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) res += ",";
+		res += it->first->to_json();
+		res += ":";
+		res += it->second->to_json();
+	}
+	return res + "]";
+}
+template <>
+std::string LSMap<LSValue*,int>::json() const {
+	string res = "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) res += ",";
+		res += it->first->to_json();
+		res += ":";
+		res += std::to_string(it->second);
+	}
+	return res + "]";
+}
+template <>
+std::string LSMap<LSValue*,double>::json() const {
+	string res = "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) res += ",";
+		res += it->first->to_json();
+		res += ":";
+		res += std::to_string(it->second);
+	}
+	return res + "]";
+}
+template <>
+std::string LSMap<int,LSValue*>::json() const {
+	string res = "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) res += ",";
+		res += std::to_string(it->first);
+		res += ":";
+		res += it->second->to_json();
+	}
+	return res + "]";
+}
+template <>
+std::string LSMap<int,int>::json() const {
+	string res = "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) res += ",";
+		res += std::to_string(it->first);
+		res += ":";
+		res += std::to_string(it->second);
+	}
+	return res + "]";
+}
+template <>
+std::string LSMap<int,double>::json() const {
+	string res = "[";
+	for (auto it = begin(); it != end(); ++it) {
+		if (it != begin()) res += ",";
+		res += std::to_string(it->first);
+		res += ":";
+		res += std::to_string(it->second);
+	}
+	return res + "]";
 }
 
 template <>

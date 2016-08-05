@@ -9,7 +9,7 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 
 int boolean_compare(bool a, bool b) {
 	if (a) {
-		if (!b) return 1;
+		if (not b) return 1;
 	} else {
 		if (b) return -1;
 	}

@@ -128,7 +128,7 @@ Block* SyntaxicAnalyser::eatBlock() {
 	while (true) {
 		if (t->type == TokenType::CLOSING_BRACE) {
 			eat();
-			if (!brace) {
+			if (not brace) {
 				errors.push_back(new SyntaxicalError(t, "Unexpected closing brace, forgot to open it ?"));
 			}
 			break;

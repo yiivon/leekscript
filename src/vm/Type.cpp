@@ -96,7 +96,7 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type
 }
 
 bool Type::must_manage_memory() const {
-	return nature == Nature::POINTER && !native;
+	return nature == Nature::POINTER and not native;
 }
 
 Type Type::getReturnType() const {
@@ -257,12 +257,17 @@ bool Type::compatible(const Type& type) const {
 		return this->getElementType().compatible(type.getElementType());
 	}
 
+	if (this->raw_type == RawType::MAP) {
+		return element_type[0].compatible(type.element_type[0])
+				&& element_type[1].compatible(type.element_type[1]);
+	}
+
 	return true;
 }
 
 
 bool Type::operator != (const Type& type) const {
-	return !this->operator == (type);
+	return not this->operator == (type);
 }
 
 bool Type::list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual) {
