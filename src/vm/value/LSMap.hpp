@@ -25,8 +25,9 @@ public:
 	virtual ~LSMap();
 
 	/*
-	 * Map methods
+	 * Map methods;
 	 */
+	LSMap<K,T>* insert(const K key, const T value);
 
 	/*
 	 * LSValue methods;
@@ -53,8 +54,6 @@ public:
 
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;
-	int atv(const LSValue* key);
-	int* atLv(const LSValue* key);
 	virtual std::ostream& print(std::ostream&) const override;
 	virtual std::string json() const override;
 	virtual LSValue* clone() const override;

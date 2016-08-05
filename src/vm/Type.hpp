@@ -201,6 +201,7 @@ public:
 	Type(const BaseRawType* raw_type, Nature nature, bool native);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native);
+	Type(const BaseRawType* raw_type, Nature nature, const std::vector<Type>& element_types);
 
 	bool must_manage_memory() const;
 
@@ -211,7 +212,7 @@ public:
 	void setArgumentType(const unsigned int index, Type type);
 	const Type getArgumentType(const unsigned int index) const;
 	const std::vector<Type> getArgumentTypes() const;
-	const Type getElementType() const;
+	const Type getElementType(size_t i = 0) const;
 	void setElementType(Type);
 	bool isHomogeneous() const;
 
@@ -250,10 +251,16 @@ public:
 	static const Type STRING;
 	static const Type OBJECT;
 	static const Type ARRAY;
-	static const Type MAP;
 	static const Type INT_ARRAY;
 	static const Type FLOAT_ARRAY;
 	static const Type STRING_ARRAY;
+	static const Type MAP;
+	static const Type PTR_PTR_MAP;
+	static const Type PTR_INT_MAP;
+	static const Type PTR_FLOAT_MAP;
+	static const Type INT_PTR_MAP;
+	static const Type INT_INT_MAP;
+	static const Type INT_FLOAT_MAP;
 	static const Type INTERVAL;
 	static const Type FUNCTION;
 	static const Type FUNCTION_P;

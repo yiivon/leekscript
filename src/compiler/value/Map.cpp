@@ -22,11 +22,12 @@ Map::~Map()
 }
 
 void Map::print(std::ostream& os, int indent, bool debug) const {
-	os << tabs(indent) << "[\n";
+	os << "[\n";
 	for (size_t i = 0; i < values.size(); ++i) {
+		os << tabs(indent);
 		keys[i]->print(os, indent + 1, debug);
 		os << " : ";
-		values[i]->print(os, 0, debug);
+		values[i]->print(os, indent + 1, debug);
 		os << "\n";
 	}
 	os << tabs(indent) << "]";

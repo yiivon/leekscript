@@ -47,23 +47,12 @@ unsigned ArrayAccess::line() const {
 void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	array->analyse(analyser);
+	key->analyse(analyser);
 	constant = array->constant && key->constant;
 
-	if (array->type.raw_type == RawType::MAP) {
-		type = array_element_type = array->type.element_type[1];
-		key->analyse(analyser, array->type.element_type[0]);
-		if (!req_type.compatible(type)) {
-			analyser->add_error({SemanticException::Type::INVALID_MAP_KEY, 0, "<key 1>"});
-		} else {
-			type = Type::get_compatible_type(type, req_type);
-		}
-		return;
-	}
-
-	key->analyse(analyser);
-
 	if (array->type.raw_type == RawType::ARRAY || array->type.raw_type == RawType::INTERVAL) {
-		type = array_element_type = array->type.getElementType();
+		array_element_type = array->type.getElementType();
+		type = array_element_type;
 	}
 
 	if (array->type == Type::INTERVAL) {
@@ -89,7 +78,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	} else {
 
-		if (!key->type.isNumber()) {
+		if (not key->type.isNumber()) {
 			std::string k = "<key 1>";
 			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, k});
 		}

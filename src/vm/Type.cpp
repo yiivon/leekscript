@@ -38,10 +38,16 @@ const Type Type::FLOAT_P(RawType::FLOAT, Nature::POINTER);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
-const Type Type::MAP(RawType::MAP, Nature::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
+const Type Type::MAP(RawType::MAP, Nature::POINTER, {Type::UNKNOWN, Type::UNKNOWN});
+const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::POINTER});
+const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::INTEGER});
+const Type Type::PTR_FLOAT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::FLOAT});
+const Type Type::INT_PTR_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::POINTER});
+const Type Type::INT_INT_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::INTEGER});
+const Type Type::INT_FLOAT_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::FLOAT});
 const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
@@ -95,6 +101,14 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type
 	this->native = native;
 }
 
+Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& element_types) {
+	this->raw_type = raw_type;
+	this->nature = nature;
+	this->clazz = raw_type->getClass();
+	this->element_type = element_types;
+	native = false;
+}
+
 bool Type::must_manage_memory() const {
 	return nature == Nature::POINTER and not native;
 }
@@ -139,11 +153,11 @@ const vector<Type> Type::getArgumentTypes() const {
 	return arguments_types;
 }
 
-const Type Type::getElementType() const {
-	if (element_type.size() == 0) {
-		return Type::UNKNOWN;
+const Type Type::getElementType(size_t i) const {
+	if (i < element_type.size()) {
+		return element_type[i];
 	}
-	return element_type[0];
+	return Type::UNKNOWN;
 }
 
 void Type::setElementType(Type type) {
@@ -258,8 +272,8 @@ bool Type::compatible(const Type& type) const {
 	}
 
 	if (this->raw_type == RawType::MAP) {
-		return element_type[0].compatible(type.element_type[0])
-				&& element_type[1].compatible(type.element_type[1]);
+		return getElementType(0).compatible(type.getElementType(0))
+				&& getElementType(1).compatible(type.getElementType(1));
 	}
 
 	return true;
