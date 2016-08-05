@@ -12,7 +12,7 @@ void Test::test_objects() {
 	success("{a: 12, b: 5}", "{a: 12, b: 5}");
 	success("{a: {}, b: []}", "{a: {}, b: []}");
 
-	success("let a = {}", "{}");
+	success("let a = {} a", "{}");
 	success("let a = {b: 12, c: 5} a", "{b: 12, c: 5}");
 	success("let a = {b: 12, c: 5} a.b", "12");
 

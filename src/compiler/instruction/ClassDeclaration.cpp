@@ -28,8 +28,8 @@ void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 }
 
-jit_value_t ClassDeclaration::compile(Compiler& c) const {
-	return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
+jit_value_t ClassDeclaration::compile(Compiler&) const {
+	return nullptr;
 }
 
 }

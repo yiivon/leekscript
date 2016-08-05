@@ -258,6 +258,7 @@ public:
 	static LSValue* parse(Json& json);
 
 	static void delete_val(LSValue* value);
+	static LSValue* move(LSValue* value);
 };
 
 }

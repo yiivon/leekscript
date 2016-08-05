@@ -41,7 +41,7 @@ void Test::test_operators() {
 	header("Swap");
 	success("let a = 2 let b = 5 a <=> b [a, b]", "[5, 2]");
 //	success("let a = [1, 2, 3, 4] a[0] <=> a[3] a", "[4, 2, 3, 1]");
-	success("let a = 12 let b = 5 let s = a <=> b", "5");
+	success("let a = 12 let b = 5 let s = a <=> b s", "5");
 
 	/*
 	a ~~ b => (a ~~ b)

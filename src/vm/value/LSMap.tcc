@@ -34,7 +34,7 @@ template <class T>
 LSValue* LSMap<T>::pop() {
 	auto last = this->values.rbegin();
 	if (last == this->values.rend()) {
-		return LSNull::null_var;
+		return LSNull::get();
 	}
 	index--;
 	LSValue* val = (LSValue*) last->second;
@@ -74,7 +74,7 @@ LSValue* LSMap<T>::remove_key(LSValue* key) {
 		this->values.erase(it);
 		return val;
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 template <class T>
@@ -94,7 +94,7 @@ T LSMap<T>::sum() const {
 //		sum += ((LSNumber*) v.second)->value;
 //	}
 //	return sum;
-	return (T) LSNull::null_var;
+	return (T) LSNull::get();
 }
 
 template <class T>
@@ -221,7 +221,7 @@ LSValue* LSMap<T>::at(const LSValue* key) const {
 	try {
 		return (LSValue*) values.at((LSValue*) key);
 	} catch (exception& e) {
-		return LSNull::null_var;
+		return LSNull::get();
 	}
 }
 
@@ -230,7 +230,7 @@ LSValue** LSMap<T>::atL(const LSValue* key) {
 	try {
 		return (LSValue**) &values[(LSValue*) key];
 	} catch (exception& e) {
-		return &LSNull::null_var;
+		return nullptr;
 	}
 }
 
@@ -265,7 +265,7 @@ LSValue* LSMap<T>::attr(const LSValue* key) const {
 	try {
 		return (LSValue*) values.at((LSValue*) key);
 	} catch (exception& e) {
-		return LSNull::null_var;
+		return LSNull::get();
 	}
 }
 

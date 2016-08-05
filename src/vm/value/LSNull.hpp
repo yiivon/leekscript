@@ -9,15 +9,16 @@
 namespace ls {
 
 class LSNull : public LSValue {
+private:
+	static LSValue* null_var;
+	LSNull();
+
 public:
 
-	static LSValue* null_var;
+	static LSValue* get();
 	static LSClass* null_class;
 
-	LSNull();
-	LSNull(int refs);
-
-	~LSNull() {}
+	~LSNull();
 
 	LSValue* clone() const override;
 

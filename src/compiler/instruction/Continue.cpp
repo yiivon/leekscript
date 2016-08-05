@@ -13,13 +13,10 @@ Continue::Continue() {
 
 Continue::~Continue() {}
 
-void Continue::print(std::ostream& os, int indent, bool debug) const {
+void Continue::print(std::ostream& os, int indent, bool) const {
 	os << tabs(indent) << "continue";
 	if (value > 1) {
 		os << " " << value;
-	}
-	if (debug) {
-		os << " " << type;
 	}
 }
 
@@ -35,7 +32,7 @@ jit_value_t Continue::compile(Compiler& c) const {
 
 	jit_insn_branch(c.F, c.get_current_loop_cond_label());
 
-	return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
+	return nullptr;
 }
 
 }

@@ -30,12 +30,13 @@ void Test::test_strings() {
 	sem_err("'bonjour'['a':'b']", ls::SemanticException::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, "<key 1>");
 	success("'salut' * (1 + 2)", "'salutsalutsalut'");
 	success("('salut' * 1) + 2", "'salut2'");
+	success("('hello.world.how.are.you' / '.').size()", "5");
 
 	// Unicode
 	success("'韭'", "'韭'");
 	success("'♫☯🐖👽'", "'♫☯🐖👽'");
 	success("'a♫b☯c🐖d👽'", "'a♫b☯c🐖d👽'");
-	success("var hello = '你好，世界'", "'你好，世界'");
+	success("var hello = '你好，世界' hello", "'你好，世界'");
 	success("'♫☯🐖👽'[3]", "'👽'");
 	success("'韭' + '♫'", "'韭♫'");
 	success("|'♫👽'|", "2");

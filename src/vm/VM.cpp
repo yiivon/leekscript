@@ -97,9 +97,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	/*
 	 * Debug
 	 */
-	cout << "Program: ";
-	program->print(cout, true);
-
+//	cout << "Program: "; program->print(cout, true);
 
 	// Compilation
 	internals.clear();
@@ -130,10 +128,8 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 	if (mode == ExecMode::COMMAND_JSON || mode == ExecMode::TOP_LEVEL) {
 
-		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
-
 		ostringstream oss;
-		res_array->operator[] (0)->print(oss);
+		res->print(oss);
 		result = oss.str();
 
 		string ctx = "{";
@@ -149,7 +145,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		}
 		*/
 		ctx += "}";
-		delete res_array;
+		LSValue::delete_val(res);
 
 		if (mode == ExecMode::TOP_LEVEL) {
 			cout << result << endl;
@@ -234,7 +230,7 @@ jit_type_t VM::get_jit_type(const Type& type) {
 }
 
 LSValue* create_null_object(int) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* create_number_object_int(int n) {
 	return LSNumber::get(n);
@@ -243,7 +239,7 @@ LSValue* create_number_object_long(long n) {
 	return LSNumber::get(n);
 }
 LSValue* create_bool_object(bool n) {
-	return new LSBoolean(n);
+	return LSBoolean::get(n);
 }
 LSValue* create_func_object(void* f) {
 	return new LSFunction(f);
@@ -388,14 +384,10 @@ void VM::dec_refs(jit_function_t& F, jit_value_t& obj) {
 	jit_insn_call_native(F, "dec_refs", (void*) VM_dec_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
-void VM_delete(LSValue* ptr) {
-	LSValue::delete_val(ptr);
-}
-
 void VM::delete_obj(jit_function_t& F, jit_value_t& obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-	jit_insn_call_native(F, "delete", (void*) VM_delete, sig, &obj, 1, JIT_CALL_NOTHROW);
+	jit_insn_call_native(F, "delete", (void*) &LSValue::delete_val, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 void VM_delete_temporary(LSValue* val) {
@@ -452,7 +444,7 @@ void VM::print_int(jit_function_t& F, jit_value_t& val) {
 }
 
 LSValue* VM_create_null() {
-	return new LSNull();
+	return LSNull::get();
 }
 
 jit_value_t VM::create_null(jit_function_t& F) {

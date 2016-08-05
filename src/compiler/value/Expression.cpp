@@ -164,6 +164,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			v2->analyse(analyser, Type::POINTER);
 			type.nature = Nature::POINTER;
 		}
+
+		// String / String => Array<String>
+		if (op->type == TokenType::DIVIDE and v1->type == Type::STRING and v2->type == Type::STRING) {
+			type = Type::STRING_ARRAY;
+		}
 	}
 
 	// Boolean operators : result is a boolean
@@ -223,6 +228,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
 		type = Type::POINTER;
+		if (v1->type == v2->type) type = v1->type;
 	}
 
 	if (op->type == TokenType::INSTANCEOF) {
@@ -362,40 +368,40 @@ LSValue* jit_instanceof(LSValue* x, LSValue* y) {
 }
 
 LSValue* jit_bit_and(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_and_equal(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_or(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_or_equal(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_xor(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_xor_equal(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_shl(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_shl_equal(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_shr(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_shr_equal(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_shr_unsigned(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* jit_bit_shr_unsigned_equal(LSValue*, LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 bool jit_is_null(LSValue* v) {
 	return v->typeID() == 1;
@@ -886,7 +892,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 		}
 		case TokenType::DOUBLE_QUESTION_MARK: {
 
-			// x ?? y ==> if (x == null) { y } else { x }
+			// x ?? y ==> if (x != null) { x } else { y }
 
 			jit_label_t label_end = jit_label_undefined;
 			jit_label_t label_else = jit_label_undefined;
@@ -897,22 +903,22 @@ jit_value_t Expression::compile(Compiler& c) const {
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ls_jit_integer, args_types, 1, 0);
 			jit_value_t r = jit_insn_call_native(c.F, "is_null", (void*) jit_is_null, sig, &x, 1, JIT_CALL_NOTHROW);
 
-			jit_insn_branch_if_not(c.F, r, &label_else);
+			jit_insn_branch_if(c.F, r, &label_else);
 
-			jit_value_t y = v2->compile(c);
-			jit_insn_store(c.F, v, y);
-//			VM::inc_refs(F, y);
-
-			jit_insn_branch(c.F, &label_end);
-			jit_insn_label(c.F, &label_else);
-
+			// then {
 			jit_insn_store(c.F, v, x);
 			VM::inc_refs(c.F, x);
 
+			// else
+			jit_insn_branch(c.F, &label_end);
+			jit_insn_label(c.F, &label_else);
+			// {
+
+			jit_value_t y = v2->compile(c);
+			jit_insn_store(c.F, v, y);
+			VM::inc_refs(c.F, y);
+
 			jit_insn_label(c.F, &label_end);
-
-			VM::delete_temporary(c.F, x);
-
 
 			return v;
 			break;

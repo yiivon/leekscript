@@ -36,7 +36,6 @@ LSValue* array_reverse(const LSArray<LSValue*>* array);
 LSValue* array_shift(const LSArray<LSValue*>* array);
 LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>* array);
 LSValue* array_shift(const LSArray<LSValue*>* array);
-LSNumber* array_size(const LSArray<LSValue*>* array);
 LSArray<LSValue*>* array_sort(const LSArray<LSValue*>* array, const LSNumber* order);
 LSValue* array_sum(const LSArray<LSValue*>* array);
 LSValue* array_unshift(const LSArray<LSValue*>* array, const LSValue* value);

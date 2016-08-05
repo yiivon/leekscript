@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSObject::object_class(new LSClass("Object", 1));
+LSValue* LSObject::object_class(new LSClass("Object"));
 
 LSObject::LSObject() {
 	clazz = nullptr;
@@ -254,10 +254,10 @@ bool LSObject::operator >= (const LSClass*) const {
 }
 
 LSValue* LSObject::at (const LSValue*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSObject::atL (const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSObject::range(int, int) const {
@@ -290,17 +290,17 @@ LSValue* LSObject::attr(const LSValue* key) const {
 				return (LSValue*) attr;
 			}
 		}
-		return LSNull::null_var;
+		return LSNull::get();
 	}
 }
 LSValue** LSObject::attrL(const LSValue* key) {
 	if (readonly) {
-		return &LSNull::null_var;
+		return nullptr;
 	}
 	try {
 		return &values.at(*((LSString*) key));
 	} catch (exception& e) {
-		values.insert({*((LSString*) key), LSNull::null_var});
+		values.insert({*((LSString*) key), LSNull::get()});
 		return &values[*((LSString*) key)];
 	}
 }

@@ -68,6 +68,7 @@ Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 }
 
 Block* SyntaxicAnalyser::eatMain() {
+
 	Block* block = new Block();
 
 	while (true) {
@@ -78,7 +79,9 @@ Block* SyntaxicAnalyser::eatMain() {
 			eat();
 		} else {
 			Instruction* ins = eatInstruction();
-			if (ins) block->instructions.push_back(ins);
+			if (ins) {
+				block->instructions.push_back(ins);
+			}
 		}
 	}
 
@@ -287,10 +290,11 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 	return vd;
 }
 
-Function *SyntaxicAnalyser::eatFunction()
-{
-	if (t->type == TokenType::FUNCTION)
+Function* SyntaxicAnalyser::eatFunction() {
+
+	if (t->type == TokenType::FUNCTION) {
 		eat();
+	}
 
 	Function* f = new Function();
 
@@ -314,8 +318,9 @@ Function *SyntaxicAnalyser::eatFunction()
 
 		f->addArgument(ident, reference, defaultValue);
 
-		if (t->type == TokenType::COMMA)
+		if (t->type == TokenType::COMMA) {
 			eat();
+		}
 	}
 	eat(TokenType::CLOSING_PARENTHESIS);
 
@@ -326,8 +331,9 @@ Function *SyntaxicAnalyser::eatFunction()
 
 	f->body = eatBlock();
 
-	if (!braces)
+	if (!braces) {
 		eat(TokenType::END);
+	}
 
 	return f;
 }

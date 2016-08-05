@@ -29,7 +29,6 @@ void Compiler::leave_block(jit_function_t& F) {
 			if (var.second.type.must_manage_memory()) {
 				VM::delete_obj(F, var.second.value);
 			}
-
 		}
 	}
 

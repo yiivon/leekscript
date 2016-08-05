@@ -7,7 +7,7 @@ using namespace std;
 
 namespace ls {
 
-LSClass* LSFunction::function_class = new LSClass("Function", 1);
+LSClass* LSFunction::function_class = new LSClass("Function");
 
 LSFunction::LSFunction(void* function) {
 	this->function = function;
@@ -209,10 +209,10 @@ bool LSFunction::operator >= (const LSClass*) const {
 }
 
 LSValue* LSFunction::at(const LSValue*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSFunction::atL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSFunction::range(int, int) const {
@@ -226,10 +226,10 @@ LSValue* LSFunction::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSFunction::attrL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSFunction::clone() const {

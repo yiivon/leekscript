@@ -9,19 +9,14 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSClass::class_class(new LSClass("Class", 1));
+LSValue* LSClass::class_class(new LSClass("Class"));
 
-LSClass::LSClass() : name("?") {
-	parent = nullptr;
-}
+LSClass::LSClass() : LSClass("?") {}
 
 LSClass::LSClass(string name) : name(name) {
 	parent = nullptr;
-}
-
-LSClass::LSClass(string name, int refs) : name(name) {
-	parent = nullptr;
-	this->refs = refs;
+	refs = 1;
+	native = true;
 }
 
 LSClass::LSClass(Json&) {
@@ -300,11 +295,11 @@ bool LSClass::operator >= (const LSClass*) const {
 }
 
 LSValue* LSClass::at(const LSValue*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue** LSClass::atL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSClass::range(int, int) const {
@@ -325,11 +320,11 @@ LSValue* LSClass::attr(const LSValue* key) const {
 	try {
 		return static_fields.at(*((LSString*) key)).value;
 	} catch (exception& e) {}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue** LSClass::attrL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSClass::clone() const {

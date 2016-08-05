@@ -29,7 +29,7 @@ namespace ls {
 
 FunctionCall::FunctionCall() {
 	function = nullptr;
-	type = Type::VALUE;
+	type = Type::UNKNOWN;
 	std_func = nullptr;
 	this_ptr = nullptr;
 }
@@ -316,9 +316,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			type = ret_type;
 		}
 	} else {
-		Type ret_type =function->type.getReturnType();
+		Type ret_type = function->type.getReturnType();
 		if (ret_type.raw_type != RawType::UNKNOWN) {
 			type = ret_type;
+		} else {
+			type = Type::POINTER; // When the function is unknown, the return type is a pointer
 		}
 	}
 

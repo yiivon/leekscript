@@ -9,6 +9,11 @@
 namespace ls {
 
 class LSBoolean : public LSValue {
+private:
+
+	LSBoolean();
+	LSBoolean(bool value);
+
 public:
 
 	const bool value;
@@ -18,9 +23,6 @@ public:
 	static LSBoolean* true_val;
 	static LSBoolean* get(bool);
 
-	LSBoolean();
-	LSBoolean(bool value);
-	LSBoolean(bool value, int refs);
 	LSBoolean(Json& data);
 
 	virtual ~LSBoolean();

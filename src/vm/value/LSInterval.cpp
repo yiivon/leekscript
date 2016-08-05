@@ -31,8 +31,8 @@ LSValue* LSInterval::at(const LSValue* key) const {
 }
 
 LSValue** LSInterval::atL(const LSValue*) {
-
-	return &LSNull::null_var;
+	// TODO
+	return nullptr;
 }
 
 LSValue* LSInterval::abso() const {

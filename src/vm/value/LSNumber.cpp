@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ls {
 
-LSClass* LSNumber::number_class = new LSClass("Number", 1);
+LSClass* LSNumber::number_class = new LSClass("Number");
 
 LSNumber* LSNumber::cache[CACHE_HIGH - CACHE_LOW + 1];
 
@@ -102,7 +102,7 @@ LSValue* LSNumber::operator += (LSValue* value) {
 	return value->operator += (this);
 }
 LSValue* LSNumber::operator += (const LSNull*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator += (const LSNumber* number) {
 #if !USE_CACHE
@@ -119,14 +119,14 @@ LSValue* LSNumber::operator += (const LSBoolean* boolean) {
 	return this;
 }
 LSValue* LSNumber::operator += (const LSString*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::operator - (const LSValue* value) const {
 	return value->operator - (this);
 }
 LSValue* LSNumber::operator - (const LSNull*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator - (const LSBoolean* boolean) const {
 	return LSNumber::get(this->value - boolean->value);
@@ -143,10 +143,10 @@ LSValue* LSNumber::operator -= (LSValue* value) {
 	return value->operator -= (this);
 }
 LSValue* LSNumber::operator -= (const LSNull*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator -= (const LSBoolean*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator -= (const LSNumber* number) {
 #if !USE_CACHE
@@ -156,14 +156,14 @@ LSValue* LSNumber::operator -= (const LSNumber* number) {
 	return this;
 }
 LSValue* LSNumber::operator -= (const LSString*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::operator * (const LSValue* value) const {
 	return value->operator * (this);
 }
 LSValue* LSNumber::operator * (const LSNull*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator * (const LSBoolean* boolean) const {
 	return LSNumber::get(this->value * boolean->value);
@@ -186,7 +186,7 @@ LSValue* LSNumber::operator *= (const LSNull*) {
 	return this;
 }
 LSValue* LSNumber::operator *= (const LSBoolean*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator *= (const LSNumber* number) {
 #if !USE_CACHE
@@ -196,23 +196,23 @@ LSValue* LSNumber::operator *= (const LSNumber* number) {
 	return this;
 }
 LSValue* LSNumber::operator *= (const LSString*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::operator / (const LSValue* value) const {
 	return value->operator / (this);
 }
 LSValue* LSNumber::operator / (const LSNull*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator / (const LSBoolean*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator / (const LSNumber* number) const {
 	return LSNumber::get(this->value / number->value);
 }
 LSValue* LSNumber::operator / (const LSString*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::operator /= (LSValue* value) {
@@ -232,68 +232,68 @@ LSValue* LSNumber::operator /= (const LSNumber* number) {
 	return this;
 }
 LSValue* LSNumber::operator /= (const LSString*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::poww(const LSValue* value) const {
 	return value->poww(this);
 }
 LSValue* LSNumber::poww(const LSNull*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::poww(const LSBoolean*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::poww(const LSNumber* value) const {
 	return LSNumber::get((NUMBER_TYPE) pow(this->value, value->value));
 }
 LSValue* LSNumber::poww(const LSString*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::pow_eq(LSValue*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::pow_eq(const LSNull*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::pow_eq(const LSBoolean*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::pow_eq(const LSNumber* number) {
 #if !USE_CACHE
 	value = pow(value, number->value);
 #endif
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::pow_eq(const LSString*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::operator % (const LSValue* value) const {
 	return value->operator % (this);
 }
 LSValue* LSNumber::operator % (const LSNull*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator % (const LSBoolean*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator % (const LSNumber* value) const {
 	return LSNumber::get(fmod(this->value, value->value));
 }
 LSValue* LSNumber::operator % (const LSString*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::operator %= (LSValue* value) {
 	return value->operator %= (this);
 }
 LSValue* LSNumber::operator %= (const LSNull*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator %= (const LSBoolean*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue* LSNumber::operator %= (const LSNumber* number) {
 #if !USE_CACHE
@@ -303,7 +303,7 @@ LSValue* LSNumber::operator %= (const LSNumber* number) {
 	return this;
 }
 LSValue* LSNumber::operator %= (const LSString*) {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 bool LSNumber::operator == (const LSValue* v) const {
@@ -452,11 +452,11 @@ bool LSNumber::operator >= (const LSClass*)  const {
 }
 
 LSValue* LSNumber::at(const LSValue*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 
 LSValue** LSNumber::atL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSNumber::range(int, int) const {
@@ -471,10 +471,10 @@ LSValue* LSNumber::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSNumber::attrL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSNumber::abso() const {

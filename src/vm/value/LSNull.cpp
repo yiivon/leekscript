@@ -6,13 +6,20 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSNull::null_var = new LSNull(1);
-LSClass* LSNull::null_class = new LSClass("Null", 1);
+LSValue* LSNull::null_var = new LSNull();
+LSClass* LSNull::null_class = new LSClass("Null");
 
-LSNull::LSNull() {}
+LSValue* LSNull::get() {
+	return null_var;
+}
 
-LSNull::LSNull(int refs) {
-	this->refs = refs;
+LSNull::LSNull() {
+	refs = 1;
+	native = true; // We create one null value which is destroyed only at the end
+}
+
+LSNull::~LSNull() {
+	cout << "delete LSNull" << endl;
 }
 
 bool LSNull::isTrue() const {
@@ -200,10 +207,10 @@ bool LSNull::operator >= (const LSClass*) const {
 }
 
 LSValue* LSNull::at(const LSValue*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSNull::atL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSNull::range(int, int) const {
@@ -217,14 +224,14 @@ LSValue* LSNull::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSNull::attrL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSNull::clone() const {
-	return new LSNull();
+	return LSNull::get();
 }
 
 std::ostream& LSNull::print(std::ostream& os) const {

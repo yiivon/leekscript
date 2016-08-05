@@ -66,18 +66,18 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 
 		for (Value* key : keys) {
 			if (key != nullptr) {
-				key->analyse(analyser, Type::UNKNOWN);
+				key->analyse(analyser);
 			}
 		}
 
 		if (expressions.size() > 0) {
 
-			Type element_type = Type::UNKNOWN;
+			Type element_type;
 
 			for (unsigned i = 0; i < expressions.size(); ++i) {
 
 				Value* ex = expressions[i];
-				ex->analyse(analyser, Type::UNKNOWN);
+				ex->analyse(analyser);
 
 				if (ex->constant == false) {
 					constant = false;
@@ -90,22 +90,42 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			}
 			type.setElementType(element_type);
 
-			// Native elements types supported : integer, double and pointer
-			supported_type = element_type == Type::INTEGER || element_type == Type::FLOAT ?
-				element_type : Type::POINTER;
+			// Native elements types supported : integer, double
+			if (element_type == Type::INTEGER || element_type == Type::FLOAT) {
+				supported_type = element_type;
+			}
+			// For function, we store them as pointers
+			else if (element_type.raw_type == RawType::FUNCTION) {
+				element_type.nature = Nature::POINTER;
+				supported_type = element_type;
+			} else {
+				supported_type = Type::POINTER;
+				// If there are some functions, they types will be lost, so tell them to return pointers
+				supported_type.setReturnType(Type::POINTER);
+			}
 
 			// Re-analyze expressions with the supported type
 			for (unsigned i = 0; i < expressions.size(); ++i) {
 				expressions[i]->analyse(analyser, supported_type);
 			}
-			type.setElementType(supported_type);
+
+			// Second computation of the array type
+			for (unsigned i = 0; i < expressions.size(); ++i) {
+				Value* ex = expressions[i];
+				if (i == 0) {
+					element_type = ex->type;
+				} else {
+					element_type = Type::get_compatible_type(element_type, ex->type);
+				}
+			}
+			type.setElementType(element_type);
 		}
 	}
-
-//	cout << "Array type : " << type << endl;
 }
 
 void Array::elements_will_take(SemanticAnalyser* analyser, const unsigned pos, const Type& type, int level) {
+
+//	cout << "Array::elements_will_take " << type << " at " << pos << endl;
 
 	for (unsigned i = 0; i < expressions.size(); ++i) {
 
@@ -116,6 +136,20 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const unsigned pos, c
 			expressions[i]->will_take(analyser, pos, type);
 		}
 	}
+
+	// Computation of the new array type
+	Type element_type;
+	for (unsigned i = 0; i < expressions.size(); ++i) {
+		Value* ex = expressions[i];
+		if (i == 0) {
+			element_type = ex->type;
+		} else {
+			element_type = Type::get_compatible_type(element_type, ex->type);
+		}
+	}
+	this->type.setElementType(element_type);
+
+//	cout << "Array::elements_will_take type after " << this->type << endl;
 }
 
 LSArray<LSValue*>* LSArray_create() {

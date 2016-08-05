@@ -8,23 +8,22 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSBoolean::boolean_class(new LSClass("Boolean", 1));
-LSBoolean* LSBoolean::false_val(new LSBoolean(false, 1));
-LSBoolean* LSBoolean::true_val(new LSBoolean(true, 1));
+LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
+LSBoolean* LSBoolean::false_val(new LSBoolean(false));
+LSBoolean* LSBoolean::true_val(new LSBoolean(true));
 
 LSBoolean* LSBoolean::get(bool value) {
 	return value ? true_val : false_val;
 }
 
-LSBoolean::LSBoolean() : value(true) {}
+LSBoolean::LSBoolean() : LSBoolean(true) {}
 
-LSBoolean::LSBoolean(bool value) : value(value) {}
-
-LSBoolean::LSBoolean(bool value, int refs) : value(value) {
-	this->refs = refs;
+LSBoolean::LSBoolean(bool value) : value(value) {
+	native = true;
+	refs = 1;
 }
 
-LSBoolean::LSBoolean(Json& json) : value(json) {}
+LSBoolean::LSBoolean(Json& json) : LSBoolean((bool) json) {}
 
 LSBoolean::~LSBoolean() {}
 
@@ -236,10 +235,10 @@ bool LSBoolean::in(const LSValue* key) const {
 }
 
 LSValue* LSBoolean::at(const LSValue*) const {
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSBoolean::atL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSBoolean::range(int, int) const {
@@ -254,10 +253,10 @@ LSValue* LSBoolean::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
 	}
-	return LSNull::null_var;
+	return LSNull::get();
 }
 LSValue** LSBoolean::attrL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 LSValue* LSBoolean::clone() const {

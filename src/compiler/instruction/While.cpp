@@ -12,7 +12,6 @@ namespace ls {
 While::While() {
 	condition = nullptr;
 	body = nullptr;
-	type = Type::VOID;
 }
 
 While::~While() {
@@ -77,7 +76,7 @@ jit_value_t While::compile(Compiler& c) const {
 
 	c.leave_loop();
 
-	return JIT_CREATE_CONST_POINTER(c.F, LSNull::null_var);
+	return nullptr;
 }
 
 }
