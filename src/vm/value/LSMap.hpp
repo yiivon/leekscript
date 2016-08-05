@@ -6,7 +6,7 @@
 
 namespace ls {
 
-template <typename K>
+template <class K>
 struct lsmap_less {
 	bool operator() (K lhs, K rhs) const;
 };
