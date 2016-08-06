@@ -313,7 +313,7 @@ inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<LSValue*,LSValue*
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,int>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
@@ -329,7 +329,7 @@ inline bool LSMap<LSValue*,int>::operator == (const LSMap<LSValue*,LSValue*>* va
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
@@ -345,7 +345,7 @@ inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,LSValue*>*
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
@@ -361,7 +361,7 @@ inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,LSValue*>* va
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
@@ -379,7 +379,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,LSValue*>* value) 
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
@@ -397,7 +397,7 @@ inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,LSValue*>* valu
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<LSValue*,int>* value) const {
@@ -415,7 +415,7 @@ inline bool LSMap<LSValue*,int>::operator == (const LSMap<LSValue*,int>* value) 
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,int>* value) const {
@@ -429,7 +429,7 @@ inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,int>* valu
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,int>* value) const {
@@ -447,7 +447,7 @@ inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,int>* value) 
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,int>* value) const {
@@ -463,7 +463,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,int>* value) const
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,int>* value) const {
@@ -479,7 +479,7 @@ inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,int>* value) co
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<LSValue*,double>* value) const {
@@ -501,7 +501,7 @@ inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,double>* v
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,double>* value) const {
@@ -519,7 +519,7 @@ inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,double>* valu
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,double>* value) const {
@@ -535,7 +535,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,double>* value) co
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,double>* value) const {
@@ -551,7 +551,7 @@ inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,double>* value)
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<int,LSValue*>* value) const {
@@ -577,7 +577,7 @@ inline bool LSMap<int,LSValue*>::operator == (const LSMap<int,LSValue*>* value) 
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,int>::operator == (const LSMap<int,LSValue*>* value) const {
@@ -593,7 +593,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<int,LSValue*>* value) const
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,double>::operator == (const LSMap<int,LSValue*>* value) const {
@@ -609,7 +609,7 @@ inline bool LSMap<int,double>::operator == (const LSMap<int,LSValue*>* value) co
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<int,int>* value) const {
@@ -639,7 +639,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<int,int>* value) const {
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 template <>
 inline bool LSMap<int,double>::operator == (const LSMap<int,int>* value) const {
@@ -653,7 +653,7 @@ inline bool LSMap<int,double>::operator == (const LSMap<int,int>* value) const {
 		++it2;
 		++it1;
 	}
-	return true;
+	return it2 == value->end();
 }
 
 template <>
