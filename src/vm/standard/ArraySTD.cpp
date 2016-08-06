@@ -58,9 +58,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	float_array_array.setElementType(Type::FLOAT_ARRAY);
 
 	method("chunk", {
-		{Type::ARRAY, array_array, {}, (void*) &LSArray<LSValue*>::chunk_1},
-		{Type::FLOAT_ARRAY, float_array_array, {}, (void*) &LSArray<double>::chunk_1},
-		{Type::INT_ARRAY, int_array_array, {}, (void*) &LSArray<int>::chunk_1},
+		{Type::ARRAY, array_array, {}, (void*) array_chunk_1_ptr},
+		{Type::FLOAT_ARRAY, float_array_array, {}, (void*) array_chunk_1_float},
+		{Type::INT_ARRAY, int_array_array, {}, (void*) array_chunk_1_int},
 
 		{Type::ARRAY, array_array, {Type::INTEGER}, (void*) &LSArray<LSValue*>::chunk},
 		{Type::FLOAT_ARRAY, float_array_array, {Type::INTEGER}, (void*) &LSArray<double>::chunk},
@@ -127,7 +127,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	method("partition", {
 		{Type::ARRAY, Type::ARRAY, {partition_fun_type}, (void*) &LSArray<LSValue*>::partition},
-		{Type::ARRAY, Type::INT_ARRAY, {partition_fun_type_int}, (void*) &LSArray<int>::partition}
+		{Type::ARRAY, Type::ARRAY, {partition_fun_type_int}, (void*) &LSArray<int>::partition}
 	});
 
 	method("first", Type::ARRAY, Type::POINTER, {}, (void*) &array_first);
@@ -520,6 +520,18 @@ LSValue* array_sum(const LSArray<LSValue*>*) {
 LSValue* array_unshift(const LSArray<LSValue*>*, const LSValue*) {
 	// TODO
 	return new LSArray<LSValue*>();
+}
+
+LSArray<LSValue*>* array_chunk_1_ptr(const LSArray<LSValue*>* array) {
+	return array->chunk(1);
+}
+
+LSArray<LSValue*>* array_chunk_1_int(const LSArray<int>* array) {
+	return array->chunk(1);
+}
+
+LSArray<LSValue*>* array_chunk_1_float(const LSArray<double>* array) {
+	return array->chunk(1);
 }
 
 }

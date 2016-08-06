@@ -39,6 +39,9 @@ LSValue* array_shift(const LSArray<LSValue*>* array);
 LSArray<LSValue*>* array_sort(const LSArray<LSValue*>* array, const LSNumber* order);
 LSValue* array_sum(const LSArray<LSValue*>* array);
 LSValue* array_unshift(const LSArray<LSValue*>* array, const LSValue* value);
+LSArray<LSValue*>* array_chunk_1_ptr(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_chunk_1_int(const LSArray<int>* array);
+LSArray<LSValue*>* array_chunk_1_float(const LSArray<double>* array);
 
 }
 

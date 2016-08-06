@@ -31,6 +31,16 @@ void Test::test_arrays() {
 	success("[1 2 3]", "[1, 2, 3]");
 	success("['yo' 'ya' 'yu']", "['yo', 'ya', 'yu']");
 	success("[true false true true]", "[true, false, true, true]");
+	success("[1,2,3,4] < [1,2,3,5]", "true");
+	success("[1,2,4,4] < [1,2,3,5]", "false");
+	success("[1,2,3,4.1] < [1,2,3,5.1]", "true");
+	success("[1,2,4,4.1] < [1,2,3,5.1]", "false");
+	success("['1','2','3','4'] < ['1','2','3','5']", "true");
+	success("['1','2','4','4'] < ['1','2','3','5']", "false");
+	success("[1,2,3,4] < [1,2,3,5.1]", "true");
+	success("[1,2,4,4.1] < [1,2,3,5]", "false");
+	success("[1,2,'3'] < [1,2,3]", "false");
+	success("[1,1,'3'] < [1,2,3]", "true");
 
 
 	/*
@@ -116,6 +126,7 @@ void Test::test_arrays() {
 	success("let x = [3, 1, 2] x.sort() x", "[1, 2, 3]");
 	success("let x = ['foo', 'yop', 'abc'] x.sort() x", "['abc', 'foo', 'yop']");
 	success("let x = [[[]], [[], [], []], [[], []]]; x.sort() x", "[[[]], [[], []], [[], [], []]]");
+	success("let x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x", "[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
 
 	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
 	success("[3, 4, 5].filter(x -> x > 6)", "[]");
