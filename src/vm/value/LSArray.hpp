@@ -48,8 +48,7 @@ public:
 	LSArray<LSValue*>* map(const void*) const;
 	LSArray<int>* map_int(const void*) const;
 	LSArray<double>* map_real(const void*) const;
-	LSArray<LSArray<T>*>* chunk(int size = 1) const;
-	LSArray<LSArray<T>*>* chunk_1() const;
+	LSArray<LSValue*>* chunk(int size = 1) const;
 	LSArray<T>* unique();
 	LSArray<T>* sort();
 	void iter(const LSFunction*) const;
@@ -63,7 +62,7 @@ public:
 	LSValue* foldLeft(const void* fun, const LSValue* initial) const;
 	LSValue* foldRight(const void* fun, const LSValue* initial) const;
 	LSArray<T>* insert_v(const T v, const LSValue* pos);
-	LSArray<LSArray<T>*>* partition(const void* fun) const;
+	LSArray<LSValue*>* partition(const void* fun) const;
 	LSArray<LSValue*>* map2(const LSArray<LSValue*>*, const void* fun) const;
 	LSArray<LSValue*>* map2_int(const LSArray<int>*, const void* fun) const;
 	int search(const LSValue* search, const int start) const;

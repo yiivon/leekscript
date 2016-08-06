@@ -49,8 +49,8 @@ void LSObject::addField(string name, LSValue* var) {
 	var->refs++;
 }
 
-LSArray<LSString*>* LSObject::get_keys() const {
-	LSArray<LSString*>* keys = new LSArray<LSString*>();
+LSArray<LSValue*>* LSObject::get_keys() const {
+	LSArray<LSValue*>* keys = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
 		keys->push_no_clone(new LSString(i->first));
 	}
