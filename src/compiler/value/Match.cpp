@@ -53,14 +53,13 @@ unsigned Match::line() const {
 void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 
 	bool any_pointer = false;
+	bool has_default = false;
 
 	value->analyse(analyser, Type::UNKNOWN);
 	if (value->type.nature == Nature::POINTER) any_pointer = true;
 
 	for (auto& ps : pattern_list) {
 		for (Pattern& p : ps) {
-			if (any_pointer) break;
-
 			if (p.begin) {
 				p.begin->analyse(analyser, Type::UNKNOWN);
 				if (p.begin->type.nature == Nature::POINTER) any_pointer = true;
@@ -69,6 +68,7 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 				p.end->analyse(analyser, Type::UNKNOWN);
 				if (p.end->type.nature == Nature::POINTER) any_pointer = true;
 			}
+			has_default = has_default || p.is_default();
 		}
 	}
 
@@ -86,41 +86,94 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 		}
 	}
 
-	// Return type is always pointer because in the default case, null is return
-	type = Type::POINTER;
-	for (Value* r : returns) {
-		r->analyse(analyser, Type::POINTER);
+	if (!has_default) {
+		// Return type is always pointer because in the default case, null is return
+		type = Type::POINTER;
+		for (Value* r : returns) {
+			r->analyse(analyser, Type::POINTER);
+		}
+	} else {
+		type = Type::UNKNOWN;
+		for (Value* ret : returns) {
+			ret->analyse(analyser, Type::UNKNOWN);
+			type = Type::get_compatible_type(type, ret->type);
+		}
+		if (type != Type::INTEGER || type != Type::LONG || type != Type::FLOAT) {
+			type = Type::POINTER;
+		}
+		for (Value* ret : returns) {
+			ret->analyse(analyser, type);
+		}
 	}
 }
 
+/*
+ * create res
+ *
+ * if not pattern[0]==value goto next[0]
+ * res = return[0]
+ * goto end
+ * next[0]:
+ *
+ * if not pattern[1]==value goto next[1]
+ * res = return[1]
+ * goto end
+ * next[1]:
+ *
+ * if not pattern[2]==value goto next[2]
+ * res = return[2]
+ * goto end
+ * next[2]:
+ *
+ * res = default
+ *
+ * end:
+ * return res
+ */
+
 jit_value_t Match::compile(Compiler& c) const {
+
+	jit_type_t return_type;
+	if (type == Type::INTEGER)
+		return_type = JIT_INTEGER;
+	else if (type == Type::LONG)
+		return_type = JIT_INTEGER_LONG;
+	else if (type == Type::FLOAT)
+		return_type = JIT_FLOAT;
+	else
+		return_type = JIT_POINTER;
 
 	jit_value_t v = value->compile(c);
 
-	jit_value_t res = jit_value_create(c.F, JIT_POINTER);
-	jit_label_t label_next = jit_label_undefined;
+	jit_value_t res = jit_value_create(c.F, return_type);
 	jit_label_t label_end = jit_label_undefined;
 
 	for (size_t i = 0; i < pattern_list.size(); ++i) {
-		if (i > 0) {
-			jit_insn_label(c.F, &label_next);
-			label_next = jit_label_undefined;
+
+		bool is_default = false;
+		for (const Pattern& pattern : pattern_list[i]) {
+			is_default = is_default || pattern.is_default();
 		}
+
+		if (is_default) {
+			jit_value_t ret = returns[i]->compile(c);
+			jit_insn_store(c.F, res, ret);
+			jit_insn_label(c.F, &label_end);
+			return res;
+		}
+
+		jit_label_t label_next = jit_label_undefined;
 
 		if (pattern_list[i].size() == 1) {
 			jit_value_t cond = pattern_list[i][0].match(c, v);
-			if (cond) {
-				jit_insn_branch_if_not(c.F, cond, &label_next);
-			}
+			jit_insn_branch_if_not(c.F, cond, &label_next);
 		} else {
 			jit_label_t label_match = jit_label_undefined;
 
 			for (const Pattern& pattern : pattern_list[i]) {
 				jit_value_t cond = pattern.match(c, v);
-				if (cond) jit_insn_branch_if(c.F, cond, &label_match);
-				else jit_insn_branch(c.F, &label_match); // mettre .. dans la liste est idiot donc il n'y a pas besoin que ce soit optimisé
+				jit_insn_branch_if(c.F, cond, &label_match);
 			}
-
 			jit_insn_branch(c.F, &label_next);
 			jit_insn_label(c.F, &label_match);
 		}
@@ -128,8 +181,9 @@ jit_value_t Match::compile(Compiler& c) const {
 		jit_value_t ret = returns[i]->compile(c);
 		jit_insn_store(c.F, res, ret);
 		jit_insn_branch(c.F, &label_end);
+		jit_insn_label(c.F, &label_next);
 	}
-	jit_insn_label(c.F, &label_next);
+	// In the case of no default pattern
 
 	jit_insn_store(c.F, res, VM::create_null(c.F));
 
