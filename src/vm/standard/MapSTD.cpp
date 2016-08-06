@@ -12,13 +12,14 @@ MapSTD::MapSTD() : Module("Map") {
 	method("size", Type::MAP, Type::INTEGER, {}, (void*) map_size);
 
 	method("insert", {
-			   {Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {Type::POINTER, Type::POINTER}, (void*) map_insert_ptr_ptr},
-			   {Type::PTR_FLOAT_MAP, Type::PTR_FLOAT_MAP, {Type::POINTER, Type::FLOAT}, (void*) map_insert_ptr_float},
-			   {Type::PTR_INT_MAP, Type::PTR_INT_MAP, {Type::POINTER, Type::INTEGER}, (void*) map_insert_ptr_int},
-			   {Type::INT_PTR_MAP, Type::INT_PTR_MAP, {Type::INTEGER, Type::POINTER}, (void*) map_insert_int_ptr},
-			   {Type::INT_FLOAT_MAP, Type::INT_FLOAT_MAP, {Type::INTEGER, Type::FLOAT}, (void*) map_insert_int_float},
-			   {Type::INT_INT_MAP, Type::INT_INT_MAP, {Type::INTEGER, Type::INTEGER}, (void*) map_insert_int_int},
+			   {Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_insert},
+			   {Type::PTR_FLOAT_MAP, Type::PTR_FLOAT_MAP, {Type::POINTER, Type::FLOAT}, (void*) &LSMap<LSValue*,double>::ls_insert},
+			   {Type::PTR_INT_MAP, Type::PTR_INT_MAP, {Type::POINTER, Type::INTEGER}, (void*) &LSMap<LSValue*,int>::ls_insert},
+			   {Type::INT_PTR_MAP, Type::INT_PTR_MAP, {Type::INTEGER, Type::POINTER}, (void*) &LSMap<int,LSValue*>::ls_insert},
+			   {Type::INT_FLOAT_MAP, Type::INT_FLOAT_MAP, {Type::INTEGER, Type::FLOAT}, (void*) &LSMap<int,double>::ls_insert},
+			   {Type::INT_INT_MAP, Type::INT_INT_MAP, {Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_insert},
 		   });
+
 
 	method("clear", {
 			   {Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear},
@@ -37,29 +38,19 @@ MapSTD::MapSTD() : Module("Map") {
 			   {Type::INT_FLOAT_MAP, Type::INT_FLOAT_MAP, {Type::INTEGER}, (void*) &LSMap<int,double>::ls_erase},
 			   {Type::INT_INT_MAP, Type::INT_INT_MAP, {Type::INTEGER}, (void*) &LSMap<int,int>::ls_erase},
 		   });
+
+	method("look", {
+			   {Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_look},
+			   {Type::PTR_FLOAT_MAP, Type::PTR_FLOAT_MAP, {Type::POINTER, Type::FLOAT}, (void*) &LSMap<LSValue*,double>::ls_look},
+			   {Type::PTR_INT_MAP, Type::PTR_INT_MAP, {Type::POINTER, Type::INTEGER}, (void*) &LSMap<LSValue*,int>::ls_look},
+			   {Type::INT_PTR_MAP, Type::INT_PTR_MAP, {Type::INTEGER, Type::POINTER}, (void*) &LSMap<int,LSValue*>::ls_look},
+			   {Type::INT_FLOAT_MAP, Type::INT_FLOAT_MAP, {Type::INTEGER, Type::FLOAT}, (void*) &LSMap<int,double>::ls_look},
+			   {Type::INT_INT_MAP, Type::INT_INT_MAP, {Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_look},
+		   });
 }
 
 int map_size(const LSMap<LSValue*,LSValue*>* map) {
 	return (int) map->size();
-}
-
-LSMap<LSValue*,LSValue*>* map_insert_ptr_ptr(LSMap<LSValue*,LSValue*>* map, LSValue* key, LSValue* value) {
-	return map->ls_insert(make_pair(key, value));
-}
-LSMap<LSValue*,int>* map_insert_ptr_int(LSMap<LSValue*,int>* map, LSValue* key, int value) {
-	return map->ls_insert(make_pair(key, value));
-}
-LSMap<LSValue*,double>* map_insert_ptr_float(LSMap<LSValue*,double>* map, LSValue* key, double value) {
-	return map->ls_insert(make_pair(key, value));
-}
-LSMap<int,LSValue*>* map_insert_int_ptr(LSMap<int,LSValue*>* map, int key, LSValue* value) {
-	return map->ls_insert(make_pair(key, value));
-}
-LSMap<int,int>* map_insert_int_int(LSMap<int,int>* map, int key, int value) {
-	return map->ls_insert(make_pair(key, value));
-}
-LSMap<int,double>* map_insert_int_float(LSMap<int,double>* map, int key, double value) {
-	return map->ls_insert(make_pair(key, value));
 }
 
 

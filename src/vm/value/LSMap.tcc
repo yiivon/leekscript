@@ -39,38 +39,38 @@ inline LSMap<K,T>::~LSMap() {}
  * Map methods
  */
 template <>
-inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_insert(const value_type& x) {
-	emplace(x.first->clone(), x.second->clone());
+inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_insert(LSValue* key, LSValue* value) {
+	emplace(key->clone(), value->clone());
 	if (refs == 0) refs = 1;
 	return this;
 }
 template <>
-inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_insert(const value_type& x) {
-	emplace(x.first->clone(), x.second);
+inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_insert(LSValue* key, int value) {
+	emplace(key->clone(), value);
 	if (refs == 0) refs = 1;
 	return this;
 }
 template <>
-inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_insert(const value_type& x) {
-	emplace(x.first->clone(), x.second);
+inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_insert(LSValue* key, double value) {
+	emplace(key->clone(), value);
 	if (refs == 0) refs = 1;
 	return this;
 }
 template <>
-inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_insert(const value_type& x) {
-	emplace(x.first, x.second->clone());
+inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_insert(int key, LSValue* value) {
+	emplace(key, value->clone());
 	if (refs == 0) refs = 1;
 	return this;
 }
 template <>
-inline LSMap<int,int>* LSMap<int,int>::ls_insert(const value_type& x) {
-	insert(x);
+inline LSMap<int,int>* LSMap<int,int>::ls_insert(int key, int value) {
+	emplace(key, value);
 	if (refs == 0) refs = 1;
 	return this;
 }
 template <>
-inline LSMap<int,double>* LSMap<int,double>::ls_insert(const value_type& x) {
-	insert(x);
+inline LSMap<int,double>* LSMap<int,double>::ls_insert(int key, double value) {
+	emplace(key, value);
 	if (refs == 0) refs = 1;
 	return this;
 }
@@ -178,6 +178,60 @@ inline LSMap<int,double>* LSMap<int,double>::ls_erase(int key) {
 	erase(key);
 	refs++;
 	return this;
+}
+
+
+template <>
+inline LSValue* LSMap<LSValue*,LSValue*>::ls_look(LSValue* key, LSValue* def) {
+	auto it = find(key);
+	if (it != end()) {
+		it->second->refs++;
+		return it->second;
+	}
+	def->refs++;
+	return def;
+}
+template <>
+inline int LSMap<LSValue*,int>::ls_look(LSValue* key, int def) {
+	auto it = find(key);
+	if (it != end()) {
+		return it->second;
+	}
+	return def;
+}
+template <>
+inline double LSMap<LSValue*,double>::ls_look(LSValue* key, double def) {
+	auto it = find(key);
+	if (it != end()) {
+		return it->second;
+	}
+	return def;
+}
+template <>
+inline LSValue* LSMap<int,LSValue*>::ls_look(int key, LSValue* def) {
+	auto it = find(key);
+	if (it != end()) {
+		it->second->refs++;
+		return it->second;
+	}
+	def->refs++;
+	return def;
+}
+template <>
+inline int LSMap<int,int>::ls_look(int key, int def) {
+	auto it = find(key);
+	if (it != end()) {
+		return it->second;
+	}
+	return def;
+}
+template <>
+inline double LSMap<int,double>::ls_look(int key, double def) {
+	auto it = find(key);
+	if (it != end()) {
+		return it->second;
+	}
+	return def;
 }
 
 

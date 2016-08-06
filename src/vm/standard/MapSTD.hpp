@@ -13,13 +13,6 @@ public:
 
 int map_size(const LSMap<LSValue*,LSValue*>* map);
 
-LSMap<LSValue*,LSValue*>* map_insert_ptr_ptr(LSMap<LSValue*,LSValue*>* map, LSValue* key, LSValue* value);
-LSMap<LSValue*,int>* map_insert_ptr_int(LSMap<LSValue*,int>* map, LSValue* key, int value);
-LSMap<LSValue*,double>* map_insert_ptr_float(LSMap<LSValue*,double>* map, LSValue* key, double value);
-LSMap<int,LSValue*>* map_insert_int_ptr(LSMap<int,LSValue*>* map, int key, LSValue* value);
-LSMap<int,int>* map_insert_int_int(LSMap<int,int>* map, int key, int value);
-LSMap<int,double>* map_insert_int_float(LSMap<int,double>* map, int key, double value);
-
 }
 
 #endif

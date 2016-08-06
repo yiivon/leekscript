@@ -17,8 +17,6 @@ using LSMapIterator = typename std::map<K, T>::iterator;
 template <class K, class T>
 class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
 public:
-	typedef std::pair<const K,T> value_type;
-
 	static LSValue* map_class;
 
 	LSMap();
@@ -27,9 +25,10 @@ public:
 	/*
 	 * Map methods;
 	 */
-	LSMap<K,T>* ls_insert(const value_type& x);
+	LSMap<K,T>* ls_insert(K key, T value);
 	LSMap<K,T>* ls_clear();
 	LSMap<K,T>* ls_erase(K key);
+	T ls_look(K key, T def);
 
 	/*
 	 * LSValue methods;
