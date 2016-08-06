@@ -6,8 +6,6 @@
 
 #include <exception>
 
-using namespace std;
-
 namespace ls {
 
 //template<>
@@ -35,57 +33,100 @@ template <typename K, typename T>
 inline LSMap<K, T>::LSMap() {}
 
 template <typename K, typename T>
-inline LSMap<K, T>::LSMap(initializer_list<pair<LSValue*, T>> values) {
-	for (auto i : values) {
-		(*this)[i.first] = i.second;
-	}
-}
-
-template <typename K, typename T>
 inline LSMap<K,T>::~LSMap() {}
 
 /*
  * Map methods
  */
+template <>
+inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_insert(const value_type& x) {
+	emplace(x.first->clone(), x.second->clone());
+	if (refs == 0) refs = 1;
+	return this;
+}
+template <>
+inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_insert(const value_type& x) {
+	emplace(x.first->clone(), x.second);
+	if (refs == 0) refs = 1;
+	return this;
+}
+template <>
+inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_insert(const value_type& x) {
+	emplace(x.first->clone(), x.second);
+	if (refs == 0) refs = 1;
+	return this;
+}
+template <>
+inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_insert(const value_type& x) {
+	emplace(x.first, x.second->clone());
+	if (refs == 0) refs = 1;
+	return this;
+}
+template <>
+inline LSMap<int,int>* LSMap<int,int>::ls_insert(const value_type& x) {
+	insert(x);
+	if (refs == 0) refs = 1;
+	return this;
+}
+template <>
+inline LSMap<int,double>* LSMap<int,double>::ls_insert(const value_type& x) {
+	insert(x);
+	if (refs == 0) refs = 1;
+	return this;
+}
+
 
 template <>
-inline LSMap<int, int>* LSMap<int, int>::insert(const int key, const int value) {
-	emplace(key, value);
-	if (refs == 0) refs = 1;
+inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_clear() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(it->first);
+		LSValue::delete_val(it->second);
+	}
+	clear();
+	refs++;
 	return this;
 }
 template <>
-inline LSMap<int, double>* LSMap<int, double>::insert(const int key, const double value) {
-	emplace(key, value);
-	if (refs == 0) refs = 1;
-	return this;
-}
-/*
-template <>
-inline LSMap<LSValue*, LSValue*>* LSMap<LSValue*, LSValue*>::insert(const LSValue* key, const LSValue* value) {
-	emplace(key->clone(), value->clone());
-	if (refs == 0) refs = 1;
+inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_clear() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(it->first);
+	}
+	clear();
+	refs++;
 	return this;
 }
 template <>
-inline LSMap<LSValue*, int>* LSMap<LSValue*, int>::insert(const LSValue* key, const int value) {
-	emplace(key->clone(), value);
-	if (refs == 0) refs = 1;
+inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_clear() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(it->first);
+	}
+	clear();
+	refs++;
 	return this;
 }
 template <>
-inline LSMap<LSValue*, double>* LSMap<LSValue*, double>::insert(const LSValue* key, const double value) {
-	emplace(key->clone(), value);
-	if (refs == 0) refs = 1;
+inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_clear() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(it->second);
+	}
+	clear();
+	refs++;
 	return this;
 }
 template <>
-inline LSMap<int, LSValue*>* LSMap<int, LSValue*>::insert(const int key, const LSValue* value) {
-	emplace(key, value->clone());
-	if (refs == 0) refs = 1;
+inline LSMap<int,int>* LSMap<int,int>::ls_clear() {
+	clear();
+	refs++;
 	return this;
 }
-*/
+template <>
+inline LSMap<int,double>* LSMap<int,double>::ls_clear() {
+	clear();
+	refs++;
+	return this;
+}
+
+
 
 /*
  * LSValue methods
@@ -302,7 +343,7 @@ inline std::ostream& LSMap<int,double>::print(std::ostream& os) const {
 
 template <>
 inline std::string LSMap<LSValue*,LSValue*>::json() const {
-	string res = "[";
+	std::string res = "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) res += ",";
 		res += it->first->to_json();
@@ -314,7 +355,7 @@ inline std::string LSMap<LSValue*,LSValue*>::json() const {
 
 template <>
 inline std::string LSMap<LSValue*,int>::json() const {
-	string res = "[";
+	std::string res = "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) res += ",";
 		res += it->first->to_json();
@@ -325,7 +366,7 @@ inline std::string LSMap<LSValue*,int>::json() const {
 }
 template <>
 inline std::string LSMap<LSValue*,double>::json() const {
-	string res = "[";
+	std::string res = "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) res += ",";
 		res += it->first->to_json();
@@ -336,7 +377,7 @@ inline std::string LSMap<LSValue*,double>::json() const {
 }
 template <>
 inline std::string LSMap<int,LSValue*>::json() const {
-	string res = "[";
+	std::string res = "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) res += ",";
 		res += std::to_string(it->first);
@@ -347,7 +388,7 @@ inline std::string LSMap<int,LSValue*>::json() const {
 }
 template <>
 inline std::string LSMap<int,int>::json() const {
-	string res = "[";
+	std::string res = "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) res += ",";
 		res += std::to_string(it->first);
@@ -358,7 +399,7 @@ inline std::string LSMap<int,int>::json() const {
 }
 template <>
 inline std::string LSMap<int,double>::json() const {
-	string res = "[";
+	std::string res = "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) res += ",";
 		res += std::to_string(it->first);
