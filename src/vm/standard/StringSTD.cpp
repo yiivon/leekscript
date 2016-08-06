@@ -133,7 +133,7 @@ LSValue* string_size(LSString* string) {
 }
 
 LSValue* string_split(LSString* string, LSString* delimiter) {
-	LSArray<LSString*>* parts = new LSArray<LSString*>();
+	LSArray<LSValue*>* parts = new LSArray<LSValue*>();
 	if (*delimiter == "") {
 		for (char c : *string) {
 			parts->push_no_clone(new LSString(c));

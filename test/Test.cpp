@@ -22,6 +22,7 @@ int Test::all() {
 	test_numbers();
 	test_strings();
 	test_arrays();
+	test_map();
 	test_objects();
 	test_functions();
 	test_classes();

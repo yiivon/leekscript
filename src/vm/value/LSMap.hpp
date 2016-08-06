@@ -17,17 +17,18 @@ using LSMapIterator = typename std::map<K, T>::iterator;
 template <class K, class T>
 class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
 public:
-
 	static LSValue* map_class;
 
 	LSMap();
-	LSMap(std::initializer_list<std::pair<LSValue*, T>>);
 	virtual ~LSMap();
 
 	/*
 	 * Map methods;
 	 */
-	LSMap<K, T>* insert(const K key, const T value);
+	LSMap<K,T>* ls_insert(K key, T value);
+	LSMap<K,T>* ls_clear();
+	LSMap<K,T>* ls_erase(K key);
+	T ls_look(K key, T def);
 
 	/*
 	 * LSValue methods;
