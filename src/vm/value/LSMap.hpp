@@ -33,25 +33,30 @@ public:
 	/*
 	 * LSValue methods;
 	 */
-	bool isTrue() const override;
+	virtual bool isTrue() const override;
 
-	LSValue* operator + (const LSValue*) const override;
-	LSValue* operator += (LSValue*) override;
-	LSValue* operator - (const LSValue*) const override;
-	LSValue* operator -= (LSValue*) override;
-	LSValue* operator * (const LSValue*) const override;
-	LSValue* operator *= (LSValue*) override;
-	LSValue* operator / (const LSValue*) const override;
-	LSValue* operator /= (LSValue*) override;
-	LSValue* poww(const LSValue*) const override;
-	LSValue* pow_eq(LSValue*) override;
-	LSValue* operator % (const LSValue*) const override;
-	LSValue* operator %= (LSValue*) override;
-	bool operator == (const LSValue*) const override;
-	//bool operator == (const LSMap<LSValue*>*) const override;
+	virtual LSValue* operator + (const LSValue*) const override;
+	virtual LSValue* operator += (LSValue*) override;
+	virtual LSValue* operator - (const LSValue*) const override;
+	virtual LSValue* operator -= (LSValue*) override;
+	virtual LSValue* operator * (const LSValue*) const override;
+	virtual LSValue* operator *= (LSValue*) override;
+	virtual LSValue* operator / (const LSValue*) const override;
+	virtual LSValue* operator /= (LSValue*) override;
+	virtual LSValue* poww(const LSValue*) const override;
+	virtual LSValue* pow_eq(LSValue*) override;
+	virtual LSValue* operator % (const LSValue*) const override;
+	virtual LSValue* operator %= (LSValue*) override;
+	virtual bool operator == (const LSValue*) const override;
+	virtual bool operator == (const LSMap<LSValue*,LSValue*>*) const override;
+	virtual bool operator == (const LSMap<LSValue*,int>*) const override;
+	virtual bool operator == (const LSMap<LSValue*,double>*) const override;
+	virtual bool operator == (const LSMap<int,LSValue*>*) const override;
+	virtual bool operator == (const LSMap<int,int>*) const override;
+	virtual bool operator == (const LSMap<int,double>*) const override;
 
 	virtual bool operator < (const LSValue*) const override;
-	//virtual bool operator < (const LSMap*) const override;
+//	virtual bool operator < (const LSMap<LSValue*,LSValue*>*) const override;
 
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;

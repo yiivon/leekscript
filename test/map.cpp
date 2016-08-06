@@ -22,4 +22,6 @@ void Test::test_map() {
 	success("let x = ['a' : 'a'] x.erase('b')", "['a' : 'a']");
 	success("let x = ['a' : 1] x.erase(3.14)", "['a' : 1]");
 
+	success("['a':'b'] == [1:1]", "false");
+	//success("let x = ['a' : 'b'] let y = [1 : 1] x.clear() == y.clear()", "true");
 }
