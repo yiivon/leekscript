@@ -21,12 +21,21 @@ MapSTD::MapSTD() : Module("Map") {
 		   });
 
 	method("clear", {
-			   {Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {}, (void*) map_clear_ptr_ptr},
-			   {Type::PTR_FLOAT_MAP, Type::PTR_FLOAT_MAP, {}, (void*) map_clear_ptr_float},
-			   {Type::PTR_INT_MAP, Type::PTR_INT_MAP, {}, (void*) map_clear_ptr_int},
-			   {Type::INT_PTR_MAP, Type::INT_PTR_MAP, {}, (void*) map_clear_int_ptr},
-			   {Type::INT_FLOAT_MAP, Type::INT_FLOAT_MAP, {}, (void*) map_clear_int_float},
-			   {Type::INT_INT_MAP, Type::INT_INT_MAP, {}, (void*) map_clear_int_int},
+			   {Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear},
+			   {Type::PTR_FLOAT_MAP, Type::PTR_FLOAT_MAP, {}, (void*) &LSMap<LSValue*,double>::ls_clear},
+			   {Type::PTR_INT_MAP, Type::PTR_INT_MAP, {}, (void*) &LSMap<LSValue*,int>::ls_clear},
+			   {Type::INT_PTR_MAP, Type::INT_PTR_MAP, {}, (void*) &LSMap<int,LSValue*>::ls_clear},
+			   {Type::INT_FLOAT_MAP, Type::INT_FLOAT_MAP, {}, (void*) &LSMap<int,double>::ls_clear},
+			   {Type::INT_INT_MAP, Type::INT_INT_MAP, {}, (void*) &LSMap<int,int>::ls_clear},
+		   });
+
+	method("erase", {
+			   {Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_erase},
+			   {Type::PTR_FLOAT_MAP, Type::PTR_FLOAT_MAP, {Type::POINTER}, (void*) &LSMap<LSValue*,double>::ls_erase},
+			   {Type::PTR_INT_MAP, Type::PTR_INT_MAP, {Type::POINTER}, (void*) &LSMap<LSValue*,int>::ls_erase},
+			   {Type::INT_PTR_MAP, Type::INT_PTR_MAP, {Type::INTEGER}, (void*) &LSMap<int,LSValue*>::ls_erase},
+			   {Type::INT_FLOAT_MAP, Type::INT_FLOAT_MAP, {Type::INTEGER}, (void*) &LSMap<int,double>::ls_erase},
+			   {Type::INT_INT_MAP, Type::INT_INT_MAP, {Type::INTEGER}, (void*) &LSMap<int,int>::ls_erase},
 		   });
 }
 
@@ -53,23 +62,5 @@ LSMap<int,double>* map_insert_int_float(LSMap<int,double>* map, int key, double 
 	return map->ls_insert(make_pair(key, value));
 }
 
-LSMap<LSValue*,LSValue*>* map_clear_ptr_ptr(LSMap<LSValue*,LSValue*>* map) {
-	return map->ls_clear();
-}
-LSMap<LSValue*,int>* map_clear_ptr_int(LSMap<LSValue*,int>* map) {
-	return map->ls_clear();
-}
-LSMap<LSValue*,double>* map_clear_ptr_float(LSMap<LSValue*,double>* map) {
-	return map->ls_clear();
-}
-LSMap<int,LSValue*>* map_clear_int_ptr(LSMap<int,LSValue*>* map) {
-	return map->ls_clear();
-}
-LSMap<int,int>* map_clear_int_int(LSMap<int,int>* map) {
-	return map->ls_clear();
-}
-LSMap<int,double>* map_clear_int_float(LSMap<int,double>* map) {
-	return map->ls_clear();
-}
 
 }

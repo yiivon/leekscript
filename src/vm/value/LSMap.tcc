@@ -126,6 +126,59 @@ inline LSMap<int,double>* LSMap<int,double>::ls_clear() {
 	return this;
 }
 
+template <>
+inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_erase(LSValue* key) {
+	auto it = find(key);
+	if (it != end()) {
+		LSValue::delete_val(it->first);
+		LSValue::delete_val(it->second);
+		erase(it);
+	}
+	refs++;
+	return this;
+}
+template <>
+inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_erase(LSValue* key) {
+	auto it = find(key);
+	if (it != end()) {
+		LSValue::delete_val(it->first);
+		erase(it);
+	}
+	refs++;
+	return this;
+}
+template <>
+inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_erase(LSValue* key) {
+	auto it = find(key);
+	if (it != end()) {
+		LSValue::delete_val(it->first);
+		erase(it);
+	}
+	refs++;
+	return this;
+}
+template <>
+inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_erase(int key) {
+	auto it = find(key);
+	if (it != end()) {
+		LSValue::delete_val(it->second);
+		erase(it);
+	}
+	refs++;
+	return this;
+}
+template <>
+inline LSMap<int,int>* LSMap<int,int>::ls_erase(int key) {
+	erase(key);
+	refs++;
+	return this;
+}
+template <>
+inline LSMap<int,double>* LSMap<int,double>::ls_erase(int key) {
+	erase(key);
+	refs++;
+	return this;
+}
 
 
 /*

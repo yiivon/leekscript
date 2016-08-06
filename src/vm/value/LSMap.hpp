@@ -29,6 +29,7 @@ public:
 	 */
 	LSMap<K,T>* ls_insert(const value_type& x);
 	LSMap<K,T>* ls_clear();
+	LSMap<K,T>* ls_erase(K key);
 
 	/*
 	 * LSValue methods;
