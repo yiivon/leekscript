@@ -287,7 +287,7 @@ inline std::ostream& LSMap<LSValue*,LSValue*>::print(std::ostream& os) const {
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) os << " ";
 		it->first->print(os);
-		os << ": ";
+		os << " : ";
 		it->second->print(os);
 	}
 	return os << "]";
@@ -298,7 +298,7 @@ inline std::ostream& LSMap<LSValue*,int>::print(std::ostream& os) const {
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) os << " ";
 		it->first->print(os);
-		os << ": " << it->second;
+		os << " : " << it->second;
 	}
 	return os << "]";
 }
@@ -308,7 +308,7 @@ inline std::ostream& LSMap<LSValue*,double>::print(std::ostream& os) const {
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) os << " ";
 		it->first->print(os);
-		os << ": " << it->second;
+		os << " : " << it->second;
 	}
 	return os << "]";
 }
@@ -327,7 +327,7 @@ inline std::ostream& LSMap<int,int>::print(std::ostream& os) const {
 	os << "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) os << " ";
-		os << it->first << ": " << it->second;
+		os << it->first << " : " << it->second;
 	}
 	return os << "]";
 }
@@ -336,7 +336,7 @@ inline std::ostream& LSMap<int,double>::print(std::ostream& os) const {
 	os << "[";
 	for (auto it = begin(); it != end(); ++it) {
 		if (it != begin()) os << " ";
-		os << it->first << ": " << it->second;
+		os << it->first << " : " << it->second;
 	}
 	return os << "]";
 }
