@@ -102,6 +102,7 @@ inline LSArray<double>::~LSArray() {
 
 template <class T>
 void LSArray<T>::clear() {
+	// TODO
 	((std::vector<T>*) this)->clear();
 }
 
@@ -329,6 +330,7 @@ inline LSArray<LSArray<T>*>* LSArray<T>::chunk_1() const {
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::unique() {
+	this->refs++;
 	if (this->empty()) return this;
 
 	auto it = this->begin();
@@ -353,6 +355,7 @@ template <>
 inline LSArray<int>* LSArray<int>::unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
+	this->refs++;
 	return this;
 }
 
@@ -360,6 +363,7 @@ template <>
 inline LSArray<double>* LSArray<double>::unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
+	this->refs++;
 	return this;
 }
 
@@ -368,18 +372,21 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::sort() {
 	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
 		return a->operator > (b);
 	});
+	this->refs++;
 	return this;
 }
 
 template <>
 inline LSArray<int>* LSArray<int>::sort() {
 	std::sort(this->begin(), this->end());
+	this->refs++;
 	return this;
 }
 
 template <>
 inline LSArray<double>* LSArray<double>::sort() {
 	std::sort(this->begin(), this->end());
+	this->refs++;
 	return this;
 }
 
@@ -537,6 +544,7 @@ LSArray<T>* LSArray<T>::insert_v(const T v, const LSValue* pos) {
 		}
 		this->insert(this->begin() + (int) n->value, v);
 	}
+	this->refs++;
 	return this;
 }
 
@@ -548,6 +556,7 @@ inline LSArray<int>* LSArray<int>::insert_v(const int v, const LSValue* pos) {
 		}
 		this->insert(this->begin() + (int) n->value, (int) v);
 	}
+	this->refs++;
 	return this;
 }
 
@@ -728,6 +737,7 @@ LSArray<T>* LSArray<T>::fill(const LSValue* element, const int size) {
 	for (int i = 0; i < size; i++) {
 		this->push_clone((LSValue*) element);
 	}
+	this->refs++;
 	return this;
 }
 
@@ -737,6 +747,7 @@ inline LSArray<int>* LSArray<int>::fill(const LSValue* element, const int size) 
 	for (int i = 0; i < size; i++) {
 		this->push_clone(((LSNumber*) element)->value);
 	}
+	this->refs++;
 	return this;
 }
 

@@ -41,6 +41,7 @@ public:
 	void test_numbers();
 	void test_booleans();
 	void test_arrays();
+	void test_map();
 	void test_functions();
 	void test_loops();
 	void test_classes();

@@ -55,6 +55,12 @@ public:
 	virtual LSValue* operator + (const LSArray<LSValue*>*) const;
 	virtual LSValue* operator + (const LSArray<int>*) const;
 	virtual LSValue* operator + (const LSArray<double>*) const;
+	virtual LSValue* operator + (const LSMap<LSValue*,LSValue*>*) const;
+	virtual LSValue* operator + (const LSMap<LSValue*,int>*) const;
+	virtual LSValue* operator + (const LSMap<LSValue*,double>*) const;
+	virtual LSValue* operator + (const LSMap<int,LSValue*>*) const;
+	virtual LSValue* operator + (const LSMap<int,int>*) const;
+	virtual LSValue* operator + (const LSMap<int,double>*) const;
 	virtual LSValue* operator + (const LSObject*) const;
 	virtual LSValue* operator + (const LSFunction*) const;
 	virtual LSValue* operator + (const LSClass*) const;
@@ -65,6 +71,14 @@ public:
 	virtual LSValue* operator += (const LSNumber*);
 	virtual LSValue* operator += (const LSString*);
 	virtual LSValue* operator += (const LSArray<LSValue*>*);
+	virtual LSValue* operator += (const LSArray<int>*);
+	virtual LSValue* operator += (const LSArray<double>*);
+	virtual LSValue* operator += (const LSMap<LSValue*,LSValue*>*);
+	virtual LSValue* operator += (const LSMap<LSValue*,int>*);
+	virtual LSValue* operator += (const LSMap<LSValue*,double>*);
+	virtual LSValue* operator += (const LSMap<int,LSValue*>*);
+	virtual LSValue* operator += (const LSMap<int,int>*);
+	virtual LSValue* operator += (const LSMap<int,double>*);
 	virtual LSValue* operator += (const LSObject*);
 	virtual LSValue* operator += (const LSFunction*);
 	virtual LSValue* operator += (const LSClass*);
@@ -75,6 +89,14 @@ public:
 	virtual LSValue* operator - (const LSNumber*) const;
 	virtual LSValue* operator - (const LSString*) const;
 	virtual LSValue* operator - (const LSArray<LSValue*>*) const;
+	virtual LSValue* operator - (const LSArray<int>*) const;
+	virtual LSValue* operator - (const LSArray<double>*) const;
+	virtual LSValue* operator - (const LSMap<LSValue*,LSValue*>*) const;
+	virtual LSValue* operator - (const LSMap<LSValue*,int>*) const;
+	virtual LSValue* operator - (const LSMap<LSValue*,double>*) const;
+	virtual LSValue* operator - (const LSMap<int,LSValue*>*) const;
+	virtual LSValue* operator - (const LSMap<int,int>*) const;
+	virtual LSValue* operator - (const LSMap<int,double>*) const;
 	virtual LSValue* operator - (const LSObject*) const;
 	virtual LSValue* operator - (const LSFunction*) const;
 	virtual LSValue* operator - (const LSClass*) const;
@@ -85,6 +107,14 @@ public:
 	virtual LSValue* operator -= (const LSNumber*);
 	virtual LSValue* operator -= (const LSString*);
 	virtual LSValue* operator -= (const LSArray<LSValue*>*);
+	virtual LSValue* operator -= (const LSArray<int>*);
+	virtual LSValue* operator -= (const LSArray<double>*);
+	virtual LSValue* operator -= (const LSMap<LSValue*,LSValue*>*);
+	virtual LSValue* operator -= (const LSMap<LSValue*,int>*);
+	virtual LSValue* operator -= (const LSMap<LSValue*,double>*);
+	virtual LSValue* operator -= (const LSMap<int,LSValue*>*);
+	virtual LSValue* operator -= (const LSMap<int,int>*);
+	virtual LSValue* operator -= (const LSMap<int,double>*);
 	virtual LSValue* operator -= (const LSObject*);
 	virtual LSValue* operator -= (const LSFunction*);
 	virtual LSValue* operator -= (const LSClass*);
@@ -95,6 +125,14 @@ public:
 	virtual LSValue* operator * (const LSNumber*) const;
 	virtual LSValue* operator * (const LSString*) const;
 	virtual LSValue* operator * (const LSArray<LSValue*>*) const;
+	virtual LSValue* operator * (const LSArray<int>*) const;
+	virtual LSValue* operator * (const LSArray<double>*) const;
+	virtual LSValue* operator * (const LSMap<LSValue*,LSValue*>*) const;
+	virtual LSValue* operator * (const LSMap<LSValue*,int>*) const;
+	virtual LSValue* operator * (const LSMap<LSValue*,double>*) const;
+	virtual LSValue* operator * (const LSMap<int,LSValue*>*) const;
+	virtual LSValue* operator * (const LSMap<int,int>*) const;
+	virtual LSValue* operator * (const LSMap<int,double>*) const;
 	virtual LSValue* operator * (const LSObject*) const;
 	virtual LSValue* operator * (const LSFunction*) const;
 	virtual LSValue* operator * (const LSClass*) const;
@@ -105,6 +143,14 @@ public:
 	virtual LSValue* operator *= (const LSNumber*);
 	virtual LSValue* operator *= (const LSString*);
 	virtual LSValue* operator *= (const LSArray<LSValue*>*);
+	virtual LSValue* operator *= (const LSArray<int>*);
+	virtual LSValue* operator *= (const LSArray<double>*);
+	virtual LSValue* operator *= (const LSMap<LSValue*,LSValue*>*);
+	virtual LSValue* operator *= (const LSMap<LSValue*,int>*);
+	virtual LSValue* operator *= (const LSMap<LSValue*,double>*);
+	virtual LSValue* operator *= (const LSMap<int,LSValue*>*);
+	virtual LSValue* operator *= (const LSMap<int,int>*);
+	virtual LSValue* operator *= (const LSMap<int,double>*);
 	virtual LSValue* operator *= (const LSObject*);
 	virtual LSValue* operator *= (const LSFunction*);
 	virtual LSValue* operator *= (const LSClass*);
@@ -175,6 +221,14 @@ public:
 	virtual bool operator == (const LSNumber*) const;
 	virtual bool operator == (const LSString*) const;
 	virtual bool operator == (const LSArray<LSValue*>*) const;
+	virtual bool operator == (const LSArray<int>*) const;
+	virtual bool operator == (const LSArray<double>*) const;
+	virtual bool operator == (const LSMap<LSValue*,LSValue*>*) const;
+	virtual bool operator == (const LSMap<LSValue*,int>*) const;
+	virtual bool operator == (const LSMap<LSValue*,double>*) const;
+	virtual bool operator == (const LSMap<int,LSValue*>*) const;
+	virtual bool operator == (const LSMap<int,int>*) const;
+	virtual bool operator == (const LSMap<int,double>*) const;
 	virtual bool operator == (const LSFunction*) const;
 	virtual bool operator == (const LSObject*) const;
 	virtual bool operator == (const LSClass*) const;
@@ -191,13 +245,36 @@ public:
 	virtual bool operator < (const LSArray<LSValue*>*) const;
 	virtual bool operator < (const LSArray<int>*) const;
 	virtual bool operator < (const LSArray<double>*) const;
+	virtual bool operator < (const LSMap<LSValue*,LSValue*>*) const;
+	virtual bool operator < (const LSMap<LSValue*,int>*) const;
+	virtual bool operator < (const LSMap<LSValue*,double>*) const;
+	virtual bool operator < (const LSMap<int,LSValue*>*) const;
+	virtual bool operator < (const LSMap<int,int>*) const;
+	virtual bool operator < (const LSMap<int,double>*) const;
 	virtual bool operator < (const LSFunction*) const;
 	virtual bool operator < (const LSObject*) const;
 	virtual bool operator < (const LSClass*) const;
 
-	inline bool operator >(const LSValue* value) const {
+	inline virtual bool operator > (const LSValue* value) const {
 		return not this->operator <(value) and not this->operator ==(value);
 	}
+	virtual bool operator > (const LSNull*) const;
+	virtual bool operator > (const LSBoolean*) const;
+	virtual bool operator > (const LSNumber*) const;
+	virtual bool operator > (const LSString*) const;
+	virtual bool operator > (const LSArray<LSValue*>*) const;
+	virtual bool operator > (const LSArray<int>*) const;
+	virtual bool operator > (const LSArray<double>*) const;
+	virtual bool operator > (const LSMap<LSValue*,LSValue*>*) const;
+	virtual bool operator > (const LSMap<LSValue*,int>*) const;
+	virtual bool operator > (const LSMap<LSValue*,double>*) const;
+	virtual bool operator > (const LSMap<int,LSValue*>*) const;
+	virtual bool operator > (const LSMap<int,int>*) const;
+	virtual bool operator > (const LSMap<int,double>*) const;
+	virtual bool operator > (const LSFunction*) const;
+	virtual bool operator > (const LSObject*) const;
+	virtual bool operator > (const LSClass*) const;
+
 	inline bool operator <=(const LSValue* value) const {
 		return this->operator <(value) || this->operator ==(value);
 	}
