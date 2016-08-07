@@ -200,9 +200,7 @@ LSValue* LSString::operator / (const LSString* s) const {
 				item += buff;
 			}
 		}
-		if (item.size() > 0) {
-			array->push_no_clone(new LSString(item));
-		}
+		array->push_no_clone(new LSString(item));
 //		stringstream ss(*this);
 //		string item;
 //		while (getline(ss, item, s->operator[] (0))) {

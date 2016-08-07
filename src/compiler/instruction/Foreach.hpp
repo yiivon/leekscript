@@ -16,7 +16,7 @@ public:
 
 	Token* key;
 	Token* value;
-	Value* array;
+	Value* container;
 	Block* body;
 	Type key_type;
 	Type value_type;
@@ -31,6 +31,8 @@ public:
 	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
 
 	virtual jit_value_t compile(Compiler&) const override;
+	void compile_foreach(Compiler&c, jit_value_t a, void* fun_begin, void* fun_condition, void* fun_value, const Type& value_type, void* fun_key, const Type& key_type, void* fun_inc) const;
+	static bool equal_type(const Type& generic, const Type& actual);
 };
 
 }

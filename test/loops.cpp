@@ -59,7 +59,8 @@ void Test::test_loops() {
 	success("let s = 0 for v in [1, 2, 3, 4] { s += v } s", "10");
 	success_almost("let s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s", 10.969999999999998863);
 	success("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
-//	success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
+	success("let a = 0 let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] for i in x { if i < 5 { continue } a++ } a", "5");
+//	success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "20");
 
 	/*
 	 * Break & continue

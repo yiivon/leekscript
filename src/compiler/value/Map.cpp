@@ -24,7 +24,7 @@ Map::~Map()
 void Map::print(std::ostream& os, int indent, bool debug) const {
 	os << "[\n";
 	for (size_t i = 0; i < values.size(); ++i) {
-		os << tabs(indent);
+		os << tabs(indent+1);
 		keys[i]->print(os, indent + 1, debug);
 		os << " : ";
 		values[i]->print(os, indent + 1, debug);
@@ -92,7 +92,7 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 		values[i]->analyse(analyser, value_type);
 	}
 	type = Type::MAP;
-	type.element_type = { key_type, value_type };
+	type.element_types = { key_type, value_type };
 }
 
 LSMap<LSValue*,LSValue*>* LSMap_create_ptr_ptr() {
@@ -140,27 +140,27 @@ void LSMap_insert_int_float(LSMap<int,double>* map, int key, double value) {
 
 jit_value_t Map::compile(Compiler &c) const {
 
-	jit_type_t key_type = type.element_type[0] == Type::INTEGER ? JIT_INTEGER : JIT_POINTER;
-	jit_type_t value_type = type.element_type[1] == Type::INTEGER ? JIT_INTEGER:
-																	type.element_type[1] == Type::FLOAT ? JIT_FLOAT :
+	jit_type_t key_type = type.element_types[0] == Type::INTEGER ? JIT_INTEGER : JIT_POINTER;
+	jit_type_t value_type = type.element_types[1] == Type::INTEGER ? JIT_INTEGER:
+																	type.element_types[1] == Type::FLOAT ? JIT_FLOAT :
 																										  JIT_POINTER;
 
 	void* create = nullptr;
 	void* insert = nullptr;
 
-	if (type.element_type[0] == Type::INTEGER) {
-		create = type.element_type[1] == Type::INTEGER ? (void*) LSMap_create_int_int :
-														 type.element_type[1] == Type::FLOAT ? (void*) LSMap_create_int_float :
+	if (type.element_types[0] == Type::INTEGER) {
+		create = type.element_types[1] == Type::INTEGER ? (void*) LSMap_create_int_int :
+														 type.element_types[1] == Type::FLOAT ? (void*) LSMap_create_int_float :
 																							   (void*) LSMap_create_int_ptr;
-		insert = type.element_type[1] == Type::INTEGER ? (void*) LSMap_insert_int_int :
-														 type.element_type[1] == Type::FLOAT ? (void*) LSMap_insert_int_float :
+		insert = type.element_types[1] == Type::INTEGER ? (void*) LSMap_insert_int_int :
+														 type.element_types[1] == Type::FLOAT ? (void*) LSMap_insert_int_float :
 																							   (void*) LSMap_insert_int_ptr;
 	} else {
-		create = type.element_type[1] == Type::INTEGER ? (void*) LSMap_create_ptr_int :
-														 type.element_type[1] == Type::FLOAT ? (void*) LSMap_create_ptr_float :
+		create = type.element_types[1] == Type::INTEGER ? (void*) LSMap_create_ptr_int :
+														 type.element_types[1] == Type::FLOAT ? (void*) LSMap_create_ptr_float :
 																							   (void*) LSMap_create_ptr_ptr;
-		insert = type.element_type[1] == Type::INTEGER ? (void*) LSMap_insert_ptr_int :
-														 type.element_type[1] == Type::FLOAT ? (void*) LSMap_insert_ptr_float :
+		insert = type.element_types[1] == Type::INTEGER ? (void*) LSMap_insert_ptr_int :
+														 type.element_types[1] == Type::FLOAT ? (void*) LSMap_insert_ptr_float :
 																							   (void*) LSMap_insert_ptr_ptr;
 	}
 
@@ -171,12 +171,12 @@ jit_value_t Map::compile(Compiler &c) const {
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		jit_value_t k = keys[i]->compile(c);
-		if (type.element_type[0].must_manage_memory()) {
+		if (type.element_types[0].must_manage_memory()) {
 			VM::inc_refs(c.F, k); ops += 1;
 		}
 
 		jit_value_t v = values[i]->compile(c);
-		if (type.element_type[1].must_manage_memory()) {
+		if (type.element_types[1].must_manage_memory()) {
 			VM::inc_refs(c.F, v); ops += 1;
 		}
 

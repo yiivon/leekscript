@@ -20,6 +20,11 @@ void Test::test_strings() {
 	success("'salut' + null", "'salutnull'");
 	success("'salut' * 3", "'salutsalutsalut'");
 	success("|'salut'|", "5");
+	success("'abc' / '.'", "['abc']");
+	success("'ab.c' / '.'", "['ab', 'c']");
+	success("'.ab.c' / '.'", "['', 'ab', 'c']");
+	success("'abc.' / '.'", "['abc', '']");
+	success("'.aaaaa.bbbb.ccc.dd.e.' / '.'", "['', 'aaaaa', 'bbbb', 'ccc', 'dd', 'e', '']");
 	success("~'bonjour'", "'ruojnob'");
 	success("'bonjour'[3]", "'j'");
 	sem_err("'bonjour'['hello']", ls::SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, "<key 1>");

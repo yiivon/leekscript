@@ -98,9 +98,6 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 			ret->analyse(analyser, Type::UNKNOWN);
 			type = Type::get_compatible_type(type, ret->type);
 		}
-		if (type != Type::INTEGER || type != Type::LONG || type != Type::FLOAT) {
-			type = Type::POINTER;
-		}
 		for (Value* ret : returns) {
 			ret->analyse(analyser, type);
 		}
@@ -133,19 +130,9 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 
 jit_value_t Match::compile(Compiler& c) const {
 
-	jit_type_t return_type;
-	if (type == Type::INTEGER)
-		return_type = JIT_INTEGER;
-	else if (type == Type::LONG)
-		return_type = JIT_INTEGER_LONG;
-	else if (type == Type::FLOAT)
-		return_type = JIT_FLOAT;
-	else
-		return_type = JIT_POINTER;
-
 	jit_value_t v = value->compile(c);
 
-	jit_value_t res = jit_value_create(c.F, return_type);
+	jit_value_t res = jit_value_create(c.F, VM::get_jit_type(type));
 	jit_label_t label_end = jit_label_undefined;
 
 	for (size_t i = 0; i < pattern_list.size(); ++i) {

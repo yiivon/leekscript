@@ -38,6 +38,7 @@ const Type Type::FLOAT_P(RawType::FLOAT, Nature::POINTER);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
+const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
@@ -67,7 +68,7 @@ Type::Type(const Type& type) {
 	this->return_types = type.return_types;
 	this->arguments_types = type.arguments_types;
 	this->clazz = raw_type->getClass();
-	this->element_type = type.element_type;
+	this->element_types = type.element_types;
 	native = false;
 }
 
@@ -105,7 +106,7 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& eleme
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->clazz = raw_type->getClass();
-	this->element_type = element_type;
+	this->element_types = element_type;
 	native = false;
 }
 
@@ -154,17 +155,17 @@ const vector<Type> Type::getArgumentTypes() const {
 }
 
 const Type Type::getElementType(size_t i) const {
-	if (i < element_type.size()) {
-		return element_type[i];
+	if (i < element_types.size()) {
+		return element_types[i];
 	}
 	return Type::UNKNOWN;
 }
 
 void Type::setElementType(Type type) {
-	if (element_type.size() == 0) {
-		element_type.push_back(type);
+	if (element_types.size() == 0) {
+		element_types.push_back(type);
 	} else {
-		element_type[0] = type;
+		element_types[0] = type;
 	}
 }
 
@@ -230,8 +231,8 @@ bool Type::operator == (const Type& type) const {
 	if (this->return_types != type.return_types) return false;
 	if (this->arguments_types != type.arguments_types) return false;
 
-	if (this->element_type.size() > 0 and type.element_type.size() > 0 and
-		this->element_type != type.element_type) return false;
+	if (this->element_types.size() > 0 and type.element_types.size() > 0 and
+		this->element_types != type.element_types) return false;
 
 	return true;
 }
@@ -288,10 +289,8 @@ bool Type::list_compatible(const std::vector<Type>& expected, const std::vector<
 
 	if (expected.size() != actual.size()) return false;
 
-	for (unsigned a = 0; a < expected.size(); ++a) {
-
-		if (not expected.at(a).compatible(actual.at(a))) return false;
-//		cout << "YES" << endl;
+	for (unsigned i = 0; i < expected.size(); ++i) {
+		if (not expected[i].compatible(actual[i])) return false;
 	}
 	return true;
 }
@@ -311,6 +310,18 @@ bool Type::more_specific(const Type& neww, const Type& old) {
 //		cout << "old element type : " << old.getElementType() << endl;
 
 		if (Type::more_specific(neww.getElementType(), old.getElementType())) {
+//			cout << "YES" << endl;
+			return true;
+		}
+	}
+
+	if (neww.raw_type == RawType::MAP and old.raw_type == RawType::MAP) {
+
+//		cout << "new element type : " << neww.getElementType() << endl;
+//		cout << "old element type : " << old.getElementType() << endl;
+
+		if (Type::more_specific(neww.getElementType(0), old.getElementType(0))
+				|| Type::more_specific(neww.getElementType(1), old.getElementType(1))) {
 //			cout << "YES" << endl;
 			return true;
 		}
@@ -414,6 +425,9 @@ ostream& operator << (ostream& os, const Type& type) {
 	}
 	if (type.raw_type == RawType::ARRAY) {
 		os << " of " << type.getElementType();
+	}
+	if (type.raw_type == RawType::MAP) {
+		os << " of " << type.getElementType(0) << " → " << type.getElementType(1);
 	}
 	os << "}";
 	return os;

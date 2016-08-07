@@ -8,7 +8,6 @@ namespace ls {
 
 Continue::Continue() {
 	value = 1;
-	can_return = false;
 }
 
 Continue::~Continue() {}

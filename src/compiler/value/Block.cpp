@@ -47,8 +47,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		can_return = can_return or instructions[i]->can_return;
 
-		bool can_return = instructions[i]->can_return or (i == instructions.size() - 1);
-		if (can_return) {
+		if (instructions[i]->can_return or (i == instructions.size() - 1)) {
 			type = Type::get_compatible_type(type, instructions[i]->type);
 		}
 	}

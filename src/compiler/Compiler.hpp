@@ -15,9 +15,9 @@ public:
 	jit_value_t value;
 	Type type;
 	bool reference;
-	CompilerVar() : value(jit_value_t{}), type(Type::UNKNOWN), reference(false) {};
+	CompilerVar() : value(jit_value_t{}), type(Type::UNKNOWN), reference(false) {}
 	CompilerVar(jit_value_t& value, const Type& type, bool reference) :
-		value(value), type(type), reference(reference) {};
+		value(value), type(type), reference(reference) {}
 };
 
 class Compiler {
