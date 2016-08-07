@@ -201,7 +201,7 @@ public:
 	Type(const BaseRawType* raw_type, Nature nature, bool native);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native);
-	Type(const BaseRawType* raw_type, Nature nature, const std::vector<Type>& element_types);
+	Type(const BaseRawType* raw_type, Nature nature, const std::vector<Type>& element_type);
 
 	bool must_manage_memory() const;
 

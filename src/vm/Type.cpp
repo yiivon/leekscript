@@ -101,11 +101,11 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type
 	this->native = native;
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& element_types) {
+Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& element_type) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->clazz = raw_type->getClass();
-	this->element_type = element_types;
+	this->element_type = element_type;
 	native = false;
 }
 

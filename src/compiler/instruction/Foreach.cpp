@@ -1,5 +1,5 @@
 /*
- * for (let k : let v in array) { ... }
+ * for (let k : let v in array) { ... }
  */
 #include "../../compiler/instruction/Foreach.hpp"
 
@@ -48,13 +48,14 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	array->analyse(analyser);
 
-	var_type = array->type.getElementType();
-
+	int i = 0;
 	if (key != nullptr) {
+		key_type = array->type.getElementType(i++);
 		key_var = analyser->add_var(key, Type::POINTER, nullptr, nullptr);
 	}
+	value_type = array->type.getElementType(i);
+	value_var = analyser->add_var(value, value_type, nullptr, nullptr);
 
-	value_var = analyser->add_var(value, var_type, nullptr, nullptr);
 
 	analyser->enter_loop();
 	body->analyse(analyser, Type::VOID);
@@ -127,20 +128,20 @@ jit_value_t Foreach::compile(Compiler& c) const {
 	// Get array element (each value of array)
 	jit_value_t value_val = nullptr;
 	jit_type_t args_types_val[1] = {JIT_POINTER};
-	if (var_type.nature == Nature::POINTER) {
+	if (value_type.nature == Nature::POINTER) {
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_val, 1, 0);
 		value_val = jit_insn_call_native(c.F, "get", (void*) get_array_elem, sig, &it, 1, JIT_CALL_NOTHROW);
-	} else if (var_type.raw_type == RawType::INTEGER) {
+	} else if (value_type.raw_type == RawType::INTEGER) {
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types_val, 1, 0);
 		value_val = jit_insn_call_native(c.F, "get", (void*) get_array_elem_int, sig, &it, 1, JIT_CALL_NOTHROW);
-	} else if (var_type.raw_type == RawType::FLOAT) {
+	} else if (value_type.raw_type == RawType::FLOAT) {
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ls_jit_real, args_types_val, 1, 0);
 		value_val = jit_insn_call_native(c.F, "get", (void*) get_array_elem_real, sig, &it, 1, JIT_CALL_NOTHROW);
 	}
 
-	jit_value_t value_var = jit_value_create(c.F, VM::get_jit_type(var_type));
+	jit_value_t value_var = jit_value_create(c.F, VM::get_jit_type(value_type));
 	jit_insn_store(c.F, value_var, value_val);
-	c.add_var(value->content, value_var, var_type, true);
+	c.add_var(value->content, value_var, value_type, true);
 
 	// Key
 	if (key != nullptr) {
@@ -161,9 +162,9 @@ jit_value_t Foreach::compile(Compiler& c) const {
 	jit_type_t args_types_3[1] = {JIT_POINTER};
 	jit_type_t sig3 = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_3, 1, 0);
 	void* inc_func = (void*) iterator_inc;
-	if (var_type.raw_type == RawType::INTEGER) {
+	if (value_type.raw_type == RawType::INTEGER) {
 		inc_func = (void*) iterator_inc_int;
-	} else if (var_type.raw_type == RawType::FLOAT) {
+	} else if (value_type.raw_type == RawType::FLOAT) {
 		inc_func = (void*) iterator_inc_real;
 	}
 	jit_insn_store(c.F, it, jit_insn_call_native(c.F, "inc", inc_func, sig3, &it, 1, JIT_CALL_NOTHROW));
