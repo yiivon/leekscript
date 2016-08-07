@@ -133,12 +133,10 @@ void SemanticAnalyser::leave_function() {
 }
 
 void SemanticAnalyser::enter_block() {
-	in_block = true;
 	variables.back().push_back(map<std::string, SemanticVar*> {});
 }
 
 void SemanticAnalyser::leave_block() {
-	in_block = false;
 	variables.back().pop_back();
 }
 

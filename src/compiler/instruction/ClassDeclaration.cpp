@@ -7,9 +7,7 @@ using namespace std;
 
 namespace ls {
 
-ClassDeclaration::ClassDeclaration() {
-	can_return = false;
-}
+ClassDeclaration::ClassDeclaration() {}
 
 ClassDeclaration::~ClassDeclaration() {}
 

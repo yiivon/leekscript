@@ -47,7 +47,7 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	condition->analyse(analyser, Type::BOOLEAN);
 	then->analyse(analyser, req_type);
 
-	can_return = can_return or then->can_return;
+	can_return = then->can_return;
 
 	if (elze != nullptr) {
 

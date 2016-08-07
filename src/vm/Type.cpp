@@ -288,10 +288,8 @@ bool Type::list_compatible(const std::vector<Type>& expected, const std::vector<
 
 	if (expected.size() != actual.size()) return false;
 
-	for (unsigned a = 0; a < expected.size(); ++a) {
-
-		if (not expected.at(a).compatible(actual.at(a))) return false;
-//		cout << "YES" << endl;
+	for (unsigned i = 0; i < expected.size(); ++i) {
+		if (not expected[i].compatible(actual[i])) return false;
 	}
 	return true;
 }
@@ -311,6 +309,18 @@ bool Type::more_specific(const Type& neww, const Type& old) {
 //		cout << "old element type : " << old.getElementType() << endl;
 
 		if (Type::more_specific(neww.getElementType(), old.getElementType())) {
+//			cout << "YES" << endl;
+			return true;
+		}
+	}
+
+	if (neww.raw_type == RawType::MAP and old.raw_type == RawType::MAP) {
+
+//		cout << "new element type : " << neww.getElementType() << endl;
+//		cout << "old element type : " << old.getElementType() << endl;
+
+		if (Type::more_specific(neww.getElementType(0), old.getElementType(0))
+				|| Type::more_specific(neww.getElementType(1), old.getElementType(1))) {
 //			cout << "YES" << endl;
 			return true;
 		}
@@ -414,6 +424,9 @@ ostream& operator << (ostream& os, const Type& type) {
 	}
 	if (type.raw_type == RawType::ARRAY) {
 		os << " of " << type.getElementType();
+	}
+	if (type.raw_type == RawType::MAP) {
+		os << " of " << type.getElementType(0) << " → " << type.getElementType(1);
 	}
 	os << "}";
 	return os;

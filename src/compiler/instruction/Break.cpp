@@ -10,7 +10,6 @@ namespace ls {
 
 Break::Break() {
 	value = 1;
-	can_return = false;
 }
 
 Break::~Break() {}
