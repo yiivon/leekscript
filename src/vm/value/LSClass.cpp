@@ -60,7 +60,7 @@ Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args)
 	try {
 		vector<Method>& impl = methods.at(name);
 		Method* best = nullptr;
-		for (auto& m : impl) {
+		for (Method& m : impl) {
 //			cout << "Test impl : " << m.type << endl;
 
 			if (m.obj_type.compatible(obj_type) and Type::list_compatible(m.type.arguments_types, args)) {

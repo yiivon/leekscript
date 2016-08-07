@@ -12,12 +12,13 @@ void Test::test_map() {
 
 	success("let x = [1 : 1] x.insert(2, 2)", "[1 : 1 2 : 2]");
 	success("let x = ['a' : 'a'] x.insert(2, 2)", "[2 : 2 'a' : 'a']");
-	success("let x = [1 : 'a'] x.insert(2, 2)", "[1 : 'a' 2 : 2]");
+	success("let x = [1 : 'a'] x.insert(2, 3)", "[1 : 'a' 2 : 3]");
+	success("let x = ['a' : 1] x.insert(2, 3)", "[2 : 3 'a' : 1]");
 
-	//success("let x = [1 : 1] x.clear()", "[]");
+	success("let x = [1 : 1] x.clear()", "[]");
 	success("let x = ['a' : 'a'] x.clear()", "[]");
 
-	//success("let x = [1 : 1] x.erase(1)", "[]");
+	success("let x = [1 : 1] x.erase(1)", "[]");
 	success("let x = ['a' : 'a'] x.erase('a')", "[]");
 	success("let x = ['a' : 'a'] x.erase('b')", "['a' : 'a']");
 	success("let x = ['a' : 1] x.erase(3.14)", "['a' : 1]");

@@ -51,7 +51,9 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 	var_type = array->type.getElementType();
 
 	if (key != nullptr) {
-		key_var = analyser->add_var(key, Type::POINTER, nullptr, nullptr);
+		key_type = array->type.getElementType(1);
+		if (key_type == Type::UNKNOWN) key_type = Type::INTEGER; // If no key type in array key = 0, 1, 2...
+		key_var = analyser->add_var(key, key_type, nullptr, nullptr);
 	}
 
 	value_var = analyser->add_var(value, var_type, nullptr, nullptr);
@@ -104,7 +106,7 @@ jit_value_t Foreach::compile(Compiler& c) const {
 
 
 	// Array
-	jit_value_t a = array->compile(c);
+	jit_value_t a = array->compile(c); // break continue into array ?
 
 	// Variable it = begin()
 	jit_value_t it = jit_value_create(c.F, JIT_POINTER);

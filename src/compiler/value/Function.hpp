@@ -30,7 +30,6 @@ public:
 	virtual ~Function();
 
 	void addArgument(Token* token, bool reference, Value* defaultValue);
-	void can_return(Type type);
 	void capture(SemanticVar* var);
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

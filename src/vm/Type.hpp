@@ -21,7 +21,6 @@ public:
 	virtual const std::string getName() const { return "?"; }
 	virtual const std::string getClass() const { return "?"; }
 	virtual const std::string getJsonName() const { return "?"; }
-	virtual bool operator == (const BaseRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return false; }
 };
 
@@ -29,8 +28,6 @@ class VoidRawType : public BaseRawType {
 public:
 	virtual const std::string getName() const { return "void"; }
 	virtual const std::string getJsonName() const { return "void"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const VoidRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -39,8 +36,6 @@ public:
 	virtual const std::string getName() const { return "null"; }
 	virtual const std::string getClass() const { return "Null"; }
 	virtual const std::string getJsonName() const { return "null"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const NullRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -49,8 +44,6 @@ public:
 	virtual const std::string getName() const { return "bool"; }
 	virtual const std::string getClass() const { return "Boolean"; }
 	virtual const std::string getJsonName() const { return "boolean"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const BooleanRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -59,8 +52,6 @@ public:
 	virtual const std::string getName() const { return "number"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const NumberRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -69,8 +60,6 @@ public:
 	virtual const std::string getName() const { return "int"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const IntegerRawType*) { return true; }
 	virtual bool operator > (const NumberRawType*) { return true; }
 	virtual bool derived_from(const NumberRawType*) const { return true; }
 };
@@ -80,8 +69,6 @@ public:
 	virtual const std::string getName() const { return "long"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const LongRawType*) { return true; }
 	virtual bool derived_from(const NumberRawType*) const { return true; }
 };
 
@@ -90,8 +77,6 @@ public:
 	virtual const std::string getName() const { return "real"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const FloatRawType*) { return true; }
 	virtual bool derived_from(const NumberRawType*) const { return true; }
 };
 
@@ -100,8 +85,6 @@ public:
 	virtual const std::string getName() const { return "string"; }
 	virtual const std::string getClass() const { return "String"; }
 	virtual const std::string getJsonName() const { return "string"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const StringRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -110,8 +93,6 @@ public:
 	virtual const std::string getName() const { return "array"; }
 	virtual const std::string getClass() const { return "Array"; }
 	virtual const std::string getJsonName() const { return "array"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const ArrayRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -120,8 +101,6 @@ public:
 	virtual const std::string getName() const { return "map"; }
 	virtual const std::string getClass() const { return "Map"; }
 	virtual const std::string getJsonName() const { return "map"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const MapRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -130,8 +109,6 @@ public:
 	virtual const std::string getName() const { return "interval"; }
 	virtual const std::string getClass() const { return "Array"; }
 	virtual const std::string getJsonName() const { return "array"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const IntervalRawType*) { return true; }
 	virtual bool derived_from(const ArrayRawType*) const { return true; }
 };
 
@@ -140,8 +117,6 @@ public:
 	virtual const std::string getName() const { return "object"; }
 	virtual const std::string getClass() const { return "Object"; }
 	virtual const std::string getJsonName() const { return "object"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const ObjectRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -150,8 +125,6 @@ public:
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getClass() const { return "Function"; }
 	virtual const std::string getJsonName() const { return "function"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const FunctionRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
@@ -160,8 +133,6 @@ public:
 	virtual const std::string getName() const { return "class"; }
 	virtual const std::string getClass() const { return "Class"; }
 	virtual const std::string getJsonName() const { return "class"; }
-	virtual bool operator == (const BaseRawType*) { return false; }
-	virtual bool operator == (const ClassRawType*) { return true; }
 	virtual bool derived_from(const BaseRawType*) const { return true; }
 };
 
