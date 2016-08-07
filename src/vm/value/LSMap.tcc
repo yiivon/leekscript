@@ -8,9 +8,6 @@
 
 namespace ls {
 
-//template<>
-//class LSMap<LSValue*, LSValue*> {};
-
 template <class K>
 inline bool lsmap_less<K>::operator()(K lhs, K rhs) const {
 	return rhs->operator < (lhs);
