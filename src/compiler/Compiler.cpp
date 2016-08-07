@@ -52,12 +52,11 @@ void Compiler::add_var(std::string& name, jit_value_t& value, const Type& type, 
 }
 
 CompilerVar& Compiler::get_var(const std::string& name) {
-	int i = variables.size() - 1;
-	while (i >= 0) {
-		try {
-			return variables[i].at(name);
-		} catch (std::exception& e) {}
-		i--;
+	for (int i = variables.size() - 1; i >= 0; --i) {
+		auto it = variables[i].find(name);
+		if (it != variables[i].end()) {
+			return it->second;
+		}
 	}
 	return *((CompilerVar*) nullptr); // Should not reach this line
 }

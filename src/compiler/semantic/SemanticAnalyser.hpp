@@ -48,7 +48,6 @@ class SemanticAnalyser {
 public:
 
 	Program* program;
-	bool in_block = false;
 	bool in_program = false;
 
 	std::map<std::string, SemanticVar*> internal_vars;

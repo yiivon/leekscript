@@ -18,6 +18,7 @@ public:
 	Token* value;
 	Value* array;
 	Block* body;
+	Type key_type;
 	Type var_type;
 	SemanticVar* value_var;
 	SemanticVar* key_var;
