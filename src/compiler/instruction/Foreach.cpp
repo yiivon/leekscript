@@ -1,5 +1,5 @@
 /*
- * for (let k : let v in array) { ... }
+ * for (let k : let v in array) { ... }
  */
 #include "../../compiler/instruction/Foreach.hpp"
 
@@ -99,9 +99,9 @@ jit_value_t Foreach::compile(Compiler& c) const {
 
 	// Labels
 	jit_label_t label_cond = jit_label_undefined;
+	jit_label_t label_it = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 
-	c.enter_loop(&label_end, &label_cond);
 
 	// Array
 	jit_value_t a = array->compile(c);
@@ -111,6 +111,8 @@ jit_value_t Foreach::compile(Compiler& c) const {
 	jit_type_t args_types_begin[1] = {JIT_POINTER};
 	jit_type_t sig_begin = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_begin, 1, 0);
 	jit_insn_store(c.F, it, jit_insn_call_native(c.F, "begin", (void*) get_array_begin, sig_begin, &a, 1, JIT_CALL_NOTHROW));
+
+	c.enter_loop(&label_end, &label_it);
 
 	// cond label:
 	jit_insn_label(c.F, &label_cond);
@@ -158,6 +160,7 @@ jit_value_t Foreach::compile(Compiler& c) const {
 	body->compile(c);
 
 	// it++
+	jit_insn_label(c.F, &label_it);
 	jit_type_t args_types_3[1] = {JIT_POINTER};
 	jit_type_t sig3 = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_3, 1, 0);
 	void* inc_func = (void*) iterator_inc;
