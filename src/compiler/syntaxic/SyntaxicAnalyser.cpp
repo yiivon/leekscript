@@ -952,7 +952,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 		eat(TokenType::IN);
 
-		f->array = eatExpression();
+		f->container = eatExpression();
 
 		if (parenthesis)
 			eat(TokenType::CLOSING_PARENTHESIS);

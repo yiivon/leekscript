@@ -38,6 +38,7 @@ const Type Type::FLOAT_P(RawType::FLOAT, Nature::POINTER);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
+const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
@@ -67,7 +68,7 @@ Type::Type(const Type& type) {
 	this->return_types = type.return_types;
 	this->arguments_types = type.arguments_types;
 	this->clazz = raw_type->getClass();
-	this->element_type = type.element_type;
+	this->element_types = type.element_types;
 	native = false;
 }
 
@@ -101,11 +102,11 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type
 	this->native = native;
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& element_types) {
+Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& element_type) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->clazz = raw_type->getClass();
-	this->element_type = element_types;
+	this->element_types = element_type;
 	native = false;
 }
 
@@ -154,17 +155,17 @@ const vector<Type> Type::getArgumentTypes() const {
 }
 
 const Type Type::getElementType(size_t i) const {
-	if (i < element_type.size()) {
-		return element_type[i];
+	if (i < element_types.size()) {
+		return element_types[i];
 	}
 	return Type::UNKNOWN;
 }
 
 void Type::setElementType(Type type) {
-	if (element_type.size() == 0) {
-		element_type.push_back(type);
+	if (element_types.size() == 0) {
+		element_types.push_back(type);
 	} else {
-		element_type[0] = type;
+		element_types[0] = type;
 	}
 }
 
@@ -230,8 +231,8 @@ bool Type::operator == (const Type& type) const {
 	if (this->return_types != type.return_types) return false;
 	if (this->arguments_types != type.arguments_types) return false;
 
-	if (this->element_type.size() > 0 and type.element_type.size() > 0 and
-		this->element_type != type.element_type) return false;
+	if (this->element_types.size() > 0 and type.element_types.size() > 0 and
+		this->element_types != type.element_types) return false;
 
 	return true;
 }
