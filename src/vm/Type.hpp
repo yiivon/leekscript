@@ -162,7 +162,7 @@ public:
 	Nature nature;
 	bool native; // A C++ objects, memory management is done outside the language
 	std::string clazz;
-	std::vector<Type> element_type;
+	std::vector<Type> element_types;
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
 
@@ -222,6 +222,7 @@ public:
 	static const Type STRING;
 	static const Type OBJECT;
 	static const Type ARRAY;
+	static const Type PTR_ARRAY;
 	static const Type INT_ARRAY;
 	static const Type FLOAT_ARRAY;
 	static const Type STRING_ARRAY;

@@ -60,7 +60,16 @@ void Test::test_loops() {
 	success_almost("let s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s", 10.969999999999998863);
 	success("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
 	success("let a = 0 let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] for i in x { if i < 5 { continue } a++ } a", "5");
-//	success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "18");
+	success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "20");
+	success("let s = '' for k : v in ['a':1, 'b':2, 'c':3, 'd':4] { s += v * k } s", "'abbcccdddd'");
+	success("(a->{ let s = 0; for x in a { s+=x } s })([1,2,3,4.25])", "10.25");
+	success("let y = null for x in { let x = [] x.push(4) x } { y = x } y", "4");
+	success("let y = null for k, x in { let x = [] x.push(4) x } { y = k + x } y", "4");
+	//success("let y = 0 for x in { let x = [] x.push(4) x } { y = x } y", "4");
+	success("let y = 0 for x in { let x = [3:4] x.insert(4,5) x } { y = x } y", "5");
+	success("let y = null for x in { let x = ['3':'4'] x.insert(4,5) x } { y = x } y", "'4'");
+	success("let y = null for x in 1 { y = x } y", "null");
+	success("let y = null for x in 'salut' { y = x } y", "null");
 
 	/*
 	 * Break & continue
