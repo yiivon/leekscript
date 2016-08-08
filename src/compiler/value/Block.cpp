@@ -68,7 +68,7 @@ jit_value_t Block::compile(Compiler& c) const {
 		if (i == instructions.size() - 1) {
 			jit_value_t val = instructions[i]->compile(c);
 			if (type.nature != Nature::VOID and type.must_manage_memory()) {
-				VM::inc_refs(c.F, val);
+				VM::inc_refs_if_not_temp(c.F, val);
 			}
 			c.leave_block(c.F);
 			return val;

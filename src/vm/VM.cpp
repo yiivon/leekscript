@@ -97,7 +97,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	/*
 	 * Debug
 	 */
-	//cout << "Program: "; program->print(cout, true);
+//	cout << "Program: "; program->print(cout, true);
 
 	// Compilation
 	internals.clear();
@@ -205,8 +205,8 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
 		for (auto o : objs) {
-			o.second->print(cout);
-			cout << " (" << o.second->refs << " refs)" << endl;
+//			o.second->print(cout);
+//			cout << " (" << o.second->refs << " refs)" << endl;
 		}
 	}
 
@@ -372,6 +372,18 @@ void VM::inc_refs(jit_function_t& F, jit_value_t& obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "inc_refs", (void*) VM_inc_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
+}
+
+void VM_inc_refs_if_not_temp(LSValue* val) {
+	if (val->refs != 0) {
+		val->refs++;
+	}
+}
+
+void VM::inc_refs_if_not_temp(jit_function_t& F, jit_value_t& obj) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+	jit_insn_call_native(F, "inc_refs_not_temp", (void*) VM_inc_refs_if_not_temp, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 void VM_dec_refs(LSValue* val) {

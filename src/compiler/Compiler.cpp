@@ -16,7 +16,7 @@ void Compiler::leave_block(jit_function_t& F) {
 
 	if (variables.size() > 0) {
 
-		auto vars = variables.back();
+		auto& vars = variables.back();
 
 		for (auto var : vars) {
 

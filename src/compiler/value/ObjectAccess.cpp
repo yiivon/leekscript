@@ -28,8 +28,8 @@ ObjectAccess::~ObjectAccess() {
 	LSValue::delete_val(field_string);
 }
 
-void ObjectAccess::print(ostream& os, int, bool debug) const {
-	object->print(os, debug);
+void ObjectAccess::print(ostream& os, int indent, bool debug) const {
+	object->print(os, indent, debug);
 	os << "." << field->content;
 	if (debug) {
 		os << " " << type;
@@ -80,18 +80,28 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (analyser->program->system_vars.find(object_class) != analyser->program->system_vars.end()) {
 
-//		LSClass* std_class = (LSClass*) analyser->program->system_vars[object_class];
+		LSClass* std_class = (LSClass*) analyser->program->system_vars[object_class];
 
 //		cout << "Classe ! ";
 //		std_class->print(cout);
 //		cout << endl;
 
-		try {
+		// Search in class fields
+		bool is_field = false;
+//		try {
 //			type = std_class->fields[field->content];
 //			cout << "Field " << field->content << " in class " << std_class << " found." << endl;
 //			cout << "(type " << type << ")" << endl;
-		} catch (exception& e) {
+//			is_field = true;
+//		} catch (exception& e) {}
 
+		// Otherwise search in class methods
+		if (not is_field) {
+			try {
+				type = std_class->methods.at(field->content)[0].type;
+	//			cout << "Method " << field->content << " in class " << std_class << " found." << endl;
+	//			cout << "(type " << type << ")" << endl;
+			} catch (exception& e) {}
 		}
 
 		auto types = analyser->internal_vars[object_class]->attr_types;

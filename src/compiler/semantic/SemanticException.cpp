@@ -30,15 +30,22 @@ std::string SemanticException::message() const {
 std::string SemanticException::build_message(Type type, std::string token) {
 
 	if (!translation_loaded) {
-		translation = Json::parse(Util::read_file("src/doc/semantic_exception_fr.json"));
+		try {
+			translation = Json::parse(Util::read_file("src/doc/semantic_exception_fr.json"));
+		} catch (exception&) {}
+
 		translation_loaded = true;
 	}
 
-	std::string m = translation[type_to_string(type)];
-	if (m.find("%s") != std::string::npos) {
-		m = m.replace(m.find("%s"), 2, token);
+	try {
+		std::string m = translation[type_to_string(type)];
+		if (m.find("%s") != std::string::npos) {
+			m = m.replace(m.find("%s"), 2, token);
+		}
+		return m;
+	} catch (exception&) {
+		return type_to_string(type);
 	}
-	return m;
 }
 
 std::string SemanticException::type_to_string(Type type) {

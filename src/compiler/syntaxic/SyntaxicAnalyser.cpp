@@ -443,14 +443,14 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
 			case TokenType::OPEN_PARENTHESIS: {
 
 				FunctionCall* fc = new FunctionCall();
-				eat(TokenType::OPEN_PARENTHESIS);
-
 				fc->function = e;
 
-				while (t->type != TokenType::FINISHED and t->type != TokenType::CLOSING_PARENTHESIS) {
+				eat(TokenType::OPEN_PARENTHESIS);
+				if (t->type != TokenType::CLOSING_PARENTHESIS) {
 					fc->arguments.push_back(eatExpression());
-					if (t->type == TokenType::COMMA) {
-						eat(TokenType::COMMA);
+					while (t->type == TokenType::COMMA) {
+						eat();
+						fc->arguments.push_back(eatExpression());
 					}
 				}
 				eat(TokenType::CLOSING_PARENTHESIS);
@@ -952,7 +952,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 		eat(TokenType::IN);
 
-		f->array = eatExpression();
+		f->container = eatExpression();
 
 		if (parenthesis)
 			eat(TokenType::CLOSING_PARENTHESIS);
