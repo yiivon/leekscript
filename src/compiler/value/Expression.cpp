@@ -904,7 +904,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 
 			// then {
 			jit_insn_store(c.F, v, x);
-			VM::inc_refs(c.F, x);
+//			VM::inc_refs(c.F, x);
 
 			// else
 			jit_insn_branch(c.F, &label_end);
@@ -913,7 +913,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 
 			jit_value_t y = v2->compile(c);
 			jit_insn_store(c.F, v, y);
-			VM::inc_refs(c.F, y);
+//			VM::inc_refs(c.F, y);
 
 			jit_insn_label(c.F, &label_end);
 
