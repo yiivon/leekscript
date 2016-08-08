@@ -217,10 +217,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
-		v2->analyse(analyser, Type::VALUE);
 		v2->will_take(analyser, 0, v1->type.getElementType());
-
-//		v2->must_return(analyser, Type::POINTER);
 		type = Type::ARRAY;
 		type.setElementType(v2->type.getReturnType());
 	}
@@ -954,10 +951,10 @@ jit_value_t Expression::compile(Compiler& c) const {
 		}
 
 		// Delete operands
-		if (v1->type.nature == Nature::POINTER) {
+		if (v1->type.must_manage_memory()) {
 			VM::delete_temporary(c.F, args[0]);
 		}
-		if (v2->type.nature == Nature::POINTER) {
+		if (v2->type.must_manage_memory()) {
 			VM::delete_temporary(c.F, args[1]);
 		}
 

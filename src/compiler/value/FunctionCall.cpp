@@ -79,7 +79,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	int a = 0;
 	for (Value* arg : arguments) {
-		arg->analyse(analyser, function->type.getArgumentType(a++));
+//		arg->analyse(analyser, function->type.getArgumentType(a++));
+		arg->analyse(analyser);
 	}
 
 	// Standard library constructors
@@ -305,10 +306,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// The function is a variable
 	if (vv and vv->var->value != nullptr) {
-//		cout << "function call, fun is vv: " << vv->var << endl;
 		a = 0;
 		for (Value* arg : arguments) {
-//			cout << "arg " << a << " " << arg->type << endl;
 			vv->var->will_take(analyser, a++, arg->type);
 		}
 		Type ret_type = vv->var->value->type.getReturnType();
@@ -320,7 +319,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (ret_type.raw_type != RawType::UNKNOWN) {
 			type = ret_type;
 		} else {
-			type = Type::POINTER; // When the function is unknown, the return type is a pointer
+//			type = Type::POINTER; // When the function is unknown, the return type is a pointer
 		}
 	}
 

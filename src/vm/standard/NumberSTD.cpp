@@ -25,8 +25,16 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("hypot", Type::NUMBER, Type::FLOAT_P, {Type::NUMBER}, (void*) &number_hypot);
 	method("log", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_log);
 	method("log10", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_log10);
-	method("max", Type::NUMBER, Type::FLOAT, {Type::NUMBER}, (void*) &number_max);
-	method("min", Type::NUMBER, Type::FLOAT, {Type::NUMBER}, (void*) &number_min);
+	method("max", {
+		{Type::NUMBER, Type::NUMBER, {Type::NUMBER}, (void*) &number_max},
+		{Type::FLOAT, Type::FLOAT, {Type::FLOAT}, nullptr},
+		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, nullptr},
+	});
+	method("min", {
+		{Type::NUMBER, Type::NUMBER, {Type::NUMBER}, (void*) &number_min},
+		{Type::FLOAT, Type::FLOAT, {Type::FLOAT}, nullptr},
+		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, nullptr},
+	});
 	method("pow", Type::NUMBER, Type::FLOAT_P, {Type::NUMBER}, (void*) &number_pow);
 	method("round", Type::NUMBER, Type::INTEGER_P, {}, (void*) &number_round);
 	method("signum", Type::NUMBER, Type::INTEGER_P, {}, (void*) &number_signum);
