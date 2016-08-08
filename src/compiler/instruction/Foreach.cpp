@@ -39,7 +39,6 @@ void Foreach::print(ostream& os, int indent, bool debug) const {
 
 void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	analyser->enter_block();
 
 	container->analyse(analyser);
 
@@ -57,6 +56,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 		value_type = Type::POINTER;
 	}
 
+	analyser->enter_block();
 	if (key != nullptr) {
 		key_var = analyser->add_var(key, key_type, nullptr, nullptr);
 	}
@@ -384,6 +384,7 @@ void Foreach::compile_foreach(Compiler&c, jit_value_t a, void* fun_begin, void* 
 	jit_insn_store(c.F, it, jit_insn_call_native(c.F, "begin", (void*) fun_begin, sig_begin, &a, 1, JIT_CALL_NOTHROW));
 
 	c.enter_loop(&label_end, &label_it);
+	c.enter_block();
 
 	// cond label:
 	jit_insn_label(c.F, &label_cond);
@@ -432,6 +433,7 @@ void Foreach::compile_foreach(Compiler&c, jit_value_t a, void* fun_begin, void* 
 	jit_insn_label(c.F, &label_end);
 
 	c.leave_loop();
+	c.leave_block(c.F);
 }
 
 bool Foreach::equal_type(const Type& generic, const Type& actual)
