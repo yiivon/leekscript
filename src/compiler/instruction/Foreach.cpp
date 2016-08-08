@@ -49,6 +49,9 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 	} else if (container->type.element_types.size() == 2) {
 		key_type = container->type.element_types[0];
 		value_type = container->type.element_types[1];
+	} else if (container->type == Type::ARRAY) {
+		key_type = Type::INTEGER;
+		value_type = Type::POINTER;
 	} else {
 		key_type = Type::POINTER;
 		value_type = Type::POINTER;
@@ -287,54 +290,81 @@ jit_value_t Foreach::compile(Compiler& c) const {
 		compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_int_int, Type::INTEGER, (void*) fun_key_map_int_int, Type::INTEGER, (void*) fun_inc_map_int_int);
 	} else if (equal_type(container->type, Type::INT_FLOAT_MAP)) {
 		compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_int_float, Type::FLOAT, (void*) fun_key_map_int_float, Type::INTEGER, (void*) fun_inc_map_int_float);
-	} else {
+	} else if (container->type.nature == Nature::POINTER) {
 
 		// Dynamic selector
-//		jit_value_t s = jit_value_create(c.F, jit_type_int);
 		jit_type_t args_types_sel[1] = {JIT_POINTER};
 		jit_type_t sig_sel = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_types_sel, 1, 0);
 		jit_value_t s = jit_insn_call_native(c.F, "selector", (void*) fun_selector, sig_sel, &a, 1, JIT_CALL_NOTHROW);
 
-		jit_label_t destinations[9] = {
-			jit_label_undefined, jit_label_undefined, jit_label_undefined,
-			jit_label_undefined, jit_label_undefined, jit_label_undefined,
-			jit_label_undefined, jit_label_undefined, jit_label_undefined,
-		};
-		jit_label_t end = jit_label_undefined;
+		if (container->type == Type::ARRAY) {
 
-		jit_insn_jump_table(c.F, s, destinations, 9);
-		jit_insn_branch(c.F, &end);
+			// Special case for Array with unknown element type
 
-		jit_insn_label(c.F, &destinations[0]); // PTR_ARRAY = 0,
-		compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_ptr, Type::POINTER, (void*) fun_key_array_ptr_2ptr, Type::POINTER, (void*) fun_inc_array_ptr);
-		jit_insn_branch(c.F, &end);
-		jit_insn_label(c.F, &destinations[1]); // INT_ARRAY,
-		compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_int_2ptr, Type::POINTER, (void*) fun_key_array_int_2ptr, Type::POINTER, (void*) fun_inc_array_int);
-		jit_insn_branch(c.F, &end);
-		jit_insn_label(c.F, &destinations[2]); // FLOAT_ARRAY,
-		compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_float_2ptr, Type::POINTER, (void*) fun_key_array_float_2ptr, Type::POINTER, (void*) fun_inc_array_float);
-		jit_insn_branch(c.F, &end);
-		jit_insn_label(c.F, &destinations[3]); // PTR_PTR_MAP,
-		compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_ptr_ptr, Type::POINTER, (void*) fun_key_map_ptr_ptr, Type::POINTER, (void*) fun_inc_map_ptr_ptr);
-		jit_insn_branch(c.F, &end);
-		jit_insn_label(c.F, &destinations[4]); // PTR_INT_MAP,
-		compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_ptr_int_2ptr, Type::POINTER, (void*) fun_key_map_ptr_int, Type::POINTER, (void*) fun_inc_map_ptr_int);
-		jit_insn_branch(c.F, &end);
-		jit_insn_label(c.F, &destinations[5]); // PTR_FLOAT_MAP,
-		compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_ptr_float, Type::POINTER, (void*) fun_key_map_ptr_float, Type::POINTER, (void*) fun_inc_map_ptr_float);
-		jit_insn_branch(c.F, &end);
-		jit_insn_label(c.F, &destinations[6]); // INT_PTR_MAP,
-		compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_int_ptr, Type::POINTER, (void*) fun_key_map_int_ptr_2ptr, Type::POINTER, (void*) fun_inc_map_int_ptr);
-		jit_insn_branch(c.F, &end);
-		jit_insn_label(c.F, &destinations[7]); // INT_INT_MAP,
-		compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_int_int_2ptr, Type::POINTER, (void*) fun_key_map_int_int_2ptr, Type::POINTER, (void*) fun_inc_map_int_int);
-		jit_insn_branch(c.F, &end);
-		jit_insn_label(c.F, &destinations[8]); // INT_FLOAT_MAP,
-		compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_int_float_2ptr, Type::POINTER, (void*) fun_key_map_int_float_2ptr, Type::POINTER, (void*) fun_inc_map_int_float);
-		jit_insn_label(c.F, &end);
+			jit_label_t destinations[3] = {
+				jit_label_undefined, jit_label_undefined, jit_label_undefined,
+			};
+			jit_label_t end = jit_label_undefined;
+
+			jit_insn_jump_table(c.F, s, destinations, 3);
+			jit_insn_branch(c.F, &end);
+
+			jit_insn_label(c.F, &destinations[0]); // PTR_ARRAY = 0,
+			compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_ptr, Type::POINTER, (void*) fun_key_array_ptr, Type::INTEGER, (void*) fun_inc_array_ptr);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[1]); // INT_ARRAY,
+			compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_int_2ptr, Type::POINTER, (void*) fun_key_array_int, Type::INTEGER, (void*) fun_inc_array_int);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[2]); // FLOAT_ARRAY,
+			compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_float_2ptr, Type::POINTER, (void*) fun_key_array_float, Type::INTEGER, (void*) fun_inc_array_float);
+			jit_insn_label(c.F, &end);
+
+		} else {
+
+			jit_label_t destinations[9] = {
+				jit_label_undefined, jit_label_undefined, jit_label_undefined,
+				jit_label_undefined, jit_label_undefined, jit_label_undefined,
+				jit_label_undefined, jit_label_undefined, jit_label_undefined,
+			};
+			jit_label_t end = jit_label_undefined;
+
+			jit_insn_jump_table(c.F, s, destinations, 9);
+			jit_insn_branch(c.F, &end);
+
+			jit_insn_label(c.F, &destinations[0]); // PTR_ARRAY = 0,
+			compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_ptr, Type::POINTER, (void*) fun_key_array_ptr_2ptr, Type::POINTER, (void*) fun_inc_array_ptr);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[1]); // INT_ARRAY,
+			compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_int_2ptr, Type::POINTER, (void*) fun_key_array_int_2ptr, Type::POINTER, (void*) fun_inc_array_int);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[2]); // FLOAT_ARRAY,
+			compile_foreach(c, a, (void*) fun_begin_array_all, (void*) fun_condition_array_all, (void*) fun_value_array_float_2ptr, Type::POINTER, (void*) fun_key_array_float_2ptr, Type::POINTER, (void*) fun_inc_array_float);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[3]); // PTR_PTR_MAP,
+			compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_ptr_ptr, Type::POINTER, (void*) fun_key_map_ptr_ptr, Type::POINTER, (void*) fun_inc_map_ptr_ptr);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[4]); // PTR_INT_MAP,
+			compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_ptr_int_2ptr, Type::POINTER, (void*) fun_key_map_ptr_int, Type::POINTER, (void*) fun_inc_map_ptr_int);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[5]); // PTR_FLOAT_MAP,
+			compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_ptr_float, Type::POINTER, (void*) fun_key_map_ptr_float, Type::POINTER, (void*) fun_inc_map_ptr_float);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[6]); // INT_PTR_MAP,
+			compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_int_ptr, Type::POINTER, (void*) fun_key_map_int_ptr_2ptr, Type::POINTER, (void*) fun_inc_map_int_ptr);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[7]); // INT_INT_MAP,
+			compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_int_int_2ptr, Type::POINTER, (void*) fun_key_map_int_int_2ptr, Type::POINTER, (void*) fun_inc_map_int_int);
+			jit_insn_branch(c.F, &end);
+			jit_insn_label(c.F, &destinations[8]); // INT_FLOAT_MAP,
+			compile_foreach(c, a, (void*) fun_begin_map_all, (void*) fun_condition_map_all, (void*) fun_value_map_int_float_2ptr, Type::POINTER, (void*) fun_key_map_int_float_2ptr, Type::POINTER, (void*) fun_inc_map_int_float);
+			jit_insn_label(c.F, &end);
+		}
+
 	}
 
-	VM::delete_temporary(c.F, a);
+	if (container->type.nature == Nature::POINTER) {
+		VM::delete_temporary(c.F, a);
+	}
 	return nullptr;
 }
 
