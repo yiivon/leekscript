@@ -93,42 +93,42 @@ LSValue* LSString::operator += (LSValue* value) {
 }
 LSValue* LSString::operator += (const LSNull*) {
 	((std::string*) this)->operator += ("null");
-	this->refs++;
+	if (refs == 0) refs = 1;
 	return this;
 }
 LSValue* LSString::operator += (const LSBoolean* boolean) {
 	((std::string*) this)->operator += (boolean->value ? "true" : "false");
-	this->refs++;
+	if (refs == 0) refs = 1;
 	return this;
 }
 LSValue* LSString::operator += (const LSNumber* value) {
 	((std::string*) this)->operator += (value->toString());
-	this->refs++;
+	if (refs == 0) refs = 1;
 	return this;
 }
 LSValue* LSString::operator += (const LSString* string) {
 	((std::string*) this)->operator += (*string);
-	this->refs++;
+	if (refs == 0) refs = 1;
 	return this;
 }
 LSValue* LSString::operator += (const LSArray<LSValue*>*) {
 	((std::string*) this)->operator += ("<array>");
-	this->refs++;
+	if (refs == 0) refs = 1;
 	return this;
 }
 LSValue* LSString::operator += (const LSObject*) {
 	((std::string*) this)->operator += ("<object>");
-	this->refs++;
+	if (refs == 0) refs = 1;
 	return this;
 }
 LSValue* LSString::operator += (const LSFunction*) {
 	((std::string*) this)->operator += ("<function>");
-	this->refs++;
+	if (refs == 0) refs = 1;
 	return this;
 }
 LSValue* LSString::operator += (const LSClass*) {
 	((std::string*) this)->operator += ("<class>");
-	this->refs++;
+	if (refs == 0) refs = 1;
 	return this;
 }
 

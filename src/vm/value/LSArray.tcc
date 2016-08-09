@@ -13,24 +13,24 @@ namespace ls {
 template <class T>
 LSValue* LSArray<T>::array_class(new LSClass("Array"));
 
-template <class T>
-void LSArray<T>::push_clone(const T value) {
+template <>
+inline void LSArray<LSValue*>::push_clone(LSValue* value) {
 	if (value->native) {
 		this->push_back(value); // no clone if native value
 	} else {
-		T val = (T) value->clone();
-		((LSValue*) val)->refs++;
+		LSValue* val = value->clone();
+		val->refs++;
 		this->push_back(val);
 	}
 }
 
 template <>
-inline void LSArray<int>::push_clone(const int value) {
+inline void LSArray<int>::push_clone(int value) {
 	this->push_back(value);
 }
 
 template <>
-inline void LSArray<double>::push_clone(const double value) {
+inline void LSArray<double>::push_clone(double value) {
 	this->push_back(value);
 }
 

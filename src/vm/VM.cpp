@@ -205,8 +205,8 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
 		for (auto o : objs) {
-//			o.second->print(cout);
-//			cout << " (" << o.second->refs << " refs)" << endl;
+			o.second->print(cout);
+			cout << " (" << o.second->refs << " refs)" << endl;
 		}
 	}
 
