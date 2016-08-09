@@ -20,7 +20,7 @@ LSValue::LSValue() {
 //	cout << "LSValue()" << endl;
 	native = false;
 	obj_count++;
-	objs.insert({this, this});
+//	objs.insert({this, this});
 }
 
 LSValue::~LSValue() {
@@ -69,9 +69,9 @@ std::string LSValue::to_json() const {
 
 void LSValue::delete_val(LSValue* value) {
 
-	if (value->native) return;
-
 	if (value == nullptr) return;
+
+	if (value->native) return;
 
 //	cout << "LSValue::delete_val ";
 //	value->print(cout);

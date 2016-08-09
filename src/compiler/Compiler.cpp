@@ -1,6 +1,7 @@
 #include "Compiler.hpp"
-
 #include "../vm/VM.hpp"
+
+using namespace std;
 
 namespace ls {
 
@@ -15,19 +16,18 @@ void Compiler::enter_block() {
 void Compiler::leave_block(jit_function_t& F) {
 
 	if (variables.size() > 0) {
+		map<string, CompilerVar>& vars = variables.back();
 
-		auto& vars = variables.back();
-
-		for (auto var : vars) {
+		for (auto it = vars.begin(); it != vars.end(); ++it) {
 
 //			std::cout << "delete " << var.first  << std::endl;
 
-			if (var.second.reference == true) {
+			if (it->second.reference == true) {
 				continue;
 			}
 
-			if (var.second.type.must_manage_memory()) {
-				VM::delete_obj(F, var.second.value);
+			if (it->second.type.must_manage_memory()) {
+				VM::delete_obj(F, it->second.value);
 			}
 		}
 	}

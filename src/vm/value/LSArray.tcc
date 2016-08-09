@@ -80,17 +80,16 @@ inline LSArray<int>::LSArray(Json& json) {
 	}
 }
 
-template <class T>
-LSArray<T>::~LSArray() {
+template <>
+inline LSArray<LSValue*>::~LSArray() {
 //	std::cout << "~LSArray<T>" << std::endl;
 	for (auto v : *this) {
 //		std::cout << "delete ";
 //		v->print(std::cout);
 //		std::cout << " " << v->refs << std::endl;
-		LSValue::delete_val((LSValue*) v);
+		LSValue::delete_val(v);
 	}
 }
-
 template <>
 inline LSArray<int>::~LSArray() {
 //	std::cout << "~LSArray<int>" << std::endl;

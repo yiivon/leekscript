@@ -29,8 +29,35 @@ LSValue* LSMap<K,T>::map_class(new LSClass("Map"));
 template <typename K, typename T>
 inline LSMap<K, T>::LSMap() {}
 
-template <typename K, typename T>
-inline LSMap<K,T>::~LSMap() {}
+template <>
+inline LSMap<LSValue*,LSValue*>::~LSMap() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(it->first);
+		LSValue::delete_val(it->second);
+	}
+}
+template <>
+inline LSMap<LSValue*,int>::~LSMap() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(it->first);
+	}
+}
+template <>
+inline LSMap<LSValue*,double>::~LSMap() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(it->first);
+	}
+}
+template <>
+inline LSMap<int,LSValue*>::~LSMap() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(it->second);
+	}
+}
+template <>
+inline LSMap<int,int>::~LSMap() {}
+template <>
+inline LSMap<int,double>::~LSMap() {}
 
 /*
  * Map methods
