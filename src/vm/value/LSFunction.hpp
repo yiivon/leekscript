@@ -22,7 +22,7 @@ public:
 	std::map<std::string, LSValue*> values;
 
 	LSFunction(void* function);
-	LSFunction(void* function, int refs);
+	LSFunction(void* function, int refs, bool native);
 	LSFunction(Json& data);
 
 	virtual ~LSFunction();

@@ -67,13 +67,37 @@ std::string LSValue::to_json() const {
 	return "{\"t\":" + to_string(typeID()) + ",\"v\":" + json() + "}";
 }
 
-void LSValue::delete_val(LSValue* value) {
+LSValue* LSValue::clone_inc() const
+{
+	LSValue* copy = clone();
+	copy->refs++;
+	return copy;
+}
 
-	if (value->native) return;
+LSValue* LSValue::move() {
+	if (refs == 0) {
+//		cout << "move ";
+//		print(cout);
+//		cout << endl;
+		return this;
+	}
+	return clone();
+}
+
+LSValue* LSValue::move_inc()
+{
+	LSValue* copy = move();
+	copy->refs++;
+	return copy;
+}
+
+void LSValue::delete_val(LSValue* value) {
 
 	if (value == nullptr) return;
 
-//	cout << "LSValue::delete_val ";
+	if (value->native) return;
+
+//	cout << "LSValue::delete_val " << flush;
 //	value->print(cout);
 //	cout << " " << value->refs << endl;
 
@@ -82,19 +106,6 @@ void LSValue::delete_val(LSValue* value) {
 		//cout << "delete LSValue" << endl;
 		delete value;
 	}
-}
-
-LSValue* LSValue::move(LSValue* value) {
-	if (value->refs == 0) {
-//		cout << "move ";
-//		value->print(cout);
-//		cout << endl;
-		value->refs++;
-		return value;
-	}
-	auto v = value->clone();
-	v->refs = 1;
-	return v;
 }
 
 LSValue* LSValue::operator - () const { return LSNull::get(); }

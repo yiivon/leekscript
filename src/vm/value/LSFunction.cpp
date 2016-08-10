@@ -13,9 +13,10 @@ LSFunction::LSFunction(void* function) {
 	this->function = function;
 }
 
-LSFunction::LSFunction(void* function, int refs) {
+LSFunction::LSFunction(void* function, int refs, bool native) {
 	this->function = function;
 	this->refs = refs;
+	this->native = native;
 }
 
 LSFunction::LSFunction(Json&) {
