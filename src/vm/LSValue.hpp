@@ -300,7 +300,7 @@ public:
 	std::string to_json() const;
 
 	virtual LSValue* clone() const = 0;
-	LSValue* clone_inc() const;
+	LSValue* clone_inc();
 	LSValue* move();
 	LSValue* move_inc();
 
