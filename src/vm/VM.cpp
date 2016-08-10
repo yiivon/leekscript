@@ -270,7 +270,7 @@ void* get_conv_fun(Type type) {
 	return (void*) &create_number_object_int;
 }
 
-jit_value_t VM::value_to_pointer(jit_function_t& F, jit_value_t& v, Type type) {
+jit_value_t VM::value_to_pointer(jit_function_t F, jit_value_t v, Type type) {
 
 	void* fun = get_conv_fun(type);
 
@@ -293,7 +293,7 @@ int boolean_to_value(LSBoolean* b) {
 	return b->value;
 }
 
-jit_value_t VM::pointer_to_value(jit_function_t& F, jit_value_t& v, Type type) {
+jit_value_t VM::pointer_to_value(jit_function_t F, jit_value_t v, Type type) {
 
 	if (type == Type::BOOLEAN) {
 		jit_type_t args_types[1] = {JIT_POINTER};
@@ -304,7 +304,7 @@ jit_value_t VM::pointer_to_value(jit_function_t& F, jit_value_t& v, Type type) {
 }
 
 /*
-bool VM::get_number(jit_function_t& F, jit_value_t& val) {
+bool VM::get_number(jit_function_t F, jit_value_t val) {
 
 	// x & (1 << 31) == 0
 
@@ -333,21 +333,21 @@ void push_array_pointer(LSArray<LSValue*>* array, LSValue* value) {
 	array->push_clone(value);
 }
 
-jit_value_t VM::new_array(jit_function_t& F) {
+jit_value_t VM::new_array(jit_function_t F) {
 	jit_type_t args_t[0] = {};
 	jit_value_t args[0] = {};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_t, 0, 0);
 	return jit_insn_call_native(F, "new", (void*) new_array, sig, args, 0, JIT_CALL_NOTHROW);
 }
 
-void VM::push_array_value(jit_function_t& F, jit_value_t& array, jit_value_t& value) {
+void VM::push_array_value(jit_function_t F, jit_value_t array, jit_value_t value) {
 	jit_type_t args[2] = {JIT_INTEGER, JIT_INTEGER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 	jit_value_t args_v[] = {array, value};
 	jit_insn_call_native(F, "push", (void*) push_array_value, sig, args_v, 2, JIT_CALL_NOTHROW);
 }
 
-void VM::push_array_pointer(jit_function_t& F, jit_value_t& array, jit_value_t& value) {
+void VM::push_array_pointer(jit_function_t F, jit_value_t array, jit_value_t value) {
 	jit_type_t args[2] = {JIT_INTEGER, JIT_INTEGER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 	jit_value_t args_v[] = {array, value};
@@ -358,7 +358,7 @@ int VM_get_refs(LSValue* val) {
 	return val->refs;
 }
 
-jit_value_t VM::get_refs(jit_function_t& F, jit_value_t& obj) {
+jit_value_t VM::get_refs(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
 	return jit_insn_call_native(F, "get_refs", (void*) VM_get_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
@@ -368,7 +368,7 @@ void VM_inc_refs(LSValue* val) {
 	val->refs++;
 }
 
-void VM::inc_refs(jit_function_t& F, jit_value_t& obj) {
+void VM::inc_refs(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "inc_refs", (void*) VM_inc_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
@@ -380,7 +380,7 @@ void VM_inc_refs_if_not_temp(LSValue* val) {
 	}
 }
 
-void VM::inc_refs_if_not_temp(jit_function_t& F, jit_value_t& obj) {
+void VM::inc_refs_if_not_temp(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "inc_refs_not_temp", (void*) VM_inc_refs_if_not_temp, sig, &obj, 1, JIT_CALL_NOTHROW);
@@ -390,13 +390,13 @@ void VM_dec_refs(LSValue* val) {
 	val->refs--;
 }
 
-void VM::dec_refs(jit_function_t& F, jit_value_t& obj) {
+void VM::dec_refs(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "dec_refs", (void*) VM_dec_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
-void VM::delete_obj(jit_function_t& F, jit_value_t& obj) {
+void VM::delete_obj(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "delete", (void*) &LSValue::delete_val, sig, &obj, 1, JIT_CALL_NOTHROW);
@@ -408,7 +408,7 @@ void VM_delete_temporary(LSValue* val) {
 	}
 }
 
-void VM::delete_temporary(jit_function_t& F, jit_value_t& obj) {
+void VM::delete_temporary(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "delete_temporary", (void*) VM_delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
@@ -419,12 +419,12 @@ void VM_operation_exception() {
 	throw vm_operation_exception();
 }
 
-void VM::inc_ops(jit_function_t& F, int add) {
+void VM::inc_ops(jit_function_t F, int add) {
 
 	if (not enable_operations) return;
 
 	// Variable counter pointer
-	jit_value_t jit_ops_ptr = jit_value_create_long_constant(F, jit_type_void_ptr, (long int) &VM::operations);
+	jit_value_t jit_ops_ptr = jit_value_create_long_constant(F, JIT_POINTER, (long int) &VM::operations);
 
 	// Increment counter
 	jit_value_t jit_ops = jit_insn_load_relative(F, jit_ops_ptr, 0, jit_type_uint);
@@ -450,7 +450,7 @@ void VM_print_int(int val) {
 	cout << "Execution ended, too much operations: " << VM::operations << " (" << val << ")" << endl;
 }
 
-void VM::print_int(jit_function_t& F, jit_value_t& val) {
+void VM::print_int(jit_function_t F, jit_value_t val) {
 	jit_type_t args[1] = {JIT_INTEGER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "print_int", (void*) VM_print_int, sig, &val, 1, JIT_CALL_NOTHROW);
@@ -460,9 +460,19 @@ LSValue* VM_create_null() {
 	return LSNull::get();
 }
 
-jit_value_t VM::create_null(jit_function_t& F) {
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, {}, 0, 0);
+jit_value_t VM::create_null(jit_function_t F) {
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
 	return jit_insn_call_native(F, "create_null", (void*) VM_create_null, sig, {}, 0, JIT_CALL_NOTHROW);
+}
+
+LSValue* VM_move(LSValue* val) {
+	return val->move();
+}
+
+jit_value_t VM::move_obj(jit_function_t F, jit_value_t obj) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
+	return jit_insn_call_native(F, "move", (void*) VM_move, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 }

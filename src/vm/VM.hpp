@@ -58,23 +58,24 @@ public:
 	std::string execute(const std::string code, std::string ctx, ExecMode mode);
 
 	static jit_type_t get_jit_type(const Type& type);
-	static jit_value_t value_to_pointer(jit_function_t&, jit_value_t&, Type);
-	static jit_value_t pointer_to_value(jit_function_t&, jit_value_t&, Type);
-	static jit_value_t new_array(jit_function_t&);
+	static jit_value_t value_to_pointer(jit_function_t, jit_value_t, Type);
+	static jit_value_t pointer_to_value(jit_function_t, jit_value_t, Type);
+	static jit_value_t new_array(jit_function_t);
 	// static bool is_number(void* v);
-	static void push_array_value(jit_function_t&, jit_value_t&, jit_value_t&);
-	static void push_array_pointer(jit_function_t&, jit_value_t&, jit_value_t&);
+	static void push_array_value(jit_function_t, jit_value_t, jit_value_t);
+	static void push_array_pointer(jit_function_t, jit_value_t, jit_value_t);
 
-	static jit_value_t get_refs(jit_function_t& F, jit_value_t& obj);
-	static void inc_refs(jit_function_t& F, jit_value_t& obj);
-	static void inc_refs_if_not_temp(jit_function_t& F, jit_value_t& obj);
-	static void dec_refs(jit_function_t& F, jit_value_t& obj);
-	static void delete_obj(jit_function_t& F, jit_value_t& obj);
-	static void delete_temporary(jit_function_t& F, jit_value_t& obj);
-	static void inc_ops(jit_function_t& F, int add);
-	static void get_operations(jit_function_t& F);
-	static void print_int(jit_function_t& F, jit_value_t& val);
-	static jit_value_t create_null(jit_function_t& F);
+	static jit_value_t get_refs(jit_function_t F, jit_value_t obj);
+	static void inc_refs(jit_function_t F, jit_value_t obj);
+	static void inc_refs_if_not_temp(jit_function_t F, jit_value_t obj);
+	static void dec_refs(jit_function_t F, jit_value_t obj);
+	static void delete_obj(jit_function_t F, jit_value_t obj);
+	static void delete_temporary(jit_function_t F, jit_value_t obj);
+	static void inc_ops(jit_function_t F, int add);
+	static void get_operations(jit_function_t F);
+	static void print_int(jit_function_t F, jit_value_t val);
+	static jit_value_t create_null(jit_function_t F);
+	static jit_value_t move_obj(jit_function_t F, jit_value_t obj);
 };
 
 }
