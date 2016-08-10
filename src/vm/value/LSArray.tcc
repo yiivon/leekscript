@@ -228,7 +228,10 @@ LSArray<LSValue*>* LSArray<T>::map(const void* function) const {
 	new_array->reserve(this->size());
 	auto fun = (LSValue* (*)(void*)) function;
 	for (auto v : *this) {
-		new_array->push_back(LSValue::move(fun(v)));
+		LSValue* c = v->clone();
+//		c->print(std::cout); std::cout << std::endl;
+		new_array->push_back(LSValue::move(fun(c)));
+//		LSValue::delete_val(c);
 	}
 	return new_array;
 }

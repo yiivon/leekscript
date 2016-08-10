@@ -1,11 +1,17 @@
 let f = function(number) {
 	for (let k = 1; 36 * k * k - 12 * k < number; k++) {
+		System.print(k)
 		if ((number % (6 * k + 1) == 0) or (number % (6 * k - 1) == 0)) {
+			System.print("not prime")
 			return false
 		}
 	}
 	return true
 }
+
+f(65)
+
+/*
 
 let c = 2
 

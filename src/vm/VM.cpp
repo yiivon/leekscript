@@ -414,6 +414,7 @@ void VM::delete_temporary(jit_function_t& F, jit_value_t& obj) {
 	jit_insn_call_native(F, "delete_temporary", (void*) VM_delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
+
 void VM_operation_exception() {
 	throw vm_operation_exception();
 }

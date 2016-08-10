@@ -86,9 +86,9 @@ void LSValue::delete_val(LSValue* value) {
 
 LSValue* LSValue::move(LSValue* value) {
 	if (value->refs == 0) {
-		cout << "move ";
-		value->print(cout);
-		cout << endl;
+//		cout << "move ";
+//		value->print(cout);
+//		cout << endl;
 		value->refs++;
 		return value;
 	}
