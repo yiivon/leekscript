@@ -67,28 +67,35 @@ std::string LSValue::to_json() const {
 	return "{\"t\":" + to_string(typeID()) + ",\"v\":" + json() + "}";
 }
 
-LSValue* LSValue::clone_inc() const
-{
-	LSValue* copy = clone();
-	copy->refs++;
-	return copy;
+LSValue* LSValue::clone_inc() {
+	if (native) {
+		return this;
+	} else {
+		LSValue* copy = clone();
+		copy->refs++;
+		return copy;
+	}
 }
 
 LSValue* LSValue::move() {
-	if (refs == 0) {
-//		cout << "move ";
-//		print(cout);
-//		cout << endl;
+	if (native) {
 		return this;
+	} else {
+		if (refs == 0) {
+			return this;
+		}
+		return clone();
 	}
-	return clone();
 }
 
-LSValue* LSValue::move_inc()
-{
-	LSValue* copy = move();
-	copy->refs++;
-	return copy;
+LSValue* LSValue::move_inc() {
+	if (native) {
+		return this;
+	} else {
+		LSValue* copy = move();
+		copy->refs++;
+		return copy;
+	}
 }
 
 void LSValue::delete_val(LSValue* value) {
