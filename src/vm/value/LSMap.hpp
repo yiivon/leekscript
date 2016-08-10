@@ -6,15 +6,15 @@
 
 namespace ls {
 
-template <class K>
+template <typename K>
 struct lsmap_less {
 	bool operator() (K lhs, K rhs) const;
 };
 
-template <class K, class T>
+template <typename K, typename T>
 using LSMapIterator = typename std::map<K, T>::iterator;
 
-template <class K, class T>
+template <typename K, typename T>
 class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
 public:
 	static LSValue* map_class;

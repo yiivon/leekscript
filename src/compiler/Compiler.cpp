@@ -13,7 +13,7 @@ void Compiler::enter_block() {
 	variables.push_back(std::map<std::string, CompilerVar> {});
 }
 
-void Compiler::leave_block(jit_function_t& F) {
+void Compiler::leave_block(jit_function_t F) {
 
 	if (variables.size() > 0) {
 		map<string, CompilerVar>& vars = variables.back();
@@ -35,7 +35,7 @@ void Compiler::leave_block(jit_function_t& F) {
 	variables.pop_back();
 }
 
-void Compiler::enter_function(jit_function_t& F) {
+void Compiler::enter_function(jit_function_t F) {
 	variables.push_back(std::map<std::string, CompilerVar> {});
 	functions.push(F);
 	this->F = F;
@@ -47,7 +47,7 @@ void Compiler::leave_function() {
 	this->F = functions.top();
 }
 
-void Compiler::add_var(std::string& name, jit_value_t& value, const Type& type, bool ref) {
+void Compiler::add_var(std::string& name, jit_value_t value, const Type& type, bool ref) {
 	variables.back()[name] = {value, type, ref};
 }
 

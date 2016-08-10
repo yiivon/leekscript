@@ -300,6 +300,9 @@ public:
 	std::string to_json() const;
 
 	virtual LSValue* clone() const = 0;
+	LSValue* clone_inc() const;
+	LSValue* move();
+	LSValue* move_inc();
 
 	virtual LSValue* getClass() const = 0;
 
@@ -312,7 +315,6 @@ public:
 	static LSValue* parse(Json& json);
 
 	static void delete_val(LSValue* value);
-	static LSValue* move(LSValue* value);
 };
 
 }

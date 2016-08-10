@@ -67,11 +67,15 @@ jit_value_t Block::compile(Compiler& c) const {
 
 		if (i == instructions.size() - 1) {
 			jit_value_t val = instructions[i]->compile(c);
-			if (type.nature != Nature::VOID and type.must_manage_memory()) {
-				VM::inc_refs_if_not_temp(c.F, val);
+			if (type.must_manage_memory()) {
+//				VM::inc_refs_if_not_temp(c.F, val);
+				jit_value_t ret = VM::move_obj(c.F, val);
+				c.leave_block(c.F);
+				return ret;
+			} else {
+				c.leave_block(c.F);
+				return val;
 			}
-			c.leave_block(c.F);
-			return val;
 		} else {
 			instructions[i]->compile(c);
 		}

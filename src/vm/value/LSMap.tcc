@@ -64,25 +64,25 @@ inline LSMap<int,double>::~LSMap() {}
  */
 template <>
 inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_insert(LSValue* key, LSValue* value) {
-	emplace(key->clone(), value->clone());
+	emplace(key->move_inc(), value->move_inc());
 	if (refs == 0) refs = 1;
 	return this;
 }
 template <>
 inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_insert(LSValue* key, int value) {
-	emplace(key->clone(), value);
+	emplace(key->move_inc(), value);
 	if (refs == 0) refs = 1;
 	return this;
 }
 template <>
 inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_insert(LSValue* key, double value) {
-	emplace(key->clone(), value);
+	emplace(key->move_inc(), value);
 	if (refs == 0) refs = 1;
 	return this;
 }
 template <>
 inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_insert(int key, LSValue* value) {
-	emplace(key, value->clone());
+	emplace(key, value->move_inc());
 	if (refs == 0) refs = 1;
 	return this;
 }
@@ -940,7 +940,7 @@ template <>
 inline LSValue* LSMap<LSValue*,LSValue*>::clone() const {
 	LSMap<LSValue*,LSValue*>* map = new LSMap<LSValue*,LSValue*>();
 	for (auto it = begin(); it != end(); ++it) {
-		map->emplace(it->first->clone(), it->second->clone());
+		map->emplace(it->first->clone_inc(), it->second->clone_inc());
 	}
 	return map;
 }
@@ -948,7 +948,7 @@ template <>
 inline LSValue* LSMap<LSValue*,int>::clone() const {
 	LSMap<LSValue*,int>* map = new LSMap<LSValue*,int>();
 	for (auto it = begin(); it != end(); ++it) {
-		map->emplace(it->first->clone(), it->second);
+		map->emplace(it->first->clone_inc(), it->second);
 	}
 	return map;
 }
@@ -956,7 +956,7 @@ template <>
 inline LSValue* LSMap<LSValue*,double>::clone() const {
 	LSMap<LSValue*,double>* map = new LSMap<LSValue*,double>();
 	for (auto it = begin(); it != end(); ++it) {
-		map->emplace(it->first->clone(), it->second);
+		map->emplace(it->first->clone_inc(), it->second);
 	}
 	return map;
 }
@@ -964,7 +964,7 @@ template <>
 inline LSValue* LSMap<int,LSValue*>::clone() const {
 	LSMap<int,LSValue*>* map = new LSMap<int,LSValue*>();
 	for (auto it = begin(); it != end(); ++it) {
-		map->emplace(it->first, it->second->clone());
+		map->emplace(it->first, it->second->clone_inc());
 	}
 	return map;
 }

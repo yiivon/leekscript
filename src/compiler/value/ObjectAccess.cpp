@@ -150,7 +150,7 @@ jit_value_t ObjectAccess::compile(Compiler& c) const {
 	// Special case for custom attributes, accessible via a function
 	if (access_function != nullptr) {
 
-		auto fun = (jit_value_t (*)(jit_function_t&)) access_function;
+		auto fun = (jit_value_t (*)(jit_function_t)) access_function;
 		jit_value_t res = fun(c.F);
 
 		if (type.nature == Nature::POINTER) {
