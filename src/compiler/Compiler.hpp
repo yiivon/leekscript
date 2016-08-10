@@ -16,7 +16,7 @@ public:
 	Type type;
 	bool reference;
 	CompilerVar() : value(jit_value_t{}), type(Type::UNKNOWN), reference(false) {}
-	CompilerVar(jit_value_t& value, const Type& type, bool reference) :
+	CompilerVar(jit_value_t value, const Type& type, bool reference) :
 		value(value), type(type), reference(reference) {}
 };
 
@@ -34,11 +34,11 @@ public:
 	virtual ~Compiler();
 
 	void enter_block();
-	void leave_block(jit_function_t& F);
-	void enter_function(jit_function_t& F);
+	void leave_block(jit_function_t F);
+	void enter_function(jit_function_t F);
 	void leave_function();
 
-	void add_var(std::string& name, jit_value_t& value, const Type& type, bool ref);
+	void add_var(std::string& name, jit_value_t value, const Type& type, bool ref);
 	CompilerVar& get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
 	std::map<std::string, CompilerVar> get_vars();

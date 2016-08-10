@@ -102,6 +102,9 @@ jit_value_t If::compile(Compiler& c) const {
 		jit_type_t args_types[1] = {JIT_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 		jit_value_t cond_bool = jit_insn_call_native(c.F, "is_true", (void*) is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
+		if (condition->type.must_manage_memory()) {
+			VM::delete_obj(c.F, cond);
+		}
 
 		jit_value_t cmp = inversed ? jit_insn_eq(c.F, cond_bool, const_true) : jit_insn_ne(c.F, cond_bool, const_true);
 		jit_insn_branch_if(c.F, cmp, &label_else);

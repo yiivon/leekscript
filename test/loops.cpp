@@ -63,13 +63,13 @@ void Test::test_loops() {
 	success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "20");
 	success("let s = '' for k : v in ['a':1, 'b':2, 'c':3, 'd':4] { s += v * k } s", "'abbcccdddd'");
 	success("(a->{ let s = 0; for x in a { s+=x } s })([1,2,3,4.25])", "10.25");
-	success("let y = null for x in { let x = [] x.push(4) x } { y = x } y", "4");
-	success("let y = null for k, x in { let x = [] x.push(4) x } { y = k + x } y", "4");
-	//success("let y = 0 for x in { let x = [] x.push(4) x } { y = x } y", "4");
-	success("let y = 0 for x in { let x = [3:4] x.insert(4,5) x } { y = x } y", "5");
-	success("let y = null for x in { let x = ['3':'4'] x.insert(4,5) x } { y = x } y", "'4'");
-	success("let y = null for x in 1 { y = x } y", "null");
-	success("let y = null for x in 'salut' { y = x } y", "null");
+	success("let y = '' for k, x in { let x = [] x.push(4) x } { y += k + ':' + x + ' ' } y", "'0:4 '");
+	success("let y = '' for k, x in { let x = [1:2] x.insert(3,4) x } { y += k + ':' + x + ' ' } y", "'1:2 3:4 '");
+	success("let y = '' for k, x in { let x = [1:2.5] x.insert(3,4) x } { y += k + ':' + x + ' ' } y", "'1:2.5 3:4 '");
+	success("let y = '' for k, x in { let x = [1:'2'] x.insert(3,4) x } { y += k + ':' + x + ' ' } y", "'1:2 3:4 '");
+	success("let y = 'test' for x in 1 { y = x } y", "'test'");
+	success("let y = 'test' for x in 'salut' { y = x } y", "'test'");
+	success("let x = 'test' for x in [1] {} x", "'test'");
 
 	/*
 	 * Break & continue

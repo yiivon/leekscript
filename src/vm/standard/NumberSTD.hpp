@@ -17,10 +17,10 @@ public:
 	NumberSTD();
 };
 
-jit_value_t Number_e(jit_function_t& F);
-jit_value_t Number_phi(jit_function_t& F);
-jit_value_t Number_pi(jit_function_t& F);
-jit_value_t Number_epsilon(jit_function_t& F);
+jit_value_t Number_e(jit_function_t F);
+jit_value_t Number_phi(jit_function_t F);
+jit_value_t Number_pi(jit_function_t F);
+jit_value_t Number_epsilon(jit_function_t F);
 
 LSNumber* number_abs(const LSNumber* number);
 LSNumber* number_acos(const LSNumber* number);

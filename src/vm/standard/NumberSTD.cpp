@@ -76,16 +76,16 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("char", Type::STRING, {Type::NUMBER}, (void*) &number_char);
 }
 
-jit_value_t Number_e(jit_function_t& F) {
+jit_value_t Number_e(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, M_E);
 }
-jit_value_t Number_phi(jit_function_t& F) {
+jit_value_t Number_phi(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, 1.61803398874989484820);
 }
-jit_value_t Number_pi(jit_function_t& F) {
+jit_value_t Number_pi(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, 3.14159265358979323846);
 }
-jit_value_t Number_epsilon(jit_function_t& F) {
+jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
