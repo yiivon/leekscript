@@ -127,14 +127,19 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 		analyser->add_parameter(arguments[i], type.getArgumentType(i));
 	}
 
+	type.setReturnType(Type::UNKNOWN);
 	body->analyse(analyser, req_type);
 	if (body->can_return) { // the body contains return instruction
-		// return instruction always return POINTERS
-		body->analyse(analyser, Type::POINTER);
-		type.setReturnType(Type::POINTER);
-	} else {
-		type.setReturnType(body->type);
+		Type return_type = body->type;
+		for (size_t i = 1; i < type.return_types.size(); ++i) {
+			return_type = Type::get_compatible_type(return_type, type.return_types[i]);
+		}
+		type.return_types.clear();
+		type.setReturnType(return_type);
+		body->analyse(analyser, return_type); // second pass
 	}
+
+	type.setReturnType(body->type);
 
 	vars = analyser->get_local_vars();
 

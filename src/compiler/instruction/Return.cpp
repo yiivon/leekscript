@@ -29,12 +29,19 @@ void Return::print(ostream& os, int indent, bool debug) const {
 void Return::analyse(SemanticAnalyser* analyser, const Type& ) {
 
 	Function* f = analyser->current_function();
-	expression->analyse(analyser, Type::POINTER);
 	if (f != nullptr) {
-		f->type.setReturnType(expression->type);
+		if (f->type.getReturnType() == Type::UNKNOWN) {
+			expression->analyse(analyser, Type::UNKNOWN);
+
+			f->type.setReturnType(Type::UNKNOWN); // ensure that the vector is not empty
+			f->type.return_types.push_back(expression->type);
+		} else {
+			expression->analyse(analyser, f->type.getReturnType());
+		}
 		function = f;
 		in_function = true;
 	} else {
+		expression->analyse(analyser, Type::POINTER);
 		function = nullptr;
 		in_function = false;
 	}
