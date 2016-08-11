@@ -30,7 +30,7 @@ void Program::compile(Context& context) {
 	jit_context_build_start(jit_context);
 
 	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(main->body->type), params, 0, 0);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(main->type.getReturnType()), params, 0, 0);
 	jit_function_t F = jit_function_create(jit_context, signature);
 	jit_insn_uses_catcher(F);
 	c.enter_function(F);
@@ -50,23 +50,25 @@ void Program::compile(Context& context) {
 
 LSValue* Program::execute() {
 
-	if (main->body->type == Type::BOOLEAN) {
+	Type output_type = main->type.getReturnType();
+
+	if (output_type == Type::BOOLEAN) {
 		auto fun = (bool (*)()) closure;
 		return LSBoolean::get(fun());
 	}
-	if (main->body->type == Type::INTEGER) {
+	if (output_type == Type::INTEGER) {
 		auto fun = (int (*)()) closure;
 		return LSNumber::get((double) fun());
 	}
-	if (main->body->type == Type::FLOAT) {
+	if (output_type == Type::FLOAT) {
 		auto fun = (double (*)()) closure;
 		return LSNumber::get(fun());
 	}
-	if (main->body->type == Type::LONG) {
+	if (output_type == Type::LONG) {
 		auto fun = (long (*)()) closure;
 		return LSNumber::get(fun());
 	}
-	if (main->body->type.raw_type == RawType::FUNCTION and main->body->type.nature == Nature::VALUE) {
+	if (output_type.raw_type == RawType::FUNCTION and output_type.nature == Nature::VALUE) {
 		auto fun = (void* (*)()) closure;
 		return new LSFunction(fun());
 	}
@@ -138,13 +140,7 @@ void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 	}
 
 	jit_value_t res = main->body->compile(c);
-
-	// Return null instead of void
-	if (main->body->type.nature == Nature::VOID) {
-		jit_insn_return(c.F, VM::create_null(c.F));
-	} else {
-		jit_insn_return(c.F, res);
-	}
+	jit_insn_return(c.F, res);
 
 	/*
 	if (toplevel) {

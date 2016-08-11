@@ -48,6 +48,11 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			instructions[i]->analyse(analyser, req_type);
 			type = instructions[i]->type;
 		}
+		if (dynamic_cast<Return*>(instructions[i])) {
+			type = Type::VOID; // This block has really no type
+			analyser->leave_block();
+			return; // no need to compile after a return
+		}
 	}
 
 	analyser->leave_block();
@@ -67,6 +72,9 @@ jit_value_t Block::compile(Compiler& c) const {
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		jit_value_t val = instructions[i]->compile(c);
+		if (dynamic_cast<Return*>(instructions[i])) {
+			break; // no need to compile after a return
+		}
 		if (i == instructions.size() - 1 && instructions[i]->type.nature != Nature::VOID) {
 			if (type.must_manage_memory()) {
 				jit_value_t ret = VM::move_obj(c.F, val);
