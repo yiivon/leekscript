@@ -26,23 +26,26 @@ void Return::print(ostream& os, int indent, bool debug) const {
 	expression->print(os, indent, debug);
 }
 
-void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Return::analyse(SemanticAnalyser* analyser, const Type& ) {
 
-	expression->analyse(analyser, req_type);
 	Function* f = analyser->current_function();
+	expression->analyse(analyser, Type::POINTER);
 	if (f != nullptr) {
+		f->type.setReturnType(expression->type);
 		function = f;
 		in_function = true;
-//		f->can_return(expression->type);
+	} else {
+		function = nullptr;
+		in_function = false;
 	}
-	type = expression->type;
+	type = Type::VOID;
 }
 
 jit_value_t Return::compile(Compiler& c) const {
 
 	jit_value_t v = expression->compile(c);
 	jit_insn_return(c.F, v);
-	return v;
+	return nullptr;
 }
 
 }

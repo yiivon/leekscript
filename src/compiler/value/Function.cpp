@@ -128,10 +128,13 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	body->analyse(analyser, req_type);
-
-//	cout << "body type: " << body->type << endl;
-
-	type.setReturnType(body->type);
+	if (body->can_return) { // the body contains return instruction
+		// return instruction always return POINTERS
+		body->analyse(analyser, Type::POINTER);
+		type.setReturnType(Type::POINTER);
+	} else {
+		type.setReturnType(body->type);
+	}
 
 	vars = analyser->get_local_vars();
 

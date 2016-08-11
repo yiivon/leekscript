@@ -1374,8 +1374,8 @@ LSValue* LSArray<T>::clone() const {
 	return new_array;
 }
 
-template <class T>
-std::ostream& LSArray<T>::print(std::ostream& os) const {
+template <>
+inline std::ostream& LSArray<LSValue*>::print(std::ostream& os) const {
 	os << "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";

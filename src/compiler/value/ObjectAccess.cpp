@@ -46,7 +46,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		field_string = new LSString(field->content);
 	}
 
-	object->analyse(analyser);
+	object->analyse(analyser, Type::UNKNOWN);
 
 	// Search direct attributes
 	try {

@@ -107,6 +107,9 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	in_program = true;
 
 	program->body->analyse(this, Type::UNKNOWN);
+	if (program->body->can_return) { // the body contains return instruction
+		program->body->analyse(this, Type::POINTER);
+	}
 
 	program->functions = functions;
 }

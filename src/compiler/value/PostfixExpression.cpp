@@ -31,7 +31,7 @@ unsigned PostfixExpression::line() const {
 }
 
 void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-	expression->analyse(analyser);
+	expression->analyse(analyser, Type::UNKNOWN);
 	type = expression->type;
 	this->return_value = return_value;
 

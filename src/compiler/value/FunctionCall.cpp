@@ -67,7 +67,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	constant = false;
 
-	function->analyse(analyser);
+	function->analyse(analyser, Type::UNKNOWN);
 
 	if (function->type.raw_type != RawType::UNKNOWN and function->type.raw_type != RawType::FUNCTION
 		and function->type.raw_type != RawType::CLASS) {
@@ -80,7 +80,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	int a = 0;
 	for (Value* arg : arguments) {
 //		arg->analyse(analyser, function->type.getArgumentType(a++));
-		arg->analyse(analyser);
+		arg->analyse(analyser, Type::UNKNOWN);
 	}
 
 	// Standard library constructors
@@ -278,7 +278,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			bool isByValue = true;
 			Type effectiveType;
 			for (Value* arg : arguments) {
-				arg->analyse(analyser);
+				arg->analyse(analyser, Type::UNKNOWN);
 				effectiveType = arg->type;
 				if (arg->type.nature != Nature::VALUE) {
 					isByValue = false;
@@ -323,7 +323,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	return_type = type;
+	return_type = function->type.getReturnType();
 
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;

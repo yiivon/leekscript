@@ -45,6 +45,8 @@ void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 
 void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
+	type = Type::VOID;
+
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
 

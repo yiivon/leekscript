@@ -39,23 +39,27 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	analyser->enter_block();
 
-	type = Type::UNKNOWN;
+	type = Type::VOID;
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
-
-		instructions[i]->analyse(analyser, req_type);
+		if (i < instructions.size() - 1 || req_type.nature == Nature::VOID) {
+			instructions[i]->analyse(analyser, Type::VOID);
+		} else {
+			instructions[i]->analyse(analyser, req_type);
+			type = instructions[i]->type;
+		}
 
 		can_return = can_return or instructions[i]->can_return;
-
-		if (instructions[i]->can_return or (i == instructions.size() - 1)) {
-			type = Type::get_compatible_type(type, instructions[i]->type);
-		}
 	}
 
 	analyser->leave_block();
 
-	if (req_type.nature != Nature::UNKNOWN) {
-		type.nature = req_type.nature;
+	if (type.nature == Nature::VOID) { // empty block or last instruction type is VOID
+		if (req_type.nature != Nature::UNKNOWN) {
+			type.nature = req_type.nature;
+		} else {
+			type = Type::NULLL;
+		}
 	}
 }
 
@@ -64,9 +68,8 @@ jit_value_t Block::compile(Compiler& c) const {
 	c.enter_block();
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
-
-		if (i == instructions.size() - 1) {
-			jit_value_t val = instructions[i]->compile(c);
+		jit_value_t val = instructions[i]->compile(c);
+		if (i == instructions.size() - 1 && instructions[i]->type.nature != Nature::VOID) {
 			if (type.must_manage_memory()) {
 				jit_value_t ret = VM::move_obj(c.F, val);
 				c.leave_block(c.F);
@@ -75,14 +78,15 @@ jit_value_t Block::compile(Compiler& c) const {
 				c.leave_block(c.F);
 				return val;
 			}
-		} else {
-			instructions[i]->compile(c);
 		}
 	}
 	c.leave_block(c.F);
 
-	if (type.nature != Nature::VOID) {
+	if (type.nature == Nature::POINTER) {
 		return VM::create_null(c.F);
+	}
+	if (type.nature == Nature::VALUE) {
+		return jit_value_create_nint_constant(c.F, VM::get_jit_type(type), 0);
 	}
 	return nullptr;
 }

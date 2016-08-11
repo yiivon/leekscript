@@ -667,7 +667,7 @@ Value* SyntaxicAnalyser::eatValue() {
 
 						eat(TokenType::ARROW);
 						l->body = new Block();
-						l->body->instructions.push_back(new Return(eatExpression()));
+						l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
 
 						return l;
 
@@ -708,7 +708,7 @@ Value* SyntaxicAnalyser::eatValue() {
 			l->lambda = true;
 			eat(TokenType::ARROW);
 			l->body = new Block();
-			l->body->instructions.push_back(new Return(eatExpression()));
+			l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
 			return l;
 		}
 

@@ -63,7 +63,7 @@ void For::print(ostream& os, int indent, bool debug) const {
 void For::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	for (unsigned i = 0; i < variablesValues.size(); ++i) {
-		variablesValues[i]->analyse(analyser);
+		variablesValues[i]->analyse(analyser, Type::UNKNOWN);
 	}
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
@@ -86,7 +86,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type&) {
 		}
 	}
 	if (condition != nullptr) {
-		condition->analyse(analyser);
+		condition->analyse(analyser, Type::UNKNOWN);
 	}
 	for (auto it : iterations) {
 		it->analyse(analyser, Type::VOID);
