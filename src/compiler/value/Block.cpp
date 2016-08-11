@@ -48,8 +48,6 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			instructions[i]->analyse(analyser, req_type);
 			type = instructions[i]->type;
 		}
-
-		can_return = can_return or instructions[i]->can_return;
 	}
 
 	analyser->leave_block();

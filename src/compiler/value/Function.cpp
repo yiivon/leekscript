@@ -129,7 +129,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 
 	type.setReturnType(Type::UNKNOWN);
 	body->analyse(analyser, req_type);
-	if (body->can_return) { // the body contains return instruction
+	if (type.return_types.size() > 1) { // the body contains return instruction
 		Type return_type = body->type;
 		for (size_t i = 1; i < type.return_types.size(); ++i) {
 			return_type = Type::get_compatible_type(return_type, type.return_types[i]);

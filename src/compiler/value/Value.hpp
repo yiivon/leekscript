@@ -18,7 +18,6 @@ public:
 	std::map<std::string, Type> attr_types;
 	bool constant;
 	bool parenthesis = false;
-	bool can_return = false;
 
 	Value();
 	virtual ~Value();

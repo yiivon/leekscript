@@ -8,13 +8,13 @@ using namespace std;
 namespace ls {
 
 Program::Program() {
-	body = nullptr;
+	main = nullptr;
 	closure = nullptr;
 }
 
 Program::~Program() {
-	if (body != nullptr) {
-		delete body;
+	if (main != nullptr) {
+		delete main;
 	}
 	for (auto v : system_vars) {
 		delete v.second;
@@ -30,7 +30,7 @@ void Program::compile(Context& context) {
 	jit_context_build_start(jit_context);
 
 	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(body->type), params, 0, 0);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(main->body->type), params, 0, 0);
 	jit_function_t F = jit_function_create(jit_context, signature);
 	jit_insn_uses_catcher(F);
 	c.enter_function(F);
@@ -50,23 +50,23 @@ void Program::compile(Context& context) {
 
 LSValue* Program::execute() {
 
-	if (body->type == Type::BOOLEAN) {
+	if (main->body->type == Type::BOOLEAN) {
 		auto fun = (bool (*)()) closure;
 		return LSBoolean::get(fun());
 	}
-	if (body->type == Type::INTEGER) {
+	if (main->body->type == Type::INTEGER) {
 		auto fun = (int (*)()) closure;
 		return LSNumber::get((double) fun());
 	}
-	if (body->type == Type::FLOAT) {
+	if (main->body->type == Type::FLOAT) {
 		auto fun = (double (*)()) closure;
 		return LSNumber::get(fun());
 	}
-	if (body->type == Type::LONG) {
+	if (main->body->type == Type::LONG) {
 		auto fun = (long (*)()) closure;
 		return LSNumber::get(fun());
 	}
-	if (body->type.raw_type == RawType::FUNCTION and body->type.nature == Nature::VALUE) {
+	if (main->body->type.raw_type == RawType::FUNCTION and main->body->type.nature == Nature::VALUE) {
 		auto fun = (void* (*)()) closure;
 		return new LSFunction(fun());
 	}
@@ -75,7 +75,7 @@ LSValue* Program::execute() {
 }
 
 void Program::print(ostream& os, bool debug) const {
-	body->print(os, 0, debug);
+	main->body->print(os, 0, debug);
 	cout << endl;
 }
 
@@ -134,10 +134,10 @@ void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 		}
 	}
 
-	jit_value_t res = body->compile(c);
+	jit_value_t res = main->body->compile(c);
 
 	// Return null instead of void
-	if (body->type.nature == Nature::VOID) {
+	if (main->body->type.nature == Nature::VOID) {
 		jit_insn_return(c.F, VM::create_null(c.F));
 	} else {
 		jit_insn_return(c.F, res);

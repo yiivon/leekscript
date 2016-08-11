@@ -23,10 +23,10 @@ namespace ls {
 SemanticAnalyser::SemanticAnalyser() {
 	program = nullptr;
 	in_program = false;
-	loops.push(0);
-	variables.push_back(vector<map<std::string, SemanticVar*>> {});
-	functions_stack.push(nullptr); // The first function is the main function of the program
-	parameters.push_back(map<std::string, SemanticVar*> {});
+//	loops.push(0);
+//	variables.push_back(vector<map<std::string, SemanticVar*>> {});
+//	functions_stack.push(nullptr); // The first function is the main function of the program
+//	parameters.push_back(map<std::string, SemanticVar*> {});
 }
 
 SemanticAnalyser::~SemanticAnalyser() {}
@@ -62,6 +62,8 @@ extern LSValue* jit_mod(LSValue* x, LSValue* y);
 void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<Module*>& modules) {
 
 	this->program = program;
+
+	enter_function(program->main);
 
 	// Add context variables
 	for (auto var : context->vars) {
@@ -106,10 +108,19 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 
 	in_program = true;
 
-	program->body->analyse(this, Type::UNKNOWN);
-	if (program->body->can_return) { // the body contains return instruction
-		program->body->analyse(this, Type::POINTER);
+	program->main->type.setReturnType(Type::UNKNOWN);
+	program->main->body->analyse(this, Type::UNKNOWN);
+	if (program->main->type.return_types.size() > 1) { // the body contains return instruction
+		Type return_type = program->main->body->type;
+		for (size_t i = 1; i < program->main->type.return_types.size(); ++i) {
+			return_type = Type::get_compatible_type(return_type, program->main->type.return_types[i]);
+		}
+		program->main->type.return_types.clear();
+		program->main->type.setReturnType(return_type);
+		program->main->body->analyse(this, return_type); // second pass
 	}
+
+	program->main->type.setReturnType(program->main->body->type);
 
 	program->functions = functions;
 }

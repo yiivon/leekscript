@@ -14,7 +14,6 @@ Return::Return(Value* v) {
 	expression = v;
 	function = nullptr;
 	in_function = false;
-	can_return = true;
 }
 
 Return::~Return() {
@@ -29,22 +28,17 @@ void Return::print(ostream& os, int indent, bool debug) const {
 void Return::analyse(SemanticAnalyser* analyser, const Type& ) {
 
 	Function* f = analyser->current_function();
-	if (f != nullptr) {
-		if (f->type.getReturnType() == Type::UNKNOWN) {
-			expression->analyse(analyser, Type::UNKNOWN);
+	if (f->type.getReturnType() == Type::UNKNOWN) {
+		expression->analyse(analyser, Type::UNKNOWN);
 
-			f->type.setReturnType(Type::UNKNOWN); // ensure that the vector is not empty
-			f->type.return_types.push_back(expression->type);
-		} else {
-			expression->analyse(analyser, f->type.getReturnType());
-		}
-		function = f;
-		in_function = true;
+		f->type.setReturnType(Type::UNKNOWN); // ensure that the vector is not empty
+		f->type.return_types.push_back(expression->type);
 	} else {
-		expression->analyse(analyser, Type::POINTER);
-		function = nullptr;
-		in_function = false;
+		expression->analyse(analyser, f->type.getReturnType());
 	}
+	function = f;
+	in_function = true;
+
 	type = Type::VOID;
 }
 

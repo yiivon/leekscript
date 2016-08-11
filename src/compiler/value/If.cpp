@@ -47,12 +47,9 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	condition->analyse(analyser, Type::BOOLEAN);
 	then->analyse(analyser, req_type);
 
-	can_return = then->can_return;
-
 	if (elze != nullptr) {
 
 		elze->analyse(analyser, req_type);
-		can_return = can_return or elze->can_return;
 
 		type = Type::get_compatible_type(then->type, elze->type);
 		if (then->type != type) {

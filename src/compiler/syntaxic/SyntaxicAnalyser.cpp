@@ -63,7 +63,8 @@ Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 	this->i = 0;
 
 	Program* program = new Program();
-	program->body = eatMain();
+	program->main = new Function();
+	program->main->body = eatMain();
 
 	return program;
 }

@@ -25,7 +25,6 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 		value->analyse(analyser, req_type);
 		type = value->type;
 	}
-	can_return = value->can_return;
 }
 
 jit_value_t ExpressionInstruction::compile(Compiler& c) const {

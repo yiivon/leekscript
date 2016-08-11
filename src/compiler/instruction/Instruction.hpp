@@ -14,7 +14,6 @@ class Instruction {
 public:
 
 	Type type = Type::VOID;
-	bool can_return = false;
 
 	virtual ~Instruction() = 0;
 
