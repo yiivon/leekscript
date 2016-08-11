@@ -817,6 +817,7 @@ inline std::ostream& LSMap<LSValue*,LSValue*>::print(std::ostream& os) const {
 		os << " : ";
 		it->second->print(os);
 	}
+	if (empty()) os << ':';
 	return os << "]";
 }
 template <>
@@ -827,6 +828,7 @@ inline std::ostream& LSMap<LSValue*,int>::print(std::ostream& os) const {
 		it->first->print(os);
 		os << " : " << it->second;
 	}
+	if (empty()) os << ':';
 	return os << "]";
 }
 template <>
@@ -837,6 +839,7 @@ inline std::ostream& LSMap<LSValue*,double>::print(std::ostream& os) const {
 		it->first->print(os);
 		os << " : " << it->second;
 	}
+	if (empty()) os << ':';
 	return os << "]";
 }
 template <>
@@ -847,6 +850,7 @@ inline std::ostream& LSMap<int,LSValue*>::print(std::ostream& os) const {
 		os << it->first << " : ";
 		it->second->print(os);
 	}
+	if (empty()) os << ':';
 	return os << "]";
 }
 template <>
@@ -856,6 +860,7 @@ inline std::ostream& LSMap<int,int>::print(std::ostream& os) const {
 		if (it != begin()) os << " ";
 		os << it->first << " : " << it->second;
 	}
+	if (empty()) os << ':';
 	return os << "]";
 }
 template <>
@@ -865,6 +870,7 @@ inline std::ostream& LSMap<int,double>::print(std::ostream& os) const {
 		if (it != begin()) os << " ";
 		os << it->first << " : " << it->second;
 	}
+	if (empty()) os << ':';
 	return os << "]";
 }
 
