@@ -231,8 +231,8 @@ bool Type::operator == (const Type& type) const {
 	if (this->return_types != type.return_types) return false;
 	if (this->arguments_types != type.arguments_types) return false;
 
-	if (this->element_types.size() > 0 and type.element_types.size() > 0 and
-		this->element_types != type.element_types) return false;
+	if (/*this->element_types.size() > 0 and type.element_types.size() > 0 and
+		*/this->element_types != type.element_types) return false;
 
 	return true;
 }
@@ -366,7 +366,15 @@ Type Type::get_compatible_type(const Type& old_type, const Type& new_type) {
 	}
 
 	if (old_type.nature == Nature::POINTER and new_type.nature == Nature::VALUE) {
-		return old_type;
+		if (old_type.raw_type == new_type.raw_type) {
+			if (old_type.element_types == new_type.element_types
+					&& old_type.return_types == new_type.return_types
+					&& old_type.arguments_types == new_type.arguments_types) {
+				return old_type; // They are identical except the Nature
+			}
+			return Type(old_type.raw_type, Nature::POINTER); // They have the same raw_type
+		}
+		return Type::POINTER;
 	}
 
 	if (old_type.raw_type == RawType::UNKNOWN) {

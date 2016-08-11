@@ -76,6 +76,9 @@ LSValue* Program::execute() {
 
 void Program::print(ostream& os, bool debug) const {
 	main->body->print(os, 0, debug);
+	if (debug) {
+		os << "\n" << main->type;
+	}
 	cout << endl;
 }
 

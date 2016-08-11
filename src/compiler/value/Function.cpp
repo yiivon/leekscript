@@ -137,9 +137,9 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 		type.return_types.clear();
 		type.setReturnType(return_type);
 		body->analyse(analyser, return_type); // second pass
+	} else {
+		type.setReturnType(body->type);
 	}
-
-	type.setReturnType(body->type);
 
 	vars = analyser->get_local_vars();
 

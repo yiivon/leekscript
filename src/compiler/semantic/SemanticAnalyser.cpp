@@ -118,9 +118,9 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 		program->main->type.return_types.clear();
 		program->main->type.setReturnType(return_type);
 		program->main->body->analyse(this, return_type); // second pass
+	} else {
+		program->main->type.setReturnType(program->main->body->type);
 	}
-
-	program->main->type.setReturnType(program->main->body->type);
 
 	program->functions = functions;
 }
