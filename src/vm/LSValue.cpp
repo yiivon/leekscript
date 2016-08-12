@@ -16,11 +16,14 @@ int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
 extern std::map<LSValue*, LSValue*> objs;
 
-LSValue::LSValue() {
-//	cout << "LSValue()" << endl;
-	native = false;
+LSValue::LSValue() : refs(0), native(false) {
 	obj_count++;
-//	objs.insert({this, this});
+	//	objs.insert({this, this});
+}
+
+LSValue::LSValue(const LSValue& other) : refs(0), native(other.native) {
+	obj_count++;
+	//	objs.insert({this, this});
 }
 
 LSValue::~LSValue() {

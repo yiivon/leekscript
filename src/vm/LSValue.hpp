@@ -33,6 +33,7 @@ public:
 	bool native;
 
 	LSValue();
+	LSValue(const LSValue& other);
 	virtual ~LSValue() = 0;
 
 	virtual bool isTrue() const = 0;
