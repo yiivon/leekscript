@@ -40,7 +40,7 @@ void Foreach::print(ostream& os, int indent, bool debug) const {
 void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 
 
-	container->analyse(analyser);
+	container->analyse(analyser, Type::UNKNOWN);
 
 	if (container->type.element_types.size() == 1) {
 		key_type = Type::INTEGER; // If no key type in array key = 0, 1, 2...

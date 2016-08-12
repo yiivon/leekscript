@@ -16,7 +16,7 @@ void Test::test_general() {
 	header("General");
 	success("", "null");
 	success(" ", "null"); // classic space
-	success(" ", "null"); // unbreakable space
+	success(" ", "null"); // unbreakable space
 	success("	", "null"); // tab
 	success("null", "null");
 	success("()", "null");
@@ -30,6 +30,7 @@ void Test::test_general() {
 	success("{;}", "null");
 	success("return 12", "12");
 	success("return", "null");
+	success("'a' 'b' 'c'", "'c'");
 
 	header("Variables");
 	success("let a = 2 a", "2");

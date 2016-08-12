@@ -38,7 +38,7 @@ unsigned PrefixExpression::line() const {
 
 void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	expression->analyse(analyser);
+	expression->analyse(analyser, Type::UNKNOWN);
 
 	if (operatorr->type == TokenType::PLUS_PLUS
 		or operatorr->type == TokenType::MINUS_MINUS
@@ -63,7 +63,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
 				if (vv->name == "Number") {
 					if (fc->arguments.size() > 0) {
-						fc->arguments[0]->analyse(analyser);
+						fc->arguments[0]->analyse(analyser, Type::UNKNOWN);
 						type = fc->arguments[0]->type;
 					} else {
 						type = Type::INTEGER;

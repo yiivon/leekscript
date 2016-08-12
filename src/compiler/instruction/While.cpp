@@ -29,7 +29,7 @@ void While::print(ostream& os, int indent, bool debug) const {
 void While::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	if (condition != nullptr) {
-		condition->analyse(analyser);
+		condition->analyse(analyser, Type::UNKNOWN);
 	}
 	analyser->enter_loop();
 	body->analyse(analyser, Type::VOID);

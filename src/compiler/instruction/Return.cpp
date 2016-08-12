@@ -14,7 +14,6 @@ Return::Return(Value* v) {
 	expression = v;
 	function = nullptr;
 	in_function = false;
-	can_return = true;
 }
 
 Return::~Return() {
@@ -26,23 +25,28 @@ void Return::print(ostream& os, int indent, bool debug) const {
 	expression->print(os, indent, debug);
 }
 
-void Return::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Return::analyse(SemanticAnalyser* analyser, const Type& ) {
 
-	expression->analyse(analyser, req_type);
 	Function* f = analyser->current_function();
-	if (f != nullptr) {
-		function = f;
-		in_function = true;
-//		f->can_return(expression->type);
+	if (f->type.getReturnType() == Type::UNKNOWN) {
+		expression->analyse(analyser, Type::UNKNOWN);
+
+		f->type.setReturnType(Type::UNKNOWN); // ensure that the vector is not empty
+		f->type.return_types.push_back(expression->type);
+	} else {
+		expression->analyse(analyser, f->type.getReturnType());
 	}
-	type = expression->type;
+	function = f;
+	in_function = true;
+
+	type = Type::VOID;
 }
 
 jit_value_t Return::compile(Compiler& c) const {
 
 	jit_value_t v = expression->compile(c);
 	jit_insn_return(c.F, v);
-	return v;
+	return nullptr;
 }
 
 }

@@ -49,21 +49,17 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 
 		if (expressions.size() > 0) {
 
-			Type element_type;
+			Type element_type = Type::UNKNOWN;
 
 			for (size_t i = 0; i < expressions.size(); ++i) {
 
 				Value* ex = expressions[i];
-				ex->analyse(analyser);
+				ex->analyse(analyser, Type::UNKNOWN);
 
 				if (ex->constant == false) {
 					constant = false;
 				}
-				if (i == 0) {
-					element_type = ex->type;
-				} else {
-					element_type = Type::get_compatible_type(element_type, ex->type);
-				}
+				element_type = Type::get_compatible_type(element_type, ex->type);
 			}
 
 			// Native elements types supported : integer, double
@@ -86,13 +82,10 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			}
 
 			// Second computation of the array type
+			element_type = Type::UNKNOWN;
 			for (unsigned i = 0; i < expressions.size(); ++i) {
 				Value* ex = expressions[i];
-				if (i == 0) {
-					element_type = ex->type;
-				} else {
-					element_type = Type::get_compatible_type(element_type, ex->type);
-				}
+				element_type = Type::get_compatible_type(element_type, ex->type);
 			}
 			type.setElementType(element_type);
 		}
@@ -154,8 +147,7 @@ LSInterval* LSArray_create_interval(int a, int b) {
 }
 
 void LSArray_push(LSArray<LSValue*>* array, LSValue* value) {
-	array->push_clone(value);
-	LSValue::delete_val(value);
+	array->push_move(value);
 }
 
 void LSArray_push_integer(LSArray<int>* array, int value) {
@@ -205,10 +197,6 @@ jit_value_t Array::compile(Compiler& c) const {
 	for (Value* val : expressions) {
 
 		jit_value_t v = val->compile(c);
-
-		if (supported_type.must_manage_memory()) {
-			VM::inc_refs(c.F, v);
-		}
 
 		jit_type_t args[2] = {JIT_POINTER, elem_type};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);

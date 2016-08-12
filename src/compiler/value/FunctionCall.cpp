@@ -67,7 +67,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	constant = false;
 
-	function->analyse(analyser);
+	function->analyse(analyser, Type::UNKNOWN);
 
 	if (function->type.raw_type != RawType::UNKNOWN and function->type.raw_type != RawType::FUNCTION
 		and function->type.raw_type != RawType::CLASS) {
@@ -80,7 +80,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	int a = 0;
 	for (Value* arg : arguments) {
 //		arg->analyse(analyser, function->type.getArgumentType(a++));
-		arg->analyse(analyser);
+		arg->analyse(analyser, Type::UNKNOWN);
 	}
 
 	// Standard library constructors
@@ -278,7 +278,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			bool isByValue = true;
 			Type effectiveType;
 			for (Value* arg : arguments) {
-				arg->analyse(analyser);
+				arg->analyse(analyser, Type::UNKNOWN);
 				effectiveType = arg->type;
 				if (arg->type.nature != Nature::VALUE) {
 					isByValue = false;
@@ -319,11 +319,12 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (ret_type.raw_type != RawType::UNKNOWN) {
 			type = ret_type;
 		} else {
+			// TODO : to be able to remove temporary variable we must know the nature
 //			type = Type::POINTER; // When the function is unknown, the return type is a pointer
 		}
 	}
 
-	return_type = type;
+	return_type = function->type.getReturnType();
 
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
@@ -514,7 +515,16 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 			}
 		}
 
-		VM::delete_temporary(c.F, args[0]);
+		if (return_type.nature == Nature::POINTER) {
+			// Dont delete the argument if it is the result
+			jit_label_t label = jit_label_undefined;
+			jit_insn_branch_if(c.F, jit_insn_eq(c.F, res, args[0]), &label);
+			VM::delete_temporary(c.F, args[0]);
+			jit_insn_label(c.F, &label);
+		} else {
+			VM::delete_temporary(c.F, args[0]);
+		}
+
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(c.F, res, type);

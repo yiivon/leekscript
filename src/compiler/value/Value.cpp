@@ -10,10 +10,6 @@ Value::Value() {
 
 Value::~Value() {}
 
-void Value::analyse(SemanticAnalyser* analyser) {
-	analyse(analyser, Type::UNKNOWN);
-}
-
 bool Value::will_take(SemanticAnalyser*, const unsigned i, const Type arg_type) {
 	return type.will_take(i, arg_type);
 }

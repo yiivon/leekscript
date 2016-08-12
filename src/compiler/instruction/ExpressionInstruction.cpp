@@ -18,13 +18,25 @@ void ExpressionInstruction::print(ostream& os, int indent, bool debug) const {
 }
 
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-	value->analyse(analyser, req_type);
-	type = value->type;
-	can_return = value->can_return;
+	if (req_type.nature == Nature::VOID) {
+		value->analyse(analyser, Type::UNKNOWN);
+		type = Type::VOID;
+	} else {
+		value->analyse(analyser, req_type);
+		type = value->type;
+	}
 }
 
 jit_value_t ExpressionInstruction::compile(Compiler& c) const {
-	return value->compile(c);
+	jit_value_t v = value->compile(c);
+	if (type.nature == Nature::VOID) {
+		if (value->type.must_manage_memory()) {
+			VM::delete_temporary(c.F, v);
+		}
+		return nullptr;
+	} else {
+		return v;
+	}
 }
 
 }

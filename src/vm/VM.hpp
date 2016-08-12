@@ -74,7 +74,7 @@ public:
 	static void inc_ops(jit_function_t F, int add);
 	static void get_operations(jit_function_t F);
 	static void print_int(jit_function_t F, jit_value_t val);
-	static jit_value_t create_null(jit_function_t F);
+	static jit_value_t get_null(jit_function_t F);
 	static jit_value_t move_obj(jit_function_t F, jit_value_t obj);
 };
 
