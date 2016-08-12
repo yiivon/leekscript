@@ -89,7 +89,7 @@ jit_value_t Block::compile(Compiler& c) const {
 	c.leave_block(c.F);
 
 	if (type.nature == Nature::POINTER) {
-		return VM::create_null(c.F);
+		return VM::get_null(c.F);
 	}
 	if (type.nature == Nature::VALUE) {
 		return jit_value_create_nint_constant(c.F, VM::get_jit_type(type), 0);

@@ -99,7 +99,7 @@ jit_value_t VariableDeclaration::compile(Compiler& c) const {
 			jit_value_t var = jit_value_create(c.F, JIT_POINTER);
 			c.add_var(name, var, Type::NULLL, false);
 
-			jit_value_t val = VM::create_null(c.F);
+			jit_value_t val = VM::get_null(c.F);
 			jit_insn_store(c.F, var, val);
 		}
 	}

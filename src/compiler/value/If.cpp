@@ -136,7 +136,7 @@ jit_value_t If::compile(Compiler& c) const {
 		}
 	} else {
 		if (type != Type::VOID) {
-			jit_insn_store(c.F, res, VM::create_null(c.F));
+			jit_insn_store(c.F, res, VM::get_null(c.F));
 		}
 	}
 

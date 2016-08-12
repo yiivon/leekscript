@@ -456,13 +456,8 @@ void VM::print_int(jit_function_t F, jit_value_t val) {
 	jit_insn_call_native(F, "print_int", (void*) VM_print_int, sig, &val, 1, JIT_CALL_NOTHROW);
 }
 
-LSValue* VM_create_null() {
-	return LSNull::get();
-}
-
-jit_value_t VM::create_null(jit_function_t F) {
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
-	return jit_insn_call_native(F, "create_null", (void*) VM_create_null, sig, {}, 0, JIT_CALL_NOTHROW);
+jit_value_t VM::get_null(jit_function_t F) {
+	return JIT_CREATE_CONST_POINTER(F, LSNull::get());
 }
 
 LSValue* VM_move(LSValue* val) {

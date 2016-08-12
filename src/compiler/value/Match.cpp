@@ -175,7 +175,7 @@ jit_value_t Match::compile(Compiler& c) const {
 	}
 	// In the case of no default pattern
 
-	jit_insn_store(c.F, res, VM::create_null(c.F));
+	jit_insn_store(c.F, res, VM::get_null(c.F));
 
 	jit_insn_label(c.F, &label_end);
 	if (value->type.must_manage_memory()) {
