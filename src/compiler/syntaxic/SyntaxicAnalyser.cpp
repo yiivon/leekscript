@@ -732,6 +732,13 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 		return new Array();
 	}
 
+	// Empty map
+	if (t->type == TokenType::COLON) {
+		eat();
+		eat(TokenType::CLOSING_BRACKET);
+		return new Map();
+	}
+
 	Value* value = eatExpression();
 
 	// eatInterval
