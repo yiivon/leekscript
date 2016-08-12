@@ -24,9 +24,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("size", {
-		{Type::ARRAY, Type::INTEGER, {}, (void*) &LSArray<LSValue*>::size},
-		{Type::FLOAT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<float>::size},
-		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::size}
+		{Type::ARRAY, Type::INTEGER, {}, (void*) &LSArray<LSValue*>::ls_size},
+		{Type::FLOAT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<double>::ls_size},
+		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_size}
 	});
 
 	method("sum", {
@@ -48,35 +48,26 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::ARRAY, Type::ARRAY, {map_fun_type}, (void*) &LSArray<LSValue*>::map},
 	});
 
-	Type array_array = Type::ARRAY;
-	array_array.setElementType(Type::ARRAY);
-
-	Type int_array_array = Type::ARRAY;
-	int_array_array.setElementType(Type::INT_ARRAY);
-
-	Type float_array_array = Type::ARRAY;
-	float_array_array.setElementType(Type::FLOAT_ARRAY);
-
 	method("chunk", {
-		{Type::ARRAY, array_array, {}, (void*) array_chunk_1_ptr},
-		{Type::FLOAT_ARRAY, float_array_array, {}, (void*) array_chunk_1_float},
-		{Type::INT_ARRAY, int_array_array, {}, (void*) array_chunk_1_int},
+		{Type::ARRAY, Type::ARRAY, {}, (void*) array_chunk_1_ptr},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) array_chunk_1_float},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) array_chunk_1_int},
 
-		{Type::ARRAY, array_array, {Type::INTEGER}, (void*) &LSArray<LSValue*>::chunk},
-		{Type::FLOAT_ARRAY, float_array_array, {Type::INTEGER}, (void*) &LSArray<double>::chunk},
-		{Type::INT_ARRAY, int_array_array, {Type::INTEGER}, (void*) &LSArray<int>::chunk},
+		{Type::ARRAY, Type::ARRAY, {Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_chunk},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {Type::INTEGER}, (void*) &LSArray<double>::ls_chunk},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::ls_chunk},
     });
 
 	method("unique", {
-		{Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::unique},
-		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) &LSArray<double>::unique},
-		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::unique},
+		{Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::ls_unique},
+		{Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::ls_unique},
+		{Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::ls_unique},
 	});
 
 	method("sort", {
-		{Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::sort},
-		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) &LSArray<double>::sort},
-		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::sort},
+		{Type::ARRAY, Type::VOID, {}, (void*) &LSArray<LSValue*>::ls_sort},
+		{Type::FLOAT_ARRAY, Type::VOID, {}, (void*) &LSArray<double>::ls_sort},
+		{Type::INT_ARRAY, Type::VOID, {}, (void*) &LSArray<int>::ls_sort},
 	});
 
 	Type map2_fun_type = Type::FUNCTION;
@@ -155,7 +146,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("pop", {
-		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::pop}
+		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::ls_pop}
 	});
 
 	method("push", {
@@ -216,9 +207,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	static_method("min", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_min);
 
 	static_method("size", {
-		{Type::INTEGER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::size},
-		{Type::INTEGER, {Type::FLOAT_ARRAY}, (void*) &LSArray<float>::size},
-		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::size}
+		{Type::INTEGER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::ls_size},
+		{Type::INTEGER, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_size},
+		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_size}
 	});
 
 	static_method("sum", {
@@ -280,8 +271,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("pop", {
-		{Type::POINTER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::pop},
-		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::pop}
+		{Type::POINTER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::ls_pop},
+		{Type::INTEGER, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_pop},
+		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_pop}
 	});
 
 	static_method("push", {
@@ -382,11 +374,6 @@ LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LS
 
 LSValue* array_isEmpty(const LSArray<LSValue*>* array) {
 	return LSBoolean::get(array->size() == 0);
-}
-
-LSValue* array_keySort(const LSArray<LSValue*>*, const LSNumber*) {
-	// TODO
-	return new LSArray<LSValue*>();
 }
 
 LSValue* array_last(const LSArray<LSValue*>* array) {
@@ -507,11 +494,6 @@ LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>*) {
 	return new_array;
 }
 
-LSArray<LSValue*>* array_sort(const LSArray<LSValue*>*, const LSNumber*) {
-	// TODO
-	return new LSArray<LSValue*>();
-}
-
 LSValue* array_sum(const LSArray<LSValue*>*) {
 //	return LSNumber::get(array->sum());
 	return LSNumber::get(0);
@@ -523,15 +505,15 @@ LSValue* array_unshift(const LSArray<LSValue*>*, const LSValue*) {
 }
 
 LSArray<LSValue*>* array_chunk_1_ptr(const LSArray<LSValue*>* array) {
-	return array->chunk(1);
+	return array->ls_chunk(1);
 }
 
 LSArray<LSValue*>* array_chunk_1_int(const LSArray<int>* array) {
-	return array->chunk(1);
+	return array->ls_chunk(1);
 }
 
 LSArray<LSValue*>* array_chunk_1_float(const LSArray<double>* array) {
-	return array->chunk(1);
+	return array->ls_chunk(1);
 }
 
 }

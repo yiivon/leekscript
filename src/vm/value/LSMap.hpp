@@ -25,9 +25,9 @@ public:
 	/*
 	 * Map methods;
 	 */
-	LSMap<K,T>* ls_insert(K key, T value);
+	bool ls_insert(K key, T value);
 	LSMap<K,T>* ls_clear();
-	LSMap<K,T>* ls_erase(K key);
+	bool ls_erase(K key);
 	T ls_look(K key, T def);
 
 	/*

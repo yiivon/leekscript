@@ -319,6 +319,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (ret_type.raw_type != RawType::UNKNOWN) {
 			type = ret_type;
 		} else {
+			// TODO : to be able to remove temporary variable we must know the nature
 //			type = Type::POINTER; // When the function is unknown, the return type is a pointer
 		}
 	}
@@ -514,7 +515,16 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 			}
 		}
 
-		VM::delete_temporary(c.F, args[0]);
+		if (return_type.nature == Nature::POINTER) {
+			// Dont delete the argument if it is the result
+			jit_label_t label = jit_label_undefined;
+			jit_insn_branch_if(c.F, jit_insn_eq(c.F, res, args[0]), &label);
+			VM::delete_temporary(c.F, args[0]);
+			jit_insn_label(c.F, &label);
+		} else {
+			VM::delete_temporary(c.F, args[0]);
+		}
+
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(c.F, res, type);
