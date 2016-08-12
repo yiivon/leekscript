@@ -4,6 +4,8 @@ void Test::test_map() {
 
 	header("Map");
 
+	success("[:]", "[:]");
+
 	success("[1 : 1 2 : 2]", "[1 : 1 2 : 2]");
 	success("[1 : 1 2 : '2']", "[1 : 1 2 : '2']");
 	success("['1' : '1' '1' : '2' '1' : '3']", "['1' : '1']");
@@ -17,11 +19,11 @@ void Test::test_map() {
 	success("let x = ['a' : 1] x.insert(2, 3) x", "[2 : 3 'a' : 1]");
 	success("let x = ['a' : 1] x.insert('a', 3)", "false");
 
-	success("let x = [1 : 1] x.clear()", "[]");
-	success("let x = ['a' : 'a'] x.clear()", "[]");
+	success("let x = [1 : 1] x.clear()", "[:]");
+	success("let x = ['a' : 'a'] x.clear()", "[:]");
 
 	success("let x = [1 : 1] x.erase(1)", "true");
-	success("let x = ['a' : 'a'] x.erase('a') x", "[]");
+	success("let x = ['a' : 'a'] x.erase('a') x", "[:]");
 	success("let x = ['a' : 'a'] x.erase('b') x", "['a' : 'a']");
 	success("let x = ['a' : 1] x.erase(3.14) x", "['a' : 1]");
 

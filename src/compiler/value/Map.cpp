@@ -22,16 +22,19 @@ Map::~Map()
 }
 
 void Map::print(std::ostream& os, int indent, bool debug) const {
-	os << "[\n";
-	for (size_t i = 0; i < values.size(); ++i) {
-		os << tabs(indent+1);
-		keys[i]->print(os, indent + 1, debug);
-		os << " : ";
-		values[i]->print(os, indent + 1, debug);
-		os << "\n";
+	if (values.empty()) {
+		os << "[:]";
+	} else {
+		os << "[\n";
+		for (size_t i = 0; i < values.size(); ++i) {
+			os << tabs(indent+1);
+			keys[i]->print(os, indent + 1, debug);
+			os << " : ";
+			values[i]->print(os, indent + 1, debug);
+			os << "\n";
+		}
+		os << tabs(indent) << "]";
 	}
-	os << tabs(indent) << "]";
-
 	if (debug) {
 		os << " " << type;
 	}
@@ -43,8 +46,6 @@ unsigned Map::line() const {
 
 void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 	constant = true;
-
-	if (values.empty()) return;
 
 	Type key_type = Type::UNKNOWN;
 	Type value_type = Type::UNKNOWN;
