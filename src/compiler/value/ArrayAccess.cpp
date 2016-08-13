@@ -46,8 +46,8 @@ unsigned ArrayAccess::line() const {
 
 void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	array->analyse(analyser);
-	key->analyse(analyser);
+	array->analyse(analyser, Type::UNKNOWN);
+	key->analyse(analyser, Type::UNKNOWN);
 	constant = array->constant && key->constant;
 
 	if (array->type.raw_type == RawType::ARRAY || array->type.raw_type == RawType::INTERVAL) {

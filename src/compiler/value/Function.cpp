@@ -127,11 +127,19 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 		analyser->add_parameter(arguments[i], type.getArgumentType(i));
 	}
 
+	type.setReturnType(Type::UNKNOWN);
 	body->analyse(analyser, req_type);
-
-//	cout << "body type: " << body->type << endl;
-
-	type.setReturnType(body->type);
+	if (type.return_types.size() > 1) { // the body contains return instruction
+		Type return_type = body->type == Type::VOID ? Type::UNKNOWN : body->type;
+		for (size_t i = 1; i < type.return_types.size(); ++i) {
+			return_type = Type::get_compatible_type(return_type, type.return_types[i]);
+		}
+		type.return_types.clear();
+		type.setReturnType(return_type);
+		body->analyse(analyser, return_type); // second pass
+	} else {
+		type.setReturnType(body->type);
+	}
 
 	vars = analyser->get_local_vars();
 
@@ -189,17 +197,6 @@ jit_value_t Function::compile(Compiler& c) const {
 
 	// Execute function
 	jit_value_t res = body->compile(c);
-	if (body->type.must_manage_memory()) {
-//		VM::dec_refs(function, res);
-	}
-
-	// Delete arguments
-	for (unsigned i = 0; i < arg_count; ++i) {
-		if (type.getArgumentType(i).must_manage_memory()) {
-			jit_value_t param = jit_value_get_param(function, i);
-//			VM::delete_obj(function, param);
-		}
-	}
 
 	// Return
 	jit_insn_return(function, res);

@@ -38,8 +38,8 @@ public:
 	T remove(const int index);
 	T remove_key(LSValue* key);
 	T remove_element(T element);
-	LSValue* pop();
-	virtual size_t size() const;
+	LSValue* ls_pop();
+	int ls_size();
 	virtual T sum() const;
 	virtual double average() const;
 	virtual T first() const;
@@ -49,9 +49,9 @@ public:
 	LSArray<LSValue*>* map(const void*) const;
 	LSArray<int>* map_int(const void*) const;
 	LSArray<double>* map_real(const void*) const;
-	LSArray<LSValue*>* chunk(int size = 1) const;
-	LSArray<T>* unique();
-	LSArray<T>* sort();
+	LSArray<LSValue*>* ls_chunk(int size = 1) const;
+	void ls_unique();
+	void ls_sort();
 	void iter(const LSFunction*) const;
 	int contains(const LSValue*) const;
 	int contains_int(int) const;

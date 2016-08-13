@@ -118,7 +118,7 @@ void Test::test_arrays() {
 	success("let x = [1, 2, 3, 4] x.chunk()", "[[1], [2], [3], [4]]");
 
 	success("let x = [1, 1, 2, 2, 1] x.unique() x", "[1, 2, 1]");
-	success("let x = [1, 1, 2, 2, 1] x.sort().unique() x", "[1, 2]");
+	success("let x = [1, 1, 2, 2, 1] x.sort() x.unique() x", "[1, 2]");
 	success("let x = ['a', 'a', 'b'] x.unique() x", "['a', 'b']");
 	success("let x = ['a', 'b', 'c'] x.unique() x", "['a', 'b', 'c']");
 	success("let x = ['a', 'a', 'b', 'a', 'a'] x.unique() x", "['a', 'b', 'a']");

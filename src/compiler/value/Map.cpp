@@ -57,11 +57,7 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (ex->constant == false) {
 			constant = false;
 		}
-		if (i == 0) {
-			key_type = ex->type;
-		} else {
-			key_type = Type::get_compatible_type(key_type, ex->type);
-		}
+		key_type = Type::get_compatible_type(key_type, ex->type);
 	}
 	for (size_t i = 0; i < values.size(); ++i) {
 		Value* ex = values[i];
@@ -70,11 +66,7 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (ex->constant == false) {
 			constant = false;
 		}
-		if (i == 0) {
-			value_type = ex->type;
-		} else {
-			value_type = Type::get_compatible_type(value_type, ex->type);
-		}
+		value_type = Type::get_compatible_type(value_type, ex->type);
 	}
 
 	if (key_type == Type::INTEGER) {
@@ -124,65 +116,22 @@ LSMap<int,double>* LSMap_create_int_float() {
 }
 
 void LSMap_insert_ptr_ptr(LSMap<LSValue*,LSValue*>* map, LSValue* key, LSValue* value) {
-	LSValue* key_copy;
-	LSValue* value_copy;
-	if (key->native) {
-		key_copy = key;
-	} else {
-		key_copy = key->clone();
-		key_copy->refs++;
-	}
-
-	if (value->native) {
-		value_copy = value;
-	} else {
-		value_copy = value->clone();
-		value_copy->refs++;
-	}
-	map->emplace(key_copy, value_copy);
-	LSValue::delete_val(key);
-	LSValue::delete_val(value);
+	map->ls_insert(key, value);
 }
 void LSMap_insert_ptr_int(LSMap<LSValue*,int>* map, LSValue* key, int value) {
-	LSValue* key_copy;
-	if (key->native) {
-		key_copy = key;
-	} else {
-		key_copy = key->clone();
-		key_copy->refs++;
-	}
-
-	map->emplace(key_copy, value);
-	LSValue::delete_val(key);
+	map->ls_insert(key, value);
 }
 void LSMap_insert_ptr_float(LSMap<LSValue*,double>* map, LSValue* key, double value) {
-	LSValue* key_copy;
-	if (key->native) {
-		key_copy = key;
-	} else {
-		key_copy = key->clone();
-		key_copy->refs++;
-	}
-
-	map->emplace(key_copy, value);
-	LSValue::delete_val(key);
+	map->ls_insert(key, value);
 }
 void LSMap_insert_int_ptr(LSMap<int,LSValue*>* map, int key, LSValue* value) {
-	LSValue* value_copy;
-	if (value->native) {
-		value_copy = value;
-	} else {
-		value_copy = value->clone();
-		value_copy->refs++;
-	}
-	map->emplace(key, value_copy);
-	LSValue::delete_val(value);
+	map->ls_insert(key, value);
 }
 void LSMap_insert_int_int(LSMap<int,int>* map, int key, int value) {
-	map->emplace(key, value);
+	map->ls_insert(key, value);
 }
 void LSMap_insert_int_float(LSMap<int,double>* map, int key, double value) {
-	map->emplace(key, value);
+	map->ls_insert(key, value);
 }
 
 jit_value_t Map::compile(Compiler &c) const {
@@ -218,19 +167,19 @@ jit_value_t Map::compile(Compiler &c) const {
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		jit_value_t k = keys[i]->compile(c);
-		if (type.element_types[0].must_manage_memory()) {
-			VM::inc_refs(c.F, k);
-		}
-
 		jit_value_t v = values[i]->compile(c);
-		if (type.element_types[1].must_manage_memory()) {
-			VM::inc_refs(c.F, v);
-		}
 
 		jit_type_t args[3] = {JIT_POINTER, key_type, value_type};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 0);
 		jit_value_t args_v[] = {map, k, v};
 		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 3, JIT_CALL_NOTHROW); ops += std::log2(i + 1);
+
+		if (type.element_types[0].must_manage_memory()) {
+			VM::delete_temporary(c.F, k);
+		}
+		if (type.element_types[1].must_manage_memory()) {
+			VM::delete_temporary(c.F, v);
+		}
 	}
 
 	VM::inc_ops(c.F, ops);

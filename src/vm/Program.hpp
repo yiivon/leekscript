@@ -15,7 +15,7 @@ public:
 
 	std::vector<Function*> functions;
 	std::map<std::string, LSValue*> system_vars;
-	Block* body;
+	Function* main;
 	void* closure;
 
 	Program();

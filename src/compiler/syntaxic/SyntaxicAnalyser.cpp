@@ -63,7 +63,8 @@ Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 	this->i = 0;
 
 	Program* program = new Program();
-	program->body = eatMain();
+	program->main = new Function();
+	program->main->body = eatMain();
 
 	return program;
 }
@@ -667,7 +668,7 @@ Value* SyntaxicAnalyser::eatValue() {
 
 						eat(TokenType::ARROW);
 						l->body = new Block();
-						l->body->instructions.push_back(new Return(eatExpression()));
+						l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
 
 						return l;
 
@@ -708,7 +709,7 @@ Value* SyntaxicAnalyser::eatValue() {
 			l->lambda = true;
 			eat(TokenType::ARROW);
 			l->body = new Block();
-			l->body->instructions.push_back(new Return(eatExpression()));
+			l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
 			return l;
 		}
 
