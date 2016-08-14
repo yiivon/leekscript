@@ -26,6 +26,7 @@ public:
 	jit_function_t F = nullptr;
 	std::stack<jit_function_t> functions;
 
+	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<jit_label_t*> loops_end_labels;
 	std::vector<jit_label_t*> loops_cond_labels;
 	std::vector<std::map<std::string, CompilerVar>> variables;
@@ -35,10 +36,11 @@ public:
 
 	void enter_block();
 	void leave_block(jit_function_t F);
+	void delete_variables_block(jit_function_t F, int deepness); // delete all variables in the #deepness current blocks
 	void enter_function(jit_function_t F);
 	void leave_function();
 
-	void add_var(std::string& name, jit_value_t value, const Type& type, bool ref);
+	void add_var(const std::string& name, jit_value_t value, const Type& type, bool ref);
 	CompilerVar& get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
 	std::map<std::string, CompilerVar> get_vars();
@@ -47,6 +49,7 @@ public:
 	void leave_loop();
 	jit_label_t* get_current_loop_end_label(int deepness) const;
 	jit_label_t* get_current_loop_cond_label(int deepness) const;
+	int get_current_loop_blocks(int deepness) const;
 };
 
 }

@@ -31,6 +31,21 @@ void Break::analyse(SemanticAnalyser* analyser, const Type&) {
 
 jit_value_t Break::compile(Compiler& c) const {
 
+	/*	{ for {
+	 *		let x = ...
+	 *		{
+	 *			let y = ...
+	 *			if ... break => delete y, delete x, goto end
+	 *			let z = ...
+	 *		}
+	 *		let w = ...
+	 *	}
+	 *		label end
+	 *	}
+	 */
+
+	c.delete_variables_block(c.F, c.get_current_loop_blocks(deepness));
+
 	jit_insn_branch(c.F, c.get_current_loop_end_label(deepness));
 
 	return nullptr;

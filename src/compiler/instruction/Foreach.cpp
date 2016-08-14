@@ -268,10 +268,16 @@ int fun_selector(LSValue* containter) {
 
 jit_value_t Foreach::compile(Compiler& c) const {
 
+	c.enter_block(); // { for x in [1, 2] {} }<-- this block
+
 	// Array
 	jit_value_t a = container->compile(c);
 
-	jit_label_t label_end = jit_label_undefined;
+	if (container->type.must_manage_memory()) {
+		VM::inc_refs(c.F, a);
+	}
+
+	c.add_var("{array}", a, container->type, false);
 
 	// Create variables
 	jit_type_t jit_value_type = VM::get_jit_type(value_type);
@@ -279,12 +285,13 @@ jit_value_t Foreach::compile(Compiler& c) const {
 	jit_type_t jit_key_type = VM::get_jit_type(key_type);
 	jit_value_t k = key ? jit_value_create(c.F, jit_key_type) : nullptr;
 
-	jit_label_t label_it = jit_label_undefined;
-	c.enter_loop(&label_end, &label_it);
-	c.enter_block(); // let x = 'test' for x in [1] {} x
 	c.add_var(value->content, v, value_type, true);
 	if (key) c.add_var(key->content, k, key_type, true);
 
+
+	jit_label_t label_end = jit_label_undefined;
+	jit_label_t label_it = jit_label_undefined;
+	c.enter_loop(&label_end, &label_it);
 
 	// Static Selector
 	if (equal_type(container->type, Type::INT_ARRAY)) {
@@ -401,16 +408,16 @@ jit_value_t Foreach::compile(Compiler& c) const {
 
 	}
 
+	c.leave_loop();
+
 	// end label:
 	jit_insn_label(c.F, &label_end);
 
-	c.leave_loop();
-	c.leave_block(c.F);
+	c.leave_block(c.F); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block
 
-
-	if (container->type.nature == Nature::POINTER) {
-		VM::delete_temporary(c.F, a);
-	}
+//	if (container->type.nature == Nature::POINTER) {
+//		VM::delete_temporary(c.F, a);
+//	}
 	return nullptr;
 }
 

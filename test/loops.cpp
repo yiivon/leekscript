@@ -81,6 +81,10 @@ void Test::test_loops() {
 	sem_err("while (true) { break 2 }", ls::SemanticException::Type::BREAK_MUST_BE_IN_LOOP, "");
 	sem_err("while (true) { continue 2 }", ls::SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, "");
 	success("let r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r", "14");
+	success("let r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y continue 2 } r = 0 } r", "23");
+	success("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
+	success("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
+	success("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0", "0");
 
 	/*
 	 * Match
