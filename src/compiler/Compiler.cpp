@@ -79,12 +79,12 @@ void Compiler::leave_loop() {
 	loops_cond_labels.pop_back();
 }
 
-jit_label_t* Compiler::get_current_loop_end_label() const {
-	return loops_end_labels.back();
+jit_label_t* Compiler::get_current_loop_end_label(int deepness) const {
+	return loops_end_labels[loops_end_labels.size() - deepness];
 }
 
-jit_label_t* Compiler::get_current_loop_cond_label() const {
-	return loops_cond_labels.back();
+jit_label_t* Compiler::get_current_loop_cond_label(int deepness) const {
+	return loops_cond_labels[loops_cond_labels.size() - deepness];
 }
 
 }

@@ -45,8 +45,8 @@ public:
 
 	void enter_loop(jit_label_t*, jit_label_t*);
 	void leave_loop();
-	jit_label_t* get_current_loop_end_label() const;
-	jit_label_t* get_current_loop_cond_label() const;
+	jit_label_t* get_current_loop_end_label(int deepness) const;
+	jit_label_t* get_current_loop_cond_label(int deepness) const;
 };
 
 }

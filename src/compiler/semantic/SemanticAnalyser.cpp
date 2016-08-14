@@ -169,8 +169,8 @@ void SemanticAnalyser::leave_loop() {
 	loops.top()--;
 }
 
-bool SemanticAnalyser::in_loop() const {
-	return loops.top() > 0;
+bool SemanticAnalyser::in_loop(int deepness) const {
+	return loops.top() >= deepness;
 }
 
 SemanticVar* SemanticAnalyser::add_parameter(Token* v, Type type) {

@@ -9,29 +9,29 @@ using namespace std;
 namespace ls {
 
 Break::Break() {
-	value = 1;
+	deepness = 1;
 }
 
 Break::~Break() {}
 
 void Break::print(ostream& os, int indent, bool) const {
 	os << tabs(indent) << "break";
-	if (value > 1) {
-		os << " " << value;
+	if (deepness > 1) {
+		os << " " << deepness;
 	}
 }
 
 void Break::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	// break must be in a loop
-	if (!analyser->in_loop()) {
+	if (!analyser->in_loop(deepness)) {
 		analyser->add_error({SemanticException::Type::BREAK_MUST_BE_IN_LOOP, 0});
 	}
 }
 
 jit_value_t Break::compile(Compiler& c) const {
 
-	jit_insn_branch(c.F, c.get_current_loop_end_label());
+	jit_insn_branch(c.F, c.get_current_loop_end_label(deepness));
 
 	return nullptr;
 }

@@ -23,6 +23,8 @@ class Block;
 class Object;
 class Array;
 class Function;
+class Break;
+class Continue;
 
 class SyntaxicAnalyser {
 
@@ -60,6 +62,8 @@ public:
 	Match::Pattern eatMatchPattern();
 	Instruction* eatFor();
 	Instruction* eatWhile();
+	Break* eatBreak();
+	Continue* eatContinue();
 	ClassDeclaration* eatClassDeclaration();
 	VariableDeclaration* eatVariableDeclaration();
 	Function* eatFunction();

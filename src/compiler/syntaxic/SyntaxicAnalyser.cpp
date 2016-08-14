@@ -224,12 +224,10 @@ Instruction* SyntaxicAnalyser::eatInstruction()
 			}
 		}
 		case TokenType::BREAK:
-			eat();
-			return new Break();
+			return eatBreak();
 
 		case TokenType::CONTINUE:
-			eat();
-			return new Continue();
+			return eatContinue();
 
 		case TokenType::CLASS:
 			return eatClassDeclaration();
@@ -1075,6 +1073,40 @@ Instruction* SyntaxicAnalyser::eatWhile() {
 	}
 
 	return w;
+}
+
+Break*SyntaxicAnalyser::eatBreak() {
+	eat(TokenType::BREAK);
+	Break* b = new Break();
+
+	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
+		double deepness = stod_(t->content);
+		if (deepness != int(deepness) || deepness <= 0) {
+			errors.push_back(new SyntaxicalError(t, "Break should only be followed by a positive integer"));
+		} else {
+			b->deepness = deepness;
+			eat();
+		}
+	}
+
+	return b;
+}
+
+Continue*SyntaxicAnalyser::eatContinue() {
+	eat(TokenType::CONTINUE);
+	Continue* c = new Continue();
+
+	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
+		double deepness = stod_(t->content);
+		if (deepness != int(deepness) || deepness <= 0) {
+			errors.push_back(new SyntaxicalError(t, "Continue should only be followed by a positive integer"));
+		} else {
+			c->deepness = deepness;
+			eat();
+		}
+	}
+
+	return c;
 }
 
 ClassDeclaration* SyntaxicAnalyser::eatClassDeclaration() {
