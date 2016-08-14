@@ -49,7 +49,7 @@ public:
 	Value* eatValue();
 	bool isObject();
 	Value* eatBlockOrObject();
-	Block* eatBlock(bool acceptSemicolon = true);
+	Block* eatBlock();
 	Object* eatObject();
 	Value* eatArrayOrMap();
 	If* eatIf();

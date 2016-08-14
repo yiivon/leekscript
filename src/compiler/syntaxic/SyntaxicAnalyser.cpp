@@ -119,7 +119,7 @@ Value* SyntaxicAnalyser::eatBlockOrObject() {
 	}
 }
 
-Block* SyntaxicAnalyser::eatBlock(bool acceptSemicolon) {
+Block* SyntaxicAnalyser::eatBlock() {
 
 	Block* block = new Block();
 
@@ -136,7 +136,7 @@ Block* SyntaxicAnalyser::eatBlock(bool acceptSemicolon) {
 				errors.push_back(new SyntaxicalError(t, "Unexpected closing brace, forgot to open it ?"));
 			}
 			break;
-		} else if (t->type == TokenType::FINISHED || t->type == TokenType::ELSE || t->type == TokenType::END || t->type == TokenType::IN || (!acceptSemicolon && t->type == TokenType::SEMICOLON)) {
+		} else if (t->type == TokenType::FINISHED || t->type == TokenType::ELSE || t->type == TokenType::END || t->type == TokenType::IN) {
 			if (brace) {
 				errors.push_back(new SyntaxicalError(t, "Expecting closing brace at end of the block"));
 			}
@@ -931,7 +931,14 @@ Instruction* SyntaxicAnalyser::eatFor() {
 	}
 
 	save_current_state();
-	Block* init = eatBlock(false);
+	Block* init = new Block();
+	while (true) {
+		if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::IN || t->type == TokenType::OPEN_BRACE) {
+			break;
+		}
+		Instruction* ins = eatInstruction();
+		if (ins) init->instructions.push_back(ins);
+	}
 
 	if (errors.empty() && t->type == TokenType::SEMICOLON) {
 		forgot_saved_state();
@@ -950,7 +957,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		// increment
 		Block* block = new Block();
 		while (true) {
-			if (t->type == TokenType::FINISHED || t->type == TokenType::DO || t->type == TokenType::OPEN_BRACE || t->type == TokenType::CLOSING_PARENTHESIS) {
+			if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::DO || t->type == TokenType::OPEN_BRACE || t->type == TokenType::CLOSING_PARENTHESIS) {
 				break;
 			}
 			Instruction* ins = eatInstruction();
