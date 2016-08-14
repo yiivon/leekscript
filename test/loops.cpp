@@ -63,12 +63,12 @@ void Test::test_loops() {
 	success("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s", "'salut ça va ?'");
 	success("let a = 0 let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] for i in x { if i < 5 { continue } a++ } a", "5");
 	success("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s", "20");
-	success("let s = '' for k : v in ['a':1, 'b':2, 'c':3, 'd':4] { s += v * k } s", "'abbcccdddd'");
-	success("(a->{ let s = 0; for x in a { s+=x } s })([1,2,3,4.25])", "10.25");
+	success("let s = '' for k : v in ['a': 1, 'b': 2, 'c': 3, 'd': 4] { s += v * k } s", "'abbcccdddd'");
+	success("(a -> { let s = 0; for x in a { s += x } s })([1, 2, 3, 4.25])", "10.25");
 	success("let y = '' for k, x in { let x = [] x.push(4) x } { y += k + ':' + x + ' ' } y", "'0:4 '");
-	success("let y = '' for k, x in { let x = [1:2] x.insert(3,4) x } { y += k + ':' + x + ' ' } y", "'1:2 3:4 '");
-	success("let y = '' for k, x in { let x = [1:2.5] x.insert(3,4) x } { y += k + ':' + x + ' ' } y", "'1:2.5 3:4 '");
-	success("let y = '' for k, x in { let x = [1:'2'] x.insert(3,4) x } { y += k + ':' + x + ' ' } y", "'1:2 3:4 '");
+	success("let y = '' for k, x in { let x = [1:2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y", "'1:2 3:4 '");
+	success("let y = '' for k, x in { let x = [1:2.5] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y", "'1:2.5 3:4 '");
+	success("let y = '' for k, x in { let x = [1:'2'] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y", "'1:2 3:4 '");
 	success("let y = 'test' for x in 1 { y = x } y", "'test'");
 	success("let y = 'test' for x in 'salut' { y = x } y", "'test'");
 	success("let x = 'test' for x in [1] {} x", "'test'");
@@ -92,8 +92,8 @@ void Test::test_loops() {
 	success("match 'a' { 1 : 1 'a' : 'a' }", "'a'");
 	success("match 1 { 1 : 1 'a' : 'a' }", "1");
 	success("match 1 { 1|2 : 1 'a'|[]|{} : 'a' }", "1");
-	success("match 1 { (4-2)|2| |-1| : 1 'a'|[]|{} : 'a' }", "1");
-	success("match 1+5 { (4+1)|2|8 : 1 'a'|[]|{} : 'a' }", "null");
+	success("match 1 { (4 - 2)|2| |-1| : 1 'a'|[]|{} : 'a' }", "1");
+	success("match 1 + 5 { (4 + 1)|2|8 : 1 'a'|[]|{} : 'a' }", "null");
 	success("match 50 { 0..50: 1 50..100: 2 }", "2");
 	success("match 50 { ..50: 1 50..: 2 }", "2");
 	success("match 50 { ..10: 1 ..100: 2 }", "2");
