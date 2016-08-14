@@ -13,7 +13,7 @@ Continue::Continue() {
 Continue::~Continue() {}
 
 void Continue::print(std::ostream& os, int indent, bool) const {
-	os << tabs(indent) << "continue";
+	os << "continue";
 	if (value > 1) {
 		os << " " << value;
 	}

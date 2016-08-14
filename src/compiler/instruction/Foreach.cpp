@@ -22,7 +22,7 @@ Foreach::~Foreach() {
 }
 
 void Foreach::print(ostream& os, int indent, bool debug) const {
-	os << tabs(indent) << "for ";
+	os << "for ";
 
 	if (key != nullptr) {
 		os << key->content;
@@ -34,11 +34,12 @@ void Foreach::print(ostream& os, int indent, bool debug) const {
 	container->print(os, indent + 1, debug);
 
 	os << " ";
-	body->print(os, indent + 1, debug);
+	body->print(os, indent, debug);
 }
 
 void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 
+	analyser->enter_block();
 
 	container->analyse(analyser, Type::UNKNOWN);
 
@@ -56,7 +57,6 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type&) {
 		value_type = Type::POINTER;
 	}
 
-	analyser->enter_block();
 	if (key != nullptr) {
 		key_var = analyser->add_var(key, key_type, nullptr, nullptr);
 	}

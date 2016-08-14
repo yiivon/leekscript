@@ -3,10 +3,9 @@
 
 #include <vector>
 
-#include "../../compiler/lexical/Ident.hpp"
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
-#include "../../compiler/value/Expression.hpp"
-#include "../../compiler/value/Value.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../value/Value.hpp"
+#include "../value/Block.hpp"
 #include "Instruction.hpp"
 
 namespace ls {
@@ -17,13 +16,10 @@ class SemanticVar;
 class For : public Instruction {
 public:
 
-	std::vector<Token*> variables;
-	std::vector<Value*> variablesValues;
-	std::vector<bool> declare_variables;
+	Block* init;
 	Value* condition;
-	std::vector<Value*> iterations;
+	Block* increment;
 	Block* body;
-	std::map<std::string, SemanticVar*> vars;
 
 	For();
 	virtual ~For();

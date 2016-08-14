@@ -15,7 +15,7 @@ Break::Break() {
 Break::~Break() {}
 
 void Break::print(ostream& os, int indent, bool) const {
-	os << tabs(indent) << "break";
+	os << "break";
 	if (value > 1) {
 		os << " " << value;
 	}

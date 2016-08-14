@@ -33,6 +33,7 @@ class SyntaxicAnalyser {
 	unsigned i;
 	std::vector<SyntaxicalError*> errors;
 	long time;
+	std::vector<std::pair<unsigned,size_t>> stack;
 
 public:
 
@@ -41,10 +42,6 @@ public:
 
 	Program* analyse(std::vector<Token>&);
 
-	Token* eat();
-	Token* eat(TokenType type);
-	Token* nextTokenAt(int pos);
-
 	Block* eatMain();
 	Token* eatIdent();
 	Value* eatExpression(bool pipe_opened = false);
@@ -52,7 +49,7 @@ public:
 	Value* eatValue();
 	bool isObject();
 	Value* eatBlockOrObject();
-	Block* eatBlock();
+	Block* eatBlock(bool acceptSemicolon = true);
 	Object* eatObject();
 	Value* eatArrayOrMap();
 	If* eatIf();
@@ -66,8 +63,16 @@ public:
 	VariableDeclaration *eatFunctionDeclaration();
 	Instruction* eatInstruction();
 
-	long getTime();
+	Token* eat();
+	Token* eat(TokenType type);
+	Token* nextTokenAt(int pos);
+
+	void save_current_state();
+	void restore_saved_state();
+	void forgot_saved_state();
+
 	std::vector<SyntaxicalError*> getErrors();
+	long getTime();
 };
 
 }

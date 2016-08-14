@@ -20,7 +20,7 @@ While::~While() {
 }
 
 void While::print(ostream& os, int indent, bool debug) const {
-	os << tabs(indent) << "while ";
+	os << "while ";
 	condition->print(os, debug);
 	os << " ";
 	body->print(os, indent, debug);
