@@ -85,6 +85,9 @@ void Test::test_loops() {
 	success("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
 	success("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
 	success("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0", "0");
+	success("for let x = 0; x < 2; ++x { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
+	success("for let x = 0; x < 2; ++x { let a = 'a' for let y = 0; y < 2; ++y { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
+	success("for let x = 0; x < 2; ++x { let a = 'a' for let y = 0; y < 2; ++y { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0", "0");
 
 	/*
 	 * Match
