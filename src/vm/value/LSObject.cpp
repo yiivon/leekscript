@@ -18,7 +18,7 @@ LSObject::LSObject() {
 LSObject::LSObject(initializer_list<pair<std::string, LSValue*>> values) {
 
 	for (auto i : values) {
-		this->values.insert({i.first, i.second->clone()});
+		addField(i.first, i.second->clone());
 	}
 	clazz = nullptr;
 	readonly = false;
@@ -154,7 +154,8 @@ LSValue* LSObject::attr(const LSValue* key) const {
 		return getClass();
 	}
 	try {
-		return values.at(*((LSString*) key))->clone();
+//		cout << "attr : " << values.at(*((LSString*) key))->refs << endl;
+		return values.at(*((LSString*) key));
 	} catch (exception& e) {
 		if (clazz != nullptr) {
 			string name = *((LSString*) key);
@@ -173,8 +174,9 @@ LSValue** LSObject::attrL(const LSValue* key) {
 	try {
 		return &values.at(*((LSString*) key));
 	} catch (exception& e) {
-		values.insert({*((LSString*) key), LSNull::get()});
-		return &values[*((LSString*) key)];
+		return nullptr;
+//		values.insert({*((LSString*) key), LSNull::get()});
+//		return &values[*((LSString*) key)];
 	}
 }
 
