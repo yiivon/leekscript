@@ -34,15 +34,16 @@ int Test::all() {
 
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
 	int errors = (total - success_count);
+	int leaks = (obj_created - obj_deleted);
 
 	std::cout << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
 	std::cout << "Total : " << total << ", succès : " << success_count << ", erreurs : " << errors << std::endl;
 	std::cout << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
-	std::cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << (obj_created - obj_deleted) << " leaked)" << std::endl;
+	std::cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)" << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
 
-	return errors;
+	return errors + leaks;
 }
 
 void Test::header(std::string text) {
