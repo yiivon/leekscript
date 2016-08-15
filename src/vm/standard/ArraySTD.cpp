@@ -146,7 +146,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("pop", {
-		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::ls_pop}
+		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::ls_pop},
+		{Type::FLOAT_ARRAY, Type::POINTER, {}, (void*) &LSArray<double>::ls_pop},
+		{Type::INT_ARRAY, Type::POINTER, {}, (void*) &LSArray<int>::ls_pop}
 	});
 
 	method("push", {

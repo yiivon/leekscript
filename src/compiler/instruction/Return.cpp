@@ -21,7 +21,7 @@ Return::~Return() {
 }
 
 void Return::print(ostream& os, int indent, bool debug) const {
-	os << tabs(indent) << "return ";
+	os << "return ";
 	expression->print(os, indent, debug);
 }
 

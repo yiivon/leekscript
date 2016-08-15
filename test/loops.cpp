@@ -41,7 +41,8 @@ void Test::test_loops() {
 	 * For loops
 	 */
 	header("For loops");
-	success("for let i = 0; ; i++ {}", "null");
+//	success("for let i = 0; ; i++ {}", "null");
+	success("for let i = 0; false; i++ {}", "null");
 	success("for let i = 0; i < 10; i++ {}", "null");
 	success("let s = 0 for let i = 0; i < 5; i++ do s += i end s", "10");
 	success("let s = 0 for let i = 0; i < 10; i += 2 do s += i end s", "20");
@@ -49,7 +50,8 @@ void Test::test_loops() {
 	success("let i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i", "5");
 	success("let a = 0 for let i = 0; i < 10; i++ { a++ } a", "10");
 	success("let a = 0 for let i = 0; i < 10; i++ { if i < 5 { continue } a++ } a", "5");
-//	 success("let c = 0 for var t = []; t.size() < 10; t += 'x' { c++ } c", "10"),
+	success("let c = 0 for var t = []; t.size() < 10; t.push('x') { c++ } c", "10");
+	success("let s = 0 for let m = [1 : 3, 2 : 2, 3 : 1]; m; let l = 0 for k,x in m { l = k } m.erase(l) { for x in m { s += x } } s", "14");
 
 	/*
 	 * Foreach loops
@@ -78,6 +80,16 @@ void Test::test_loops() {
 	sem_err("continue", ls::SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, "");
 	sem_err("while (true) { x -> {x break} }", ls::SemanticException::Type::BREAK_MUST_BE_IN_LOOP, "");
 	sem_err("while (true) { x -> {x continue} }", ls::SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, "");
+	sem_err("while (true) { break 2 }", ls::SemanticException::Type::BREAK_MUST_BE_IN_LOOP, "");
+	sem_err("while (true) { continue 2 }", ls::SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, "");
+	success("let r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r", "14");
+	success("let r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y continue 2 } r = 0 } r", "23");
+	success("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
+	success("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
+	success("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0", "0");
+	success("for let x = 0; x < 2; ++x { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
+	success("for let x = 0; x < 2; ++x { let a = 'a' for let y = 0; y < 2; ++y { let b = 'b' break let c = 'c' } let d = 'd' } 0", "0");
+	success("for let x = 0; x < 2; ++x { let a = 'a' for let y = 0; y < 2; ++y { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0", "0");
 
 	/*
 	 * Match

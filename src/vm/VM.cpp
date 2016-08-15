@@ -11,6 +11,7 @@
 #include "value/LSNumber.hpp"
 #include "value/LSArray.hpp"
 #include "Program.hpp"
+#include "value/LSObject.hpp"
 
 using namespace std;
 
@@ -460,6 +461,15 @@ jit_value_t VM::get_null(jit_function_t F) {
 	return JIT_CREATE_CONST_POINTER(F, LSNull::get());
 }
 
+LSObject* VM_create_object() {
+	return new LSObject();
+}
+
+jit_value_t VM::create_object(jit_function_t F) {
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, {}, 0, 0);
+	return jit_insn_call_native(F, "create_object", (void*) VM_create_object, sig, {}, 0, JIT_CALL_NOTHROW);
+}
+
 LSValue* VM_move(LSValue* val) {
 	return val->move();
 }
@@ -468,6 +478,16 @@ jit_value_t VM::move_obj(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
 	return jit_insn_call_native(F, "move", (void*) VM_move, sig, &obj, 1, JIT_CALL_NOTHROW);
+}
+
+bool VM_is_true(LSValue* val) {
+	return val->isTrue();
+}
+
+jit_value_t VM::is_true(jit_function_t F, jit_value_t ptr) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args, 1, 0);
+	return jit_insn_call_native(F, "is_true", (void*) VM_is_true, sig, &ptr, 1, JIT_CALL_NOTHROW);
 }
 
 }

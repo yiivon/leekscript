@@ -9,7 +9,7 @@ namespace ls {
 class Break : public Instruction {
 public:
 
-	char value;
+	int deepness;
 
 	Break();
 	virtual ~Break();

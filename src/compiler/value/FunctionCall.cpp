@@ -316,12 +316,17 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	} else {
 		Type ret_type = function->type.getReturnType();
+		if (ret_type.nature != Nature::UNKNOWN) {
+			type = ret_type;
+		}
+		/*
 		if (ret_type.raw_type != RawType::UNKNOWN) {
 			type = ret_type;
 		} else {
 			// TODO : to be able to remove temporary variable we must know the nature
 //			type = Type::POINTER; // When the function is unknown, the return type is a pointer
 		}
+		*/
 	}
 
 	return_type = function->type.getReturnType();

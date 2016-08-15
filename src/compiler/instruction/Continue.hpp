@@ -9,7 +9,7 @@ namespace ls {
 class Continue : public Instruction {
 public:
 
-	char value;
+	int deepness;
 
 	Continue();
 	virtual ~Continue();

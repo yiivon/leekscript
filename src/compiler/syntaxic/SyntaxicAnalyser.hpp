@@ -23,6 +23,8 @@ class Block;
 class Object;
 class Array;
 class Function;
+class Break;
+class Continue;
 
 class SyntaxicAnalyser {
 
@@ -33,6 +35,7 @@ class SyntaxicAnalyser {
 	unsigned i;
 	std::vector<SyntaxicalError*> errors;
 	long time;
+	std::vector<std::pair<unsigned,size_t>> stack;
 
 public:
 
@@ -40,10 +43,6 @@ public:
 	~SyntaxicAnalyser();
 
 	Program* analyse(std::vector<Token>&);
-
-	Token* eat();
-	Token* eat(TokenType type);
-	Token* nextTokenAt(int pos);
 
 	Block* eatMain();
 	Token* eatIdent();
@@ -60,14 +59,24 @@ public:
 	Match::Pattern eatMatchPattern();
 	Instruction* eatFor();
 	Instruction* eatWhile();
+	Break* eatBreak();
+	Continue* eatContinue();
 	ClassDeclaration* eatClassDeclaration();
 	VariableDeclaration* eatVariableDeclaration();
 	Function* eatFunction();
 	VariableDeclaration *eatFunctionDeclaration();
 	Instruction* eatInstruction();
 
-	long getTime();
+	Token* eat();
+	Token* eat(TokenType type);
+	Token* nextTokenAt(int pos);
+
+	void save_current_state();
+	void restore_saved_state();
+	void forgot_saved_state();
+
 	std::vector<SyntaxicalError*> getErrors();
+	long getTime();
 };
 
 }

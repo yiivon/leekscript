@@ -74,7 +74,7 @@ public:
 
 	void enter_loop();
 	void leave_loop();
-	bool in_loop() const;
+	bool in_loop(int deepness) const;
 
 	SemanticVar* add_var(Token*, Type, Value*, VariableDeclaration*);
 	SemanticVar* add_parameter(Token*, Type);
