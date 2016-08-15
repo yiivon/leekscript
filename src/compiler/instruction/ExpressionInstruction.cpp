@@ -13,7 +13,6 @@ ExpressionInstruction::~ExpressionInstruction() {
 }
 
 void ExpressionInstruction::print(ostream& os, int indent, bool debug) const {
-	os << tabs(indent);
 	value->print(os, indent, debug);
 }
 

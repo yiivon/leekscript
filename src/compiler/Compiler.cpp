@@ -25,7 +25,9 @@ void Compiler::leave_block(jit_function_t F) {
 }
 
 void Compiler::delete_variables_block(jit_function_t F, int deepness) {
+
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
+
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 
 //			std::cout << "delete " << var.first  << std::endl;
@@ -53,7 +55,7 @@ void Compiler::leave_function() {
 	this->F = functions.top();
 }
 
-void Compiler::add_var(const string& name, jit_value_t value, const Type& type, bool ref) {
+void Compiler::add_var(const std::string& name, jit_value_t value, const Type& type, bool ref) {
 	variables.back()[name] = {value, type, ref};
 }
 
