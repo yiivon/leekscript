@@ -60,21 +60,18 @@ Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args)
 	try {
 		vector<Method>& impl = methods.at(name);
 		Method* best = nullptr;
-		for (Method& m : impl) {
-//			cout << "Test impl : " << m.type << endl;
 
+		for (Method& m : impl) {
 			if (m.obj_type.compatible(obj_type) and Type::list_compatible(m.type.arguments_types, args)) {
-//				cout << "Impl good : " << m.type << endl;
 				if (best == nullptr or
 					Type::list_more_specific(best->type.arguments_types, m.type.arguments_types) or
-					Type::more_specific(m.obj_type, best->obj_type)) {
+					Type::more_specific(best->obj_type, m.obj_type) /* old, new */) {
 					best = &m;
-//					cout << "best : " << m.type << endl;
 				}
 			}
 		}
 		return best;
-	} catch (exception& e) {
+	} catch (exception&) {
 		return nullptr;
 	}
 }
@@ -83,19 +80,16 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 	try {
 		vector<StaticMethod>& impl = static_methods.at(name);
 		StaticMethod* best = nullptr;
+
 		for (auto& m : impl) {
-//			cout << "Test impl : " << m.type << endl;
 			if (Type::list_compatible(m.type.arguments_types, args)) {
-//				cout << "Impl good : " << m.type << endl;
 				if (best == nullptr or Type::list_more_specific(best->type.arguments_types, m.type.arguments_types)) {
-//					cout << "Better" << endl;
 					best = &m;
 				}
 			}
 		}
-//		cout << "BEST : " << best->type << endl;
 		return best;
-	} catch (exception& e) {
+	} catch (exception&) {
 		return nullptr;
 	}
 }
