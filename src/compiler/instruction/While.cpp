@@ -44,13 +44,16 @@ jit_value_t While::compile(Compiler& c) const {
 
 	// condition
 	jit_value_t cond = condition->compile(c);
-
-	// goto end si !condition
-	if (condition->type.nature == Nature::VALUE) {
-		jit_insn_branch_if_not(c.F, cond, &label_end);
-	} else {
+	if (condition->type.nature == Nature::POINTER) {
 		jit_value_t cond_bool = VM::is_true(c.F, cond);
+
+		if (condition->type.must_manage_memory()) {
+			VM::delete_temporary(c.F, cond);
+		}
+
 		jit_insn_branch_if_not(c.F, cond_bool, &label_end);
+	} else {
+		jit_insn_branch_if_not(c.F, cond, &label_end);
 	}
 
 	// body
