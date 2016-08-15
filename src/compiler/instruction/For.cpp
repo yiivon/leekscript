@@ -11,6 +11,10 @@ For::For() {
 }
 
 For::~For() {
+	for (Instruction* ins : inits) delete ins;
+	delete condition;
+	for (Instruction* ins : increments) delete ins;
+	delete body;
 }
 
 void For::print(ostream& os, int indent, bool debug) const {

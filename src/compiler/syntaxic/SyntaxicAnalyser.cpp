@@ -977,6 +977,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 		return f;
 	} else {
+		for (Instruction* ins : inits) delete ins;
 		restore_saved_state();
 
 		// for key , value in container { body }
