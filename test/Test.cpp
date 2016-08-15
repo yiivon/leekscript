@@ -43,7 +43,7 @@ int Test::all() {
 	std::cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)" << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
 
-	return errors + leaks;
+	return abs(errors) + abs(leaks);
 }
 
 void Test::header(std::string text) {
