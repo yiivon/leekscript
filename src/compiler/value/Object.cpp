@@ -53,8 +53,7 @@ void push_object(LSObject* o, LSString* k, LSValue* v) {
 
 jit_value_t Object::compile(Compiler& c) const {
 
-	LSObject* o = new LSObject();
-	jit_value_t object = JIT_CREATE_CONST_POINTER(c.F, o);
+	jit_value_t object = VM::create_object(c.F);
 
 	jit_type_t args[3] = {JIT_POINTER, JIT_POINTER, JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 0);

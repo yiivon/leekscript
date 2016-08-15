@@ -11,6 +11,7 @@
 #include "value/LSNumber.hpp"
 #include "value/LSArray.hpp"
 #include "Program.hpp"
+#include "value/LSObject.hpp"
 
 using namespace std;
 
@@ -458,6 +459,15 @@ void VM::print_int(jit_function_t F, jit_value_t val) {
 
 jit_value_t VM::get_null(jit_function_t F) {
 	return JIT_CREATE_CONST_POINTER(F, LSNull::get());
+}
+
+LSObject* VM_create_object() {
+	return new LSObject();
+}
+
+jit_value_t VM::create_object(jit_function_t F) {
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, {}, 0, 0);
+	return jit_insn_call_native(F, "create_object", (void*) VM_create_object, sig, {}, 0, JIT_CALL_NOTHROW);
 }
 
 LSValue* VM_move(LSValue* val) {
