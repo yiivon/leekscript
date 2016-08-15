@@ -173,8 +173,8 @@ Object* SyntaxicAnalyser::eatObject() {
 	return o;
 }
 
-Instruction* SyntaxicAnalyser::eatInstruction()
-{
+Instruction* SyntaxicAnalyser::eatInstruction() {
+
 	switch (t->type) {
 
 		case TokenType::LET:
@@ -380,8 +380,9 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
 
 		// Opérateurs unaires préfixe
 		if (t->type == TokenType::NEW || t->type == TokenType::MINUS ||
-				t->type == TokenType::NOT || t->type == TokenType::MINUS_MINUS ||
-				t->type == TokenType::PLUS_PLUS || t->type == TokenType::TILDE) {
+			t->type == TokenType::PLUS || t->type == TokenType::NOT ||
+			t->type == TokenType::MINUS_MINUS || t->type == TokenType::PLUS_PLUS
+			|| t->type == TokenType::TILDE) {
 
 			if (t->type == TokenType::MINUS && nt != nullptr && t->line == nt->line) {
 
@@ -401,6 +402,11 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
 					pe->expression = ex;
 					e = pe;
 				}
+			} else if (t->type == TokenType::PLUS && nt != nullptr && t->line == nt->line) {
+
+				eat(); // eat the +
+				e = eatExpression(pipe_opened);
+
 			} else {
 				PrefixExpression* ex = new PrefixExpression();
 				ex->operatorr = new Operator(eat());
