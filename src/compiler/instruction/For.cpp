@@ -14,12 +14,18 @@ For::~For() {
 }
 
 void For::print(ostream& os, int indent, bool debug) const {
-	os << "for ";
-	init->print(os, indent + 1, debug);
+	os << "for";
+	for (Instruction* ins : inits) {
+		os << " ";
+		ins->print(os, indent + 1, debug);
+	}
 	os << "; ";
 	condition->print(os, indent + 1, debug);
-	os << "; ";
-	increment->print(os, indent + 1, debug);
+	os << ";";
+	for (Instruction* ins : increments) {
+		os << " ";
+		ins->print(os, indent + 1, debug);
+	}
 	os << " ";
 	body->print(os, indent, debug);
 }
@@ -31,9 +37,9 @@ void For::analyse(SemanticAnalyser* analyser, const Type&) {
 	analyser->enter_block();
 
 	// Init
-	for (size_t i = 0; i < init->instructions.size(); ++i) {
-		init->instructions[i]->analyse(analyser, Type::VOID);
-		if (dynamic_cast<Return*>(init->instructions[i])) {
+	for (Instruction* ins : inits) {
+		ins->analyse(analyser, Type::VOID);
+		if (dynamic_cast<Return*>(ins)) {
 			analyser->leave_block();
 			return;
 		}
@@ -49,9 +55,9 @@ void For::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	// Increment
 	analyser->enter_block();
-	for (size_t i = 0; i < increment->instructions.size(); ++i) {
-		increment->instructions[i]->analyse(analyser, Type::VOID);
-		if (dynamic_cast<Return*>(increment->instructions[i])) {
+	for (Instruction* ins : increments) {
+		ins->analyse(analyser, Type::VOID);
+		if (dynamic_cast<Return*>(ins)) {
 			break;
 		}
 	}
@@ -73,9 +79,9 @@ jit_value_t For::compile(Compiler& c) const {
 	jit_label_t label_end = jit_label_undefined;
 
 	// Init
-	for (size_t i = 0; i < init->instructions.size(); ++i) {
-		init->instructions[i]->compile(c);
-		if (dynamic_cast<Return*>(init->instructions[i])) {
+	for (Instruction* ins : inits) {
+		ins->compile(c);
+		if (dynamic_cast<Return*>(ins)) {
 			c.leave_block(c.F);
 			return nullptr;
 		}
@@ -106,9 +112,9 @@ jit_value_t For::compile(Compiler& c) const {
 
 	// Inc
 	c.enter_block();
-	for (size_t i = 0; i < increment->instructions.size(); ++i) {
-		increment->instructions[i]->compile(c);
-		if (dynamic_cast<Return*>(increment->instructions[i])) {
+	for (Instruction* ins : increments) {
+		ins->compile(c);
+		if (dynamic_cast<Return*>(ins)) {
 			break;
 		}
 	}

@@ -16,9 +16,9 @@ class SemanticVar;
 class For : public Instruction {
 public:
 
-	Block* init;
+	std::vector<Instruction*> inits;
 	Value* condition;
-	Block* increment;
+	std::vector<Instruction*> increments;
 	Block* body;
 
 	For();

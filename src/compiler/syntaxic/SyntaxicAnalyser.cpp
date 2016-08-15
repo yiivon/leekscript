@@ -931,23 +931,23 @@ Instruction* SyntaxicAnalyser::eatFor() {
 	}
 
 	save_current_state();
-	Block* init = new Block();
+	vector<Instruction*> inits;
 	while (true) {
 		if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::IN || t->type == TokenType::OPEN_BRACE) {
 			break;
 		}
 		Instruction* ins = eatInstruction();
-		if (ins) init->instructions.push_back(ins);
+		if (ins) inits.push_back(ins);
 	}
 
 	if (errors.empty() && t->type == TokenType::SEMICOLON) {
 		forgot_saved_state();
 
-		// for init ; condition ; increment { body }
+		// for inits ; condition ; increments { body }
 		For* f = new For();
 
 		// init
-		f->init = init;
+		f->inits = inits;
 		eat(TokenType::SEMICOLON);
 
 		// condition
@@ -955,15 +955,13 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		eat(TokenType::SEMICOLON);
 
 		// increment
-		Block* block = new Block();
 		while (true) {
 			if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::DO || t->type == TokenType::OPEN_BRACE || t->type == TokenType::CLOSING_PARENTHESIS) {
 				break;
 			}
 			Instruction* ins = eatInstruction();
-			if (ins) block->instructions.push_back(ins);
+			if (ins) f->increments.push_back(ins);
 		}
-		f->increment = block;
 
 		if (parenthesis)
 			eat(TokenType::CLOSING_PARENTHESIS);
