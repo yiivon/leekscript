@@ -41,7 +41,8 @@ void Test::test_loops() {
 	 * For loops
 	 */
 	header("For loops");
-	success("for let i = 0; ; i++ {}", "null");
+//	success("for let i = 0; ; i++ {}", "null");
+	success("for let i = 0; false; i++ {}", "null");
 	success("for let i = 0; i < 10; i++ {}", "null");
 	success("let s = 0 for let i = 0; i < 5; i++ do s += i end s", "10");
 	success("let s = 0 for let i = 0; i < 10; i += 2 do s += i end s", "20");
@@ -49,7 +50,8 @@ void Test::test_loops() {
 	success("let i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i", "5");
 	success("let a = 0 for let i = 0; i < 10; i++ { a++ } a", "10");
 	success("let a = 0 for let i = 0; i < 10; i++ { if i < 5 { continue } a++ } a", "5");
-//	 success("let c = 0 for var t = []; t.size() < 10; t += 'x' { c++ } c", "10"),
+	success("let c = 0 for var t = []; t.size() < 10; t.push('x') { c++ } c", "10");
+	success("let s = 0 for let m = [1 : 3, 2 : 2, 3 : 1]; m; let l = 0 for k,x in m { l = k } m.erase(l) { for x in m { s += x } } s", "14");
 
 	/*
 	 * Foreach loops

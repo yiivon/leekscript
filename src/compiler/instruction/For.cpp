@@ -1,171 +1,127 @@
 #include "For.hpp"
 
-#include "../value/Number.hpp"
+#include "../instruction/Return.hpp"
 #include "../../vm/LSValue.hpp"
-#include "../../vm/value/LSNull.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
-#include "../value/Block.hpp"
 
 using namespace std;
 
 namespace ls {
 
 For::For() {
-	condition = nullptr;
-	body = nullptr;
 }
 
 For::~For() {
-	for (auto v : variablesValues) {
-		delete v;
-	}
-	if (condition != nullptr) {
-		delete condition;
-	}
-	for (auto i : iterations) {
-		delete i;
-	}
+	for (Instruction* ins : inits) delete ins;
+	delete condition;
+	for (Instruction* ins : increments) delete ins;
 	delete body;
 }
 
 void For::print(ostream& os, int indent, bool debug) const {
-
-	os << tabs(indent) << "for (";
-
-	if (variables.size() > 0) {
-		os << "let ";
-	}
-	for (unsigned i = 0; i < variables.size(); ++i) {
-		os << variables.at(i)->content;
-		if ((Value*) variablesValues.at(i) != nullptr) {
-			os << " = ";
-			variablesValues.at(i)->print(os, indent, debug);
-		}
-		if (i < variables.size() - 1) {
-			os << ", ";
-		}
+	os << "for";
+	for (Instruction* ins : inits) {
+		os << " ";
+		ins->print(os, indent + 1, debug);
 	}
 	os << "; ";
-	if (condition != nullptr) {
-		condition->print(os, indent, debug);
+	condition->print(os, indent + 1, debug);
+	os << ";";
+	for (Instruction* ins : increments) {
+		os << " ";
+		ins->print(os, indent + 1, debug);
 	}
-	os << "; ";
-	for (unsigned i = 0; i < iterations.size(); ++i) {
-		iterations.at(i)->print(os, indent, debug);
-		if (i < iterations.size() - 1) {
-			os << ", ";
-		}
-	}
-	os << ") ";
+	os << " ";
 	body->print(os, indent, debug);
 }
 
 void For::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	for (unsigned i = 0; i < variablesValues.size(); ++i) {
-		variablesValues[i]->analyse(analyser, Type::UNKNOWN);
-	}
-	for (unsigned i = 0; i < variables.size(); ++i) {
+	type = Type::VOID;
 
-		Token* var = variables[i];
+	analyser->enter_block();
 
-		//cout << "var " << var->content << " : " << std::boolalpha <<  declare_variables[i] << endl;
-
-		Type info = Type::POINTER;
-		Value* value = nullptr;
-		if (i < variablesValues.size()) {
-			info = variablesValues[i]->type;
-			value = variablesValues[i];
-		}
-		if (declare_variables[i]) {
-			SemanticVar* v = analyser->add_var(var, info, value, nullptr);
-			vars.insert(pair<string, SemanticVar*>(var->content, v));
-		} else {
-			SemanticVar* v = analyser->get_var(var);
-			vars.insert(pair<string, SemanticVar*>(var->content, v));
+	// Init
+	for (Instruction* ins : inits) {
+		ins->analyse(analyser, Type::VOID);
+		if (dynamic_cast<Return*>(ins)) {
+			analyser->leave_block();
+			return;
 		}
 	}
-	if (condition != nullptr) {
-		condition->analyse(analyser, Type::UNKNOWN);
-	}
-	for (auto it : iterations) {
-		it->analyse(analyser, Type::VOID);
-	}
+
+	// Condition
+	condition->analyse(analyser, Type::BOOLEAN);
+
+	// Body
 	analyser->enter_loop();
 	body->analyse(analyser, Type::VOID);
 	analyser->leave_loop();
-}
 
-int for_is_true(LSValue* v) {
-	return v->isTrue();
+	// Increment
+	analyser->enter_block();
+	for (Instruction* ins : increments) {
+		ins->analyse(analyser, Type::VOID);
+		if (dynamic_cast<Return*>(ins)) {
+			break;
+		}
+	}
+	analyser->leave_block();
+
+	analyser->leave_block();
 }
 
 jit_value_t For::compile(Compiler& c) const {
 
-	if (body->instructions.size() == 0 && condition == nullptr) {
-		return nullptr;
-	}
-
-	// Initialization
-	for (unsigned i = 0; i < variables.size(); ++i) {
-
-		std::string& name = variables.at(i)->content;
-		SemanticVar* v = vars.at(name);
-
-		jit_value_t var;
-		if (declare_variables[i]) {
-			var = jit_value_create(c.F, JIT_INTEGER);
-			c.add_var(name, var, v->type, false);
-		} else {
-			var = c.get_var(name).value;
-		}
-		if (variablesValues.at(i) != nullptr) {
-			jit_value_t val = variablesValues.at(i)->compile(c);
-			jit_insn_store(c.F, var, val);
-		} else {
-			jit_value_t val = JIT_CREATE_CONST_POINTER(c.F, LSNull::get());
-			jit_insn_store(c.F, var, val);
-		}
-	}
+	c.enter_block(); // { for init ; cond ; inc { body } }<-- this block
 
 	jit_label_t label_cond = jit_label_undefined;
-	jit_label_t label_it = jit_label_undefined;
+	jit_label_t label_inc = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
-	jit_type_t args_types[1] = {JIT_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_INTEGER, args_types, 1, 0);
 
-	c.enter_loop(&label_end, &label_it);
+	// Init
+	for (Instruction* ins : inits) {
+		ins->compile(c);
+		if (dynamic_cast<Return*>(ins)) {
+			c.leave_block(c.F);
+			return nullptr;
+		}
+	}
 
-	// condition label:
+	// Cond
 	jit_insn_label(c.F, &label_cond);
-
-	// condition
 	jit_value_t cond = condition->compile(c);
+	if (condition->type.nature == Nature::POINTER) {
+		jit_value_t cond_bool = VM::is_true(c.F, cond);
 
-	// goto end if !condition
-	if (condition->type.nature != Nature::VALUE) {
-		cond = jit_insn_call_native(c.F, "is_true", (void*) for_is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
+		if (condition->type.must_manage_memory()) {
+			VM::delete_temporary(c.F, cond);
+		}
+
+		jit_insn_branch_if_not(c.F, cond_bool, &label_end);
+	} else {
+		jit_insn_branch_if_not(c.F, cond, &label_end);
 	}
-	jit_insn_branch_if_not(c.F, cond, &label_end);
 
-	// body
+	// Body
+	c.enter_loop(&label_end, &label_inc);
 	body->compile(c);
+	c.leave_loop();
+	jit_insn_label(c.F, &label_inc);
 
-	jit_insn_label(c.F, &label_it);
-
-	// iterations
-	for (Value* it : iterations) {
-		it->compile(c);
+	// Inc
+	c.enter_block();
+	for (Instruction* ins : increments) {
+		ins->compile(c);
+		if (dynamic_cast<Return*>(ins)) {
+			break;
+		}
 	}
-
-	// jump to condition
+	c.leave_block(c.F);
 	jit_insn_branch(c.F, &label_cond);
 
-	// end label:
+	// End
 	jit_insn_label(c.F, &label_end);
-
-	c.leave_loop();
-
+	c.leave_block(c.F);
 	return nullptr;
 }
 

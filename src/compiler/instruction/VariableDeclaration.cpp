@@ -22,8 +22,6 @@ VariableDeclaration::~VariableDeclaration() {
 
 void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 
-	os << tabs(indent);
-
 	os << (global ? "global " : "let ");
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
@@ -36,7 +34,7 @@ void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 		os << " = ";
 	}
 	for (unsigned i = 0; i < expressions.size(); ++i) {
-		expressions.at(i)->print(os, indent, debug);
+		expressions.at(i)->print(os, indent + 1, debug);
 		if (i < expressions.size() - 1) {
 			os << ", ";
 		}

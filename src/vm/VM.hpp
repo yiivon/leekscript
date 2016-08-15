@@ -76,6 +76,7 @@ public:
 	static void print_int(jit_function_t F, jit_value_t val);
 	static jit_value_t get_null(jit_function_t F);
 	static jit_value_t move_obj(jit_function_t F, jit_value_t obj);
+	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
 };
 
 }

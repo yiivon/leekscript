@@ -136,7 +136,7 @@ Block* SyntaxicAnalyser::eatBlock() {
 				errors.push_back(new SyntaxicalError(t, "Unexpected closing brace, forgot to open it ?"));
 			}
 			break;
-		} else if (t->type == TokenType::FINISHED || t->type == TokenType::ELSE || t->type == TokenType::END) {
+		} else if (t->type == TokenType::FINISHED || t->type == TokenType::ELSE || t->type == TokenType::END || t->type == TokenType::IN) {
 			if (brace) {
 				errors.push_back(new SyntaxicalError(t, "Expecting closing brace at end of the block"));
 			}
@@ -928,24 +928,60 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		eat();
 	}
 
-	bool forEach = true;
-	bool declare = false;
-	if (t->type == TokenType::SEMICOLON) {
-		forEach = false;
-	} else {
-		if (t->type == TokenType::LET) {
-			eat();
-			declare = true;
+	save_current_state();
+	vector<Instruction*> inits;
+	while (true) {
+		if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::IN || t->type == TokenType::OPEN_BRACE) {
+			break;
 		}
-		Token* t3 = nextTokenAt(3);
-		Token* t4 = nextTokenAt(4);
-		forEach = (nt != nullptr && (nt->type == TokenType::COLON || nt->type == TokenType::IN))
-				|| (t3 != nullptr && t3->type == TokenType::IN) || (t4 != nullptr && t4->type == TokenType::IN);
+		Instruction* ins = eatInstruction();
+		if (ins) inits.push_back(ins);
 	}
 
-	if (forEach) {
+	if (errors.empty() && t->type == TokenType::SEMICOLON) {
+		forgot_saved_state();
 
+		// for inits ; condition ; increments { body }
+		For* f = new For();
+
+		// init
+		f->inits = inits;
+		eat(TokenType::SEMICOLON);
+
+		// condition
+		f->condition = eatExpression();
+		eat(TokenType::SEMICOLON);
+
+		// increment
+		while (true) {
+			if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::DO || t->type == TokenType::OPEN_BRACE || t->type == TokenType::CLOSING_PARENTHESIS) {
+				break;
+			}
+			Instruction* ins = eatInstruction();
+			if (ins) f->increments.push_back(ins);
+		}
+
+		if (parenthesis)
+			eat(TokenType::CLOSING_PARENTHESIS);
+
+		// body
+		if (t->type == TokenType::OPEN_BRACE) {
+			f->body = eatBlock();
+		} else {
+			eat(TokenType::DO);
+			f->body = eatBlock();
+			eat(TokenType::END);
+		}
+
+		return f;
+	} else {
+		for (Instruction* ins : inits) delete ins;
+		restore_saved_state();
+
+		// for key , value in container { body }
 		Foreach* f = new Foreach();
+
+		if (t->type == TokenType::LET) eat();
 
 		if (nt->type == TokenType::COMMA || nt->type == TokenType::COLON) {
 			f->key = eatIdent();
@@ -963,76 +999,12 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		if (parenthesis)
 			eat(TokenType::CLOSING_PARENTHESIS);
 
-		bool braces = false;
+		// body
 		if (t->type == TokenType::OPEN_BRACE) {
-			braces = true;
+			f->body = eatBlock();
 		} else {
 			eat(TokenType::DO);
-		}
-
-		f->body = eatBlock();
-
-		if (!braces) {
-			eat(TokenType::END);
-		}
-
-		return f;
-
-	} else {
-
-		For* f = new For();
-
-		while (t->type != TokenType::SEMICOLON && t->type != TokenType::FINISHED) {
-			if (t->type == TokenType::LET) {
-				eat();
-				declare = true;
-			}
-			f->variables.push_back(eatIdent());
-			f->declare_variables.push_back(declare);
-			if (t->type == TokenType::EQUAL) {
-				eat();
-				f->variablesValues.push_back(eatExpression());
-			} else {
-				f->variablesValues.push_back(nullptr);
-			}
-			if (t->type == TokenType::COMMA) {
-				eat();
-			}
-			declare = false;
-		}
-
-		eat(TokenType::SEMICOLON);
-
-		if (t->type != TokenType::SEMICOLON) {
-			f->condition = eatExpression();
-		}
-
-		eat(TokenType::SEMICOLON);
-
-		while (parenthesis ? (t->type != TokenType::CLOSING_PARENTHESIS) :
-			   (t->type != TokenType::DO && t->type != TokenType::OPEN_BRACE) && t->type != TokenType::FINISHED) {
-
-			if (t->type != TokenType::FINISHED) {
-				//				System.out.println(t);
-			}
-			f->iterations.push_back(eatExpression());
-			if (t->type == TokenType::COMMA)
-				eat();
-		}
-
-		if (parenthesis)
-			eat(TokenType::CLOSING_PARENTHESIS);
-
-		bool braces = false;
-		if (t->type == TokenType::OPEN_BRACE) {
-			braces = true;
-		} else {
-			eat(TokenType::DO);
-		}
-
-		f->body = eatBlock();
-
-		if (!braces) {
+			f->body = eatBlock();
 			eat(TokenType::END);
 		}
 
@@ -1140,13 +1112,11 @@ Token* SyntaxicAnalyser::eat(TokenType type) {
 
 	lt = t;
 	if (i < tokens.size() - 1) {
-		t = &tokens.at(++i);
-		// System.out.println(">> " + t.content);
+		t = &tokens[++i];
 	} else {
 		t = new Token(TokenType::FINISHED, 0, 0, "");
-		// System.out.println(">>>> done.");
 	}
-	nt = i < tokens.size() - 1 ? &tokens.at(i + 1) : nullptr;
+	nt = i < tokens.size() - 1 ? &tokens[i + 1] : nullptr;
 
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
 		errors.push_back(new SyntaxicalError(eaten, "Expected token of type <" + to_string((int)type) + ">, got <" + to_string((int)eaten->type) + "> (" + eaten->content + ")"));
@@ -1157,9 +1127,29 @@ Token* SyntaxicAnalyser::eat(TokenType type) {
 
 Token* SyntaxicAnalyser::nextTokenAt(int pos) {
 	if (i + pos < tokens.size())
-		return &tokens.at(i + pos);
+		return &tokens[i + pos];
 	else
 		return nullptr;
+}
+
+void SyntaxicAnalyser::save_current_state() {
+	stack.push_back(make_pair(i, errors.size()));
+}
+
+void SyntaxicAnalyser::restore_saved_state() {
+	if (!stack.empty()) {
+		i = stack.back().first;
+		errors.resize(stack.back().second);
+		stack.pop_back();
+
+		lt = i > 0 ? &tokens[i-1] : nullptr;
+		t = i < tokens.size() ? &tokens[i] : nullptr;
+		nt = i+1 < tokens.size() ? &tokens[i+1] : nullptr;
+	}
+}
+
+void SyntaxicAnalyser::forgot_saved_state() {
+	stack.pop_back();
 }
 
 vector<SyntaxicalError*> SyntaxicAnalyser::getErrors() {
