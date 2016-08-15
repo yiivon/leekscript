@@ -70,10 +70,6 @@ void For::analyse(SemanticAnalyser* analyser, const Type&) {
 	analyser->leave_block();
 }
 
-bool for_is_true(LSValue* v) {
-	return v->isTrue();
-}
-
 jit_value_t For::compile(Compiler& c) const {
 
 	c.enter_block(); // { for init ; cond ; inc { body } }<-- this block
@@ -95,9 +91,7 @@ jit_value_t For::compile(Compiler& c) const {
 	jit_insn_label(c.F, &label_cond);
 	jit_value_t cond = condition->compile(c);
 	if (condition->type.nature == Nature::POINTER) {
-		jit_type_t args_types[1] = {JIT_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 1, 0);
-		jit_value_t cond_bool = jit_insn_call_native(c.F, "is_true", (void*) for_is_true, sig, &cond, 1, JIT_CALL_NOTHROW);
+		jit_value_t cond_bool = VM::is_true(c.F, cond);
 
 		if (condition->type.must_manage_memory()) {
 			VM::delete_temporary(c.F, cond);
