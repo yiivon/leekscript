@@ -58,56 +58,31 @@ const Type Type::CLASS(RawType::CLASS, Nature::POINTER);
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
 	nature = Nature::UNKNOWN;
+	native = false;
 	clazz = "?";
-	native = false;
-}
-
-Type::Type(const Type& type) {
-	this->raw_type = type.raw_type;
-	this->nature = type.nature;
-	this->return_types = type.return_types;
-	this->arguments_types = type.arguments_types;
-	this->clazz = raw_type->getClass();
-	this->element_types = type.element_types;
-	native = false;
-}
-
-Type::Type(const BaseRawType* raw_type, Nature nature) {
-	this->raw_type = raw_type;
-	this->nature = nature;
-	this->clazz = raw_type->getClass();
-	native = false;
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature, bool native) {
 	this->raw_type = raw_type;
 	this->nature = nature;
-	this->clazz = raw_type->getClass();
 	this->native = native;
-}
-
-Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type) {
-	this->raw_type = raw_type;
-	this->nature = nature;
 	this->clazz = raw_type->getClass();
-	this->setElementType(elements_type);
-	native = false;
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native) {
 	this->raw_type = raw_type;
 	this->nature = nature;
+	this->native = native;
 	this->clazz = raw_type->getClass();
 	this->setElementType(elements_type);
-	this->native = native;
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& element_type) {
+Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& element_type, bool native) {
 	this->raw_type = raw_type;
 	this->nature = nature;
+	this->native = native;
 	this->clazz = raw_type->getClass();
 	this->element_types = element_type;
-	native = false;
 }
 
 bool Type::must_manage_memory() const {
@@ -132,7 +107,7 @@ void Type::addArgumentType(Type type) {
 	arguments_types.push_back(type);
 }
 
-void Type::setArgumentType(unsigned int index, Type type) {
+void Type::setArgumentType(size_t index, Type type) {
 	while (arguments_types.size() <= index) {
 		arguments_types.push_back(Type::UNKNOWN);
 	}
@@ -143,14 +118,14 @@ void Type::setArgumentType(unsigned int index, Type type) {
  * By default, all arguments are type INTEGER, but if we see it's not always
  * a integer, it will switch to UNKNOWN
  */
-const Type Type::getArgumentType(const unsigned int index) const {
+const Type Type::getArgumentType(size_t index) const {
 	if (index >= arguments_types.size()) {
 		return Type::UNKNOWN;
 	}
 	return arguments_types[index];
 }
 
-const vector<Type> Type::getArgumentTypes() const {
+const std::vector<Type>& Type::getArgumentTypes() const {
 	return arguments_types;
 }
 
@@ -223,25 +198,42 @@ Type Type::mix(const Type& x) const {
 	return type;
 }
 
-bool Type::operator == (const Type& type) const {
+void Type::toJson(ostream& os) const {
+	os << "{\"type\":\"" << raw_type->getJsonName() << "\"";
 
-	if (this->raw_type != type.raw_type) return false;
-	if (this->nature != type.nature) return false;
+	if (raw_type == RawType::FUNCTION) {
+		os << ",\"args\":[";
+		for (unsigned t = 0; t < arguments_types.size(); ++t) {
+			if (t > 0) os << ",";
+			arguments_types[t].toJson(os);
+		}
+		os << "]";
+		os << ",\"return\":";
+		getReturnType().toJson(os);
+	}
+	os << "}";
+}
 
-	if (this->return_types != type.return_types) return false;
-	if (this->arguments_types != type.arguments_types) return false;
+bool Type::isNumber() const {
+	return dynamic_cast<const NumberRawType*>(raw_type) != nullptr;
+}
 
-	if (/*this->element_types.size() > 0 and type.element_types.size() > 0 and
-		*/this->element_types != type.element_types) return false;
-
-	return true;
+bool Type::operator ==(const Type& type) const {
+	return raw_type == type.raw_type &&
+			nature == type.nature &&
+			native == type.native &&
+			clazz == type.clazz &&
+			element_types == type.element_types &&
+			return_types == type.return_types &&
+			arguments_types == type.arguments_types;
 }
 
 bool Type::compatible(const Type& type) const {
+/*  Can we convert type into this ?
+ *   {float}.compatible({int}) == true
+ *   {int*}.compatible({int}) == true
+ */
 
-//	cout << "COMPATIBLE : " << type << " with " << *this << endl;
-
-	// A pointer type is not compatible with a value type
 	if (this->nature == Nature::VALUE && type.nature == Nature::POINTER) {
 		return false;
 	}
@@ -280,165 +272,115 @@ bool Type::compatible(const Type& type) const {
 	return true;
 }
 
-
-bool Type::operator != (const Type& type) const {
-	return not this->operator == (type);
-}
-
 bool Type::list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual) {
 
 	if (expected.size() != actual.size()) return false;
 
-	for (unsigned i = 0; i < expected.size(); ++i) {
+	for (size_t i = 0; i < expected.size(); ++i) {
+		// Can we convert type actual[i] into type expected[i] ?
 		if (not expected[i].compatible(actual[i])) return false;
 	}
 	return true;
 }
 
-bool Type::more_specific(const Type& neww, const Type& old) {
+bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww) {
 
-//	cout << "MORE SPECIFIC : " << neww << " than " << old << endl;
+	if (old.size() != neww.size()) return false;
 
-	if (neww.raw_type != old.raw_type and neww.raw_type->derived_from(old.raw_type)) {
-//		cout << "DERIVED" << endl;
-		return true;
+	for (size_t i = 0; i < old.size(); ++i) {
+		if (Type::more_specific(old[i], neww[i])) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Type::more_specific(const Type& old, const Type& neww) {
+
+	if (neww.raw_type != old.raw_type) {
+		if (old.raw_type == RawType::UNKNOWN) {
+			return true;
+		}
+		if (old.raw_type == RawType::NUMBER
+				&& (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG || neww.raw_type == RawType::FLOAT)) {
+			return true;
+		}
+		if (old.raw_type == RawType::FLOAT
+				&& (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG)) {
+			return true;
+		}
+		if (old.raw_type == RawType::LONG
+				&& neww.raw_type == RawType::INTEGER) {
+			return true;
+		}
 	}
 
 	if (neww.raw_type == RawType::ARRAY and old.raw_type == RawType::ARRAY) {
-
-//		cout << "new element type : " << neww.getElementType() << endl;
-//		cout << "old element type : " << old.getElementType() << endl;
-
-		if (Type::more_specific(neww.getElementType(), old.getElementType())) {
-//			cout << "YES" << endl;
+		if (Type::more_specific(old.getElementType(), neww.getElementType())) {
 			return true;
 		}
 	}
 
 	if (neww.raw_type == RawType::MAP and old.raw_type == RawType::MAP) {
-
-//		cout << "new element type : " << neww.getElementType() << endl;
-//		cout << "old element type : " << old.getElementType() << endl;
-
-		if (Type::more_specific(neww.getElementType(0), old.getElementType(0))
-				|| Type::more_specific(neww.getElementType(1), old.getElementType(1))) {
-//			cout << "YES" << endl;
+		if (Type::more_specific(old.getElementType(0), neww.getElementType(0))
+				|| Type::more_specific(old.getElementType(1), neww.getElementType(1))) {
 			return true;
 		}
 	}
 
 	if (neww.raw_type == RawType::FUNCTION and old.raw_type == RawType::FUNCTION) {
-
-//		cout << "more_specific function" << endl;
-//		cout << "new element type : " << neww.getArgumentType(0) << endl;
-//		cout << "old element type : " << old.getArgumentType(0) << endl;
-
-		// TODO only the first arg
-		if (Type::more_specific(neww.getArgumentType(0), old.getArgumentType(0))) {
-//			cout << "YES" << endl;
+		if (Type::more_specific(old.getArgumentType(0), neww.getArgumentType(0))) { //! TODO only the first arg
 			return true;
 		}
 	}
 	return false;
 }
 
-bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww) {
+Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 
-//	cout << "MORE SPECIFIC" << endl;
-//	cout << "[TEST] " << Type::more_specific(Type::INTEGER, Type::UNKNOWN) << endl;
-
-	if (old.size() != neww.size()) return false;
-
-	for (unsigned a = 0; a < old.size(); ++a) {
-//		cout << "CHECK : " << neww.at(a) << " ||| " << old.at(a) << endl;
-		if (Type::more_specific(neww.at(a), old.at(a))) {
-//			cout << "MORE SPECIFIC : " << neww.at(a) << " ||| " << old.at(a) << endl;
-			return true;
-		}
-	}
-	return false;
-}
-
-Type Type::get_compatible_type(const Type& old_type, const Type& new_type) {
-
-	if (old_type == new_type) {
-		return old_type;
+	if (t1 == t2) {
+		return t1;
 	}
 
-	if (old_type.nature == Nature::POINTER and new_type.nature == Nature::VALUE) {
-		if (old_type.raw_type == new_type.raw_type) {
-			if (old_type.element_types == new_type.element_types
-					&& old_type.return_types == new_type.return_types
-					&& old_type.arguments_types == new_type.arguments_types) {
-				return old_type; // They are identical except the Nature
+	if (t1.nature == Nature::POINTER and t2.nature == Nature::VALUE) {
+		if (t1.raw_type == t2.raw_type) {
+			if (t1.element_types == t2.element_types
+					&& t1.return_types == t2.return_types
+					&& t1.arguments_types == t2.arguments_types) {
+				return t1; // They are identical except the Nature
 			}
-			return Type(old_type.raw_type, Nature::POINTER); // They have the same raw_type
+			return Type(t1.raw_type, Nature::POINTER); // They have the same raw_type : for example {function* ({int})->{int}} and {function ({int})->{void}}
 		}
 		return Type::POINTER;
 	}
 
-	if (old_type.raw_type == RawType::UNKNOWN) {
-		return new_type;
-	}
-	if (new_type.raw_type == RawType::UNKNOWN) {
-		return old_type;
+	// symmetric of last it statement
+	if (t2.nature == Nature::POINTER and t1.nature == Nature::VALUE) {
+		if (t2.raw_type == t1.raw_type) {
+			if (t2.element_types == t1.element_types
+					&& t2.return_types == t1.return_types
+					&& t2.arguments_types == t1.arguments_types) {
+				return t2;
+			}
+			return Type(t2.raw_type, Nature::POINTER);
+		}
+		return Type::POINTER;
 	}
 
-	if (old_type.compatible(new_type)) {
-		return old_type;
+	if (t1.raw_type == RawType::UNKNOWN) {
+		return t2;
 	}
-	if (new_type.compatible(old_type)) {
-		return new_type;
+	if (t2.raw_type == RawType::UNKNOWN) {
+		return t1;
+	}
+
+	if (t1.compatible(t2)) {
+		return t1;
+	}
+	if (t2.compatible(t1)) {
+		return t2;
 	}
 	return Type::POINTER;
-}
-
-void Type::toJson(ostream& os) const {
-	os << "{\"type\":\"" << raw_type->getJsonName() << "\"";
-
-	if (raw_type == RawType::FUNCTION) {
-		os << ",\"args\":[";
-		for (unsigned t = 0; t < arguments_types.size(); ++t) {
-			if (t > 0) os << ",";
-			arguments_types[t].toJson(os);
-		}
-		os << "]";
-		os << ",\"return\":";
-		getReturnType().toJson(os);
-	}
-	os << "}";
-}
-
-bool Type::isNumber() const {
-	return raw_type == RawType::NUMBER or
-		dynamic_cast<const NumberRawType*>(raw_type) != nullptr;
-}
-
-ostream& operator << (ostream& os, const Type& type) {
-
-	if (type.nature == Nature::VOID) {
-		os << "{void}";
-		return os;
-	}
-
-	os << "{" << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
-
-	if (type.raw_type == RawType::FUNCTION) {
-		os << " (";
-		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
-			if (t > 0) os << ", ";
-			os << type.arguments_types[t];
-		}
-		os << ") → " << type.getReturnType();
-	}
-	if (type.raw_type == RawType::ARRAY) {
-		os << " of " << type.getElementType();
-	}
-	if (type.raw_type == RawType::MAP) {
-		os << " of " << type.getElementType(0) << " → " << type.getElementType(1);
-	}
-	os << "}";
-	return os;
 }
 
 string Type::get_nature_name(const Nature& nature) {
@@ -469,6 +411,33 @@ string Type::get_nature_symbol(const Nature& nature) {
 	default:
 		return "???";
 	}
+}
+
+ostream& operator << (ostream& os, const Type& type) {
+
+	if (type == Type::VOID) {
+		os << "{void}";
+		return os;
+	}
+
+	os << "{" << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
+
+	if (type.raw_type == RawType::FUNCTION) {
+		os << " (";
+		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
+			if (t > 0) os << ", ";
+			os << type.arguments_types[t];
+		}
+		os << ") → " << type.getReturnType();
+	}
+	if (type.raw_type == RawType::ARRAY) {
+		os << " of " << type.getElementType();
+	}
+	if (type.raw_type == RawType::MAP) {
+		os << " of " << type.getElementType(0) << " → " << type.getElementType(1);
+	}
+	os << "}";
+	return os;
 }
 
 }
