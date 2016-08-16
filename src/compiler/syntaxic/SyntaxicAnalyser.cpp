@@ -351,6 +351,15 @@ VariableDeclaration* SyntaxicAnalyser::eatFunctionDeclaration() {
 	return vd;
 }
 
+bool SyntaxicAnalyser::beginingOfExpression(TokenType type) {
+
+	return type == TokenType::NUMBER or type == TokenType::IDENT
+		or type == TokenType::AROBASE or type == TokenType::OPEN_BRACKET
+		or type == TokenType::OPEN_BRACE or type == TokenType::OPEN_PARENTHESIS
+		or type == TokenType::STRING or type == TokenType::PI or type == TokenType::TRUE
+		or type == TokenType::FALSE or type == TokenType::NULLL;
+}
+
 Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
 
 	Value* e = nullptr;
@@ -386,26 +395,41 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
 
 			if (t->type == TokenType::MINUS && nt != nullptr && t->line == nt->line) {
 
-				Operator* op = new Operator(eat());
-				Value* ex = eatExpression(pipe_opened);
-				Expression* expr = dynamic_cast<Expression*>(ex);
+				Token* minus = eat();
+				Operator* op = new Operator(minus);
 
-				if (expr and expr->op->priority >= op->priority) {
-					PrefixExpression* pexp = new PrefixExpression();
-					pexp->operatorr = op;
-					pexp->expression = expr->v1;
-					expr->v1 = pexp;
-					e = expr;
+				if (beginingOfExpression(t->type)) {
+
+					Value* ex = eatExpression(pipe_opened);
+					Expression* expr = dynamic_cast<Expression*>(ex);
+
+					if (expr and expr->op->priority >= op->priority) {
+						PrefixExpression* pexp = new PrefixExpression();
+						pexp->operatorr = op;
+						pexp->expression = expr->v1;
+						expr->v1 = pexp;
+						e = expr;
+					} else {
+						PrefixExpression* pe = new PrefixExpression();
+						pe->operatorr = op;
+						pe->expression = ex;
+						e = pe;
+					}
 				} else {
-					PrefixExpression* pe = new PrefixExpression();
-					pe->operatorr = op;
-					pe->expression = ex;
-					e = pe;
+					// No expression after the -, so it's the variable '-'
+					e = new VariableValue(minus);
 				}
-			} else if (t->type == TokenType::PLUS && nt != nullptr && t->line == nt->line) {
 
-				eat(); // eat the +
-				e = eatExpression(pipe_opened);
+			} else if (t->type == TokenType::PLUS) {
+
+				Token* plus = eat(); // eat the +
+
+				if (beginingOfExpression(t->type)) {
+					e = eatExpression(pipe_opened);
+				} else {
+					// No expression after the +, so it's the variable '+'
+					e = new VariableValue(plus);
+				}
 
 			} else {
 				PrefixExpression* ex = new PrefixExpression();
@@ -723,13 +747,12 @@ Value* SyntaxicAnalyser::eatValue() {
 
 	errors.push_back(new SyntaxicalError(t, "Expected value, got <" + to_string((int)t->type) + "> (" + t->content + ")"));
 	eat();
-	return new Nulll();
+	return nullptr;
 }
 
 Value* SyntaxicAnalyser::eatArrayOrMap() {
 
 	eat(TokenType::OPEN_BRACKET);
-
 
 	// Empty array
 	if (t->type == TokenType::CLOSING_BRACKET) {

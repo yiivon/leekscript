@@ -64,8 +64,10 @@ public:
 	ClassDeclaration* eatClassDeclaration();
 	VariableDeclaration* eatVariableDeclaration();
 	Function* eatFunction();
-	VariableDeclaration *eatFunctionDeclaration();
+	VariableDeclaration* eatFunctionDeclaration();
 	Instruction* eatInstruction();
+
+	bool beginingOfExpression(TokenType type);
 
 	Token* eat();
 	Token* eat(TokenType type);
