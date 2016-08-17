@@ -54,10 +54,7 @@ public:
 	static jit_type_t get_jit_type(const Type& type);
 	static jit_value_t value_to_pointer(jit_function_t, jit_value_t, Type);
 	static jit_value_t pointer_to_value(jit_function_t, jit_value_t, Type);
-	static jit_value_t new_array(jit_function_t);
 	// static bool is_number(void* v);
-	static void push_array_value(jit_function_t, jit_value_t, jit_value_t);
-	static void push_array_pointer(jit_function_t, jit_value_t, jit_value_t);
 
 	static jit_value_t get_refs(jit_function_t F, jit_value_t obj);
 	static void inc_refs(jit_function_t F, jit_value_t obj);
@@ -70,8 +67,15 @@ public:
 	static void print_int(jit_function_t F, jit_value_t val);
 	static jit_value_t get_null(jit_function_t F);
 	static jit_value_t create_object(jit_function_t F);
-	static jit_value_t move_obj(jit_function_t F, jit_value_t obj);
+	static jit_value_t create_array(jit_function_t F, const Type& element_type, int cap = 0);
+	static void push_move_array(jit_function_t F, const Type& element_type, jit_value_t array, jit_value_t value);
+	static jit_value_t move_obj(jit_function_t F, jit_value_t ptr);
+	static jit_value_t clone_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
+
+	jit_value_t new_array(jit_function_t F);
+	void push_array_value(jit_function_t F, jit_value_t array, jit_value_t value);
+	void push_array_pointer(jit_function_t F, jit_value_t array, jit_value_t value);
 };
 
 }

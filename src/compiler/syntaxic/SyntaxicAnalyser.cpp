@@ -32,6 +32,7 @@
 #include "../value/Reference.hpp"
 #include "../value/String.hpp"
 #include "../value/VariableValue.hpp"
+#include "../value/ArrayFor.hpp"
 #include "../../vm/Program.hpp"
 #include "SyntaxicalError.hpp"
 #include "../lexical/Token.hpp"
@@ -765,6 +766,14 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 		eat();
 		eat(TokenType::CLOSING_BRACKET);
 		return new Map();
+	}
+
+	// Array For
+	if (t->type == TokenType::FOR) {
+		ArrayFor* arrayFor = new ArrayFor();
+		arrayFor->forr = eatFor();
+		eat(TokenType::CLOSING_BRACKET);
+		return arrayFor;
 	}
 
 	Value* value = eatExpression();
