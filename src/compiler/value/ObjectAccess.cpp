@@ -25,7 +25,7 @@ ObjectAccess::ObjectAccess() {
 
 ObjectAccess::~ObjectAccess() {
 	delete object;
-	LSValue::delete_val(field_string);
+	delete field_string;
 }
 
 void ObjectAccess::print(ostream& os, int indent, bool debug) const {

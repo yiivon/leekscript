@@ -6,7 +6,7 @@
 #include <jit/jit.h>
 
 #define OPERATION_LIMIT 10000000
-#define DEBUG 1 // 0 no debug, 1 print types, 2 print leaks
+#define DEBUG 1 // 0 no debug, 1 print types + #leaks, 2 print leak details
 
 #define LS_INTEGER jit_type_int
 #define LS_LONG jit_type_long
@@ -60,7 +60,7 @@ public:
 	static void inc_refs(jit_function_t F, jit_value_t obj);
 	static void inc_refs_if_not_temp(jit_function_t F, jit_value_t obj);
 	static void dec_refs(jit_function_t F, jit_value_t obj);
-	static void delete_obj(jit_function_t F, jit_value_t obj);
+	static void delete_ref(jit_function_t F, jit_value_t obj);
 	static void delete_temporary(jit_function_t F, jit_value_t obj);
 	static void inc_ops(jit_function_t F, int add);
 	static void get_operations(jit_function_t F);

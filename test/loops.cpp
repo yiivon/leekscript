@@ -119,9 +119,9 @@ void Test::test_loops() {
 	success("match 50 { ..50: 1 50..: 2 }", "2");
 	success("match 50 { ..10: 1 ..100: 2 }", "2");
 	success("match 50 { ..100: 1 ..100: 2 }", "1");
-	success("match 'e' { ..'b': 1 ..'z': 2 }", "2");
+	success("let e = 'e' match e { ..'b': 1 ..'z': 2 }", "2");
 	success("match 'e' { 'z'..: 1 'b'..: 2 }", "2");
 	success("match [1] { ..[]: 1 ..[2, 2]: 2 }", "2");
 	success("match [1] { [2, 2]..: 1 []..: 2 }", "2");
-	success("match 'e' { ..'b': 1 1..6|0..9: 2 ..|..: 3}", "3");
+	success("let b = 'b' match 'e' { ..b: 1 1..6|0..9: 2 ..|..: 3}", "3");
 }

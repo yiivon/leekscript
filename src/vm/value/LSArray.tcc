@@ -103,7 +103,7 @@ inline LSArray<LSValue*>::~LSArray() {
 //		std::cout << "delete ";
 //		v->print(std::cout);
 //		std::cout << " " << v->refs << std::endl;
-		LSValue::delete_val(v);
+		LSValue::delete_ref(v);
 	}
 }
 template <>
@@ -159,7 +159,7 @@ T LSArray<T>::sum() const {
 	LSValue* sum = this->operator [] (0)->clone();
 	for (unsigned i = 1; i < this->size(); ++i) {
 		LSValue* new_sum = (*this)[i]->operator + (sum);
-		LSValue::delete_val(sum);
+		LSValue::delete_temporary(sum);
 		sum = new_sum;
 	}
 	return (T) sum;
@@ -358,7 +358,7 @@ inline void LSArray<LSValue*>::ls_unique() {
 	while (true) {
 		++next;
 		while (next != this->end() && (*next)->operator == (*it)) {
-			LSValue::delete_val(*next);
+			LSValue::delete_ref(*next);
 			next++;
 		}
 		++it;
@@ -574,6 +574,8 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::partition(const void* function) con
 			array_false->push_clone(v);
 		}
 	}
+	array_true->refs = 1;
+	array_false->refs = 1;
 	return new LSArray<LSValue*> {array_true, array_false};
 }
 
@@ -591,6 +593,8 @@ inline LSArray<LSValue*>* LSArray<int>::partition(const void* function) const {
 			array_false->push_clone(v);
 		}
 	}
+	array_true->refs = 1;
+	array_false->refs = 1;
 	return new LSArray<LSValue*> {array_true, array_false};
 }
 
@@ -604,8 +608,7 @@ LSArray<LSValue*>* LSArray<T>::map2(const LSArray<LSValue*>* array, const void* 
 		LSValue* v1 = this->operator [] (i);
 		LSValue* v2 = ((LSArray<LSValue*>*) array)->operator [] (i);
 		LSValue* res = (LSValue*) fun(v1, v2);
-		new_array->push_clone(res); // push_no_clone ?
-		LSValue::delete_val(res);
+		new_array->push_move(res);
 	}
 	return new_array;
 }
@@ -621,8 +624,7 @@ inline LSArray<LSValue*>* LSArray<int>::map2(const LSArray<LSValue*>* array, con
 		LSValue* v1 = LSNumber::get(this->operator [] (i));
 		LSValue* v2 = array->operator [] (i);
 		LSValue* res = (LSValue*) fun(v1, v2);
-		new_array->push_clone(res);
-		LSValue::delete_val(res);
+		new_array->push_move(res);
 	}
 	return new_array;
 }
@@ -638,8 +640,7 @@ LSArray<LSValue*>* LSArray<T>::map2_int(const LSArray<int>* array, const void* f
 		LSValue* v1 = this->operator [] (i);
 		int v2 = array->operator [] (i);
 		LSValue* res = (LSValue*) fun(v1, v2);
-		new_array->push_clone(res);
-		LSValue::delete_val(res);
+		new_array->push_move(res);
 	}
 	return new_array;
 }
@@ -655,8 +656,7 @@ inline LSArray<LSValue*>* LSArray<int>::map2_int(const LSArray<int>* array, cons
 		int v1 = this->operator [] (i);
 		int v2 = array->operator [] (i);
 		LSValue* res = (LSValue*) fun(v1, v2);
-		new_array->push_clone(res);
-		LSValue::delete_val(res);
+		new_array->push_move(res);
 	}
 	return new_array;
 }
@@ -707,12 +707,12 @@ LSString* LSArray<T>::join(const LSString* glue) const {
 	auto it = this->begin();
 	LSString* empty = new LSString();
 	LSValue* result = (*it)->operator + (empty);
-	LSValue::delete_val(empty);
+	delete empty;
 	for (it++; it != this->end(); it++) {
 		LSValue* n1 = glue->operator + (result);
 		LSValue* n = (*it)->operator + (n1);
-		LSValue::delete_val(result);
-		LSValue::delete_val(n1);
+		LSValue::delete_temporary(result);
+		LSValue::delete_temporary(n1);
 		result = n;
 	}
 	return (LSString*) result;

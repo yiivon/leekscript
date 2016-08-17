@@ -147,7 +147,7 @@ jit_value_t Match::compile(Compiler& c) const {
 			jit_insn_store(c.F, res, ret);
 			jit_insn_label(c.F, &label_end);
 			if (value->type.must_manage_memory()) {
-				VM::delete_obj(c.F, v);
+				VM::delete_temporary(c.F, v);
 			}
 			return res;
 		}
@@ -179,7 +179,7 @@ jit_value_t Match::compile(Compiler& c) const {
 
 	jit_insn_label(c.F, &label_end);
 	if (value->type.must_manage_memory()) {
-		VM::delete_obj(c.F, v);
+		VM::delete_temporary(c.F, v);
 	}
 	return res;
 }
@@ -227,7 +227,7 @@ jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 				jit_value_t args[2] = { v, b };
 				ge = jit_insn_call_native(c.F, "", (void*) jit_greater_equal_, sig, args, 2, JIT_CALL_NOTHROW);
 				if (begin->type.must_manage_memory()) {
-					VM::delete_obj(c.F, b);
+					VM::delete_temporary(c.F, b);
 				}
 			}
 		}
@@ -241,7 +241,7 @@ jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 				jit_value_t args[2] = { v, e };
 				lt = jit_insn_call_native(c.F, "", (void*) jit_less_, sig, args, 2, JIT_CALL_NOTHROW);
 				if (end->type.must_manage_memory()) {
-					VM::delete_obj(c.F, e);
+					VM::delete_temporary(c.F, e);
 				}
 			}
 		}
@@ -270,7 +270,7 @@ jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 			jit_value_t args[2] = { v, p };
 			cond = jit_insn_call_native(c.F, "", (void*) jit_equals_, sig, args, 2, JIT_CALL_NOTHROW);
 			if (begin->type.must_manage_memory()) {
-				VM::delete_obj(c.F, p);
+				VM::delete_temporary(c.F, p);
 			}
 		}
 		return cond;

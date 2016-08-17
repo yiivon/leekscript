@@ -106,13 +106,6 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		return ctx;
 	}
 
-	/*
-	 * Debug
-	 */
-	#if DEBUG > 0
-		cout << "Program: "; program->print(cout, true);
-	#endif
-
 	// Compilation
 	internals.clear();
 
@@ -159,7 +152,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		}
 		*/
 		ctx += "}";
-		LSValue::delete_val(res);
+		LSValue::delete_temporary(res);
 
 		if (mode == ExecMode::TOP_LEVEL) {
 			cout << result << endl;
@@ -179,7 +172,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		res_array->operator[] (0)->print(oss);
 		result = oss.str();
 
-		LSValue::delete_val(res);
+		LSValue::delete_temporary(res);
 
 		cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns
 			 << ",\"ctx\":" << ctx << ",\"res\":\"" << result << "\"}" << endl;
@@ -189,7 +182,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 		ostringstream oss;
 		res->print(oss);
-		LSValue::delete_val(res);
+		LSValue::delete_temporary(res);
 		string res_string = oss.str();
 
 		cout << res_string << endl;
@@ -203,11 +196,11 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 		res->print(oss);
 		result = oss.str();
 
-		LSValue::delete_val(res);
+		LSValue::delete_temporary(res);
 
 	} else if (mode == ExecMode::TEST_OPS) {
 
-		LSValue::delete_val(res);
+		LSValue::delete_temporary(res);
 		result = to_string(VM::operations);
 	}
 
@@ -377,22 +370,16 @@ void VM::dec_refs(jit_function_t F, jit_value_t obj) {
 	jit_insn_call_native(F, "dec_refs", (void*) VM_dec_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
-void VM::delete_obj(jit_function_t F, jit_value_t obj) {
+void VM::delete_ref(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-	jit_insn_call_native(F, "delete", (void*) &LSValue::delete_val, sig, &obj, 1, JIT_CALL_NOTHROW);
-}
-
-void VM_delete_temporary(LSValue* val) {
-	if (val->refs == 0) {
-		delete val;
-	}
+	jit_insn_call_native(F, "delete", (void*) &LSValue::delete_ref, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 void VM::delete_temporary(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-	jit_insn_call_native(F, "delete_temporary", (void*) VM_delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
+	jit_insn_call_native(F, "delete_temporary", (void*) &LSValue::delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 

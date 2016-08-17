@@ -645,7 +645,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	// Destroy temporary arguments
 	for (int i = 0; i < arg_count; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			VM::delete_obj(c.F, args[i]);
+			VM::delete_ref(c.F, args[i]);
 		}
 	}
 

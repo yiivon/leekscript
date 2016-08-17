@@ -39,7 +39,7 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 			}
 
 			if (it->second.type.must_manage_memory()) {
-				VM::delete_obj(F, it->second.value);
+				VM::delete_ref(F, it->second.value);
 			}
 		}
 	}

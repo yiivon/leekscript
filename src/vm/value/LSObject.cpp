@@ -40,7 +40,7 @@ LSObject::LSObject(Json& json) {
 
 LSObject::~LSObject() {
 	for (auto v : values) {
-		LSValue::delete_val(v.second);
+		LSValue::delete_ref(v.second);
 	}
 }
 
@@ -187,7 +187,7 @@ LSValue* LSObject::abso() const {
 LSValue* LSObject::clone() const {
 	LSObject* obj = new LSObject();
 	for (auto i = values.begin(); i != values.end(); i++) {
-		obj->values.insert({i->first, i->second->clone()});
+		obj->values.insert({i->first, i->second->clone_inc()});
 	}
 	return obj;
 }

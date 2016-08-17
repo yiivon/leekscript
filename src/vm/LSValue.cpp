@@ -107,19 +107,23 @@ LSValue* LSValue::move_inc() {
 	}
 }
 
-void LSValue::delete_val(LSValue* value) {
+void LSValue::delete_ref(LSValue* value) {
 
 	if (value == nullptr) return;
-
 	if (value->native) return;
 
-//	cout << "LSValue::delete_val " << flush;
-//	value->print(cout);
-//	cout << " " << value->refs << endl;
-
 	value->refs--;
-	if (value->refs <= 0) {
-		//cout << "delete LSValue" << endl;
+	if (value->refs == 0) {
+		delete value;
+	}
+}
+
+void LSValue::delete_temporary(LSValue* value)
+{
+	if (value == nullptr) return;
+	if (value->native) return;
+
+	if (value->refs == 0) {
 		delete value;
 	}
 }
