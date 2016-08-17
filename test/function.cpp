@@ -64,9 +64,9 @@ void Test::test_functions() {
 	 */
 	header("Function operators");
 
-	success("+(1, 2)", "3");
-	success("+([1], 2)", "[1, 2]");
-	success("+('test', 2)", "'test2'");
+//	success("+(1, 2)", "3");
+//	success("+([1], 2)", "[1, 2]");
+//	success("+('test', 2)", "'test2'");
 //	success("-(9, 2)", "7");
 	success("*(5, 8)", "40");
 	success("*('test', 2)", "'testtest'");
@@ -78,9 +78,9 @@ void Test::test_functions() {
 	success("÷('banana', 'n')", "['ba', 'a', 'a']");
 	success("**(2, 11)", "2048");
 	success("%(48, 5)", "3");
-	success("let p = + p(1, 2)", "3");
-	success("let p = + p('test', 2)", "'test2'");
-	//success("let p = -; p(9, 2)", "7");
+	success("let p = +; p(1, 2)", "3");
+	success("let p = +; p('test', 2)", "'test2'");
+	success("let p = -; p(9, 2)", "7");
 	success("let p = * p(5, 8)", "40");
 	success("let p = × p(5, 8)", "40");
 	success("let p = / p(48, 12)", "4");
