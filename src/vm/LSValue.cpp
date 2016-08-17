@@ -111,6 +111,7 @@ void LSValue::delete_ref(LSValue* value) {
 
 	if (value == nullptr) return;
 	if (value->native) return;
+	if (value->refs == 0) return;
 
 	value->refs--;
 	if (value->refs == 0) {
