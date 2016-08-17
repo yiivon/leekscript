@@ -12,7 +12,6 @@ Function::Function() {
 	parent = nullptr;
 	pos = 0;
 	constant = true;
-	type = Type::FUNCTION;
 	function_added = false;
 }
 
@@ -77,6 +76,8 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		function_added = true;
 	}
 
+	type = Type::FUNCTION;
+
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		type.setArgumentType(i, Type::UNKNOWN);
 	}
@@ -84,8 +85,6 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
 		type.setArgumentType(i, req_type.getArgumentType(i));
 	}
-
-//	type.setReturnType(return_type);
 
 	analyse_body(analyser, req_type.getReturnType());
 
@@ -96,11 +95,11 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "Function type: " << type << endl;
 }
 
-bool Function::will_take(SemanticAnalyser* analyser, const unsigned pos, const Type arg_type) {
+bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types) {
 
 //	cout << "Function::will_take " << arg_type << " at " << pos << endl;
 
-	bool changed = type.will_take(pos, arg_type);
+	bool changed = type.will_take(arg_types);
 
 	analyse_body(analyser, type.getReturnType());
 
@@ -175,18 +174,10 @@ jit_value_t Function::compile(Compiler& c) const {
 		if (i < type.getArgumentTypes().size()) {
 			t = type.getArgumentType(i);
 		}
-//		cout << "func arg: " << t << endl;
-		params.push_back(t.nature == Nature::POINTER ? JIT_POINTER :
-				(t.raw_type == RawType::FLOAT) ? JIT_FLOAT :
-				(t.raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
-				JIT_INTEGER);
+		params.push_back(VM::get_jit_type(t));
 	}
 
-	jit_type_t return_type = type.getReturnType().nature == Nature::POINTER ? JIT_POINTER : (
-			(type.getReturnType().raw_type == RawType::FUNCTION) ? JIT_POINTER :
-			(type.getReturnType().raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
-			(type.getReturnType().raw_type == RawType::FLOAT) ? JIT_FLOAT :
-			JIT_INTEGER);
+	jit_type_t return_type = VM::get_jit_type(type.getReturnType());
 
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 0);
 	jit_function_t function = jit_function_create(context, signature);
@@ -217,11 +208,10 @@ jit_value_t Function::compile(Compiler& c) const {
 
 	if (type.nature == Nature::POINTER) {
 //		cout << "create function pointer " << endl;
-		LSFunction* fo = new LSFunction(f);
-		return JIT_CREATE_CONST_POINTER(c.F, fo);
+		return LS_CREATE_POINTER(c.F, new LSFunction(f));
 	} else {
 //		cout << "create function value " << endl;
-		return JIT_CREATE_CONST_POINTER(c.F, f);
+		return LS_CREATE_POINTER(c.F, f);
 	}
 }
 

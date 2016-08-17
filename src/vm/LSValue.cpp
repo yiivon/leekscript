@@ -14,26 +14,32 @@ namespace ls {
 
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
-extern std::map<LSValue*, LSValue*> objs;
+#if DEBUG
+	extern std::map<LSValue*, LSValue*> objs;
+#endif
 
 LSValue::LSValue() : refs(0), native(false) {
 	obj_count++;
-	objs.insert({this, this});
+	#if DEBUG
+		objs.insert({this, this});
+	#endif
 }
 
 LSValue::LSValue(const LSValue& other) : refs(0), native(other.native) {
 	obj_count++;
-	objs.insert({this, this});
+	#if DEBUG
+		objs.insert({this, this});
+	#endif
 }
 
 LSValue::~LSValue() {
-//	cout << "~LSValue()" << endl;
 	obj_deleted++;
-	objs.erase(this);
+	#if DEBUG
+		objs.erase(this);
+	#endif
 }
 
 std::ostream& operator << (std::ostream& os, LSValue& value) {
-	cout << "print LSValue" << endl;
 	value.print(os);
 	return os;
 }

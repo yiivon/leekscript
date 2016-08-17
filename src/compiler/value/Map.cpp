@@ -136,40 +136,35 @@ void LSMap_insert_int_float(LSMap<int,double>* map, int key, double value) {
 
 jit_value_t Map::compile(Compiler &c) const {
 
-	jit_type_t key_type = type.element_types[0] == Type::INTEGER ? JIT_INTEGER : JIT_POINTER;
-	jit_type_t value_type = type.element_types[1] == Type::INTEGER ? JIT_INTEGER:
-																	type.element_types[1] == Type::FLOAT ? JIT_FLOAT :
-																										  JIT_POINTER;
+	jit_type_t key_type = type.element_types[0] == Type::INTEGER ? LS_INTEGER : LS_POINTER;
+	jit_type_t value_type = type.element_types[1] == Type::INTEGER ? LS_INTEGER:
+		type.element_types[1] == Type::FLOAT ? LS_REAL : LS_POINTER;
 
 	void* create = nullptr;
 	void* insert = nullptr;
 
 	if (type.element_types[0] == Type::INTEGER) {
 		create = type.element_types[1] == Type::INTEGER ? (void*) LSMap_create_int_int :
-														 type.element_types[1] == Type::FLOAT ? (void*) LSMap_create_int_float :
-																							   (void*) LSMap_create_int_ptr;
+			type.element_types[1] == Type::FLOAT ? (void*) LSMap_create_int_float : (void*) LSMap_create_int_ptr;
 		insert = type.element_types[1] == Type::INTEGER ? (void*) LSMap_insert_int_int :
-														 type.element_types[1] == Type::FLOAT ? (void*) LSMap_insert_int_float :
-																							   (void*) LSMap_insert_int_ptr;
+			type.element_types[1] == Type::FLOAT ? (void*) LSMap_insert_int_float : (void*) LSMap_insert_int_ptr;
 	} else {
 		create = type.element_types[1] == Type::INTEGER ? (void*) LSMap_create_ptr_int :
-														 type.element_types[1] == Type::FLOAT ? (void*) LSMap_create_ptr_float :
-																							   (void*) LSMap_create_ptr_ptr;
+			type.element_types[1] == Type::FLOAT ? (void*) LSMap_create_ptr_float : (void*) LSMap_create_ptr_ptr;
 		insert = type.element_types[1] == Type::INTEGER ? (void*) LSMap_insert_ptr_int :
-														 type.element_types[1] == Type::FLOAT ? (void*) LSMap_insert_ptr_float :
-																							   (void*) LSMap_insert_ptr_ptr;
+			type.element_types[1] == Type::FLOAT ? (void*) LSMap_insert_ptr_float : (void*) LSMap_insert_ptr_ptr;
 	}
 
 	unsigned ops = 0;
 
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, {}, 0, 0);
 	jit_value_t map = jit_insn_call_native(c.F, "new_map", (void*) create, sig, {}, 0, JIT_CALL_NOTHROW); ops += 1;
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		jit_value_t k = keys[i]->compile(c);
 		jit_value_t v = values[i]->compile(c);
 
-		jit_type_t args[3] = {JIT_POINTER, key_type, value_type};
+		jit_type_t args[3] = {LS_POINTER, key_type, value_type};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 0);
 		jit_value_t args_v[] = {map, k, v};
 		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 3, JIT_CALL_NOTHROW); ops += std::log2(i + 1);

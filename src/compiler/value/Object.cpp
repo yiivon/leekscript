@@ -55,11 +55,11 @@ jit_value_t Object::compile(Compiler& c) const {
 
 	jit_value_t object = VM::create_object(c.F);
 
-	jit_type_t args[3] = {JIT_POINTER, JIT_POINTER, JIT_POINTER};
+	jit_type_t args[3] = {LS_POINTER, LS_POINTER, LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 0);
 
 	for (unsigned i = 0; i < keys.size(); ++i) {
-		jit_value_t k = JIT_CREATE_CONST_POINTER(c.F, &keys.at(i)->token->content);
+		jit_value_t k = LS_CREATE_POINTER(c.F, &keys.at(i)->token->content);
 		jit_value_t v = values[i]->compile(c);
 		jit_value_t args[] = {object, k, v};
 		jit_insn_call_native(c.F, "push", (void*) push_object, sig, args, 3, JIT_CALL_NOTHROW);

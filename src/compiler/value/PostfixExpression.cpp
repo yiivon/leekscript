@@ -45,8 +45,8 @@ extern LSValue* jit_dec(LSValue*);
 
 jit_value_t PostfixExpression::compile(Compiler& c) const {
 
-	jit_type_t args_types[1] = {JIT_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
+	jit_type_t args_types[1] = {LS_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 1, 0);
 	vector<jit_value_t> args;
 
 	void* func = nullptr;
@@ -57,7 +57,7 @@ jit_value_t PostfixExpression::compile(Compiler& c) const {
 			if (expression->type.nature == Nature::VALUE) {
 				jit_value_t x = expression->compile(c);
 				jit_value_t ox = jit_insn_load(c.F, x);
-				jit_value_t y = JIT_CREATE_CONST(c.F, JIT_INTEGER, 1);
+				jit_value_t y = LS_CREATE_INTEGER(c.F, 1);
 				jit_value_t sum = jit_insn_add(c.F, x, y);
 				jit_insn_store(c.F, x, sum);
 				if (type.nature == Nature::POINTER) {
@@ -74,7 +74,7 @@ jit_value_t PostfixExpression::compile(Compiler& c) const {
 			if (expression->type.nature == Nature::VALUE) {
 				jit_value_t x = expression->compile(c);
 				jit_value_t ox = jit_insn_load(c.F, x);
-				jit_value_t y = JIT_CREATE_CONST(c.F, JIT_INTEGER, 1);
+				jit_value_t y = LS_CREATE_INTEGER(c.F, 1);
 				jit_value_t sum = jit_insn_sub(c.F, x, y);
 				jit_insn_store(c.F, x, sum);
 				if (type.nature == Nature::POINTER) {

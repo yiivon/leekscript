@@ -5,24 +5,18 @@
 #include <string>
 #include <jit/jit.h>
 
-#define USE_INTEGERS 1
-
-#define ls_jit_integer jit_type_int
-#define ls_jit_real jit_type_float64
-#define ls_jit_long jit_type_long
-#define ls_jit_pointer jit_type_void_ptr
-
-#define JIT_INTEGER ls_jit_integer
-#define JIT_INTEGER_LONG ls_jit_long
-#define JIT_FLOAT ls_jit_real
-#define JIT_POINTER ls_jit_pointer
-
-#define JIT_CREATE_CONST jit_value_create_nint_constant
-#define JIT_CREATE_CONST_LONG jit_value_create_long_constant
-#define JIT_CREATE_CONST_FLOAT jit_value_create_float64_constant
-#define JIT_CREATE_CONST_POINTER(F, X) jit_value_create_constant((F), new jit_constant_t{ JIT_POINTER, {(X)} })
-
 #define OPERATION_LIMIT 10000000
+#define DEBUG 0
+
+#define LS_INTEGER jit_type_int
+#define LS_LONG jit_type_long
+#define LS_REAL jit_type_float64
+#define LS_POINTER jit_type_void_ptr
+
+#define LS_CREATE_INTEGER(F, X) jit_value_create_nint_constant((F), LS_INTEGER, (X))
+#define LS_CREATE_LONG(F, X) jit_value_create_long_constant((F), LS_LONG, (X))
+#define LS_CREATE_REAL(F, X) jit_value_create_float64_constant((F), LS_REAL, (X))
+#define LS_CREATE_POINTER(F, X) jit_value_create_constant((F), new jit_constant_t { LS_POINTER, {(X)} })
 
 namespace ls {
 

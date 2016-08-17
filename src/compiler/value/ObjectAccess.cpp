@@ -162,16 +162,16 @@ jit_value_t ObjectAccess::compile(Compiler& c) const {
 	if (class_attr) {
 
 		// TODO : only functions!
-		return JIT_CREATE_CONST_POINTER(c.F, new LSFunction(attr_addr));
+		return LS_CREATE_POINTER(c.F, new LSFunction(attr_addr));
 
 	} else {
 
 		jit_value_t o = object->compile(c);
 
-		jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
+		jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 0);
 
-		jit_value_t k = JIT_CREATE_CONST_POINTER(c.F, field_string);
+		jit_value_t k = LS_CREATE_POINTER(c.F, field_string);
 		jit_value_t args[] = {o, k};
 
 		jit_value_t res = jit_insn_call_native(c.F, "access", (void*) object_access, sig, args, 2, JIT_CALL_NOTHROW);
@@ -185,10 +185,10 @@ jit_value_t ObjectAccess::compile_l(Compiler& c) const {
 
 	jit_value_t o = object->compile(c);
 
-	jit_type_t args_types[2] = {JIT_POINTER, JIT_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 2, 0);
+	jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 0);
 
-	jit_value_t k = JIT_CREATE_CONST_POINTER(c.F, field_string);
+	jit_value_t k = LS_CREATE_POINTER(c.F, field_string);
 	jit_value_t args[] = {o, k};
 
 	jit_value_t res = jit_insn_call_native(c.F, "access_l", (void*) object_access_l, sig, args, 2, JIT_CALL_NOTHROW);

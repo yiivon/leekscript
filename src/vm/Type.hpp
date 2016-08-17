@@ -12,6 +12,7 @@ enum class Nature {
 
 class BaseRawType {
 public:
+	virtual ~BaseRawType() {}
 	virtual const std::string getName() const { return "?"; }
 	virtual const std::string getClass() const { return "?"; }
 	virtual const std::string getJsonName() const { return "?"; }
@@ -138,7 +139,7 @@ public:
 
 	const BaseRawType* raw_type;
 	Nature nature;
-	bool native; // A C++ objects, memory management is done outside the language
+	bool native; // A C++ object, memory management is done outside the language
 	std::string clazz;
 	std::vector<Type> element_types;
 	std::vector<Type> return_types;
@@ -162,7 +163,7 @@ public:
 	const Type getElementType(size_t i = 0) const;
 	void setElementType(Type);
 
-	bool will_take(const int i, const Type& arg_type);
+	bool will_take(const std::vector<Type>& args_type);
 	bool will_take_element(const Type& arg_type);
 	Type mix(const Type& x) const;
 

@@ -37,7 +37,7 @@ const Type Type::FLOAT(RawType::FLOAT, Nature::VALUE);
 const Type Type::FLOAT_P(RawType::FLOAT, Nature::POINTER);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
-const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
+const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
@@ -147,31 +147,25 @@ void Type::setElementType(Type type) {
 /*
  *
  */
-bool Type::will_take(const int i, const Type& arg_type) {
+bool Type::will_take(const std::vector<Type>& args_type) {
 
-//	cout << "before will_take: " << *this << endl;
-//	cout << "will_take " << arg_type << endl;
+	bool changed = false;
 
-	Type current_type = getArgumentType(i);
+	for (size_t i = 0; i < args_type.size(); ++i) {
 
-	/*
-	if (current_type.nature == Nature::MIXED) {
-		return; // No change, it is still mixed
-	}
-	*/
+		Type current_type = getArgumentType(i);
 
-	if (current_type.nature == Nature::UNKNOWN) {
-		setArgumentType(i, arg_type);
-		return true;
-	} else {
-		if (current_type.nature == Nature::VALUE and arg_type.nature == Nature::POINTER) {
-			setArgumentType(i, Type(RawType::UNKNOWN, Nature::POINTER));
-			return true;
+		if (current_type.nature == Nature::UNKNOWN) {
+			setArgumentType(i, args_type[i]);
+			changed = true;
+		} else {
+			if (current_type.nature == Nature::VALUE and args_type[i].nature == Nature::POINTER) {
+				setArgumentType(i, Type(RawType::UNKNOWN, Nature::POINTER));
+				changed = true;
+			}
 		}
 	}
-
-//	cout << "after will_take: " << *this << endl;
-	return false;
+	return changed;
 }
 
 bool Type::will_take_element(const Type& element_type) {

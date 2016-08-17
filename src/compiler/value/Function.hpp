@@ -37,7 +37,7 @@ public:
 
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 
-	bool will_take(SemanticAnalyser*, const unsigned pos, const Type) override;
+	bool will_take(SemanticAnalyser*, const std::vector<Type>&) override;
 
 	void must_return(SemanticAnalyser*, const Type&) override;
 

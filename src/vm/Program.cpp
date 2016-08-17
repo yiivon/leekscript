@@ -40,7 +40,7 @@ void Program::compile(Context& context) {
 	// catch (ex) {
 	jit_value_t ex = jit_insn_start_catcher(F);
 	VM::print_int(F, ex);
-	jit_insn_return(F, JIT_CREATE_CONST_POINTER(F, LSNull::get()));
+	jit_insn_return(F, LS_CREATE_POINTER(F, LSNull::get()));
 
 	jit_function_compile(F);
 	jit_context_build_end(jit_context);
@@ -78,9 +78,6 @@ LSValue* Program::execute() {
 
 void Program::print(ostream& os, bool debug) const {
 	main->body->print(os, 0, debug);
-	if (debug) {
-		os << "\n" << main->type;
-	}
 	cout << endl;
 }
 
@@ -118,7 +115,7 @@ void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 		string name = var.first;
 		LSValue* value = var.second;
 
-		jit_value_t jit_val = JIT_CREATE_CONST_POINTER(c.F, value);
+		jit_value_t jit_val = LS_CREATE_POINTER(c.F, value);
 		internals.insert(pair<string, jit_value_t>(name, jit_val));
 	}
 
@@ -129,8 +126,8 @@ void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 			string name = var.first;
 			LSValue* value = var.second;
 
-			jit_value_t jit_var = jit_value_create(c.F, JIT_POINTER);
-			jit_value_t jit_val = JIT_CREATE_CONST_POINTER(c.F, value);
+			jit_value_t jit_var = jit_value_create(c.F, LS_POINTER);
+			jit_value_t jit_val = LS_CREATE_POINTER(c.F, value);
 			jit_insn_store(c.F, jit_var, jit_val);
 
 			c.add_var(name, jit_var, Type(value->getRawType(), Nature::POINTER), false);
