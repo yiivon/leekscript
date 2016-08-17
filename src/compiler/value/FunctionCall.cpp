@@ -513,7 +513,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 
 		// Destroy temporary arguments
 		for (int i = 0; i < arg_count - 1; ++i) {
-			if (function->type.getArgumentType(i).nature == Nature::POINTER) {
+			if (function->type.getArgumentType(i).must_manage_memory()) {
 				VM::delete_temporary(c.F, args[i + 1]);
 			}
 		}
