@@ -502,20 +502,20 @@ LSValue* VM_move(LSValue* val) {
 	return val->move();
 }
 
-jit_value_t VM::move_obj(jit_function_t F, jit_value_t obj) {
+jit_value_t VM::move_obj(jit_function_t F, jit_value_t ptr) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
-	return jit_insn_call_native(F, "move", (void*) VM_move, sig, &obj, 1, JIT_CALL_NOTHROW);
+	return jit_insn_call_native(F, "move", (void*) VM_move, sig, &ptr, 1, JIT_CALL_NOTHROW);
 }
 
 LSValue* VM_clone(LSValue* val) {
 	return val->clone();
 }
 
-jit_value_t VM::clone_obj(jit_function_t F, jit_value_t obj) {
+jit_value_t VM::clone_obj(jit_function_t F, jit_value_t ptr) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
-	return jit_insn_call_native(F, "clone", (void*) VM_clone, sig, &obj, 1, JIT_CALL_NOTHROW);
+	return jit_insn_call_native(F, "clone", (void*) VM_clone, sig, &ptr, 1, JIT_CALL_NOTHROW);
 }
 
 bool VM_is_true(LSValue* val) {

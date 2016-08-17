@@ -75,8 +75,8 @@ public:
 	static jit_value_t create_object(jit_function_t F);
 	static jit_value_t create_array(jit_function_t F, const Type& element_type, int cap = 0);
 	static void push_move_array(jit_function_t F, const Type& element_type, jit_value_t array, jit_value_t value);
-	static jit_value_t move_obj(jit_function_t F, jit_value_t obj);
-	static jit_value_t clone_obj(jit_function_t F, jit_value_t obj);
+	static jit_value_t move_obj(jit_function_t F, jit_value_t ptr);
+	static jit_value_t clone_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
 };
 
