@@ -738,22 +738,22 @@ jit_value_t Expression::compile(Compiler& c) const {
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.getElementType() == Type::INTEGER) {
 				if (type.getElementType() == Type::INTEGER) {
-					ls_func = (void*) &LSArray<int>::map_int;
+					ls_func = (void*) &LSArray<int>::ls_map_int;
 				} else if (type.getElementType() == Type::FLOAT) {
-					ls_func = (void*) &LSArray<int>::map_real;
+					ls_func = (void*) &LSArray<int>::ls_map_real;
 				} else {
-					ls_func = (void*) &LSArray<int>::map;
+					ls_func = (void*) &LSArray<int>::ls_map;
 				}
 			} else if (v1->type.getElementType() == Type::FLOAT) {
 				if (type.getElementType() == Type::FLOAT) {
-					ls_func = (void*) &LSArray<double>::map_real;
+					ls_func = (void*) &LSArray<double>::ls_map_real;
 				} else if (type.getElementType() == Type::INTEGER) {
-					ls_func = (void*) &LSArray<double>::map_int;
+					ls_func = (void*) &LSArray<double>::ls_map_int;
 				} else {
-					ls_func = (void*) &LSArray<double>::map;
+					ls_func = (void*) &LSArray<double>::ls_map;
 				}
 			} else {
-				ls_func = (void*) &LSArray<LSValue*>::map;
+				ls_func = (void*) &LSArray<LSValue*>::ls_map;
 			}
 			break;
 		}
