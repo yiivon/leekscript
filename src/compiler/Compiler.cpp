@@ -14,6 +14,7 @@ void Compiler::enter_block() {
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()++;
 	}
+	functions_blocks.back()++;
 }
 
 void Compiler::leave_block(jit_function_t F) {
@@ -22,6 +23,7 @@ void Compiler::leave_block(jit_function_t F) {
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()--;
 	}
+	functions_blocks.back()--;
 }
 
 void Compiler::delete_variables_block(jit_function_t F, int deepness) {
@@ -46,13 +48,19 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 void Compiler::enter_function(jit_function_t F) {
 	variables.push_back(std::map<std::string, CompilerVar> {});
 	functions.push(F);
+	functions_blocks.push_back(0);
 	this->F = F;
 }
 
 void Compiler::leave_function() {
 	variables.pop_back();
 	functions.pop();
+	functions_blocks.pop_back();
 	this->F = functions.top();
+}
+
+int Compiler::get_current_function_blocks() const {
+	return functions_blocks.back();
 }
 
 void Compiler::add_var(const std::string& name, jit_value_t value, const Type& type, bool ref) {

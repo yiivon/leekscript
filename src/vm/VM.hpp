@@ -6,7 +6,7 @@
 #include <jit/jit.h>
 
 #define OPERATION_LIMIT 10000000
-#define DEBUG 0
+#define DEBUG 1 // 0 no debug, 1 print types, 2 print leaks
 
 #define LS_INTEGER jit_type_int
 #define LS_LONG jit_type_long
@@ -72,10 +72,6 @@ public:
 	static jit_value_t move_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t clone_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
-
-	jit_value_t new_array(jit_function_t F);
-	void push_array_value(jit_function_t F, jit_value_t array, jit_value_t value);
-	void push_array_pointer(jit_function_t F, jit_value_t array, jit_value_t value);
 };
 
 }

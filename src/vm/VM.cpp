@@ -31,13 +31,17 @@ void VM::add_module(Module* m) {
 	modules.push_back(m);
 }
 
+#if DEBUG > 1
 extern std::map<LSValue*, LSValue*> objs;
+#endif
 
 string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
-	objs = {};
+#if DEBUG > 1
+	objs.clear();
+#endif
 
 	auto compile_start = chrono::high_resolution_clock::now();
 
@@ -83,7 +87,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	/*
 	 * Debug
 	 */
-	#if DEBUG
+	#if DEBUG > 0
 		cout << "Program: "; program->print(cout, true);
 	#endif
 
@@ -105,7 +109,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	/*
 	 * Debug
 	 */
-	#if DEBUG
+	#if DEBUG > 0
 		cout << "Program: "; program->print(cout, true);
 	#endif
 
@@ -212,15 +216,17 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	 */
 	delete program;
 
-	#if DEBUG
+#if DEBUG > 0
 		if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 			cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
+#if DEBUG > 1
 			for (auto o : objs) {
 				o.second->print(cout);
 				cout << " (" << o.second->refs << " refs)" << endl;
 			}
+#endif
 		}
-	#endif
+#endif
 
 	return result;
 }
@@ -297,7 +303,7 @@ jit_value_t VM::value_to_pointer(jit_function_t F, jit_value_t v, Type type) {
 	return jit_insn_call_native(F, "convert", (void*) fun, sig, &v, 1, JIT_CALL_NOTHROW);
 }
 
-int boolean_to_value(LSBoolean* b) {
+int VM_boolean_to_value(LSBoolean* b) {
 	return b->value;
 }
 
@@ -306,7 +312,7 @@ jit_value_t VM::pointer_to_value(jit_function_t F, jit_value_t v, Type type) {
 	if (type == Type::BOOLEAN) {
 		jit_type_t args_types[1] = {LS_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 0);
-		return jit_insn_call_native(F, "convert", (void*) boolean_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
+		return jit_insn_call_native(F, "convert", (void*) VM_boolean_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
 	}
 	return LS_CREATE_INTEGER(F, 0);
 }
@@ -328,39 +334,6 @@ bool VM::get_number(jit_function_t F, jit_value_t val) {
 
 	return false;
 }*/
-
-LSArray<LSValue*>* VM_new_array() {
-	return new LSArray<LSValue*>();
-}
-
-void VM_push_array_value(LSArray<LSValue*>* array, int value) {
-	array->push_clone(LSNumber::get(value));
-}
-
-void VM_push_array_pointer(LSArray<LSValue*>* array, LSValue* value) {
-	array->push_clone(value);
-}
-
-jit_value_t VM::new_array(jit_function_t F) {
-	jit_type_t args_t[0] = {};
-	jit_value_t args[0] = {};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_t, 0, 0);
-	return jit_insn_call_native(F, "new", (void*) &VM_new_array, sig, args, 0, JIT_CALL_NOTHROW);
-}
-
-void VM::push_array_value(jit_function_t F, jit_value_t array, jit_value_t value) {
-	jit_type_t args[2] = {LS_INTEGER, LS_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
-	jit_value_t args_v[] = {array, value};
-	jit_insn_call_native(F, "push", (void*) &VM_push_array_value, sig, args_v, 2, JIT_CALL_NOTHROW);
-}
-
-void VM::push_array_pointer(jit_function_t F, jit_value_t array, jit_value_t value) {
-	jit_type_t args[2] = {LS_INTEGER, LS_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
-	jit_value_t args_v[] = {array, value};
-	jit_insn_call_native(F, "push", (void*) &VM_push_array_pointer, sig, args_v, 2, JIT_CALL_NOTHROW);
-}
 
 int VM_get_refs(LSValue* val) {
 	return val->refs;
