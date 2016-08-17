@@ -15,7 +15,7 @@ Continue::Continue() {
 Continue::~Continue() {}
 
 void Continue::print(std::ostream& os, int indent, bool) const {
-	os << tabs(indent) << "continue";
+	os << "continue";
 	if (deepness > 1) {
 		os << " " << deepness;
 	}

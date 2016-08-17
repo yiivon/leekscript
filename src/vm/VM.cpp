@@ -98,7 +98,7 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	/*
 	 * Debug
 	 */
-//	cout << "Program: "; program->print(cout, true);
+	cout << "Program: "; program->print(cout, true);
 
 	// Compilation
 	internals.clear();
@@ -322,39 +322,6 @@ bool VM::get_number(jit_function_t F, jit_value_t val) {
 	return false;
 }*/
 
-LSArray<LSValue*>* new_array() {
-	return new LSArray<LSValue*>();
-}
-
-void push_array_value(LSArray<LSValue*>* array, int value) {
-	array->push_clone(LSNumber::get(value));
-}
-
-void push_array_pointer(LSArray<LSValue*>* array, LSValue* value) {
-	array->push_clone(value);
-}
-
-jit_value_t VM::new_array(jit_function_t F) {
-	jit_type_t args_t[0] = {};
-	jit_value_t args[0] = {};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_t, 0, 0);
-	return jit_insn_call_native(F, "new", (void*) new_array, sig, args, 0, JIT_CALL_NOTHROW);
-}
-
-void VM::push_array_value(jit_function_t F, jit_value_t array, jit_value_t value) {
-	jit_type_t args[2] = {JIT_INTEGER, JIT_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
-	jit_value_t args_v[] = {array, value};
-	jit_insn_call_native(F, "push", (void*) push_array_value, sig, args_v, 2, JIT_CALL_NOTHROW);
-}
-
-void VM::push_array_pointer(jit_function_t F, jit_value_t array, jit_value_t value) {
-	jit_type_t args[2] = {JIT_INTEGER, JIT_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
-	jit_value_t args_v[] = {array, value};
-	jit_insn_call_native(F, "push", (void*) push_array_pointer, sig, args_v, 2, JIT_CALL_NOTHROW);
-}
-
 int VM_get_refs(LSValue* val) {
 	return val->refs;
 }
@@ -470,6 +437,67 @@ jit_value_t VM::create_object(jit_function_t F) {
 	return jit_insn_call_native(F, "create_object", (void*) VM_create_object, sig, {}, 0, JIT_CALL_NOTHROW);
 }
 
+LSArray<LSValue*>* VM_create_array_ptr(int cap) {
+	LSArray<LSValue*>* array = new LSArray<LSValue*>();
+	array->reserve(cap);
+	return array;
+}
+
+LSArray<int>* VM_create_array_int(int cap) {
+	LSArray<int>* array = new LSArray<int>();
+	array->reserve(cap);
+	return array;
+}
+
+LSArray<double>* VM_create_array_float(int cap) {
+	LSArray<double>* array = new LSArray<double>();
+	array->reserve(cap);
+	return array;
+}
+
+jit_value_t VM::create_array(jit_function_t F, const Type& element_type, int cap) {
+	jit_type_t args[1] = {JIT_INTEGER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
+	jit_value_t s = JIT_CREATE_CONST(F, ls_jit_integer, cap);
+
+	if (element_type == Type::INTEGER) {
+		return jit_insn_call_native(F, "create_array", (void*) VM_create_array_int, sig, &s, 1, JIT_CALL_NOTHROW);
+	}
+	if (element_type == Type::FLOAT) {
+		return jit_insn_call_native(F, "create_array", (void*) VM_create_array_float, sig, &s, 1, JIT_CALL_NOTHROW);
+	}
+	return jit_insn_call_native(F, "create_array", (void*) VM_create_array_ptr, sig, &s, 1, JIT_CALL_NOTHROW);
+}
+
+void VM_push_array_ptr(LSArray<LSValue*>* array, LSValue* value) {
+	array->push_move(value);
+}
+
+void VM_push_array_int(LSArray<int>* array, int value) {
+	array->push_clone(value);
+}
+
+void VM_push_array_float(LSArray<double>* array, double value) {
+	array->push_clone(value);
+}
+
+void VM::push_move_array(jit_function_t F, const Type& element_type, jit_value_t array, jit_value_t value) {
+	/* Because of the move, there is no need to call delete_temporary on the pushed value.
+	 * If value points to a temporary variable his ownership will be transfer to the array.
+	 */
+	jit_type_t args[2] = {JIT_POINTER, get_jit_type(element_type)};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
+	jit_value_t args_v[] = {array, value};
+
+	if (element_type == Type::INTEGER) {
+		jit_insn_call_native(F, "push_array", (void*) VM_push_array_int, sig, args_v, 2, JIT_CALL_NOTHROW);
+	} else if (element_type == Type::FLOAT) {
+		jit_insn_call_native(F, "push_array", (void*) VM_push_array_float, sig, args_v, 2, JIT_CALL_NOTHROW);
+	} else {
+		jit_insn_call_native(F, "push_array", (void*) VM_push_array_ptr, sig, args_v, 2, JIT_CALL_NOTHROW);
+	}
+}
+
 LSValue* VM_move(LSValue* val) {
 	return val->move();
 }
@@ -478,6 +506,16 @@ jit_value_t VM::move_obj(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {JIT_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
 	return jit_insn_call_native(F, "move", (void*) VM_move, sig, &obj, 1, JIT_CALL_NOTHROW);
+}
+
+LSValue* VM_clone(LSValue* val) {
+	return val->clone();
+}
+
+jit_value_t VM::clone_obj(jit_function_t F, jit_value_t obj) {
+	jit_type_t args[1] = {JIT_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
+	return jit_insn_call_native(F, "clone", (void*) VM_clone, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 bool VM_is_true(LSValue* val) {
