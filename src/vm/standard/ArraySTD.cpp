@@ -44,8 +44,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	map_fun_type.setReturnType(Type::POINTER);
 
 	method("map", {
-		{Type::INT_ARRAY, Type::ARRAY, {map_int_fun_type}, (void*) &LSArray<int>::map},
 		{Type::ARRAY, Type::ARRAY, {map_fun_type}, (void*) &LSArray<LSValue*>::map},
+		{Type::INT_ARRAY, Type::ARRAY, {map_int_fun_type}, (void*) &LSArray<int>::map},
 	});
 
 	method("chunk", {
@@ -220,8 +220,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("map", {
-		{Type::ARRAY, {Type::INT_ARRAY, map_int_fun_type}, (void*) &LSArray<int>::map},
 		{Type::ARRAY, {Type::ARRAY, map_fun_type}, (void*) &LSArray<LSValue*>::map},
+		{Type::ARRAY, {Type::INT_ARRAY, map_int_fun_type}, (void*) &LSArray<int>::map},
 	});
 
 	static_method("map2", {

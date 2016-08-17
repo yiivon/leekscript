@@ -324,7 +324,7 @@ jit_value_t Foreach::compile(Compiler& c) const {
 	} else if (container->type.nature == Nature::POINTER) {
 
 		// Dynamic selector
-		jit_type_t args_types_sel[1] = {JIT_POINTER};
+		jit_type_t args_types_sel[1] = {LS_POINTER};
 		jit_type_t sig_sel = jit_type_create_signature(jit_abi_cdecl, jit_type_int, args_types_sel, 1, 0);
 		jit_value_t s = jit_insn_call_native(c.F, "selector", (void*) fun_selector, sig_sel, &a, 1, JIT_CALL_NOTHROW);
 
@@ -430,30 +430,30 @@ void Foreach::compile_foreach(Compiler&c, jit_value_t a,
 	jit_label_t label_cond = jit_label_undefined;
 
 	// Variable it = begin()
-	jit_value_t it = jit_value_create(c.F, JIT_POINTER);
-	jit_type_t args_types_begin[1] = {JIT_POINTER};
-	jit_type_t sig_begin = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_begin, 1, 0);
+	jit_value_t it = jit_value_create(c.F, LS_POINTER);
+	jit_type_t args_types_begin[1] = {LS_POINTER};
+	jit_type_t sig_begin = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types_begin, 1, 0);
 	jit_insn_store(c.F, it, jit_insn_call_native(c.F, "begin", (void*) fun_begin, sig_begin, &a, 1, JIT_CALL_NOTHROW));
 
 	// cond label:
 	jit_insn_label(c.F, &label_cond);
 
 	// Condition to continue
-	jit_type_t args_types_cond[2] = {JIT_POINTER, JIT_POINTER};
+	jit_type_t args_types_cond[2] = {LS_POINTER, LS_POINTER};
 	jit_type_t sig_cond = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types_cond, 2, 0);
 	jit_value_t args_cond[2] = { a, it };
 	jit_value_t cond = jit_insn_call_native(c.F, "cond", (void*) fun_condition, sig_cond, args_cond, 2, JIT_CALL_NOTHROW);
 	jit_insn_branch_if_not(c.F, cond, label_end);
 
 	// Get Value
-	jit_type_t args_types_value[1] = {JIT_POINTER};
+	jit_type_t args_types_value[1] = {LS_POINTER};
 	jit_type_t sig_value = jit_type_create_signature(jit_abi_cdecl, jit_value_type, args_types_value, 1, 0);
 	jit_value_t vtmp = jit_insn_call_native(c.F, "value", fun_value, sig_value, &it, 1, JIT_CALL_NOTHROW);
 	jit_insn_store(c.F, v, vtmp);
 
 	// Get Key
 	if (key != nullptr) {
-		jit_type_t args_types_key[2] = {JIT_POINTER, JIT_POINTER};
+		jit_type_t args_types_key[2] = {LS_POINTER, LS_POINTER};
 		jit_type_t sig_key = jit_type_create_signature(jit_abi_cdecl, jit_key_type, args_types_key, 2, 0);
 		jit_value_t args_key[2] = { a, it };
 		jit_value_t ktmp = jit_insn_call_native(c.F, "key", (void*) fun_key, sig_key, args_key, 2, JIT_CALL_NOTHROW);
@@ -465,8 +465,8 @@ void Foreach::compile_foreach(Compiler&c, jit_value_t a,
 
 	// it++
 	jit_insn_label(c.F, label_it);
-	jit_type_t args_types_inc[1] = {JIT_POINTER};
-	jit_type_t sig_inc = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_inc, 1, 0);
+	jit_type_t args_types_inc[1] = {LS_POINTER};
+	jit_type_t sig_inc = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types_inc, 1, 0);
 	jit_insn_store(c.F, it, jit_insn_call_native(c.F, "inc", fun_inc, sig_inc, &it, 1, JIT_CALL_NOTHROW));
 
 	// jump to cond
@@ -482,9 +482,9 @@ void Foreach::compile_foreach_noblock(Compiler& c, jit_value_t a,
 	jit_insn_label(c.F, label_begin);
 
 	// Variable it = begin()
-	jit_value_t it = jit_value_create(c.F, JIT_POINTER);
-	jit_type_t args_types_begin[1] = {JIT_POINTER};
-	jit_type_t sig_begin = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_begin, 1, 0);
+	jit_value_t it = jit_value_create(c.F, LS_POINTER);
+	jit_type_t args_types_begin[1] = {LS_POINTER};
+	jit_type_t sig_begin = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types_begin, 1, 0);
 	jit_insn_store(c.F, it, jit_insn_call_native(c.F, "begin", (void*) fun_begin, sig_begin, &a, 1, JIT_CALL_NOTHROW));
 
 
@@ -493,21 +493,21 @@ void Foreach::compile_foreach_noblock(Compiler& c, jit_value_t a,
 	jit_insn_label(c.F, &label_cond);
 
 	// Condition to continue
-	jit_type_t args_types_cond[2] = {JIT_POINTER, JIT_POINTER};
+	jit_type_t args_types_cond[2] = {LS_POINTER, LS_POINTER};
 	jit_type_t sig_cond = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types_cond, 2, 0);
 	jit_value_t args_cond[2] = { a, it };
 	jit_value_t cond = jit_insn_call_native(c.F, "cond", (void*) fun_condition, sig_cond, args_cond, 2, JIT_CALL_NOTHROW);
 	jit_insn_branch_if_not(c.F, cond, label_end);
 
 	// Get Value
-	jit_type_t args_types_value[1] = {JIT_POINTER};
+	jit_type_t args_types_value[1] = {LS_POINTER};
 	jit_type_t sig_value = jit_type_create_signature(jit_abi_cdecl, jit_value_type, args_types_value, 1, 0);
 	jit_value_t vtmp = jit_insn_call_native(c.F, "value", fun_value, sig_value, &it, 1, JIT_CALL_NOTHROW);
 	jit_insn_store(c.F, v, vtmp);
 
 	// Get Key
 	if (key != nullptr) {
-		jit_type_t args_types_key[2] = {JIT_POINTER, JIT_POINTER};
+		jit_type_t args_types_key[2] = {LS_POINTER, LS_POINTER};
 		jit_type_t sig_key = jit_type_create_signature(jit_abi_cdecl, jit_key_type, args_types_key, 2, 0);
 		jit_value_t args_key[2] = { a, it };
 		jit_value_t ktmp = jit_insn_call_native(c.F, "key", (void*) fun_key, sig_key, args_key, 2, JIT_CALL_NOTHROW);
@@ -519,8 +519,8 @@ void Foreach::compile_foreach_noblock(Compiler& c, jit_value_t a,
 
 	// it++
 	jit_insn_label(c.F, label_it);
-	jit_type_t args_types_inc[1] = {JIT_POINTER};
-	jit_type_t sig_inc = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types_inc, 1, 0);
+	jit_type_t args_types_inc[1] = {LS_POINTER};
+	jit_type_t sig_inc = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types_inc, 1, 0);
 	jit_insn_store(c.F, it, jit_insn_call_native(c.F, "inc", fun_inc, sig_inc, &it, 1, JIT_CALL_NOTHROW));
 
 	// jump to cond

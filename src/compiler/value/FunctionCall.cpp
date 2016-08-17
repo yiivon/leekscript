@@ -293,23 +293,27 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
+	vector<Type> arg_types;
+	for (auto arg : arguments) {
+		arg_types.push_back(arg->type);
+	}
+
 	a = 0;
 	for (Value* arg : arguments) {
 		arg->analyse(analyser, function->type.getArgumentType(a));
+		if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION) {
+			arg->will_take(analyser, function->type.getArgumentType(a).arguments_types);
+		}
 		a++;
 	}
 
-	a = 0;
-	for (Value* arg : arguments) {
-		function->will_take(analyser, a++, arg->type);
-	}
+	function->will_take(analyser, arg_types);
 
 	// The function is a variable
-	if (vv and vv->var->value != nullptr) {
-		a = 0;
-		for (Value* arg : arguments) {
-			vv->var->will_take(analyser, a++, arg->type);
-		}
+	if (vv and vv->var and vv->var->value) {
+
+		vv->var->will_take(analyser, arg_types);
+
 		Type ret_type = vv->var->value->type.getReturnType();
 		if (ret_type.raw_type != RawType::UNKNOWN) {
 			type = ret_type;
@@ -355,14 +359,14 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		if (vv->name == "Boolean") {
-			jit_value_t n = jit_value_create_nint_constant(c.F, JIT_INTEGER, 0);
+			jit_value_t n = jit_value_create_nint_constant(c.F, LS_INTEGER, 0);
 			if (type.nature == Nature::POINTER) {
 				return VM::value_to_pointer(c.F, n, Type::BOOLEAN);
 			}
 			return n;
 		}
 		if (vv->name == "Number") {
-			jit_value_t n = jit_value_create_nint_constant(c.F, JIT_INTEGER, 0);
+			jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
 			if (type.nature == Nature::POINTER) {
 				return VM::value_to_pointer(c.F, n, Type::INTEGER);
 			}
@@ -372,13 +376,13 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 			if (arguments.size() > 0) {
 				return arguments[0]->compile(c);
 			}
-			return JIT_CREATE_CONST_POINTER(c.F, new LSString(""));
+			return LS_CREATE_POINTER(c.F, new LSString(""));
 		}
 		if (vv->name == "Array") {
-			return JIT_CREATE_CONST_POINTER(c.F, new LSArray<LSValue*>());
+			return LS_CREATE_POINTER(c.F, new LSArray<LSValue*>());
 		}
 		if (vv->name == "Object") {
-			return JIT_CREATE_CONST_POINTER(c.F, new LSObject());
+			return LS_CREATE_POINTER(c.F, new LSObject());
 		}
 	}
 
@@ -493,21 +497,15 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 
 		int arg_count = arguments.size() + 1;
 		vector<jit_value_t> args = { this_ptr->compile(c) };
-		vector<jit_type_t> args_types = { JIT_POINTER };
+		vector<jit_type_t> args_types = { LS_POINTER };
 
 		for (int i = 0; i < arg_count - 1; ++i) {
-//			cout << "arg " << i << " : " << function->type.getArgumentType(i) << endl;
-//			args.push_back(arguments[i]->compile(c, function->type.getArgumentType(i)));
 			args.push_back(arguments[i]->compile(c));
 
-			args_types.push_back(function->type.getArgumentType(i).nature != Nature::VALUE ? JIT_POINTER :
-				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION)	? JIT_POINTER :
-				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
-				(function->type.getArgumentType(i).raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
-				JIT_INTEGER);
+			args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 		}
 
-		jit_type_t ret_type = type.raw_type == RawType::FLOAT ? JIT_FLOAT : JIT_POINTER;
+		jit_type_t ret_type = type.raw_type == RawType::FLOAT ? LS_REAL : LS_POINTER;
 
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
 
@@ -549,19 +547,11 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 		vector<jit_type_t> args_types;
 
 		for (int i = 0; i < arg_count; ++i) {
-//			cout << "arg " << i << " : " << function->type.getArgumentType(i) << endl;
-
-//			args.push_back(arguments[i]->compile(c, function->type.getArgumentType(i)));
 			args.push_back(arguments[i]->compile(c));
-
-			args_types.push_back(function->type.getArgumentType(i).nature != Nature::VALUE ? JIT_POINTER :
-				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION) ? JIT_POINTER :
-				(function->type.getArgumentType(i).raw_type == RawType::FLOAT)	? JIT_FLOAT :
-				(function->type.getArgumentType(i).raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
-				JIT_INTEGER);
+			args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 		}
 
-		jit_type_t ret_type = return_type.raw_type == RawType::FLOAT ? JIT_FLOAT : JIT_POINTER;
+		jit_type_t ret_type = return_type.raw_type == RawType::FLOAT ? LS_REAL : LS_POINTER;
 
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
 
@@ -623,7 +613,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 
 	if (function->type.nature == Nature::POINTER) {
 		jit_value_t fun_addr = function->compile(c);
-		fun.push_back(jit_insn_load_relative(c.F, fun_addr, 16, JIT_POINTER));
+		fun.push_back(jit_insn_load_relative(c.F, fun_addr, 16, LS_POINTER));
 	} else {
 		fun.push_back(function->compile(c));
 	}
@@ -634,14 +624,9 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 
 	for (int i = 0; i < arg_count; ++i) {
 
-		//args.push_back(arguments[i]->compile(c, function->type.getArgumentType(i)));
 		args.push_back(arguments[i]->compile(c));
+		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 
-		args_types.push_back(function->type.getArgumentType(i).nature != Nature::VALUE ? JIT_POINTER :
-				(function->type.getArgumentType(i).raw_type == RawType::FUNCTION) ? JIT_POINTER :
-				(function->type.getArgumentType(i).raw_type == RawType::FLOAT) ? JIT_FLOAT :
-				(function->type.getArgumentType(i).raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
-				JIT_INTEGER);
 		if (function->type.getArgumentType(i).must_manage_memory()) {
 			VM::inc_refs(c.F, args[i]);
 		}
@@ -649,11 +634,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 
 	//cout << "function call return type : " << info << endl;
 
-	jit_type_t jit_return_type = type.nature != Nature::VALUE ? JIT_POINTER :
-			(type.raw_type == RawType::FUNCTION) ? JIT_POINTER :
-			(type.raw_type == RawType::LONG) ? JIT_INTEGER_LONG :
-			(type.raw_type == RawType::FLOAT) ? JIT_FLOAT :
-			JIT_INTEGER;
+	jit_type_t jit_return_type = VM::get_jit_type(type);
 
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), arg_count, 0);
 

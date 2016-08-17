@@ -75,9 +75,9 @@ jit_value_t Reference::compile(Compiler& c) const {
 	*/
 
 	if (type.nature == Nature::POINTER) {
-		return JIT_CREATE_CONST_POINTER(c.F, LSNull::get());
+		return LS_CREATE_POINTER(c.F, LSNull::get());
 	} else {
-		return JIT_CREATE_CONST(c.F, JIT_INTEGER, 0);
+		return LS_CREATE_INTEGER(c.F, 0);
 	}
 }
 

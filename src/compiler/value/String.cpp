@@ -39,10 +39,10 @@ LSValue* String_create(LSString* s) {
 
 jit_value_t String::compile(Compiler& c) const {
 
-	jit_value_t base = JIT_CREATE_CONST_POINTER(c.F, ls_string);
+	jit_value_t base = LS_CREATE_POINTER(c.F, ls_string);
 
-	jit_type_t args_types[1] = {JIT_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args_types, 1, 0);
+	jit_type_t args_types[1] = {LS_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 1, 0);
 
 	return jit_insn_call_native(c.F, "create", (void*) String_create, sig, &base, 1, JIT_CALL_NOTHROW);
 }

@@ -92,7 +92,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 }
 
-void Array::elements_will_take(SemanticAnalyser* analyser, const unsigned pos, const Type& type, int level) {
+void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types, int level) {
 
 //	cout << "Array::elements_will_take " << type << " at " << pos << endl;
 
@@ -100,9 +100,9 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const unsigned pos, c
 
 		Array* arr = dynamic_cast<Array*>(expressions[i]);
 		if (arr != nullptr && level > 0) {
-			arr->elements_will_take(analyser, pos, type, level - 1);
+			arr->elements_will_take(analyser, arg_types, level - 1);
 		} else {
-			expressions[i]->will_take(analyser, pos, type);
+			expressions[i]->will_take(analyser, arg_types);
 		}
 	}
 
@@ -165,8 +165,8 @@ jit_value_t Array::compile(Compiler& c) const {
 		jit_value_t a = expressions[0]->compile(c);
 		jit_value_t b = expressions[1]->compile(c);
 
-		jit_type_t args[2] = {JIT_INTEGER, JIT_INTEGER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 2, 0);
+		jit_type_t args[2] = {LS_INTEGER, LS_INTEGER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 2, 0);
 		jit_value_t args_v[] = {a, b};
 
 		jit_value_t interval = jit_insn_call_native(c.F, "new", (void*) LSArray_create_interval, sig, args_v, 2, JIT_CALL_NOTHROW);
@@ -174,8 +174,8 @@ jit_value_t Array::compile(Compiler& c) const {
 		return interval;
 	}
 
-	jit_type_t args[1] = {JIT_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, args, 1, 0);
+	jit_type_t args[1] = {LS_INTEGER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 1, 0);
 
 	void* create = type.getElementType() == Type::INTEGER ?
 			(void*) LSArray_create_integer :
@@ -187,10 +187,10 @@ jit_value_t Array::compile(Compiler& c) const {
 			type.getElementType() == Type::FLOAT ? (void*) LSArray_push_float :
 			(void*) LSArray_push;
 
-	jit_type_t elem_type = type.getElementType() == Type::INTEGER ? JIT_INTEGER :
-			type.getElementType() == Type::FLOAT ? JIT_FLOAT : JIT_POINTER;
+	jit_type_t elem_type = type.getElementType() == Type::INTEGER ? LS_INTEGER :
+			type.getElementType() == Type::FLOAT ? LS_REAL : LS_POINTER;
 
-	jit_value_t s = JIT_CREATE_CONST(c.F, ls_jit_integer, expressions.size());
+	jit_value_t s = LS_CREATE_INTEGER(c.F, expressions.size());
 	jit_value_t args_v[] = {s};
 	jit_value_t array = jit_insn_call_native(c.F, "new", create, sig, args_v, 1, JIT_CALL_NOTHROW);
 
@@ -198,7 +198,7 @@ jit_value_t Array::compile(Compiler& c) const {
 
 		jit_value_t v = val->compile(c);
 
-		jit_type_t args[2] = {JIT_POINTER, elem_type};
+		jit_type_t args[2] = {LS_POINTER, elem_type};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 		jit_value_t args_v[] = {array, v};
 		jit_insn_call_native(c.F, "push", push, sig, args_v, 2, JIT_CALL_NOTHROW);
