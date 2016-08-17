@@ -74,8 +74,19 @@ void Test::test_loops() {
 	success("let x = 'test' for x in [1] {} x", "'test'");
 
 	/*
+	 * Array For
+	 */
+	header("Array For");
+	success("[for let i = 0; i < 5; ++i { i }]", "[0, 1, 2, 3, 4]");
+	success("[for let i = 1; i <= 10; ++i { [for let j = 1; j <= 3; ++j { if i == 3 break 2 i * j}] }]", "[[1, 2, 3], [2, 4, 6]]");
+	success("[for x in [1, 2, 3] { x }]", "[1, 2, 3]");
+	success("let a = ['a': 'b'] [for k, x in a { k+x }]", "['ab']");
+	success("[for x in [1, 2, 3] {[ for y in [1, 2, 3] { if y == 2 continue x * y }] }]", "[[1, 3], [2, 6], [3, 9]]");
+
+	/*
 	 * Break & continue
 	 */
+	header("Breaks and Continues");
 	sem_err("break", ls::SemanticException::Type::BREAK_MUST_BE_IN_LOOP, "");
 	sem_err("continue", ls::SemanticException::Type::CONTINUE_MUST_BE_IN_LOOP, "");
 	sem_err("while (true) { x -> {x break} }", ls::SemanticException::Type::BREAK_MUST_BE_IN_LOOP, "");
