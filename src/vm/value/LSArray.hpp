@@ -38,6 +38,7 @@ public:
 	T remove(const int index);
 	T remove_key(LSValue* key);
 	T remove_element(T element);
+	bool ls_empty();
 	LSValue* ls_pop();
 	int ls_size();
 	T ls_sum();
@@ -53,17 +54,16 @@ public:
 	LSValue* ls_unique();
 	LSValue* ls_sort();
 	void iter(const LSFunction*) const;
-	int contains(const LSValue*) const;
-	int contains_int(int) const;
+	bool ls_contains(T val);
 	LSValue* ls_push(T val);
 	LSArray<T>* push_all(const LSArray<LSValue*>*);
 	const LSArray<T>* push_all_int(const LSArray<int>*);
 	LSArray<T>* reverse() const;
-	LSArray<T>* filter(const void* fun) const;
+	LSArray<T>* ls_filter(const void* fun);
 	LSValue* foldLeft(const void* fun, const LSValue* initial) const;
 	LSValue* foldRight(const void* fun, const LSValue* initial) const;
 	LSArray<T>* insert_v(const T v, const LSValue* pos);
-	LSArray<LSValue*>* partition(const void* fun) const;
+	LSArray<LSValue*>* ls_partition(const void* fun);
 	LSArray<LSValue*>* ls_map2(LSArray<LSValue*>*, const void* fun);
 	LSArray<LSValue*>* ls_map2_int(LSArray<int>*, const void* fun);
 	int search(const LSValue* search, const int start) const;

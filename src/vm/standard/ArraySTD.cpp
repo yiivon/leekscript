@@ -9,7 +9,6 @@ namespace ls {
 
 LSArray<LSValue*>* array_concat(const LSArray<LSValue*>* array1, const LSArray<LSValue*>* array2);
 LSArray<LSValue*>* array_clear(LSArray<LSValue*>* array);
-LSArray<LSValue*>* array_filter(const LSArray<LSValue*>* array, const void* function);
 LSValue* array_first(const LSArray<LSValue*>* array);
 LSArray<LSValue*>* array_flatten(const LSArray<LSValue*>* array, const LSNumber* depth);
 LSValue* array_foldLeft(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0);
@@ -18,7 +17,6 @@ LSValue* array_iter(LSArray<LSValue*>* array, const LSFunction* function);
 LSValue* array_contains(const LSArray<LSValue*>* array, const LSValue* value);
 LSValue* array_contains_int(const LSArray<int>* array, int value);
 LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LSValue* index);
-LSValue* array_isEmpty(const LSArray<LSValue*>* array);
 LSValue* array_keySort(const LSArray<LSValue*>* array, const LSNumber* order);
 LSValue* array_last(const LSArray<LSValue*>* array);
 LSValue* array_max(const LSArray<LSValue*>* array);
@@ -122,35 +120,33 @@ ArraySTD::ArraySTD() : Module("Array") {
 	iter_fun_type.setReturnType(Type::POINTER);
 	method("iter", Type::ARRAY, Type::POINTER, {iter_fun_type},(void*) &array_iter);
 
-	Type filter_fun_type = Type::FUNCTION;
-	filter_fun_type.setArgumentType(0, Type::POINTER);
-	filter_fun_type.setReturnType(Type::BOOLEAN);
-	Type filter_fun_type_int = Type::FUNCTION;
-	filter_fun_type_int.setArgumentType(0, Type::INTEGER);
-	filter_fun_type_int.setReturnType(Type::BOOLEAN);
+	Type pred_fun_type = Type::FUNCTION;
+	pred_fun_type.setArgumentType(0, Type::POINTER);
+	pred_fun_type.setReturnType(Type::BOOLEAN);
+	Type pred_fun_type_float = Type::FUNCTION;
+	pred_fun_type_float.setArgumentType(0, Type::FLOAT);
+	pred_fun_type_float.setReturnType(Type::BOOLEAN);
+	Type pred_fun_type_int = Type::FUNCTION;
+	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
+	pred_fun_type_int.setReturnType(Type::BOOLEAN);
 	method("filter", {
-		{Type::ARRAY, Type::ARRAY, {filter_fun_type}, (void*) &LSArray<LSValue*>::filter},
-		{Type::ARRAY, Type::ARRAY, {filter_fun_type_int}, (void*) &LSArray<int>::filter},
+		{Type::ARRAY, Type::ARRAY, {pred_fun_type}, (void*) &LSArray<LSValue*>::ls_filter},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {pred_fun_type_float}, (void*) &LSArray<double>::ls_filter},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSArray<int>::ls_filter},
 	});
 
 	method("contains", {
-		{Type::ARRAY, Type::BOOLEAN, {Type::POINTER}, (void*) &LSArray<LSValue*>::contains},
-		{Type::ARRAY, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSArray<int>::contains_int}
+		{Type::ARRAY, Type::BOOLEAN, {Type::POINTER}, (void*) &LSArray<LSValue*>::ls_contains},
+		{Type::FLOAT_ARRAY, Type::BOOLEAN, {Type::FLOAT}, (void*) &LSArray<double>::ls_contains},
+		{Type::INT_ARRAY, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSArray<int>::ls_contains}
 	});
 
-	method("isEmpty", Type::ARRAY, Type::BOOLEAN_P, {}, (void*) &array_isEmpty);
-
-	Type partition_fun_type = Type::FUNCTION;
-	partition_fun_type.setArgumentType(0, Type::POINTER);
-	partition_fun_type.setReturnType(Type::BOOLEAN);
-
-	Type partition_fun_type_int = Type::FUNCTION;
-	partition_fun_type_int.setArgumentType(0, Type::INTEGER);
-	partition_fun_type_int.setReturnType(Type::BOOLEAN);
+	method("isEmpty", Type::ARRAY, Type::BOOLEAN, {}, (void*) &LSArray<LSValue*>::ls_empty);
 
 	method("partition", {
-		{Type::ARRAY, Type::ARRAY, {partition_fun_type}, (void*) &LSArray<LSValue*>::partition},
-		{Type::ARRAY, Type::ARRAY, {partition_fun_type_int}, (void*) &LSArray<int>::partition}
+		{Type::ARRAY, Type::ARRAY, {pred_fun_type}, (void*) &LSArray<LSValue*>::ls_partition},
+		{Type::FLOAT_ARRAY, Type::ARRAY, {pred_fun_type}, (void*) &LSArray<double>::ls_partition},
+		{Type::INT_ARRAY, Type::ARRAY, {pred_fun_type_int}, (void*) &LSArray<int>::ls_partition}
 	});
 
 	method("first", {
@@ -274,19 +270,22 @@ ArraySTD::ArraySTD() : Module("Array") {
 	static_method("iter", Type::POINTER, {Type::ARRAY, iter_fun_type},(void*)&array_iter);
 
 	static_method("filter", {
-		{Type::ARRAY, {Type::ARRAY, filter_fun_type}, (void*) &LSArray<LSValue*>::filter},
-		{Type::INT_ARRAY, {Type::INT_ARRAY, filter_fun_type_int}, (void*) &LSArray<int>::filter},
+		{Type::ARRAY, {Type::ARRAY, pred_fun_type}, (void*) &LSArray<LSValue*>::ls_filter},
+		{Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY, pred_fun_type_float}, (void*) &LSArray<double>::ls_filter},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, pred_fun_type_int}, (void*) &LSArray<int>::ls_filter},
 	});
 
 	static_method("contains", {
-		{Type::BOOLEAN_P, {Type::ARRAY, Type::POINTER}, (void*) &array_contains},
-		{Type::BOOLEAN_P, {Type::ARRAY, Type::INTEGER}, (void*) &array_contains_int}
+		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_contains},
+		{Type::BOOLEAN, {Type::FLOAT_ARRAY, Type::FLOAT}, (void*) &LSArray<double>::ls_contains},
+		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_contains}
 	});
-	static_method("isEmpty",Type::BOOLEAN_P, {Type::ARRAY}, (void*)&array_isEmpty);
+	static_method("isEmpty",Type::BOOLEAN, {Type::ARRAY}, (void*)&LSArray<LSValue*>::ls_empty);
 
 	static_method("partition", {
-		{Type::ARRAY, {Type::ARRAY, partition_fun_type}, (void*) &LSArray<LSValue*>::partition},
-		{Type::INT_ARRAY, {Type::INT_ARRAY, partition_fun_type_int}, (void*) &LSArray<int>::partition}
+		{Type::ARRAY, {Type::ARRAY, pred_fun_type}, (void*) &LSArray<LSValue*>::ls_partition},
+		{Type::FLOAT_ARRAY, {Type::ARRAY, pred_fun_type_float}, (void*) &LSArray<double>::ls_partition},
+		{Type::INT_ARRAY, {Type::ARRAY, pred_fun_type_int}, (void*) &LSArray<int>::ls_partition}
 	});
 
 	static_method("first", {
@@ -387,10 +386,6 @@ LSValue* array_fill(LSArray<LSValue*>* array, const LSValue* value, const LSNumb
 	return array;
 }
 
-LSArray<LSValue*>* array_filter(const LSArray<LSValue*>* array, const void* function) {
-	return array->filter(function);
-}
-
 LSArray<LSValue*>* array_flatten(const LSArray<LSValue*>*, const LSNumber*) {
 	// TODO
 	return new LSArray<LSValue*>();
@@ -409,20 +404,16 @@ LSValue* array_iter(LSArray<LSValue*>* array, const LSFunction* function) {
 	return array;
 }
 
-LSValue* array_contains(const LSArray<LSValue*>* array, const LSValue* value) {
-	return LSBoolean::get(array->contains(value));
-}
+//LSValue* array_contains(const LSArray<LSValue*>* array, const LSValue* value) {
+//	return LSBoolean::get(array->contains(value));
+//}
 
-LSValue* array_contains_int(const LSArray<int>* array, int value) {
-	return LSBoolean::get(array->contains_int(value));
-}
+//LSValue* array_contains_int(const LSArray<int>* array, int value) {
+//	return LSBoolean::get(array->contains_int(value));
+//}
 
 LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LSValue* index) {
 	return array->insert_v((LSValue*) element, index);
-}
-
-LSValue* array_isEmpty(const LSArray<LSValue*>* array) {
-	return LSBoolean::get(array->size() == 0);
 }
 
 LSValue* array_max(const LSArray<LSValue*>*) {
