@@ -222,7 +222,17 @@ LSValue* string_startsWith(const LSString* string, const LSString* starting) {
 }
 
 LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length) {
-	return new LSString(string->substr(start->value, length->value));
+	LSValue* r =  new LSString(string->substr(start->value, length->value));
+	if (string->refs == 0) {
+		delete string;
+	}
+	if (start->refs == 0) {
+		delete start;
+	}
+	if (length->refs == 0) {
+		delete length;
+	}
+	return r;
 }
 
 LSValue* string_toArray(const LSString* string) {
@@ -255,15 +265,27 @@ LSValue* string_toUpper(LSString* s) {
 }
 
 int string_begin_code(const LSString* v) {
-	return LSString::u8_char_at((char*) v->c_str(), 0);
+	int r = LSString::u8_char_at((char*) v->c_str(), 0);
+	if (v->refs == 0) {
+		delete v;
+	}
+	return r;
 }
 
 int string_code(const LSString* v, int pos) {
-	return LSString::u8_char_at((char*) v->c_str(), pos);
+	int r = LSString::u8_char_at((char*) v->c_str(), pos);
+	if (v->refs == 0) {
+		delete v;
+	}
+	return r;
 }
 
 long string_number(const LSString* s) {
-	return stol(*s);
+	long r = stol(*s);
+	if (s->refs == 0) {
+		delete s;
+	}
+	return r;
 }
 
 }

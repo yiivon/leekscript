@@ -7,12 +7,44 @@ using namespace std;
 
 namespace ls {
 
+LSArray<LSValue*>* array_concat(const LSArray<LSValue*>* array1, const LSArray<LSValue*>* array2);
+LSArray<LSValue*>* array_clear(LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_filter(const LSArray<LSValue*>* array, const void* function);
+LSValue* array_first(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_flatten(const LSArray<LSValue*>* array, const LSNumber* depth);
+LSValue* array_foldLeft(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0);
+LSValue* array_foldRight(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0);
+LSValue* array_iter(LSArray<LSValue*>* array, const LSFunction* function);
+LSValue* array_contains(const LSArray<LSValue*>* array, const LSValue* value);
+LSValue* array_contains_int(const LSArray<int>* array, int value);
+LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LSValue* index);
+LSValue* array_isEmpty(const LSArray<LSValue*>* array);
+LSValue* array_keySort(const LSArray<LSValue*>* array, const LSNumber* order);
+LSValue* array_last(const LSArray<LSValue*>* array);
+LSValue* array_max(const LSArray<LSValue*>* array);
+LSValue* array_min(const LSArray<LSValue*>* array);
+LSValue* array_push(LSArray<LSValue*>* array, LSValue* value);
+LSValue* array_pushAll(LSArray<LSValue*>* array, const LSArray<LSValue*>* elements);
+LSValue* array_remove(LSArray<LSValue*>* array, const LSValue* index);
+LSValue* array_removeElement(LSArray<LSValue*>* array, const LSValue* element);
+LSValue* array_removeKey(LSArray<LSValue*>* array, const LSValue* index);
+LSValue* array_reverse(const LSArray<LSValue*>* array);
+LSValue* array_shift(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>* array);
+LSValue* array_shift(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_sort(const LSArray<LSValue*>* array, const LSNumber* order);
+LSValue* array_sum(const LSArray<LSValue*>* array);
+LSValue* array_unshift(const LSArray<LSValue*>* array, const LSValue* value);
+LSArray<LSValue*>* array_chunk_1_ptr(const LSArray<LSValue*>* array);
+LSArray<LSValue*>* array_chunk_1_int(const LSArray<int>* array);
+LSArray<LSValue*>* array_chunk_1_float(const LSArray<double>* array);
+
 ArraySTD::ArraySTD() : Module("Array") {
 
 	method("average", {
-		{Type::ARRAY, Type::FLOAT, {}, (void*) &LSArray<LSValue*>::average},
-		{Type::FLOAT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<double>::average},
-		{Type::INT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<int>::average}
+		{Type::ARRAY, Type::FLOAT, {}, (void*) &LSArray<LSValue*>::ls_average},
+		{Type::FLOAT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<double>::ls_average},
+		{Type::INT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<int>::ls_average}
 	});
 
 	method("max", {
@@ -30,9 +62,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("sum", {
-		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::sum},
-		{Type::FLOAT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<double>::sum},
-		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::sum}
+		{Type::ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::ls_sum},
+		{Type::FLOAT_ARRAY, Type::FLOAT, {}, (void*) &LSArray<double>::ls_sum},
+		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_sum}
 	});
 
 	Type map_int_fun_type = Type::FUNCTION;
@@ -81,8 +113,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	map2_fun_type_int.setReturnType(Type::POINTER);
 
 	method("map2", {
-		{Type::ARRAY, Type::ARRAY, {Type::ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::map2},
-		{Type::ARRAY, Type::ARRAY, {Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::map2_int},
+		{Type::ARRAY, Type::ARRAY, {Type::ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::ls_map2},
+		{Type::ARRAY, Type::ARRAY, {Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::ls_map2_int},
 	});
 
 	Type iter_fun_type = Type::FUNCTION_P;
@@ -209,8 +241,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Static methods
 	 */
 	static_method("average", {
-		{Type::FLOAT, {Type::ARRAY}, (void*) &LSArray<LSValue*>::average},
-		{Type::FLOAT, {Type::INT_ARRAY}, (void*) &LSArray<int>::average}
+		{Type::FLOAT, {Type::ARRAY}, (void*) &LSArray<LSValue*>::ls_average},
+		{Type::FLOAT, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_average},
+		{Type::FLOAT, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_average}
 	});
 
 	static_method("max", Type::INTEGER_P, {Type::ARRAY}, (void*) &array_max);
@@ -223,8 +256,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("sum", {
-		{Type::POINTER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::sum},
-		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::sum}
+		{Type::POINTER, {Type::ARRAY}, (void*) &LSArray<LSValue*>::ls_sum},
+		{Type::POINTER, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_sum},
+		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_sum}
 	});
 
 	static_method("map", {
@@ -233,8 +267,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("map2", {
-		{Type::ARRAY, {Type::ARRAY, Type::ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::map2},
-		{Type::ARRAY, {Type::ARRAY, Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::map2_int},
+		{Type::ARRAY, {Type::ARRAY, Type::ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::ls_map2},
+		{Type::ARRAY, {Type::ARRAY, Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::ls_map2_int},
 	});
 
 	static_method("iter", Type::POINTER, {Type::ARRAY, iter_fun_type},(void*)&array_iter);

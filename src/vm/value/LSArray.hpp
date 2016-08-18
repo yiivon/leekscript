@@ -40,8 +40,8 @@ public:
 	T remove_element(T element);
 	LSValue* ls_pop();
 	int ls_size();
-	T sum() const;
-	double average() const;
+	T ls_sum();
+	double ls_average();
 	LSValue* ls_first();
 	LSValue* ls_last();
 	int atv(const int i);
@@ -64,8 +64,8 @@ public:
 	LSValue* foldRight(const void* fun, const LSValue* initial) const;
 	LSArray<T>* insert_v(const T v, const LSValue* pos);
 	LSArray<LSValue*>* partition(const void* fun) const;
-	LSArray<LSValue*>* map2(const LSArray<LSValue*>*, const void* fun) const;
-	LSArray<LSValue*>* map2_int(const LSArray<int>*, const void* fun) const;
+	LSArray<LSValue*>* ls_map2(LSArray<LSValue*>*, const void* fun);
+	LSArray<LSValue*>* ls_map2_int(LSArray<int>*, const void* fun);
 	int search(const LSValue* search, const int start) const;
 	int search_int(const int search, const int start) const;
 	LSString* join(const LSString* glue) const;

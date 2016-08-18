@@ -423,47 +423,77 @@ int jit_array_add_value(LSArray<int>* x, int v) {
 }
 
 LSValue* jit_in(LSValue* x, LSValue* y) {
-	return LSBoolean::get(y->in(x));
+	LSValue* r = LSBoolean::get(y->in(x));
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 
 LSValue* jit_instanceof(LSValue* x, LSValue* y) {
-	return LSBoolean::get(((LSClass*) x->getClass())->name == ((LSClass*) y)->name);
+	LSValue* r = LSBoolean::get(((LSClass*) x->getClass())->name == ((LSClass*) y)->name);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 
-LSValue* jit_bit_and(LSValue*, LSValue*) {
+LSValue* jit_bit_and(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_and_equal(LSValue*, LSValue*) {
+LSValue* jit_bit_and_equal(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_or(LSValue*, LSValue*) {
+LSValue* jit_bit_or(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_or_equal(LSValue*, LSValue*) {
+LSValue* jit_bit_or_equal(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_xor(LSValue*, LSValue*) {
+LSValue* jit_bit_xor(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_xor_equal(LSValue*, LSValue*) {
+LSValue* jit_bit_xor_equal(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_shl(LSValue*, LSValue*) {
+LSValue* jit_bit_shl(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_shl_equal(LSValue*, LSValue*) {
+LSValue* jit_bit_shl_equal(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_shr(LSValue*, LSValue*) {
+LSValue* jit_bit_shr(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_shr_equal(LSValue*, LSValue*) {
+LSValue* jit_bit_shr_equal(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_shr_unsigned(LSValue*, LSValue*) {
+LSValue* jit_bit_shr_unsigned(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
-LSValue* jit_bit_shr_unsigned_equal(LSValue*, LSValue*) {
+LSValue* jit_bit_shr_unsigned_equal(LSValue* x, LSValue* y) {
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
 	return LSNull::get();
 }
 bool jit_is_null(LSValue* v) {

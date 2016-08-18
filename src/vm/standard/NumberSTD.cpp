@@ -6,6 +6,40 @@ using namespace std;
 
 namespace ls {
 
+jit_value_t Number_e(jit_function_t F);
+jit_value_t Number_phi(jit_function_t F);
+jit_value_t Number_pi(jit_function_t F);
+jit_value_t Number_epsilon(jit_function_t F);
+
+LSNumber* number_abs(LSNumber* number);
+LSNumber* number_acos(LSNumber* number);
+LSNumber* number_asin(LSNumber* number);
+LSNumber* number_atan(LSNumber* number);
+LSNumber* number_atan2(LSNumber* x, LSNumber* y);
+LSNumber* number_cbrt(LSNumber* number);
+LSNumber* number_ceil(LSNumber* number);
+LSNumber* number_cos(LSNumber* number);
+LSNumber* number_exp(LSNumber* number);
+LSNumber* number_floor(LSNumber* number);
+LSNumber* number_hypot(LSNumber* x, LSNumber* y);
+LSNumber* number_log(LSNumber* number);
+LSNumber* number_log10(LSNumber* number);
+LSNumber* number_max(LSNumber* x, LSNumber* y);
+LSNumber* number_min(LSNumber* x, LSNumber* y);
+LSNumber* number_pow(LSNumber* x, LSNumber* y);
+double number_rand();
+LSNumber* number_randFloat(LSNumber* min, LSNumber* max);
+int number_randInt(const int min, const int max);
+LSNumber* number_round(LSNumber* number);
+LSNumber* number_signum(LSNumber* number);
+LSNumber* number_sin(LSNumber* number);
+LSNumber* number_sqrt(LSNumber* number);
+LSNumber* number_tan(LSNumber* number);
+LSNumber* number_toDegrees(LSNumber* number);
+LSNumber* number_toRadians(LSNumber* number);
+bool number_isInteger(LSNumber* number);
+LSString* number_char(LSNumber* number);
+
 NumberSTD::NumberSTD() : Module("Number") {
 
 	static_field("pi", Type::FLOAT, (void*) &Number_pi);
@@ -89,113 +123,241 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-LSNumber* number_abs(const LSNumber* number) {
-	return LSNumber::get(fabs(number->value));
+LSNumber* number_abs(LSNumber* number) {
+	LSNumber* r = LSNumber::get(fabs(number->value));
+	if (number->refs == 0) {
+		delete number;
+	}
+	return r;
 }
 
-LSNumber* number_acos(const LSNumber* number) {
-	return LSNumber::get(acos(number->value));
+LSNumber* number_acos(LSNumber* number) {
+	LSNumber* r = LSNumber::get(acos(number->value));
+	if (number->refs == 0) {
+		delete number;
+	}
+	return r;
 }
 
-LSNumber* number_asin(const LSNumber* number) {
-	return LSNumber::get(asin(number->value));
+LSNumber* number_asin(LSNumber* number) {
+	LSNumber* r = LSNumber::get(asin(number->value));
+	if (number->refs == 0) {
+		delete number;
+	}
+	return r;
 }
 
-LSNumber* number_atan(const LSNumber* number) {
-	return LSNumber::get(atan(number->value));
+LSNumber* number_atan(LSNumber* number) {
+	LSNumber* r = LSNumber::get(atan(number->value));
+	if (number->refs == 0) {
+		delete number;
+	}
+	return r;
 }
 
-LSNumber* number_atan2(const LSNumber* x, const LSNumber* y) {
-	return LSNumber::get(atan2(x->value, y->value));
+LSNumber* number_atan2(LSNumber* x, LSNumber* y) {
+	LSNumber* r = LSNumber::get(atan2(x->value, y->value));
+	if (x->refs == 0) {
+		delete x;
+	}
+	if (y->refs == 0) {
+		delete y;
+	}
+	return r;
 }
 
-LSNumber* number_cbrt(const LSNumber* number) {
-	return LSNumber::get(cbrt(number->value));
+LSNumber* number_cbrt(LSNumber* number) {
+	LSNumber* r = LSNumber::get(cbrt(number->value));
+	if (number->refs == 0) {
+		delete number;
+	}
+	return r;
 }
 
-LSNumber* number_ceil(const LSNumber* number) {
-	return LSNumber::get(ceil(number->value));
+LSNumber* number_ceil(LSNumber* number) {
+	LSNumber* r = LSNumber::get(ceil(number->value));
+	if (number->refs == 0) {
+		delete number;
+	}
+	return r;
 }
 
-LSNumber* number_cos(const LSNumber* x) {
-	return LSNumber::get(cos(x->value));
+LSNumber* number_cos(LSNumber* x) {
+	LSNumber* r = LSNumber::get(cos(x->value));
+	if (x->refs == 0) {
+		delete x;
+	}
+	return r;
 }
 
-LSNumber* number_exp(const LSNumber* x) {
-	return LSNumber::get(exp(x->value));
+LSNumber* number_exp(LSNumber* x) {
+	LSNumber* r = LSNumber::get(exp(x->value));
+	if (x->refs == 0) {
+		delete x;
+	}
+	return r;
 }
 
-LSNumber* number_floor(const LSNumber* number) {
-	return LSNumber::get(floor(number->value));
+LSNumber* number_floor(LSNumber* number) {
+	LSNumber* r = LSNumber::get(floor(number->value));
+	if (number->refs == 0) {
+		delete number;
+	}
+	return r;
 }
 
-LSNumber* number_hypot(const LSNumber* x, const LSNumber* y) {
-	return LSNumber::get(hypot(x->value, y->value));
+LSNumber* number_hypot(LSNumber* x, LSNumber* y) {
+	double r = hypot(x->value, y->value);
+	if (x->refs == 0) {
+		if (y->refs == 0) {
+			delete y;
+		}
+		x->value = r;
+		return x;
+	} else if (y->refs == 0) {
+		y->value = r;
+		return y;
+	}
+	return LSNumber::get(r);
 }
 
-LSNumber* number_log(const LSNumber* x) {
-	return LSNumber::get(log(x->value));
+LSNumber* number_log(LSNumber* x) {
+	double r = log(x->value);
+	if (x->refs == 0) {
+		x->value = r;
+		return x;
+	}
+	return LSNumber::get(r);
 }
 
-LSNumber* number_log10(const LSNumber* x) {
-	return LSNumber::get(log10(x->value));
+LSNumber* number_log10(LSNumber* x) {
+	double r = log10(x->value);
+	if (x->refs == 0) {
+		x->value = r;
+		return x;
+	}
+	return LSNumber::get(r);
 }
 
-LSNumber* number_max(const LSNumber* x, const LSNumber* y) {
-	return LSNumber::get(max(x->value, y->value));
+LSNumber* number_max(LSNumber* x, LSNumber* y) {
+	double r = max(x->value, y->value);
+	if (x->refs == 0) {
+		if (y->refs == 0) {
+			delete y;
+		}
+		x->value = r;
+		return x;
+	} else if (y->refs == 0) {
+		y->value = r;
+		return y;
+	}
+	return LSNumber::get(r);
 }
 
-LSNumber* number_min(const LSNumber* x, const LSNumber* y) {
-	return new LSNumber(min(x->value, y->value));
+LSNumber* number_min(LSNumber* x, LSNumber* y) {
+	double r = pow(x->value, y->value);
+	if (x->refs == 0) {
+		if (y->refs == 0) {
+			delete y;
+		}
+		x->value = r;
+		return x;
+	} else if (y->refs == 0) {
+		y->value = r;
+		return y;
+	}
+	return LSNumber::get(r);
 }
 
-LSNumber* number_pow(const LSNumber* x, const LSNumber* y) {
-	return LSNumber::get(pow(x->value, y->value));
+LSNumber* number_pow(LSNumber* x, LSNumber* y) {
+	double r = pow(x->value, y->value);
+	if (x->refs == 0) {
+		if (y->refs == 0) {
+			delete y;
+		}
+		x->value = r;
+		return x;
+	} else if (y->refs == 0) {
+		y->value = r;
+		return y;
+	}
+	return LSNumber::get(r);
 }
 
 double number_rand() {
 	return (double) rand() / RAND_MAX;
 }
 
-LSNumber* number_randFloat(const LSNumber* min, const LSNumber* max) {
-	return LSNumber::get(min->value + ((double) rand() / RAND_MAX) * max->value);
+LSNumber* number_randFloat(LSNumber* min, LSNumber* max) {
+	LSNumber* r = LSNumber::get(min->value + ((double) rand() / RAND_MAX) * max->value);
+	if (min->refs == 0) {
+		delete min;
+	}
+	if (max->refs == 0) {
+		delete max;
+	}
+	return r;
 }
 
 int number_randInt(int min, int max) {
 	return floor(min + ((double) rand() / RAND_MAX) * (max - min));
 }
 
-LSNumber* number_round(const LSNumber* number) {
+LSNumber* number_round(LSNumber* number) {
+	if (number->refs == 0) {
+		number->value = round(number->value);
+		return number;
+	}
 	return LSNumber::get(round(number->value));
 }
 
-LSNumber* number_signum(const LSNumber* x) {
+LSNumber* number_signum(LSNumber* x) {
 	if (x->value > 0) return LSNumber::get(1);
 	if (x->value < 0) return LSNumber::get(-1);
 	return LSNumber::get(0);
 }
 
-LSNumber* number_sin(const LSNumber* x) {
+LSNumber* number_sin(LSNumber* x) {
+	if (x->refs == 0) {
+		x->value = sin(x->value);
+		return x;
+	}
 	return new LSNumber(sin(x->value));
 }
 
-LSNumber* number_sqrt(const LSNumber* x) {
+LSNumber* number_sqrt(LSNumber* x) {
+	if (x->refs == 0) {
+		x->value = sqrt(x->value);
+		return x;
+	}
 	return new LSNumber(sqrt(x->value));
 }
 
-LSNumber* number_tan(const LSNumber* x) {
+LSNumber* number_tan(LSNumber* x) {
+	if (x->refs == 0) {
+		x->value = tan(x->value);
+		return x;
+	}
 	return new LSNumber(tan(x->value));
 }
 
-LSNumber* number_toDegrees(const LSNumber* x) {
+LSNumber* number_toDegrees(LSNumber* x) {
+	if (x->refs == 0) {
+		x->value = (x->value * 180) / M_PI;
+		return x;
+	}
 	return LSNumber::get((x->value * 180) / M_PI);
 }
 
-LSNumber* number_toRadians(const LSNumber* x) {
+LSNumber* number_toRadians(LSNumber* x) {
+	if (x->refs == 0) {
+		x->value = (x->value * M_PI) / 180;
+		return x;
+	}
 	return LSNumber::get((x->value * M_PI) / 180);
 }
 
-bool number_isInteger(const LSNumber* x) {
+bool number_isInteger(LSNumber* x) {
 	bool is = x->value == (int) x->value;
 	if (x->refs == 0) {
 		delete x;
@@ -203,7 +365,7 @@ bool number_isInteger(const LSNumber* x) {
 	return is;
 }
 
-LSString* number_char(const LSNumber* number) {
+LSString* number_char(LSNumber* number) {
 	unsigned int n = number->value;
 	if (number->refs == 0) {
 		delete number;

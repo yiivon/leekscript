@@ -149,51 +149,55 @@ inline int LSArray<int>::remove_element(int element) {
 	return 0;
 }
 
-template <class T>
-T LSArray<T>::sum() const {
-	if (this->size() == 0) return (T) LSNumber::get(0);
+template <>
+inline LSValue* LSArray<LSValue*>::ls_sum() {
+	if (this->size() == 0) return LSNumber::get(0);
 	LSValue* sum = this->operator [] (0)->clone();
 	for (unsigned i = 1; i < this->size(); ++i) {
 		LSValue* new_sum = (*this)[i]->operator + (sum);
 		LSValue::delete_temporary(sum);
 		sum = new_sum;
 	}
-	return (T) sum;
+	if (refs == 0) delete this;
+	return sum;
 }
 
 template <>
-inline int LSArray<int>::sum() const {
+inline int LSArray<int>::ls_sum() {
 	int sum = 0;
 	for (auto v : *this) {
 		sum += v;
 	}
+	if (refs == 0) delete this;
 	return sum;
 }
 
 template <>
-inline double LSArray<double>::sum() const {
+inline double LSArray<double>::ls_sum() {
 	double sum = 0;
 	for (auto v : *this) {
 		sum += v;
 	}
+	if (refs == 0) delete this;
 	return sum;
 }
 
-template <class T>
-double LSArray<T>::average() const {
+template <>
+inline double LSArray<LSValue*>::ls_average() {
+	if (refs == 0) delete this;
 	return 0; // No average for a no integer array
 }
 
 template <>
-inline double LSArray<double>::average() const {
+inline double LSArray<double>::ls_average() {
 	if (size() == 0) return 0;
-	return this->sum() / size();
+	return this->ls_sum() / size();
 }
 
 template <>
-inline double LSArray<int>::average() const {
+inline double LSArray<int>::ls_average() {
 	if (size() == 0) return 0;
-	return (double) this->sum() / size();
+	return (double) this->ls_sum() / size();
 }
 
 template <>
@@ -762,8 +766,8 @@ inline LSArray<LSValue*>* LSArray<int>::partition(const void* function) const {
 	return new LSArray<LSValue*> {array_true, array_false};
 }
 
-template <class T>
-LSArray<LSValue*>* LSArray<T>::map2(const LSArray<LSValue*>* array, const void* function) const {
+template <>
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_map2(LSArray<LSValue*>* array, const void* function) {
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size());
 	auto fun = (void* (*)(void*, void*)) function;
@@ -774,11 +778,13 @@ LSArray<LSValue*>* LSArray<T>::map2(const LSArray<LSValue*>* array, const void* 
 		LSValue* res = (LSValue*) fun(v1, v2);
 		new_array->push_move(res);
 	}
+	if (refs == 0) delete this;
+	if (array->refs == 0) delete array;
 	return new_array;
 }
 
 template <>
-inline LSArray<LSValue*>* LSArray<int>::map2(const LSArray<LSValue*>* array, const void* function) const {
+inline LSArray<LSValue*>* LSArray<int>::ls_map2(LSArray<LSValue*>* array, const void* function) {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size());
@@ -790,11 +796,13 @@ inline LSArray<LSValue*>* LSArray<int>::map2(const LSArray<LSValue*>* array, con
 		LSValue* res = (LSValue*) fun(v1, v2);
 		new_array->push_move(res);
 	}
+	if (refs == 0) delete this;
+	if (array->refs == 0) delete array;
 	return new_array;
 }
 
-template <class T>
-LSArray<LSValue*>* LSArray<T>::map2_int(const LSArray<int>* array, const void* function) const {
+template <>
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_map2_int(LSArray<int>* array, const void* function) {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size());
@@ -806,11 +814,13 @@ LSArray<LSValue*>* LSArray<T>::map2_int(const LSArray<int>* array, const void* f
 		LSValue* res = (LSValue*) fun(v1, v2);
 		new_array->push_move(res);
 	}
+	if (refs == 0) delete this;
+	if (array->refs == 0) delete array;
 	return new_array;
 }
 
 template <>
-inline LSArray<LSValue*>* LSArray<int>::map2_int(const LSArray<int>* array, const void* function) const {
+inline LSArray<LSValue*>* LSArray<int>::ls_map2_int(LSArray<int>* array, const void* function) {
 
 	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size());
@@ -822,6 +832,8 @@ inline LSArray<LSValue*>* LSArray<int>::map2_int(const LSArray<int>* array, cons
 		LSValue* res = (LSValue*) fun(v1, v2);
 		new_array->push_move(res);
 	}
+	if (refs == 0) delete this;
+	if (array->refs == 0) delete array;
 	return new_array;
 }
 
