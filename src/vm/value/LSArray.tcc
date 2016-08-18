@@ -214,7 +214,7 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 		/* In that case `first` will survive
 		 */
 	}
-	return first; /* return as reference */
+	return first->move(); /* return temporary */
 }
 template <>
 inline LSValue* LSArray<double>::ls_first() {
@@ -261,7 +261,7 @@ inline LSValue* LSArray<LSValue*>::ls_last() {
 		}
 		delete this;
 	}
-	return last;
+	return last->move();
 }
 template <>
 inline LSValue* LSArray<double>::ls_last() {
@@ -306,7 +306,7 @@ inline LSValue* LSArray<LSValue*>::ls_pop() {
 	if (refs == 0) {
 		delete this;
 	}
-	return last;
+	return last->move();
 }
 template <>
 inline LSValue* LSArray<int>::ls_pop() {
@@ -498,7 +498,7 @@ inline LSArray<LSValue*>* LSArray<T>::ls_chunk(int size) const {
 
 template <>
 inline LSValue* LSArray<LSValue*>::ls_unique() {
-	if (this->empty()) return this;
+	if (this->empty()) return this->move();
 
 	auto it = this->begin();
 	auto next = it;
@@ -516,19 +516,19 @@ inline LSValue* LSArray<LSValue*>::ls_unique() {
 		*it = *next;
 	}
 	this->resize(std::distance(this->begin(), it));
-	return this;
+	return this->move();
 }
 template <>
 inline LSValue* LSArray<int>::ls_unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
-	return this;
+	return this->move();
 }
 template <>
 inline LSValue* LSArray<double>::ls_unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
-	return this;
+	return this->move();
 }
 
 template <>
@@ -536,17 +536,17 @@ inline LSValue* LSArray<LSValue*>::ls_sort() {
 	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
 		return b->operator < (a);
 	});
-	return this;
+	return this->move();
 }
 template <>
 inline LSValue* LSArray<int>::ls_sort() {
 	std::sort(this->begin(), this->end());
-	return this;
+	return this->move();
 }
 template <>
 inline LSValue* LSArray<double>::ls_sort() {
 	std::sort(this->begin(), this->end());
-	return this;
+	return this->move();
 }
 
 template <class T>
