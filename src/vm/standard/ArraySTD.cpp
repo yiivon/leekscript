@@ -160,9 +160,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("push", {
-		{Type::ARRAY, Type::ARRAY, {Type::POINTER}, (void*) &LSArray<LSValue*>::push},
-		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {Type::FLOAT}, (void*) &LSArray<double>::push},
-		{Type::INT_ARRAY, Type::INT_ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::push},
+		{Type::ARRAY, Type::ARRAY, {Type::POINTER}, (void*) &LSArray<LSValue*>::ls_push},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {Type::FLOAT}, (void*) &LSArray<double>::ls_push},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::ls_push},
 	});
 
 	method("pushAll", {
@@ -295,8 +295,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("push", {
-		{Type::ARRAY, {Type::ARRAY, Type::POINTER}, (void*) &LSArray<LSValue*>::push},
-		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::push}
+		{Type::ARRAY, {Type::ARRAY, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_push},
+		{Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY, Type::FLOAT}, (void*) &LSArray<double>::ls_push},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_push}
 	});
 
 	static_method("pushAll", Type::ARRAY, {Type::ARRAY, Type::ARRAY}, (void*)&array_pushAll);

@@ -256,34 +256,64 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 
 LSValue* jit_add(LSValue* x, LSValue* y) {
-	return y->operator + (x);
+	LSValue* r = y->operator + (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_int_array_add(LSArray<int>* x, LSArray<int>* y) {
-	return x->operator + (y);
+	LSValue* r = y->operator + (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_sub(LSValue* x, LSValue* y) {
-	return y->operator - (x);
+	LSValue* r = y->operator - (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_mul(LSValue* x, LSValue* y) {
-	return y->operator * (x);
+	LSValue* r = y->operator * (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_div(LSValue* x, LSValue* y) {
-	return y->operator / (x);
+	LSValue* r = y->operator / (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_pow(LSValue* x, LSValue* y) {
-	return y->poww(x);
+	LSValue* r = y->poww(x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_mod(LSValue* x, LSValue* y) {
-	return y->operator % (x);
+	LSValue* r = y->operator % (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_and(LSValue* x, LSValue* y) {
-	return LSBoolean::get(x->isTrue() and y->isTrue());
+	LSValue* r = LSBoolean::get(x->isTrue() and y->isTrue());
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_or(LSValue* x, LSValue* y) {
-	return LSBoolean::get(x->isTrue() or y->isTrue());
+	LSValue* r = LSBoolean::get(x->isTrue() or y->isTrue());
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_xor(LSValue* x, LSValue* y) {
-	return LSBoolean::get(x->isTrue() xor y->isTrue());
+	LSValue* r = LSBoolean::get(x->isTrue() xor y->isTrue());
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_inc(LSValue* x) {
 	return x->operator ++ (1);
@@ -293,23 +323,40 @@ LSValue* jit_dec(LSValue* x) {
 }
 
 LSValue* jit_equals(LSValue* x, LSValue* y) {
-	return LSBoolean::get(x->operator == (y));
+	LSValue* r = LSBoolean::get(x->operator == (y));
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_not_equals(LSValue* x, LSValue* y) {
-	return LSBoolean::get(x->operator != (y));
+	LSValue* r = LSBoolean::get(x->operator != (y));
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_lt(LSValue* x, LSValue* y) {
-
-	return LSBoolean::get(y->operator < (x));
+	LSValue* r = LSBoolean::get(y->operator < (x));
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_le(LSValue* x, LSValue* y) {
-	return LSBoolean::get(y->operator <= (x));
+	LSValue* r = LSBoolean::get(y->operator <= (x));
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_gt(LSValue* x, LSValue* y) {
-	return LSBoolean::get(y->operator > (x));
+	LSValue* r = LSBoolean::get(y->operator > (x));
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_ge(LSValue* x, LSValue* y) {
-	return LSBoolean::get(y->operator >= (x));
+	LSValue* r = LSBoolean::get(y->operator >= (x));
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 
 LSValue* jit_store(LSValue** x, LSValue* y) {
@@ -331,28 +378,47 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 }
 
 LSValue* jit_add_equal(LSValue* x, LSValue* y) {
-	return y->operator += (x);
+	LSValue* r = y->operator += (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 int jit_add_equal_value(int* x, int y) {
 	return *x += y;
 }
 LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
-	return y->operator -= (x);
+	LSValue* r = y->operator -= (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_mul_equal(LSValue* x, LSValue* y) {
-	return y->operator *= (x);
+	LSValue* r = y->operator *= (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_div_equal(LSValue* x, LSValue* y) {
-	return y->operator /= (x);
+	LSValue* r = y->operator /= (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
-	return y->operator %= (x);
+	LSValue* r = y->operator %= (x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
-	return y->pow_eq(x);
+	LSValue* r = y->pow_eq(x);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 int jit_array_add_value(LSArray<int>* x, int v) {
 	x->push_clone(v);
+	LSValue::delete_temporary(x);
 	return v;
 }
 
@@ -462,7 +528,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 					args.push_back(v2->compile(c));
 
 					if (v1->type.must_manage_memory()) {
-						VM::inc_refs(c.F, args[1]);
+						args[1] = VM::move_inc_obj(c.F, args[1]);
 					}
 
 					ls_func = (void*) &jit_store;
@@ -473,7 +539,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 					jit_value_t y = v2->compile(c);
 
 					if (v2->type.must_manage_memory()) {
-						VM::inc_refs(c.F, y);
+						y = VM::move_inc_obj(c.F, y);
 					}
 					if (v1->type.must_manage_memory()) {
 						VM::delete_ref(c.F, x);
@@ -951,12 +1017,12 @@ jit_value_t Expression::compile(Compiler& c) const {
 		}
 
 		// Delete operands
-		if (v1->type.must_manage_memory()) {
-			VM::delete_temporary(c.F, args[0]);
-		}
-		if (v2->type.must_manage_memory()) {
-			VM::delete_temporary(c.F, args[1]);
-		}
+//		if (v1->type.must_manage_memory()) {
+//			VM::delete_temporary(c.F, args[0]);
+//		}
+//		if (v2->type.must_manage_memory()) {
+//			VM::delete_temporary(c.F, args[1]);
+//		}
 
 		// Convert to value
 		if (type == Type::BOOLEAN) {

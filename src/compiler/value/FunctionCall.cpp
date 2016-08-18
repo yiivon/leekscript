@@ -603,7 +603,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			VM::inc_refs(c.F, args[i]);
+			args[i] = VM::move_inc_obj(c.F, args[i]);
 		}
 	}
 

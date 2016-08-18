@@ -498,7 +498,7 @@ inline LSArray<LSValue*>* LSArray<T>::ls_chunk(int size) const {
 
 template <>
 inline LSValue* LSArray<LSValue*>::ls_unique() {
-	if (this->empty()) return this->move();
+	if (this->empty()) return this;
 
 	auto it = this->begin();
 	auto next = it;
@@ -516,19 +516,19 @@ inline LSValue* LSArray<LSValue*>::ls_unique() {
 		*it = *next;
 	}
 	this->resize(std::distance(this->begin(), it));
-	return this->move();
+	return this;
 }
 template <>
 inline LSValue* LSArray<int>::ls_unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
-	return this->move();
+	return this;
 }
 template <>
 inline LSValue* LSArray<double>::ls_unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
-	return this->move();
+	return this;
 }
 
 template <>
@@ -536,17 +536,17 @@ inline LSValue* LSArray<LSValue*>::ls_sort() {
 	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
 		return b->operator < (a);
 	});
-	return this->move();
+	return this;
 }
 template <>
 inline LSValue* LSArray<int>::ls_sort() {
 	std::sort(this->begin(), this->end());
-	return this->move();
+	return this;
 }
 template <>
 inline LSValue* LSArray<double>::ls_sort() {
 	std::sort(this->begin(), this->end());
-	return this->move();
+	return this;
 }
 
 template <class T>
@@ -586,9 +586,19 @@ inline int LSArray<int>::contains_int(int val) const {
 	return false;
 }
 
-template <class T>
-LSArray<T>* LSArray<T>::push(const T val) {
-	push_clone(val);
+template <>
+inline LSValue* LSArray<LSValue*>::ls_push(LSValue* val) {
+	this->push_back(val->move_inc());
+	return this;
+}
+template <>
+inline LSValue* LSArray<int>::ls_push(int val) {
+	this->push_back(val);
+	return this;
+}
+template <>
+inline LSValue* LSArray<double>::ls_push(double val) {
+	this->push_back(val);
 	return this;
 }
 

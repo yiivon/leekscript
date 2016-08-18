@@ -196,12 +196,18 @@ LSNumber* number_toRadians(const LSNumber* x) {
 }
 
 bool number_isInteger(const LSNumber* x) {
-	double _;
-	return modf(x->value, &_) == 0;
+	bool is = x->value == (int) x->value;
+	if (x->refs == 0) {
+		delete x;
+	}
+	return is;
 }
 
 LSString* number_char(const LSNumber* number) {
 	unsigned int n = number->value;
+	if (number->refs == 0) {
+		delete number;
+	}
 	char dest[5];
 	u8_toutf8(dest, 5, &n, 1);
 	return new LSString(dest);

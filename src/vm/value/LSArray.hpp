@@ -55,7 +55,7 @@ public:
 	void iter(const LSFunction*) const;
 	int contains(const LSValue*) const;
 	int contains_int(int) const;
-	LSArray<T>* push(const T val);
+	LSValue* ls_push(T val);
 	LSArray<T>* push_all(const LSArray<LSValue*>*);
 	const LSArray<T>* push_all_int(const LSArray<int>*);
 	LSArray<T>* reverse() const;
