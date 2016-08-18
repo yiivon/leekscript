@@ -26,9 +26,7 @@ LSValue* array_pushAll(LSArray<LSValue*>* array, const LSArray<LSValue*>* elemen
 LSValue* array_remove(LSArray<LSValue*>* array, const LSValue* index);
 LSValue* array_removeElement(LSArray<LSValue*>* array, const LSValue* element);
 LSValue* array_removeKey(LSArray<LSValue*>* array, const LSValue* index);
-LSValue* array_reverse(const LSArray<LSValue*>* array);
 LSValue* array_shift(const LSArray<LSValue*>* array);
-LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>* array);
 LSValue* array_shift(const LSArray<LSValue*>* array);
 LSArray<LSValue*>* array_sort(const LSArray<LSValue*>* array, const LSNumber* order);
 LSValue* array_sum(const LSArray<LSValue*>* array);
@@ -145,7 +143,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	method("partition", {
 		{Type::ARRAY, Type::ARRAY, {pred_fun_type}, (void*) &LSArray<LSValue*>::ls_partition},
-		{Type::FLOAT_ARRAY, Type::ARRAY, {pred_fun_type}, (void*) &LSArray<double>::ls_partition},
+		{Type::FLOAT_ARRAY, Type::ARRAY, {pred_fun_type_float}, (void*) &LSArray<double>::ls_partition},
 		{Type::INT_ARRAY, Type::ARRAY, {pred_fun_type_int}, (void*) &LSArray<int>::ls_partition}
 	});
 
@@ -160,25 +158,33 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::POINTER, {}, (void*) &LSArray<int>::ls_last},
 	});
 
-	Type fold_fun_type = Type::FUNCTION_P;
+	Type fold_fun_type = Type::FUNCTION;
 	fold_fun_type.setArgumentType(0, Type::POINTER);
 	fold_fun_type.setArgumentType(1, Type::POINTER);
 	fold_fun_type.setReturnType(Type::POINTER);
-	Type fold_fun_type_int = Type::FUNCTION_P;
+	Type fold_fun_type_float = Type::FUNCTION;
+	fold_fun_type_float.setArgumentType(0, Type::POINTER);
+	fold_fun_type_float.setArgumentType(1, Type::FLOAT);
+	fold_fun_type_float.setReturnType(Type::POINTER);
+	Type fold_fun_type_int = Type::FUNCTION;
 	fold_fun_type_int.setArgumentType(0, Type::POINTER);
-	fold_fun_type_int.setArgumentType(1, Type::POINTER);
+	fold_fun_type_int.setArgumentType(1, Type::INTEGER);
 	fold_fun_type_int.setReturnType(Type::POINTER);
 	method("foldLeft", {
-		{Type::ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::foldLeft},
-		{Type::ARRAY, Type::POINTER, {fold_fun_type_int, Type::POINTER}, (void*) &array_foldLeft}
+		{Type::ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldLeft},
+		{Type::FLOAT_ARRAY, Type::POINTER, {fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldLeft},
+		{Type::INT_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<int>::ls_foldLeft},
 	});
-	method("foldRight", Type::ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*)&array_foldRight);
-
-	method("shuffle", Type::ARRAY, Type::ARRAY, {}, (void*)&array_shuffle);
+	method("foldRight", {
+		{Type::ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
+		{Type::FLOAT_ARRAY, Type::POINTER, {fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
+		{Type::INT_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<int>::ls_foldRight},
+	});
 
 	method("search", {
-		{Type::ARRAY, Type::INTEGER, {Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::search},
-		{Type::ARRAY, Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::search_int}
+		{Type::ARRAY, Type::INTEGER, {Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_search},
+		{Type::FLOAT_ARRAY, Type::INTEGER, {Type::FLOAT, Type::INTEGER}, (void*) &LSArray<double>::ls_search},
+		{Type::INT_ARRAY, Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::ls_search}
 	});
 
 	method("pop", {
@@ -199,8 +205,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("join", {
-		{Type::ARRAY, Type::STRING, {Type::STRING}, (void*) &LSArray<LSValue*>::join},
-//		{Type::STRING, {Type::STRING}, (void*) &LSArray<int>::join}
+		{Type::ARRAY, Type::STRING, {Type::STRING}, (void*) &LSArray<LSValue*>::ls_join},
+		{Type::FLOAT_ARRAY, Type::STRING, {Type::STRING}, (void*) &LSArray<double>::ls_join},
+		{Type::INT_ARRAY, Type::STRING, {Type::STRING}, (void*) &LSArray<int>::ls_join}
 	});
 
 	method("clear", Type::ARRAY, Type::ARRAY, {}, (void*)&array_clear);
@@ -229,9 +236,17 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("reverse", {
-		{Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::reverse},
-		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::reverse},
+		{Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::ls_reverse},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) &LSArray<double>::ls_reverse},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::ls_reverse},
 	});
+
+	method("shuffle", {
+		{Type::ARRAY, Type::ARRAY, {}, (void*) &LSArray<LSValue*>::ls_shuffle},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) &LSArray<double>::ls_shuffle},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::ls_shuffle},
+	});
+
 
 	/*
 	 * Static methods
@@ -284,8 +299,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	static_method("partition", {
 		{Type::ARRAY, {Type::ARRAY, pred_fun_type}, (void*) &LSArray<LSValue*>::ls_partition},
-		{Type::FLOAT_ARRAY, {Type::ARRAY, pred_fun_type_float}, (void*) &LSArray<double>::ls_partition},
-		{Type::INT_ARRAY, {Type::ARRAY, pred_fun_type_int}, (void*) &LSArray<int>::ls_partition}
+		{Type::ARRAY, {Type::FLOAT_ARRAY, pred_fun_type_float}, (void*) &LSArray<double>::ls_partition},
+		{Type::ARRAY, {Type::INT_ARRAY, pred_fun_type_int}, (void*) &LSArray<int>::ls_partition}
 	});
 
 	static_method("first", {
@@ -300,21 +315,31 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("foldLeft", {
-		{Type::POINTER, {Type::ARRAY, fold_fun_type, Type::POINTER}, (void*) &array_foldLeft},
-		{Type::POINTER, {Type::ARRAY, fold_fun_type_int, Type::POINTER}, (void*) &array_foldLeft}
+		{Type::POINTER, {Type::ARRAY, fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldLeft},
+		{Type::POINTER, {Type::FLOAT_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldLeft},
+		{Type::POINTER, {Type::INT_ARRAY, fold_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldLeft}
 	});
-
 	static_method("foldRight", {
-		{Type::POINTER, {Type::ARRAY, fold_fun_type, Type::POINTER}, (void*)&array_foldRight},
-		{Type::POINTER, {Type::ARRAY, fold_fun_type_int, Type::POINTER}, (void*)&array_foldRight}
+		{Type::POINTER, {Type::ARRAY, fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
+		{Type::POINTER, {Type::FLOAT_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
+		{Type::POINTER, {Type::INT_ARRAY, fold_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldRight}
 	});
 
-	static_method("reverse", Type::ARRAY, {Type::ARRAY}, (void*) &array_reverse);
-	static_method("shuffle", Type::ARRAY, {Type::ARRAY}, (void*)&array_shuffle);
+	static_method("shuffle", {
+					  {Type::ARRAY, {Type::ARRAY}, (void*) &LSArray<LSValue*>::ls_shuffle},
+					  {Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_shuffle},
+					  {Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_shuffle},
+				  });
+	static_method("reverse", {
+					  {Type::ARRAY, {Type::ARRAY}, (void*) &LSArray<LSValue*>::ls_reverse},
+					  {Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_reverse},
+					  {Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_reverse},
+				  });
 
 	static_method("search", {
-		{Type::INTEGER, {Type::ARRAY, Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::search},
-		{Type::INTEGER, {Type::INT_ARRAY, Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::search_int}
+		{Type::INTEGER, {Type::ARRAY, Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_search},
+		{Type::INTEGER, {Type::FLOAT_ARRAY, Type::FLOAT, Type::INTEGER}, (void*) &LSArray<double>::ls_search},
+		{Type::INTEGER, {Type::INT_ARRAY, Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::ls_search}
 	});
 
 	static_method("subArray", {
@@ -337,8 +362,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	static_method("concat", Type::ARRAY, {Type::ARRAY, Type::ARRAY}, (void*) &array_concat);
 
 	static_method("join", {
-		{Type::STRING, {Type::ARRAY, Type::STRING}, (void*) &LSArray<LSValue*>::join},
-		{Type::STRING, {Type::INT_ARRAY, Type::STRING}, (void*) &LSArray<int>::join}
+		{Type::STRING, {Type::ARRAY, Type::STRING}, (void*) &LSArray<LSValue*>::ls_join},
+		{Type::STRING, {Type::FLOAT_ARRAY, Type::STRING}, (void*) &LSArray<double>::ls_join},
+		{Type::STRING, {Type::INT_ARRAY, Type::STRING}, (void*) &LSArray<int>::ls_join}
 	});
 
 	static_method("clear", Type::ARRAY, {Type::ARRAY}, (void*)&array_clear);
@@ -389,14 +415,6 @@ LSValue* array_fill(LSArray<LSValue*>* array, const LSValue* value, const LSNumb
 LSArray<LSValue*>* array_flatten(const LSArray<LSValue*>*, const LSNumber*) {
 	// TODO
 	return new LSArray<LSValue*>();
-}
-
-LSValue* array_foldLeft(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0) {
-	return array->foldLeft(function->function, v0);
-}
-
-LSValue* array_foldRight(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0) {
-	return array->foldRight(function->function, v0);
 }
 
 LSValue* array_iter(LSArray<LSValue*>* array, const LSFunction* function) {
@@ -492,42 +510,9 @@ LSValue* array_removeKey(LSArray<LSValue*>* array, const LSValue* index) {
 	return array->remove_key((LSValue*) index);
 }
 
-LSValue* array_reverse(const LSArray<LSValue*>* array) {
-	return array->reverse();
-}
-
-LSValue* array_search(const LSArray<LSValue*>*, const LSValue*, const LSValue*) {
-	/*
-	for (auto i = array->values.begin(); i != array->values.end(); i++) {
-		if (start->operator < (i->first)) continue; // i < start
-		if (value->operator == (i->second))
-			return i->first->clone();
-	}
-	*/
-	return LSNull::get();
-}
-
 LSValue* array_shift(const LSArray<LSValue*>*) {
 	// TODO
 	return new LSArray<LSValue*>();
-}
-
-LSArray<LSValue*>* array_shuffle(const LSArray<LSValue*>*) {
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	/*
-	if (array->values.empty()) {
-		return new_array;
-	}
-	vector<LSValue*> shuffled_values;
-	for (auto it = array->values.begin(); it != array->values.end(); it++) {
-		shuffled_values.push_back(it->second);
-	}
-	random_shuffle(shuffled_values.begin(), shuffled_values.end());
-	for (auto it = shuffled_values.begin(); it != shuffled_values.end(); it++) {
-		new_array->pushClone(*it);
-	}
-	*/
-	return new_array;
 }
 
 LSValue* array_sum(const LSArray<LSValue*>*) {

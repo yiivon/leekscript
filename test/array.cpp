@@ -128,7 +128,7 @@ void Test::test_arrays() {
 	success("let x = [[[]], [[], [], []], [[], []]]; x.sort() x", "[[[]], [[], []], [[], [], []]]");
 	success("let x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x", "[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
 
-	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
+	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "['yo', 10, 3]");
 	success("[3, 4, 5].filter(x -> x > 6)", "[]");
 
 	success("Array.contains([1, 2, 3, 10, 1], 1)", "true");
@@ -143,7 +143,7 @@ void Test::test_arrays() {
 	success("Array.partition([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[[3, 10, 'yo'], [1, 2, true]]");
 	success("[1, 2, 3, 4, 5].partition(x -> x > 3)", "[[4, 5], [1, 2, 3]]");
 	success("[1, 2, 3, 4, 5].partition(x -> x == 3)", "[[3], [1, 2, 4, 5]]");
-	success("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)", "[[5, 6], [3, 4]]");
+	success("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)", "[[6, 5], [3, 4]]");
 	// success("[1, 2, 3, 4, 5].partition(x -> 'yolo')", "**error**");
 
 	success("Array.first([1, 2, 3, 10, true, 'yo', null])", "1");
@@ -155,7 +155,7 @@ void Test::test_arrays() {
 //	success("[[321, 21], [23, 212], [654, 9876]].first().last()", "21");
 
 	success("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "'concat:12310trueyonull'");
-	success("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "16");
+	success("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> y + x), 'concat:')", "16");
 
 //	success("Array.shuffle([1, 2, 3, 10, true, 'yo', null])", "test shuffle ?");
 

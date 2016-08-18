@@ -58,17 +58,17 @@ public:
 	LSValue* ls_push(T val);
 	LSArray<T>* push_all(const LSArray<LSValue*>*);
 	const LSArray<T>* push_all_int(const LSArray<int>*);
-	LSArray<T>* reverse() const;
+	LSArray<T>* ls_shuffle();
+	LSArray<T>* ls_reverse();
 	LSArray<T>* ls_filter(const void* fun);
-	LSValue* foldLeft(const void* fun, const LSValue* initial) const;
-	LSValue* foldRight(const void* fun, const LSValue* initial) const;
+	LSValue* ls_foldLeft(const void* fun, LSValue* initial);
+	LSValue* ls_foldRight(const void* fun, LSValue* initial);
 	LSArray<T>* insert_v(const T v, const LSValue* pos);
 	LSArray<LSValue*>* ls_partition(const void* fun);
 	LSArray<LSValue*>* ls_map2(LSArray<LSValue*>*, const void* fun);
 	LSArray<LSValue*>* ls_map2_int(LSArray<int>*, const void* fun);
-	int search(const LSValue* search, const int start) const;
-	int search_int(const int search, const int start) const;
-	LSString* join(const LSString* glue) const;
+	int ls_search(T needle, int start);
+	LSString* ls_join(LSString* glue);
 	LSArray<T>* fill(const LSValue* element, const int size);
 
 	/*

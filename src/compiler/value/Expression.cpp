@@ -262,7 +262,7 @@ LSValue* jit_add(LSValue* x, LSValue* y) {
 	return r;
 }
 LSValue* jit_int_array_add(LSArray<int>* x, LSArray<int>* y) {
-	LSValue* r = y->operator + (x);
+	LSValue* r = x->operator + (y);
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
