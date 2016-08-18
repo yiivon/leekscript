@@ -26,8 +26,8 @@ LSClass::LSClass(Json&) {
 
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
-		if (s.second.value != nullptr) {
-			LSValue::delete_val(s.second.value);
+		if (s.second.value != nullptr && !s.second.value->native) {
+			delete s.second.value;
 		}
 	}
 }

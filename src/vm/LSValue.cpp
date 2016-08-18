@@ -14,27 +14,27 @@ namespace ls {
 
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
-#if DEBUG
+#if DEBUG > 1
 	extern std::map<LSValue*, LSValue*> objs;
 #endif
 
 LSValue::LSValue() : refs(0), native(false) {
 	obj_count++;
-	#if DEBUG
+	#if DEBUG > 1
 		objs.insert({this, this});
 	#endif
 }
 
 LSValue::LSValue(const LSValue& other) : refs(0), native(other.native) {
 	obj_count++;
-	#if DEBUG
+	#if DEBUG > 1
 		objs.insert({this, this});
 	#endif
 }
 
 LSValue::~LSValue() {
 	obj_deleted++;
-	#if DEBUG
+	#if DEBUG > 1
 		objs.erase(this);
 	#endif
 }
@@ -107,19 +107,24 @@ LSValue* LSValue::move_inc() {
 	}
 }
 
-void LSValue::delete_val(LSValue* value) {
+void LSValue::delete_ref(LSValue* value) {
 
 	if (value == nullptr) return;
-
 	if (value->native) return;
-
-//	cout << "LSValue::delete_val " << flush;
-//	value->print(cout);
-//	cout << " " << value->refs << endl;
+	if (value->refs == 0) return;
 
 	value->refs--;
-	if (value->refs <= 0) {
-		//cout << "delete LSValue" << endl;
+	if (value->refs == 0) {
+		delete value;
+	}
+}
+
+void LSValue::delete_temporary(LSValue* value)
+{
+	if (value == nullptr) return;
+	if (value->native) return;
+
+	if (value->refs == 0) {
 		delete value;
 	}
 }

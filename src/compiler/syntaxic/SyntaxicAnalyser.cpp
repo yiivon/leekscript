@@ -257,23 +257,11 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 		eat(TokenType::LET);
 	}
 
-	if (t->type == TokenType::NEW) {
-		vd->variables.push_back(t);
-		eat();
-	} else {
-		vd->variables.push_back(eatIdent());
-	}
+	vd->variables.push_back(eatIdent());
 
 	while (t->type == TokenType::COMMA) {
-
 		eat(TokenType::COMMA);
-
-		if (t->type == TokenType::NEW) {
-			vd->variables.push_back(t);
-			eat();
-		} else {
-			vd->variables.push_back(eatIdent());
-		}
+		vd->variables.push_back(eatIdent());
 	}
 
 	if (t->type == TokenType::EQUAL) {
@@ -282,7 +270,7 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 
 		vd->expressions.push_back(eatExpression());
 
-		while (t->type == TokenType::COMMA) {
+		while (t->type == TokenType::COMMA && vd->expressions.size() < vd->variables.size()) {
 			eat();
 			vd->expressions.push_back(eatExpression());
 		}

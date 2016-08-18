@@ -315,7 +315,7 @@ LSValue* jit_ge(LSValue* x, LSValue* y) {
 LSValue* jit_store(LSValue** x, LSValue* y) {
 	y->refs++;
 	LSValue* r = *x = y;
-	LSValue::delete_val(y);
+	LSValue::delete_ref(y);
 	return r;
 }
 
@@ -475,8 +475,8 @@ jit_value_t Expression::compile(Compiler& c) const {
 					if (v2->type.must_manage_memory()) {
 						VM::inc_refs(c.F, y);
 					}
-					if (v2->type.must_manage_memory()) {
-						VM::delete_obj(c.F, x);
+					if (v1->type.must_manage_memory()) {
+						VM::delete_ref(c.F, x);
 					}
 					jit_insn_store(c.F, x, y);
 					return y;

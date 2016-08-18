@@ -315,7 +315,8 @@ public:
 
 	static LSValue* parse(Json& json);
 
-	static void delete_val(LSValue* value);
+	static void delete_ref(LSValue* value);
+	static void delete_temporary(LSValue* value);
 };
 
 }

@@ -402,7 +402,6 @@ std::ostream& LSNumber::print(std::ostream& os) const {
 }
 
 LSValue* LSNumber::getClass() const {
-	LSNumber::number_class->refs++;
 	return LSNumber::number_class;
 }
 

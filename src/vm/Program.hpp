@@ -1,7 +1,6 @@
 #ifndef PROGRAM_HPP
 #define PROGRAM_HPP
 
-#include "../compiler/value/Block.hpp"
 #include "../compiler/value/Function.hpp"
 #include "../compiler/semantic/SemanticAnalyser.hpp"
 

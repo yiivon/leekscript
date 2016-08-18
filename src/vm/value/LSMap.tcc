@@ -32,26 +32,26 @@ inline LSMap<K, T>::LSMap() {}
 template <>
 inline LSMap<LSValue*,LSValue*>::~LSMap() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(it->first);
-		LSValue::delete_val(it->second);
+		LSValue::delete_ref(it->first);
+		LSValue::delete_ref(it->second);
 	}
 }
 template <>
 inline LSMap<LSValue*,int>::~LSMap() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(it->first);
+		LSValue::delete_ref(it->first);
 	}
 }
 template <>
 inline LSMap<LSValue*,double>::~LSMap() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(it->first);
+		LSValue::delete_ref(it->first);
 	}
 }
 template <>
 inline LSMap<int,LSValue*>::~LSMap() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(it->second);
+		LSValue::delete_ref(it->second);
 	}
 }
 template <>
@@ -111,8 +111,8 @@ inline bool LSMap<int,double>::ls_insert(int key, double value) {
 template <>
 inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_clear() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(it->first);
-		LSValue::delete_val(it->second);
+		LSValue::delete_ref(it->first);
+		LSValue::delete_ref(it->second);
 	}
 	clear();
 	return this;
@@ -120,7 +120,7 @@ inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_clear() {
 template <>
 inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_clear() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(it->first);
+		LSValue::delete_ref(it->first);
 	}
 	clear();
 	return this;
@@ -128,7 +128,7 @@ inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_clear() {
 template <>
 inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_clear() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(it->first);
+		LSValue::delete_ref(it->first);
 	}
 	clear();
 	return this;
@@ -136,7 +136,7 @@ inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_clear() {
 template <>
 inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_clear() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(it->second);
+		LSValue::delete_ref(it->second);
 	}
 	clear();
 	return this;
@@ -156,8 +156,8 @@ template <>
 inline bool LSMap<LSValue*,LSValue*>::ls_erase(LSValue* key) {
 	auto it = find(key);
 	if (it != end()) {
-		LSValue::delete_val(it->first);
-		LSValue::delete_val(it->second);
+		LSValue::delete_ref(it->first);
+		LSValue::delete_ref(it->second);
 		erase(it);
 		return true;
 	}
@@ -167,7 +167,7 @@ template <>
 inline bool LSMap<LSValue*,int>::ls_erase(LSValue* key) {
 	auto it = find(key);
 	if (it != end()) {
-		LSValue::delete_val(it->first);
+		LSValue::delete_ref(it->first);
 		erase(it);
 		return true;
 	}
@@ -177,7 +177,7 @@ template <>
 inline bool LSMap<LSValue*,double>::ls_erase(LSValue* key) {
 	auto it = find(key);
 	if (it != end()) {
-		LSValue::delete_val(it->first);
+		LSValue::delete_ref(it->first);
 		erase(it);
 		return true;
 	}
@@ -187,7 +187,7 @@ template <>
 inline bool LSMap<int,LSValue*>::ls_erase(int key) {
 	auto it = find(key);
 	if (it != end()) {
-		LSValue::delete_val(it->second);
+		LSValue::delete_ref(it->second);
 		erase(it);
 		return true;
 	}

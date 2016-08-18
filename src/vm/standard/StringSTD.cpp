@@ -105,11 +105,11 @@ LSValue* string_map(const LSString* s, void* function) {
 		u_int32_t c = u8_nextchar(string_chars, &i);
 		u8_toutf8(buff, 5, &c, 1);
 		LSString* ch = new LSString(buff);
-		ch->refs = 1;
+		ch->refs = 1; // Why ?
 		LSString* res = (LSString*) fun(ch);
 		new_string += *res;
-		LSValue::delete_val(res);
-		LSValue::delete_val(ch);
+		LSValue::delete_temporary(res);
+		LSValue::delete_ref(ch);
 	}
 	return new LSString(new_string);
 }

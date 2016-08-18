@@ -199,7 +199,7 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 			jit_value_t args[] = {a, k};
 			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
 
-			if (key->type.nature == Nature::POINTER) {
+			if (key->type.must_manage_memory()) {
 				VM::delete_temporary(c.F, k);
 			}
 			VM::delete_temporary(c.F, a);
