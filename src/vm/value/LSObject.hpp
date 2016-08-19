@@ -26,8 +26,8 @@ public:
 	virtual ~LSObject();
 
 	void addField(std::string name, LSValue* value);
-	LSArray<LSValue*>* get_keys() const;
-	LSArray<LSValue*>* get_values() const;
+	LSArray<LSValue*>* ls_get_keys() const;
+	LSArray<LSValue*>* ls_get_values() const;
 
 	/*
 	 * LSValue methods

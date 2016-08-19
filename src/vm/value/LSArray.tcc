@@ -41,7 +41,7 @@ inline void LSArray<double>::push_move(double value) {
 
 template <>
 inline void LSArray<LSValue*>::push_no_clone(LSValue* value) {
-	value->refs++;
+	if (!value->native) value->refs++;
 	this->push_back(value);
 }
 template <>
@@ -853,27 +853,29 @@ inline LSValue* LSArray<double>::ls_foldRight(const void* function, LSValue* v0)
 
 
 
-template <class T>
-LSArray<T>* LSArray<T>::insert_v(const T v, const LSValue* pos) {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(pos)) {
-		if (this->size() <= n->value) {
-			this->resize(n->value);
-		}
-		this->insert(this->begin() + (int) n->value, v);
+template <>
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_insert(LSValue* value, int pos) {
+
+	if (pos >= (int) this->size()) {
+		this->resize(pos, LSNull::get());
 	}
+
+	this->insert(this->begin() + pos, value->move_inc());
+
+	return this;
+}
+template <typename T>
+inline LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
+
+	if (pos >= (int) this->size()) {
+		this->resize(pos, (T) 0);
+	}
+
+	this->insert(this->begin() + pos, value);
+
 	return this;
 }
 
-template <>
-inline LSArray<int>* LSArray<int>::insert_v(const int v, const LSValue* pos) {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(pos)) {
-		if (this->size() <= n->value) {
-			this->resize(n->value);
-		}
-		this->insert(this->begin() + (int) n->value, (int) v);
-	}
-	return this;
-}
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_partition(const void* function) {

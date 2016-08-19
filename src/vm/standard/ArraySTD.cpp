@@ -7,26 +7,23 @@ using namespace std;
 
 namespace ls {
 
-LSValue* array_first(const LSArray<LSValue*>* array);
-LSArray<LSValue*>* array_flatten(const LSArray<LSValue*>* array, const LSNumber* depth);
-LSValue* array_foldLeft(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0);
-LSValue* array_foldRight(const LSArray<LSValue*>* array, const LSFunction* function, const LSValue* v0);
-LSValue* array_contains(const LSArray<LSValue*>* array, const LSValue* value);
-LSValue* array_contains_int(const LSArray<int>* array, int value);
-LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LSValue* index);
-LSValue* array_keySort(const LSArray<LSValue*>* array, const LSNumber* order);
-LSValue* array_last(const LSArray<LSValue*>* array);
-LSValue* array_push(LSArray<LSValue*>* array, LSValue* value);
-LSValue* array_pushAll(LSArray<LSValue*>* array, const LSArray<LSValue*>* elements);
-LSValue* array_shift(const LSArray<LSValue*>* array);
-LSValue* array_shift(const LSArray<LSValue*>* array);
-LSArray<LSValue*>* array_sort(const LSArray<LSValue*>* array, const LSNumber* order);
-LSValue* array_sum(const LSArray<LSValue*>* array);
-LSValue* array_unshift(const LSArray<LSValue*>* array, const LSValue* value);
-LSArray<LSValue*>* array_chunk_1_ptr(LSArray<LSValue*>* array);
-LSArray<LSValue*>* array_chunk_1_int(LSArray<int>* array);
-LSArray<LSValue*>* array_chunk_1_float(LSArray<double>* array);
-LSValue* array_sub(LSArray<LSValue*>* array, int begin, int end);
+LSArray<LSValue*>* array_chunk_1_ptr(LSArray<LSValue*>* array) {
+	return array->ls_chunk(1);
+}
+
+LSArray<LSValue*>* array_chunk_1_int(LSArray<int>* array) {
+	return array->ls_chunk(1);
+}
+
+LSArray<LSValue*>* array_chunk_1_float(LSArray<double>* array) {
+	return array->ls_chunk(1);
+}
+
+LSValue* array_sub(LSArray<LSValue*>* array, int begin, int end) {
+	LSValue* r = array->range(begin, end);
+	if (array->refs == 0) delete array;
+	return r;
+}
 
 ArraySTD::ArraySTD() : Module("Array") {
 
@@ -235,8 +232,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("insert", {
-		{Type::ARRAY, Type::ARRAY, {Type::POINTER, Type::POINTER}, (void*) &LSArray<LSValue*>::insert_v},
-		{Type::ARRAY, Type::INT_ARRAY, {Type::INTEGER, Type::POINTER}, (void*) &LSArray<int>::insert_v}
+		{Type::ARRAY, Type::ARRAY, {Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_insert},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {Type::FLOAT, Type::INTEGER}, (void*) &LSArray<double>::ls_insert},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::ls_insert}
 	});
 
 	method("remove", {
@@ -364,7 +362,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("subArray", {
-		{Type::ARRAY, {Type::ARRAY, Type::INTEGER, Type::INTEGER}, (void* )&array_sub}
+		{Type::ARRAY, {Type::ARRAY, Type::INTEGER, Type::INTEGER}, (void* )&array_sub},
+		{Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY, Type::INTEGER, Type::INTEGER}, (void* )&array_sub},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::INTEGER}, (void* )&array_sub},
 	});
 
 	static_method("pop", {
@@ -404,8 +404,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("insert", {
-		{Type::ARRAY, {Type::ARRAY, Type::POINTER, Type::POINTER}, (void*) &LSArray<LSValue*>::insert_v},
-		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::POINTER}, (void*) &LSArray<int>::insert_v}
+		{Type::ARRAY, {Type::ARRAY, Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_insert},
+		{Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY, Type::FLOAT, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_insert},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::ls_insert}
 	});
 
 	static_method("remove", {
@@ -421,54 +422,5 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 }
 
-LSValue* array_fill(LSArray<LSValue*>* array, const LSValue* value, const LSNumber* size) {
-	array->clear();
-	for (int i = 0; i < (int) size->value; i++) {
-		array->push_clone((LSValue*) value);
-	}
-	return array;
-}
-
-LSArray<LSValue*>* array_flatten(const LSArray<LSValue*>*, const LSNumber*) {
-	// TODO
-	return new LSArray<LSValue*>();
-}
-
-LSValue* array_insert(LSArray<LSValue*>* array, const LSValue* element, const LSValue* index) {
-	return array->insert_v((LSValue*) element, index);
-}
-
-LSValue* array_shift(const LSArray<LSValue*>*) {
-	// TODO
-	return new LSArray<LSValue*>();
-}
-
-LSValue* array_sum(const LSArray<LSValue*>*) {
-//	return LSNumber::get(array->sum());
-	return LSNumber::get(0);
-}
-
-LSValue* array_unshift(const LSArray<LSValue*>*, const LSValue*) {
-	// TODO
-	return new LSArray<LSValue*>();
-}
-
-LSArray<LSValue*>* array_chunk_1_ptr(LSArray<LSValue*>* array) {
-	return array->ls_chunk(1);
-}
-
-LSArray<LSValue*>* array_chunk_1_int(LSArray<int>* array) {
-	return array->ls_chunk(1);
-}
-
-LSArray<LSValue*>* array_chunk_1_float(LSArray<double>* array) {
-	return array->ls_chunk(1);
-}
-
-LSValue* array_sub(LSArray<LSValue*>* array, int begin, int end) {
-	LSValue* r = array->range(begin, end);
-	if (array->refs == 0) delete array;
-	return r;
-}
 
 }

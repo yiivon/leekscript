@@ -42,7 +42,7 @@ const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
-const Type Type::MAP(RawType::MAP, Nature::POINTER, {Type::UNKNOWN, Type::UNKNOWN});
+const Type Type::MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::POINTER});
 const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::POINTER});
 const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::INTEGER});
 const Type Type::PTR_FLOAT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::FLOAT});
@@ -262,8 +262,21 @@ bool Type::compatible(const Type& type) const {
 	}
 
 	if (this->raw_type == RawType::MAP) {
-		return getElementType(0).compatible(type.getElementType(0))
-				&& getElementType(1).compatible(type.getElementType(1));
+		const Type& k1 = this->getElementType(0);
+		const Type& k2 = type.getElementType(0);
+		const Type& v1 = this->getElementType(1);
+		const Type& v2 = type.getElementType(1);
+		if (k1.nature == Nature::POINTER && k2.nature == Nature::POINTER) {
+			if (v1.nature == Nature::POINTER && v2.nature == Nature::POINTER) {
+				return true;
+			}
+			return v1 == v2;
+		} else {
+			if (v1.nature == Nature::POINTER && v2.nature == Nature::POINTER) {
+				return k1 == k2;
+			}
+			return k1 == k2 && v1 == v2;
+		}
 	}
 
 	return true;

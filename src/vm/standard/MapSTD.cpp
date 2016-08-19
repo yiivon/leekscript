@@ -14,7 +14,14 @@ int map_size(const LSMap<LSValue*,LSValue*>* map) {
 
 MapSTD::MapSTD() : Module("Map") {
 
-	method("size", Type::MAP, Type::INTEGER, {}, (void*) map_size);
+	method("size", {
+			   {Type::PTR_PTR_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::PTR_FLOAT_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::PTR_INT_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::INT_PTR_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::INT_FLOAT_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::INT_INT_MAP, Type::INTEGER, {}, (void*) map_size},
+		   });
 
 	method("insert", {
 			   {Type::PTR_PTR_MAP, Type::BOOLEAN, {Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_insert},
