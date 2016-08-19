@@ -23,7 +23,7 @@ void Test::test_arrays() {
 	success("let a = [1, 2, 3]; ~a", "[3, 2, 1]");
 	success("let a = [1, 2, 3] a[1] = 12 a", "[1, 12, 3]");
 	success("[1.2, 321.42, 23.15]", "[1.2, 321.42, 23.15]");
-	success("[1, 2, 3, 4, 5][1:3]", "[2, 3, 4]");
+	success("[1, 2, 3, 4, 5][1:3]", "[2, 3]");
 	success("2 in [1, 2, 3]", "true");
 	success("4 in [1, 2, 3]", "false");
 	success("'yo' in ['ya', 'yu', 'yo']", "true");
@@ -128,7 +128,7 @@ void Test::test_arrays() {
 	success("let x = [[[]], [[], [], []], [[], []]]; x.sort() x", "[[[]], [[], []], [[], [], []]]");
 	success("let x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x", "[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
 
-	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[3, 10, 'yo']");
+	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "['yo', 10, 3]");
 	success("[3, 4, 5].filter(x -> x > 6)", "[]");
 
 	success("Array.contains([1, 2, 3, 10, 1], 1)", "true");
@@ -143,7 +143,7 @@ void Test::test_arrays() {
 	success("Array.partition([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[[3, 10, 'yo'], [1, 2, true]]");
 	success("[1, 2, 3, 4, 5].partition(x -> x > 3)", "[[4, 5], [1, 2, 3]]");
 	success("[1, 2, 3, 4, 5].partition(x -> x == 3)", "[[3], [1, 2, 4, 5]]");
-	success("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)", "[[5, 6], [3, 4]]");
+	success("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)", "[[6, 5], [3, 4]]");
 	// success("[1, 2, 3, 4, 5].partition(x -> 'yolo')", "**error**");
 
 	success("Array.first([1, 2, 3, 10, true, 'yo', null])", "1");
@@ -155,7 +155,7 @@ void Test::test_arrays() {
 //	success("[[321, 21], [23, 212], [654, 9876]].first().last()", "21");
 
 	success("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "'concat:12310trueyonull'");
-	success("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "16");
+	success("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> y + x), 'concat:')", "16");
 
 //	success("Array.shuffle([1, 2, 3, 10, true, 'yo', null])", "test shuffle ?");
 
@@ -171,10 +171,10 @@ void Test::test_arrays() {
 	success("Array.search([1, 2, 3, 10, true, 'yo', null], false, 0)", "-1");
 	success("[null].search(null, 0)", "0");
 
-	success("Array.subArray([1, 2, 3, 10, true, 'yo', null], 3, 5)", "[10, true, 'yo']");
+	success("Array.subArray([1, 2, 3, 10, true, 'yo', null], 3, 5)", "[10, true]");
 	success("Array.subArray([1, 2, 3, 10, true, 'yo', null], 3, 1)", "[]");
 	success("Array.subArray([1, 2, 3, 10, true, 'yo', null], 0, 100)", "[1, 2, 3, 10, true, 'yo', null]");
-	success("Array.subArray([1, 2, 3, 10, true, 'yo', null], 1, 1)", "[2]");
+	success("Array.subArray([1, 2, 3, 10, true, 'yo', null], 1, 1)", "[]");
 
 	success("[].pop()", "null");
 	success("Array.pop(['1', '2'])", "'2'");
@@ -188,7 +188,7 @@ void Test::test_arrays() {
 //	success("let a = [1, 2] a.push(3.5) a", "[1, 2, 3.5]");
 	success("let a = [1.5, -2.9] a.push(3.5) a", "[1.5, -2.9, 3.5]");
 
-	success("Array.concat([], [true, 'yo'])", "[true, 'yo']");
+	success("Array.pushAll([], [true, 'yo'])", "[true, 'yo']");
 
 	success("[].join('a')", "''");
 	success("['salut', 'ça', 'va'].join(' ')", "'salut ça va'");
@@ -212,8 +212,8 @@ void Test::test_arrays() {
 //	success("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key')", "'test'");
 //	success("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key') a", "[0: 1, 1: 2, 2: 3]");
 
-	success("let a = [1, 2, 3] a.removeElement(1) a", "[2, 3]");
-	success("let a = [1, 2, 3] a.removeElement('key') a", "[1, 2, 3]");
+	success("let a = [1, 2, 3] a.removeElement(1) a", "[3, 2]");
+	sem_err("let a = [1, 2, 3] a.removeElement('key') a", ls::SemanticException::METHOD_NOT_FOUND, "removeElement");
 
 	/*
 	success("3 ~ x -> x ^ x", "27");

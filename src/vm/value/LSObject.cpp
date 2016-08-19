@@ -49,19 +49,21 @@ void LSObject::addField(string name, LSValue* var) {
 	var->refs++;
 }
 
-LSArray<LSValue*>* LSObject::get_keys() const {
+LSArray<LSValue*>* LSObject::ls_get_keys() const {
 	LSArray<LSValue*>* keys = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
 		keys->push_no_clone(new LSString(i->first));
 	}
+	if (refs == 0) delete this;
 	return keys;
 }
 
-LSArray<LSValue*>* LSObject::get_values() const {
+LSArray<LSValue*>* LSObject::ls_get_values() const {
 	LSArray<LSValue*>* v = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
 		v->push_clone(i->second);
 	}
+	if (refs == 0) delete this;
 	return v;
 }
 
@@ -131,13 +133,6 @@ LSValue* LSObject::at (const LSValue*) const {
 }
 LSValue** LSObject::atL (const LSValue*) {
 	return nullptr;
-}
-
-LSValue* LSObject::range(int, int) const {
-	return this->clone();
-}
-LSValue* LSObject::rangeL(int, int) {
-	return this;
 }
 
 bool LSObject::in(const LSValue* v) const {

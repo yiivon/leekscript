@@ -11,8 +11,6 @@ public:
 	MapSTD();
 };
 
-int map_size(const LSMap<LSValue*,LSValue*>* map);
-
 }
 
 #endif

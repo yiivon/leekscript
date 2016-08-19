@@ -72,7 +72,7 @@ LSValue* Block_move(LSValue* value) {
 	/* Move the value if it's a temporary variable
 	 * or if it's only attached to the current block.
 	 */
-	if (value->refs <= 1) {
+	if (value->refs <= 1 /*|| value->native()*/) {
 		value->refs = 0;
 		return value;
 	}

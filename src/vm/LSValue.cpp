@@ -15,118 +15,28 @@ namespace ls {
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
 #if DEBUG > 1
-	extern std::map<LSValue*, LSValue*> objs;
+extern std::map<LSValue*, LSValue*> objs;
 #endif
 
-LSValue::LSValue() : refs(0), native(false) {
+LSValue::LSValue() : refs(0) {
 	obj_count++;
-	#if DEBUG > 1
-		objs.insert({this, this});
-	#endif
+#if DEBUG > 1
+	objs.insert({this, this});
+#endif
 }
 
-LSValue::LSValue(const LSValue& other) : refs(0), native(other.native) {
+LSValue::LSValue(const LSValue& ) : refs(0) {
 	obj_count++;
-	#if DEBUG > 1
-		objs.insert({this, this});
-	#endif
+#if DEBUG > 1
+	objs.insert({this, this});
+#endif
 }
 
 LSValue::~LSValue() {
 	obj_deleted++;
-	#if DEBUG > 1
-		objs.erase(this);
-	#endif
-}
-
-std::ostream& operator << (std::ostream& os, LSValue& value) {
-	value.print(os);
-	return os;
-}
-
-bool LSValue::isInteger() const {
-	if (const LSNumber* v = dynamic_cast<const LSNumber*>(this)) {
-		return v->isInteger();
-	}
-	return false;
-}
-
-LSValue* get_value(int type, Json& json) {
-	switch (type) {
-	case 1: return LSNull::get();
-	case 2: return new LSBoolean(json);
-	case 3: return new LSNumber(json);
-	case 4: return new LSString(json);
-	case 5: return new LSArray<LSValue*>(json);
-	case 8: return new LSFunction(json);
-	case 9: return new LSObject(json);
-	case 10: return new LSClass(json);
-	}
-	return LSNull::get();
-}
-
-LSValue* LSValue::parse(Json& json) {
-
-	int type = json["t"];
-	Json data = json["v"];
-	return get_value(type, data);
-}
-
-std::string LSValue::to_json() const {
-	return "{\"t\":" + to_string(typeID()) + ",\"v\":" + json() + "}";
-}
-
-LSValue* LSValue::clone_inc() {
-	if (native) {
-		return this;
-	} else {
-		LSValue* copy = clone();
-		copy->refs++;
-		return copy;
-	}
-}
-
-LSValue* LSValue::move() {
-	if (native) {
-		return this;
-	} else {
-		if (refs == 0) {
-			return this;
-		}
-		return clone();
-	}
-}
-
-LSValue* LSValue::move_inc() {
-	if (native) {
-		return this;
-	} else {
-		LSValue* copy = move();
-		copy->refs++;
-		return copy;
-	}
-}
-
-void LSValue::delete_ref(LSValue* value) {
-
-	if (value == nullptr) return;
-	if (value->native) return;
-	if (value->refs == 0) return;
-
-	value->refs--;
-	if (value->refs == 0) {
-		delete value;
-	}
-}
-
-void LSValue::delete_temporary(LSValue* value)
-{
-	if (value == nullptr) return;
-	if (value->native) return;
-
-	if (value->refs == 0) {
-		delete value;
-	}
+#if DEBUG > 1
+	objs.erase(this);
+#endif
 }
 
 LSValue* LSValue::operator - () const { return LSNull::get(); }
@@ -139,7 +49,6 @@ LSValue* LSValue::operator ++ (int) { return LSNull::get(); }
 LSValue* LSValue::operator -- () { return LSNull::get(); }
 LSValue* LSValue::operator -- (int) { return LSNull::get(); }
 
-//LSValue* LSValue::operator + (const LSValue*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSNull*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSNumber*) const { return LSNull::get(); }
@@ -157,7 +66,6 @@ LSValue* LSValue::operator + (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSClass*) const { return LSNull::get(); }
 
-//LSValue* LSValue::operator += (LSValue*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSNull*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSNumber*) { return LSNull::get(); }
@@ -175,7 +83,6 @@ LSValue* LSValue::operator += (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSClass*) { return LSNull::get(); }
 
-//LSValue* LSValue::operator - (const LSValue*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSNull*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSNumber*) const { return LSNull::get(); }
@@ -193,7 +100,6 @@ LSValue* LSValue::operator - (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSClass*) const { return LSNull::get(); }
 
-//LSValue* LSValue::operator -= (LSValue*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSNull*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSNumber*) { return LSNull::get(); }
@@ -211,7 +117,6 @@ LSValue* LSValue::operator -= (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSClass*) { return LSNull::get(); }
 
-//LSValue* LSValue::operator * (const LSValue*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSNull*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSNumber*) const { return LSNull::get(); }
@@ -229,7 +134,6 @@ LSValue* LSValue::operator * (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSClass*) const { return LSNull::get(); }
 
-//LSValue* LSValue::operator *= (LSValue*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSNull*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSNumber*) { return LSNull::get(); }
@@ -247,7 +151,6 @@ LSValue* LSValue::operator *= (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSClass*) { return LSNull::get(); }
 
-//LSValue* LSValue::operator / (const LSValue*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSNull*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSNumber*) const { return LSNull::get(); }
@@ -257,7 +160,6 @@ LSValue* LSValue::operator / (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSClass*) const { return LSNull::get(); }
 
-//LSValue* LSValue::operator /= (LSValue*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSNull*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSNumber*) { return LSNull::get(); }
@@ -267,7 +169,6 @@ LSValue* LSValue::operator /= (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSClass*) { return LSNull::get(); }
 
-//LSValue* LSValue::poww(const LSValue*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSNull*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSNumber*) const { return LSNull::get(); }
@@ -277,7 +178,6 @@ LSValue* LSValue::poww(const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSClass*) const { return LSNull::get(); }
 
-//LSValue* LSValue::pow_eq(LSValue*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSNull*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSNumber*) { return LSNull::get(); }
@@ -287,7 +187,6 @@ LSValue* LSValue::pow_eq(const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSClass*) { return LSNull::get(); }
 
-//LSValue* LSValue::operator % (const LSValue*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSNull*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSNumber*) const { return LSNull::get(); }
@@ -297,7 +196,6 @@ LSValue* LSValue::operator % (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSClass*) const { return LSNull::get(); }
 
-//LSValue* LSValue::operator %= (LSValue*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSNull*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSNumber*) { return LSNull::get(); }
@@ -453,6 +351,43 @@ LSValue* LSValue::rangeL(int, int) {
 
 LSValue* LSValue::abso() const {
 	return LSNull::get();
+}
+
+//std::ostream& operator << (std::ostream& os, LSValue& value) {
+//	value.print(os);
+//	return os;
+//}
+
+bool LSValue::isInteger() const {
+	if (const LSNumber* v = dynamic_cast<const LSNumber*>(this)) {
+		return v->isInteger();
+	}
+	return false;
+}
+
+LSValue* get_value(int type, Json& json) {
+	switch (type) {
+	case 1: return LSNull::get();
+	case 2: return new LSBoolean(json);
+	case 3: return new LSNumber(json);
+	case 4: return new LSString(json);
+	case 5: return new LSArray<LSValue*>(json);
+	case 8: return new LSFunction(json);
+	case 9: return new LSObject(json);
+	case 10: return new LSClass(json);
+	}
+	return LSNull::get();
+}
+
+LSValue* LSValue::parse(Json& json) {
+
+	int type = json["t"];
+	Json data = json["v"];
+	return get_value(type, data);
+}
+
+std::string LSValue::to_json() const {
+	return "{\"t\":" + to_string(typeID()) + ",\"v\":" + json() + "}";
 }
 
 }

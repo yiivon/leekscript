@@ -16,7 +16,6 @@ LSClass::LSClass() : LSClass("?") {}
 LSClass::LSClass(string name) : name(name) {
 	parent = nullptr;
 	refs = 1;
-	native = true;
 }
 
 LSClass::LSClass(Json&) {
@@ -26,7 +25,7 @@ LSClass::LSClass(Json&) {
 
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
-		if (s.second.value != nullptr && !s.second.value->native) {
+		if (s.second.value != nullptr && !s.second.value->native()) {
 			delete s.second.value;
 		}
 	}
@@ -92,6 +91,10 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 	} catch (exception&) {
 		return nullptr;
 	}
+}
+
+bool LSClass::native() const {
+	return true;
 }
 
 LSFunction* LSClass::getDefaultMethod(string& name) {
@@ -194,14 +197,6 @@ LSValue* LSClass::at(const LSValue*) const {
 
 LSValue** LSClass::atL(const LSValue*) {
 	return nullptr;
-}
-
-LSValue* LSClass::range(int, int) const {
-	return this->clone();
-}
-
-LSValue* LSClass::rangeL(int, int) {
-	return this;
 }
 
 LSValue* LSClass::attr(const LSValue* key) const {

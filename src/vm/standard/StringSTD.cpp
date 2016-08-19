@@ -12,6 +12,25 @@ using namespace std;
 
 namespace ls {
 
+LSValue* string_charAt(LSString* string, LSNumber* index);
+LSValue* string_contains(LSString* haystack, LSString* needle);
+LSValue* string_endsWith(LSString* string, LSString* ending);
+int string_indexOf(LSString* haystack, LSString* needle);
+LSValue* string_length(LSString* string);
+LSValue* string_map(const LSString* string, void* fun);
+LSValue* string_replace(LSString* string, LSString* from, LSString* to);
+LSValue* string_reverse(LSString* string);
+LSValue* string_size(LSString* string);
+LSValue* string_split(LSString* string, LSString* delimiter);
+LSValue* string_startsWith(const LSString* string, const LSString* starting);
+LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length);
+LSValue* string_toLower(LSString* string);
+LSValue* string_toUpper(LSString* string);
+LSValue* string_toArray(const LSString* string);
+int string_begin_code(const LSString*);
+int string_code(const LSString*, int pos);
+long string_number(const LSString*);
+
 StringSTD::StringSTD() : Module("String") {
 
 	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);
@@ -66,11 +85,25 @@ StringSTD::StringSTD() : Module("String") {
 StringSTD::~StringSTD() {}
 
 LSValue* string_charAt(LSString* string, LSNumber* index) {
-	return new LSString(string->operator[] (index->value));
+	LSValue* r = new LSString(string->operator[] (index->value));
+	if (string->refs == 0) {
+		delete string;
+	}
+	if (index->refs == 0) {
+		delete index;
+	}
+	return r;
 }
 
 LSValue* string_contains(LSString* haystack, LSString* needle) {
-	return LSBoolean::get(haystack->find(*needle) != string::npos);
+	LSValue* r = LSBoolean::get(haystack->find(*needle) != string::npos);
+	if (haystack->refs == 0) {
+		delete haystack;
+	}
+	if (needle->refs == 0) {
+		delete needle;
+	}
+	return r;
 }
 
 LSValue* string_endsWith(LSString* string, LSString* ending) {
@@ -88,7 +121,11 @@ int string_indexOf(LSString* string, LSString* needle) {
 }
 
 LSValue* string_length(LSString* string) {
-	return new LSNumber(string->size());
+	LSValue* r = new LSNumber(string->size());
+	if (string->refs == 0) {
+		delete string;
+	}
+	return r;
 }
 
 LSValue* string_map(const LSString* s, void* function) {
@@ -111,6 +148,9 @@ LSValue* string_map(const LSString* s, void* function) {
 		LSValue::delete_temporary(res);
 		LSValue::delete_ref(ch);
 	}
+	if (s->refs == 0) {
+		delete s;
+	}
 	return new LSString(new_string);
 }
 
@@ -121,15 +161,32 @@ LSValue* string_replace(LSString* string, LSString* from, LSString* to) {
 		str.replace(start_pos, from->length(), *to);
 		start_pos += to->length();
 	}
+	if (string->refs == 0) {
+		delete string;
+	}
+	if (from->refs == 0) {
+		delete from;
+	}
+	if (to->refs == 0) {
+		delete to;
+	}
 	return new LSString(str);
 }
 
 LSValue* string_reverse(LSString* string) {
-	return string->operator ~();
+	LSValue* r = string->operator ~();
+	if (string->refs == 0) {
+		delete string;
+	}
+	return r;
 }
 
 LSValue* string_size(LSString* string) {
-	return LSNumber::get(string->unicode_length());
+	LSValue* r = LSNumber::get(string->unicode_length());
+	if (string->refs == 0) {
+		delete string;
+	}
+	return r;
 }
 
 LSValue* string_split(LSString* string, LSString* delimiter) {
@@ -137,6 +194,12 @@ LSValue* string_split(LSString* string, LSString* delimiter) {
 	if (*delimiter == "") {
 		for (char c : *string) {
 			parts->push_no_clone(new LSString(c));
+		}
+		if (string->refs == 0) {
+			delete string;
+		}
+		if (delimiter->refs == 0) {
+			delete delimiter;
 		}
 		return parts;
 	} else {
@@ -147,19 +210,48 @@ LSValue* string_split(LSString* string, LSString* delimiter) {
 			last = pos + delimiter->size();
 		}
 		parts->push_no_clone(new LSString(string->substr(last)));
+		if (string->refs == 0) {
+			delete string;
+		}
+		if (delimiter->refs == 0) {
+			delete delimiter;
+		}
 		return parts;
 	}
 }
 
 LSValue* string_startsWith(const LSString* string, const LSString* starting) {
 	if (starting->size() > string->size()) {
+		if (string->refs == 0) {
+			delete string;
+		}
+		if (starting->refs == 0) {
+			delete starting;
+		}
 		return LSBoolean::false_val;
 	}
-	return LSBoolean::get(std::equal(starting->begin(), starting->end(), string->begin()));
+	LSValue* r = LSBoolean::get(std::equal(starting->begin(), starting->end(), string->begin()));
+	if (string->refs == 0) {
+		delete string;
+	}
+	if (starting->refs == 0) {
+		delete starting;
+	}
+	return r;
 }
 
 LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length) {
-	return new LSString(string->substr(start->value, length->value));
+	LSValue* r =  new LSString(string->substr(start->value, length->value));
+	if (string->refs == 0) {
+		delete string;
+	}
+	if (start->refs == 0) {
+		delete start;
+	}
+	if (length->refs == 0) {
+		delete length;
+	}
+	return r;
 }
 
 LSValue* string_toArray(const LSString* string) {
@@ -167,31 +259,52 @@ LSValue* string_toArray(const LSString* string) {
 	for (char c : *string) {
 		parts->push_no_clone(new LSString(c));
 	}
+	if (string->refs == 0) {
+		delete string;
+	}
 	return parts;
 }
 
 LSValue* string_toLower(LSString* s) {
 	string new_s = string(*s);
 	for (auto& c : new_s) c = tolower(c);
+	if (s->refs == 0) {
+		delete s;
+	}
 	return new LSString(new_s);
 }
 
 LSValue* string_toUpper(LSString* s) {
 	string new_s = string(*s);
 	for (auto& c : new_s) c = toupper(c);
+	if (s->refs == 0) {
+		delete s;
+	}
 	return new LSString(new_s);
 }
 
 int string_begin_code(const LSString* v) {
-	return LSString::u8_char_at((char*) v->c_str(), 0);
+	int r = LSString::u8_char_at((char*) v->c_str(), 0);
+	if (v->refs == 0) {
+		delete v;
+	}
+	return r;
 }
 
 int string_code(const LSString* v, int pos) {
-	return LSString::u8_char_at((char*) v->c_str(), pos);
+	int r = LSString::u8_char_at((char*) v->c_str(), pos);
+	if (v->refs == 0) {
+		delete v;
+	}
+	return r;
 }
 
 long string_number(const LSString* s) {
-	return stol(*s);
+	long r = stol(*s);
+	if (s->refs == 0) {
+		delete s;
+	}
+	return r;
 }
 
 }
