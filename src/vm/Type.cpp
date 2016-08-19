@@ -26,9 +26,9 @@ const Type Type::VOID(RawType::VOID, Nature::VOID);
 const Type Type::VALUE(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
 
-const Type Type::NULLL(RawType::NULLL, Nature::POINTER);
+const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
-const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
+const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER, true);
 const Type Type::NUMBER(RawType::NUMBER, Nature::POINTER);
 const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
 const Type Type::INTEGER_P(RawType::INTEGER, Nature::POINTER);
@@ -53,7 +53,7 @@ const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
-const Type Type::CLASS(RawType::CLASS, Nature::POINTER);
+const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
 
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
