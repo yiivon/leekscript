@@ -42,6 +42,8 @@ public:
 	LSFunction* getDefaultMethod(std::string& name);
 	StaticMethod* getStaticMethod(std::string&, std::vector<Type>&);
 
+	bool native() const override;
+
 	bool isTrue() const override;
 
 	LSValue* operator + (const LSValue*) const override;
@@ -76,9 +78,6 @@ public:
 
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;
-
-	LSValue* range(int start, int end) const override;
-	LSValue* rangeL(int start, int end) override;
 
 	LSValue* attr(const LSValue* key) const override;
 	LSValue** attrL(const LSValue* key) override;

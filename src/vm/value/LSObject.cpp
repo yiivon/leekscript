@@ -40,7 +40,7 @@ LSObject::LSObject(Json& json) {
 
 LSObject::~LSObject() {
 	for (auto v : values) {
-		LSValue::delete_val(v.second);
+		LSValue::delete_ref(v.second);
 	}
 }
 
@@ -49,19 +49,21 @@ void LSObject::addField(string name, LSValue* var) {
 	var->refs++;
 }
 
-LSArray<LSValue*>* LSObject::get_keys() const {
+LSArray<LSValue*>* LSObject::ls_get_keys() const {
 	LSArray<LSValue*>* keys = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
 		keys->push_no_clone(new LSString(i->first));
 	}
+	if (refs == 0) delete this;
 	return keys;
 }
 
-LSArray<LSValue*>* LSObject::get_values() const {
+LSArray<LSValue*>* LSObject::ls_get_values() const {
 	LSArray<LSValue*>* v = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
 		v->push_clone(i->second);
 	}
+	if (refs == 0) delete this;
 	return v;
 }
 
@@ -133,13 +135,6 @@ LSValue** LSObject::atL (const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSObject::range(int, int) const {
-	return this->clone();
-}
-LSValue* LSObject::rangeL(int, int) {
-	return this;
-}
-
 bool LSObject::in(const LSValue* v) const {
 	for (auto i = values.begin(); i != values.end(); i++) {
 		if (i->second->operator == (v)) {
@@ -187,7 +182,7 @@ LSValue* LSObject::abso() const {
 LSValue* LSObject::clone() const {
 	LSObject* obj = new LSObject();
 	for (auto i = values.begin(); i != values.end(); i++) {
-		obj->values.insert({i->first, i->second->clone()});
+		obj->values.insert({i->first, i->second->clone_inc()});
 	}
 	return obj;
 }

@@ -15,8 +15,6 @@ public:
 	ObjectSTD();
 };
 
-LSObject* object_map(const LSObject* object);
-
 }
 
 #endif

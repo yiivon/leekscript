@@ -338,14 +338,6 @@ LSValue** LSNumber::atL(const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSNumber::range(int, int) const {
-	return this->clone();
-}
-
-LSValue* LSNumber::rangeL(int, int) {
-	return this;
-}
-
 LSValue* LSNumber::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
@@ -402,7 +394,6 @@ std::ostream& LSNumber::print(std::ostream& os) const {
 }
 
 LSValue* LSNumber::getClass() const {
-	LSNumber::number_class->refs++;
 	return LSNumber::number_class;
 }
 

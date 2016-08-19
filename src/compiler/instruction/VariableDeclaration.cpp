@@ -86,7 +86,7 @@ jit_value_t VariableDeclaration::compile(Compiler& c) const {
 				jit_value_t val = ex->compile(c);
 
 				if (ex->type.must_manage_memory()) {
-					VM::inc_refs(c.F, val);
+					val = VM::move_inc_obj(c.F, val);
 				}
 
 				c.add_var(name, var, ex->type, false);

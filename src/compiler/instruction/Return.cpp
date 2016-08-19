@@ -1,6 +1,4 @@
 #include "../../compiler/instruction/Return.hpp"
-
-#include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Function.hpp"
 
@@ -45,7 +43,16 @@ void Return::analyse(SemanticAnalyser* analyser, const Type& ) {
 jit_value_t Return::compile(Compiler& c) const {
 
 	jit_value_t v = expression->compile(c);
-	jit_insn_return(c.F, v);
+
+	if (expression->type.must_manage_memory()) {
+		jit_value_t r = VM::move_obj(c.F, v);
+		c.delete_variables_block(c.F, c.get_current_function_blocks());
+		jit_insn_return(c.F, r);
+	} else {
+		c.delete_variables_block(c.F, c.get_current_function_blocks());
+		jit_insn_return(c.F, v);
+	}
+
 	return nullptr;
 }
 

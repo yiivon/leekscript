@@ -2,7 +2,6 @@
 #define RETURN_HPP
 
 #include "../../compiler/instruction/Instruction.hpp"
-#include "../../compiler/value/Expression.hpp"
 #include "../../compiler/value/Function.hpp"
 
 namespace ls {

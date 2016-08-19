@@ -6,10 +6,22 @@ using namespace std;
 
 namespace ls {
 
+int map_size(const LSMap<LSValue*,LSValue*>* map) {
+	int r = map->size();
+	if (map->refs == 0) delete map;
+	return r;
+}
 
 MapSTD::MapSTD() : Module("Map") {
 
-	method("size", Type::MAP, Type::INTEGER, {}, (void*) map_size);
+	method("size", {
+			   {Type::PTR_PTR_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::PTR_FLOAT_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::PTR_INT_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::INT_PTR_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::INT_FLOAT_MAP, Type::INTEGER, {}, (void*) map_size},
+			   {Type::INT_INT_MAP, Type::INTEGER, {}, (void*) map_size},
+		   });
 
 	method("insert", {
 			   {Type::PTR_PTR_MAP, Type::BOOLEAN, {Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_insert},
@@ -19,7 +31,6 @@ MapSTD::MapSTD() : Module("Map") {
 			   {Type::INT_FLOAT_MAP, Type::BOOLEAN, {Type::INTEGER, Type::FLOAT}, (void*) &LSMap<int,double>::ls_insert},
 			   {Type::INT_INT_MAP, Type::BOOLEAN, {Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_insert},
 		   });
-
 
 	method("clear", {
 			   {Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear},
@@ -47,10 +58,6 @@ MapSTD::MapSTD() : Module("Map") {
 			   {Type::INT_FLOAT_MAP, Type::FLOAT, {Type::INTEGER, Type::FLOAT}, (void*) &LSMap<int,double>::ls_look},
 			   {Type::INT_INT_MAP, Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_look},
 		   });
-}
-
-int map_size(const LSMap<LSValue*,LSValue*>* map) {
-	return (int) map->size();
 }
 
 

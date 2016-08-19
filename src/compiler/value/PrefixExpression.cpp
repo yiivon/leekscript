@@ -249,7 +249,7 @@ jit_value_t PrefixExpression::compile(Compiler& c) const {
 	}
 	jit_value_t result = jit_insn_call_native(c.F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
 
-	if (expression->type.nature == Nature::POINTER) {
+	if (expression->type.must_manage_memory()) {
 		VM::delete_temporary(c.F, args[0]);
 	}
 
