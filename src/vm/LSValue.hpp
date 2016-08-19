@@ -30,11 +30,12 @@ public:
 	static int obj_deleted;
 
 	int refs = 0;
-	bool native;
 
 	LSValue();
 	LSValue(const LSValue& other);
 	virtual ~LSValue() = 0;
+
+	virtual bool native() const { return false; }
 
 	virtual bool isTrue() const = 0;
 
@@ -320,7 +321,7 @@ public:
 };
 
 inline LSValue* LSValue::clone_inc() {
-	if (native) {
+	if (native()) {
 		return this;
 	} else {
 		LSValue* copy = clone();
@@ -330,7 +331,7 @@ inline LSValue* LSValue::clone_inc() {
 }
 
 inline LSValue* LSValue::move() {
-	if (native) {
+	if (native()) {
 		return this;
 	} else {
 		if (refs == 0) {
@@ -341,7 +342,7 @@ inline LSValue* LSValue::move() {
 }
 
 inline LSValue* LSValue::move_inc() {
-	if (native) {
+	if (native()) {
 		return this;
 	} else if (refs == 0) {
 		refs++;
@@ -356,7 +357,7 @@ inline LSValue* LSValue::move_inc() {
 inline void LSValue::delete_ref(LSValue* value) {
 
 	if (value == nullptr) return;
-	if (value->native) return;
+	if (value->native()) return;
 	if (value->refs == 0) return;
 
 	value->refs--;
@@ -368,7 +369,7 @@ inline void LSValue::delete_ref(LSValue* value) {
 inline void LSValue::delete_temporary(LSValue* value)
 {
 	if (value == nullptr) return;
-	if (value->native) return;
+	if (value->native()) return;
 
 	if (value->refs == 0) {
 		delete value;

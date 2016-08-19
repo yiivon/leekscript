@@ -22,6 +22,8 @@ public:
 
 	LSValue* clone() const override;
 
+	bool native() const override;
+
 	bool isTrue() const override;
 
 	LSValue* operator + (const LSValue*) const override;

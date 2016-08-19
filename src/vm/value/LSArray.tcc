@@ -41,7 +41,7 @@ inline void LSArray<double>::push_move(double value) {
 
 template <>
 inline void LSArray<LSValue*>::push_no_clone(LSValue* value) {
-	if (!value->native) value->refs++;
+	if (!value->native()) value->refs++;
 	this->push_back(value);
 }
 template <>

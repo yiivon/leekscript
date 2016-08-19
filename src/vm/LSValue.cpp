@@ -15,65 +15,28 @@ namespace ls {
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
 #if DEBUG > 1
-	extern std::map<LSValue*, LSValue*> objs;
+extern std::map<LSValue*, LSValue*> objs;
 #endif
 
-LSValue::LSValue() : refs(0), native(false) {
+LSValue::LSValue() : refs(0) {
 	obj_count++;
-	#if DEBUG > 1
-		objs.insert({this, this});
-	#endif
+#if DEBUG > 1
+	objs.insert({this, this});
+#endif
 }
 
-LSValue::LSValue(const LSValue& other) : refs(0), native(other.native) {
+LSValue::LSValue(const LSValue& ) : refs(0) {
 	obj_count++;
-	#if DEBUG > 1
-		objs.insert({this, this});
-	#endif
+#if DEBUG > 1
+	objs.insert({this, this});
+#endif
 }
 
 LSValue::~LSValue() {
 	obj_deleted++;
-	#if DEBUG > 1
-		objs.erase(this);
-	#endif
-}
-
-std::ostream& operator << (std::ostream& os, LSValue& value) {
-	value.print(os);
-	return os;
-}
-
-bool LSValue::isInteger() const {
-	if (const LSNumber* v = dynamic_cast<const LSNumber*>(this)) {
-		return v->isInteger();
-	}
-	return false;
-}
-
-LSValue* get_value(int type, Json& json) {
-	switch (type) {
-	case 1: return LSNull::get();
-	case 2: return new LSBoolean(json);
-	case 3: return new LSNumber(json);
-	case 4: return new LSString(json);
-	case 5: return new LSArray<LSValue*>(json);
-	case 8: return new LSFunction(json);
-	case 9: return new LSObject(json);
-	case 10: return new LSClass(json);
-	}
-	return LSNull::get();
-}
-
-LSValue* LSValue::parse(Json& json) {
-
-	int type = json["t"];
-	Json data = json["v"];
-	return get_value(type, data);
-}
-
-std::string LSValue::to_json() const {
-	return "{\"t\":" + to_string(typeID()) + ",\"v\":" + json() + "}";
+#if DEBUG > 1
+	objs.erase(this);
+#endif
 }
 
 LSValue* LSValue::operator - () const { return LSNull::get(); }
@@ -388,6 +351,43 @@ LSValue* LSValue::rangeL(int, int) {
 
 LSValue* LSValue::abso() const {
 	return LSNull::get();
+}
+
+//std::ostream& operator << (std::ostream& os, LSValue& value) {
+//	value.print(os);
+//	return os;
+//}
+
+bool LSValue::isInteger() const {
+	if (const LSNumber* v = dynamic_cast<const LSNumber*>(this)) {
+		return v->isInteger();
+	}
+	return false;
+}
+
+LSValue* get_value(int type, Json& json) {
+	switch (type) {
+	case 1: return LSNull::get();
+	case 2: return new LSBoolean(json);
+	case 3: return new LSNumber(json);
+	case 4: return new LSString(json);
+	case 5: return new LSArray<LSValue*>(json);
+	case 8: return new LSFunction(json);
+	case 9: return new LSObject(json);
+	case 10: return new LSClass(json);
+	}
+	return LSNull::get();
+}
+
+LSValue* LSValue::parse(Json& json) {
+
+	int type = json["t"];
+	Json data = json["v"];
+	return get_value(type, data);
+}
+
+std::string LSValue::to_json() const {
+	return "{\"t\":" + to_string(typeID()) + ",\"v\":" + json() + "}";
 }
 
 }

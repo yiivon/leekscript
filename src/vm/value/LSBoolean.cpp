@@ -19,13 +19,16 @@ LSBoolean* LSBoolean::get(bool value) {
 LSBoolean::LSBoolean() : LSBoolean(true) {}
 
 LSBoolean::LSBoolean(bool value) : value(value) {
-	native = true;
 	refs = 1;
 }
 
 LSBoolean::LSBoolean(Json& json) : LSBoolean((bool) json) {}
 
 LSBoolean::~LSBoolean() {}
+
+bool LSBoolean::native() const {
+	return true;
+}
 
 bool LSBoolean::isTrue() const {
 	return value;

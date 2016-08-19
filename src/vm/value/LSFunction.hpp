@@ -18,6 +18,7 @@ public:
 
 	static LSClass* function_class;
 
+	bool native_function;
 	void* function;
 	std::map<std::string, LSValue*> values;
 
@@ -26,6 +27,8 @@ public:
 	LSFunction(Json& data);
 
 	virtual ~LSFunction();
+
+	bool native() const override;
 
 	bool isTrue() const override;
 

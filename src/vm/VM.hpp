@@ -6,7 +6,7 @@
 #include <jit/jit.h>
 
 #define OPERATION_LIMIT 10000000
-#define DEBUG 1 // 0 no debug, 1 print types + #leaks, 2 print leak details
+#define DEBUG 2 // 0 no debug, 1 print types + #leaks, 2 print leak details
 
 #define LS_INTEGER jit_type_int
 #define LS_LONG jit_type_long
