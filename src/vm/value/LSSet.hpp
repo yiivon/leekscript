@@ -1,31 +1,31 @@
-#ifndef LS_MAP_BASE
-#define LS_MAP_BASE
+#ifndef LS_SET_BASE
+#define LS_SET_BASE
 
 #include "../LSValue.hpp"
-#include <map>
+#include <set>
 
 namespace ls {
 
 template <typename K>
-struct lsmap_less {
+struct lsset_less {
 	bool operator() (K lhs, K rhs) const;
 };
 
-template <typename K, typename T>
-class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
+template <typename T>
+class LSSet : public LSValue, public std::set<T, lsset_less<T>> {
 public:
 	static LSValue* map_class;
 
-	LSMap();
-	virtual ~LSMap();
+	LSSet();
+	virtual ~LSSet();
 
 	/*
-	 * Map methods;
+	 * LSSet methods;
 	 */
-	bool ls_insert(K key, T value);
-	LSMap<K,T>* ls_clear();
-	bool ls_erase(K key);
-	T ls_look(K key, T def);
+	bool ls_insert(T value);
+	LSSet<T>* ls_clear();
+	bool ls_erase(T value);
+	bool ls_contains(T value);
 
 	/*
 	 * LSValue methods;
@@ -45,15 +45,12 @@ public:
 	virtual LSValue* operator % (const LSValue*) const override;
 	virtual LSValue* operator %= (LSValue*) override;
 	virtual bool operator == (const LSValue*) const override;
-	virtual bool operator == (const LSMap<LSValue*,LSValue*>*) const override;
-	virtual bool operator == (const LSMap<LSValue*,int>*) const override;
-	virtual bool operator == (const LSMap<LSValue*,double>*) const override;
-	virtual bool operator == (const LSMap<int,LSValue*>*) const override;
-	virtual bool operator == (const LSMap<int,int>*) const override;
-	virtual bool operator == (const LSMap<int,double>*) const override;
+	virtual bool operator == (const LSSet<LSValue*>*) const override;
+	virtual bool operator == (const LSSet<int>*) const override;
+	virtual bool operator == (const LSSet<double>*) const override;
 
 	virtual bool operator < (const LSValue*) const override;
-//	virtual bool operator < (const LSMap<LSValue*,LSValue*>*) const override;
+//	virtual bool operator < (const LSSet<LSValue*>*) const override;
 
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;
@@ -68,7 +65,7 @@ public:
 }
 
 #ifndef _GLIBCXX_EXPORT_TEMPLATE
-#include "LSMap.tcc"
+#include "LSSet.tcc"
 #endif
 
 #endif

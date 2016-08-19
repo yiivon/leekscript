@@ -86,7 +86,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 LSArrayIterator<LSValue*> fun_begin_array_all(LSArray<LSValue*>* array) {
 	return array->begin();
 }
-LSMapIterator<LSValue*,LSValue*> fun_begin_map_all(LSMap<LSValue*,LSValue*>* map) {
+LSMap<LSValue*,LSValue*>::iterator fun_begin_map_all(LSMap<LSValue*,LSValue*>* map) {
 	return map->begin();
 }
 
@@ -96,7 +96,7 @@ LSMapIterator<LSValue*,LSValue*> fun_begin_map_all(LSMap<LSValue*,LSValue*>* map
 bool fun_condition_array_all(LSArray<LSValue*>* array, LSArrayIterator<LSValue*> it) {
 	return it != array->end();
 }
-bool fun_condition_map_all(LSMap<LSValue*,LSValue*>* map, LSMapIterator<LSValue*,LSValue*> it) {
+bool fun_condition_map_all(LSMap<LSValue*,LSValue*>* map, LSMap<LSValue*,LSValue*>::iterator it) {
 	return it != map->end();
 }
 
@@ -118,34 +118,34 @@ double fun_value_array_float(LSArrayIterator<double> it) {
 LSValue* fun_value_array_float_2ptr(LSArrayIterator<double> it) {
 	return LSNumber::get(*it);
 }
-LSValue* fun_value_map_ptr_ptr(LSMapIterator<LSValue*,LSValue*> it) {
+LSValue* fun_value_map_ptr_ptr(LSMap<LSValue*,LSValue*>::iterator it) {
 	return it->second;
 }
-int fun_value_map_ptr_int(LSMapIterator<LSValue*,int> it) {
+int fun_value_map_ptr_int(LSMap<LSValue*,int>::iterator it) {
 	return it->second;
 }
-LSValue* fun_value_map_ptr_int_2ptr(LSMapIterator<LSValue*,int> it) {
+LSValue* fun_value_map_ptr_int_2ptr(LSMap<LSValue*,int>::iterator it) {
 	return LSNumber::get(it->second);
 }
-double fun_value_map_ptr_float(LSMapIterator<LSValue*,double> it) {
+double fun_value_map_ptr_float(LSMap<LSValue*,double>::iterator it) {
 	return it->second;
 }
-LSValue* fun_value_map_ptr_float_2ptr(LSMapIterator<LSValue*,double> it) {
+LSValue* fun_value_map_ptr_float_2ptr(LSMap<LSValue*,double>::iterator it) {
 	return LSNumber::get(it->second);
 }
-LSValue* fun_value_map_int_ptr(LSMapIterator<int,LSValue*> it) {
+LSValue* fun_value_map_int_ptr(LSMap<int,LSValue*>::iterator it) {
 	return it->second;
 }
-int fun_value_map_int_int(LSMapIterator<int,int> it) {
+int fun_value_map_int_int(LSMap<int,int>::iterator it) {
 	return it->second;
 }
-LSValue* fun_value_map_int_int_2ptr(LSMapIterator<int,int> it) {
+LSValue* fun_value_map_int_int_2ptr(LSMap<int,int>::iterator it) {
 	return LSNumber::get(it->second);
 }
-double fun_value_map_int_float(LSMapIterator<int,double> it) {
+double fun_value_map_int_float(LSMap<int,double>::iterator it) {
 	return it->second;
 }
-LSValue* fun_value_map_int_float_2ptr(LSMapIterator<int,double> it) {
+LSValue* fun_value_map_int_float_2ptr(LSMap<int,double>::iterator it) {
 	return LSNumber::get(it->second);
 }
 
@@ -170,31 +170,31 @@ LSValue* fun_key_array_int_2ptr(LSArray<int>* array, LSArrayIterator<int> it) {
 LSValue* fun_key_array_float_2ptr(LSArray<double>* array, LSArrayIterator<double> it) {
 	return LSNumber::get(distance(array->begin(), it));
 }
-LSValue* fun_key_map_ptr_ptr(void*, LSMapIterator<LSValue*,LSValue*> it) {
+LSValue* fun_key_map_ptr_ptr(void*, LSMap<LSValue*,LSValue*>::iterator it) {
 	return it->first;
 }
-LSValue* fun_key_map_ptr_int(void*, LSMapIterator<LSValue*,int> it) {
+LSValue* fun_key_map_ptr_int(void*, LSMap<LSValue*,int>::iterator it) {
 	return it->first;
 }
-LSValue* fun_key_map_ptr_float(void*, LSMapIterator<LSValue*,double> it) {
+LSValue* fun_key_map_ptr_float(void*, LSMap<LSValue*,double>::iterator it) {
 	return it->first;
 }
-int fun_key_map_int_ptr(void*, LSMapIterator<int,LSValue*> it) {
+int fun_key_map_int_ptr(void*, LSMap<int,LSValue*>::iterator it) {
 	return it->first;
 }
-int fun_key_map_int_int(void*, LSMapIterator<int,int> it) {
+int fun_key_map_int_int(void*, LSMap<int,int>::iterator it) {
 	return it->first;
 }
-int fun_key_map_int_float(void*, LSMapIterator<int,double> it) {
+int fun_key_map_int_float(void*, LSMap<int,double>::iterator it) {
 	return it->first;
 }
-LSValue* fun_key_map_int_ptr_2ptr(void*, LSMapIterator<int,LSValue*> it) {
+LSValue* fun_key_map_int_ptr_2ptr(void*, LSMap<int,LSValue*>::iterator it) {
 	return LSNumber::get(it->first);
 }
-LSValue* fun_key_map_int_int_2ptr(void*, LSMapIterator<int,int> it) {
+LSValue* fun_key_map_int_int_2ptr(void*, LSMap<int,int>::iterator it) {
 	return LSNumber::get(it->first);
 }
-LSValue* fun_key_map_int_float_2ptr(void*, LSMapIterator<int,double> it) {
+LSValue* fun_key_map_int_float_2ptr(void*, LSMap<int,double>::iterator it) {
 	return LSNumber::get(it->first);
 }
 
@@ -211,22 +211,22 @@ LSArrayIterator<int> fun_inc_array_int(LSArrayIterator<int> it) {
 LSArrayIterator<double> fun_inc_array_float(LSArrayIterator<double> it) {
 	return ++it;
 }
-LSMapIterator<LSValue*,LSValue*> fun_inc_map_ptr_ptr(LSMapIterator<LSValue*,LSValue*> it) {
+LSMap<LSValue*,LSValue*>::iterator fun_inc_map_ptr_ptr(LSMap<LSValue*,LSValue*>::iterator it) {
 	return ++it;
 }
-LSMapIterator<LSValue*,int>fun_inc_map_ptr_int(LSMapIterator<LSValue*,int> it) {
+LSMap<LSValue*,int>::iterator fun_inc_map_ptr_int(LSMap<LSValue*,int>::iterator it) {
 	return ++it;
 }
-LSMapIterator<LSValue*,double> fun_inc_map_ptr_float(LSMapIterator<LSValue*,double> it) {
+LSMap<LSValue*,double>::iterator fun_inc_map_ptr_float(LSMap<LSValue*,double>::iterator it) {
 	return ++it;
 }
-LSMapIterator<int,LSValue*> fun_inc_map_int_ptr(LSMapIterator<int,LSValue*> it) {
+LSMap<int,LSValue*>::iterator fun_inc_map_int_ptr(LSMap<int,LSValue*>::iterator it) {
 	return ++it;
 }
-LSMapIterator<int,int> fun_inc_map_int_int(LSMapIterator<int,int> it) {
+LSMap<int,int>::iterator fun_inc_map_int_int(LSMap<int,int>::iterator it) {
 	return ++it;
 }
-LSMapIterator<int,double> fun_inc_map_int_float(LSMapIterator<int,double> it) {
+LSMap<int,double>::iterator fun_inc_map_int_float(LSMap<int,double>::iterator it) {
 	return ++it;
 }
 

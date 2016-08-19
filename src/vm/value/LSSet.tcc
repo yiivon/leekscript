@@ -1,0 +1,205 @@
+#ifndef LS_SET_TCC
+#define LS_SET_TCC
+
+#include "LSSet.hpp"
+#include "LSClass.hpp"
+#include "LSNumber.hpp"
+
+namespace ls {
+
+template <>
+inline bool lsset_less<LSValue*>::operator()(LSValue* lhs, LSValue* rhs) const {
+	return rhs->operator < (lhs);
+}
+
+template <typename T>
+inline bool lsset_less<T>::operator()(T lhs, T rhs) const {
+	return lhs < rhs;
+}
+
+template <typename T>
+LSValue* LSSet<T>::map_class(new LSClass("Set"));
+
+template <>
+inline LSSet<LSValue*>::LSSet() {}
+template <>
+inline LSSet<double>::LSSet() {}
+template <>
+inline LSSet<int>::LSSet() {}
+
+template <>
+inline LSSet<LSValue*>::~LSSet() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_val(*it);
+	}
+}
+
+bool LSSet::ls_insert(ls::T value)
+{
+
+}
+
+LSSet<ls::T>*LSSet::ls_clear()
+{
+
+}
+
+bool LSSet::ls_erase(ls::T value)
+{
+
+}
+
+bool LSSet::ls_contains(ls::T value)
+{
+
+}
+
+template <typename T>
+bool LSSet<T>::isTrue() const {
+	return !empty();
+}
+
+template <typename T>
+inline LSValue* LSSet<T>::operator + (const LSValue* value) const {
+	return value->operator + (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator += (LSValue* value) {
+	return value->operator += (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator - (const LSValue* value) const {
+	return value->operator - (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator -= (LSValue* value) {
+	return value->operator -= (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator * (const LSValue* value) const {
+	return value->operator * (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator *= (LSValue* value) {
+	return value->operator *= (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator / (const LSValue* value) const {
+	return value->operator / (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator /= (LSValue* value) {
+	return value->operator /= (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::poww(const LSValue* value) const {
+	return value->poww(this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::pow_eq(LSValue* value) {
+	return value->pow_eq(this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator % (const LSValue* value) const {
+	return value->operator % (this);
+}
+template <typename T>
+inline LSValue* LSSet<T>::operator %= (LSValue* value) {
+	return value->operator %= (this);
+}
+template <typename T>
+inline bool LSSet<T>::operator == (const LSValue* value) const {
+	return value->operator == (this);
+}
+
+
+template <>
+inline bool LSSet<LSValue*>::operator == (const LSSet<LSValue*>* other) const {
+	if (size() != other->size()) return false;
+	auto it1 = begin();
+	auto it2 = other->begin();
+	while (it1 != end()) {
+		if ((*it1)->operator !=(*it2)) return false;
+		++it1;
+		++it2;
+	}
+	return true;
+}
+template <typename T>
+inline bool LSSet<T>::operator == (const LSSet<LSValue*>* other) const {
+	if (size() != other->size()) return false;
+	auto it1 = begin();
+	auto it2 = other->begin();
+	while (it1 != end()) {
+		LSNumber* v2 = dynamic_cast<LSNumber*>(*it2);
+		if (!v2) return false;
+		if (*it1 != v2->value) return false;
+		++it1;
+		++it2;
+	}
+	return true;
+}
+
+template <>
+inline bool LSSet<LSValue*>::operator == (const LSSet<int>* other) const {
+	if (size() != other->size()) return false;
+	auto it1 = begin();
+	auto it2 = other->begin();
+	while (it1 != end()) {
+		LSNumber* v1 = dynamic_cast<LSNumber*>(*it1);
+		if (!v1) return false;
+		if (*it2 != v1->value) return false;
+		++it1;
+		++it2;
+	}
+	return true;
+}
+template <typename T>
+inline bool LSSet<T>::operator == (const LSSet<int>* other) const {
+	if (size() != other->size()) return false;
+	auto it1 = begin();
+	auto it2 = other->begin();
+	while (it1 != end()) {
+		if (*it1 != *it2) return false;
+		++it1;
+		++it2;
+	}
+	return true;
+}
+
+template <>
+inline bool LSSet<LSValue*>::operator == (const LSSet<double>* other) const {
+	if (size() != other->size()) return false;
+	auto it1 = begin();
+	auto it2 = other->begin();
+	while (it1 != end()) {
+		LSNumber* v1 = dynamic_cast<LSNumber*>(*it1);
+		if (!v1) return false;
+		if (*it2 != v1->value) return false;
+		++it1;
+		++it2;
+	}
+	return true;
+}
+template <typename T>
+inline bool LSSet<T>::operator == (const LSSet<double>* other) const {
+	if (size() != other->size()) return false;
+	auto it1 = begin();
+	auto it2 = other->begin();
+	while (it1 != end()) {
+		if (*it1 != *it2) return false;
+		++it1;
+		++it2;
+	}
+	return true;
+}
+
+template <typename T>
+inline bool LSSet<T>::operator <(const LSValue* value) const {
+	return value->operator <(this);
+}
+
+
+}
+
+#endif
