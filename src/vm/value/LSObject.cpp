@@ -133,13 +133,6 @@ LSValue** LSObject::atL (const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSObject::range(int, int) const {
-	return this->clone();
-}
-LSValue* LSObject::rangeL(int, int) {
-	return this;
-}
-
 bool LSObject::in(const LSValue* v) const {
 	for (auto i = values.begin(); i != values.end(); i++) {
 		if (i->second->operator == (v)) {

@@ -157,10 +157,10 @@ public:
 
 	void addArgumentType(Type type);
 	void setArgumentType(size_t index, Type type);
-	const Type getArgumentType(size_t index) const;
+	const Type& getArgumentType(size_t index) const;
 	const std::vector<Type>& getArgumentTypes() const;
 
-	const Type getElementType(size_t i = 0) const;
+	const Type& getElementType(size_t i = 0) const;
 	void setElementType(Type);
 
 	bool will_take(const std::vector<Type>& args_type);

@@ -117,13 +117,6 @@ LSValue** LSFunction::atL(const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSFunction::range(int, int) const {
-	return this->clone();
-}
-LSValue* LSFunction::rangeL(int, int) {
-	return this;
-}
-
 LSValue* LSFunction::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();

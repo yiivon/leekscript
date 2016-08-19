@@ -3,6 +3,8 @@
 
 namespace ls {
 
+LSObject* object_map(const LSObject* object);
+
 ObjectSTD::ObjectSTD() : Module("Object") {
 
 	method("map", Type::OBJECT, Type::OBJECT, {}, (void*) &object_map);

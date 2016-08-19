@@ -5,6 +5,18 @@
 
 namespace ls {
 
+jit_value_t System_operations(jit_function_t F);
+jit_value_t System_version(jit_function_t F);
+jit_value_t System_time(jit_function_t F);
+jit_value_t System_millitime(jit_function_t F);
+jit_value_t System_microtime(jit_function_t F);
+jit_value_t System_nanotime(jit_function_t F);
+void System_print(LSValue* v);
+void System_print_int(int v);
+void System_print_long(long v);
+void System_print_bool(bool v);
+void System_print_float(double v);
+
 SystemSTD::SystemSTD() : Module("System") {
 
 	static_field("version", Type::INTEGER, (void*) &System_version);
@@ -80,6 +92,7 @@ jit_value_t System_version(jit_function_t F) {
 
 void System_print(LSValue* value) {
 	value->print(std::cout);
+	LSValue::delete_temporary(value);
 	std::cout << std::endl;
 }
 

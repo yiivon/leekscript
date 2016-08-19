@@ -12,6 +12,25 @@ using namespace std;
 
 namespace ls {
 
+LSValue* string_charAt(LSString* string, LSNumber* index);
+LSValue* string_contains(LSString* haystack, LSString* needle);
+LSValue* string_endsWith(LSString* string, LSString* ending);
+int string_indexOf(LSString* haystack, LSString* needle);
+LSValue* string_length(LSString* string);
+LSValue* string_map(const LSString* string, void* fun);
+LSValue* string_replace(LSString* string, LSString* from, LSString* to);
+LSValue* string_reverse(LSString* string);
+LSValue* string_size(LSString* string);
+LSValue* string_split(LSString* string, LSString* delimiter);
+LSValue* string_startsWith(const LSString* string, const LSString* starting);
+LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length);
+LSValue* string_toLower(LSString* string);
+LSValue* string_toUpper(LSString* string);
+LSValue* string_toArray(const LSString* string);
+int string_begin_code(const LSString*);
+int string_code(const LSString*, int pos);
+long string_number(const LSString*);
+
 StringSTD::StringSTD() : Module("String") {
 
 	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);

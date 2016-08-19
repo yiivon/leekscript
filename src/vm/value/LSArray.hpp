@@ -34,10 +34,9 @@ public:
 	void push_move(T value);
 	void push_no_clone(T value);
 
-	void clear();
-	T remove(const int index);
-	T remove_key(LSValue* key);
-	T remove_element(T element);
+	LSArray<T>* ls_clear();
+	T ls_remove(int index);
+	bool ls_remove_element(T element);
 	bool ls_empty();
 	LSValue* ls_pop();
 	int ls_size();
@@ -50,14 +49,13 @@ public:
 	LSArray<LSValue*>* ls_map(const void*);
 	LSArray<int>* ls_map_int(const void*);
 	LSArray<double>* ls_map_real(const void*);
-	LSArray<LSValue*>* ls_chunk(int size = 1) const;
+	LSArray<LSValue*>* ls_chunk(int size = 1);
 	LSValue* ls_unique();
 	LSValue* ls_sort();
-	void iter(const LSFunction*) const;
+	void ls_iter(const void* fun);
 	bool ls_contains(T val);
 	LSValue* ls_push(T val);
-	LSArray<T>* push_all(const LSArray<LSValue*>*);
-	const LSArray<T>* push_all_int(const LSArray<int>*);
+	LSArray<T>* ls_push_all(LSArray<T>* array);
 	LSArray<T>* ls_shuffle();
 	LSArray<T>* ls_reverse();
 	LSArray<T>* ls_filter(const void* fun);
@@ -69,7 +67,9 @@ public:
 	LSArray<LSValue*>* ls_map2_int(LSArray<int>*, const void* fun);
 	int ls_search(T needle, int start);
 	LSString* ls_join(LSString* glue);
-	LSArray<T>* fill(const LSValue* element, const int size);
+	LSArray<T>* ls_fill(T element, int size);
+	T ls_max();
+	T ls_min();
 
 	/*
 	 * LSValue methods

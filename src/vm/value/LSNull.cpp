@@ -113,13 +113,6 @@ LSValue** LSNull::atL(const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSNull::range(int, int) const {
-	return this->clone();
-}
-LSValue* LSNull::rangeL(int, int) {
-	return this;
-}
-
 LSValue* LSNull::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();

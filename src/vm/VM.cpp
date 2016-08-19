@@ -474,11 +474,11 @@ void VM_push_array_ptr(LSArray<LSValue*>* array, LSValue* value) {
 }
 
 void VM_push_array_int(LSArray<int>* array, int value) {
-	array->push_clone(value);
+	array->push_back(value);
 }
 
 void VM_push_array_float(LSArray<double>* array, double value) {
-	array->push_clone(value);
+	array->push_back(value);
 }
 
 void VM::push_move_array(jit_function_t F, const Type& element_type, jit_value_t array, jit_value_t value) {

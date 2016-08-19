@@ -505,9 +505,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 			args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 		}
 
-		jit_type_t ret_type = type.raw_type == RawType::FLOAT ? LS_REAL : LS_POINTER;
-
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(return_type), args_types.data(), arg_count, 0);
 
 		jit_value_t res = jit_insn_call_native(c.F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
 
@@ -533,9 +531,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 			args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 		}
 
-		jit_type_t ret_type = return_type.raw_type == RawType::FLOAT ? LS_REAL : LS_POINTER;
-
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, ret_type, args_types.data(), arg_count, 0);
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(return_type), args_types.data(), arg_count, 0);
 
 		jit_value_t res = jit_insn_call_native(c.F, "std_func", (void*) std_func, sig, args.data(), arg_count, JIT_CALL_NOTHROW);
 

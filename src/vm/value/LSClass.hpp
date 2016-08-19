@@ -77,9 +77,6 @@ public:
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;
 
-	LSValue* range(int start, int end) const override;
-	LSValue* rangeL(int start, int end) override;
-
 	LSValue* attr(const LSValue* key) const override;
 	LSValue** attrL(const LSValue* key) override;
 

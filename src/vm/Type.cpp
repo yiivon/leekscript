@@ -118,7 +118,7 @@ void Type::setArgumentType(size_t index, Type type) {
  * By default, all arguments are type INTEGER, but if we see it's not always
  * a integer, it will switch to UNKNOWN
  */
-const Type Type::getArgumentType(size_t index) const {
+const Type& Type::getArgumentType(size_t index) const {
 	if (index >= arguments_types.size()) {
 		return Type::UNKNOWN;
 	}
@@ -129,7 +129,7 @@ const std::vector<Type>& Type::getArgumentTypes() const {
 	return arguments_types;
 }
 
-const Type Type::getElementType(size_t i) const {
+const Type& Type::getElementType(size_t i) const {
 	if (i < element_types.size()) {
 		return element_types[i];
 	}
@@ -255,7 +255,10 @@ bool Type::compatible(const Type& type) const {
 	}
 
 	if (this->raw_type == RawType::ARRAY) {
-		return this->getElementType().compatible(type.getElementType());
+		const Type& e1 = this->getElementType();
+		const Type& e2 = type.getElementType();
+		if (e1.nature == Nature::POINTER && e2.nature == Nature::POINTER) return true;
+		return e1 == e2;
 	}
 
 	if (this->raw_type == RawType::MAP) {

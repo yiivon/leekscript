@@ -116,22 +116,34 @@ LSMap<int,double>* LSMap_create_int_float() {
 }
 
 void LSMap_insert_ptr_ptr(LSMap<LSValue*,LSValue*>* map, LSValue* key, LSValue* value) {
-	map->ls_insert(key, value);
+	auto it = map->lower_bound(key);
+	if (it == map->end() || it->first->operator !=(key)) {
+		map->emplace_hint(it, key->move_inc(), value->move_inc());
+	}
 }
 void LSMap_insert_ptr_int(LSMap<LSValue*,int>* map, LSValue* key, int value) {
-	map->ls_insert(key, value);
+	auto it = map->lower_bound(key);
+	if (it == map->end() || it->first->operator !=(key)) {
+		map->emplace_hint(it, key->move_inc(), value);
+	}
 }
 void LSMap_insert_ptr_float(LSMap<LSValue*,double>* map, LSValue* key, double value) {
-	map->ls_insert(key, value);
+	auto it = map->lower_bound(key);
+	if (it == map->end() || it->first->operator !=(key)) {
+		map->emplace_hint(it, key->move_inc(), value);
+	}
 }
 void LSMap_insert_int_ptr(LSMap<int,LSValue*>* map, int key, LSValue* value) {
-	map->ls_insert(key, value);
+	auto it = map->lower_bound(key);
+	if (it == map->end() || it->first != key) {
+		map->emplace_hint(it, key, value->move_inc());
+	}
 }
 void LSMap_insert_int_int(LSMap<int,int>* map, int key, int value) {
-	map->ls_insert(key, value);
+	map->emplace(key, value);
 }
 void LSMap_insert_int_float(LSMap<int,double>* map, int key, double value) {
-	map->ls_insert(key, value);
+	map->emplace(key, value);
 }
 
 jit_value_t Map::compile(Compiler &c) const {

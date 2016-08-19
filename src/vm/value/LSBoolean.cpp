@@ -141,14 +141,6 @@ LSValue** LSBoolean::atL(const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSBoolean::range(int, int) const {
-	return this->clone();
-}
-
-LSValue* LSBoolean::rangeL(int, int) {
-	return this;
-}
-
 LSValue* LSBoolean::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
