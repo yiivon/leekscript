@@ -218,6 +218,8 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 				cout << " (" << o.second->refs << " refs)" << endl;
 			}
 #endif
+		} else {
+			cout << ls::LSValue::obj_count << " objects created" << endl;
 		}
 #endif
 
