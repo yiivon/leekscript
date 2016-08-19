@@ -15,7 +15,7 @@ String::String(string& value, Token* token) {
 }
 
 String::~String() {
-	LSValue::delete_val(ls_string);
+	delete ls_string;
 }
 
 void String::print(ostream& os, int, bool debug) const {

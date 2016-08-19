@@ -40,7 +40,8 @@ void Test::test_functions() {
 	success("let f = x -> [x, x, x] f(44)", "[44, 44, 44]");
 	success("let f = function(x) { let r = x ** 2 return r + 1 } f(10)", "101");
 	success("1; 2", "2");
-	success("return 1; 2", "1");
+	success("let x = 'leak' return '1'; 2", "'1'");
+	success("let x = '1' return x; 2", "'1'");
 	success("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]", "[true, 12]");
 	//	success("let a = 10 a ~ x -> x ^ 2", "100");
 	success("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]", "['-0.5', 'error', '0.5']");

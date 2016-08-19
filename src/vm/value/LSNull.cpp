@@ -15,11 +15,19 @@ LSValue* LSNull::get() {
 
 LSNull::LSNull() {
 	refs = 1;
-	native = true; // We create one null value which is destroyed only at the end
+	cout << "create null" << endl;
 }
 
 LSNull::~LSNull() {
 	cout << "delete LSNull" << endl;
+}
+
+LSValue* LSNull::clone() const {
+	return LSNull::get();
+}
+
+bool LSNull::native() const {
+	return true; // We create one null value which is destroyed only at the end
 }
 
 bool LSNull::isTrue() const {
@@ -113,13 +121,6 @@ LSValue** LSNull::atL(const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSNull::range(int, int) const {
-	return this->clone();
-}
-LSValue* LSNull::rangeL(int, int) {
-	return this;
-}
-
 LSValue* LSNull::attr(const LSValue* key) const {
 	if (*((LSString*) key) == "class") {
 		return getClass();
@@ -128,10 +129,6 @@ LSValue* LSNull::attr(const LSValue* key) const {
 }
 LSValue** LSNull::attrL(const LSValue*) {
 	return nullptr;
-}
-
-LSValue* LSNull::clone() const {
-	return LSNull::get();
 }
 
 std::ostream& LSNull::print(std::ostream& os) const {

@@ -151,8 +151,10 @@ int* access_l_value(LSArray<int>* array, int key) {
 	return array->atLv(key);
 }
 
-LSValue* range(LSArray<LSValue*>* array, int start, int end) {
-	return array->range(start, end);
+LSValue* range(LSValue* array, int start, int end) {
+	LSValue* r = array->range(start, end);
+	LSValue::delete_temporary(array);
+	return r;
 }
 
 int interval_access(const LSInterval* interval, int pos) {
@@ -199,7 +201,7 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 			jit_value_t args[] = {a, k};
 			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
 
-			if (key->type.nature == Nature::POINTER) {
+			if (key->type.must_manage_memory()) {
 				VM::delete_temporary(c.F, k);
 			}
 			VM::delete_temporary(c.F, a);
@@ -223,8 +225,6 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 		jit_value_t args[] = {a, start, end};
 
 		jit_value_t result = jit_insn_call_native(c.F, "range", (void*) range, sig, args, 3, JIT_CALL_NOTHROW);
-
-		VM::delete_temporary(c.F, a);
 
 		return result;
 	}

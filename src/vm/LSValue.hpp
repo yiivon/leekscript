@@ -30,11 +30,12 @@ public:
 	static int obj_deleted;
 
 	int refs = 0;
-	bool native;
 
 	LSValue();
 	LSValue(const LSValue& other);
 	virtual ~LSValue() = 0;
+
+	virtual bool native() const { return false; }
 
 	virtual bool isTrue() const = 0;
 
@@ -315,8 +316,65 @@ public:
 
 	static LSValue* parse(Json& json);
 
-	static void delete_val(LSValue* value);
+	static void delete_ref(LSValue* value);
+	static void delete_temporary(LSValue* value);
 };
+
+inline LSValue* LSValue::clone_inc() {
+	if (native()) {
+		return this;
+	} else {
+		LSValue* copy = clone();
+		copy->refs++;
+		return copy;
+	}
+}
+
+inline LSValue* LSValue::move() {
+	if (native()) {
+		return this;
+	} else {
+		if (refs == 0) {
+			return this;
+		}
+		return clone();
+	}
+}
+
+inline LSValue* LSValue::move_inc() {
+	if (native()) {
+		return this;
+	} else if (refs == 0) {
+		refs++;
+		return this;
+	} else {
+		LSValue* copy = clone();
+		copy->refs++;
+		return copy;
+	}
+}
+
+inline void LSValue::delete_ref(LSValue* value) {
+
+	if (value == nullptr) return;
+	if (value->native()) return;
+	if (value->refs == 0) return;
+
+	value->refs--;
+	if (value->refs == 0) {
+		delete value;
+	}
+}
+
+inline void LSValue::delete_temporary(LSValue* value)
+{
+	if (value == nullptr) return;
+	if (value->native()) return;
+
+	if (value->refs == 0) {
+		delete value;
+	}
+}
 
 }
 

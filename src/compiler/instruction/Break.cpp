@@ -1,6 +1,4 @@
 #include "../../compiler/instruction/Break.hpp"
-
-#include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticException.hpp"
 

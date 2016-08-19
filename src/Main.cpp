@@ -22,9 +22,11 @@ bool param_exec = false;
 bool param_file = false;
 bool param_json = false;
 
+#if DEBUG > 1
 namespace ls {
 	std::map<LSValue*, LSValue*> objs;
 }
+#endif
 
 int main(int argc, char* argv[]) {
 

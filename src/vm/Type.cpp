@@ -26,9 +26,9 @@ const Type Type::VOID(RawType::VOID, Nature::VOID);
 const Type Type::VALUE(RawType::UNKNOWN, Nature::VALUE);
 const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
 
-const Type Type::NULLL(RawType::NULLL, Nature::POINTER);
+const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
-const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
+const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER, true);
 const Type Type::NUMBER(RawType::NUMBER, Nature::POINTER);
 const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
 const Type Type::INTEGER_P(RawType::INTEGER, Nature::POINTER);
@@ -42,7 +42,7 @@ const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
-const Type Type::MAP(RawType::MAP, Nature::POINTER, {Type::UNKNOWN, Type::UNKNOWN});
+const Type Type::MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::POINTER});
 const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::POINTER});
 const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::INTEGER});
 const Type Type::PTR_FLOAT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::FLOAT});
@@ -53,7 +53,7 @@ const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
-const Type Type::CLASS(RawType::CLASS, Nature::POINTER);
+const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
 
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
@@ -118,7 +118,7 @@ void Type::setArgumentType(size_t index, Type type) {
  * By default, all arguments are type INTEGER, but if we see it's not always
  * a integer, it will switch to UNKNOWN
  */
-const Type Type::getArgumentType(size_t index) const {
+const Type& Type::getArgumentType(size_t index) const {
 	if (index >= arguments_types.size()) {
 		return Type::UNKNOWN;
 	}
@@ -129,7 +129,7 @@ const std::vector<Type>& Type::getArgumentTypes() const {
 	return arguments_types;
 }
 
-const Type Type::getElementType(size_t i) const {
+const Type& Type::getElementType(size_t i) const {
 	if (i < element_types.size()) {
 		return element_types[i];
 	}
@@ -255,12 +255,28 @@ bool Type::compatible(const Type& type) const {
 	}
 
 	if (this->raw_type == RawType::ARRAY) {
-		return this->getElementType().compatible(type.getElementType());
+		const Type& e1 = this->getElementType();
+		const Type& e2 = type.getElementType();
+		if (e1.nature == Nature::POINTER && e2.nature == Nature::POINTER) return true;
+		return e1 == e2;
 	}
 
 	if (this->raw_type == RawType::MAP) {
-		return getElementType(0).compatible(type.getElementType(0))
-				&& getElementType(1).compatible(type.getElementType(1));
+		const Type& k1 = this->getElementType(0);
+		const Type& k2 = type.getElementType(0);
+		const Type& v1 = this->getElementType(1);
+		const Type& v2 = type.getElementType(1);
+		if (k1.nature == Nature::POINTER && k2.nature == Nature::POINTER) {
+			if (v1.nature == Nature::POINTER && v2.nature == Nature::POINTER) {
+				return true;
+			}
+			return v1 == v2;
+		} else {
+			if (v1.nature == Nature::POINTER && v2.nature == Nature::POINTER) {
+				return k1 == k2;
+			}
+			return k1 == k2 && v1 == v2;
+		}
 	}
 
 	return true;
