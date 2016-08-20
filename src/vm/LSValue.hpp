@@ -69,7 +69,7 @@ public:
 	virtual LSValue* operator + (const LSSet<double>*) const;
 	virtual LSValue* operator + (const LSObject*) const;
 	virtual LSValue* operator + (const LSFunction*) const;
-	virtual LSValue* operator + (const LSClass*) const;	
+	virtual LSValue* operator + (const LSClass*) const;
 
 	virtual LSValue* operator += (LSValue*) = 0;
 	virtual LSValue* operator += (const LSNull*);
@@ -378,7 +378,7 @@ public:
 		return not this->operator <(value);
 	}
 
-	virtual bool in(const LSValue*) const;
+	virtual bool in(LSValue*) const;
 
 	virtual LSValue* at(const LSValue* key) const;
 	virtual LSValue** atL(const LSValue* key);

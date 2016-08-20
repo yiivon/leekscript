@@ -132,11 +132,6 @@ bool LSBoolean::operator < (const LSClass*) const {
 }
 
 
-
-bool LSBoolean::in(const LSValue* key) const {
-	return key->operator == (this);
-}
-
 LSValue* LSBoolean::at(const LSValue*) const {
 	return LSNull::get();
 }

@@ -427,7 +427,7 @@ bool LSValue::operator > (const LSClass* value) const {
 	return not value->operator <(this) and not this->operator ==(value);
 }
 
-bool LSValue::in(const LSValue*) const { return false; }
+bool LSValue::in(LSValue*) const { return false; }
 
 LSValue* LSValue::at(const LSValue*) const {
 	return LSNull::get();

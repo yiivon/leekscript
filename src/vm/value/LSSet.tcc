@@ -49,28 +49,70 @@ template <typename T>
 inline LSSet<T>::~LSSet() {
 }
 
+template <>
+inline bool LSSet<LSValue*>::ls_insert(LSValue* value) {
+	auto it = lower_bound(value);
+	if (it == end() || (*it)->operator !=(value)) {
+		insert(it, value->move_inc());
+		if (refs == 0) delete this;
+		return true;
+	}
+	LSValue::delete_temporary(value);
+	if (refs == 0) delete this;
+	return false;
+}
 template <typename T>
-bool LSSet<T>::ls_insert(T value)
-{
-
+inline bool LSSet<T>::ls_insert(T value) {
+	bool r = this->insert(value).second;
+	if (refs == 0) delete this;
+	return r;
 }
 
+template <>
+inline LSSet<LSValue*> *LSSet<LSValue*>::ls_clear() {
+	for (LSValue* v : *this) LSValue::delete_ref(v);
+	this->clear();
+	return this;
+}
 template <typename T>
-LSSet<T> *LSSet<T>::ls_clear()
-{
-
+inline LSSet<T> *LSSet<T>::ls_clear() {
+	this->clear();
+	return this;
 }
 
+template <>
+inline bool LSSet<LSValue*>::ls_erase(LSValue* value) {
+	auto it = find(value);
+	LSValue::delete_temporary(value);
+	if (it == end()) {
+		if (refs == 0) delete this;
+		return false;
+	} else {
+		LSValue::delete_ref(*it);
+		erase(it);
+		if (refs == 0) delete this;
+		return true;
+	}
+}
 template <typename T>
-bool LSSet<T>::ls_erase(T value)
-{
-
+inline bool LSSet<T>::ls_erase(T value) {
+	bool r = this->erase(value);
+	if (refs == 0) delete this;
+	return r;
 }
 
+template <>
+inline bool LSSet<LSValue*>::ls_contains(LSValue* value) {
+	bool r = count(value);
+	LSValue::delete_temporary(value);
+	if (refs == 0) delete this;
+	return r;
+}
 template <typename T>
-bool LSSet<T>::ls_contains(T value)
-{
-
+inline bool LSSet<T>::ls_contains(T value) {
+	bool r = this->count(value);
+	if (refs == 0) delete this;
+	return r;
 }
 
 template <typename T>
@@ -216,6 +258,18 @@ inline bool LSSet<T>::operator == (const LSSet<double>* other) const {
 template <typename T>
 inline bool LSSet<T>::operator <(const LSValue* value) const {
 	return value->operator <(this);
+}
+
+template <>
+inline bool LSSet<LSValue*>::in(LSValue* value) const {
+	return count(value);
+}
+template <typename T>
+inline bool LSSet<T>::in(LSValue* value) const {
+	if (LSNumber* number = dynamic_cast<LSNumber*>(value)) {
+		return this->count(number->value);
+	}
+	return false;
 }
 
 template <typename T>

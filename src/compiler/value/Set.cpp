@@ -40,6 +40,8 @@ void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (element_type != Type::INTEGER && element_type != Type::FLOAT) {
 			element_type = Type::POINTER;
 		}
+	} else if (element_type.nature == Nature::UNKNOWN) {
+		element_type.nature = Nature::POINTER;
 	}
 
 	constant = true;
