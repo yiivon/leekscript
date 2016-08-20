@@ -15,6 +15,7 @@ const FloatRawType* const RawType::FLOAT = new FloatRawType();
 const StringRawType* const RawType::STRING = new StringRawType();
 const ArrayRawType* const RawType::ARRAY = new ArrayRawType();
 const MapRawType* const RawType::MAP = new MapRawType();
+const SetRawType* const RawType::SET = new SetRawType();
 const IntervalRawType* const RawType::INTERVAL = new IntervalRawType();
 const ObjectRawType* const RawType::OBJECT = new ObjectRawType();
 const FunctionRawType* const RawType::FUNCTION = new FunctionRawType();
@@ -49,6 +50,9 @@ const Type Type::PTR_FLOAT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Ty
 const Type Type::INT_PTR_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::POINTER});
 const Type Type::INT_INT_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::INTEGER});
 const Type Type::INT_FLOAT_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::FLOAT});
+const Type Type::PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER);
+const Type Type::INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER);
+const Type Type::FLOAT_SET(RawType::SET, Nature::POINTER, Type::FLOAT);
 const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
@@ -254,7 +258,7 @@ bool Type::compatible(const Type& type) const {
 		return false;
 	}
 
-	if (this->raw_type == RawType::ARRAY) {
+	if (this->raw_type == RawType::ARRAY || this->raw_type == RawType::SET) {
 		const Type& e1 = this->getElementType();
 		const Type& e2 = type.getElementType();
 		if (e1.nature == Nature::POINTER && e2.nature == Nature::POINTER) return true;
@@ -325,7 +329,8 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 		}
 	}
 
-	if (neww.raw_type == RawType::ARRAY and old.raw_type == RawType::ARRAY) {
+	if ((neww.raw_type == RawType::ARRAY and old.raw_type == RawType::ARRAY)
+			|| (neww.raw_type == RawType::SET and old.raw_type == RawType::SET)) {
 		if (Type::more_specific(old.getElementType(), neww.getElementType())) {
 			return true;
 		}
@@ -440,7 +445,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		}
 		os << ") → " << type.getReturnType();
 	}
-	if (type.raw_type == RawType::ARRAY) {
+	if (type.raw_type == RawType::ARRAY || type.raw_type == RawType::SET) {
 		os << " of " << type.getElementType();
 	}
 	if (type.raw_type == RawType::MAP) {

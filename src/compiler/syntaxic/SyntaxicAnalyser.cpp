@@ -20,6 +20,7 @@
 #include "../value/AbsoluteValue.hpp"
 #include "../value/Array.hpp"
 #include "../value/Map.hpp"
+#include "../value/Set.hpp"
 #include "../value/ArrayAccess.hpp"
 #include "../value/Boolean.hpp"
 #include "../value/FunctionCall.hpp"
@@ -207,6 +208,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::MODULO:
 		case TokenType::PIPE:
 		case TokenType::TILDE:
+		case TokenType::LOWER:
 			return new ExpressionInstruction(eatExpression());
 
 		case TokenType::MATCH:
@@ -349,7 +351,7 @@ bool SyntaxicAnalyser::beginingOfExpression(TokenType type) {
 		or type == TokenType::FALSE or type == TokenType::NULLL;
 }
 
-Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
+Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened) {
 
 	Value* e = nullptr;
 
@@ -389,7 +391,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
 
 				if (beginingOfExpression(t->type)) {
 
-					Value* ex = eatExpression(pipe_opened);
+					Value* ex = eatExpression(pipe_opened, set_opened);
 					Expression* expr = dynamic_cast<Expression*>(ex);
 
 					if (expr and expr->op->priority >= op->priority) {
@@ -521,7 +523,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened) {
 	return e;
 }
 
-Value* SyntaxicAnalyser::eatExpression(bool pipe_opened) {
+Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened) {
 
 	Expression* ex = nullptr;
 	Value* e = eatSimpleExpression(pipe_opened);
@@ -534,7 +536,7 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened) {
 		   t->type == TokenType::EQUAL || t->type == TokenType::POWER ||
 		   t->type == TokenType::DOUBLE_EQUAL || t->type == TokenType::DIFFERENT ||
 		   t->type == TokenType::TRIPLE_EQUAL || t->type == TokenType::TRIPLE_DIFFERENT ||
-		   t->type == TokenType::GREATER || t->type == TokenType::LOWER ||
+		   (!set_opened && t->type == TokenType::GREATER) || t->type == TokenType::LOWER ||
 		   t->type == TokenType::GREATER_EQUALS || t->type == TokenType::LOWER_EQUALS ||
 		   t->type == TokenType::TIMES_EQUAL || t->type == TokenType::PLUS_EQUAL ||
 		   t->type == TokenType::MINUS_EQUAL || t->type == TokenType::DIVIDE_EQUAL ||
@@ -707,6 +709,9 @@ Value* SyntaxicAnalyser::eatValue() {
 		case TokenType::OPEN_BRACKET:
 			return eatArrayOrMap();
 
+		case TokenType::LOWER:
+			return eatSet();
+
 		case TokenType::OPEN_BRACE:
 			return eatBlockOrObject();
 
@@ -809,6 +814,27 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 	}
 	eat(TokenType::CLOSING_BRACKET);
 	return array;
+}
+
+Set*SyntaxicAnalyser::eatSet() {
+	eat(TokenType::LOWER);
+
+	Set* set = new Set();
+
+	if (t->type == TokenType::GREATER) {
+		eat();
+		return set;
+	}
+
+	set->expressions.push_back(eatExpression(false, true));
+
+	while (t->type != TokenType::GREATER && t->type != TokenType::FINISHED) {
+		if (t->type == TokenType::COMMA) eat();
+		set->expressions.push_back(eatExpression(false, true));
+	}
+	eat(TokenType::GREATER);
+
+	return set;
 }
 
 If* SyntaxicAnalyser::eatIf() {

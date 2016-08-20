@@ -4,6 +4,8 @@
 #include "value/LSNull.hpp"
 #include "value/LSBoolean.hpp"
 #include "value/LSArray.hpp"
+#include "value/LSMap.hpp"
+#include "value/LSSet.hpp"
 #include "value/LSObject.hpp"
 #include "value/LSFunction.hpp"
 #include "VM.hpp"
@@ -218,6 +220,9 @@ bool LSValue::operator == (const LSMap<LSValue*,double>*) const { return false; 
 bool LSValue::operator == (const LSMap<int,LSValue*>*) const { return false; }
 bool LSValue::operator == (const LSMap<int,int>*) const { return false; }
 bool LSValue::operator == (const LSMap<int,double>*) const { return false; }
+bool LSValue::operator == (const LSSet<LSValue*>*) const { return false; }
+bool LSValue::operator == (const LSSet<int>*) const { return false; }
+bool LSValue::operator == (const LSSet<double>*) const { return false; }
 bool LSValue::operator == (const LSFunction*) const { return false; }
 bool LSValue::operator == (const LSObject*) const { return false; }
 bool LSValue::operator == (const LSClass*) const { return false; }
@@ -261,6 +266,15 @@ bool LSValue::operator < (const LSMap<int,int>*) const {
 bool LSValue::operator < (const LSMap<int,double>*) const {
 	return typeID() < 6;
 }
+bool LSValue::operator < (const LSSet<LSValue*>*) const {
+	return typeID() < 7;
+}
+bool LSValue::operator < (const LSSet<int>*) const {
+	return typeID() < 7;
+}
+bool LSValue::operator < (const LSSet<double>*) const {
+	return typeID() < 7;
+}
 bool LSValue::operator < (const LSFunction*) const {
 	return typeID() < 8;
 }
@@ -272,52 +286,61 @@ bool LSValue::operator < (const LSClass*) const {
 }
 
 bool LSValue::operator > (const LSNull* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSBoolean* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSNumber* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSString* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSArray<LSValue*>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSArray<int>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSArray<double>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSMap<LSValue*,LSValue*>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSMap<LSValue*,int>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSMap<LSValue*,double>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSMap<int,LSValue*>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSMap<int,int>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSMap<int,double>* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
+}
+bool LSValue::operator > (const LSSet<LSValue*>* value) const {
+	return not value->operator <(this) and not this->operator ==(value);
+}
+bool LSValue::operator > (const LSSet<int>* value) const {
+	return not value->operator <(this) and not this->operator ==(value);
+}
+bool LSValue::operator > (const LSSet<double>* value) const {
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSFunction* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSObject* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 bool LSValue::operator > (const LSClass* value) const {
-	return not this->operator <(value) and not this->operator ==(value);
+	return not value->operator <(this) and not this->operator ==(value);
 }
 
 bool LSValue::in(const LSValue*) const { return false; }
@@ -367,14 +390,16 @@ bool LSValue::isInteger() const {
 
 LSValue* get_value(int type, Json& json) {
 	switch (type) {
-	case 1: return LSNull::get();
-	case 2: return new LSBoolean(json);
-	case 3: return new LSNumber(json);
-	case 4: return new LSString(json);
-	case 5: return new LSArray<LSValue*>(json);
-	case 8: return new LSFunction(json);
-	case 9: return new LSObject(json);
-	case 10: return new LSClass(json);
+		case 1: return LSNull::get();
+		case 2: return new LSBoolean(json);
+		case 3: return new LSNumber(json);
+		case 4: return new LSString(json);
+		case 5: return new LSArray<LSValue*>(json);
+//		case 6: return new LSMap<LSValue*,LSValue*>(json); TODO
+//		case 7: return new LSSet<LSValue*>(json);
+		case 8: return new LSFunction(json);
+		case 9: return new LSObject(json);
+		case 10: return new LSClass(json);
 	}
 	return LSNull::get();
 }

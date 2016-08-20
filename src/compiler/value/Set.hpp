@@ -1,19 +1,17 @@
-#ifndef MAP_HPP
-#define MAP_HPP
+#ifndef SET_H
+#define SET_H
 
 #include <vector>
-
 #include "Value.hpp"
 
 namespace ls {
 
-class Map : public Value {
+class Set : public Value {
 public:
-	std::vector<Value*> keys;
-	std::vector<Value*> values;
+	std::vector<Value*> expressions;
 
-	Map();
-	virtual ~Map();
+	Set();
+	virtual ~Set();
 
 	virtual void print(std::ostream&, int indent = 0, bool debug = false) const override;
 	virtual unsigned line() const override;
@@ -23,4 +21,4 @@ public:
 
 }
 
-#endif
+#endif // SET_H

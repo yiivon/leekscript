@@ -30,33 +30,40 @@ inline LSSet<int>::LSSet() {}
 template <>
 inline LSSet<LSValue*>::~LSSet() {
 	for (auto it = begin(); it != end(); ++it) {
-		LSValue::delete_val(*it);
+		LSValue::delete_ref(*it);
 	}
 }
+template <typename T>
+inline LSSet<T>::~LSSet() {
+}
 
-bool LSSet::ls_insert(ls::T value)
+template <typename T>
+bool LSSet<T>::ls_insert(T value)
 {
 
 }
 
-LSSet<ls::T>*LSSet::ls_clear()
+template <typename T>
+LSSet<T> *LSSet<T>::ls_clear()
 {
 
 }
 
-bool LSSet::ls_erase(ls::T value)
+template <typename T>
+bool LSSet<T>::ls_erase(T value)
 {
 
 }
 
-bool LSSet::ls_contains(ls::T value)
+template <typename T>
+bool LSSet<T>::ls_contains(T value)
 {
 
 }
 
 template <typename T>
 bool LSSet<T>::isTrue() const {
-	return !empty();
+	return !this->empty();
 }
 
 template <typename T>
@@ -127,10 +134,10 @@ inline bool LSSet<LSValue*>::operator == (const LSSet<LSValue*>* other) const {
 }
 template <typename T>
 inline bool LSSet<T>::operator == (const LSSet<LSValue*>* other) const {
-	if (size() != other->size()) return false;
-	auto it1 = begin();
+	if (this->size() != other->size()) return false;
+	auto it1 = this->begin();
 	auto it2 = other->begin();
-	while (it1 != end()) {
+	while (it1 != this->end()) {
 		LSNumber* v2 = dynamic_cast<LSNumber*>(*it2);
 		if (!v2) return false;
 		if (*it1 != v2->value) return false;
@@ -156,10 +163,10 @@ inline bool LSSet<LSValue*>::operator == (const LSSet<int>* other) const {
 }
 template <typename T>
 inline bool LSSet<T>::operator == (const LSSet<int>* other) const {
-	if (size() != other->size()) return false;
-	auto it1 = begin();
+	if (this->size() != other->size()) return false;
+	auto it1 = this->begin();
 	auto it2 = other->begin();
-	while (it1 != end()) {
+	while (it1 != this->end()) {
 		if (*it1 != *it2) return false;
 		++it1;
 		++it2;
@@ -183,10 +190,10 @@ inline bool LSSet<LSValue*>::operator == (const LSSet<double>* other) const {
 }
 template <typename T>
 inline bool LSSet<T>::operator == (const LSSet<double>* other) const {
-	if (size() != other->size()) return false;
-	auto it1 = begin();
+	if (this->size() != other->size()) return false;
+	auto it1 = this->begin();
 	auto it2 = other->begin();
-	while (it1 != end()) {
+	while (it1 != this->end()) {
 		if (*it1 != *it2) return false;
 		++it1;
 		++it2;
@@ -197,6 +204,68 @@ inline bool LSSet<T>::operator == (const LSSet<double>* other) const {
 template <typename T>
 inline bool LSSet<T>::operator <(const LSValue* value) const {
 	return value->operator <(this);
+}
+
+template <typename T>
+LSValue* LSSet<T>::at(const LSValue* key) const
+{
+
+}
+
+template <typename T>
+LSValue** LSSet<T>::atL(const LSValue* key)
+{
+
+}
+
+template <>
+inline std::ostream& LSSet<LSValue*>::print(std::ostream& os) const {
+	os << "<";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) os << ", ";
+		(*i)->print(os);
+	}
+	os << ">";
+	return os;
+}
+template <typename T>
+inline std::ostream& LSSet<T>::print(std::ostream& os) const {
+	os << "<";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) os << ", ";
+		os << *i;
+	}
+	os << ">";
+	return os;
+}
+
+template <typename T>
+std::string LSSet<T>::json() const
+{
+
+}
+
+template <typename T>
+LSValue*LSSet<T>::clone() const
+{
+
+}
+
+template <typename T>
+LSValue*LSSet<T>::getClass() const
+{
+
+}
+
+template <typename T>
+int LSSet<T>::typeID() const {
+	return 7;
+}
+
+template <typename T>
+const BaseRawType*LSSet<T>::getRawType() const
+{
+
 }
 
 
