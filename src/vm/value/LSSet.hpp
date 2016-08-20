@@ -14,9 +14,10 @@ struct lsset_less {
 template <typename T>
 class LSSet : public LSValue, public std::set<T, lsset_less<T>> {
 public:
-	static LSValue* map_class;
+	static LSValue* set_class;
 
 	LSSet();
+	LSSet(const LSSet<T>& other);
 	virtual ~LSSet();
 
 	/*

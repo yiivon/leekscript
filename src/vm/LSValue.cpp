@@ -64,6 +64,9 @@ LSValue* LSValue::operator + (const LSMap<LSValue*,double>*) const { return LSNu
 LSValue* LSValue::operator + (const LSMap<int,LSValue*>*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSMap<int,int>*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSMap<int,double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator + (const LSSet<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator + (const LSSet<int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator + (const LSSet<double>*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator + (const LSClass*) const { return LSNull::get(); }
@@ -81,6 +84,9 @@ LSValue* LSValue::operator += (const LSMap<LSValue*,double>*) { return LSNull::g
 LSValue* LSValue::operator += (const LSMap<int,LSValue*>*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSMap<int,int>*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSMap<int,double>*) { return LSNull::get(); }
+LSValue* LSValue::operator += (const LSSet<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator += (const LSSet<int>*) { return LSNull::get(); }
+LSValue* LSValue::operator += (const LSSet<double>*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSClass*) { return LSNull::get(); }
@@ -98,6 +104,9 @@ LSValue* LSValue::operator - (const LSMap<LSValue*,double>*) const { return LSNu
 LSValue* LSValue::operator - (const LSMap<int,LSValue*>*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSMap<int,int>*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSMap<int,double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator - (const LSSet<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator - (const LSSet<int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator - (const LSSet<double>*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator - (const LSClass*) const { return LSNull::get(); }
@@ -115,6 +124,9 @@ LSValue* LSValue::operator -= (const LSMap<LSValue*,double>*) { return LSNull::g
 LSValue* LSValue::operator -= (const LSMap<int,LSValue*>*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSMap<int,int>*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSMap<int,double>*) { return LSNull::get(); }
+LSValue* LSValue::operator -= (const LSSet<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator -= (const LSSet<int>*) { return LSNull::get(); }
+LSValue* LSValue::operator -= (const LSSet<double>*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator -= (const LSClass*) { return LSNull::get(); }
@@ -132,6 +144,9 @@ LSValue* LSValue::operator * (const LSMap<LSValue*,double>*) const { return LSNu
 LSValue* LSValue::operator * (const LSMap<int,LSValue*>*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSMap<int,int>*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSMap<int,double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator * (const LSSet<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator * (const LSSet<int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator * (const LSSet<double>*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator * (const LSClass*) const { return LSNull::get(); }
@@ -149,6 +164,9 @@ LSValue* LSValue::operator *= (const LSMap<LSValue*,double>*) { return LSNull::g
 LSValue* LSValue::operator *= (const LSMap<int,LSValue*>*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSMap<int,int>*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSMap<int,double>*) { return LSNull::get(); }
+LSValue* LSValue::operator *= (const LSSet<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator *= (const LSSet<int>*) { return LSNull::get(); }
+LSValue* LSValue::operator *= (const LSSet<double>*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator *= (const LSClass*) { return LSNull::get(); }
@@ -158,6 +176,17 @@ LSValue* LSValue::operator / (const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSNumber*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSString*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSArray<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSArray<int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSArray<double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSMap<LSValue*,LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSMap<LSValue*,int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSMap<LSValue*,double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSMap<int,LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSMap<int,int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSMap<int,double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSSet<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSSet<int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator / (const LSSet<double>*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator / (const LSClass*) const { return LSNull::get(); }
@@ -167,6 +196,17 @@ LSValue* LSValue::operator /= (const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSNumber*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSString*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSArray<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSArray<int>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSArray<double>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSMap<LSValue*,LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSMap<LSValue*,int>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSMap<LSValue*,double>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSMap<int,LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSMap<int,int>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSMap<int,double>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSSet<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSSet<int>*) { return LSNull::get(); }
+LSValue* LSValue::operator /= (const LSSet<double>*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator /= (const LSClass*) { return LSNull::get(); }
@@ -176,6 +216,17 @@ LSValue* LSValue::poww(const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSNumber*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSString*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSArray<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSArray<int>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSArray<double>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSMap<LSValue*,LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSMap<LSValue*,int>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSMap<LSValue*,double>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSMap<int,LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSMap<int,int>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSMap<int,double>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSSet<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSSet<int>*) const { return LSNull::get(); }
+LSValue* LSValue::poww(const LSSet<double>*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::poww(const LSClass*) const { return LSNull::get(); }
@@ -185,6 +236,17 @@ LSValue* LSValue::pow_eq(const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSNumber*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSString*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSArray<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSArray<int>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSArray<double>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSMap<LSValue*,LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSMap<LSValue*,int>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSMap<LSValue*,double>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSMap<int,LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSMap<int,int>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSMap<int,double>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSSet<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSSet<int>*) { return LSNull::get(); }
+LSValue* LSValue::pow_eq(const LSSet<double>*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::pow_eq(const LSClass*) { return LSNull::get(); }
@@ -194,6 +256,17 @@ LSValue* LSValue::operator % (const LSBoolean*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSNumber*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSString*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSArray<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSArray<int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSArray<double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSMap<LSValue*,LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSMap<LSValue*,int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSMap<LSValue*,double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSMap<int,LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSMap<int,int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSMap<int,double>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSSet<LSValue*>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSSet<int>*) const { return LSNull::get(); }
+LSValue* LSValue::operator % (const LSSet<double>*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSObject*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSFunction*) const { return LSNull::get(); }
 LSValue* LSValue::operator % (const LSClass*) const { return LSNull::get(); }
@@ -203,6 +276,17 @@ LSValue* LSValue::operator %= (const LSBoolean*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSNumber*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSString*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSArray<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSArray<int>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSArray<double>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSMap<LSValue*,LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSMap<LSValue*,int>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSMap<LSValue*,double>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSMap<int,LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSMap<int,int>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSMap<int,double>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSSet<LSValue*>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSSet<int>*) { return LSNull::get(); }
+LSValue* LSValue::operator %= (const LSSet<double>*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSObject*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSFunction*) { return LSNull::get(); }
 LSValue* LSValue::operator %= (const LSClass*) { return LSNull::get(); }

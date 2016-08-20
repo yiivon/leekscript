@@ -129,8 +129,8 @@ public:
 	bool operator > (const LSValue*) const override;
 	bool operator > (const LSNumber*) const override;
 
-	LSValue* at (const LSValue* value) const override;
-	LSValue** atL (const LSValue* value) override;
+	LSValue* at(const LSValue* value) const override;
+	LSValue** atL(const LSValue* value) override;
 
 	LSValue* attr(const LSValue* key) const override;
 	LSValue** attrL(const LSValue* key) override;

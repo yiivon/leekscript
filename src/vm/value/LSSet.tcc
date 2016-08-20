@@ -4,6 +4,7 @@
 #include "LSSet.hpp"
 #include "LSClass.hpp"
 #include "LSNumber.hpp"
+#include "LSNull.hpp"
 
 namespace ls {
 
@@ -18,7 +19,7 @@ inline bool lsset_less<T>::operator()(T lhs, T rhs) const {
 }
 
 template <typename T>
-LSValue* LSSet<T>::map_class(new LSClass("Set"));
+LSValue* LSSet<T>::set_class(new LSClass("Set"));
 
 template <>
 inline LSSet<LSValue*>::LSSet() {}
@@ -26,6 +27,17 @@ template <>
 inline LSSet<double>::LSSet() {}
 template <>
 inline LSSet<int>::LSSet() {}
+
+template <>
+inline LSSet<LSValue*>::LSSet(const LSSet<LSValue*>& other) : LSValue(other), std::set<LSValue*, lsset_less<LSValue*>>() {
+	for (LSValue* v : other) {
+		insert(end(), v->clone_inc());
+	}
+}
+template <typename T>
+inline LSSet<T>::LSSet(const LSSet<T>& other) : LSValue(other), std::set<T, lsset_less<T>>(other) {
+}
+
 
 template <>
 inline LSSet<LSValue*>::~LSSet() {
@@ -207,15 +219,13 @@ inline bool LSSet<T>::operator <(const LSValue* value) const {
 }
 
 template <typename T>
-LSValue* LSSet<T>::at(const LSValue* key) const
-{
-
+LSValue* LSSet<T>::at(const LSValue* ) const {
+	return LSNull::get();
 }
 
 template <typename T>
-LSValue** LSSet<T>::atL(const LSValue* key)
-{
-
+LSValue** LSSet<T>::atL(const LSValue* ) {
+	return nullptr;
 }
 
 template <>
@@ -239,22 +249,35 @@ inline std::ostream& LSSet<T>::print(std::ostream& os) const {
 	return os;
 }
 
+template <>
+inline std::string LSSet<LSValue*>::json() const {
+	std::string res = "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) res += ",";
+		std::string json = (*i)->to_json();
+		res += json;
+	}
+	return res + "]";
+}
 template <typename T>
-std::string LSSet<T>::json() const
-{
-
+inline std::string LSSet<T>::json() const {
+	std::string res = "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) res += ",";
+		std::string json = std::to_string(*i);
+		res += json;
+	}
+	return res + "]";
 }
 
 template <typename T>
-LSValue*LSSet<T>::clone() const
-{
-
+inline LSValue* LSSet<T>::clone() const {
+	return new LSSet<T>(*this);
 }
 
 template <typename T>
-LSValue*LSSet<T>::getClass() const
-{
-
+LSValue*LSSet<T>::getClass() const {
+	return LSSet<T>::set_class;
 }
 
 template <typename T>
@@ -263,9 +286,8 @@ int LSSet<T>::typeID() const {
 }
 
 template <typename T>
-const BaseRawType*LSSet<T>::getRawType() const
-{
-
+const BaseRawType*LSSet<T>::getRawType() const {
+	return RawType::SET;
 }
 
 

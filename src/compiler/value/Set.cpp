@@ -17,9 +17,7 @@ void Set::print(ostream& os, int indent, bool debug) const {
 	for (size_t i = 0; i < expressions.size(); ++i) {
 		os << tabs(indent + 1);
 		expressions[i]->print(os, indent + 1, debug);
-		if (i + 1 < expressions.size()) {
-			os << "\n";
-		}
+		os << "\n";
 	}
 	os << tabs(indent) << ">";
 	if (debug) os << " " << type;
@@ -39,7 +37,7 @@ void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 
 	if (element_type.nature == Nature::VALUE) {
-		if (element_type != Type::INTEGER || element_type != Type::FLOAT) {
+		if (element_type != Type::INTEGER && element_type != Type::FLOAT) {
 			element_type = Type::POINTER;
 		}
 	}
