@@ -225,8 +225,7 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 			first->refs = 0;
 		}
 		delete this;
-		/* In that case `first` will survive
-		 */
+		// In that case `first` will survive
 	}
 	return first->move(); /* return temporary */
 }

@@ -150,6 +150,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 void Function::capture(SemanticVar* var) {
 
 	if (std::find(captures.begin(), captures.end(), var) == captures.end()) {
+
 //		cout << "Function::capture " << var->name << endl;
 
 		captures.push_back(var);
