@@ -12,9 +12,6 @@
 namespace ls {
 
 template <typename T>
-using LSArrayIterator = typename std::vector<T>::iterator;
-
-template <typename T>
 class LSArray : public LSValue, public std::vector<T> {
 public:
 

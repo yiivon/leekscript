@@ -9,7 +9,7 @@ using namespace std;
 namespace ls {
 
 Array::Array() {
-	type = Type::ARRAY;
+	type = Type::PTR_ARRAY;
 }
 
 Array::~Array() {

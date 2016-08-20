@@ -92,7 +92,7 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 		}
 	}
 
-	type = Type::MAP;
+	type = Type::PTR_PTR_MAP;
 	type.element_types = { key_type, value_type };
 }
 

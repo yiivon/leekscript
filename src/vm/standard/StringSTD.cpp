@@ -42,7 +42,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
 	method("reverse", Type::STRING, Type::STRING, {}, (void*) &string_reverse);
 	method("substring", Type::STRING, Type::STRING, {Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
-	method("toArray", Type::STRING, Type::ARRAY, {}, (void*) &string_toArray);
+	method("toArray", Type::STRING, Type::PTR_ARRAY, {}, (void*) &string_toArray);
 	method("toLower", Type::STRING, Type::STRING, {}, (void*) &string_toLower);
 	method("toUpper", Type::STRING, Type::STRING, {}, (void*) &string_toUpper);
 	method("split", Type::STRING, Type::STRING_ARRAY, {Type::STRING}, (void*) &string_split);
@@ -69,7 +69,7 @@ StringSTD::StringSTD() : Module("String") {
 	static_method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &string_replace);
 	static_method("reverse", Type::STRING, {Type::STRING}, (void*) &string_reverse);
 	static_method("substring", Type::STRING, {Type::STRING, Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
-	static_method("toArray", Type::ARRAY, {Type::STRING}, (void*) &string_toArray);
+	static_method("toArray", Type::PTR_ARRAY, {Type::STRING}, (void*) &string_toArray);
 	static_method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
 	static_method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);
 	static_method("split", Type::STRING_ARRAY, {Type::STRING, Type::STRING}, (void*) &string_split);

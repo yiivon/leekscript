@@ -79,7 +79,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	type = Type::FUNCTION;
 
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		type.setArgumentType(i, Type::UNKNOWN);
+		type.setArgumentType(i, Type::POINTER);
 	}
 
 	for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {

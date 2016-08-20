@@ -72,6 +72,9 @@ void Test::test_loops() {
 	success("let y = 'test' for x in 1 { y = x } y", "'test'");
 	success("let y = 'test' for x in 'salut' { y = x } y", "'test'");
 	success("let x = 'test' for x in [1] {} x", "'test'");
+	success("let y = '' for k, x in { let x = <> x.insert(4) x } { y += k + ':' + x } y", "'0:4'");
+//	success("let fs = [] fs.push(s -> {let sum = 0 for v in s {sum += v} sum}) fs[0](<1,2>)", "3");
+	success("let fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)", "[1, 2]");
 
 	/*
 	 * Array For
@@ -82,6 +85,7 @@ void Test::test_loops() {
 	success("[for x in [1, 2, 3] { x }]", "[1, 2, 3]");
 	success("let a = ['a': 'b'] [for k, x in a { k+x }]", "['ab']");
 	success("[for x in [1, 2, 3] {[ for y in [1, 2, 3] { if y == 2 continue x * y }] }]", "[[1, 3], [2, 6], [3, 9]]");
+	success("let sorted = [for x in <5, 2, 4, 1, 3> { x }] sorted", "[1, 2, 3, 4, 5]");
 
 	/*
 	 * Break & continue
