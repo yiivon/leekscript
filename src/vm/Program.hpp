@@ -9,20 +9,36 @@ namespace ls {
 class LSValue;
 
 class Program {
+private:
+
+	std::string code; // The program code
+	void* closure;
+	double compile_time;
+	ExecMode mode;
+
+	void compile_main(Context&);
+	void compile_jit(Compiler&, Context&, bool);
+	LSValue* execute_main();
 
 public:
 
+	Function* main;
 	std::vector<Function*> functions;
 	std::map<std::string, LSValue*> system_vars;
-	Function* main;
-	void* closure;
 
-	Program();
+
+	Program(const std::string& code);
 	virtual ~Program();
 
-	void compile(Context&);
-	LSValue* execute();
-	void compile_jit(Compiler&, Context&, bool);
+	/*
+	 * Compile the program with a VM, a context (json) and an execution mode
+	 */
+	double compile(VM* vm, const std::string& context, const ExecMode);
+
+	/*
+	 * Execute the program and get the result as a string
+	 */
+	std::string execute();
 
 	void print(std::ostream& os, bool debug = false) const;
 };

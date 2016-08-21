@@ -37,176 +37,22 @@ extern std::map<LSValue*, LSValue*> objs;
 
 string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 
+	// Reset
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
-#if DEBUG > 1
-	objs.clear();
-#endif
-
-	auto compile_start = chrono::high_resolution_clock::now();
-
-	LexicalAnalyser lex;
-	vector<Token> tokens = lex.analyse(code);
-
-	if (lex.errors.size()) {
-		if (mode == ExecMode::TEST) {
-			throw lex.errors[0];
-		}
-		for (auto error : lex.errors) {
-			cout << "Line " << error.line << " : " <<  error.message() << endl;
-		}
-		return ctx;
-	}
-
-	SyntaxicAnalyser syn;
-	Program* program = syn.analyse(tokens);
-
-	if (syn.getErrors().size() > 0) {
-		if (mode == ExecMode::COMMAND_JSON) {
-
-			cout << "{\"success\":false,\"errors\":[";
-			for (auto error : syn.getErrors()) {
-				cout << "{\"line\":" << error->token->line << ",\"message\":\"" << error->message << "\"}";
-			}
-			cout << "]}" << endl;
-			return ctx;
-
-		} else {
-			for (auto error : syn.getErrors()) {
-				cout << "Line " << error->token->line << " : " <<  error->message << endl;
-			}
-			return ctx;
-		}
-	}
-
-	Context context { ctx };
-
-	SemanticAnalyser sem;
-	sem.analyse(program, &context, modules);
-
-	/*
-	 * Debug
-	 */
-	#if DEBUG > 0
-		cout << "Program: "; program->print(cout, true);
+	#if DEBUG > 1
+		objs.clear();
 	#endif
 
-	if (sem.errors.size()) {
+	Program* program = new Program(code);
 
-		if (mode == ExecMode::COMMAND_JSON) {
-			cout << "{\"success\":false,\"errors\":[]}" << endl;
-		} else if (mode == ExecMode::TEST) {
-			delete program;
-			throw sem.errors[0];
-		} else {
-			for (auto e : sem.errors) {
-				cout << "Line " << e.line << " : " << e.message() << endl;
-			}
-		}
-		return ctx;
-	}
+	// Compile
+	program->compile(this, ctx, mode);
 
-	// Compilation
-	internals.clear();
+	// Execute
+	std::string result = program->execute();
 
-	program->compile(context);
-
-	auto compile_end = chrono::high_resolution_clock::now();
-
-	/*
-	 * Execute
-	 */
-	operations = 0;
-
-	auto exe_start = chrono::high_resolution_clock::now();
-	LSValue* res = program->execute();
-	auto exe_end = chrono::high_resolution_clock::now();
-
-	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
-	long compile_time_ns = chrono::duration_cast<chrono::nanoseconds>(compile_end - compile_start).count();
-
-	double exe_time_ms = (((double) exe_time_ns / 1000) / 1000);
-	double compile_time_ms = (((double) compile_time_ns / 1000) / 1000);
-
-	/*
-	 * Return results
-	 */
-	string result;
-
-	if (mode == ExecMode::COMMAND_JSON || mode == ExecMode::TOP_LEVEL) {
-
-		ostringstream oss;
-		res->print(oss);
-		result = oss.str();
-
-		string ctx = "{";
-
-//		unsigned i = 0;
-/*
-		for (auto g : globals) {
-			if (globals_ref[g.first]) continue;
-			LSValue* v = res_array->operator[] (i + 1);
-			ctx += "\"" + g.first + "\":" + v->to_json();
-			if (i < globals.size() - 1) ctx += ",";
-			i++;
-		}
-		*/
-		ctx += "}";
-		LSValue::delete_temporary(res);
-
-		if (mode == ExecMode::TOP_LEVEL) {
-			cout << result << endl;
-			cout << "(" << VM::operations << " ops, " << compile_time_ms << " ms + " << exe_time_ms << " ms)" << endl;
-			result = ctx;
-		} else {
-			cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
-					<< result << "\"}" << endl;
-			result = ctx;
-		}
-
-	} else if (mode == ExecMode::FILE_JSON) {
-
-		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
-
-		ostringstream oss;
-		res_array->operator[] (0)->print(oss);
-		result = oss.str();
-
-		LSValue::delete_temporary(res);
-
-		cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns
-			 << ",\"ctx\":" << ctx << ",\"res\":\"" << result << "\"}" << endl;
-
-
-	} else if (mode == ExecMode::NORMAL) {
-
-		ostringstream oss;
-		res->print(oss);
-		LSValue::delete_temporary(res);
-		string res_string = oss.str();
-
-		cout << res_string << endl;
-		cout << "(" << VM::operations << " ops, " << compile_time_ms << "ms + " << exe_time_ms << " ms)" << endl;
-
-		result = ctx;
-
-	} else if (mode == ExecMode::TEST) {
-
-		ostringstream oss;
-		res->print(oss);
-		result = oss.str();
-
-		LSValue::delete_temporary(res);
-
-	} else if (mode == ExecMode::TEST_OPS) {
-
-		LSValue::delete_temporary(res);
-		result = to_string(VM::operations);
-	}
-
-	/*
-	 * Cleaning
-	 */
+	// Cleaning
 	delete program;
 
 	#if DEBUG > 0

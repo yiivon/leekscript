@@ -12,7 +12,7 @@
  * 1 : print types + #leaks
  * 2 : print leak details
  */
-#define DEBUG 1
+#define DEBUG 0
 
 #define LS_INTEGER jit_type_int
 #define LS_LONG jit_type_long
@@ -53,15 +53,15 @@ public:
 	VM();
 	virtual ~VM();
 
-	void add_module(Module* m);
-
+	/*
+	 * Shorthand to execute a code
+	 */
 	std::string execute(const std::string code, std::string ctx, ExecMode mode);
 
+	void add_module(Module* m);
 	static jit_type_t get_jit_type(const Type& type);
 	static jit_value_t value_to_pointer(jit_function_t, jit_value_t, Type);
 	static jit_value_t pointer_to_value(jit_function_t, jit_value_t, Type);
-	// static bool is_number(void* v);
-
 	static jit_value_t get_refs(jit_function_t F, jit_value_t obj);
 	static void inc_refs(jit_function_t F, jit_value_t obj);
 	static void inc_refs_if_not_temp(jit_function_t F, jit_value_t obj);
