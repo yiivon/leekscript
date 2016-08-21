@@ -16,11 +16,18 @@ void Test::test_arrays() {
 	success("[1] + 2", "[1, 2]");
 	success("[1] + 0.5", "[1, 0.5]");
 	success("[1] + 0.5 + 'a' + null", "[1, 0.5, 'a', null]");
+	success("[1] + null", "[1, null]");
+	success("[1] + true", "[1, true]");
 	success("[1] + [2] + [3]", "[1, 2, 3]");
 	success("[1] + [2.5] + ['a']", "[1, 2.5, 'a']");
 	success("['a'] + [2.5] + [1]", "['a', 2.5, 1]");
 	success("[1] + ['a']", "[1, 'a']");
 	success("['a'] + [1]", "['a', 1]");
+	success("let a = ['a'] a += 'b' a", "['a', 'b']");
+	success("let a = [1] a += 'a' a", "[1, 'a']");
+	success("let a = [1.5] a += ['a', 'b'] a", "[1.5, 'a', 'b']");
+	success("let a = [1.5] a += false a", "[1.5, false]");
+	success("let a = [1] a += <'z', 'a'> a", "[1, 'a', 'z']");
 	success("[1, 2, 3][1]", "2");
 	success("let a = [1, 2, 3] a[0]", "1");
 	success("let a = [1, 2, 3] a[0] = 5 a[0]", "5");

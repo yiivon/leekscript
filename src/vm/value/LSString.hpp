@@ -35,7 +35,9 @@ public:
 	LSValue* operator ! () const override;
 	LSValue* operator ~ () const override;
 
-	LSValue* ls_radd(LSValue*) override;
+	LSValue* ls_radd(LSValue* value) override    { return value->ls_add(this); }
+	LSValue* ls_radd_eq(LSValue* value) override { return value->ls_add_eq(this); }
+
 	LSValue* ls_add(LSNull*) override;
 	LSValue* ls_add(LSBoolean*) override;
 	LSValue* ls_add(LSNumber*) override;
@@ -46,15 +48,15 @@ public:
 	LSValue* ls_add(LSFunction*) override;
 	LSValue* ls_add(LSClass*) override;
 
-	LSValue* operator += (LSValue*) override;
-	LSValue* operator += (const LSNull*) override;
-	LSValue* operator += (const LSBoolean*) override;
-	LSValue* operator += (const LSNumber*) override;
-	LSValue* operator += (const LSString*) override;
-	LSValue* operator += (const LSArray<LSValue*>*) override;
-	LSValue* operator += (const LSObject*) override;
-	LSValue* operator += (const LSFunction*) override;
-	LSValue* operator += (const LSClass*) override;
+	LSValue* ls_add_eq(LSNull*) override;
+	LSValue* ls_add_eq(LSBoolean*) override;
+	LSValue* ls_add_eq(LSNumber*) override;
+	LSValue* ls_add_eq(LSString*) override;
+	LSValue* ls_add_eq(LSArray<LSValue*>*) override;
+	LSValue* ls_add_eq(LSArray<int>*) override;
+	LSValue* ls_add_eq(LSObject*) override;
+	LSValue* ls_add_eq(LSFunction*) override;
+	LSValue* ls_add_eq(LSClass*) override;
 
 	LSValue* operator - (const LSValue*) const override;
 	LSValue* operator - (const LSNumber*) const override;

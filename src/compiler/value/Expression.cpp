@@ -17,7 +17,7 @@ namespace ls {
 Expression::Expression() : Expression(nullptr) {}
 
 Expression::Expression(Value* v) :
-	v1(v), v2(nullptr), op(nullptr), ignorev2(false), no_op(false), operations(0) {
+	v1(v), v2(nullptr), op(nullptr), store_result_in_v1(false), no_op(false), operations(0) {
 	type = Type::VALUE;
 	operations = 1;
 }
@@ -133,14 +133,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	constant = v1->constant and v2->constant;
 
-	// Array += element
-	if (op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
-		VariableValue* vv = dynamic_cast<VariableValue*>(v1);
-		if (vv->type.raw_type == RawType::ARRAY) {
-			vv->var->will_take_element(analyser, v2->type);
-		}
-	}
-
 	// A = B, A += B, etc. mix types
 	if (op->type == TokenType::EQUAL or op->type == TokenType::XOR
 		or op->type == TokenType::PLUS or op->type == TokenType::PLUS_EQUAL
@@ -213,6 +205,17 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				((LeftValue*) v1)->change_type(analyser, Type::FLOAT);
 			}
 		}
+
+		store_result_in_v1 = true;
+		type = v1->type;
+
+		// Array += element
+//		if (is_left_value && op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
+//			VariableValue* vv = dynamic_cast<VariableValue*>(v1);
+//			if (vv->type.raw_type == RawType::ARRAY) {
+//				vv->var->will_take_element(analyser, v2->type);
+//			}
+//		}
 	}
 
 	// [1, 2, 3] ~~ x -> x ^ 2
@@ -369,10 +372,7 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 }
 
 LSValue* jit_add_equal(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator += (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_add_eq(y);
 }
 int jit_add_equal_value(int* x, int y) {
 	return *x += y;
@@ -601,11 +601,11 @@ jit_value_t Expression::compile(Compiler& c) const {
 		}
 		case TokenType::PLUS_EQUAL: {
 
-			if (v1->type.raw_type == RawType::ARRAY) {
-//				cout << "Array add " << endl;
-				ls_func = (void*) jit_array_add_value;
-				break;
-			}
+//			if (v1->type.raw_type == RawType::ARRAY) {
+////				cout << "Array add " << endl;
+//				ls_func = (void*) jit_array_add_value;
+//				break;
+//			}
 
 			if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
 
@@ -1036,17 +1036,14 @@ jit_value_t Expression::compile(Compiler& c) const {
 			args.push_back(v2->compile(c));
 		}
 		jit_value_t v = jit_insn_call_native(c.F, "", ls_func, sig, args.data(), 2, JIT_CALL_NOTHROW);
-		if (v1->type.nature == Nature::VALUE and op->type == TokenType::PLUS_EQUAL) {
+
+//		if (v1->type.nature == Nature::VALUE and op->type == TokenType::PLUS_EQUAL) {
+//			jit_insn_store(c.F, args[0], v);
+//		}
+
+		if (store_result_in_v1) {
 			jit_insn_store(c.F, args[0], v);
 		}
-
-		// Delete operands
-//		if (v1->type.must_manage_memory()) {
-//			VM::delete_temporary(c.F, args[0]);
-//		}
-//		if (v2->type.must_manage_memory()) {
-//			VM::delete_temporary(c.F, args[1]);
-//		}
 
 		// Convert to value
 		if (type == Type::BOOLEAN) {

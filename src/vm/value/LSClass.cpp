@@ -111,12 +111,6 @@ bool LSClass::isTrue() const {
 	return false;
 }
 
-LSValue* LSClass::ls_radd(LSValue *value) {
-	return value->ls_add(this);
-}
-LSValue* LSClass::operator += (LSValue* value) {
-	return value->operator += (this);
-}
 LSValue* LSClass::operator - (const LSValue* value) const {
 	return value->operator - (this);
 }

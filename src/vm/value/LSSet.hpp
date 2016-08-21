@@ -33,8 +33,9 @@ public:
 	 */
 	virtual bool isTrue() const override;
 
-	virtual LSValue* ls_radd(LSValue* value) override { return value->ls_add(this); }
-	virtual LSValue* operator += (LSValue*) override;
+	LSValue* ls_radd(LSValue* value) override    { return value->ls_add(this); }
+	LSValue* ls_radd_eq(LSValue* value) override { return value->ls_add_eq(this); }
+
 	virtual LSValue* operator - (const LSValue*) const override;
 	virtual LSValue* operator -= (LSValue*) override;
 	virtual LSValue* operator * (const LSValue*) const override;

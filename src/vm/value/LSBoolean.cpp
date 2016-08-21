@@ -42,15 +42,15 @@ LSValue* LSBoolean::operator ~ () const {
 	return LSBoolean::get(not value);
 }
 
-LSValue* LSBoolean::ls_radd(LSValue* value) {
-	return value->ls_add(this);
-}
 LSValue* LSBoolean::ls_add(LSNumber* n) {
-	return LSNumber::get(this->value + n->value);
-}
-
-LSValue* LSBoolean::operator += (LSValue* value) {
-	return value->operator += (this);
+	if (this->value) {
+		if (n->refs == 0) {
+			n->value += 1;
+			return n;
+		}
+		return LSNumber::get(n->value + 1);
+	}
+	return n;
 }
 
 LSValue* LSBoolean::operator - (const LSValue* value) const {

@@ -57,9 +57,6 @@ LSValue* LSString::operator ~ () const {
 	return new LSString(reversed);
 }
 
-LSValue* LSString::ls_radd(LSValue* value) {
-	return value->ls_add(this);
-}
 LSValue* LSString::ls_add(LSNull*) {
 	if (refs == 0) {
 		this->append("null");
@@ -143,47 +140,46 @@ LSValue* LSString::ls_add(LSClass*) {
 	return r;
 }
 
-LSValue* LSString::operator += (LSValue* value) {
-	return value->operator += (this);
-}
-LSValue* LSString::operator += (const LSNull*) {
-	((std::string*) this)->operator += ("null");
-	if (refs == 0) refs = 1;
+LSValue* LSString::ls_add_eq(LSNull*) {
+	append("null");
 	return this;
 }
-LSValue* LSString::operator += (const LSBoolean* boolean) {
-	((std::string*) this)->operator += (boolean->value ? "true" : "false");
-	if (refs == 0) refs = 1;
+LSValue* LSString::ls_add_eq(LSBoolean* boolean) {
+	append(boolean->value ? "true" : "false");
 	return this;
 }
-LSValue* LSString::operator += (const LSNumber* value) {
-	((std::string*) this)->operator += (value->toString());
-	if (refs == 0) refs = 1;
+LSValue* LSString::ls_add_eq(LSNumber* value) {
+	append(value->toString());
+	if (value->refs == 0) delete value;
 	return this;
 }
-LSValue* LSString::operator += (const LSString* string) {
-	((std::string*) this)->operator += (*string);
-	if (refs == 0) refs = 1;
+LSValue* LSString::ls_add_eq(LSString* string) {
+	append(*string);
+	if (string->refs == 0) delete string;
 	return this;
 }
-LSValue* LSString::operator += (const LSArray<LSValue*>*) {
-	((std::string*) this)->operator += ("<array>");
-	if (refs == 0) refs = 1;
+LSValue* LSString::ls_add_eq(LSArray<LSValue*>* array) {
+	append("<array>");
+	if (array->refs == 0) delete array;
 	return this;
 }
-LSValue* LSString::operator += (const LSObject*) {
-	((std::string*) this)->operator += ("<object>");
-	if (refs == 0) refs = 1;
+LSValue* LSString::ls_add_eq(LSArray<int>* array) {
+	append("<array>");
+	if (array->refs == 0) delete array;
 	return this;
 }
-LSValue* LSString::operator += (const LSFunction*) {
-	((std::string*) this)->operator += ("<function>");
-	if (refs == 0) refs = 1;
+LSValue* LSString::ls_add_eq(LSObject* object) {
+	append("<object>");
+	if (object->refs == 0) delete object;
 	return this;
 }
-LSValue* LSString::operator += (const LSClass*) {
-	((std::string*) this)->operator += ("<class>");
-	if (refs == 0) refs = 1;
+LSValue* LSString::ls_add_eq(LSFunction* function) {
+	append("<function>");
+	LSValue::delete_temporary(function);
+	return this;
+}
+LSValue* LSString::ls_add_eq(LSClass*) {
+	append("<class>");
 	return this;
 }
 

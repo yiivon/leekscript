@@ -33,12 +33,6 @@ bool LSNull::isTrue() const {
 	return false;
 }
 
-LSValue* LSNull::ls_radd(LSValue *value) {
-	return value->ls_add(this);
-}
-LSValue* LSNull::operator += (LSValue* value) {
-	return value->operator += (this);
-}
 LSValue* LSNull::operator - (const LSValue* value) const {
 	return value->operator - (this);
 }
