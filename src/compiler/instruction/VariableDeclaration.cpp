@@ -34,7 +34,7 @@ void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 		os << " = ";
 	}
 	for (unsigned i = 0; i < expressions.size(); ++i) {
-		expressions.at(i)->print(os, indent + 1, debug);
+		expressions.at(i)->print(os, indent, debug);
 		if (i < expressions.size() - 1) {
 			os << ", ";
 		}

@@ -327,9 +327,6 @@ bool LSNumber::operator > (const LSNumber* v) const {
 	return this->value > v->value;
 }
 
-
-
-
 LSValue* LSNumber::at(const LSValue*) const {
 	return LSNull::get();
 }

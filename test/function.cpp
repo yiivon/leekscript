@@ -53,7 +53,7 @@ void Test::test_functions() {
 	 * Closures
 	 */
 	header("Closures");
-	//	success("let a = 5 let f = -> a f()", "5");
+//		success("let a = 5 let f = -> a f()", "5");
 	//	success("let f = x -> y -> x + y let g = f(5) g(12)", "17");
 	//	success("let f = x -> y -> x + y f(5)(12)", "17");
 	//	success("let f = x -> x (-> f(12))()", "12");

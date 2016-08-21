@@ -8,6 +8,7 @@
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
 
+
 using namespace std;
 
 namespace ls {
@@ -31,6 +32,10 @@ int string_begin_code(const LSString*);
 int string_code(const LSString*, int pos);
 long string_number(const LSString*);
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+#endif
 StringSTD::StringSTD() : Module("String") {
 
 	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);
@@ -81,6 +86,9 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	static_method("number", Type::LONG, {Type::STRING}, (void*) &string_number);
 }
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 StringSTD::~StringSTD() {}
 
@@ -308,3 +316,4 @@ long string_number(const LSString* s) {
 }
 
 }
+

@@ -1,6 +1,7 @@
 #include "SetSTD.hpp"
 #include "../value/LSSet.hpp"
 
+
 using namespace std;
 
 namespace ls {
@@ -11,6 +12,10 @@ int set_size(const LSSet<LSValue*>* set) {
 	return r;
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+#endif
 SetSTD::SetSTD() : Module("Set") {
 
 	method("size", {
@@ -43,5 +48,9 @@ SetSTD::SetSTD() : Module("Set") {
 			   {Type::INT_SET, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSSet<int>::ls_contains},
 		   });
 }
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 }
+

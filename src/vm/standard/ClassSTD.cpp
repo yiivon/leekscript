@@ -1,4 +1,3 @@
-
 #include "ClassSTD.hpp"
 
 namespace ls {

@@ -25,6 +25,10 @@ LSValue* array_sub(LSArray<LSValue*>* array, int begin, int end) {
 	return r;
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+#endif
 ArraySTD::ArraySTD() : Module("Array") {
 
 	method("average", {
@@ -116,11 +120,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type iter_fun_type_float = Type::FUNCTION;
 	iter_fun_type_float.setArgumentType(0, Type::FLOAT);
 	iter_fun_type_float.setReturnType(Type::VOID);
+
 	method("iter", {
-			   {Type::PTR_ARRAY, Type::VOID, {iter_fun_type},(void*) &LSArray<LSValue*>::ls_iter},
-			   {Type::FLOAT_ARRAY, Type::VOID, {iter_fun_type_float},(void*) &LSArray<double>::ls_iter},
-			   {Type::INT_ARRAY, Type::VOID, {iter_fun_type_int},(void*) &LSArray<int>::ls_iter},
-		   });
+		{Type::PTR_ARRAY, Type::VOID, {iter_fun_type}, (void*) &LSArray<LSValue*>::ls_iter},
+		{Type::FLOAT_ARRAY, Type::VOID, {iter_fun_type_float}, (void*) &LSArray<double>::ls_iter},
+		{Type::INT_ARRAY, Type::VOID, {iter_fun_type_int}, (void*) &LSArray<int>::ls_iter},
+	});
 
 	Type pred_fun_type = Type::FUNCTION;
 	pred_fun_type.setArgumentType(0, Type::POINTER);
@@ -131,6 +136,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type pred_fun_type_int = Type::FUNCTION;
 	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
+
 	method("filter", {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {pred_fun_type}, (void*) &LSArray<LSValue*>::ls_filter},
 		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {pred_fun_type_float}, (void*) &LSArray<double>::ls_filter},
@@ -178,6 +184,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_fun_type_int.setArgumentType(0, Type::POINTER);
 	fold_fun_type_int.setArgumentType(1, Type::INTEGER);
 	fold_fun_type_int.setReturnType(Type::POINTER);
+
 	method("foldLeft", {
 		{Type::PTR_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldLeft},
 		{Type::FLOAT_ARRAY, Type::POINTER, {fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldLeft},
@@ -220,10 +227,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("clear", {
-			   {Type::PTR_ARRAY, Type::PTR_ARRAY, {}, (void*) &LSArray<LSValue*>::ls_clear},
-			   {Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) &LSArray<double>::ls_clear},
-			   {Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::ls_clear},
-		   });
+		{Type::PTR_ARRAY, Type::PTR_ARRAY, {}, (void*) &LSArray<LSValue*>::ls_clear},
+		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {}, (void*) &LSArray<double>::ls_clear},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::ls_clear},
+	});
 
 	method("fill", {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_fill},
@@ -294,10 +301,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("iter", {
-					  {Type::VOID, {Type::PTR_ARRAY, iter_fun_type},(void*) &LSArray<LSValue*>::ls_iter},
-					  {Type::VOID, {Type::FLOAT_ARRAY, iter_fun_type_float},(void*) &LSArray<double>::ls_iter},
-					  {Type::VOID, {Type::INT_ARRAY, iter_fun_type_int},(void*) &LSArray<int>::ls_iter},
-				  });
+		{Type::VOID, {Type::PTR_ARRAY, iter_fun_type},(void*) &LSArray<LSValue*>::ls_iter},
+		{Type::VOID, {Type::FLOAT_ARRAY, iter_fun_type_float},(void*) &LSArray<double>::ls_iter},
+		{Type::VOID, {Type::INT_ARRAY, iter_fun_type_int},(void*) &LSArray<int>::ls_iter},
+	});
 
 	static_method("filter", {
 		{Type::PTR_ARRAY, {Type::PTR_ARRAY, pred_fun_type}, (void*) &LSArray<LSValue*>::ls_filter},
@@ -310,6 +317,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::BOOLEAN, {Type::FLOAT_ARRAY, Type::FLOAT}, (void*) &LSArray<double>::ls_contains},
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_contains}
 	});
+
 	static_method("isEmpty", {
 		{Type::BOOLEAN, {Type::PTR_ARRAY}, (void*)&LSArray<LSValue*>::ls_empty},
 		{Type::BOOLEAN, {Type::FLOAT_ARRAY}, (void*)&LSArray<double>::ls_empty},
@@ -327,6 +335,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::POINTER, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_first},
 		{Type::POINTER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_first},
 	});
+
 	static_method("last", {
 		{Type::POINTER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_last},
 		{Type::POINTER, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_last},
@@ -338,6 +347,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::POINTER, {Type::FLOAT_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldLeft},
 		{Type::POINTER, {Type::INT_ARRAY, fold_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldLeft}
 	});
+
 	static_method("foldRight", {
 		{Type::POINTER, {Type::PTR_ARRAY, fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
 		{Type::POINTER, {Type::FLOAT_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
@@ -345,15 +355,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("shuffle", {
-					  {Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_shuffle},
-					  {Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_shuffle},
-					  {Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_shuffle},
-				  });
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_shuffle},
+		{Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_shuffle},
+		{Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_shuffle},
+	});
 	static_method("reverse", {
-					  {Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_reverse},
-					  {Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_reverse},
-					  {Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_reverse},
-				  });
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_reverse},
+		{Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY}, (void*) &LSArray<double>::ls_reverse},
+		{Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_reverse},
+	});
 
 	static_method("search", {
 		{Type::INTEGER, {Type::PTR_ARRAY, Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_search},
@@ -380,10 +390,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("pushAll", {
-					  {Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::PTR_ARRAY}, (void*)&LSArray<LSValue*>::ls_push_all},
-					  {Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY, Type::FLOAT_ARRAY}, (void*)&LSArray<LSValue*>::ls_push_all},
-					  {Type::INT_ARRAY, {Type::INT_ARRAY, Type::INT_ARRAY}, (void*)&LSArray<LSValue*>::ls_push_all},
-				  });
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::PTR_ARRAY}, (void*)&LSArray<LSValue*>::ls_push_all},
+		{Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY, Type::FLOAT_ARRAY}, (void*)&LSArray<LSValue*>::ls_push_all},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INT_ARRAY}, (void*)&LSArray<LSValue*>::ls_push_all},
+	});
 
 	static_method("join", {
 		{Type::STRING, {Type::PTR_ARRAY, Type::STRING}, (void*) &LSArray<LSValue*>::ls_join},
@@ -421,6 +431,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_remove_element}
 	});
 }
-
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 }
+
+
