@@ -8,7 +8,7 @@ SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
 OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 
-FLAGS := -std=c++11 -O2 -g3 -Wall -Wextra
+FLAGS := -std=c++14 -O2 -g3 -Wall -Wextra
 LIBS := -ljit
 
 .PHONY: test
@@ -43,6 +43,7 @@ lib: makedirs $(OBJ_LIB)
 	
 install: lib
 	cp build/libleekscript.so /usr/lib/
+	@find -iregex '.*\.\(hpp\|h\|tcc\)' | cpio -updm /usr/include/leekscript/
 	@echo "Library installed!"
 	
 clean:

@@ -56,7 +56,7 @@ SyntaxicAnalyser::~SyntaxicAnalyser() {
 	}
 }
 
-Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
+Function* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 
 	this->tokens = tokens;
 	this->lt = nullptr;
@@ -64,11 +64,10 @@ Program* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 	this->nt = tokens.size() > 1 ? &tokens.at(1) : nullptr;
 	this->i = 0;
 
-	Program* program = new Program();
-	program->main = new Function();
-	program->main->body = eatMain();
+	Function* function = new Function();
+	function->body = eatMain();
 
-	return program;
+	return function;
 }
 
 Block* SyntaxicAnalyser::eatMain() {

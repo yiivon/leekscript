@@ -43,7 +43,7 @@ public:
 	SyntaxicAnalyser();
 	~SyntaxicAnalyser();
 
-	Program* analyse(std::vector<Token>&);
+	Function* analyse(std::vector<Token>&);
 
 	Block* eatMain();
 	Token* eatIdent();
