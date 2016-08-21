@@ -269,11 +269,6 @@ bool LSString::operator < (const LSClass*) const {
 }
 
 
-
-bool LSString::in(const LSValue*) const {
-	return false;
-}
-
 u_int32_t LSString::u8_char_at(char* s, int pos) {
 	int i = 0;
 	int j = 0;

@@ -87,6 +87,13 @@ public:
 	virtual const std::string getJsonName() const { return "map"; }
 };
 
+class SetRawType : public BaseRawType {
+public:
+	virtual const std::string getName() const { return "set"; }
+	virtual const std::string getClass() const { return "Set"; }
+	virtual const std::string getJsonName() const { return "set"; }
+};
+
 class IntervalRawType : public BaseRawType {
 public:
 	virtual const std::string getName() const { return "interval"; }
@@ -128,6 +135,7 @@ public:
 	static const StringRawType* const STRING;
 	static const ArrayRawType* const ARRAY;
 	static const MapRawType* const MAP;
+	static const SetRawType* const SET;
 	static const IntervalRawType* const INTERVAL;
 	static const ObjectRawType* const OBJECT;
 	static const FunctionRawType* const FUNCTION;
@@ -207,6 +215,9 @@ public:
 	static const Type INT_PTR_MAP;
 	static const Type INT_INT_MAP;
 	static const Type INT_FLOAT_MAP;
+	static const Type PTR_SET;
+	static const Type INT_SET;
+	static const Type FLOAT_SET;
 	static const Type INTERVAL;
 	static const Type FUNCTION;
 	static const Type FUNCTION_P;

@@ -266,6 +266,10 @@ LSString* number_char(LSNumber* x) {
 	return new LSString(dest);
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+#endif
 NumberSTD::NumberSTD() : Module("Number") {
 
 	static_field("pi", Type::FLOAT, (void*) &Number_pi);
@@ -338,7 +342,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
 	static_method("char", Type::STRING, {Type::NUMBER}, (void*) &number_char);
 }
-
-
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 }
+

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "../../compiler/value/Expression.hpp"
+#include "Value.hpp"
 
 namespace ls {
 
@@ -12,7 +12,6 @@ public:
 
 	std::vector<Value*> expressions;
 	bool interval = false;
-	Type supported_type;
 
 	Array();
 	virtual ~Array();

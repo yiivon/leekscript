@@ -9,6 +9,7 @@
 #include "../../vm/standard/StringSTD.hpp"
 #include "../../vm/standard/ArraySTD.hpp"
 #include "../../vm/standard/MapSTD.hpp"
+#include "../../vm/standard/SetSTD.hpp"
 #include "../../vm/standard/ObjectSTD.hpp"
 #include "../../vm/standard/SystemSTD.hpp"
 #include "../../vm/standard/FunctionSTD.hpp"
@@ -97,6 +98,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	StringSTD().include(this, program);
 	ArraySTD().include(this, program);
 	MapSTD().include(this, program);
+	SetSTD().include(this, program);
 	ObjectSTD().include(this, program);
 	FunctionSTD().include(this, program);
 	ClassSTD().include(this, program);

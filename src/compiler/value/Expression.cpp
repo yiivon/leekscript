@@ -218,7 +218,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
 		v2->will_take(analyser, { v1->type.getElementType() });
-		type = Type::ARRAY;
+		type = Type::PTR_ARRAY;
 		type.setElementType(v2->type.getReturnType());
 	}
 
@@ -831,6 +831,10 @@ jit_value_t Expression::compile(Compiler& c) const {
 			conv_info = Type::BOOLEAN;
 			break;
 		}
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+#endif
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.getElementType() == Type::INTEGER) {
 				if (type.getElementType() == Type::INTEGER) {
@@ -853,6 +857,9 @@ jit_value_t Expression::compile(Compiler& c) const {
 			}
 			break;
 		}
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 		case TokenType::IN: {
 			use_jit_func = false;
 			ls_func = (void*) &jit_in;

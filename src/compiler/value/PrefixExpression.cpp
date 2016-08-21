@@ -56,7 +56,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 			if (vv->name == "Number") type = Type::INTEGER;
 			if (vv->name == "Boolean") type = Type::BOOLEAN;
 			if (vv->name == "String") type = Type::STRING;
-			if (vv->name == "Array") type = Type::ARRAY;
+			if (vv->name == "Array") type = Type::PTR_ARRAY;
 			if (vv->name == "Object") type = Type::OBJECT;
 		}
 		if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
@@ -71,7 +71,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 				}
 				if (vv->name == "Boolean") type = Type::BOOLEAN;
 				if (vv->name == "String") type = Type::STRING;
-				if (vv->name == "Array") type = Type::ARRAY;
+				if (vv->name == "Array") type = Type::PTR_ARRAY;
 				if (vv->name == "Object") type = Type::OBJECT;
 			}
 		}
