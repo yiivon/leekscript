@@ -48,11 +48,11 @@ public:
 	LSValue* operator -- () override;
 	LSValue* operator -- (int) override;
 
-	LSValue* operator + (const LSValue*) const override;
-	LSValue* operator + (const LSNull*) const override;
-	LSValue* operator + (const LSBoolean*) const override;
-	LSValue* operator + (const LSNumber*) const override;
-	LSValue* operator + (const LSString*) const override;
+	LSValue* ls_radd(LSValue*) override;
+	LSValue* ls_add(LSNull*) override;
+	LSValue* ls_add(LSBoolean*) override;
+	LSValue* ls_add(LSNumber*) override;
+	LSValue* ls_add(LSString*) override;
 
 	LSValue* operator += (LSValue*) override;
 	LSValue* operator += (const LSNull*) override;

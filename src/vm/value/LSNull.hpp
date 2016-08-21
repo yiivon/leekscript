@@ -26,7 +26,7 @@ public:
 
 	bool isTrue() const override;
 
-	LSValue* operator + (const LSValue*) const override;
+	LSValue* ls_radd(LSValue *) override;
 	LSValue* operator += (LSValue*) override;
 	LSValue* operator - (const LSValue*) const override;
 	LSValue* operator -= (LSValue*) override;

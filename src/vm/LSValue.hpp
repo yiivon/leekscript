@@ -50,26 +50,27 @@ public:
 	virtual LSValue* operator -- ();
 	virtual LSValue* operator -- (int);
 
-	virtual LSValue* operator + (const LSValue*) const = 0;
-	virtual LSValue* operator + (const LSNull*) const;
-	virtual LSValue* operator + (const LSBoolean*) const;
-	virtual LSValue* operator + (const LSNumber*) const;
-	virtual LSValue* operator + (const LSString*) const;
-	virtual LSValue* operator + (const LSArray<LSValue*>*) const;
-	virtual LSValue* operator + (const LSArray<int>*) const;
-	virtual LSValue* operator + (const LSArray<double>*) const;
-	virtual LSValue* operator + (const LSMap<LSValue*,LSValue*>*) const;
-	virtual LSValue* operator + (const LSMap<LSValue*,int>*) const;
-	virtual LSValue* operator + (const LSMap<LSValue*,double>*) const;
-	virtual LSValue* operator + (const LSMap<int,LSValue*>*) const;
-	virtual LSValue* operator + (const LSMap<int,int>*) const;
-	virtual LSValue* operator + (const LSMap<int,double>*) const;
-	virtual LSValue* operator + (const LSSet<LSValue*>*) const;
-	virtual LSValue* operator + (const LSSet<int>*) const;
-	virtual LSValue* operator + (const LSSet<double>*) const;
-	virtual LSValue* operator + (const LSObject*) const;
-	virtual LSValue* operator + (const LSFunction*) const;
-	virtual LSValue* operator + (const LSClass*) const;
+	LSValue* operator + (LSValue* value) { return value->ls_radd(this); }
+	virtual LSValue* ls_radd(LSValue*) = 0;
+	virtual LSValue* ls_add(LSNull*);
+	virtual LSValue* ls_add(LSBoolean*);
+	virtual LSValue* ls_add(LSNumber*);
+	virtual LSValue* ls_add(LSString*);
+	virtual LSValue* ls_add(LSArray<LSValue*>*);
+	virtual LSValue* ls_add(LSArray<int>*);
+	virtual LSValue* ls_add(LSArray<double>*);
+	virtual LSValue* ls_add(LSMap<LSValue*,LSValue*>*);
+	virtual LSValue* ls_add(LSMap<LSValue*,int>*);
+	virtual LSValue* ls_add(LSMap<LSValue*,double>*);
+	virtual LSValue* ls_add(LSMap<int,LSValue*>*);
+	virtual LSValue* ls_add(LSMap<int,int>*);
+	virtual LSValue* ls_add(LSMap<int,double>*);
+	virtual LSValue* ls_add(LSSet<LSValue*>*);
+	virtual LSValue* ls_add(LSSet<int>*);
+	virtual LSValue* ls_add(LSSet<double>*);
+	virtual LSValue* ls_add(LSObject*);
+	virtual LSValue* ls_add(LSFunction*);
+	virtual LSValue* ls_add(LSClass*);
 
 	virtual LSValue* operator += (LSValue*) = 0;
 	virtual LSValue* operator += (const LSNull*);

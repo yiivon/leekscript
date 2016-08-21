@@ -57,34 +57,34 @@ LSValue* LSString::operator ~ () const {
 	return new LSString(reversed);
 }
 
-LSValue* LSString::operator + (const LSValue* v) const {
-	return v->operator + (this);
+LSValue* LSString::ls_radd(LSValue* value) {
+	return value->ls_add(this);
 }
-LSValue* LSString::operator + (const LSNull*) const {
+LSValue* LSString::ls_add(LSNull*) {
 	return new LSString(*this + "null");
 }
-LSValue* LSString::operator + (const LSBoolean* boolean) const {
+LSValue* LSString::ls_add(LSBoolean* boolean) {
 	return new LSString(*this + (boolean->value ? "true" : "false"));
 }
-LSValue* LSString::operator + (const LSNumber* value) const {
+LSValue* LSString::ls_add(LSNumber* value) {
 	return new LSString(*this + value->toString());
 }
-LSValue* LSString::operator + (const LSString* string) const {
+LSValue* LSString::ls_add(LSString* string) {
 	return new LSString(*this + *string);
 }
-LSValue* LSString::operator + (const LSArray<LSValue*>*) const {
+LSValue* LSString::ls_add(LSArray<LSValue*>*) {
 	return new LSString(*this + "<array>");
 }
-LSValue* LSString::operator + (const LSArray<int>*) const {
+LSValue* LSString::ls_add(LSArray<int>*) {
 	return new LSString(*this + "<array>");
 }
-LSValue* LSString::operator + (const LSObject* ) const {
+LSValue* LSString::ls_add(LSObject* ) {
 	return new LSString(*this + "<object>");
 }
-LSValue* LSString::operator + (const LSFunction*) const {
+LSValue* LSString::ls_add(LSFunction*) {
 	return new LSString(*this + "<function>");
 }
-LSValue* LSString::operator + (const LSClass*) const {
+LSValue* LSString::ls_add(LSClass*) {
 	return new LSString(*this + "<class>");
 }
 

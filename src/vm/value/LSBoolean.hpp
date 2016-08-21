@@ -34,8 +34,8 @@ public:
 	LSValue* operator ! () const override;
 	LSValue* operator ~ () const override;
 
-	LSValue* operator + (const LSValue*) const override;
-	LSValue* operator + (const LSNumber*) const override;
+	LSValue* ls_radd(LSValue*) override;
+	LSValue* ls_add(LSNumber*) override;
 	LSValue* operator += (LSValue*) override;
 	LSValue* operator - (const LSValue*) const override;
 	LSValue* operator - (const LSNumber*) const override;

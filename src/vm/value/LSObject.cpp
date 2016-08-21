@@ -75,9 +75,6 @@ bool LSObject::isTrue() const {
 	return values.size() > 0;
 }
 
-LSValue* LSObject::operator + (const LSValue* v) const {
-	return v->operator + (this);
-}
 LSValue* LSObject::operator += (LSValue* value) {
 	return value->operator += (this);
 }

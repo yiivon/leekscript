@@ -82,19 +82,19 @@ LSValue* LSNumber::operator -- (int) {
 	return LSNumber::get(old);
 }
 
-LSValue* LSNumber::operator + (const LSValue* v) const {
-	return v->operator + (this);
+LSValue* LSNumber::ls_radd(LSValue* value) {
+	return value->ls_add(this);
 }
-LSValue* LSNumber::operator + (const LSNull*) const {
+LSValue* LSNumber::ls_add(LSNull*) {
 	return this->clone();
 }
-LSValue* LSNumber::operator + (const LSBoolean* boolean) const {
+LSValue* LSNumber::ls_add(LSBoolean* boolean) {
 	return LSNumber::get(value + boolean->value);
 }
-LSValue* LSNumber::operator + (const LSString* string) const {
+LSValue* LSNumber::ls_add(LSString* string) {
 	return new LSString(toString() + *string);
 }
-LSValue* LSNumber::operator + (const LSNumber* number) const {
+LSValue* LSNumber::ls_add(LSNumber* number) {
 	return LSNumber::get(this->value + number->value);
 }
 

@@ -1219,76 +1219,76 @@ LSValue* LSArray<T>::operator ~ () const {
 
 
 template <class T>
-LSValue* LSArray<T>::operator + (const LSValue* v) const {
-	return v->operator + (this);
+LSValue* LSArray<T>::ls_radd(LSValue* value) {
+	return value->ls_add(this);
 }
 
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSNull* v) const {
+inline LSValue* LSArray<T>::ls_add(LSNull* v) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone((T) v);
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSNull*) const {
+inline LSValue* LSArray<int>::ls_add(LSNull*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSNull*) const {
+inline LSValue* LSArray<double>::ls_add(LSNull*) {
 	return LSNull::get();
 }
 
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSBoolean* boolean) const {
+inline LSValue* LSArray<T>::ls_add(LSBoolean* boolean) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone((T) boolean);
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSBoolean*) const {
+inline LSValue* LSArray<int>::ls_add(LSBoolean*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSBoolean*) const {
+inline LSValue* LSArray<double>::ls_add(LSBoolean*) {
 	return LSNull::get();
 }
 
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSNumber* v) const {
+inline LSValue* LSArray<T>::ls_add(LSNumber* v) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone((T) v);
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSNumber* number) const {
+inline LSValue* LSArray<int>::ls_add(LSNumber* number) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone(number->value);
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSNumber* number) const {
+inline LSValue* LSArray<double>::ls_add(LSNumber* number) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone(number->value);
 	return new_array;
 }
 
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSString* string) const {
+inline LSValue* LSArray<T>::ls_add(LSString* string) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone((T) string);
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSString*) const {
+inline LSValue* LSArray<int>::ls_add(LSString*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSString*) const {
+inline LSValue* LSArray<double>::ls_add(LSString*) {
 	return LSNull::get();
 }
 
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
+inline LSValue* LSArray<T>::ls_add(LSArray<LSValue*>* array) {
 	LSArray<LSValue*>* new_array = (LSArray<LSValue*>*) this->clone();
 	new_array->reserve(new_array->size() + array->size());
 	for (auto v : *array) {
@@ -1297,30 +1297,30 @@ inline LSValue* LSArray<T>::operator + (const LSArray<LSValue*>* array) const {
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSArray<LSValue*>*) const {
+inline LSValue* LSArray<int>::ls_add(LSArray<LSValue*>*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSArray<LSValue*>*) const {
+inline LSValue* LSArray<double>::ls_add(LSArray<LSValue*>*) {
 	return LSNull::get();
 }
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSArray<int>*) const {
+inline LSValue* LSArray<T>::ls_add(LSArray<int>*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSArray<int>* array) const {
+inline LSValue* LSArray<int>::ls_add(LSArray<int>* array) {
 	LSArray<int>* new_array = new LSArray<int>();
 	new_array->insert(new_array->end(), this->begin(), this->end());
 	new_array->insert(new_array->end(), array->begin(), array->end());
 	return new_array;
 }
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSArray<double>*) const {
+inline LSValue* LSArray<T>::ls_add(LSArray<double>*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSArray<double>* array) const {
+inline LSValue* LSArray<double>::ls_add(LSArray<double>* array) {
 	LSArray<double>* new_array = new LSArray<double>();
 	new_array->insert(new_array->end(), this->begin(), this->end());
 	new_array->insert(new_array->end(), array->begin(), array->end());
@@ -1328,47 +1328,47 @@ inline LSValue* LSArray<double>::operator + (const LSArray<double>* array) const
 }
 
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSObject* object) const {
+inline LSValue* LSArray<T>::ls_add(LSObject* object) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone((T) object);
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSObject*) const {
+inline LSValue* LSArray<int>::ls_add(LSObject*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSObject*) const {
+inline LSValue* LSArray<double>::ls_add(LSObject*) {
 	return LSNull::get();
 }
 
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSFunction* fun) const {
+inline LSValue* LSArray<T>::ls_add(LSFunction* fun) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone((T) fun);
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSFunction*) const {
+inline LSValue* LSArray<int>::ls_add(LSFunction*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSFunction*) const {
+inline LSValue* LSArray<double>::ls_add(LSFunction*) {
 	return LSNull::get();
 }
 
 template <class T>
-inline LSValue* LSArray<T>::operator + (const LSClass* clazz) const {
+inline LSValue* LSArray<T>::ls_add(LSClass* clazz) {
 	LSArray* new_array = (LSArray*) this->clone();
 	new_array->push_clone((T) clazz);
 	return new_array;
 }
 template <>
-inline LSValue* LSArray<int>::operator + (const LSClass*) const {
+inline LSValue* LSArray<int>::ls_add(LSClass*) {
 	return LSNull::get();
 }
 template <>
-inline LSValue* LSArray<double>::operator + (const LSClass*) const {
+inline LSValue* LSArray<double>::ls_add(LSClass*) {
 	return LSNull::get();
 }
 

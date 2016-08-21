@@ -32,7 +32,7 @@ public:
 	 */
 	virtual bool isTrue() const override;
 
-	virtual LSValue* operator + (const LSValue*) const override;
+	virtual LSValue* ls_radd(LSValue*) override;
 	virtual LSValue* operator += (LSValue*) override;
 	virtual LSValue* operator - (const LSValue*) const override;
 	virtual LSValue* operator -= (LSValue*) override;

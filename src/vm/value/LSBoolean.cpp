@@ -42,10 +42,10 @@ LSValue* LSBoolean::operator ~ () const {
 	return LSBoolean::get(not value);
 }
 
-LSValue* LSBoolean::operator + (const LSValue* v) const {
-	return v->operator + (this);
+LSValue* LSBoolean::ls_radd(LSValue* value) {
+	return value->ls_add(this);
 }
-LSValue* LSBoolean::operator + (const LSNumber*n) const {
+LSValue* LSBoolean::ls_add(LSNumber* n) {
 	return LSNumber::get(this->value + n->value);
 }
 
