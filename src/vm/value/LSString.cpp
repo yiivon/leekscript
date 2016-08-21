@@ -61,31 +61,86 @@ LSValue* LSString::ls_radd(LSValue* value) {
 	return value->ls_add(this);
 }
 LSValue* LSString::ls_add(LSNull*) {
+	if (refs == 0) {
+		this->append("null");
+		return this;
+	}
 	return new LSString(*this + "null");
 }
 LSValue* LSString::ls_add(LSBoolean* boolean) {
+	if (refs == 0) {
+		this->append(boolean->value ? "true" : "false");
+		return this;
+	}
 	return new LSString(*this + (boolean->value ? "true" : "false"));
 }
 LSValue* LSString::ls_add(LSNumber* value) {
-	return new LSString(*this + value->toString());
+	if (refs == 0) {
+		this->append(value->toString());
+		if (value->refs == 0) delete value;
+		return this;
+	}
+	LSValue* r = new LSString(*this + value->toString());
+	if (value->refs == 0) delete value;
+	return r;
 }
 LSValue* LSString::ls_add(LSString* string) {
-	return new LSString(*this + *string);
+	if (refs == 0) {
+		this->append(*string);
+		if (string->refs == 0) delete string;
+		return this;
+	}
+	LSValue* r = new LSString(*this + *string);
+	if (string->refs == 0) delete string;
+	return r;
 }
-LSValue* LSString::ls_add(LSArray<LSValue*>*) {
-	return new LSString(*this + "<array>");
+LSValue* LSString::ls_add(LSArray<LSValue*>* array) {
+	if (refs == 0) {
+		this->append("<array>");
+		if (array->refs == 0) delete array;
+		return this;
+	}
+	LSValue* r = new LSString(*this + "<array>");
+	if (array->refs == 0) delete array;
+	return r;
 }
-LSValue* LSString::ls_add(LSArray<int>*) {
-	return new LSString(*this + "<array>");
+LSValue* LSString::ls_add(LSArray<int>* array) {
+	if (refs == 0) {
+		this->append("<array>");
+		if (array->refs == 0) delete array;
+		return this;
+	}
+	LSValue* r = new LSString(*this + "<array>");
+	if (array->refs == 0) delete array;
+	return r;
 }
-LSValue* LSString::ls_add(LSObject* ) {
-	return new LSString(*this + "<object>");
+LSValue* LSString::ls_add(LSObject* object) {
+	if (refs == 0) {
+		this->append("<object>");
+		if (object->refs == 0) delete object;
+		return this;
+	}
+	LSValue* r = new LSString(*this + "<object>");
+	if (object->refs == 0) delete object;
+	return r;
 }
-LSValue* LSString::ls_add(LSFunction*) {
-	return new LSString(*this + "<function>");
+LSValue* LSString::ls_add(LSFunction* function) {
+	if (refs == 0) {
+		this->append("<function>");
+		if (function->refs == 0) delete function;
+		return this;
+	}
+	LSValue* r = new LSString(*this + "<function>");
+	if (function->refs == 0) delete function;
+	return r;
 }
 LSValue* LSString::ls_add(LSClass*) {
-	return new LSString(*this + "<class>");
+	if (refs == 0) {
+		this->append("<class>");
+		return this;
+	}
+	LSValue* r = new LSString(*this + "<class>");
+	return r;
 }
 
 LSValue* LSString::operator += (LSValue* value) {
@@ -182,7 +237,7 @@ LSValue* LSString::operator / (const LSString* s) const {
 			u_int32_t c = u8_nextchar(string_chars, &i);
 			u8_toutf8(buff, 5, &c, 1);
 			LSString* ch = new LSString(buff);
-			array->push_no_clone(ch);
+			array->push_inc(ch);
 		}
  	} else {
 
@@ -193,14 +248,14 @@ LSValue* LSString::operator / (const LSString* s) const {
 		while (i < l) {
 			u_int32_t c = u8_nextchar(string_chars, &i);
 			if (c == separator) {
-				array->push_no_clone(new LSString(item));
+				array->push_inc(new LSString(item));
 				item = "";
 			} else {
 				u8_toutf8(buff, 5, &c, 1);
 				item += buff;
 			}
 		}
-		array->push_no_clone(new LSString(item));
+		array->push_inc(new LSString(item));
 //		stringstream ss(*this);
 //		string item;
 //		while (getline(ss, item, s->operator[] (0))) {

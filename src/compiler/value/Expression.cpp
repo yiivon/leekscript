@@ -169,6 +169,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (op->type == TokenType::DIVIDE and v1->type == Type::STRING and v2->type == Type::STRING) {
 			type = Type::STRING_ARRAY;
 		}
+
+		// Unknown + String => String
+		if (op->type == TokenType::PLUS && v2->type == Type::STRING) {
+			type = Type::STRING;
+		}
 	}
 
 	// Boolean operators : result is a boolean
@@ -256,16 +261,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 
 LSValue* jit_add(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator + (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-LSValue* jit_int_array_add(LSArray<int>* x, LSArray<int>* y) {
-	LSValue* r = x->operator + (y);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_add(y);
 }
 LSValue* jit_sub(LSValue* x, LSValue* y) {
 	LSValue* r = y->operator - (x);
@@ -762,11 +758,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 		}
 		case TokenType::PLUS: {
 			jit_func = &jit_insn_add;
-			if (v1->type == Type::INT_ARRAY and v2->type == Type::INT_ARRAY) {
-				ls_func = (void*) &jit_int_array_add;
-			} else {
-				ls_func = (void*) &jit_add;
-			}
+			ls_func = (void*) &jit_add;
 			break;
 		}
 		case TokenType::MINUS: {

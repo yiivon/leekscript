@@ -51,25 +51,25 @@ LSValue* LSValue::operator ++ (int) { return LSNull::get(); }
 LSValue* LSValue::operator -- () { return LSNull::get(); }
 LSValue* LSValue::operator -- (int) { return LSNull::get(); }
 
-LSValue* LSValue::ls_add(LSNull*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSBoolean*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSNumber*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSString*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSArray<LSValue*>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSArray<int>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSArray<double>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSMap<LSValue*,LSValue*>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSMap<LSValue*,int>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSMap<LSValue*,double>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSMap<int,LSValue*>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSMap<int,int>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSMap<int,double>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSSet<LSValue*>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSSet<int>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSSet<double>*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSObject*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSFunction*) { return LSNull::get(); }
-LSValue* LSValue::ls_add(LSClass*) { return LSNull::get(); }
+LSValue* LSValue::ls_add(LSNull*)                         { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSBoolean*)                      { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSNumber* value)                 { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSString* value)                 { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSArray<LSValue*>* value)        { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSArray<int>* value)             { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSArray<double>* value)          { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSMap<LSValue*,LSValue*>* value) { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSMap<LSValue*,int>* value)      { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSMap<LSValue*,double>* value)   { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSMap<int,LSValue*>* value)      { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSMap<int,int>* value)           { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSMap<int,double>* value)        { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSSet<LSValue*>* value)          { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSSet<int>* value)               { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSSet<double>* value)            { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSObject* value)                 { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSFunction* value)               { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::ls_add(LSClass* value)                  { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
 
 LSValue* LSValue::operator += (const LSNull*) { return LSNull::get(); }
 LSValue* LSValue::operator += (const LSBoolean*) { return LSNull::get(); }

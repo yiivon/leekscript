@@ -50,7 +50,7 @@ public:
 	virtual LSValue* operator -- ();
 	virtual LSValue* operator -- (int);
 
-	LSValue* operator + (LSValue* value) { return value->ls_radd(this); }
+	LSValue* ls_add(LSValue* value) { return value->ls_radd(this); }
 	virtual LSValue* ls_radd(LSValue*) = 0;
 	virtual LSValue* ls_add(LSNull*);
 	virtual LSValue* ls_add(LSBoolean*);

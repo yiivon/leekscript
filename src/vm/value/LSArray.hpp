@@ -27,9 +27,9 @@ public:
 	/*
 	 * Array functions
 	 */
-	void push_clone(T value);
-	void push_move(T value);
-	void push_no_clone(T value);
+	void push_clone(T value); // clone increment and push
+	void push_move(T value); // clone (if not temporaray) increment and push
+	void push_inc(T value); // increment (if not native) and push
 
 	LSArray<T>* ls_clear();
 	T ls_remove(int index);
@@ -52,7 +52,9 @@ public:
 	void ls_iter(const void* fun);
 	bool ls_contains(T val);
 	LSValue* ls_push(T val);
-	LSArray<T>* ls_push_all(LSArray<T>* array);
+	LSArray<T>* ls_push_all_ptr(LSArray<LSValue*>* array);
+	LSArray<T>* ls_push_all_int(LSArray<int>* array);
+	LSArray<T>* ls_push_all_flo(LSArray<double>* array);
 	LSArray<T>* ls_shuffle();
 	LSArray<T>* ls_reverse();
 	LSArray<T>* ls_filter(const void* fun);

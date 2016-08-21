@@ -52,7 +52,7 @@ void LSObject::addField(string name, LSValue* var) {
 LSArray<LSValue*>* LSObject::ls_get_keys() const {
 	LSArray<LSValue*>* keys = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
-		keys->push_no_clone(new LSString(i->first));
+		keys->push_inc(new LSString(i->first));
 	}
 	if (refs == 0) delete this;
 	return keys;

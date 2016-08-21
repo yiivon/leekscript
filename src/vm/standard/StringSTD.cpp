@@ -201,7 +201,7 @@ LSValue* string_split(LSString* string, LSString* delimiter) {
 	LSArray<LSValue*>* parts = new LSArray<LSValue*>();
 	if (*delimiter == "") {
 		for (char c : *string) {
-			parts->push_no_clone(new LSString(c));
+			parts->push_inc(new LSString(c));
 		}
 		if (string->refs == 0) {
 			delete string;
@@ -214,10 +214,10 @@ LSValue* string_split(LSString* string, LSString* delimiter) {
 		size_t last = 0;
 		size_t pos = 0;
 		while ((pos = string->find(*delimiter, last)) != std::wstring::npos) {
-			parts->push_no_clone(new LSString(string->substr(last, pos - last)));
+			parts->push_inc(new LSString(string->substr(last, pos - last)));
 			last = pos + delimiter->size();
 		}
-		parts->push_no_clone(new LSString(string->substr(last)));
+		parts->push_inc(new LSString(string->substr(last)));
 		if (string->refs == 0) {
 			delete string;
 		}
@@ -265,7 +265,7 @@ LSValue* string_substring(LSString* string, LSNumber* start, LSNumber* length) {
 LSValue* string_toArray(const LSString* string) {
 	LSArray<LSValue*>* parts = new LSArray<LSValue*>();
 	for (char c : *string) {
-		parts->push_no_clone(new LSString(c));
+		parts->push_inc(new LSString(c));
 	}
 	if (string->refs == 0) {
 		delete string;

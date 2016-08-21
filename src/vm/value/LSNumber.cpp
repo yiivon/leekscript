@@ -86,15 +86,33 @@ LSValue* LSNumber::ls_radd(LSValue* value) {
 	return value->ls_add(this);
 }
 LSValue* LSNumber::ls_add(LSNull*) {
-	return this->clone();
+	return this;
 }
 LSValue* LSNumber::ls_add(LSBoolean* boolean) {
-	return LSNumber::get(value + boolean->value);
+	if (boolean->value) {
+		if (refs == 0) {
+			this->value += 1;
+			return this;
+		}
+		return LSNumber::get(value + 1);
+	}
+	return this;
 }
 LSValue* LSNumber::ls_add(LSString* string) {
-	return new LSString(toString() + *string);
+	LSValue* r = new LSString(toString() + *string);
+	if (refs == 0) delete this;
+	if (string->refs == 0) delete string;
+	return r;
 }
 LSValue* LSNumber::ls_add(LSNumber* number) {
+	if (refs == 0) {
+		value += number->value;
+		return this;
+	}
+	if (number->refs == 0) {
+		number->value += value;
+		return number;
+	}
 	return LSNumber::get(this->value + number->value);
 }
 
