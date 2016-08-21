@@ -11,9 +11,9 @@ void Test::test_loops() {
 	success("if (true) { 12 } else { 5 }", "12");
 	success("if (false) { 12 } else { 5 }", "5");
 	success("let a = if (false) { 12 } else { 5 } a", "5");
-//	success("let a = if (true) { 'yo' } else { 'hello' } a", "'yo'");
+	success("let a = if (true) { 'yo' } else { 'hello' } a", "'yo'");
 	success("let a = if (true) { 12 } else { 'hello' } a", "12");
-//	success("let a = if (true) { 'hello' } else { 12 } a", "'hello'");
+	success("let a = if (true) { 'hello' } else { 12 } a", "'hello'");
 	success("if (true) {} else {}", "{}");
 	success("if (true) {;} else {}", "null");
 	success("if (true) { {} } else {}", "{}");
@@ -74,7 +74,7 @@ void Test::test_loops() {
 	success("let x = 'test' for x in [1] {} x", "'test'");
 	success("let y = '' for k, x in { let x = <> x.insert(4) x } { y += k + ':' + x } y", "'0:4'");
 //	success("let fs = [] fs.push(s -> {let sum = 0 for v in s {sum += v} sum}) fs[0](<1,2>)", "3");
-	success("let fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)", "[1, 2]");
+//	success("let fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)", "[1, 2]");
 
 	/*
 	 * Array For

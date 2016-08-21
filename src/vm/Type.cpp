@@ -166,7 +166,9 @@ bool Type::will_take(const std::vector<Type>& args_type) {
 				changed = true;
 			}
 		}
+
 	}
+
 	return changed;
 }
 
