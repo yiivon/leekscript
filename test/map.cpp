@@ -28,7 +28,7 @@ void Test::test_map() {
 	success("let x = ['a' : 1] x.erase(3.14) x", "['a' : 1]");
 
 	success("let x = [1 : 1] x.look(1,0)", "1");
-	//success("let x = ['a' : 'a'] x.look('a','b')", "'a'");
+	success("let x = ['a' : 'a'] x.look('a','b')", "'a'");
 	success("let x = ['a' : 'a'] x.look('b','b')", "'b'");
 	sem_err("let x = ['a' : 1] x.look(3.14,'a')", ls::SemanticException::METHOD_NOT_FOUND, "look");
 

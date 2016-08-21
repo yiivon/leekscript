@@ -8,6 +8,7 @@
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
 
+
 using namespace std;
 
 namespace ls {
@@ -31,6 +32,10 @@ int string_begin_code(const LSString*);
 int string_code(const LSString*, int pos);
 long string_number(const LSString*);
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+#endif
 StringSTD::StringSTD() : Module("String") {
 
 	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER_P}, (void*) &LSString::charAt);
@@ -42,7 +47,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
 	method("reverse", Type::STRING, Type::STRING, {}, (void*) &string_reverse);
 	method("substring", Type::STRING, Type::STRING, {Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
-	method("toArray", Type::STRING, Type::ARRAY, {}, (void*) &string_toArray);
+	method("toArray", Type::STRING, Type::PTR_ARRAY, {}, (void*) &string_toArray);
 	method("toLower", Type::STRING, Type::STRING, {}, (void*) &string_toLower);
 	method("toUpper", Type::STRING, Type::STRING, {}, (void*) &string_toUpper);
 	method("split", Type::STRING, Type::STRING_ARRAY, {Type::STRING}, (void*) &string_split);
@@ -69,7 +74,7 @@ StringSTD::StringSTD() : Module("String") {
 	static_method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &string_replace);
 	static_method("reverse", Type::STRING, {Type::STRING}, (void*) &string_reverse);
 	static_method("substring", Type::STRING, {Type::STRING, Type::INTEGER_P, Type::INTEGER_P}, (void*) &string_substring);
-	static_method("toArray", Type::ARRAY, {Type::STRING}, (void*) &string_toArray);
+	static_method("toArray", Type::PTR_ARRAY, {Type::STRING}, (void*) &string_toArray);
 	static_method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
 	static_method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);
 	static_method("split", Type::STRING_ARRAY, {Type::STRING, Type::STRING}, (void*) &string_split);
@@ -81,6 +86,9 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	static_method("number", Type::LONG, {Type::STRING}, (void*) &string_number);
 }
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 StringSTD::~StringSTD() {}
 
@@ -308,3 +316,4 @@ long string_number(const LSString* s) {
 }
 
 }
+

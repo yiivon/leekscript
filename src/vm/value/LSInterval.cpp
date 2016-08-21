@@ -13,7 +13,7 @@ LSInterval::LSInterval() {}
 LSInterval::~LSInterval() {}
 
 
-bool LSInterval::in(const LSValue* key) const {
+bool LSInterval::in(LSValue* key) const {
 
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		return n->value >= a and n->value <= b;

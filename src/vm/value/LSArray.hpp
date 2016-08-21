@@ -12,9 +12,6 @@
 namespace ls {
 
 template <typename T>
-using LSArrayIterator = typename std::vector<T>::iterator;
-
-template <typename T>
 class LSArray : public LSValue, public std::vector<T> {
 public:
 
@@ -129,7 +126,7 @@ public:
 	bool operator < (const LSClass*) const override;
 
 
-	bool in(const LSValue*) const override;
+	bool in(LSValue*) const override;
 
 	LSValue* at(const LSValue* value) const override;
 	LSValue** atL(const LSValue* value) override;

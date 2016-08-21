@@ -22,6 +22,7 @@ class Program;
 class Block;
 class Object;
 class Array;
+class Set;
 class Function;
 class Break;
 class Continue;
@@ -46,14 +47,15 @@ public:
 
 	Block* eatMain();
 	Token* eatIdent();
-	Value* eatExpression(bool pipe_opened = false);
-	Value* eatSimpleExpression(bool pipe_opened = false);
+	Value* eatExpression(bool pipe_opened = false, bool set_opened = false);
+	Value* eatSimpleExpression(bool pipe_opened = false, bool set_opened = false);
 	Value* eatValue();
 	bool isObject();
 	Value* eatBlockOrObject();
 	Block* eatBlock();
 	Object* eatObject();
 	Value* eatArrayOrMap();
+	Set* eatSet();
 	If* eatIf();
 	Match* eatMatch(bool force_value);
 	Match::Pattern eatMatchPattern();

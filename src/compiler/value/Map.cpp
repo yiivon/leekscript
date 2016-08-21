@@ -27,10 +27,10 @@ void Map::print(std::ostream& os, int indent, bool debug) const {
 	} else {
 		os << "[\n";
 		for (size_t i = 0; i < values.size(); ++i) {
-			os << tabs(indent+1);
-			keys[i]->print(os, indent + 1, debug);
+			os << tabs(indent + 1);
+			keys[i]->print(os, indent + 2, debug);
 			os << " : ";
-			values[i]->print(os, indent + 1, debug);
+			values[i]->print(os, indent + 2, debug);
 			os << "\n";
 		}
 		os << tabs(indent) << "]";
@@ -45,7 +45,6 @@ unsigned Map::line() const {
 }
 
 void Map::analyse(SemanticAnalyser* analyser, const Type&) {
-	constant = true;
 
 	Type key_type = Type::UNKNOWN;
 	Type value_type = Type::UNKNOWN;
@@ -54,18 +53,12 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 		Value* ex = keys[i];
 		ex->analyse(analyser, Type::UNKNOWN);
 
-		if (ex->constant == false) {
-			constant = false;
-		}
 		key_type = Type::get_compatible_type(key_type, ex->type);
 	}
 	for (size_t i = 0; i < values.size(); ++i) {
 		Value* ex = values[i];
 		ex->analyse(analyser, Type::UNKNOWN);
 
-		if (ex->constant == false) {
-			constant = false;
-		}
 		value_type = Type::get_compatible_type(value_type, ex->type);
 	}
 
@@ -85,14 +78,21 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 
 	// Re-analyze expressions with the supported type
+	constant = true;
 	for (size_t i = 0; i < keys.size(); ++i) {
 		keys[i]->analyse(analyser, key_type);
+		if (keys[i]->constant == false) {
+			constant = false;
+		}
 	}
 	for (size_t i = 0; i < values.size(); ++i) {
 		values[i]->analyse(analyser, value_type);
+		if (values[i]->constant == false) {
+			constant = false;
+		}
 	}
 
-	type = Type::MAP;
+	type = Type::PTR_PTR_MAP;
 	type.element_types = { key_type, value_type };
 }
 
@@ -148,10 +148,6 @@ void LSMap_insert_int_float(LSMap<int,double>* map, int key, double value) {
 
 jit_value_t Map::compile(Compiler &c) const {
 
-	jit_type_t key_type = type.element_types[0] == Type::INTEGER ? LS_INTEGER : LS_POINTER;
-	jit_type_t value_type = type.element_types[1] == Type::INTEGER ? LS_INTEGER:
-		type.element_types[1] == Type::FLOAT ? LS_REAL : LS_POINTER;
-
 	void* create = nullptr;
 	void* insert = nullptr;
 
@@ -176,7 +172,7 @@ jit_value_t Map::compile(Compiler &c) const {
 		jit_value_t k = keys[i]->compile(c);
 		jit_value_t v = values[i]->compile(c);
 
-		jit_type_t args[3] = {LS_POINTER, key_type, value_type};
+		jit_type_t args[3] = {LS_POINTER, VM::get_jit_type(type.element_types[0]), VM::get_jit_type(type.element_types[1])};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 0);
 		jit_value_t args_v[] = {map, k, v};
 		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 3, JIT_CALL_NOTHROW); ops += std::log2(i + 1);

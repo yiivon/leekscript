@@ -9,7 +9,7 @@ using namespace std;
 namespace ls {
 
 Array::Array() {
-	type = Type::ARRAY;
+	type = Type::PTR_ARRAY;
 }
 
 Array::~Array() {
@@ -50,6 +50,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (expressions.size() > 0) {
 
 			Type element_type = Type::UNKNOWN;
+			Type supported_type = Type::UNKNOWN;
 
 			for (size_t i = 0; i < expressions.size(); ++i) {
 

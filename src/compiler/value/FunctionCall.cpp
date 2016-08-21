@@ -89,7 +89,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (vv->name == "Number") type = Type::INTEGER;
 		if (vv->name == "Boolean") type = Type::BOOLEAN;
 		if (vv->name == "String") type = Type::STRING;
-		if (vv->name == "Array") type = Type::ARRAY;
+		if (vv->name == "Array") type = Type::PTR_ARRAY;
 		if (vv->name == "Object") type = Type::OBJECT;
 	}
 
@@ -247,7 +247,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				}
 			}
 			/*
-			if (object_type == Type::ARRAY) {
+			if (object_type == Type::PTR_ARRAY) {
 				cout << "array" << endl;
 
 				cout << "type before: " << function->type << endl;
@@ -257,7 +257,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					Type arg = function->type.getArgumentType(i);
 					if (arg.raw_type == RawType::FUNCTION) {
 						for (unsigned int j = 0; j < arg.getArgumentTypes().size(); ++j) {
-							if (arg.getArgumentType(j) == Type::ARRAY_ELEMENT) {
+							if (arg.getArgumentType(j) == Type::PTR_ARRAY_ELEMENT) {
 								cout << "set arg " << j << " : " << object_type.getElementType() << endl;
 								arg.setArgumentType(j, object_type.getElementType());
 								function->type.setArgumentType(i, arg);

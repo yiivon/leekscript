@@ -156,8 +156,7 @@ void Test::test_arrays() {
 
 	success("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')", "'concat:12310trueyonull'");
 	success("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> y + x), 'concat:')", "16");
-
-//	success("Array.shuffle([1, 2, 3, 10, true, 'yo', null])", "test shuffle ?");
+	success("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()", "7");
 
 	success("Array.reverse([1, 2, 3, 10, true, 'yo', null])", "[null, 'yo', true, 10, 3, 2, 1]");
 	success("[null].reverse()", "[null]");
