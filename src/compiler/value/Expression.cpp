@@ -169,11 +169,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (op->type == TokenType::DIVIDE and v1->type == Type::STRING and v2->type == Type::STRING) {
 			type = Type::STRING_ARRAY;
 		}
-
-		// Unknown + String => String
-		if (op->type == TokenType::PLUS && v2->type == Type::STRING) {
-			type = Type::STRING;
-		}
 	}
 
 	// Boolean operators : result is a boolean

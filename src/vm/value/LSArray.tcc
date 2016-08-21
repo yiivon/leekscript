@@ -1311,17 +1311,37 @@ inline LSValue* LSArray<LSValue*>::ls_add(LSNumber* v) {
 	new_array->push_move(v);
 	return new_array;
 }
-template <typename T>
-inline LSValue* LSArray<T>::ls_add(LSNumber* v) {
+template <>
+inline LSValue* LSArray<double>::ls_add(LSNumber* v) {
 	if (refs == 0) {
 		this->push_back(v->value);
 		if (v->refs == 0) delete v;
 		return this;
 	}
-	LSArray<T>* new_array = (LSArray<T>*) this->clone();
-	new_array->push_back(v->value);
+	LSArray<double>* r = (LSArray<double>*) this->clone();
+	r->push_back(v->value);
 	if (v->refs == 0) delete v;
-	return new_array;
+	return r;
+}
+template <>
+inline LSValue* LSArray<int>::ls_add(LSNumber* v) {
+	if (v->value == (int) v->value) {
+		if (refs == 0) {
+			this->push_back(v->value);
+			if (v->refs == 0) delete v;
+			return this;
+		}
+		LSArray<double>* r = (LSArray<double>*) this->clone();
+		r->push_back(v->value);
+		if (v->refs == 0) delete v;
+		return r;
+	}
+	LSArray<double>* ret = new LSArray<double>();
+	ret->insert(ret->end(), this->begin(), this->end());
+	ret->push_back(v->value);
+	if (refs == 0) delete this;
+	if (v->refs == 0) delete v;
+	return ret;
 }
 
 template <>
@@ -1330,15 +1350,19 @@ inline LSValue* LSArray<LSValue*>::ls_add(LSString* v) {
 		this->push_move(v);
 		return this;
 	}
-	LSArray<LSValue*>* new_array = (LSArray<LSValue*>*) this->clone();
-	new_array->push_move(v);
-	return new_array;
+	LSArray<LSValue*>* r = (LSArray<LSValue*>*) this->clone();
+	r->push_move(v);
+	return r;
 }
 template <typename T>
 inline LSValue* LSArray<T>::ls_add(LSString* v) {
+	LSArray<LSValue*>* r = new LSArray<LSValue*>();
+	for (T v : *this) {
+		r->push_inc(LSNumber::get(v));
+	}
+	r->push_move(v);
 	if (refs == 0) delete this;
-	if (v->refs == 0) delete v;
-	return LSNull::get();
+	return r;
 }
 
 template <>
