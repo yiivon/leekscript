@@ -15,7 +15,6 @@ LSValue* LSNull::get() {
 
 LSNull::LSNull() {
 	refs = 1;
-	cout << "create null" << endl;
 }
 
 LSNull::~LSNull() {
