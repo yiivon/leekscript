@@ -50,6 +50,7 @@ public:
 
 	LSValue* ls_radd(LSValue* value) override    { return value->ls_add(this); }
 	LSValue* ls_radd_eq(LSValue* value) override { return value->ls_add_eq(this); }
+	LSValue* ls_rsub(LSValue* value) override    { return value->ls_sub(this); }
 
 	LSValue* ls_add(LSNull*) override;
 	LSValue* ls_add(LSBoolean*) override;
@@ -60,11 +61,9 @@ public:
 	LSValue* ls_add_eq(LSBoolean*) override;
 	LSValue* ls_add_eq(LSNumber*) override;
 
-	LSValue* operator - (const LSValue*) const override;
-	LSValue* operator - (const LSNull*) const override;
-	LSValue* operator - (const LSBoolean*) const override;
-	LSValue* operator - (const LSNumber*) const override;
-	LSValue* operator - (const LSString*) const override;
+	LSValue* ls_sub(LSNull*) override;
+	LSValue* ls_sub(LSBoolean*) override;
+	LSValue* ls_sub(LSNumber*) override;
 
 	LSValue* operator -= (LSValue*) override;
 	LSValue* operator -= (const LSNull*) override;

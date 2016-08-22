@@ -126,22 +126,30 @@ LSValue* LSNumber::ls_add_eq(LSBoolean* boolean) {
 	return this;
 }
 
-LSValue* LSNumber::operator - (const LSValue* value) const {
-	return value->operator - (this);
+LSValue* LSNumber::ls_sub(LSNull*) {
+	return this;
 }
-LSValue* LSNumber::operator - (const LSNull*) const {
-	return LSNull::get();
+LSValue* LSNumber::ls_sub(LSBoolean* boolean) {
+	if (boolean->value) {
+		if (refs == 0) {
+			this->value -= 1;
+			return this;
+		}
+		return LSNumber::get(value - 1);
+	}
+	return this;
 }
-LSValue* LSNumber::operator - (const LSBoolean* boolean) const {
-	return LSNumber::get(this->value - boolean->value);
-}
-LSValue* LSNumber::operator - (const LSNumber* number) const {
+LSValue* LSNumber::ls_sub(LSNumber* number) {
+	if (refs == 0) {
+		value -= number->value;
+		return this;
+	}
+	if (number->refs == 0) {
+		number->value = this->value - number->value;
+		return number;
+	}
 	return LSNumber::get(this->value - number->value);
 }
-LSValue* LSNumber::operator - (const LSString* value) const {
-	return new LSString(*value + this->toString());
-}
-
 
 LSValue* LSNumber::operator -= (LSValue* value) {
 	return value->operator -= (this);

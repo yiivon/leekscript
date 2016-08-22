@@ -121,10 +121,6 @@ bool LSSet<T>::isTrue() const {
 }
 
 template <typename T>
-inline LSValue* LSSet<T>::operator - (const LSValue* value) const {
-	return value->operator - (this);
-}
-template <typename T>
 inline LSValue* LSSet<T>::operator -= (LSValue* value) {
 	return value->operator -= (this);
 }

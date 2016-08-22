@@ -133,7 +133,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	constant = v1->constant and v2->constant;
 
-	// A = B, A += B, etc. mix types
+	// A = B, A += B, A * B, etc. mix types
 	if (op->type == TokenType::EQUAL or op->type == TokenType::XOR
 		or op->type == TokenType::PLUS or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::TIMES or op->type == TokenType::TIMES_EQUAL
@@ -145,17 +145,15 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
 		or op->type == TokenType::SWAP) {
 
-		type = v1->type.mix(v2->type);
-
 		// Set the correct type nature for the two members
 		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
 			v1->analyse(analyser, Type::POINTER);
-			type.nature = Nature::POINTER;
 		}
 		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
 			v2->analyse(analyser, Type::POINTER);
-			type.nature = Nature::POINTER;
 		}
+
+		type = v1->type.mix(v2->type);
 
 		// String / String => Array<String>
 		if (op->type == TokenType::DIVIDE and v1->type == Type::STRING and v2->type == Type::STRING) {
@@ -207,15 +205,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 
 		store_result_in_v1 = true;
-		type = v1->type;
-
-		// Array += element
-//		if (is_left_value && op->type == TokenType::PLUS_EQUAL && v1->type.raw_type == RawType::ARRAY) {
-//			VariableValue* vv = dynamic_cast<VariableValue*>(v1);
-//			if (vv->type.raw_type == RawType::ARRAY) {
-//				vv->var->will_take_element(analyser, v2->type);
-//			}
-//		}
 	}
 
 	// [1, 2, 3] ~~ x -> x ^ 2
@@ -262,10 +251,7 @@ LSValue* jit_add(LSValue* x, LSValue* y) {
 	return x->ls_add(y);
 }
 LSValue* jit_sub(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator - (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_sub(y);
 }
 LSValue* jit_mul(LSValue* x, LSValue* y) {
 	LSValue* r = y->operator * (x);

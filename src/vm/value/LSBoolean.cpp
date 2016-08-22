@@ -53,11 +53,15 @@ LSValue* LSBoolean::ls_add(LSNumber* n) {
 	return n;
 }
 
-LSValue* LSBoolean::operator - (const LSValue* value) const {
-	return value->operator - (this);
-}
-LSValue* LSBoolean::operator - (const LSNumber*n) const {
-	return LSNumber::get(this->value - n->value);
+LSValue* LSBoolean::ls_sub(LSNumber* n) {
+	if (this->value) {
+		if (n->refs == 0) {
+			n->value = 1 - n->value;
+			return n;
+		}
+		return LSNumber::get(1 - n->value);
+	}
+	return n;
 }
 
 LSValue* LSBoolean::operator -= (LSValue* value) {

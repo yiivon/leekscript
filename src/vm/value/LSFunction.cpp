@@ -35,9 +35,6 @@ bool LSFunction::isTrue() const {
 	return true;
 }
 
-LSValue* LSFunction::operator - (const LSValue* value) const {
-	return value->operator - (this);
-}
 LSValue* LSFunction::operator -= (LSValue* value) {
 	return value->operator -= (this);
 }
