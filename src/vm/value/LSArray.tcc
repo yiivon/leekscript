@@ -1997,16 +1997,6 @@ inline bool LSArray<T>::operator < (const LSClass*) const {
 	return true;
 }
 
-
-template <>
-inline bool LSArray<LSValue*>::in(LSValue* key) const {
-	for (auto i = this->begin(); i != this->end(); i++) {
-		if ((*i)->operator == (key)) {
-			return true;
-		}
-	}
-	return false;
-}
 template <typename T>
 inline bool LSArray<T>::in(LSValue* key) const {
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
@@ -2019,6 +2009,15 @@ inline bool LSArray<T>::in(LSValue* key) const {
 	return false;
 }
 
+template <>
+inline bool LSArray<LSValue*>::in(LSValue* key) const {
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if ((*i)->operator == (key)) {
+			return true;
+		}
+	}
+	return false;
+}
 
 template <>
 inline int LSArray<int>::atv(const int i) {
