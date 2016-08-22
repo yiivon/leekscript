@@ -405,7 +405,7 @@ public:
 		return not this->operator <(value);
 	}
 
-	virtual bool in(LSValue*) const;
+	virtual bool in(LSValue*) { return false; }
 
 	virtual LSValue* at(const LSValue* key) const;
 	virtual LSValue** atL(const LSValue* key);

@@ -428,8 +428,6 @@ bool LSValue::operator > (const LSClass* value) const {
 	return not value->operator <(this) and not this->operator ==(value);
 }
 
-bool LSValue::in(LSValue*) const { return false; }
-
 LSValue* LSValue::at(const LSValue*) const {
 	return LSNull::get();
 }

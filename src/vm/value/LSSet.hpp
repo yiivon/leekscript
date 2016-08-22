@@ -43,7 +43,7 @@ public:
 	virtual bool operator < (const LSValue*) const override;
 //	virtual bool operator < (const LSSet<LSValue*>*) const override;
 
-	bool in(LSValue*) const override;
+	bool in(LSValue*) override;
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;
 	virtual std::ostream& print(std::ostream&) const override;

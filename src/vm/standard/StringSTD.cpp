@@ -18,7 +18,7 @@ LSValue* string_contains(LSString* haystack, LSString* needle);
 LSValue* string_endsWith(LSString* string, LSString* ending);
 int string_indexOf(LSString* haystack, LSString* needle);
 LSValue* string_length(LSString* string);
-LSValue* string_map(const LSString* string, void* fun);
+LSValue* string_map(LSString* string, void* fun);
 LSValue* string_replace(LSString* string, LSString* from, LSString* to);
 LSValue* string_reverse(LSString* string);
 LSValue* string_size(LSString* string);
@@ -136,10 +136,10 @@ LSValue* string_length(LSString* string) {
 	return r;
 }
 
-LSValue* string_map(const LSString* s, void* function) {
+LSValue* string_map(LSString* s, void* function) {
 
 	char buff[5];
-	std::string new_string = string("");
+	std::string r;
 	auto fun = (void* (*)(void*)) function;
 
 	const char* string_chars = s->c_str();
@@ -150,16 +150,17 @@ LSValue* string_map(const LSString* s, void* function) {
 		u_int32_t c = u8_nextchar(string_chars, &i);
 		u8_toutf8(buff, 5, &c, 1);
 		LSString* ch = new LSString(buff);
-		ch->refs = 1; // Why ?
+		ch->refs = 1;
 		LSString* res = (LSString*) fun(ch);
-		new_string += *res;
-		LSValue::delete_temporary(res);
+		r += *res;
 		LSValue::delete_ref(ch);
+		LSValue::delete_temporary(res);
 	}
 	if (s->refs == 0) {
-		delete s;
+		*s = r;
+		return s;
 	}
-	return new LSString(new_string);
+	return new LSString(r);
 }
 
 LSValue* string_replace(LSString* string, LSString* from, LSString* to) {
@@ -293,25 +294,19 @@ LSValue* string_toUpper(LSString* s) {
 
 int string_begin_code(const LSString* v) {
 	int r = LSString::u8_char_at((char*) v->c_str(), 0);
-	if (v->refs == 0) {
-		delete v;
-	}
+	if (v->refs == 0) delete v;
 	return r;
 }
 
 int string_code(const LSString* v, int pos) {
 	int r = LSString::u8_char_at((char*) v->c_str(), pos);
-	if (v->refs == 0) {
-		delete v;
-	}
+	if (v->refs == 0) delete v;
 	return r;
 }
 
 long string_number(const LSString* s) {
 	long r = stol(*s);
-	if (s->refs == 0) {
-		delete s;
-	}
+	if (s->refs == 0) delete s;
 	return r;
 }
 

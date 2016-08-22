@@ -213,11 +213,11 @@ inline bool LSSet<T>::operator <(const LSValue* value) const {
 }
 
 template <>
-inline bool LSSet<LSValue*>::in(LSValue* value) const {
+inline bool LSSet<LSValue*>::in(LSValue* value) {
 	return count(value);
 }
 template <typename T>
-inline bool LSSet<T>::in(LSValue* value) const {
+inline bool LSSet<T>::in(LSValue* value) {
 	if (LSNumber* number = dynamic_cast<LSNumber*>(value)) {
 		return this->count(number->value);
 	}

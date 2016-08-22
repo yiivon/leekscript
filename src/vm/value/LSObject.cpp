@@ -99,9 +99,9 @@ LSValue** LSObject::atL (const LSValue*) {
 	return nullptr;
 }
 
-bool LSObject::in(LSValue* v) const {
+bool LSObject::in(LSValue* value) {
 	for (auto i = values.begin(); i != values.end(); i++) {
-		if (i->second->operator == (v)) {
+		if (i->second->operator == (value)) {
 			return true;
 		}
 	}

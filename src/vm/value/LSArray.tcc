@@ -1956,8 +1956,8 @@ inline bool LSArray<T>::operator < (const LSClass*) const {
 }
 
 template <typename T>
-inline bool LSArray<T>::in(LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+inline bool LSArray<T>::in(LSValue* value) {
+	if (const LSNumber* n = dynamic_cast<const LSNumber*>(value)) {
 		for (auto i = this->begin(); i != this->end(); i++) {
 			if ((*i) == n->value) {
 				return true;
@@ -1968,9 +1968,9 @@ inline bool LSArray<T>::in(LSValue* key) const {
 }
 
 template <>
-inline bool LSArray<LSValue*>::in(LSValue* key) const {
+inline bool LSArray<LSValue*>::in(LSValue* value) {
 	for (auto i = this->begin(); i != this->end(); i++) {
-		if ((*i)->operator == (key)) {
+		if ((*i)->operator == (value)) {
 			return true;
 		}
 	}

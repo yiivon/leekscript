@@ -162,11 +162,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Boolean operators : result is a boolean
-	if (op->type == TokenType::AND or op->type == TokenType::OR or op->type == TokenType::XOR or
-		op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL or
-		op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS or
-		op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL or
-		op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
+	if (op->type == TokenType::AND or op->type == TokenType::OR or op->type == TokenType::XOR
+		or op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL
+		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
+		or op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL
+		or op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
 
 		type = Type::BOOLEAN;
 	}
@@ -222,9 +222,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (op->type == TokenType::INSTANCEOF) {
 		v1->analyse(analyser, Type::POINTER);
+		type = Type::BOOLEAN;
 	}
 	if (op->type == TokenType::IN) {
 		v1->analyse(analyser, Type::POINTER);
+		type = Type::BOOLEAN;
 	}
 
 	// Merge operations count
@@ -265,20 +267,20 @@ LSValue* jit_pow(LSValue* x, LSValue* y) {
 LSValue* jit_mod(LSValue* x, LSValue* y) {
 	return x->ls_mod(y);
 }
-LSValue* jit_and(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(x->isTrue() and y->isTrue());
+bool jit_and(LSValue* x, LSValue* y) {
+	bool r = x->isTrue() and y->isTrue();
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
-LSValue* jit_or(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(x->isTrue() or y->isTrue());
+bool jit_or(LSValue* x, LSValue* y) {
+	bool r = (x->isTrue() or y->isTrue());
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
-LSValue* jit_xor(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(x->isTrue() xor y->isTrue());
+bool jit_xor(LSValue* x, LSValue* y) {
+	bool r = (x->isTrue() xor y->isTrue());
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
@@ -290,38 +292,38 @@ LSValue* jit_dec(LSValue* x) {
 	return x->operator -- (1);
 }
 
-LSValue* jit_equals(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(x->operator == (y));
+bool jit_equals(LSValue* x, LSValue* y) {
+	bool r = (x->operator == (y));
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
-LSValue* jit_not_equals(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(x->operator != (y));
+bool jit_not_equals(LSValue* x, LSValue* y) {
+	bool r = (x->operator != (y));
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
-LSValue* jit_lt(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(y->operator < (x));
+bool jit_lt(LSValue* x, LSValue* y) {
+	bool r = (y->operator < (x));
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
-LSValue* jit_le(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(y->operator <= (x));
+bool jit_le(LSValue* x, LSValue* y) {
+	bool r = (y->operator <= (x));
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
-LSValue* jit_gt(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(y->operator > (x));
+bool jit_gt(LSValue* x, LSValue* y) {
+	bool r = (y->operator > (x));
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
-LSValue* jit_ge(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(y->operator >= (x));
+bool jit_ge(LSValue* x, LSValue* y) {
+	bool r = (y->operator >= (x));
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
@@ -367,15 +369,15 @@ LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->ls_pow_eq(y);
 }
 
-LSValue* jit_in(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(y->in(x));
+bool jit_in(LSValue* x, LSValue* y) {
+	bool r = y->in(x);
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
 
-LSValue* jit_instanceof(LSValue* x, LSValue* y) {
-	LSValue* r = LSBoolean::get(((LSClass*) x->getClass())->name == ((LSClass*) y)->name);
+bool jit_instanceof(LSValue* x, LSValue* y) {
+	bool r = (((LSClass*) x->getClass())->name == ((LSClass*) y)->name);
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
@@ -464,8 +466,6 @@ jit_value_t Expression::compile(Compiler& c) const {
 	bool use_jit_func = v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE;
 	vector<jit_value_t> args;
 	Type conv_info = Type::UNKNOWN;
-	Type v1_conv = Type::POINTER;
-	Type v2_conv = Type::POINTER;
 
 	switch (op->type) {
 		case TokenType::EQUAL: {
@@ -989,10 +989,6 @@ jit_value_t Expression::compile(Compiler& c) const {
 			jit_insn_store(c.F, args[0], v);
 		}
 
-		// Convert to value
-		if (type == Type::BOOLEAN) {
-			return VM::pointer_to_value(c.F, v, Type::BOOLEAN);
-		}
 		return v;
 	}
 }
