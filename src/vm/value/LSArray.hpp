@@ -20,6 +20,7 @@ public:
 	LSArray();
 	LSArray(std::initializer_list<T>);
 	LSArray(const std::vector<T>&);
+	LSArray(const LSArray<T>&);
 	LSArray(Json& data);
 
 	virtual ~LSArray();

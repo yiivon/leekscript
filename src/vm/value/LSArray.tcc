@@ -67,10 +67,17 @@ LSArray<T>::LSArray(std::initializer_list<T> values_list) {
 }
 
 template <class T>
-LSArray<T>::LSArray(const std::vector<T>& vec) {
-	for (auto i : vec) {
-		this->push_back(i);
+LSArray<T>::LSArray(const std::vector<T>& vec) : LSValue(), std::vector<T>(vec) {}
+
+template <>
+inline LSArray<LSValue*>::LSArray(const LSArray<LSValue*>& other) : LSValue(other), std::vector<LSValue*>() {
+	reserve(other.size());
+	for (LSValue* v : other) {
+		push_back(v->clone_inc());
 	}
+}
+template <typename T>
+inline LSArray<T>::LSArray(const LSArray<T>& other) : LSValue(other), std::vector<T>(other) {
 }
 
 template <class T>
@@ -1410,7 +1417,7 @@ inline LSValue* LSArray<T>::ls_add(LSArray<int>* array) {
 	if (refs == 0) {
 		return ls_push_all_int(array);
 	}
-	return ((LSArray<LSValue*>*) this->clone())->ls_push_all_int(array);
+	return ((LSArray<T>*) this->clone())->ls_push_all_int(array);
 }
 template <typename T>
 inline LSValue* LSArray<T>::ls_add(LSArray<double>* array) {
@@ -2006,16 +2013,9 @@ LSValue* LSArray<T>::rangeL(int, int) {
 	return this;
 }
 
-
 template <class T>
 LSValue* LSArray<T>::clone() const {
-	LSArray<T>* new_array = new LSArray<T>();
-	new_array->reserve(this->size());
-
-	for (auto i = this->begin(); i != this->end(); i++) {
-		new_array->push_clone(*i);
-	}
-	return new_array;
+	return new LSArray<T>(*this);
 }
 
 template <>
