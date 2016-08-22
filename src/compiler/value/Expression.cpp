@@ -17,9 +17,7 @@ namespace ls {
 Expression::Expression() : Expression(nullptr) {}
 
 Expression::Expression(Value* v) :
-	v1(v), v2(nullptr), op(nullptr), store_result_in_v1(false), no_op(false), operations(0) {
-	type = Type::VALUE;
-	operations = 1;
+	v1(v), v2(nullptr), op(nullptr), store_result_in_v1(false), no_op(false), operations(1) {
 }
 
 Expression::~Expression() {
@@ -104,6 +102,9 @@ unsigned Expression::line() const {
 }
 
 void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+
+	operations = 1;
+	type = Type::VALUE;
 
 	// No operator : just analyse v1 and return
 	if (op == nullptr) {
@@ -465,7 +466,8 @@ jit_value_t Expression::compile(Compiler& c) const {
 	void* ls_func;
 	bool use_jit_func = v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE;
 	vector<jit_value_t> args;
-	Type conv_info = Type::UNKNOWN;
+	Type jit_returned_type = Type::UNKNOWN;
+	Type ls_returned_type = Type::POINTER; // By default ls_ function returns pointers
 
 	switch (op->type) {
 		case TokenType::EQUAL: {
@@ -670,13 +672,15 @@ jit_value_t Expression::compile(Compiler& c) const {
 		case TokenType::AND: {
 			jit_func = &jit_insn_and;
 			ls_func = (void*) &jit_and;
-			conv_info = Type::BOOLEAN;
+			jit_returned_type = Type::BOOLEAN;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::OR: {
 			jit_func = &jit_insn_or;
 			ls_func = (void*) &jit_or;
-			conv_info = Type::BOOLEAN;
+			jit_returned_type = Type::BOOLEAN;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::XOR: {
@@ -695,7 +699,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 				return r;
 			} else {
 				ls_func = (void*) &jit_xor;
-				conv_info = Type::BOOLEAN;
+				ls_returned_type = Type::BOOLEAN;
 			}
 			break;
 		}
@@ -717,7 +721,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 		case TokenType::DIVIDE: {
 			jit_func = &jit_insn_div;
 			ls_func = (void*) &jit_div;
-			conv_info = Type::FLOAT;
+			jit_returned_type = Type::FLOAT;
 			break;
 		}
 		case TokenType::MODULO: {
@@ -733,37 +737,43 @@ jit_value_t Expression::compile(Compiler& c) const {
 		case TokenType::DOUBLE_EQUAL: {
 			jit_func = &jit_insn_eq;
 			ls_func = (void*) &jit_equals;
-			conv_info = Type::BOOLEAN;
+			jit_returned_type = Type::BOOLEAN;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::DIFFERENT: {
 			jit_func = &jit_insn_ne;
 			ls_func = (void*) &jit_not_equals;
-			conv_info = Type::BOOLEAN;
+			jit_returned_type = Type::BOOLEAN;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::LOWER: {
 			jit_func = &jit_insn_lt;
 			ls_func = (void*) &jit_lt;
-			conv_info = Type::BOOLEAN;
+			jit_returned_type = Type::BOOLEAN;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::LOWER_EQUALS: {
 			jit_func = &jit_insn_le;
 			ls_func = (void*) &jit_le;
-			conv_info = Type::BOOLEAN;
+			jit_returned_type = Type::BOOLEAN;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::GREATER: {
 			jit_func = &jit_insn_gt;
 			ls_func = (void*) &jit_gt;
-			conv_info = Type::BOOLEAN;
+			jit_returned_type = Type::BOOLEAN;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::GREATER_EQUALS: {
 			jit_func = &jit_insn_ge;
 			ls_func = (void*) &jit_ge;
-			conv_info = Type::BOOLEAN;
+			jit_returned_type = Type::BOOLEAN;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 #ifdef __GNUC__
@@ -798,11 +808,13 @@ jit_value_t Expression::compile(Compiler& c) const {
 		case TokenType::IN: {
 			use_jit_func = false;
 			ls_func = (void*) &jit_in;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::INSTANCEOF: {
 			use_jit_func = false;
 			ls_func = (void*) &jit_instanceof;
+			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::BIT_AND: {
@@ -970,7 +982,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 		jit_value_t r = jit_func(c.F, x, y);
 
 		if (type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(c.F, r, conv_info);
+			return VM::value_to_pointer(c.F, r, jit_returned_type);
 		}
 		return r;
 
@@ -987,6 +999,10 @@ jit_value_t Expression::compile(Compiler& c) const {
 
 		if (store_result_in_v1) {
 			jit_insn_store(c.F, args[0], v);
+		}
+
+		if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
+			return VM::value_to_pointer(c.F, v, ls_returned_type);
 		}
 
 		return v;

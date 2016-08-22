@@ -139,8 +139,8 @@ LSValue* string_length(LSString* string) {
 LSValue* string_map(LSString* s, void* function) {
 
 	char buff[5];
-	std::string r;
-	auto fun = (void* (*)(void*)) function;
+	LSValue* r = new LSString();
+	auto fun = (LSValue* (*)(void*)) function;
 
 	const char* string_chars = s->c_str();
 	int i = 0;
@@ -150,17 +150,13 @@ LSValue* string_map(LSString* s, void* function) {
 		u_int32_t c = u8_nextchar(string_chars, &i);
 		u8_toutf8(buff, 5, &c, 1);
 		LSString* ch = new LSString(buff);
+		cout << *ch << endl;
 		ch->refs = 1;
-		LSString* res = (LSString*) fun(ch);
-		r += *res;
+		r->ls_add_eq(fun(ch));
 		LSValue::delete_ref(ch);
-		LSValue::delete_temporary(res);
 	}
-	if (s->refs == 0) {
-		*s = r;
-		return s;
-	}
-	return new LSString(r);
+	if (s->refs == 0) delete s;
+	return r;
 }
 
 LSValue* string_replace(LSString* string, LSString* from, LSString* to) {
