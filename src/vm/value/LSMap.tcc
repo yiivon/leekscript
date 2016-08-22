@@ -311,10 +311,6 @@ inline bool LSMap<K,T>::isTrue() const {
 }
 
 template <typename K, typename T>
-inline LSValue* LSMap<K,T>::operator -= (LSValue* value) {
-	return value->operator -= (this);
-}
-template <typename K, typename T>
 inline LSValue* LSMap<K,T>::operator * (const LSValue* value) const {
 	return value->operator * (this);
 }

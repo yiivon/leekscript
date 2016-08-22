@@ -116,13 +116,13 @@ LSValue* LSNumber::ls_add(LSNumber* number) {
 LSValue* LSNumber::ls_add_eq(LSNull*) {
 	return this;
 }
+LSValue* LSNumber::ls_add_eq(LSBoolean* boolean) {
+	value += boolean->value;
+	return this;
+}
 LSValue* LSNumber::ls_add_eq(LSNumber* number) {
 	value += number->value;
 	if (number->refs == 0) delete number;
-	return this;
-}
-LSValue* LSNumber::ls_add_eq(LSBoolean* boolean) {
-	value += boolean->value;
 	return this;
 }
 
@@ -151,24 +151,17 @@ LSValue* LSNumber::ls_sub(LSNumber* number) {
 	return LSNumber::get(this->value - number->value);
 }
 
-LSValue* LSNumber::operator -= (LSValue* value) {
-	return value->operator -= (this);
-}
-LSValue* LSNumber::operator -= (const LSNull*) {
-	return LSNull::get();
-}
-LSValue* LSNumber::operator -= (const LSBoolean*) {
-	return LSNull::get();
-}
-LSValue* LSNumber::operator -= (const LSNumber* number) {
-#if !USE_CACHE
-	value -= number->value;
-#endif
-//	this->refs++;
+LSValue* LSNumber::ls_sub_eq(LSNull*) {
 	return this;
 }
-LSValue* LSNumber::operator -= (const LSString*) {
-	return LSNull::get();
+LSValue* LSNumber::ls_sub_eq(LSBoolean* boolean) {
+	value -= boolean->value;
+	return this;
+}
+LSValue* LSNumber::ls_sub_eq(LSNumber* number) {
+	value -= number->value;
+	if (number->refs == 0) delete number;
+	return this;
 }
 
 LSValue* LSNumber::operator * (const LSValue* value) const {

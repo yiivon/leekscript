@@ -34,13 +34,10 @@ public:
 	LSValue* operator ! () const override;
 	LSValue* operator ~ () const override;
 
-	LSValue* ls_radd(LSValue* value) override    { return value->ls_add(this); }
-	LSValue* ls_radd_eq(LSValue* value) override { return value->ls_add_eq(this); }
-	LSValue* ls_rsub(LSValue* value) override    { return value->ls_sub(this); }
+	LSVALUE_OPERATORS
 
 	LSValue* ls_add(LSNumber*) override;
 	LSValue* ls_sub(LSNumber*) override;
-	LSValue* operator -= (LSValue*) override;
 	LSValue* operator * (const LSValue*) const override;
 	LSValue* operator *= (LSValue*) override;
 	LSValue* operator / (const LSValue*) const override;

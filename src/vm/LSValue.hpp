@@ -24,6 +24,13 @@ class LSObject;
 class LSClass;
 class Context;
 
+#define LSVALUE_OPERATORS \
+	LSValue* ls_radd(LSValue* value) override    { return value->ls_add(this); } \
+	LSValue* ls_radd_eq(LSValue* value) override { return value->ls_add_eq(this); } \
+	LSValue* ls_rsub(LSValue* value) override    { return value->ls_sub(this); } \
+	LSValue* ls_rsub_eq(LSValue* value) override { return value->ls_sub_eq(this); }
+
+
 class LSValue {
 public:
 
@@ -116,26 +123,27 @@ public:
 	virtual LSValue* ls_sub(LSFunction*);
 	virtual LSValue* ls_sub(LSClass*);
 
-	virtual LSValue* operator -= (LSValue*) = 0;
-	virtual LSValue* operator -= (const LSNull*);
-	virtual LSValue* operator -= (const LSBoolean*);
-	virtual LSValue* operator -= (const LSNumber*);
-	virtual LSValue* operator -= (const LSString*);
-	virtual LSValue* operator -= (const LSArray<LSValue*>*);
-	virtual LSValue* operator -= (const LSArray<int>*);
-	virtual LSValue* operator -= (const LSArray<double>*);
-	virtual LSValue* operator -= (const LSMap<LSValue*,LSValue*>*);
-	virtual LSValue* operator -= (const LSMap<LSValue*,int>*);
-	virtual LSValue* operator -= (const LSMap<LSValue*,double>*);
-	virtual LSValue* operator -= (const LSMap<int,LSValue*>*);
-	virtual LSValue* operator -= (const LSMap<int,int>*);
-	virtual LSValue* operator -= (const LSMap<int,double>*);
-	virtual LSValue* operator -= (const LSSet<LSValue*>*);
-	virtual LSValue* operator -= (const LSSet<int>*);
-	virtual LSValue* operator -= (const LSSet<double>*);
-	virtual LSValue* operator -= (const LSObject*);
-	virtual LSValue* operator -= (const LSFunction*);
-	virtual LSValue* operator -= (const LSClass*);
+	LSValue* ls_sub_eq(LSValue* value) { return value->ls_rsub_eq(this); }
+	virtual LSValue* ls_rsub_eq(LSValue*) = 0;
+	virtual LSValue* ls_sub_eq(LSNull*);
+	virtual LSValue* ls_sub_eq(LSBoolean*);
+	virtual LSValue* ls_sub_eq(LSNumber*);
+	virtual LSValue* ls_sub_eq(LSString*);
+	virtual LSValue* ls_sub_eq(LSArray<LSValue*>*);
+	virtual LSValue* ls_sub_eq(LSArray<int>*);
+	virtual LSValue* ls_sub_eq(LSArray<double>*);
+	virtual LSValue* ls_sub_eq(LSMap<LSValue*,LSValue*>*);
+	virtual LSValue* ls_sub_eq(LSMap<LSValue*,int>*);
+	virtual LSValue* ls_sub_eq(LSMap<LSValue*,double>*);
+	virtual LSValue* ls_sub_eq(LSMap<int,LSValue*>*);
+	virtual LSValue* ls_sub_eq(LSMap<int,int>*);
+	virtual LSValue* ls_sub_eq(LSMap<int,double>*);
+	virtual LSValue* ls_sub_eq(LSSet<LSValue*>*);
+	virtual LSValue* ls_sub_eq(LSSet<int>*);
+	virtual LSValue* ls_sub_eq(LSSet<double>*);
+	virtual LSValue* ls_sub_eq(LSObject*);
+	virtual LSValue* ls_sub_eq(LSFunction*);
+	virtual LSValue* ls_sub_eq(LSClass*);
 
 	virtual LSValue* operator * (const LSValue*) const = 0;
 	virtual LSValue* operator * (const LSNull*) const;

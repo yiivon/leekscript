@@ -364,10 +364,7 @@ int jit_add_equal_value(int* x, int y) {
 	return *x += y;
 }
 LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator -= (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_sub_eq(y);
 }
 LSValue* jit_mul_equal(LSValue* x, LSValue* y) {
 	LSValue* r = y->operator *= (x);

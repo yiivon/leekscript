@@ -183,10 +183,6 @@ LSValue* LSString::ls_add_eq(LSClass*) {
 	return this;
 }
 
-LSValue* LSString::operator -= (LSValue* value) {
-	return value->operator -= (this);
-}
-
 LSValue* LSString::operator * (const LSValue* value) const {
 	return value->operator * (this);
 }
