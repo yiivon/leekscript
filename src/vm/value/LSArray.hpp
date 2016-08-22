@@ -125,7 +125,6 @@ public:
 	bool operator < (const LSObject*) const override;
 	bool operator < (const LSClass*) const override;
 
-
 	bool in(LSValue*) const override;
 
 	LSValue* at(const LSValue* value) const override;

@@ -14,15 +14,20 @@ template <class T>
 LSValue* LSArray<T>::array_class(new LSClass("Array"));
 
 template <>
+inline LSArray<LSValue*>::~LSArray() {
+	for (auto v : *this) {
+		LSValue::delete_ref(v);
+	}
+}
+template <typename T>
+LSArray<T>::~LSArray() {}
+
+template <>
 inline void LSArray<LSValue*>::push_clone(LSValue* value) {
 	this->push_back(value->clone_inc());
 }
-template <>
-inline void LSArray<int>::push_clone(int value) {
-	this->push_back(value);
-}
-template <>
-inline void LSArray<double>::push_clone(double value) {
+template <typename T>
+void LSArray<T>::push_clone(T value) {
 	this->push_back(value);
 }
 
@@ -30,12 +35,8 @@ template <>
 inline void LSArray<LSValue*>::push_move(LSValue* value) {
 	this->push_back(value->move_inc());
 }
-template <>
-inline void LSArray<int>::push_move(int value) {
-	this->push_back(value);
-}
-template <>
-inline void LSArray<double>::push_move(double value) {
+template <typename T>
+void LSArray<T>::push_move(T value) {
 	this->push_back(value);
 }
 
@@ -84,18 +85,7 @@ inline LSArray<int>::LSArray(Json& json) {
 	}
 }
 
-template <>
-inline LSArray<LSValue*>::~LSArray() {
-	for (auto v : *this) {
-		LSValue::delete_ref(v);
-	}
-}
-template <>
-inline LSArray<int>::~LSArray() {
-}
-template <>
-inline LSArray<double>::~LSArray() {
-}
+
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_clear() {
@@ -1711,8 +1701,8 @@ inline bool LSArray<T>::operator < (const LSClass*) const {
 	return true;
 }
 
-template <typename T>
-inline bool LSArray<T>::in(LSValue* key) const {
+template <>
+inline bool LSArray<int>::in(LSValue* key) const {
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		for (auto i = this->begin(); i != this->end(); i++) {
 			if ((*i) == n->value) {
@@ -1724,7 +1714,19 @@ inline bool LSArray<T>::in(LSValue* key) const {
 }
 
 template <>
-inline bool LSArray<LSValue*>::in(LSValue* key) const {
+inline bool LSArray<double>::in(LSValue* key) const {
+	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+		for (auto i = this->begin(); i != this->end(); i++) {
+			if ((*i) == n->value) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+template <typename T>
+inline bool LSArray<T>::in(LSValue* key) const {
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if ((*i)->operator == (key)) {
 			return true;
@@ -1787,8 +1789,8 @@ inline std::ostream& LSArray<LSValue*>::print(std::ostream& os) const {
 	return os;
 }
 
-template <>
-inline std::ostream& LSArray<int>::print(std::ostream& os) const {
+template <typename T>
+std::ostream& LSArray<T>::print(std::ostream& os) const {
 	os << "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
@@ -1799,18 +1801,7 @@ inline std::ostream& LSArray<int>::print(std::ostream& os) const {
 }
 
 template <>
-inline std::ostream& LSArray<double>::print(std::ostream& os) const {
-	os << "[";
-	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) os << ", ";
-		os << (*i);
-	}
-	os << "]";
-	return os;
-}
-
-template <class T>
-std::string LSArray<T>::json() const {
+inline std::string LSArray<LSValue*>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) res += ",";
@@ -1825,8 +1816,9 @@ inline std::string LSArray<int>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) res += ",";
-		std::string json = std::to_string(*i);
-		res += json;
+		std::ostringstream oss;
+		oss << *i;
+		res += oss.str();
 	}
 	return res + "]";
 }
