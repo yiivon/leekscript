@@ -19,8 +19,8 @@ public:
 	LSString();
 	LSString(char);
 	LSString(const char*);
-	LSString(std::string);
-	LSString(Json&);
+	LSString(const std::string&);
+	LSString(const Json&);
 
 	virtual ~LSString();
 
@@ -57,19 +57,8 @@ public:
 	LSValue* ls_add_eq(LSFunction*) override;
 	LSValue* ls_add_eq(LSClass*) override;
 
-	LSValue* operator * (const LSValue*) const override;
-	LSValue* operator * (const LSNumber*) const override;
-
-	LSValue* operator *= (LSValue*) override;
-
-	LSValue* operator / (const LSValue*) const override;
-	LSValue* operator / (const LSString*) const override;
-
-	LSValue* operator /= (LSValue*) override;
-	LSValue* poww(const LSValue*) const override;
-	LSValue* pow_eq(LSValue*) override;
-	LSValue* operator % (const LSValue*) const override;
-	LSValue* operator %= (LSValue*) override;
+	LSValue* ls_mul(LSNumber*) override;
+	LSValue* ls_div(LSString*) override;
 
 	bool operator == (const LSValue*) const override;
 	bool operator == (const LSString*) const override;

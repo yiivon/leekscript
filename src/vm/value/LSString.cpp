@@ -18,8 +18,8 @@ LSValue* LSString::string_class(new LSClass("String"));
 LSString::LSString() {}
 LSString::LSString(const char value) : string(string(1, value)) {}
 LSString::LSString(const char* value) : string(value) {}
-LSString::LSString(std::string value) : string(value) {}
-LSString::LSString(Json& json) : string(json.get<std::string>()) {}
+LSString::LSString(const string& value) : string(value) {}
+LSString::LSString(const Json& json) : string(json.get<std::string>()) {}
 
 LSString::~LSString() {}
 
@@ -183,26 +183,20 @@ LSValue* LSString::ls_add_eq(LSClass*) {
 	return this;
 }
 
-LSValue* LSString::operator * (const LSValue* value) const {
-	return value->operator * (this);
-}
-LSValue* LSString::operator * (const LSNumber* value) const {
-	string res = "";
-	for (int i = 0; i < value->value; ++i) {
-		res += *this;
+LSValue* LSString::ls_mul(LSNumber* number) {
+	string r;
+	for (int i = 0; i < number->value; ++i) {
+		r += *this;
 	}
-	return new LSString(res);
+	if (number->refs == 0) delete number;
+	if (refs == 0) {
+		*this = r;
+		return this;
+	}
+	return new LSString(r);
 }
 
-LSValue* LSString::operator *= (LSValue* value) {
-	return value->operator *= (this);
-}
-
-LSValue* LSString::operator / (const LSValue* value) const {
-	return value->operator / (this);
-}
-
-LSValue* LSString::operator / (const LSString* s) const {
+LSValue* LSString::ls_div(LSString* s) {
 
 	char buff[5];
 	char* string_chars = (char*) this->c_str();
@@ -210,9 +204,6 @@ LSValue* LSString::operator / (const LSString* s) const {
 	LSArray<LSValue*>* array = new LSArray<LSValue*>();
 
 	if (s->size() == 0) {
-//		for (char c : *this) {
-//			array->push_no_clone(new LSString(c));
-//		}
 		int i = 0;
 		int l = strlen(string_chars);
 		while (i < l) {
@@ -243,25 +234,10 @@ LSValue* LSString::operator / (const LSString* s) const {
 //		while (getline(ss, item, s->operator[] (0))) {
 //			array->push_no_clone(new LSString(item));
 //		}
-
  	}
+	if (s->refs == 0) delete s;
+	if (refs == 0) delete this;
 	return array;
-}
-
-LSValue* LSString::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-LSValue* LSString::poww(const LSValue*) const {
-	return LSNull::get();
-}
-LSValue* LSString::pow_eq(LSValue* value) {
-	return value->operator *= (this);
-}
-LSValue* LSString::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-LSValue* LSString::operator %= (LSValue* value) {
-	return value->operator %= (this);
 }
 
 bool LSString::operator == (const LSValue* v) const {

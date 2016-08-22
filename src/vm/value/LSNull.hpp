@@ -28,15 +28,6 @@ public:
 
 	LSVALUE_OPERATORS
 
-	LSValue* operator * (const LSValue*) const override;
-	LSValue* operator *= (LSValue*) override;
-	LSValue* operator / (const LSValue*) const override;
-	LSValue* operator /= (LSValue*) override;
-	LSValue* poww(const LSValue*) const override;
-	LSValue* pow_eq(LSValue*) override;
-	LSValue* operator % (const LSValue*) const override;
-	LSValue* operator %= (LSValue*) override;
-
 	bool operator == (const LSValue*) const override;
 	bool operator == (const LSNull*) const override;
 

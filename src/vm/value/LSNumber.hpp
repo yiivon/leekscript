@@ -67,53 +67,38 @@ public:
 	LSValue* ls_sub_eq(LSBoolean*) override;
 	LSValue* ls_sub_eq(LSNumber*) override;
 
-	LSValue* operator * (const LSValue*) const override;
-	LSValue* operator * (const LSNull*) const override;
-	LSValue* operator * (const LSBoolean*) const override;
-	LSValue* operator * (const LSNumber*) const override;
-	LSValue* operator * (const LSString*) const override;
+	LSValue* ls_mul(LSNull*) override;
+	LSValue* ls_mul(LSBoolean*) override;
+	LSValue* ls_mul(LSNumber*) override;
+	LSValue* ls_mul(LSString*) override;
 
-	LSValue* operator *= (LSValue*) override;
-	LSValue* operator *= (const LSNull*) override;
-	LSValue* operator *= (const LSBoolean*) override;
-	LSValue* operator *= (const LSNumber*) override;
-	LSValue* operator *= (const LSString*) override;
+	LSValue* ls_mul_eq(LSNull*) override;
+	LSValue* ls_mul_eq(LSBoolean*) override;
+	LSValue* ls_mul_eq(LSNumber*) override;
 
-	LSValue* operator / (const LSValue*) const override;
-	LSValue* operator / (const LSNull*) const override;
-	LSValue* operator / (const LSBoolean*) const override;
-	LSValue* operator / (const LSNumber*) const override;
-	LSValue* operator / (const LSString*) const override;
+	LSValue* ls_div(LSNull*) override;
+	LSValue* ls_div(LSBoolean*) override;
+	LSValue* ls_div(LSNumber*) override;
 
-	LSValue* operator /= (LSValue*) override;
-	LSValue* operator /= (const LSNull*) override;
-	LSValue* operator /= (const LSBoolean*) override;
-	LSValue* operator /= (const LSNumber*) override;
-	LSValue* operator /= (const LSString*) override;
+	LSValue* ls_div_eq(LSNull*) override;
+	LSValue* ls_div_eq(LSBoolean*) override;
+	LSValue* ls_div_eq(LSNumber*) override;
 
-	LSValue* poww(const LSValue*) const override;
-	LSValue* poww(const LSNull*) const override;
-	LSValue* poww(const LSBoolean*) const override;
-	LSValue* poww(const LSNumber*) const override;
-	LSValue* poww(const LSString*) const override;
+	LSValue* ls_pow(LSNull*) override;
+	LSValue* ls_pow(LSBoolean*) override;
+	LSValue* ls_pow(LSNumber*) override;
 
-	LSValue* pow_eq(LSValue*) override;
-	LSValue* pow_eq(const LSNull*) override;
-	LSValue* pow_eq(const LSBoolean*) override;
-	LSValue* pow_eq(const LSNumber*) override;
-	LSValue* pow_eq(const LSString*) override;
+	LSValue* ls_pow_eq(LSNull*) override;
+	LSValue* ls_pow_eq(LSBoolean*) override;
+	LSValue* ls_pow_eq(LSNumber*) override;
 
-	LSValue* operator % (const LSValue*) const override;
-	LSValue* operator % (const LSNull*) const override;
-	LSValue* operator % (const LSBoolean*) const override;
-	LSValue* operator % (const LSNumber*) const override;
-	LSValue* operator % (const LSString*) const override;
+	LSValue* ls_mod(LSNull*) override;
+	LSValue* ls_mod(LSBoolean*) override;
+	LSValue* ls_mod(LSNumber*) override;
 
-	LSValue* operator %= (LSValue*) override;
-	LSValue* operator %= (const LSNull*) override;
-	LSValue* operator %= (const LSBoolean*) override;
-	LSValue* operator %= (const LSNumber*) override;
-	LSValue* operator %= (const LSString*) override;
+	LSValue* ls_mod_eq(LSNull*) override;
+	LSValue* ls_mod_eq(LSBoolean*) override;
+	LSValue* ls_mod_eq(LSNumber*) override;
 
 	bool operator == (const LSValue*) const override;
 	bool operator == (const LSNumber*) const override;

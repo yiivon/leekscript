@@ -111,31 +111,6 @@ bool LSClass::isTrue() const {
 	return false;
 }
 
-LSValue* LSClass::operator * (const LSValue* value) const {
-	return value->operator * (this);
-}
-LSValue* LSClass::operator *= (LSValue* value) {
-	return value->operator *= (this);
-}
-LSValue* LSClass::operator / (const LSValue* value) const {
-	return value->operator / (this);
-}
-LSValue* LSClass::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-LSValue* LSClass::poww(const LSValue* value) const {
-	return value->poww(this);
-}
-LSValue* LSClass::pow_eq(LSValue* value) {
-	return value->pow_eq(this);
-}
-LSValue* LSClass::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-LSValue* LSClass::operator %= (LSValue* value) {
-	return value->operator %= (this);
-}
-
 bool LSClass::operator == (const LSValue* v) const {
 	return v->operator == (this);
 }

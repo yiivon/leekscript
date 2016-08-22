@@ -121,38 +121,6 @@ bool LSSet<T>::isTrue() const {
 }
 
 template <typename T>
-inline LSValue* LSSet<T>::operator * (const LSValue* value) const {
-	return value->operator * (this);
-}
-template <typename T>
-inline LSValue* LSSet<T>::operator *= (LSValue* value) {
-	return value->operator *= (this);
-}
-template <typename T>
-inline LSValue* LSSet<T>::operator / (const LSValue* value) const {
-	return value->operator / (this);
-}
-template <typename T>
-inline LSValue* LSSet<T>::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-template <typename T>
-inline LSValue* LSSet<T>::poww(const LSValue* value) const {
-	return value->poww(this);
-}
-template <typename T>
-inline LSValue* LSSet<T>::pow_eq(LSValue* value) {
-	return value->pow_eq(this);
-}
-template <typename T>
-inline LSValue* LSSet<T>::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-template <typename T>
-inline LSValue* LSSet<T>::operator %= (LSValue* value) {
-	return value->operator %= (this);
-}
-template <typename T>
 inline bool LSSet<T>::operator == (const LSValue* value) const {
 	return value->operator == (this);
 }

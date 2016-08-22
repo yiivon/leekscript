@@ -310,40 +310,6 @@ inline bool LSMap<K,T>::isTrue() const {
 	return not this->empty();
 }
 
-template <typename K, typename T>
-inline LSValue* LSMap<K,T>::operator * (const LSValue* value) const {
-	return value->operator * (this);
-}
-template <typename K, typename T>
-inline LSValue* LSMap<K,T>::operator *= (LSValue* value) {
-	return value->operator *= (this);
-}
-template <typename K, typename T>
-inline LSValue* LSMap<K,T>::operator / (const LSValue* value) const {
-	return value->operator / (this);
-}
-template <typename K, typename T>
-inline LSValue* LSMap<K,T>::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-template <typename K, typename T>
-inline LSValue* LSMap<K,T>::poww(const LSValue* value) const {
-	return value->poww(this);
-}
-template <typename K, typename T>
-inline LSValue* LSMap<K,T>::pow_eq(LSValue* value) {
-	return value->pow_eq(this);
-}
-template <typename K, typename T>
-inline LSValue* LSMap<K,T>::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-template <typename K, typename T>
-inline LSValue* LSMap<K,T>::operator %= (LSValue* value) {
-	return value->operator %= (this);
-}
-
-
 
 
 template <typename K, typename T>

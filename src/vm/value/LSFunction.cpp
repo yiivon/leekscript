@@ -35,31 +35,6 @@ bool LSFunction::isTrue() const {
 	return true;
 }
 
-LSValue* LSFunction::operator * (const LSValue* value) const {
-	return value->operator * (this);
-}
-LSValue* LSFunction::operator *= (LSValue* value) {
-	return value->operator *= (this);
-}
-LSValue* LSFunction::operator / (const LSValue* value) const {
-	return value->operator / (this);
-}
-LSValue* LSFunction::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-LSValue* LSFunction::poww(const LSValue* value) const {
-	return value->poww(this);
-}
-LSValue* LSFunction::pow_eq(LSValue* value) {
-	return value->pow_eq(this);
-}
-LSValue* LSFunction::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-LSValue* LSFunction::operator %= (LSValue* value) {
-	return value->operator %= (this);
-}
-
 bool LSFunction::operator == (const LSValue* v) const {
 	return v->operator == (this);
 }

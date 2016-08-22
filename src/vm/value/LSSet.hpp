@@ -35,14 +35,6 @@ public:
 
 	LSVALUE_OPERATORS
 
-	virtual LSValue* operator * (const LSValue*) const override;
-	virtual LSValue* operator *= (LSValue*) override;
-	virtual LSValue* operator / (const LSValue*) const override;
-	virtual LSValue* operator /= (LSValue*) override;
-	virtual LSValue* poww(const LSValue*) const override;
-	virtual LSValue* pow_eq(LSValue*) override;
-	virtual LSValue* operator % (const LSValue*) const override;
-	virtual LSValue* operator %= (LSValue*) override;
 	virtual bool operator == (const LSValue*) const override;
 	virtual bool operator == (const LSSet<LSValue*>*) const override;
 	virtual bool operator == (const LSSet<int>*) const override;

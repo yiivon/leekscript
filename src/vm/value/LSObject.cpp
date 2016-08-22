@@ -75,30 +75,6 @@ bool LSObject::isTrue() const {
 	return values.size() > 0;
 }
 
-LSValue* LSObject::operator * (const LSValue* value) const {
-	return value->operator * (this);
-}
-LSValue* LSObject::operator *= (LSValue* value) {
-	return value->operator *= (this);
-}
-LSValue* LSObject::operator / (const LSValue* value) const {
-	return value->operator / (this);
-}
-LSValue* LSObject::operator /= (LSValue* value) {
-	return value->operator / (this);
-}
-LSValue* LSObject::poww(const LSValue* value) const {
-	return value->poww(this);
-}
-LSValue* LSObject::pow_eq(LSValue* value) {
-	return value->pow_eq(this);
-}
-LSValue* LSObject::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-LSValue* LSObject::operator %= (LSValue* value) {
-	return value->operator %= (this);
-}
 
 bool LSObject::operator == (const LSValue* value) const {
 	return value->operator == (this);

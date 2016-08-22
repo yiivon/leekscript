@@ -64,32 +64,6 @@ LSValue* LSBoolean::ls_sub(LSNumber* n) {
 	return n;
 }
 
-LSValue* LSBoolean::operator * (const LSValue* value) const {
-	return value->operator * (this);
-}
-LSValue* LSBoolean::operator *= (LSValue* value) {
-	return value->operator *= (this);
-}
-LSValue* LSBoolean::operator / (const LSValue* value) const {
-	return value->operator / (this);
-}
-LSValue* LSBoolean::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-LSValue* LSBoolean::poww(const LSValue* value) const {
-	return value->poww(this);
-}
-LSValue* LSBoolean::pow_eq(LSValue* value) {
-	return value->operator /= (this);
-}
-LSValue* LSBoolean::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-LSValue* LSBoolean::operator %= (LSValue* value) {
-	return value->operator %= (this);
-}
-
-
 bool LSBoolean::operator == (const LSValue* v) const {
 	return v->operator == (this);
 }

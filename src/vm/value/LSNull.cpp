@@ -33,31 +33,6 @@ bool LSNull::isTrue() const {
 	return false;
 }
 
-LSValue* LSNull::operator * (const LSValue* value) const {
-	return value->operator * (this);
-}
-LSValue* LSNull::operator *= (LSValue* value) {
-	return value->operator *= (this);
-}
-LSValue* LSNull::operator / (const LSValue* value) const {
-	return value->operator / (this);
-}
-LSValue* LSNull::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-LSValue* LSNull::poww(const LSValue* value) const {
-	return value->poww(this);
-}
-LSValue* LSNull::pow_eq(LSValue* value) {
-	return value->pow_eq(this);
-}
-LSValue* LSNull::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-LSValue* LSNull::operator %= (LSValue* value) {
-	return value->operator %= (this);
-}
-
 bool LSNull::operator == (const LSValue* v) const {
 	return v->operator == (this);
 }

@@ -254,28 +254,16 @@ LSValue* jit_sub(LSValue* x, LSValue* y) {
 	return x->ls_sub(y);
 }
 LSValue* jit_mul(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator * (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_mul(y);
 }
 LSValue* jit_div(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator / (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_div(y);
 }
 LSValue* jit_pow(LSValue* x, LSValue* y) {
-	LSValue* r = y->poww(x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_pow(y);
 }
 LSValue* jit_mod(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator % (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_mod(y);
 }
 LSValue* jit_and(LSValue* x, LSValue* y) {
 	LSValue* r = LSBoolean::get(x->isTrue() and y->isTrue());
@@ -367,33 +355,16 @@ LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
 	return x->ls_sub_eq(y);
 }
 LSValue* jit_mul_equal(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator *= (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_mul_eq(y);
 }
 LSValue* jit_div_equal(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator /= (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_div_eq(y);
 }
 LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
-	LSValue* r = y->operator %= (x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
+	return x->ls_mod_eq(y);
 }
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
-	LSValue* r = y->pow_eq(x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-int jit_array_add_value(LSArray<int>* x, int v) {
-	x->push_clone(v);
-	LSValue::delete_temporary(x);
-	return v;
+	return x->ls_pow_eq(y);
 }
 
 LSValue* jit_in(LSValue* x, LSValue* y) {
@@ -583,12 +554,6 @@ jit_value_t Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::PLUS_EQUAL: {
-
-//			if (v1->type.raw_type == RawType::ARRAY) {
-////				cout << "Array add " << endl;
-//				ls_func = (void*) jit_array_add_value;
-//				break;
-//			}
 
 			if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
 
@@ -1019,10 +984,6 @@ jit_value_t Expression::compile(Compiler& c) const {
 			args.push_back(v2->compile(c));
 		}
 		jit_value_t v = jit_insn_call_native(c.F, "", ls_func, sig, args.data(), 2, JIT_CALL_NOTHROW);
-
-//		if (v1->type.nature == Nature::VALUE and op->type == TokenType::PLUS_EQUAL) {
-//			jit_insn_store(c.F, args[0], v);
-//		}
 
 		if (store_result_in_v1) {
 			jit_insn_store(c.F, args[0], v);

@@ -1,8 +1,8 @@
 #include "LSNumber.hpp"
 #include "LSNull.hpp"
 #include "LSFunction.hpp"
-#include <math.h>
 #include "LSBoolean.hpp"
+#include <cmath>
 
 using namespace std;
 
@@ -104,6 +104,7 @@ LSValue* LSNumber::ls_add(LSString* string) {
 LSValue* LSNumber::ls_add(LSNumber* number) {
 	if (refs == 0) {
 		value += number->value;
+		if (number->refs == 0) delete number;
 		return this;
 	}
 	if (number->refs == 0) {
@@ -164,151 +165,193 @@ LSValue* LSNumber::ls_sub_eq(LSNumber* number) {
 	return this;
 }
 
-LSValue* LSNumber::operator * (const LSValue* value) const {
-	return value->operator * (this);
+LSValue* LSNumber::ls_mul(LSNull*) {
+	if (refs == 0) {
+		value = 0;
+		return this;
+	}
+	return LSNumber::get(0);
 }
-LSValue* LSNumber::operator * (const LSNull*) const {
-	return LSNull::get();
+LSValue* LSNumber::ls_mul(LSBoolean* boolean) {
+	if (boolean->value) {
+		return this;
+	}
+	if (refs == 0) {
+		value = 0;
+		return this;
+	}
+	return LSNumber::get(0);
 }
-LSValue* LSNumber::operator * (const LSBoolean* boolean) const {
-	return LSNumber::get(this->value * boolean->value);
-}
-LSValue* LSNumber::operator * (const LSNumber* number) const {
-	return LSNumber::get(this->value * number->value);
-}
-LSValue* LSNumber::operator * (const LSString* value) const {
-	return value->operator *(this);
+LSValue* LSNumber::ls_mul(LSNumber* number) {
+	if (refs == 0) {
+		value *= number->value;
+		if (number->refs == 0) delete number;
+		return this;
+	}
+	if (number->refs == 0) {
+		number->value *= value;
+		return number;
+	}
+	return LSNumber::get(value * number->value);
 }
 
-LSValue* LSNumber::operator *= (LSValue* value) {
-	return value->operator *= (this);
+LSValue*LSNumber::ls_mul(LSString* str) {
+	string r;
+	for (int i = 0; i < value; ++i) {
+		r += *str;
+	}
+	if (refs == 0) delete this;
+
+	if (str->refs == 0) {
+		*str = r;
+		return str;
+	}
+	return new LSString(r);
 }
-LSValue* LSNumber::operator *= (const LSNull*) {
-#if !USE_CACHE
+
+LSValue* LSNumber::ls_mul_eq(LSNull*) {
 	value = 0;
-#endif
-//	this->refs++;
 	return this;
 }
-LSValue* LSNumber::operator *= (const LSBoolean*) {
-	return LSNull::get();
+LSValue* LSNumber::ls_mul_eq(LSBoolean* boolean) {
+	value *= boolean->value;
+	return this;
 }
-LSValue* LSNumber::operator *= (const LSNumber* number) {
-#if !USE_CACHE
+LSValue* LSNumber::ls_mul_eq(LSNumber* number) {
 	value *= number->value;
-#endif
-//	this->refs++;
+	if (number->refs == 0) delete number;
 	return this;
 }
-LSValue* LSNumber::operator *= (const LSString*) {
-	return LSNull::get();
+
+LSValue* LSNumber::ls_div(LSNull*) {
+	if (refs == 0) {
+		value = NAN;
+		return this;
+	}
+	return LSNumber::get(NAN);
+}
+LSValue* LSNumber::ls_div(LSBoolean* boolean) {
+	if (boolean->value) {
+		return this;
+	}
+	if (refs == 0) {
+		value = NAN;
+		return this;
+	}
+	return LSNumber::get(NAN);
+}
+LSValue* LSNumber::ls_div(LSNumber* number) {
+	if (refs == 0) {
+		value /= number->value;
+		if (number->refs == 0) delete number;
+		return this;
+	}
+	if (number->refs == 0) {
+		number->value = value / number->value;
+		return number;
+	}
+	return LSNumber::get(value / number->value);
 }
 
-LSValue* LSNumber::operator / (const LSValue* value) const {
-	return value->operator / (this);
+LSValue* LSNumber::ls_div_eq(LSNull*) {
+	value = NAN;
+	return this;
 }
-LSValue* LSNumber::operator / (const LSNull*) const {
-	return LSNull::get();
+LSValue* LSNumber::ls_div_eq(LSBoolean* boolean) {
+	if (!boolean->value) {
+		value = NAN;
+	}
+	return this;
 }
-LSValue* LSNumber::operator / (const LSBoolean*) const {
-	return LSNull::get();
-}
-LSValue* LSNumber::operator / (const LSNumber* number) const {
-	return LSNumber::get(this->value / number->value);
-}
-LSValue* LSNumber::operator / (const LSString*) const {
-	return LSNull::get();
-}
-
-LSValue* LSNumber::operator /= (LSValue* value) {
-	return value->operator /= (this);
-}
-LSValue* LSNumber::operator /= (const LSNull*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator /= (const LSBoolean*) {
-	return this->clone();
-}
-LSValue* LSNumber::operator /= (const LSNumber* number) {
-#if !USE_CACHE
+LSValue* LSNumber::ls_div_eq(LSNumber* number) {
 	value /= number->value;
-#endif
-//	this->refs++;
+	if (number->refs == 0) delete number;
 	return this;
 }
-LSValue* LSNumber::operator /= (const LSString*) {
-	return LSNull::get();
+
+LSValue* LSNumber::ls_pow(LSNull*) {
+	if (refs == 0) {
+		value = 1;
+		return this;
+	}
+	return LSNumber::get(1);
+}
+LSValue* LSNumber::ls_pow(LSBoolean* boolean) {
+	if (boolean->value) {
+		return this;
+	}
+	if (refs == 0) {
+		value = 1;
+		return this;
+	}
+	return LSNumber::get(1);
+}
+LSValue* LSNumber::ls_pow(LSNumber* number) {
+	if (refs == 0) {
+		value = pow(value, number->value);
+		if (number->refs == 0) delete number;
+		return this;
+	}
+	if (number->refs == 0) {
+		number->value = pow(value, number->value);
+		return number;
+	}
+	return LSNumber::get(pow(value, number->value));
 }
 
-LSValue* LSNumber::poww(const LSValue* value) const {
-	return value->poww(this);
+LSValue* LSNumber::ls_pow_eq(LSNull*) {
+	value = 1;
+	return this;
 }
-LSValue* LSNumber::poww(const LSNull*) const {
-	return LSNull::get();
+LSValue* LSNumber::ls_pow_eq(LSBoolean* boolean) {
+	if (!boolean->value) value = 1;
+	return this;
 }
-LSValue* LSNumber::poww(const LSBoolean*) const {
-	return LSNull::get();
-}
-LSValue* LSNumber::poww(const LSNumber* value) const {
-	return LSNumber::get((NUMBER_TYPE) pow(this->value, value->value));
-}
-LSValue* LSNumber::poww(const LSString*) const {
-	return LSNull::get();
-}
-
-LSValue* LSNumber::pow_eq(LSValue*) {
-	return LSNull::get();
-}
-LSValue* LSNumber::pow_eq(const LSNull*) {
-	return LSNull::get();
-}
-LSValue* LSNumber::pow_eq(const LSBoolean*) {
-	return LSNull::get();
-}
-LSValue* LSNumber::pow_eq(const LSNumber* number) {
-#if !USE_CACHE
+LSValue* LSNumber::ls_pow_eq(LSNumber* number) {
 	value = pow(value, number->value);
-#endif
-	return LSNull::get();
-}
-LSValue* LSNumber::pow_eq(const LSString*) {
-	return LSNull::get();
-}
-
-LSValue* LSNumber::operator % (const LSValue* value) const {
-	return value->operator % (this);
-}
-LSValue* LSNumber::operator % (const LSNull*) const {
-	return LSNull::get();
-}
-LSValue* LSNumber::operator % (const LSBoolean*) const {
-	return LSNull::get();
-}
-LSValue* LSNumber::operator % (const LSNumber* value) const {
-	return LSNumber::get(fmod(this->value, value->value));
-}
-LSValue* LSNumber::operator % (const LSString*) const {
-	return LSNull::get();
-}
-
-LSValue* LSNumber::operator %= (LSValue* value) {
-	return value->operator %= (this);
-}
-LSValue* LSNumber::operator %= (const LSNull*) {
-	return LSNull::get();
-}
-LSValue* LSNumber::operator %= (const LSBoolean*) {
-	return LSNull::get();
-}
-LSValue* LSNumber::operator %= (const LSNumber* number) {
-#if !USE_CACHE
-	value = fmod(value, number->value);
-#endif
-//	this->refs++;
+	if (number->refs == 0) delete number;
 	return this;
 }
-LSValue* LSNumber::operator %= (const LSString*) {
-	return LSNull::get();
+
+LSValue* LSNumber::ls_mod(LSNull*) {
+	if (refs == 0) {
+		value = 0;
+		return this;
+	}
+	return LSNumber::get(0);
+}
+LSValue* LSNumber::ls_mod(LSBoolean*) {
+	if (refs == 0) {
+		value = 0;
+		return this;
+	}
+	return LSNumber::get(0);
+}
+LSValue* LSNumber::ls_mod(LSNumber* number) {
+	if (refs == 0) {
+		value = fmod(value, number->value);
+		if (number->refs == 0) delete number;
+		return this;
+	}
+	if (number->refs == 0) {
+		number->value = fmod(value, number->value);
+		return number;
+	}
+	return LSNumber::get(fmod(value, number->value));
+}
+
+LSValue* LSNumber::ls_mod_eq(LSNull*) {
+	value = 0;
+	return this;
+}
+LSValue* LSNumber::ls_mod_eq(LSBoolean*) {
+	value = 0;
+	return this;
+}
+LSValue* LSNumber::ls_mod_eq(LSNumber* number) {
+	value = fmod(value, number->value);
+	if (number->refs == 0) delete number;
+	return this;
 }
 
 bool LSNumber::operator == (const LSValue* v) const {
