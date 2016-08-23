@@ -331,6 +331,7 @@ public:
 	virtual LSValue* ls_mod_eq(LSClass*);
 
 	bool operator == (const LSValue& value) const { return value.req(this); }
+	bool operator != (const LSValue& value) const { return !value.req(this); }
 	virtual bool req(const LSValue*) const = 0;
 	virtual bool eq(const LSNull*) const;
 	virtual bool eq(const LSBoolean*) const;
@@ -352,7 +353,6 @@ public:
 	virtual bool eq(const LSObject*) const;
 	virtual bool eq(const LSClass*) const;
 
-	inline bool operator != (const LSValue* value) const { return !(*this == *value); }
 
 	virtual bool operator < (const LSValue*) const = 0;
 	virtual bool operator < (const LSNull*) const;

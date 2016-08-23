@@ -52,7 +52,7 @@ inline LSSet<T>::~LSSet() {
 template <>
 inline bool LSSet<LSValue*>::ls_insert(LSValue* value) {
 	auto it = lower_bound(value);
-	if (it == end() || (*it)->operator !=(value)) {
+	if (it == end() || (**it != *value)) {
 		insert(it, value->move_inc());
 		if (refs == 0) delete this;
 		return true;
@@ -126,7 +126,7 @@ inline bool LSSet<LSValue*>::eq(const LSSet<LSValue*>* other) const {
 	auto it1 = begin();
 	auto it2 = other->begin();
 	while (it1 != end()) {
-		if ((*it1)->operator !=(*it2)) return false;
+		if (**it1 != **it2) return false;
 		++it1;
 		++it2;
 	}

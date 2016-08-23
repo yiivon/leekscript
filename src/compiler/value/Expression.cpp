@@ -300,7 +300,7 @@ bool jit_equals(LSValue* x, LSValue* y) {
 	return r;
 }
 bool jit_not_equals(LSValue* x, LSValue* y) {
-	bool r = (x->operator != (y));
+	bool r = *x != *y;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;

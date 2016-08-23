@@ -1788,7 +1788,7 @@ inline bool LSArray<LSValue*>::eq(const LSArray<LSValue*>* array) const {
 	auto j = array->begin();
 
 	for (; i != this->end(); i++, j++) {
-		if ((*i)->operator != (*j)) return false;
+		if (**i != **j) return false;
 	}
 	return true;
 }

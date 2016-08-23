@@ -60,7 +60,7 @@ inline LSMap<int,double>::~LSMap() {}
 template <>
 inline bool LSMap<LSValue*,LSValue*>::ls_insert(LSValue* key, LSValue* value) {
 	auto it = lower_bound(key);
-	if (it == end() || it->first->operator !=(key)) {
+	if (it == end() || (*it->first != *key)) {
 		emplace_hint(it, key->move_inc(), value->move_inc());
 		if (refs == 0) delete this;
 		return true;
@@ -73,7 +73,7 @@ inline bool LSMap<LSValue*,LSValue*>::ls_insert(LSValue* key, LSValue* value) {
 template <>
 inline bool LSMap<LSValue*,int>::ls_insert(LSValue* key, int value) {
 	auto it = lower_bound(key);
-	if (it == end() || it->first->operator !=(key)) {
+	if (it == end() || (*it->first != *key)) {
 		emplace_hint(it, key->move_inc(), value);
 		if (refs == 0) delete this;
 		return true;
@@ -85,7 +85,7 @@ inline bool LSMap<LSValue*,int>::ls_insert(LSValue* key, int value) {
 template <>
 inline bool LSMap<LSValue*,double>::ls_insert(LSValue* key, double value) {
 	auto it = lower_bound(key);
-	if (it == end() || it->first->operator !=(key)) {
+	if (it == end() || (*it->first != *key)) {
 		emplace_hint(it, key->move_inc(), value);
 		if (refs == 0) delete this;
 		return true;
@@ -319,8 +319,8 @@ inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,LSValue*>* value) 
 	auto it2 = value->begin();
 	while (it1 != end()) {
 		if (it2 == value->end()) return false;
-		if (it1->first->operator !=(it2->first)) return false;
-		if (it1->second->operator !=(it2->second)) return false;
+		if (*it1->first != *it2->first) return false;
+		if (*it1->second != *it2->second) return false;
 		++it2;
 		++it1;
 	}
@@ -336,7 +336,7 @@ inline bool LSMap<LSValue*,int>::eq(const LSMap<LSValue*,LSValue*>* value) const
 		LSNumber* v2 = dynamic_cast<LSNumber*>(it2->second);
 		if (!v2) return false;
 		if (it1->second != v2->value) return false;
-		if (it1->first->operator !=(it2->first)) return false;
+		if (*it1->first != *it2->first) return false;
 		++it2;
 		++it1;
 	}
@@ -352,7 +352,7 @@ inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,LSValue*>* value) co
 		LSNumber* v2 = dynamic_cast<LSNumber*>(it2->second);
 		if (!v2) return false;
 		if (it1->second != v2->value) return false;
-		if (it1->first->operator !=(it2->first)) return false;
+		if (*it1->first != *it2->first) return false;
 		++it2;
 		++it1;
 	}
@@ -368,7 +368,7 @@ inline bool LSMap<int,LSValue*>::eq(const LSMap<LSValue*,LSValue*>* value) const
 		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
 		if (!k2) return false;
 		if (it1->first != k2->value) return false;
-		if (it1->second->operator !=(it2->second)) return false;
+		if (*it1->second != *it2->second) return false;
 		++it2;
 		++it1;
 	}
@@ -422,7 +422,7 @@ inline bool LSMap<LSValue*,int>::eq(const LSMap<LSValue*,int>* value) const {
 	while (it1 != end()) {
 		if (it2 == value->end()) return false;
 		if (it1->second != it2->second) return false;
-		if (it1->first->operator !=(it2->first)) return false;
+		if (*it1->first != *it2->first) return false;
 		++it2;
 		++it1;
 	}
@@ -436,7 +436,7 @@ inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,int>* value) const {
 	while (it1 != end()) {
 		if (it2 == value->end()) return false;
 		if (it1->second != it2->second) return false;
-		if (it1->first->operator !=(it2->first)) return false;
+		if (*it1->first != *it2->first) return false;
 		++it2;
 		++it1;
 	}
@@ -508,7 +508,7 @@ inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,double>* value) cons
 	while (it1 != end()) {
 		if (it2 == value->end()) return false;
 		if (it1->second != it2->second) return false;
-		if (it1->first->operator !=(it2->first)) return false;
+		if (*it1->first != *it2->first) return false;
 		++it2;
 		++it1;
 	}
@@ -584,7 +584,7 @@ inline bool LSMap<int,LSValue*>::eq(const LSMap<int,LSValue*>* value) const {
 	while (it1 != end()) {
 		if (it2 == value->end()) return false;
 		if (it1->first != it2->first) return false;
-		if (it1->second->operator !=(it2->second)) return false;
+		if (*it1->second != *it2->second) return false;
 		++it2;
 		++it1;
 	}
