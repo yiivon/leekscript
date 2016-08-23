@@ -38,15 +38,13 @@ public:
 
 	bool isTrue() const override;
 
-	LSValue* operator - () const override;
-	LSValue* operator ! () const override;
-	LSValue* operator ~ () const override;
-
-	LSValue* operator ++ () override;
-	LSValue* operator ++ (int) override;
-
-	LSValue* operator -- () override;
-	LSValue* operator -- (int) override;
+	LSValue* ls_minus() override;
+	LSValue* ls_not() override;
+	LSValue* ls_tilde() override;
+	LSValue* ls_preinc() override;
+	LSValue* ls_inc() override;
+	LSValue* ls_predec() override;
+	LSValue* ls_dec() override;
 
 	LSVALUE_OPERATORS
 

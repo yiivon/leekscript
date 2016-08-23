@@ -21,7 +21,9 @@ public:
 	static LSValue* boolean_class;
 	static LSBoolean* false_val;
 	static LSBoolean* true_val;
-	static LSBoolean* get(bool);
+	static LSBoolean* get(bool value) {
+		return value ? true_val : false_val;
+	}
 
 	LSBoolean(Json& data);
 
@@ -31,8 +33,8 @@ public:
 
 	bool isTrue() const override;
 
-	LSValue* operator ! () const override;
-	LSValue* operator ~ () const override;
+	LSValue* ls_not() override;
+	LSValue* ls_tilde() override;
 
 	LSVALUE_OPERATORS
 

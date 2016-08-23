@@ -1245,16 +1245,26 @@ bool LSArray<T>::isTrue() const {
 }
 
 template <class T>
-LSValue* LSArray<T>::operator ! () const {
-	return LSBoolean::get(this->size() == 0);
+LSValue* LSArray<T>::ls_not() {
+	bool r = this->size() == 0;
+	if (refs == 0) delete this;
+	return LSBoolean::get(r);
 }
 
 template <class T>
-LSValue* LSArray<T>::operator ~ () const {
+LSValue* LSArray<T>::ls_tilde() {
 	LSArray<T>* array = new LSArray<T>();
 	array->reserve(this->size());
-	for (auto i = this->rbegin(); i != this->rend(); ++i) {
-		array->push_clone(*i);
+	if (refs == 0) {
+		for (auto i = this->rbegin(); i != this->rend(); ++i) {
+			array->push_back(*i);
+		}
+		this->clear();
+		delete this;
+	} else {
+		for (auto i = this->rbegin(); i != this->rend(); ++i) {
+			array->push_clone(*i);
+		}
 	}
 	return array;
 }

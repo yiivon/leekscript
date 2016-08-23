@@ -12,10 +12,6 @@ LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
 LSBoolean* LSBoolean::false_val(new LSBoolean(false));
 LSBoolean* LSBoolean::true_val(new LSBoolean(true));
 
-LSBoolean* LSBoolean::get(bool value) {
-	return value ? true_val : false_val;
-}
-
 LSBoolean::LSBoolean() : LSBoolean(true) {}
 
 LSBoolean::LSBoolean(bool value) : value(value) {
@@ -34,12 +30,12 @@ bool LSBoolean::isTrue() const {
 	return value;
 }
 
-LSValue* LSBoolean::operator ! () const {
-	return LSBoolean::get(not value);
+LSValue*LSBoolean::ls_not() {
+	return LSBoolean::get(!value);
 }
 
-LSValue* LSBoolean::operator ~ () const {
-	return LSBoolean::get(not value);
+LSValue*LSBoolean::ls_tilde() {
+	return LSBoolean::get(!value);
 }
 
 LSValue* LSBoolean::ls_add(LSNumber* n) {

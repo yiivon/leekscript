@@ -56,15 +56,13 @@ public:
 
 	virtual bool isTrue() const = 0;
 
-	virtual LSValue* operator - () const;
-	virtual LSValue* operator ! () const;
-	virtual LSValue* operator ~ () const;
-
-	virtual LSValue* operator ++ ();
-	virtual LSValue* operator ++ (int);
-
-	virtual LSValue* operator -- ();
-	virtual LSValue* operator -- (int);
+	virtual LSValue* ls_minus();
+	virtual LSValue* ls_not();
+	virtual LSValue* ls_tilde();
+	virtual LSValue* ls_preinc(); // ++x
+	virtual LSValue* ls_inc(); // x++
+	virtual LSValue* ls_predec();
+	virtual LSValue* ls_dec();
 
 	LSValue* ls_add(LSValue* value) { return value->ls_radd(this); }
 	virtual LSValue* ls_radd(LSValue*) = 0;

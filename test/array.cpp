@@ -35,6 +35,7 @@ void Test::test_arrays() {
 	success("let v = 12 let a = [v, 2, 3] a[0] += 5 a[0]", "17");
 	success("let a = [23, 23, true, '', [], 123]; |a|", "6");
 	success("let a = [1, 2, 3]; ~a", "[3, 2, 1]");
+	success("let a = [] !a", "true");
 	success("let a = [1, 2, 3] a[1] = 12 a", "[1, 12, 3]");
 	success("[1.2, 321.42, 23.15]", "[1.2, 321.42, 23.15]");
 	success("[1, 2, 3, 4, 5][1:3]", "[2, 3]");

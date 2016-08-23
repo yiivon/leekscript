@@ -41,15 +41,13 @@ LSValue::~LSValue() {
 	#endif
 }
 
-LSValue* LSValue::operator - () const { return LSNull::get(); }
-LSValue* LSValue::operator ! () const { return LSNull::get(); }
-LSValue* LSValue::operator ~ () const { return LSNull::get(); }
-
-LSValue* LSValue::operator ++ () { return LSNull::get(); }
-LSValue* LSValue::operator ++ (int) { return LSNull::get(); }
-
-LSValue* LSValue::operator -- () { return LSNull::get(); }
-LSValue* LSValue::operator -- (int) { return LSNull::get(); }
+LSValue* LSValue::ls_minus()                                 { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_not()                                   { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_tilde()                                 { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_preinc()                                { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_inc()                                   { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_predec()                                { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_dec()                                   { delete_temporary(this); return LSNull::get(); }
 
 LSValue* LSValue::ls_add(LSNull*)                            { delete_temporary(this); return LSNull::get(); }
 LSValue* LSValue::ls_add(LSBoolean*)                         { delete_temporary(this); return LSNull::get(); }

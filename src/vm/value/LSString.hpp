@@ -32,8 +32,8 @@ public:
 	 */
 	bool isTrue() const override;
 
-	LSValue* operator ! () const override;
-	LSValue* operator ~ () const override;
+	LSValue* ls_not() override;
+	LSValue* ls_tilde() override;
 
 	LSVALUE_OPERATORS
 

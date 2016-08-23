@@ -286,12 +286,6 @@ bool jit_xor(LSValue* x, LSValue* y) {
 	LSValue::delete_temporary(y);
 	return r;
 }
-LSValue* jit_inc(LSValue* x) {
-	return x->operator ++ (1);
-}
-LSValue* jit_dec(LSValue* x) {
-	return x->operator -- (1);
-}
 
 bool jit_equals(LSValue* x, LSValue* y) {
 	bool r = *x == *y;

@@ -42,44 +42,58 @@ bool LSNumber::isTrue() const {
 	return value != 0;
 }
 
-LSValue* LSNumber::operator - () const {
+LSValue*LSNumber::ls_minus() {
+	if (refs == 0) {
+		value = -value;
+		return this;
+	}
 	return LSNumber::get(-value);
 }
 
-LSValue* LSNumber::operator ! () const {
-	return LSBoolean::get(value == 0);
+LSValue*LSNumber::ls_not() {
+	bool r = value == 0;
+	if (refs == 0) delete this;
+	return LSBoolean::get(r);
 }
 
-LSValue* LSNumber::operator ~ () const {
-	return LSNumber::get(~(int)value);
+LSValue*LSNumber::ls_tilde() {
+	if (refs == 0) {
+		value = ~ (int)value;
+		return this;
+	}
+	return LSNumber::get(~ (int)value);
 }
 
-LSValue* LSNumber::operator ++ () {
-#if !USE_CACHE
-	++value;
-#endif
+LSValue*LSNumber::ls_preinc() {
+	// ++x
+	value += 1;
 	return this;
 }
-LSValue* LSNumber::operator ++ (int) {
-	NUMBER_TYPE old = value;
-#if !USE_CACHE
-	++value;
-#endif
-	return LSNumber::get(old);
+
+LSValue*LSNumber::ls_inc() {
+	// x++
+	if (refs == 0) {
+		value += 1;
+		return this;
+	}
+	LSValue* r = LSNumber::get(value);
+	value += 1;
+	return r;
 }
 
-LSValue* LSNumber::operator -- () {
-#if !USE_CACHE
-	--value;
-#endif
+LSValue*LSNumber::ls_predec() {
+	value -= 1;
 	return this;
 }
-LSValue* LSNumber::operator -- (int) {
-	NUMBER_TYPE old = value;
-#if !USE_CACHE
-	--value;
-#endif
-	return LSNumber::get(old);
+
+LSValue*LSNumber::ls_dec() {
+	if (refs == 0) {
+		value -= 1;
+		return this;
+	}
+	LSValue* r = LSNumber::get(value);
+	value -= 1;
+	return r;
 }
 
 LSValue* LSNumber::ls_add(LSNull*) {

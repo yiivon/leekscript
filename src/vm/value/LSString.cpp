@@ -38,12 +38,13 @@ bool LSString::isTrue() const {
 	return size() > 0;
 }
 
-LSValue* LSString::operator ! () const {
-	return LSBoolean::get(size() == 0);
+LSValue* LSString::ls_not() {
+	bool r = size() == 0;
+	if (refs == 0) delete this;
+	return LSBoolean::get(r);
 }
 
-LSValue* LSString::operator ~ () const {
-
+LSValue* LSString::ls_tilde() {
 	char buff[5];
 	char* string_chars = (char*) this->c_str();
 	int i = 0;
@@ -54,6 +55,7 @@ LSValue* LSString::operator ~ () const {
 		u8_toutf8(buff, 5, &c, 1);
 		reversed = buff + reversed;
 	}
+	if (refs == 0) delete this;
 	return new LSString(reversed);
 }
 

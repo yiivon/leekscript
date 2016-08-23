@@ -179,11 +179,7 @@ LSValue* string_replace(LSString* string, LSString* from, LSString* to) {
 }
 
 LSValue* string_reverse(LSString* string) {
-	LSValue* r = string->operator ~();
-	if (string->refs == 0) {
-		delete string;
-	}
-	return r;
+	return string->ls_tilde();
 }
 
 LSValue* string_size(LSString* string) {
