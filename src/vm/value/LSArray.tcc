@@ -1886,7 +1886,7 @@ inline bool LSArray<T>::eq(const LSArray<double>* array) const {
 
 template <>
 inline bool LSArray<LSValue*>::lt(const LSArray<LSValue*>* v) const {
-	return std::lexicographical_compare(begin(), end(), v->begin(), v->end(), [](LSValue* a, LSValue* b) -> bool {
+	return std::lexicographical_compare(begin(), end(), v->begin(), v->end(), [](const LSValue* a, const LSValue* b) -> bool {
 		return *a < *b;
 	});
 }
@@ -2037,8 +2037,8 @@ std::ostream& LSArray<T>::print(std::ostream& os) const {
 	return os;
 }
 
-template <>
-inline std::string LSArray<LSValue*>::json() const {
+template <typename T>
+std::string LSArray<T>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) res += ",";
