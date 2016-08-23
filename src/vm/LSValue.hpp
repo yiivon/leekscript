@@ -469,6 +469,10 @@ inline void LSValue::delete_temporary(LSValue* value) {
 	}
 }
 
+inline std::ostream& operator << (std::ostream& os, const LSValue& value) {
+	return value.print(os);
+}
+
 }
 
 #endif

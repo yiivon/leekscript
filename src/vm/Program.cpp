@@ -160,7 +160,7 @@ std::string Program::execute() {
 	if (mode == ExecMode::COMMAND_JSON || mode == ExecMode::TOP_LEVEL) {
 
 		ostringstream oss;
-		res->print(oss);
+		oss << *res;
 		result = oss.str();
 
 		string ctx = "{";
@@ -207,7 +207,7 @@ std::string Program::execute() {
 	} else if (mode == ExecMode::NORMAL) {
 
 		ostringstream oss;
-		res->print(oss);
+		oss << *res;
 		LSValue::delete_temporary(res);
 		string res_string = oss.str();
 
@@ -221,7 +221,7 @@ std::string Program::execute() {
 	} else if (mode == ExecMode::TEST) {
 
 		ostringstream oss;
-		res->print(oss);
+		oss << *res;
 		result = oss.str();
 
 		LSValue::delete_temporary(res);

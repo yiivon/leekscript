@@ -2018,9 +2018,7 @@ inline std::ostream& LSArray<LSValue*>::print(std::ostream& os) const {
 	os << "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
-		(*i)->print(os);
-//		os << " " << *i;
-//		os << " " << (*i)->refs;
+		os << **i;
 	}
 	os << "]";
 	return os;
@@ -2065,8 +2063,9 @@ inline std::string LSArray<double>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) res += ",";
-		std::string json = std::to_string(*i);
-		res += json;
+		std::ostringstream oss;
+		oss << *i;
+		res += oss.str();
 	}
 	return res + "]";
 }

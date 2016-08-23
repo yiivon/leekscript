@@ -287,7 +287,7 @@ inline std::ostream& LSSet<LSValue*>::print(std::ostream& os) const {
 	os << "<";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
-		(*i)->print(os);
+		os << **i;
 	}
 	os << ">";
 	return os;
