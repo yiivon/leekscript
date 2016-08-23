@@ -84,7 +84,7 @@ jit_type_t VM::get_jit_type(const Type& type) {
 		return LS_INTEGER;
 	}
 	if (type.raw_type == RawType::BOOLEAN) {
-		return LS_BOOL;
+		return LS_BOOLEAN;
 	}
 	if (type.raw_type == RawType::LONG or type.raw_type == RawType::FUNCTION) {
 		return LS_LONG;
