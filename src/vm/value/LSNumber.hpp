@@ -99,12 +99,7 @@ public:
 	LSValue* ls_mod_eq(LSNumber*) override;
 
 	bool eq(const LSNumber*) const override;
-
-	bool operator < (const LSValue*) const override;
-	bool operator < (const LSNumber*) const override;
-
-	bool operator > (const LSValue*) const override;
-	bool operator > (const LSNumber*) const override;
+	bool lt(const LSNumber*) const override;
 
 	LSValue* at(const LSValue* value) const override;
 	LSValue** atL(const LSValue* value) override;
@@ -124,7 +119,7 @@ public:
 
 	bool isInteger() const;
 
-	int typeID() const override;
+	int typeID() const override { return 3; }
 
 	virtual const BaseRawType* getRawType() const override;
 };

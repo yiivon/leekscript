@@ -39,41 +39,9 @@ bool LSFunction::eq(const LSFunction* f) const {
 	return function == f->function;
 }
 
-bool LSFunction::operator < (const LSValue* v) const {
-	return v->operator < (this);
+bool LSFunction::lt(const LSFunction* f) const {
+	return function < f->function;
 }
-bool LSFunction::operator < (const LSNull*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSBoolean*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSNumber*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSString*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSArray<LSValue*>*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSArray<int>*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSArray<double>*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSObject*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSFunction*) const {
-	return false;
-}
-bool LSFunction::operator < (const LSClass*) const {
-	return true;
-}
-
-
 
 
 LSValue* LSFunction::at(const LSValue*) const {
@@ -107,10 +75,6 @@ string LSFunction::json() const {
 
 LSValue* LSFunction::getClass() const {
 	return LSFunction::function_class;
-}
-
-int LSFunction::typeID() const {
-	return 8;
 }
 
 const BaseRawType* LSFunction::getRawType() const {

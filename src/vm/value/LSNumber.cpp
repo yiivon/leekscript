@@ -372,18 +372,8 @@ bool LSNumber::eq(const LSNumber* number) const {
 	return this->value == number->value;
 }
 
-bool LSNumber::operator < (const LSValue* v) const {
-	return v->operator < (this);
-}
-bool LSNumber::operator < (const LSNumber* v) const {
-	return this->value < v->value;
-}
-
-bool LSNumber::operator > (const LSValue* v) const {
-	return v->operator > (this);
-}
-bool LSNumber::operator > (const LSNumber* v) const {
-	return this->value > v->value;
+bool LSNumber::lt(const LSNumber* number) const {
+	return this->value < number->value;
 }
 
 LSValue* LSNumber::at(const LSValue*) const {
@@ -451,10 +441,6 @@ std::ostream& LSNumber::print(std::ostream& os) const {
 
 LSValue* LSNumber::getClass() const {
 	return LSNumber::number_class;
-}
-
-int LSNumber::typeID() const {
-	return 3;
 }
 
 const BaseRawType* LSNumber::getRawType() const {

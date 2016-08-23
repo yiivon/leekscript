@@ -10,7 +10,7 @@ namespace ls {
 
 template <>
 inline bool lsmap_less<LSValue*>::operator()(LSValue* lhs, LSValue* rhs) const {
-	return rhs->operator < (lhs);
+	return *lhs < *rhs;
 }
 
 template <typename K>
@@ -315,100 +315,100 @@ inline bool LSMap<K,T>::isTrue() const {
 template <>
 inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		if (*it1->first != *it2->first) return false;
-		if (*it1->second != *it2->second) return false;
-		++it2;
-		++it1;
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		if (*i->first != *j->first) return false;
+		if (*i->second != *j->second) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,int>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* v2 = dynamic_cast<LSNumber*>(it2->second);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* v2 = dynamic_cast<LSNumber*>(j->second);
 		if (!v2) return false;
-		if (it1->second != v2->value) return false;
-		if (*it1->first != *it2->first) return false;
-		++it2;
-		++it1;
+		if (i->second != v2->value) return false;
+		if (*i->first != *j->first) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* v2 = dynamic_cast<LSNumber*>(it2->second);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* v2 = dynamic_cast<LSNumber*>(j->second);
 		if (!v2) return false;
-		if (it1->second != v2->value) return false;
-		if (*it1->first != *it2->first) return false;
-		++it2;
-		++it1;
+		if (i->second != v2->value) return false;
+		if (*i->first != *j->first) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,LSValue*>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		if (it1->first != k2->value) return false;
-		if (*it1->second != *it2->second) return false;
-		++it2;
-		++it1;
+		if (i->first != k2->value) return false;
+		if (*i->second != *j->second) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,int>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		LSNumber* v2 = dynamic_cast<LSNumber*>(it2->second);
+		LSNumber* v2 = dynamic_cast<LSNumber*>(j->second);
 		if (!v2) return false;
-		if (it1->first != k2->value) return false;
-		if (it1->second != v2->value) return false;
-		++it2;
-		++it1;
+		if (i->first != k2->value) return false;
+		if (i->second != v2->value) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,double>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		LSNumber* v2 = dynamic_cast<LSNumber*>(it2->second);
+		LSNumber* v2 = dynamic_cast<LSNumber*>(j->second);
 		if (!v2) return false;
-		if (it1->first != k2->value) return false;
-		if (it1->second != v2->value) return false;
-		++it2;
-		++it1;
+		if (i->first != k2->value) return false;
+		if (i->second != v2->value) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,int>* value) const {
@@ -417,80 +417,80 @@ inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,int>* value) const
 template <>
 inline bool LSMap<LSValue*,int>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		if (it1->second != it2->second) return false;
-		if (*it1->first != *it2->first) return false;
-		++it2;
-		++it1;
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		if (i->second != j->second) return false;
+		if (*i->first != *j->first) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		if (it1->second != it2->second) return false;
-		if (*it1->first != *it2->first) return false;
-		++it2;
-		++it1;
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		if (i->second != j->second) return false;
+		if (*i->first != *j->first) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,LSValue*>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		LSNumber* v1 = dynamic_cast<LSNumber*>(it1->second);
+		LSNumber* v1 = dynamic_cast<LSNumber*>(i->second);
 		if (!v1) return false;
-		if (it1->first != k2->value) return false;
-		if (v1->value != it2->second) return false;
-		++it2;
-		++it1;
+		if (i->first != k2->value) return false;
+		if (v1->value != j->second) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,int>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		if (it1->second != it2->second) return false;
-		if (it1->first != k2->value) return false;
-		++it2;
-		++it1;
+		if (i->second != j->second) return false;
+		if (i->first != k2->value) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,double>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		if (it1->second != it2->second) return false;
-		if (it1->first != k2->value) return false;
-		++it2;
-		++it1;
+		if (i->second != j->second) return false;
+		if (i->first != k2->value) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,double>* value) const {
@@ -503,66 +503,66 @@ inline bool LSMap<LSValue*,int>::eq(const LSMap<LSValue*,double>* value) const {
 template <>
 inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,double>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		if (it1->second != it2->second) return false;
-		if (*it1->first != *it2->first) return false;
-		++it2;
-		++it1;
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		if (i->second != j->second) return false;
+		if (*i->first != *j->first) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,LSValue*>::eq(const LSMap<LSValue*,double>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		LSNumber* v1 = dynamic_cast<LSNumber*>(it1->second);
+		LSNumber* v1 = dynamic_cast<LSNumber*>(i->second);
 		if (!v1) return false;
-		if (it1->first != k2->value) return false;
-		if (v1->value != it2->second) return false;
-		++it2;
-		++it1;
+		if (i->first != k2->value) return false;
+		if (v1->value != j->second) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,int>::eq(const LSMap<LSValue*,double>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		if (it1->second != it2->second) return false;
-		if (it1->first != k2->value) return false;
-		++it2;
-		++it1;
+		if (i->second != j->second) return false;
+		if (i->first != k2->value) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,double>::eq(const LSMap<LSValue*,double>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* k2 = dynamic_cast<LSNumber*>(it2->first);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* k2 = dynamic_cast<LSNumber*>(j->first);
 		if (!k2) return false;
-		if (it1->second != it2->second) return false;
-		if (it1->first != k2->value) return false;
-		++it2;
-		++it1;
+		if (i->second != j->second) return false;
+		if (i->first != k2->value) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<int,LSValue*>* value) const {
@@ -579,48 +579,48 @@ inline bool LSMap<LSValue*,double>::eq(const LSMap<int,LSValue*>* value) const {
 template <>
 inline bool LSMap<int,LSValue*>::eq(const LSMap<int,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		if (it1->first != it2->first) return false;
-		if (*it1->second != *it2->second) return false;
-		++it2;
-		++it1;
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		if (i->first != j->first) return false;
+		if (*i->second != *j->second) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,int>::eq(const LSMap<int,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* v2 = dynamic_cast<LSNumber*>(it2->second);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* v2 = dynamic_cast<LSNumber*>(j->second);
 		if (!v2) return false;
-		if (it1->first != it2->first) return false;
-		if (it1->second != v2->value) return false;
-		++it2;
-		++it1;
+		if (i->first != j->first) return false;
+		if (i->second != v2->value) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,double>::eq(const LSMap<int,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		LSNumber* v2 = dynamic_cast<LSNumber*>(it2->second);
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		LSNumber* v2 = dynamic_cast<LSNumber*>(j->second);
 		if (!v2) return false;
-		if (it1->first != it2->first) return false;
-		if (it1->second != v2->value) return false;
-		++it2;
-		++it1;
+		if (i->first != j->first) return false;
+		if (i->second != v2->value) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<int,int>* value) const {
@@ -641,30 +641,30 @@ inline bool LSMap<int,LSValue*>::eq(const LSMap<int,int>* value) const {
 template <>
 inline bool LSMap<int,int>::eq(const LSMap<int,int>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		if (it1->first != it2->first) return false;
-		if (it1->second != it2->second) return false;
-		++it2;
-		++it1;
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		if (i->first != j->first) return false;
+		if (i->second != j->second) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 template <>
 inline bool LSMap<int,double>::eq(const LSMap<int,int>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		if (it1->first != it2->first) return false;
-		if (it1->second != it2->second) return false;
-		++it2;
-		++it1;
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		if (i->first != j->first) return false;
+		if (i->second != j->second) return false;
+		++j;
+		++i;
 	}
-	return it2 == value->end();
+	return j == value->end();
 }
 
 template <>
@@ -690,23 +690,18 @@ inline bool LSMap<int,int>::eq(const LSMap<int,double>* value) const {
 template <>
 inline bool LSMap<int,double>::eq(const LSMap<int,double>* value) const {
 	if (this->size() != value->size()) return false;
-	auto it1 = begin();
-	auto it2 = value->begin();
-	while (it1 != end()) {
-		if (it2 == value->end()) return false;
-		if (it1->first != it2->first) return false;
-		if (it1->second != it2->second) return false;
-		++it2;
-		++it1;
+	auto i = begin();
+	auto j = value->begin();
+	while (i != end()) {
+		if (j == value->end()) return false;
+		if (i->first != j->first) return false;
+		if (i->second != j->second) return false;
+		++j;
+		++i;
 	}
 	return true;
 }
 
-
-template <typename K, typename T>
-inline bool LSMap<K,T>::operator <(const LSValue* value) const {
-	return value->operator <(this);
-}
 
 template <>
 inline LSValue* LSMap<LSValue*,LSValue*>::at(const LSValue* key) const {
@@ -973,11 +968,6 @@ inline LSValue* LSMap<int,double>::clone() const {
 template <typename K, typename T>
 inline LSValue* LSMap<K,T>::getClass() const {
 	return LSMap<K,T>::map_class;
-}
-
-template <typename K, typename T>
-inline int LSMap<K,T>::typeID() const {
-	return 6;
 }
 
 template <typename K, typename T>

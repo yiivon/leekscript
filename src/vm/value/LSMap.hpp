@@ -41,7 +41,6 @@ public:
 	virtual bool eq(const LSMap<int,int>*) const override;
 	virtual bool eq(const LSMap<int,double>*) const override;
 
-	virtual bool operator < (const LSValue*) const override;
 //	virtual bool operator < (const LSMap<LSValue*,LSValue*>*) const override;
 
 	virtual LSValue* at(const LSValue* key) const override;
@@ -50,7 +49,7 @@ public:
 	virtual std::string json() const override;
 	virtual LSValue* clone() const override;
 	virtual LSValue* getClass() const override;
-	virtual int typeID() const override;
+	virtual int typeID() const override { return 6; }
 	virtual const BaseRawType* getRawType() const override;
 };
 

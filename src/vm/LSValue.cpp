@@ -309,121 +309,25 @@ bool LSValue::eq(const LSFunction*) const                    { return false; }
 bool LSValue::eq(const LSObject*) const                      { return false; }
 bool LSValue::eq(const LSClass*) const                       { return false; }
 
-bool LSValue::operator < (const LSNull*) const {
-	return typeID() < 1;
-}
-bool LSValue::operator < (const LSBoolean*) const {
-	return typeID() < 2;
-}
-bool LSValue::operator < (const LSNumber*) const {
-	return typeID() < 3;
-}
-bool LSValue::operator < (const LSString*) const {
-	return typeID() < 4;
-}
-bool LSValue::operator < (const LSArray<LSValue*>*) const {
-	return typeID() < 5;
-}
-bool LSValue::operator < (const LSArray<int>*) const {
-	return typeID() < 5;
-}
-bool LSValue::operator < (const LSArray<double>*) const {
-	return typeID() < 5;
-}
-bool LSValue::operator < (const LSMap<LSValue*,LSValue*>*) const {
-	return typeID() < 6;
-}
-bool LSValue::operator < (const LSMap<LSValue*,int>*) const {
-	return typeID() < 6;
-}
-bool LSValue::operator < (const LSMap<LSValue*,double>*) const {
-	return typeID() < 6;
-}
-bool LSValue::operator < (const LSMap<int,LSValue*>*) const {
-	return typeID() < 6;
-}
-bool LSValue::operator < (const LSMap<int,int>*) const {
-	return typeID() < 6;
-}
-bool LSValue::operator < (const LSMap<int,double>*) const {
-	return typeID() < 6;
-}
-bool LSValue::operator < (const LSSet<LSValue*>*) const {
-	return typeID() < 7;
-}
-bool LSValue::operator < (const LSSet<int>*) const {
-	return typeID() < 7;
-}
-bool LSValue::operator < (const LSSet<double>*) const {
-	return typeID() < 7;
-}
-bool LSValue::operator < (const LSFunction*) const {
-	return typeID() < 8;
-}
-bool LSValue::operator < (const LSObject*) const {
-	return typeID() < 9;
-}
-bool LSValue::operator < (const LSClass*) const {
-	return typeID() < 10;
-}
-
-bool LSValue::operator > (const LSNull* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSBoolean* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSNumber* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSString* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSArray<LSValue*>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSArray<int>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSArray<double>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSMap<LSValue*,LSValue*>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSMap<LSValue*,int>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSMap<LSValue*,double>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSMap<int,LSValue*>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSMap<int,int>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSMap<int,double>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSSet<LSValue*>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSSet<int>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSSet<double>* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSFunction* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSObject* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
-bool LSValue::operator > (const LSClass* value) const {
-	return not value->operator <(this) and not (*this == *value);
-}
+bool LSValue::lt(const LSNull*) const                        { return typeID() < 1; }
+bool LSValue::lt(const LSBoolean*) const                     { return typeID() < 2; }
+bool LSValue::lt(const LSNumber*) const                      { return typeID() < 3; }
+bool LSValue::lt(const LSString*) const                      { return typeID() < 4; }
+bool LSValue::lt(const LSArray<LSValue*>*) const             { return typeID() < 5; }
+bool LSValue::lt(const LSArray<int>*) const                  { return typeID() < 5; }
+bool LSValue::lt(const LSArray<double>*) const               { return typeID() < 5; }
+bool LSValue::lt(const LSMap<LSValue*,LSValue*>*) const      { return typeID() < 6; }
+bool LSValue::lt(const LSMap<LSValue*,int>*) const           { return typeID() < 6; }
+bool LSValue::lt(const LSMap<LSValue*,double>*) const        { return typeID() < 6; }
+bool LSValue::lt(const LSMap<int,LSValue*>*) const           { return typeID() < 6; }
+bool LSValue::lt(const LSMap<int,int>*) const                { return typeID() < 6; }
+bool LSValue::lt(const LSMap<int,double>*) const             { return typeID() < 6; }
+bool LSValue::lt(const LSSet<LSValue*>*) const               { return typeID() < 7; }
+bool LSValue::lt(const LSSet<int>*) const                    { return typeID() < 7; }
+bool LSValue::lt(const LSSet<double>*) const                 { return typeID() < 7; }
+bool LSValue::lt(const LSFunction*) const                    { return typeID() < 8; }
+bool LSValue::lt(const LSObject*) const                      { return typeID() < 9; }
+bool LSValue::lt(const LSClass*) const                       { return typeID() < 10; }
 
 LSValue* LSValue::at(const LSValue*) const {
 	return LSNull::get();

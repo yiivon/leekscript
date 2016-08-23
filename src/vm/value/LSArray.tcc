@@ -546,7 +546,7 @@ inline LSValue* LSArray<double>::ls_unique() {
 template <>
 inline LSValue* LSArray<LSValue*>::ls_sort() {
 	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
-		return b->operator < (a);
+		return *a < *b;
 	});
 	return this;
 }
@@ -1171,7 +1171,7 @@ inline LSValue* LSArray<LSValue*>::ls_max() {
 
 	LSValue* max = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
-		if ((*this)[i]->operator <(max)) {
+		if (*(*this)[i] < *max) {
 			max = (*this)[i];
 		}
 	}
@@ -1207,7 +1207,7 @@ inline LSValue* LSArray<LSValue*>::ls_min() {
 
 	LSValue* max = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
-		if (max->operator <((*this)[i])) {
+		if (*max < *(*this)[i]) {
 			max = (*this)[i];
 		}
 	}
@@ -1884,125 +1884,65 @@ inline bool LSArray<T>::eq(const LSArray<double>* array) const {
 	return true;
 }
 
-template <class T>
-inline bool LSArray<T>::operator < (const LSValue* v) const {
-	return v->operator < (this);
-}
-
-template <class T>
-inline bool LSArray<T>::operator < (const LSNull*) const {
-	return false;
-}
-
-template <class T>
-inline bool LSArray<T>::operator < (const LSBoolean*) const {
-	return false;
-}
-
-template <class T>
-inline bool LSArray<T>::operator < (const LSNumber*) const {
-	return false;
-}
-
-template <class T>
-inline bool LSArray<T>::operator < (const LSString*) const {
-	return false;
-}
-
 template <>
-inline bool LSArray<LSValue*>::operator < (const LSArray<LSValue*>* v) const {
+inline bool LSArray<LSValue*>::lt(const LSArray<LSValue*>* v) const {
 	return std::lexicographical_compare(begin(), end(), v->begin(), v->end(), [](LSValue* a, LSValue* b) -> bool {
-		return a->operator > (b);
+		return *a < *b;
 	});
 }
-template <>
-inline bool LSArray<int>::operator < (const LSArray<LSValue*>* v) const {
-	auto it1 = begin();
-	auto it2 = v->begin();
-	while (it1 != end()) {
-		if (it2 == v->end()) return false;
-		if ((*it2)->typeID() < 3) return false;
-		if (3 < (*it2)->typeID()) return true;
-		if (*it1 < ((LSNumber*) *it2)->value) return true;
-		if (((LSNumber*) *it2)->value < *it1) return false;
-		++it1; ++it2;
+template <typename T>
+inline bool LSArray<T>::lt(const LSArray<LSValue*>* v) const {
+	auto i = this->begin();
+	auto j = v->begin();
+	while (i != this->end()) {
+		if (j == v->end()) return false;
+		if ((*j)->typeID() < 3) return false;
+		if (3 < (*j)->typeID()) return true;
+		if (*i < ((LSNumber*) *j)->value) return true;
+		if (((LSNumber*) *j)->value < *i) return false;
+		++i; ++j;
 	}
-	return (it2 != v->end());
-}
-template <>
-inline bool LSArray<double>::operator < (const LSArray<LSValue*>* v) const {
-	auto it1 = begin();
-	auto it2 = v->begin();
-	while (it1 != end()) {
-		if (it2 == v->end()) return false;
-		if ((*it2)->typeID() < 3) return false;
-		if (3 < (*it2)->typeID()) return true;
-		if (*it1 < ((LSNumber*) *it2)->value) return true;
-		if (((LSNumber*) *it2)->value < *it1) return false;
-		++it1; ++it2;
-	}
-	return (it2 != v->end());
-}
-template <>
-inline bool LSArray<LSValue*>::operator < (const LSArray<int>* v) const {
-	auto it1 = begin();
-	auto it2 = v->begin();
-	while (it1 != end()) {
-		if (it2 == v->end()) return false;
-		if (3 < (*it1)->typeID()) return false;
-		if ((*it1)->typeID() < 3) return true;
-		if (((LSNumber*) *it1)->value < *it2) return true;
-		if (*it2 < ((LSNumber*) *it1)->value) return false;
-		++it1; ++it2;
-	}
-	return (it2 != v->end());
-}
-template <>
-inline bool LSArray<int>::operator < (const LSArray<int>* v) const {
-	return std::lexicographical_compare(begin(), end(), v->begin(), v->end());
-}
-template <>
-inline bool LSArray<double>::operator < (const LSArray<int>* v) const {
-	return std::lexicographical_compare(begin(), end(), v->begin(), v->end());
-}
-template <>
-inline bool LSArray<LSValue*>::operator < (const LSArray<double>* v) const {
-	auto it1 = begin();
-	auto it2 = v->begin();
-	while (it1 != end()) {
-		if (it2 == v->end()) return false;
-		if (3 < (*it1)->typeID()) return false;
-		if ((*it1)->typeID() < 3) return true;
-		if (((LSNumber*) *it1)->value < *it2) return true;
-		if (*it2 < ((LSNumber*) *it1)->value) return false;
-		++it1; ++it2;
-	}
-	return (it2 != v->end());
-}
-template <>
-inline bool LSArray<int>::operator < (const LSArray<double>* v) const {
-	return std::lexicographical_compare(begin(), end(), v->begin(), v->end());
-}
-template <>
-inline bool LSArray<double>::operator < (const LSArray<double>* v) const {
-	return std::lexicographical_compare(begin(), end(), v->begin(), v->end());
+	return (j != v->end());
 }
 
-
-template <class T>
-inline bool LSArray<T>::operator < (const LSObject*) const {
-	return true;
+template <>
+inline bool LSArray<LSValue*>::lt(const LSArray<int>* v) const {
+	auto i = begin();
+	auto j = v->begin();
+	while (i != end()) {
+		if (j == v->end()) return false;
+		if (3 < (*i)->typeID()) return false;
+		if ((*i)->typeID() < 3) return true;
+		if (((LSNumber*) *i)->value < *j) return true;
+		if (*j < ((LSNumber*) *i)->value) return false;
+		++i; ++j;
+	}
+	return (j != v->end());
+}
+template <typename T>
+inline bool LSArray<T>::lt(const LSArray<int>* v) const {
+	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
 }
 
-template <class T>
-inline bool LSArray<T>::operator < (const LSFunction*) const {
-	return true;
+template <>
+inline bool LSArray<LSValue*>::lt(const LSArray<double>* v) const {
+	auto i = begin();
+	auto j = v->begin();
+	while (i != end()) {
+		if (j == v->end()) return false;
+		if (3 < (*i)->typeID()) return false;
+		if ((*i)->typeID() < 3) return true;
+		if (((LSNumber*) *i)->value < *j) return true;
+		if (*j < ((LSNumber*) *i)->value) return false;
+		++i; ++j;
+	}
+	return (j != v->end());
+}
+template <typename T>
+inline bool LSArray<T>::lt(const LSArray<double>* v) const {
+	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
 }
 
-template <class T>
-inline bool LSArray<T>::operator < (const LSClass*) const {
-	return true;
-}
 
 
 template <>
@@ -2134,11 +2074,6 @@ inline std::string LSArray<double>::json() const {
 template <class T>
 LSValue* LSArray<T>::getClass() const {
 	return LSArray<T>::array_class;
-}
-
-template <class T>
-int LSArray<T>::typeID() const {
-	return 5;
 }
 
 template <class T>

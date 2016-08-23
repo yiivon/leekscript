@@ -75,15 +75,38 @@ bool LSObject::isTrue() const {
 	return values.size() > 0;
 }
 
-bool LSObject::eq(const LSObject*) const {
-	return false;
+bool LSObject::eq(const LSObject* obj) const {
+	if ((!clazz && obj->clazz) || (clazz && !obj->clazz)) return false;
+	if (clazz && *clazz != *obj->clazz) return false;
+	if (values.size() != obj->values.size()) return false;
+	auto i = values.begin();
+	auto j = obj->values.begin();
+	for (; i != values.end(); ++i, ++j) {
+		if (i->first != j->first) return false;
+		if (*i->second != *j->second) return false;
+	}
+	return true;
 }
 
-bool LSObject::operator < (const LSValue* value) const {
-	return value->operator < (this);
-}
-bool LSObject::operator < (const LSObject* v) const {
-	return values.size() < v->values.size();
+bool LSObject::lt(const LSObject* obj) const {
+	if (!clazz && obj->clazz) return true;
+	if (clazz && !obj->clazz) return false;
+	if (clazz && *clazz != *obj->clazz) return *clazz < *obj->clazz;
+	auto i = values.begin();
+	auto j = obj->values.begin();
+	while (i != values.end()) {
+		if (j == obj->values.end()) return false;
+		// i < j => true
+		// j < i => false
+		int x = i->first.compare(j->first);
+		if (x < 0) return true;
+		if (x > 0) return false;
+		if (*i->second != *j->second) {
+			return *i->second < *j->second;
+		}
+		++i; ++j;
+	}
+	return (j != obj->values.end());
 }
 
 
@@ -174,10 +197,6 @@ std::string LSObject::json() const {
 LSValue* LSObject::getClass() const {
 	if (clazz != nullptr) return clazz;
 	return LSObject::object_class;
-}
-
-int LSObject::typeID() const {
-	return 9;
 }
 
 const BaseRawType* LSObject::getRawType() const {

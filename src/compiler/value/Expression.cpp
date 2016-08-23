@@ -300,25 +300,25 @@ bool jit_not_equals(LSValue* x, LSValue* y) {
 	return r;
 }
 bool jit_lt(LSValue* x, LSValue* y) {
-	bool r = (y->operator < (x));
+	bool r = *x < *y;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
 bool jit_le(LSValue* x, LSValue* y) {
-	bool r = (y->operator <= (x));
+	bool r = *x <= *y;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
 bool jit_gt(LSValue* x, LSValue* y) {
-	bool r = (y->operator > (x));
+	bool r = *x > *y;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
 bool jit_ge(LSValue* x, LSValue* y) {
-	bool r = (y->operator >= (x));
+	bool r = *x >= *y;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;

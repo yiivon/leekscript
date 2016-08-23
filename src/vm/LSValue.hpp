@@ -38,6 +38,7 @@ class Context;
 	LSValue* ls_rmod(LSValue* value) override     { return value->ls_mod(this); } \
 	LSValue* ls_rmod_eq(LSValue* value) override  { return value->ls_mod_eq(this); } \
 	bool req(const LSValue* value) const override { return value->eq(this); } \
+	bool rlt(const LSValue* value) const override { return value->lt(this); } \
 
 
 class LSValue {
@@ -351,57 +352,30 @@ public:
 	virtual bool eq(const LSObject*) const;
 	virtual bool eq(const LSClass*) const;
 
-
-	virtual bool operator < (const LSValue*) const = 0;
-	virtual bool operator < (const LSNull*) const;
-	virtual bool operator < (const LSBoolean*) const;
-	virtual bool operator < (const LSNumber*) const;
-	virtual bool operator < (const LSString*) const;
-	virtual bool operator < (const LSArray<LSValue*>*) const;
-	virtual bool operator < (const LSArray<int>*) const;
-	virtual bool operator < (const LSArray<double>*) const;
-	virtual bool operator < (const LSMap<LSValue*,LSValue*>*) const;
-	virtual bool operator < (const LSMap<LSValue*,int>*) const;
-	virtual bool operator < (const LSMap<LSValue*,double>*) const;
-	virtual bool operator < (const LSMap<int,LSValue*>*) const;
-	virtual bool operator < (const LSMap<int,int>*) const;
-	virtual bool operator < (const LSMap<int,double>*) const;
-	virtual bool operator < (const LSSet<LSValue*>*) const;
-	virtual bool operator < (const LSSet<int>*) const;
-	virtual bool operator < (const LSSet<double>*) const;
-	virtual bool operator < (const LSFunction*) const;
-	virtual bool operator < (const LSObject*) const;
-	virtual bool operator < (const LSClass*) const;
-
-	inline virtual bool operator > (const LSValue* value) const {
-		return not this->operator <(value) and not (*this == *value);
-	}
-	virtual bool operator > (const LSNull*) const;
-	virtual bool operator > (const LSBoolean*) const;
-	virtual bool operator > (const LSNumber*) const;
-	virtual bool operator > (const LSString*) const;
-	virtual bool operator > (const LSArray<LSValue*>*) const;
-	virtual bool operator > (const LSArray<int>*) const;
-	virtual bool operator > (const LSArray<double>*) const;
-	virtual bool operator > (const LSMap<LSValue*,LSValue*>*) const;
-	virtual bool operator > (const LSMap<LSValue*,int>*) const;
-	virtual bool operator > (const LSMap<LSValue*,double>*) const;
-	virtual bool operator > (const LSMap<int,LSValue*>*) const;
-	virtual bool operator > (const LSMap<int,int>*) const;
-	virtual bool operator > (const LSMap<int,double>*) const;
-	virtual bool operator > (const LSSet<LSValue*>*) const;
-	virtual bool operator > (const LSSet<int>*) const;
-	virtual bool operator > (const LSSet<double>*) const;
-	virtual bool operator > (const LSFunction*) const;
-	virtual bool operator > (const LSObject*) const;
-	virtual bool operator > (const LSClass*) const;
-
-	inline bool operator <=(const LSValue* value) const {
-		return this->operator <(value) || (*this == *value);
-	}
-	inline bool operator >=(const LSValue*value) const {
-		return not this->operator <(value);
-	}
+	bool operator < (const LSValue& value) const { return value.rlt(this); }
+	bool operator > (const LSValue& value) const { return !(*this == value) && !(*this < value); }
+	bool operator <=(const LSValue& value) const { return (*this == value) || (*this < value); }
+	bool operator >=(const LSValue& value) const { return !(*this < value); }
+	virtual bool rlt(const LSValue*) const = 0;
+	virtual bool lt(const LSNull*) const;
+	virtual bool lt(const LSBoolean*) const;
+	virtual bool lt(const LSNumber*) const;
+	virtual bool lt(const LSString*) const;
+	virtual bool lt(const LSArray<LSValue*>*) const;
+	virtual bool lt(const LSArray<int>*) const;
+	virtual bool lt(const LSArray<double>*) const;
+	virtual bool lt(const LSMap<LSValue*,LSValue*>*) const;
+	virtual bool lt(const LSMap<LSValue*,int>*) const;
+	virtual bool lt(const LSMap<LSValue*,double>*) const;
+	virtual bool lt(const LSMap<int,LSValue*>*) const;
+	virtual bool lt(const LSMap<int,int>*) const;
+	virtual bool lt(const LSMap<int,double>*) const;
+	virtual bool lt(const LSSet<LSValue*>*) const;
+	virtual bool lt(const LSSet<int>*) const;
+	virtual bool lt(const LSSet<double>*) const;
+	virtual bool lt(const LSFunction*) const;
+	virtual bool lt(const LSObject*) const;
+	virtual bool lt(const LSClass*) const;
 
 	virtual bool in(LSValue*) const { return false; }
 

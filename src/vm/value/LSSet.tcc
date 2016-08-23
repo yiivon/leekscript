@@ -10,7 +10,7 @@ namespace ls {
 
 template <>
 inline bool lsset_less<LSValue*>::operator()(LSValue* lhs, LSValue* rhs) const {
-	return rhs->operator < (lhs);
+	return *lhs < *rhs;
 }
 
 template <typename T>
@@ -201,9 +201,63 @@ inline bool LSSet<T>::eq(const LSSet<double>* other) const {
 	return true;
 }
 
+template <>
+inline bool LSSet<LSValue*>::lt(const LSSet<LSValue*>* set) const {
+	return std::lexicographical_compare(begin(), end(), set->begin(), set->end(), [](LSValue* a, LSValue* b) -> bool {
+		return *a < *b;
+	});
+}
 template <typename T>
-inline bool LSSet<T>::operator <(const LSValue* value) const {
-	return value->operator <(this);
+inline bool LSSet<T>::lt(const LSSet<LSValue*>* set) const {
+	auto i = this->begin();
+	auto j = set->begin();
+	while (i != this->end()) {
+		if (j == set->end()) return false;
+		if ((*j)->typeID() < 3) return false;
+		if (3 < (*j)->typeID()) return true;
+		if (*i < ((LSNumber*) *j)->value) return true;
+		if (((LSNumber*) *j)->value < *i) return false;
+		++i; ++j;
+	}
+	return (j != set->end());
+}
+
+template <>
+inline bool LSSet<LSValue*>::lt(const LSSet<int>* v) const {
+	auto i = begin();
+	auto j = v->begin();
+	while (i != end()) {
+		if (j == v->end()) return false;
+		if (3 < (*i)->typeID()) return false;
+		if ((*i)->typeID() < 3) return true;
+		if (((LSNumber*) *i)->value < *j) return true;
+		if (*j < ((LSNumber*) *i)->value) return false;
+		++i; ++j;
+	}
+	return (j != v->end());
+}
+template <typename T>
+inline bool LSSet<T>::lt(const LSSet<int>* v) const {
+	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
+}
+
+template <>
+inline bool LSSet<LSValue*>::lt(const LSSet<double>* v) const {
+	auto i = begin();
+	auto j = v->begin();
+	while (i != end()) {
+		if (j == v->end()) return false;
+		if (3 < (*i)->typeID()) return false;
+		if ((*i)->typeID() < 3) return true;
+		if (((LSNumber*) *i)->value < *j) return true;
+		if (*j < ((LSNumber*) *i)->value) return false;
+		++i; ++j;
+	}
+	return (j != v->end());
+}
+template <typename T>
+inline bool LSSet<T>::lt(const LSSet<double>* v) const {
+	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
 }
 
 template <>
@@ -278,11 +332,6 @@ inline LSValue* LSSet<T>::clone() const {
 template <typename T>
 LSValue*LSSet<T>::getClass() const {
 	return LSSet<T>::set_class;
-}
-
-template <typename T>
-int LSSet<T>::typeID() const {
-	return 7;
 }
 
 template <typename T>

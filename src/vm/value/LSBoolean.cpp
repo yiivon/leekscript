@@ -64,40 +64,9 @@ bool LSBoolean::eq(const LSBoolean* boolean) const {
 	return boolean->value == this->value;
 }
 
-bool LSBoolean::operator < (const LSValue* v) const {
-	return v->operator < (this);
+bool LSBoolean::lt(const LSBoolean* boolean) const {
+	return this->value < boolean->value;
 }
-bool LSBoolean::operator < (const LSNull*) const {
-	return false;
-}
-bool LSBoolean::operator < (const LSBoolean* v) const {
-	return v->value < this->value;
-}
-bool LSBoolean::operator < (const LSNumber*) const {
-	return true;
-}
-bool LSBoolean::operator < (const LSString*) const {
-	return true;
-}
-bool LSBoolean::operator < (const LSArray<LSValue*>*) const {
-	return true;
-}
-bool LSBoolean::operator < (const LSArray<int>*) const {
-	return true;
-}
-bool LSBoolean::operator < (const LSArray<double>*) const {
-	return true;
-}
-bool LSBoolean::operator < (const LSFunction*) const {
-	return true;
-}
-bool LSBoolean::operator < (const LSObject*) const {
-	return true;
-}
-bool LSBoolean::operator < (const LSClass*) const {
-	return true;
-}
-
 
 LSValue* LSBoolean::at(const LSValue*) const {
 	return LSNull::get();
@@ -131,10 +100,6 @@ string LSBoolean::json() const {
 
 LSValue* LSBoolean::getClass() const {
 	return LSBoolean::boolean_class;
-}
-
-int LSBoolean::typeID() const {
-	return 2;
 }
 
 const BaseRawType* LSBoolean::getRawType() const {

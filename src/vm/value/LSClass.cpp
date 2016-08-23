@@ -115,37 +115,7 @@ bool LSClass::eq(const LSClass*) const {
 	return false;
 }
 
-bool LSClass::operator < (const LSValue* v) const {
-	return v->operator < (this);
-}
-bool LSClass::operator < (const LSNull*) const {
-	return false;
-}
-bool LSClass::operator < (const LSBoolean*) const {
-	return false;
-}
-bool LSClass::operator < (const LSNumber*) const {
-	return false;
-}
-bool LSClass::operator < (const LSString*) const {
-	return false;
-}
-bool LSClass::operator < (const LSArray<LSValue*>*) const {
-	return false;
-}
-bool LSClass::operator < (const LSArray<int>*) const {
-	return false;
-}
-bool LSClass::operator < (const LSArray<double>*) const {
-	return false;
-}
-bool LSClass::operator < (const LSObject*) const {
-	return false;
-}
-bool LSClass::operator < (const LSFunction*) const {
-	return false;
-}
-bool LSClass::operator < (const LSClass*) const {
+bool LSClass::lt(const LSClass*) const {
 	return false;
 }
 
@@ -194,10 +164,6 @@ string LSClass::json() const {
 
 LSValue* LSClass::getClass() const {
 	return LSClass::class_class;
-}
-
-int LSClass::typeID() const {
-	return 10;
 }
 
 const BaseRawType* LSClass::getRawType() const {

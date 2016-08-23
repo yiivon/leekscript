@@ -246,38 +246,8 @@ bool LSString::eq(const LSString* str) const {
 	return compare(*str) == 0;
 }
 
-bool LSString::operator < (const LSValue* v) const {
-	return v->operator < (this);
-}
-bool LSString::operator < (const LSNull*) const {
-	return false;
-}
-bool LSString::operator < (const LSBoolean*) const {
-	return false;
-}
-bool LSString::operator < (const LSNumber*) const {
-	return false;
-}
-bool LSString::operator < (const LSString* v) const {
-	return *this < *v;
-}
-bool LSString::operator < (const LSArray<LSValue*>*) const {
-	return true;
-}
-bool LSString::operator < (const LSArray<int>*) const {
-	return true;
-}
-bool LSString::operator < (const LSArray<double>*) const {
-	return true;
-}
-bool LSString::operator < (const LSObject*) const {
-	return true;
-}
-bool LSString::operator < (const LSFunction*) const {
-	return true;
-}
-bool LSString::operator < (const LSClass*) const {
-	return true;
+bool LSString::lt(const LSString* str) const {
+	return compare(*str) < 0;
 }
 
 
@@ -398,10 +368,6 @@ std::ostream& operator << (std::ostream& os, const LSString& obj) {
 
 LSValue* LSString::getClass() const {
 	return LSString::string_class;
-}
-
-int LSString::typeID() const {
-	return 4;
 }
 
 const BaseRawType* LSString::getRawType() const {

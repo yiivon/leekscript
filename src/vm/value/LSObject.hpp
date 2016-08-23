@@ -37,9 +37,7 @@ public:
 	LSVALUE_OPERATORS
 
 	bool eq(const LSObject*) const override;
-
-	bool operator < (const LSValue*) const override;
-	bool operator < (const LSObject*) const override;
+	bool lt(const LSObject*) const override;
 
 	bool in(LSValue*) const override;
 
@@ -58,7 +56,7 @@ public:
 
 	LSValue* getClass() const override;
 
-	int typeID() const override;
+	int typeID() const override { return 9; }
 
 	virtual const BaseRawType* getRawType() const override;
 };

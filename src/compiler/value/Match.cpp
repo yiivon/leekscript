@@ -206,10 +206,10 @@ bool jit_equals_(LSValue* x, LSValue* y) {
 	return *x == *y;
 }
 bool jit_less_(LSValue* x, LSValue* y) {
-	return y->operator < (x);
+	return *x < *y;
 }
 bool jit_greater_equal_(LSValue* x, LSValue* y) {
-	return y->operator >= (x);
+	return *x >= *y;
 }
 
 jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
