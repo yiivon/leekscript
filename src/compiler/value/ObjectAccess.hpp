@@ -15,7 +15,7 @@ public:
 
 	Value* object;
 	Token* field;
-	std::string object_class;
+	std::string object_class_name;
 	std::string class_name;
 	bool class_attr = false;
 	void* attr_addr;

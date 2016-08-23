@@ -16,26 +16,28 @@ LSClass::LSClass() : LSClass("?") {}
 LSClass::LSClass(string name) : name(name) {
 	parent = nullptr;
 	refs = 1;
+	native = true;
 }
 
 LSClass::LSClass(Json&) {
 	parent = nullptr;
+	native = true;
 	// TODO
 }
 
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
-		if (s.second.value != nullptr && !s.second.value->native()) {
+		if (s.second.value != nullptr && !s.second.value->native) {
 			delete s.second.value;
 		}
 	}
 }
 
-void LSClass::addMethod(string& name, vector<Method>& method) {
+void LSClass::addMethod(string& name, vector<Method> method) {
 	methods.insert({name, method});
 }
 
-void LSClass::addStaticMethod(string& name, vector<StaticMethod>& method) {
+void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
 	static_methods.insert({name, method});
 
 	// Add first implementation as default method
@@ -47,7 +49,7 @@ void LSClass::addField(std::string name, Type type) {
 	fields.insert({name, type});
 }
 
-void LSClass::addStaticField(ModuleStaticField& f) {
+void LSClass::addStaticField(ModuleStaticField f) {
 	static_fields.insert({f.name, f});
 }
 
@@ -56,6 +58,7 @@ void LSClass::addStaticField(std::string name, Type type, LSValue* value) {
 }
 
 Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args) {
+
 	try {
 		vector<Method>& impl = methods.at(name);
 		Method* best = nullptr;
@@ -76,6 +79,7 @@ Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args)
 }
 
 StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
+
 	try {
 		vector<StaticMethod>& impl = static_methods.at(name);
 		StaticMethod* best = nullptr;
@@ -91,10 +95,6 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 	} catch (exception&) {
 		return nullptr;
 	}
-}
-
-bool LSClass::native() const {
-	return true;
 }
 
 LSFunction* LSClass::getDefaultMethod(string& name) {

@@ -19,7 +19,6 @@ Program::Program(const std::string& code) {
 	this->code = code;
 	main = nullptr;
 	closure = nullptr;
-	mode = ExecMode::NORMAL;
 }
 
 Program::~Program() {
@@ -31,9 +30,7 @@ Program::~Program() {
 	}
 }
 
-double Program::compile(VM* vm, const std::string& ctx, const ExecMode mode) {
-
-	this->mode = mode;
+double Program::compile(VM& vm, const std::string& ctx, const ExecMode mode) {
 
 	auto compile_start = chrono::high_resolution_clock::now();
 
@@ -74,7 +71,7 @@ double Program::compile(VM* vm, const std::string& ctx, const ExecMode mode) {
 	Context context { ctx };
 
 	SemanticAnalyser sem;
-	sem.analyse(this, &context, vm->modules);
+	sem.analyse(this, &context, vm.modules);
 
 	/*
 	 * Debug
@@ -108,8 +105,6 @@ double Program::compile(VM* vm, const std::string& ctx, const ExecMode mode) {
 	long compile_time_ns = chrono::duration_cast<chrono::nanoseconds>(compile_end - compile_start).count();
 	double compile_time_ms = (((double) compile_time_ns / 1000) / 1000);
 
-	compile_time = compile_time_ms;
-
 	return compile_time_ms;
 }
 
@@ -140,102 +135,7 @@ void Program::compile_main(Context& context) {
 	closure = jit_function_to_closure(F);
 }
 
-std::string Program::execute() {
-
-	VM::operations = 0;
-
-	auto exe_start = chrono::high_resolution_clock::now();
-	LSValue* res = execute_main();
-	auto exe_end = chrono::high_resolution_clock::now();
-
-	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
-
-	double exe_time_ms = (((double) exe_time_ns / 1000) / 1000);
-
-	/*
-	 * Return results
-	 */
-	string result;
-
-	if (mode == ExecMode::COMMAND_JSON || mode == ExecMode::TOP_LEVEL) {
-
-		ostringstream oss;
-		res->print(oss);
-		result = oss.str();
-
-		string ctx = "{";
-
-	//		unsigned i = 0;
-	/*
-		for (auto g : globals) {
-			if (globals_ref[g.first]) continue;
-			LSValue* v = res_array->operator[] (i + 1);
-			ctx += "\"" + g.first + "\":" + v->to_json();
-			if (i < globals.size() - 1) ctx += ",";
-			i++;
-		}
-		*/
-		ctx += "}";
-		LSValue::delete_temporary(res);
-
-		if (mode == ExecMode::TOP_LEVEL) {
-			cout << result << endl;
-			cout << "(" << VM::operations << " ops, " << compile_time << " ms + " << exe_time_ms << " ms)" << endl;
-			result = ctx;
-		} else {
-			cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
-					<< result << "\"}" << endl;
-			result = ctx;
-		}
-
-	} else if (mode == ExecMode::FILE_JSON) {
-
-		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
-
-		ostringstream oss;
-		res_array->operator[] (0)->print(oss);
-		result = oss.str();
-
-		LSValue::delete_temporary(res);
-
-		string ctx;
-
-		cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns
-			 << ",\"ctx\":" << ctx << ",\"res\":\"" << result << "\"}" << endl;
-
-
-	} else if (mode == ExecMode::NORMAL) {
-
-		ostringstream oss;
-		res->print(oss);
-		LSValue::delete_temporary(res);
-		string res_string = oss.str();
-
-		string ctx;
-
-		cout << res_string << endl;
-		cout << "(" << VM::operations << " ops, " << compile_time << "ms + " << exe_time_ms << " ms)" << endl;
-
-		result = ctx;
-
-	} else if (mode == ExecMode::TEST) {
-
-		ostringstream oss;
-		res->print(oss);
-		result = oss.str();
-
-		LSValue::delete_temporary(res);
-
-	} else if (mode == ExecMode::TEST_OPS) {
-
-		LSValue::delete_temporary(res);
-		result = to_string(VM::operations);
-	}
-
-	return result;
-}
-
-LSValue* Program::execute_main() {
+LSValue* Program::execute() {
 
 	Type output_type = main->type.getReturnType();
 

@@ -48,13 +48,12 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	object->analyse(analyser, Type::UNKNOWN);
 
-	// Search direct attributes
-	try {
-		//type = object->attr_types.at(field);
-		//cout << "Type of " << field << " : " << type << endl;
-	} catch (exception&) {}
-
-//	cout << type << endl;
+	// General information about the object
+	object_class_name = object->type.clazz;
+	LSClass* object_class = nullptr;
+	if (analyser->program->system_vars.find(object_class_name) != analyser->program->system_vars.end()) {
+		object_class = (LSClass*) analyser->program->system_vars[object_class_name];
+	}
 
 	// Static attribute
 	VariableValue* vv = dynamic_cast<VariableValue*>(object);
@@ -74,39 +73,23 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Search class attributes
-	object_class = object->type.clazz;
+	if (object_class != nullptr) {
 
-//	cout << "Classe : " << object_class << endl;
-
-	if (analyser->program->system_vars.find(object_class) != analyser->program->system_vars.end()) {
-
-		LSClass* std_class = (LSClass*) analyser->program->system_vars[object_class];
-
-//		cout << "Classe ! ";
-//		std_class->print(cout);
-//		cout << endl;
-
-		// Search in class fields
+		// Object attribute
 		bool is_field = false;
-//		try {
-//			type = std_class->fields[field->content];
-//			cout << "Field " << field->content << " in class " << std_class << " found." << endl;
-//			cout << "(type " << type << ")" << endl;
-//			is_field = true;
-//		} catch (exception& e) {}
+		try {
+			type = object_class->fields.at(field->content);
+			is_field = true;
+		} catch (exception& e) {}
 
 		// Otherwise search in class methods
 		if (not is_field) {
 			try {
-				type = std_class->methods.at(field->content)[0].type;
-	//			cout << "Method " << field->content << " in class " << std_class << " found." << endl;
-	//			cout << "(type " << type << ")" << endl;
+				type = object_class->methods.at(field->content)[0].type;
 			} catch (exception& e) {}
 		}
 
-		auto types = analyser->internal_vars[object_class]->attr_types;
-
-//		cout << "search type of " << field << endl;
+		auto types = analyser->internal_vars[object_class_name]->attr_types;
 
 		if (types.find(field->content) != types.end()) {
 

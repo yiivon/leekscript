@@ -226,11 +226,12 @@ bool Type::operator ==(const Type& type) const {
 			arguments_types == type.arguments_types;
 }
 
-bool Type::compatible(const Type& type) const {
-/*  Can we convert type into this ?
- *   {float}.compatible({int}) == true
- *   {int*}.compatible({int}) == true
+/*
+ * Can we convert type into this ?
+ * {float}.compatible({int}) == true
+ * {int*}.compatible({int}) == true
  */
+bool Type::compatible(const Type& type) const {
 
 	if (this->nature == Nature::VALUE && type.nature == Nature::POINTER) {
 		return false;
