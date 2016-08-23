@@ -1606,9 +1606,9 @@ inline bool LSArray<T>::operator < (const LSString*) const {
 	return false;
 }
 
-template <>
-inline bool LSArray<LSValue*>::operator < (const LSArray<LSValue*>* v) const {
-	return std::lexicographical_compare(begin(), end(), v->begin(), v->end(), [](LSValue* a, LSValue* b) -> bool {
+template <typename T>
+bool LSArray<T>::operator < (const LSArray<LSValue*>* v) const {
+	return std::lexicographical_compare(begin(*this), end(*this), v->begin(), v->end(), [](const LSValue* a, const LSValue* b) -> bool {
 		return a->operator > (b);
 	});
 }
@@ -1640,11 +1640,12 @@ inline bool LSArray<double>::operator < (const LSArray<LSValue*>* v) const {
 	}
 	return (it2 != v->end());
 }
-template <>
-inline bool LSArray<LSValue*>::operator < (const LSArray<int>* v) const {
-	auto it1 = begin();
+
+template <typename T>
+bool LSArray<T>::operator < (const LSArray<int>* v) const {
+	auto it1 = begin(*this);
 	auto it2 = v->begin();
-	while (it1 != end()) {
+	while (it1 != end(*this)) {
 		if (it2 == v->end()) return false;
 		if (3 < (*it1)->typeID()) return false;
 		if ((*it1)->typeID() < 3) return true;
@@ -1662,11 +1663,11 @@ template <>
 inline bool LSArray<double>::operator < (const LSArray<int>* v) const {
 	return std::lexicographical_compare(begin(), end(), v->begin(), v->end());
 }
-template <>
-inline bool LSArray<LSValue*>::operator < (const LSArray<double>* v) const {
-	auto it1 = begin();
+template <typename T>
+bool LSArray<T>::operator < (const LSArray<double>* v) const {
+	auto it1 = begin(*this);
 	auto it2 = v->begin();
-	while (it1 != end()) {
+	while (it1 != end(*this)) {
 		if (it2 == v->end()) return false;
 		if (3 < (*it1)->typeID()) return false;
 		if ((*it1)->typeID() < 3) return true;
@@ -1800,8 +1801,8 @@ std::ostream& LSArray<T>::print(std::ostream& os) const {
 	return os;
 }
 
-template <>
-inline std::string LSArray<LSValue*>::json() const {
+template <typename T>
+std::string LSArray<T>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) res += ",";
