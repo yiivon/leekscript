@@ -42,7 +42,7 @@ public:
 	bool operator < (const LSValue*) const override;
 	bool operator < (const LSObject*) const override;
 
-	bool in(LSValue*) override;
+	bool in(LSValue*) const override;
 
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;

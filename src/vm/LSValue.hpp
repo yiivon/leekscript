@@ -405,7 +405,7 @@ public:
 		return not this->operator <(value);
 	}
 
-	virtual bool in(LSValue*) { return false; }
+	virtual bool in(LSValue*) const { return false; }
 
 	virtual LSValue* at(const LSValue* key) const;
 	virtual LSValue** atL(const LSValue* key);
@@ -487,8 +487,8 @@ inline void LSValue::delete_ref(LSValue* value) {
 	}
 }
 
-inline void LSValue::delete_temporary(LSValue* value)
-{
+inline void LSValue::delete_temporary(LSValue* value) {
+
 	if (value == nullptr) return;
 	if (value->native()) return;
 
