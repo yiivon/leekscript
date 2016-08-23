@@ -460,8 +460,8 @@ inline void LSValue::delete_ref(LSValue* value) {
 	}
 }
 
-inline void LSValue::delete_temporary(LSValue* value)
-{
+inline void LSValue::delete_temporary(LSValue* value) {
+
 	if (value == nullptr) return;
 	if (value->native()) return;
 
