@@ -75,11 +75,7 @@ bool LSObject::isTrue() const {
 	return values.size() > 0;
 }
 
-
-bool LSObject::operator == (const LSValue* value) const {
-	return value->operator == (this);
-}
-bool LSObject::operator == (const LSObject*) const {
+bool LSObject::eq(const LSObject*) const {
 	return false;
 }
 
@@ -101,7 +97,7 @@ LSValue** LSObject::atL (const LSValue*) {
 
 bool LSObject::in(LSValue* value) const {
 	for (auto i = values.begin(); i != values.end(); i++) {
-		if (i->second->operator == (value)) {
+		if (*i->second == *value) {
 			return true;
 		}
 	}

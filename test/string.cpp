@@ -36,6 +36,11 @@ void Test::test_strings() {
 	success("'salut' * (1 + 2)", "'salutsalutsalut'");
 	success("('salut' * 1) + 2", "'salut2'");
 	success("('hello.world.how.are.you' / '.').size()", "5");
+	success("'test' == 'etst'", "false");
+	success("'test' == 'test'", "true");
+	success("'aaaa' < 'aaba'", "true");
+	success("'aaab' < 'aaaa'", "false");
+	success("'test' < 'test'", "false");
 
 	// Unicode
 	success("'韭'", "'韭'");

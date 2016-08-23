@@ -64,13 +64,9 @@ LSValue* LSBoolean::ls_sub(LSNumber* n) {
 	return n;
 }
 
-bool LSBoolean::operator == (const LSValue* v) const {
-	return v->operator == (this);
+bool LSBoolean::eq(const LSBoolean* boolean) const {
+	return boolean->value == this->value;
 }
-bool LSBoolean::operator == (const LSBoolean* v) const {
-	return v->value == this->value;
-}
-
 
 bool LSBoolean::operator < (const LSValue* v) const {
 	return v->operator < (this);

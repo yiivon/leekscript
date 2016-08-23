@@ -34,13 +34,12 @@ public:
 
 	LSVALUE_OPERATORS
 
-	virtual bool operator == (const LSValue*) const override;
-	virtual bool operator == (const LSMap<LSValue*,LSValue*>*) const override;
-	virtual bool operator == (const LSMap<LSValue*,int>*) const override;
-	virtual bool operator == (const LSMap<LSValue*,double>*) const override;
-	virtual bool operator == (const LSMap<int,LSValue*>*) const override;
-	virtual bool operator == (const LSMap<int,int>*) const override;
-	virtual bool operator == (const LSMap<int,double>*) const override;
+	virtual bool eq(const LSMap<LSValue*,LSValue*>*) const override;
+	virtual bool eq(const LSMap<LSValue*,int>*) const override;
+	virtual bool eq(const LSMap<LSValue*,double>*) const override;
+	virtual bool eq(const LSMap<int,LSValue*>*) const override;
+	virtual bool eq(const LSMap<int,int>*) const override;
+	virtual bool eq(const LSMap<int,double>*) const override;
 
 	virtual bool operator < (const LSValue*) const override;
 //	virtual bool operator < (const LSMap<LSValue*,LSValue*>*) const override;

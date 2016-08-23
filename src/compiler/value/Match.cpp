@@ -203,7 +203,7 @@ void Match::Pattern::print(ostream &os, int indent, bool debug) const {
 }
 
 bool jit_equals_(LSValue* x, LSValue* y) {
-	return x->operator == (y);
+	return *x == *y;
 }
 bool jit_less_(LSValue* x, LSValue* y) {
 	return y->operator < (x);

@@ -33,10 +33,7 @@ bool LSNull::isTrue() const {
 	return false;
 }
 
-bool LSNull::operator == (const LSValue* v) const {
-	return v->operator == (this);
-}
-bool LSNull::operator == (const LSNull*) const {
+bool LSNull::eq(const LSNull*) const {
 	return true;
 }
 

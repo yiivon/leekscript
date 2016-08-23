@@ -35,10 +35,9 @@ public:
 
 	LSVALUE_OPERATORS
 
-	virtual bool operator == (const LSValue*) const override;
-	virtual bool operator == (const LSSet<LSValue*>*) const override;
-	virtual bool operator == (const LSSet<int>*) const override;
-	virtual bool operator == (const LSSet<double>*) const override;
+	virtual bool eq(const LSSet<LSValue*>*) const override;
+	virtual bool eq(const LSSet<int>*) const override;
+	virtual bool eq(const LSSet<double>*) const override;
 
 	virtual bool operator < (const LSValue*) const override;
 //	virtual bool operator < (const LSSet<LSValue*>*) const override;

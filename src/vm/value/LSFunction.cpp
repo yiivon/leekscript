@@ -35,10 +35,7 @@ bool LSFunction::isTrue() const {
 	return true;
 }
 
-bool LSFunction::operator == (const LSValue* v) const {
-	return v->operator == (this);
-}
-bool LSFunction::operator == (const LSFunction* f) const {
+bool LSFunction::eq(const LSFunction* f) const {
 	return function == f->function;
 }
 

@@ -48,8 +48,7 @@ public:
 
 	LSVALUE_OPERATORS
 
-	bool operator == (const LSValue*) const override;
-	bool operator == (const LSClass*) const override;
+	bool eq(const LSClass*) const override;
 
 	bool operator < (const LSValue*) const override;
 	bool operator < (const LSNull*) const override;

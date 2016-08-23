@@ -240,11 +240,8 @@ LSValue* LSString::ls_div(LSString* s) {
 	return array;
 }
 
-bool LSString::operator == (const LSValue* v) const {
-	return v->operator == (this);
-}
-bool LSString::operator == (const LSString* v) const {
-	return *this == *v;
+bool LSString::eq(const LSString* str) const {
+	return compare(*str) == 0;
 }
 
 bool LSString::operator < (const LSValue* v) const {

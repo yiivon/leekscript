@@ -60,8 +60,7 @@ public:
 	LSValue* ls_mul(LSNumber*) override;
 	LSValue* ls_div(LSString*) override;
 
-	bool operator == (const LSValue*) const override;
-	bool operator == (const LSString*) const override;
+	bool eq(const LSString*) const override;
 
 	bool operator < (const LSValue*) const override;
 	bool operator < (const LSNull*) const override;

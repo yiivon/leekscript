@@ -111,10 +111,7 @@ bool LSClass::isTrue() const {
 	return false;
 }
 
-bool LSClass::operator == (const LSValue* v) const {
-	return v->operator == (this);
-}
-bool LSClass::operator == (const LSClass*) const {
+bool LSClass::eq(const LSClass*) const {
 	return false;
 }
 
@@ -163,15 +160,18 @@ LSValue** LSClass::atL(const LSValue*) {
 }
 
 LSValue* LSClass::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "class") {
-		return getClass();
+	const LSString* str = dynamic_cast<const LSString*>(key);
+	if (str) {
+		if (str->compare("class") == 0) {
+			return getClass();
+		}
+		if (str->compare("name") == 0) {
+			return new LSString(name);
+		}
+		try {
+			return static_fields.at(*str).value;
+		} catch (exception&) {}
 	}
-	if (key->operator == (new LSString("name"))) {
-		return new LSString(name);
-	}
-	try {
-		return static_fields.at(*((LSString*) key)).value;
-	} catch (exception& e) {}
 	return LSNull::get();
 }
 

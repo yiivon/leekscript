@@ -120,14 +120,8 @@ bool LSSet<T>::isTrue() const {
 	return !this->empty();
 }
 
-template <typename T>
-inline bool LSSet<T>::operator == (const LSValue* value) const {
-	return value->operator == (this);
-}
-
-
 template <>
-inline bool LSSet<LSValue*>::operator == (const LSSet<LSValue*>* other) const {
+inline bool LSSet<LSValue*>::eq(const LSSet<LSValue*>* other) const {
 	if (size() != other->size()) return false;
 	auto it1 = begin();
 	auto it2 = other->begin();
@@ -139,7 +133,7 @@ inline bool LSSet<LSValue*>::operator == (const LSSet<LSValue*>* other) const {
 	return true;
 }
 template <typename T>
-inline bool LSSet<T>::operator == (const LSSet<LSValue*>* other) const {
+inline bool LSSet<T>::eq(const LSSet<LSValue*>* other) const {
 	if (this->size() != other->size()) return false;
 	auto it1 = this->begin();
 	auto it2 = other->begin();
@@ -154,7 +148,7 @@ inline bool LSSet<T>::operator == (const LSSet<LSValue*>* other) const {
 }
 
 template <>
-inline bool LSSet<LSValue*>::operator == (const LSSet<int>* other) const {
+inline bool LSSet<LSValue*>::eq(const LSSet<int>* other) const {
 	if (size() != other->size()) return false;
 	auto it1 = begin();
 	auto it2 = other->begin();
@@ -168,7 +162,7 @@ inline bool LSSet<LSValue*>::operator == (const LSSet<int>* other) const {
 	return true;
 }
 template <typename T>
-inline bool LSSet<T>::operator == (const LSSet<int>* other) const {
+inline bool LSSet<T>::eq(const LSSet<int>* other) const {
 	if (this->size() != other->size()) return false;
 	auto it1 = this->begin();
 	auto it2 = other->begin();
@@ -181,7 +175,7 @@ inline bool LSSet<T>::operator == (const LSSet<int>* other) const {
 }
 
 template <>
-inline bool LSSet<LSValue*>::operator == (const LSSet<double>* other) const {
+inline bool LSSet<LSValue*>::eq(const LSSet<double>* other) const {
 	if (size() != other->size()) return false;
 	auto it1 = begin();
 	auto it2 = other->begin();
@@ -195,7 +189,7 @@ inline bool LSSet<LSValue*>::operator == (const LSSet<double>* other) const {
 	return true;
 }
 template <typename T>
-inline bool LSSet<T>::operator == (const LSSet<double>* other) const {
+inline bool LSSet<T>::eq(const LSSet<double>* other) const {
 	if (this->size() != other->size()) return false;
 	auto it1 = this->begin();
 	auto it2 = other->begin();

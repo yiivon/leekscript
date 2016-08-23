@@ -106,8 +106,9 @@ public:
 	LSValue* ls_add_eq(LSFunction*) override;
 	LSValue* ls_add_eq(LSClass*) override;
 
-	bool operator == (const LSValue*) const override;
-	bool operator == (const LSArray<LSValue*>*) const override;
+	bool eq(const LSArray<LSValue*>*) const override;
+	bool eq(const LSArray<int>*) const override;
+	bool eq(const LSArray<double>*) const override;
 
 	bool operator < (const LSValue*) const override;
 	bool operator < (const LSNull*) const override;

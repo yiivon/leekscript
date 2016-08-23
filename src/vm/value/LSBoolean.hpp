@@ -39,8 +39,7 @@ public:
 	LSValue* ls_add(LSNumber*) override;
 	LSValue* ls_sub(LSNumber*) override;
 
-	bool operator == (const LSValue*) const override;
-	bool operator == (const LSBoolean*) const override;
+	bool eq(const LSBoolean*) const override;
 
 	bool operator < (const LSValue*) const override;
 	bool operator < (const LSNull*) const override;

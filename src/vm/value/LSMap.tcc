@@ -312,13 +312,8 @@ inline bool LSMap<K,T>::isTrue() const {
 
 
 
-template <typename K, typename T>
-inline bool LSMap<K,T>::operator == (const LSValue* value) const {
-	return value->operator == (this);
-}
-
 template <>
-inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
+inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -332,7 +327,7 @@ inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<LSValue*,LSValue*
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<LSValue*,int>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
+inline bool LSMap<LSValue*,int>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -348,7 +343,7 @@ inline bool LSMap<LSValue*,int>::operator == (const LSMap<LSValue*,LSValue*>* va
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
+inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -364,7 +359,7 @@ inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,LSValue*>*
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
+inline bool LSMap<int,LSValue*>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -380,7 +375,7 @@ inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,LSValue*>* va
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
+inline bool LSMap<int,int>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -398,7 +393,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,LSValue*>* value) 
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,LSValue*>* value) const {
+inline bool LSMap<int,double>::eq(const LSMap<LSValue*,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -416,11 +411,11 @@ inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,LSValue*>* valu
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<LSValue*,int>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,int>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,int>::operator == (const LSMap<LSValue*,int>* value) const {
+inline bool LSMap<LSValue*,int>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -434,7 +429,7 @@ inline bool LSMap<LSValue*,int>::operator == (const LSMap<LSValue*,int>* value) 
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,int>* value) const {
+inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -448,7 +443,7 @@ inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,int>* valu
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,int>* value) const {
+inline bool LSMap<int,LSValue*>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -466,7 +461,7 @@ inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,int>* value) 
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,int>* value) const {
+inline bool LSMap<int,int>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -482,7 +477,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,int>* value) const
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,int>* value) const {
+inline bool LSMap<int,double>::eq(const LSMap<LSValue*,int>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -498,15 +493,15 @@ inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,int>* value) co
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<LSValue*,double>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,double>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,int>::operator == (const LSMap<LSValue*,double>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,int>::eq(const LSMap<LSValue*,double>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,double>* value) const {
+inline bool LSMap<LSValue*,double>::eq(const LSMap<LSValue*,double>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -520,7 +515,7 @@ inline bool LSMap<LSValue*,double>::operator == (const LSMap<LSValue*,double>* v
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,double>* value) const {
+inline bool LSMap<int,LSValue*>::eq(const LSMap<LSValue*,double>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -538,7 +533,7 @@ inline bool LSMap<int,LSValue*>::operator == (const LSMap<LSValue*,double>* valu
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,double>* value) const {
+inline bool LSMap<int,int>::eq(const LSMap<LSValue*,double>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -554,7 +549,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<LSValue*,double>* value) co
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,double>* value) const {
+inline bool LSMap<int,double>::eq(const LSMap<LSValue*,double>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -570,19 +565,19 @@ inline bool LSMap<int,double>::operator == (const LSMap<LSValue*,double>* value)
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<int,LSValue*>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<int,LSValue*>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,int>::operator == (const LSMap<int,LSValue*>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,int>::eq(const LSMap<int,LSValue*>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,double>::operator == (const LSMap<int,LSValue*>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,double>::eq(const LSMap<int,LSValue*>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<int,LSValue*>::operator == (const LSMap<int,LSValue*>* value) const {
+inline bool LSMap<int,LSValue*>::eq(const LSMap<int,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -596,7 +591,7 @@ inline bool LSMap<int,LSValue*>::operator == (const LSMap<int,LSValue*>* value) 
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,int>::operator == (const LSMap<int,LSValue*>* value) const {
+inline bool LSMap<int,int>::eq(const LSMap<int,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -612,7 +607,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<int,LSValue*>* value) const
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,double>::operator == (const LSMap<int,LSValue*>* value) const {
+inline bool LSMap<int,double>::eq(const LSMap<int,LSValue*>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -628,23 +623,23 @@ inline bool LSMap<int,double>::operator == (const LSMap<int,LSValue*>* value) co
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<int,int>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<int,int>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,int>::operator == (const LSMap<int,int>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,int>::eq(const LSMap<int,int>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,double>::operator == (const LSMap<int,int>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,double>::eq(const LSMap<int,int>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<int,LSValue*>::operator == (const LSMap<int,int>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<int,LSValue*>::eq(const LSMap<int,int>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<int,int>::operator == (const LSMap<int,int>* value) const {
+inline bool LSMap<int,int>::eq(const LSMap<int,int>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -658,7 +653,7 @@ inline bool LSMap<int,int>::operator == (const LSMap<int,int>* value) const {
 	return it2 == value->end();
 }
 template <>
-inline bool LSMap<int,double>::operator == (const LSMap<int,int>* value) const {
+inline bool LSMap<int,double>::eq(const LSMap<int,int>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();
@@ -673,27 +668,27 @@ inline bool LSMap<int,double>::operator == (const LSMap<int,int>* value) const {
 }
 
 template <>
-inline bool LSMap<LSValue*,LSValue*>::operator == (const LSMap<int,double>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<int,double>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,int>::operator == (const LSMap<int,double>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,int>::eq(const LSMap<int,double>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<LSValue*,double>::operator == (const LSMap<int,double>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<LSValue*,double>::eq(const LSMap<int,double>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<int,LSValue*>::operator == (const LSMap<int,double>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<int,LSValue*>::eq(const LSMap<int,double>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<int,int>::operator == (const LSMap<int,double>* value) const {
-	return value->operator ==(this);
+inline bool LSMap<int,int>::eq(const LSMap<int,double>* value) const {
+	return value->eq(this);
 }
 template <>
-inline bool LSMap<int,double>::operator == (const LSMap<int,double>* value) const {
+inline bool LSMap<int,double>::eq(const LSMap<int,double>* value) const {
 	if (this->size() != value->size()) return false;
 	auto it1 = begin();
 	auto it2 = value->begin();

@@ -130,7 +130,7 @@ inline T LSArray<T>::ls_remove(int index) {
 template <>
 inline bool LSArray<LSValue*>::ls_remove_element(LSValue* element) {
 	for (size_t i = 0; i < this->size(); ++i) {
-		if (this->operator[] (i)->operator ==(element)) {
+		if (*(*this)[i] == *element) {
 			LSValue::delete_temporary(element);
 			LSValue::delete_ref(this->operator[] (i));
 			(*this)[i] = this->back();
@@ -517,7 +517,7 @@ inline LSValue* LSArray<LSValue*>::ls_unique() {
 
 	while (true) {
 		++next;
-		while (next != this->end() && (*next)->operator == (*it)) {
+		while (next != this->end() && (**next) == (**it)) {
 			LSValue::delete_ref(*next);
 			next++;
 		}
@@ -576,7 +576,7 @@ void LSArray<T>::ls_iter(const void* function) {
 template <>
 inline bool LSArray<LSValue*>::ls_contains(LSValue* val) {
 	for (auto v : *this) {
-		if (v->operator == (val)) {
+		if (*v == *val) {
 			if (refs == 0) delete this;
 			if (val->refs == 0) delete val;
 			return true;
@@ -1056,7 +1056,7 @@ template <>
 inline int LSArray<LSValue*>::ls_search(LSValue* needle, int start) {
 
 	for (size_t i = start; i < this->size(); i++) {
-		if (needle->operator == ((*this)[i])) {
+		if (*needle == *(*this)[i]) {
 			if (refs == 0) delete this;
 			LSValue::delete_temporary(needle);
 			return i;
@@ -1778,19 +1778,14 @@ inline LSValue* LSArray<T>::ls_add_eq(LSClass* v) {
 	return r;
 }
 
-template <class T>
-bool LSArray<T>::operator == (const LSValue* v) const {
-	return v->operator == (this);
-}
+template <>
+inline bool LSArray<LSValue*>::eq(const LSArray<LSValue*>* array) const {
 
-template <class T>
-bool LSArray<T>::operator == (const LSArray<LSValue*>* v) const {
-
-	if (this->size() != v->size()) {
+	if (this->size() != array->size()) {
 		return false;
 	}
 	auto i = this->begin();
-	auto j = v->begin();
+	auto j = array->begin();
 
 	for (; i != this->end(); i++, j++) {
 		if ((*i)->operator != (*j)) return false;
@@ -1798,14 +1793,14 @@ bool LSArray<T>::operator == (const LSArray<LSValue*>* v) const {
 	return true;
 }
 
-template <>
-inline bool LSArray<int>::operator == (const LSArray<LSValue*>* v) const {
+template <typename T>
+inline bool LSArray<T>::eq(const LSArray<LSValue*>* array) const {
 
-	if (this->size() != v->size()) {
+	if (this->size() != array->size()) {
 		return false;
 	}
 	auto i = this->begin();
-	auto j = v->begin();
+	auto j = array->begin();
 
 	for (; i != this->end(); i++, j++) {
 		const LSNumber* n = dynamic_cast<const LSNumber*>(*j);
@@ -1816,18 +1811,65 @@ inline bool LSArray<int>::operator == (const LSArray<LSValue*>* v) const {
 }
 
 template <>
-inline bool LSArray<double>::operator == (const LSArray<LSValue*>* v) const {
+inline bool LSArray<LSValue*>::eq(const LSArray<int>* array) const {
 
-	if (this->size() != v->size()) {
+	if (this->size() != array->size()) {
 		return false;
 	}
 	auto i = this->begin();
-	auto j = v->begin();
+	auto j = array->begin();
 
 	for (; i != this->end(); i++, j++) {
-		const LSNumber* n = dynamic_cast<const LSNumber*>(*j);
+		const LSNumber* n = dynamic_cast<const LSNumber*>(*i);
 		if (!n) return false;
-		if (n->value != *i) return false;
+		if (n->value != *j) return false;
+	}
+	return true;
+}
+
+template <typename T>
+inline bool LSArray<T>::eq(const LSArray<int>* array) const {
+
+	if (this->size() != array->size()) {
+		return false;
+	}
+	auto i = this->begin();
+	auto j = array->begin();
+
+	for (; i != this->end(); i++, j++) {
+		if (*i != *j) return false;
+	}
+	return true;
+}
+
+template <>
+inline bool LSArray<LSValue*>::eq(const LSArray<double>* array) const {
+
+	if (this->size() != array->size()) {
+		return false;
+	}
+	auto i = this->begin();
+	auto j = array->begin();
+
+	for (; i != this->end(); i++, j++) {
+		const LSNumber* n = dynamic_cast<const LSNumber*>(*i);
+		if (!n) return false;
+		if (n->value != *j) return false;
+	}
+	return true;
+}
+
+template <typename T>
+inline bool LSArray<T>::eq(const LSArray<double>* array) const {
+
+	if (this->size() != array->size()) {
+		return false;
+	}
+	auto i = this->begin();
+	auto j = array->begin();
+
+	for (; i != this->end(); i++, j++) {
+		if (*i != *j) return false;
 	}
 	return true;
 }
@@ -1980,7 +2022,7 @@ inline bool LSArray<double>::in(LSValue* key) const {
 template <>
 inline bool LSArray<LSValue*>::in(LSValue* key) const {
 	for (auto i = this->begin(); i != this->end(); i++) {
-		if ((*i)->operator == (key)) {
+		if (**i == *key) {
 			return true;
 		}
 	}

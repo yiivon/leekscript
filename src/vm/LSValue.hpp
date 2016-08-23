@@ -25,18 +25,19 @@ class LSClass;
 class Context;
 
 #define LSVALUE_OPERATORS \
-	LSValue* ls_radd(LSValue* value) override    { return value->ls_add(this); } \
-	LSValue* ls_radd_eq(LSValue* value) override { return value->ls_add_eq(this); } \
-	LSValue* ls_rsub(LSValue* value) override    { return value->ls_sub(this); } \
-	LSValue* ls_rsub_eq(LSValue* value) override { return value->ls_sub_eq(this); } \
-	LSValue* ls_rmul(LSValue* value) override    { return value->ls_mul(this); } \
-	LSValue* ls_rmul_eq(LSValue* value) override { return value->ls_mul_eq(this); } \
-	LSValue* ls_rdiv(LSValue* value) override    { return value->ls_div(this); } \
-	LSValue* ls_rdiv_eq(LSValue* value) override { return value->ls_div_eq(this); } \
-	LSValue* ls_rpow(LSValue* value) override    { return value->ls_pow(this); } \
-	LSValue* ls_rpow_eq(LSValue* value) override { return value->ls_pow_eq(this); } \
-	LSValue* ls_rmod(LSValue* value) override    { return value->ls_mod(this); } \
-	LSValue* ls_rmod_eq(LSValue* value) override { return value->ls_mod_eq(this); } \
+	LSValue* ls_radd(LSValue* value) override     { return value->ls_add(this); } \
+	LSValue* ls_radd_eq(LSValue* value) override  { return value->ls_add_eq(this); } \
+	LSValue* ls_rsub(LSValue* value) override     { return value->ls_sub(this); } \
+	LSValue* ls_rsub_eq(LSValue* value) override  { return value->ls_sub_eq(this); } \
+	LSValue* ls_rmul(LSValue* value) override     { return value->ls_mul(this); } \
+	LSValue* ls_rmul_eq(LSValue* value) override  { return value->ls_mul_eq(this); } \
+	LSValue* ls_rdiv(LSValue* value) override     { return value->ls_div(this); } \
+	LSValue* ls_rdiv_eq(LSValue* value) override  { return value->ls_div_eq(this); } \
+	LSValue* ls_rpow(LSValue* value) override     { return value->ls_pow(this); } \
+	LSValue* ls_rpow_eq(LSValue* value) override  { return value->ls_pow_eq(this); } \
+	LSValue* ls_rmod(LSValue* value) override     { return value->ls_mod(this); } \
+	LSValue* ls_rmod_eq(LSValue* value) override  { return value->ls_mod_eq(this); } \
+	bool req(const LSValue* value) const override { return value->eq(this); } \
 
 
 class LSValue {
@@ -329,30 +330,29 @@ public:
 	virtual LSValue* ls_mod_eq(LSFunction*);
 	virtual LSValue* ls_mod_eq(LSClass*);
 
-	virtual bool operator == (const LSValue*) const = 0;
-	virtual bool operator == (const LSNull*) const;
-	virtual bool operator == (const LSBoolean*) const;
-	virtual bool operator == (const LSNumber*) const;
-	virtual bool operator == (const LSString*) const;
-	virtual bool operator == (const LSArray<LSValue*>*) const;
-	virtual bool operator == (const LSArray<int>*) const;
-	virtual bool operator == (const LSArray<double>*) const;
-	virtual bool operator == (const LSMap<LSValue*,LSValue*>*) const;
-	virtual bool operator == (const LSMap<LSValue*,int>*) const;
-	virtual bool operator == (const LSMap<LSValue*,double>*) const;
-	virtual bool operator == (const LSMap<int,LSValue*>*) const;
-	virtual bool operator == (const LSMap<int,int>*) const;
-	virtual bool operator == (const LSMap<int,double>*) const;
-	virtual bool operator == (const LSSet<LSValue*>*) const;
-	virtual bool operator == (const LSSet<int>*) const;
-	virtual bool operator == (const LSSet<double>*) const;
-	virtual bool operator == (const LSFunction*) const;
-	virtual bool operator == (const LSObject*) const;
-	virtual bool operator == (const LSClass*) const;
+	bool operator == (const LSValue& value) const { return value.req(this); }
+	virtual bool req(const LSValue*) const = 0;
+	virtual bool eq(const LSNull*) const;
+	virtual bool eq(const LSBoolean*) const;
+	virtual bool eq(const LSNumber*) const;
+	virtual bool eq(const LSString*) const;
+	virtual bool eq(const LSArray<LSValue*>*) const;
+	virtual bool eq(const LSArray<int>*) const;
+	virtual bool eq(const LSArray<double>*) const;
+	virtual bool eq(const LSMap<LSValue*,LSValue*>*) const;
+	virtual bool eq(const LSMap<LSValue*,int>*) const;
+	virtual bool eq(const LSMap<LSValue*,double>*) const;
+	virtual bool eq(const LSMap<int,LSValue*>*) const;
+	virtual bool eq(const LSMap<int,int>*) const;
+	virtual bool eq(const LSMap<int,double>*) const;
+	virtual bool eq(const LSSet<LSValue*>*) const;
+	virtual bool eq(const LSSet<int>*) const;
+	virtual bool eq(const LSSet<double>*) const;
+	virtual bool eq(const LSFunction*) const;
+	virtual bool eq(const LSObject*) const;
+	virtual bool eq(const LSClass*) const;
 
-	inline bool operator != (const LSValue* value) const {
-		return not this->operator ==(value);
-	}
+	inline bool operator != (const LSValue* value) const { return !(*this == *value); }
 
 	virtual bool operator < (const LSValue*) const = 0;
 	virtual bool operator < (const LSNull*) const;
@@ -376,7 +376,7 @@ public:
 	virtual bool operator < (const LSClass*) const;
 
 	inline virtual bool operator > (const LSValue* value) const {
-		return not this->operator <(value) and not this->operator ==(value);
+		return not this->operator <(value) and not (*this == *value);
 	}
 	virtual bool operator > (const LSNull*) const;
 	virtual bool operator > (const LSBoolean*) const;
@@ -399,7 +399,7 @@ public:
 	virtual bool operator > (const LSClass*) const;
 
 	inline bool operator <=(const LSValue* value) const {
-		return this->operator <(value) || this->operator ==(value);
+		return this->operator <(value) || (*this == *value);
 	}
 	inline bool operator >=(const LSValue*value) const {
 		return not this->operator <(value);

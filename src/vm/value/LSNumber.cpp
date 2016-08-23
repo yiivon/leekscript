@@ -354,11 +354,8 @@ LSValue* LSNumber::ls_mod_eq(LSNumber* number) {
 	return this;
 }
 
-bool LSNumber::operator == (const LSValue* v) const {
-	return v->operator == (this);
-}
-bool LSNumber::operator == (const LSNumber* v) const {
-	return this->value == v->value;
+bool LSNumber::eq(const LSNumber* number) const {
+	return this->value == number->value;
 }
 
 bool LSNumber::operator < (const LSValue* v) const {
