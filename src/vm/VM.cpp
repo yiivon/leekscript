@@ -47,7 +47,11 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	Program* program = new Program(code);
 
 	// Compile
-	program->compile(this, ctx, mode);
+	double compilation_time = program->compile(this, ctx, mode);
+
+	if (compilation_time < 0.0) {
+		return "";
+	}
 
 	// Execute
 	std::string result = program->execute();
