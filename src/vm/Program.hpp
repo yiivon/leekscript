@@ -13,12 +13,9 @@ private:
 
 	std::string code; // The program code
 	void* closure;
-	double compile_time;
-	ExecMode mode;
 
 	void compile_main(Context&);
 	void compile_jit(Compiler&, Context&, bool);
-	LSValue* execute_main();
 
 public:
 
@@ -33,12 +30,12 @@ public:
 	/*
 	 * Compile the program with a VM, a context (json) and an execution mode
 	 */
-	double compile(VM* vm, const std::string& context, const ExecMode);
+	double compile(VM& vm, const std::string& context, const ExecMode);
 
 	/*
-	 * Execute the program and get the result as a string
+	 * Execute the program and get a LSValue* result
 	 */
-	std::string execute();
+	LSValue* execute();
 
 	void print(std::ostream& os, bool debug = false) const;
 };

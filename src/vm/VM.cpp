@@ -47,14 +47,98 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	Program* program = new Program(code);
 
 	// Compile
-	double compilation_time = program->compile(this, ctx, mode);
-
-	if (compilation_time < 0.0) {
-		return "";
-	}
+	double compile_time = program->compile(*this, ctx, mode);
 
 	// Execute
-	std::string result = program->execute();
+	VM::operations = 0;
+
+	auto exe_start = chrono::high_resolution_clock::now();
+	LSValue* res = program->execute();
+	auto exe_end = chrono::high_resolution_clock::now();
+
+	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
+
+	double exe_time_ms = (((double) exe_time_ns / 1000) / 1000);
+
+	/*
+	 * Return results
+	 */
+	string result;
+
+	if (mode == ExecMode::COMMAND_JSON || mode == ExecMode::TOP_LEVEL) {
+
+		ostringstream oss;
+		res->print(oss);
+		result = oss.str();
+
+		string ctx = "{";
+
+	//		unsigned i = 0;
+	/*
+		for (auto g : globals) {
+			if (globals_ref[g.first]) continue;
+			LSValue* v = res_array->operator[] (i + 1);
+			ctx += "\"" + g.first + "\":" + v->to_json();
+			if (i < globals.size() - 1) ctx += ",";
+			i++;
+		}
+		*/
+		ctx += "}";
+		LSValue::delete_temporary(res);
+
+		if (mode == ExecMode::TOP_LEVEL) {
+			cout << result << endl;
+			cout << "(" << VM::operations << " ops, " << compile_time << " ms + " << exe_time_ms << " ms)" << endl;
+			result = ctx;
+		} else {
+			cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
+					<< result << "\"}" << endl;
+			result = ctx;
+		}
+
+	} else if (mode == ExecMode::FILE_JSON) {
+
+		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
+
+		ostringstream oss;
+		res_array->operator[] (0)->print(oss);
+		result = oss.str();
+
+		LSValue::delete_temporary(res);
+
+		string ctx;
+
+		cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns
+			 << ",\"ctx\":" << ctx << ",\"res\":\"" << result << "\"}" << endl;
+
+
+	} else if (mode == ExecMode::NORMAL) {
+
+		ostringstream oss;
+		res->print(oss);
+		LSValue::delete_temporary(res);
+		string res_string = oss.str();
+
+		string ctx;
+
+		cout << res_string << endl;
+		cout << "(" << VM::operations << " ops, " << compile_time << "ms + " << exe_time_ms << " ms)" << endl;
+
+		result = ctx;
+
+	} else if (mode == ExecMode::TEST) {
+
+		ostringstream oss;
+		res->print(oss);
+		result = oss.str();
+
+		LSValue::delete_temporary(res);
+
+	} else if (mode == ExecMode::TEST_OPS) {
+
+		LSValue::delete_temporary(res);
+		result = to_string(VM::operations);
+	}
 
 	// Cleaning
 	delete program;

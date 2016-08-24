@@ -12,13 +12,13 @@ LSClass* LSFunction::function_class = new LSClass("Function");
 LSFunction::LSFunction(void* function) {
 	this->function = function;
 	this->refs = 0;
-	this->native_function = false;
+	this->native = false;
 }
 
 LSFunction::LSFunction(void* function, int refs, bool native) {
 	this->function = function;
 	this->refs = refs;
-	this->native_function = native;
+	this->native = native;
 }
 
 LSFunction::LSFunction(Json&) {
@@ -26,10 +26,6 @@ LSFunction::LSFunction(Json&) {
 }
 
 LSFunction::~LSFunction() {}
-
-bool LSFunction::native() const {
-	return native_function;
-}
 
 bool LSFunction::isTrue() const {
 	return true;

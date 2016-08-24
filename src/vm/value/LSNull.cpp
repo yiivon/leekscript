@@ -15,6 +15,7 @@ LSValue* LSNull::get() {
 
 LSNull::LSNull() {
 	refs = 1;
+	native = true;
 }
 
 LSNull::~LSNull() {
@@ -23,10 +24,6 @@ LSNull::~LSNull() {
 
 LSValue* LSNull::clone() const {
 	return LSNull::get();
-}
-
-bool LSNull::native() const {
-	return true; // We create one null value which is destroyed only at the end
 }
 
 bool LSNull::isTrue() const {

@@ -16,15 +16,12 @@ LSBoolean::LSBoolean() : LSBoolean(true) {}
 
 LSBoolean::LSBoolean(bool value) : value(value) {
 	refs = 1;
+	native = true;
 }
 
 LSBoolean::LSBoolean(Json& json) : LSBoolean((bool) json) {}
 
 LSBoolean::~LSBoolean() {}
-
-bool LSBoolean::native() const {
-	return true;
-}
 
 bool LSBoolean::isTrue() const {
 	return value;

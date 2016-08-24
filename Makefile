@@ -41,7 +41,7 @@ lib: makedirs $(OBJ_LIB)
 	@echo "Library build finished!"
 	@echo "-----------------------"
 	
-install: lib
+install:
 	cp build/libleekscript.so /usr/lib/
 	@find -iregex '.*\.\(hpp\|h\|tcc\)' | cpio -updm /usr/include/leekscript/
 	@echo "Library installed!"
