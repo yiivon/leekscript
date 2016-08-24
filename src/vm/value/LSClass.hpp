@@ -33,16 +33,14 @@ public:
 
 	virtual ~LSClass();
 
-	void addMethod(std::string&, std::vector<Method>&);
+	void addMethod(std::string&, std::vector<Method>);
 	void addField(std::string, Type);
-	void addStaticField(ModuleStaticField& f);
+	void addStaticField(ModuleStaticField f);
 	void addStaticField(std::string, Type type, LSValue*);
 	Method* getMethod(std::string&, Type obj_type, std::vector<Type>&);
-	void addStaticMethod(std::string& name, std::vector<StaticMethod>& method);
+	void addStaticMethod(std::string& name, std::vector<StaticMethod> method);
 	LSFunction* getDefaultMethod(std::string& name);
 	StaticMethod* getStaticMethod(std::string&, std::vector<Type>&);
-
-	bool native() const override;
 
 	bool isTrue() const override;
 

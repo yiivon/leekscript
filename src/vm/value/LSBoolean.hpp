@@ -27,8 +27,6 @@ public:
 
 	virtual ~LSBoolean();
 
-	bool native() const override;
-
 	bool isTrue() const override;
 
 	LSValue* operator ! () const override;

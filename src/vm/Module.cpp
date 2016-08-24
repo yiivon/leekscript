@@ -22,51 +22,37 @@ void Module::include(SemanticAnalyser* analyser, Program* program) {
 
 	program->system_vars.insert({name, clazz});
 	SemanticVar* var = analyser->add_var(new Token(name), Type::CLASS, nullptr, nullptr);
-
-	for (auto f : fields) {
-		//var->attr_types.insert(pair<string, Type>(f.name, f.type));
-		clazz->addField(f.name, f.type);
-	}
-
-	for (auto f : static_fields) {
-		//var->attr_types.insert(pair<string, Type>(f.name, f.type));
-		// clazz->addStaticField(f.name, f.type, LSNumber::get(std::stoi(f.value)));
-		//clazz->addStaticField(f.name, f.type, nullptr);
-		clazz->addStaticField(f);
-	}
-
-	for (auto m : methods) {
-		clazz->addMethod(m.name, m.impl);
-	}
-
-	for (auto m : static_methods) {
-		var->attr_types.insert({m.name, m.impl[0].type});
-		clazz->addStaticMethod(m.name, m.impl);
-	}
 }
 
 void Module::field(std::string name, Type type) {
 	fields.push_back(ModuleField(name, type));
+	clazz->addField(name, type);
 }
 
 void Module::static_field(std::string name, Type type, void* fun) {
 	static_fields.push_back(ModuleStaticField(name, type, fun));
+	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 
 void Module::method(std::string name, initializer_list<Method> impl) {
 	methods.push_back(ModuleMethod(name, impl));
+	vector<Method> methods = impl;
+	clazz->addMethod(name, methods);
 }
 
 void Module::method(std::string name, Type obj_type, Type return_type, initializer_list<Type> args, void* addr) {
 	methods.push_back(ModuleMethod(name, {{obj_type, return_type, args, addr}}));
+	clazz->addMethod(name, {{obj_type, return_type, args, addr}});
 }
 
 void Module::static_method(string name, initializer_list<StaticMethod> impl) {
 	static_methods.push_back(ModuleStaticMethod(name, impl));
+	clazz->addStaticMethod(name, impl);
 }
 
 void Module::static_method(string name, Type return_type, initializer_list<Type> args, void* addr) {
 	static_methods.push_back(ModuleStaticMethod(name, {{return_type, args, addr}}));
+	clazz->addStaticMethod(name, {{return_type, args, addr}});
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {

@@ -42,7 +42,7 @@ void LSArray<T>::push_move(T value) {
 
 template <>
 inline void LSArray<LSValue*>::push_no_clone(LSValue* value) {
-	if (!value->native()) value->refs++;
+	if (!value->native) value->refs++;
 	this->push_back(value);
 }
 template <>
@@ -1777,8 +1777,9 @@ LSValue* LSArray<T>::clone() const {
 	return new_array;
 }
 
-template <>
-inline std::ostream& LSArray<LSValue*>::print(std::ostream& os) const {
+template <typename T>
+std::ostream& LSArray<T>::print(std::ostream& os) const {
+
 	os << "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
@@ -1790,8 +1791,19 @@ inline std::ostream& LSArray<LSValue*>::print(std::ostream& os) const {
 	return os;
 }
 
-template <typename T>
-std::ostream& LSArray<T>::print(std::ostream& os) const {
+template <>
+inline std::ostream& LSArray<int>::print(std::ostream& os) const {
+	os << "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) os << ", ";
+		os << (*i);
+	}
+	os << "]";
+	return os;
+}
+
+template <>
+inline std::ostream& LSArray<double>::print(std::ostream& os) const {
 	os << "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
