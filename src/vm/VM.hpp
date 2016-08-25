@@ -17,10 +17,11 @@
 #define LS_INTEGER jit_type_int
 #define LS_LONG jit_type_long
 #define LS_REAL jit_type_float64
-#define LS_BOOL jit_type_sys_bool
+#define LS_BOOLEAN LS_INTEGER
 #define LS_POINTER jit_type_void_ptr
 
 #define LS_CREATE_INTEGER(F, X) jit_value_create_nint_constant((F), LS_INTEGER, (X))
+#define LS_CREATE_BOOLEAN(F, X) LS_CREATE_INTEGER(F, X)
 #define LS_CREATE_LONG(F, X) jit_value_create_long_constant((F), LS_LONG, (X))
 #define LS_CREATE_REAL(F, X) jit_value_create_float64_constant((F), LS_REAL, (X))
 #define LS_CREATE_POINTER(F, X) jit_value_create_constant((F), new jit_constant_t { LS_POINTER, {(X)} })

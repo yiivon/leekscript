@@ -743,6 +743,16 @@ jit_value_t Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::LOWER: {
+			if (use_jit_func) {
+				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
+					if (type.nature == Nature::VALUE) return LS_CREATE_BOOLEAN(c.F, true);
+					else return LS_CREATE_POINTER(c.F, LSBoolean::get(true));
+				}
+				if (v1->type.isNumber() && v2->type == Type::BOOLEAN) {
+					if (type.nature == Nature::VALUE) return LS_CREATE_BOOLEAN(c.F, false);
+					else return LS_CREATE_POINTER(c.F, LSBoolean::get(false));
+				}
+			}
 			jit_func = &jit_insn_lt;
 			ls_func = (void*) &jit_lt;
 			jit_returned_type = Type::BOOLEAN;
@@ -750,6 +760,16 @@ jit_value_t Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::LOWER_EQUALS: {
+			if (use_jit_func) {
+				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
+					if (type.nature == Nature::VALUE) return LS_CREATE_BOOLEAN(c.F, true);
+					else return LS_CREATE_POINTER(c.F, LSBoolean::get(true));
+				}
+				if (v1->type.isNumber() && v2->type == Type::BOOLEAN) {
+					if (type.nature == Nature::VALUE) return LS_CREATE_BOOLEAN(c.F, false);
+					else return LS_CREATE_POINTER(c.F, LSBoolean::get(false));
+				}
+			}
 			jit_func = &jit_insn_le;
 			ls_func = (void*) &jit_le;
 			jit_returned_type = Type::BOOLEAN;
@@ -757,6 +777,16 @@ jit_value_t Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::GREATER: {
+			if (use_jit_func) {
+				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
+					if (type.nature == Nature::VALUE) return LS_CREATE_BOOLEAN(c.F, false);
+					else return LS_CREATE_POINTER(c.F, LSBoolean::get(false));
+				}
+				if (v1->type.isNumber() && v2->type == Type::BOOLEAN) {
+					if (type.nature == Nature::VALUE) return LS_CREATE_BOOLEAN(c.F, true);
+					else return LS_CREATE_POINTER(c.F, LSBoolean::get(true));
+				}
+			}
 			jit_func = &jit_insn_gt;
 			ls_func = (void*) &jit_gt;
 			jit_returned_type = Type::BOOLEAN;
@@ -764,6 +794,16 @@ jit_value_t Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::GREATER_EQUALS: {
+			if (use_jit_func) {
+				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
+					if (type.nature == Nature::VALUE) return LS_CREATE_BOOLEAN(c.F, false);
+					else return LS_CREATE_POINTER(c.F, LSBoolean::get(false));
+				}
+				if (v1->type.isNumber() && v2->type == Type::BOOLEAN) {
+					if (type.nature == Nature::VALUE) return LS_CREATE_BOOLEAN(c.F, true);
+					else return LS_CREATE_POINTER(c.F, LSBoolean::get(true));
+				}
+			}
 			jit_func = &jit_insn_ge;
 			ls_func = (void*) &jit_ge;
 			jit_returned_type = Type::BOOLEAN;
