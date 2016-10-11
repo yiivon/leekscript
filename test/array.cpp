@@ -97,7 +97,15 @@ void Test::test_arrays() {
 	success("[1..1000][500]", "501");
 	success("[1000..2000][12]", "1012");
 	success("[0..44.523]", "[0..44]");
-	success("[0..Number.sqrt(1991)]", "[0..44]");
+
+	success("[1..6].filter(x -> x > 3)", "[4, 5, 6]");
+	success("[1..6].filter(x -> x < 3)", "[1, 2]");
+	success("[1..100].filter(x -> x > 50 and x < 53)", "[51, 52]");
+
+	success("[1..Number.sqrt(1991)]", "[1..44]");
+	success("[1..Number.sqrt(1991)].filter(x -> x % 1991 == 0)", "");
+	success("[1..Number.sqrt(1991)].filter(x -> x % 1991 == 0).max()", "");
+
 	sem_err("[1..10]['hello']", ls::SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, "<key 1>");
 	// success("[1..10][-10]", ""); must throw exception
 
@@ -263,6 +271,6 @@ void Test::test_arrays() {
 	// a[10:*]
 	// a[] = 12 (a += 12)
 
-	// [0..Number.sqrt(1991)].filter(x -> x % 1991 == 0).max()
+
 
 }

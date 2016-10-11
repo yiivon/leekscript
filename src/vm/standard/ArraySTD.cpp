@@ -2,6 +2,7 @@
 #include "ArraySTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
+#include "../value/LSInterval.hpp"
 
 using namespace std;
 
@@ -141,6 +142,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {pred_fun_type}, (void*) &LSArray<LSValue*>::ls_filter},
 		{Type::FLOAT_ARRAY, Type::FLOAT_ARRAY, {pred_fun_type_float}, (void*) &LSArray<double>::ls_filter},
 		{Type::INT_ARRAY, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSArray<int>::ls_filter},
+		{Type::INTERVAL, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSInterval::ls_filter},
 	});
 
 	method("contains", {

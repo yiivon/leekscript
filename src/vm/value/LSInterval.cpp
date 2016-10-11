@@ -12,6 +12,19 @@ LSInterval::LSInterval() {}
 
 LSInterval::~LSInterval() {}
 
+LSArray<int>* LSInterval::ls_filter(const void* function) {
+	auto fun = (bool (*)(int)) function;
+
+	LSArray<int>* new_array = new LSArray<int>();
+
+	int i = this->a;
+	while (i <= b) {
+		if (fun(i)) new_array->push_clone(i);
+		i++;
+	}
+	if (this->refs == 0) delete this;
+	return new_array;
+}
 
 bool LSInterval::in(LSValue* value) const {
 

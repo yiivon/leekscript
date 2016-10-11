@@ -21,6 +21,15 @@ public:
 	LSInterval();
 	virtual ~LSInterval();
 
+	/*
+	 * Array methods
+	 */
+	LSArray<int>* ls_filter(const void* function);
+
+
+	/*
+	 * LSValue methods
+	 */
 	virtual bool in(LSValue*) const override;
 	int atv(const int key) const;
 	virtual LSValue* at(const LSValue* key) const override;
