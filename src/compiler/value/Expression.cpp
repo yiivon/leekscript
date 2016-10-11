@@ -144,7 +144,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
 		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
-		or op->type == TokenType::SWAP) {
+		or op->type == TokenType::SWAP or op->type == TokenType::INT_DIV) {
 
 		// Set the correct type nature for the two members
 		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
@@ -230,6 +230,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type = Type::BOOLEAN;
 	}
 
+	// int div => result is int
+	if (op->type == TokenType::INT_DIV) {
+		type = Type::INTEGER;
+	}
+
 	// Merge operations count
 	// (2 + 3) × 4    ->  2 ops for the × directly
 	if (op->type != TokenType::OR or op->type == TokenType::AND) {
@@ -261,6 +266,12 @@ LSValue* jit_mul(LSValue* x, LSValue* y) {
 }
 LSValue* jit_div(LSValue* x, LSValue* y) {
 	return x->ls_div(y);
+}
+int jit_int_div(LSValue* x, LSValue* y) {
+	LSValue* res = x->ls_int_div(y);
+	int v = ((LSNumber*) res)->value;
+	LSValue::delete_temporary(res);
+	return v;
 }
 LSValue* jit_pow(LSValue* x, LSValue* y) {
 	return x->ls_pow(y);
@@ -718,6 +729,20 @@ jit_value_t Expression::compile(Compiler& c) const {
 			jit_returned_type = Type::FLOAT;
 			break;
 		}
+		case TokenType::INT_DIV: {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				jit_value_t x = v1->compile(c);
+				jit_value_t y = v2->compile(c);
+				jit_value_t r = jit_insn_floor(c.F, jit_insn_div(c.F, x, y));
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, r, Type::INTEGER);
+				}
+				return r;
+			} else {
+				ls_func = (void*) &jit_int_div;
+			}
+			break;
+		}
 		case TokenType::MODULO: {
 			jit_func = &jit_insn_rem;
 			ls_func = (void*) &jit_mod;
@@ -1044,4 +1069,3 @@ jit_value_t Expression::compile(Compiler& c) const {
 }
 
 }
-

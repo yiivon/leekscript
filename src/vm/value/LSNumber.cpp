@@ -254,6 +254,7 @@ LSValue* LSNumber::ls_div(LSBoolean* boolean) {
 	}
 	return LSNumber::get(NAN);
 }
+
 LSValue* LSNumber::ls_div(LSNumber* number) {
 	if (refs == 0) {
 		value /= number->value;
@@ -265,6 +266,20 @@ LSValue* LSNumber::ls_div(LSNumber* number) {
 		return number;
 	}
 	return LSNumber::get(value / number->value);
+}
+
+LSValue* LSNumber::ls_int_div(LSNumber* number) {
+	if (refs == 0) {
+		value /= number->value;
+		value = floor(value);
+		if (number->refs == 0) delete number;
+		return this;
+	}
+	if (number->refs == 0) {
+		number->value = floor(value / number->value);
+		return number;
+	}
+	return LSNumber::get(floor(value / number->value));
 }
 
 LSValue* LSNumber::ls_div_eq(LSNull*) {

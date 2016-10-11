@@ -32,6 +32,7 @@ class Context;
 	LSValue* ls_rmul(LSValue* value) override     { return value->ls_mul(this); } \
 	LSValue* ls_rmul_eq(LSValue* value) override  { return value->ls_mul_eq(this); } \
 	LSValue* ls_rdiv(LSValue* value) override     { return value->ls_div(this); } \
+	LSValue* ls_rint_div(LSValue* value) override { return value->ls_div(this); } \
 	LSValue* ls_rdiv_eq(LSValue* value) override  { return value->ls_div_eq(this); } \
 	LSValue* ls_rpow(LSValue* value) override     { return value->ls_pow(this); } \
 	LSValue* ls_rpow_eq(LSValue* value) override  { return value->ls_pow_eq(this); } \
@@ -217,6 +218,28 @@ public:
 	virtual LSValue* ls_div(LSObject*);
 	virtual LSValue* ls_div(LSFunction*);
 	virtual LSValue* ls_div(LSClass*);
+
+	LSValue* ls_int_div(LSValue* value) { return value->ls_rint_div(this); }
+	virtual LSValue* ls_rint_div(LSValue*) = 0;
+	virtual LSValue* ls_int_div(LSNull*);
+	virtual LSValue* ls_int_div(LSBoolean*);
+	virtual LSValue* ls_int_div(LSNumber*);
+	virtual LSValue* ls_int_div(LSString*);
+	virtual LSValue* ls_int_div(LSArray<LSValue*>*);
+	virtual LSValue* ls_int_div(LSArray<int>*);
+	virtual LSValue* ls_int_div(LSArray<double>*);
+	virtual LSValue* ls_int_div(LSMap<LSValue*,LSValue*>*);
+	virtual LSValue* ls_int_div(LSMap<LSValue*,int>*);
+	virtual LSValue* ls_int_div(LSMap<LSValue*,double>*);
+	virtual LSValue* ls_int_div(LSMap<int,LSValue*>*);
+	virtual LSValue* ls_int_div(LSMap<int,int>*);
+	virtual LSValue* ls_int_div(LSMap<int,double>*);
+	virtual LSValue* ls_int_div(LSSet<LSValue*>*);
+	virtual LSValue* ls_int_div(LSSet<int>*);
+	virtual LSValue* ls_int_div(LSSet<double>*);
+	virtual LSValue* ls_int_div(LSObject*);
+	virtual LSValue* ls_int_div(LSFunction*);
+	virtual LSValue* ls_int_div(LSClass*);
 
 	LSValue* ls_div_eq(LSValue* value) { return value->ls_rdiv_eq(this); }
 	virtual LSValue* ls_rdiv_eq(LSValue*) = 0;
@@ -475,4 +498,3 @@ inline std::ostream& operator << (std::ostream& os, const LSValue& value) {
 }
 
 #endif
-

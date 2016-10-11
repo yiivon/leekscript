@@ -70,7 +70,8 @@ static vector<vector<string>> type_literals = {
 	{ "^<" }, { "^<=" },
 	{ "^>" }, { "^>=" },
 
-	{ "??" }
+	{ "??" },
+	{ "\\" }
 };
 
 LexicalAnalyser::LexicalAnalyser() {}

@@ -78,6 +78,8 @@ public:
 	LSValue* ls_div(LSBoolean*) override;
 	LSValue* ls_div(LSNumber*) override;
 
+	LSValue* ls_int_div(LSNumber*) override;
+
 	LSValue* ls_div_eq(LSNull*) override;
 	LSValue* ls_div_eq(LSBoolean*) override;
 	LSValue* ls_div_eq(LSNumber*) override;

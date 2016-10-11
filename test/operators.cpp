@@ -146,4 +146,16 @@ void Test::test_operators() {
 	success("{} >= 'a'", "true");
 	success("{} >= []", "true");
 	success("{} >= {}", "true");
+
+	/*
+	 * Integral division
+	 */
+	 header("Integral division");
+	success("10 \\ 2", "5");
+	success("10 \\ 4", "2");
+	success("2432431 \\ 2313", "1051");
+	success("let a = [420987, 'a', 546] a[0] \\ a[2]", "771");
+	success("[420987, 'a', 546][0] \\ 12", "35082");
+
+
 }
