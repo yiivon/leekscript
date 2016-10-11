@@ -102,9 +102,9 @@ void Test::test_arrays() {
 	success("[1..6].filter(x -> x < 3)", "[1, 2]");
 	success("[1..100].filter(x -> x > 50 and x < 53)", "[51, 52]");
 
-	success("[1..Number.sqrt(1991)]", "[1..44]");
-	success("[1..Number.sqrt(1991)].filter(x -> x % 1991 == 0)", "");
-	success("[1..Number.sqrt(1991)].filter(x -> x % 1991 == 0).max()", "");
+	success("[1..Number.sqrt(1989)]", "[1..44]");
+	success("[1..Number.sqrt(1989)].filter(x -> 1989 % x == 0)", "[1, 3, 9, 13, 17, 39]");
+	success("[1..1989.sqrt()].filter(x -> !(1989 % x)).max()", "39");
 
 	sem_err("[1..10]['hello']", ls::SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, "<key 1>");
 	// success("[1..10][-10]", ""); must throw exception
@@ -162,6 +162,7 @@ void Test::test_arrays() {
 
 	success("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "['yo', 10, 3]");
 	success("[3, 4, 5].filter(x -> x > 6)", "[]");
+	success("[1, 2, 3, 4, 5, 6, 7].filter(x -> x % 2 == 0)", "[2, 4, 6]");
 
 	success("Array.contains([1, 2, 3, 10, 1], 1)", "true");
 	success("[3, 4, 5].contains(6)", "false");
@@ -175,7 +176,7 @@ void Test::test_arrays() {
 	success("Array.partition([1, 2, 3, 10, true, 'yo'], x -> x > 2)", "[[3, 10, 'yo'], [1, 2, true]]");
 	success("[1, 2, 3, 4, 5].partition(x -> x > 3)", "[[4, 5], [1, 2, 3]]");
 	success("[1, 2, 3, 4, 5].partition(x -> x == 3)", "[[3], [1, 2, 4, 5]]");
-	success("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)", "[[6, 5], [3, 4]]");
+	success("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)", "[[5, 6], [3, 4]]");
 	// success("[1, 2, 3, 4, 5].partition(x -> 'yolo')", "**error**");
 
 	success("Array.first([1, 2, 3, 10, true, 'yo', null])", "1");
@@ -247,6 +248,8 @@ void Test::test_arrays() {
 
 	success("let a = [1, 2, 3] a.removeElement(1) a", "[3, 2]");
 	sem_err("let a = [1, 2, 3] a.removeElement('key') a", ls::SemanticException::METHOD_NOT_FOUND, "removeElement");
+
+
 
 	/*
 	success("3 ~ x -> x ^ x", "27");

@@ -809,8 +809,7 @@ inline LSArray<int>* LSArray<int>::ls_filter(const void* function) {
 		for (size_t i = 0; i < this->size(); ) {
 			int v = (*this)[i];
 			if (!fun(v)) {
-				(*this)[i] = this->back();
-				this->pop_back();
+				this->erase(this->begin() + i);
 			} else {
 				++i;
 			}
