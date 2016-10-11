@@ -63,5 +63,3 @@ void Test::test_general() {
 	success("null ?? 'default'", "'default'");
 	success("let a = null let b = null a ?? b ?? ':)'", "':)'");
 }
-
-

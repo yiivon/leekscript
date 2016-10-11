@@ -1,6 +1,6 @@
 #include "Test.hpp"
-
-
+#include <fstream>
+#include <string>
 
 Test::Test() {
 	total = 0;
@@ -32,6 +32,7 @@ int Test::all() {
 	test_references();
 	test_operations();
 	test_system();
+	test_files();
 
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
 	int errors = (total - success_count);
@@ -44,7 +45,29 @@ int Test::all() {
 	std::cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)" << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
 
-	return abs(errors) + abs(leaks);
+	int result = abs(errors) + abs(leaks);
+	std::cout << (result == 0 ? "GOOD :)" : "BAD :(") << std::endl;
+	std::cout << "------------------------------------------------" << std::endl;
+
+	return result;
+}
+
+void Test::test_file(std::string file_name, std::string expected) {
+
+	total++;
+
+	std::ifstream ifs(file_name);
+	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+	ifs.close();
+
+	std::string res = vm.execute(code, "{}", ls::ExecMode::TEST);
+
+	if (res != expected) {
+		std::cout << "FAUX : " << file_name << "  =/=>  " << expected << "  got  " << res << std::endl;
+	} else {
+		std::cout << "OK   : " << file_name << "  ===>  " << expected << std::endl;
+		success_count++;
+	}
 }
 
 void Test::header(std::string text) {

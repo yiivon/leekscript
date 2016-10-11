@@ -30,6 +30,7 @@ public:
 	void sem_err(std::string code, ls::SemanticException::Type type, std::string token);
 	void lex_err(std::string code, ls::LexicalError::Type type);
 	void ops(std::string code, int operations);
+	void test_file(std::string file_name, std::string expected);
 
 	void test_general();
 	void test_operations();
@@ -46,6 +47,7 @@ public:
 	void test_functions();
 	void test_loops();
 	void test_classes();
+	void test_files();
 };
 
 #endif
