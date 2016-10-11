@@ -44,6 +44,8 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 	if (interval) {
 
 		type = Type::INTERVAL;
+		expressions[0]->analyse(analyser, Type::INTEGER);
+		expressions[1]->analyse(analyser, Type::INTEGER);
 
 	} else {
 
