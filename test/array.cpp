@@ -57,7 +57,6 @@ void Test::test_arrays() {
 	success("[1,2,'3'] < [1,2,3]", "false");
 	success("[1,1,'3'] < [1,2,3]", "true");
 
-
 	/*
 	 * Array operations
 	 */
@@ -105,6 +104,7 @@ void Test::test_arrays() {
 	success("[1..Number.sqrt(1989)]", "[1..44]");
 	success("[1..Number.sqrt(1989)].filter(x -> 1989 % x == 0)", "[1, 3, 9, 13, 17, 39]");
 	success("[1..1989.sqrt()].filter(x -> !(1989 % x)).max()", "39");
+//	success("let divisors = n -> [1..n.sqrt()].filter(x -> !(n % x)) divisors(1989)", "[]"); // will work with closures
 
 	sem_err("[1..10]['hello']", ls::SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, "<key 1>");
 	// success("[1..10][-10]", ""); must throw exception
@@ -249,8 +249,6 @@ void Test::test_arrays() {
 	success("let a = [1, 2, 3] a.removeElement(1) a", "[3, 2]");
 	sem_err("let a = [1, 2, 3] a.removeElement('key') a", ls::SemanticException::METHOD_NOT_FOUND, "removeElement");
 
-
-
 	/*
 	success("3 ~ x -> x ^ x", "27");
 	success("[1, 2, 3] ~ x -> x + 4", "[1, 2, 3, 4]");
@@ -273,7 +271,4 @@ void Test::test_arrays() {
 	// let a = [for let i = 0; i < 100; i++ do i end]
 	// a[10:*]
 	// a[] = 12 (a += 12)
-
-
-
 }
