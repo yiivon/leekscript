@@ -40,13 +40,17 @@ int Test::all() {
 
 	std::cout << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
-	std::cout << "Total : " << total << ", succès : " << success_count << ", erreurs : " << errors << std::endl;
+	std::cout << "Total : " << total << ", success : " << success_count << ", errors : " << errors << std::endl;
 	std::cout << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
 	std::cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)" << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
 
 	int result = abs(errors) + abs(leaks);
-	std::cout << (result == 0 ? "GOOD :)" : "BAD :(") << std::endl;
+	if (result == 0) {
+		std::cout << "GOOD :)" << std::endl;
+	} else {
+		std::cout << "BAD : " << result << " error(s) :(" << std::endl;
+	}
 	std::cout << "------------------------------------------------" << std::endl;
 
 	return result;

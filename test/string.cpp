@@ -96,7 +96,7 @@ void Test::test_strings() {
 	success("(x -> x)(65).char()", "'A'");
 	success("[128040][0].char()", "'🐨'");
 	success("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })", "'8 5 12 12 15 '");
-//	success("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })", "'8 5 12 12 15 '");
+	success("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })", "'8 5 12 12 15 '");
 
 	success("String.number('1234567')", "1234567");
 	success("String.number('1469215478186644')", "1469215478186644");
