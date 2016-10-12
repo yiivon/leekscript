@@ -65,6 +65,8 @@ void Test::test_file(std::string file_name, std::string expected) {
 	ifs.close();
 
 	std::string res = vm.execute(code, "{}", ls::ExecMode::TEST);
+	obj_created += ls::LSValue::obj_count;
+	obj_deleted += ls::LSValue::obj_deleted;
 
 	if (res != expected) {
 		std::cout << "FAUX : " << file_name << "  =/=>  " << expected << "  got  " << res << std::endl;
