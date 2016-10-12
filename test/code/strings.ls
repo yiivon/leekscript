@@ -12,4 +12,4 @@ for var k = 0; k < tests; k++ {
 	if contains count++
 }
 
-100 * ((count + 0.000001) / tests) // ~ 52%
+100 * (count / tests) // ~ 52%

@@ -56,6 +56,81 @@ int Test::all() {
 	return result;
 }
 
+Test::Input Test::_code(const std::string& code) {
+	return Test::Input(this, code, code);
+}
+
+Test::Input Test::file(const std::string& file_name) {
+	std::ifstream ifs(file_name);
+	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+	ifs.close();
+	return Test::Input(this, file_name, code);
+}
+
+void Test::Input::_equals(std::string&& expected) {
+	test->total++;
+	std::string res;
+	try {
+		res = test->vm.execute(_code, "{}", ls::ExecMode::TEST);
+	} catch (ls::SemanticException& e) {
+		res = e.message();
+	}
+	test->obj_created += ls::LSValue::obj_count;
+	test->obj_deleted += ls::LSValue::obj_deleted;
+
+	if (res != expected) {
+		std::cout << "FAUX : " << name() << "  =/=>  " << expected << "  got  " << res << std::endl;
+	} else {
+		std::cout << "OK   : " << name() << "  ===>  " << expected << std::endl;
+		test->success_count++;
+	}
+}
+
+template void Test::Input::almost(long expected, long delta);
+template void Test::Input::almost(double expected, double delta);
+
+template <typename T>
+void Test::Input::almost(T expected, T delta) {
+
+	test->total++;
+	std::string res;
+	try {
+		res = test->vm.execute(_code, "{}", ls::ExecMode::TEST);
+	} catch (ls::SemanticException& e) {
+		res = e.message();
+	}
+	test->obj_created += ls::LSValue::obj_count;
+	test->obj_deleted += ls::LSValue::obj_deleted;
+
+	T res_num;
+	std::stringstream ss(res);
+	ss >> res_num;
+
+	if (std::abs(res_num - expected) > delta) {
+		std::cout << "FAUX : " << name() << "  =/=>  " << expected << "  got  " << res << std::endl;
+	} else {
+		std::cout << "OK   : " << name() << "  ===>  " << res << " (perfect: " << expected << ")" << std::endl;
+		test->success_count++;
+	}
+}
+
+template <typename T>
+void Test::Input::between(T a, T b) {
+
+}
+
+template <typename T>
+void Test::Input::error(T error, std::string& param) {
+
+}
+
+void Test::Input::operations(int) {
+
+}
+Test::Input& Test::Input::timeout(int) {
+	return *this;
+}
+
 void Test::test_file(std::string file_name, std::string expected) {
 
 	total++;
