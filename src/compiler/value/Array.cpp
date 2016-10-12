@@ -19,14 +19,23 @@ Array::~Array() {
 }
 
 void Array::print(std::ostream& os, int indent, bool debug) const {
-	os << "[";
-	for (size_t i = 0; i < expressions.size(); ++i) {
-		expressions[i]->print(os, indent, debug);
-		if (i < expressions.size() - 1) {
-			os << ", ";
+
+	if (interval) {
+		os << "[";
+		expressions[0]->print(os, indent, debug);
+		os << "..";
+		expressions[1]->print(os, indent, debug);
+		os << "]";
+	} else {
+		os << "[";
+		for (size_t i = 0; i < expressions.size(); ++i) {
+			expressions[i]->print(os, indent, debug);
+			if (i < expressions.size() - 1) {
+				os << ", ";
+			}
 		}
+		os << "]";
 	}
-	os << "]";
 
 	if (debug) {
 		os << " " << type;

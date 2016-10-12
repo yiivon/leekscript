@@ -13,13 +13,12 @@ Set::~Set() {
 }
 
 void Set::print(ostream& os, int indent, bool debug) const {
-	os << "<" << endl;
+	os << "<";
 	for (size_t i = 0; i < expressions.size(); ++i) {
-		os << tabs(indent + 1);
+		if (i > 0) os << ", ";
 		expressions[i]->print(os, indent + 1, debug);
-		os << "\n";
 	}
-	os << tabs(indent) << ">";
+	os << ">";
 	if (debug) os << " " << type;
 }
 

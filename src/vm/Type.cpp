@@ -430,30 +430,51 @@ string Type::get_nature_symbol(const Nature& nature) {
 	}
 }
 
+#define GREY "\033[0;90m"
+#define GREEN "\033[0;32m"
+#define RED "\033[1;31m"
+#define BLUE "\033[1;34m"
+#define YELLOW "\033[1;33m"
+#define END_COLOR "\033[0m"
+
 ostream& operator << (ostream& os, const Type& type) {
 
 	if (type == Type::VOID) {
-		os << "{void}";
+		os << GREY << "{void}" << END_COLOR;
 		return os;
 	}
 
-	os << "{" << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
+	auto color = (type.nature == Nature::VALUE) ? GREEN : RED;
+	os << color;
 
-	if (type.raw_type == RawType::FUNCTION) {
-		os << " (";
+	if (type.raw_type == RawType::UNKNOWN and type.nature == Nature::POINTER) {
+		os << YELLOW << "?";
+	} else if (type.raw_type == RawType::FUNCTION) {
+		os << "fun" << Type::get_nature_symbol(type.nature);
+		os << "(";
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
 			os << type.arguments_types[t];
+			os << color;
 		}
 		os << ") → " << type.getReturnType();
+	} else if (type.raw_type == RawType::STRING || type.raw_type == RawType::CLASS
+		|| type.raw_type == RawType::OBJECT || type.raw_type == RawType::NULLL
+		|| type.raw_type == RawType::INTERVAL) {
+		os << BLUE << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
+	} else if (type.raw_type == RawType::ARRAY || type.raw_type == RawType::SET) {
+		os << BLUE << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
+		os << "<" << type.getElementType() << BLUE << ">";
+	} else if (type.raw_type == RawType::MAP) {
+		os << BLUE << type.raw_type->getName();
+		os << "<" << type.getElementType(0) << BLUE
+			<< ", " << type.getElementType(1) << BLUE << ">";
+	} else {
+		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 	}
-	if (type.raw_type == RawType::ARRAY || type.raw_type == RawType::SET) {
-		os << " of " << type.getElementType();
-	}
-	if (type.raw_type == RawType::MAP) {
-		os << " of " << type.getElementType(0) << " → " << type.getElementType(1);
-	}
-	os << "}";
+
+	os << END_COLOR;
+
 	return os;
 }
 
