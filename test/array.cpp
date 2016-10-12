@@ -24,10 +24,6 @@ void Test::test_arrays() {
 	success("[1] + ['a']", "[1, 'a']");
 	success("['a'] + [1]", "['a', 1]");
 	success("let a = ['a'] a += 'b' a", "['a', 'b']");
-	success("let a = [1] a += 'a' a", "[1, 'a']");
-	success("let a = [1.5] a += ['a', 'b'] a", "[1.5, 'a', 'b']");
-	success("let a = [1.5] a += false a", "[1.5, false]");
-	success("let a = [1] a += <'z', 'a'> a", "[1, 'a', 'z']");
 	success("[1, 2, 3][1]", "2");
 	success("let a = [1, 2, 3] a[0]", "1");
 	success("let a = [1, 2, 3] a[0] = 5 a[0]", "5");
@@ -43,13 +39,25 @@ void Test::test_arrays() {
 	success("4 in [1, 2, 3]", "false");
 	success("'yo' in ['ya', 'yu', 'yo']", "true");
 	success("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }", "'ok'");
+	success("let a = [5, 'yolo', 12] a[1]", "'yolo'");
+
+	// No commas
 	success("[1 2 3]", "[1, 2, 3]");
 	success("['yo' 'ya' 'yu']", "['yo', 'ya', 'yu']");
 	success("[true false true true]", "[true, false, true, true]");
-	success("[1,2,3,4] < [1,2,3,5]", "true");
-	success("[1,2,4,4] < [1,2,3,5]", "false");
-	success("[1,2,3,4.1] < [1,2,3,5.1]", "true");
-	success("[1,2,4,4.1] < [1,2,3,5.1]", "false");
+
+	// Type changes
+	success("let a = [1, 2, 3] a += 'hello' a", "[1, 2, 3, 'hello']");
+	success("let a = [1.5] a += ['a', 'b'] a", "[1.5, 'a', 'b']");
+	success("let a = [1.5] a += false a", "[1.5, false]");
+	success("let a = [1] a += <'z', 'a'> a", "[1, 'a', 'z']");
+	success("let a = [1] a += 'a' a", "[1, 'a']");
+
+	// Comparison
+	success("[1, 2, 3, 4] < [1, 2, 3, 5]", "true");
+	success("[1, 2, 4, 4] < [1, 2, 3, 5]", "false");
+	success("[1, 2, 3, 4.1] < [1, 2, 3, 5.1]", "true");
+	success("[1, 2, 4, 4.1] < [1, 2, 3, 5.1]", "false");
 	success("['1','2','3','4'] < ['1','2','3','5']", "true");
 	success("['1','2','4','4'] < ['1','2','3','5']", "false");
 	success("[1,2,3,4] < [1,2,3,5.1]", "true");

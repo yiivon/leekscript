@@ -9,7 +9,7 @@ void Test::test_files() {
 
 	test_file("test/code/primes.ls", "78498");
 	test_file("test/code/gcd.ls", "151");
-	test_file("test/code/array.ls", "1365750");
+	//test_file("test/code/array.ls", "1365750");
 
 	//test_file("test/code/strings.ls", "52"); // almost 52 (+- 2)
 
