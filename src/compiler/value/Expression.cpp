@@ -120,7 +120,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (op->type == TokenType::DIVIDE) {
 		type.raw_type = RawType::FLOAT;
 		v1_type = Type::FLOAT;
-		v2_type = Type::FLOAT;
+		//v2_type = Type::FLOAT;
 	}
 
 	// First analyse of v1 and v2
@@ -155,6 +155,10 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 
 		type = v1->type.mix(v2->type);
+
+		if (op->type == TokenType::DIVIDE and v1->type.isNumber() and v2->type.isNumber()) {
+			type.raw_type = RawType::FLOAT;
+		}
 
 		// String / String => Array<String>
 		if (op->type == TokenType::DIVIDE and v1->type == Type::STRING and v2->type == Type::STRING) {
@@ -251,6 +255,10 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// At the end the require nature is taken into account
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
+	}
+	if (req_type.raw_type == RawType::FLOAT) {
+		conversion = type;
+		type.raw_type = RawType::FLOAT;
 	}
 }
 
@@ -1042,6 +1050,9 @@ jit_value_t Expression::compile(Compiler& c) const {
 
 		if (type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(c.F, r, jit_returned_type);
+		}
+		if (conversion == Type::INTEGER and type.raw_type == RawType::FLOAT) {
+			return VM::int_to_real(c.F, r);
 		}
 		return r;
 

@@ -249,6 +249,12 @@ jit_value_t VM::pointer_to_value(jit_function_t F, jit_value_t v, Type type) {
 	return LS_CREATE_INTEGER(F, 0);
 }
 
+jit_value_t VM::int_to_real(jit_function_t F, jit_value_t v) {
+	jit_value_t real = jit_value_create(F, LS_REAL);
+	jit_insn_store(F, real, v);
+	return real;
+}
+
 /*
 bool VM::get_number(jit_function_t F, jit_value_t val) {
 

@@ -18,6 +18,7 @@ public:
 	bool store_result_in_v1;
 	bool no_op;
 	int operations;
+	Type conversion = Type::UNKNOWN;
 
 	Expression();
 	Expression(Value*);
