@@ -15,6 +15,9 @@ LIBS := -ljit
 
 all: makedirs leekscript
 
+fast:
+	make -j8
+
 test:
 	@build/leekscript -test
 
