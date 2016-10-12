@@ -249,7 +249,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// At the end the require nature is taken into account
-	if (req_type.nature != Nature::UNKNOWN) {
+	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
 	}
 }

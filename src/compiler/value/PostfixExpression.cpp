@@ -35,7 +35,7 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 	type = expression->type;
 	this->return_value = return_value;
 
-	if (req_type.nature != Nature::UNKNOWN) {
+	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
 	}
 }

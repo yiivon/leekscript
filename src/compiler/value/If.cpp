@@ -50,7 +50,9 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		elze->analyse(analyser, req_type);
 
-		if (then->type == Type::VOID) { // then contains return instruction
+		if (req_type == Type::VOID) {
+			type = Type::VOID;
+		} else if (then->type == Type::VOID) { // then contains return instruction
 			type = elze->type;
 		} else if (elze->type == Type::VOID) { // elze contains return instruction
 			type = then->type;
@@ -64,9 +66,13 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			elze->analyse(analyser, type);
 		}
 	} else {
-		type = Type::POINTER; // Pointer because the else will give null
 
-		then->analyse(analyser, Type::POINTER);
+		if (req_type == Type::VOID) {
+			type = Type::VOID;
+		} else {
+			type = Type::POINTER; // Pointer because the else will give null
+		}
+		then->analyse(analyser, type);
 	}
 
 	if (req_type.nature == Nature::POINTER) {
