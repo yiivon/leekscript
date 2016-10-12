@@ -2,7 +2,7 @@
 
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../../vm/value/LSFunction.hpp"
-
+#include <jit/jit-dump.h>
 using namespace std;
 
 namespace ls {
@@ -195,8 +195,12 @@ jit_value_t Function::compile(Compiler& c) const {
 
 	jit_insn_rethrow_unhandled(function);
 
+	//jit_dump_function(fopen("f_uncompiled", "w"), function, "f");
+
 	jit_function_compile(function);
 	jit_context_build_end(context);
+
+	//jit_dump_function(fopen("f_compiled", "w"), function, "f");
 
 	void* f = jit_function_to_closure(function);
 

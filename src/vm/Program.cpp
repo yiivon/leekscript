@@ -1,13 +1,16 @@
+#include <chrono>
+#include <jit/jit-dump.h>
+
 #include "Program.hpp"
 #include "Context.hpp"
 #include "value/LSNull.hpp"
 #include "value/LSArray.hpp"
-#include <chrono>
 #include "../compiler/lexical/LexicalAnalyser.hpp"
 #include "../compiler/syntaxic/SyntaxicAnalyser.hpp"
 #include "Context.hpp"
 #include "../compiler/semantic/SemanticAnalyser.hpp"
 #include "../compiler/semantic/SemanticException.hpp"
+
 
 using namespace std;
 
@@ -129,8 +132,12 @@ void Program::compile_main(Context& context) {
 	VM::print_int(F, ex);
 	jit_insn_return(F, LS_CREATE_POINTER(F, LSNull::get()));
 
+	//jit_dump_function(fopen("main_uncompiled", "w"), F, "main");
+
 	jit_function_compile(F);
 	jit_context_build_end(jit_context);
+
+	//jit_dump_function(fopen("main_compiled", "w"), F, "main");
 
 	closure = jit_function_to_closure(F);
 }
