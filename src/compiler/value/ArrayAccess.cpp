@@ -5,7 +5,7 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSInterval.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-#include "../semantic/SemanticException.hpp"
+#include "../semantic/SemanticError.hpp"
 
 using namespace std;
 
@@ -67,11 +67,11 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (key->type != Type::UNKNOWN and not key->type.isNumber()) {
 			std::string k = "<key 1>";
-			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
 		}
 		if (key2->type != Type::UNKNOWN and not key2->type.isNumber()) {
 			std::string k = "<key 2>";
-			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
 		}
 
 		type = array->type;
@@ -80,7 +80,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (key->type != Type::UNKNOWN and not key->type.isNumber()) {
 			std::string k = "<key 1>";
-			analyser->add_error({SemanticException::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, k});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, k});
 		}
 
 		if (array_element_type == Type::INTEGER) {

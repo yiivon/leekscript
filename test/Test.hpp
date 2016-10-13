@@ -4,13 +4,14 @@
 #include <iostream>
 #include <string>
 #include "../src/leekscript.h"
-#include "../src/compiler/semantic/SemanticException.hpp"
+#include "../src/vm/VM.hpp"
+#include "../src/compiler/semantic/SemanticError.hpp"
 #include "../src/compiler/lexical/LexicalError.hpp"
 
 // TODO
 /*
  code("2 + 2").equals("4")
- code("'hello'()").error(SemanticException::CANNOT_CALL_VALUE, "'hello'")
+ code("'hello'()").error(SemanticError::CANNOT_CALL_VALUE, "'hello'")
  code("'unterminated").error(LexicalError::UNTERMINATED_STRING)
  code("[1, 2, 3].size()").between(2, 5)
  file("test/code/strings.ls").almost(52, 2)
@@ -51,14 +52,6 @@ public:
 	Input _code(const std::string& _code);
 	Input file(const std::string& file_name);
 
-	void success(std::string _code, std::string result);
-	template <typename T>
-	void success_almost(std::string _code, T result, T delta = std::numeric_limits<T>::epsilon());
-	void sem_err(std::string _code, ls::SemanticException::Type type, std::string token);
-	void lex_err(std::string _code, ls::LexicalError::Type type);
-	void ops(std::string _code, int operations);
-	void test_file(std::string file_name, std::string expected);
-
 	void test_general();
 	void test_operations();
 	void test_operators();
@@ -89,11 +82,14 @@ public:
 		void almost(T expected, T delta = std::numeric_limits<T>::epsilon());
 		template <typename T>
 		void between(T a, T b);
-		template <typename T>
-		void error(T error, std::string& param);
+		void semantic_error(ls::SemanticError::Type error, std::string param);
+		void lexical_error(ls::LexicalError::Type error);
 		void operations(int ops);
 		Input& timeout(int ms);
 
+		ls::VM::Result run();
+		void pass(std::string expected);
+		void fail(std::string expected, std::string actuel);
 		std::string& name() { return _name; };
 	};
 };

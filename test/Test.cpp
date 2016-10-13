@@ -67,22 +67,36 @@ Test::Input Test::file(const std::string& file_name) {
 	return Test::Input(this, file_name, code);
 }
 
-void Test::Input::_equals(std::string&& expected) {
+ls::VM::Result Test::Input::run() {
+	auto result = test->vm.execute(_code, "{}");
+	test->obj_created += result.objects_created;
+	test->obj_deleted += result.objects_deleted;
 	test->total++;
-	std::string res;
-	try {
-		res = test->vm.execute(_code, "{}", ls::ExecMode::TEST);
-	} catch (ls::SemanticException& e) {
-		res = e.message();
-	}
-	test->obj_created += ls::LSValue::obj_count;
-	test->obj_deleted += ls::LSValue::obj_deleted;
+	return result;
+}
 
-	if (res != expected) {
-		std::cout << "FAUX : " << name() << "  =/=>  " << expected << "  got  " << res << std::endl;
+#define GREEN "\033[0;32m"
+#define RED "\033[1;31m"
+#define END_COLOR "\033[0m"
+
+void Test::Input::pass(std::string expected) {
+	std::cout << GREEN << "OK   " << END_COLOR << ": " << name() <<  "  ===>  " << expected << std::endl;
+	test->success_count++;
+}
+
+void Test::Input::fail(std::string expected, std::string actual) {
+	std::cout << RED << "FAIL " << END_COLOR << ": " << name() << "  =/=>  " << expected
+		<< "  got  " << actual << std::endl;
+}
+
+void Test::Input::_equals(std::string&& expected) {
+
+	auto result = run();
+
+	if (result.value == expected) {
+		pass(expected);
 	} else {
-		std::cout << "OK   : " << name() << "  ===>  " << expected << std::endl;
-		test->success_count++;
+		fail(expected, result.value);
 	}
 }
 
@@ -92,25 +106,16 @@ template void Test::Input::almost(double expected, double delta);
 template <typename T>
 void Test::Input::almost(T expected, T delta) {
 
-	test->total++;
-	std::string res;
-	try {
-		res = test->vm.execute(_code, "{}", ls::ExecMode::TEST);
-	} catch (ls::SemanticException& e) {
-		res = e.message();
-	}
-	test->obj_created += ls::LSValue::obj_count;
-	test->obj_deleted += ls::LSValue::obj_deleted;
+	auto result = run();
 
 	T res_num;
-	std::stringstream ss(res);
+	std::stringstream ss(result.value);
 	ss >> res_num;
 
-	if (std::abs(res_num - expected) > delta) {
-		std::cout << "FAUX : " << name() << "  =/=>  " << expected << "  got  " << res << std::endl;
+	if (std::abs(res_num - expected) <= delta) {
+		pass(result.value + " (perfect: " + std::to_string(expected) + ")");
 	} else {
-		std::cout << "OK   : " << name() << "  ===>  " << res << " (perfect: " << expected << ")" << std::endl;
-		test->success_count++;
+		fail(std::to_string(expected), result.value);
 	}
 }
 
@@ -119,170 +124,69 @@ void Test::Input::between(T a, T b) {
 
 }
 
-template <typename T>
-void Test::Input::error(T error, std::string& param) {
+void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::string token) {
 
+	auto result = run();
+
+	std::string expected_message = ls::SemanticError::build_message(expected_type, token);
+
+	if (result.semantical_errors.size()) {
+		ls::SemanticError e = result.semantical_errors[0];
+		if (expected_type != e.type or token != e.content) {
+			fail(expected_message, e.message());
+		} else {
+			pass(e.message());
+		}
+	} else {
+		fail(expected_message, "(no exception)");
+	}
 }
 
-void Test::Input::operations(int) {
+void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 
+	auto result = run();
+
+	std::string expected_message = ls::LexicalError::build_message(expected_type);
+
+	if (result.lexical_errors.size()) {
+		ls::LexicalError e = result.lexical_errors[0];
+		if (expected_type != e.type) {
+			fail(expected_message, e.message());
+		} else {
+			pass(e.message());
+		}
+	} else {
+		fail(expected_message, "(no exception)");
+	}
+}
+
+void Test::Input::operations(int expected) {
+	test->total++;
+
+	std::string res;
+	try {
+		auto result = test->vm.execute(code, "{}");
+		res = std::to_string(result.operations);
+		test->obj_created += result.objects_created;
+		test->obj_deleted += result.objects_deleted;
+	} catch (ls::SemanticError& e) {
+		res = e.message();
+	}
+
+	int ops = std::stoi(res);
+	if (ops != expected) {
+		std::cout << "FAUX : " << name() << "  =/=>  " << expected << "  got  " << ops << std::endl;
+	} else {
+		std::cout << "OK   : " << name() << "  ===>  " << expected << std::endl;
+		test->success_count++;
+	}
 }
 Test::Input& Test::Input::timeout(int) {
 	return *this;
-}
-
-void Test::test_file(std::string file_name, std::string expected) {
-
-	total++;
-
-	std::ifstream ifs(file_name);
-	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-	ifs.close();
-
-	std::string res = vm.execute(code, "{}", ls::ExecMode::TEST);
-	obj_created += ls::LSValue::obj_count;
-	obj_deleted += ls::LSValue::obj_deleted;
-
-	if (res != expected) {
-		std::cout << "FAUX : " << file_name << "  =/=>  " << expected << "  got  " << res << std::endl;
-	} else {
-		std::cout << "OK   : " << file_name << "  ===>  " << expected << std::endl;
-		success_count++;
-	}
 }
 
 void Test::header(std::string text) {
 	std::cout << "----------------" << std::endl;
 	std::cout << text << std::endl;
 	std::cout << "----------------" << std::endl;
-}
-
-void Test::success(std::string code, std::string expected) {
-
-	total++;
-	std::string res;
-	try {
-		res = vm.execute(code, "{}", ls::ExecMode::TEST);
-	} catch (ls::SemanticException& e) {
-		res = e.message();
-	}
-	obj_created += ls::LSValue::obj_count;
-	obj_deleted += ls::LSValue::obj_deleted;
-
-	if (res != expected) {
-		std::cout << "FAUX : " << code << "  =/=>  " << expected << "  got  " << res << std::endl;
-	} else {
-		std::cout << "OK   : " << code << "  ===>  " << expected << std::endl;
-		success_count++;
-	}
-}
-
-template void Test::success_almost(std::string code, long expected, long delta);
-template void Test::success_almost(std::string code, double expected, double delta);
-
-template <typename T>
-void Test::success_almost(std::string code, T expected, T delta) {
-
-	total++;
-	std::string res;
-	try {
-		res = vm.execute(code, "{}", ls::ExecMode::TEST);
-	} catch (ls::SemanticException& e) {
-		res = e.message();
-	}
-	obj_created += ls::LSValue::obj_count;
-	obj_deleted += ls::LSValue::obj_deleted;
-
-	T res_num;
-	std::stringstream ss(res);
-	ss >> res_num;
-
-	if (std::abs(res_num - expected) > delta) {
-		std::cout << "FAUX : " << code << "  =/=>  " << expected << "  got  " << res << std::endl;
-	} else {
-		std::cout << "OK   : " << code << "  ===>  " << res << " (perfect: " << expected << ")" << std::endl;
-		success_count++;
-	}
-}
-
-void Test::ops(std::string code, int expected) {
-
-	total++;
-
-	std::string res;
-	try {
-		res = vm.execute(code, "{}", ls::ExecMode::TEST_OPS);
-	} catch (ls::SemanticException& e) {
-		res = e.message();
-	}
-	obj_created += ls::LSValue::obj_count;
-	obj_deleted += ls::LSValue::obj_deleted;
-
-	int ops = std::stoi(res);
-	if (ops != expected) {
-		std::cout << "FAUX : " << code << "  =/=>  " << expected << "  got  " << ops << std::endl;
-	} else {
-		std::cout << "OK   : " << code << "  ===>  " << expected << std::endl;
-		success_count++;
-	}
-}
-
-void Test::sem_err(std::string code, ls::SemanticException::Type expected_type, std::string token) {
-
-	total++;
-
-	bool exception = false;
-	std::string expected_message = ls::SemanticException::build_message(expected_type, token);
-
-	try {
-		vm.execute(code, "{}", ls::ExecMode::TEST);
-
-	} catch (ls::SemanticException& e) {
-		exception = true;
-		if (expected_type != e.type or token != e.content) {
-			std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << e.message() << std::endl;
-		} else {
-			std::cout << "OK   : " << code << "  ===> " << e.message() <<  std::endl;
-			success_count++;
-		}
-	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
-	}
-
-	if (!exception) {
-		std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << "(no exception)" << std::endl;
-	}
-
-	obj_created += ls::LSValue::obj_count;
-	obj_deleted += ls::LSValue::obj_deleted;
-}
-
-void Test::lex_err(std::string code, ls::LexicalError::Type expected_type) {
-
-	total++;
-
-	bool exception = false;
-	std::string expected_message = ls::LexicalError::build_message(expected_type);
-
-	try {
-		vm.execute(code, "{}", ls::ExecMode::TEST);
-
-	} catch (ls::LexicalError& e) {
-		exception = true;
-		if (expected_type != e.type) {
-			std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << e.message() << std::endl;
-		} else {
-			std::cout << "OK   : " << code << "  ===> " << e.message() <<  std::endl;
-			success_count++;
-		}
-	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
-	}
-
-	if (!exception) {
-		std::cout << "FAUX : " << code << "  =/=> " << expected_message << "  got  " << "(no exception)" << std::endl;
-	}
-
-	obj_created += ls::LSValue::obj_count;
-	obj_deleted += ls::LSValue::obj_deleted;
 }

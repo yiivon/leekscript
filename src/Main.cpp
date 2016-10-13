@@ -32,24 +32,18 @@ int main(int argc, char* argv[]) {
 
 	srand(time(0));
 
-	/*
-	 * Launch tests
-	 */
+	/** Launch tests */
 	if (argc > 1 && string(argv[1]) == "-test") {
 		return Test().all();
 	}
 
-	/*
-	 * Generate the standard functions documentation
-	 */
+	/** Generate the standard functions documentation */
 	if (argc > 1 && string(argv[1]) == "-doc") {
 		ls::Documentation().generate(cout);
 		return 0;
 	}
 
-	/*
-	 * Arguments
-	 */
+	/** Arguments */
 	if (argc > 1 && argv[1][0] == '-') {
 		string args(argv[1]);
 		for (char c : args) {
@@ -77,9 +71,20 @@ int main(int argc, char* argv[]) {
 
 		// Execute
 		if (param_file) {
-			vm.execute(code, "{}", ls::ExecMode::NORMAL);
+
+			auto result = vm.execute(code, "{}");
+			cout << result.value << endl;
+			cout << "(" << result.operations << " ops, "
+				<< result.compilation_time_ms << "ms + "
+				<< result.execution_time_ms << " ms)" << endl;
+
 		} else if (param_json) {
-			vm.execute(code, "{}", ls::ExecMode::FILE_JSON);
+
+			auto result = vm.execute(code, "{}");
+			cout << "{\"success\":true,\"ops\":" << result.operations
+				<< ",\"time\":" << result.execution_time
+				<< ",\"ctx\":" << result.context
+				<< ",\"res\":\"" << result.value << "\"}" << endl;
 		}
 
 	} else if (param_exec) {
@@ -87,7 +92,11 @@ int main(int argc, char* argv[]) {
 		string code = argv[2];
 		string ctx = argv[3];
 
-		vm.execute(code, ctx, ls::ExecMode::COMMAND_JSON);
+		auto result = vm.execute(code, ctx);
+		cout << "{\"success\":true,\"ops\":" << result.operations
+			<< ",\"time\":" << result.execution_time
+			<< ",\"ctx\":" << result.context << ",\"res\":\""
+			<< result.value << "\"}" << endl;
 
 	} else {
 
@@ -101,7 +110,12 @@ int main(int argc, char* argv[]) {
 			std::getline(std::cin, code);
 
 			// Execute
-			ctx = vm.execute(code, ctx, ls::ExecMode::TOP_LEVEL);
+			auto result = vm.execute(code, ctx);
+			cout << result.value << endl;
+			cout << "(" << result.operations << " ops, "
+				<< result.compilation_time << " ms + "
+				<< result.execution_time << " ms)" << endl;
+			ctx = result.context;
 		}
 	}
 	return 0;

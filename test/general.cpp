@@ -6,7 +6,7 @@
 #include "../src/compiler/lexical/LexicalAnalyser.hpp"
 #include "../src/compiler/syntaxic/SyntaxicAnalyser.hpp"
 #include "../src/compiler/semantic/SemanticAnalyser.hpp"
-#include "../src/compiler/semantic/SemanticException.hpp"
+#include "../src/compiler/semantic/SemanticError.hpp"
 #include "Test.hpp"
 
 using namespace std;
@@ -45,13 +45,13 @@ void Test::test_general() {
 	code("let 韭 = 'leek' 韭").equals("'leek'");
 	code("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ** 🐨").equals("25");
 
-	sem_err("a", ls::SemanticException::Type::UNDEFINED_VARIABLE, "a");
-	sem_err("let a = 2 let a = 5", ls::SemanticException::Type::VARIABLE_ALREADY_DEFINED, "a");
+	code("a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, "a");
+	code("let a = 2 let a = 5").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, "a");
 
 	code("let a = 12 a").equals("12");
 	code("let a = 12 { let a = 5 } a").equals("12");
 	code("let a = 12 let b = 0 { let a = 5 b = a } b").equals("5");
-	sem_err("{let a = 5} a", ls::SemanticException::Type::UNDEFINED_VARIABLE, "a");
+	code("{let a = 5} a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, "a");
 
 	code("'foo' ?? 'bar'").equals("'foo'");
 	code("null ?? 'bar'").equals("'bar'");

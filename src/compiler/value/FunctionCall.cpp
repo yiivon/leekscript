@@ -19,7 +19,7 @@
 #include "../Compiler.hpp"
 #include "../lexical/Token.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-#include "../semantic/SemanticException.hpp"
+#include "../semantic/SemanticError.hpp"
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
 
@@ -74,7 +74,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		std::ostringstream oss;
 		function->print(oss);
 		std::string content = oss.str();
-		analyser->add_error({SemanticException::Type::CANNOT_CALL_VALUE, function->line(), content});
+		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, function->line(), content});
 	}
 
 	int a = 0;
@@ -170,7 +170,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					std_func = m->addr;
 					function->type = m->type;
 				} else {
-					analyser->add_error({SemanticException::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, oa->field->content});
+					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, oa->field->content});
 				}
 
 			} else { // "salut".size()
@@ -242,7 +242,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 						function->type = m->type;
 
 					} else {
-						analyser->add_error({SemanticException::Type::METHOD_NOT_FOUND, oa->field->line, oa->field->content});
+						analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field->line, oa->field->content});
 					}
 				}
 			}

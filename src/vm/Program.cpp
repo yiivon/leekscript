@@ -9,7 +9,7 @@
 #include "../compiler/syntaxic/SyntaxicAnalyser.hpp"
 #include "Context.hpp"
 #include "../compiler/semantic/SemanticAnalyser.hpp"
-#include "../compiler/semantic/SemanticException.hpp"
+#include "../compiler/semantic/SemanticError.hpp"
 
 
 using namespace std;
@@ -33,82 +33,55 @@ Program::~Program() {
 	}
 }
 
-double Program::compile(VM& vm, const std::string& ctx, const ExecMode mode) {
+VM::Result Program::compile(VM& vm, const std::string& ctx) {
 
-	auto compile_start = chrono::high_resolution_clock::now();
+	VM::Result result;
 
+	// Lexical analysis
 	LexicalAnalyser lex;
 	vector<Token> tokens = lex.analyse(code);
 
 	if (lex.errors.size()) {
-		if (mode == ExecMode::TEST) {
-			throw lex.errors[0];
-		}
-		for (auto error : lex.errors) {
-			cout << "Line " << error.line << " : " <<  error.message() << endl;
-		}
-		return -1;
+		result.compilation_success = false;
+		result.lexical_errors = lex.errors;
+		return result;
 	}
 
+	// Syntaxical analysis
 	SyntaxicAnalyser syn;
 	this->main = syn.analyse(tokens);
 
 	if (syn.getErrors().size() > 0) {
-		if (mode == ExecMode::COMMAND_JSON) {
-
-			cout << "{\"success\":false,\"errors\":[";
-			for (auto error : syn.getErrors()) {
-				cout << "{\"line\":" << error->token->line << ",\"message\":\"" << error->message << "\"}";
-			}
-			cout << "]}" << endl;
-			return -1;
-
-		} else {
-			for (auto error : syn.getErrors()) {
-				cout << "Line " << error->token->line << " : " <<  error->message << endl;
-			}
-			return -1;
-		}
+		result.compilation_success = false;
+		result.syntaxical_errors = syn.getErrors();
+		return result;
 	}
 
+	// Semantical analysis
 	Context context { ctx };
-
 	SemanticAnalyser sem;
 	sem.analyse(this, &context, vm.modules);
 
-	/*
-	 * Debug
-	 */
+	std::cout << "semantic errros : " << sem.errors.size() << std::endl;
+
+	if (sem.errors.size()) {
+		result.compilation_success = false;
+		result.semantical_errors = sem.errors;
+		return result;
+	}
+
+	// Debug
 	#if DEBUG > 0
 		cout << "Program: "; print(cout, true);
 	#endif
 
-	if (sem.errors.size()) {
-
-		if (mode == ExecMode::COMMAND_JSON) {
-			cout << "{\"success\":false,\"errors\":[]}" << endl;
-		} else if (mode == ExecMode::TEST) {
-			delete this;
-			throw sem.errors[0];
-		} else {
-			for (auto e : sem.errors) {
-				cout << "Line " << e.line << " : " << e.message() << endl;
-			}
-		}
-		return -1;
-	}
-
 	// Compilation
 	internals.clear();
-
 	this->compile_main(context);
 
-	auto compile_end = chrono::high_resolution_clock::now();
-
-	long compile_time_ns = chrono::duration_cast<chrono::nanoseconds>(compile_end - compile_start).count();
-	double compile_time_ms = (((double) compile_time_ns / 1000) / 1000);
-
-	return compile_time_ms;
+	// Result
+	result.compilation_success = true;
+	return result;
 }
 
 void Program::compile_main(Context& context) {

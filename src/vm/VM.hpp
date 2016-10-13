@@ -4,6 +4,10 @@
 #include <vector>
 #include <string>
 #include <jit/jit.h>
+#include "Context.hpp"
+#include "../compiler/lexical/LexicalError.hpp"
+#include "../compiler/syntaxic/SyntaxicalError.hpp"
+#include "../compiler/semantic/SemanticError.hpp"
 
 #define OPERATION_LIMIT 10000000
 
@@ -12,7 +16,7 @@
  * 1 : print types + #leaks
  * 2 : print leak details
  */
-#define DEBUG 0
+#define DEBUG 2
 
 #define LS_INTEGER jit_type_int
 #define LS_LONG jit_type_long
@@ -31,10 +35,8 @@ namespace ls {
 class Type;
 class Module;
 class Program;
-
-enum class ExecMode {
-	NORMAL, TOP_LEVEL, COMMAND_JSON, TEST, TEST_OPS, FILE_JSON
-};
+class LSValue;
+class LexicalError;
 
 class vm_operation_exception : public std::exception {
 public:
@@ -50,40 +52,66 @@ public:
 	static const bool enable_operations;
 	static const unsigned int operation_limit;
 
+	class Result {
+	public:
+		bool compilation_success = false;
+		bool execution_success = false;
+		std::vector<LexicalError> lexical_errors;
+		std::vector<SyntaxicalError*> syntaxical_errors;
+		std::vector<SemanticError> semantical_errors;
+		std::string value;
+		std::string context;
+		long compilation_time = 0;
+		long compilation_time_ms = 0;
+		long execution_time = 0;
+		long execution_time_ms = 0;
+		long operations = 0;
+		int objects_created = 0;
+		int objects_deleted = 0;
+	};
+
 	std::vector<Module*> modules;
 
 	VM();
 	virtual ~VM();
 
-	/*
-	 * Shorthand to execute a code
-	 */
-	std::string execute(const std::string code, std::string ctx, ExecMode mode);
+	/** Main execution function **/
+	Result execute(const std::string code, std::string ctx);
 
+	/** Add a module **/
 	void add_module(Module* m);
 	static jit_type_t get_jit_type(const Type& type);
 
-	// Conversions
+	/** Value creation **/
+	static jit_value_t get_null(jit_function_t F);
+	static jit_value_t create_object(jit_function_t F);
+	static jit_value_t create_array(jit_function_t F, const Type& element_type,
+		int cap = 0);
+	static void push_move_array(jit_function_t F, const Type& element_type,
+		jit_value_t array, jit_value_t value);
+
+	/** Conversions **/
 	static jit_value_t value_to_pointer(jit_function_t, jit_value_t, Type);
 	static jit_value_t pointer_to_value(jit_function_t, jit_value_t, Type);
 	static jit_value_t int_to_real(jit_function_t F, jit_value_t v);
 
+	/** Ref counting and memory management **/
 	static jit_value_t get_refs(jit_function_t F, jit_value_t obj);
 	static void inc_refs(jit_function_t F, jit_value_t obj);
 	static void inc_refs_if_not_temp(jit_function_t F, jit_value_t obj);
 	static void dec_refs(jit_function_t F, jit_value_t obj);
 	static void delete_ref(jit_function_t F, jit_value_t obj);
 	static void delete_temporary(jit_function_t F, jit_value_t obj);
-	static void inc_ops(jit_function_t F, int add);
-	static void get_operations(jit_function_t F);
-	static void print_int(jit_function_t F, jit_value_t val);
-	static jit_value_t get_null(jit_function_t F);
-	static jit_value_t create_object(jit_function_t F);
-	static jit_value_t create_array(jit_function_t F, const Type& element_type, int cap = 0);
-	static void push_move_array(jit_function_t F, const Type& element_type, jit_value_t array, jit_value_t value);
 	static jit_value_t move_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t move_inc_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t clone_obj(jit_function_t F, jit_value_t ptr);
+
+	/** Operations **/
+	static void inc_ops(jit_function_t F, int add);
+	static void get_operations(jit_function_t F);
+
+	/** Utilities **/
+	static void print_int(jit_function_t F, jit_value_t val);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
 };
 

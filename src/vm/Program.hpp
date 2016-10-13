@@ -28,9 +28,9 @@ public:
 	virtual ~Program();
 
 	/*
-	 * Compile the program with a VM, a context (json) and an execution mode
+	 * Compile the program with a VM and a context (json)
 	 */
-	double compile(VM& vm, const std::string& context, const ExecMode);
+	VM::Result compile(VM& vm, const std::string& context);
 
 	/*
 	 * Execute the program and get a LSValue* result

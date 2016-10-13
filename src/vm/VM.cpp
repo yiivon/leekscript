@@ -7,7 +7,7 @@
 #include "../compiler/syntaxic/SyntaxicAnalyser.hpp"
 #include "Context.hpp"
 #include "../compiler/semantic/SemanticAnalyser.hpp"
-#include "../compiler/semantic/SemanticException.hpp"
+#include "../compiler/semantic/SemanticError.hpp"
 #include "value/LSNumber.hpp"
 #include "value/LSArray.hpp"
 #include "Program.hpp"
@@ -35,11 +35,12 @@ void VM::add_module(Module* m) {
 extern std::map<LSValue*, LSValue*> objs;
 #endif
 
-string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
+VM::Result VM::execute(const std::string code, std::string ctx) {
 
 	// Reset
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
+	VM::operations = 0;
 	#if DEBUG > 1
 		objs.clear();
 	#endif
@@ -47,101 +48,40 @@ string VM::execute(const std::string code, std::string ctx, ExecMode mode) {
 	Program* program = new Program(code);
 
 	// Compile
-	double compile_time = program->compile(*this, ctx, mode);
+	auto compilation_start = chrono::high_resolution_clock::now();
+	VM::Result result = program->compile(*this, ctx);
+	auto compilation_end = chrono::high_resolution_clock::now();
 
 	// Execute
-	VM::operations = 0;
+	LSValue* value = nullptr;
+	if (result.compilation_success) {
 
-	auto exe_start = chrono::high_resolution_clock::now();
-	LSValue* res = program->execute();
-	auto exe_end = chrono::high_resolution_clock::now();
+		auto exe_start = chrono::high_resolution_clock::now();
+		value = program->execute();
+		auto exe_end = chrono::high_resolution_clock::now();
 
-	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
-
-	double exe_time_ms = (((double) exe_time_ns / 1000) / 1000);
-
-	/*
-	 * Return results
-	 */
-	string result;
-
-	if (mode == ExecMode::COMMAND_JSON || mode == ExecMode::TOP_LEVEL) {
+		result.execution_time = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
+		result.execution_time_ms = (((double) result.execution_time / 1000) / 1000);
 
 		ostringstream oss;
-		res->print(oss);
-		result = oss.str();
-
-		string ctx = "{";
-
-	//		unsigned i = 0;
-	/*
-		for (auto g : globals) {
-			if (globals_ref[g.first]) continue;
-			LSValue* v = res_array->operator[] (i + 1);
-			ctx += "\"" + g.first + "\":" + v->to_json();
-			if (i < globals.size() - 1) ctx += ",";
-			i++;
-		}
-		*/
-		ctx += "}";
-		LSValue::delete_temporary(res);
-
-		if (mode == ExecMode::TOP_LEVEL) {
-			cout << result << endl;
-			cout << "(" << VM::operations << " ops, " << compile_time << " ms + " << exe_time_ms << " ms)" << endl;
-			result = ctx;
-		} else {
-			cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns << ",\"ctx\":" << ctx << ",\"res\":\""
-					<< result << "\"}" << endl;
-			result = ctx;
-		}
-
-	} else if (mode == ExecMode::FILE_JSON) {
-
-		LSArray<LSValue*>* res_array = (LSArray<LSValue*>*) res;
-
-		ostringstream oss;
-		res_array->operator[] (0)->print(oss);
-		result = oss.str();
-
-		LSValue::delete_temporary(res);
-
-		string ctx;
-
-		cout << "{\"success\":true,\"ops\":" << VM::operations << ",\"time\":" << exe_time_ns
-			 << ",\"ctx\":" << ctx << ",\"res\":\"" << result << "\"}" << endl;
-
-
-	} else if (mode == ExecMode::NORMAL) {
-
-		ostringstream oss;
-		res->print(oss);
-		LSValue::delete_temporary(res);
-		string res_string = oss.str();
-
-		string ctx;
-
-		cout << res_string << endl;
-		cout << "(" << VM::operations << " ops, " << compile_time << "ms + " << exe_time_ms << " ms)" << endl;
-
-		result = ctx;
-
-	} else if (mode == ExecMode::TEST) {
-
-		ostringstream oss;
-		res->print(oss);
-		result = oss.str();
-
-		LSValue::delete_temporary(res);
-
-	} else if (mode == ExecMode::TEST_OPS) {
-
-		LSValue::delete_temporary(res);
-		result = to_string(VM::operations);
+		value->print(oss);
+		result.value = oss.str();
 	}
 
+	// Set results
+	result.context = ctx;
+	result.compilation_time = chrono::duration_cast<chrono::nanoseconds>(compilation_end - compilation_start).count();
+	result.compilation_time_ms = (((double) result.compilation_time / 1000) / 1000);
+	result.execution_success = value != nullptr;
+	result.operations = VM::operations;
+
 	// Cleaning
+	if (value != nullptr) {
+		LSValue::delete_temporary(value);
+	}
 	delete program;
+	result.objects_created = LSValue::obj_count;
+	result.objects_deleted = LSValue::obj_deleted;
 
 	#if DEBUG > 0
 		if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {

@@ -4,19 +4,19 @@ void Test::test_set() {
 
 	header("Set");
 
-	success("<>", "<>");
-	success("<2, 1, 1>", "<1, 2>");
-	success("<'2', '1', '1'>", "<'1', '2'>");
+	code("<>").equals("<>");
+	code("<2, 1, 1>").equals("<1, 2>");
+	code("<'2', '1', '1'>").equals("<'1', '2'>");
 
-	success("let s = <1, 2> s.insert(3) s", "<1, 2, 3>");
-	success("let s = <1, 2> s.clear() s", "<>");
-	success("let s = <1, 2> s.erase(3)", "false");
-	success("let s = <1, 2> s.erase(1)", "true");
-	success("let s = <1, 2> s.contains(3)", "false");
-	success("let s = <1, 2> s.contains(1)", "true");
-	success("let s = <1, 2> 3 in s", "false");
-	success("let s = <1, 2> 1 in s", "true");
+	code("let s = <1, 2> s.insert(3) s").equals("<1, 2, 3>");
+	code("let s = <1, 2> s.clear() s").equals("<>");
+	code("let s = <1, 2> s.erase(3)").equals("false");
+	code("let s = <1, 2> s.erase(1)").equals("true");
+	code("let s = <1, 2> s.contains(3)").equals("false");
+	code("let s = <1, 2> s.contains(1)").equals("true");
+	code("let s = <1, 2> 3 in s").equals("false");
+	code("let s = <1, 2> 1 in s").equals("true");
 
 	// Type changes
-	// success("let s = <1, 2> s += 'a' s", "<1, 2, 'a'>");
+	// code("let s = <1, 2> s += 'a' s").equals("<1, 2, 'a'>");
 }

@@ -198,7 +198,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		bool is_left_value = true;
 		if (dynamic_cast<LeftValue*>(v1) == nullptr) {
 			std::string c = "<v>";
-			analyser->add_error({SemanticException::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), c});
+			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), c});
 			is_left_value = false;
 		}
 

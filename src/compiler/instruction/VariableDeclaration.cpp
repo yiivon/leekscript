@@ -3,7 +3,7 @@
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-#include "../semantic/SemanticException.hpp"
+#include "../semantic/SemanticError.hpp"
 #include "../value/Reference.hpp"
 
 using namespace std;
@@ -60,7 +60,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		}
 
 		if (v->type == Type::VOID) {
-			analyser->add_error({SemanticException::Type::CANT_ASSIGN_VOID, var->line, var->content});
+			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, var->line, var->content});
 		}
 
 		vars.insert(pair<string, SemanticVar*>(var->content, v));

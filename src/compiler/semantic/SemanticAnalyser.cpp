@@ -14,7 +14,7 @@
 #include "../../vm/standard/SystemSTD.hpp"
 #include "../../vm/standard/FunctionSTD.hpp"
 #include "../../vm/standard/ClassSTD.hpp"
-#include "SemanticException.hpp"
+#include "SemanticError.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 
 using namespace std;
@@ -207,7 +207,7 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 		}
 		f--;
 	}
-	add_error({SemanticException::Type::UNDEFINED_VARIABLE, v->line, v->content});
+	add_error({SemanticError::Type::UNDEFINED_VARIABLE, v->line, v->content});
 	return nullptr;
 }
 
@@ -232,7 +232,7 @@ SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, Variab
 	}
 
 	if (variables.back().back().find(v->content) != variables.back().back().end()) {
-		add_error({SemanticException::Type::VARIABLE_ALREADY_DEFINED, v->line, v->content});
+		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, v->content});
 	}
 	variables.back().back().insert(pair<string, SemanticVar*>(
 		v->content,
@@ -249,7 +249,7 @@ map<string, SemanticVar*>& SemanticAnalyser::get_local_vars() {
 	return variables.back().back();
 }
 
-void SemanticAnalyser::add_error(SemanticException ex) {
+void SemanticAnalyser::add_error(SemanticError ex) {
 	errors.push_back(ex);
 }
 
