@@ -8,7 +8,7 @@ SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
 OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 
-FLAGS := -std=c++14 -O2 -g3 -Wall -Wextra
+FLAGS := -std=c++14 -O2 -g3 -Wall -Wextra -fprofile-arcs -ftest-coverage
 LIBS := -ljit
 
 .PHONY: test
@@ -57,7 +57,7 @@ clean:
 
 travis:
 	docker build -t leekscript .
-	docker run leekscript /bin/sh -c "cd leekscript; make -j4 && make test"
+	docker run leekscript /bin/sh -c "cd leekscript; make -j4 && make test; cpp-coveralls --gcov-options='-r'"
 	
 cloc:
 	cloc . --exclude-dir=.git,lib,build
