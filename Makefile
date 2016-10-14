@@ -57,7 +57,7 @@ clean:
 
 travis:
 	docker build -t leekscript .
-	docker run leekscript /bin/sh -c "cd leekscript; make -j4 && make test; cpp-coveralls --gcov-options='-r'"
+	docker run leekscript /bin/bash -c "cd leekscript; make -j4 && make test && cpp-coveralls --gcov-options='-r'"
 	
 cloc:
 	cloc . --exclude-dir=.git,lib,build
