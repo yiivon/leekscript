@@ -162,24 +162,13 @@ void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 }
 
 void Test::Input::operations(int expected) {
-	test->total++;
 
-	std::string res;
-	try {
-		auto result = test->vm.execute(code, "{}");
-		res = std::to_string(result.operations);
-		test->obj_created += result.objects_created;
-		test->obj_deleted += result.objects_deleted;
-	} catch (ls::SemanticError& e) {
-		res = e.message();
-	}
+	auto result = run();
 
-	int ops = std::stoi(res);
-	if (ops != expected) {
-		std::cout << "FAUX : " << name() << "  =/=>  " << expected << "  got  " << ops << std::endl;
+	if (result.operations != expected) {
+		fail(std::to_string(expected), std::to_string(result.operations));
 	} else {
-		std::cout << "OK   : " << name() << "  ===>  " << expected << std::endl;
-		test->success_count++;
+		pass(std::to_string(result.operations));
 	}
 }
 Test::Input& Test::Input::timeout(int) {
