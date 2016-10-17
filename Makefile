@@ -29,10 +29,10 @@ fast:
 	@make -j8
 
 build/default/%.o: %.cpp
-	g++ -c $(FLAGS) $(OPTIM) -o "$@" "$<"
+	g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
 	
 build/shared/%.o: %.cpp
-	g++ -c $(FLAGS) $(OPTIM) -fPIC -o "$@" "$<"
+	g++ -c $(OPTIM) $(FLAGS) -fPIC -o "$@" "$<"
 	
 build/coverage/%.o: %.cpp
 	g++ -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o "$@" "$<"
@@ -67,7 +67,7 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE)
 coverage: build/leekscript-coverage
 
 # Run tests/
-test:
+test: build/leekscript
 	@build/leekscript -test
 
 # Travis task, useless in local.
@@ -75,7 +75,7 @@ test:
 # (coverage results are sent to coveralls.io).
 travis:
 	docker build -t leekscript .
-	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" leekscript /bin/bash -c "cd leekscript; make -j4 && make test && cpp-coveralls --gcov-options='-r'"
+	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" leekscript /bin/bash -c "cd leekscript; make coverage && make test && cpp-coveralls --gcov-options='-r'"
 
 # Coverage results with lcov.
 # `apt-get install lcov`
