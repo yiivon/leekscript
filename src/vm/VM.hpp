@@ -59,6 +59,7 @@ public:
 		std::vector<LexicalError> lexical_errors;
 		std::vector<SyntaxicalError*> syntaxical_errors;
 		std::vector<SemanticError> semantical_errors;
+		std::string program;
 		std::string value;
 		std::string context;
 		long compilation_time = 0;

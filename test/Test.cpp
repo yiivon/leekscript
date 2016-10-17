@@ -72,6 +72,7 @@ ls::VM::Result Test::Input::run() {
 	test->obj_created += result.objects_created;
 	test->obj_deleted += result.objects_deleted;
 	test->total++;
+	std::cout << "pgrm() " << result.program;
 	return result;
 }
 

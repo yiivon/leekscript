@@ -62,8 +62,6 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	SemanticAnalyser sem;
 	sem.analyse(this, &context, vm.modules);
 
-	std::cout << "semantic errros : " << sem.errors.size() << std::endl;
-
 	if (sem.errors.size()) {
 		result.compilation_success = false;
 		result.semantical_errors = sem.errors;
@@ -71,8 +69,12 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	}
 
 	// Debug
+	std::ostringstream oss;
+	print(oss, true);
+	result.program = oss.str();
+
 	#if DEBUG > 0
-		cout << "Program: "; print(cout, true);
+		cout << "Program: " << result.program;
 	#endif
 
 	// Compilation
