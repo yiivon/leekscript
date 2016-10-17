@@ -39,12 +39,6 @@ build/coverage/%.o: %.cpp
 
 $(BUILD_DIR):
 	@mkdir -p $@
-
-leekscript: $(OBJ)
-	g++ $(FLAGS) -o build/leekscript $(OBJ) $(LIBS)
-	@echo "---------------"
-	@echo "Build finished!"
-	@echo "---------------"
 	
 # Build the shared library version of the leekscript
 # (libleekscript.so in build/)
@@ -72,13 +66,6 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE)
 	@echo "--------------------------"
 coverage: build/leekscript-coverage
 
-# Clean every build files by destroying the build/ folder.
-clean:
-	rm -rf build
-	@echo "----------------"
-	@echo "Project cleaned."
-	@echo "----------------"
-
 # Run tests/
 test:
 	@build/leekscript -test
@@ -100,6 +87,13 @@ html-coverage: coverage
 	build/leekscript-coverage -test
 	lcov --quiet --no-external --no-checksum --directory build/coverage/src --base-directory build/coverage/src --capture --output-file build/html/app.info
 	cd build/html; genhtml app.info
+
+# Clean every build files by destroying the build/ folder.
+clean:
+	rm -rf build
+	@echo "----------------"
+	@echo "Project cleaned."
+	@echo "----------------"
 
 # Line couning with cloc.
 # `apt-get install cloc`
