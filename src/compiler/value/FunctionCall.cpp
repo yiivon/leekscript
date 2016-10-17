@@ -99,8 +99,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		string field_name = oa->field->content;
 
+		Type arg1_type = arguments.size() ? arguments.at(0)->type : Type::UNKNOWN;
+
 		VariableValue* vv = dynamic_cast<VariableValue*>(oa->object);
-		if (vv != nullptr and vv->name == "Number") {
+		if (vv != nullptr and vv->name == "Number" and arg1_type.nature == Nature::VALUE) {
 
 			if (field_name == "abs") {
 				function->type.setArgumentType(0, Type::INTEGER);

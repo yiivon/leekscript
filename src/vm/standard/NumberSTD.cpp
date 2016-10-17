@@ -313,7 +313,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
 	method("char", Type::NUMBER, Type::STRING, {}, (void*) &number_char);
 
-	static_method("abs", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_abs);
+	static_method("abs", Type::FLOAT_P, {Type::POINTER}, (void*) &number_abs);
 	static_method("acos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_acos);
 	static_method("asin", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_asin);
 	static_method("atan", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_atan);

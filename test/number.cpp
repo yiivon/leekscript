@@ -153,6 +153,8 @@ void Test::test_numbers() {
 
 //	code("Number.abs").equals("<function>");
 	code("Number.abs(-12)").equals("12");
+	code("Number.abs(['a', -15][1])").equals("15");
+
 	code("Number.floor(5.9)").equals("5");
 	code("var a = 5 Number.floor(a)").equals("5");
 	code("var a = 5.4 Number.floor(a)").equals("5");
