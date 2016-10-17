@@ -95,8 +95,6 @@ inline LSArray<int>::LSArray(Json& json) {
 	}
 }
 
-
-
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_clear() {
 	for (auto v : *this) {
@@ -156,8 +154,6 @@ inline bool LSArray<T>::ls_remove_element(T element) {
 	if (refs == 0) delete this;
 	return false;
 }
-
-
 
 template <>
 inline LSValue* LSArray<LSValue*>::ls_sum() {

@@ -32,4 +32,14 @@ void Test::test_booleans() {
 	code("Boolean.compare(true, true)").equals("0");
 	code("Boolean.compare(false, false)").equals("0");
 	code("Boolean.compare(false, true)").equals("-1");
+
+	code("12 and 'aaa'").equals("true");
+	code("[1, 2] and false").equals("false");
+	code("[] and ''").equals("false");
+	code("false and (x -> x)").equals("false");
+
+	code("12 or 'aaa'").equals("true");
+	code("[1, 2] or false").equals("true");
+	code("false or (x -> x)").equals("true");
+	code("[] or ''").equals("false");
 }

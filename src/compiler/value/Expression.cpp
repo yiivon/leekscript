@@ -173,6 +173,13 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL
 		or op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
 
+		// Set the correct type nature for the two members
+		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
+			v1->analyse(analyser, Type::POINTER);
+		}
+		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
+			v2->analyse(analyser, Type::POINTER);
+		}
 		type = Type::BOOLEAN;
 	}
 
@@ -288,19 +295,20 @@ LSValue* jit_mod(LSValue* x, LSValue* y) {
 	return x->ls_mod(y);
 }
 bool jit_and(LSValue* x, LSValue* y) {
+	x->print(cout);
 	bool r = x->isTrue() and y->isTrue();
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
 bool jit_or(LSValue* x, LSValue* y) {
-	bool r = (x->isTrue() or y->isTrue());
+	bool r = x->isTrue() or y->isTrue();
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
 }
 bool jit_xor(LSValue* x, LSValue* y) {
-	bool r = (x->isTrue() xor y->isTrue());
+	bool r = x->isTrue() xor y->isTrue();
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
