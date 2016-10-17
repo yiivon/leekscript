@@ -27,4 +27,9 @@ void Test::test_booleans() {
 	code("false xor 99").equals("true");
 	code("false + 99").equals("99");
 	code("true + 99").equals("100");
+
+	code("Boolean.compare(true, false)").equals("1");
+	code("Boolean.compare(true, true)").equals("0");
+	code("Boolean.compare(false, false)").equals("0");
+	code("Boolean.compare(false, true)").equals("-1");
 }
