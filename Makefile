@@ -2,32 +2,40 @@ SRC_DIR := . src src/vm src/vm/value src/vm/standard src/doc \
 src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic \
 src/compiler/value src/compiler/instruction src/util lib benchmark test
 
-BUILD_DIR := $(addprefix build/,$(SRC_DIR))
-BUILD_DIR += $(addprefix build/shared/,$(SRC_DIR))
 SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
-OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
-OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 
-FLAGS := -std=c++14 -O2 -g3 -Wall -Wextra -fprofile-arcs -ftest-coverage
+BUILD_DIR := $(addprefix build/default/,$(SRC_DIR))
+BUILD_DIR += $(addprefix build/shared/,$(SRC_DIR))
+BUILD_DIR += $(addprefix build/coverage/,$(SRC_DIR))
+
+OBJ := $(patsubst %.cpp,build/default/%.o,$(SRC))
+OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
+OBJ_COVERAGE := $(patsubst %.cpp,build/coverage/%.o,$(SRC))
+
+OPTIM := -O2
+FLAGS := -std=c++14 -g3 -Wall -Wextra
 LIBS := -ljit
 
 .PHONY: test
 
-all: makedirs leekscript
+# Main build task, default build
+build/leekscript: $(BUILD_DIR) $(OBJ)
+	g++ $(FLAGS) -o build/leekscript $(OBJ) $(LIBS)
+	@echo "---------------"
+	@echo "Build finished!"
+	@echo "---------------"
 
 fast:
-	make -j8
+	@make -j8
 
-test:
-	@build/leekscript -test
-
-build/%.o: %.cpp
-	g++ -c $(FLAGS) -o "$@" "$<"
+build/default/%.o: %.cpp
+	g++ -c $(FLAGS) $(OPTIM) -o "$@" "$<"
 	
 build/shared/%.o: %.cpp
-	g++ -c $(FLAGS) -fPIC -o "$@" "$<"
+	g++ -c $(FLAGS) $(OPTIM) -fPIC -o "$@" "$<"
 	
-makedirs: $(BUILD_DIR)
+build/coverage/%.o: %.cpp
+	g++ -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o "$@" "$<"
 
 $(BUILD_DIR):
 	@mkdir -p $@
@@ -38,26 +46,62 @@ leekscript: $(OBJ)
 	@echo "Build finished!"
 	@echo "---------------"
 	
-lib: makedirs $(OBJ_LIB) 
+# Build the shared library version of the leekscript
+# (libleekscript.so in build/)
+build/libleekscript.so: $(BUILD_DIR) $(OBJ_LIB)
 	g++ $(FLAGS) -shared -o build/libleekscript.so $(OBJ_LIB) $(LIBS)
 	@echo "-----------------------"
 	@echo "Library build finished!"
 	@echo "-----------------------"
-	
-install:
+lib: build/libleekscript.so
+
+# Install the shared library by copying the libleekscript.so file
+# into /usr/lib/ folder.
+install: lib
 	cp build/libleekscript.so /usr/lib/
 	@find -iregex '.*\.\(hpp\|h\|tcc\)' | cpio -updm /usr/include/leekscript/
+	@echo "------------------"
 	@echo "Library installed!"
+	@echo "------------------"
 	
+# Build with coverage flags enabled
+build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE)
+	g++ $(FLAGS) -fprofile-arcs -ftest-coverage -o build/leekscript-coverage $(OBJ_COVERAGE) $(LIBS)
+	@echo "--------------------------"
+	@echo "Build (coverage) finished!"
+	@echo "--------------------------"
+coverage: build/leekscript-coverage
+
+# Clean every build files by destroying the build/ folder.
 clean:
 	rm -rf build
 	@echo "----------------"
 	@echo "Project cleaned."
 	@echo "----------------"
 
+# Run tests/
+test:
+	@build/leekscript -test
+
+# Travis task, useless in local.
+# Build a leekscript docker image, compile, run tests and run cpp-coveralls
+# (coverage results are sent to coveralls.io).
 travis:
 	docker build -t leekscript .
 	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" leekscript /bin/bash -c "cd leekscript; make -j4 && make test && cpp-coveralls --gcov-options='-r'"
-	
+
+# Coverage results with lcov.
+# `apt-get install lcov`
+html-coverage: coverage
+	mkdir -p build/html
+	cp -R src/ build/coverage/src/
+	lcov --quiet --no-external --zerocounters --directory build/coverage/src --base-directory build/coverage/src
+	lcov --quiet --no-external --capture --initial --directory build/coverage/src --base-directory build/coverage/src --output-file build/html/app.info
+	build/leekscript-coverage -test
+	lcov --quiet --no-external --no-checksum --directory build/coverage/src --base-directory build/coverage/src --capture --output-file build/html/app.info
+	cd build/html; genhtml app.info
+
+# Line couning with cloc.
+# `apt-get install cloc`
 cloc:
 	cloc . --exclude-dir=.git,lib,build
