@@ -18,6 +18,8 @@ LIBS := -ljit
 
 .PHONY: test
 
+all: build/leekscript
+
 # Main build task, default build
 build/leekscript: $(BUILD_DIR) $(OBJ)
 	g++ $(FLAGS) -o build/leekscript $(OBJ) $(LIBS)
