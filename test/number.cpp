@@ -47,6 +47,12 @@ void Test::test_numbers() {
 	code("-0xffff").equals("-65535");
 	code("0xffffffff").equals("4294967295");
 
+	// Binary representation
+	code("0b0").equals("0");
+	code("0b00001").equals("1");
+	code("0b1001010110").equals("598");
+	code("-0b0101101001111").equals("-2895");
+
 	// null must not be considered as 0
 	code("null + 5").equals("null");
 	code("null * 5").equals("null");
