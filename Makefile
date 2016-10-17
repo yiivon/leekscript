@@ -88,7 +88,7 @@ html-coverage: coverage
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --capture --initial --directory build/coverage/src --base-directory build/coverage/src --output-file build/html/app.info
 	build/leekscript-coverage -test
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --no-checksum --directory build/coverage/src --base-directory build/coverage/src --capture --output-file build/html/app.info
-	cd build/html; genhtml --branch-coverage app.info
+	cd build/html; genhtml --precision 2 --branch-coverage app.info
 
 # Clean every build files by destroying the build/ folder.
 clean:
