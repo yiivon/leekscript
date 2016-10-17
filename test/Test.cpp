@@ -72,7 +72,14 @@ ls::VM::Result Test::Input::run() {
 	test->obj_created += result.objects_created;
 	test->obj_deleted += result.objects_deleted;
 	test->total++;
-	std::cout << "pgrm() " << result.program;
+
+	if (result.semantical_errors.size()) {
+		for (const auto& error : result.semantical_errors) {
+			std::cout << "Semantic error: " << error.message() << std::endl;
+		}
+	}
+	std::cout << "pgrm() " << result.program << std::endl;
+
 	return result;
 }
 
