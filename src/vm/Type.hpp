@@ -227,7 +227,6 @@ public:
 	static bool list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww);
 	static bool more_specific(const Type& old, const Type& neww);
 	static Type get_compatible_type(const Type& t1, const Type& t2);
-	static std::string get_nature_name(const Nature& nature);
 	static std::string get_nature_symbol(const Nature& nature);
 };
 

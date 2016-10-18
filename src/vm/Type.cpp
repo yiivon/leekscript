@@ -400,21 +400,6 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	return Type::POINTER;
 }
 
-string Type::get_nature_name(const Nature& nature) {
-	switch (nature) {
-	case Nature::POINTER:
-		return "POINTER";
-	case Nature::UNKNOWN:
-		return "UNKNOWN";
-	case Nature::VALUE:
-		return "VALUE";
-	case Nature::VOID:
-		return "VOID";
-	default:
-		return "??";
-	}
-}
-
 string Type::get_nature_symbol(const Nature& nature) {
 	switch (nature) {
 	case Nature::POINTER:
@@ -472,7 +457,6 @@ ostream& operator << (ostream& os, const Type& type) {
 	} else {
 		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 	}
-
 	os << END_COLOR;
 
 	return os;
