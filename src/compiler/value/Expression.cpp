@@ -295,7 +295,6 @@ LSValue* jit_mod(LSValue* x, LSValue* y) {
 	return x->ls_mod(y);
 }
 bool jit_and(LSValue* x, LSValue* y) {
-	x->print(cout);
 	bool r = x->isTrue() and y->isTrue();
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
