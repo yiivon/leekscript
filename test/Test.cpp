@@ -78,8 +78,9 @@ ls::VM::Result Test::Input::run() {
 			std::cout << "Semantic error: " << error.message() << std::endl;
 		}
 	}
-	std::cout << "pgrm() " << result.program << std::endl;
-
+	#if DEBUG > 0
+		std::cout << "pgrm() " << result.program << std::endl;
+	#endif
 	return result;
 }
 

@@ -72,11 +72,6 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 		return result;
 	}
 
-	// Debug
-	#if DEBUG > 0
-		cout << "Program: " << result.program;
-	#endif
-
 	// Compilation
 	internals.clear();
 	this->compile_main(context);
@@ -147,7 +142,6 @@ LSValue* Program::execute() {
 
 void Program::print(ostream& os, bool debug) const {
 	main->body->print(os, 0, debug);
-	cout << endl;
 }
 
 std::ostream& operator << (std::ostream& os, const Program* program) {

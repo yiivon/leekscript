@@ -111,7 +111,12 @@ int main(int argc, char* argv[]) {
 
 			// Execute
 			auto result = vm.execute(code, ctx);
+			
+			#if DEBUG > 0
+				cout << "main() " << result.program << endl;
+			#endif
 			cout << result.value << endl;
+
 			cout << "(" << result.operations << " ops, "
 				<< result.compilation_time << " ms + "
 				<< result.execution_time << " ms)" << endl;
