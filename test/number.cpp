@@ -4,13 +4,13 @@ void Test::test_numbers() {
 
 	header("Numbers");
 
-	// basic numbers
+	section("Basic numbers");
 	code("0").equals("0");
 	code("-1").equals("-1");
 	code("-(-1)").equals("1");
 	code("π").equals("3.141592653589793116");
 
-	// basic operations
+	section("Basic operations");
 	code("0 + 5").equals("5");
 	code("5 + 5").equals("10");
 	code("10 - 3").equals("7");
@@ -34,7 +34,7 @@ void Test::test_numbers() {
 	code("-12 + 2").equals("-10");
 	code("let a = [2, 'a'] [-a[0], +a[0], ~a[0]] == [-2, 2, ~2]").equals("true");
 
-	// Hexadecimal representation
+	section("Hexadecimal representation");
 	code("0x0").equals("0");
 	code("0x00000000").equals("0");
 	code("0x1").equals("1");
@@ -47,17 +47,23 @@ void Test::test_numbers() {
 	code("-0xffff").equals("-65535");
 	code("0xffffffff").equals("4294967295");
 
-	// Binary representation
+	section("Binary representation");
 	code("0b0").equals("0");
 	code("0b00001").equals("1");
 	code("0b1001010110").equals("598");
 	code("-0b0101101001111").equals("-2895");
 
-	// null must not be considered as 0
+	section("null must not be considered as 0");
+	code("null == 0").equals("false");
+	code("null < 0").equals("true");
 	code("null + 5").equals("null");
+	code("5 + null").equals("null");
+	code("5 / null").equals("null");
+	code("null / 12").equals("null");
 	code("null * 5").equals("null");
+	code("5 * null").equals("null");
 
-	// with variables
+	section("Numbers with variables");
 	code("let a = 2 a++").equals("2");
 	code("let a = 2; ++a").equals("3");
 	code("let a = 2 a--").equals("2");
@@ -70,7 +76,7 @@ void Test::test_numbers() {
 	code("let a = 15 a **= 2").equals("225");
 	code("let a = 1.5 a * 0.5").equals("0.75");
 
-	// multiple operations
+	section("multiple operations");
 	code("(33 - 2) / 2").equals("15.5");
 	code("12 < (45 / 4)").equals("false");
 	code("12 == (24 / 2)").equals("true");
@@ -78,7 +84,7 @@ void Test::test_numbers() {
 	code("2.5 × 4.7").equals("11.75");
 	code("5 * 2 + 3 * 4").equals("22");
 
-	// binary
+	section("Binary operators");
 	code("0 & 0").equals("0");
 	code("1 & 0").equals("0");
 	code("1 & 1").equals("1");
@@ -125,7 +131,7 @@ void Test::test_numbers() {
 	code("let a = -155 a >>>= 4").equals("268435446");
 	code("let a = -155 a >>>= 5 a").equals("134217723");
 
-	// string conversions
+	section("String conversions");
 	code("65.char()").equals("'A'");
 	code("Number.char(65)").equals("'A'");
 	code("126.char()").equals("'~'");
@@ -138,40 +144,50 @@ void Test::test_numbers() {
 	 * Number standard library
 	 */
 	header("Number standard library");
+	section("Constructor");
 	code("Number").equals("<class Number>");
 	code("Number()").equals("0");
 	code("new Number").equals("0");
 	code("new Number()").equals("0");
 	code("new Number(12)").equals("12");
 
-	// constants
+	section("Constants");
 	code("Number.pi").equals("3.141592653589793116");
 	code("2 × Number.pi").equals("6.283185307179586232");
 	code("Number.e").equals("2.718281828459045091");
 	code("Number.phi").equals("1.618033988749894903");
 	code("Number.epsilon").equals("0.000000000000000222");
 
+	section("abs()");
 //	code("Number.abs").equals("<function>");
 	code("Number.abs(-12)").equals("12");
+	code("Number.abs(-12.67)").equals("-12.67");
 	code("Number.abs(['a', -15][1])").equals("15");
 
+	section("floor()");
 	code("Number.floor(5.9)").equals("5");
 	code("var a = 5 Number.floor(a)").equals("5");
 	code("var a = 5.4 Number.floor(a)").equals("5");
+	code("Number.floor(['a', -14.7][1])").equals("-15");
+
+	section("round()");
 	code("Number.round(5.7)").equals("6");
 	code("Number.round(5.4)").equals("5");
 	code("Number.ceil(5.1)").equals("6");
 	code("Number.max(5, 12)").equals("12");
 
+	section("cos()");
 	code("Number.cos(0)").equals("1");
 	code("Number.cos(π)").equals("-1");
 	code("Number.cos(π / 2)").almost(0.0);
 
+	section("cos()");
 	code("Number.sin(0)").equals("0");
 	code("Number.sin(π)").almost(0.0);
 	code("Number.sin(π / 2)").equals("1");
 	code("Number.sin(- π / 2)").equals("-1");
 
+	section("cos()");
 	code("Number.isInteger(12)").equals("true");
 	code("Number.isInteger(0)").equals("true");
 	code("Number.isInteger(-5)").equals("true");
@@ -179,7 +195,7 @@ void Test::test_numbers() {
 	code("Number.isInteger(-5.2)").equals("false");
 	code("Number.isInteger(π)").equals("false");
 
-	// Object-like calls
+	section("Object-like calls");
 	code("(-12).abs()").equals("12");
 	code("π.cos()").equals("-1");
 	code("(π / 2).sin()").equals("1");
@@ -197,7 +213,7 @@ void Test::test_numbers() {
 	code("3.max(5)").equals("5");
 	code("5.max(3)").equals("5");
 
-	// Combinated
+	section("Combinated");
 	code("3.max(5).min(2)").equals("2");
 	code("3.max(5).max(10).max(12)").equals("12");
 	code("10.max(5).max(8.7).max(-3.91)").equals("10");
