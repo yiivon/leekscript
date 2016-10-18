@@ -34,6 +34,7 @@ public:
 
 	int all();
 	void header(std::string);
+	void section(std::string);
 
 	Input _code(const std::string& _code);
 	Input file(const std::string& file_name);

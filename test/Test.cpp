@@ -184,6 +184,12 @@ Test::Input& Test::Input::timeout(int) {
 }
 
 void Test::header(std::string text) {
+	std::cout << "================" << std::endl;
+	std::cout << text << std::endl;
+	std::cout << "================" << std::endl;
+}
+
+void Test::section(std::string text) {
 	std::cout << "----------------" << std::endl;
 	std::cout << text << std::endl;
 	std::cout << "----------------" << std::endl;
