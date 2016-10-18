@@ -161,7 +161,7 @@ void Test::test_numbers() {
 	section("abs()");
 //	code("Number.abs").equals("<function>");
 	code("Number.abs(-12)").equals("12");
-	code("Number.abs(-12.67)").equals("-12.67");
+	code("Number.abs(-12.67)").almost(12.67);
 	code("Number.abs(['a', -15][1])").equals("15");
 
 	section("floor()");
@@ -173,21 +173,33 @@ void Test::test_numbers() {
 	section("round()");
 	code("Number.round(5.7)").equals("6");
 	code("Number.round(5.4)").equals("5");
+	code("Number.round(['a', -15.89][1])").equals("-16");
+
+	section("ceil()");
 	code("Number.ceil(5.1)").equals("6");
+
+	section("max()");
 	code("Number.max(5, 12)").equals("12");
+	code("Number.max(75.7, 12)").almost(75.7);
+	code("Number.max(5, 12.451)").almost(12.451);
+	code("Number.max([5, 'a'][0], 4)").equals("5");
+	code("Number.max([5, 'a'][0], 76)").equals("76");
+	code("Number.max(4, [5, 'a'][0])").equals("5");
+	code("Number.max(77, [5, 'a'][0])").equals("77");
+	code("Number.max([55, 'a'][0], [5, 'a'][0])").equals("55");
 
 	section("cos()");
 	code("Number.cos(0)").equals("1");
 	code("Number.cos(π)").equals("-1");
 	code("Number.cos(π / 2)").almost(0.0);
 
-	section("cos()");
+	section("sin()");
 	code("Number.sin(0)").equals("0");
 	code("Number.sin(π)").almost(0.0);
 	code("Number.sin(π / 2)").equals("1");
 	code("Number.sin(- π / 2)").equals("-1");
 
-	section("cos()");
+	section("isInteger()");
 	code("Number.isInteger(12)").equals("true");
 	code("Number.isInteger(0)").equals("true");
 	code("Number.isInteger(-5)").equals("true");
@@ -206,12 +218,14 @@ void Test::test_numbers() {
 	code("12.2.ceil()").equals("13");
 	code("12.8.round()").equals("13");
 	code("-12.8.round()").equals("-13");
+	/*
 	code("2.pow(10)").equals("1024");
 	code("0.isInteger()").equals("true");
 	code("56.7.isInteger()").equals("false");
 	code("(-56.7).isInteger()").equals("false");
 	code("3.max(5)").equals("5");
 	code("5.max(3)").equals("5");
+	*/
 
 	section("Combinated");
 	code("3.max(5).min(2)").equals("2");
