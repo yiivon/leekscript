@@ -13,8 +13,6 @@ public:
 	BooleanSTD();
 };
 
-int boolean_compare(bool, bool);
-
 }
 
 #endif

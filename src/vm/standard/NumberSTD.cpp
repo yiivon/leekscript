@@ -1,11 +1,11 @@
 #include "NumberSTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../../../lib/utf8.h"
+#include "../../compiler/Compiler.hpp"
 
 using namespace std;
 
 namespace ls {
-
 
 jit_value_t Number_e(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, M_E);
@@ -18,15 +18,6 @@ jit_value_t Number_pi(jit_function_t F) {
 }
 jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
-}
-
-LSNumber* number_abs(LSNumber* x) {
-	double r = fabs(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
 }
 
 LSNumber* number_acos(LSNumber* x) {
@@ -258,14 +249,6 @@ bool number_isInteger(LSNumber* x) {
 	return is;
 }
 
-LSString* number_char(LSNumber* x) {
-	unsigned int n = x->value;
-	if (x->refs == 0) delete x;
-	char dest[5];
-	u8_toutf8(dest, 5, &n, 1);
-	return new LSString(dest);
-}
-
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
@@ -277,7 +260,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_field("phi", Type::FLOAT, (void*) &Number_phi);
 	static_field("epsilon", Type::FLOAT, (void*) &Number_epsilon);
 
-	method("abs", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_abs);
+	method("abs", Type::NUMBER, Type::FLOAT_P, {}, (void*) &NumberSTD::abs_ptr);
 	method("acos", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_acos);
 	method("asin", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_asin);
 	method("atan", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_atan);
@@ -311,9 +294,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("toDegrees", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toDegrees);
 	method("toRadians", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toRadians);
 	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
-	method("char", Type::NUMBER, Type::STRING, {}, (void*) &number_char);
+	method("char", Type::NUMBER, Type::STRING, {}, (void*) &NumberSTD::char_ptr);
 
-	static_method("abs", Type::FLOAT_P, {Type::POINTER}, (void*) &number_abs);
+	static_method("abs", {
+		{Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::abs_ptr},
+		{Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::abs_real},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_real}
+	});
 	static_method("acos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_acos);
 	static_method("asin", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_asin);
 	static_method("atan", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_atan);
@@ -322,7 +309,11 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("ceil", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_ceil);
 	static_method("cos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_cos);
 	static_method("exp", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_exp);
-	static_method("floor", Type::INTEGER_P, {Type::NUMBER}, (void*) &number_floor);
+	static_method("floor", {
+		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::floor_ptr},
+		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::floor_real},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int},
+	});
 	static_method("hypot", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_hypot);
 	static_method("log", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_log);
 	static_method("log10", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_log10);
@@ -340,11 +331,69 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("toDegrees", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toDegrees);
 	static_method("toRadians", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toRadians);
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
-	static_method("char", Type::STRING, {Type::NUMBER}, (void*) &number_char);
+	static_method("char", {
+		{Type::STRING, {Type::NUMBER}, (void*) &NumberSTD::char_ptr},
+		{Type::STRING, {Type::FLOAT}, (void*) &NumberSTD::char_real},
+		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int}
+	});
 }
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 
+jit_value_t NumberSTD::abs_ptr(Compiler& c, vector<jit_value_t> args) {
+	// TODO check args
+	// VM::check_arg(args, {LS_NUMBER})
+	// Number.abs(["hello", 12][0])
+	// ==>  Execution error Number.abs(number x) : first parameter 'x' is not a number but a string.
+	return VM::call(c, LS_REAL, {LS_NUMBER}, args, +[](LSNumber* x) {
+		double a = fabs(x->value);
+		LSValue::delete_temporary(x);
+		return a;
+	});
+}
+jit_value_t NumberSTD::abs_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_abs(c.F, args[0]);
 }
 
+jit_value_t NumberSTD::char_ptr(Compiler& c, vector<jit_value_t> args) {
+	return VM::call(c, LS_STRING, {LS_NUMBER}, args, +[](LSNumber* x) {
+		unsigned int n = x->value;
+		LSValue::delete_temporary(x);
+		char dest[5];
+		u8_toutf8(dest, 5, &n, 1);
+		return new LSString(dest);
+	});
+}
+jit_value_t NumberSTD::char_real(Compiler& c, vector<jit_value_t> args) {
+	return VM::call(c, LS_STRING, {LS_REAL}, args, +[](double x) {
+		unsigned int n = x;
+		char dest[5];
+		u8_toutf8(dest, 5, &n, 1);
+		return new LSString(dest);
+	});
+}
+jit_value_t NumberSTD::char_int(Compiler& c, vector<jit_value_t> args) {
+	return VM::call(c, LS_STRING, {LS_INTEGER}, args, +[](int x) {
+		unsigned int n = x;
+		char dest[5];
+		u8_toutf8(dest, 5, &n, 1);
+		return new LSString(dest);
+	});
+}
+
+jit_value_t NumberSTD::floor_ptr(Compiler& c, vector<jit_value_t> args) {
+	return VM::call(c, LS_INTEGER, {LS_NUMBER}, args, +[](LSNumber* x) {
+		int a = floor(x->value);
+		LSValue::delete_temporary(x);
+		return a;
+	});
+}
+jit_value_t NumberSTD::floor_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_floor(c.F, args[0]);
+}
+jit_value_t NumberSTD::floor_int(Compiler&, std::vector<jit_value_t> args) {
+	return args[0]; // Nothing to do
+}
+
+}

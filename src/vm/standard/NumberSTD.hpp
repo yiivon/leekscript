@@ -11,10 +11,22 @@
 namespace ls {
 
 class LSNumber;
+class Compiler;
 
 class NumberSTD : public Module {
 public:
 	NumberSTD();
+
+	static jit_value_t abs_ptr(Compiler&, std::vector<jit_value_t>);
+	static jit_value_t abs_real(Compiler&, std::vector<jit_value_t>);
+
+	static jit_value_t char_ptr(Compiler&, std::vector<jit_value_t>);
+	static jit_value_t char_real(Compiler&, std::vector<jit_value_t>);
+	static jit_value_t char_int(Compiler&, std::vector<jit_value_t>);
+
+	static jit_value_t floor_ptr(Compiler&, std::vector<jit_value_t>);
+	static jit_value_t floor_real(Compiler&, std::vector<jit_value_t>);
+	static jit_value_t floor_int(Compiler&, std::vector<jit_value_t>);
 };
 
 }

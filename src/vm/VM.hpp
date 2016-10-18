@@ -8,6 +8,7 @@
 #include "../compiler/lexical/LexicalError.hpp"
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
+#include "../compiler/Compiler.hpp"
 
 #define OPERATION_LIMIT 10000000
 
@@ -23,6 +24,8 @@
 #define LS_REAL jit_type_float64
 #define LS_BOOLEAN LS_INTEGER
 #define LS_POINTER jit_type_void_ptr
+#define LS_STRING LS_POINTER
+#define LS_NUMBER LS_POINTER
 
 #define LS_CREATE_INTEGER(F, X) jit_value_create_nint_constant((F), LS_INTEGER, (X))
 #define LS_CREATE_BOOLEAN(F, X) LS_CREATE_INTEGER(F, X)
@@ -37,6 +40,7 @@ class Module;
 class Program;
 class LSValue;
 class LexicalError;
+class Compiler;
 
 class vm_operation_exception : public std::exception {
 public:
@@ -114,6 +118,13 @@ public:
 	/** Utilities **/
 	static void print_int(jit_function_t F, jit_value_t val);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
+
+	template <typename R, typename... A>
+	static jit_value_t call(Compiler& c, jit_type_t return_type, std::vector<jit_type_t> types, std::vector<jit_value_t> args, R(*func)(A...))
+	{
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, types.data(), types.size(), 0);
+		return jit_insn_call_native(c.F, "VM::call", (void*) func, sig, args.data(), types.size(), JIT_CALL_NOTHROW);
+	}
 };
 
 }
