@@ -64,6 +64,7 @@ Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args)
 		Method* best = nullptr;
 
 		for (Method& m : impl) {
+
 			if (m.obj_type.compatible(obj_type) and Type::list_compatible(m.type.arguments_types, args)) {
 				if (best == nullptr or
 					Type::list_more_specific(best->type.arguments_types, m.type.arguments_types) or

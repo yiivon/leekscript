@@ -113,7 +113,6 @@ jit_value_t For::compile(Compiler& c) const {
 		if (condition->type.must_manage_memory()) {
 			VM::delete_temporary(c.F, condition_v);
 		}
-
 		jit_insn_branch_if_not(c.F, bool_v, &label_end);
 	} else {
 		jit_insn_branch_if_not(c.F, condition_v, &label_end);
