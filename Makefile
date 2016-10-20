@@ -32,16 +32,16 @@ fast:
 
 build/default/%.o: %.cpp
 	g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
-	
+
 build/shared/%.o: %.cpp
 	g++ -c $(OPTIM) $(FLAGS) -fPIC -o "$@" "$<"
-	
+
 build/coverage/%.o: %.cpp
 	g++ -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o "$@" "$<"
 
 $(BUILD_DIR):
 	@mkdir -p $@
-	
+
 # Build the shared library version of the leekscript
 # (libleekscript.so in build/)
 build/libleekscript.so: $(BUILD_DIR) $(OBJ_LIB)
@@ -59,7 +59,7 @@ install: lib
 	@echo "------------------"
 	@echo "Library installed!"
 	@echo "------------------"
-	
+
 # Build with coverage flags enabled
 build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE)
 	g++ $(FLAGS) -fprofile-arcs -ftest-coverage -o build/leekscript-coverage $(OBJ_COVERAGE) $(LIBS)
