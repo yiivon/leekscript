@@ -97,7 +97,8 @@ LSValue*LSNumber::ls_dec() {
 }
 
 LSValue* LSNumber::ls_add(LSNull*) {
-	return this;
+	LSValue::delete_temporary(this);
+	return LSNull::get();
 }
 LSValue* LSNumber::ls_add(LSBoolean* boolean) {
 	if (boolean->value) {
@@ -129,7 +130,7 @@ LSValue* LSNumber::ls_add(LSNumber* number) {
 }
 
 LSValue* LSNumber::ls_add_eq(LSNull*) {
-	return this;
+	return LSNull::get();
 }
 LSValue* LSNumber::ls_add_eq(LSBoolean* boolean) {
 	value += boolean->value;
@@ -142,7 +143,7 @@ LSValue* LSNumber::ls_add_eq(LSNumber* number) {
 }
 
 LSValue* LSNumber::ls_sub(LSNull*) {
-	return this;
+	return LSNull::get();
 }
 LSValue* LSNumber::ls_sub(LSBoolean* boolean) {
 	if (boolean->value) {
@@ -180,11 +181,8 @@ LSValue* LSNumber::ls_sub_eq(LSNumber* number) {
 }
 
 LSValue* LSNumber::ls_mul(LSNull*) {
-	if (refs == 0) {
-		value = 0;
-		return this;
-	}
-	return LSNumber::get(0);
+	LSValue::delete_temporary(this);
+	return LSNull::get();
 }
 LSValue* LSNumber::ls_mul(LSBoolean* boolean) {
 	if (boolean->value) {
@@ -224,8 +222,7 @@ LSValue*LSNumber::ls_mul(LSString* str) {
 }
 
 LSValue* LSNumber::ls_mul_eq(LSNull*) {
-	value = 0;
-	return this;
+	return LSNull::get();
 }
 LSValue* LSNumber::ls_mul_eq(LSBoolean* boolean) {
 	value *= boolean->value;
@@ -238,11 +235,8 @@ LSValue* LSNumber::ls_mul_eq(LSNumber* number) {
 }
 
 LSValue* LSNumber::ls_div(LSNull*) {
-	if (refs == 0) {
-		value = NAN;
-		return this;
-	}
-	return LSNumber::get(NAN);
+	LSValue::delete_temporary(this);
+	return LSNull::get();
 }
 LSValue* LSNumber::ls_div(LSBoolean* boolean) {
 	if (boolean->value) {
