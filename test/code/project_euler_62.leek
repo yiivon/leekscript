@@ -1,0 +1,29 @@
+var singles = []
+var groups = []
+
+var i = 405
+while ++i {
+
+    var n = '' + [i, ''][0] ** 3
+    var added = false
+
+    for var g in groups {
+        if g[0].isPermutation(n) {
+			g += n
+            added = true
+            if g.size() == 5 {
+				System.print(g)
+            	return String.number(g[0])
+            }
+        }
+    }
+	for var s in singles {
+		if s.isPermutation(n) {
+			groups += [[s, n]]
+			added = true
+		}
+	}
+    if not added {
+		singles += n
+    }
+}

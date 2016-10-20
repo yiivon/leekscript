@@ -30,7 +30,7 @@ void Test::test_map() {
 	code("let x = [1 : 1] x.look(1,0)").equals("1");
 	code("let x = ['a' : 'a'] x.look('a','b')").equals("'a'");
 	code("let x = ['a' : 'a'] x.look('b','b')").equals("'b'");
-	code("let x = ['a' : 1] x.look(3.14,'a')").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, "look");
+	code("let x = ['a' : 1] x.look(3.14,'a')").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, "Map.look(" + ls::Type::FLOAT.toString() + ", " + ls::Type::STRING.toString() + ")");
 
 	code("['a':'b'] == [1:1]").equals("false");
 	code("let x = ['a' : 'b'] let y = [1 : 1] x.clear() == y.clear()").equals("true");

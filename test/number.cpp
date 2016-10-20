@@ -106,6 +106,8 @@ void Test::test_numbers() {
 	code("87619 ^ 18431").equals("70076");
 	code("let a = 87619 a ^= 18431").equals("70076");
 	code("let a = 87619 a ^= 18431 a").equals("70076");
+
+	section("Binary shift operators");
 	code("0 << 0").equals("0");
 	code("1 << 0").equals("1");
 	code("123456 << 0").equals("123456");
