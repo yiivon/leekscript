@@ -51,9 +51,14 @@ void OperatorPrototypes::initialize() {
 		{{Type::POINTER}, Type::BOOLEAN, (void*) &not_pointer}
 	});
 
+	prototype({"="}, 9, true, false, {
+		{{Type::FLOAT, Type::FLOAT}, Type::FLOAT, (void*) &store_real_real, Method::NATIVE},
+		{{Type::INTEGER, Type::INTEGER}, Type::INTEGER, (void*) &store_real_real, Method::NATIVE},
+	});
+
 	prototype({"+"}, 3, false, false, {
-		{{Type::FLOAT, Type::FLOAT}, Type::FLOAT, (void*) &jit_insn_add, Method::NATIVE},
-		{{Type::INTEGER, Type::INTEGER}, Type::INTEGER, (void*) &jit_insn_add, Method::NATIVE},
+		{{Type::FLOAT, Type::FLOAT}, Type::FLOAT, (void*) &add_real_real, Method::NATIVE},
+		{{Type::INTEGER, Type::INTEGER}, Type::INTEGER, (void*) &add_real_real, Method::NATIVE},
 	});
 
 	prototype({"+="}, 9, true, false, {
@@ -67,6 +72,11 @@ bool OperatorPrototypes::not_pointer(LSValue* value) {
 }
 jit_value_t OperatorPrototypes::not_value(Compiler& c, jit_value_t v) {
 	return jit_insn_to_not_bool(c.F, v);
+}
+
+jit_value_t OperatorPrototypes::store_real_real(Compiler& c, jit_value_t a, jit_value_t b) {
+	jit_insn_store(c.F, a, b);
+	return b;
 }
 
 jit_value_t OperatorPrototypes::add_real_real(Compiler& c, jit_value_t a, jit_value_t b) {

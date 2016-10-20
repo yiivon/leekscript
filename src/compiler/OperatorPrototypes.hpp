@@ -40,6 +40,8 @@ public:
 	static bool not_pointer(LSValue*);
 	static jit_value_t not_value(Compiler& c, jit_value_t v);
 
+	static jit_value_t store_real_real(Compiler& c, jit_value_t a, jit_value_t b);
+
 	static jit_value_t add_real_real(Compiler& c, jit_value_t a, jit_value_t b);
 	static jit_value_t add_equals_real_real(Compiler& c, jit_value_t a, jit_value_t b);
 };
