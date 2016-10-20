@@ -70,6 +70,7 @@ public:
 	LSArray<T>* ls_fill(T element, int size);
 	T ls_max();
 	T ls_min();
+	bool is_permutation(LSArray<int>*);
 
 	/*
 	 * LSValue methods

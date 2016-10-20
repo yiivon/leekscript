@@ -42,6 +42,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("contains", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);
 	method("endsWith", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_endsWith);
 	method("indexOf", Type::STRING, Type::INTEGER, {Type::STRING}, (void*) &string_indexOf);
+	method("isPermutation", Type::STRING, Type::BOOLEAN, {Type::POINTER}, (void*) &LSString::is_permutation); 
 	method("length", Type::STRING, Type::INTEGER_P, {}, (void*) &string_length);
 	method("size", Type::STRING, Type::INTEGER_P, {}, (void*) &string_size);
 	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);

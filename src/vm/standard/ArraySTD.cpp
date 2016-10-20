@@ -157,6 +157,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::BOOLEAN, {}, (void*) &LSArray<int>::ls_empty},
 	});
 
+	method("isPermutation", {
+		{Type::INT_ARRAY, Type::BOOLEAN, {Type::INT_ARRAY}, (void*) &LSArray<int>::is_permutation}
+	});
+
 	method("partition", {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {pred_fun_type}, (void*) &LSArray<LSValue*>::ls_partition},
 		{Type::FLOAT_ARRAY, Type::PTR_ARRAY, {pred_fun_type_float}, (void*) &LSArray<double>::ls_partition},

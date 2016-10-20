@@ -31,6 +31,13 @@ int LSString::unicode_length() const {
 	return u8_strlen(this->c_str());
 }
 
+bool LSString::is_permutation(LSString* other) {
+	bool result = this->size() == other->size() and std::is_permutation(this->begin(), this->end(), other->begin());
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(other);
+	return result; 
+}
+
 /*
  * LSValue methods
  */

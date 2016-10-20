@@ -864,6 +864,8 @@ inline LSValue* LSArray<LSValue*>::ls_foldRight(const void* function, LSValue* v
 	LSValue* result = v0->move();
 	for (auto it = this->rbegin(); it != this->rend(); it++) {
 		result = fun(result, *it);
+		//result->print(std::cout);
+		//std::cout << std::endl;
 	}
 	if (refs == 0) delete this;
 	return result;
@@ -1229,6 +1231,13 @@ inline T LSArray<T>::ls_min() {
 	return max;
 }
 
+template <>
+inline bool LSArray<int>::is_permutation(LSArray<int>* other) {
+	bool result = this->size() == other->size() and std::is_permutation(this->begin(), this->end(), other->begin());
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(other);
+	return result;
+}
 
 /*
  * LSValue methods
@@ -2121,4 +2130,3 @@ LSValue* LSArray<T>::abso() const {
 } // end of namespace ls
 
 #endif
-
