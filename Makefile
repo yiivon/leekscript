@@ -77,7 +77,9 @@ test: build/leekscript
 # (coverage results are sent to coveralls.io).
 travis:
 	docker build -t leekscript .
-	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="master" leekscript /bin/bash -c "cd leekscript; make coverage && build/leekscript-coverage -test && cpp-coveralls --gcov-options='-r'"
+	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
+	       leekscript /bin/bash -c "cd leekscript; make coverage && build/leekscript-coverage -test \
+	       && cpp-coveralls --gcov-options='-r'"
 
 # Coverage results with lcov.
 # `apt-get install lcov`
