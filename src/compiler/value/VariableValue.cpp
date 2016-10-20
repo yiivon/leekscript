@@ -65,6 +65,14 @@ bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& ar
 	return false;
 }
 
+bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
+	if (var != nullptr and var->value != nullptr) {
+		var->value->will_store(analyser, type);
+		this->type = var->value->type;
+	}
+	return false;
+}
+
 void VariableValue::must_return(SemanticAnalyser* analyser, const Type& ret_type) {
 
 	var->value->must_return(analyser, ret_type);

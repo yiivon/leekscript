@@ -133,6 +133,24 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 //	cout << "Array::elements_will_take type after " << this->type << endl;
 }
 
+bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
+	Type added_type = type;
+	if (added_type.raw_type == RawType::ARRAY) {
+		added_type = added_type.getElementType();
+	}
+	Type current_type = this->type.getElementType();
+	if (expressions.size() == 0) {
+		this->type.setElementType(added_type);
+	} else {
+		this->type.setElementType(Type::get_compatible_type(current_type, added_type));
+	}
+	// Re-analyze expressions with the new type
+	for (size_t i = 0; i < expressions.size(); ++i) {
+		expressions[i]->analyse(analyser, this->type.getElementType());
+	}
+	return false;
+}
+
 LSInterval* LSArray_create_interval(int a, int b) {
 	LSInterval* interval = new LSInterval();
 	interval->a = a;

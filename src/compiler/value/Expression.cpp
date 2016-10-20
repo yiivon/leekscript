@@ -134,6 +134,14 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	constant = v1->constant and v2->constant;
 
+	bool array_push = v1->type.raw_type == RawType::ARRAY and op->type == TokenType::PLUS_EQUAL;
+
+	// array += ?  ==>  will take the type of ?
+	if (array_push) {
+		v1->will_store(analyser, v2->type);
+		type = v2->type;
+	}
+
 	// A = B, A += B, A * B, etc. mix types
 	if (op->type == TokenType::EQUAL or op->type == TokenType::XOR
 		or op->type == TokenType::PLUS or op->type == TokenType::PLUS_EQUAL
@@ -147,13 +155,18 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::SWAP or op->type == TokenType::INT_DIV) {
 
 		// Set the correct type nature for the two members
-		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
-			v1->analyse(analyser, Type::POINTER);
+		if (array_push) {
+			if (v1->type.getElementType().nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
+				v2->analyse(analyser, Type::POINTER);
+			}
+		} else {
+			if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
+				v1->analyse(analyser, Type::POINTER);
+			}
+			if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
+				v2->analyse(analyser, Type::POINTER);
+			}
 		}
-		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
-			v2->analyse(analyser, Type::POINTER);
-		}
-
 		type = v1->type.mix(v2->type);
 
 		if (op->type == TokenType::DIVIDE and v1->type.isNumber() and v2->type.isNumber()) {
@@ -269,7 +282,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 }
 
-
 LSValue* jit_add(LSValue* x, LSValue* y) {
 	return x->ls_add(y);
 }
@@ -370,6 +382,10 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 
 LSValue* jit_add_equal(LSValue* x, LSValue* y) {
 	return x->ls_add_eq(y);
+}
+int jit_array_push_int(LSArray<int>* x, int y) {
+	x->push_move(y);
+	return y;
 }
 int jit_add_equal_value(int* x, int y) {
 	return *x += y;
@@ -576,6 +592,16 @@ jit_value_t Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::PLUS_EQUAL: {
+
+			if (v1->type == Type::INT_ARRAY and v2->type == Type::INTEGER) {
+				args.push_back(v1->compile(c));
+				args.push_back(v2->compile(c));
+				jit_value_t res = VM::call(c, LS_INTEGER, {LS_POINTER, LS_INTEGER}, args, &jit_array_push_int);
+				if (type.nature == Nature::POINTER) {
+					return VM::value_to_pointer(c.F, res, type);
+				}
+				return res;
+			}
 
 			if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
 

@@ -25,6 +25,7 @@ public:
 
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 	virtual bool will_take(SemanticAnalyser* analyser, const std::vector<Type>&) override;
+	virtual bool will_store(SemanticAnalyser* analyser, const Type& type) override;
 	void must_return(SemanticAnalyser* analyser, const Type& type) override;
 	virtual void change_type(SemanticAnalyser*, const Type&) override;
 
