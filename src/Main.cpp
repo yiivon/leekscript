@@ -73,10 +73,14 @@ int main(int argc, char* argv[]) {
 		if (param_file) {
 
 			auto result = vm.execute(code, "{}");
+			//cout << "main() " << result.program << endl;
+			for (auto error : result.semantical_errors) {
+				std::cout << "line " << error.line << ": " << error.message() << std::endl;
+			}
 			cout << result.value << endl;
 			cout << "(" << result.operations << " ops, "
 				<< result.compilation_time_ms << "ms + "
-				<< result.execution_time_ms << " ms)" << endl;
+				<< result.execution_time_ms << "ms)" << endl;
 
 		} else if (param_json) {
 
@@ -111,15 +115,15 @@ int main(int argc, char* argv[]) {
 
 			// Execute
 			auto result = vm.execute(code, ctx);
-			
+
 			#if DEBUG > 0
-				cout << "main() " << result.program << endl;
+				//cout << "main() " << result.program << endl;
 			#endif
 			cout << result.value << endl;
 
 			cout << "(" << result.operations << " ops, "
-				<< result.compilation_time << " ms + "
-				<< result.execution_time << " ms)" << endl;
+				<< result.compilation_time << "ms + "
+				<< result.execution_time << "ms)" << endl;
 			ctx = result.context;
 		}
 	}

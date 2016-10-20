@@ -52,6 +52,10 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	VM::Result result = program->compile(*this, ctx);
 	auto compilation_end = chrono::high_resolution_clock::now();
 
+	#if DEBUG > 0
+		std::cout << "main() " << result.program << std::endl;
+	#endif
+
 	// Execute
 	LSValue* value = nullptr;
 	if (result.compilation_success) {
