@@ -18,6 +18,7 @@ public:
 	Type return_type;
 	void* std_func;
 	Value* this_ptr;
+	bool is_native_method = false;
 
 	FunctionCall();
 	virtual ~FunctionCall();

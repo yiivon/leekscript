@@ -16,13 +16,15 @@ class StaticMethod {
 public:
 	Type type;
 	void* addr;
-	StaticMethod(Type return_type, std::initializer_list<Type> args, void* addr) {
+	bool native;
+	StaticMethod(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false) {
 		this->addr = addr;
 		type = {RawType::FUNCTION, Nature::POINTER};
 		type.setReturnType(return_type);
 		for (Type arg : args) {
 			type.addArgumentType(arg);
 		}
+		this->native = native;
 	}
 };
 
@@ -31,7 +33,8 @@ public:
 	Type type;
 	void* addr;
 	Type obj_type;
-	Method(Type obj_type, Type return_type, std::initializer_list<Type> args, void* addr) {
+	bool native;
+	Method(Type obj_type, Type return_type, std::initializer_list<Type> args, void* addr, bool native = false) {
 		this->addr = addr;
 		this->obj_type = obj_type;
 		type = {RawType::FUNCTION, Nature::POINTER};
@@ -39,7 +42,9 @@ public:
 		for (Type arg : args) {
 			type.addArgumentType(arg);
 		}
+		this->native = native;
 	}
+	static bool NATIVE;
 };
 
 class ModuleMethod {

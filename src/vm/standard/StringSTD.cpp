@@ -78,14 +78,14 @@ StringSTD::StringSTD() : Module("String") {
 	static_method("toArray", Type::PTR_ARRAY, {Type::STRING}, (void*) &string_toArray);
 	static_method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
 	static_method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);
-	static_method("split", Type::STRING_ARRAY, {Type::STRING, Type::STRING}, (void*) &string_split);
+	static_method("split", Type::STRING_ARRAY, {Type::POINTER, Type::POINTER}, (void*) &string_split);
 	static_method("startsWith", Type::BOOLEAN_P, {Type::STRING, Type::STRING}, (void*) &string_startsWith);
 	static_method("map", Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map);
 	static_method("code", {
-		{Type::INTEGER, {Type::STRING}, (void*) &string_begin_code},
+		{Type::INTEGER, {Type::POINTER}, (void*) &string_begin_code},
 		{Type::INTEGER, {Type::STRING, Type::INTEGER}, (void*) &string_code},
 	});
-	static_method("number", Type::LONG, {Type::STRING}, (void*) &string_number);
+	static_method("number", Type::LONG, {Type::POINTER}, (void*) &string_number);
 }
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
@@ -303,4 +303,3 @@ long string_number(const LSString* s) {
 }
 
 }
-

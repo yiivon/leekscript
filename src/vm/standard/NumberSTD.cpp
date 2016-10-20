@@ -262,8 +262,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	method("abs", {
 		{Type::POINTER, Type::FLOAT, {}, (void*) &NumberSTD::abs_ptr},
-		{Type::FLOAT, Type::FLOAT, {}, (void*) &NumberSTD::abs_real},
-		{Type::INTEGER, Type::INTEGER, {}, (void*) &NumberSTD::abs_real}
+		{Type::FLOAT, Type::FLOAT, {}, (void*) &NumberSTD::abs_real, Method::NATIVE},
+		{Type::INTEGER, Type::INTEGER, {}, (void*) &NumberSTD::abs_real, Method::NATIVE}
 	});
 
 	method("acos", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_acos);
@@ -273,6 +273,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	method("ceil", {
 		{Type::NUMBER, Type::FLOAT, {}, (void*) &NumberSTD::ceil_ptr}
+	});
+
+	method("char", {
+		{Type::NUMBER, Type::POINTER, {}, (void*) &NumberSTD::char_ptr},
+		{Type::FLOAT, Type::STRING, {}, (void*) &NumberSTD::char_real, Method::NATIVE},
+		{Type::INTEGER, Type::STRING, {}, (void*) &NumberSTD::char_int, Method::NATIVE}
 	});
 
 	method("cos", {
@@ -289,13 +295,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("log10", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_log10);
 
 	method("max", {
-		{Type::FLOAT, Type::NUMBER, {Type::NUMBER}, (void*) &NumberSTD::max_ptr_ptr},
-		{Type::FLOAT, Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::max_float_float},
-		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::max_float_float},
+		{Type::POINTER, Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
+		{Type::FLOAT, Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 	});
 
 	method("min", {
-		{Type::FLOAT, Type::NUMBER, {Type::NUMBER}, (void*) &NumberSTD::min_ptr_ptr},
+		{Type::POINTER, Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
 		{Type::FLOAT, Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::min_float_float},
 		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float},
 	});
@@ -319,15 +325,14 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("toDegrees", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toDegrees);
 	method("toRadians", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toRadians);
 	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
-	method("char", Type::NUMBER, Type::STRING, {}, (void*) &NumberSTD::char_ptr);
 
 	/*
 	 * Static methods
 	 */
 	static_method("abs", {
 		{Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::abs_ptr},
-		{Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::abs_real},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_real}
+		{Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::abs_real, Method::NATIVE},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_real, Method::NATIVE}
 	});
 
 	static_method("acos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_acos);
@@ -338,8 +343,14 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	static_method("ceil", {
 		{Type::FLOAT_P, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr},
-		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::ceil_real},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int}
+		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::ceil_real, Method::NATIVE},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int, Method::NATIVE}
+	});
+
+	static_method("char", {
+		{Type::STRING, {Type::POINTER}, (void*) &NumberSTD::char_ptr},
+		{Type::STRING, {Type::FLOAT}, (void*) &NumberSTD::char_real, Method::NATIVE},
+		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int, Method::NATIVE}
 	});
 
 	static_method("cos", {
@@ -350,8 +361,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	static_method("floor", {
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::floor_ptr},
-		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::floor_real},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int},
+		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::floor_real, Method::NATIVE},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int, Method::NATIVE},
 	});
 
 	static_method("hypot", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_hypot);
@@ -362,10 +373,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::FLOAT, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
 		{Type::FLOAT, {Type::POINTER, Type::FLOAT}, (void*) &NumberSTD::max_ptr_float},
 		{Type::FLOAT, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int},
-		{Type::FLOAT, {Type::FLOAT, Type::FLOAT}, (void*) &NumberSTD::max_float_float},
-		{Type::FLOAT, {Type::FLOAT, Type::INTEGER}, (void*) &NumberSTD::max_float_float},
-		{Type::FLOAT, {Type::INTEGER, Type::FLOAT}, (void*) &NumberSTD::max_float_float},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float}
+		{Type::FLOAT, {Type::FLOAT, Type::FLOAT}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::FLOAT, {Type::FLOAT, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::FLOAT, {Type::INTEGER, Type::FLOAT}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE}
 	});
 
 	static_method("min", {
@@ -385,8 +396,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	static_method("round", {
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::round_ptr},
-		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::round_real},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::round_int}
+		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::round_real, Method::NATIVE},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::round_int, Method::NATIVE}
 	});
 
 	static_method("signum", Type::INTEGER_P, {Type::NUMBER}, (void*) &number_signum);
@@ -404,39 +415,31 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("toRadians", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toRadians);
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
 
-	static_method("char", {
-		{Type::STRING, {Type::NUMBER}, (void*) &NumberSTD::char_ptr},
-		{Type::STRING, {Type::FLOAT}, (void*) &NumberSTD::char_real},
-		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int}
-	});
+
 }
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 
-jit_value_t NumberSTD::abs_ptr(Compiler& c, vector<jit_value_t> args) {
+double NumberSTD::abs_ptr(LSNumber* x) {
 	// TODO check args
 	// VM::check_arg(args, {LS_NUMBER})
 	// Number.abs(["hello", 12][0])
 	// ==>  Execution error Number.abs(number x) : first parameter 'x' is not a number but a string.
-	return VM::call(c, LS_REAL, {LS_NUMBER}, args, +[](LSNumber* x) {
-		double a = fabs(x->value);
-		LSValue::delete_temporary(x);
-		return a;
-	});
+	double a = fabs(x->value);
+	LSValue::delete_temporary(x);
+	return a;
 }
 jit_value_t NumberSTD::abs_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_abs(c.F, args[0]);
 }
 
-jit_value_t NumberSTD::char_ptr(Compiler& c, vector<jit_value_t> args) {
-	return VM::call(c, LS_STRING, {LS_NUMBER}, args, +[](LSNumber* x) {
-		unsigned int n = x->value;
-		LSValue::delete_temporary(x);
-		char dest[5];
-		u8_toutf8(dest, 5, &n, 1);
-		return new LSString(dest);
-	});
+LSString* NumberSTD::char_ptr(LSNumber* x) {
+	unsigned int n = x->value;
+	LSValue::delete_temporary(x);
+	char dest[5];
+	u8_toutf8(dest, 5, &n, 1);
+	return new LSString(dest);
 }
 jit_value_t NumberSTD::char_real(Compiler& c, vector<jit_value_t> args) {
 	return VM::call(c, LS_STRING, {LS_REAL}, args, +[](double x) {
@@ -455,12 +458,10 @@ jit_value_t NumberSTD::char_int(Compiler& c, vector<jit_value_t> args) {
 	});
 }
 
-jit_value_t NumberSTD::floor_ptr(Compiler& c, vector<jit_value_t> args) {
-	return VM::call(c, LS_INTEGER, {LS_NUMBER}, args, +[](LSNumber* x) {
-		int a = floor(x->value);
-		LSValue::delete_temporary(x);
-		return a;
-	});
+int NumberSTD::floor_ptr(LSNumber* x) {
+	int a = floor(x->value);
+	LSValue::delete_temporary(x);
+	return a;
 }
 jit_value_t NumberSTD::floor_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_floor(c.F, args[0]);
@@ -469,12 +470,10 @@ jit_value_t NumberSTD::floor_int(Compiler&, std::vector<jit_value_t> args) {
 	return args[0]; // Nothing to do
 }
 
-jit_value_t NumberSTD::round_ptr(Compiler& c, vector<jit_value_t> args) {
-	return VM::call(c, LS_INTEGER, {LS_NUMBER}, args, +[](LSNumber* x) {
-		int a = round(x->value);
-		LSValue::delete_temporary(x);
-		return a;
-	});
+int NumberSTD::round_ptr(LSNumber* x) {
+	int a = round(x->value);
+	LSValue::delete_temporary(x);
+	return a;
 }
 jit_value_t NumberSTD::round_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_round(c.F, args[0]);
@@ -483,12 +482,10 @@ jit_value_t NumberSTD::round_int(Compiler&, std::vector<jit_value_t> args) {
 	return args[0]; // Nothing to do
 }
 
-jit_value_t NumberSTD::ceil_ptr(Compiler& c, vector<jit_value_t> args) {
-	return VM::call(c, LS_INTEGER, {LS_NUMBER}, args, +[](LSNumber* x) {
-		int a = ceil(x->value);
-		LSValue::delete_temporary(x);
-		return a;
-	});
+int NumberSTD::ceil_ptr(LSNumber* x) {
+	int a = ceil(x->value);
+	LSValue::delete_temporary(x);
+	return a;
 }
 jit_value_t NumberSTD::ceil_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_ceil(c.F, args[0]);
@@ -497,109 +494,82 @@ jit_value_t NumberSTD::ceil_int(Compiler&, std::vector<jit_value_t> args) {
 	return args[0]; // Nothing to do
 }
 
-jit_value_t NumberSTD::max_ptr_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER, LS_NUMBER}, args, +[](LSNumber* x, LSNumber* y) {
-		int max = fmax(x->value, y->value);
-		LSValue::delete_temporary(x);
-		LSValue::delete_temporary(y);
-		return max;
-	});
+double NumberSTD::max_ptr_ptr(LSNumber* x, LSNumber* y) {
+	int max = fmax(x->value, y->value);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return max;
 }
-jit_value_t NumberSTD::max_ptr_float(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER, LS_REAL}, args, +[](LSNumber* x, double y) {
-		int max = fmax(x->value, y);
-		LSValue::delete_temporary(x);
-		return max;
-	});
+double NumberSTD::max_ptr_float(LSNumber* x, double y) {
+	int max = fmax(x->value, y);
+	LSValue::delete_temporary(x);
+	return max;
 }
-jit_value_t NumberSTD::max_ptr_int(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER, LS_INTEGER}, args, +[](LSNumber* x, int y) {
-		int max = fmax(x->value, y);
-		LSValue::delete_temporary(x);
-		return max;
-	});
+double NumberSTD::max_ptr_int(LSNumber* x, int y) {
+	int max = fmax(x->value, y);
+	LSValue::delete_temporary(x);
+	return max;
 }
-jit_value_t NumberSTD::max_float_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_REAL, LS_NUMBER}, args, +[](double x, LSNumber* y) {
-		int max = fmax(x, y->value);
-		LSValue::delete_temporary(y);
-		return max;
-	});
+double NumberSTD::max_float_ptr(double x, LSNumber* y) {
+	int max = fmax(x, y->value);
+	LSValue::delete_temporary(y);
+	return max;
 }
-jit_value_t NumberSTD::max_int_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_INTEGER, LS_NUMBER}, args, +[](int x, LSNumber* y) {
-		int max = fmax(x, y->value);
-		LSValue::delete_temporary(y);
-		return max;
-	});
+double NumberSTD::max_int_ptr(int x, LSNumber* y) {
+	int max = fmax(x, y->value);
+	LSValue::delete_temporary(y);
+	return max;
 }
 jit_value_t NumberSTD::max_float_float(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_max(c.F, args[0], args[1]);
 }
 
-
-jit_value_t NumberSTD::min_ptr_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER, LS_NUMBER}, args, +[](LSNumber* x, LSNumber* y) {
-		int max = fmin(x->value, y->value);
-		LSValue::delete_temporary(x);
-		LSValue::delete_temporary(y);
-		return max;
-	});
+double NumberSTD::min_ptr_ptr(LSNumber* x, LSNumber* y) {
+	int max = fmin(x->value, y->value);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return max;
 }
-jit_value_t NumberSTD::min_ptr_float(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER, LS_REAL}, args, +[](LSNumber* x, double y) {
-		int max = fmin(x->value, y);
-		LSValue::delete_temporary(x);
-		return max;
-	});
+double NumberSTD::min_ptr_float(LSNumber* x, double y) {
+	int max = fmin(x->value, y);
+	LSValue::delete_temporary(x);
+	return max;
 }
-jit_value_t NumberSTD::min_ptr_int(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER, LS_INTEGER}, args, +[](LSNumber* x, int y) {
-		int max = fmin(x->value, y);
-		LSValue::delete_temporary(x);
-		return max;
-	});
+double NumberSTD::min_ptr_int(LSNumber* x, int y) {
+	int max = fmin(x->value, y);
+	LSValue::delete_temporary(x);
+	return max;
 }
-jit_value_t NumberSTD::min_float_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_REAL, LS_NUMBER}, args, +[](double x, LSNumber* y) {
-		int max = fmin(x, y->value);
-		LSValue::delete_temporary(y);
-		return max;
-	});
+double NumberSTD::min_float_ptr(double x, LSNumber* y) {
+	int max = fmin(x, y->value);
+	LSValue::delete_temporary(y);
+	return max;
 }
-jit_value_t NumberSTD::min_int_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_INTEGER, LS_NUMBER}, args, +[](int x, LSNumber* y) {
-		int max = fmin(x, y->value);
-		LSValue::delete_temporary(y);
-		return max;
-	});
+double NumberSTD::min_int_ptr(int x, LSNumber* y) {
+	int max = fmin(x, y->value);
+	LSValue::delete_temporary(y);
+	return max;
 }
 jit_value_t NumberSTD::min_float_float(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_min(c.F, args[0], args[1]);
 }
 
-jit_value_t NumberSTD::cos_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER}, args, +[](LSNumber* x) {
-		int c = cos(x->value);
-		LSValue::delete_temporary(x);
-		return c;
-	});
+double NumberSTD::cos_ptr(LSNumber* x) {
+	double c = cos(x->value);
+	LSValue::delete_temporary(x);
+	return c;
 }
 
-jit_value_t NumberSTD::sin_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER}, args, +[](LSNumber* x) {
-		int s = sin(x->value);
-		LSValue::delete_temporary(x);
-		return s;
-	});
+double NumberSTD::sin_ptr(LSNumber* x) {
+	double s = sin(x->value);
+	LSValue::delete_temporary(x);
+	return s;
 }
 
-jit_value_t NumberSTD::sqrt_ptr(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c, LS_REAL, {LS_NUMBER}, args, +[](LSNumber* x) {
-		int s = sqrt(x->value);
-		LSValue::delete_temporary(x);
-		return s;
-	});
+double NumberSTD::sqrt_ptr(LSNumber* x) {
+	double s = sqrt(x->value);
+	LSValue::delete_temporary(x);
+	return s;
 }
 
 }

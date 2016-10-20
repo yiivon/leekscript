@@ -104,6 +104,13 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		for (auto arg : arguments) {
 			arg_types.push_back(arg->type);
 		}
+		std::string args_string = "";
+		for (int i = 0; i < arg_types.size(); ++i) {
+			std::ostringstream oss;
+			oss << arg_types[i];
+			if (i > 0) args_string += ", ";
+			args_string += oss.str();
+		}
 
 		if (object_type.raw_type == RawType::CLASS) { // String.size("salut")
 
@@ -114,8 +121,9 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			if (m != nullptr) {
 				std_func = m->addr;
 				function->type = m->type;
+				is_native_method = m->native;
 			} else {
-				analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, oa->field->content});
+				analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, clazz + "::" + oa->field->content + "(" + args_string + ")"});
 			}
 
 		} else if (object_type.raw_type != RawType::UNKNOWN) {  // "salut".size()
@@ -128,8 +136,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				this_ptr->analyse(analyser, Type::POINTER);
 				std_func = m->addr;
 				function->type = m->type;
+				is_native_method = m->native;
 			} else {
-				analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field->line, oa->field->content});
+				std::ostringstream obj_type_ss;
+				analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field->line, object_type.clazz + "." + oa->field->content + "(" + args_string + ")"});
 			}
 		}
 		/*
@@ -271,11 +281,20 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	if (this_ptr != nullptr) {
 
 		vector<jit_value_t> args = { this_ptr->compile(c) };
+		vector<jit_type_t> arg_types = { VM::get_jit_type(this_ptr->type) };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments[i]->compile(c));
+			arg_types.push_back(VM::get_jit_type(arguments[i]->type));
 		}
-		auto fun = (jit_value_t (*)(Compiler&, vector<jit_value_t>)) std_func;
-		jit_value_t res = fun(c, args);
+
+		jit_value_t res;
+		if (is_native_method) {
+			auto fun = (jit_value_t (*)(Compiler&, vector<jit_value_t>)) std_func;
+			res = fun(c, args);
+		} else {
+			auto fun = (void* (*)()) std_func;
+			res = VM::call(c, VM::get_jit_type(type), arg_types, args, fun);
+		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(c.F, res, type);
@@ -287,11 +306,20 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	if (std_func != nullptr) {
 
 		vector<jit_value_t> args;
+		vector<jit_type_t> arg_types;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments[i]->compile(c));
+			arg_types.push_back(VM::get_jit_type(arguments[i]->type));
 		}
-		auto fun = (jit_value_t (*)(Compiler&, vector<jit_value_t>)) std_func;
-		jit_value_t res = fun(c, args);
+
+		jit_value_t res;
+		if (is_native_method) {
+			auto fun = (jit_value_t (*)(Compiler&, vector<jit_value_t>)) std_func;
+			res = fun(c, args);
+		} else {
+			auto fun = (void* (*)()) std_func;
+			res = VM::call(c, VM::get_jit_type(type), arg_types, args, fun);
+		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(c.F, res, type);

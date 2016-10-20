@@ -1,22 +1,7 @@
 #include "BooleanSTD.hpp"
-
+#include "../value/LSBoolean.hpp"
 
 namespace ls {
-
-int boolean_compare_fun(bool a, bool b) {
-	if (a) {
-		if (not b) return 1;
-	} else {
-		if (b) return -1;
-	}
-	return 0;
-}
-
-jit_value_t boolean_compare(Compiler& c, std::vector<jit_value_t> args) {
-	std::vector<jit_type_t> types = {LS_INTEGER, LS_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, types.data(), 2, 0);
-	return jit_insn_call_native(c.F, "compare", (void*) boolean_compare_fun, sig, args.data(), 2, JIT_CALL_NOTHROW);
-}
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -24,12 +9,29 @@ jit_value_t boolean_compare(Compiler& c, std::vector<jit_value_t> args) {
 #endif
 BooleanSTD::BooleanSTD() : Module("Boolean") {
 
-	static_method("compare", Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &boolean_compare);
+	static_method("compare", {
+		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
+		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
+	});
 }
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 
+int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
+	bool res = 0;
+	if (a->value) {
+		if (not b->value) res = 1;
+	} else {
+		if (b->value) res = -1;
+	}
+	LSValue::delete_temporary(a);
+	LSValue::delete_temporary(b);
+	return res;
+}
 
+jit_value_t BooleanSTD::compare_val_val(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_cmpl(c.F, args[0], args[1]);
+}
 
 }

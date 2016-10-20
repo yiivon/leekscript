@@ -11,6 +11,9 @@ namespace ls {
 class BooleanSTD : public Module {
 public:
 	BooleanSTD();
+
+	static int compare_ptr_ptr(LSBoolean* a, LSBoolean* b);
+	static jit_value_t compare_val_val(Compiler&, std::vector<jit_value_t>);
 };
 
 }

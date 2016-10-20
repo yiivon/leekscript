@@ -12,6 +12,8 @@ using namespace std;
 
 namespace ls {
 
+bool Method::NATIVE = true;
+
 Module::Module(std::string name) : name(name) {
 	clazz = new LSClass(name);
 }

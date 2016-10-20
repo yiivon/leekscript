@@ -1,4 +1,5 @@
 #include "Type.hpp"
+#include <sstream>
 
 using namespace std;
 
@@ -138,7 +139,7 @@ const Type& Type::getElementType(size_t i) const {
 	return Type::UNKNOWN;
 }
 
-void Type::setElementType(Type type) {
+void Type::setElementType(const Type& type) {
 	if (element_types.size() == 0) {
 		element_types.push_back(type);
 	} else {
@@ -211,6 +212,12 @@ void Type::toJson(ostream& os) const {
 		getReturnType().toJson(os);
 	}
 	os << "}";
+}
+
+std::string Type::toString() const {
+	std::ostringstream oss;
+	oss << *this;
+	return oss.str();
 }
 
 bool Type::isNumber() const {

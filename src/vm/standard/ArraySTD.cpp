@@ -396,7 +396,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("push", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_push},
+		{Type::PTR_ARRAY, {Type::POINTER, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_push},
 		{Type::FLOAT_ARRAY, {Type::FLOAT_ARRAY, Type::FLOAT}, (void*) &LSArray<double>::ls_push},
 		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_push}
 	});
@@ -454,5 +454,3 @@ ArraySTD::ArraySTD() : Module("Array") {
 #endif
 
 }
-
-
