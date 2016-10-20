@@ -232,6 +232,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		store_result_in_v1 = true;
 	}
 
+	// "hello" + ? => string
+	if (op->type == TokenType::PLUS and v1->type == Type::STRING) {
+		type = Type::STRING;
+	}
+
 	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
 		v2->will_take(analyser, { v1->type.getElementType() });
