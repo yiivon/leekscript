@@ -42,7 +42,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("contains", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_contains);
 	method("endsWith", Type::STRING, Type::BOOLEAN_P, {Type::STRING}, (void*) &string_endsWith);
 	method("indexOf", Type::STRING, Type::INTEGER, {Type::STRING}, (void*) &string_indexOf);
-	method("isPermutation", Type::STRING, Type::BOOLEAN, {Type::POINTER}, (void*) &LSString::is_permutation); 
+	method("isPermutation", Type::STRING, Type::BOOLEAN, {Type::POINTER}, (void*) &LSString::is_permutation);
 	method("length", Type::STRING, Type::INTEGER_P, {}, (void*) &string_length);
 	method("size", Type::STRING, Type::INTEGER_P, {}, (void*) &string_size);
 	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
@@ -63,6 +63,8 @@ StringSTD::StringSTD() : Module("String") {
 	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
 	method("map", Type::STRING, Type::STRING, {map_fun_type}, (void*) &string_map);
+
+	method("sort", Type::STRING, Type::STRING, {}, (void*) &LSString::sort);
 
 	/*
 	 * Static methods
