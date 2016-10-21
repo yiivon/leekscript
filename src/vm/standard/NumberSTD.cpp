@@ -306,7 +306,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float},
 	});
 
-	method("pow", Type::NUMBER, Type::FLOAT_P, {Type::NUMBER}, (void*) &number_pow);
+	method("pow", {
+		{Type::NUMBER, Type::FLOAT_P, {Type::NUMBER}, (void*) &number_pow},
+		{Type::INTEGER, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int, Method::NATIVE}
+	});
 
 	method("round", {
 		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::round_ptr}
@@ -570,6 +573,10 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 	double s = sqrt(x->value);
 	LSValue::delete_temporary(x);
 	return s;
+}
+
+jit_value_t NumberSTD::pow_int(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_pow(c.F, args[0], args[1]);
 }
 
 }
