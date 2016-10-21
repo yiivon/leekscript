@@ -77,12 +77,12 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type = array->type;
 
 	} else {
-
+		/*
 		if (key->type != Type::UNKNOWN and not key->type.isNumber()) {
 			std::string k = "<key 1>";
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, k});
 		}
-
+		*/
 		if (array_element_type == Type::INTEGER) {
 			key->analyse(analyser, Type::INTEGER);
 		} else {
@@ -135,7 +135,9 @@ void ArrayAccess::change_type(SemanticAnalyser*, const Type&) {
 	// TODO
 }
 
-LSValue* access_temp(LSArray<LSValue*>* array, LSValue* key) {
+LSValue* access_temp(LSValue* array, LSValue* key) {
+	std::cout << "array access temp ";
+	key->print(std::cout); std::cout << std::endl;
 	return array->at(key);
 }
 
