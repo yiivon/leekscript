@@ -8,14 +8,20 @@
 
 namespace ls {
 
-template <>
-inline bool lsmap_less<LSValue*>::operator()(LSValue* lhs, LSValue* rhs) const {
-	return *lhs < *rhs;
-}
-
 template <typename K>
 inline bool lsmap_less<K>::operator()(K lhs, K rhs) const {
+	std::cout << "lsmap_less<K> : " << lhs << " and " << rhs << std::endl;
 	return lhs < rhs;
+}
+
+template <>
+inline bool lsmap_less<LSValue*>::operator()(LSValue* lhs, LSValue* rhs) const {
+	std::cout << "lsmap_less<LSValue*> : ";
+	lhs->print(std::cout);
+	std::cout << " and ";
+	rhs->print(std::cout);
+	std::cout << std::endl;
+	return *lhs < *rhs;
 }
 
 template <typename K, typename T>
@@ -310,7 +316,22 @@ inline bool LSMap<K,T>::isTrue() const {
 	return not this->empty();
 }
 
-
+template <typename K, typename T>
+inline bool LSMap<K, T>::in(LSValue* key) const {
+	return this->find(key) != this->end();
+}
+template <>
+inline bool LSMap<int, LSValue*>::in(LSValue* key) const {
+	return false;
+}
+template <>
+inline bool LSMap<int, int>::in(LSValue* key) const {
+	return false;
+}
+template <>
+inline bool LSMap<int, double>::in(LSValue* key) const {
+	return false;
+}
 
 template <>
 inline bool LSMap<LSValue*,LSValue*>::eq(const LSMap<LSValue*,LSValue*>* value) const {
@@ -1278,7 +1299,6 @@ inline bool LSMap<K,T>::lt(const LSMap<int,double>* map) const {
 
 template <>
 inline LSValue* LSMap<LSValue*,LSValue*>::at(const LSValue* key) const {
-
 	try {
 		return (LSValue*) ((std::map<LSValue*,LSValue*>*) this)->at((LSValue*) key)->clone();
 	} catch (std::exception&) {
@@ -1287,10 +1307,17 @@ inline LSValue* LSMap<LSValue*,LSValue*>::at(const LSValue* key) const {
 }
 template <>
 inline LSValue* LSMap<LSValue*,int>::at(const LSValue* key) const {
-
+	std::cout << "LSValue* LSMap<LSValue*,int>::at(const LSValue* key)" << std::endl;
+	std::cout << "key : ";
+	key->print(std::cout); std::cout << std::endl;
+	std::cout << "this : " << this->size() << std::endl;
+	std::cout << "first key : ";
+	this->begin()->first->print(std::cout);
+	std::cout << std::endl;
 	try {
 		return LSNumber::get(((std::map<LSValue*,int>*) this)->at((LSValue*) key));
-	} catch (std::exception&) {
+	} catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
 		return LSNull::get();
 	}
 }
