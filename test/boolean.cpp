@@ -4,20 +4,29 @@ void Test::test_booleans() {
 
 	header("Booléens");
 
+	section("Constructor");
 	code("new Boolean").equals("false");
 	code("new Boolean()").equals("false");
 	code("true").equals("true");
 	code("false").equals("false");
+
+	section("operator !");
 	code("!true").equals("false");
 	code("!false").equals("true");
+
+	section("operator &&");
 	code("true and true").equals("true");
 	code("true and false").equals("false");
 	code("false and true").equals("false");
 	code("false and false").equals("false");
+
+	section("operator ||");
 	code("true or true").equals("true");
 	code("true or false").equals("true");
 	code("false or true").equals("true");
 	code("false or false").equals("false");
+
+	section("operator xor");
 	code("true xor true").equals("false");
 	code("true xor false").equals("true");
 	code("false xor true").equals("true");
@@ -28,16 +37,17 @@ void Test::test_booleans() {
 	code("false + 99").equals("99");
 	code("true + 99").equals("100");
 
+	section("Boolean.compare()");
 	code("Boolean.compare(true, false)").equals("1");
 	code("Boolean.compare(true, true)").equals("0");
 	code("Boolean.compare(false, false)").equals("0");
 	code("Boolean.compare(false, true)").equals("-1");
 
+	section("Conversions");
 	code("12 and 'aaa'").equals("true");
 	code("[1, 2] and false").equals("false");
 	code("[] and ''").equals("false");
 	code("false and (x -> x)").equals("false");
-
 	code("12 or 'aaa'").equals("true");
 	code("[1, 2] or false").equals("true");
 	code("false or (x -> x)").equals("true");
