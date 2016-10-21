@@ -139,7 +139,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				is_native_method = m->native;
 			} else {
 				std::ostringstream obj_type_ss;
-				analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field->line, object_type.clazz + "." + oa->field->content + "(" + args_string + ")"});
+				obj_type_ss << object_type;
+				analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field->line, obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"});
 			}
 		}
 		/*

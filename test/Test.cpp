@@ -67,17 +67,18 @@ Test::Input Test::file(const std::string& file_name) {
 	return Test::Input(this, file_name, code);
 }
 
-ls::VM::Result Test::Input::run() {
+ls::VM::Result Test::Input::run(bool display_errors) {
 	auto result = test->vm.execute(_code, "{}");
 	test->obj_created += result.objects_created;
 	test->obj_deleted += result.objects_deleted;
 	test->total++;
 
-	if (result.semantical_errors.size()) {
+	if (display_errors) {
 		for (const auto& error : result.semantical_errors) {
-			std::cout << "Semantic error: " << error.message() << std::endl;
+			std::cout << "Line " << error.line << ": " << error.message() << std::endl;
 		}
 	}
+
 	#if DEBUG > 0
 		std::cout << "pgrm() " << result.program << std::endl;
 	#endif
@@ -102,6 +103,11 @@ void Test::Input::_equals(std::string&& expected) {
 
 	auto result = run();
 
+	if (result.semantical_errors.size()) {
+		for (const auto& error : result.semantical_errors) {
+			std::cout << "Semantic error: " << error.message() << std::endl;
+		}
+	}
 	if (result.value == expected) {
 		pass(expected);
 	} else {
@@ -135,7 +141,7 @@ void Test::Input::between(T a, T b) {
 
 void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::string token) {
 
-	auto result = run();
+	auto result = run(false);
 
 	std::string expected_message = ls::SemanticError::build_message(expected_type, token);
 
@@ -153,7 +159,7 @@ void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::str
 
 void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 
-	auto result = run();
+	auto result = run(false);
 
 	std::string expected_message = ls::LexicalError::build_message(expected_type);
 

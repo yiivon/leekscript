@@ -74,7 +74,7 @@ public:
 		void operations(int ops);
 		Input& timeout(int ms);
 
-		ls::VM::Result run();
+		ls::VM::Result run(bool display_errors = true);
 		void pass(std::string expected);
 		void fail(std::string expected, std::string actuel);
 		std::string& name() { return _name; };
