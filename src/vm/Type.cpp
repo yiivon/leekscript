@@ -192,6 +192,7 @@ bool Type::will_take_element(const Type& element_type) {
 Type Type::mix(const Type& x) const {
 
 	if (*this == x) return *this;
+	if (*this == Type::UNKNOWN or x == Type::UNKNOWN) return Type::UNKNOWN;
 	if (nature == Nature::POINTER || x.nature == Nature::POINTER) return Type::POINTER;
 	if (raw_type == RawType::FLOAT || x.raw_type == RawType::FLOAT) return Type::FLOAT;
 	if (raw_type == RawType::INTEGER || x.raw_type == RawType::INTEGER) return Type::INTEGER;
@@ -439,8 +440,12 @@ ostream& operator << (ostream& os, const Type& type) {
 	auto color = (type.nature == Nature::VALUE) ? GREEN : RED;
 	os << color;
 
-	if (type.raw_type == RawType::UNKNOWN and type.nature == Nature::POINTER) {
-		os << YELLOW << "?";
+	if (type.raw_type == RawType::UNKNOWN) {
+		if (type.nature == Nature::POINTER) {
+			os << YELLOW << "*";
+		} else {
+			os << YELLOW << "?";
+		}
 	} else if (type.raw_type == RawType::FUNCTION) {
 		os << "fun" << Type::get_nature_symbol(type.nature);
 		os << "(";
