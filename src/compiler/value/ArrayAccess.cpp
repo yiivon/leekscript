@@ -220,35 +220,35 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 			void* func = nullptr;
 			if (map_key_type == Type::INTEGER) {
 				if (array_element_type == Type::INTEGER) {
-					std::cout << "int int" << std::endl;
+					//std::cout << "int int" << std::endl;
 					func = (void*) &LSMap<int, int>::at_int_int;
 				} else if (array_element_type == Type::FLOAT) {
-					std::cout << "int real" << std::endl;
+					//std::cout << "int real" << std::endl;
 					func = (void*) &LSMap<int, double>::at_int_real;
 				} else {
-					std::cout << "int ptr" << std::endl;
+					//std::cout << "int ptr" << std::endl;
 					func = (void*) &LSMap<int, LSValue*>::at_int_ptr;
 				}
 			} else if (map_key_type == Type::FLOAT) {
 				if (array_element_type == Type::INTEGER) {
-					std::cout << "real int" << std::endl;
+					//std::cout << "real int" << std::endl;
 					func = (void*) &LSMap<double, int>::at_real_int;
 				} else if (array_element_type == Type::FLOAT) {
-					std::cout << "real real" << std::endl;
+					//std::cout << "real real" << std::endl;
 					func = (void*) &LSMap<double, double>::at_real_real;
 				} else {
-					std::cout << "real ptr" << std::endl;
+					//std::cout << "real ptr" << std::endl;
 					func = (void*) &LSMap<double, LSValue*>::at_real_ptr;
 				}
 			} else {
 				if (array_element_type == Type::INTEGER) {
-					std::cout << "ptr int" << std::endl;
+					//std::cout << "ptr int" << std::endl;
 					func = (void*) &LSMap<LSValue*, int>::at_ptr_int;
 				} else if (array_element_type == Type::FLOAT) {
-					std::cout << "ptr float" << std::endl;
+					//std::cout << "ptr float" << std::endl;
 					func = (void*) &LSMap<LSValue*, double>::at_ptr_real;
 				} else {
-					std::cout << "ptr ptr" << std::endl;
+					//std::cout << "ptr ptr" << std::endl;
 					func = (void*) &LSMap<LSValue*, LSValue*>::at;
 				}
 			}
@@ -311,7 +311,7 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 
 jit_value_t ArrayAccess::compile_l(Compiler& c) const {
 
-	std::cout << "compile access l " << std::endl;
+	//std::cout << "compile access l " << std::endl;
 
 	jit_value_t a = array->compile(c);
 
