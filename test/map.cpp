@@ -51,11 +51,11 @@ void Test::test_map() {
 
 	section("Map.operator []");
 	code("let m = [5: 12] m[5]").equals("12");
-	//code("let m = [5: 12.5] m[5]").equals("12.5");
+	code("let m = [5: 12.5] m[5]").equals("12.5");
 	code("let m = [5.5: 12] m[5.5]").equals("12");
-	//code("let m = [5.5: 12.5] m[5.5]").equals("12.5");
+	code("let m = [5.5: 12.5] m[5.5]").equals("12.5");
 	code("let m = ['salut': 12] m['salut']").equals("12");
-	//code("let m = ['salut': 12.5] m['salut']").equals("12.5");
+	code("let m = ['salut': 12.5] m['salut']").equals("12.5");
 	code("let m = ['salut': 'yolo'] m['salut']").equals("'yolo'");
 
 	section("Map.operator [] left-value");

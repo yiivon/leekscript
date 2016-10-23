@@ -165,7 +165,6 @@ LSValue** access_l(LSValue* array, LSValue* key) {
 int* access_l_value(LSArray<int>* array, int key) {
 	return array->atLv(key);
 }
-
 int* access_l_map(LSMap<LSValue*, int>* map, LSValue* key) {
 	int* res = map->atLv(key);
 	LSValue::delete_temporary(key);
@@ -212,8 +211,8 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 
 		} else if (array->type.raw_type == RawType::MAP) {
 
-			jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 0);
+			jit_type_t args_types[2] = {LS_POINTER, VM::get_jit_type(map_key_type)};
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(array_element_type), args_types, 2, 0);
 
 			jit_value_t k = key->compile(c);
 
