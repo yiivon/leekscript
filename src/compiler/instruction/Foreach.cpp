@@ -50,12 +50,16 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	container->analyse(analyser, Type::UNKNOWN);
 
-	if (container->type.element_types.size() == 1) {
+	if (container->type.element_type.size() == 1) {
+
 		key_type = Type::INTEGER; // If no key type in array key = 0, 1, 2...
-		value_type = container->type.element_types[0];
-	} else if (container->type.element_types.size() == 2) {
-		key_type = container->type.element_types[0];
-		value_type = container->type.element_types[1];
+		value_type = container->type.getElementType();
+
+	} else if (container->type.raw_type == RawType::MAP) {
+
+		key_type = container->type.getKeyType();
+		value_type = container->type.getElementType();
+
 	} else if (container->type.raw_type == RawType::ARRAY ||
 			   container->type.raw_type == RawType::SET) {
 		key_type = Type::INTEGER;
@@ -656,11 +660,11 @@ bool Foreach::equal_type(const Type& generic, const Type& actual) {
 
 	if (generic.raw_type != actual.raw_type) return false;
 	if (generic.nature != actual.nature) return false;
-	if (generic.element_types.size() != actual.element_types.size()) return false;
+	if (generic.element_type.size() != actual.element_type.size()) return false;
 
-	for (size_t i = 0; i < generic.element_types.size(); ++i) {
-		const Type& a = generic.element_types[i];
-		const Type& b = actual.element_types[i];
+	for (size_t i = 0; i < generic.element_type.size(); ++i) {
+		const Type& a = generic.element_type[i];
+		const Type& b = actual.element_type[i];
 		if (a.nature != b.nature) return false;
 		if (a.nature == Nature::VALUE && a.raw_type != b.raw_type) return false;
 	}

@@ -1,17 +1,20 @@
-/*
-
 var singles = []
-var groups = ['string' : 12] groups.erase('string')
+var groups = ['s' : 12] groups.erase('s')
+var first = ['s' : 's'] first.erase('s')
 var i = 405
 
-while ++i {
-
-    var n = ('' + i.pow(3)).sort()
-
-	if n in groups {
-		groups[n]++
-		System.print(groups[n])
+while i++ {
+	
+    var n = '' + i.pow(3)
+    var ns = n.sort()
+    
+	if ns in groups {
+		var c = (groups[ns] = groups[ns] + 1)
+		if (c == 5) {
+			return String.number(first[ns])
+		}
 	} else {
-		groups.insert(n, 1)
+		groups.insert(ns, 1)
+		first.insert(ns, n)
 	}
 }

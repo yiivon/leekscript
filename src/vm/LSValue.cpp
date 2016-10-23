@@ -322,6 +322,9 @@ bool LSValue::eq(const LSMap<LSValue*,double>*) const        { return false; }
 bool LSValue::eq(const LSMap<int,LSValue*>*) const           { return false; }
 bool LSValue::eq(const LSMap<int,int>*) const                { return false; }
 bool LSValue::eq(const LSMap<int,double>*) const             { return false; }
+bool LSValue::eq(const LSMap<double,LSValue*>*) const        { return false; }
+bool LSValue::eq(const LSMap<double,int>*) const             { return false; }
+bool LSValue::eq(const LSMap<double,double>*) const          { return false; }
 bool LSValue::eq(const LSSet<LSValue*>*) const               { return false; }
 bool LSValue::eq(const LSSet<int>*) const                    { return false; }
 bool LSValue::eq(const LSSet<double>*) const                 { return false; }
@@ -342,6 +345,9 @@ bool LSValue::lt(const LSMap<LSValue*,double>*) const        { return typeID() <
 bool LSValue::lt(const LSMap<int,LSValue*>*) const           { return typeID() < 6; }
 bool LSValue::lt(const LSMap<int,int>*) const                { return typeID() < 6; }
 bool LSValue::lt(const LSMap<int,double>*) const             { return typeID() < 6; }
+bool LSValue::lt(const LSMap<double,LSValue*>*) const        { return typeID() < 6; }
+bool LSValue::lt(const LSMap<double,int>*) const             { return typeID() < 6; }
+bool LSValue::lt(const LSMap<double,double>*) const          { return typeID() < 6; }
 bool LSValue::lt(const LSSet<LSValue*>*) const               { return typeID() < 7; }
 bool LSValue::lt(const LSSet<int>*) const                    { return typeID() < 7; }
 bool LSValue::lt(const LSSet<double>*) const                 { return typeID() < 7; }
@@ -419,4 +425,12 @@ std::string LSValue::to_json() const {
 	return "{\"t\":" + to_string(typeID()) + ",\"v\":" + json() + "}";
 }
 
+}
+
+namespace std {
+	std::string to_string(ls::LSValue* value) {
+		std::ostringstream oss;
+		value->print(oss);
+		return oss.str();
+	}
 }

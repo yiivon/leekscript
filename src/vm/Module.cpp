@@ -26,6 +26,11 @@ void Module::include(SemanticAnalyser* analyser, Program* program) {
 	analyser->add_var(new Token(name), Type::CLASS, nullptr, nullptr);
 }
 
+void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
+	vector<LSClass::Operator> operators = impl;
+	clazz->addOperator(name, operators);
+}
+
 void Module::field(std::string name, Type type) {
 	fields.push_back(ModuleField(name, type));
 	clazz->addField(name, type);

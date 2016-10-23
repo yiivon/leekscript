@@ -17,6 +17,14 @@ class NumberSTD : public Module {
 public:
 	NumberSTD();
 
+	/*
+	 * Operators
+	 */
+	static jit_value_t add_real_real(Compiler& c, std::vector<jit_value_t>);
+
+	/*
+	 * Methods
+	 */
 	static double abs_ptr(LSNumber* x);
 	static jit_value_t abs_real(Compiler&, std::vector<jit_value_t>);
 	static jit_value_t abs_int(Compiler&, std::vector<jit_value_t>);

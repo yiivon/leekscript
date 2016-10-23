@@ -367,6 +367,9 @@ public:
 	virtual bool eq(const LSMap<int,LSValue*>*) const;
 	virtual bool eq(const LSMap<int,int>*) const;
 	virtual bool eq(const LSMap<int,double>*) const;
+	virtual bool eq(const LSMap<double,LSValue*>*) const;
+	virtual bool eq(const LSMap<double,int>*) const;
+	virtual bool eq(const LSMap<double,double>*) const;
 	virtual bool eq(const LSSet<LSValue*>*) const;
 	virtual bool eq(const LSSet<int>*) const;
 	virtual bool eq(const LSSet<double>*) const;
@@ -392,6 +395,9 @@ public:
 	virtual bool lt(const LSMap<int,LSValue*>*) const;
 	virtual bool lt(const LSMap<int,int>*) const;
 	virtual bool lt(const LSMap<int,double>*) const;
+	virtual bool lt(const LSMap<double,LSValue*>*) const;
+	virtual bool lt(const LSMap<double,int>*) const;
+	virtual bool lt(const LSMap<double,double>*) const;
 	virtual bool lt(const LSSet<LSValue*>*) const;
 	virtual bool lt(const LSSet<int>*) const;
 	virtual bool lt(const LSSet<double>*) const;
@@ -495,6 +501,10 @@ inline std::ostream& operator << (std::ostream& os, const LSValue& value) {
 	return value.print(os);
 }
 
+}
+
+namespace std {
+	std::string to_string(ls::LSValue* value);
 }
 
 #endif

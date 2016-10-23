@@ -19,6 +19,11 @@ public:
 	bool no_op;
 	int operations;
 	Type conversion = Type::UNKNOWN;
+	void* operator_fun = nullptr;
+	bool is_native_method = false;
+	Type v1_type;
+	Type v2_type;
+	Type return_type;
 
 	Expression();
 	Expression(Value*);

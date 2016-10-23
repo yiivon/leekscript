@@ -57,6 +57,10 @@ void LSClass::addStaticField(std::string name, Type type, LSValue* value) {
 	static_fields.insert({name, ModuleStaticField(name, type, value)});
 }
 
+void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
+	operators.insert({name, impl});
+}
+
 Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args) {
 
 	try {
@@ -106,6 +110,26 @@ LSFunction* LSClass::getDefaultMethod(string& name) {
 		return nullptr;
 	}
 	return nullptr;
+}
+
+LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type& operand_type) {
+	try {
+		vector<Operator>& impl = operators.at(name);
+		Operator* best = nullptr;
+
+		for (Operator& m : impl) {
+			if (m.object_type.compatible(obj_type) and m.operand_type.compatible(operand_type)) {
+				if (best == nullptr or
+					Type::more_specific(best->operand_type, m.operand_type) or
+					Type::more_specific(best->object_type, m.object_type)) {
+					best = &m;
+				}
+			}
+		}
+		return best;
+	} catch (exception&) {
+		return nullptr;
+	}
 }
 
 bool LSClass::isTrue() const {

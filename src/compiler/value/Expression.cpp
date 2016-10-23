@@ -9,6 +9,7 @@
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSBoolean.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../../vm/Program.hpp"
 
 using namespace std;
 
@@ -112,6 +113,39 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type = v1->type;
 		return;
 	}
+
+	v1->analyse(analyser, Type::UNKNOWN);
+	v2->analyse(analyser, Type::UNKNOWN);
+
+	LSClass* object_class = (LSClass*) analyser->program->system_vars[v1->type.clazz];
+	if (object_class) {
+
+		LSClass::Operator* m = object_class->getOperator(op->character, v1->type, v2->type);
+
+		if (m != nullptr) {
+
+			//std::cout << "Operator " << v1->type << " " << op->character << " " << v2->type << " found!" << std::endl;
+			operator_fun = m->addr;
+			is_native_method = m->native;
+			v1_type = m->object_type;
+			v2_type = m->object_type;
+			return_type = m->return_type;
+			type = return_type;
+			v1->analyse(analyser, v1_type);
+			v2->analyse(analyser, v2_type);
+
+			if (req_type.nature == Nature::POINTER) {
+				type.nature = req_type.nature;
+			}
+			return;
+		} else {
+			//std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
+		}
+	}
+
+	/*
+	 * OLD
+	 */
 
 	// Require float type for a division
 	Type v1_type = Type::UNKNOWN;
@@ -499,6 +533,24 @@ jit_value_t Expression::compile(Compiler& c) const {
 	// Increment operations
 	if (operations > 0) {
 		VM::inc_ops(c.F, operations);
+	}
+
+	if (operator_fun != nullptr) {
+		vector<jit_value_t> args = { v1->compile(c), v2->compile(c) };
+		vector<jit_type_t> arg_types = { VM::get_jit_type(v1_type), VM::get_jit_type(v2_type) };
+
+		jit_value_t res;
+		if (is_native_method) {
+			auto fun = (jit_value_t (*)(Compiler&, std::vector<jit_value_t>)) operator_fun;
+			res = fun(c, args);
+		} else {
+			auto fun = (void* (*)()) operator_fun;
+			res = VM::call(c, VM::get_jit_type(type), arg_types, args, fun);
+		}
+		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
+			return VM::value_to_pointer(c.F, res, type);
+		}
+		return res;
 	}
 
 //	cout << "v1 : " << v1->type << ", v2 : " << v2->type << endl;

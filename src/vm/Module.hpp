@@ -7,6 +7,7 @@
 #include "../compiler/semantic/SemanticAnalyser.hpp"
 #include "Type.hpp"
 #include "Program.hpp"
+#include "value/LSClass.hpp"
 
 namespace ls {
 
@@ -99,6 +100,8 @@ public:
 
 	Module(std::string name);
 	virtual ~Module();
+
+	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
 
 	void method(std::string name, std::initializer_list<Method>);
 	void method(std::string name, Type obj_type, Type return_type, std::initializer_list<Type> args, void* addr);

@@ -3,6 +3,7 @@
 #include "../../compiler/value/Array.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSInterval.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
@@ -50,9 +51,13 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	key->analyse(analyser, Type::UNKNOWN);
 	constant = array->constant && key->constant;
 
-	if (array->type.raw_type == RawType::ARRAY || array->type.raw_type == RawType::INTERVAL) {
+	if (array->type.raw_type == RawType::ARRAY || array->type.raw_type == RawType::INTERVAL
+		|| array->type.raw_type == RawType::MAP) {
 		array_element_type = array->type.getElementType();
 		type = array_element_type;
+	}
+	if (array->type.raw_type == RawType::MAP) {
+		map_key_type = array->type.getKeyType();
 	}
 
 	if (array->type == Type::INTERVAL) {
@@ -91,8 +96,10 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	} else if (array->type.raw_type == RawType::MAP) {
 
-		if (array_element_type == Type::INTEGER) {
+		if (map_key_type == Type::INTEGER) {
 			key->analyse(analyser, Type::INTEGER);
+		} else if (map_key_type == Type::FLOAT) {
+			key->analyse(analyser, Type::FLOAT);
 		} else {
 			key->analyse(analyser, Type::POINTER);
 		}
@@ -143,22 +150,26 @@ void ArrayAccess::change_type(SemanticAnalyser*, const Type&) {
 	// TODO
 }
 
+/*
+ * Array
+ */
 LSValue* access_temp(LSValue* array, LSValue* key) {
-	//std::cout << "array access temp ";
-	//key->print(std::cout); std::cout << std::endl;
 	return array->at(key);
 }
-
 int access_temp_value(LSArray<int>* array, int key) {
 	return array->atv(key);
 }
-
-LSValue** access_l(LSArray<LSValue*>* array, LSValue* key) {
+LSValue** access_l(LSValue* array, LSValue* key) {
 	return array->atL(key);
 }
-
 int* access_l_value(LSArray<int>* array, int key) {
 	return array->atLv(key);
+}
+
+int* access_l_map(LSMap<LSValue*, int>* map, LSValue* key) {
+	int* res = map->atLv(key);
+	LSValue::delete_temporary(key);
+	return res;
 }
 
 LSValue* range(LSValue* array, int start, int end) {
@@ -195,6 +206,64 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 			VM::inc_ops(c.F, 2);
 
 			if (type.nature == Nature::POINTER) {
+				return VM::value_to_pointer(c.F, res, type);
+			}
+			return res;
+
+		} else if (array->type.raw_type == RawType::MAP) {
+
+			jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 0);
+
+			jit_value_t k = key->compile(c);
+
+			void* func = nullptr;
+			if (map_key_type == Type::INTEGER) {
+				if (array_element_type == Type::INTEGER) {
+					std::cout << "int int" << std::endl;
+					func = (void*) &LSMap<int, int>::at_int_int;
+				} else if (array_element_type == Type::FLOAT) {
+					std::cout << "int real" << std::endl;
+					func = (void*) &LSMap<int, double>::at_int_real;
+				} else {
+					std::cout << "int ptr" << std::endl;
+					func = (void*) &LSMap<int, LSValue*>::at_int_ptr;
+				}
+			} else if (map_key_type == Type::FLOAT) {
+				if (array_element_type == Type::INTEGER) {
+					std::cout << "real int" << std::endl;
+					func = (void*) &LSMap<double, int>::at_real_int;
+				} else if (array_element_type == Type::FLOAT) {
+					std::cout << "real real" << std::endl;
+					func = (void*) &LSMap<double, double>::at_real_real;
+				} else {
+					std::cout << "real ptr" << std::endl;
+					func = (void*) &LSMap<double, LSValue*>::at_real_ptr;
+				}
+			} else {
+				if (array_element_type == Type::INTEGER) {
+					std::cout << "ptr int" << std::endl;
+					func = (void*) &LSMap<LSValue*, int>::at_ptr_int;
+				} else if (array_element_type == Type::FLOAT) {
+					std::cout << "ptr float" << std::endl;
+					func = (void*) &LSMap<LSValue*, double>::at_ptr_real;
+				} else {
+					std::cout << "ptr ptr" << std::endl;
+					func = (void*) &LSMap<LSValue*, LSValue*>::at;
+				}
+			}
+
+			jit_value_t args[] = {a, k};
+			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
+
+			if (key->type.must_manage_memory()) {
+				VM::delete_temporary(c.F, k);
+			}
+			VM::delete_temporary(c.F, a);
+
+			VM::inc_ops(c.F, 2);
+
+			if (array_element_type == Type::INTEGER and type.nature == Nature::POINTER) {
 				return VM::value_to_pointer(c.F, res, type);
 			}
 			return res;
@@ -242,6 +311,8 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 
 jit_value_t ArrayAccess::compile_l(Compiler& c) const {
 
+	std::cout << "compile access l " << std::endl;
+
 	jit_value_t a = array->compile(c);
 
 	jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
@@ -250,7 +321,11 @@ jit_value_t ArrayAccess::compile_l(Compiler& c) const {
 	jit_value_t k = key->compile(c);
 
 	jit_value_t args[] = {a, k};
-	return jit_insn_call_native(c.F, "access_l", (void*) access_l_value, sig, args, 2, JIT_CALL_NOTHROW);
-}
 
+	if (array->type.raw_type == RawType::MAP) {
+		return jit_insn_call_native(c.F, "access_l", (void*) access_l_map, sig, args, 2, JIT_CALL_NOTHROW);
+	} else {
+		return jit_insn_call_native(c.F, "access_l", (void*) access_l_value, sig, args, 2, JIT_CALL_NOTHROW);
+	}
+}
 }

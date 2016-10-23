@@ -149,14 +149,15 @@ public:
 	Nature nature;
 	bool native; // A C++ object, memory management is done outside the language
 	std::string clazz;
-	std::vector<Type> element_types;
+	std::vector<Type> element_type;
+	std::vector<Type> key_type;
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
 
 	Type();
 	Type(const BaseRawType* raw_type, Nature nature, bool native = false);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native = false);
-	Type(const BaseRawType* raw_type, Nature nature, const std::vector<Type>& element_types, bool native = false);
+	Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native = false);
 
 	bool must_manage_memory() const;
 
@@ -168,8 +169,11 @@ public:
 	const Type& getArgumentType(size_t index) const;
 	const std::vector<Type>& getArgumentTypes() const;
 
-	const Type& getElementType(size_t i = 0) const;
+	const Type& getElementType() const;
 	void setElementType(const Type&);
+
+	const Type& getKeyType() const;
+	void setKeyType(const Type&);
 
 	bool will_take(const std::vector<Type>& args_type);
 	bool will_take_element(const Type& arg_type);

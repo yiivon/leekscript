@@ -255,6 +255,11 @@ bool number_isInteger(LSNumber* x) {
 #endif
 NumberSTD::NumberSTD() : Module("Number") {
 
+	operator_("+", {
+		{Type::FLOAT, Type::FLOAT, Type::FLOAT, (void*) &NumberSTD::add_real_real, Method::NATIVE},
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_real_real, Method::NATIVE},
+	});
+
 	static_field("pi", Type::FLOAT, (void*) &Number_pi);
 	static_field("e", Type::FLOAT, (void*) &Number_e);
 	static_field("phi", Type::FLOAT, (void*) &Number_phi);
@@ -423,6 +428,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
+
+jit_value_t NumberSTD::add_real_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_add(c.F, args[0], args[1]);
+}
 
 double NumberSTD::abs_ptr(LSNumber* x) {
 	// TODO check args

@@ -43,12 +43,12 @@ const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
-const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::POINTER});
-const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::INTEGER});
-const Type Type::PTR_FLOAT_MAP(RawType::MAP, Nature::POINTER, {Type::POINTER, Type::FLOAT});
-const Type Type::INT_PTR_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::POINTER});
-const Type Type::INT_INT_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::INTEGER});
-const Type Type::INT_FLOAT_MAP(RawType::MAP, Nature::POINTER, {Type::INTEGER, Type::FLOAT});
+const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::POINTER);
+const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER);
+const Type Type::PTR_FLOAT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::FLOAT);
+const Type Type::INT_PTR_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::POINTER);
+const Type Type::INT_INT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::INTEGER);
+const Type Type::INT_FLOAT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::FLOAT);
 const Type Type::PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER);
 const Type Type::INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER);
 const Type Type::FLOAT_SET(RawType::SET, Nature::POINTER, Type::FLOAT);
@@ -72,20 +72,21 @@ Type::Type(const BaseRawType* raw_type, Nature nature, bool native) {
 	this->clazz = raw_type->getClass();
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native) {
+Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type, bool native) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
-	this->setElementType(elements_type);
+	this->setElementType(element_type);
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const vector<Type>& element_type, bool native) {
+Type::Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
-	this->element_types = element_type;
+	this->setKeyType(key_type);
+	this->setElementType(element_type);
 }
 
 bool Type::must_manage_memory() const {
@@ -132,18 +133,31 @@ const std::vector<Type>& Type::getArgumentTypes() const {
 	return arguments_types;
 }
 
-const Type& Type::getElementType(size_t i) const {
-	if (i < element_types.size()) {
-		return element_types[i];
+const Type& Type::getElementType() const {
+	if (element_type.size()) {
+		return element_type[0];
 	}
 	return Type::UNKNOWN;
 }
-
 void Type::setElementType(const Type& type) {
-	if (element_types.size() == 0) {
-		element_types.push_back(type);
+	if (element_type.size() == 0) {
+		element_type.push_back(type);
 	} else {
-		element_types[0] = type;
+		element_type[0] = type;
+	}
+}
+
+const Type& Type::getKeyType() const {
+	if (key_type.size()) {
+		return key_type[0];
+	}
+	return Type::UNKNOWN;
+}
+void Type::setKeyType(const Type& type) {
+	if (key_type.size() == 0) {
+		key_type.push_back(type);
+	} else {
+		key_type[0] = type;
 	}
 }
 
@@ -230,7 +244,8 @@ bool Type::operator ==(const Type& type) const {
 			nature == type.nature &&
 			native == type.native &&
 			clazz == type.clazz &&
-			element_types == type.element_types &&
+			element_type == type.element_type &&
+			key_type == type.key_type &&
 			return_types == type.return_types &&
 			arguments_types == type.arguments_types;
 }
@@ -276,10 +291,10 @@ bool Type::compatible(const Type& type) const {
 	}
 
 	if (this->raw_type == RawType::MAP) {
-		const Type& k1 = this->getElementType(0);
-		const Type& k2 = type.getElementType(0);
-		const Type& v1 = this->getElementType(1);
-		const Type& v2 = type.getElementType(1);
+		const Type& k1 = this->getKeyType();
+		const Type& k2 = type.getKeyType();
+		const Type& v1 = this->getElementType();
+		const Type& v2 = type.getElementType();
 		if (k1.nature == Nature::POINTER && k2.nature == Nature::POINTER) {
 			if (v1.nature == Nature::POINTER && v2.nature == Nature::POINTER) {
 				return true;
@@ -347,8 +362,8 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 	}
 
 	if (neww.raw_type == RawType::MAP and old.raw_type == RawType::MAP) {
-		if (Type::more_specific(old.getElementType(0), neww.getElementType(0))
-				|| Type::more_specific(old.getElementType(1), neww.getElementType(1))) {
+		if (Type::more_specific(old.getKeyType(), neww.getKeyType())
+				|| Type::more_specific(old.getElementType(), neww.getElementType())) {
 			return true;
 		}
 	}
@@ -369,7 +384,8 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 
 	if (t1.nature == Nature::POINTER and t2.nature == Nature::VALUE) {
 		if (t1.raw_type == t2.raw_type) {
-			if (t1.element_types == t2.element_types
+			if (t1.element_type == t2.element_type
+					&& t1.key_type == t2.key_type
 					&& t1.return_types == t2.return_types
 					&& t1.arguments_types == t2.arguments_types) {
 				return t1; // They are identical except the Nature
@@ -382,7 +398,8 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	// symmetric of last it statement
 	if (t2.nature == Nature::POINTER and t1.nature == Nature::VALUE) {
 		if (t2.raw_type == t1.raw_type) {
-			if (t2.element_types == t1.element_types
+			if (t2.element_type == t1.element_type
+					&& t1.key_type == t2.key_type
 					&& t2.return_types == t1.return_types
 					&& t2.arguments_types == t1.arguments_types) {
 				return t2;
@@ -464,8 +481,8 @@ ostream& operator << (ostream& os, const Type& type) {
 		os << "<" << type.getElementType() << BLUE << ">";
 	} else if (type.raw_type == RawType::MAP) {
 		os << BLUE << type.raw_type->getName();
-		os << "<" << type.getElementType(0) << BLUE
-			<< ", " << type.getElementType(1) << BLUE << ">";
+		os << "<" << type.getKeyType() << BLUE
+			<< ", " << type.getElementType() << BLUE << ">";
 	} else {
 		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 	}
