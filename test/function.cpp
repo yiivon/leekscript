@@ -41,7 +41,7 @@ void Test::test_functions() {
 	code("let f = x -> [x, x, x] f(44)").equals("[44, 44, 44]");
 	code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
 	code("1; 2").equals("2");
-	code("let x = 'leak' return '1'; 2").equals("'1'");
+	code("let x = 'yolo' return '1'; 2").equals("'1'");
 	code("let x = '1' return x; 2").equals("'1'");
 	code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
 	//	code("let a = 10 a ~ x -> x ^ 2").equals("100");
