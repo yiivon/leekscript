@@ -1,4 +1,4 @@
-#include "../../compiler/value/Function.hpp"
+#include "Function.hpp"
 
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../../vm/value/LSFunction.hpp"
