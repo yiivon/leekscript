@@ -3,6 +3,7 @@
 
 #include "LSNumber.hpp"
 #include "LSNull.hpp"
+#include "LSArray.hpp"
 
 #include <exception>
 
@@ -302,6 +303,16 @@ inline double LSMap<int,double>::ls_look(int key, double def) {
 	}
 	if (refs == 0) delete this;
 	return def;
+}
+
+template <typename K, typename V>
+LSArray<V>* LSMap<K, V>::values() const {
+	LSArray<V>* array = new LSArray<V>();
+	for (auto i : *this) {
+		array->push_clone(i.second);
+	}
+	LSValue::delete_temporary(this);
+	return array;
 }
 
 

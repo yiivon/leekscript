@@ -39,6 +39,18 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::INT_INT_MAP, Type::INTEGER, {}, (void*) map_size},
     });
 
+	method("values", {
+		{Type::PTR_PTR_MAP, Type::PTR_ARRAY, {}, (void*) &LSMap<LSValue*, LSValue*>::values},
+		{Type::PTR_REAL_MAP, Type::REAL_ARRAY, {}, (void*) &LSMap<LSValue*, double>::values},
+		{Type::PTR_INT_MAP, Type::INT_ARRAY, {}, (void*) &LSMap<LSValue*, int>::values},
+		{Type::REAL_PTR_MAP, Type::PTR_ARRAY, {}, (void*) &LSMap<double, LSValue*>::values},
+		{Type::REAL_REAL_MAP, Type::REAL_ARRAY, {}, (void*) &LSMap<double, double>::values},
+		{Type::REAL_INT_MAP, Type::INT_ARRAY, {}, (void*) &LSMap<double, int>::values},
+		{Type::INT_PTR_MAP, Type::PTR_ARRAY, {}, (void*) &LSMap<int, LSValue*>::values},
+		{Type::INT_REAL_MAP, Type::REAL_ARRAY, {}, (void*) &LSMap<int, double>::values},
+		{Type::INT_INT_MAP, Type::INT_ARRAY, {}, (void*) &LSMap<int, int>::values}
+	});
+
 	method("insert", {
 		{Type::PTR_PTR_MAP, Type::BOOLEAN, {Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_insert},
 		{Type::PTR_REAL_MAP, Type::BOOLEAN, {Type::POINTER, Type::REAL}, (void*) &LSMap<LSValue*,double>::ls_insert},

@@ -26,6 +26,7 @@ public:
 	LSMap<K, T>* ls_clear();
 	bool ls_erase(K key);
 	T ls_look(K key, T def);
+	LSArray<T>* values() const;
 
 	/*
 	 * LSValue methods;
