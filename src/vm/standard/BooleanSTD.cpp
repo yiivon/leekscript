@@ -19,7 +19,7 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 #endif
 
 int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
-	bool res = 0;
+	int res = 0;
 	if (a->value) {
 		if (not b->value) res = 1;
 	} else {

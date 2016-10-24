@@ -42,6 +42,10 @@ void Test::test_booleans() {
 	code("Boolean.compare(true, true)").equals("0");
 	code("Boolean.compare(false, false)").equals("0");
 	code("Boolean.compare(false, true)").equals("-1");
+	code("Boolean.compare([true, ''][0], [false, ''][0])").equals("1");
+	code("Boolean.compare([true, ''][0], [true, ''][0])").equals("0");
+	code("Boolean.compare([false, ''][0], [false, ''][0])").equals("0");
+	code("Boolean.compare([false, ''][0], [true, ''][0])").equals("-1");
 
 	section("Conversions");
 	code("12 and 'aaa'").equals("true");
