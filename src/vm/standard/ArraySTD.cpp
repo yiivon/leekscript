@@ -32,6 +32,13 @@ LSValue* array_sub(LSArray<LSValue*>* array, int begin, int end) {
 #endif
 ArraySTD::ArraySTD() : Module("Array") {
 
+	operator_("in", {
+		{Type::PTR_ARRAY, Type::POINTER, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in},
+		{Type::REAL_ARRAY, Type::REAL, Type::BOOLEAN, (void*) &LSArray<double>::in},
+		{Type::INT_ARRAY, Type::INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in},
+		{Type::INTERVAL, Type::INTEGER, Type::BOOLEAN, (void*) &LSInterval::in_v}
+	});
+
 	method("average", {
 		{Type::PTR_ARRAY, Type::REAL, {}, (void*) &LSArray<LSValue*>::ls_average},
 		{Type::REAL_ARRAY, Type::REAL, {}, (void*) &LSArray<double>::ls_average},

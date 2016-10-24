@@ -262,14 +262,16 @@ inline bool LSSet<T>::lt(const LSSet<double>* v) const {
 
 template <>
 inline bool LSSet<LSValue*>::in(LSValue* value) const {
-	return count(value);
+	bool r = count(value);
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(value);
+	return r;
 }
 template <typename T>
-inline bool LSSet<T>::in(LSValue* value) const {
-	if (LSNumber* number = dynamic_cast<LSNumber*>(value)) {
-		return this->count(number->value);
-	}
-	return false;
+inline bool LSSet<T>::in(T value) const {
+	bool r = this->count(value);
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 template <typename T>

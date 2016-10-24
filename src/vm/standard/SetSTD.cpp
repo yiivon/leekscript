@@ -18,6 +18,12 @@ int set_size(const LSSet<LSValue*>* set) {
 #endif
 SetSTD::SetSTD() : Module("Set") {
 
+	operator_("in", {
+		{Type::PTR_SET, Type::POINTER, Type::BOOLEAN, (void*) &LSSet<LSValue*>::in},
+		{Type::REAL_SET, Type::REAL, Type::BOOLEAN, (void*) &LSSet<double>::in},
+		{Type::INT_SET, Type::INTEGER, Type::BOOLEAN, (void*) &LSSet<int>::in}
+	});
+
 	method("size", {
 		{Type::PTR_SET, Type::INTEGER, {}, (void*) set_size},
 		{Type::REAL_SET, Type::INTEGER, {}, (void*) set_size},
@@ -53,4 +59,3 @@ SetSTD::SetSTD() : Module("Set") {
 #endif
 
 }
-

@@ -12,6 +12,10 @@ LSObject* object_map(const LSObject* object);
 #endif
 ObjectSTD::ObjectSTD() : Module("Object") {
 
+	operator_("in", {
+		{Type::OBJECT, Type::POINTER, Type::BOOLEAN, (void*) &LSObject::in}
+	});
+
 	method("map", Type::OBJECT, Type::OBJECT, {}, (void*) &object_map);
 
 	method("keys", Type::OBJECT, Type::STRING_ARRAY, {}, (void*) &LSObject::ls_get_keys);
@@ -29,4 +33,3 @@ LSObject* object_map(const LSObject*) {
 }
 
 }
-

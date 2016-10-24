@@ -1955,24 +1955,27 @@ inline bool LSArray<T>::lt(const LSArray<double>* v) const {
 }
 
 template <typename T>
-bool LSArray<T>::in(LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		for (auto i = this->begin(); i != this->end(); i++) {
-			if ((*i) == n->value) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-template <>
-inline bool LSArray<LSValue*>::in(LSValue* key) const {
+inline bool LSArray<T>::in(const T value) const {
 	for (auto i = this->begin(); i != this->end(); i++) {
-		if (**i == *key) {
+		if (*i == value) {
+			LSValue::delete_temporary(this);
 			return true;
 		}
 	}
+	LSValue::delete_temporary(this);
+	return false;
+}
+template <>
+inline bool LSArray<LSValue*>::in(LSValue* const value) const {
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (**i == *value) {
+			LSValue::delete_temporary(this);
+			LSValue::delete_temporary(value);
+			return true;
+		}
+	}
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(value);
 	return false;
 }
 

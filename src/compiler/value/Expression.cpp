@@ -117,18 +117,24 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	v1->analyse(analyser, Type::UNKNOWN);
 	v2->analyse(analyser, Type::UNKNOWN);
 
-	LSClass* object_class = (LSClass*) analyser->program->system_vars[v1->type.clazz];
+	Type obj_type = op->reversed ? v2->type : v1->type;
+
+	LSClass* object_class = (LSClass*) analyser->program->system_vars[obj_type.clazz];
 	if (object_class) {
 
-		LSClass::Operator* m = object_class->getOperator(op->character, v1->type, v2->type);
+		Type v1_type = op->reversed ? v2->type : v1->type;
+		Type v2_type = op->reversed ? v1->type : v2->type;
+
+		LSClass::Operator* m = object_class->getOperator(op->character, v1_type, v2_type);
 
 		if (m != nullptr) {
 
 			//std::cout << "Operator " << v1->type << " " << op->character << " " << v2->type << " found!" << std::endl;
+
 			operator_fun = m->addr;
 			is_native_method = m->native;
-			v1_type = m->object_type;
-			v2_type = m->object_type;
+			v1_type = op->reversed ? m->operand_type : m->object_type;
+			v2_type = op->reversed ? m->object_type : m->operand_type;
 			return_type = m->return_type;
 			type = return_type;
 			v1->analyse(analyser, v1_type);
@@ -445,13 +451,6 @@ LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->ls_pow_eq(y);
 }
 
-bool jit_in(LSValue* x, LSValue* y) {
-	bool r = y->in(x);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-
 bool jit_instanceof(LSValue* x, LSValue* y) {
 	bool r = (((LSClass*) x->getClass())->name == ((LSClass*) y)->name);
 	LSValue::delete_temporary(x);
@@ -536,8 +535,15 @@ jit_value_t Expression::compile(Compiler& c) const {
 	}
 
 	if (operator_fun != nullptr) {
-		vector<jit_value_t> args = { v1->compile(c), v2->compile(c) };
-		vector<jit_type_t> arg_types = { VM::get_jit_type(v1_type), VM::get_jit_type(v2_type) };
+
+		vector<jit_value_t> args = {
+			op->reversed ? v2->compile(c) : v1->compile(c),
+			op->reversed ? v1->compile(c) : v2->compile(c)
+		};
+		vector<jit_type_t> arg_types = {
+			op->reversed ? VM::get_jit_type(v2_type) : VM::get_jit_type(v1_type),
+			op->reversed ? VM::get_jit_type(v1_type) : VM::get_jit_type(v2_type)
+		};
 
 		jit_value_t res;
 		if (is_native_method) {
@@ -962,12 +968,6 @@ jit_value_t Expression::compile(Compiler& c) const {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-		case TokenType::IN: {
-			use_jit_func = false;
-			ls_func = (void*) &jit_in;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
 		case TokenType::INSTANCEOF: {
 			use_jit_func = false;
 			ls_func = (void*) &jit_instanceof;

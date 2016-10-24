@@ -26,11 +26,12 @@ public:
 	 */
 	LSArray<int>* ls_filter(const void* function);
 
-
 	/*
 	 * LSValue methods
 	 */
-	virtual bool in(LSValue*) const override;
+	bool in(LSValue*) const override;
+	bool in_v(int) const;
+
 	int atv(const int key) const;
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;

@@ -309,32 +309,31 @@ inline bool LSMap<K,T>::isTrue() const {
 }
 
 template <typename K, typename T>
-inline bool LSMap<K, T>::in(LSValue* key) const {
-	return this->find(key) != this->end();
+inline bool LSMap<K, T>::in(K key) const {
+	bool r = this->find(key) != this->end();
+	LSValue::delete_temporary(this);
+	return r;
 }
 template <>
-inline bool LSMap<int, LSValue*>::in(LSValue*) const {
-	return false;
+inline bool LSMap<LSValue*, int>::in(LSValue* key) const {
+	bool r = this->find(key) != this->end();
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(key);
+	return r;
 }
 template <>
-inline bool LSMap<int, int>::in(LSValue*) const {
-	return false;
+inline bool LSMap<LSValue*, double>::in(LSValue* key) const {
+	bool r = this->find(key) != this->end();
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(key);
+	return r;
 }
 template <>
-inline bool LSMap<int, double>::in(LSValue*) const {
-	return false;
-}
-template <>
-inline bool LSMap<double, LSValue*>::in(LSValue*) const {
-	return false;
-}
-template <>
-inline bool LSMap<double, int>::in(LSValue*) const {
-	return false;
-}
-template <>
-inline bool LSMap<double, double>::in(LSValue*) const {
-	return false;
+inline bool LSMap<LSValue*, LSValue*>::in(LSValue* key) const {
+	bool r = this->find(key) != this->end();
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(key);
+	return r;
 }
 
 template <typename K, typename T>

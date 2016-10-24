@@ -27,11 +27,14 @@ LSArray<int>* LSInterval::ls_filter(const void* function) {
 }
 
 bool LSInterval::in(LSValue* value) const {
-
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(value)) {
-		return n->value >= a and n->value <= b;
-	}
+	LSValue::delete_temporary(this);
 	return false;
+}
+
+bool LSInterval::in_v(int value) const {
+	bool res = value >= a and value <= b;
+	LSValue::delete_temporary(this);
+	return res;
 }
 
 int LSInterval::atv(const int key) const {

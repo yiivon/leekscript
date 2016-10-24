@@ -42,7 +42,8 @@ public:
 	virtual bool lt(const LSSet<int>*) const;
 	virtual bool lt(const LSSet<double>*) const;
 
-	bool in(LSValue*) const override;
+	bool in(T) const;
+
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;
 	virtual std::ostream& print(std::ostream&) const override;

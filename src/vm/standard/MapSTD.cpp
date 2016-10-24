@@ -18,6 +18,18 @@ int map_size(const LSMap<LSValue*,LSValue*>* map) {
 #endif
 MapSTD::MapSTD() : Module("Map") {
 
+	operator_("in", {
+		{Type::PTR_PTR_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, LSValue*>::in},
+		{Type::PTR_REAL_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, double>::in},
+		{Type::PTR_INT_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, int>::in},
+		{Type::REAL_PTR_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, LSValue*>::in},
+		{Type::REAL_REAL_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, double>::in},
+		{Type::REAL_INT_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, int>::in},
+		{Type::INT_PTR_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, LSValue*>::in},
+		{Type::INT_REAL_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, double>::in},
+		{Type::INT_INT_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, int>::in},
+	});
+
 	method("size", {
 		{Type::PTR_PTR_MAP, Type::INTEGER, {}, (void*) map_size},
 		{Type::PTR_REAL_MAP, Type::INTEGER, {}, (void*) map_size},

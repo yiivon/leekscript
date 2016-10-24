@@ -66,6 +66,7 @@ Operator::Operator(Token* token) {
 	this->character = token->content;
 	this->priority = operator_priorities[(int) token->type];
 
+	this->reversed = type == TokenType::IN;
 //	cout << "operator " << character << " (" << (int)token->type << ") : " << priority << endl;
 }
 

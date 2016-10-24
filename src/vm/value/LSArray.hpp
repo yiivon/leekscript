@@ -115,7 +115,7 @@ public:
 	bool lt(const LSArray<int>*) const override;
 	bool lt(const LSArray<double>*) const override;
 
-	bool in(LSValue*) const override;
+	bool in(const T) const;
 
 	LSValue* at(const LSValue* value) const override;
 	LSValue** atL(const LSValue* value) override;
