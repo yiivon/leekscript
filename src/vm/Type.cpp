@@ -12,7 +12,7 @@ const BooleanRawType* const RawType::BOOLEAN = new BooleanRawType();
 const NumberRawType* const RawType::NUMBER = new NumberRawType();
 const IntegerRawType* const RawType::INTEGER = new IntegerRawType();
 const LongRawType* const RawType::LONG = new LongRawType();
-const FloatRawType* const RawType::FLOAT = new FloatRawType();
+const FloatRawType* const RawType::REAL = new FloatRawType();
 const StringRawType* const RawType::STRING = new StringRawType();
 const ArrayRawType* const RawType::ARRAY = new ArrayRawType();
 const MapRawType* const RawType::MAP = new MapRawType();
@@ -30,28 +30,28 @@ const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
 
 const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
-const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER, true);
 const Type Type::NUMBER(RawType::NUMBER, Nature::POINTER);
 const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
-const Type Type::INTEGER_P(RawType::INTEGER, Nature::POINTER);
 const Type Type::LONG(RawType::LONG, Nature::VALUE);
-const Type Type::FLOAT(RawType::FLOAT, Nature::VALUE);
-const Type Type::FLOAT_P(RawType::FLOAT, Nature::POINTER);
+const Type Type::REAL(RawType::REAL, Nature::VALUE);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
-const Type Type::FLOAT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::FLOAT);
+const Type Type::REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
 const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::POINTER);
 const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER);
-const Type Type::PTR_FLOAT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::FLOAT);
+const Type Type::PTR_REAL_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::REAL);
+const Type Type::REAL_PTR_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::POINTER);
+const Type Type::REAL_INT_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::INTEGER);
+const Type Type::REAL_REAL_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::REAL);
 const Type Type::INT_PTR_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::POINTER);
 const Type Type::INT_INT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::INTEGER);
-const Type Type::INT_FLOAT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::FLOAT);
+const Type Type::INT_REAL_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::REAL);
 const Type Type::PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER);
 const Type Type::INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER);
-const Type Type::FLOAT_SET(RawType::SET, Nature::POINTER, Type::FLOAT);
+const Type Type::REAL_SET(RawType::SET, Nature::POINTER, Type::REAL);
 const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
@@ -208,7 +208,7 @@ Type Type::mix(const Type& x) const {
 	if (*this == x) return *this;
 	if (*this == Type::UNKNOWN or x == Type::UNKNOWN) return Type::UNKNOWN;
 	if (nature == Nature::POINTER || x.nature == Nature::POINTER) return Type::POINTER;
-	if (raw_type == RawType::FLOAT || x.raw_type == RawType::FLOAT) return Type::FLOAT;
+	if (raw_type == RawType::REAL || x.raw_type == RawType::REAL) return Type::REAL;
 	if (raw_type == RawType::INTEGER || x.raw_type == RawType::INTEGER) return Type::INTEGER;
 	return x;
 }
@@ -269,7 +269,7 @@ bool Type::compatible(const Type& type) const {
 		}
 
 		// 'Integer' is compatible with 'Float'
-		if (this->raw_type == RawType::FLOAT and type.raw_type == RawType::INTEGER) {
+		if (this->raw_type == RawType::REAL and type.raw_type == RawType::INTEGER) {
 			return true;
 		}
 
@@ -277,7 +277,7 @@ bool Type::compatible(const Type& type) const {
 		if (this->raw_type == RawType::NUMBER and (
 			type.raw_type == RawType::INTEGER or
 			type.raw_type == RawType::LONG or
-			type.raw_type == RawType::FLOAT
+			type.raw_type == RawType::REAL
 		)) return true;
 
 		return false;
@@ -341,10 +341,10 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 			return true;
 		}
 		if (old.raw_type == RawType::NUMBER
-				&& (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG || neww.raw_type == RawType::FLOAT)) {
+				&& (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG || neww.raw_type == RawType::REAL)) {
 			return true;
 		}
-		if (old.raw_type == RawType::FLOAT
+		if (old.raw_type == RawType::REAL
 				&& (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG)) {
 			return true;
 		}

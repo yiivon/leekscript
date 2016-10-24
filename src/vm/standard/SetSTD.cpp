@@ -19,34 +19,34 @@ int set_size(const LSSet<LSValue*>* set) {
 SetSTD::SetSTD() : Module("Set") {
 
 	method("size", {
-			   {Type::PTR_SET, Type::INTEGER, {}, (void*) set_size},
-			   {Type::FLOAT_SET, Type::INTEGER, {}, (void*) set_size},
-			   {Type::INT_SET, Type::INTEGER, {}, (void*) set_size},
-		   });
+		{Type::PTR_SET, Type::INTEGER, {}, (void*) set_size},
+		{Type::REAL_SET, Type::INTEGER, {}, (void*) set_size},
+		{Type::INT_SET, Type::INTEGER, {}, (void*) set_size},
+	});
 
 	method("insert", {
-			   {Type::PTR_SET, Type::BOOLEAN, {Type::POINTER}, (void*) &LSSet<LSValue*>::ls_insert},
-			   {Type::FLOAT_SET, Type::BOOLEAN, {Type::FLOAT}, (void*) &LSSet<double>::ls_insert},
-			   {Type::INT_SET, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSSet<int>::ls_insert},
-		   });
+		{Type::PTR_SET, Type::BOOLEAN, {Type::POINTER}, (void*) &LSSet<LSValue*>::ls_insert},
+		{Type::REAL_SET, Type::BOOLEAN, {Type::REAL}, (void*) &LSSet<double>::ls_insert},
+		{Type::INT_SET, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSSet<int>::ls_insert},
+	});
 
 	method("clear", {
-			   {Type::PTR_SET, Type::PTR_SET, {}, (void*) &LSSet<LSValue*>::ls_clear},
-			   {Type::FLOAT_SET, Type::FLOAT_SET, {}, (void*) &LSSet<double>::ls_clear},
-			   {Type::INT_SET, Type::INT_SET, {}, (void*) &LSSet<int>::ls_clear},
-		   });
+		{Type::PTR_SET, Type::PTR_SET, {}, (void*) &LSSet<LSValue*>::ls_clear},
+		{Type::REAL_SET, Type::REAL_SET, {}, (void*) &LSSet<double>::ls_clear},
+		{Type::INT_SET, Type::INT_SET, {}, (void*) &LSSet<int>::ls_clear},
+	});
 
 	method("erase", {
-			   {Type::PTR_SET, Type::BOOLEAN, {Type::POINTER}, (void*) &LSSet<LSValue*>::ls_erase},
-			   {Type::FLOAT_SET, Type::BOOLEAN, {Type::FLOAT}, (void*) &LSSet<double>::ls_erase},
-			   {Type::INT_SET, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSSet<int>::ls_erase},
-		   });
+		{Type::PTR_SET, Type::BOOLEAN, {Type::POINTER}, (void*) &LSSet<LSValue*>::ls_erase},
+		{Type::REAL_SET, Type::BOOLEAN, {Type::REAL}, (void*) &LSSet<double>::ls_erase},
+		{Type::INT_SET, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSSet<int>::ls_erase},
+	});
 
 	method("contains", {
-			   {Type::PTR_SET, Type::BOOLEAN, {Type::POINTER}, (void*) &LSSet<LSValue*>::ls_contains},
-			   {Type::FLOAT_SET, Type::BOOLEAN, {Type::FLOAT}, (void*) &LSSet<double>::ls_contains},
-			   {Type::INT_SET, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSSet<int>::ls_contains},
-		   });
+		{Type::PTR_SET, Type::BOOLEAN, {Type::POINTER}, (void*) &LSSet<LSValue*>::ls_contains},
+		{Type::REAL_SET, Type::BOOLEAN, {Type::REAL}, (void*) &LSSet<double>::ls_contains},
+		{Type::INT_SET, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSSet<int>::ls_contains},
+	});
 }
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

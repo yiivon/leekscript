@@ -75,7 +75,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			}
 
 			// Native elements types supported : integer, double
-			if (element_type == Type::INTEGER || element_type == Type::FLOAT) {
+			if (element_type == Type::INTEGER || element_type == Type::REAL) {
 				supported_type = element_type;
 			}
 			// For function, we store them as pointers

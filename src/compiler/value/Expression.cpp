@@ -152,9 +152,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	Type v2_type = Type::UNKNOWN;
 
 	if (op->type == TokenType::DIVIDE) {
-		type.raw_type = RawType::FLOAT;
-		v1_type = Type::FLOAT;
-		//v2_type = Type::FLOAT;
+		type.raw_type = RawType::REAL;
+		v1_type = Type::REAL;
+		//v2_type = Type::REAL;
 	}
 
 	// First analyse of v1 and v2
@@ -204,7 +204,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type = v1->type.mix(v2->type);
 
 		if (op->type == TokenType::DIVIDE and v1->type.isNumber() and v2->type.isNumber()) {
-			type.raw_type = RawType::FLOAT;
+			type.raw_type = RawType::REAL;
 		}
 
 		// String / String => Array<String>
@@ -258,8 +258,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		// A += B, A -= B
 		if (is_left_value and (op->type == TokenType::PLUS_EQUAL or op->type == TokenType::MINUS_EQUAL)) {
-			if (v1->type == Type::INTEGER and v2->type == Type::FLOAT) {
-				((LeftValue*) v1)->change_type(analyser, Type::FLOAT);
+			if (v1->type == Type::INTEGER and v2->type == Type::REAL) {
+				((LeftValue*) v1)->change_type(analyser, Type::REAL);
 			}
 		}
 
@@ -315,9 +315,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
 	}
-	if (req_type.raw_type == RawType::FLOAT) {
+	if (req_type.raw_type == RawType::REAL) {
 		conversion = type;
-		type.raw_type = RawType::FLOAT;
+		type.raw_type = RawType::REAL;
 	}
 }
 
@@ -824,7 +824,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 		case TokenType::DIVIDE: {
 			jit_func = &jit_insn_div;
 			ls_func = (void*) &jit_div;
-			jit_returned_type = Type::FLOAT;
+			jit_returned_type = Type::REAL;
 			break;
 		}
 		case TokenType::INT_DIV: {
@@ -941,13 +941,13 @@ jit_value_t Expression::compile(Compiler& c) const {
 			if (v1->type.getElementType() == Type::INTEGER) {
 				if (type.getElementType() == Type::INTEGER) {
 					ls_func = (void*) &LSArray<int>::ls_map_int;
-				} else if (type.getElementType() == Type::FLOAT) {
+				} else if (type.getElementType() == Type::REAL) {
 					ls_func = (void*) &LSArray<int>::ls_map_real;
 				} else {
 					ls_func = (void*) &LSArray<int>::ls_map;
 				}
-			} else if (v1->type.getElementType() == Type::FLOAT) {
-				if (type.getElementType() == Type::FLOAT) {
+			} else if (v1->type.getElementType() == Type::REAL) {
+				if (type.getElementType() == Type::REAL) {
 					ls_func = (void*) &LSArray<double>::ls_map_real;
 				} else if (type.getElementType() == Type::INTEGER) {
 					ls_func = (void*) &LSArray<double>::ls_map_int;
@@ -1141,7 +1141,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 		if (type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(c.F, r, jit_returned_type);
 		}
-		if (conversion == Type::INTEGER and type.raw_type == RawType::FLOAT) {
+		if (conversion == Type::INTEGER and type.raw_type == RawType::REAL) {
 			return VM::int_to_real(c.F, r);
 		}
 		return r;

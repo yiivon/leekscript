@@ -117,7 +117,7 @@ jit_type_t VM::get_jit_type(const Type& type) {
 	if (type.raw_type == RawType::LONG or type.raw_type == RawType::FUNCTION) {
 		return LS_LONG;
 	}
-	if (type.raw_type == RawType::FLOAT) {
+	if (type.raw_type == RawType::REAL) {
 		return LS_REAL;
 	}
 	return LS_INTEGER;
@@ -152,7 +152,7 @@ void* get_conv_fun(Type type) {
 	if (type.raw_type == RawType::LONG) {
 		return (void*) &create_number_object_long;
 	}
-	if (type.raw_type == RawType::FLOAT) {
+	if (type.raw_type == RawType::REAL) {
 		return (void*) &create_float_object;
 	}
 	if (type.raw_type == RawType::BOOLEAN) {
@@ -352,7 +352,7 @@ jit_value_t VM::create_array(jit_function_t F, const Type& element_type, int cap
 	if (element_type == Type::INTEGER) {
 		return jit_insn_call_native(F, "create_array", (void*) VM_create_array_int, sig, &s, 1, JIT_CALL_NOTHROW);
 	}
-	if (element_type == Type::FLOAT) {
+	if (element_type == Type::REAL) {
 		return jit_insn_call_native(F, "create_array", (void*) VM_create_array_float, sig, &s, 1, JIT_CALL_NOTHROW);
 	}
 	return jit_insn_call_native(F, "create_array", (void*) VM_create_array_ptr, sig, &s, 1, JIT_CALL_NOTHROW);
@@ -380,7 +380,7 @@ void VM::push_move_array(jit_function_t F, const Type& element_type, jit_value_t
 
 	if (element_type == Type::INTEGER) {
 		jit_insn_call_native(F, "push_array", (void*) VM_push_array_int, sig, args_v, 2, JIT_CALL_NOTHROW);
-	} else if (element_type == Type::FLOAT) {
+	} else if (element_type == Type::REAL) {
 		jit_insn_call_native(F, "push_array", (void*) VM_push_array_float, sig, args_v, 2, JIT_CALL_NOTHROW);
 	} else {
 		jit_insn_call_native(F, "push_array", (void*) VM_push_array_ptr, sig, args_v, 2, JIT_CALL_NOTHROW);

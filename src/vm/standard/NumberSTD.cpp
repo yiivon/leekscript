@@ -20,144 +20,103 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-LSNumber* number_acos(LSNumber* x) {
+double number_acos(LSNumber* x) {
 	double r = acos(x->value);
 	if (x->refs == 0) {
 		x->value = r;
-		return x;
+		return x->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_asin(LSNumber* x) {
+double number_asin(LSNumber* x) {
 	double r = asin(x->value);
 	if (x->refs == 0) {
 		x->value = r;
-		return x;
+		return x->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_atan(LSNumber* x) {
+double number_atan(LSNumber* x) {
 	double r = atan(x->value);
 	if (x->refs == 0) {
 		x->value = r;
-		return x;
+		return x->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_atan2(LSNumber* x, LSNumber* y) {
+double number_atan2(LSNumber* x, LSNumber* y) {
 	double r = atan2(x->value, y->value);
 	if (x->refs == 0) delete x;
 	if (y->refs == 0) {
 		y->value = r;
-		return y;
+		return y->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_cbrt(LSNumber* x) {
+double number_cbrt(LSNumber* x) {
 	double r = cbrt(x->value);
 	if (x->refs == 0) {
 		x->value = r;
-		return x;
+		return x->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_ceil(LSNumber* x) {
-	double r = ceil(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
-}
-
-LSNumber* number_cos(LSNumber* x) {
+double number_cos(LSNumber* x) {
 	double r = cos(x->value);
 	if (x->refs == 0) {
 		x->value = r;
-		return x;
+		return x->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_exp(LSNumber* x) {
+double number_exp(LSNumber* x) {
 	double r = exp(x->value);
 	if (x->refs == 0) {
 		x->value = r;
-		return x;
+		return x->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_floor(LSNumber* x) {
-	double r = floor(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
-}
-
-LSNumber* number_hypot(LSNumber* x, LSNumber* y) {
+double number_hypot(LSNumber* x, LSNumber* y) {
 	double r = hypot(x->value, y->value);
 	if (x->refs == 0) delete x;
 	if (y->refs == 0) {
 		y->value = r;
-		return y;
+		return y->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_log(LSNumber* x) {
+double number_log(LSNumber* x) {
 	double r = log(x->value);
 	if (x->refs == 0) {
 		x->value = r;
-		return x;
+		return x->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_log10(LSNumber* x) {
+double number_log10(LSNumber* x) {
 	double r = log10(x->value);
 	if (x->refs == 0) {
 		x->value = r;
-		return x;
+		return x->value;
 	}
-	return LSNumber::get(r);
+	return r;
 }
 
-LSNumber* number_max(LSNumber* x, LSNumber* y) {
-	if (x->value < y->value) {
-		if (x->refs == 0) delete x;
-		return y;
-	} else {
-		if (y->refs == 0) delete y;
-		return x;
-	}
-}
-
-LSNumber* number_min(LSNumber* x, LSNumber* y) {
-	if (x->value > y->value) {
-		if (x->refs == 0) delete x;
-		return y;
-	} else {
-		if (y->refs == 0) delete y;
-		return x;
-	}
-}
-
-LSNumber* number_pow(LSNumber* x, LSNumber* y) {
+double number_pow(LSNumber* x, LSNumber* y) {
 	double r = pow(x->value, y->value);
-	if (x->refs == 0) delete x;
-	if (y->refs == 0) {
-		y->value = r;
-		return y;
-	}
-	return LSNumber::get(r);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 
 double number_rand() {
@@ -176,15 +135,6 @@ LSNumber* number_randFloat(LSNumber* min, LSNumber* max) {
 
 int number_randInt(int min, int max) {
 	return floor(min + ((double) rand() / RAND_MAX) * (max - min));
-}
-
-LSNumber* number_round(LSNumber* x) {
-	double r = round(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
 }
 
 LSNumber* number_signum(LSNumber* x) {
@@ -256,63 +206,64 @@ bool number_isInteger(LSNumber* x) {
 NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("+", {
-		{Type::FLOAT, Type::FLOAT, Type::FLOAT, (void*) &NumberSTD::add_real_real, Method::NATIVE},
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_real_real, Method::NATIVE},
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_real_real, Method::NATIVE},
 	});
 
-	static_field("pi", Type::FLOAT, (void*) &Number_pi);
-	static_field("e", Type::FLOAT, (void*) &Number_e);
-	static_field("phi", Type::FLOAT, (void*) &Number_phi);
-	static_field("epsilon", Type::FLOAT, (void*) &Number_epsilon);
+	static_field("pi", Type::REAL, (void*) &Number_pi);
+	static_field("e", Type::REAL, (void*) &Number_e);
+	static_field("phi", Type::REAL, (void*) &Number_phi);
+	static_field("epsilon", Type::REAL, (void*) &Number_epsilon);
 
 	method("abs", {
-		{Type::POINTER, Type::FLOAT, {}, (void*) &NumberSTD::abs_ptr},
-		{Type::FLOAT, Type::FLOAT, {}, (void*) &NumberSTD::abs_real, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::abs_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::abs_real, Method::NATIVE},
 		{Type::INTEGER, Type::INTEGER, {}, (void*) &NumberSTD::abs_real, Method::NATIVE}
 	});
 
-	method("acos", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_acos);
-	method("asin", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_asin);
-	method("atan", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_atan);
-	method("cbrt", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_cbrt);
+	method("acos", Type::REAL, Type::REAL, {}, (void*) &number_acos);
+	method("asin", Type::REAL, Type::REAL, {}, (void*) &number_asin);
+	method("atan", Type::REAL, Type::REAL, {}, (void*) &number_atan);
+	method("cbrt", Type::REAL, Type::REAL, {}, (void*) &number_cbrt);
 
 	method("ceil", {
-		{Type::NUMBER, Type::FLOAT, {}, (void*) &NumberSTD::ceil_ptr}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::ceil_ptr}
 	});
 
 	method("char", {
 		{Type::NUMBER, Type::POINTER, {}, (void*) &NumberSTD::char_ptr},
-		{Type::FLOAT, Type::STRING, {}, (void*) &NumberSTD::char_real, Method::NATIVE},
+		{Type::REAL, Type::STRING, {}, (void*) &NumberSTD::char_real, Method::NATIVE},
 		{Type::INTEGER, Type::STRING, {}, (void*) &NumberSTD::char_int, Method::NATIVE}
 	});
 
 	method("cos", {
-		{Type::NUMBER, Type::FLOAT, {}, (void*) &NumberSTD::cos_ptr}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::cos_ptr}
 	});
-	method("exp", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_exp);
+	method("exp", Type::NUMBER, Type::REAL, {}, (void*) &number_exp);
 
 	method("floor", {
-		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr}
+		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr},
+		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr}
 	});
 
-	method("hypot", Type::NUMBER, Type::FLOAT_P, {Type::NUMBER}, (void*) &number_hypot);
-	method("log", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_log);
-	method("log10", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_log10);
+	method("hypot", Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_hypot);
+	method("log", Type::NUMBER, Type::REAL, {}, (void*) &number_log);
+	method("log10", Type::NUMBER, Type::REAL, {}, (void*) &number_log10);
 
 	method("max", {
-		{Type::POINTER, Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
-		{Type::FLOAT, Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 	});
 
 	method("min", {
-		{Type::POINTER, Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
-		{Type::FLOAT, Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::min_float_float},
+		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::min_float_float},
 		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float},
 	});
 
 	method("pow", {
-		{Type::NUMBER, Type::FLOAT_P, {Type::NUMBER}, (void*) &number_pow},
+		{Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_pow},
 		{Type::INTEGER, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int, Method::NATIVE}
 	});
 
@@ -320,107 +271,107 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::round_ptr}
 	});
 
-	method("signum", Type::NUMBER, Type::INTEGER_P, {}, (void*) &number_signum);
+	method("signum", Type::NUMBER, Type::INTEGER, {}, (void*) &number_signum);
 
 	method("sin", {
-		{Type::POINTER, Type::FLOAT, {}, (void*) &NumberSTD::sin_ptr}
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::sin_ptr}
 	});
 
 	method("sqrt", {
-		{Type::NUMBER, Type::FLOAT, {}, (void*) &NumberSTD::sqrt_ptr}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sqrt_ptr}
 	});
-	method("tan", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_tan);
-	method("toDegrees", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toDegrees);
-	method("toRadians", Type::NUMBER, Type::FLOAT_P, {}, (void*) &number_toRadians);
+	method("tan", Type::NUMBER, Type::REAL, {}, (void*) &number_tan);
+	method("toDegrees", Type::NUMBER, Type::REAL, {}, (void*) &number_toDegrees);
+	method("toRadians", Type::NUMBER, Type::REAL, {}, (void*) &number_toRadians);
 	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
 
 	/*
 	 * Static methods
 	 */
 	static_method("abs", {
-		{Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::abs_ptr},
-		{Type::FLOAT, {Type::FLOAT}, (void*) &NumberSTD::abs_real, Method::NATIVE},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::abs_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_real, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_real, Method::NATIVE}
 	});
 
-	static_method("acos", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_acos);
-	static_method("asin", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_asin);
-	static_method("atan", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_atan);
-	static_method("atan2", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_atan2);
-	static_method("cbrt", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_cbrt);
+	static_method("acos", Type::REAL, {Type::NUMBER}, (void*) &number_acos);
+	static_method("asin", Type::REAL, {Type::NUMBER}, (void*) &number_asin);
+	static_method("atan", Type::REAL, {Type::NUMBER}, (void*) &number_atan);
+	static_method("atan2", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_atan2);
+	static_method("cbrt", Type::REAL, {Type::NUMBER}, (void*) &number_cbrt);
 
 	static_method("ceil", {
-		{Type::FLOAT_P, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr},
-		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::ceil_real, Method::NATIVE},
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr},
+		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::ceil_real, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int, Method::NATIVE}
 	});
 
 	static_method("char", {
 		{Type::STRING, {Type::POINTER}, (void*) &NumberSTD::char_ptr},
-		{Type::STRING, {Type::FLOAT}, (void*) &NumberSTD::char_real, Method::NATIVE},
+		{Type::STRING, {Type::REAL}, (void*) &NumberSTD::char_real, Method::NATIVE},
 		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int, Method::NATIVE}
 	});
 
 	static_method("cos", {
-		{Type::FLOAT, {Type::NUMBER}, (void*) &NumberSTD::cos_ptr}
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::cos_ptr}
 	});
 
-	static_method("exp", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_exp);
+	static_method("exp", Type::REAL, {Type::NUMBER}, (void*) &number_exp);
 
 	static_method("floor", {
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::floor_ptr},
-		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::floor_real, Method::NATIVE},
+		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::floor_real, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int, Method::NATIVE},
 	});
 
-	static_method("hypot", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_hypot);
-	static_method("log", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_log);
-	static_method("log10", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_log10);
+	static_method("hypot", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_hypot);
+	static_method("log", Type::REAL, {Type::NUMBER}, (void*) &number_log);
+	static_method("log10", Type::REAL, {Type::NUMBER}, (void*) &number_log10);
 
 	static_method("max", {
-		{Type::FLOAT, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
-		{Type::FLOAT, {Type::POINTER, Type::FLOAT}, (void*) &NumberSTD::max_ptr_float},
-		{Type::FLOAT, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int},
-		{Type::FLOAT, {Type::FLOAT, Type::FLOAT}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
-		{Type::FLOAT, {Type::FLOAT, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
-		{Type::FLOAT, {Type::INTEGER, Type::FLOAT}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
+		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::max_ptr_float},
+		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE}
 	});
 
 	static_method("min", {
-		{Type::FLOAT, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
-		{Type::FLOAT, {Type::POINTER, Type::FLOAT}, (void*) &NumberSTD::min_ptr_float},
-		{Type::FLOAT, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::min_ptr_int},
-		{Type::FLOAT, {Type::FLOAT, Type::FLOAT}, (void*) &NumberSTD::min_float_float},
-		{Type::FLOAT, {Type::FLOAT, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
-		{Type::FLOAT, {Type::INTEGER, Type::FLOAT}, (void*) &NumberSTD::min_float_float},
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
+		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::min_ptr_float},
+		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::min_ptr_int},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float},
+		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
+		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float},
 		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float}
 	});
 
-	static_method("pow", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_pow);
-	static_method("rand", Type::FLOAT, {}, (void*) &number_rand);
-	static_method("randFloat", Type::FLOAT_P, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat);
+	static_method("pow", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_pow);
+	static_method("rand", Type::REAL, {}, (void*) &number_rand);
+	static_method("randFloat", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat);
 	static_method("randInt", Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &number_randInt);
 
 	static_method("round", {
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::round_ptr},
-		{Type::INTEGER, {Type::FLOAT}, (void*) &NumberSTD::round_real, Method::NATIVE},
+		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::round_real, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::round_int, Method::NATIVE}
 	});
 
-	static_method("signum", Type::INTEGER_P, {Type::NUMBER}, (void*) &number_signum);
+	static_method("signum", Type::INTEGER, {Type::NUMBER}, (void*) &number_signum);
 
 	static_method("sin", {
-		{Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::sin_ptr}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sin_ptr}
 	});
 
 	static_method("sqrt", {
-		{Type::FLOAT, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr}
 	});
 
-	static_method("tan", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_tan);
-	static_method("toDegrees", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toDegrees);
-	static_method("toRadians", Type::FLOAT_P, {Type::NUMBER}, (void*) &number_toRadians);
+	static_method("tan", Type::REAL, {Type::NUMBER}, (void*) &number_tan);
+	static_method("toDegrees", Type::REAL, {Type::NUMBER}, (void*) &number_toDegrees);
+	static_method("toRadians", Type::REAL, {Type::NUMBER}, (void*) &number_toRadians);
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
 
 

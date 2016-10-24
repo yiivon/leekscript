@@ -52,17 +52,17 @@ void OperatorPrototypes::initialize() {
 	});
 
 	prototype({"="}, 9, true, false, {
-		{{Type::FLOAT, Type::FLOAT}, Type::FLOAT, (void*) &store_real_real, Method::NATIVE},
+		{{Type::REAL, Type::REAL}, Type::REAL, (void*) &store_real_real, Method::NATIVE},
 		{{Type::INTEGER, Type::INTEGER}, Type::INTEGER, (void*) &store_real_real, Method::NATIVE},
 	});
 
 	prototype({"+"}, 3, false, false, {
-		{{Type::FLOAT, Type::FLOAT}, Type::FLOAT, (void*) &add_real_real, Method::NATIVE},
+		{{Type::REAL, Type::REAL}, Type::REAL, (void*) &add_real_real, Method::NATIVE},
 		{{Type::INTEGER, Type::INTEGER}, Type::INTEGER, (void*) &add_real_real, Method::NATIVE},
 	});
 
 	prototype({"+="}, 9, true, false, {
-		{{Type::FLOAT, Type::FLOAT}, Type::FLOAT, (void*) &add_equals_real_real, Method::NATIVE},
+		{{Type::REAL, Type::REAL}, Type::REAL, (void*) &add_equals_real_real, Method::NATIVE},
 		{{Type::INTEGER, Type::INTEGER}, Type::INTEGER, (void*) &add_equals_real_real, Method::NATIVE},
 	});
 }

@@ -98,8 +98,8 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (map_key_type == Type::INTEGER) {
 			key->analyse(analyser, Type::INTEGER);
-		} else if (map_key_type == Type::FLOAT) {
-			key->analyse(analyser, Type::FLOAT);
+		} else if (map_key_type == Type::REAL) {
+			key->analyse(analyser, Type::REAL);
 		} else {
 			key->analyse(analyser, Type::POINTER);
 		}
@@ -166,7 +166,9 @@ int* access_l_value(LSArray<int>* array, int key) {
 	return array->atLv(key);
 }
 int* access_l_map(LSMap<LSValue*, int>* map, LSValue* key) {
+//	std::cout << "access_l_map" << std::endl;
 	int* res = map->atLv(key);
+//	std::cout << *res << std::endl;
 	LSValue::delete_temporary(key);
 	return res;
 }
@@ -182,8 +184,6 @@ int interval_access(const LSInterval* interval, int pos) {
 }
 
 jit_value_t ArrayAccess::compile(Compiler& c) const {
-
-//	cout << "aa " << type << endl;
 
 	jit_value_t a = array->compile(c);
 
@@ -219,35 +219,26 @@ jit_value_t ArrayAccess::compile(Compiler& c) const {
 			void* func = nullptr;
 			if (map_key_type == Type::INTEGER) {
 				if (array_element_type == Type::INTEGER) {
-					//std::cout << "int int" << std::endl;
-					func = (void*) &LSMap<int, int>::at_int_int;
-				} else if (array_element_type == Type::FLOAT) {
-					//std::cout << "int real" << std::endl;
-					func = (void*) &LSMap<int, double>::at_int_real;
+					func = (void*) &LSMap<int, int>::at;
+				} else if (array_element_type == Type::REAL) {
+					func = (void*) &LSMap<int, double>::at;
 				} else {
-					//std::cout << "int ptr" << std::endl;
-					func = (void*) &LSMap<int, LSValue*>::at_int_ptr;
+					func = (void*) &LSMap<int, LSValue*>::at;
 				}
-			} else if (map_key_type == Type::FLOAT) {
+			} else if (map_key_type == Type::REAL) {
 				if (array_element_type == Type::INTEGER) {
-					//std::cout << "real int" << std::endl;
-					func = (void*) &LSMap<double, int>::at_real_int;
-				} else if (array_element_type == Type::FLOAT) {
-					//std::cout << "real real" << std::endl;
-					func = (void*) &LSMap<double, double>::at_real_real;
+					func = (void*) &LSMap<double, int>::at;
+				} else if (array_element_type == Type::REAL) {
+					func = (void*) &LSMap<double, double>::at;
 				} else {
-					//std::cout << "real ptr" << std::endl;
-					func = (void*) &LSMap<double, LSValue*>::at_real_ptr;
+					func = (void*) &LSMap<double, LSValue*>::at;
 				}
 			} else {
 				if (array_element_type == Type::INTEGER) {
-					//std::cout << "ptr int" << std::endl;
-					func = (void*) &LSMap<LSValue*, int>::at_ptr_int;
-				} else if (array_element_type == Type::FLOAT) {
-					//std::cout << "ptr float" << std::endl;
-					func = (void*) &LSMap<LSValue*, double>::at_ptr_real;
+					func = (void*) &LSMap<LSValue*, int>::at;
+				} else if (array_element_type == Type::REAL) {
+					func = (void*) &LSMap<LSValue*, double>::at;
 				} else {
-					//std::cout << "ptr ptr" << std::endl;
 					func = (void*) &LSMap<LSValue*, LSValue*>::at;
 				}
 			}

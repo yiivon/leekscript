@@ -47,8 +47,8 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
 	}
-	if (req_type.raw_type == RawType::FLOAT) {
-		type.raw_type = RawType::FLOAT;
+	if (req_type.raw_type == RawType::REAL) {
+		type.raw_type = RawType::REAL;
 	}
 //	cout << "VV " << name << " : " << type << endl;
 //	cout << "var scope : " << (int)var->scope << endl;
@@ -117,7 +117,7 @@ jit_value_t VariableValue::compile(Compiler& c) const {
 	if (var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 		return VM::value_to_pointer(c.F, v, var->type);
 	}
-	if (var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::FLOAT) {
+	if (var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
 		return VM::int_to_real(c.F, v);
 	}
 	return v;

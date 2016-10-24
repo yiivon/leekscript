@@ -37,7 +37,7 @@ SystemSTD::SystemSTD() : Module("System") {
 		{Type::VOID, {Type::INTEGER}, (void*) &System_print_int},
 		{Type::VOID, {Type::LONG}, (void*) &System_print_long},
 		{Type::VOID, {Type::BOOLEAN}, (void*) &System_print_bool},
-		{Type::VOID, {Type::FLOAT}, (void*) &System_print_float},
+		{Type::VOID, {Type::REAL}, (void*) &System_print_float},
 		{Type::VOID, {Type::POINTER}, (void*) &System_print}
 	});
 }
@@ -121,4 +121,3 @@ void System_print_float(double v) {
 }
 
 }
-

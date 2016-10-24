@@ -124,7 +124,7 @@ LSValue* Program::execute() {
 		auto fun = (int (*)()) closure;
 		return LSNumber::get((double) fun());
 	}
-	if (output_type == Type::FLOAT) {
+	if (output_type == Type::REAL) {
 		auto fun = (double (*)()) closure;
 		return LSNumber::get(fun());
 	}
@@ -258,8 +258,8 @@ void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
 					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
 					jit_insn_call_native(F, "push", (void*) &Program_push_integer, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::FLOAT) {
-					jit_type_t args_float[2] = {JIT_POINTER, JIT_FLOAT};
+				} else if (type.raw_type == RawType::REAL) {
+					jit_type_t args_float[2] = {JIT_POINTER, JIT_REAL};
 					jit_type_t sig_push_float = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args_float, 2, 0);
 					jit_insn_call_native(F, "push", (void*) &Program_push_float, sig_push_float, var_args, 2, JIT_CALL_NOTHROW);
 				} else if (type.raw_type == RawType::FUNCTION) {
