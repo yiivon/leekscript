@@ -72,6 +72,10 @@ coverage: build/leekscript-coverage
 test: build/leekscript
 	@build/leekscript -test
 
+# Valgrind
+valgrind:
+	valgrind -v leekscript -test
+
 # Travis task, useless in local.
 # Build a leekscript docker image, compile, run tests and run cpp-coveralls
 # (coverage results are sent to coveralls.io).
