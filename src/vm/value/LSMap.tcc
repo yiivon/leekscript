@@ -49,6 +49,12 @@ inline LSMap<int,LSValue*>::~LSMap() {
 		LSValue::delete_ref(it->second);
 	}
 }
+template <>
+inline LSMap<double,LSValue*>::~LSMap() {
+	for (auto it = begin(); it != end(); ++it) {
+		LSValue::delete_ref(it->second);
+	}
+}
 template <typename K, typename T>
 inline LSMap<K, T>::~LSMap() {}
 
@@ -369,109 +375,17 @@ inline bool LSMap<K, T>::lt(const LSMap<K2, T2>* map) const {
 		if (i->second < j->second) return true;
 		if (j->second < i->second) return false;
 	}
-
 	return j != map->end();
 }
 
-template <>
-inline LSValue* LSMap<LSValue*,LSValue*>::at(const LSValue* key) const {
+template <typename K, typename V>
+inline V LSMap<K, V>::at(const K key) const {
 	try {
-		auto map = (std::map<LSValue*, LSValue*, lsmap_less<LSValue*>>*) this;
-		return ((LSValue*) map->at((LSValue*) key))->clone();
+		auto map = (std::map<K, V, lsmap_less<K>>*) this;
+		return map->at(key);
 	} catch (std::exception&) {
-		return LSNull::get();
+		return V();
 	}
-}
-template <>
-inline LSValue* LSMap<LSValue*, int>::at(const LSValue* key) const {
-	try {
-		auto map = (std::map<LSValue*, int, lsmap_less<LSValue*>>*) this;
-		return LSNumber::get(map->at((LSValue*) key));
-	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
-		return LSNull::get();
-	}
-}
-template <>
-inline LSValue* LSMap<LSValue*,double>::at(const LSValue* key) const {
-	try {
-		auto map = (std::map<LSValue*, double, lsmap_less<LSValue*>>*) this;
-		return LSNumber::get(map->at((LSValue*) key));
-	} catch (std::exception&) {
-		return LSNull::get();
-	}
-}
-template <>
-inline LSValue* LSMap<int,LSValue*>::at(const LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		try {
-			auto map = (std::map<int, LSValue*, lsmap_less<int>>*) this;
-			return (LSValue*) map->at((int) n->value)->clone();
-		} catch (std::exception&) {
-			return LSNull::get();
-		}
-	}
-	return LSNull::get();
-}
-template <>
-inline LSValue* LSMap<int,int>::at(const LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		try {
-			auto map = (std::map<int, int, lsmap_less<int>>*) this;
-			return LSNumber::get(map->at((int) n->value));
-		} catch (std::exception&) {
-			return LSNull::get();
-		}
-	}
-	return LSNull::get();
-}
-template <>
-inline LSValue* LSMap<int,double>::at(const LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		try {
-			auto map = (std::map<int, double, lsmap_less<int>>*) this;
-			return LSNumber::get(map->at((int) n->value));
-		} catch (std::exception&) {
-			return LSNull::get();
-		}
-	}
-	return LSNull::get();
-}
-template <>
-inline LSValue* LSMap<double, LSValue*>::at(const LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		try {
-			auto map = (std::map<double, LSValue*, lsmap_less<double>>*) this;
-			return (LSValue*) map->at((double) n->value)->clone();
-		} catch (std::exception&) {
-			return LSNull::get();
-		}
-	}
-	return LSNull::get();
-}
-template <>
-inline LSValue* LSMap<double, int>::at(const LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		try {
-			auto map = (std::map<double, int, lsmap_less<double>>*) this;
-			return LSNumber::get(map->at((double) n->value));
-		} catch (std::exception&) {
-			return LSNull::get();
-		}
-	}
-	return LSNull::get();
-}
-template <>
-inline LSValue* LSMap<double, double>::at(const LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		try {
-			auto map = (std::map<double, double, lsmap_less<double>>*) this;
-			return LSNumber::get(map->at((double) n->value));
-		} catch (std::exception&) {
-			return LSNull::get();
-		}
-	}
-	return LSNull::get();
 }
 
 template <typename K, typename T>
@@ -499,119 +413,6 @@ inline LSValue** LSMap<int,LSValue*>::atL(const LSValue* key) {
 }
 
 template <typename K, typename T>
-inline double LSMap<K, T>::at_ptr_real(const LSValue*) const {
-	return 0;
-}
-template <>
-inline double LSMap<LSValue*, double>::at_ptr_real(const LSValue* key) const {
-	try {
-		auto map = (std::map<LSValue*, double, lsmap_less<LSValue*>>*) this;
-		return map->at((LSValue*) key);
-	} catch (std::exception&) {
-		return 0;
-	}
-}
-
-template <typename K, typename T>
-inline int LSMap<K, T>::at_ptr_int(const LSValue*) const {
-	return 0;
-}
-template <>
-inline int LSMap<LSValue*, int>::at_ptr_int(const LSValue* key) const {
-	try {
-		auto map = (std::map<LSValue*, int, lsmap_less<LSValue*>>*) this;
-		return map->at((LSValue*) key);
-	} catch (std::exception&) {
-		return 0;
-	}
-}
-
-template <typename K, typename T>
-inline LSValue* LSMap<K, T>::at_int_ptr(int) const {
-	return 0;
-}
-template <>
-inline LSValue* LSMap<int, LSValue*>::at_int_ptr(int key) const {
-	try {
-		auto map = (std::map<int, LSValue*, lsmap_less<int>>*) this;
-		return map->at(key);
-	} catch (std::exception&) {
-		return 0;
-	}
-}
-
-template <typename K, typename T>
-inline double LSMap<K, T>::at_int_real(int) const {
-	return 0;
-}
-template <>
-inline double LSMap<int, double>::at_int_real(int key) const {
-	try {
-		auto map = (std::map<int, double, lsmap_less<int>>*) this;
-		return map->at(key);
-	} catch (std::exception&) {
-		return 0;
-	}
-}
-
-template <typename K, typename T>
-inline double LSMap<K, T>::at_real_real(double) const {
-	return 0;
-}
-template <>
-inline double LSMap<double, double>::at_real_real(double key) const {
-	try {
-		auto map = (std::map<double, double, lsmap_less<double>>*) this;
-		return map->at(key);
-	} catch (std::exception&) {
-		return 0;
-	}
-}
-
-template <typename K, typename T>
-inline int LSMap<K, T>::at_real_int(double) const {
-	return 0;
-}
-template <>
-inline int LSMap<double, int>::at_real_int(double key) const {
-	try {
-		auto map = (std::map<double, int, lsmap_less<double>>*) this;
-		return map->at(key);
-	} catch (std::exception&) {
-		return 0;
-	}
-}
-
-template <typename K, typename T>
-inline LSValue* LSMap<K, T>::at_real_ptr(double) const {
-	return 0;
-}
-template <>
-inline LSValue* LSMap<double, LSValue*>::at_real_ptr(double key) const {
-	try {
-		auto map = (std::map<double, LSValue*, lsmap_less<double>>*) this;
-		return map->at(key);
-	} catch (std::exception&) {
-		return 0;
-	}
-}
-
-template <typename K, typename T>
-inline int LSMap<K, T>::at_int_int(int) const {
-	return 0;
-}
-template <>
-inline int LSMap<int, int>::at_int_int(int key) const {
-	try {
-		auto map = (std::map<int, int, lsmap_less<int>>*) this;
-		return map->at(key);
-	} catch (std::exception&) {
-		return 0;
-	}
-}
-
-
-template <typename K, typename T>
 inline int* LSMap<K, T>::atLv(const LSValue*) const {
 	return nullptr;
 }
@@ -625,54 +426,8 @@ inline int* LSMap<LSValue*, int>::atLv(const LSValue* key) const {
 	}
 }
 
-template <>
-inline std::ostream& LSMap<LSValue*, LSValue*>::print(std::ostream& os) const {
-	os << "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) os << " ";
-		it->first->print(os);
-		os << " : ";
-		it->second->print(os);
-	}
-	if (empty()) os << ':';
-	return os << "]";
-}
-template <>
-inline std::ostream& LSMap<LSValue*, int>::print(std::ostream& os) const {
-	os << "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) os << " ";
-		it->first->print(os);
-		os << " : " << it->second;
-	}
-	if (empty()) os << ':';
-	return os << "]";
-}
-template <>
-inline std::ostream& LSMap<LSValue*, double>::print(std::ostream& os) const {
-	os << "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) os << " ";
-		it->first->print(os);
-		os << " : " << it->second;
-	}
-	if (empty()) os << ':';
-	return os << "]";
-}
-template <>
-inline std::ostream& LSMap<int, LSValue*>::print(std::ostream& os) const {
-	os << "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) os << " ";
-		os << it->first << " : ";
-		it->second->print(os);
-	}
-	if (empty()) os << ':';
-	return os << "]";
-}
-
-template <typename K, typename T>
-inline std::ostream& LSMap<K, T>::print(std::ostream& os) const {
+template <typename K, typename V>
+inline std::ostream& LSMap<K, V>::print(std::ostream& os) const {
 	os << "[";
 	for (auto it = this->begin(); it != this->end(); ++it) {
 		if (it != this->begin()) os << " ";
@@ -682,59 +437,14 @@ inline std::ostream& LSMap<K, T>::print(std::ostream& os) const {
 	return os << "]";
 }
 
-template <>
-inline std::string LSMap<LSValue*, LSValue*>::json() const {
-	std::string res = "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) res += ",";
-		res += it->first->to_json();
-		res += ":";
-		res += it->second->to_json();
-	}
-	return res + "]";
-}
-
-template <>
-inline std::string LSMap<LSValue*,int>::json() const {
-	std::string res = "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) res += ",";
-		res += it->first->to_json();
-		res += ":";
-		res += std::to_string(it->second);
-	}
-	return res + "]";
-}
-template <>
-inline std::string LSMap<LSValue*,double>::json() const {
-	std::string res = "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) res += ",";
-		res += it->first->to_json();
-		res += ":";
-		res += std::to_string(it->second);
-	}
-	return res + "]";
-}
-template <>
-inline std::string LSMap<int,LSValue*>::json() const {
-	std::string res = "[";
-	for (auto it = begin(); it != end(); ++it) {
-		if (it != begin()) res += ",";
-		res += std::to_string(it->first);
-		res += ":";
-		res += it->second->to_json();
-	}
-	return res + "]";
-}
-template <typename K, typename T>
-inline std::string LSMap<K, T>::json() const {
+template <typename K, typename V>
+inline std::string LSMap<K, V>::json() const {
 	std::string res = "[";
 	for (auto it = this->begin(); it != this->end(); ++it) {
 		if (it != this->begin()) res += ",";
-		res += std::to_string(it->first);
+		res += ls::to_json(it->first);
 		res += ":";
-		res += std::to_string(it->second);
+		res += ls::to_json(it->second);
 	}
 	return res + "]";
 }
@@ -785,9 +495,6 @@ template <typename K, typename T>
 inline const BaseRawType* LSMap<K,T>::getRawType() const {
 	return RawType::MAP;
 }
-
-
-
 
 }
 

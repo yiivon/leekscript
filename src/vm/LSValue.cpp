@@ -433,4 +433,8 @@ namespace std {
 		value->print(oss);
 		return oss.str();
 	}
+	std::ostream& operator << (std::ostream& os, const ls::LSValue* value) {
+		value->print(os);
+		return os;
+	}
 }

@@ -284,16 +284,6 @@ LSValue** LSSet<T>::atL(const LSValue* ) {
 	return nullptr;
 }
 
-template <>
-inline std::ostream& LSSet<LSValue*>::print(std::ostream& os) const {
-	os << "<";
-	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) os << ", ";
-		os << **i;
-	}
-	os << ">";
-	return os;
-}
 template <typename T>
 inline std::ostream& LSSet<T>::print(std::ostream& os) const {
 	os << "<";
@@ -305,22 +295,12 @@ inline std::ostream& LSSet<T>::print(std::ostream& os) const {
 	return os;
 }
 
-template <>
-inline std::string LSSet<LSValue*>::json() const {
-	std::string res = "[";
-	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) res += ",";
-		std::string json = (*i)->to_json();
-		res += json;
-	}
-	return res + "]";
-}
 template <typename T>
 inline std::string LSSet<T>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) res += ",";
-		std::string json = std::to_string(*i);
+		std::string json = ls::to_json(*i);
 		res += json;
 	}
 	return res + "]";

@@ -41,7 +41,6 @@ class Context;
 	bool req(const LSValue* value) const override { return value->eq(this); } \
 	bool rlt(const LSValue* value) const override { return value->lt(this); } \
 
-
 class LSValue {
 public:
 
@@ -65,7 +64,9 @@ public:
 	virtual LSValue* ls_predec();
 	virtual LSValue* ls_dec();
 
-	LSValue* ls_add(LSValue* value) { return value->ls_radd(this); }
+	LSValue* ls_add(LSValue* value) {
+		return value->ls_radd(this);
+	}
 	virtual LSValue* ls_radd(LSValue*) = 0;
 	virtual LSValue* ls_add(LSNull*);
 	virtual LSValue* ls_add(LSBoolean*);
@@ -87,7 +88,9 @@ public:
 	virtual LSValue* ls_add(LSFunction*);
 	virtual LSValue* ls_add(LSClass*);
 
-	LSValue* ls_add_eq(LSValue* value) { return value->ls_radd_eq(this); }
+	LSValue* ls_add_eq(LSValue* value) {
+		return value->ls_radd_eq(this);
+	}
 	virtual LSValue* ls_radd_eq(LSValue*) = 0;
 	virtual LSValue* ls_add_eq(LSNull*);
 	virtual LSValue* ls_add_eq(LSBoolean*);
@@ -109,7 +112,9 @@ public:
 	virtual LSValue* ls_add_eq(LSFunction*);
 	virtual LSValue* ls_add_eq(LSClass*);
 
-	LSValue* ls_sub(LSValue* value) { return value->ls_rsub(this); }
+	LSValue* ls_sub(LSValue* value) {
+		return value->ls_rsub(this);
+	}
 	virtual LSValue* ls_rsub(LSValue*) = 0;
 	virtual LSValue* ls_sub(LSNull*);
 	virtual LSValue* ls_sub(LSBoolean*);
@@ -131,7 +136,9 @@ public:
 	virtual LSValue* ls_sub(LSFunction*);
 	virtual LSValue* ls_sub(LSClass*);
 
-	LSValue* ls_sub_eq(LSValue* value) { return value->ls_rsub_eq(this); }
+	LSValue* ls_sub_eq(LSValue* value) {
+		return value->ls_rsub_eq(this);
+	}
 	virtual LSValue* ls_rsub_eq(LSValue*) = 0;
 	virtual LSValue* ls_sub_eq(LSNull*);
 	virtual LSValue* ls_sub_eq(LSBoolean*);
@@ -153,7 +160,9 @@ public:
 	virtual LSValue* ls_sub_eq(LSFunction*);
 	virtual LSValue* ls_sub_eq(LSClass*);
 
-	LSValue* ls_mul(LSValue* value) { return value->ls_rmul(this); }
+	LSValue* ls_mul(LSValue* value) {
+		return value->ls_rmul(this);
+	}
 	virtual LSValue* ls_rmul(LSValue*) = 0;
 	virtual LSValue* ls_mul(LSNull*);
 	virtual LSValue* ls_mul(LSBoolean*);
@@ -175,7 +184,9 @@ public:
 	virtual LSValue* ls_mul(LSFunction*);
 	virtual LSValue* ls_mul(LSClass*);
 
-	LSValue* ls_mul_eq(LSValue* value) { return value->ls_rmul_eq(this); }
+	LSValue* ls_mul_eq(LSValue* value) {
+		return value->ls_rmul_eq(this);
+	}
 	virtual LSValue* ls_rmul_eq(LSValue*) = 0;
 	virtual LSValue* ls_mul_eq(LSNull*);
 	virtual LSValue* ls_mul_eq(LSBoolean*);
@@ -197,7 +208,9 @@ public:
 	virtual LSValue* ls_mul_eq(LSFunction*);
 	virtual LSValue* ls_mul_eq(LSClass*);
 
-	LSValue* ls_div(LSValue* value) { return value->ls_rdiv(this); }
+	LSValue* ls_div(LSValue* value) {
+		return value->ls_rdiv(this);
+	}
 	virtual LSValue* ls_rdiv(LSValue*) = 0;
 	virtual LSValue* ls_div(LSNull*);
 	virtual LSValue* ls_div(LSBoolean*);
@@ -219,7 +232,9 @@ public:
 	virtual LSValue* ls_div(LSFunction*);
 	virtual LSValue* ls_div(LSClass*);
 
-	LSValue* ls_int_div(LSValue* value) { return value->ls_rint_div(this); }
+	LSValue* ls_int_div(LSValue* value) {
+		return value->ls_rint_div(this);
+	}
 	virtual LSValue* ls_rint_div(LSValue*) = 0;
 	virtual LSValue* ls_int_div(LSNull*);
 	virtual LSValue* ls_int_div(LSBoolean*);
@@ -241,7 +256,9 @@ public:
 	virtual LSValue* ls_int_div(LSFunction*);
 	virtual LSValue* ls_int_div(LSClass*);
 
-	LSValue* ls_div_eq(LSValue* value) { return value->ls_rdiv_eq(this); }
+	LSValue* ls_div_eq(LSValue* value) {
+		return value->ls_rdiv_eq(this);
+	}
 	virtual LSValue* ls_rdiv_eq(LSValue*) = 0;
 	virtual LSValue* ls_div_eq(LSNull*);
 	virtual LSValue* ls_div_eq(LSBoolean*);
@@ -263,7 +280,9 @@ public:
 	virtual LSValue* ls_div_eq(LSFunction*);
 	virtual LSValue* ls_div_eq(LSClass*);
 
-	LSValue* ls_pow(LSValue* value) { return value->ls_rpow(this); }
+	LSValue* ls_pow(LSValue* value) {
+		return value->ls_rpow(this);
+	}
 	virtual LSValue* ls_rpow(LSValue*) = 0;
 	virtual LSValue* ls_pow(LSNull*);
 	virtual LSValue* ls_pow(LSBoolean*);
@@ -285,7 +304,9 @@ public:
 	virtual LSValue* ls_pow(LSFunction*);
 	virtual LSValue* ls_pow(LSClass*);
 
-	LSValue* ls_pow_eq(LSValue* value) { return value->ls_rpow_eq(this); }
+	LSValue* ls_pow_eq(LSValue* value) {
+		return value->ls_rpow_eq(this);
+	}
 	virtual LSValue* ls_rpow_eq(LSValue*) = 0;
 	virtual LSValue* ls_pow_eq(LSNull*);
 	virtual LSValue* ls_pow_eq(LSBoolean*);
@@ -307,7 +328,9 @@ public:
 	virtual LSValue* ls_pow_eq(LSFunction*);
 	virtual LSValue* ls_pow_eq(LSClass*);
 
-	LSValue* ls_mod(LSValue* value) { return value->ls_rmod(this); }
+	LSValue* ls_mod(LSValue* value) {
+		return value->ls_rmod(this);
+	}
 	virtual LSValue* ls_rmod(LSValue*) = 0;
 	virtual LSValue* ls_mod(LSNull*);
 	virtual LSValue* ls_mod(LSBoolean*);
@@ -329,7 +352,9 @@ public:
 	virtual LSValue* ls_mod(LSFunction*);
 	virtual LSValue* ls_mod(LSClass*);
 
-	LSValue* ls_mod_eq(LSValue* value) { return value->ls_rmod_eq(this); }
+	LSValue* ls_mod_eq(LSValue* value) {
+		return value->ls_rmod_eq(this);
+	}
 	virtual LSValue* ls_rmod_eq(LSValue*) = 0;
 	virtual LSValue* ls_mod_eq(LSNull*);
 	virtual LSValue* ls_mod_eq(LSBoolean*);
@@ -351,8 +376,12 @@ public:
 	virtual LSValue* ls_mod_eq(LSFunction*);
 	virtual LSValue* ls_mod_eq(LSClass*);
 
-	bool operator == (const LSValue& value) const { return value.req(this); }
-	bool operator != (const LSValue& value) const { return !value.req(this); }
+	bool operator == (const LSValue& value) const {
+		return value.req(this);
+	}
+	bool operator != (const LSValue& value) const {
+		return !value.req(this);
+	}
 	virtual bool req(const LSValue*) const = 0;
 	virtual bool eq(const LSNull*) const;
 	virtual bool eq(const LSBoolean*) const;
@@ -377,10 +406,18 @@ public:
 	virtual bool eq(const LSObject*) const;
 	virtual bool eq(const LSClass*) const;
 
-	bool operator < (const LSValue& value) const { return value.rlt(this); }
-	bool operator > (const LSValue& value) const { return !(*this == value) && !(*this < value); }
-	bool operator <=(const LSValue& value) const { return (*this == value) || (*this < value); }
-	bool operator >=(const LSValue& value) const { return !(*this < value); }
+	bool operator < (const LSValue& value) const {
+		return value.rlt(this);
+	}
+	bool operator > (const LSValue& value) const {
+		return !(*this == value) && !(*this < value);
+	}
+	bool operator <=(const LSValue& value) const {
+		return (*this == value) || (*this < value);
+	}
+	bool operator >=(const LSValue& value) const {
+		return !(*this < value);
+	}
 	virtual bool rlt(const LSValue*) const = 0;
 	virtual bool lt(const LSNull*) const;
 	virtual bool lt(const LSBoolean*) const;
@@ -438,7 +475,7 @@ public:
 	static LSValue* parse(Json& json);
 
 	static void delete_ref(LSValue* value);
-	static void delete_temporary(LSValue* value);
+	static void delete_temporary(const LSValue* const value);
 };
 
 inline LSValue* LSValue::clone_inc() {
@@ -487,7 +524,7 @@ inline void LSValue::delete_ref(LSValue* value) {
 	}
 }
 
-inline void LSValue::delete_temporary(LSValue* value) {
+inline void LSValue::delete_temporary(const LSValue* const value) {
 
 	if (value == nullptr) return;
 	if (value->native) return;
@@ -503,8 +540,30 @@ inline std::ostream& operator << (std::ostream& os, const LSValue& value) {
 
 }
 
+namespace ls {
+	template <typename T>
+	std::string to_json(T v) {
+		return std::to_string(v);
+	}
+	template <>
+	inline std::string to_json(LSValue* v) {
+		return v->to_json();
+	}
+	template <typename T>
+	bool equals(const T v1, const T v2);
+	template <>
+	inline bool equals(ls::LSValue* v1, ls::LSValue* v2) {
+		return v1->operator == (*v2);
+	}
+	template <typename T>
+	bool equals(const T v1, const T v2) {
+		return v1 == v2;
+	}
+}
+
 namespace std {
 	std::string to_string(ls::LSValue* value);
+	std::ostream& operator << (std::ostream&, const ls::LSValue*);
 }
 
 #endif

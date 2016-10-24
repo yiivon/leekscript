@@ -36,24 +36,9 @@ public:
 
 	template <typename K2, typename T2>
 	bool eq(const LSMap<K2, T2>*) const;
-	/*
-	virtual bool eq(const LSMap<LSValue*,int>*) const override;
-	virtual bool eq(const LSMap<LSValue*,double>*) const override;
-	virtual bool eq(const LSMap<int,LSValue*>*) const override;
-	virtual bool eq(const LSMap<int,int>*) const override;
-	virtual bool eq(const LSMap<int,double>*) const override;
-	*/
 
 	template <typename K2, typename T2>
 	bool lt(const LSMap<K2, T2>*) const;
-	/*
-	virtual bool lt(const LSMap<LSValue*,LSValue*>*) const override;
-	virtual bool lt(const LSMap<LSValue*,int>*) const override;
-	virtual bool lt(const LSMap<LSValue*,double>*) const override;
-	virtual bool lt(const LSMap<int,LSValue*>*) const override;
-	virtual bool lt(const LSMap<int,int>*) const override;
-	virtual bool lt(const LSMap<int,double>*) const override;
-	*/
 
 	virtual LSValue* at(const LSValue* key) const override;
 	LSValue* at_real_ptr(double) const;
