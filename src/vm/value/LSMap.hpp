@@ -41,20 +41,12 @@ public:
 	template <typename K2, typename T2>
 	bool lt(const LSMap<K2, T2>*) const;
 
-	virtual LSValue* at(const LSValue* key) const override;
-	LSValue* at_real_ptr(double) const;
-	LSValue* at_int_ptr(int) const;
-	int at_ptr_int(const LSValue* key) const;
-	int at_int_int(int key) const;
-	int at_real_int(double key) const;
-	double at_int_real(int) const;
-	double at_real_real(double) const;
-	double at_ptr_real(const LSValue* key) const;
+	T at(const K key) const;
 
 	virtual LSValue** atL(const LSValue* key) override;
 	int* atLv(const LSValue* key) const;
 
-	virtual bool in(LSValue*) const override;
+	bool in(K) const;
 
 	virtual std::ostream& print(std::ostream&) const override;
 	virtual std::string json() const override;
