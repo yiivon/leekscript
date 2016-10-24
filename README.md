@@ -54,8 +54,8 @@ Run a code, and get the result as JSON
 
 Libraries used
 --------------
-* libjit, by Rhys Weatherley, under GPL license
-* gason, by Ivan Vashchaev, under MIT license
+* [libjit](https://www.gnu.org/software/libjit/), by Rhys Weatherley, under GPL license
+* [JSON for modern C++](https://github.com/nlohmann/json), by Niels Lohmann, under MIT license
 
 License
 -------
