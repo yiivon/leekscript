@@ -26,10 +26,6 @@ LSValue* array_sub(LSArray<LSValue*>* array, int begin, int end) {
 	return r;
 }
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpmf-conversions"
-#endif
 ArraySTD::ArraySTD() : Module("Array") {
 
 	operator_("in", {
@@ -456,8 +452,5 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_remove_element}
 	});
 }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 
 }

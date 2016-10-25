@@ -3,10 +3,6 @@
 
 namespace ls {
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpmf-conversions"
-#endif
 BooleanSTD::BooleanSTD() : Module("Boolean") {
 
 	static_method("compare", {
@@ -14,9 +10,6 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
 	});
 }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 
 int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
 	int res = 0;

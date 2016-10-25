@@ -18,10 +18,6 @@ void System_print_long(long v);
 void System_print_bool(bool v);
 void System_print_float(double v);
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpmf-conversions"
-#endif
 SystemSTD::SystemSTD() : Module("System") {
 
 	static_field("version", Type::INTEGER, (void*) &System_version);
@@ -41,9 +37,6 @@ SystemSTD::SystemSTD() : Module("System") {
 		{Type::VOID, {Type::POINTER}, (void*) &System_print}
 	});
 }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 
 long get_sec_time() {
 	return std::chrono::duration_cast<std::chrono::seconds>(

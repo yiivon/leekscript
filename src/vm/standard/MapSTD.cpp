@@ -12,10 +12,6 @@ int map_size(const LSMap<LSValue*,LSValue*>* map) {
 	return r;
 }
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpmf-conversions"
-#endif
 MapSTD::MapSTD() : Module("Map") {
 
 	operator_("in", {
@@ -87,9 +83,5 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::INT_INT_MAP, Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_look},
 	});
 }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
-
 
 }

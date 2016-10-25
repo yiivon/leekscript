@@ -153,10 +153,6 @@ bool number_isInteger(LSNumber* x) {
 	return is;
 }
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpmf-conversions"
-#endif
 NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("+", {
@@ -354,12 +350,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("toDegrees", Type::REAL, {Type::NUMBER}, (void*) &number_toDegrees);
 	static_method("toRadians", Type::REAL, {Type::NUMBER}, (void*) &number_toRadians);
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
-
-
 }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 
 jit_value_t NumberSTD::add_real_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_add(c.F, args[0], args[1]);

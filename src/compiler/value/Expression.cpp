@@ -939,10 +939,6 @@ jit_value_t Expression::compile(Compiler& c) const {
 			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpmf-conversions"
-#endif
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.getElementType() == Type::INTEGER) {
 				if (type.getElementType() == Type::INTEGER) {
@@ -965,9 +961,6 @@ jit_value_t Expression::compile(Compiler& c) const {
 			}
 			break;
 		}
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 		case TokenType::INSTANCEOF: {
 			use_jit_func = false;
 			ls_func = (void*) &jit_instanceof;
