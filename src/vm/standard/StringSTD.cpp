@@ -211,21 +211,13 @@ LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter) {
 
 bool string_startsWith(const LSString* string, const LSString* starting) {
 	if (starting->size() > string->size()) {
-		if (string->refs == 0) {
-			delete string;
-		}
-		if (starting->refs == 0) {
-			delete starting;
-		}
-		return LSBoolean::false_val;
+		LSValue::delete_temporary(string);
+		LSValue::delete_temporary(starting);
+		return false;
 	}
 	bool r = std::equal(starting->begin(), starting->end(), string->begin());
-	if (string->refs == 0) {
-		delete string;
-	}
-	if (starting->refs == 0) {
-		delete starting;
-	}
+	LSValue::delete_temporary(string);
+	LSValue::delete_temporary(starting);
 	return r;
 }
 
