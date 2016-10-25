@@ -20,16 +20,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_atan2(LSNumber* x, LSNumber* y) {
-	double r = atan2(x->value, y->value);
-	if (x->refs == 0) delete x;
-	if (y->refs == 0) {
-		y->value = r;
-		return y->value;
-	}
-	return r;
-}
-
 double number_cbrt(LSNumber* x) {
 	double r = cbrt(x->value);
 	if (x->refs == 0) {
@@ -196,6 +186,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::atan_ptr},
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::atan_real, Method::NATIVE},
 	});
+	method("atan2", {
+		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr},
+		{Type::POINTER, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_ptr_real},
+		{Type::REAL, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_real_real, Method::NATIVE}
+	});
 	method("cbrt", Type::REAL, Type::REAL, {}, (void*) &number_cbrt);
 
 	method("ceil", {
@@ -277,7 +273,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan_ptr},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan_real, Method::NATIVE},
 	});
-	static_method("atan2", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_atan2);
+	static_method("atan2", {
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr},
+		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::atan2_ptr_real},
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::atan2_real_real, Method::NATIVE}
+	});
 	static_method("cbrt", Type::REAL, {Type::NUMBER}, (void*) &number_cbrt);
 
 	static_method("ceil", {
@@ -402,6 +403,31 @@ double NumberSTD::atan_ptr(LSNumber* x) {
 }
 jit_value_t NumberSTD::atan_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_atan(c.F, args[0]);
+}
+
+double NumberSTD::atan2_ptr_ptr(LSNumber* y, LSNumber* x) {
+	std::cout << "NumberSTD::atan2_ptr_ptr(LSNumber* y, LSNumber* x)" << std::endl;
+	double a = atan2(y->value, x->value);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return a;
+}
+double NumberSTD::atan2_ptr_real(LSNumber* y, double x) {
+	std::cout << "NumberSTD::atan2_ptr_real(LSNumber* y, double x)" << std::endl;
+	double a = atan2(y->value, x);
+	LSValue::delete_temporary(y);
+	return a;
+}
+double NumberSTD::atan2_real_ptr(double y, LSNumber* x) {
+	std::cout << "NumberSTD::atan2_real_ptr(double, LSNumber*)" << std::endl;
+	double a = atan2(y, x->value);
+	LSValue::delete_temporary(x);
+	return a;
+}
+jit_value_t NumberSTD::atan2_real_real(Compiler& c, std::vector<jit_value_t> args) {
+	std::cout << "NumberSTD::atan2_real_real(Compiler& c, std::vector<jit_value_t> args)" << std::endl;
+	std::cout << args.size() << std::endl;
+	return jit_insn_atan2(c.F, args[0], args[1]);
 }
 
 LSString* NumberSTD::char_ptr(LSNumber* x) {

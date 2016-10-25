@@ -222,6 +222,23 @@ void Test::test_numbers() {
 	code("0.atan()").equals("0");
 	code("Number.atan(['y', 0.5][1])").almost(0.463647609000806094);
 
+	section("atan2()");
+	code("Number.atan2(1, 1)").almost(M_PI / 4);
+	code("Number.atan2(150.78, 150.78)").almost(M_PI / 4);
+	code("Number.atan2(1, 0)").almost(M_PI / 2);
+	code("Number.atan2(-1, 0)").almost(-M_PI / 2);
+	code("Number.atan2(0, 1)").equals("0");
+	code("Number.atan2(0, -1)").almost(M_PI);
+	code("Number.atan2(12.12, 42.42)").almost(0.278299659005111333);
+	code("1.atan2(1)").almost(M_PI / 4);
+	//code("['', -1][1].atan2(1)").almost(-M_PI / 4);
+	code("1.atan2(['', -1][1])").almost(3 * M_PI / 4);
+	//code("['', -1][1].atan2(['', -1][1])").almost(-3 * M_PI / 4);
+	code("Number.atan2(1, 1)").almost(M_PI / 4);
+	code("Number.atan2(['', -1][1], 1)").almost(-M_PI / 4);
+	code("Number.atan2(1, ['', -1][1])").almost(3 * M_PI / 4);
+	code("Number.atan2(['', -1][1], ['', -1][1])").almost(-3 * M_PI / 4);
+
 	section("isInteger()");
 	code("Number.isInteger(12)").equals("true");
 	code("Number.isInteger(0)").equals("true");

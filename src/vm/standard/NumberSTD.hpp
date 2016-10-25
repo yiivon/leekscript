@@ -38,6 +38,11 @@ public:
 	static double atan_ptr(LSNumber* x);
 	static jit_value_t atan_real(Compiler&, std::vector<jit_value_t>);
 
+	static double atan2_ptr_ptr(LSNumber*, LSNumber*);
+	static double atan2_ptr_real(LSNumber*, double);
+	static double atan2_real_ptr(double, LSNumber*);
+	static jit_value_t atan2_real_real(Compiler&, std::vector<jit_value_t>);
+
 	static LSString* char_ptr(LSNumber* x);
 	static jit_value_t char_real(Compiler&, std::vector<jit_value_t>);
 	static jit_value_t char_int(Compiler&, std::vector<jit_value_t>);
