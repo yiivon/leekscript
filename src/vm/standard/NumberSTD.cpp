@@ -211,7 +211,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	method("floor", {
 		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr},
-		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr}
+		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_real, Method::NATIVE}
 	});
 
 	method("hypot", Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_hypot);
@@ -226,8 +226,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	method("min", {
 		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::min_float_float},
-		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
+		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
 	});
 
 	method("pow", {
@@ -323,10 +323,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::min_ptr_float},
 		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::min_ptr_int},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float},
-		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
-		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float}
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
+		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE}
 	});
 
 	static_method("pow", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_pow);
