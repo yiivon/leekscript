@@ -491,4 +491,14 @@ ostream& operator << (ostream& os, const Type& type) {
 	return os;
 }
 
+ostream& operator << (ostream& os, const std::vector<Type>& types) {
+	os << "[";
+	for (unsigned i = 0; i < types.size(); ++i) {
+		if (i > 0) os << ", ";
+		os << types[i];
+	}
+	os << "]";
+	return os;
+}
+
 }

@@ -236,6 +236,7 @@ public:
 };
 
 std::ostream& operator << (std::ostream&, const Type&);
+std::ostream& operator << (std::ostream&, const std::vector<Type>&);
 
 }
 
