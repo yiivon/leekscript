@@ -36,6 +36,7 @@ void Test::test_loops() {
 	code("let i = 0 while (i < 100) { i++ if (i == 50) break } i").equals("50");
 	code("let i = 0 let a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a").equals("3");
 	code("while (true) { break }").equals("null");
+	code("let i = 10 while (['hello', i][1]) { i-- } i").equals("0");
 
 	/*
 	 * For loops
