@@ -84,7 +84,15 @@ void Test::test_strings() {
 	code("String.charAt('salut', 1)").equals("'a'");
 	code("'salut'.substring(3, 4)").equals("'ut'");
 
+	section("String.endsWith()");
+	code("'salut'.endsWith('lut')").equals("true");
+	code("'hello world how are you? ♫'.endsWith('are you? ♫')").equals("true");
+	code("'bonjour'.endsWith('soir')").equals("false");
+	code("String.endsWith('salut', 'lut')").equals("true");
+	code("String.endsWith('aaaaaabbbb', 'abc')").equals("false");
+
 	// Integer conversions
+	section("String.code()");
 	code("'A'.code()").equals("65");
 	code("'ABC'.code(2)").equals("67");
 	code("'©'.code()").equals("169");
