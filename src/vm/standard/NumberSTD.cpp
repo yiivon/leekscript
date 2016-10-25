@@ -406,27 +406,22 @@ jit_value_t NumberSTD::atan_real(Compiler& c, std::vector<jit_value_t> args) {
 }
 
 double NumberSTD::atan2_ptr_ptr(LSNumber* y, LSNumber* x) {
-	std::cout << "NumberSTD::atan2_ptr_ptr(LSNumber* y, LSNumber* x)" << std::endl;
 	double a = atan2(y->value, x->value);
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return a;
 }
 double NumberSTD::atan2_ptr_real(LSNumber* y, double x) {
-	std::cout << "NumberSTD::atan2_ptr_real(LSNumber* y, double x)" << std::endl;
 	double a = atan2(y->value, x);
 	LSValue::delete_temporary(y);
 	return a;
 }
 double NumberSTD::atan2_real_ptr(double y, LSNumber* x) {
-	std::cout << "NumberSTD::atan2_real_ptr(double, LSNumber*)" << std::endl;
 	double a = atan2(y, x->value);
 	LSValue::delete_temporary(x);
 	return a;
 }
 jit_value_t NumberSTD::atan2_real_real(Compiler& c, std::vector<jit_value_t> args) {
-	std::cout << "NumberSTD::atan2_real_real(Compiler& c, std::vector<jit_value_t> args)" << std::endl;
-	std::cout << args.size() << std::endl;
 	return jit_insn_atan2(c.F, args[0], args[1]);
 }
 
