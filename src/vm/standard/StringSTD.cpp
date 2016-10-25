@@ -67,6 +67,7 @@ StringSTD::StringSTD() : Module("String") {
 	static_method("charAt", Type::STRING, {Type::STRING, Type::INTEGER}, (void*) &string_charAt);
 	static_method("contains", Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_contains);
 	static_method("endsWith", Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_endsWith);
+	static_method("indexOf", Type::INTEGER, {Type::STRING, Type::STRING}, (void*) &string_indexOf);
 	static_method("length", Type::INTEGER, {Type::STRING}, (void*) &string_length);
 	static_method("size", Type::INTEGER, {Type::STRING}, (void*) &string_size);
 	static_method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &string_replace);
@@ -102,7 +103,9 @@ bool string_contains(LSString* haystack, LSString* needle) {
 
 bool string_endsWith(LSString* string, LSString* ending) {
 	if (ending->size() > string->size()) {
-		return LSBoolean::false_val;
+		LSValue::delete_temporary(string);
+		LSValue::delete_temporary(ending);
+		return false;
 	}
 	bool r = std::equal(ending->rbegin(), ending->rend(), string->rbegin());
 	LSValue::delete_temporary(string);

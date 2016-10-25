@@ -90,6 +90,14 @@ void Test::test_strings() {
 	code("'bonjour'.endsWith('soir')").equals("false");
 	code("String.endsWith('salut', 'lut')").equals("true");
 	code("String.endsWith('aaaaaabbbb', 'abc')").equals("false");
+	code("String.endsWith('', '')").equals("true");
+	code("String.endsWith('too', 'too long')").equals("false");
+
+	section("String.indexOf()");
+	code("'bonjour'.indexOf('jour')").equals("3");
+	code("String.indexOf('azerty', 'zer')").equals("1");
+	code("String.indexOf('bonjour tout le monde', 'not found')").equals("-1");
+	code("String.indexOf('bonjour', 'needle too long')").equals("-1");
 
 	// Integer conversions
 	section("String.code()");
