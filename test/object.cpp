@@ -43,4 +43,7 @@ void Test::test_objects() {
 
 	code("'x' in {x: 5, y: 'yo'}.keys()").equals("true");
 	code("'x' in {a: 5, y: 'yo'}.keys()").equals("false");
+
+	section("map()");
+	//code("{x: 12, y: 5}.map(x -> x + 1)", "{}");
 }
