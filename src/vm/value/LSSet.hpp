@@ -23,6 +23,7 @@ public:
 	/*
 	 * LSSet methods;
 	 */
+	int ls_size();
 	bool ls_insert(T value);
 	LSSet<T>* ls_clear();
 	bool ls_erase(T value);

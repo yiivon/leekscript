@@ -49,6 +49,13 @@ template <typename T>
 inline LSSet<T>::~LSSet() {
 }
 
+template <typename T>
+int LSSet<T>::ls_size() {
+	int s = this->size();
+	LSValue::delete_temporary(this);
+	return s;
+}
+
 template <>
 inline bool LSSet<LSValue*>::ls_insert(LSValue* value) {
 	auto it = lower_bound(value);

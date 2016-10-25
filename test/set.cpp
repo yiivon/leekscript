@@ -19,4 +19,13 @@ void Test::test_set() {
 
 	// Type changes
 	// code("let s = <1, 2> s += 'a' s").equals("<1, 2, 'a'>");
+
+	section("Set.size()");
+	code("<>.size()").equals("0");
+	code("<1, 2, 3>.size()").equals("3");
+	code("<1.6, 2.1, 3.75, 12.12>.size()").equals("4");
+	code("<'éééé', null>.size()").equals("2");
+	code("Set.size(<1, 2, 3>)").equals("3");
+	code("Set.size(<1.6, 2.1, 3.75, 12.12>)").equals("4");
+	code("Set.size(<'éééé', null>)").equals("2");
 }
