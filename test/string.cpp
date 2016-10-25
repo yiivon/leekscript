@@ -69,7 +69,17 @@ void Test::test_strings() {
 	code("String()").equals("''");
 	code("String('yo')").equals("'yo'");
 	code("String.size('salut')").equals("5");
+
+	section("String.toUpper()");
+	code("String.toUpper('')").equals("''");
 	code("String.toUpper('salut')").equals("'SALUT'");
+	//code("String.toUpper('ça va ?')").equals("'Ça va ?'");
+
+	section("String.toLower()");
+	code("String.toLower('')").equals("''");
+	code("String.toLower('SALUT')").equals("'salut'");
+	//code("String.toLower('ÇÀÉÈÔÖÛ')").equals("'çaéèôöû'");
+
 	code("String.length('salut')").equals("5");
 	code("String.reverse('salut')").equals("'tulas'");
 	code("String.replace('bonjour à tous', 'o', '_')").equals("'b_nj_ur à t_us'");
@@ -80,6 +90,7 @@ void Test::test_strings() {
 	code("String.split('bonjour_*_ça_*_va', '_*_')").equals("['bonjour', 'ça', 'va']");
 	code("String.split('salut', '')").equals("['s', 'a', 'l', 'u', 't']");
 	code("String.startsWith('salut ça va', 'salut')").equals("true");
+	code("String.startsWith('bonjour', 'bonjour ça va')").equals("false");
 	code("String.toArray('salut')").equals("['s', 'a', 'l', 'u', 't']");
 	code("String.charAt('salut', 1)").equals("'a'");
 	code("'salut'.substring(3, 4)").equals("'ut'");
