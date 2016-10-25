@@ -195,6 +195,13 @@ void Test::test_numbers() {
 	code("Number.cos(π)").equals("-1");
 	code("Number.cos(π / 2)").almost(0.0);
 
+	section("acos()");
+	code("Number.acos(1)").equals("0");
+	code("Number.acos(-1)").almost(M_PI);
+	code("Number.acos(0)").almost(M_PI / 2);
+	code("(-0.33).acos()").equals("1.907099901948877019");
+	code("Number.acos(['y', 0][1])").almost(M_PI / 2);
+
 	section("sin()");
 	code("Number.sin(0)").equals("0");
 	code("Number.sin(π)").almost(0.0);
