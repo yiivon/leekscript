@@ -55,6 +55,7 @@ public:
 	void test_loops();
 	void test_classes();
 	void test_files();
+	void test_doc();
 
 	class Input {
 	private:

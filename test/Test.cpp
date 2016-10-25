@@ -33,6 +33,7 @@ int Test::all() {
 	test_operations();
 	test_system();
 	test_files();
+	test_doc();
 
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
 	int errors = (total - success_count);

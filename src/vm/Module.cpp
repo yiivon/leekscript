@@ -65,7 +65,11 @@ void Module::static_method(string name, Type return_type, initializer_list<Type>
 void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
 	ifstream f;
-	f.open(translation_file);
+	try {
+		f.open(translation_file);
+	} catch (std::exception& e) {
+		return; // no file
+	}
 	stringstream j;
 	j << f.rdbuf();
 	std::string str = j.str();
@@ -75,7 +79,12 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 	str.erase(std::remove(str.begin(), str.end(), '	'), str.end());
 
 	// Parse json
-	Json translation = Json::parse(str);
+	Json translation;
+	try {
+		translation = Json::parse(str);
+	} catch (std::exception& e) {
+		return; // error parsing json
+	}
 
 	map<std::string, Json> translation_map;
 
@@ -130,9 +139,8 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
 			if (translation_map.find(m.name) != translation_map.end()) {
 				Json json = translation_map[m.name];
-				std::string desc = json["desc"];
-				std::string return_desc = json["return"];
-
+				std::string desc = (json.find("desc") != json.end()) ? json["desc"] : "?";
+				std::string return_desc = (json.find("return") != json.end()) ? json["return"] : "?";
 				os << ",\"desc\":\"" << desc << "\"";
 				os << ",\"return\":\"" << return_desc << "\"";
 			}
