@@ -133,7 +133,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 			if (m != nullptr) {
 				this_ptr = oa->object;
-				this_ptr->analyse(analyser, Type::POINTER);
+				this_ptr->analyse(analyser, m->obj_type);
 				std_func = m->addr;
 				function->type = m->type;
 				is_native_method = m->native;
