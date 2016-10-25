@@ -20,15 +20,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_atan(LSNumber* x) {
-	double r = atan(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x->value;
-	}
-	return r;
-}
-
 double number_atan2(LSNumber* x, LSNumber* y) {
 	double r = atan2(x->value, y->value);
 	if (x->refs == 0) delete x;
@@ -201,7 +192,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::asin_ptr},
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::asin_real, Method::NATIVE},
 	});
-	method("atan", Type::REAL, Type::REAL, {}, (void*) &number_atan);
+	method("atan", {
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::atan_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::atan_real, Method::NATIVE},
+	});
 	method("cbrt", Type::REAL, Type::REAL, {}, (void*) &number_cbrt);
 
 	method("ceil", {
@@ -279,7 +273,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::asin_ptr},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::asin_real, Method::NATIVE},
 	});
-	static_method("atan", Type::REAL, {Type::NUMBER}, (void*) &number_atan);
+	static_method("atan", {
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan_real, Method::NATIVE},
+	});
 	static_method("atan2", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_atan2);
 	static_method("cbrt", Type::REAL, {Type::NUMBER}, (void*) &number_cbrt);
 
@@ -396,6 +393,15 @@ double NumberSTD::asin_ptr(LSNumber* x) {
 }
 jit_value_t NumberSTD::asin_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_asin(c.F, args[0]);
+}
+
+double NumberSTD::atan_ptr(LSNumber* x) {
+	double a = atan(x->value);
+	LSValue::delete_temporary(x);
+	return a;
+}
+jit_value_t NumberSTD::atan_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_atan(c.F, args[0]);
 }
 
 LSString* NumberSTD::char_ptr(LSNumber* x) {

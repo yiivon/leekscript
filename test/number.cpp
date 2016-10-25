@@ -215,6 +215,13 @@ void Test::test_numbers() {
 	code("0.33.asin()").equals("0.33630357515398035");
 	code("Number.asin(['y', -1][1])").almost(-M_PI / 2);
 
+	section("atan()");
+	code("Number.atan(1)").almost(M_PI / 4);
+	code("Number.atan(-1)").almost(-M_PI / 4);
+	code("Number.atan(0.5)").almost(0.463647609000806094);
+	code("0.atan()").equals("0");
+	code("Number.atan(['y', 0.5][1])").almost(0.463647609000806094);
+
 	section("isInteger()");
 	code("Number.isInteger(12)").equals("true");
 	code("Number.isInteger(0)").equals("true");

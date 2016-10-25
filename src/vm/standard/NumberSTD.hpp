@@ -35,6 +35,9 @@ public:
 	static double asin_ptr(LSNumber* x);
 	static jit_value_t asin_real(Compiler&, std::vector<jit_value_t>);
 
+	static double atan_ptr(LSNumber* x);
+	static jit_value_t atan_real(Compiler&, std::vector<jit_value_t>);
+
 	static LSString* char_ptr(LSNumber* x);
 	static jit_value_t char_real(Compiler&, std::vector<jit_value_t>);
 	static jit_value_t char_int(Compiler&, std::vector<jit_value_t>);
