@@ -208,6 +208,13 @@ void Test::test_numbers() {
 	code("Number.sin(π / 2)").equals("1");
 	code("Number.sin(- π / 2)").equals("-1");
 
+	section("asin()");
+	code("Number.asin(0)").equals("0");
+	code("Number.asin(-1)").almost(-M_PI / 2);
+	code("Number.asin(1)").almost(M_PI / 2);
+	code("0.33.asin()").equals("0.33630357515398035");
+	code("Number.asin(['y', -1][1])").almost(-M_PI / 2);
+
 	section("isInteger()");
 	code("Number.isInteger(12)").equals("true");
 	code("Number.isInteger(0)").equals("true");

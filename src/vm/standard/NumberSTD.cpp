@@ -20,15 +20,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_asin(LSNumber* x) {
-	double r = asin(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x->value;
-	}
-	return r;
-}
-
 double number_atan(LSNumber* x) {
 	double r = atan(x->value);
 	if (x->refs == 0) {
@@ -206,7 +197,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::acos_ptr},
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::acos_real, Method::NATIVE},
 	});
-	method("asin", Type::REAL, Type::REAL, {}, (void*) &number_asin);
+	method("asin", {
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::asin_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::asin_real, Method::NATIVE},
+	});
 	method("atan", Type::REAL, Type::REAL, {}, (void*) &number_atan);
 	method("cbrt", Type::REAL, Type::REAL, {}, (void*) &number_cbrt);
 
@@ -281,7 +275,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::acos_ptr},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::acos_real, Method::NATIVE},
 	});
-	static_method("asin", Type::REAL, {Type::NUMBER}, (void*) &number_asin);
+	static_method("asin", {
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::asin_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::asin_real, Method::NATIVE},
+	});
 	static_method("atan", Type::REAL, {Type::NUMBER}, (void*) &number_atan);
 	static_method("atan2", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_atan2);
 	static_method("cbrt", Type::REAL, {Type::NUMBER}, (void*) &number_cbrt);
@@ -390,6 +387,15 @@ double NumberSTD::acos_ptr(LSNumber* x) {
 }
 jit_value_t NumberSTD::acos_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_acos(c.F, args[0]);
+}
+
+double NumberSTD::asin_ptr(LSNumber* x) {
+	double a = asin(x->value);
+	LSValue::delete_temporary(x);
+	return a;
+}
+jit_value_t NumberSTD::asin_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_asin(c.F, args[0]);
 }
 
 LSString* NumberSTD::char_ptr(LSNumber* x) {
