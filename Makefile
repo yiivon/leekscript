@@ -89,10 +89,11 @@ travis:
 # `apt-get install lcov`
 html-coverage: coverage
 	mkdir -p build/html
-	cp -R src/ build/coverage/src/
+	cp -R src/ build/coverage/
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --zerocounters --directory build/coverage/src --base-directory build/coverage/src
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --capture --initial --directory build/coverage/src --base-directory build/coverage/src --output-file build/html/app.info
 	build/leekscript-coverage -test
+	rm build/coverage/src/Main.*
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --no-checksum --directory build/coverage/src --base-directory build/coverage/src --capture --output-file build/html/app.info
 	cd build/html; genhtml --precision 2 --branch-coverage app.info
 
