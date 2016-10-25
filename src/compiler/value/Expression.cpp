@@ -294,10 +294,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		v1->analyse(analyser, Type::POINTER);
 		type = Type::BOOLEAN;
 	}
-	if (op->type == TokenType::IN) {
-		v1->analyse(analyser, Type::POINTER);
-		type = Type::BOOLEAN;
-	}
 
 	// int div => result is int
 	if (op->type == TokenType::INT_DIV) {
