@@ -13,7 +13,7 @@ OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 OBJ_COVERAGE := $(patsubst %.cpp,build/coverage/%.o,$(SRC))
 
 OPTIM := -O2
-FLAGS := -std=c++17 -g3 -Wall -Wextra -Wpmf-conversions
+FLAGS := -std=c++17 -g3 -Wall -Wextra -Wno-pmf-conversions
 LIBS := -ljit
 
 .PHONY: test

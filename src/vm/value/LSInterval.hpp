@@ -29,7 +29,6 @@ public:
 	/*
 	 * LSValue methods
 	 */
-	bool in(LSValue*) const override;
 	bool in_v(int) const;
 
 	int atv(const int key) const;

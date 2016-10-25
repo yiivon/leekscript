@@ -1,7 +1,6 @@
 #include "MapSTD.hpp"
 #include "../value/LSMap.hpp"
 
-
 using namespace std;
 
 namespace ls {

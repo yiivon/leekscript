@@ -19,7 +19,7 @@ bool Value::will_take_element(SemanticAnalyser*, const Type arg_type) {
 }
 
 bool Value::will_store(SemanticAnalyser*, const Type&) {
-	
+	return false;
 }
 
 bool Value::must_be_pointer(SemanticAnalyser*) {

@@ -105,7 +105,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			arg_types.push_back(arg->type);
 		}
 		std::string args_string = "";
-		for (int i = 0; i < arg_types.size(); ++i) {
+		for (unsigned i = 0; i < arg_types.size(); ++i) {
 			std::ostringstream oss;
 			oss << arg_types[i];
 			if (i > 0) args_string += ", ";

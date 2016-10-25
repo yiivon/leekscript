@@ -26,11 +26,6 @@ LSArray<int>* LSInterval::ls_filter(const void* function) {
 	return new_array;
 }
 
-bool LSInterval::in(LSValue* value) const {
-	LSValue::delete_temporary(this);
-	return false;
-}
-
 bool LSInterval::in_v(int value) const {
 	bool res = value >= a and value <= b;
 	LSValue::delete_temporary(this);
