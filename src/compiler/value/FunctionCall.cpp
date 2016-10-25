@@ -238,13 +238,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "Function call function type : " << type << endl;
 }
 
-LSValue* create_float_object_3(double n) {
-	return LSNumber::get(n);
-}
-LSValue* create_int_object_3(int n) {
-	return LSNumber::get(n);
-}
-
 jit_value_t FunctionCall::compile(Compiler& c) const {
 
 	/** Standard library constructors : Array(), Number() */
