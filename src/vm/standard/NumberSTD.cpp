@@ -228,7 +228,11 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	method("pow", {
 		{Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_pow},
-		{Type::INTEGER, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int, Method::NATIVE}
+		{Type::LONG, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int, Method::NATIVE}
+		// pow(int x, int y) => {
+		//     int  [if x^y < 2^32]
+		//     long otherwise
+
 	});
 
 	method("round", {
@@ -242,7 +246,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	method("sqrt", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sqrt_ptr}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sqrt_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sqrt_real, Method::NATIVE}
 	});
 	method("tan", Type::NUMBER, Type::REAL, {}, (void*) &number_tan);
 	method("toDegrees", Type::NUMBER, Type::REAL, {}, (void*) &number_toDegrees);
@@ -552,6 +557,10 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 	double s = sqrt(x->value);
 	LSValue::delete_temporary(x);
 	return s;
+}
+
+jit_value_t NumberSTD::sqrt_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_sqrt(c.F, args[0]);
 }
 
 jit_value_t NumberSTD::pow_int(Compiler& c, std::vector<jit_value_t> args) {

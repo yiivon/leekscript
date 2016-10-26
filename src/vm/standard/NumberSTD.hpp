@@ -78,7 +78,8 @@ public:
 	static double sin_ptr(LSNumber* x);
 
 	static double sqrt_ptr(LSNumber* x);
-
+	static jit_value_t sqrt_real(Compiler&, std::vector<jit_value_t>);
+	
 	static jit_value_t pow_int(Compiler&, std::vector<jit_value_t>);
 };
 
