@@ -62,9 +62,12 @@ public:
 		Test* test;
 		std::string _name;
 		std::string _code;
+		bool file;
+		float time;
 	public:
-		Input(Test* test, const std::string& name, const std::string& _code)
-			: test(test), _name(name), _code(_code) {};
+		Input(Test* test, const std::string& name, const std::string& _code,
+			bool file = false) : test(test), _name(name), _code(_code),
+			file(file) {};
 		void _equals(std::string&& expected);
 		template <typename T>
 		void almost(T expected, T delta = std::numeric_limits<T>::epsilon());

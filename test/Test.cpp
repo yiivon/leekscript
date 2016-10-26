@@ -65,7 +65,7 @@ Test::Input Test::file(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
-	return Test::Input(this, file_name, code);
+	return Test::Input(this, file_name, code, true);
 }
 
 ls::VM::Result Test::Input::run(bool display_errors) {
@@ -73,6 +73,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	test->obj_created += result.objects_created;
 	test->obj_deleted += result.objects_deleted;
 	test->total++;
+	time = round((float) result.execution_time / 1000) / 1000;
 
 	if (display_errors) {
 		for (const auto& error : result.semantical_errors) {
@@ -86,18 +87,24 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	return result;
 }
 
+#define GREY "\033[0;90m"
 #define GREEN "\033[0;32m"
 #define RED "\033[1;31m"
 #define END_COLOR "\033[0m"
 
 void Test::Input::pass(std::string expected) {
-	std::cout << GREEN << "OK   " << END_COLOR << ": " << name() <<  "  ===>  " << expected << std::endl;
+	std::cout << GREEN << "OK   " << END_COLOR << ": " << name()
+	<<  "  ===>  " << expected;
+	std::cout <<  GREY << " (" << this->time << " ms)" << END_COLOR;
+	std::cout << std::endl;
 	test->success_count++;
 }
 
 void Test::Input::fail(std::string expected, std::string actual) {
-	std::cout << RED << "FAIL " << END_COLOR << ": " << name() << "  =/=>  " << expected
-		<< "  got  " << actual << std::endl;
+	std::cout << RED << "FAIL " << END_COLOR << ": " << name()
+	<< "  =/=>  " << expected << "  got  " << actual;
+	std::cout <<  GREY << " (" << this->time << " ms)" << END_COLOR;
+	std::cout << std::endl;
 }
 
 void Test::Input::_equals(std::string&& expected) {
