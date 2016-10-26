@@ -2,7 +2,7 @@ LeekScript language
 ===================
 
 [![Build Status](https://travis-ci.org/leek-wars/leekscript.svg?branch=master)](https://travis-ci.org/leek-wars/leekscript)
-[![Coverage Status](https://coveralls.io/repos/github/leek-wars/leekscript/badge.svg)](https://coveralls.io/github/leek-wars/leekscript)
+[![Coverage Status](https://coveralls.io/repos/github/leek-wars/leekscript/badge.svg?branch=master)](https://coveralls.io/github/leek-wars/leekscript?branch=master)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
 
 LeekScript is a language initially designed for Leek Wars, and for games in general. Design to be simple to use for beginners, but with rich syntax and functionnalities, and a good speed thanks to an optimized JIT compiler.
