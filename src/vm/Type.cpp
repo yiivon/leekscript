@@ -273,6 +273,11 @@ bool Type::compatible(const Type& type) const {
 			return true;
 		}
 
+		// 'Integer' is compatible with 'Long'
+		if (this->raw_type == RawType::LONG and type.raw_type == RawType::INTEGER) {
+			return true;
+		}
+
 		// All numbers types are compatible with the base 'Number' type
 		if (this->raw_type == RawType::NUMBER and (
 			type.raw_type == RawType::INTEGER or
