@@ -197,7 +197,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("foldLeft", {
 		{Type::PTR_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldLeft},
 		{Type::REAL_ARRAY, Type::POINTER, {fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldLeft},
-		{Type::INT_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<int>::ls_foldLeft},
+		{Type::INT_ARRAY, Type::POINTER, {fold_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldLeft},
 	});
 	method("foldRight", {
 		{Type::PTR_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
