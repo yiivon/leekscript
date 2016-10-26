@@ -45,6 +45,12 @@ LSString* LSString::sort() {
 	return new LSString(res);
 }
 
+bool LSString::is_palindrome() const {
+	bool r = std::equal(this->begin(), this->begin() + this->size() / 2, this->rbegin());
+	LSValue::delete_temporary(this);
+	return r;
+}
+
 /*
  * LSValue methods
  */

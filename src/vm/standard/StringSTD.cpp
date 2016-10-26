@@ -38,6 +38,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("endsWith", Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_endsWith);
 	method("indexOf", Type::STRING, Type::INTEGER, {Type::STRING}, (void*) &string_indexOf);
 	method("isPermutation", Type::STRING, Type::BOOLEAN, {Type::POINTER}, (void*) &LSString::is_permutation);
+	method("isPalindrome", Type::STRING, Type::BOOLEAN, {}, (void*) &LSString::is_palindrome);
 	method("length", Type::STRING, Type::INTEGER, {}, (void*) &string_length);
 	method("size", Type::STRING, Type::INTEGER, {}, (void*) &string_size);
 	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
