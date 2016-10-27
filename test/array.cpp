@@ -290,6 +290,12 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3] a.removeElement(1) a").equals("[3, 2]");
 	code("let a = [1, 2, 3] a.removeElement('key') a").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, ls::Type::INT_ARRAY.toString() + ".removeElement(" + ls::Type::STRING.toString() + ")");
 
+	section("Postfix expressions");
+	code("let a = [10, ''] a[0]++").equals("11");
+	code("let a = [10, ''] a[0]--").equals("9");
+	code("let v = 10 [v++, '']").equals("[10, '']");
+	code("let v = 90 [v--, '']").equals("[90, '']");
+
 	/*
 	code("3 ~ x -> x ^ x").equals("27");
 	code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");
