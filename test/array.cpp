@@ -105,6 +105,10 @@ void Test::test_arrays() {
 	code("[1000..2000][12]").equals("1012");
 	code("[0..44.523]").equals("[0..44]");
 
+	section("|Interval|");
+	code("|[0..1]|").equals("2");
+	code("|[1..100]|").equals("100");
+
 	code("[1..6].filter(x -> x > 3)").equals("[4, 5, 6]");
 	code("[1..6].filter(x -> x < 3)").equals("[1, 2]");
 	code("[1..100].filter(x -> x > 50 and x < 53)").equals("[51, 52]");
