@@ -35,6 +35,7 @@
 #include "../value/VariableValue.hpp"
 #include "../value/ArrayFor.hpp"
 #include "../../vm/Program.hpp"
+#include "../../vm/value/LSNumber.hpp"
 #include "SyntaxicalError.hpp"
 #include "../lexical/Token.hpp"
 
@@ -612,15 +613,18 @@ Value* SyntaxicAnalyser::eatValue() {
 
 		case TokenType::NUMBER:
 		{
-			Number* n = new Number(stod_(t->content), t);
+			double v = stod_(t->content);
+			Number* n = new Number(LSNumber::print(v), t);
 			eat();
 			return n;
 		}
 
-		case TokenType::PI:
+		case TokenType::PI: {
 			eat();
-			return new Number(M_PI, t);
-
+			std::stringstream stream;
+			stream << std::fixed << std::setprecision(19) << M_PI;
+			return new Number(stream.str(), t);
+		}
 		case TokenType::STRING:
 		{
 			String* v = new String(t->content, t);

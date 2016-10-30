@@ -547,7 +547,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 			res = fun(c, args);
 		} else {
 			auto fun = (void* (*)()) operator_fun;
-			res = VM::call(c, VM::get_jit_type(type), arg_types, args, fun);
+			res = VM::call(c.F, VM::get_jit_type(type), arg_types, args, fun);
 		}
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 			return VM::value_to_pointer(c.F, res, type);
@@ -655,7 +655,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 			if (v1->type == Type::INT_ARRAY and v2->type == Type::INTEGER) {
 				args.push_back(v1->compile(c));
 				args.push_back(v2->compile(c));
-				jit_value_t res = VM::call(c, LS_INTEGER, {LS_POINTER, LS_INTEGER}, args, &jit_array_push_int);
+				jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, args, &jit_array_push_int);
 				if (type.nature == Nature::POINTER) {
 					return VM::value_to_pointer(c.F, res, type);
 				}

@@ -25,6 +25,10 @@ unsigned int VM::operations = 0;
 const bool VM::enable_operations = true;
 const unsigned int VM::operation_limit = 2000000000;
 
+jit_type_t VM::gmp_int_type;
+long VM::gmp_values_created = 0;
+long VM::gmp_values_deleted = 0;
+
 map<string, jit_value_t> internals;
 
 void VM::add_module(Module* m) {
@@ -37,9 +41,14 @@ extern std::map<LSValue*, LSValue*> objs;
 
 VM::Result VM::execute(const std::string code, std::string ctx) {
 
+	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
+	VM::gmp_int_type = jit_type_create_struct(types, 3, 0);
+
 	// Reset
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
+	VM::gmp_values_created = 0;
+	VM::gmp_values_deleted = 0;
 	VM::operations = 0;
 	#if DEBUG > 1
 		objs.clear();
@@ -57,7 +66,7 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	#endif
 
 	// Execute
-	LSValue* value = nullptr;
+	std::string value;
 	if (result.compilation_success) {
 
 		auto exe_start = chrono::high_resolution_clock::now();
@@ -67,22 +76,23 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 		result.execution_time = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
 		result.execution_time_ms = (((double) result.execution_time / 1000) / 1000);
 
-		ostringstream oss;
-		value->print(oss);
-		result.value = oss.str();
+		result.value = value;
 	}
 
 	// Set results
 	result.context = ctx;
 	result.compilation_time = chrono::duration_cast<chrono::nanoseconds>(compilation_end - compilation_start).count();
 	result.compilation_time_ms = (((double) result.compilation_time / 1000) / 1000);
-	result.execution_success = value != nullptr;
+	result.execution_success = true;
 	result.operations = VM::operations;
 
+//	std::cout << "GMP objects created : " << VM::gmp_values_created << std::endl;
+//	std::cout << "GMP objects deleted : " << VM::gmp_values_deleted << std::endl;
+
 	// Cleaning
-	if (value != nullptr) {
-		LSValue::delete_temporary(value);
-	}
+//	if (value != nullptr) {
+//		LSValue::delete_temporary(value);
+//	}
 	delete program;
 	result.objects_created = LSValue::obj_count;
 	result.objects_deleted = LSValue::obj_deleted;
@@ -110,6 +120,9 @@ jit_type_t VM::get_jit_type(const Type& type) {
 	}
 	if (type.raw_type == RawType::INTEGER) {
 		return LS_INTEGER;
+	}
+	if (type.raw_type == RawType::GMP_INT) {
+		return VM::gmp_int_type;
 	}
 	if (type.raw_type == RawType::BOOLEAN) {
 		return LS_BOOLEAN;
@@ -313,6 +326,20 @@ void VM::print_int(jit_function_t F, jit_value_t val) {
 	jit_insn_call_native(F, "print_int", (void*) VM_print_int, sig, &val, 1, JIT_CALL_NOTHROW);
 }
 
+void VM_print_gmp_int(__mpz_struct mpz) {
+	std::cout << "_mp_alloc: " << mpz._mp_alloc << std::endl;
+	std::cout << "_mp_size: " << mpz._mp_size << std::endl;
+	std::cout << "_mp_d: " << mpz._mp_d << std::endl;
+	char buff[1000];
+	mpz_get_str(buff, 10, &mpz);
+	cout << "VM::print_gmp_int : " << buff << endl;
+}
+void VM::print_gmp_int(jit_function_t F, jit_value_t val) {
+	jit_type_t args[1] = {get_jit_type(Type::GMP_INT)};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
+	jit_insn_call_native(F, "print_gmp_int", (void*) VM_print_gmp_int, sig, &val, 1, JIT_CALL_NOTHROW);
+}
+
 jit_value_t VM::get_null(jit_function_t F) {
 	return LS_CREATE_POINTER(F, LSNull::get());
 }
@@ -387,6 +414,24 @@ void VM::push_move_array(jit_function_t F, const Type& element_type, jit_value_t
 	}
 }
 
+jit_value_t VM::create_gmp_int(jit_function_t F, long value) {
+
+	jit_value_t gmp_struct = jit_value_create(F, gmp_int_type);
+	jit_value_set_addressable(gmp_struct);
+
+	jit_value_t gmp_addr = jit_insn_address_of(F, gmp_struct);
+	jit_value_t jit_value = LS_CREATE_LONG(F, value);
+	VM::call(F, LS_VOID, {LS_POINTER, LS_LONG}, {gmp_addr, jit_value}, &mpz_init_set_ui);
+
+	// Increment gmp values counter
+	/*
+	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_created);
+	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
+	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
+	*/
+	return gmp_struct;
+}
+
 LSValue* VM_move(LSValue* val) {
 	return val->move();
 }
@@ -415,6 +460,19 @@ jit_value_t VM::clone_obj(jit_function_t F, jit_value_t ptr) {
 	jit_type_t args[1] = {LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 1, 0);
 	return jit_insn_call_native(F, "clone", (void*) VM_clone, sig, &ptr, 1, JIT_CALL_NOTHROW);
+}
+
+void VM::delete_gmp_int(jit_function_t F, jit_value_t gmp) {
+
+	jit_value_t gmp_addr = jit_insn_address_of(F, gmp);
+	VM::call(F, LS_VOID, {LS_POINTER}, {gmp_addr}, &mpz_clear);
+
+	// Increment gmp values counter
+	/*
+	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_deleted);
+	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
+	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
+	*/
 }
 
 bool VM_is_true(LSValue* val) {

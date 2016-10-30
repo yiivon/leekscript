@@ -90,7 +90,15 @@ jit_value_t VariableDeclaration::compile(Compiler& c) const {
 				}
 
 				c.add_var(name, var, ex->type, false);
-				jit_insn_store(c.F, var, val);
+
+				if (v->type == Type::GMP_INT) {
+					jit_value_t var_addr = jit_insn_address_of(c.F, var);
+					jit_value_t val_addr = jit_insn_address_of(c.F, val);
+					VM::call(c.F, LS_VOID, {LS_POINTER, LS_POINTER}, {var_addr, val_addr}, &mpz_init_set);
+					VM::gmp_values_created++;
+				} else {
+					jit_insn_store(c.F, var, val);
+				}
 			}
 		} else {
 

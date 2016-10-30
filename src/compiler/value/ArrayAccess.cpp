@@ -312,10 +312,14 @@ jit_value_t ArrayAccess::compile_l(Compiler& c) const {
 
 	jit_value_t args[] = {a, k};
 
+	void* func = nullptr;
 	if (array->type.raw_type == RawType::MAP) {
-		return jit_insn_call_native(c.F, "access_l", (void*) access_l_map, sig, args, 2, JIT_CALL_NOTHROW);
+		//std::cout << "access_l_map" << std::endl;
+		func = (void*) access_l_map;
 	} else {
-		return jit_insn_call_native(c.F, "access_l", (void*) access_l_value, sig, args, 2, JIT_CALL_NOTHROW);
+		func = (void*) access_l_value;
 	}
+
+	return jit_insn_call_native(c.F, "access_l", func, sig, args, 2, JIT_CALL_NOTHROW);
 }
 }

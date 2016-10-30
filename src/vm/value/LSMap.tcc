@@ -413,6 +413,7 @@ inline LSValue** LSMap<LSValue*, LSValue*>::atL(const LSValue* key) {
 }
 template <>
 inline LSValue** LSMap<int,LSValue*>::atL(const LSValue* key) {
+
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		try {
 			return (LSValue**) &((std::map<int,LSValue*>*) this)->at((int) n->value);

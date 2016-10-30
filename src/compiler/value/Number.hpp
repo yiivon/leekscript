@@ -10,9 +10,9 @@ class Number : public Value {
 public:
 
 	Token* token;
-	double value;
+	std::string value;
 
-	Number(double value, Token* token);
+	Number(std::string value, Token* token);
 	virtual ~Number();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

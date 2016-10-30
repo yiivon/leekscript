@@ -140,7 +140,8 @@ void Test::test_numbers() {
 	code("Number.char(128040)").equals("'🐨'");
 
 	// large numbers
-	// code("12344532132423").equals("12344532132423");
+	code("12344532132423").equals("12344532132423");
+	code("12344532132423 × 987657897613412").equals("12192174652930110836520779776");
 
 	/*
 	 * Number standard library

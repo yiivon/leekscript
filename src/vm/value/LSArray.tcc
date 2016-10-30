@@ -653,6 +653,7 @@ inline LSArray<T>* LSArray<T>::ls_push_all_ptr(LSArray<LSValue*>* array) {
 	}
 
 	if (array->refs == 0) delete array;
+
 	return this;
 }
 
@@ -1569,12 +1570,15 @@ inline LSValue* LSArray<LSValue*>::ls_add_eq(LSNumber* v) {
 }
 template <>
 inline LSValue* LSArray<double>::ls_add_eq(LSNumber* v) {
+
 	this->push_back(v->value);
 	if (v->refs == 0) delete v;
+
 	return this;
 }
 template <>
 inline LSValue* LSArray<int>::ls_add_eq(LSNumber* v) {
+
 	if (v->value == (int) v->value) {
 		this->push_back(v->value);
 		if (v->refs == 0) delete v;
@@ -2078,6 +2082,7 @@ inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
 			return LSNull::get();
 		}
 	}
+
 	return LSNull::get();
 }
 
@@ -2109,6 +2114,7 @@ LSValue* LSArray<T>::attr(const LSValue* key) const {
 
 template <class T>
 LSValue** LSArray<T>::atL(const LSValue* key) {
+
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		try {
 			LSValue** v = (LSValue**) &(((std::vector<T>*)this)->at((int) n->value));

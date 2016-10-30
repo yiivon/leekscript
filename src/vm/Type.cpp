@@ -11,6 +11,7 @@ const NullRawType* const RawType::NULLL = new NullRawType();
 const BooleanRawType* const RawType::BOOLEAN = new BooleanRawType();
 const NumberRawType* const RawType::NUMBER = new NumberRawType();
 const IntegerRawType* const RawType::INTEGER = new IntegerRawType();
+const GmpIntRawType* const RawType::GMP_INT = new GmpIntRawType();
 const LongRawType* const RawType::LONG = new LongRawType();
 const FloatRawType* const RawType::REAL = new FloatRawType();
 const StringRawType* const RawType::STRING = new StringRawType();
@@ -32,6 +33,8 @@ const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
 const Type Type::NUMBER(RawType::NUMBER, Nature::POINTER);
 const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
+const Type Type::GMP_INT(RawType::GMP_INT, Nature::VALUE);
+const Type Type::GMP_INT_TMP(RawType::GMP_INT, Nature::VALUE, false, true);
 const Type Type::LONG(RawType::LONG, Nature::VALUE);
 const Type Type::REAL(RawType::REAL, Nature::VALUE);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
@@ -65,11 +68,12 @@ Type::Type() {
 	clazz = "?";
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, bool native) {
+Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool temporary) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
+	this->temporary = temporary;
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type, bool native) {
@@ -261,6 +265,10 @@ bool Type::compatible(const Type& type) const {
 		return false;
 	}
 
+	if (this->temporary and not type.temporary) {
+		return false; // type not compatible with type&&
+	}
+
 	if (this->raw_type != type.raw_type) {
 
 		// Every type is compatible with 'Unknown' type
@@ -378,6 +386,11 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 			return true;
 		}
 	}
+
+	if (not old.temporary and neww.temporary) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -492,6 +505,10 @@ ostream& operator << (ostream& os, const Type& type) {
 		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 	}
 	os << END_COLOR;
+
+	if (type.temporary) {
+		os << "&&";
+	}
 
 	return os;
 }

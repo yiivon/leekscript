@@ -112,32 +112,52 @@ void Program::compile_main(Context& context) {
 	closure = jit_function_to_closure(F);
 }
 
-LSValue* Program::execute() {
+std::string Program::execute() {
 
 	Type output_type = main->type.getReturnType();
 
 	if (output_type == Type::BOOLEAN) {
 		auto fun = (bool (*)()) closure;
-		return LSBoolean::get(fun());
+		return fun() ? "true" : "false";
 	}
+
 	if (output_type == Type::INTEGER) {
 		auto fun = (int (*)()) closure;
-		return LSNumber::get((double) fun());
+		return std::to_string(fun());
 	}
+
+	if (output_type == Type::GMP_INT) {
+		auto fun = (__mpz_struct (*)()) closure;
+		__mpz_struct ret = fun();
+		char buff[1000];
+		mpz_get_str(buff, 10, &ret);
+		mpz_clear(&ret);
+		VM::gmp_values_deleted++;
+		return std::string(buff);
+	}
+
 	if (output_type == Type::REAL) {
 		auto fun = (double (*)()) closure;
-		return LSNumber::get(fun());
+		return LSNumber::print(fun());
 	}
+
 	if (output_type == Type::LONG) {
 		auto fun = (long (*)()) closure;
-		return LSNumber::get(fun());
+		return std::to_string(fun());
 	}
+
 	if (output_type.raw_type == RawType::FUNCTION and output_type.nature == Nature::VALUE) {
 		auto fun = (void* (*)()) closure;
-		return new LSFunction(fun());
+		fun();
+		return "<function>";
 	}
+
 	auto fun = (LSValue* (*)()) closure;
-	return fun();
+	LSValue* ptr = fun();
+	std::ostringstream oss;
+	oss << ptr;
+	LSValue::delete_temporary(ptr);
+	return oss.str();
 }
 
 void Program::print(ostream& os, bool debug) const {

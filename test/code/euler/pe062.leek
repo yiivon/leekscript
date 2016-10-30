@@ -4,13 +4,13 @@ var first = ['s' : 's'] first.erase('s')
 var i = 405
 
 while i++ {
-
+	
     var n = '' + i.pow(3)
     var ns = n.sort()
 
 	if ns in groups {
-		var c = (groups[ns] = groups[ns] + 1)
-		if (c == 5) {
+		var c = groups[ns]++;
+		if (c == 4) {
 			return String.number(first[ns])
 		}
 	} else {

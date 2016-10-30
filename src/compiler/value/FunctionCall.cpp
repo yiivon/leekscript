@@ -287,7 +287,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 			res = fun(c, args);
 		} else {
 			auto fun = (void* (*)()) std_func;
-			res = VM::call(c, VM::get_jit_type(type), arg_types, args, fun);
+			res = VM::call(c.F, VM::get_jit_type(type), arg_types, args, fun);
 		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
@@ -312,7 +312,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 			res = fun(c, args);
 		} else {
 			auto fun = (void* (*)()) std_func;
-			res = VM::call(c, VM::get_jit_type(type), arg_types, args, fun);
+			res = VM::call(c.F, VM::get_jit_type(type), arg_types, args, fun);
 		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {

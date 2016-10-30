@@ -52,6 +52,13 @@ public:
 	virtual const std::string getJsonName() const { return "number"; }
 };
 
+class GmpIntRawType : public NumberRawType {
+public:
+	virtual const std::string getName() const { return "gmp_int"; }
+	virtual const std::string getClass() const { return "Number"; }
+	virtual const std::string getJsonName() const { return "number"; }
+};
+
 class LongRawType : public NumberRawType {
 public:
 	virtual const std::string getName() const { return "long"; }
@@ -129,6 +136,7 @@ public:
 	static const NullRawType* const NULLL;
 	static const BooleanRawType* const BOOLEAN;
 	static const NumberRawType* const NUMBER;
+	static const GmpIntRawType* const GMP_INT;
 	static const IntegerRawType* const INTEGER;
 	static const LongRawType* const LONG;
 	static const FloatRawType* const REAL;
@@ -153,9 +161,10 @@ public:
 	std::vector<Type> key_type;
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
+	bool temporary = false;
 
 	Type();
-	Type(const BaseRawType* raw_type, Nature nature, bool native = false);
+	Type(const BaseRawType* raw_type, Nature nature, bool native = false, bool temporary = false);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native = false);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native = false);
 
@@ -201,6 +210,8 @@ public:
 	static const Type BOOLEAN;
 	static const Type NUMBER;
 	static const Type INTEGER;
+	static const Type GMP_INT;
+	static const Type GMP_INT_TMP;
 	static const Type LONG;
 	static const Type REAL;
 	static const Type STRING;

@@ -4,6 +4,9 @@
 #include <vector>
 #include <string>
 #include <jit/jit.h>
+#include <gmp.h>
+#include <gmpxx.h>
+
 #include "Context.hpp"
 #include "../compiler/lexical/LexicalError.hpp"
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
@@ -19,6 +22,7 @@
  */
 #define DEBUG 0
 
+#define LS_VOID jit_type_void
 #define LS_INTEGER jit_type_int
 #define LS_LONG jit_type_long
 #define LS_REAL jit_type_float64
@@ -55,6 +59,10 @@ public:
 	static unsigned int operations;
 	static const bool enable_operations;
 	static const unsigned int operation_limit;
+
+	static jit_type_t gmp_int_type;
+	static long gmp_values_created;
+	static long gmp_values_deleted;
 
 	class Result {
 	public:
@@ -94,6 +102,7 @@ public:
 		int cap = 0);
 	static void push_move_array(jit_function_t F, const Type& element_type,
 		jit_value_t array, jit_value_t value);
+	static jit_value_t create_gmp_int(jit_function_t F, long value = 0);
 
 	/** Conversions **/
 	static jit_value_t value_to_pointer(jit_function_t, jit_value_t, Type);
@@ -110,6 +119,7 @@ public:
 	static jit_value_t move_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t move_inc_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t clone_obj(jit_function_t F, jit_value_t ptr);
+	static void delete_gmp_int(jit_function_t F, jit_value_t gmp);
 
 	/** Operations **/
 	static void inc_ops(jit_function_t F, int add);
@@ -117,13 +127,14 @@ public:
 
 	/** Utilities **/
 	static void print_int(jit_function_t F, jit_value_t val);
+	static void print_gmp_int(jit_function_t F, jit_value_t val);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
 
 	template <typename R, typename... A>
-	static jit_value_t call(Compiler& c, jit_type_t return_type, std::vector<jit_type_t> types, std::vector<jit_value_t> args, R(*func)(A...))
+	static jit_value_t call(jit_function_t& f, jit_type_t return_type, std::vector<jit_type_t> types, std::vector<jit_value_t> args, R(*func)(A...))
 	{
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, types.data(), types.size(), 0);
-		return jit_insn_call_native(c.F, "VM::call", (void*) func, sig, args.data(), types.size(), JIT_CALL_NOTHROW);
+		return jit_insn_call_native(f, "VM::call", (void*) func, sig, args.data(), types.size(), JIT_CALL_NOTHROW);
 	}
 };
 

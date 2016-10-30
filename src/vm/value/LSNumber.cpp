@@ -1,8 +1,10 @@
+#include <cmath>
+#include <sstream>
+
 #include "LSNumber.hpp"
 #include "LSNull.hpp"
 #include "LSFunction.hpp"
 #include "LSBoolean.hpp"
-#include <cmath>
 
 using namespace std;
 
@@ -28,6 +30,25 @@ LSNumber* LSNumber::get(NUMBER_TYPE i) {
 	return new LSNumber(i);
 }
 
+std::string LSNumber::print(double d) {
+	std::string s;
+	size_t len = snprintf(0, 0, "%.18f", d);
+	size_t oldsize = s.size();
+	s.resize(oldsize + len + 1);
+
+	// technically non-portable
+	snprintf(&s[oldsize], len+1, "%.18f", d);
+	// remove nul terminator
+	s.pop_back();
+	// remove trailing zeros
+	s.erase(s.find_last_not_of('0') + 1, string::npos);
+	// remove trailing point
+	if (s.back() == L'.') {
+		s.pop_back();
+	}
+	return s;
+}
+
 LSNumber::LSNumber() : value(0) {}
 
 LSNumber::LSNumber(NUMBER_TYPE value) : value(value) {}
@@ -36,6 +57,11 @@ LSNumber::LSNumber(Json& json) : value(json) {}
 
 LSNumber::~LSNumber() {
 //	cout << "delete LSNumber : " << value << endl;
+}
+
+int LSNumber::integer() const {
+//	return mpz_get_ui(value.get_mpz_t());
+	return 0;
 }
 
 bool LSNumber::isTrue() const {
@@ -57,6 +83,7 @@ LSValue*LSNumber::ls_not() {
 }
 
 LSValue*LSNumber::ls_tilde() {
+
 	if (refs == 0) {
 		value = ~ (int)value;
 		return this;
@@ -70,7 +97,7 @@ LSValue*LSNumber::ls_preinc() {
 	return this;
 }
 
-LSValue*LSNumber::ls_inc() {
+LSValue* LSNumber::ls_inc() {
 	// x++
 	if (refs == 0) {
 		value += 1;
@@ -81,12 +108,12 @@ LSValue*LSNumber::ls_inc() {
 	return r;
 }
 
-LSValue*LSNumber::ls_predec() {
+LSValue* LSNumber::ls_predec() {
 	value -= 1;
 	return this;
 }
 
-LSValue*LSNumber::ls_dec() {
+LSValue* LSNumber::ls_dec() {
 	if (refs == 0) {
 		value -= 1;
 		return this;
@@ -415,29 +442,11 @@ bool LSNumber::isInteger() const {
 	return value == (int)value;
 }
 
-void append_dbl2str(std::string &s, double d) {
-
-	size_t len = snprintf(0, 0, "%.18f", d);
-	size_t oldsize = s.size();
-	s.resize(oldsize + len + 1);
-
-	// technically non-portable
-	snprintf(&s[oldsize], len+1, "%.18f", d);
-	// remove nul terminator
-	s.pop_back();
-	// remove trailing zeros
-	s.erase(s.find_last_not_of('0') + 1, string::npos);
-	// remove trailing point
-	if (s.back() == L'.') {
-		s.pop_back();
-	}
-}
-
 string LSNumber::toString() const {
+
 	if (isInteger()) return to_string((int)value);
-	string s;
-	append_dbl2str(s, value);
-	return s;
+
+	return LSNumber::print(value);
 }
 string LSNumber::json() const {
 	return toString();

@@ -50,6 +50,9 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.raw_type == RawType::REAL) {
 		type.raw_type = RawType::REAL;
 	}
+
+	type.temporary = false;
+
 //	cout << "VV " << name << " : " << type << endl;
 //	cout << "var scope : " << (int)var->scope << endl;
 //	for (auto t : attr_types)

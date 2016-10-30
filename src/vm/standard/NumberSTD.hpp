@@ -20,7 +20,41 @@ public:
 	/*
 	 * Operators
 	 */
+	static jit_value_t store_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t store_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+
 	static jit_value_t add_real_real(Compiler& c, std::vector<jit_value_t>);
+	static jit_value_t add_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t add_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t add_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t add_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+
+	static jit_value_t add_eq_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+
+	static jit_value_t sub_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t sub_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t sub_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t sub_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+
+	static jit_value_t mul_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t mul_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t mul_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t mul_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+
+	static jit_value_t pow_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+
+	static jit_value_t lt_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t lt_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t lt_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+
+	static jit_value_t gt_int_gmp(Compiler& c, std::vector<jit_value_t> args);
+
+	static jit_value_t mod_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t mod_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
+
+	static jit_value_t eq_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t eq_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args);
 
 	/*
 	 * Methods
@@ -79,8 +113,10 @@ public:
 
 	static double sqrt_ptr(LSNumber* x);
 	static jit_value_t sqrt_real(Compiler&, std::vector<jit_value_t>);
-	
+
 	static jit_value_t pow_int(Compiler&, std::vector<jit_value_t>);
+
+	static jit_value_t is_prime(Compiler&, std::vector<jit_value_t>);
 };
 
 }
