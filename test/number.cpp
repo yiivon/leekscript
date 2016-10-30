@@ -142,6 +142,9 @@ void Test::test_numbers() {
 	// large numbers
 	code("12344532132423").equals("12344532132423");
 	code("12344532132423 × 987657897613412").equals("12192174652930110836520779776");
+	code("0l").equals("0");
+	code("2 ** 50").equals("-2147483648");
+	code("2l ** 50").equals("1125899906842624");
 
 	/*
 	 * Number standard library

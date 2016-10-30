@@ -191,6 +191,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("**", {
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_gmp, Method::NATIVE},
+		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_int, Method::NATIVE},
 	});
 
 	operator_("<", {
@@ -564,6 +565,16 @@ jit_value_t NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
 		mpz_t res;
 		mpz_init(res);
 		mpz_pow_ui(res, &a, mpz_get_ui(&b));
+		return *res;
+	});
+}
+
+jit_value_t NumberSTD::pow_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
+	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, LS_INTEGER}, args,
+	+[](__mpz_struct a, int b) {
+		mpz_t res;
+		mpz_init(res);
+		mpz_pow_ui(res, &a, b);
 		return *res;
 	});
 }

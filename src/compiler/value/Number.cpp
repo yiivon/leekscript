@@ -37,6 +37,7 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 	} catch (exception& e) {
 		large_number = true;
 	}
+	large_number |= token->large_number;
 
 	if (large_number) {
 		type = Type::GMP_INT;

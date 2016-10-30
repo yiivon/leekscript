@@ -14,12 +14,13 @@ Token::Token(std::string content) {
 	size = 0;
 }
 
-Token::Token(TokenType type, unsigned int line, unsigned int character, string content) {
+Token::Token(TokenType type, unsigned int line, unsigned int character, string content, bool large_number) {
 
 	this->type = type;
 	this->character = character - content.size() - 1;
 	this->line = line;
 	this->content = string(content);
+	this->large_number = large_number;
 
 	if (type == TokenType::STRING) {
 		this->character--;

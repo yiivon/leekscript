@@ -42,6 +42,7 @@ public:
 	static jit_value_t mul_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args);
 
 	static jit_value_t pow_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t pow_gmp_int(Compiler& c, std::vector<jit_value_t> args);
 
 	static jit_value_t lt_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
 	static jit_value_t lt_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args);

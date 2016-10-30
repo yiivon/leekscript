@@ -135,6 +135,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 	string word = "";
 	bool ident = false;
 	bool number = false;
+	bool large_number = false;
 	bool string1 = false;
 	bool string2 = false;
 	bool other = false;
@@ -184,7 +185,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						if ((bin || hex) && word.size() == 2) {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 						}
-						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
+						tokens.push_back(Token(TokenType::NUMBER, line, character, word, large_number));
 						number = bin = hex = false;
 					} else if (string1 || string2) {
 						if (escape) {
@@ -229,6 +230,10 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						} else if (hex && (c <= 'F' || (c >= 'a' && c <= 'f'))) {
 							u8_toutf8(buff, 5, &c, 1);
 							word += buff;
+						} else if (c == 'l' or c == 'L') {
+							tokens.push_back(Token(TokenType::NUMBER, line, character, word, true));
+							number = bin = hex = false;
+							word = "";
 						} else {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 							tokens.push_back(Token(TokenType::NUMBER, line, character, word));
@@ -266,10 +271,12 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
 						number = true;
+						large_number = false;
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 					} else {
 						number = true;
+						large_number = false;
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 					}
@@ -285,7 +292,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						if ((bin || hex) && word.size() == 2) {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 						}
-						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
+						tokens.push_back(Token(TokenType::NUMBER, line, character, word, large_number));
 						number = bin = hex = false;
 						string1 = true;
 						word = "";
@@ -321,7 +328,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						if ((bin || hex) && word.size() == 2) {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 						}
-						tokens.push_back(Token(TokenType::NUMBER, line, character, word));
+						tokens.push_back(Token(TokenType::NUMBER, line, character, word, large_number));
 						number = bin = hex = false;
 						string2 = true;
 						word = "";
@@ -362,7 +369,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 							if ((bin || hex) && word.size() == 2) {
 								errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 							}
-							tokens.push_back(Token(TokenType::NUMBER, line, character, word));
+							tokens.push_back(Token(TokenType::NUMBER, line, character, word, large_number));
 							number = bin = hex = false;
 							other = true;
 							u8_toutf8(buff, 5, &c, 1);
