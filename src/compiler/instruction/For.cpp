@@ -7,8 +7,7 @@ using namespace std;
 
 namespace ls {
 
-For::For() {
-}
+For::For() {}
 
 For::~For() {
 	for (Instruction* ins : inits) delete ins;
@@ -46,8 +45,9 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Init
 	for (Instruction* ins : inits) {
-		ins->analyse(analyser, Type::VOID);
+		ins->analyse(analyser, Type::UNKNOWN);
 		if (dynamic_cast<Return*>(ins)) {
+			type = ins->type;
 			analyser->leave_block();
 			return;
 		}
