@@ -12,6 +12,11 @@ Test::Test() {
 
 Test::~Test() {}
 
+int main(int argc, char* argv[]) {
+	srand(time(0));
+	return Test().all();
+}
+
 int Test::all() {
 
 	clock_t begin = clock();

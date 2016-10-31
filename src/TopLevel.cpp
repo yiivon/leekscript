@@ -13,7 +13,6 @@
 
 #include "doc/Documentation.hpp"
 #include "../benchmark/Benchmark.hpp"
-#include "../test/Test.hpp"
 #include "vm/LSValue.hpp"
 
 using namespace std;
@@ -47,11 +46,6 @@ void print_errors(ls::VM::Result& result) {
 int main(int argc, char* argv[]) {
 
 	srand(time(0));
-
-	/** Launch tests */
-	if (argc > 1 && string(argv[1]) == "-test") {
-		return Test().all();
-	}
 
 	/** Generate the standard functions documentation */
 	if (argc > 1 && string(argv[1]) == "-doc") {

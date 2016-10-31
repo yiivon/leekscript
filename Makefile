@@ -1,14 +1,19 @@
-SRC_DIR := . src src/vm src/vm/value src/vm/standard src/doc \
+SRC_DIR := src/vm src/vm/value src/vm/standard src/doc \
 src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic \
-src/compiler/value src/compiler/instruction src/util lib benchmark test
+src/compiler/value src/compiler/instruction src/util lib
+TEST_DIR := test
 
-SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+SRC := $(foreach d,$(SRC_DIR),$(wildcard $(d)/*.cpp))
+TEST_SRC := $(foreach d,$(TEST_DIR),$(wildcard $(d)/*.cpp))
 
 BUILD_DIR := $(addprefix build/default/,$(SRC_DIR))
+BUILD_DIR += $(addprefix build/default/,$(TEST_DIR))
 BUILD_DIR += $(addprefix build/shared/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/coverage/,$(SRC_DIR))
 
 OBJ := $(patsubst %.cpp,build/default/%.o,$(SRC))
+OBJ_TOPLEVEL = build/default/src/TopLevel.o
+OBJ_TEST := $(patsubst %.cpp,build/default/%.o,$(TEST_SRC))
 OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 OBJ_COVERAGE := $(patsubst %.cpp,build/coverage/%.o,$(SRC))
 
@@ -21,8 +26,8 @@ LIBS := -ljit -lgmpxx -lgmp
 all: build/leekscript
 
 # Main build task, default build
-build/leekscript: $(BUILD_DIR) $(OBJ)
-	g++ $(FLAGS) -o build/leekscript $(OBJ) $(LIBS)
+build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
+	g++ $(FLAGS) -o build/leekscript $(OBJ) $(OBJ_TOPLEVEL) $(LIBS)
 	@echo "---------------"
 	@echo "Build finished!"
 	@echo "---------------"
@@ -41,6 +46,13 @@ build/coverage/%.o: %.cpp
 
 $(BUILD_DIR):
 	@mkdir -p $@
+	
+# Build test target
+build/leekscript-test: $(BUILD_DIR) $(OBJ) $(OBJ_TEST)
+	g++ $(FLAGS) -o build/leekscript-test $(OBJ) $(OBJ_TEST) $(LIBS)
+	@echo "--------------------------"
+	@echo "Build (test) finished!"
+	@echo "--------------------------"
 
 # Build the shared library version of the leekscript
 # (libleekscript.so in build/)
@@ -69,12 +81,12 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE)
 coverage: build/leekscript-coverage
 
 # Run tests/
-test: build/leekscript
-	@build/leekscript -test
+test: build/leekscript-test
+	@build/leekscript-test
 
 # Valgrind
 valgrind:
-	valgrind -v leekscript -test
+	valgrind -v leekscript-test
 
 # Travis task, useless in local.
 # Build a leekscript docker image, compile, run tests and run cpp-coveralls
