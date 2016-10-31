@@ -6,6 +6,7 @@ void Test::test_files() {
 	header("Files");
 	section("General");
 	file("test/code/primes.leek").equals("41538");
+	file("test/code/primes_gmp.leek").equals("9591");
 	file("test/code/gcd.leek").equals("151");
 	file("test/code/strings.leek").almost(52.0, 3.0);
 	file("test/code/reachable_cells.leek").equals("383");
