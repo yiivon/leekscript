@@ -30,6 +30,20 @@ namespace ls {
 }
 #endif
 
+void print_errors(ls::VM::Result& result) {
+
+	#if DEBUG > 0
+		cout << "main() " << result.program << endl;
+	#endif
+
+	for (const auto& e : result.syntaxical_errors) {
+		std::cout << "Line " << e->token->line << ": " << e->message << std::endl;
+	}
+	for (const auto& e : result.semantical_errors) {
+		std::cout << "line " << e.line << ": " << e.message() << std::endl;
+	}
+}
+
 int main(int argc, char* argv[]) {
 
 	srand(time(0));
@@ -75,10 +89,8 @@ int main(int argc, char* argv[]) {
 		if (param_file) {
 
 			auto result = vm.execute(code, "{}");
-			//cout << "main() " << result.program << endl;
-			for (auto error : result.semantical_errors) {
-				std::cout << "line " << error.line << ": " << error.message() << std::endl;
-			}
+			print_errors(result);
+
 			cout << result.value << endl;
 			cout << "(" << result.operations << " ops, "
 				<< result.compilation_time_ms << "ms + "
@@ -117,10 +129,8 @@ int main(int argc, char* argv[]) {
 
 			// Execute
 			auto result = vm.execute(code, ctx);
+			print_errors(result);
 
-			//#if DEBUG > 0
-				cout << "main() " << result.program << endl;
-//			#endif
 			cout << result.value << endl;
 
 			cout << "(" << result.operations << " ops, "
