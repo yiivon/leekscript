@@ -42,7 +42,7 @@ void Test::test_loops() {
 	 * For loops
 	 */
 	header("For loops");
-//	code("for let i = 0; ; i++ {}").equals("null");
+//	code("for let i = 0; ; i++ {}").equals("null"); // TODO infinite loop
 	code("for let i = 0; false; i++ {}").equals("null");
 	code("for let i = 0; i < 10; i++ {}").equals("null");
 	code("let s = 0 for let i = 0; i < 5; i++ do s += i end s").equals("10");
@@ -53,7 +53,11 @@ void Test::test_loops() {
 	code("let a = 0 for let i = 0; i < 10; i++ { if i < 5 { continue } a++ } a").equals("5");
 	code("let c = 0 for var t = []; t.size() < 10; t.push('x') { c++ } c").equals("10");
 	//code("let s = 0 for let m = [1 : 3, 2 : 2, 3 : 1]; m; let l = 0 for k,x in m { l = k } m.erase(l) { for x in m { s += x } } s").equals("14");
+	code("for let i = 0; ['', i < 10][1]; i++ {}").equals("null");
+
+	section("For loops with returns");
 	code("for return 12; true; null {}").equals("12");
+	code("for ;; return 'hello' {}").equals("'hello'");
 
 	/*
 	 * Foreach loops
