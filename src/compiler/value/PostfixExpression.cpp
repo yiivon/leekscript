@@ -49,6 +49,8 @@ LSValue* jit_dec(LSValue* x) {
 
 jit_value_t PostfixExpression::compile(Compiler& c) const {
 
+	VM::inc_ops(c.F, 1);
+
 	jit_type_t args_types[1] = {LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 1, 0);
 	vector<jit_value_t> args;
