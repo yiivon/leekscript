@@ -30,6 +30,14 @@ void Test::test_system() {
 	code("System.nanoTime").almost(nano_time, 100000000L);
 
 	code("let a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, "a");
+
+	section("print()");
+	code("System.print(true)").equals("null");
+	code("System.print(12)").equals("null");
+	code("System.print(123.456)").equals("null");
+	code("System.print(1234567123456)").equals("null");
+	code("System.print(12345671234561234567123456)").equals("null");
+	code("System.print('salut')").equals("null");
 }
 
 long get_sec_time() {
