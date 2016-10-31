@@ -12,7 +12,7 @@ Test::Test() {
 
 Test::~Test() {}
 
-int main(int argc, char* argv[]) {
+int main(int, char**) {
 	srand(time(0));
 	return Test().all();
 }

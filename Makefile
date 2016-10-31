@@ -73,8 +73,8 @@ install: lib
 	@echo "------------------"
 
 # Build with coverage flags enabled
-build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE)
-	g++ $(FLAGS) -fprofile-arcs -ftest-coverage -o build/leekscript-coverage $(OBJ_COVERAGE) $(LIBS)
+build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE) $(OBJ_TEST)
+	g++ $(FLAGS) -fprofile-arcs -ftest-coverage -o build/leekscript-coverage $(OBJ_COVERAGE) $(OBJ_TEST) $(LIBS)
 	@echo "--------------------------"
 	@echo "Build (coverage) finished!"
 	@echo "--------------------------"
@@ -94,7 +94,7 @@ valgrind:
 travis:
 	docker build -t leekscript .
 	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
-	       leekscript /bin/bash -c "cd leekscript; make coverage && build/leekscript-coverage -test \
+	       leekscript /bin/bash -c "cd leekscript; make coverage && build/leekscript-coverage \
 	       && cpp-coveralls --gcov-options='-r'"
 
 # Coverage results with lcov.
@@ -104,8 +104,7 @@ html-coverage: coverage
 	cp -R src/ build/coverage/
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --zerocounters --directory build/coverage/src --base-directory build/coverage/src
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --capture --initial --directory build/coverage/src --base-directory build/coverage/src --output-file build/html/app.info
-	build/leekscript-coverage -test
-	rm build/coverage/src/Main.*
+	build/leekscript-coverage
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --no-checksum --directory build/coverage/src --base-directory build/coverage/src --capture --output-file build/html/app.info
 	cd build/html; genhtml --precision 2 --branch-coverage app.info
 
