@@ -990,8 +990,13 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		eat(TokenType::SEMICOLON);
 
 		// condition
-		f->condition = eatExpression();
-		eat(TokenType::SEMICOLON);
+		if (t->type == TokenType::SEMICOLON) {
+			f->condition = nullptr;
+			eat();
+		} else {
+			f->condition = eatExpression();
+			eat(TokenType::SEMICOLON);
+		}
 
 		// increment
 		while (true) {
@@ -1013,9 +1018,10 @@ Instruction* SyntaxicAnalyser::eatFor() {
 			f->body = eatBlock();
 			eat(TokenType::END);
 		}
-
 		return f;
+
 	} else {
+
 		for (Instruction* ins : inits) delete ins;
 		restore_saved_state();
 
