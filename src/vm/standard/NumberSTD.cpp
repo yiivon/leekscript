@@ -21,15 +21,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_cbrt(LSNumber* x) {
-	double r = cbrt(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x->value;
-	}
-	return r;
-}
-
 double number_cos(LSNumber* x) {
 	double r = cos(x->value);
 	if (x->refs == 0) {
@@ -220,6 +211,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_field("phi", Type::REAL, (void*) &Number_phi);
 	static_field("epsilon", Type::REAL, (void*) &Number_epsilon);
 
+	/*
+	 * Methods
+	 */
 	method("abs", {
 		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::abs_ptr},
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::abs_real, Method::NATIVE},
@@ -243,18 +237,18 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr},
 		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_real_real, Method::NATIVE}
 	});
-	method("cbrt", Type::REAL, Type::REAL, {}, (void*) &number_cbrt);
-
+	method("cbrt", {
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cbrt_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cbrt_real, Method::NATIVE}
+	});
 	method("ceil", {
 		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::ceil_ptr}
 	});
-
 	method("char", {
 		{Type::NUMBER, Type::POINTER, {}, (void*) &NumberSTD::char_ptr},
 		{Type::REAL, Type::STRING, {}, (void*) &NumberSTD::char_real, Method::NATIVE},
 		{Type::INTEGER, Type::STRING, {}, (void*) &NumberSTD::char_int, Method::NATIVE}
 	});
-
 	method("cos", {
 		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::cos_ptr}
 	});
@@ -339,8 +333,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::atan2_real_real, Method::NATIVE}
 	});
-	static_method("cbrt", Type::REAL, {Type::NUMBER}, (void*) &number_cbrt);
-
+	static_method("cbrt", {
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cbrt_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cbrt_real, Method::NATIVE}
+	});
 	static_method("ceil", {
 		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr},
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::ceil_real, Method::NATIVE},
@@ -870,6 +866,18 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 
 jit_value_t NumberSTD::sqrt_real(Compiler& c, std::vector<jit_value_t> args) {
 	return jit_insn_sqrt(c.F, args[0]);
+}
+
+double NumberSTD::cbrt_ptr(LSNumber* x) {
+	double s = cbrt(x->value);
+	LSValue::delete_temporary(x);
+	return s;
+}
+
+jit_value_t NumberSTD::cbrt_real(Compiler& c, std::vector<jit_value_t> args) {
+	return VM::call(c.F, LS_REAL, {LS_REAL}, args, +[] (double x) {
+		return cbrt(x);
+	});
 }
 
 jit_value_t NumberSTD::pow_int(Compiler& c, std::vector<jit_value_t> args) {

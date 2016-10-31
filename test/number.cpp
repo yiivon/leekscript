@@ -244,6 +244,12 @@ void Test::test_numbers() {
 	code("Number.atan2(1, ['', -1][1])").almost(3 * M_PI / 4);
 	code("Number.atan2(['', -1][1], ['', -1][1])").almost(-3 * M_PI / 4);
 
+	section("cbrt()");
+	code("Number.cbrt(1728)").almost(12.0, 1e-14);
+	code("1728.cbrt()").almost(12.0, 0.00000000000001);
+	code("Number.cbrt(['', 1728][1])").almost(12.0, 0.00000000000001);
+//	code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
+
 	section("isInteger()");
 	code("Number.isInteger(12)").equals("true");
 	code("Number.isInteger(0)").equals("true");
