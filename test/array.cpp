@@ -121,6 +121,9 @@ void Test::test_arrays() {
 	code("[1..10]['hello']").semantic_error( ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, "<key 1>");
 	// code("[1..10][-10]").equals(""); must throw exception
 
+	section("Interval clone()");
+	code("let i = [1..10] [i]").equals("[[1..10]]");
+
 	/*
 	 * Array standard library
 	 */
