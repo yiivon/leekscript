@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
 			auto result = vm.execute(code, ctx);
 
 			//#if DEBUG > 0
-//				cout << "main() " << result.program << endl;
+				cout << "main() " << result.program << endl;
 //			#endif
 			cout << result.value << endl;
 

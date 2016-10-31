@@ -541,6 +541,7 @@ jit_value_t NumberSTD::mul_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t>
 	VM::delete_gmp_int(c.F, args[1]);
 	return args[0];
 }
+
 jit_value_t NumberSTD::mul_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
 	std::cout << "mul_gmp_gmp_tmp" << std::endl;
 
@@ -550,6 +551,7 @@ jit_value_t NumberSTD::mul_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> arg
 		return b;
 	});
 }
+
 jit_value_t NumberSTD::mul_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
 	std::cout << "[jit] mul_gmp_tmp_gmp" << std::endl;
 
@@ -560,6 +562,8 @@ jit_value_t NumberSTD::mul_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> arg
 }
 
 jit_value_t NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
+	std::cout << "pow_gmp_gmp" << std::endl;
+
 	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, VM::gmp_int_type}, args,
 	+[](__mpz_struct a, __mpz_struct b) {
 		mpz_t res;

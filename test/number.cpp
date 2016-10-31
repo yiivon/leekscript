@@ -139,12 +139,13 @@ void Test::test_numbers() {
 	code("126.char()").equals("'~'");
 	code("Number.char(128040)").equals("'🐨'");
 
-	// large numbers
+	section("Multiple precision numbers");
 	code("12344532132423").equals("12344532132423");
-	code("12344532132423 × 987657897613412").equals("12192174652930110836520779776");
-	code("0l").equals("0");
+	code("12344532132423m * 987657897613412m").equals("12192174652930109838844857276");
+	code("0m").equals("0");
 	code("2 ** 50").equals("-2147483648");
-	code("2l ** 50").equals("1125899906842624");
+	code("2m ** 50").equals("1125899906842624");
+	code("0xf45eab5c9d13aab44376beff").equals("75628790656539575381594128127");
 
 	/*
 	 * Number standard library

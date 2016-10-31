@@ -11,6 +11,12 @@ public:
 
 	Token* token;
 	std::string value;
+	std::string clean_value;
+	int base = 10;
+	int int_value = 0;
+	long long_value = 0;
+	double double_value = 0;
+	mpz_t mpz_value;
 
 	Number(std::string value, Token* token);
 	virtual ~Number();

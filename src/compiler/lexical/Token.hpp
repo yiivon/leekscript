@@ -16,10 +16,9 @@ public:
 	unsigned character;
 	unsigned line;
 	unsigned size;
-	bool large_number = false;
 
 	Token(std::string content);
-	Token(TokenType type, unsigned int line, unsigned int character, std::string content, bool large_number = false);
+	Token(TokenType type, unsigned int line, unsigned int character, std::string content);
 	virtual ~Token();
 };
 

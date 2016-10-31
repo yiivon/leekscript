@@ -580,20 +580,6 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened) {
 	return e;
 }
 
-double stod_(string str) {
-
-	if (str.size() > 2 && str[0] == '0' && str[1] == 'b') {
-		double x = 0.0;
-		for (size_t i = 2; i < str.size(); ++i) {
-			x *= 2.0;
-			if (str[i] == '1') x += 1.0;
-		}
-		return x;
-	} else {
-		return stod(str);
-	}
-}
-
 Value* SyntaxicAnalyser::eatValue() {
 
 	switch (t->type) {
@@ -613,8 +599,7 @@ Value* SyntaxicAnalyser::eatValue() {
 
 		case TokenType::NUMBER:
 		{
-			double v = stod_(t->content);
-			Number* n = new Number(LSNumber::print(v), t);
+			Number* n = new Number(t->content, t);
 			eat();
 			return n;
 		}
@@ -1103,13 +1088,13 @@ Instruction* SyntaxicAnalyser::eatWhile() {
 	return w;
 }
 
-Break*SyntaxicAnalyser::eatBreak() {
+Break* SyntaxicAnalyser::eatBreak() {
 	eat(TokenType::BREAK);
 	Break* b = new Break();
 
 	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
-		double deepness = stod_(t->content);
-		if (deepness != int(deepness) || deepness <= 0) {
+		int deepness = std::stoi(t->content);
+		if (deepness <= 0) {
 			errors.push_back(new SyntaxicalError(t, "Break should only be followed by a positive integer"));
 		} else {
 			b->deepness = deepness;
@@ -1120,13 +1105,13 @@ Break*SyntaxicAnalyser::eatBreak() {
 	return b;
 }
 
-Continue*SyntaxicAnalyser::eatContinue() {
+Continue* SyntaxicAnalyser::eatContinue() {
 	eat(TokenType::CONTINUE);
 	Continue* c = new Continue();
 
 	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
-		double deepness = stod_(t->content);
-		if (deepness != int(deepness) || deepness <= 0) {
+		int deepness = std::stoi(t->content);
+		if (deepness <= 0) {
 			errors.push_back(new SyntaxicalError(t, "Continue should only be followed by a positive integer"));
 		} else {
 			c->deepness = deepness;
