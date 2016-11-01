@@ -41,6 +41,8 @@ public:
 	static std::string tabs(int indent);
 };
 
+std::ostream& operator << (std::ostream& os, const Value* v);
+
 }
 
 #endif
