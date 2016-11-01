@@ -199,6 +199,9 @@ void Test::test_numbers() {
 	code("Number.cos(0)").equals("1");
 	code("Number.cos(π)").equals("-1");
 	code("Number.cos(π / 2)").almost(0.0);
+	code("π.cos()").equals("-1");
+//	code("['', π][1].cos()").equals("-1");
+	code("Number.cos(['', π][1])").equals("-1");
 
 	section("acos()");
 	code("Number.acos(1)").equals("0");
@@ -212,6 +215,14 @@ void Test::test_numbers() {
 	code("Number.sin(π)").almost(0.0);
 	code("Number.sin(π / 2)").equals("1");
 	code("Number.sin(- π / 2)").equals("-1");
+	code("Number.sin(['', π / 2][1])").equals("1");
+
+	section("tan()");
+	code("Number.tan(0)").equals("0");
+	code("Number.tan(π)").almost(0.0);
+	code("Number.tan(π / 4)").almost(1.0);
+	code("Number.tan(- π / 4)").almost(-1.0);
+	code("Number.tan(['', π / 4][1])").almost(1.0);
 
 	section("asin()");
 	code("Number.asin(0)").equals("0");

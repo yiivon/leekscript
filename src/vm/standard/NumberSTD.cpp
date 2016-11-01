@@ -21,15 +21,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_cos(LSNumber* x) {
-	double r = cos(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x->value;
-	}
-	return r;
-}
-
 double number_exp(LSNumber* x) {
 	double r = exp(x->value);
 	if (x->refs == 0) {
@@ -96,24 +87,6 @@ LSNumber* number_signum(LSNumber* x) {
 	double r = 0;
 	if (x->value > 0) r = 1;
 	if (x->value < 0) r = -1;
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
-}
-
-LSNumber* number_sin(LSNumber* x) {
-	double r = sin(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
-}
-
-LSNumber* number_tan(LSNumber* x) {
-	double r = tan(x->value);
 	if (x->refs == 0) {
 		x->value = r;
 		return x;
@@ -250,7 +223,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, Type::STRING, {}, (void*) &NumberSTD::char_int, Method::NATIVE}
 	});
 	method("cos", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::cos_ptr}
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cos_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cos_real, Method::NATIVE}
 	});
 	method("exp", Type::NUMBER, Type::REAL, {}, (void*) &number_exp);
 
@@ -262,43 +236,36 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("hypot", Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_hypot);
 	method("log", Type::NUMBER, Type::REAL, {}, (void*) &number_log);
 	method("log10", Type::NUMBER, Type::REAL, {}, (void*) &number_log10);
-
 	method("max", {
 		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
 		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 	});
-
 	method("min", {
 		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
 		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
 		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
 	});
-
 	method("pow", {
 		{Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_pow},
 		{Type::LONG, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int, Method::NATIVE}
-		// pow(int x, int y) => {
-		//     int  [if x^y < 2^32]
-		//     long otherwise
-
 	});
-
 	method("round", {
 		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::round_ptr}
 	});
-
 	method("signum", Type::NUMBER, Type::INTEGER, {}, (void*) &number_signum);
-
 	method("sin", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::sin_ptr}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sin_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sin_real, Method::NATIVE}
 	});
-
 	method("sqrt", {
 		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sqrt_ptr},
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sqrt_real, Method::NATIVE}
 	});
-	method("tan", Type::NUMBER, Type::REAL, {}, (void*) &number_tan);
+	method("tan", {
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::tan_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::tan_real, Method::NATIVE}
+	});
 	method("toDegrees", Type::NUMBER, Type::REAL, {}, (void*) &number_toDegrees);
 	method("toRadians", Type::NUMBER, Type::REAL, {}, (void*) &number_toRadians);
 	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
@@ -350,7 +317,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	static_method("cos", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::cos_ptr}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cos_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cos_real, Method::NATIVE},
 	});
 
 	static_method("exp", Type::REAL, {Type::NUMBER}, (void*) &number_exp);
@@ -399,14 +367,18 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("signum", Type::INTEGER, {Type::NUMBER}, (void*) &number_signum);
 
 	static_method("sin", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sin_ptr}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sin_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sin_real, Method::NATIVE},
 	});
 
 	static_method("sqrt", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr}
 	});
 
-	static_method("tan", Type::REAL, {Type::NUMBER}, (void*) &number_tan);
+	static_method("tan", {
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::tan_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::tan_real, Method::NATIVE},
+	});
 	static_method("toDegrees", Type::REAL, {Type::NUMBER}, (void*) &number_toDegrees);
 	static_method("toRadians", Type::REAL, {Type::NUMBER}, (void*) &number_toRadians);
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
@@ -851,11 +823,26 @@ double NumberSTD::cos_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return c;
 }
+jit_value_t NumberSTD::cos_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_cos(c.F, args[0]);
+}
 
 double NumberSTD::sin_ptr(LSNumber* x) {
 	double s = sin(x->value);
 	LSValue::delete_temporary(x);
 	return s;
+}
+jit_value_t NumberSTD::sin_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_sin(c.F, args[0]);
+}
+
+double NumberSTD::tan_ptr(LSNumber* x) {
+	double c = tan(x->value);
+	LSValue::delete_temporary(x);
+	return c;
+}
+jit_value_t NumberSTD::tan_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_tan(c.F, args[0]);
 }
 
 double NumberSTD::sqrt_ptr(LSNumber* x) {

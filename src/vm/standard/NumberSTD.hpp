@@ -109,8 +109,13 @@ public:
 	static double min_int_ptr(int x, LSNumber* y);
 
 	static double cos_ptr(LSNumber* x);
+	static jit_value_t cos_real(Compiler&, std::vector<jit_value_t>);
 
 	static double sin_ptr(LSNumber* x);
+	static jit_value_t sin_real(Compiler&, std::vector<jit_value_t>);
+
+	static double tan_ptr(LSNumber* x);
+	static jit_value_t tan_real(Compiler&, std::vector<jit_value_t>);
 
 	static double sqrt_ptr(LSNumber* x);
 	static jit_value_t sqrt_real(Compiler&, std::vector<jit_value_t>);
