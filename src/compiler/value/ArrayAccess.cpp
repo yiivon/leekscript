@@ -51,6 +51,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	key->analyse(analyser, Type::UNKNOWN);
 	constant = array->constant && key->constant;
 
+	array_element_type = Type::UNKNOWN;
 	if (array->type.raw_type == RawType::ARRAY || array->type.raw_type == RawType::INTERVAL
 		|| array->type.raw_type == RawType::MAP) {
 		array_element_type = array->type.getElementType();
@@ -103,6 +104,8 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		} else {
 			key->analyse(analyser, Type::POINTER);
 		}
+	} else {
+		key->analyse(analyser, Type::POINTER);
 	}
 
 	if (req_type.nature != Nature::UNKNOWN) {

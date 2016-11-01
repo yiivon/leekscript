@@ -104,6 +104,7 @@ void Test::test_arrays() {
 	code("[1..1000][500]").equals("501");
 	code("[1000..2000][12]").equals("1012");
 	code("[0..44.523]").equals("[0..44]");
+	code("['', [10..20]][1][5]").equals("15");
 
 	section("|Interval|");
 	code("|[0..1]|").equals("2");
