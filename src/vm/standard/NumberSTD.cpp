@@ -8,6 +8,14 @@ using namespace std;
 
 namespace ls {
 
+int mpz_log(__mpz_struct n) {
+	int l = abs(n._mp_size) - 1;
+	unsigned long s = n._mp_d[l];
+	unsigned char r = 0;
+	while (s >>= 1) r++;
+	return 64 * l + r + 1;
+}
+
 jit_value_t Number_e(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, M_E);
 }
@@ -397,6 +405,7 @@ jit_value_t NumberSTD::store_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> a
 }
 
 jit_value_t NumberSTD::add_real_real(Compiler& c, std::vector<jit_value_t> args) {
+	//std::cout << "add_real_real" << std::endl;
 	return jit_insn_add(c.F, args[0], args[1]);
 }
 
@@ -489,6 +498,14 @@ jit_value_t NumberSTD::sub_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t>
 	return args[0];
 }
 
+void mpz_mul_custom(__mpz_struct* r, __mpz_struct* a, __mpz_struct* b) {
+	std::cout << "size a: " << mpz_log(*a) << std::endl;
+	std::cout << "size b: " << mpz_log(*b) << std::endl;
+	std::cout << "expected size: " << mpz_log(*a) + mpz_log(*b) << std::endl;
+	mpz_mul(r, a, b);
+	std::cout << "size r: " << mpz_log(*r) << std::endl;
+}
+
 jit_value_t NumberSTD::mul_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
 	std::cout << "[jit] mul_gmp_gmp" << std::endl;
 
@@ -496,7 +513,7 @@ jit_value_t NumberSTD::mul_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
 	jit_value_t r_addr = jit_insn_address_of(c.F, r);
 	jit_value_t a = jit_insn_address_of(c.F, args[0]);
 	jit_value_t b = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {r_addr, a, b}, &mpz_mul);
+	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {r_addr, a, b}, &mpz_mul_custom);
 	return r;
 }
 
@@ -541,14 +558,25 @@ jit_value_t NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
 	});
 }
 
+__mpz_struct pow_gmp_int_lambda(__mpz_struct a, int b) throw() {
+	mpz_t res;
+	mpz_init(res);
+	mpz_pow_ui(res, &a, b);
+	return *res;
+}
+
 jit_value_t NumberSTD::pow_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, LS_INTEGER}, args,
-	+[](__mpz_struct a, int b) {
-		mpz_t res;
-		mpz_init(res);
-		mpz_pow_ui(res, &a, b);
-		return *res;
-	});
+
+	// Check: mpz_log(a) * b <= 10000
+	jit_value_t a_size = VM::call(c.F, LS_INTEGER, {VM::gmp_int_type}, {args[0]}, (void*) &mpz_log);
+	jit_value_t r_size = jit_insn_mul(c.F, a_size, args[1]);
+	jit_value_t cond = jit_insn_lt(c.F, r_size, LS_CREATE_INTEGER(c.F, 10000));
+	jit_label_t label_end = jit_label_undefined;
+	jit_insn_branch_if(c.F, cond, &label_end);
+	jit_insn_throw(c.F, r_size);
+	jit_insn_label(c.F, &label_end);
+
+	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, LS_INTEGER}, args, &pow_gmp_int_lambda);
 }
 
 jit_value_t NumberSTD::lt_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {

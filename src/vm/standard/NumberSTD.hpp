@@ -15,6 +15,13 @@ class Compiler;
 
 class NumberSTD : public Module {
 public:
+
+	class OverflowException : public std::exception {
+		virtual const char* what() const throw() {
+			return "Number is too big! (10 000 bits max)";
+		}
+	};
+
 	NumberSTD();
 
 	/*
