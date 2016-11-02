@@ -56,6 +56,20 @@ public:
 class VM {
 public:
 
+	struct Exception {
+		virtual std::string what() const = 0;
+	};
+	struct OperationLimitExceededException : public Exception {
+		virtual std::string what() const throw() override {
+			return "Too much operations";
+		}
+	};
+	struct DivisionByZeroException : public Exception {
+		virtual std::string what() const throw() override {
+			return "Division by zero";
+		}
+	};
+
 	static unsigned int operations;
 	static const bool enable_operations;
 	static const unsigned int operation_limit;
@@ -64,11 +78,10 @@ public:
 	static long gmp_values_created;
 	static long gmp_values_deleted;
 
-	static int last_exception;
+	static Exception* last_exception;
 	static jit_stack_trace_t stack_trace;
 
-	class Result {
-	public:
+	struct Result {
 		bool compilation_success = false;
 		bool execution_success = false;
 		std::vector<LexicalError> lexical_errors;

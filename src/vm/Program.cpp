@@ -114,23 +114,22 @@ void Program::compile_main(Context& context) {
 }
 
 void* handler(int type) {
-	std::cout << "JIT exception : " << type << std::endl;
-	jit_stack_trace_t trace = jit_exception_get_stack_trace();
-	int size = jit_stack_trace_get_size(trace);
-	std::cout << "stack size : " << size << std::endl;
-	return (void*) 999;
+	switch (type) {
+		case JIT_RESULT_DIVISION_BY_ZERO: return new VM::DivisionByZeroException();
+	}
+	return nullptr;
 }
 
 std::string Program::execute() {
 
-//	int buff;
-//	jit_function_apply(function, nullptr, &buff);
-//
-//	std::cout << "LSString/ stack " << VM::stack_trace << std::endl;
-//	std::cout << "LSString/ stack size " << jit_stack_trace_get_size(VM::stack_trace) << std::endl;
-//	std::cout << "fun: " << jit_stack_trace_get_pc(VM::stack_trace, 0) << std::endl;
-//
-//	if (true) return to_string(buff);
+	/*
+	int buff;
+	jit_function_apply(function, nullptr, &buff);
+	std::cout << "LSString/ stack " << VM::stack_trace << std::endl;
+	std::cout << "LSString/ stack size " << jit_stack_trace_get_size(VM::stack_trace) << std::endl;
+	std::cout << "fun: " << jit_stack_trace_get_pc(VM::stack_trace, 0) << std::endl;
+	if (true) return to_string(buff);
+	*/
 
 	Type output_type = main->type.getReturnType();
 

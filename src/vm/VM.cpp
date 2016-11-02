@@ -29,7 +29,7 @@ jit_type_t VM::gmp_int_type;
 long VM::gmp_values_created = 0;
 long VM::gmp_values_deleted = 0;
 
-int VM::last_exception = 0;
+VM::Exception* VM::last_exception = nullptr;
 jit_stack_trace_t VM::stack_trace;
 
 map<string, jit_value_t> internals;
@@ -53,7 +53,7 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	VM::gmp_values_created = 0;
 	VM::gmp_values_deleted = 0;
 	VM::operations = 0;
-	VM::last_exception = 0;
+	VM::last_exception = nullptr;
 	#if DEBUG > 1
 		objs.clear();
 	#endif
@@ -79,10 +79,8 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 			result.execution_success = true;
 		} catch (std::exception& e) {
 			std::cout << "Execution failed: " << e.what() << std::endl;
-		} catch (int i) {
-			std::cout << "Execution failed int : " << i << std::endl;
-			int size = jit_stack_trace_get_size(VM::stack_trace);
-			std::cout << "stack size : " << size << std::endl;
+		} catch (const VM::Exception* ex) {
+			std::cout << "Execution failed: " << ex->what() << std::endl;
 		}
 		auto exe_end = chrono::high_resolution_clock::now();
 
