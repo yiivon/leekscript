@@ -573,7 +573,7 @@ jit_value_t NumberSTD::pow_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
 	jit_value_t cond = jit_insn_lt(c.F, r_size, LS_CREATE_INTEGER(c.F, 10000));
 	jit_label_t label_end = jit_label_undefined;
 	jit_insn_branch_if(c.F, cond, &label_end);
-	jit_insn_throw(c.F, r_size);
+	jit_insn_throw(c.F, LS_CREATE_INTEGER(c.F, VM::Exception::NUMBER_OVERFLOW));
 	jit_insn_label(c.F, &label_end);
 
 	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, LS_INTEGER}, args, &pow_gmp_int_lambda);

@@ -88,7 +88,6 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 			std::cout << "Line " << error.line << ": " << error.message() << std::endl;
 		}
 	}
-
 	#if DEBUG > 0
 		std::cout << "pgrm() " << result.program << std::endl;
 	#endif
@@ -188,6 +187,20 @@ void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 		}
 	} else {
 		fail(expected_message, "(no exception)");
+	}
+}
+
+void Test::Input::exception(ls::VM::Exception expected) {
+
+	auto result = run(false);
+
+	std::string expected_message = ls::VM::exception_message(expected);
+	std::string actual_message = ls::VM::exception_message(result.exception);
+
+	if (result.exception != expected) {
+		fail(expected_message, actual_message);
+	} else {
+		pass("throw exception « " + expected_message + " »");
 	}
 }
 

@@ -114,10 +114,7 @@ void Program::compile_main(Context& context) {
 }
 
 void* handler(int type) {
-	switch (type) {
-		case JIT_RESULT_DIVISION_BY_ZERO: return new VM::DivisionByZeroException();
-	}
-	return nullptr;
+	return (void*) type;
 }
 
 std::string Program::execute() {

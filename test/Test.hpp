@@ -76,6 +76,7 @@ public:
 		void semantic_error(ls::SemanticError::Type error, std::string param);
 		void lexical_error(ls::LexicalError::Type error);
 		void operations(int ops);
+		void exception(ls::VM::Exception);
 		Input& timeout(int ms);
 
 		ls::VM::Result run(bool display_errors = true);

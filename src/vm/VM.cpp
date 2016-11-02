@@ -29,7 +29,7 @@ jit_type_t VM::gmp_int_type;
 long VM::gmp_values_created = 0;
 long VM::gmp_values_deleted = 0;
 
-VM::Exception* VM::last_exception = nullptr;
+VM::Exception VM::last_exception = VM::Exception::NO_EXCEPTION;
 jit_stack_trace_t VM::stack_trace;
 
 map<string, jit_value_t> internals;
@@ -53,7 +53,7 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	VM::gmp_values_created = 0;
 	VM::gmp_values_deleted = 0;
 	VM::operations = 0;
-	VM::last_exception = nullptr;
+	VM::last_exception = VM::Exception::NO_EXCEPTION;
 	#if DEBUG > 1
 		objs.clear();
 	#endif
@@ -78,9 +78,9 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 			value = program->execute();
 			result.execution_success = true;
 		} catch (std::exception& e) {
-			std::cout << "Execution failed: " << e.what() << std::endl;
-		} catch (const VM::Exception* ex) {
-			std::cout << "Execution failed: " << ex->what() << std::endl;
+			result.exception = VM::Exception::OTHER;
+		} catch (const VM::Exception& ex) {
+			result.exception = ex;
 		}
 		auto exe_end = chrono::high_resolution_clock::now();
 
@@ -319,7 +319,7 @@ void VM::inc_ops(jit_function_t F, int add) {
 //	jit_type_t args[1] = {JIT_INTEGER};
 //	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 //	jit_insn_call_native(F, "throw_exception", (void*) VM_operation_exception, sig, &jit_ops, 1, JIT_CALL_NOTHROW);
-	jit_insn_throw(F, jit_value_create_nint_constant(F, jit_type_int, 12));
+	jit_insn_throw(F, LS_CREATE_INTEGER(F, VM::Exception::OPERATION_LIMIT_EXCEEDED));
 
 	// End
 	jit_insn_label(F, &label_end);
@@ -492,6 +492,17 @@ void VM::store_exception(jit_function_t F, jit_value_t ex) {
 	*/
 	jit_value_t vm_ex_ptr = jit_value_create_long_constant(F, LS_POINTER, (long int) &VM::last_exception);
 	jit_insn_store_relative(F, vm_ex_ptr, 0, ex);
+}
+
+std::string VM::exception_message(VM::Exception expected) {
+	switch (expected) {
+	case Exception::DIVISION_BY_ZERO: return "division_by_zero";
+	case Exception::OPERATION_LIMIT_EXCEEDED: return "too_much_operations";
+	case Exception::NUMBER_OVERFLOW: return "number_overflow";
+	case Exception::NO_EXCEPTION: return "no_exception";
+	case Exception::OTHER: return "?";
+	}
+	return "?";
 }
 
 }

@@ -56,18 +56,12 @@ public:
 class VM {
 public:
 
-	struct Exception {
-		virtual std::string what() const = 0;
-	};
-	struct OperationLimitExceededException : public Exception {
-		virtual std::string what() const throw() override {
-			return "Too much operations";
-		}
-	};
-	struct DivisionByZeroException : public Exception {
-		virtual std::string what() const throw() override {
-			return "Division by zero";
-		}
+	enum Exception {
+		DIVISION_BY_ZERO = -2,
+		NO_EXCEPTION = 0,
+		OPERATION_LIMIT_EXCEEDED = 1,
+		NUMBER_OVERFLOW = 2,
+		OTHER = 3
 	};
 
 	static unsigned int operations;
@@ -78,7 +72,7 @@ public:
 	static long gmp_values_created;
 	static long gmp_values_deleted;
 
-	static Exception* last_exception;
+	static Exception last_exception;
 	static jit_stack_trace_t stack_trace;
 
 	struct Result {
@@ -87,6 +81,7 @@ public:
 		std::vector<LexicalError> lexical_errors;
 		std::vector<SyntaxicalError*> syntaxical_errors;
 		std::vector<SemanticError> semantical_errors;
+		Exception exception;
 		std::string program;
 		std::string value;
 		std::string context;
@@ -145,6 +140,7 @@ public:
 	static void print_gmp_int(jit_function_t F, jit_value_t val);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
 	static void store_exception(jit_function_t F, jit_value_t ex);
+	static std::string exception_message(VM::Exception expected);
 
 	template <typename R, typename... A>
 	static jit_value_t call(jit_function_t& f, jit_type_t return_type, std::vector<jit_type_t> types, std::vector<jit_value_t> args, R(*func)(A...))
