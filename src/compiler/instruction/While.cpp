@@ -43,6 +43,7 @@ jit_value_t While::compile(Compiler& c) const {
 	jit_insn_label(c.F, &label_cond);
 
 	// condition
+	VM::inc_ops(c.F, 1);
 	jit_value_t cond = condition->compile(c);
 	if (condition->type.nature == Nature::POINTER) {
 		jit_value_t cond_bool = VM::is_true(c.F, cond);
