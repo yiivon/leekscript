@@ -43,6 +43,11 @@ void print_errors(ls::VM::Result& result) {
 	}
 }
 
+#define GREY "\033[0;90m"
+#define GREEN "\033[0;32m"
+#define RED "\033[1;31m"
+#define END_COLOR "\033[0m"
+
 int main(int argc, char* argv[]) {
 
 	srand(time(0));
@@ -125,11 +130,15 @@ int main(int argc, char* argv[]) {
 			auto result = vm.execute(code, ctx);
 			print_errors(result);
 
-			cout << result.value << endl;
+			if (result.execution_success) {
+				cout << result.value << endl;
+			}
 
-			cout << "(" << result.operations << " ops, "
-				<< result.compilation_time_ms << "ms + "
-				<< result.execution_time_ms << "ms)" << endl;
+			double compilation_time = round((float) result.compilation_time / 1000) / 1000;
+			double execution_time = round((float) result.execution_time / 1000) / 1000;
+			cout << GREY << "(" << result.operations << " ops, "
+				<< compilation_time << "ms + "
+				<< execution_time << "ms)" << END_COLOR << endl;
 			ctx = result.context;
 		}
 	}
