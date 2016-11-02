@@ -99,8 +99,8 @@ void Program::compile_main(Context& context) {
 
 	// catch (ex) {
 	jit_value_t ex = jit_insn_start_catcher(F);
-	VM::print_int(F, ex);
-	jit_insn_return(F, LS_CREATE_POINTER(F, LSNull::get()));
+	VM::store_exception(F, ex);
+	jit_insn_rethrow_unhandled(F);
 
 	//jit_dump_function(fopen("main_uncompiled", "w"), F, "main");
 
@@ -110,9 +110,27 @@ void Program::compile_main(Context& context) {
 	//jit_dump_function(fopen("main_compiled", "w"), F, "main");
 
 	closure = jit_function_to_closure(F);
+	function = F;
+}
+
+void* handler(int type) {
+	std::cout << "JIT exception : " << type << std::endl;
+	jit_stack_trace_t trace = jit_exception_get_stack_trace();
+	int size = jit_stack_trace_get_size(trace);
+	std::cout << "stack size : " << size << std::endl;
+	return (void*) 999;
 }
 
 std::string Program::execute() {
+
+//	int buff;
+//	jit_function_apply(function, nullptr, &buff);
+//
+//	std::cout << "LSString/ stack " << VM::stack_trace << std::endl;
+//	std::cout << "LSString/ stack size " << jit_stack_trace_get_size(VM::stack_trace) << std::endl;
+//	std::cout << "fun: " << jit_stack_trace_get_pc(VM::stack_trace, 0) << std::endl;
+//
+//	if (true) return to_string(buff);
 
 	Type output_type = main->type.getReturnType();
 
@@ -121,15 +139,20 @@ std::string Program::execute() {
 		return fun() ? "true" : "false";
 	}
 
+	jit_exception_set_handler(&handler);
+
 	if (output_type == Type::INTEGER) {
 		auto fun = (int (*)()) closure;
-		return std::to_string(fun());
+		int res = fun();
+		if (VM::last_exception) throw VM::last_exception;
+		return std::to_string(res);
 	}
 
 	if (output_type == Type::GMP_INT) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
-		char buff[1000];
+		if (VM::last_exception) throw VM::last_exception;
+		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
 		mpz_clear(&ret);
 		VM::gmp_values_deleted++;
@@ -138,22 +161,28 @@ std::string Program::execute() {
 
 	if (output_type == Type::REAL) {
 		auto fun = (double (*)()) closure;
-		return LSNumber::print(fun());
+		double res = fun();
+		if (VM::last_exception) throw VM::last_exception;
+		return LSNumber::print(res);
 	}
 
 	if (output_type == Type::LONG) {
 		auto fun = (long (*)()) closure;
-		return std::to_string(fun());
+		long res = fun();
+		if (VM::last_exception) throw VM::last_exception;
+		return std::to_string(res);
 	}
 
 	if (output_type.raw_type == RawType::FUNCTION and output_type.nature == Nature::VALUE) {
 		auto fun = (void* (*)()) closure;
 		fun();
+		if (VM::last_exception) throw VM::last_exception;
 		return "<function>";
 	}
 
 	auto fun = (LSValue* (*)()) closure;
 	LSValue* ptr = fun();
+	if (VM::last_exception) throw VM::last_exception;
 	std::ostringstream oss;
 	oss << ptr;
 	LSValue::delete_temporary(ptr);

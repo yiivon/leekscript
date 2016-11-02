@@ -29,6 +29,9 @@ jit_type_t VM::gmp_int_type;
 long VM::gmp_values_created = 0;
 long VM::gmp_values_deleted = 0;
 
+int VM::last_exception = 0;
+jit_stack_trace_t VM::stack_trace;
+
 map<string, jit_value_t> internals;
 
 void VM::add_module(Module* m) {
@@ -50,6 +53,7 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	VM::gmp_values_created = 0;
 	VM::gmp_values_deleted = 0;
 	VM::operations = 0;
+	VM::last_exception = 0;
 	#if DEBUG > 1
 		objs.clear();
 	#endif
@@ -70,7 +74,16 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	if (result.compilation_success) {
 
 		auto exe_start = chrono::high_resolution_clock::now();
-		value = program->execute();
+		try {
+			value = program->execute();
+			result.execution_success = true;
+		} catch (std::exception& e) {
+			std::cout << "Execution failed: " << e.what() << std::endl;
+		} catch (int i) {
+			std::cout << "Execution failed int : " << i << std::endl;
+			int size = jit_stack_trace_get_size(VM::stack_trace);
+			std::cout << "stack size : " << size << std::endl;
+		}
 		auto exe_end = chrono::high_resolution_clock::now();
 
 		result.execution_time = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
@@ -83,7 +96,6 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	result.context = ctx;
 	result.compilation_time = chrono::duration_cast<chrono::nanoseconds>(compilation_end - compilation_start).count();
 	result.compilation_time_ms = (((double) result.compilation_time / 1000) / 1000);
-	result.execution_success = true;
 	result.operations = VM::operations;
 
 //	std::cout << "GMP objects created : " << VM::gmp_values_created << std::endl;
@@ -315,17 +327,6 @@ void VM::inc_ops(jit_function_t F, int add) {
 	jit_insn_label(F, &label_end);
 }
 
-void VM_print_int(int val) {
-//	cout << val << endl;
-	cout << "Execution ended, too much operations: " << VM::operations << " (" << val << ")" << endl;
-}
-
-void VM::print_int(jit_function_t F, jit_value_t val) {
-	jit_type_t args[1] = {LS_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-	jit_insn_call_native(F, "print_int", (void*) VM_print_int, sig, &val, 1, JIT_CALL_NOTHROW);
-}
-
 void VM_print_gmp_int(__mpz_struct mpz) {
 	std::cout << "_mp_alloc: " << mpz._mp_alloc << std::endl;
 	std::cout << "_mp_size: " << mpz._mp_size << std::endl;
@@ -483,6 +484,16 @@ jit_value_t VM::is_true(jit_function_t F, jit_value_t ptr) {
 	jit_type_t args[1] = {LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args, 1, 0);
 	return jit_insn_call_native(F, "is_true", (void*) VM_is_true, sig, &ptr, 1, JIT_CALL_NOTHROW);
+}
+
+void VM::store_exception(jit_function_t F, jit_value_t ex) {
+	/*
+	VM::call(F, LS_VOID, {}, {}, +[] () {
+		std::cout << "Exception saved!" << std::endl;
+	});
+	*/
+	jit_value_t vm_ex_ptr = jit_value_create_long_constant(F, LS_POINTER, (long int) &VM::last_exception);
+	jit_insn_store_relative(F, vm_ex_ptr, 0, ex);
 }
 
 }

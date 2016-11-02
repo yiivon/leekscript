@@ -64,6 +64,9 @@ public:
 	static long gmp_values_created;
 	static long gmp_values_deleted;
 
+	static int last_exception;
+	static jit_stack_trace_t stack_trace;
+
 	class Result {
 	public:
 		bool compilation_success = false;
@@ -126,15 +129,20 @@ public:
 	static void get_operations(jit_function_t F);
 
 	/** Utilities **/
-	static void print_int(jit_function_t F, jit_value_t val);
 	static void print_gmp_int(jit_function_t F, jit_value_t val);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
+	static void store_exception(jit_function_t F, jit_value_t ex);
 
 	template <typename R, typename... A>
 	static jit_value_t call(jit_function_t& f, jit_type_t return_type, std::vector<jit_type_t> types, std::vector<jit_value_t> args, R(*func)(A...))
 	{
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, types.data(), types.size(), 0);
-		return jit_insn_call_native(f, "VM::call", (void*) func, sig, args.data(), types.size(), JIT_CALL_NOTHROW);
+		return jit_insn_call_native(f, "VM::call", (void*) func, sig, args.data(), types.size(), 0);
+	}
+	static jit_value_t call(jit_function_t& f, jit_type_t return_type, std::vector<jit_type_t> types, std::vector<jit_value_t> args, void* func)
+	{
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, types.data(), types.size(), 0);
+		return jit_insn_call_native(f, "VM::call", func, sig, args.data(), types.size(), 0);
 	}
 };
 

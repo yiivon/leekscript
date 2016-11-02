@@ -1144,7 +1144,7 @@ jit_value_t Expression::compile(Compiler& c) const {
 			args.push_back(v1->compile(c));
 			args.push_back(v2->compile(c));
 		}
-		jit_value_t v = jit_insn_call_native(c.F, "", ls_func, sig, args.data(), 2, JIT_CALL_NOTHROW);
+		jit_value_t v = jit_insn_call_native(c.F, "", ls_func, sig, args.data(), 2, 0);
 
 		if (store_result_in_v1) {
 			jit_insn_store(c.F, args[0], v);
