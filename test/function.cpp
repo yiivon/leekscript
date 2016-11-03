@@ -7,17 +7,15 @@ void Test::test_functions() {
 	 */
 	header("Functions");
 	code("function foo(x, y) { x + y } foo(1, 2)").equals("3");
+	code("function f() { return 12 } [f(), 'str']").equals("[12, 'str']");
 
+	section("Can't call a value");
 	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, "null");
 	code("12()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, "12");
 	code("'hello'()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, "'hello'");
 	code("[1, 2, 3]()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, "[1, 2, 3]");
 
-	/*
-	 * Lambdas
-	 */
-	header("Functions / Lambdas");
-
+	section("Functions / Lambdas");
 	code("let f = x -> x f(12)").equals("12");
 	code("let f = x -> x ** 2 f(12)").equals("144");
 	code("let f = x, y -> x + y f(5, 12)").equals("17");
@@ -49,6 +47,7 @@ void Test::test_functions() {
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
 	code("let f = a, i -> a[i] f([1 2 3], 1)").equals("2");
+	code("[x -> x][0]").equals("<function>");
 
 	/*
 	 * Closures
