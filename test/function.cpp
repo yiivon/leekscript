@@ -77,6 +77,7 @@ void Test::test_functions() {
 	code("*('test', 2)").equals("'testtest'");
 	code("×(5, 8)").equals("40");
 	code("×('test', 2)").equals("'testtest'");
+	code("**(2, 11)").equals("2048");
 	code("/(48, 12)").equals("4");
 	code("/('banana', 'n')").equals("['ba', 'a', 'a']");
 	code("÷(48, 12)").equals("4");
