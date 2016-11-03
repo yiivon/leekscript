@@ -50,15 +50,16 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 	for (size_t i = 0; i < keys.size(); ++i) {
 		Value* ex = keys[i];
 		ex->analyse(analyser, Type::UNKNOWN);
-
 		key_type = Type::get_compatible_type(key_type, ex->type);
 	}
+	key_type.temporary = false;
+
 	for (size_t i = 0; i < values.size(); ++i) {
 		Value* ex = values[i];
 		ex->analyse(analyser, Type::UNKNOWN);
-
 		value_type = Type::get_compatible_type(value_type, ex->type);
 	}
+	value_type.temporary = false;
 
 	if (key_type == Type::INTEGER or key_type == Type::REAL) {
 	} else if (key_type.raw_type == RawType::FUNCTION) {

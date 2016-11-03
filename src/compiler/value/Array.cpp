@@ -99,6 +99,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 				Value* ex = expressions[i];
 				element_type = Type::get_compatible_type(element_type, ex->type);
 			}
+			element_type.temporary = false;
 			type.setElementType(element_type);
 		}
 	}

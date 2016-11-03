@@ -111,8 +111,6 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}
-
-//	cout << "array access " << type << endl;
 }
 
 bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types) {
