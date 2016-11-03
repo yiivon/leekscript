@@ -20,6 +20,7 @@ OBJ_COVERAGE := $(patsubst %.cpp,build/coverage/%.o,$(SRC))
 OPTIM := -O2
 FLAGS := -std=c++17 -g3 -Wall -Wextra -Wno-pmf-conversions
 LIBS := -ljit -lgmpxx -lgmp
+MAKEFLAGS += --jobs=$(shell nproc)
 
 .PHONY: test
 
@@ -31,9 +32,6 @@ build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
 	@echo "---------------"
 	@echo "Build finished!"
 	@echo "---------------"
-
-fast:
-	@make -j8
 
 build/default/%.o: %.cpp
 	g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
