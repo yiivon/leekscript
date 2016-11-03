@@ -19,8 +19,8 @@ void Test::test_files() {
 	file("test/code/euler/pe005.leek").equals("232792560");
 	file("test/code/euler/pe006.leek").equals("25164150");
 	file("test/code/euler/pe007.leek").equals("104743");
-//	file("test/code/euler/pe008.leek").equals("23514624000");
+	file("test/code/euler/pe008.leek").equals("23514624000");
 	file("test/code/euler/pe009.leek").equals("31875000");
-//	file("test/code/euler/pe010.leek").equals("142913680098");
-//	file("test/code/euler/pe062.leek").equals("127035954683");
+	file("test/code/euler/pe010.leek").equals("142913680098");
+	file("test/code/euler/pe062.leek").equals("127035954683");
 }
