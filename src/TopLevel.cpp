@@ -41,6 +41,9 @@ void print_errors(ls::VM::Result& result) {
 	for (const auto& e : result.semantical_errors) {
 		std::cout << "line " << e.line << ": " << e.message() << std::endl;
 	}
+	if (result.exception != ls::VM::Exception::NO_EXCEPTION) {
+		std::cout << "Exception: " << ls::VM::exception_message(result.exception) << std::endl;
+	}
 }
 
 #define GREY "\033[0;90m"
