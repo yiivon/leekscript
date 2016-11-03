@@ -305,8 +305,13 @@ void VM_operation_exception() {
 	throw vm_operation_exception();
 }
 
-void VM::inc_ops(jit_function_t F, int add) {
+void VM::inc_ops(jit_function_t F, int amount) {
+	jit_value_t amount_jit = LS_CREATE_INTEGER(F, amount);
+	inc_ops_jit(F, amount_jit);
+}
 
+void VM::inc_ops_jit(jit_function_t F, jit_value_t amount) {
+	// Operations enabled?
 	if (not enable_operations) return;
 
 	// Variable counter pointer
@@ -314,7 +319,7 @@ void VM::inc_ops(jit_function_t F, int add) {
 
 	// Increment counter
 	jit_value_t jit_ops = jit_insn_load_relative(F, jit_ops_ptr, 0, jit_type_uint);
-	jit_insn_store_relative(F, jit_ops_ptr, 0, jit_insn_add(F, jit_ops, jit_value_create_nint_constant(F, jit_type_uint, add)));
+	jit_insn_store_relative(F, jit_ops_ptr, 0, jit_insn_add(F, jit_ops, amount));
 
 	// Compare to the limit
 	jit_value_t compare = jit_insn_gt(F, jit_ops, jit_value_create_nint_constant(F, jit_type_uint, VM::operation_limit));
@@ -322,9 +327,6 @@ void VM::inc_ops(jit_function_t F, int add) {
 	jit_insn_branch_if_not(F, compare, &label_end);
 
 	// If greater than the limit, throw exception
-//	jit_type_t args[1] = {JIT_INTEGER};
-//	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-//	jit_insn_call_native(F, "throw_exception", (void*) VM_operation_exception, sig, &jit_ops, 1, JIT_CALL_NOTHROW);
 	jit_insn_throw(F, LS_CREATE_INTEGER(F, VM::Exception::OPERATION_LIMIT_EXCEEDED));
 
 	// End

@@ -580,6 +580,9 @@ jit_value_t NumberSTD::pow_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
 	jit_insn_throw(c.F, LS_CREATE_INTEGER(c.F, VM::Exception::NUMBER_OVERFLOW));
 	jit_insn_label(c.F, &label_end);
 
+	// Ops: size of the theorical result
+	VM::inc_ops_jit(c.F, r_size);
+
 	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, LS_INTEGER}, args, &pow_gmp_int_lambda);
 }
 

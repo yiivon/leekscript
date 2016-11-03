@@ -136,6 +136,7 @@ public:
 
 	/** Operations **/
 	static void inc_ops(jit_function_t F, int add);
+	static void inc_ops_jit(jit_function_t F, jit_value_t add);
 	static void get_operations(jit_function_t F);
 
 	/** Utilities **/
