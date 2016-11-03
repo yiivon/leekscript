@@ -279,7 +279,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
 
 	method("isPrime", {
-		{Type::GMP_INT, Type::INTEGER, {}, (void*) &NumberSTD::is_prime, Method::NATIVE}
+		{Type::GMP_INT, Type::INTEGER, {}, (void*) &NumberSTD::is_prime, Method::NATIVE},
+		{Type::GMP_INT_TMP, Type::INTEGER, {}, (void*) &NumberSTD::is_prime_tmp, Method::NATIVE},
 	});
 
 	/*
@@ -908,6 +909,14 @@ jit_value_t NumberSTD::is_prime(Compiler& c, std::vector<jit_value_t> args) {
 	jit_value_t v_addr = jit_insn_address_of(c.F, args[0]);
 	jit_value_t reps = LS_CREATE_INTEGER(c.F, 15);
 	return VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {v_addr, reps}, &mpz_probab_prime_p);
+}
+jit_value_t NumberSTD::is_prime_tmp(Compiler& c, std::vector<jit_value_t> args) {
+
+	jit_value_t v_addr = jit_insn_address_of(c.F, args[0]);
+	jit_value_t reps = LS_CREATE_INTEGER(c.F, 15);
+	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {v_addr, reps}, &mpz_probab_prime_p);
+	VM::delete_gmp_int(c.F, args[0]);
+	return res;
 }
 
 }

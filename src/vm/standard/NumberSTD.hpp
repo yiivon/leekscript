@@ -133,6 +133,7 @@ public:
 	static jit_value_t pow_int(Compiler&, std::vector<jit_value_t>);
 
 	static jit_value_t is_prime(Compiler&, std::vector<jit_value_t>);
+	static jit_value_t is_prime_tmp(Compiler&, std::vector<jit_value_t>);
 };
 
 }
