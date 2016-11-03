@@ -95,4 +95,7 @@ void Test::test_functions() {
 	code("+").equals("<function>");
 	code("+.class").equals("<class Function>");
 	code("let p = +; p.class").equals("<class Function>");
+
+	section("Function.isTrue()");
+	code("if [x -> x, 12][0] { 'ok' } else { null }").equals("'ok'");
 }
