@@ -42,6 +42,13 @@ void VM::add_module(Module* m) {
 extern std::map<LSValue*, LSValue*> objs;
 #endif
 
+#define GREY "\033[0;90m"
+#define GREEN "\033[0;32m"
+#define RED "\033[1;31m"
+#define BLUE "\033[1;34m"
+#define YELLOW "\033[1;33m"
+#define END_COLOR "\033[0m"
+
 VM::Result VM::execute(const std::string code, std::string ctx) {
 
 	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
