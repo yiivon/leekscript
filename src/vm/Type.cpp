@@ -506,7 +506,7 @@ ostream& operator << (ostream& os, const Type& type) {
 	}
 	os << END_COLOR;
 
-	if (type.temporary) {
+	if (type.temporary && type != Type::REAL) {
 		os << "&&";
 	}
 
