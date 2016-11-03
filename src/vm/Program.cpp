@@ -114,7 +114,7 @@ void Program::compile_main(Context& context) {
 }
 
 void* handler(int type) {
-	return (void*) type;
+	return (void*) (long) type;
 }
 
 std::string Program::execute() {
@@ -219,7 +219,7 @@ void Program_push_pointer(LSArray<LSValue*>* array, LSValue* value) {
 }
 */
 
-void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
+void Program::compile_jit(Compiler& c, Context&, bool) {
 
 	// System internal variables
 	for (auto var : system_vars) {
