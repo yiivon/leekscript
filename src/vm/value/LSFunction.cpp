@@ -11,14 +11,8 @@ LSClass* LSFunction::function_class = new LSClass("Function");
 
 LSFunction::LSFunction(void* function) {
 	this->function = function;
-	this->refs = 0;
-	this->native = false;
-}
-
-LSFunction::LSFunction(void* function, int refs, bool native) {
-	this->function = function;
-	this->refs = refs;
-	this->native = native;
+	this->refs = 1;
+	this->native = true;
 }
 
 LSFunction::LSFunction(Json&) {

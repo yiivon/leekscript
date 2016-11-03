@@ -27,9 +27,12 @@ LSClass::LSClass(Json&) {
 
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
-		if (s.second.value != nullptr && !s.second.value->native) {
+		if (s.second.value != nullptr) {
 			delete s.second.value;
 		}
+	}
+	for (auto m : default_methods) {
+		delete m.second;
 	}
 }
 
@@ -104,10 +107,14 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 
 LSFunction* LSClass::getDefaultMethod(string& name) {
 	try {
-		vector<Method>& impl = methods.at(name);
-		return new LSFunction(impl[0].addr);
-	} catch (exception& e) {
-		return nullptr;
+		return default_methods.at(name);
+	} catch (...) {
+		try {
+			vector<Method>& impl = methods.at(name);
+			LSFunction* fun = new LSFunction(impl[0].addr);
+			default_methods.insert({name, fun});
+			return fun;
+		} catch (...) {}
 	}
 	return nullptr;
 }

@@ -20,6 +20,9 @@ Function::~Function() {
 	for (auto value : defaultValues) {
 		delete value;
 	}
+	if (ls_fun != nullptr) {
+		delete ls_fun;
+	}
 }
 
 void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
@@ -90,6 +93,9 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
+	}
+	if (ls_fun == nullptr && type.nature == Nature::POINTER) {
+		ls_fun = new LSFunction(nullptr);
 	}
 
 //	cout << "Function type: " << type << endl;
@@ -212,8 +218,8 @@ jit_value_t Function::compile(Compiler& c) const {
 	VM::inc_ops(c.F, 1);
 
 	if (type.nature == Nature::POINTER) {
-//		cout << "create function pointer " << endl;
-		return LS_CREATE_POINTER(c.F, new LSFunction(f));
+		ls_fun->function = f;
+		return LS_CREATE_POINTER(c.F, ls_fun);
 	} else {
 //		cout << "create function value " << endl;
 		return LS_CREATE_POINTER(c.F, f);

@@ -391,6 +391,10 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 			VM::delete_ref(c.F, args[i]);
 		}
 	}
+	// Delete temporary function
+	//if (function->type.must_manage_memory()) {
+		VM::delete_temporary(c.F, fun[0]);
+	//}
 
 	// Custom function call : 1 op
 	VM::inc_ops(c.F, 1);
