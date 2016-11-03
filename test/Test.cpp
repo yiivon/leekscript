@@ -78,7 +78,10 @@ Test::Input Test::file(const std::string& file_name) {
 }
 
 ls::VM::Result Test::Input::run(bool display_errors) {
+	ls::VM::operation_limit = this->operation_limit;
 	auto result = test->vm.execute(_code, "{}");
+	ls::VM::operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
+
 	test->obj_created += result.objects_created;
 	test->obj_deleted += result.objects_deleted;
 	test->gmp_obj_created += result.gmp_objects_created;
@@ -221,6 +224,10 @@ void Test::Input::operations(int expected) {
 	}
 }
 Test::Input& Test::Input::timeout(int) {
+	return *this;
+}
+Test::Input&  Test::Input::ops_limit(long int ops) {
+	this->operation_limit = ops;
 	return *this;
 }
 

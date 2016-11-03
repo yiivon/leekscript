@@ -15,4 +15,7 @@ void Test::test_operations() {
 
 	code("x -> x").operations(1);
 	code("(x -> x + 1)(12)").operations(3);
+	section("Operation limit exceeded");
+	code("while true {}").ops_limit(1000).exception(ls::VM::Exception::OPERATION_LIMIT_EXCEEDED);
+	code("for ;; {}").ops_limit(1000).exception(ls::VM::Exception::OPERATION_LIMIT_EXCEEDED);
 }

@@ -66,6 +66,7 @@ public:
 		std::string _code;
 		bool file;
 		float time;
+		long int operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 	public:
 		Input(Test* test, const std::string& name, const std::string& _code,
 			bool file = false) : test(test), _name(name), _code(_code),
@@ -80,6 +81,7 @@ public:
 		void operations(int ops);
 		void exception(ls::VM::Exception);
 		Input& timeout(int ms);
+		Input& ops_limit(long int ops);
 
 		ls::VM::Result run(bool display_errors = true);
 		void pass(std::string expected);
