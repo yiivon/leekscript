@@ -92,7 +92,7 @@ travis:
 	docker build -t leekscript .
 	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
 	       leekscript /bin/bash -c "cd leekscript; make build/leekscript-coverage && build/leekscript-coverage \
-	       && cpp-coveralls -e lib/ --gcov-options='-r'"
+	       && cpp-coveralls -i src/ --gcov-options='-r'"
 
 # Coverage results with lcov.
 # `apt-get install lcov`
