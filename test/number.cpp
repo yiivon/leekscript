@@ -150,6 +150,10 @@ void Test::test_numbers() {
 	section("Overflow");
 	code("123m ** 1900").exception(ls::VM::Exception::NUMBER_OVERFLOW);
 
+	section("Integer division by zero");
+	code("1 \\ 0").exception(ls::VM::Exception::DIVISION_BY_ZERO);
+	code("1 % 0").exception(ls::VM::Exception::DIVISION_BY_ZERO);
+	
 	/*
 	 * Number standard library
 	 */
