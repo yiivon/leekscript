@@ -21,9 +21,10 @@ VM::VM() {}
 
 VM::~VM() {}
 
+const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;
 unsigned int VM::operations = 0;
 const bool VM::enable_operations = true;
-const unsigned int VM::operation_limit = 2000000000;
+unsigned long int VM::operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
 jit_type_t VM::gmp_int_type;
 long VM::gmp_values_created = 0;

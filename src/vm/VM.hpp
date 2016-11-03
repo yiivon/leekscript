@@ -63,10 +63,10 @@ public:
 		NUMBER_OVERFLOW = 2,
 		OTHER = 3
 	};
-
+	static const unsigned long int DEFAULT_OPERATION_LIMIT;
 	static unsigned int operations;
 	static const bool enable_operations;
-	static const unsigned int operation_limit;
+	static unsigned long int operation_limit;
 
 	static jit_type_t gmp_int_type;
 	static long gmp_values_created;
