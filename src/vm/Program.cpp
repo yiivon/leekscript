@@ -150,8 +150,10 @@ std::string Program::execute() {
 		if (VM::last_exception) throw VM::last_exception;
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
-		mpz_clear(&ret);
-		VM::gmp_values_deleted++;
+		if (output_type.temporary) {
+			mpz_clear(&ret);
+			VM::gmp_values_deleted++;
+		}
 		return std::string(buff);
 	}
 
