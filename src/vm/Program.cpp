@@ -194,6 +194,7 @@ std::ostream& operator << (std::ostream& os, const Program* program) {
 	return os;
 }
 
+/*
 extern map<string, jit_value_t> internals;
 
 LSArray<LSValue*>* Program_create_array() {
@@ -214,6 +215,7 @@ void Program_push_function(LSArray<LSValue*>* array, void* value) {
 void Program_push_pointer(LSArray<LSValue*>* array, LSValue* value) {
 	array->push_clone(value);
 }
+*/
 
 void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 
@@ -228,6 +230,7 @@ void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 	}
 
 	// User context variables
+	/*
 	if (toplevel) {
 		for (auto var : context.vars) {
 
@@ -243,6 +246,7 @@ void Program::compile_jit(Compiler& c, Context& context, bool toplevel) {
 			value->refs++;
 		}
 	}
+	*/
 
 	jit_value_t res = main->body->compile(c);
 	jit_insn_return(c.F, res);
