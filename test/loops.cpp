@@ -27,6 +27,10 @@ void Test::test_loops() {
 	code("if (true) 12").equals("12");
 	code("if (false) 12").equals("null");
 
+	section("Conditions with other types");
+	code("if 1212 { 'ok' } else { 5 }").equals("'ok'");
+	code("if ['str', true][0] { 12 } else { 5 }").equals("12");
+
 	/*
 	 * While loops
 	 */

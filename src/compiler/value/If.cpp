@@ -43,7 +43,7 @@ unsigned If::line() const {
 
 void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	condition->analyse(analyser, Type::BOOLEAN);
+	condition->analyse(analyser, Type::UNKNOWN);
 	then->analyse(analyser, req_type);
 
 	if (elze != nullptr) {
