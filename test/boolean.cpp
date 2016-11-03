@@ -2,9 +2,11 @@
 
 void Test::test_booleans() {
 
-	header("Booléens");
+	header("Booleans");
 
 	section("Constructor");
+	code("Boolean()").equals("false");
+	code("[Boolean(), 'str']").equals("[false, 'str']");
 	code("new Boolean").equals("false");
 	code("new Boolean()").equals("false");
 	code("true").equals("true");
