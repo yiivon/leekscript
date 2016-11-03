@@ -85,8 +85,6 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 		try {
 			value = program->execute();
 			result.execution_success = true;
-		} catch (std::exception& e) {
-			result.exception = VM::Exception::OTHER;
 		} catch (const VM::Exception& ex) {
 			result.exception = ex;
 		}

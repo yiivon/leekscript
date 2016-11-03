@@ -81,7 +81,7 @@ public:
 		std::vector<LexicalError> lexical_errors;
 		std::vector<SyntaxicalError*> syntaxical_errors;
 		std::vector<SemanticError> semantical_errors;
-		Exception exception;
+		Exception exception = Exception::NO_EXCEPTION;
 		std::string program;
 		std::string value;
 		std::string context;
