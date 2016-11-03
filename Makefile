@@ -44,7 +44,7 @@ build/coverage/%.o: %.cpp
 
 $(BUILD_DIR):
 	@mkdir -p $@
-	
+
 # Build test target
 build/leekscript-test: $(BUILD_DIR) $(OBJ) $(OBJ_TEST)
 	g++ $(FLAGS) -o build/leekscript-test $(OBJ) $(OBJ_TEST) $(LIBS)
@@ -76,7 +76,6 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE) $(OBJ_TEST)
 	@echo "--------------------------"
 	@echo "Build (coverage) finished!"
 	@echo "--------------------------"
-coverage: build/leekscript-coverage
 
 # Run tests/
 test: build/leekscript-test
@@ -92,12 +91,12 @@ valgrind:
 travis:
 	docker build -t leekscript .
 	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
-	       leekscript /bin/bash -c "cd leekscript; make coverage && build/leekscript-coverage \
+	       leekscript /bin/bash -c "cd leekscript; make build/leekscript-coverage && build/leekscript-coverage \
 	       && cpp-coveralls --gcov-options='-r'"
 
 # Coverage results with lcov.
 # `apt-get install lcov`
-html-coverage: coverage
+coverage: build/leekscript-coverage
 	mkdir -p build/html
 	cp -R src/ build/coverage/
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --zerocounters --directory build/coverage/src --base-directory build/coverage/src
