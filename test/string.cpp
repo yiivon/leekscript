@@ -69,6 +69,7 @@ void Test::test_strings() {
 	code("String()").equals("''");
 	code("String('yo')").equals("'yo'");
 	code("String.size('salut')").equals("5");
+	code("['hello'.size(), 'str']").equals("[5, 'str']");
 
 	section("String.toUpper()");
 	code("String.toUpper('')").equals("''");
