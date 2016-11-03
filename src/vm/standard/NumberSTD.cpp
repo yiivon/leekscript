@@ -400,6 +400,7 @@ jit_value_t NumberSTD::store_gmp_gmp(Compiler& c, std::vector<jit_value_t> args)
 }
 
 jit_value_t NumberSTD::store_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
+	VM::delete_gmp_int(c.F, args[0]);
 	jit_insn_store(c.F, args[0], args[1]);
 	return args[1];
 }
@@ -562,10 +563,12 @@ __mpz_struct pow_gmp_int_lambda(__mpz_struct a, int b) throw() {
 	mpz_t res;
 	mpz_init(res);
 	mpz_pow_ui(res, &a, b);
+	VM::gmp_values_created++;
 	return *res;
 }
 
 jit_value_t NumberSTD::pow_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
+	std::cout << "pow_gmp_gmp_int" << std::endl;
 
 	// Check: mpz_log(a) * b <= 10000
 	jit_value_t a_size = VM::call(c.F, LS_INTEGER, {VM::gmp_int_type}, {args[0]}, (void*) &mpz_log);
@@ -605,6 +608,7 @@ jit_value_t NumberSTD::lt_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args
 	+[](__mpz_struct a, __mpz_struct b) {
 		bool res = mpz_cmp(&a, &b) < 0;
 		mpz_clear(&b);
+		VM::gmp_values_deleted++;
 		return res;
 	});
 }

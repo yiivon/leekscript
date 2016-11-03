@@ -92,6 +92,8 @@ public:
 		long operations = 0;
 		int objects_created = 0;
 		int objects_deleted = 0;
+		int gmp_objects_created = 0;
+		int gmp_objects_deleted = 0;
 	};
 
 	std::vector<Module*> modules;

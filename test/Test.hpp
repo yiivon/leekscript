@@ -24,6 +24,8 @@ private:
 	double exeTime;
 	int obj_created;
 	int obj_deleted;
+	int gmp_obj_created;
+	int gmp_obj_deleted;
 
 public:
 

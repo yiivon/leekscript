@@ -37,9 +37,11 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 			if (it->second.reference == true) {
 				continue;
 			}
-
 			if (it->second.type.must_manage_memory()) {
 				VM::delete_ref(F, it->second.value);
+			}
+			if (it->second.type == Type::GMP_INT) {
+				VM::delete_gmp_int(F, it->second.value);
 			}
 		}
 	}

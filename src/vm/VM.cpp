@@ -96,30 +96,28 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	result.compilation_time_ms = (((double) result.compilation_time / 1000) / 1000);
 	result.operations = VM::operations;
 
-//	std::cout << "GMP objects created : " << VM::gmp_values_created << std::endl;
-//	std::cout << "GMP objects deleted : " << VM::gmp_values_deleted << std::endl;
-
 	// Cleaning
-//	if (value != nullptr) {
-//		LSValue::delete_temporary(value);
-//	}
 	delete program;
+
 	result.objects_created = LSValue::obj_count;
 	result.objects_deleted = LSValue::obj_deleted;
+	result.gmp_objects_created = VM::gmp_values_created;
+	result.gmp_objects_deleted = VM::gmp_values_deleted;
 
-	#if DEBUG > 0
-		if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
-			cout << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << endl;
-			#if DEBUG > 1
-				for (auto o : objs) {
-					o.second->print(cout);
-					cout << " (" << o.second->refs << " refs)" << endl;
-				}
-			#endif
-		} else {
-			cout << ls::LSValue::obj_count << " objects created" << endl;
-		}
-	#endif
+	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
+		cout << RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
+		#if DEBUG > 1
+			for (auto o : objs) {
+				o.second->print(cout);
+				cout << " (" << o.second->refs << " refs)" << endl;
+			}
+		#endif
+	}
+	if (VM::gmp_values_deleted != VM::gmp_values_created) {
+		cout << RED << "/!\\ " << VM::gmp_values_deleted << " / " << VM::gmp_values_created << " (" << (VM::gmp_values_created - VM::gmp_values_deleted) << " gmp leaked)" << END_COLOR << endl;
+	} else {
+		//cout << GREEN << VM::gmp_values_deleted << " gmp deleted" << END_COLOR << endl;
+	}
 
 	return result;
 }
@@ -423,11 +421,10 @@ jit_value_t VM::create_gmp_int(jit_function_t F, long value) {
 	VM::call(F, LS_VOID, {LS_POINTER, LS_LONG}, {gmp_addr, jit_value}, &mpz_init_set_ui);
 
 	// Increment gmp values counter
-	/*
 	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_created);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
-	*/
+
 	return gmp_struct;
 }
 
@@ -467,11 +464,10 @@ void VM::delete_gmp_int(jit_function_t F, jit_value_t gmp) {
 	VM::call(F, LS_VOID, {LS_POINTER}, {gmp_addr}, &mpz_clear);
 
 	// Increment gmp values counter
-	/*
 	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_deleted);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
-	*/
+
 }
 
 bool VM_is_true(LSValue* val) {

@@ -8,6 +8,8 @@ Test::Test() {
 	exeTime = 0;
 	obj_deleted = 0;
 	obj_created = 0;
+	gmp_obj_deleted = 0;
+	gmp_obj_created = 0;
 }
 
 Test::~Test() {}
@@ -43,15 +45,17 @@ int Test::all() {
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
 	int errors = (total - success_count);
 	int leaks = (obj_created - obj_deleted);
+	int gmp_leaks = (gmp_obj_created - gmp_obj_deleted);
 
 	std::cout << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
 	std::cout << "Total : " << total << ", success : " << success_count << ", errors : " << errors << std::endl;
 	std::cout << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
 	std::cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)" << std::endl;
+	std::cout << "GMP objects destroyed : " << gmp_obj_deleted << " / " << gmp_obj_created << " (" << gmp_leaks << " leaked)" << std::endl;
 	std::cout << "------------------------------------------------" << std::endl;
 
-	int result = abs(errors) + abs(leaks);
+	int result = abs(errors) + abs(leaks) + abs(gmp_leaks);
 	if (result == 0) {
 		std::cout << "GOOD :)" << std::endl;
 	} else {
@@ -77,6 +81,8 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	auto result = test->vm.execute(_code, "{}");
 	test->obj_created += result.objects_created;
 	test->obj_deleted += result.objects_deleted;
+	test->gmp_obj_created += result.gmp_objects_created;
+	test->gmp_obj_deleted += result.gmp_objects_deleted;
 	test->total++;
 	time = round((float) result.execution_time / 1000) / 1000;
 
