@@ -29,6 +29,7 @@ int Test::all() {
 	test_numbers();
 	test_strings();
 	test_arrays();
+	test_intervals();
 	test_map();
 	test_set();
 	test_objects();

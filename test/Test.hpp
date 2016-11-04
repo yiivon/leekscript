@@ -58,6 +58,7 @@ public:
 	void test_classes();
 	void test_files();
 	void test_doc();
+	void test_intervals();
 
 	class Input {
 	private:
