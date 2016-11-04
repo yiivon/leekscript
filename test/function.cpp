@@ -98,4 +98,8 @@ void Test::test_functions() {
 
 	section("Function.isTrue()");
 	code("if [x -> x, 12][0] { 'ok' } else { null }").equals("'ok'");
+
+	section("STD method");
+	code("String.size").equals("<function>");
+	code("Number.cos").equals("<function>");
 }
