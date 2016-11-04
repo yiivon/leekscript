@@ -2,7 +2,6 @@
 #include "ArraySTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
-#include "../value/LSInterval.hpp"
 
 using namespace std;
 
@@ -31,8 +30,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	operator_("in", {
 		{Type::PTR_ARRAY, Type::POINTER, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in},
 		{Type::REAL_ARRAY, Type::REAL, Type::BOOLEAN, (void*) &LSArray<double>::in},
-		{Type::INT_ARRAY, Type::INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in},
-		{Type::INTERVAL, Type::INTEGER, Type::BOOLEAN, (void*) &LSInterval::in_v}
+		{Type::INT_ARRAY, Type::INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in}
 	});
 
 	method("average", {
@@ -144,8 +142,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("filter", {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {pred_fun_type}, (void*) &LSArray<LSValue*>::ls_filter},
 		{Type::REAL_ARRAY, Type::REAL_ARRAY, {pred_fun_type_float}, (void*) &LSArray<double>::ls_filter},
-		{Type::INT_ARRAY, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSArray<int>::ls_filter},
-		{Type::INTERVAL, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSInterval::ls_filter},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSArray<int>::ls_filter}
 	});
 
 	method("contains", {

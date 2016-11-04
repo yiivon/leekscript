@@ -14,6 +14,7 @@
 #include "../../vm/standard/SystemSTD.hpp"
 #include "../../vm/standard/FunctionSTD.hpp"
 #include "../../vm/standard/ClassSTD.hpp"
+#include "../../vm/standard/IntervalSTD.hpp"
 #include "SemanticError.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 
@@ -103,6 +104,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	FunctionSTD().include(this, program);
 	ClassSTD().include(this, program);
 	SystemSTD().include(this, program);
+	IntervalSTD().include(this, program);
 
 	for (Module* module : modules) {
 		module->include(this, program);

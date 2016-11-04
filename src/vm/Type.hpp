@@ -104,8 +104,8 @@ public:
 class IntervalRawType : public BaseRawType {
 public:
 	virtual const std::string getName() const { return "interval"; }
-	virtual const std::string getClass() const { return "Array"; }
-	virtual const std::string getJsonName() const { return "array"; }
+	virtual const std::string getClass() const { return "Interval"; }
+	virtual const std::string getJsonName() const { return "interval"; }
 };
 
 class ObjectRawType : public BaseRawType {
