@@ -23,15 +23,9 @@ bool param_exec = false;
 bool param_file = false;
 bool param_json = false;
 
-#if DEBUG > 1
-namespace ls {
-	std::map<LSValue*, LSValue*> objs;
-}
-#endif
-
 void print_errors(ls::VM::Result& result) {
 
-	#if DEBUG > 0
+	#if DEBUG
 		cout << "main() " << result.program << endl;
 	#endif
 

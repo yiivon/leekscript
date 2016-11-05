@@ -98,7 +98,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 			std::cout << "Line " << error.line << ": " << error.message() << std::endl;
 		}
 	}
-	#if DEBUG > 0
+	#if DEBUG
 		std::cout << "pgrm() " << result.program << std::endl;
 	#endif
 	return result;

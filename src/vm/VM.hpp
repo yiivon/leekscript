@@ -7,6 +7,7 @@
 #include <gmp.h>
 #include <gmpxx.h>
 
+#include "../constants.h"
 #include "Context.hpp"
 #include "../compiler/lexical/LexicalError.hpp"
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
@@ -14,13 +15,6 @@
 #include "../compiler/Compiler.hpp"
 
 #define OPERATION_LIMIT 10000000
-
-/*
- * 0 : no debug,
- * 1 : print types + #leaks
- * 2 : print leak details
- */
-#define DEBUG 0
 
 #define LS_VOID jit_type_void
 #define LS_INTEGER jit_type_int

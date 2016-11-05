@@ -39,10 +39,6 @@ void VM::add_module(Module* m) {
 	modules.push_back(m);
 }
 
-#if DEBUG > 1
-extern std::map<LSValue*, LSValue*> objs;
-#endif
-
 #define GREY "\033[0;90m"
 #define GREEN "\033[0;32m"
 #define RED "\033[1;31m"
@@ -62,8 +58,8 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	VM::gmp_values_deleted = 0;
 	VM::operations = 0;
 	VM::last_exception = VM::Exception::NO_EXCEPTION;
-	#if DEBUG > 1
-		objs.clear();
+	#if DEBUG_LEAKS_DETAILS
+		LSValue::objs().clear();
 	#endif
 
 	Program* program = new Program(code);
@@ -73,7 +69,7 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	VM::Result result = program->compile(*this, ctx);
 	auto compilation_end = chrono::high_resolution_clock::now();
 
-	#if DEBUG > 0
+	#if DEBUG
 		std::cout << "main() " << result.program << std::endl;
 	#endif
 
@@ -112,17 +108,14 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		cout << RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
-		#if DEBUG > 1
-			for (auto o : objs) {
-				o.second->print(cout);
-				cout << " (" << o.second->refs << " refs)" << endl;
+		#if DEBUG_LEAKS_DETAILS
+			for (auto o : LSValue::objs()) {
+				std::cout << o.second << " (" << o.second->refs << " refs)" << endl;
 			}
 		#endif
 	}
 	if (VM::gmp_values_deleted != VM::gmp_values_created) {
 		cout << RED << "/!\\ " << VM::gmp_values_deleted << " / " << VM::gmp_values_created << " (" << (VM::gmp_values_created - VM::gmp_values_deleted) << " gmp leaked)" << END_COLOR << endl;
-	} else {
-		//cout << GREEN << VM::gmp_values_deleted << " gmp deleted" << END_COLOR << endl;
 	}
 
 	return result;
