@@ -129,10 +129,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::VOID, {iter_fun_type_int}, (void*) &LSArray<int>::ls_iter},
 	});
 
-	Type pred_fun_type = Type::FUNCTION;
+	Type pred_fun_type = Type::FUNCTION_P;
 	pred_fun_type.setArgumentType(0, Type::POINTER);
 	pred_fun_type.setReturnType(Type::BOOLEAN);
-	Type pred_fun_type_float = Type::FUNCTION;
+	Type pred_fun_type_float = Type::FUNCTION_P;
 	pred_fun_type_float.setArgumentType(0, Type::REAL);
 	pred_fun_type_float.setReturnType(Type::BOOLEAN);
 	Type pred_fun_type_int = Type::FUNCTION_P;

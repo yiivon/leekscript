@@ -60,6 +60,8 @@ void Test::test_functions() {
 	//	code("let f = x -> x let g = x -> f(x) g(12)").equals("12");
 	//	code("let g = x -> x ^ 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
 
+	code("let a = 5 let f = x -> x < a [1, 2, 3, 4, 5, 6].filter(f)").equals("[1, 2, 3, 4]");
+
 	header("Recursive");
 	//	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(10)").equals("3628800");
 

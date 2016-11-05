@@ -62,7 +62,7 @@ public:
 	LSValue* ls_foldLeft(const void* fun, LSValue* initial);
 	LSValue* ls_foldRight(const void* fun, LSValue* initial);
 	LSArray<T>* ls_insert(T value, int pos);
-	LSArray<LSValue*>* ls_partition(const void* fun);
+	LSArray<LSValue*>* ls_partition(LSFunction* function);
 	LSArray<LSValue*>* ls_map2(LSArray<LSValue*>*, const void* fun);
 	LSArray<LSValue*>* ls_map2_int(LSArray<int>*, const void* fun);
 	int ls_search(T needle, int start);

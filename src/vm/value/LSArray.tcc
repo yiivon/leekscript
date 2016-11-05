@@ -921,14 +921,14 @@ inline LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
 
 
 template <>
-inline LSArray<LSValue*>* LSArray<LSValue*>::ls_partition(const void* function) {
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_partition(LSFunction* function) {
 
 	LSArray<LSValue*>* array_true = new LSArray<LSValue*>();
 	LSArray<LSValue*>* array_false = new LSArray<LSValue*>();
-	auto fun = (bool (*)(void*, void*)) function;
+	auto fun = (bool (*)(void*, void*)) function->function;
 
 	for (auto v : *this) {
-		if (fun(nullptr, v)) {
+		if (fun(function, v)) {
 			array_true->push_clone(v);
 		} else {
 			array_false->push_clone(v);
@@ -940,14 +940,14 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_partition(const void* function) 
 	return new LSArray<LSValue*> {array_true, array_false};
 }
 template <>
-inline LSArray<LSValue*>* LSArray<double>::ls_partition(const void* function) {
+inline LSArray<LSValue*>* LSArray<double>::ls_partition(LSFunction* function) {
 
 	LSArray<double>* array_true = new LSArray<double>();
 	LSArray<double>* array_false = new LSArray<double>();
-	auto fun = (bool (*)(void*, double)) function;
+	auto fun = (bool (*)(void*, double)) function->function;
 
 	for (auto v : *this) {
-		if (fun(nullptr, v)) {
+		if (fun(function, v)) {
 			array_true->push_back(v);
 		} else {
 			array_false->push_back(v);
@@ -959,14 +959,14 @@ inline LSArray<LSValue*>* LSArray<double>::ls_partition(const void* function) {
 	return new LSArray<LSValue*> {array_true, array_false};
 }
 template <>
-inline LSArray<LSValue*>* LSArray<int>::ls_partition(const void* function) {
+inline LSArray<LSValue*>* LSArray<int>::ls_partition(LSFunction* function) {
 
 	LSArray<int>* array_true = new LSArray<int>();
 	LSArray<int>* array_false = new LSArray<int>();
-	auto fun = (bool (*)(void*, int)) function;
+	auto fun = (bool (*)(void*, int)) function->function;
 
 	for (auto v : *this) {
-		if (fun(nullptr, v)) {
+		if (fun(function, v)) {
 			array_true->push_back(v);
 		} else {
 			array_false->push_back(v);
