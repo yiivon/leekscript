@@ -750,13 +750,13 @@ inline LSArray<T>* LSArray<T>::ls_reverse() {
 }
 
 template <>
-inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(const void* function) {
-	auto fun = (bool (*)(void*, void*)) function;
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(LSFunction* function) {
+	auto fun = (bool (*)(void*, void*)) function->function;
 
 	if (refs == 0) {
 		for (size_t i = 0; i < this->size(); ) {
 			LSValue* v = (*this)[i];
-			if (!fun(nullptr, v)) {
+			if (!fun(function, v)) {
 				LSValue::delete_ref(v);
 				(*this)[i] = this->back();
 				this->pop_back();
@@ -769,19 +769,19 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(const void* function) {
 		LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
 		new_array->reserve(this->size());
 		for (auto v : *this) {
-			if (fun(nullptr, v)) new_array->push_clone(v);
+			if (fun(function, v)) new_array->push_clone(v);
 		}
 		return new_array;
 	}
 }
 template <>
-inline LSArray<double>* LSArray<double>::ls_filter(const void* function) {
-	auto fun = (bool (*)(void*, double)) function;
+inline LSArray<double>* LSArray<double>::ls_filter(LSFunction* function) {
+	auto fun = (bool (*)(void*, double)) function->function;
 
 	if (refs == 0) {
 		for (size_t i = 0; i < this->size(); ) {
 			double v = (*this)[i];
-			if (!fun(nullptr, v)) {
+			if (!fun(function, v)) {
 				(*this)[i] = this->back();
 				this->pop_back();
 			} else {
@@ -793,19 +793,19 @@ inline LSArray<double>* LSArray<double>::ls_filter(const void* function) {
 		LSArray<double>* new_array = new LSArray<double>();
 		new_array->reserve(this->size());
 		for (auto v : *this) {
-			if (fun(nullptr, v)) new_array->push_clone(v);
+			if (fun(function, v)) new_array->push_clone(v);
 		}
 		return new_array;
 	}
 }
 template <>
-inline LSArray<int>* LSArray<int>::ls_filter(const void* function) {
-	auto fun = (bool (*)(void*, int)) function;
+inline LSArray<int>* LSArray<int>::ls_filter(LSFunction* function) {
+	auto fun = (bool (*)(void*, int)) function->function;
 
 	if (refs == 0) {
 		for (size_t i = 0; i < this->size(); ) {
 			int v = (*this)[i];
-			if (!fun(nullptr, v)) {
+			if (!fun(function, v)) {
 				this->erase(this->begin() + i);
 			} else {
 				++i;
@@ -816,7 +816,7 @@ inline LSArray<int>* LSArray<int>::ls_filter(const void* function) {
 		LSArray<int>* new_array = new LSArray<int>();
 		new_array->reserve(this->size());
 		for (auto v : *this) {
-			if (fun(nullptr, v)) new_array->push_clone(v);
+			if (fun(function, v)) new_array->push_clone(v);
 		}
 		return new_array;
 	}

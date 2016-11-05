@@ -19,9 +19,15 @@ LSFunction::LSFunction(Json&) {
 	// TODO
 }
 
-LSFunction::~LSFunction() {}
+LSFunction::~LSFunction() {
+	for (auto capture : captures) {
+//		std::cout << "capture " << capture << " " << capture->refs << std::endl;
+		LSValue::delete_ref(capture);
+	}
+}
 
 void LSFunction::add_capture(LSValue* value) {
+	value->refs++;
 	captures.push_back(value);
 }
 

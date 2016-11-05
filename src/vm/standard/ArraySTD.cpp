@@ -135,7 +135,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type pred_fun_type_float = Type::FUNCTION;
 	pred_fun_type_float.setArgumentType(0, Type::REAL);
 	pred_fun_type_float.setReturnType(Type::BOOLEAN);
-	Type pred_fun_type_int = Type::FUNCTION;
+	Type pred_fun_type_int = Type::FUNCTION_P;
 	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
 

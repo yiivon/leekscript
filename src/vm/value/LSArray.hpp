@@ -58,7 +58,7 @@ public:
 	LSArray<T>* ls_push_all_flo(LSArray<double>* array);
 	LSArray<T>* ls_shuffle();
 	LSArray<T>* ls_reverse();
-	LSArray<T>* ls_filter(const void* fun);
+	LSArray<T>* ls_filter(LSFunction* fun);
 	LSValue* ls_foldLeft(const void* fun, LSValue* initial);
 	LSValue* ls_foldRight(const void* fun, LSValue* initial);
 	LSArray<T>* ls_insert(T value, int pos);
