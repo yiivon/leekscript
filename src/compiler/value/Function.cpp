@@ -153,7 +153,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "function analyse body : " << type << endl;
 }
 
-void Function::capture(SemanticVar* var) {
+int Function::capture(SemanticVar* var) {
 
 	if (std::find(captures.begin(), captures.end(), var) == captures.end()) {
 
@@ -165,6 +165,8 @@ void Function::capture(SemanticVar* var) {
 			parent->capture(var);
 		}
 	}
+	type.nature = Nature::POINTER;
+	return std::distance(captures.begin(), std::find(captures.begin(), captures.end(), var));
 }
 
 jit_value_t Function::compile(Compiler& c) const {
@@ -174,9 +176,10 @@ jit_value_t Function::compile(Compiler& c) const {
 	jit_context_t context = jit_context_create();
 	jit_context_build_start(context);
 
-	unsigned arg_count = arguments.size();
-	vector<jit_type_t> params;
-	for (unsigned i = 0; i < arg_count; ++i) {
+	unsigned arg_count = arguments.size() + 1;
+	vector<jit_type_t> params = {LS_POINTER}; // first arg is the function pointer
+
+	for (unsigned i = 0; i < arg_count - 1; ++i) {
 		Type t = Type::INTEGER;
 		if (i < type.getArgumentTypes().size()) {
 			t = type.getArgumentType(i);
@@ -219,9 +222,16 @@ jit_value_t Function::compile(Compiler& c) const {
 
 	if (type.nature == Nature::POINTER) {
 		ls_fun->function = f;
-		return LS_CREATE_POINTER(c.F, ls_fun);
+		jit_value_t jit_fun = LS_CREATE_POINTER(c.F, ls_fun);
+		for (const auto& cap : captures) {
+			jit_value_t jit_cap = c.get_var(cap->name).value;
+			if (cap->type.nature != Nature::POINTER) {
+				jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->type);
+			}
+			VM::function_add_capture(c.F, jit_fun, jit_cap);
+		}
+		return jit_fun;
 	} else {
-//		cout << "create function value " << endl;
 		return LS_CREATE_POINTER(c.F, f);
 	}
 }

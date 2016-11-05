@@ -21,7 +21,7 @@ class Token;
 class VariableDeclaration;
 
 enum class VarScope {
-	INTERNAL, LOCAL, PARAMETER
+	INTERNAL, LOCAL, PARAMETER, CAPTURE
 };
 
 class SemanticVar {

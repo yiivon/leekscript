@@ -21,6 +21,18 @@ LSFunction::LSFunction(Json&) {
 
 LSFunction::~LSFunction() {}
 
+void LSFunction::add_capture(LSValue* value) {
+	captures.push_back(value);
+}
+
+LSValue* LSFunction::get_capture(int index) {
+	return captures[index];
+}
+
+/*
+ * LSValue methods
+ */
+
 bool LSFunction::isTrue() const {
 	return true;
 }

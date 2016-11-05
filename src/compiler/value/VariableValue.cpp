@@ -35,10 +35,13 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	var = analyser->get_var(token);
 	if (var != nullptr) {
 		type = var->type;
+		scope = var->scope;
 		attr_types = var->attr_types;
-
 		if (var->function != analyser->current_function()) {
-			analyser->current_function()->capture(var);
+			capture_index = analyser->current_function()->capture(var);
+			std::cout << "Capture " << var->name << " : " << capture_index << std::endl;
+			type.nature = Nature::POINTER;
+			scope = VarScope::CAPTURE;
   		}
 	} else {
 		type = Type::POINTER;
@@ -104,17 +107,22 @@ jit_value_t VariableValue::compile(Compiler& c) const {
 
 	jit_value_t v;
 
-	if (var->scope == VarScope::INTERNAL) {
+	if (scope == VarScope::INTERNAL) {
 
 		v = internals[name];
 
-	} else if (var->scope == VarScope::LOCAL) {
+	} else if (scope == VarScope::LOCAL) {
 
 		v = c.get_var(name).value;
 
-	} else { // Parameter
+	} else if (scope == VarScope::PARAMETER) {
 
-		v = jit_value_get_param(c.F, var->index);
+		v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr
+
+	} else if (scope == VarScope::CAPTURE) {
+
+		jit_value_t fun = jit_value_get_param(c.F, 0); // function pointer
+		return VM::function_get_capture(c.F, fun, capture_index);
 	}
 
 	if (var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {

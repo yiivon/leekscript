@@ -502,4 +502,19 @@ std::string VM::exception_message(VM::Exception expected) {
 	return "?";
 }
 
+void VM::function_add_capture(jit_function_t F, jit_value_t fun, jit_value_t capture) {
+	VM::call(F, LS_VOID, {LS_POINTER, LS_POINTER}, {fun, capture}, +[](LSFunction* fun, LSValue* cap) {
+		std::cout << "add capture " << fun << " " << cap << std::endl;
+		fun->add_capture(cap);
+	});
+}
+
+jit_value_t VM::function_get_capture(jit_function_t F, jit_value_t fun_ptr, int capture_index) {
+	jit_value_t jit_index = LS_CREATE_INTEGER(F, capture_index);
+	return VM::call(F, LS_POINTER, {LS_POINTER, LS_INTEGER}, {fun_ptr, jit_index}, +[](LSFunction* fun, int index) {
+		std::cout << "get capture " << fun << " " << index << std::endl;
+		return fun->get_capture(index);
+	});
+}
+
 }

@@ -9,6 +9,7 @@ namespace ls {
 
 class Value;
 class SemanticVar;
+enum class VarScope;
 
 class VariableValue : public LeftValue {
 public:
@@ -16,6 +17,8 @@ public:
 	std::string name;
 	Token* token;
 	SemanticVar* var;
+	int capture_index = 0;
+	VarScope scope;
 
 	VariableValue(Token* token);
 	virtual ~VariableValue();

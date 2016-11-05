@@ -134,7 +134,7 @@ LSString* string_map(LSString* s, void* function) {
 
 	char buff[5];
 	LSValue* r = new LSString();
-	auto fun = (LSValue* (*)(void*)) function;
+	auto fun = (LSValue* (*)(void*, void*)) function;
 
 	const char* string_chars = s->c_str();
 	int i = 0;
@@ -145,7 +145,7 @@ LSString* string_map(LSString* s, void* function) {
 		u8_toutf8(buff, 5, &c, 1);
 		LSString* ch = new LSString(buff);
 		ch->refs = 1;
-		r->ls_add_eq(fun(ch));
+		r->ls_add_eq(fun(nullptr, ch));
 		LSValue::delete_ref(ch);
 	}
 	LSValue::delete_temporary(s);

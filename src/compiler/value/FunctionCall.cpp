@@ -356,26 +356,32 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	}
 
 	/** Default function : f(12) */
-	vector<jit_value_t> fun;
+	jit_value_t fun;
+	jit_value_t ls_fun_addr = LS_CREATE_POINTER(c.F, nullptr);
 
 	if (function->type.nature == Nature::POINTER) {
-		jit_value_t fun_addr = function->compile(c);
-		fun.push_back(jit_insn_load_relative(c.F, fun_addr, 16, LS_POINTER));
+		ls_fun_addr = function->compile(c);
+		fun = jit_insn_load_relative(c.F, ls_fun_addr, 16, LS_POINTER);
 	} else {
-		fun.push_back(function->compile(c));
+		fun = function->compile(c);
 	}
 
-	int arg_count = arguments.size();
+	/** Arguments */
+	int arg_count = arguments.size() + 1;
 	vector<jit_value_t> args;
 	vector<jit_type_t> args_types;
 
-	for (int i = 0; i < arg_count; ++i) {
+	// Function pointer as first argument
+	args.push_back(ls_fun_addr);
+	args_types.push_back(LS_POINTER);
+
+	for (int i = 0; i < arg_count - 1; ++i) {
 
 		args.push_back(arguments[i]->compile(c));
 		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			args[i] = VM::move_inc_obj(c.F, args[i]);
+			args[1 + i] = VM::move_inc_obj(c.F, args[1 + i]);
 		}
 	}
 
@@ -383,17 +389,17 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), arg_count, 0);
 
-	jit_value_t ret = jit_insn_call_indirect(c.F, fun[0], sig, args.data(), arg_count, 0);
+	jit_value_t ret = jit_insn_call_indirect(c.F, fun, sig, args.data(), arg_count, 0);
 
 	// Destroy temporary arguments
 	for (int i = 0; i < arg_count; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			VM::delete_ref(c.F, args[i]);
+			VM::delete_ref(c.F, args[1 + i]);
 		}
 	}
 	// Delete temporary function
 	//if (function->type.must_manage_memory()) {
-		VM::delete_temporary(c.F, fun[0]);
+		VM::delete_temporary(c.F, fun);
 	//}
 
 	// Custom function call : 1 op
