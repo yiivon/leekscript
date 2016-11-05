@@ -18,7 +18,7 @@ bool string_contains(LSString* haystack, LSString* needle);
 bool string_endsWith(LSString* string, LSString* ending);
 int string_indexOf(LSString* haystack, LSString* needle);
 int string_length(LSString* string);
-LSString* string_map(LSString* string, void* fun);
+LSString* string_map(LSString* string, LSFunction* fun);
 LSString* string_replace(LSString* string, LSString* from, LSString* to);
 int string_size(LSString* string);
 LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter);
@@ -55,7 +55,7 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	method("number", Type::STRING, Type::LONG, {}, (void*) &string_number);
 
-	Type map_fun_type = Type::FUNCTION;
+	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
 	method("map", Type::STRING, Type::STRING, {map_fun_type}, (void*) &string_map);
@@ -130,11 +130,11 @@ int string_length(LSString* string) {
 	return r;
 }
 
-LSString* string_map(LSString* s, void* function) {
+LSString* string_map(LSString* s, LSFunction* function) {
 
 	char buff[5];
 	LSValue* r = new LSString();
-	auto fun = (LSValue* (*)(void*, void*)) function;
+	auto fun = (LSValue* (*)(void*, void*)) function->function;
 
 	const char* string_chars = s->c_str();
 	int i = 0;
@@ -145,7 +145,7 @@ LSString* string_map(LSString* s, void* function) {
 		u8_toutf8(buff, 5, &c, 1);
 		LSString* ch = new LSString(buff);
 		ch->refs = 1;
-		r->ls_add_eq(fun(nullptr, ch));
+		r->ls_add_eq(fun(function, ch));
 		LSValue::delete_ref(ch);
 	}
 	LSValue::delete_temporary(s);

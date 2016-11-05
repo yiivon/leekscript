@@ -63,11 +63,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_sum}
 	});
 
-	Type map_int_fun_type = Type::FUNCTION;
+	Type map_int_fun_type = Type::FUNCTION_P;
 	map_int_fun_type.setArgumentType(0, Type::INTEGER);
 	map_int_fun_type.setReturnType(Type::POINTER);
 
-	Type map_fun_type = Type::FUNCTION;
+	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::POINTER);
 	map_fun_type.setReturnType(Type::POINTER);
 
@@ -98,12 +98,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) &LSArray<int>::ls_sort},
 	});
 
-	Type map2_fun_type = Type::FUNCTION;
+	Type map2_fun_type = Type::FUNCTION_P;
 	map2_fun_type.setArgumentType(0, Type::POINTER);
 	map2_fun_type.setArgumentType(1, Type::POINTER);
 	map2_fun_type.setReturnType(Type::POINTER);
 
-	Type map2_fun_type_int = Type::FUNCTION;
+	Type map2_fun_type_int = Type::FUNCTION_P;
 	map2_fun_type_int.setArgumentType(0, Type::POINTER);
 	map2_fun_type_int.setArgumentType(1, Type::INTEGER);
 	map2_fun_type_int.setReturnType(Type::POINTER);
@@ -113,13 +113,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::ls_map2_int},
 	});
 
-	Type iter_fun_type = Type::FUNCTION;
+	Type iter_fun_type = Type::FUNCTION_P;
 	iter_fun_type.setArgumentType(0, Type::POINTER);
 	iter_fun_type.setReturnType(Type::VOID);
-	Type iter_fun_type_int = Type::FUNCTION;
+	Type iter_fun_type_int = Type::FUNCTION_P;
 	iter_fun_type_int.setArgumentType(0, Type::INTEGER);
 	iter_fun_type_int.setReturnType(Type::VOID);
-	Type iter_fun_type_float = Type::FUNCTION;
+	Type iter_fun_type_float = Type::FUNCTION_P;
 	iter_fun_type_float.setArgumentType(0, Type::REAL);
 	iter_fun_type_float.setReturnType(Type::VOID);
 
@@ -178,15 +178,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::POINTER, {}, (void*) &LSArray<int>::ls_last},
 	});
 
-	Type fold_fun_type = Type::FUNCTION;
+	Type fold_fun_type = Type::FUNCTION_P;
 	fold_fun_type.setArgumentType(0, Type::POINTER);
 	fold_fun_type.setArgumentType(1, Type::POINTER);
 	fold_fun_type.setReturnType(Type::POINTER);
-	Type fold_fun_type_float = Type::FUNCTION;
+	Type fold_fun_type_float = Type::FUNCTION_P;
 	fold_fun_type_float.setArgumentType(0, Type::POINTER);
 	fold_fun_type_float.setArgumentType(1, Type::REAL);
 	fold_fun_type_float.setReturnType(Type::POINTER);
-	Type fold_fun_type_int = Type::FUNCTION;
+	Type fold_fun_type_int = Type::FUNCTION_P;
 	fold_fun_type_int.setArgumentType(0, Type::POINTER);
 	fold_fun_type_int.setArgumentType(1, Type::INTEGER);
 	fold_fun_type_int.setReturnType(Type::POINTER);

@@ -81,7 +81,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		function_added = true;
 	}
 
-	type = Type::FUNCTION;
+	type = Type::FUNCTION_P;
 
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		type.setArgumentType(i, Type::UNKNOWN);
@@ -99,6 +99,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (ls_fun == nullptr && type.nature == Nature::POINTER) {
 		ls_fun = new LSFunction(nullptr);
 	}
+	type.nature = Nature::POINTER;
 
 //	cout << "Function type: " << type << endl;
 }
