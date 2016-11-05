@@ -72,6 +72,8 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 //	cout << "Function::analyse req_type " << req_type << endl;
 
+	captures.clear();
+
 	parent = analyser->current_function();
 
 	if (!function_added) {
@@ -224,7 +226,12 @@ jit_value_t Function::compile(Compiler& c) const {
 		ls_fun->function = f;
 		jit_value_t jit_fun = LS_CREATE_POINTER(c.F, ls_fun);
 		for (const auto& cap : captures) {
-			jit_value_t jit_cap = c.get_var(cap->name).value;
+			jit_value_t jit_cap;
+			if (cap->scope == VarScope::LOCAL) {
+				jit_cap = c.get_var(cap->name).value;
+			} else {
+				jit_cap = jit_value_get_param(c.F, 1 + cap->index);
+			}
 			if (cap->type.nature != Nature::POINTER) {
 				jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->type);
 			}
