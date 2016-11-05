@@ -53,9 +53,9 @@ void Test::test_functions() {
 	 * Closures
 	 */
 	header("Closures");
-//		code("let a = 5 let f = -> a f()").equals("5");
-	//	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
-	//	code("let f = x -> y -> x + y f(5)(12)").equals("17");
+	code("let a = 5 let f = -> a f()").equals("5");
+	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	code("let f = x -> y -> x + y f(5)(12)").equals("17");
 	//	code("let f = x -> x (-> f(12))()").equals("12");
 	//	code("let f = x -> x let g = x -> f(x) g(12)").equals("12");
 	//	code("let g = x -> x ^ 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
