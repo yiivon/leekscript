@@ -42,7 +42,6 @@ void Test::test_functions() {
 	code("let x = 'yolo' return '1'; 2").equals("'1'");
 	code("let x = '1' return x; 2").equals("'1'");
 	code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
-	//	code("let a = 10 a ~ x -> x ^ 2").equals("100");
 	code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
@@ -61,13 +60,14 @@ void Test::test_functions() {
 	code("let g = x -> x ** 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
 	code("let a = 5 let f = x -> x < a [1, 2, 3, 4, 5, 6].filter(f)").equals("[1, 2, 3, 4]");
 
-	header("Recursive");
+	section("Recursive");
 	//	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(10)").equals("3628800");
 
-	/*
-	 * Function operators
-	 */
-	header("Function operators");
+	section("Operator ~ ");
+	code("let a = 10 a ~ x -> x ** 2").equals("100");
+	code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
+
+	section("Function operators");
 
 //	code("+(1, 2)").equals("3");
 //	code("+([1], 2)").equals("[1, 2]");

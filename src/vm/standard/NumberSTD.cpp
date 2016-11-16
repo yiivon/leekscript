@@ -187,6 +187,17 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::GMP_INT_TMP, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_tmp_gmp, Method::NATIVE},
 	});
 
+	Type tilde_fun_type_int = Type::FUNCTION_P;
+	tilde_fun_type_int.setArgumentType(0, Type::INTEGER);
+	tilde_fun_type_int.setReturnType(Type::POINTER);
+	Type tilde_fun_type_real = Type::FUNCTION_P;
+	tilde_fun_type_real.setArgumentType(0, Type::REAL);
+	tilde_fun_type_real.setReturnType(Type::POINTER);
+	operator_("~", {
+		{Type::REAL, tilde_fun_type_real, Type::POINTER, (void*) &NumberSTD::tilde_real, Method::NATIVE},
+		{Type::INTEGER, tilde_fun_type_int, Type::POINTER, (void*) &NumberSTD::tilde_int, Method::NATIVE}
+	});
+
 	static_field("pi", Type::REAL, (void*) &Number_pi);
 	static_field("e", Type::REAL, (void*) &Number_e);
 	static_field("phi", Type::REAL, (void*) &Number_phi);
@@ -672,6 +683,32 @@ jit_value_t NumberSTD::eq_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args
 	VM::delete_gmp_int(c.F, args[0]);
 	return jit_insn_eq(c.F, res, LS_CREATE_INTEGER(c.F, 0));
 }
+
+jit_value_t NumberSTD::tilde_int(Compiler& c, std::vector<jit_value_t> args) {
+
+	jit_type_t arg_types[] = {LS_POINTER, LS_INTEGER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 0);
+	jit_value_t i = args[0];
+	jit_value_t f = args[1];
+	jit_value_t fun = jit_insn_load_relative(c.F, f, 16, LS_POINTER);
+	jit_value_t jit_args[] = {f, i};
+	return jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0);
+}
+
+jit_value_t NumberSTD::tilde_real(Compiler& c, std::vector<jit_value_t> args) {
+
+	jit_type_t arg_types[] = {LS_POINTER, LS_REAL};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 0);
+	jit_value_t r = args[0];
+	jit_value_t f = args[1];
+	jit_value_t fun = jit_insn_load_relative(c.F, f, 16, LS_POINTER);
+	jit_value_t jit_args[] = {f, r};
+	return jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0);
+}
+
+/*
+ * Methods
+ */
 
 double NumberSTD::abs_ptr(LSNumber* x) {
 	// TODO check args
