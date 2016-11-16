@@ -458,12 +458,21 @@ string Type::get_nature_symbol(const Nature& nature) {
 	}
 }
 
-#define GREY "\033[0;90m"
-#define GREEN "\033[0;32m"
-#define RED "\033[1;31m"
-#define BLUE "\033[1;34m"
-#define YELLOW "\033[1;33m"
-#define END_COLOR "\033[0m"
+#if PRINT_COLORS
+	#define GREY "\033[0;90m"
+	#define GREEN "\033[0;32m"
+	#define RED "\033[1;31m"
+	#define BLUE "\033[1;34m"
+	#define YELLOW "\033[1;33m"
+	#define END_COLOR "\033[0m"
+#else
+	#define GREY ""
+	#define GREEN ""
+	#define RED ""
+	#define BLUE ""
+	#define YELLOW ""
+	#define END_COLOR ""
+#endif
 
 ostream& operator << (ostream& os, const Type& type) {
 
