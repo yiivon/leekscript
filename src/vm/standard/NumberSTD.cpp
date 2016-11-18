@@ -151,7 +151,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp, Method::NATIVE},
 		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp, Method::NATIVE},
 		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp_tmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp_tmp, Method::NATIVE}
+		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp_tmp, Method::NATIVE},
+		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_int, Method::NATIVE},
+		{Type::GMP_INT_TMP, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_int, Method::NATIVE}
 	});
 
 	operator_("*", {
@@ -507,6 +509,40 @@ jit_value_t NumberSTD::sub_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t>
 	jit_value_t a = jit_insn_address_of(c.F, args[0]);
 	jit_value_t b = jit_insn_address_of(c.F, args[1]);
 	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {a, a, b}, &mpz_sub);
+	VM::delete_gmp_int(c.F, args[1]);
+	return args[0];
+}
+
+jit_value_t NumberSTD::sub_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
+	std::cout << "[jit] sub_gmp_int" << std::endl;
+
+	jit_value_t a = jit_insn_address_of(c.F, args[0]);
+	jit_value_t b = args[1];
+	jit_value_t r = VM::create_gmp_int(c.F);
+	jit_value_t r_addr = jit_insn_address_of(c.F, r);
+
+	jit_label_t label_end = jit_label_undefined;
+	jit_label_t label_else = jit_label_undefined;
+
+	jit_value_t cond = jit_insn_lt(c.F, b, LS_CREATE_INTEGER(c.F, 0));
+	jit_insn_branch_if_not(c.F, cond, &label_else);
+
+	jit_value_t neg_b = jit_insn_neg(c.F, b);
+	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_INTEGER}, {r_addr, a, neg_b}, &mpz_add_ui);
+	jit_insn_branch(c.F, &label_end);
+
+	jit_insn_label(c.F, &label_else);
+	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_INTEGER}, {r_addr, a, b}, &mpz_sub_ui);
+	jit_insn_label(c.F, &label_end);
+	return r;
+}
+
+jit_value_t NumberSTD::sub_gmp_tmp_int(Compiler& c, std::vector<jit_value_t> args) {
+	std::cout << "[jit] sub_gmp_tmp_int" << std::endl;
+
+	jit_value_t a = jit_insn_address_of(c.F, args[0]);
+	jit_value_t b = args[1];
+	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_INTEGER}, {a, a, b}, &mpz_sub_ui);
 	VM::delete_gmp_int(c.F, args[1]);
 	return args[0];
 }

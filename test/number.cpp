@@ -146,6 +146,8 @@ void Test::test_numbers() {
 	code("2 ** 50").equals("-2147483648");
 	code("2m ** 50").equals("1125899906842624");
 	code("0xf45eab5c9d13aab44376beff").equals("75628790656539575381594128127");
+	code("1000m - 12").equals("988");
+	code("1000m - (-12)").equals("1012");
 
 	section("Overflow");
 	code("123m ** 1900").exception(ls::VM::Exception::NUMBER_OVERFLOW);
