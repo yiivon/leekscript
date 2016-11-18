@@ -1,4 +1,5 @@
 #include "Type.hpp"
+#include "../constants.h"
 #include <sstream>
 
 using namespace std;
@@ -458,7 +459,7 @@ string Type::get_nature_symbol(const Nature& nature) {
 	}
 }
 
-#if PRINT_COLORS
+#if PRINT_TYPES_COLORS
 	#define GREY "\033[0;90m"
 	#define GREEN "\033[0;32m"
 	#define RED "\033[1;31m"
