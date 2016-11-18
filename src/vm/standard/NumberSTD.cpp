@@ -187,6 +187,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("==", {
 		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_gmp, Method::NATIVE},
 		{Type::GMP_INT_TMP, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_tmp_gmp, Method::NATIVE},
+		{Type::GMP_INT, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_int, Method::NATIVE},
+		{Type::GMP_INT_TMP, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_tmp_int, Method::NATIVE},
 	});
 
 	Type tilde_fun_type_int = Type::FUNCTION_P;
@@ -548,11 +550,11 @@ jit_value_t NumberSTD::sub_gmp_tmp_int(Compiler& c, std::vector<jit_value_t> arg
 }
 
 void mpz_mul_custom(__mpz_struct* r, __mpz_struct* a, __mpz_struct* b) {
-	std::cout << "size a: " << mpz_log(*a) << std::endl;
-	std::cout << "size b: " << mpz_log(*b) << std::endl;
-	std::cout << "expected size: " << mpz_log(*a) + mpz_log(*b) << std::endl;
+//	std::cout << "size a: " << mpz_log(*a) << std::endl;
+//	std::cout << "size b: " << mpz_log(*b) << std::endl;
+//	std::cout << "expected size: " << mpz_log(*a) + mpz_log(*b) << std::endl;
 	mpz_mul(r, a, b);
-	std::cout << "size r: " << mpz_log(*r) << std::endl;
+//	std::cout << "size r: " << mpz_log(*r) << std::endl;
 }
 
 jit_value_t NumberSTD::mul_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
@@ -716,6 +718,21 @@ jit_value_t NumberSTD::eq_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args
 	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
 	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
 	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_POINTER}, {a_addr, b_addr}, &mpz_cmp);
+	VM::delete_gmp_int(c.F, args[0]);
+	return jit_insn_eq(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+}
+jit_value_t NumberSTD::eq_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
+	std::cout << "[jit] eq_gmp_int" << std::endl;
+
+	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
+	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {a_addr, args[1]}, &_mpz_cmp_si);
+	return jit_insn_eq(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+}
+jit_value_t NumberSTD::eq_gmp_tmp_int(Compiler& c, std::vector<jit_value_t> args) {
+	std::cout << "[jit] eq_gmp_tmp_int" << std::endl;
+
+	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
+	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {a_addr, args[1]}, &_mpz_cmp_si);
 	VM::delete_gmp_int(c.F, args[0]);
 	return jit_insn_eq(c.F, res, LS_CREATE_INTEGER(c.F, 0));
 }

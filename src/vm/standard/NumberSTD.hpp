@@ -65,6 +65,8 @@ public:
 
 	static jit_value_t eq_gmp_gmp(Compiler& c, std::vector<jit_value_t> args);
 	static jit_value_t eq_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t eq_gmp_int(Compiler& c, std::vector<jit_value_t> args);
+	static jit_value_t eq_gmp_tmp_int(Compiler& c, std::vector<jit_value_t> args);
 
 	static jit_value_t tilde_int(Compiler& c, std::vector<jit_value_t> args);
 	static jit_value_t tilde_real(Compiler& c, std::vector<jit_value_t> args);
