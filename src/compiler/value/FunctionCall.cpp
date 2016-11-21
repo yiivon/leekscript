@@ -169,7 +169,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		string name = vv->name;
-		if (name == "+" or name == "-" or name == "*" or name == "/" or name == "^" or name == "%") {
+		if (name == "+" or name == "-" or name == "*" or name == "/" or name == "**" or name == "%") {
 			bool isByValue = true;
 			Type effectiveType;
 			for (Value* arg : arguments) {
