@@ -114,8 +114,9 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 	bool changed = type.will_take(arg_types);
 
-	analyse_body(analyser, type.getReturnType());
-
+	if (changed) {
+		analyse_body(analyser, type.getReturnType());
+	}
 //	cout << "Function::will_take type after " << type << endl;
 	update_function_args(analyser);
 
@@ -154,8 +155,11 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 		type.setReturnType(body->type);
 	}
 
-	vars = analyser->get_local_vars();
+	if (type.getReturnType() == Type::GMP_INT) {
+		type.setReturnType(Type::GMP_INT_TMP);
+	}
 
+	vars = analyser->get_local_vars();
 	analyser->leave_function();
 
 //	cout << "function analyse body : " << type << endl;
@@ -254,8 +258,10 @@ jit_value_t Function::compile(Compiler& c) const {
 		for (const auto& cap : captures) {
 			jit_value_t jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
+//				std::cout << "capture local" << std::endl;
 				jit_cap = c.get_var(cap->name).value;
 			} else {
+//				std::cout << "capture parameter" << std::endl;
 				jit_cap = jit_value_get_param(c.F, 1 + cap->index);
 			}
 			if (cap->type.nature != Nature::POINTER) {

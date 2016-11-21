@@ -294,7 +294,6 @@ void VM::delete_temporary(jit_function_t F, jit_value_t obj) {
 	jit_insn_call_native(F, "delete_temporary", (void*) &LSValue::delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
-
 void VM_operation_exception() {
 	throw vm_operation_exception();
 }
@@ -424,10 +423,7 @@ jit_value_t VM::create_gmp_int(jit_function_t F, long value) {
 	jit_value_t jit_value = LS_CREATE_LONG(F, value);
 	VM::call(F, LS_VOID, {LS_POINTER, LS_LONG}, {gmp_addr, jit_value}, &mpz_init_set_ui);
 
-	// Increment gmp values counter
-	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_created);
-	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
-	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
+	VM::inc_gmp_counter(F);
 
 	return gmp_struct;
 }
@@ -471,7 +467,22 @@ void VM::delete_gmp_int(jit_function_t F, jit_value_t gmp) {
 	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_deleted);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
+}
 
+jit_value_t VM::clone_gmp_int(jit_function_t F, jit_value_t gmp) {
+
+	jit_value_t r = VM::create_gmp_int(F);
+	jit_value_t r_addr = jit_insn_address_of(F, r);
+	jit_value_t gmp_addr = jit_insn_address_of(F, gmp);
+	VM::call(F, LS_VOID, {LS_POINTER, LS_POINTER}, {r_addr, gmp_addr}, &mpz_init_set);
+	return r;
+}
+
+void VM::inc_gmp_counter(jit_function_t F) {
+
+	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_created);
+	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
+	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
 
 bool VM_is_true(LSValue* val) {
@@ -507,7 +518,6 @@ std::string VM::exception_message(VM::Exception expected) {
 
 void VM::function_add_capture(jit_function_t F, jit_value_t fun, jit_value_t capture) {
 	VM::call(F, LS_VOID, {LS_POINTER, LS_POINTER}, {fun, capture}, +[](LSFunction* fun, LSValue* cap) {
-//		std::cout << "add capture " << fun << " " << cap << std::endl;
 		fun->add_capture(cap);
 	});
 }
@@ -515,7 +525,6 @@ void VM::function_add_capture(jit_function_t F, jit_value_t fun, jit_value_t cap
 jit_value_t VM::function_get_capture(jit_function_t F, jit_value_t fun_ptr, int capture_index) {
 	jit_value_t jit_index = LS_CREATE_INTEGER(F, capture_index);
 	return VM::call(F, LS_POINTER, {LS_POINTER, LS_INTEGER}, {fun_ptr, jit_index}, +[](LSFunction* fun, int index) {
-//		std::cout << "get capture " << fun << " " << index << std::endl;
 		LSValue* v = fun->get_capture(index);
 //		v->refs++;
 		return v;

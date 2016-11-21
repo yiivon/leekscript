@@ -1,5 +1,6 @@
 #include "../../compiler/value/If.hpp"
 
+#include "../semantic/SemanticAnalyser.hpp"
 #include "../../compiler/value/Number.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
@@ -48,7 +49,15 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (elze != nullptr) {
 
+		if (then->type != Type::VOID) {
+			analyser->set_potential_return_type(then->type);
+		}
+
 		elze->analyse(analyser, req_type);
+
+		if (elze->type != Type::VOID) {
+			analyser->set_potential_return_type(elze->type);
+		}
 
 		if (req_type == Type::VOID) {
 			type = Type::VOID;
@@ -59,9 +68,9 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		} else {
 			type = Type::get_compatible_type(then->type, elze->type);
 		}
-		if (then->type != type) {
-			then->analyse(analyser, type);
-		}
+
+		then->analyse(analyser, type);
+
 		if (elze->type != type) {
 			elze->analyse(analyser, type);
 		}
@@ -77,6 +86,9 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
+	}
+	if (type == Type::GMP_INT) {
+		type = Type::GMP_INT_TMP;
 	}
 }
 

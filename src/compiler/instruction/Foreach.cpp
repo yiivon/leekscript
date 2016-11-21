@@ -50,6 +50,11 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	container->analyse(analyser, Type::UNKNOWN);
 
+	//if (not container->iterable()) {
+		// TODO
+		// analyser->add_error();
+	//}
+
 	if (container->type.element_type.size() == 1) {
 
 		key_type = Type::INTEGER; // If no key type in array key = 0, 1, 2...

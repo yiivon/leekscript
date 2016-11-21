@@ -117,6 +117,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	v1->analyse(analyser, Type::UNKNOWN);
 	v2->analyse(analyser, Type::UNKNOWN);
 
+//	if (v1->type == Type::UNKNOWN) v1->type = Type::GMP_INT;
+
 	Type obj_type = op->reversed ? v2->type : v1->type;
 
 	LSClass* object_class = (LSClass*) analyser->program->system_vars[obj_type.clazz];

@@ -390,6 +390,10 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
 			args[1 + i] = VM::move_inc_obj(c.F, args[1 + i]);
 		}
+		if (function->type.getArgumentType(i) == Type::GMP_INT &&
+			arguments[i]->type != Type::GMP_INT_TMP) {
+			args[1 + i] = VM::clone_gmp_int(c.F, args[1 + i]);
+		}
 	}
 
 	jit_type_t jit_return_type = VM::get_jit_type(type);
@@ -402,6 +406,10 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	for (int i = 0; i < arg_count; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
 			VM::delete_ref(c.F, args[1 + i]);
+		}
+		if (function->type.getArgumentType(i) == Type::GMP_INT ||
+			function->type.getArgumentType(i) == Type::GMP_INT_TMP) {
+			VM::delete_gmp_int(c.F, args[1 + i]);
 		}
 	}
 	// Delete temporary function

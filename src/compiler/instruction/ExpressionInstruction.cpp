@@ -34,6 +34,9 @@ jit_value_t ExpressionInstruction::compile(Compiler& c) const {
 		if (value->type.must_manage_memory()) {
 			VM::delete_temporary(c.F, v);
 		}
+		if (value->type == Type::GMP_INT_TMP) {
+			VM::delete_gmp_int(c.F, v);
+		}
 		return nullptr;
 	} else {
 		return v;

@@ -40,6 +40,9 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 			if (it->second.type.must_manage_memory()) {
 				VM::delete_ref(F, it->second.value);
 			}
+			if (it->second.type == Type::GMP_INT_TMP) {
+				VM::delete_gmp_int(F, it->second.value);
+			}
 			if (it->second.type == Type::GMP_INT) {
 				VM::delete_gmp_int(F, it->second.value);
 			}
@@ -77,6 +80,10 @@ CompilerVar& Compiler::get_var(const std::string& name) {
 		}
 	}
 	return *((CompilerVar*) nullptr); // Should not reach this line
+}
+
+void Compiler::set_var_type(std::string& name, const Type& type) {
+	variables.back()[name].type = type;
 }
 
 /*

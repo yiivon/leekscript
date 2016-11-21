@@ -5,6 +5,7 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
 #include "../value/Reference.hpp"
+#include "../value/Function.hpp"
 
 using namespace std;
 
@@ -83,19 +84,20 @@ jit_value_t VariableDeclaration::compile(Compiler& c) const {
 				c.add_var(name, val, v->type, true);
 			} else {
 				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v->type));
-				jit_value_t val = ex->compile(c);
+				c.add_var(name, var, Type::POINTER, false);
 
+				if (Function* f = dynamic_cast<Function*>(ex)) {
+					jit_insn_store(c.F, var, LS_CREATE_POINTER(c.F, (void*) f->ls_fun));
+				}
+
+				jit_value_t val = ex->compile(c);
 				if (ex->type.must_manage_memory()) {
 					val = VM::move_inc_obj(c.F, val);
 				}
-
-				c.add_var(name, var, ex->type, false);
+				c.set_var_type(name, ex->type);
 
 				if (v->type == Type::GMP_INT) {
-					jit_value_t var_addr = jit_insn_address_of(c.F, var);
-					jit_value_t val_addr = jit_insn_address_of(c.F, val);
-					VM::call(c.F, LS_VOID, {LS_POINTER, LS_POINTER}, {var_addr, val_addr}, &mpz_init_set);
-					VM::gmp_values_created++;
+					jit_insn_store(c.F, var, VM::clone_gmp_int(c.F, val));
 				} else {
 					jit_insn_store(c.F, var, val);
 				}

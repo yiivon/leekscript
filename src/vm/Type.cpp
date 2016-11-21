@@ -252,6 +252,7 @@ bool Type::operator ==(const Type& type) const {
 			element_type == type.element_type &&
 			key_type == type.key_type &&
 			return_types == type.return_types &&
+			temporary == type.temporary &&
 			arguments_types == type.arguments_types;
 }
 

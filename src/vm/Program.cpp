@@ -153,16 +153,16 @@ std::string Program::execute() {
 		return std::to_string(res);
 	}
 
-	if (output_type == Type::GMP_INT) {
+	if (output_type == Type::GMP_INT_TMP or output_type == Type::GMP_INT) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
 		if (VM::last_exception) throw VM::last_exception;
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
-		if (output_type.temporary) {
+//		if (output_type.temporary) {
 			mpz_clear(&ret);
 			VM::gmp_values_deleted++;
-		}
+//		}
 		return std::string(buff);
 	}
 

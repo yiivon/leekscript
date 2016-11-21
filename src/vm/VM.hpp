@@ -128,6 +128,8 @@ public:
 	static jit_value_t move_inc_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t clone_obj(jit_function_t F, jit_value_t ptr);
 	static void delete_gmp_int(jit_function_t F, jit_value_t gmp);
+	static jit_value_t clone_gmp_int(jit_function_t F, jit_value_t gmp);
+	static void inc_gmp_counter(jit_function_t F);
 
 	/** Operations **/
 	static void inc_ops(jit_function_t F, int add);

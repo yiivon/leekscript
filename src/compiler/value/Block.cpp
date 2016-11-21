@@ -66,6 +66,11 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			type = Type::VOID;
 		}
 	}
+	if (type == Type::GMP_INT) {
+		type = Type::GMP_INT_TMP;
+	} else if (type == Type::GMP_INT_TMP) {
+		temporary_gmp = true;
+	}
 }
 
 LSValue* Block_move(LSValue* value) {
@@ -85,7 +90,9 @@ jit_value_t Block::compile(Compiler& c) const {
 	c.enter_block();
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
+
 		jit_value_t val = instructions[i]->compile(c);
+
 		if (dynamic_cast<Return*>(instructions[i])) {
 			break; // no need to compile after a return
 		}
@@ -96,6 +103,9 @@ jit_value_t Block::compile(Compiler& c) const {
 				jit_value_t ret = jit_insn_call_native(c.F, "true_move", (void*) Block_move, sig, &val, 1, JIT_CALL_NOTHROW);
 				c.leave_block(c.F);
 				return ret;
+			} else if (type == Type::GMP_INT_TMP && !temporary_gmp) {
+				c.leave_block(c.F);
+				return VM::clone_gmp_int(c.F, val);
 			} else {
 				c.leave_block(c.F);
 				return val;

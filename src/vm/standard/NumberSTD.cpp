@@ -613,7 +613,6 @@ __mpz_struct pow_gmp_int_lambda(__mpz_struct a, int b) throw() {
 	mpz_t res;
 	mpz_init(res);
 	mpz_pow_ui(res, &a, b);
-	VM::gmp_values_created++;
 	return *res;
 }
 
@@ -632,6 +631,7 @@ jit_value_t NumberSTD::pow_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
 	// Ops: size of the theorical result
 	VM::inc_ops_jit(c.F, r_size);
 
+	VM::inc_gmp_counter(c.F);
 	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, LS_INTEGER}, args, &pow_gmp_int_lambda);
 }
 
