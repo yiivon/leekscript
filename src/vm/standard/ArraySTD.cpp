@@ -291,7 +291,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("size", {
-		{Type::INTEGER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_size},
+		{Type::INTEGER, {Type::POINTER}, (void*) &LSArray<LSValue*>::ls_size},
 		{Type::INTEGER, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_size},
 		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_size}
 	});
