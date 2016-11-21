@@ -189,6 +189,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
+	// Check argument count
+	if (function->type.raw_type == RawType::FUNCTION && function->type.getArgumentTypes().size() != arguments.size()) {
+		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,
+			function->line(), function->to_string()});
+		type = Type::UNKNOWN;
+		return;
+	}
+
 	vector<Type> arg_types;
 	for (auto arg : arguments) {
 		arg_types.push_back(arg->type);

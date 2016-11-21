@@ -35,7 +35,7 @@ void Test::test_functions() {
 	code("[[[[[[[x -> x ** 2]]]]]]][0][0][0][0][0][0][0](12)").equals("144");
 	code("(-> -> 12)()()").equals("12");
 	code("let f = -> -> 12 f()()").equals("12");
-	code("let f = x -> -> 'salut' f()()").equals("'salut'");
+	code("let f = x -> -> 'salut' f(5)()").equals("'salut'");
 	code("let f = x -> [x, x, x] f(44)").equals("[44, 44, 44]");
 	code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
 	code("1; 2").equals("2");
@@ -103,4 +103,9 @@ void Test::test_functions() {
 	section("STD method");
 	code("String.size").equals("<function>");
 	code("Number.cos").equals("<function>");
+
+	section("Check argument count");
+	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "(x) → {\n    x\n}");
+	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "f");
+	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "add");
 }
