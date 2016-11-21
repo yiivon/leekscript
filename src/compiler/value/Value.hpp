@@ -26,6 +26,7 @@ public:
 	virtual bool isLeftValue() const;
 
 	virtual void print(std::ostream&, int indent = 0, bool debug = false) const = 0;
+	std::string to_string();
 
 	virtual unsigned line() const = 0;
 
