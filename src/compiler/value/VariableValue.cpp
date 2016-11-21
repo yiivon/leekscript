@@ -67,6 +67,7 @@ bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& ar
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_take(analyser, arg_types);
 		this->type = var->value->type;
+		var->type = this->type;
 	}
 	return false;
 }
@@ -75,6 +76,7 @@ bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_store(analyser, type);
 		this->type = var->value->type;
+		var->type = this->type;
 	}
 	return false;
 }

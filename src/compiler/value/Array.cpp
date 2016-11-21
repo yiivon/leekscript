@@ -135,6 +135,9 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 }
 
 bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
+
+//	std::cout << "Array::will_store(" << type << ")" << std::endl;
+
 	Type added_type = type;
 	if (added_type.raw_type == RawType::ARRAY) {
 		added_type = added_type.getElementType();
