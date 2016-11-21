@@ -88,7 +88,8 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	test->gmp_obj_created += result.gmp_objects_created;
 	test->gmp_obj_deleted += result.gmp_objects_deleted;
 	test->total++;
-	time = round((float) result.execution_time / 1000) / 1000;
+	compilation_time = round((float) result.compilation_time / 1000) / 1000;
+	execution_time = round((float) result.execution_time / 1000) / 1000;
 
 	if (display_errors) {
 		for (const auto& error : result.syntaxical_errors) {
@@ -112,7 +113,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 void Test::Input::pass(std::string expected) {
 	std::cout << GREEN << "OK   " << END_COLOR << ": " << name()
 	<<  "  ===>  " << expected;
-	std::cout <<  GREY << " (" << this->time << " ms)" << END_COLOR;
+	std::cout <<  GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	test->success_count++;
 }
@@ -120,7 +121,7 @@ void Test::Input::pass(std::string expected) {
 void Test::Input::fail(std::string expected, std::string actual) {
 	std::cout << RED << "FAIL " << END_COLOR << ": " << name()
 	<< "  =/=>  " << expected << "  got  " << actual;
-	std::cout <<  GREY << " (" << this->time << " ms)" << END_COLOR;
+	std::cout <<  GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 }
 
