@@ -122,6 +122,9 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 }
 
 jit_type_t VM::get_jit_type(const Type& type) {
+	if (type.nature == Nature::VOID) {
+		return LS_VOID;
+	}
 	if (type.nature == Nature::POINTER) {
 		return LS_POINTER;
 	}

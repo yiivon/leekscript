@@ -32,12 +32,12 @@ void Test::test_system() {
 	code("let a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, "a");
 
 	section("print()");
-	code("System.print(true)").equals("null");
-	code("System.print(12)").equals("null");
-	code("System.print(123.456)").equals("null");
-	code("System.print(1234567123456)").equals("null");
-	code("System.print(12345671234561234567123456)").equals("null");
-	code("System.print('salut')").equals("null");
+	code("System.print(true)").equals("(void)");
+	code("System.print(12)").equals("(void)");
+	code("System.print(123.456)").equals("(void)");
+	code("System.print(1234567123456)").equals("(void)");
+	code("System.print(12345671234561234567123456)").equals("(void)");
+	code("System.print('salut')").equals("(void)");
 }
 
 long get_sec_time() {

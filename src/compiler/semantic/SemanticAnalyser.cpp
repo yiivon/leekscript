@@ -135,7 +135,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	program->main->type.setReturnType(Type::UNKNOWN);
 	program->main->body->analyse(this, Type::UNKNOWN);
 	if (program->main->type.return_types.size() > 1) { // the body contains return instruction
-		Type return_type = program->main->body->type == Type::VOID ? Type::UNKNOWN : program->main->body->type;
+		Type return_type = program->main->body->type;
 		for (size_t i = 1; i < program->main->type.return_types.size(); ++i) {
 			return_type = Type::get_compatible_type(return_type, program->main->type.return_types[i]);
 		}

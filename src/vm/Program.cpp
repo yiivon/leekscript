@@ -130,9 +130,18 @@ std::string Program::execute() {
 
 	Type output_type = main->type.getReturnType();
 
+	if (output_type == Type::VOID) {
+		auto fun = (void (*)()) closure;
+		fun();
+		if (VM::last_exception) throw VM::last_exception;
+		return "(void)";
+	}
+
 	if (output_type == Type::BOOLEAN) {
 		auto fun = (bool (*)()) closure;
-		return fun() ? "true" : "false";
+		bool res = fun();
+		if (VM::last_exception) throw VM::last_exception;
+		return res ? "true" : "false";
 	}
 
 	jit_exception_set_handler(&handler);

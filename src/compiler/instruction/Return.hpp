@@ -13,7 +13,7 @@ public:
 	Function* function;
 	bool in_function;
 
-	Return(Value*);
+	Return(Value* = nullptr);
 	virtual ~Return();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

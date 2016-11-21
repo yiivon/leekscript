@@ -64,7 +64,6 @@ jit_value_t While::compile(Compiler& c) const {
 	// end label:
 	jit_insn_label(c.F, &label_end);
 
-
 	return nullptr;
 }
 
