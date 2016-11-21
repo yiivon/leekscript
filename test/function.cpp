@@ -123,4 +123,7 @@ void Test::test_functions() {
 	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "(x) → {\n    x\n}");
 	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "f");
 	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "add");
+
+	section("Void functions");
+	code("(x -> System.print(x))(43)").equals("(void)");
 }
