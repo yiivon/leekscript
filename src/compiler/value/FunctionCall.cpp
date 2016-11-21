@@ -69,12 +69,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	function->analyse(analyser, Type::UNKNOWN);
 
-	if (function->type.raw_type != RawType::UNKNOWN and function->type.raw_type != RawType::FUNCTION
-		and function->type.raw_type != RawType::CLASS) {
-		std::ostringstream oss;
-		function->print(oss);
-		std::string content = oss.str();
-		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, function->line(), content});
+	if (function->type.raw_type != RawType::UNKNOWN and
+		function->type.raw_type != RawType::FUNCTION and
+		function->type.raw_type != RawType::CLASS) {
+		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE,
+			function->line(), function->to_string()});
 	}
 
 	int a = 0;
