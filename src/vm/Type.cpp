@@ -57,6 +57,9 @@ const Type Type::PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER);
 const Type Type::INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER);
 const Type Type::REAL_SET(RawType::SET, Nature::POINTER, Type::REAL);
 const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
+const Type Type::PTR_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::PTR_ARRAY);
+const Type Type::REAL_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL_ARRAY);
+const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INT_ARRAY);
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);

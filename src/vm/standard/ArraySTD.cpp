@@ -77,13 +77,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("chunk", {
-		{Type::PTR_ARRAY, Type::PTR_ARRAY, {}, (void*) array_chunk_1_ptr},
-		{Type::REAL_ARRAY, Type::REAL_ARRAY, {}, (void*) array_chunk_1_float},
-		{Type::INT_ARRAY, Type::INT_ARRAY, {}, (void*) array_chunk_1_int},
-
-		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_chunk},
-		{Type::REAL_ARRAY, Type::REAL_ARRAY, {Type::INTEGER}, (void*) &LSArray<double>::ls_chunk},
-		{Type::INT_ARRAY, Type::INT_ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::ls_chunk},
+		{Type::PTR_ARRAY, Type::PTR_ARRAY_ARRAY, {}, (void*) array_chunk_1_ptr},
+		{Type::REAL_ARRAY, Type::REAL_ARRAY_ARRAY, {}, (void*) array_chunk_1_float},
+		{Type::INT_ARRAY, Type::INT_ARRAY_ARRAY, {}, (void*) array_chunk_1_int},
+		{Type::PTR_ARRAY, Type::PTR_ARRAY_ARRAY, {Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_chunk},
+		{Type::REAL_ARRAY, Type::REAL_ARRAY_ARRAY, {Type::INTEGER}, (void*) &LSArray<double>::ls_chunk},
+		{Type::INT_ARRAY, Type::INT_ARRAY_ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::ls_chunk},
     });
 
 	method("unique", {
