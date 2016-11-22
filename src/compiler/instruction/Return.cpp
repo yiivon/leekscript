@@ -44,7 +44,7 @@ void Return::analyse(SemanticAnalyser* analyser, const Type& ) {
 jit_value_t Return::compile(Compiler& c) const {
 
 	if (expression != nullptr) {
-		
+
 		jit_value_t v = expression->compile(c);
 
 		if (expression->type.must_manage_memory()) {

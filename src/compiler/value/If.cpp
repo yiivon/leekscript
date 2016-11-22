@@ -45,23 +45,24 @@ unsigned If::line() const {
 void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	condition->analyse(analyser, Type::UNKNOWN);
-	then->analyse(analyser, req_type);
+	then->analyse(analyser, Type::UNKNOWN);
 
 	if (elze != nullptr) {
 
-		if (then->type != Type::VOID) {
+		if (then->type != Type::VOID && req_type != Type::VOID) {
 			analyser->set_potential_return_type(then->type);
 		}
 
-		elze->analyse(analyser, req_type);
+		elze->analyse(analyser, Type::UNKNOWN);
 
-		if (elze->type != Type::VOID) {
+		if (elze->type != Type::VOID && req_type != Type::VOID) {
 			analyser->set_potential_return_type(elze->type);
 		}
 
-		if (req_type == Type::VOID) {
-			type = Type::VOID;
-		} else if (then->type == Type::VOID) { // then contains return instruction
+//		if (req_type == Type::VOID) {
+//			type = Type::VOID;
+//		} else
+		if (then->type == Type::VOID) { // then contains return instruction
 			type = elze->type;
 		} else if (elze->type == Type::VOID) { // elze contains return instruction
 			type = then->type;

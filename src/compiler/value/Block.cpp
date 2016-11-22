@@ -44,7 +44,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	type = Type::VOID;
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
-		if (i < instructions.size() - 1 || req_type.nature == Nature::VOID) {
+		if (i < instructions.size() - 1) {
 			instructions[i]->analyse(analyser, Type::VOID);
 		} else {
 			instructions[i]->analyse(analyser, req_type);
