@@ -42,7 +42,7 @@ std::string Value::tabs(int indent) {
 	return std::string(indent * 4, ' ');
 }
 
-std::string Value::to_string() {
+std::string Value::to_string() const {
 	std::ostringstream oss;
 	oss << this;
 	return oss.str();
