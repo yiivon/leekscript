@@ -182,6 +182,20 @@ void Test::test_numbers() {
 	code("Number.abs(['a', -15][1])").equals("15");
 
 	section("floor()");
+	section("Number.exp()");
+	code("Number.exp(0)").equals("1");
+	code("Number.exp(1)").almost(M_E);
+	code("Number.exp(4)").almost(54.598150033144236204);
+	code("Number.exp(4.89)").almost(132.953574051282743085);
+	code("Number.exp(-2.97)").almost(0.051303310331919108);
+	code("Number.exp(['a', 7.78][1])").almost(2392.274820537377763685);
+	code("0.exp()").equals("1");
+	code("1.exp()").almost(M_E);
+	code("7.exp()").almost(1096.633158428458500566);
+	code("(-7).exp()").almost(0.000911881965554516);
+	code("(-3.33).exp()").almost(0.035793105067655297);
+	code("Number.e ** 5").almost(148.413159102576571513);
+
 	code("Number.floor(5.9)").equals("5");
 	code("var a = 5 Number.floor(a)").equals("5");
 	code("var a = 5.4 Number.floor(a)").equals("5");

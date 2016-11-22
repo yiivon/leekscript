@@ -29,15 +29,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_exp(LSNumber* x) {
-	double r = exp(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x->value;
-	}
-	return r;
-}
-
 double number_hypot(LSNumber* x, LSNumber* y) {
 	double r = hypot(x->value, y->value);
 	if (x->refs == 0) delete x;
@@ -249,13 +240,14 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cos_ptr},
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cos_real, Method::NATIVE}
 	});
-	method("exp", Type::NUMBER, Type::REAL, {}, (void*) &number_exp);
-
+	method("exp", {
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::exp_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::exp_real, Method::NATIVE}
+	});
 	method("floor", {
 		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr},
 		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_real, Method::NATIVE}
 	});
-
 	method("hypot", Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_hypot);
 	method("log", Type::NUMBER, Type::REAL, {}, (void*) &number_log);
 	method("log10", Type::NUMBER, Type::REAL, {}, (void*) &number_log10);
@@ -344,9 +336,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cos_ptr},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cos_real, Method::NATIVE},
 	});
-
-	static_method("exp", Type::REAL, {Type::NUMBER}, (void*) &number_exp);
-
+	static_method("exp", {
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::exp_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::exp_real, Method::NATIVE},
+	});
 	static_method("floor", {
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::floor_ptr},
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::floor_real, Method::NATIVE},
@@ -846,6 +839,15 @@ jit_value_t NumberSTD::char_int(Compiler& c, vector<jit_value_t> args) {
 		u8_toutf8(dest, 5, &n, 1);
 		return new LSString(dest);
 	});
+}
+
+double NumberSTD::exp_ptr(LSNumber* x) {
+	double a = exp(x->value);
+	LSValue::delete_temporary(x);
+	return a;
+}
+jit_value_t NumberSTD::exp_real(Compiler& c, std::vector<jit_value_t> args) {
+	return jit_insn_exp(c.F, args[0]);
 }
 
 int NumberSTD::floor_ptr(LSNumber* x) {

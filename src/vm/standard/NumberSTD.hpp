@@ -96,6 +96,9 @@ public:
 	static jit_value_t char_real(Compiler&, std::vector<jit_value_t>);
 	static jit_value_t char_int(Compiler&, std::vector<jit_value_t>);
 
+	static double exp_ptr(LSNumber* x);
+	static jit_value_t exp_real(Compiler&, std::vector<jit_value_t>);
+
 	static int floor_ptr(LSNumber* x);
 	static jit_value_t floor_real(Compiler&, std::vector<jit_value_t>);
 	static jit_value_t floor_int(Compiler&, std::vector<jit_value_t>);
