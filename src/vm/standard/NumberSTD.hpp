@@ -144,6 +144,10 @@ public:
 
 	static jit_value_t is_prime(Compiler&, std::vector<jit_value_t>);
 	static jit_value_t is_prime_tmp(Compiler&, std::vector<jit_value_t>);
+	template<typename T>
+	static bool is_prime_number(T n);
+	static jit_value_t is_prime_int(Compiler&, std::vector<jit_value_t>);
+	static jit_value_t is_prime_long(Compiler&, std::vector<jit_value_t>);
 };
 
 }

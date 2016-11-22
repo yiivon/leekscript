@@ -288,6 +288,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("isPrime", {
 		{Type::GMP_INT, Type::INTEGER, {}, (void*) &NumberSTD::is_prime, Method::NATIVE},
 		{Type::GMP_INT_TMP, Type::INTEGER, {}, (void*) &NumberSTD::is_prime_tmp, Method::NATIVE},
+		{Type::LONG, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_long, Method::NATIVE},
+		{Type::INTEGER, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_int, Method::NATIVE}
 	});
 
 	/*
@@ -325,13 +327,11 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::ceil_real, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int, Method::NATIVE}
 	});
-
 	static_method("char", {
 		{Type::STRING, {Type::POINTER}, (void*) &NumberSTD::char_ptr},
 		{Type::STRING, {Type::REAL}, (void*) &NumberSTD::char_real, Method::NATIVE},
 		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int, Method::NATIVE}
 	});
-
 	static_method("cos", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cos_ptr},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cos_real, Method::NATIVE},
@@ -345,7 +345,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::floor_real, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int, Method::NATIVE},
 	});
-
 	static_method("hypot", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_hypot);
 	static_method("log", Type::REAL, {Type::NUMBER}, (void*) &number_log);
 	static_method("log10", Type::REAL, {Type::NUMBER}, (void*) &number_log10);
@@ -359,7 +358,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE}
 	});
-
 	static_method("min", {
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::min_ptr_float},
@@ -369,7 +367,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE}
 	});
-
 	static_method("pow", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_pow);
 	static_method("rand", Type::REAL, {}, (void*) &number_rand);
 	static_method("randFloat", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat);
@@ -1000,18 +997,34 @@ jit_value_t NumberSTD::pow_int(Compiler& c, std::vector<jit_value_t> args) {
 }
 
 jit_value_t NumberSTD::is_prime(Compiler& c, std::vector<jit_value_t> args) {
-
 	jit_value_t v_addr = jit_insn_address_of(c.F, args[0]);
 	jit_value_t reps = LS_CREATE_INTEGER(c.F, 15);
 	return VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {v_addr, reps}, &mpz_probab_prime_p);
 }
 jit_value_t NumberSTD::is_prime_tmp(Compiler& c, std::vector<jit_value_t> args) {
-
 	jit_value_t v_addr = jit_insn_address_of(c.F, args[0]);
 	jit_value_t reps = LS_CREATE_INTEGER(c.F, 15);
 	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {v_addr, reps}, &mpz_probab_prime_p);
 	VM::delete_gmp_int(c.F, args[0]);
 	return res;
+}
+template<typename T>
+bool NumberSTD::is_prime_number(T n) {
+	if (((!(n & 1)) and n != 2) or (n < 2) || (n % 3 == 0 and n != 3)) {
+		return false;
+	}
+	for (T k = 1; 36 * k * k - 12 * k < n; ++k) {
+		if ((n % (6 * k + 1) == 0) or (n % (6 * k - 1) == 0)) {
+			return false;
+		}
+	}
+	return true;
+}
+jit_value_t NumberSTD::is_prime_int(Compiler& c, std::vector<jit_value_t> args) {
+	return VM::call(c.F, LS_BOOLEAN, {LS_INTEGER}, args, (void*) &NumberSTD::is_prime_number<int>);
+}
+jit_value_t NumberSTD::is_prime_long(Compiler& c, std::vector<jit_value_t> args) {
+	return VM::call(c.F, LS_BOOLEAN, {LS_LONG}, args, (void*) &NumberSTD::is_prime_number<long>);
 }
 
 }
