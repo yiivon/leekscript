@@ -22,6 +22,11 @@ void Test::test_files() {
 	file("test/code/euler/pe007.leek").equals("104743");
 	file("test/code/euler/pe008.leek").equals("23514624000");
 	file("test/code/euler/pe009.leek").equals("31875000");
-	file("test/code/euler/pe010.leek").equals("142913680098");
+	file("test/code/euler/pe010.leek").equals("142913828922");
+	file("test/code/euler/pe011.leek").equals("70600674");
+	file("test/code/euler/pe012.leek").equals("76576500");
+	file("test/code/euler/pe013.leek").equals("5537376230");
+	file("test/code/euler/pe014.leek").equals("837799");
+	file("test/code/euler/pe015.leek").equals("137846528820");
 	file("test/code/euler/pe062.leek").equals("127035954683");
 }
