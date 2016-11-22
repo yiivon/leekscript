@@ -32,7 +32,17 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::REAL_ARRAY, Type::REAL, Type::BOOLEAN, (void*) &LSArray<double>::in},
 		{Type::INT_ARRAY, Type::INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in}
 	});
-
+/*
+	Type tilde_tilde_fun_type = Type::FUNCTION_P;
+	tilde_tilde_fun_type.setArgumentType(0, Type::T);
+	tilde_tilde_fun_type.setReturnType(Type::POINTER);
+	operator_("~~", {
+		{Type::T_ARRAY, tilde_tilde_fun_type, Type::PTR_ARRAY, (void*) &LSArray<LSValue*>::ls_map}
+	});
+*/
+	/*
+	 * Methods
+	 */
 	method("average", {
 		{Type::PTR_ARRAY, Type::REAL, {}, (void*) &LSArray<LSValue*>::ls_average},
 		{Type::REAL_ARRAY, Type::REAL, {}, (void*) &LSArray<double>::ls_average},
