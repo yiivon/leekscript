@@ -20,7 +20,7 @@
 #define LS_INTEGER jit_type_int
 #define LS_LONG jit_type_long
 #define LS_REAL jit_type_float64
-#define LS_BOOLEAN LS_INTEGER
+#define LS_BOOLEAN jit_type_sys_bool
 #define LS_POINTER jit_type_void_ptr
 #define LS_STRING LS_POINTER
 #define LS_NUMBER LS_POINTER
