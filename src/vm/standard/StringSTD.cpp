@@ -31,7 +31,19 @@ int string_begin_code(const LSString*);
 int string_code(const LSString*, int pos);
 long string_number(const LSString*);
 
+LSString* plus_gmp(LSString* s, __mpz_struct mpz) {
+	char buff[1000];
+	mpz_get_str(buff, 10, &mpz);
+	LSString* res = new LSString(*s + buff);
+	LSValue::delete_temporary(s);
+	return res;
+}
+
 StringSTD::StringSTD() : Module("String") {
+
+	operator_("+", {
+		{Type::STRING, Type::GMP_INT, Type::STRING, (void*) &plus_gmp}
+	});
 
 	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER}, (void*) &LSString::charAt);
 	method("contains", Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_contains);
