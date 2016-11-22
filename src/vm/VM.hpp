@@ -40,13 +40,6 @@ class LSValue;
 class LexicalError;
 class Compiler;
 
-class vm_operation_exception : public std::exception {
-public:
-	virtual const char* what() const throw (){
-	   return "too much operations!";
-	}
-};
-
 class VM {
 public:
 

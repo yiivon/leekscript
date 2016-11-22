@@ -294,10 +294,6 @@ void VM::delete_temporary(jit_function_t F, jit_value_t obj) {
 	jit_insn_call_native(F, "delete_temporary", (void*) &LSValue::delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
-void VM_operation_exception() {
-	throw vm_operation_exception();
-}
-
 void VM::inc_ops(jit_function_t F, int amount) {
 	jit_value_t amount_jit = LS_CREATE_INTEGER(F, amount);
 	inc_ops_jit(F, amount_jit);
