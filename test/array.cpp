@@ -3,7 +3,6 @@
 void Test::test_arrays() {
 
 	header("Arrays");
-
 	code("[]").equals("[]");
 	code("[1]").equals("[1]");
 	code("[1, 2, 3]").equals("[1, 2, 3]");
@@ -41,34 +40,32 @@ void Test::test_arrays() {
 	code("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }").equals("'ok'");
 	code("let a = [5, 'yolo', 12] a[1]").equals("'yolo'");
 
-	// No commas
+	section("No commas");
 	code("[1 2 3]").equals("[1, 2, 3]");
 	code("['yo' 'ya' 'yu']").equals("['yo', 'ya', 'yu']");
 	code("[true false true true]").equals("[true, false, true, true]");
+	code("[[1 2] [[3] 4 [5 6] []]]").equals("[[1, 2], [[3], 4, [5, 6], []]]");
 
-	// Type changes
+	section("Type changes");
 	code("let a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
 	code("let a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");
 	code("let a = [1.5] a += false a").equals("[1.5, false]");
 	code("let a = [1] a += <'z', 'a'> a").equals("[1, 'a', 'z']");
 	code("let a = [1] a += 'a' a").equals("[1, 'a']");
 
-	// Comparison
+	section("Array.operator <");
 	code("[1, 2, 3, 4] < [1, 2, 3, 5]").equals("true");
 	code("[1, 2, 4, 4] < [1, 2, 3, 5]").equals("false");
 	code("[1, 2, 3, 4.1] < [1, 2, 3, 5.1]").equals("true");
 	code("[1, 2, 4, 4.1] < [1, 2, 3, 5.1]").equals("false");
-	code("['1','2','3','4'] < ['1','2','3','5']").equals("true");
-	code("['1','2','4','4'] < ['1','2','3','5']").equals("false");
-	code("[1,2,3,4] < [1,2,3,5.1]").equals("true");
-	code("[1,2,4,4.1] < [1,2,3,5]").equals("false");
-	code("[1,2,'3'] < [1,2,3]").equals("false");
-	code("[1,1,'3'] < [1,2,3]").equals("true");
+	code("['1', '2', '3', '4'] < ['1', '2', '3', '5']").equals("true");
+	code("['1', '2', '4', '4'] < ['1', '2', '3', '5']").equals("false");
+	code("[1, 2, 3, 4] < [1, 2, 3, 5.1]").equals("true");
+	code("[1, 2, 4, 4.1] < [1, 2, 3, 5]").equals("false");
+	code("[1, 2, '3'] < [1, 2, 3]").equals("false");
+	code("[1, 1, '3'] < [1, 2, 3]").equals("true");
 
-	/*
-	 * Array operations
-	 */
-	header("Array operations");
+	section("Array operations");
 	code("[1, 2, 3, 4, 5] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25]");
 	code("[1.5, 2.5, 3.5] ~~ x -> x.floor()").equals("[1, 2, 3]");
 	code("[1, 2, 3, 4, 5] ~~ (x -> x ** 2)").equals("[1, 4, 9, 16, 25]");
@@ -89,11 +86,6 @@ void Test::test_arrays() {
 	code("[1, 2.5] == [1, 2.5]").equals("true");
 
 //	let f=x->x[0]; [f([1]), f([0..3])]
-
-	/*
-	 * Array standard library
-	 */
-	header("Array standard library");
 
 	section("Constructor");
 	code("Array").equals("<class Array>");
