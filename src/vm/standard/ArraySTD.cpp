@@ -213,6 +213,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::POINTER, {}, (void*) &LSArray<int>::ls_pop}
 	});
 
+	method("product", {
+		{Type::REAL_ARRAY, Type::REAL, {}, (void*) &LSArray<double>::ls_product},
+		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_product}
+	});
+
 	method("push", {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::POINTER}, (void*) &LSArray<LSValue*>::ls_push},
 		{Type::REAL_ARRAY, Type::REAL_ARRAY, {Type::REAL}, (void*) &LSArray<double>::ls_push},
