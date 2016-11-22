@@ -34,7 +34,7 @@ void Test::test_arrays() {
 	code("let a = [] !a").equals("true");
 	code("let a = [1, 2, 3] a[1] = 12 a").equals("[1, 12, 3]");
 	code("[1.2, 321.42, 23.15]").equals("[1.2, 321.42, 23.15]");
-	code("[1, 2, 3, 4, 5][1:3]").equals("[2, 3]");
+	code("[1, 2, 3, 4, 5][1:3]").equals("[2, 3, 4]");
 	code("2 in [1, 2, 3]").equals("true");
 	code("4 in [1, 2, 3]").equals("false");
 	code("'yo' in ['ya', 'yu', 'yo']").equals("true");
@@ -208,10 +208,10 @@ void Test::test_arrays() {
 	code("[null].search(null, 0)").equals("0");
 
 	section("Array.subArray()");
-	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 3, 5)").equals("[10, true]");
+	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 3, 5)").equals("[10, true, 'yo']");
 	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 3, 1)").equals("[]");
 	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 0, 100)").equals("[1, 2, 3, 10, true, 'yo', null]");
-	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 1, 1)").equals("[]");
+	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 1, 1)").equals("[2]");
 
 	section("Array.pop()");
 	code("[].pop()").equals("null");
@@ -268,6 +268,12 @@ void Test::test_arrays() {
 	code("let a = [10, ''] a[0]--").equals("9");
 	code("let v = 10 [v++, '']").equals("[10, '']");
 	code("let v = 90 [v--, '']").equals("[90, '']");
+
+	section("Range access");
+	code("[1 2 3 4 5 6 7 8][0:0]").equals("[1]");
+	code("[1 2 3 4 5 6 7 8][0:1]").equals("[1, 2]");
+	code("[1 2 3 4 5 6 7 8][3:5]").equals("[4, 5, 6]");
+	// TODO add more
 
 	/*
 	code("3 ~ x -> x ^ x").equals("27");

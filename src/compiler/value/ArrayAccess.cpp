@@ -79,7 +79,6 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			std::string k = "<key 2>";
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
 		}
-
 		type = array->type;
 
 	} else if (array->type.raw_type == RawType::ARRAY or array->type.raw_type == RawType::STRING
@@ -95,6 +94,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		} else {
 			key->analyse(analyser, Type::POINTER);
 		}
+
 	} else if (array->type.raw_type == RawType::MAP) {
 
 		if (map_key_type == Type::INTEGER) {
