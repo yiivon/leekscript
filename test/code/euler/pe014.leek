@@ -2,13 +2,13 @@ function sequence_length(n) {
 	var l = 1
 	while n != 1 {
 		l++
-		n = if (n % 2) {
+		n = if (n % 2) { // TODO replace with a match (doesn't work)
 			3 * n + 1
 		} else {
 			n \ 2
 		}
 	}
-	l
+	l // TODO return l fails
 }
 
 var max = 0

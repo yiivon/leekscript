@@ -21,7 +21,10 @@ let grid = [08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
 
 var max = 0
 
-for var j = 0; j < grid.size(); ++j {
+// TODO in future use advanced array range operators to select
+// diagonally or backwards
+
+for var j = 0; j < grid.size(); ++j { // TODO use |grid| instead of grid.size()
 	for var i = 0; i < grid.size() - 3; ++i {
 
 		// horizontal
