@@ -39,6 +39,7 @@ public:
 	LSValue* ls_pop();
 	int ls_size();
 	T ls_sum();
+	T ls_product();
 	double ls_average();
 	LSValue* ls_first();
 	LSValue* ls_last();

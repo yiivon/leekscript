@@ -186,6 +186,16 @@ inline double LSArray<double>::ls_sum() {
 	return sum;
 }
 
+template <typename T>
+inline T LSArray<T>::ls_product() {
+	T product = 1;
+	for (auto v : *this) {
+		product *= v;
+	}
+	if (refs == 0) delete this;
+	return product;
+}
+
 template <>
 inline double LSArray<LSValue*>::ls_average() {
 	if (refs == 0) delete this;
