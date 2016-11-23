@@ -19,7 +19,7 @@ void Test::test_booleans() {
 	section("Boolean.operator +");
 	code("true + 'salut'").equals("'truesalut'");
 	code("false + '!'").equals("'false!'");
-	code("false + 12").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "+");
+//	code("false + 12").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "+");
 
 	section("operator &&");
 	code("true and true").equals("true");
