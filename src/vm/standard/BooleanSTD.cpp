@@ -1,5 +1,6 @@
 #include "BooleanSTD.hpp"
 #include "../value/LSBoolean.hpp"
+#include "../value/LSString.hpp"
 
 namespace ls {
 
@@ -9,6 +10,11 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::BOOLEAN, Type::STRING, Type::STRING_TMP, (void*) &BooleanSTD::add},
 		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp}
 	});
+	operator_("and", {
+		{Type::BOOLEAN, Type::BOOLEAN, Type::BOOLEAN, (void*) &BooleanSTD::and_bool, Method::NATIVE},
+		{Type::BOOLEAN, Type::UNKNOWN, Type::BOOLEAN, (void*) &BooleanSTD::and_value, Method::NATIVE}
+	});
+
 	static_method("compare", {
 		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
 		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
@@ -32,6 +38,13 @@ LSString* BooleanSTD::add_tmp(int boolean, LSString* string) {
 	return string;
 }
 
+Compiler::value BooleanSTD::and_bool(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_and(args[0], args[1]);
+}
+
+Compiler::value BooleanSTD::and_value(Compiler& c, std::vector<Compiler::value> args) {
+	std::cout << "and_value" << std::endl;
+	return c.insn_and(args[0], c.insn_to_bool(args[1]));
 }
 
 int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
