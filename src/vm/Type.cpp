@@ -42,6 +42,7 @@ const Type Type::REAL(RawType::REAL, Nature::VALUE);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::STRING_TMP(RawType::STRING, Nature::POINTER, false, true);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
+const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
 const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL);
