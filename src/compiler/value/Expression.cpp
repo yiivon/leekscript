@@ -117,40 +117,44 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	v1->analyse(analyser, Type::UNKNOWN);
 	v2->analyse(analyser, Type::UNKNOWN);
 
-	Type obj_type = op->reversed ? v2->type : v1->type;
+	this->v1_type = op->reversed ? v2->type : v1->type;
+	this->v2_type = op->reversed ? v1->type : v2->type;
 
-	LSClass* object_class = (LSClass*) analyser->program->system_vars[obj_type.clazz];
+	LSClass* object_class = (LSClass*) analyser->program->system_vars[this->v1_type.clazz];
+	LSClass::Operator* m = nullptr;
+
 	if (object_class) {
-
-		this->v1_type = op->reversed ? v2->type : v1->type;
-		this->v2_type = op->reversed ? v1->type : v2->type;
-
-		LSClass::Operator* m = object_class->getOperator(op->character, this->v1_type, this->v2_type);
-
-		if (m != nullptr) {
-
-			//std::cout << "Operator " << v1->type << " " << op->character << " " << v2->type << " found!" << std::endl;
-
-			operator_fun = m->addr;
-			is_native_method = m->native;
-			this->v1_type = op->reversed ? m->operand_type : m->object_type;
-			this->v2_type = op->reversed ? m->object_type : m->operand_type;
-			return_type = m->return_type;
-			type = return_type;
-			if (v1->type != this->v1_type) {
-				v1->analyse(analyser, this->v1_type);
-			}
-			if (v2->type != this->v2_type) {
-				v2->analyse(analyser, this->v2_type);
-			}
-			if (req_type.nature == Nature::POINTER) {
-				type.nature = req_type.nature;
-			}
-
-			return;
-		} else {
-			//std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
+		// Search in the object class first
+		m = object_class->getOperator(op->character, this->v1_type, this->v2_type);
+		if (m == nullptr) {
+			// Search in the Value class if not found
+			auto value_class = (LSClass*) analyser->program->system_vars["Value"];
+			m = value_class->getOperator(op->character, this->v1_type, this->v2_type);
 		}
+	}
+
+	if (m != nullptr) {
+
+		//std::cout << "Operator " << v1->type << " " << op->character << " " << v2->type << " found!" << std::endl;
+
+		operator_fun = m->addr;
+		is_native_method = m->native;
+		this->v1_type = op->reversed ? m->operand_type : m->object_type;
+		this->v2_type = op->reversed ? m->object_type : m->operand_type;
+		return_type = m->return_type;
+		type = return_type;
+		if (v1->type != this->v1_type) {
+			v1->analyse(analyser, this->v1_type);
+		}
+		if (v2->type != this->v2_type) {
+			v2->analyse(analyser, this->v2_type);
+		}
+		if (req_type.nature == Nature::POINTER) {
+			type.nature = req_type.nature;
+		}
+		return;
+	} else {
+		//std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
 	}
 
 	/*

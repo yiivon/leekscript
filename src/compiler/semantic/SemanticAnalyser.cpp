@@ -3,6 +3,7 @@
 #include "../../compiler/instruction/ExpressionInstruction.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Context.hpp"
+#include "../../vm/standard/ValueSTD.hpp"
 #include "../../vm/standard/NullSTD.hpp"
 #include "../../vm/standard/NumberSTD.hpp"
 #include "../../vm/standard/BooleanSTD.hpp"
@@ -112,6 +113,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	}
 
 	// Include STD modules
+	ValueSTD().include(this, program);
 	NullSTD().include(this, program);
 	BooleanSTD().include(this, program);
 	NumberSTD().include(this, program);
