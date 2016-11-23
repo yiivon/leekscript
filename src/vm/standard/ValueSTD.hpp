@@ -13,6 +13,8 @@ public:
 	ValueSTD();
 
 	static bool instanceof_ptr(LSValue* x, LSClass* c);
+	static Compiler::value and_value_value(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value or_value_value(Compiler& c, std::vector<Compiler::value> args);
 };
 
 }

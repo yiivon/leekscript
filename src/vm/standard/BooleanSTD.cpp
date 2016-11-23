@@ -10,10 +10,6 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::BOOLEAN, Type::STRING, Type::STRING_TMP, (void*) &BooleanSTD::add},
 		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp}
 	});
-	operator_("and", {
-		{Type::BOOLEAN, Type::BOOLEAN, Type::BOOLEAN, (void*) &BooleanSTD::and_bool, Method::NATIVE},
-		{Type::BOOLEAN, Type::UNKNOWN, Type::BOOLEAN, (void*) &BooleanSTD::and_value, Method::NATIVE}
-	});
 
 	static_method("compare", {
 		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
@@ -24,6 +20,7 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::POINTER, Type::INTEGER, {Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
 		{Type::BOOLEAN, Type::INTEGER, {Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
 	});
+
 	method("json", {
 		{Type::POINTER, Type::STRING, {}, (void*) &LSValue::ls_json},
 		{Type::BOOLEAN, Type::STRING, {}, (void*) &BooleanSTD::json_val}
@@ -36,15 +33,6 @@ LSString* BooleanSTD::add(int boolean, LSString* string) {
 LSString* BooleanSTD::add_tmp(int boolean, LSString* string) {
 	(*string).insert(0, (boolean ? "true" : "false"));
 	return string;
-}
-
-Compiler::value BooleanSTD::and_bool(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_and(args[0], args[1]);
-}
-
-Compiler::value BooleanSTD::and_value(Compiler& c, std::vector<Compiler::value> args) {
-	std::cout << "and_value" << std::endl;
-	return c.insn_and(args[0], c.insn_to_bool(args[1]));
 }
 
 int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
