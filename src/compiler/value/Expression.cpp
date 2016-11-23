@@ -157,6 +157,12 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		//std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
 	}
 
+	// Don't use old stuff for boolean
+//	if (v1->type == Type::BOOLEAN) {
+//		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, v1->line(), op->character});
+//		return;
+//	}
+
 	/*
 	 * OLD
 	 */

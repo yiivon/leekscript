@@ -63,6 +63,7 @@ std::string SemanticError::type_to_string(Type type) {
 		case Type::INVALID_MAP_KEY: return "INVALID_MAP_KEY";
 		case Type::VALUE_MUST_BE_A_LVALUE: return "VALUE_MUST_BE_A_LVALUE";
 		case Type::WRONG_ARGUMENT_COUNT: return "WRONG_ARGUMENT_COUNT";
+		case Type::NO_SUCH_OPERATOR: return "NO_SUCH_OPERATOR";
 
 		default:
 			return "UNKNOWN_ERROR";
