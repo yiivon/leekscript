@@ -48,6 +48,7 @@ public:
 
 	// Operators wrapping
 	value insn_and(value, value) const;
+	value insn_or(value, value) const;
 	value insn_add(value, value) const;
 	value insn_eq(value, value) const;
 	value insn_lt(value, value) const;

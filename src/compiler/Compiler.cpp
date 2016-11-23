@@ -75,6 +75,9 @@ int Compiler::get_current_function_blocks() const {
 Compiler::value Compiler::insn_and(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_and(F, a.v, b.v), Type::BOOLEAN};
 }
+Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_or(F, a.v, b.v), Type::BOOLEAN};
+}
 Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_add(F, a.v, b.v), Type::INTEGER};
 }
