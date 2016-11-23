@@ -18,6 +18,12 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::POINTER, Type::INTEGER, {Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
 		{Type::BOOLEAN, Type::INTEGER, {Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
 	});
+	method("json", {
+		{Type::POINTER, Type::STRING, {}, (void*) &LSValue::ls_json},
+		{Type::BOOLEAN, Type::STRING, {}, (void*) &BooleanSTD::json_val}
+	});
+}
+
 LSString* BooleanSTD::add(int boolean, LSString* string) {
 	return new LSString((boolean ? "true" : "false") + *string);
 }
@@ -44,6 +50,9 @@ Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::v
 	return {jit_insn_cmpl(c.F, args[0].v, args[1].v), Type::INTEGER};
 }
 
+LSString* BooleanSTD::json_val(int boolean) {
+	std::cout << "boolean : " << boolean << std::endl;
+	return new LSString(boolean ? "true" : "false");
 }
 
 }
