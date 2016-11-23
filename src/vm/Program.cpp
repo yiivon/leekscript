@@ -259,7 +259,7 @@ void Program::compile_jit(Compiler& c, Context&, bool) {
 	}
 	*/
 
-	jit_value_t res = main->body->compile(c);
+	jit_value_t res = main->body->compile(c).v;
 	jit_insn_return(c.F, res);
 
 	/*

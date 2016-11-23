@@ -245,7 +245,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "Function call function type : " << type << endl;
 }
 
-jit_value_t FunctionCall::compile(Compiler& c) const {
+Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Standard library constructors : Array(), Number() */
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
@@ -253,52 +253,50 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 		if (vv->name == "Boolean") {
 			jit_value_t n = jit_value_create_nint_constant(c.F, LS_INTEGER, 0);
 			if (type.nature == Nature::POINTER) {
-				return VM::value_to_pointer(c.F, n, Type::BOOLEAN);
+				return {VM::value_to_pointer(c.F, n, Type::BOOLEAN), type};
 			}
-			return n;
+			return {n, type};
 		}
 		if (vv->name == "Number") {
 			jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
 			if (type.nature == Nature::POINTER) {
-				return VM::value_to_pointer(c.F, n, Type::INTEGER);
+				return {VM::value_to_pointer(c.F, n, Type::INTEGER), type};
 			}
-			return n;
+			return {n, type};
 		}
 		if (vv->name == "String") {
 			if (arguments.size() > 0) {
 				return arguments[0]->compile(c);
 			}
-			return LS_CREATE_POINTER(c.F, new LSString(""));
+			return {LS_CREATE_POINTER(c.F, new LSString("")), type};
 		}
 		if (vv->name == "Array") {
-			return LS_CREATE_POINTER(c.F, new LSArray<LSValue*>());
+			return {LS_CREATE_POINTER(c.F, new LSArray<LSValue*>()), type};
 		}
 		if (vv->name == "Object") {
-			return LS_CREATE_POINTER(c.F, new LSObject());
+			return {LS_CREATE_POINTER(c.F, new LSObject()), type};
 		}
 	}
 
 	/** Standard function call on object : "hello".size() */
 	if (this_ptr != nullptr) {
 
-		vector<jit_value_t> args = { this_ptr->compile(c) };
-		vector<jit_type_t> arg_types = { VM::get_jit_type(this_ptr->type) };
+		vector<Compiler::value> args = { this_ptr->compile(c) };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments[i]->compile(c));
-			arg_types.push_back(VM::get_jit_type(arguments[i]->type));
 		}
 
-		jit_value_t res;
+		Compiler::value res;
 		if (is_native_method) {
-			auto fun = (jit_value_t (*)(Compiler&, vector<jit_value_t>)) std_func;
+			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);
 		} else {
-			auto fun = (void* (*)()) std_func;
-			res = VM::call(c.F, VM::get_jit_type(type), arg_types, args, fun);
+			auto fun = (void*) std_func;
+			res = c.insn_call(type, args, fun);
 		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(c.F, res, type);
+			return {VM::value_to_pointer(c.F, res.v, type), type};
 		}
 		return res;
 	}
@@ -306,24 +304,22 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	/** Static standard function call : Number.char(65) */
 	if (std_func != nullptr) {
 
-		vector<jit_value_t> args;
-		vector<jit_type_t> arg_types;
+		vector<Compiler::value> args;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments[i]->compile(c));
-			arg_types.push_back(VM::get_jit_type(arguments[i]->type));
 		}
 
-		jit_value_t res;
+		Compiler::value res;
 		if (is_native_method) {
-			auto fun = (jit_value_t (*)(Compiler&, vector<jit_value_t>)) std_func;
+			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);
 		} else {
-			auto fun = (void* (*)()) std_func;
-			res = VM::call(c.F, VM::get_jit_type(type), arg_types, args, fun);
+			auto fun = (void*) std_func;
+			res = c.insn_call(type, args, fun);
 		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-			return VM::value_to_pointer(c.F, res, type);
+			return {VM::value_to_pointer(c.F, res.v, type), type};
 		}
 		return res;
 	}
@@ -350,14 +346,14 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 				jit_func = &jit_insn_rem;
 			}
 			if (jit_func != nullptr) {
-				jit_value_t v0 = arguments[0]->compile(c);
-				jit_value_t v1 = arguments[1]->compile(c);
-				jit_value_t ret = jit_func(c.F, v0, v1);
+				auto v0 = arguments[0]->compile(c);
+				auto v1 = arguments[1]->compile(c);
+				jit_value_t ret = jit_func(c.F, v0.v, v1.v);
 
 				if (type.nature == Nature::POINTER) {
-					return VM::value_to_pointer(c.F, ret, type);
+					return {VM::value_to_pointer(c.F, ret, type), type};
 				}
-				return ret;
+				return {ret, type};
 			}
 		}
 	}
@@ -367,10 +363,10 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	jit_value_t ls_fun_addr = LS_CREATE_POINTER(c.F, nullptr);
 
 	if (function->type.nature == Nature::POINTER) {
-		ls_fun_addr = function->compile(c);
+		ls_fun_addr = function->compile(c).v;
 		fun = jit_insn_load_relative(c.F, ls_fun_addr, 16, LS_POINTER);
 	} else {
-		fun = function->compile(c);
+		fun = function->compile(c).v;
 	}
 
 	/** Arguments */
@@ -384,7 +380,7 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 
 	for (int i = 0; i < arg_count - 1; ++i) {
 
-		args.push_back(arguments[i]->compile(c));
+		args.push_back(arguments[i]->compile(c).v);
 		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 
 		if (function->type.getArgumentType(i).must_manage_memory()) {
@@ -421,9 +417,9 @@ jit_value_t FunctionCall::compile(Compiler& c) const {
 	VM::inc_ops(c.F, 1);
 
 	if (return_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-		return VM::value_to_pointer(c.F, ret, type);
+		return {VM::value_to_pointer(c.F, ret, type), type};
 	}
-	return ret;
+	return {ret, type};
 }
 
 }

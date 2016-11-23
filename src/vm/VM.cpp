@@ -336,10 +336,6 @@ void VM::print_gmp_int(jit_function_t F, jit_value_t val) {
 	jit_insn_call_native(F, "print_gmp_int", (void*) VM_print_gmp_int, sig, &val, 1, JIT_CALL_NOTHROW);
 }
 
-jit_value_t VM::get_null(jit_function_t F) {
-	return LS_CREATE_POINTER(F, LSNull::get());
-}
-
 LSObject* VM_create_object() {
 	return new LSObject();
 }

@@ -208,6 +208,7 @@ public:
 	static const Type UNKNOWN;
 	static const Type NULLL;
 	static const Type BOOLEAN;
+	static const Type BOOLEAN_P;
 	static const Type NUMBER;
 	static const Type INTEGER;
 	static const Type GMP_INT;

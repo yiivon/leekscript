@@ -201,7 +201,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 	}
 }
 
-jit_value_t Function::compile(Compiler& c) const {
+Compiler::value Function::compile(Compiler& c) const {
 
 //	cout << "Function::compile : " << type << endl;
 
@@ -229,10 +229,10 @@ jit_value_t Function::compile(Compiler& c) const {
 	c.enter_function(function);
 
 	// Execute function
-	jit_value_t res = body->compile(c);
+	auto res = body->compile(c);
 
 	// Return
-	jit_insn_return(function, res);
+	jit_insn_return(function, res.v);
 
 	jit_insn_rethrow_unhandled(function);
 
@@ -269,9 +269,9 @@ jit_value_t Function::compile(Compiler& c) const {
 			}
 			VM::function_add_capture(c.F, jit_fun, jit_cap);
 		}
-		return jit_fun;
+		return {jit_fun, type};
 	} else {
-		return LS_CREATE_POINTER(c.F, f);
+		return {LS_CREATE_POINTER(c.F, f), type};
 	}
 }
 

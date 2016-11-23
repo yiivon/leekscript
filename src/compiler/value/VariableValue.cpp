@@ -102,14 +102,14 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 
 extern map<string, jit_value_t> internals;
 
-jit_value_t VariableValue::compile(Compiler& c) const {
+Compiler::value VariableValue::compile(Compiler& c) const {
 
 //	cout << "compile vv " << name->content << " : " << type << endl;
 //	cout << "req type : " << req_type << endl;
 
 	if (scope == VarScope::CAPTURE) {
 		jit_value_t fun = jit_value_get_param(c.F, 0); // function pointer
-		return VM::function_get_capture(c.F, fun, capture_index);
+		return {VM::function_get_capture(c.F, fun, capture_index), type};
 	}
 
 	jit_value_t v;
@@ -128,15 +128,15 @@ jit_value_t VariableValue::compile(Compiler& c) const {
 	}
 
 	if (var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-		return VM::value_to_pointer(c.F, v, var->type);
+		return {VM::value_to_pointer(c.F, v, var->type), type};
 	}
 	if (var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
-		return VM::int_to_real(c.F, v);
+		return {VM::int_to_real(c.F, v), type};
 	}
-	return v;
+	return {v, type};
 }
 
-jit_value_t VariableValue::compile_l(Compiler& c) const {
+Compiler::value VariableValue::compile_l(Compiler& c) const {
 	return compile(c);
 }
 

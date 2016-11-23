@@ -46,7 +46,7 @@ public:
 
 	void update_function_args(SemanticAnalyser*);
 
-	virtual jit_value_t compile(Compiler&) const override;
+	virtual Compiler::value compile(Compiler&) const override;
 };
 
 }

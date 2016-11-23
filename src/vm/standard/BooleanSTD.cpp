@@ -23,8 +23,8 @@ int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
 	return res;
 }
 
-jit_value_t BooleanSTD::compare_val_val(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_cmpl(c.F, args[0], args[1]);
+Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_cmpl(c.F, args[0].v, args[1].v), Type::INTEGER};
 }
 
 }

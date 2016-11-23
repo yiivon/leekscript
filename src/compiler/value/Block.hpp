@@ -21,7 +21,7 @@ public:
 
 	virtual void analyse(SemanticAnalyser* analyser, const Type& req_type) override;
 
-	jit_value_t compile(Compiler&) const;
+	Compiler::value compile(Compiler&) const;
 
 };
 

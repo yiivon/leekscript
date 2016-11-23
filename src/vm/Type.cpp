@@ -32,6 +32,7 @@ const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
 
 const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
+const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
 const Type Type::NUMBER(RawType::NUMBER, Nature::POINTER);
 const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
 const Type Type::GMP_INT(RawType::GMP_INT, Nature::VALUE);

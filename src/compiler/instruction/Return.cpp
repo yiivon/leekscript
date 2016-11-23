@@ -41,24 +41,24 @@ void Return::analyse(SemanticAnalyser* analyser, const Type& ) {
 	type = Type::VOID;
 }
 
-jit_value_t Return::compile(Compiler& c) const {
+Compiler::value Return::compile(Compiler& c) const {
 
 	if (expression != nullptr) {
 
-		jit_value_t v = expression->compile(c);
+		auto v = expression->compile(c);
 
 		if (expression->type.must_manage_memory()) {
-			jit_value_t r = VM::move_obj(c.F, v);
+			jit_value_t r = VM::move_obj(c.F, v.v);
 			c.delete_variables_block(c.F, c.get_current_function_blocks());
 			jit_insn_return(c.F, r);
 		} else {
 			c.delete_variables_block(c.F, c.get_current_function_blocks());
-			jit_insn_return(c.F, v);
+			jit_insn_return(c.F, v.v);
 		}
 	}
 
 	jit_insn_return(c.F, LS_CREATE_INTEGER(c.F, 0));
-	return nullptr;
+	return {nullptr, Type::UNKNOWN};
 }
 
 }

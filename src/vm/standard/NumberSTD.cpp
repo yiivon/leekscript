@@ -398,121 +398,118 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
 }
 
-jit_value_t NumberSTD::store_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, LS_VOID, {LS_POINTER, LS_POINTER}, {a, b}, &mpz_set);
+Compiler::value NumberSTD::store_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a = c.insn_address_of(args[0]);
+	auto b = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID,{a, b}, &mpz_set);
 	return args[0];
 }
 
-jit_value_t NumberSTD::store_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	VM::delete_gmp_int(c.F, args[0]);
-	jit_insn_store(c.F, args[0], args[1]);
+Compiler::value NumberSTD::store_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	VM::delete_gmp_int(c.F, args[0].v);
+	jit_insn_store(c.F, args[0].v, args[1].v);
 	return args[1];
 }
 
-jit_value_t NumberSTD::add_real_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_add(c.F, args[0], args[1]);
+Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_add(args[0], args[1]);
 }
 
-jit_value_t NumberSTD::add_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t r = VM::create_gmp_int(c.F);
-	jit_value_t r_addr = jit_insn_address_of(c.F, r);
-	jit_value_t a = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {r_addr, a, b}, &mpz_add);
+Compiler::value NumberSTD::add_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto r = c.new_mpz();
+	auto r_addr = c.insn_address_of(r);
+	auto a = c.insn_address_of(args[0]);
+	auto b = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_add);
 	return r;
 }
 
-jit_value_t NumberSTD::add_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, VM::gmp_int_type}, args,
-	+[](__mpz_struct a, __mpz_struct b) {
+Compiler::value NumberSTD::add_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::GMP_INT, args,	+[](__mpz_struct a, __mpz_struct b) {
 		mpz_add(&b, &a, &b);
 		return b;
 	});
 }
 
-jit_value_t NumberSTD::add_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {a_addr, a_addr, b_addr}, &mpz_add);
+Compiler::value NumberSTD::add_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
 	return args[0];
 }
 
-jit_value_t NumberSTD::add_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {a_addr, a_addr, b_addr}, &mpz_add);
-	VM::delete_gmp_int(c.F, args[1]);
+Compiler::value NumberSTD::add_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
+	VM::delete_gmp_int(c.F, args[1].v);
 	return args[0];
 }
 
-jit_value_t NumberSTD::add_eq_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, LS_VOID, {LS_POINTER, LS_POINTER, LS_POINTER}, {a_addr, a_addr, b_addr}, &mpz_add);
+Compiler::value NumberSTD::add_eq_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
 	return args[0];
 }
 
-jit_value_t NumberSTD::sub_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, VM::gmp_int_type}, args,
-	+[](__mpz_struct a, __mpz_struct b) {
+Compiler::value NumberSTD::sub_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::GMP_INT, args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t res;
 		mpz_init(res);
 		mpz_sub(res, &a, &b);
 		return *res;
 	});
 }
-jit_value_t NumberSTD::sub_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, VM::gmp_int_type}, args,
-	+[](__mpz_struct a, __mpz_struct b) {
+Compiler::value NumberSTD::sub_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::GMP_INT, args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_sub(&b, &a, &b);
 		return b;
 	});
 }
 
-jit_value_t NumberSTD::sub_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {a_addr, a_addr, b_addr}, &mpz_sub);
+Compiler::value NumberSTD::sub_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_sub);
 	return args[0];
 }
 
-jit_value_t NumberSTD::sub_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {a, a, b}, &mpz_sub);
-	VM::delete_gmp_int(c.F, args[1]);
+Compiler::value NumberSTD::sub_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a = c.insn_address_of(args[0]);
+	auto b = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a, a, b}, &mpz_sub);
+	VM::delete_gmp_int(c.F, args[1].v);
 	return args[0];
 }
 
-jit_value_t NumberSTD::sub_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b = args[1];
-	jit_value_t r = VM::create_gmp_int(c.F);
-	jit_value_t r_addr = jit_insn_address_of(c.F, r);
+Compiler::value NumberSTD::sub_gmp_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto a = c.insn_address_of(args[0]);
+	auto b = args[1];
+	auto r = c.new_mpz();
+	auto r_addr = c.insn_address_of(r);
 
 	jit_label_t label_end = jit_label_undefined;
 	jit_label_t label_else = jit_label_undefined;
 
-	jit_value_t cond = jit_insn_lt(c.F, b, LS_CREATE_INTEGER(c.F, 0));
-	jit_insn_branch_if_not(c.F, cond, &label_else);
+	auto cond = c.insn_lt(b, c.new_integer(0));
+	jit_insn_branch_if_not(c.F, cond.v, &label_else);
 
-	jit_value_t neg_b = jit_insn_neg(c.F, b);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_INTEGER}, {r_addr, a, neg_b}, &mpz_add_ui);
+	Compiler::value neg_b = {jit_insn_neg(c.F, b.v), Type::INTEGER};
+	c.insn_call(Type::VOID, {r_addr, a, neg_b}, &mpz_add_ui);
 	jit_insn_branch(c.F, &label_end);
 
 	jit_insn_label(c.F, &label_else);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_INTEGER}, {r_addr, a, b}, &mpz_sub_ui);
+	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub_ui);
 	jit_insn_label(c.F, &label_end);
 	return r;
 }
 
-jit_value_t NumberSTD::sub_gmp_tmp_int(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b = args[1];
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_INTEGER}, {a, a, b}, &mpz_sub_ui);
-	VM::delete_gmp_int(c.F, args[1]);
+Compiler::value NumberSTD::sub_gmp_tmp_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto a = c.insn_address_of(args[0]);
+	auto b = args[1];
+	c.insn_call(Type::VOID, {a, a, b}, &mpz_sub_ui);
+	VM::delete_gmp_int(c.F, args[1].v);
 	return args[0];
 }
 
@@ -524,41 +521,39 @@ void mpz_mul_custom(__mpz_struct* r, __mpz_struct* a, __mpz_struct* b) {
 //	std::cout << "size r: " << mpz_log(*r) << std::endl;
 }
 
-jit_value_t NumberSTD::mul_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t r = VM::create_gmp_int(c.F);
-	jit_value_t r_addr = jit_insn_address_of(c.F, r);
-	jit_value_t a = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {r_addr, a, b}, &mpz_mul_custom);
+Compiler::value NumberSTD::mul_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	Compiler::value r = {VM::create_gmp_int(c.F), Type::GMP_INT};
+	auto r_addr = c.insn_address_of(r);
+	auto a = c.insn_address_of(args[0]);
+	auto b = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_mul_custom);
 	return r;
 }
 
-jit_value_t NumberSTD::mul_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, jit_type_void, {LS_POINTER, LS_POINTER, LS_POINTER}, {a, a, b}, &mpz_mul);
-	VM::delete_gmp_int(c.F, args[1]);
+Compiler::value NumberSTD::mul_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a = c.insn_address_of(args[0]);
+	auto b = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a, a, b}, &mpz_mul);
+	VM::delete_gmp_int(c.F, args[1].v);
 	return args[0];
 }
 
-jit_value_t NumberSTD::mul_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, VM::gmp_int_type}, args,
-	+[](__mpz_struct a, __mpz_struct b) {
+Compiler::value NumberSTD::mul_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::GMP_INT, args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_mul(&b, &a, &b);
 		return b;
 	});
 }
 
-jit_value_t NumberSTD::mul_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, LS_VOID, {LS_POINTER, LS_POINTER, LS_POINTER}, {a_addr, a_addr, b_addr}, &mpz_mul);
+Compiler::value NumberSTD::mul_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_mul);
 	return args[0];
 }
 
-jit_value_t NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, VM::gmp_int_type}, args,
-	+[](__mpz_struct a, __mpz_struct b) {
+Compiler::value NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::GMP_INT, args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t res;
 		mpz_init(res);
 		mpz_pow_ui(res, &a, mpz_get_ui(&b));
@@ -573,121 +568,119 @@ __mpz_struct pow_gmp_int_lambda(__mpz_struct a, int b) throw() {
 	return *res;
 }
 
-jit_value_t NumberSTD::pow_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
+Compiler::value NumberSTD::pow_gmp_int(Compiler& c, std::vector<Compiler::value> args) {
 	// Check: mpz_log(a) * b <= 10000
-	jit_value_t a_size = VM::call(c.F, LS_INTEGER, {VM::gmp_int_type}, {args[0]}, (void*) &mpz_log);
-	jit_value_t r_size = jit_insn_mul(c.F, a_size, args[1]);
-	jit_value_t cond = jit_insn_lt(c.F, r_size, LS_CREATE_INTEGER(c.F, 10000));
+	auto a_size = c.insn_call(Type::INTEGER, {args[0]}, (void*) &mpz_log);
+	auto r_size = c.insn_mul(a_size, args[1]);
+	auto cond = c.insn_lt(r_size, c.new_integer(10000));
 	jit_label_t label_end = jit_label_undefined;
-	jit_insn_branch_if(c.F, cond, &label_end);
+	jit_insn_branch_if(c.F, cond.v, &label_end);
 	jit_insn_throw(c.F, LS_CREATE_INTEGER(c.F, VM::Exception::NUMBER_OVERFLOW));
 	jit_insn_label(c.F, &label_end);
 
 	// Ops: size of the theorical result
-	VM::inc_ops_jit(c.F, r_size);
+	VM::inc_ops_jit(c.F, r_size.v);
 
 	VM::inc_gmp_counter(c.F);
-	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, LS_INTEGER}, args, &pow_gmp_int_lambda);
+	return c.insn_call(Type::GMP_INT_TMP, args, &pow_gmp_int_lambda);
 }
 
-jit_value_t NumberSTD::lt_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_POINTER}, {a_addr, b_addr}, &mpz_cmp);
-	return jit_insn_lt(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+Compiler::value NumberSTD::lt_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
+	return c.insn_lt(res, c.new_integer(0));
 }
 
-jit_value_t NumberSTD::lt_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_POINTER}, {a_addr, b_addr}, &mpz_cmp);
-	VM::delete_gmp_int(c.F, args[0]);
-	return jit_insn_lt(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+Compiler::value NumberSTD::lt_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
+	VM::delete_gmp_int(c.F, args[0].v);
+	return c.insn_lt(res, c.new_integer(0));
 }
 
-jit_value_t NumberSTD::lt_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, LS_BOOLEAN, {VM::gmp_int_type, VM::gmp_int_type}, args,
-	+[](__mpz_struct a, __mpz_struct b) {
+Compiler::value NumberSTD::lt_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, args, +[](__mpz_struct a, __mpz_struct b) {
 		bool res = mpz_cmp(&a, &b) < 0;
 		mpz_clear(&b);
 		VM::gmp_values_deleted++;
 		return res;
 	});
 }
-jit_value_t NumberSTD::lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_POINTER}, {a_addr, b_addr}, &mpz_cmp);
-	VM::delete_gmp_int(c.F, args[0]);
-	VM::delete_gmp_int(c.F, args[1]);
-	return jit_insn_lt(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+Compiler::value NumberSTD::lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
+	VM::delete_gmp_int(c.F, args[0].v);
+	VM::delete_gmp_int(c.F, args[1].v);
+	return c.insn_lt(res, c.new_integer(0));
 }
 
-jit_value_t NumberSTD::gt_int_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_LONG}, {b_addr, args[0]}, &_mpz_cmp_si);
-	return jit_insn_lt(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+Compiler::value NumberSTD::gt_int_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto b_addr = c.insn_address_of(args[1]);
+	auto res = c.insn_call(Type::INTEGER, {b_addr, args[0]}, &_mpz_cmp_si);
+	return c.insn_lt(res, c.new_integer(0));
 }
 
-jit_value_t NumberSTD::mod_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, VM::gmp_int_type, {VM::gmp_int_type, VM::gmp_int_type}, args,
-	+[](__mpz_struct a, __mpz_struct b) {
+Compiler::value NumberSTD::mod_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::GMP_INT_TMP, args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t res;
 //		mpz_init(res);
 		mpz_mod(res, &a, &b);
 		return *res;
 	});
 }
-jit_value_t NumberSTD::mod_gmp_gmp_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	VM::call(c.F, LS_VOID, {LS_POINTER, LS_POINTER, LS_POINTER}, {b_addr, a_addr, b_addr}, &mpz_mod);
+Compiler::value NumberSTD::mod_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {b_addr, a_addr, b_addr}, &mpz_mod);
 	return args[1];
 }
 
-jit_value_t NumberSTD::eq_gmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, LS_BOOLEAN, {VM::gmp_int_type, VM::gmp_int_type}, args,
+Compiler::value NumberSTD::eq_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, args,
 	+[](__mpz_struct a, __mpz_struct b) {
 		return mpz_cmp(&a, &b) == 0;
 	});
 }
-jit_value_t NumberSTD::eq_gmp_tmp_gmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t b_addr = jit_insn_address_of(c.F, args[1]);
-	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_POINTER}, {a_addr, b_addr}, &mpz_cmp);
-	VM::delete_gmp_int(c.F, args[0]);
-	return jit_insn_eq(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+Compiler::value NumberSTD::eq_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
+	VM::delete_gmp_int(c.F, args[0].v);
+	return c.insn_eq(res, c.new_integer(0));
 }
-jit_value_t NumberSTD::eq_gmp_int(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {a_addr, args[1]}, &_mpz_cmp_si);
-	return jit_insn_eq(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+Compiler::value NumberSTD::eq_gmp_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto res = c.insn_call(Type::INTEGER, {a_addr, args[1]}, &_mpz_cmp_si);
+	return c.insn_eq(res, c.new_integer(0));
 }
-jit_value_t NumberSTD::eq_gmp_tmp_int(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t a_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {a_addr, args[1]}, &_mpz_cmp_si);
-	VM::delete_gmp_int(c.F, args[0]);
-	return jit_insn_eq(c.F, res, LS_CREATE_INTEGER(c.F, 0));
+Compiler::value NumberSTD::eq_gmp_tmp_int(Compiler& c, std::vector<Compiler::value> args) {
+	Compiler::value a_addr = c.insn_address_of(args[0]);
+	auto res = c.insn_call(Type::INTEGER, {a_addr, args[1]}, &_mpz_cmp_si);
+	VM::delete_gmp_int(c.F, args[0].v);
+	return c.insn_eq(res, c.new_integer(0));
 }
 
-jit_value_t NumberSTD::tilde_int(Compiler& c, std::vector<jit_value_t> args) {
+Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> args) {
 	jit_type_t arg_types[] = {LS_POINTER, LS_INTEGER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 0);
-	jit_value_t i = args[0];
-	jit_value_t f = args[1];
-	jit_value_t fun = jit_insn_load_relative(c.F, f, 16, LS_POINTER);
+	auto i = args[0].v;
+	auto f = args[1].v;
+	auto fun = jit_insn_load_relative(c.F, f, 16, LS_POINTER);
 	jit_value_t jit_args[] = {f, i};
-	return jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0);
+	return {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
 }
 
-jit_value_t NumberSTD::tilde_real(Compiler& c, std::vector<jit_value_t> args) {
+Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> args) {
 	jit_type_t arg_types[] = {LS_POINTER, LS_REAL};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 0);
-	jit_value_t r = args[0];
-	jit_value_t f = args[1];
-	jit_value_t fun = jit_insn_load_relative(c.F, f, 16, LS_POINTER);
+	auto r = args[0].v;
+	auto f = args[1].v;
+	auto fun = jit_insn_load_relative(c.F, f, 16, LS_POINTER);
 	jit_value_t jit_args[] = {f, r};
-	return jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0);
+	return {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
 }
 
 /*
@@ -704,8 +697,8 @@ double NumberSTD::abs_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::abs_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_abs(c.F, args[0]);
+Compiler::value NumberSTD::abs_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_abs(c.F, args[0].v), Type::REAL};
 }
 
 double NumberSTD::acos_ptr(LSNumber* x) {
@@ -713,8 +706,8 @@ double NumberSTD::acos_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::acos_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_acos(c.F, args[0]);
+Compiler::value NumberSTD::acos_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_acos(c.F, args[0].v), Type::REAL};
 }
 
 double NumberSTD::asin_ptr(LSNumber* x) {
@@ -722,8 +715,8 @@ double NumberSTD::asin_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::asin_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_asin(c.F, args[0]);
+Compiler::value NumberSTD::asin_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_asin(c.F, args[0].v), Type::REAL};
 }
 
 double NumberSTD::atan_ptr(LSNumber* x) {
@@ -731,8 +724,8 @@ double NumberSTD::atan_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::atan_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_atan(c.F, args[0]);
+Compiler::value NumberSTD::atan_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_atan(c.F, args[0].v), Type::REAL};
 }
 
 double NumberSTD::atan2_ptr_ptr(LSNumber* y, LSNumber* x) {
@@ -751,8 +744,8 @@ double NumberSTD::atan2_real_ptr(double y, LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::atan2_real_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_atan2(c.F, args[0], args[1]);
+Compiler::value NumberSTD::atan2_real_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_atan2(c.F, args[0].v, args[1].v), Type::REAL};
 }
 
 LSString* NumberSTD::char_ptr(LSNumber* x) {
@@ -762,16 +755,16 @@ LSString* NumberSTD::char_ptr(LSNumber* x) {
 	u8_toutf8(dest, 5, &n, 1);
 	return new LSString(dest);
 }
-jit_value_t NumberSTD::char_real(Compiler& c, vector<jit_value_t> args) {
-	return VM::call(c.F, LS_STRING, {LS_REAL}, args, +[](double x) {
+Compiler::value NumberSTD::char_real(Compiler& c, vector<Compiler::value> args) {
+	return c.insn_call(Type::STRING, args, +[](double x) {
 		unsigned int n = x;
 		char dest[5];
 		u8_toutf8(dest, 5, &n, 1);
 		return new LSString(dest);
 	});
 }
-jit_value_t NumberSTD::char_int(Compiler& c, vector<jit_value_t> args) {
-	return VM::call(c.F, LS_STRING, {LS_INTEGER}, args, +[](int x) {
+Compiler::value NumberSTD::char_int(Compiler& c, vector<Compiler::value> args) {
+	return c.insn_call(Type::STRING, args, +[](int x) {
 		unsigned int n = x;
 		char dest[5];
 		u8_toutf8(dest, 5, &n, 1);
@@ -784,8 +777,8 @@ double NumberSTD::exp_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::exp_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_exp(c.F, args[0]);
+Compiler::value NumberSTD::exp_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_exp(c.F, args[0].v), Type::REAL};
 }
 
 int NumberSTD::floor_ptr(LSNumber* x) {
@@ -793,10 +786,10 @@ int NumberSTD::floor_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::floor_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_floor(c.F, args[0]);
+Compiler::value NumberSTD::floor_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_floor(c.F, args[0].v), Type::REAL};
 }
-jit_value_t NumberSTD::floor_int(Compiler&, std::vector<jit_value_t> args) {
+Compiler::value NumberSTD::floor_int(Compiler&, std::vector<Compiler::value> args) {
 	return args[0]; // Nothing to do
 }
 
@@ -805,10 +798,10 @@ int NumberSTD::round_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::round_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_round(c.F, args[0]);
+Compiler::value NumberSTD::round_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_round(c.F, args[0].v), Type::REAL};
 }
-jit_value_t NumberSTD::round_int(Compiler&, std::vector<jit_value_t> args) {
+Compiler::value NumberSTD::round_int(Compiler&, std::vector<Compiler::value> args) {
 	return args[0]; // Nothing to do
 }
 
@@ -817,10 +810,10 @@ int NumberSTD::ceil_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
-jit_value_t NumberSTD::ceil_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_ceil(c.F, args[0]);
+Compiler::value NumberSTD::ceil_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_ceil(c.F, args[0].v), Type::REAL};
 }
-jit_value_t NumberSTD::ceil_int(Compiler&, std::vector<jit_value_t> args) {
+Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args) {
 	return args[0]; // Nothing to do
 }
 
@@ -850,8 +843,8 @@ double NumberSTD::max_int_ptr(int x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return max;
 }
-jit_value_t NumberSTD::max_float_float(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_max(c.F, args[0], args[1]);
+Compiler::value NumberSTD::max_float_float(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_max(c.F, args[0].v, args[1].v), Type::REAL};
 }
 
 double NumberSTD::min_ptr_ptr(LSNumber* x, LSNumber* y) {
@@ -880,8 +873,8 @@ double NumberSTD::min_int_ptr(int x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return max;
 }
-jit_value_t NumberSTD::min_float_float(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_min(c.F, args[0], args[1]);
+Compiler::value NumberSTD::min_float_float(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_min(c.F, args[0].v, args[1].v), Type::REAL};
 }
 
 double NumberSTD::cos_ptr(LSNumber* x) {
@@ -889,8 +882,8 @@ double NumberSTD::cos_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return c;
 }
-jit_value_t NumberSTD::cos_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_cos(c.F, args[0]);
+Compiler::value NumberSTD::cos_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_cos(c.F, args[0].v), Type::REAL};
 }
 
 double NumberSTD::sin_ptr(LSNumber* x) {
@@ -898,8 +891,8 @@ double NumberSTD::sin_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return s;
 }
-jit_value_t NumberSTD::sin_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_sin(c.F, args[0]);
+Compiler::value NumberSTD::sin_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_sin(c.F, args[0].v), Type::REAL};
 }
 
 double NumberSTD::tan_ptr(LSNumber* x) {
@@ -907,8 +900,8 @@ double NumberSTD::tan_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return c;
 }
-jit_value_t NumberSTD::tan_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_tan(c.F, args[0]);
+Compiler::value NumberSTD::tan_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_tan(c.F, args[0].v), Type::REAL};
 }
 
 double NumberSTD::sqrt_ptr(LSNumber* x) {
@@ -917,8 +910,8 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 	return s;
 }
 
-jit_value_t NumberSTD::sqrt_real(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_sqrt(c.F, args[0]);
+Compiler::value NumberSTD::sqrt_real(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_sqrt(c.F, args[0].v), Type::REAL};
 }
 
 double NumberSTD::cbrt_ptr(LSNumber* x) {
@@ -927,30 +920,30 @@ double NumberSTD::cbrt_ptr(LSNumber* x) {
 	return s;
 }
 
-jit_value_t NumberSTD::cbrt_real(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, LS_REAL, {LS_REAL}, args, +[] (double x) {
+Compiler::value NumberSTD::cbrt_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, args, +[] (double x) {
 		return cbrt(x);
 	});
 }
 
-jit_value_t NumberSTD::pow_int(Compiler& c, std::vector<jit_value_t> args) {
-	return jit_insn_pow(c.F, args[0], args[1]);
+Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_pow(c.F, args[0].v, args[1].v), Type::INTEGER};
 }
 
-jit_value_t NumberSTD::is_prime(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t v_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t reps = LS_CREATE_INTEGER(c.F, 15);
-	return VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {v_addr, reps}, &mpz_probab_prime_p);
+Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
+	auto v_addr = c.insn_address_of(args[0]);
+	auto reps = c.new_integer(15);
+	return c.insn_call(Type::INTEGER, {v_addr, reps}, &mpz_probab_prime_p);
 }
-jit_value_t NumberSTD::is_prime_tmp(Compiler& c, std::vector<jit_value_t> args) {
-	jit_value_t v_addr = jit_insn_address_of(c.F, args[0]);
-	jit_value_t reps = LS_CREATE_INTEGER(c.F, 15);
-	jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, {v_addr, reps}, &mpz_probab_prime_p);
-	VM::delete_gmp_int(c.F, args[0]);
+Compiler::value NumberSTD::is_prime_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto v_addr = c.insn_address_of(args[0]);
+	auto reps = c.new_integer(15);
+	auto res = c.insn_call(Type::INTEGER, {v_addr, reps}, &mpz_probab_prime_p);
+	VM::delete_gmp_int(c.F, args[0].v);
 	return res;
 }
 template<typename T>
-bool NumberSTD::is_prime_number(T n) {
+int NumberSTD::is_prime_number(T n) {
 	if (((!(n & 1)) and n != 2) or (n < 2) || (n % 3 == 0 and n != 3)) {
 		return false;
 	}
@@ -961,11 +954,11 @@ bool NumberSTD::is_prime_number(T n) {
 	}
 	return true;
 }
-jit_value_t NumberSTD::is_prime_int(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, LS_BOOLEAN, {LS_INTEGER}, args, (void*) &NumberSTD::is_prime_number<int>);
+Compiler::value NumberSTD::is_prime_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, args, &NumberSTD::is_prime_number<int>);
 }
-jit_value_t NumberSTD::is_prime_long(Compiler& c, std::vector<jit_value_t> args) {
-	return VM::call(c.F, LS_BOOLEAN, {LS_LONG}, args, (void*) &NumberSTD::is_prime_number<long>);
+Compiler::value NumberSTD::is_prime_long(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, args, &NumberSTD::is_prime_number<long>);
 }
 
 }
