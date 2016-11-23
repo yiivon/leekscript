@@ -501,8 +501,7 @@ ostream& operator << (ostream& os, const Type& type) {
 			os << YELLOW << "?";
 		}
 	} else if (type.raw_type == RawType::FUNCTION) {
-		os << "fun" << Type::get_nature_symbol(type.nature);
-		os << "(";
+		os << BLUE << "fun(";
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
 			os << type.arguments_types[t];
