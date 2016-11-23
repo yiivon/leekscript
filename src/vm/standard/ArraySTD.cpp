@@ -252,6 +252,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::STRING, {Type::STRING}, (void*) &LSArray<int>::ls_join}
 	});
 
+	method("json", {
+		{Type::ARRAY, Type::STRING, {}, (void*) &LSValue::ls_json},
+	});
+
 	method("clear", {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {}, (void*) &LSArray<LSValue*>::ls_clear},
 		{Type::REAL_ARRAY, Type::REAL_ARRAY, {}, (void*) &LSArray<double>::ls_clear},

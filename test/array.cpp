@@ -229,6 +229,9 @@ void Test::test_arrays() {
 	code("['salut', 'ça', 'va'].join(' ')").equals("'salut ça va'");
 	code("[1, null, 'va'].join(' ')").equals("'1 null va'");
 
+	section("Array.json()");
+	code("[1, 2, 3].json()").equals("'[1,2,3]'");
+
 	section("Array.clear()");
 	code("let a = [1, 2, 3] a.clear() a").equals("[]");
 	code("let a = [1, 2, 3] Array.clear(a)").equals("[]");
