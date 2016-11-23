@@ -9,6 +9,11 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
 		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
 	});
+
+	method("compare", {
+		{Type::POINTER, Type::INTEGER, {Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
+		{Type::BOOLEAN, Type::INTEGER, {Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
+	});
 }
 
 int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
@@ -25,6 +30,8 @@ int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
 
 Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_cmpl(c.F, args[0].v, args[1].v), Type::INTEGER};
+}
+
 }
 
 }
