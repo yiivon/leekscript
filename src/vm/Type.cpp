@@ -40,6 +40,7 @@ const Type Type::GMP_INT_TMP(RawType::GMP_INT, Nature::VALUE, false, true);
 const Type Type::LONG(RawType::LONG, Nature::VALUE);
 const Type Type::REAL(RawType::REAL, Nature::VALUE);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
+const Type Type::STRING_TMP(RawType::STRING, Nature::POINTER, false, true);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
@@ -305,6 +306,9 @@ bool Type::compatible(const Type& type) const {
 	if (this->raw_type == RawType::ARRAY || this->raw_type == RawType::SET) {
 		const Type& e1 = this->getElementType();
 		const Type& e2 = type.getElementType();
+		if (e1 == Type::UNKNOWN) {
+			return true;
+		}
 		if (e1.nature == Nature::POINTER && e2.nature == Nature::POINTER) return true;
 		return e1 == e2;
 	}

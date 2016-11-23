@@ -216,6 +216,7 @@ public:
 	static const Type LONG;
 	static const Type REAL;
 	static const Type STRING;
+	static const Type STRING_TMP;
 	static const Type OBJECT;
 	static const Type ARRAY;
 	static const Type PTR_ARRAY;

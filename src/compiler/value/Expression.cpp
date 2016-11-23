@@ -211,7 +211,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 
 		// String / String => Array<String>
-		if (op->type == TokenType::DIVIDE and v1->type == Type::STRING and v2->type == Type::STRING) {
+		if (op->type == TokenType::DIVIDE and (v1->type == Type::STRING or v1->type == Type::STRING_TMP) and (v2->type == Type::STRING or v2->type == Type::STRING_TMP)) {
 			type = Type::STRING_ARRAY;
 		}
 	}
@@ -270,8 +270,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// "hello" + ? => string
-	if (op->type == TokenType::PLUS and v1->type == Type::STRING) {
-		type = Type::STRING;
+	if (op->type == TokenType::PLUS and (v1->type == Type::STRING || v1->type == Type::STRING_TMP)) {
+		type = Type::STRING_TMP;
 	}
 
 	// [1, 2, 3] ~~ x -> x ^ 2
