@@ -12,7 +12,7 @@ void Test::test_system() {
 
 	header("System");
 
-	code("System.version").equals("1");
+	code("System.version").equals("2");
 
 	code("System.operations").equals("0");
 	code("2 + 2 System.operations").equals("1");
