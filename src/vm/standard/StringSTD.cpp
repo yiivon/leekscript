@@ -44,6 +44,9 @@ StringSTD::StringSTD() : Module("String") {
 	operator_("+", {
 		{Type::STRING, Type::GMP_INT, Type::STRING, (void*) &plus_gmp}
 	});
+	operator_("<", {
+		{Type::STRING, Type::STRING, Type::BOOLEAN, (void*) &StringSTD::lt, Method::NATIVE}
+	});
 
 	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER}, (void*) &LSString::charAt);
 	method("contains", Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_contains);
@@ -100,6 +103,15 @@ StringSTD::StringSTD() : Module("String") {
 }
 
 StringSTD::~StringSTD() {}
+
+Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
+	auto res = c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, LSValue* b) {
+		return b->rlt(a);
+	});
+	c.insn_delete(args[0]);
+	c.insn_delete(args[1]);
+	return res;
+}
 
 LSValue* string_charAt(LSString* string, int index) {
 	LSValue* r = new LSString(string->operator[] (index));
