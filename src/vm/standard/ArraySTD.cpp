@@ -27,6 +27,10 @@ LSValue* array_sub(LSArray<LSValue*>* array, int begin, int end) {
 
 ArraySTD::ArraySTD() : Module("Array") {
 
+	operator_("<", {
+		{Type::ARRAY, Type::ARRAY, Type::BOOLEAN, (void*) &ArraySTD::lt, Method::NATIVE}
+	});
+
 	operator_("in", {
 		{Type::PTR_ARRAY, Type::POINTER, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in},
 		{Type::REAL_ARRAY, Type::REAL, Type::BOOLEAN, (void*) &LSArray<double>::in},
@@ -464,6 +468,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::REAL}, (void*) &LSArray<double>::ls_remove_element},
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_remove_element}
 	});
+}
+
+Compiler::value ArraySTD::lt(Compiler& c, std::vector<Compiler::value> args) {
+	auto res = c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, LSValue* b) {
+		return b->rlt(a);
+	});
+	c.insn_delete(args[0]);
+	c.insn_delete(args[1]);
+	return res;
 }
 
 Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args) {
