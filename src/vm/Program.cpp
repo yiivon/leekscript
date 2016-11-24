@@ -83,7 +83,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 
 void Program::compile_main(Context& context) {
 
-	Compiler c;
+	Compiler c(this);
 
 	jit_init();
 	jit_context_t jit_context = jit_context_create();

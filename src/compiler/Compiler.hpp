@@ -10,6 +10,8 @@
 
 namespace ls {
 
+class Program;
+
 class CompilerVar {
 public:
 	jit_value_t value;
@@ -37,27 +39,41 @@ public:
 	std::vector<jit_label_t*> loops_cond_labels;
 	std::vector<std::map<std::string, CompilerVar>> variables;
 
-	Compiler();
+	Program* program;
+
+	Compiler(Program* program);
 	virtual ~Compiler();
+
+	// Utils
+	value signed_int(value) const;
 
 	// Value creation
 	value new_null() const;
 	value new_bool(bool b) const;
 	value new_integer(int i) const;
+	value new_pointer(void* p) const;
 	value new_mpz() const;
 
 	// Operators wrapping
+	value insn_not(value) const;
 	value insn_and(value, value) const;
 	value insn_or(value, value) const;
 	value insn_add(value, value) const;
 	value insn_eq(value, value) const;
 	value insn_lt(value, value) const;
+	value insn_gt(value, value) const;
 	value insn_mul(value, value) const;
 
 	// Value management
 	value insn_to_pointer(value v) const;
 	value insn_to_bool(value v) const;
+	value insn_to_not_bool(value v) const;
 	value insn_address_of(value v) const;
+	value insn_typeof(value v) const;
+	value insn_class_of(value v) const;
+	void  insn_delete(value v) const;
+	value insn_array_size(value v) const;
+	value insn_get_capture(int index, Type type) const;
 
 	// Call functions
 	template <typename R, typename... A>
