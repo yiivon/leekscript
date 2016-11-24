@@ -79,6 +79,8 @@ Test::Input Test::file(const std::string& file_name) {
 }
 
 ls::VM::Result Test::Input::run(bool display_errors) {
+	test->total++;
+
 	ls::VM::operation_limit = this->operation_limit;
 	auto result = test->vm.execute(_code, "{}");
 	ls::VM::operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
@@ -87,7 +89,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	test->obj_deleted += result.objects_deleted;
 	test->gmp_obj_created += result.gmp_objects_created;
 	test->gmp_obj_deleted += result.gmp_objects_deleted;
-	test->total++;
+
 	compilation_time = round((float) result.compilation_time / 1000) / 1000;
 	execution_time = round((float) result.execution_time / 1000) / 1000;
 
@@ -123,6 +125,17 @@ void Test::Input::fail(std::string expected, std::string actual) {
 	<< "  =/=>  " << expected << "  got  " << actual;
 	std::cout <<  GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
+}
+
+void Test::Input::works() {
+	std::cout << "Try " << code << " ..." << std::endl;
+	try {
+		run();
+	} catch (...) {
+		fail("works", "threw exception!");
+		return;
+	}
+	pass("works");
 }
 
 void Test::Input::_equals(std::string&& expected) {
