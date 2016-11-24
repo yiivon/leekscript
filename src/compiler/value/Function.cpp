@@ -39,7 +39,7 @@ void Function::print(std::ostream& os, int indent, bool debug) const {
 		os << "[";
 		for (unsigned c = 0; c < captures.size(); ++c) {
 			if (c > 0) os << ", ";
-			os << captures[c]->name;
+			os << captures[c]->name << " " << captures[c]->type;
 		}
 		os << "] ";
 	}
