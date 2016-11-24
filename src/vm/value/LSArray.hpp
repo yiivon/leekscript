@@ -32,6 +32,8 @@ public:
 	void push_move(T value); // clone (if not temporaray) increment and push
 	void push_inc(T value); // increment (if not native) and push
 
+	int int_size();
+
 	LSArray<T>* ls_clear();
 	T ls_remove(int index);
 	bool ls_remove_element(T element);

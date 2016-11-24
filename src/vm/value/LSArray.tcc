@@ -95,6 +95,11 @@ inline LSArray<int>::LSArray(Json& json) {
 	}
 }
 
+template <typename T>
+int LSArray<T>::int_size() {
+	return this->size();
+}
+
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_clear() {
 	for (auto v : *this) {
