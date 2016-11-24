@@ -211,6 +211,7 @@ public:
 	static const Type NULLL;
 	static const Type BOOLEAN;
 	static const Type BOOLEAN_P;
+	static const Type NUMBER_VALUE;
 	static const Type NUMBER;
 	static const Type INTEGER;
 	static const Type UNSIGNED_INTEGER;
@@ -237,6 +238,7 @@ public:
 	static const Type INT_PTR_MAP;
 	static const Type INT_INT_MAP;
 	static const Type INT_REAL_MAP;
+	static const Type SET;
 	static const Type PTR_SET;
 	static const Type INT_SET;
 	static const Type REAL_SET;
