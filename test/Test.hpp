@@ -75,7 +75,7 @@ public:
 			file(file) {};
 		void _equals(std::string&& expected);
 		template <typename T>
-		void almost(T expected, T delta = std::numeric_limits<T>::epsilon());
+		void almost(T expected, T delta = 1e-10);
 		template <typename T>
 		void between(T a, T b);
 		void semantic_error(ls::SemanticError::Type error, std::string param);

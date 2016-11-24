@@ -69,7 +69,7 @@ void Test::test_loops() {
 	header("Foreach loops");
 	code("for v in [1, 2, 3, 4] {}").equals("(void)");
 	code("let s = 0 for v in [1, 2, 3, 4] { s += v } s").equals("10");
-	code("let s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.969999999999998863);
+	code("let s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.97);
 	code("let s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s").equals("'salut ça va ?'");
 	code("let a = 0 let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] for i in x { if i < 5 { continue } a++ } a").equals("5");
 	code("let s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s").equals("20");

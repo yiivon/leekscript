@@ -27,8 +27,8 @@ void Test::test_functions() {
 	code("let f = x -> x f(5) + f(7)").equals("12");
 	code("[-> 12][0]()").equals("12");
 	code("[-> 12, 'toto'][0]()").equals("12");
-	code("(x -> x + 12.12)(1.01)").equals("13.129999999999999005");
-	code("(x -> x + 12)(1.01)").equals("13.009999999999999787");
+	code("(x -> x + 12.12)(1.01)").almost(13.13);
+	code("(x -> x + 12)(1.01)").almost(13.01);
 	code("[x -> x ** 2][0](12)").equals("144");
 	code("[[x -> x ** 2]][0][0](12)").equals("144");
 	code("[[[x -> x ** 2]]][0][0][0](12)").equals("144");

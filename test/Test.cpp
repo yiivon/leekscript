@@ -154,9 +154,9 @@ void Test::Input::almost(T expected, T delta) {
 	ss >> res_num;
 
 	if (std::abs(res_num - expected) <= delta) {
-		pass(result.value + " (perfect: " + std::to_string(expected) + ")");
+		pass(result.value);
 	} else {
-		fail(std::to_string(expected), result.value);
+		fail(ls::LSNumber::print(expected), result.value);
 	}
 }
 

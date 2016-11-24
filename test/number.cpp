@@ -8,7 +8,7 @@ void Test::test_numbers() {
 	code("0").equals("0");
 	code("-1").equals("-1");
 	code("-(-1)").equals("1");
-	code("π").equals("3.141592653589793116");
+	code("π").almost(3.141592653589793116);
 
 	section("Basic operations");
 	code("0 + 5").equals("5");
@@ -169,11 +169,11 @@ void Test::test_numbers() {
 	code("new Number(12)").equals("12");
 
 	section("Constants");
-	code("Number.pi").equals("3.141592653589793116");
-	code("2 × Number.pi").equals("6.283185307179586232");
-	code("Number.e").equals("2.718281828459045091");
-	code("Number.phi").equals("1.618033988749894903");
-	code("Number.epsilon").equals("0.000000000000000222");
+	code("Number.pi").almost(3.141592653589793116);
+	code("2 × Number.pi").almost(6.283185307179586232);
+	code("Number.e").almost(2.718281828459045091);
+	code("Number.phi").almost(1.618033988749894903);
+	code("Number.epsilon").almost(0.000000000000000222);
 
 	section("Number.abs()");
 //	code("Number.abs").equals("<function>");
@@ -233,7 +233,7 @@ void Test::test_numbers() {
 	code("Number.acos(1)").equals("0");
 	code("Number.acos(-1)").almost(M_PI);
 	code("Number.acos(0)").almost(M_PI / 2);
-	code("(-0.33).acos()").equals("1.907099901948877019");
+	code("(-0.33).acos()").almost(1.907099901948877019);
 	code("Number.acos(['y', 0][1])").almost(M_PI / 2);
 
 	section("Number.sin()");
@@ -254,7 +254,7 @@ void Test::test_numbers() {
 	code("Number.asin(0)").equals("0");
 	code("Number.asin(-1)").almost(-M_PI / 2);
 	code("Number.asin(1)").almost(M_PI / 2);
-	code("0.33.asin()").equals("0.33630357515398035");
+	code("0.33.asin()").almost(0.33630357515398035);
 	code("Number.asin(['y', -1][1])").almost(-M_PI / 2);
 
 	section("Number.atan()");
@@ -299,7 +299,7 @@ void Test::test_numbers() {
 	code("(-12).abs()").equals("12");
 	code("π.cos()").equals("-1");
 	code("(π / 2).sin()").equals("1");
-	code("12.sqrt()").equals("3.464101615137754386");
+	code("12.sqrt()").almost(3.464101615137754386);
 	code("12.8.floor()").equals("12");
 	code("-12.8.floor()").equals("-12");
 	code("(-12.8).floor()").equals("-13");
@@ -319,5 +319,5 @@ void Test::test_numbers() {
 	code("3.max(5).min(2)").equals("2");
 	code("3.max(5).max(10).max(12)").equals("12");
 	code("10.max(5).max(8.7).max(-3.91)").equals("10");
-	code("10.sqrt().cos()").equals("-0.99978607287932586");
+	code("10.sqrt().cos()").almost(-0.99978607287932586);
 }
