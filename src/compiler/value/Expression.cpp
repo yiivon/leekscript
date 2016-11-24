@@ -163,6 +163,13 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //		return;
 //	}
 
+	if (op->type == TokenType::IN) {
+		if (operator_fun == nullptr) {
+			analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, v1->line(), op->character});
+			return;
+		}
+	}
+
 	/*
 	 * OLD
 	 */
