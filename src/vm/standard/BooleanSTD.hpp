@@ -17,7 +17,6 @@ public:
 
 	static int compare_ptr_ptr(LSBoolean* a, LSBoolean* b);
 	static Compiler::value compare_val_val(Compiler&, std::vector<Compiler::value>);
-	static LSString* json_val(int boolean);
 };
 
 }
