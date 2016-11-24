@@ -40,7 +40,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (scope != VarScope::INTERNAL and var->function != analyser->current_function()) {
 			capture_index = analyser->current_function()->capture(var);
 //			std::cout << "Capture " << var->name << " : " << capture_index << std::endl;
-			type.nature = Nature::POINTER;
+			//type.nature = Nature::POINTER;
 			scope = VarScope::CAPTURE;
   		}
 	} else {
@@ -108,8 +108,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 //	cout << "req type : " << req_type << endl;
 
 	if (scope == VarScope::CAPTURE) {
-		jit_value_t fun = jit_value_get_param(c.F, 0); // function pointer
-		return {VM::function_get_capture(c.F, fun, capture_index), type};
+		return c.insn_get_capture(capture_index, type);
 	}
 
 	jit_value_t v;
