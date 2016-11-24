@@ -62,9 +62,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("size", {
-		{Type::PTR_ARRAY, Type::INTEGER, {}, (void*) &LSArray<LSValue*>::ls_size},
-		{Type::REAL_ARRAY, Type::INTEGER, {}, (void*) &LSArray<double>::ls_size},
-		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_size}
+		{Type::ARRAY, Type::INTEGER, {}, (void*) &ArraySTD::size, Method::NATIVE}
 	});
 
 	method("sum", {
@@ -466,6 +464,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::REAL}, (void*) &LSArray<double>::ls_remove_element},
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_remove_element}
 	});
+}
+
+Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args) {
+	auto res = c.insn_array_size(args[0]);
+	c.insn_delete(args[0]);
+	return res;
 }
 
 }

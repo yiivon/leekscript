@@ -9,6 +9,7 @@ namespace ls {
 class ArraySTD : public Module {
 public:
 	ArraySTD();
+	static Compiler::value size(Compiler&, std::vector<Compiler::value>);
 };
 
 }
