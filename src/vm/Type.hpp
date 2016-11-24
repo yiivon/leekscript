@@ -137,7 +137,9 @@ public:
 	static const BooleanRawType* const BOOLEAN;
 	static const NumberRawType* const NUMBER;
 	static const GmpIntRawType* const GMP_INT;
+	static const IntegerRawType* const UNSIGNED_INTEGER;
 	static const IntegerRawType* const INTEGER;
+	static const LongRawType* const UNSIGNED_LONG;
 	static const LongRawType* const LONG;
 	static const FloatRawType* const REAL;
 	static const StringRawType* const STRING;
@@ -211,9 +213,11 @@ public:
 	static const Type BOOLEAN_P;
 	static const Type NUMBER;
 	static const Type INTEGER;
+	static const Type UNSIGNED_INTEGER;
 	static const Type GMP_INT;
 	static const Type GMP_INT_TMP;
 	static const Type LONG;
+	static const Type UNSIGNED_LONG;
 	static const Type REAL;
 	static const Type STRING;
 	static const Type STRING_TMP;
