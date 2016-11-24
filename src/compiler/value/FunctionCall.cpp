@@ -130,6 +130,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			LSClass* object_class = (LSClass*) analyser->program->system_vars[object_type.clazz];
 			Method* m = object_class->getMethod(oa->field->content, object_type, arg_types);
 
+			if (m == nullptr) {
+				LSClass* value_class = (LSClass*) analyser->program->system_vars["Value"];
+				m = value_class->getMethod(oa->field->content, object_type, arg_types);
+			}
+
 			if (m != nullptr) {
 				this_ptr = oa->object;
 				this_ptr->analyse(analyser, m->obj_type);
