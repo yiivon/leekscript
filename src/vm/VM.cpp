@@ -205,6 +205,9 @@ jit_value_t VM::value_to_pointer(jit_function_t F, jit_value_t v, Type type) {
 int VM_boolean_to_value(LSBoolean* b) {
 	return b->value;
 }
+int VM_integer_to_value(LSNumber* n) {
+	return n->value;
+}
 
 jit_value_t VM::pointer_to_value(jit_function_t F, jit_value_t v, Type type) {
 
@@ -212,6 +215,11 @@ jit_value_t VM::pointer_to_value(jit_function_t F, jit_value_t v, Type type) {
 		jit_type_t args_types[1] = {LS_POINTER};
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 0);
 		return jit_insn_call_native(F, "convert", (void*) VM_boolean_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
+	}
+	if (type == Type::INTEGER) {
+		jit_type_t args_types[1] = {LS_POINTER};
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 0);
+		return jit_insn_call_native(F, "convert", (void*) VM_integer_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
 	}
 	return LS_CREATE_INTEGER(F, 0);
 }
