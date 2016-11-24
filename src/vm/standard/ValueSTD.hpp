@@ -12,14 +12,29 @@ class ValueSTD : public Module {
 public:
 	ValueSTD();
 
-	static bool instanceof_ptr(LSValue* x, LSClass* c);
-	static Compiler::value and_value_value(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value or_value_value(Compiler& c, std::vector<Compiler::value> args);
+	/*
+	 * Static fields
+	 */
+	static jit_value_t unknown(jit_function_t F);
+
+	/*
+	 * Operators
+	 */
+	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value op_lt(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value op_gt(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value op_and(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_or(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_xor(Compiler&, std::vector<Compiler::value>);
+
 	/*
 	 * Methods
 	 */
 	static Compiler::value to_string(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value to_json(Compiler& c, std::vector<Compiler::value> args);
+
+	// Hidden functions
+	static Compiler::value typeID(Compiler& c, std::vector<Compiler::value> args);
 };
 
 }
