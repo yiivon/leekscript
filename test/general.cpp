@@ -63,4 +63,18 @@ void Test::test_general() {
 	code("{} ?? 'default'").equals("{}");
 	code("null ?? 'default'").equals("'default'");
 	code("let a = null let b = null a ?? b ?? ':)'").equals("':)'");
+
+	section("Value.string()");
+	// integer
+	code("0.string()").equals("'0'");
+	code("12.string()").equals("'12'");
+	code("(-7).string()").equals("'-7'");
+	// long
+	code("12434324223112123.string()").equals("'12434324223112123'");
+	code("(-1243439967898452).string()").equals("'-1243439967898452'");
+	// real
+	code("12.5.string()").equals("'12.5'");
+	code("(-6546.34).string()").equals("'-6546.34'");
+	code("Number.pi.string()").equals("'3.1415926536'");
+	// TODO more types
 }

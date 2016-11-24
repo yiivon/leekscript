@@ -18,6 +18,7 @@ public:
 	/*
 	 * Methods
 	 */
+	static Compiler::value to_string(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value to_json(Compiler& c, std::vector<Compiler::value> args);
 };
 
