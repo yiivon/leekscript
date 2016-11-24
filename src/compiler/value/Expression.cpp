@@ -234,8 +234,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Boolean operators : result is a boolean
-	if (op->type == TokenType::AND or op->type == TokenType::OR or op->type == TokenType::XOR
-		or op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL
+	if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
 		or op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL
 		or op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
@@ -304,11 +303,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (v1->type == v2->type) type = v1->type;
 	}
 
-	if (op->type == TokenType::INSTANCEOF) {
-		v1->analyse(analyser, Type::POINTER);
-		type = Type::BOOLEAN;
-	}
-
 	// int div => result is int
 	if (op->type == TokenType::INT_DIV) {
 		type = v1->type == Type::LONG ? Type::LONG : Type::INTEGER;
@@ -361,25 +355,6 @@ LSValue* jit_pow(LSValue* x, LSValue* y) {
 LSValue* jit_mod(LSValue* x, LSValue* y) {
 	return x->ls_mod(y);
 }
-bool jit_and(LSValue* x, LSValue* y) {
-	bool r = x->isTrue() and y->isTrue();
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-bool jit_or(LSValue* x, LSValue* y) {
-	bool r = x->isTrue() or y->isTrue();
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-bool jit_xor(LSValue* x, LSValue* y) {
-	bool r = x->isTrue() xor y->isTrue();
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-
 bool jit_equals(LSValue* x, LSValue* y) {
 	bool r = *x == *y;
 	LSValue::delete_temporary(x);
@@ -460,14 +435,6 @@ LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->ls_pow_eq(y);
 }
-
-bool jit_instanceof(LSValue* x, LSValue* y) {
-	bool r = (((LSClass*) x->getClass())->name == ((LSClass*) y)->name);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-
 LSValue* jit_bit_and(LSValue* x, LSValue* y) {
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
@@ -784,40 +751,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 			break;
 		}
-		case TokenType::AND: {
-			jit_func = &jit_insn_and;
-			ls_func = (void*) &jit_and;
-			jit_returned_type = Type::BOOLEAN;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
-		case TokenType::OR: {
-			jit_func = &jit_insn_or;
-			ls_func = (void*) &jit_or;
-			jit_returned_type = Type::BOOLEAN;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
-		case TokenType::XOR: {
-			if (use_jit_func) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				x.v = jit_insn_to_not_bool(c.F, x.v);
-				y.v = jit_insn_to_not_bool(c.F, y.v);
-				jit_value_t r = jit_insn_or(c.F,
-					jit_insn_and(c.F, x.v, jit_insn_not(c.F, y.v)),
-					jit_insn_and(c.F, y.v, jit_insn_not(c.F, x.v))
-				);
-				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r, Type::BOOLEAN), Type::BOOLEAN};
-				}
-				return {r, Type::BOOLEAN};
-			} else {
-				ls_func = (void*) &jit_xor;
-				ls_returned_type = Type::BOOLEAN;
-			}
-			break;
-		}
 		case TokenType::PLUS: {
 			jit_func = &jit_insn_add;
 			ls_func = (void*) &jit_add;
@@ -877,23 +810,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
-		case TokenType::LOWER: {
-			if (use_jit_func) {
-				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
-					if (type.nature == Nature::VALUE) return c.new_bool(true);
-					else return {LS_CREATE_POINTER(c.F, LSBoolean::get(true)), type};
-				}
-				if (v1->type.isNumber() && v2->type == Type::BOOLEAN) {
-					if (type.nature == Nature::VALUE) return c.new_bool(false);
-					else return {LS_CREATE_POINTER(c.F, LSBoolean::get(false)), type};
-				}
-			}
-			jit_func = &jit_insn_lt;
-			ls_func = (void*) &jit_lt;
-			jit_returned_type = Type::BOOLEAN;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
+
 		case TokenType::LOWER_EQUALS: {
 			if (use_jit_func) {
 				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
@@ -965,12 +882,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				ls_func = (void*) &LSArray<LSValue*>::ls_map;
 			}
-			break;
-		}
-		case TokenType::INSTANCEOF: {
-			use_jit_func = false;
-			ls_func = (void*) &jit_instanceof;
-			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::BIT_AND: {
