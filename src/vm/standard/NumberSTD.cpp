@@ -126,6 +126,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("+", {
+		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr},
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp, Method::NATIVE},
 		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_tmp_gmp, Method::NATIVE},
 		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp_tmp, Method::NATIVE},
@@ -160,6 +161,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("<", {
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::lt, Method::NATIVE},
 		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp, Method::NATIVE},
 		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_tmp_gmp_tmp, Method::NATIVE},
 		{Type::GMP_INT_TMP, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_tmp_gmp, Method::NATIVE},
@@ -167,6 +169,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_(">", {
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::gt, Method::NATIVE},
 		{Type::INTEGER, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::gt_int_gmp, Method::NATIVE}
 	});
 
@@ -415,6 +418,10 @@ Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::valu
 	return c.insn_add(args[0], args[1]);
 }
 
+LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
+	return b->ls_radd(LSNumber::get(a));
+}
+
 Compiler::value NumberSTD::add_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = c.new_mpz();
 	auto r_addr = c.insn_address_of(r);
@@ -585,6 +592,10 @@ Compiler::value NumberSTD::pow_gmp_int(Compiler& c, std::vector<Compiler::value>
 	return c.insn_call(Type::GMP_INT_TMP, args, &pow_gmp_int_lambda);
 }
 
+Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_lt(args[0], args[1]);
+}
+
 Compiler::value NumberSTD::lt_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
 	auto a_addr = c.insn_address_of(args[0]);
 	auto b_addr = c.insn_address_of(args[1]);
@@ -615,6 +626,10 @@ Compiler::value NumberSTD::lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler:
 	VM::delete_gmp_int(c.F, args[0].v);
 	VM::delete_gmp_int(c.F, args[1].v);
 	return c.insn_lt(res, c.new_integer(0));
+}
+
+Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_gt(args[0], args[1]);
 }
 
 Compiler::value NumberSTD::gt_int_gmp(Compiler& c, std::vector<Compiler::value> args) {

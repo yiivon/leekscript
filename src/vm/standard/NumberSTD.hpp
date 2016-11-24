@@ -31,6 +31,7 @@ public:
 	static Compiler::value store_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value add_real_real(Compiler& c, std::vector<Compiler::value>);
+	static LSValue* add_int_ptr(int a, LSValue* b);
 	static Compiler::value add_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value add_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value add_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args);
@@ -53,11 +54,13 @@ public:
 	static Compiler::value pow_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value pow_gmp_int(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value lt_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value lt_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value lt_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value gt(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value gt_int_gmp(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value mod_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
