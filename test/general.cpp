@@ -76,5 +76,9 @@ void Test::test_general() {
 	code("12.5.string()").equals("'12.5'");
 	code("(-6546.34).string()").equals("'-6546.34'");
 	code("Number.pi.string()").equals("'3.1415926536'");
+	// boolean
+	code("true.string()").equals("'true'");
+	code("false.string()").equals("'false'");
+	code("(12 > 5).string()").equals("'true'");
 	// TODO more types
 }
