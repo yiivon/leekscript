@@ -41,8 +41,6 @@ void Test::test_booleans() {
 	code("12 xor 5").equals("false");
 	code("12 xor 0").equals("true");
 	code("false xor 99").equals("true");
-	code("false + 99").equals("99");
-	code("true + 99").equals("100");
 
 	section("Boolean.compare()");
 	code("Boolean.compare(true, false)").equals("1");
@@ -71,4 +69,10 @@ void Test::test_booleans() {
 	code("[1, 2] or false").equals("true");
 	code("false or (x -> x)").equals("true");
 	code("[] or ''").equals("false");
+
+	section("Boolean is not a number");
+	code("false + 99").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "+");
+	code("true - 99").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "-");
+	//code("12 + true").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "+");
+	//code("15 - false").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "-");
 }
