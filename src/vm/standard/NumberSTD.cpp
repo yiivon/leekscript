@@ -168,9 +168,17 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::GMP_INT, Type::GMP_INT_TMP, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp_tmp, Method::NATIVE},
 	});
 
+	operator_("<=", {
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::le, Method::NATIVE}
+	});
+
 	operator_(">", {
 		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::gt, Method::NATIVE},
 		{Type::INTEGER, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::gt_int_gmp, Method::NATIVE}
+	});
+
+	operator_(">=", {
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::ge, Method::NATIVE}
 	});
 
 	operator_("%", {
@@ -628,6 +636,10 @@ Compiler::value NumberSTD::lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler:
 	return c.insn_lt(res, c.new_integer(0));
 }
 
+Compiler::value NumberSTD::le(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_le(args[0], args[1]);
+}
+
 Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_gt(args[0], args[1]);
 }
@@ -636,6 +648,10 @@ Compiler::value NumberSTD::gt_int_gmp(Compiler& c, std::vector<Compiler::value> 
 	auto b_addr = c.insn_address_of(args[1]);
 	auto res = c.insn_call(Type::INTEGER, {b_addr, args[0]}, &_mpz_cmp_si);
 	return c.insn_lt(res, c.new_integer(0));
+}
+
+Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_ge(args[0], args[1]);
 }
 
 Compiler::value NumberSTD::mod_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {

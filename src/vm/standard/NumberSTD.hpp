@@ -60,8 +60,12 @@ public:
 	static Compiler::value lt_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value le(Compiler& c, std::vector<Compiler::value> args);
+
 	static Compiler::value gt(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value gt_int_gmp(Compiler& c, std::vector<Compiler::value> args);
+
+	static Compiler::value ge(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value mod_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mod_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
