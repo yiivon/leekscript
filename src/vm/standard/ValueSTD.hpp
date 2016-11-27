@@ -22,7 +22,9 @@ public:
 	 */
 	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_lt(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value op_le(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_gt(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value op_ge(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_and(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_or(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_xor(Compiler&, std::vector<Compiler::value>);

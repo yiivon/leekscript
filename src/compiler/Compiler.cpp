@@ -100,8 +100,14 @@ Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_lt(F, a.v, b.v), Type::BOOLEAN};
 }
+Compiler::value Compiler::insn_le(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_le(F, a.v, b.v), Type::BOOLEAN};
+}
 Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_gt(F, a.v, b.v), Type::BOOLEAN};
+}
+Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_ge(F, a.v, b.v), Type::BOOLEAN};
 }
 Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_mul(F, a.v, b.v), Type::INTEGER};

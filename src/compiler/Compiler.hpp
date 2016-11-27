@@ -61,7 +61,9 @@ public:
 	value insn_add(value, value) const;
 	value insn_eq(value, value) const;
 	value insn_lt(value, value) const;
+	value insn_le(value, value) const;
 	value insn_gt(value, value) const;
+	value insn_ge(value, value) const;
 	value insn_mul(value, value) const;
 
 	// Value management

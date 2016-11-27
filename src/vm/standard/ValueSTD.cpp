@@ -18,8 +18,14 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("<", {
 		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_lt, Method::NATIVE}
 	});
+	operator_("<=", {
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_le, Method::NATIVE}
+	});
 	operator_(">", {
 		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_gt, Method::NATIVE}
+	});
+	operator_(">=", {
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_ge, Method::NATIVE}
 	});
 	operator_("and", {
 		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and, Method::NATIVE}
@@ -62,8 +68,22 @@ Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) 
 	return res;
 }
 
+Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) {
+	auto res = c.insn_le(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
+	c.insn_delete(args[0]);
+	c.insn_delete(args[1]);
+	return res;
+}
+
 Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_gt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
+	c.insn_delete(args[0]);
+	c.insn_delete(args[1]);
+	return res;
+}
+
+Compiler::value ValueSTD::op_ge(Compiler& c, std::vector<Compiler::value> args) {
+	auto res = c.insn_ge(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
 	c.insn_delete(args[0]);
 	c.insn_delete(args[1]);
 	return res;
