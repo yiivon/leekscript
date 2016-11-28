@@ -411,26 +411,6 @@ LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->ls_pow_eq(y);
 }
-LSValue* jit_bit_and_equal(LSValue* x, LSValue* y) {
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return LSNull::get();
-}
-LSValue* jit_bit_or_equal(LSValue* x, LSValue* y) {
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return LSNull::get();
-}
-LSValue* jit_bit_xor(LSValue* x, LSValue* y) {
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return LSNull::get();
-}
-LSValue* jit_bit_xor_equal(LSValue* x, LSValue* y) {
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return LSNull::get();
-}
 LSValue* jit_bit_shl(LSValue* x, LSValue* y) {
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
@@ -795,51 +775,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 			} else {
 				ls_func = (void*) &LSArray<LSValue*>::ls_map;
-			}
-			break;
-		}
-		case TokenType::BIT_AND_EQUALS: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				auto a = jit_insn_and(c.F, x.v, y.v);
-				jit_insn_store(c.F, x.v, a);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, a, type), type};
-				}
-				return {a, type};
-			} else {
-				ls_func = (void*) &jit_bit_and_equal;
-			}
-			break;
-		}
-		case TokenType::BIT_OR_EQUALS: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				auto o = jit_insn_or(c.F, x.v, y.v);
-				jit_insn_store(c.F, x.v, o);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, o, type), type};
-				}
-				return {o, type};
-			} else {
-				ls_func = (void*) &jit_bit_or_equal;
-			}
-			break;
-		}
-		case TokenType::BIT_XOR_EQUALS: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				auto a = jit_insn_xor(c.F, x.v, y.v);
-				jit_insn_store(c.F, x.v, a);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, a, type), type};
-				}
-				return {a, type};
-			} else {
-				ls_func = (void*) &jit_bit_xor_equal;
 			}
 			break;
 		}

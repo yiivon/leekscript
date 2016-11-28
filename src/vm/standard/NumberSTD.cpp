@@ -215,11 +215,20 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("&", {
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and, Method::NATIVE}
 	});
+	operator_("&=", {
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and_eq, Method::NATIVE}
+	});
 	operator_("|", {
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or, Method::NATIVE}
 	});
+	operator_("|=", {
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or_eq, Method::NATIVE}
+	});
 	operator_("^", {
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor, Method::NATIVE}
+	});
+	operator_("^=", {
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor_eq, Method::NATIVE}
 	});
 
 	/*
@@ -730,13 +739,26 @@ Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> 
 Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_bit_and(args[0], args[1]);
 }
-
+Compiler::value NumberSTD::bit_and_eq(Compiler& c, std::vector<Compiler::value> args) {
+	auto res = c.insn_bit_and(args[0], args[1]);
+	c.insn_store(args[0], res);
+	return res;
+}
 Compiler::value NumberSTD::bit_or(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_bit_or(args[0], args[1]);
 }
-
+Compiler::value NumberSTD::bit_or_eq(Compiler& c, std::vector<Compiler::value> args) {
+	auto res = c.insn_bit_or(args[0], args[1]);
+	c.insn_store(args[0], res);
+	return res;
+}
 Compiler::value NumberSTD::bit_xor(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_bit_xor(args[0], args[1]);
+}
+Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> args) {
+	auto res = c.insn_bit_xor(args[0], args[1]);
+	c.insn_store(args[0], res);
+	return res;
 }
 
 /*
