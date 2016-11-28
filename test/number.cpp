@@ -148,6 +148,8 @@ void Test::test_numbers() {
 	code("Number.char(65)").equals("'A'");
 	code("126.char()").equals("'~'");
 	code("Number.char(128040)").equals("'🐨'");
+	code("126.784.char()").equals("'~'");
+	code("Number.char([126.784, 'hello'][0])").equals("'~'");
 
 	section("Multiple precision numbers");
 	code("12344532132423").equals("12344532132423");
@@ -217,9 +219,12 @@ void Test::test_numbers() {
 	code("Number.round(5.7)").equals("6");
 	code("Number.round(5.4)").equals("5");
 	code("Number.round(['a', -15.89][1])").equals("-16");
+	code("Number.round(12)").equals("12");
+	code("Number.round(-1000)").equals("-1000");
 
 	section("Number.ceil()");
 	code("Number.ceil(5.1)").equals("6");
+	code("Number.ceil(188)").equals("188");
 
 	section("Number.max()");
 	code("Number.max(5, 12)").equals("12");
