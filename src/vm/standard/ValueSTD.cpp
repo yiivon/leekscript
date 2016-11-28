@@ -62,31 +62,87 @@ Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value
 }
 
 Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_lt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
-	return res;
+	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0
+		or args[1].t.id() == 0) {
+		auto res = c.insn_call(Type::BOOLEAN,
+			{c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])},
+			+[](LSValue* a, LSValue* b) {
+				auto res = *a < *b;
+				LSValue::delete_temporary(a);
+				LSValue::delete_temporary(b);
+				return res;
+			}
+		);
+		return res;
+	} else {
+		auto res = c.insn_lt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
+		c.insn_delete(args[0]);
+		c.insn_delete(args[1]);
+		return res;
+	}
 }
 
 Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_le(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
-	return res;
+	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0
+		or args[1].t.id() == 0) {
+		auto res = c.insn_call(Type::BOOLEAN,
+			{c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])},
+			+[](LSValue* a, LSValue* b) {
+				auto res = *a <= *b;
+				LSValue::delete_temporary(a);
+				LSValue::delete_temporary(b);
+				return res;
+			}
+		);
+		return res;
+	} else {
+		auto res = c.insn_le(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
+		c.insn_delete(args[0]);
+		c.insn_delete(args[1]);
+		return res;
+	}
 }
 
 Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_gt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
-	return res;
+	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0
+		or args[1].t.id() == 0) {
+		auto res = c.insn_call(Type::BOOLEAN,
+			{c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])},
+			+[](LSValue* a, LSValue* b) {
+				auto res = *a > *b;
+				LSValue::delete_temporary(a);
+				LSValue::delete_temporary(b);
+				return res;
+			}
+		);
+		return res;
+	} else {
+		auto res = c.insn_gt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
+		c.insn_delete(args[0]);
+		c.insn_delete(args[1]);
+		return res;
+	}
 }
 
 Compiler::value ValueSTD::op_ge(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_ge(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
-	return res;
+	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0
+		or args[1].t.id() == 0) {
+		auto res = c.insn_call(Type::BOOLEAN,
+			{c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])},
+			+[](LSValue* a, LSValue* b) {
+				auto res = *a >= *b;
+				LSValue::delete_temporary(a);
+				LSValue::delete_temporary(b);
+				return res;
+			}
+		);
+		return res;
+	} else {
+		auto res = c.insn_ge(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
+		c.insn_delete(args[0]);
+		c.insn_delete(args[1]);
+		return res;
+	}
 }
 
 Compiler::value ValueSTD::op_and(Compiler& c, std::vector<Compiler::value> args) {
