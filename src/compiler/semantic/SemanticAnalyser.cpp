@@ -16,6 +16,7 @@
 #include "../../vm/standard/FunctionSTD.hpp"
 #include "../../vm/standard/ClassSTD.hpp"
 #include "../../vm/standard/IntervalSTD.hpp"
+#include "../../vm/standard/JsonSTD.hpp"
 #include "SemanticError.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../../vm/value/LSNumber.hpp"
@@ -126,6 +127,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	ClassSTD().include(this, program);
 	SystemSTD().include(this, program);
 	IntervalSTD().include(this, program);
+	JsonSTD().include(this, program);
 
 	// Include custom modules
 	for (Module* module : modules) {
