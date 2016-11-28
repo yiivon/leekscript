@@ -82,6 +82,9 @@ Compiler::value Compiler::signed_int(Compiler::value v) const {
 /*
  * Operators
  */
+void Compiler::insn_store(Compiler::value a, Compiler::value b) const {
+	jit_insn_store(F, a.v, b.v);
+}
 Compiler::value Compiler::insn_not(Compiler::value v) const {
 	return {jit_insn_not(F, v.v), v.t};
 }

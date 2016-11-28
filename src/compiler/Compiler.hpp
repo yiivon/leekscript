@@ -55,6 +55,7 @@ public:
 	value new_mpz() const;
 
 	// Operators wrapping
+	void insn_store(value, value) const;
 	value insn_not(value) const;
 	value insn_and(value, value) const;
 	value insn_or(value, value) const;
