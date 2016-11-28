@@ -112,8 +112,14 @@ Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_mul(F, a.v, b.v), Type::INTEGER};
 }
-Compiler::value Compiler::new_mpz() const {
-	return {VM::create_gmp_int(F, 0), Type::GMP_INT};
+Compiler::value Compiler::insn_bit_and(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_and(F, a.v, b.v), Type::INTEGER};
+}
+Compiler::value Compiler::insn_bit_or(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_or(F, a.v, b.v), Type::INTEGER};
+}
+Compiler::value Compiler::insn_bit_xor(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_xor(F, a.v, b.v), Type::INTEGER};
 }
 
 /*
@@ -130,6 +136,9 @@ Compiler::value Compiler::new_integer(int i) const {
 }
 Compiler::value Compiler::new_pointer(void* p) const {
 	return {LS_CREATE_POINTER(F, p), Type::POINTER};
+}
+Compiler::value Compiler::new_mpz() const {
+	return {VM::create_gmp_int(F, 0), Type::GMP_INT};
 }
 Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
