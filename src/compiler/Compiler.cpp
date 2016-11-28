@@ -132,6 +132,9 @@ Compiler::value Compiler::new_pointer(void* p) const {
 	return {LS_CREATE_POINTER(F, p), Type::POINTER};
 }
 Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
+	if (v.t.nature == Nature::POINTER) {
+		return v; // already a pointer
+	}
 	Type new_type = v.t;
 	new_type.nature = Nature::POINTER;
 	return {VM::value_to_pointer(F, v.v, v.t), new_type};
