@@ -411,17 +411,7 @@ LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->ls_pow_eq(y);
 }
-LSValue* jit_bit_and(LSValue* x, LSValue* y) {
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return LSNull::get();
-}
 LSValue* jit_bit_and_equal(LSValue* x, LSValue* y) {
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return LSNull::get();
-}
-LSValue* jit_bit_or(LSValue* x, LSValue* y) {
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return LSNull::get();
@@ -808,11 +798,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 			break;
 		}
-		case TokenType::BIT_AND: {
-			jit_func = &jit_insn_and;
-			ls_func = (void*) &jit_bit_and;
-			break;
-		}
 		case TokenType::BIT_AND_EQUALS: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
@@ -828,11 +813,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 			break;
 		}
-		case TokenType::PIPE: {
-			jit_func = &jit_insn_or;
-			ls_func = (void*) &jit_bit_or;
-			break;
-		}
 		case TokenType::BIT_OR_EQUALS: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
@@ -846,11 +826,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				ls_func = (void*) &jit_bit_or_equal;
 			}
-			break;
-		}
-		case TokenType::BIT_XOR: {
-			jit_func = &jit_insn_xor;
-			ls_func = (void*) &jit_bit_xor;
 			break;
 		}
 		case TokenType::BIT_XOR_EQUALS: {

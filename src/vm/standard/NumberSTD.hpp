@@ -78,6 +78,10 @@ public:
 	static Compiler::value tilde_int(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value tilde_real(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value bit_and(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_or(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_xor(Compiler&, std::vector<Compiler::value>);
+
 	/*
 	 * Methods
 	 */

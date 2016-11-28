@@ -120,6 +120,14 @@ bool number_isInteger(LSNumber* x) {
 
 NumberSTD::NumberSTD() : Module("Number") {
 
+	static_field("pi", Type::REAL, (void*) &Number_pi);
+	static_field("e", Type::REAL, (void*) &Number_e);
+	static_field("phi", Type::REAL, (void*) &Number_phi);
+	static_field("epsilon", Type::REAL, (void*) &Number_epsilon);
+
+	/*
+	 * Operators
+	 */
 	operator_("=", {
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT, (void*) &NumberSTD::store_gmp_gmp, Method::NATIVE},
 		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT, (void*) &NumberSTD::store_gmp_gmp_tmp, Method::NATIVE},
@@ -204,10 +212,15 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, tilde_fun_type_int, Type::POINTER, (void*) &NumberSTD::tilde_int, Method::NATIVE}
 	});
 
-	static_field("pi", Type::REAL, (void*) &Number_pi);
-	static_field("e", Type::REAL, (void*) &Number_e);
-	static_field("phi", Type::REAL, (void*) &Number_phi);
-	static_field("epsilon", Type::REAL, (void*) &Number_epsilon);
+	operator_("&", {
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and, Method::NATIVE}
+	});
+	operator_("|", {
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or, Method::NATIVE}
+	});
+	operator_("^", {
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor, Method::NATIVE}
+	});
 
 	/*
 	 * Methods
@@ -712,6 +725,18 @@ Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> 
 	auto fun = jit_insn_load_relative(c.F, f, 16, LS_POINTER);
 	jit_value_t jit_args[] = {f, r};
 	return {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
+}
+
+Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_bit_and(args[0], args[1]);
+}
+
+Compiler::value NumberSTD::bit_or(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_bit_or(args[0], args[1]);
+}
+
+Compiler::value NumberSTD::bit_xor(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_bit_xor(args[0], args[1]);
 }
 
 /*
