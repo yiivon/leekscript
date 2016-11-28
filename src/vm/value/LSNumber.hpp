@@ -13,24 +13,14 @@
 #include "../../../lib/json.hpp"
 #include "../Type.hpp"
 
-#define USE_CACHE 0
-#define CACHE_LOW -128
-#define CACHE_HIGH 1000
-
 namespace ls {
 
 class LSNumber : public LSValue {
 public:
 
-#if USE_CACHE
-	const NUMBER_TYPE value;
-#else
 	NUMBER_TYPE value;
-#endif
 
 	static LSClass* number_class;
-	static LSNumber* cache[CACHE_HIGH - CACHE_LOW + 1];
-	static void build_cache();
 	static LSNumber* get(NUMBER_TYPE);
 	static std::string print(double);
 

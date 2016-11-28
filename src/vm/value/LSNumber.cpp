@@ -12,21 +12,7 @@ namespace ls {
 
 LSClass* LSNumber::number_class = new LSClass("Number");
 
-LSNumber* LSNumber::cache[CACHE_HIGH - CACHE_LOW + 1];
-
-void LSNumber::build_cache() {
-	for (int i = CACHE_LOW; i <= CACHE_HIGH; ++i) {
-		cache[-CACHE_LOW + i] = new LSNumber(i);
-	}
-}
-
 LSNumber* LSNumber::get(NUMBER_TYPE i) {
-#if USE_CACHE
-	if ((i == (int) i) and i >= CACHE_LOW and i <= CACHE_HIGH) {
-		return cache[(int) (-CACHE_LOW + i)];
-	}
-#endif
-//	std::cout << "Number() " << i << endl;
 	return new LSNumber(i);
 }
 
@@ -55,9 +41,7 @@ LSNumber::LSNumber(NUMBER_TYPE value) : value(value) {}
 
 LSNumber::LSNumber(Json& json) : value(json) {}
 
-LSNumber::~LSNumber() {
-//	cout << "delete LSNumber : " << value << endl;
-}
+LSNumber::~LSNumber() {}
 
 int LSNumber::integer() const {
 //	return mpz_get_ui(value.get_mpz_t());
