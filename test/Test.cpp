@@ -40,6 +40,7 @@ int Test::all() {
 	test_references();
 	test_operations();
 	test_system();
+	test_json();
 	test_files();
 	test_doc();
 

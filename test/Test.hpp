@@ -59,6 +59,7 @@ public:
 	void test_files();
 	void test_doc();
 	void test_intervals();
+	void test_json();
 
 	class Input {
 	private:
