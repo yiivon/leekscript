@@ -177,8 +177,16 @@ void Test::test_arrays() {
 	section("Array.first()");
 	code("Array.first([1, 2, 3, 10, true, 'yo', null])").equals("1");
 	code("['yo', 3, 4, 5].first()").equals("'yo'");
+	code("[12, 2].first()").equals("12");
+	code("[12.891, 2].first()").equals("12.891");
+	code("[].first()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+
+	section("Array.last()");
 	code("Array.last([1, 2, 3, 10, true, 'yo', null])").equals("null");
-	// code("['yo', 3, 4, 5].last()").equals("5");
+	code("['yo', 3, 4, 5].last()").equals("5");
+	code("[12, 2].last()").equals("2");
+	code("[12.891, 2].last()").equals("2");
+	code("[].last()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	// TODO : the return type of first() must be the element type of the array if it's homogeneous
 //	code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");

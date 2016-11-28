@@ -226,7 +226,8 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 		if (refs == 0) {
 			delete this;
 		}
-		return LSNull::get();
+		jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+		return nullptr;
 	}
 	LSValue* first = front();
 	if (refs == 0) {
@@ -274,7 +275,8 @@ inline LSValue* LSArray<LSValue*>::ls_last() {
 		if (refs == 0) {
 			delete this;
 		}
-		return LSNull::get();
+		jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+		return nullptr;
 	}
 	LSValue* last = back();
 	if (refs == 0) {
