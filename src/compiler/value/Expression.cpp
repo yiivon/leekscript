@@ -367,30 +367,6 @@ bool jit_not_equals(LSValue* x, LSValue* y) {
 	LSValue::delete_temporary(y);
 	return r;
 }
-bool jit_lt(LSValue* x, LSValue* y) {
-	bool r = *x < *y;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-bool jit_le(LSValue* x, LSValue* y) {
-	bool r = *x <= *y;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-bool jit_gt(LSValue* x, LSValue* y) {
-	bool r = *x > *y;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-bool jit_ge(LSValue* x, LSValue* y) {
-	bool r = *x >= *y;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
 
 LSValue* jit_store(LSValue** x, LSValue* y) {
 	y->refs++;
@@ -806,58 +782,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		case TokenType::DIFFERENT: {
 			jit_func = &jit_insn_ne;
 			ls_func = (void*) &jit_not_equals;
-			jit_returned_type = Type::BOOLEAN;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
-
-		case TokenType::LOWER_EQUALS: {
-			if (use_jit_func) {
-				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
-					if (type.nature == Nature::VALUE) return c.new_bool(true);
-					else return {LS_CREATE_POINTER(c.F, LSBoolean::get(true)), type};
-				}
-				if (v1->type.isNumber() && v2->type == Type::BOOLEAN) {
-					if (type.nature == Nature::VALUE) return c.new_bool(false);
-					else return {LS_CREATE_POINTER(c.F, LSBoolean::get(false)), type};
-				}
-			}
-			jit_func = &jit_insn_le;
-			ls_func = (void*) &jit_le;
-			jit_returned_type = Type::BOOLEAN;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
-		case TokenType::GREATER: {
-			if (use_jit_func) {
-				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
-					if (type.nature == Nature::VALUE) return c.new_bool(false);
-					else return {LS_CREATE_POINTER(c.F, LSBoolean::get(false)), type};
-				}
-				if (v1->type.isNumber() && v2->type == Type::BOOLEAN) {
-					if (type.nature == Nature::VALUE) return c.new_bool(true);
-					else return {LS_CREATE_POINTER(c.F, LSBoolean::get(true)), type};
-				}
-			}
-			jit_func = &jit_insn_gt;
-			ls_func = (void*) &jit_gt;
-			jit_returned_type = Type::BOOLEAN;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
-		case TokenType::GREATER_EQUALS: {
-			if (use_jit_func) {
-				if (v1->type == Type::BOOLEAN && v2->type.isNumber()) {
-					if (type.nature == Nature::VALUE) return c.new_bool(false);
-					else return {LS_CREATE_POINTER(c.F, LSBoolean::get(false)), type};
-				}
-				if (v1->type.isNumber() && v2->type == Type::BOOLEAN) {
-					if (type.nature == Nature::VALUE) return c.new_bool(true);
-					else return {LS_CREATE_POINTER(c.F, LSBoolean::get(true)), type};
-				}
-			}
-			jit_func = &jit_insn_ge;
-			ls_func = (void*) &jit_ge;
 			jit_returned_type = Type::BOOLEAN;
 			ls_returned_type = Type::BOOLEAN;
 			break;
