@@ -1038,6 +1038,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		default: {
+			std::cout << "no such operator to compile : " << op->character << std::endl;
 			throw new exception();
 		}
 		}
