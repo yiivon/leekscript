@@ -269,7 +269,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			void* func = array_element_type == Type::INTEGER ? (void*) access_temp_value : (void*) access_temp;
 
 			jit_value_t args[] = {a.v, k.v};
-			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, JIT_CALL_NOTHROW);
+			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, 0);
 
 			if (key->type.must_manage_memory()) {
 				VM::delete_temporary(c.F, k.v);

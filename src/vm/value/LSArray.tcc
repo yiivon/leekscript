@@ -2,6 +2,7 @@
 #define LS_ARRAY_TCC
 
 #include "../LSValue.hpp"
+#include "../VM.hpp"
 #include "LSNull.hpp"
 #include "LSNumber.hpp"
 #include "LSBoolean.hpp"
@@ -2000,7 +2001,13 @@ inline bool LSArray<LSValue*>::in(LSValue* const value) const {
 
 template <>
 inline int LSArray<int>::atv(const int i) {
-	return this->operator[] (i);
+	try {
+		return ((std::vector<int>*) this)->at(i);
+	} catch (...) {
+		LSValue::delete_temporary(this);
+		jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+		return 0;
+	}
 }
 
 template <>
@@ -2094,11 +2101,16 @@ inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
 		try {
 			return ((std::vector<LSValue*>*) this)->at((int) n->value)->clone();
 		} catch (std::exception& e) {
-			return LSNull::get();
+			LSValue::delete_temporary(this);
+			LSValue::delete_temporary(key);
+			jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+			return nullptr;
 		}
 	}
-
-	return LSNull::get();
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(key);
+	jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	return nullptr;
 }
 
 template <typename T>
@@ -2108,10 +2120,16 @@ inline LSValue* LSArray<T>::at(const LSValue* key) const {
 		try {
 			return LSNumber::get(((std::vector<T>*) this)->at((int) n->value));
 		} catch (std::exception& e) {
-			return LSNull::get();
+			LSValue::delete_temporary(this);
+			LSValue::delete_temporary(key);
+			jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+			return nullptr;
 		}
 	}
-	return LSNull::get();
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(key);
+	jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	return nullptr;
 }
 
 template <class T>

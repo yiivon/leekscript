@@ -518,6 +518,8 @@ std::string VM::exception_message(VM::Exception expected) {
 	case Exception::NUMBER_OVERFLOW: return "number_overflow";
 	case Exception::NO_EXCEPTION: return "no_exception";
 	case Exception::NO_SUCH_OPERATOR: return "no_such_operator";
+	case Exception::ARRAY_OUT_OF_BOUNDS: return "array_out_of_bounds";
+	case Exception::ARRAY_KEY_IS_NOT_NUMBER: return "array_key_is_not_a_number";
 	}
 	return "??" + std::to_string((int) expected) + "??";
 }

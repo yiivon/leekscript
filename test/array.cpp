@@ -46,6 +46,12 @@ void Test::test_arrays() {
 	code("[true false true true]").equals("[true, false, true, true]");
 	code("[[1 2] [[3] 4 [5 6] []]]").equals("[[1, 2], [[3], 4, [5, 6], []]]");
 
+	section("Out of bounds");
+	code("[][1]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1, 2, 3][100]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[5.6, 7.2][-5]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("['hello', true][2]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+
 	section("Type changes");
 	code("let a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
 	code("let a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");
