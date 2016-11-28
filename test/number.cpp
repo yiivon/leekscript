@@ -362,8 +362,8 @@ void Test::test_numbers() {
 	code("4.isPrime()").equals("false");
 	code("5.isPrime()").equals("true");
 	code("1993.isPrime()").equals("true");
-	code("1993l.isPrime()").equals("true");
+	code("(1993l).isPrime()").equals("true");
 	code("4398042316799.isPrime()").equals("true");
-	code("4398042316799m.isPrime()").equals("true");
-	code("359334085968622831041960188598043661065388726959079837.isPrime()").equals("true");
+	code("(4398042316799m).isPrime()").equals("1");
+	code("359334085968622831041960188598043661065388726959079837.isPrime()").equals("1");
 }
