@@ -517,9 +517,9 @@ std::string VM::exception_message(VM::Exception expected) {
 	case Exception::OPERATION_LIMIT_EXCEEDED: return "too_much_operations";
 	case Exception::NUMBER_OVERFLOW: return "number_overflow";
 	case Exception::NO_EXCEPTION: return "no_exception";
-	case Exception::OTHER: return "?";
+	case Exception::NO_SUCH_OPERATOR: return "no_such_operator";
 	}
-	return "?";
+	return "??" + std::to_string((int) expected) + "??";
 }
 
 void VM::function_add_capture(jit_function_t F, jit_value_t fun, jit_value_t capture) {

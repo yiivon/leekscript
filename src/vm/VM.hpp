@@ -48,7 +48,7 @@ public:
 		NO_EXCEPTION = 0,
 		OPERATION_LIMIT_EXCEEDED = 1,
 		NUMBER_OVERFLOW = 2,
-		OTHER = 3
+		NO_SUCH_OPERATOR = 3
 	};
 
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;
