@@ -150,7 +150,11 @@ void Test::Input::_equals(std::string&& expected) {
 	if (result.value == expected) {
 		pass(expected);
 	} else {
-		fail(expected, result.value);
+		auto actual = result.value;
+		if (result.exception != ls::VM::Exception::NO_EXCEPTION) {
+			actual = "Unexpected exception: " + ls::VM::exception_message(result.exception);
+		}
+		fail(expected, actual);
 	}
 }
 
