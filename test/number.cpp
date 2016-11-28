@@ -84,7 +84,7 @@ void Test::test_numbers() {
 	code("2.5 × 4.7").equals("11.75");
 	code("5 * 2 + 3 * 4").equals("22");
 
-	section("Binary operators");
+	section("Number.operator &");
 	code("0 & 0").equals("0");
 	code("1 & 0").equals("0");
 	code("1 & 1").equals("1");
@@ -92,6 +92,10 @@ void Test::test_numbers() {
 	code("87619 & 18431").equals("17987");
 	code("let a = 87619 a &= 18431").equals("17987");
 	code("let a = 87619 a &= 18431 a").equals("17987");
+	code("[87619, ''][0] & 18431").equals("17987");
+	code("[12, 'hello'][1] & 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("Number.operator |");
 	code("0 | 0").equals("0");
 	code("1 | 0").equals("1");
 	code("1 | 1").equals("1");
@@ -99,6 +103,10 @@ void Test::test_numbers() {
 	code("87619 | 18431").equals("88063");
 	code("let a = 87619 a |= 18431").equals("88063");
 	code("let a = 87619 a |= 18431 a").equals("88063");
+	code("[87619, ''][0] | 18431").equals("88063");
+	code("[12, 'hello'][1] | 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("Number.operator ^");
 	code("0 ^ 0").equals("0");
 	code("1 ^ 0").equals("1");
 	code("1 ^ 1").equals("0");
@@ -106,6 +114,8 @@ void Test::test_numbers() {
 	code("87619 ^ 18431").equals("70076");
 	code("let a = 87619 a ^= 18431").equals("70076");
 	code("let a = 87619 a ^= 18431 a").equals("70076");
+	code("[87619, ''][0] ^ 18431").equals("70076");
+	code("[12, 'hello'][1] ^ 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	section("Binary shift operators");
 	code("0 << 0").equals("0");

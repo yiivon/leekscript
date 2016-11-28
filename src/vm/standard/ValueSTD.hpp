@@ -28,6 +28,9 @@ public:
 	static Compiler::value op_and(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_or(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_xor(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_bit_and(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_bit_or(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_bit_xor(Compiler&, std::vector<Compiler::value>);
 
 	/*
 	 * Methods
