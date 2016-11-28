@@ -386,8 +386,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::max_ptr_float},
 		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int},
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::max_float_ptr},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::max_int_ptr},
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE}
 	});
@@ -395,8 +397,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::min_ptr_float},
 		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::min_ptr_int},
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::min_float_ptr},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
+		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::min_int_ptr},
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE}
 	});
@@ -896,28 +900,28 @@ Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args
 }
 
 double NumberSTD::max_ptr_ptr(LSNumber* x, LSNumber* y) {
-	int max = fmax(x->value, y->value);
+	double max = fmax(x->value, y->value);
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return max;
 }
 double NumberSTD::max_ptr_float(LSNumber* x, double y) {
-	int max = fmax(x->value, y);
+	double max = fmax(x->value, y);
 	LSValue::delete_temporary(x);
 	return max;
 }
 double NumberSTD::max_ptr_int(LSNumber* x, int y) {
-	int max = fmax(x->value, y);
+	double max = fmax(x->value, y);
 	LSValue::delete_temporary(x);
 	return max;
 }
 double NumberSTD::max_float_ptr(double x, LSNumber* y) {
-	int max = fmax(x, y->value);
+	double max = fmax(x, y->value);
 	LSValue::delete_temporary(y);
 	return max;
 }
 double NumberSTD::max_int_ptr(int x, LSNumber* y) {
-	int max = fmax(x, y->value);
+	double max = fmax(x, y->value);
 	LSValue::delete_temporary(y);
 	return max;
 }
@@ -926,30 +930,30 @@ Compiler::value NumberSTD::max_float_float(Compiler& c, std::vector<Compiler::va
 }
 
 double NumberSTD::min_ptr_ptr(LSNumber* x, LSNumber* y) {
-	int max = fmin(x->value, y->value);
+	double min = fmin(x->value, y->value);
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return max;
+	return min;
 }
 double NumberSTD::min_ptr_float(LSNumber* x, double y) {
-	int max = fmin(x->value, y);
+	double min = fmin(x->value, y);
 	LSValue::delete_temporary(x);
-	return max;
+	return min;
 }
 double NumberSTD::min_ptr_int(LSNumber* x, int y) {
-	int max = fmin(x->value, y);
+	double min = fmin(x->value, y);
 	LSValue::delete_temporary(x);
-	return max;
+	return min;
 }
 double NumberSTD::min_float_ptr(double x, LSNumber* y) {
-	int max = fmin(x, y->value);
+	double min = fmin(x, y->value);
 	LSValue::delete_temporary(y);
-	return max;
+	return min;
 }
 double NumberSTD::min_int_ptr(int x, LSNumber* y) {
-	int max = fmin(x, y->value);
+	double min = fmin(x, y->value);
 	LSValue::delete_temporary(y);
-	return max;
+	return min;
 }
 Compiler::value NumberSTD::min_float_float(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_min(c.F, args[0].v, args[1].v), Type::REAL};

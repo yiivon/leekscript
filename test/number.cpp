@@ -230,6 +230,24 @@ void Test::test_numbers() {
 	code("Number.max(4, [5, 'a'][0])").equals("5");
 	code("Number.max(77, [5, 'a'][0])").equals("77");
 	code("Number.max([55, 'a'][0], [5, 'a'][0])").equals("55");
+	code("Number.max(5, 12.8)").equals("12.8");
+	code("Number.max(15.7, 12.8)").equals("15.7");
+	code("Number.max([15.7, ''][0], 12.8)").equals("15.7");
+	code("Number.max(5.5, [12.8, ''][0])").equals("12.8");
+
+	section("Number.min()");
+	code("Number.min(5, 12)").equals("5");
+	code("Number.min(75.7, 12)").almost(12.0);
+	code("Number.min(5, 12.451)").almost(5.0);
+	code("Number.min([5, 'a'][0], 4)").equals("4");
+	code("Number.min([5, 'a'][0], 76)").equals("5");
+	code("Number.min(4, [5, 'a'][0])").equals("4");
+	code("Number.min(77, [5, 'a'][0])").equals("5");
+	code("Number.min([55, 'a'][0], [5, 'a'][0])").equals("5");
+	code("Number.min(5, 12.8)").equals("5");
+	code("Number.min(15.7, 12.8)").equals("12.8");
+	code("Number.min([15.7, ''][0], 12.8)").equals("12.8");
+	code("Number.min(5.5, [12.8, ''][0])").equals("5.5");
 
 	section("Number.cos()");
 	code("Number.cos(0)").equals("1");
