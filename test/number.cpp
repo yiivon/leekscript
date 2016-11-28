@@ -348,4 +348,17 @@ void Test::test_numbers() {
 	code("3.max(5).max(10).max(12)").equals("12");
 	code("10.max(5).max(8.7).max(-3.91)").equals("10");
 	code("10.sqrt().cos()").almost(-0.99978607287932586);
+
+	section("Number.isPrime()");
+	code("0.isPrime()").equals("false");
+	code("1.isPrime()").equals("false");
+	code("2.isPrime()").equals("true");
+	code("3.isPrime()").equals("true");
+	code("4.isPrime()").equals("false");
+	code("5.isPrime()").equals("true");
+	code("1993.isPrime()").equals("true");
+	code("1993l.isPrime()").equals("true");
+	code("4398042316799.isPrime()").equals("true");
+	code("4398042316799m.isPrime()").equals("true");
+	code("359334085968622831041960188598043661065388726959079837.isPrime()").equals("true");
 }
