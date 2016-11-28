@@ -13,6 +13,7 @@ enum class Nature {
 class BaseRawType {
 public:
 	virtual ~BaseRawType() {}
+	virtual int id() const { return 0; }
 	virtual const std::string getName() const { return "?"; }
 	virtual const std::string getClass() const { return "?"; }
 	virtual const std::string getJsonName() const { return "?"; }
@@ -26,6 +27,7 @@ public:
 
 class NullRawType : public BaseRawType {
 public:
+	virtual int id() const { return 1; }
 	virtual const std::string getName() const { return "null"; }
 	virtual const std::string getClass() const { return "Null"; }
 	virtual const std::string getJsonName() const { return "null"; }
@@ -33,6 +35,7 @@ public:
 
 class BooleanRawType : public BaseRawType {
 public:
+	virtual int id() const { return 2; }
 	virtual const std::string getName() const { return "bool"; }
 	virtual const std::string getClass() const { return "Boolean"; }
 	virtual const std::string getJsonName() const { return "boolean"; }
@@ -40,6 +43,7 @@ public:
 
 class NumberRawType : public BaseRawType {
 public:
+	virtual int id() const { return 3; }
 	virtual const std::string getName() const { return "number"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
@@ -75,6 +79,7 @@ public:
 
 class StringRawType : public BaseRawType {
 public:
+	virtual int id() const { return 4; }
 	virtual const std::string getName() const { return "string"; }
 	virtual const std::string getClass() const { return "String"; }
 	virtual const std::string getJsonName() const { return "string"; }
@@ -82,6 +87,7 @@ public:
 
 class ArrayRawType : public BaseRawType {
 public:
+	virtual int id() const { return 5; }
 	virtual const std::string getName() const { return "array"; }
 	virtual const std::string getClass() const { return "Array"; }
 	virtual const std::string getJsonName() const { return "array"; }
@@ -89,6 +95,7 @@ public:
 
 class MapRawType : public BaseRawType {
 public:
+	virtual int id() const { return 6; }
 	virtual const std::string getName() const { return "map"; }
 	virtual const std::string getClass() const { return "Map"; }
 	virtual const std::string getJsonName() const { return "map"; }
@@ -96,6 +103,7 @@ public:
 
 class SetRawType : public BaseRawType {
 public:
+	virtual int id() const { return 7; }
 	virtual const std::string getName() const { return "set"; }
 	virtual const std::string getClass() const { return "Set"; }
 	virtual const std::string getJsonName() const { return "set"; }
@@ -103,6 +111,7 @@ public:
 
 class IntervalRawType : public BaseRawType {
 public:
+	virtual int id() const { return 5; }
 	virtual const std::string getName() const { return "interval"; }
 	virtual const std::string getClass() const { return "Interval"; }
 	virtual const std::string getJsonName() const { return "interval"; }
@@ -110,6 +119,7 @@ public:
 
 class ObjectRawType : public BaseRawType {
 public:
+	virtual int id() const { return 9; }
 	virtual const std::string getName() const { return "object"; }
 	virtual const std::string getClass() const { return "Object"; }
 	virtual const std::string getJsonName() const { return "object"; }
@@ -117,6 +127,7 @@ public:
 
 class FunctionRawType : public BaseRawType {
 public:
+	virtual int id() const { return 8; }
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getClass() const { return "Function"; }
 	virtual const std::string getJsonName() const { return "function"; }
@@ -124,6 +135,7 @@ public:
 
 class ClassRawType : public BaseRawType {
 public:
+	virtual int id() const { return 10; }
 	virtual const std::string getName() const { return "class"; }
 	virtual const std::string getClass() const { return "Class"; }
 	virtual const std::string getJsonName() const { return "class"; }
@@ -169,6 +181,8 @@ public:
 	Type(const BaseRawType* raw_type, Nature nature, bool native = false, bool temporary = false);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native = false);
 	Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native = false);
+
+	int id() const;
 
 	bool must_manage_memory() const;
 

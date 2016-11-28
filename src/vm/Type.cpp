@@ -107,6 +107,10 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, con
 	this->setElementType(element_type);
 }
 
+int Type::id() const {
+	return raw_type->id();
+}
+
 bool Type::must_manage_memory() const {
 	return nature == Nature::POINTER and not native;
 }
