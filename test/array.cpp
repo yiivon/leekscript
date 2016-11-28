@@ -246,6 +246,7 @@ void Test::test_arrays() {
 	section("Array.clear()");
 	code("let a = [1, 2, 3] a.clear() a").equals("[]");
 	code("let a = [1, 2, 3] Array.clear(a)").equals("[]");
+	code("let a = [1, 'yo', true] a.clear() a").equals("[]");
 
 	section("Array.fill()");
 	code("let a = [1, 2, 3] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
@@ -258,8 +259,8 @@ void Test::test_arrays() {
 	section("Array.remove()");
 	code("let a = [1, 2, 3] Array.remove(a, 1)").equals("2");
 	code("let a = [1, 2, 3] Array.remove(a, 1) a").equals("[1, 3]");
-//	code("let a = [1, 2, 3] Array.remove(a, 1) a").equals("[0: 1, 2: 3]");
 	code("let a = [1, 2, 3] Array.remove(a, 1)").equals("2");
+	code("let a = [1, 'yo', true] Array.remove(a, 1)").equals("'yo'");
 
 //	code("let a = [] Array.removeKey(a, 'key')").equals("null");
 //	code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key')").equals("'test'");
