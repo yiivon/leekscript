@@ -126,11 +126,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (object_class) {
 		// Search in the object class first
 		m = object_class->getOperator(op->character, this->v1_type, this->v2_type);
-		if (m == nullptr) {
-			// Search in the Value class if not found
-			auto value_class = (LSClass*) analyser->program->system_vars["Value"];
-			m = value_class->getOperator(op->character, this->v1_type, this->v2_type);
-		}
+	}
+	if (m == nullptr) {
+		// Search in the Value class if not found
+		auto value_class = (LSClass*) analyser->program->system_vars["Value"];
+		m = value_class->getOperator(op->character, this->v1_type, this->v2_type);
 	}
 
 	if (m != nullptr) {
