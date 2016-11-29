@@ -30,7 +30,7 @@ jit_type_t VM::gmp_int_type;
 long VM::gmp_values_created = 0;
 long VM::gmp_values_deleted = 0;
 
-VM::Exception VM::last_exception = VM::Exception::NO_EXCEPTION;
+VM::ExceptionObj* VM::last_exception = nullptr;
 jit_stack_trace_t VM::stack_trace;
 
 map<string, jit_value_t> internals;
@@ -57,7 +57,7 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 	VM::gmp_values_created = 0;
 	VM::gmp_values_deleted = 0;
 	VM::operations = 0;
-	VM::last_exception = VM::Exception::NO_EXCEPTION;
+	VM::last_exception = nullptr;
 	#if DEBUG_LEAKS_DETAILS
 		LSValue::objs().clear();
 	#endif
@@ -83,6 +83,11 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 			result.execution_success = true;
 		} catch (const VM::Exception& ex) {
 			result.exception = ex;
+		} catch (const VM::ExceptionObj* ex) {
+			std::cout << "Exception : " << (LSValue*)ex->obj << std::endl;
+			for (auto l : ex->lines) {
+				std::cout << "    > line " << l << std::endl;
+			}
 		}
 		auto exe_end = chrono::high_resolution_clock::now();
 

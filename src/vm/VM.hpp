@@ -53,6 +53,11 @@ public:
 		ARRAY_KEY_IS_NOT_NUMBER = 5
 	};
 
+	struct ExceptionObj {
+		void* obj;
+		std::vector<int> lines;
+	};
+
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;
 	static unsigned int operations;
 	static const bool enable_operations;
@@ -62,7 +67,7 @@ public:
 	static long gmp_values_created;
 	static long gmp_values_deleted;
 
-	static Exception last_exception;
+	static ExceptionObj* last_exception;
 	static jit_stack_trace_t stack_trace;
 
 	struct Result {
