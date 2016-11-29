@@ -99,7 +99,7 @@ void Expression::print(std::ostream& os, int indent, bool debug) const {
 }
 
 unsigned Expression::line() const {
-	return 0;
+	return op->token->line;
 }
 
 void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -878,6 +878,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 
 	if (use_jit_func) {
+
+		jit_insn_mark_offset(c.F, line());
 
 		auto x = v1->compile(c);
 		auto y = v2->compile(c);

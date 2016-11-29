@@ -8,6 +8,7 @@ namespace ls {
 class Operator {
 public:
 
+	Token* token;
 	TokenType type;
 	std::string character;
 	int priority;
