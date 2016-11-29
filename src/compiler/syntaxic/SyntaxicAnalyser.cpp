@@ -16,6 +16,7 @@
 #include "../instruction/ClassDeclaration.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../instruction/Return.hpp"
+#include "../instruction/Throw.hpp"
 #include "../instruction/While.hpp"
 #include "../value/AbsoluteValue.hpp"
 #include "../value/Array.hpp"
@@ -224,6 +225,15 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 				return new Return();
 			} else {
 				return new Return(eatExpression());
+			}
+		}
+		case TokenType::THROW: {
+			Token* t = eat();
+			if (t->type == TokenType::FINISHED or t->type == TokenType::CLOSING_BRACE
+				or t->type == TokenType::ELSE or t->type == TokenType::END) {
+				return new Throw(t);
+			} else {
+				return new Throw(t, eatExpression());
 			}
 		}
 		case TokenType::BREAK:
