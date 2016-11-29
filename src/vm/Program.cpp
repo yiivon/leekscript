@@ -1,5 +1,6 @@
 #include <chrono>
 #include <jit/jit-dump.h>
+#include <jit/jit-internal.h>
 
 #include "Program.hpp"
 #include "Context.hpp"
@@ -86,12 +87,12 @@ void Program::compile_main(Context& context) {
 	Compiler c(this);
 
 	jit_init();
-	jit_context_t jit_context = jit_context_create();
-	jit_context_build_start(jit_context);
+	VM::jit_context = jit_context_create();
+	jit_context_build_start(VM::jit_context);
 
 	jit_type_t params[0] = {};
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(main->type.getReturnType()), params, 0, 0);
-	jit_function_t F = jit_function_create(jit_context, signature);
+	jit_function_t F = jit_function_create(VM::jit_context, signature);
 	jit_insn_uses_catcher(F);
 	c.enter_function(F);
 
@@ -105,7 +106,7 @@ void Program::compile_main(Context& context) {
 	//jit_dump_function(fopen("main_uncompiled", "w"), F, "main");
 
 	jit_function_compile(F);
-	jit_context_build_end(jit_context);
+	jit_context_build_end(VM::jit_context);
 
 	//jit_dump_function(fopen("main_compiled", "w"), F, "main");
 
@@ -113,21 +114,37 @@ void Program::compile_main(Context& context) {
 	function = F;
 }
 
+
+
+/*
+ * Handle a native JIT exception, like division by zero etc.
+ * The exception is transformed directly into a VM::ExceptionObj
+ */
 void* handler(int type) {
-	return (void*) (long) type;
+
+	void* frame = __builtin_frame_address(1);
+	void* pc = jit_get_return_address(frame);
+	void* func_info = _jit_memory_find_function_info(VM::jit_context, pc);
+	jit_function_t func = _jit_memory_get_function(VM::jit_context, func_info);
+	unsigned int line = _jit_function_get_bytecode(func, func_info, pc, 0);
+
+	VM::ExceptionObj* ex = new VM::ExceptionObj();
+	ex->obj = new LSNumber(type);
+	ex->lines.push_back(line);
+	return ex;
 }
 
 std::string Program::execute() {
 
-	/*
+	jit_exception_set_handler(&handler);
+/*
 	int buff;
 	jit_function_apply(function, nullptr, &buff);
 	std::cout << "LSString/ stack " << VM::stack_trace << std::endl;
 	std::cout << "LSString/ stack size " << jit_stack_trace_get_size(VM::stack_trace) << std::endl;
 	std::cout << "fun: " << jit_stack_trace_get_pc(VM::stack_trace, 0) << std::endl;
 	if (true) return to_string(buff);
-	*/
-
+*/
 	Type output_type = main->type.getReturnType();
 
 	if (output_type == Type::VOID) {
@@ -143,8 +160,6 @@ std::string Program::execute() {
 		if (VM::last_exception) throw VM::last_exception;
 		return res ? "true" : "false";
 	}
-
-	jit_exception_set_handler(&handler);
 
 	if (output_type == Type::INTEGER) {
 		auto fun = (int (*)()) closure;

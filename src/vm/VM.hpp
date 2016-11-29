@@ -69,6 +69,7 @@ public:
 
 	static ExceptionObj* last_exception;
 	static jit_stack_trace_t stack_trace;
+	static jit_context_t jit_context;
 
 	struct Result {
 		bool compilation_success = false;
