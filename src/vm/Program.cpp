@@ -114,8 +114,6 @@ void Program::compile_main(Context& context) {
 	function = F;
 }
 
-
-
 /*
  * Handle a native JIT exception, like division by zero etc.
  * The exception is transformed directly into a VM::ExceptionObj
@@ -128,8 +126,7 @@ void* handler(int type) {
 	jit_function_t func = _jit_memory_get_function(VM::jit_context, func_info);
 	unsigned int line = _jit_function_get_bytecode(func, func_info, pc, 0);
 
-	VM::ExceptionObj* ex = new VM::ExceptionObj();
-	ex->obj = new LSNumber(type);
+	VM::ExceptionObj* ex = new VM::ExceptionObj((VM::Exception) type);
 	ex->lines.push_back(line);
 	return ex;
 }

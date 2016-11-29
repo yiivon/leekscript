@@ -226,7 +226,7 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 		if (refs == 0) {
 			delete this;
 		}
-		jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 		return nullptr;
 	}
 	LSValue* first = front();
@@ -275,7 +275,7 @@ inline LSValue* LSArray<LSValue*>::ls_last() {
 		if (refs == 0) {
 			delete this;
 		}
-		jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 		return nullptr;
 	}
 	LSValue* last = back();
@@ -2007,7 +2007,7 @@ inline int LSArray<int>::atv(const int i) {
 		return ((std::vector<int>*) this)->at(i);
 	} catch (...) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 		return 0;
 	}
 }
@@ -2105,7 +2105,7 @@ inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
 		} catch (std::exception& e) {
 			LSValue::delete_temporary(this);
 			LSValue::delete_temporary(key);
-			jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+			jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 			return nullptr;
 		}
 	}
@@ -2124,7 +2124,7 @@ inline LSValue* LSArray<T>::at(const LSValue* key) const {
 		} catch (std::exception& e) {
 			LSValue::delete_temporary(this);
 			LSValue::delete_temporary(key);
-			jit_exception_throw((void*) VM::Exception::ARRAY_OUT_OF_BOUNDS);
+			jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 			return nullptr;
 		}
 	}

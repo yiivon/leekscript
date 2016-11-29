@@ -13,6 +13,7 @@
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
 #include "../compiler/Compiler.hpp"
+#include "../vm/value/LSNumber.hpp"
 
 #define OPERATION_LIMIT 10000000
 
@@ -54,8 +55,9 @@ public:
 	};
 
 	struct ExceptionObj {
-		void* obj;
+		Exception type;
 		std::vector<int> lines;
+		ExceptionObj(Exception type) : type(type) {}
 	};
 
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;

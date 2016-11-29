@@ -82,10 +82,8 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 		try {
 			value = program->execute();
 			result.execution_success = true;
-		} catch (const VM::Exception& ex) {
-			result.exception = ex;
-		} catch (const VM::ExceptionObj* ex) {
-			std::cout << "Exception : " << (LSValue*)ex->obj << std::endl;
+		} catch (VM::ExceptionObj* ex) {
+			result.exception = ex->type;
 			for (auto l : ex->lines) {
 				std::cout << "    > line " << l << std::endl;
 			}
@@ -336,7 +334,9 @@ void VM::inc_ops_jit(jit_function_t F, jit_value_t amount) {
 	jit_insn_branch_if_not(F, compare, &label_end);
 
 	// If greater than the limit, throw exception
-	jit_insn_throw(F, LS_CREATE_INTEGER(F, VM::Exception::OPERATION_LIMIT_EXCEEDED));
+	jit_insn_throw(F, VM::call(F, jit_type_void_ptr, {}, {}, +[]() {
+		return new VM::ExceptionObj(VM::Exception::OPERATION_LIMIT_EXCEEDED);
+	}));
 
 	// End
 	jit_insn_label(F, &label_end);

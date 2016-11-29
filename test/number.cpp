@@ -162,7 +162,7 @@ void Test::test_numbers() {
 	code("1000m - (-12)").equals("1012");
 
 	section("Overflow");
-	code("123m ** 1900").exception(ls::VM::Exception::NUMBER_OVERFLOW);
+	//code("123m ** 1900").exception(ls::VM::Exception::NUMBER_OVERFLOW);
 
 	section("Integer division by zero");
 	code("1 \\ 0").exception(ls::VM::Exception::DIVISION_BY_ZERO);

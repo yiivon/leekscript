@@ -193,7 +193,7 @@ Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> a
 		}
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		jit_exception_throw((void*) VM::Exception::NO_SUCH_OPERATOR);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 		return 0;
 	});
 }
@@ -211,7 +211,7 @@ Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> ar
 		}
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		jit_exception_throw((void*) VM::Exception::NO_SUCH_OPERATOR);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 		return 0;
 	});
 }
@@ -229,7 +229,7 @@ Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> a
 		}
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		jit_exception_throw((void*) VM::Exception::NO_SUCH_OPERATOR);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 		return 0;
 	});
 }
