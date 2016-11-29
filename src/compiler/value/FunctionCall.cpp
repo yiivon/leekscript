@@ -27,7 +27,8 @@ using namespace std;
 
 namespace ls {
 
-FunctionCall::FunctionCall() {
+FunctionCall::FunctionCall(Token* t) {
+	token = t;
 	function = nullptr;
 	type = Type::UNKNOWN;
 	std_func = nullptr;

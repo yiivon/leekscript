@@ -471,10 +471,11 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened) 
 
 			case TokenType::OPEN_PARENTHESIS: {
 
-				FunctionCall* fc = new FunctionCall();
+				Token* par = eat(TokenType::OPEN_PARENTHESIS);
+
+				FunctionCall* fc = new FunctionCall(par);
 				fc->function = e;
 
-				eat(TokenType::OPEN_PARENTHESIS);
 				if (t->type != TokenType::CLOSING_PARENTHESIS) {
 					fc->arguments.push_back(eatExpression());
 					while (t->type == TokenType::COMMA) {

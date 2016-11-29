@@ -10,6 +10,7 @@ namespace ls {
 class FunctionCall : public Value {
 public:
 
+	Token* token;
 	Value* function;
 	std::vector<Value*> arguments;
 
@@ -20,7 +21,7 @@ public:
 	Value* this_ptr;
 	bool is_native_method = false;
 
-	FunctionCall();
+	FunctionCall(Token* t);
 	virtual ~FunctionCall();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
