@@ -395,6 +395,38 @@ bool LSValue::isInteger() const {
 	return false;
 }
 
+LSValue* LSValue::get_from_json(Json& json) {
+	switch (json.type()) {
+		case Json::value_t::null:
+			return LSNull::get();
+		case Json::value_t::boolean:
+			return LSBoolean::get(json);
+		case Json::value_t::number_integer:
+		case Json::value_t::number_unsigned:
+		case Json::value_t::number_float:
+			return LSNumber::get(json);
+		case Json::value_t::string:
+			return new LSString(json);
+		case Json::value_t::array: {
+			auto array = new LSArray<LSValue*>();
+			for (auto& v : json) {
+				array->push_move(get_from_json(v));
+			}
+			return array;
+		}
+		case Json::value_t::object: {
+			auto object = new LSObject();
+			for (Json::iterator it = json.begin(); it != json.end(); ++it) {
+				object->addField(it.key(), get_from_json(it.value()));
+			}
+			return object;
+		}
+		case Json::value_t::discarded:
+			return LSNull::get();
+	}
+	throw std::exception();
+}
+
 LSValue* get_value(int type, Json& json) {
 	switch (type) {
 		case 1: return LSNull::get();

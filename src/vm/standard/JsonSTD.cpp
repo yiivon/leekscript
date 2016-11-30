@@ -49,9 +49,14 @@ Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) 
 
 Compiler::value JsonSTD::decode(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::POINTER, args, (void*) +[](LSString* string) {
-		std::cout << "json decode " << string << "" << std::endl;
-		LSValue::delete_temporary(string);
-		return LSNull::get();
+		try {
+			Json json = Json::parse(*string);
+			LSValue::delete_temporary(string);
+			return LSValue::get_from_json(json);
+		} catch (...) {
+			LSValue::delete_temporary(string);
+			return LSNull::get();
+		}
 	});
 }
 

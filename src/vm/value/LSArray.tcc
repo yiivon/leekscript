@@ -2079,9 +2079,11 @@ template <>
 inline std::string LSArray<LSValue*>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) res += ",";
-		std::string json = (*i)->to_json();
-		res += json;
+		std::string json = (*i)->json();
+		if (json.size() > 0) {
+			res += json;
+			if (i < this->end() - 1) res += ",";
+		}
 	}
 	return res + "]";
 }

@@ -89,7 +89,7 @@ std::ostream& LSFunction::print(std::ostream& os) const {
 	return os;
 }
 string LSFunction::json() const {
-	return "\"<function>\"";
+	return "";
 }
 
 LSValue* LSFunction::getClass() const {

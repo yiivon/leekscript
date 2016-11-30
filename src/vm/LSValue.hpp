@@ -481,6 +481,7 @@ public:
 	virtual const BaseRawType* getRawType() const = 0;
 
 	static LSValue* parse(Json& json);
+	static LSValue* get_from_json(Json& json);
 
 	static void delete_ref(LSValue* value);
 	static void delete_temporary(const LSValue* const value);
