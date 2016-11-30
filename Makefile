@@ -10,8 +10,12 @@ BUILD_DIR := $(addprefix build/default/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/default/,$(TEST_DIR))
 BUILD_DIR += $(addprefix build/shared/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/coverage/,$(SRC_DIR))
+BUILD_DIR += $(addprefix build/deps/,$(SRC_DIR))
+BUILD_DIR += $(addprefix build/deps/,$(TEST_DIR))
 
 OBJ := $(patsubst %.cpp,build/default/%.o,$(SRC))
+DEPS := $(patsubst %.cpp,build/deps/%.d,$(SRC))
+
 OBJ_TOPLEVEL = build/default/src/TopLevel.o
 OBJ_TEST := $(patsubst %.cpp,build/default/%.o,$(TEST_SRC))
 OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
@@ -34,13 +38,16 @@ build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
 	@echo "---------------"
 
 build/default/%.o: %.cpp
-	g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
+	g++ -c $(OPTIM) $(DEPFLAGS) $(FLAGS) -o "$@" "$<"
+	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/shared/%.o: %.cpp
 	g++ -c $(OPTIM) $(FLAGS) -fPIC -o "$@" "$<"
+	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/coverage/%.o: %.cpp
 	g++ -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o "$@" "$<"
+	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 $(BUILD_DIR):
 	@mkdir -p $@
@@ -116,3 +123,6 @@ clean:
 # `apt-get install cloc`
 cloc:
 	cloc . --exclude-dir=.git,lib,build
+
+# Objects dependencies
+-include $(DEPS)
