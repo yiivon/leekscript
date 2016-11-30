@@ -1,6 +1,5 @@
 #include <chrono>
 #include <jit/jit-dump.h>
-#include <jit/jit-internal.h>
 
 #include "Program.hpp"
 #include "Context.hpp"
@@ -14,6 +13,11 @@
 
 
 using namespace std;
+
+struct jit_stack_trace {
+	unsigned int size;
+	void* items[1];
+};
 
 namespace ls {
 
@@ -122,9 +126,10 @@ void* handler(int type) {
 
 	void* frame = __builtin_frame_address(1);
 	void* pc = jit_get_return_address(frame);
-	void* func_info = _jit_memory_find_function_info(VM::jit_context, pc);
-	jit_function_t func = _jit_memory_get_function(VM::jit_context, func_info);
-	unsigned int line = _jit_function_get_bytecode(func, func_info, pc, 0);
+	auto trace = (jit_stack_trace_t) jit_malloc(sizeof(unsigned int) + sizeof(void*));
+	trace->size = 1;
+	trace->items[0] = pc;
+	unsigned int line = jit_stack_trace_get_offset(VM::jit_context, trace, 0);
 
 	VM::ExceptionObj* ex = new VM::ExceptionObj((VM::Exception) type);
 	ex->lines.push_back(line);
@@ -134,14 +139,7 @@ void* handler(int type) {
 std::string Program::execute() {
 
 	jit_exception_set_handler(&handler);
-/*
-	int buff;
-	jit_function_apply(function, nullptr, &buff);
-	std::cout << "LSString/ stack " << VM::stack_trace << std::endl;
-	std::cout << "LSString/ stack size " << jit_stack_trace_get_size(VM::stack_trace) << std::endl;
-	std::cout << "fun: " << jit_stack_trace_get_pc(VM::stack_trace, 0) << std::endl;
-	if (true) return to_string(buff);
-*/
+
 	Type output_type = main->type.getReturnType();
 
 	if (output_type == Type::VOID) {
