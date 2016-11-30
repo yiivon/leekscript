@@ -12,7 +12,6 @@ class Program {
 private:
 
 	std::string code; // The program code
-	jit_function_t function;
 	void* closure;
 
 	void compile_main(Context&);

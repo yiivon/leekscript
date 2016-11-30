@@ -115,7 +115,6 @@ void Program::compile_main(Context& context) {
 	//jit_dump_function(fopen("main_compiled", "w"), F, "main");
 
 	closure = jit_function_to_closure(F);
-	function = F;
 }
 
 /*
