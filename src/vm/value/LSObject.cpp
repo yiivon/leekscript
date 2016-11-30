@@ -192,7 +192,7 @@ std::string LSObject::json() const {
 	for (auto i = values.begin(); i != values.end(); i++) {
 		if (i != values.begin()) res += ",";
 		res += "\"" + i->first + "\":";
-		std::string json = i->second->to_json();
+		std::string json = i->second->json();
 		res += json;
 	}
 	return res + "}";

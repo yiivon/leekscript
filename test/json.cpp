@@ -26,6 +26,10 @@ void Test::test_json() {
 	// array
 	code("Json.encode([])").equals("'[]'");
 	code("Json.encode([1, 2, 3])").equals("'[1,2,3]'");
+	// object
+	code("Json.encode({})").equals("'{}'");
+	code("Json.encode({a: 1, b: 2, c: 3})").equals("'{\"a\":1,\"b\":2,\"c\":3}'");
+	code("Json.encode({hello: [], b: {d: 12}, ccccc: [1, 2, [], 4]})").equals("'{\"b\":{\"d\":12},\"ccccc\":[1,2,[],4],\"hello\":[]}'");
 	// function : not transformable into JSON
 	code("Json.encode(x -> x)").equals("''");
 	code("Json.encode([1, x -> x, 3])").equals("'[1,3]'");
@@ -51,6 +55,10 @@ void Test::test_json() {
 	// array
 	code("[].json()").equals("'[]'");
 	code("[1, 2, 3].json()").equals("'[1,2,3]'");
+	// object
+	code("{}.json()").equals("'{}'");
+	code("{a: 1, b: 2, c: 3}.json()").equals("'{\"a\":1,\"b\":2,\"c\":3}'");
+	code("{hello: [], b: {d: 12}, ccccc: [1, 2, [], 4]}.json()").equals("'{\"b\":{\"d\":12},\"ccccc\":[1,2,[],4],\"hello\":[]}'");
 
 	section("Json.decode()");
 	code("Json.decode('')").equals("null");
@@ -72,5 +80,9 @@ void Test::test_json() {
 	code("Json.decode('[1.6,2.1,3.77]')").equals("[1.6, 2.1, 3.77]");
 	code("Json.decode('[\"a\",\"b\",\"c\"]')").equals("['a', 'b', 'c']");
 	code("Json.decode('[[],[[],[]],[]]')").equals("[[], [[], []], []]");
+
+	code("Json.decode('{}')").equals("{}");
+	code("Json.decode('{\"a\":1,\"b\":2,\"c\":3}')").equals("{a: 1, b: 2, c: 3}");
+	code("Json.decode('{\"b\":{\"d\":12},\"ccccc\":[1,2,[],4],\"hello\":[]}')").equals("{b: {d: 12}, ccccc: [1, 2, [], 4], hello: []}");
 
 }
