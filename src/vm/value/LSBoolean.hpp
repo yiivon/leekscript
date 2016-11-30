@@ -11,7 +11,6 @@ namespace ls {
 class LSBoolean : public LSValue {
 private:
 
-	LSBoolean();
 	LSBoolean(bool value);
 
 public:

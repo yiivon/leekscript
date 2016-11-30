@@ -12,8 +12,6 @@ LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
 LSBoolean* LSBoolean::false_val(new LSBoolean(false));
 LSBoolean* LSBoolean::true_val(new LSBoolean(true));
 
-LSBoolean::LSBoolean() : LSBoolean(true) {}
-
 LSBoolean::LSBoolean(bool value) : value(value) {
 	refs = 1;
 	native = true;
@@ -27,11 +25,11 @@ bool LSBoolean::isTrue() const {
 	return value;
 }
 
-LSValue*LSBoolean::ls_not() {
+LSValue* LSBoolean::ls_not() {
 	return LSBoolean::get(!value);
 }
 
-LSValue*LSBoolean::ls_tilde() {
+LSValue* LSBoolean::ls_tilde() {
 	return LSBoolean::get(!value);
 }
 
