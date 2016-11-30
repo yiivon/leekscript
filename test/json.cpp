@@ -85,4 +85,9 @@ void Test::test_json() {
 	code("Json.decode('{\"a\":1,\"b\":2,\"c\":3}')").equals("{a: 1, b: 2, c: 3}");
 	code("Json.decode('{\"b\":{\"d\":12},\"ccccc\":[1,2,[],4],\"hello\":[]}')").equals("{b: {d: 12}, ccccc: [1, 2, [], 4], hello: []}");
 
+	section("Combinations");
+	code("let v = 'salut' Json.decode(Json.encode(v)) == v").equals("true");
+	code("let v = {b: {d: 12}, cc: [[], 4], h: []} Json.decode(Json.encode(v)) == v").equals("true");
+	code("let v = 'salut' Json.encode(Json.encode(v))").equals("'\"\\\"salut\\\"\"'");
+
 }
