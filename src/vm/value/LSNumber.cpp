@@ -52,7 +52,7 @@ bool LSNumber::isTrue() const {
 	return value != 0;
 }
 
-LSValue*LSNumber::ls_minus() {
+LSValue* LSNumber::ls_minus() {
 	if (refs == 0) {
 		value = -value;
 		return this;
@@ -60,14 +60,13 @@ LSValue*LSNumber::ls_minus() {
 	return LSNumber::get(-value);
 }
 
-LSValue*LSNumber::ls_not() {
+LSValue* LSNumber::ls_not() {
 	bool r = value == 0;
 	if (refs == 0) delete this;
 	return LSBoolean::get(r);
 }
 
-LSValue*LSNumber::ls_tilde() {
-
+LSValue* LSNumber::ls_tilde() {
 	if (refs == 0) {
 		value = ~ (int)value;
 		return this;
@@ -75,7 +74,7 @@ LSValue*LSNumber::ls_tilde() {
 	return LSNumber::get(~ (int)value);
 }
 
-LSValue*LSNumber::ls_preinc() {
+LSValue* LSNumber::ls_preinc() {
 	// ++x
 	value += 1;
 	return this;

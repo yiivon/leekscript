@@ -328,6 +328,12 @@ void Test::test_numbers() {
 	code("Number.isInteger(-5.2)").equals("false");
 	code("Number.isInteger(π)").equals("false");
 
+	section("Number.hypot");
+	code("Number.hypot(3, 4)").equals("5");
+	code("3.hypot(4)").equals("5");
+	code("Number.hypot(34, 74)").almost(81.437092286);
+	code("Number.hypot([34, ''][0], 74)").almost(81.437092286);
+
 	section("Object-like calls");
 	code("(-12).abs()").equals("12");
 	code("π.cos()").equals("-1");

@@ -29,16 +29,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_hypot(LSNumber* x, LSNumber* y) {
-	double r = hypot(x->value, y->value);
-	if (x->refs == 0) delete x;
-	if (y->refs == 0) {
-		y->value = r;
-		return y->value;
-	}
-	return r;
-}
-
 double number_log(LSNumber* x) {
 	double r = log(x->value);
 	if (x->refs == 0) {
@@ -281,7 +271,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr},
 		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_real, Method::NATIVE}
 	});
-	method("hypot", Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_hypot);
+	method("hypot", {
+		{Type::REAL, Type::POINTER, {Type::POINTER}, (void*) &NumberSTD::hypot_ptr_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::hypot_real_real, Method::NATIVE}
+	});
 	method("log", Type::NUMBER, Type::REAL, {}, (void*) &number_log);
 	method("log10", Type::NUMBER, Type::REAL, {}, (void*) &number_log10);
 	method("max", {
@@ -378,7 +371,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::floor_real, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int, Method::NATIVE},
 	});
-	static_method("hypot", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_hypot);
+	static_method("hypot", {
+		{Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &NumberSTD::hypot_ptr_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::hypot_real_real, Method::NATIVE},
+	});
 	static_method("log", Type::REAL, {Type::NUMBER}, (void*) &number_log);
 	static_method("log10", Type::REAL, {Type::NUMBER}, (void*) &number_log10);
 
@@ -1041,6 +1037,17 @@ Compiler::value NumberSTD::is_prime_int(Compiler& c, std::vector<Compiler::value
 }
 Compiler::value NumberSTD::is_prime_long(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::BOOLEAN, args, &NumberSTD::is_prime_number<long>);
+}
+
+Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, args, +[](LSNumber* x, LSNumber* y) {
+		return hypot(x->value, y->value);
+	});
+}
+Compiler::value NumberSTD::hypot_real_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, args, +[](double x, double y) {
+		return hypot(x, y);
+	});
 }
 
 }
