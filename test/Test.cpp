@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 
+std::vector<std::string> Test::failed_tests;
+
 Test::Test() {
 	total = 0;
 	success_count = 0;
@@ -65,6 +67,12 @@ int Test::all() {
 	}
 	std::cout << "------------------------------------------------" << std::endl;
 
+	for (const auto& error : failed_tests) {
+		std::cout << " " << error << std::endl;
+	}
+	if (failed_tests.size()) {
+		std::cout << std::endl;
+	}
 	return result;
 }
 
@@ -122,10 +130,13 @@ void Test::Input::pass(std::string expected) {
 }
 
 void Test::Input::fail(std::string expected, std::string actual) {
-	std::cout << RED << "FAIL " << END_COLOR << ": " << name()
+	std::ostringstream oss;
+	oss << RED << "FAIL " << END_COLOR << ": " << name()
 	<< "  =/=>  " << expected << "  got  " << actual;
-	std::cout <<  GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
+	std::cout << oss.str();
+	std::cout << GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
+	failed_tests.push_back(oss.str());
 }
 
 void Test::Input::works() {
