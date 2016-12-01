@@ -33,6 +33,11 @@ void Test::test_general() {
 	code("return").equals("(void)");
 	code("'a' 'b' 'c'").equals("'c'");
 
+	section("Parenthesis");
+	code("(5)").equals("5");
+	code("(((((5)))))").equals("5");
+	code("(5) * (4 + 2) - 7 / (4 - (((5))))").equals("37");
+
 	header("Variables");
 	code("let a = 2 a").equals("2");
 	code("let a, b, c = 1, 2, 3 c").equals("3");
