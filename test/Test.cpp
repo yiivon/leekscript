@@ -51,21 +51,39 @@ int Test::all() {
 	int leaks = (obj_created - obj_deleted);
 	int gmp_leaks = (gmp_obj_created - gmp_obj_deleted);
 
+	std::ostringstream line1, line2, line3, line4;
+	line1 << "Total : " << total << ", success : " << success_count << ", errors : " << errors;
+	line2 << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms";
+	line3 << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
+	line4 << "GMP objects destroyed : " << gmp_obj_deleted << " / " << gmp_obj_created << " (" << gmp_leaks << " leaked)";
+	unsigned w = std::max(line1.str().size(), std::max(line2.str().size(), std::max(line3.str().size(), line4.str().size())));
+
+	auto pad = [](std::string s, int l) {
+		l -= s.size();
+		while (l-- > 0) s += " ";
+		return s;
+	};
+	std::cout << "┌";
+	for (unsigned i = 0; i < w + 2; ++i) std::cout << "─";
+	std::cout << "┐" << std::endl;
+	std::cout << "│ " << pad(line1.str(), w) << " │" << std::endl;
+	std::cout << "│ " << pad(line2.str(), w) << " │" << std::endl;
+	std::cout << "│ " << pad(line3.str(), w) << " │" << std::endl;
+	std::cout << "│ " << pad(line4.str(), w) << " │" << std::endl;
+	std::cout << "├";
+	for (unsigned i = 0; i < w + 2; ++i) std::cout << "─";
+	std::cout << "┤";
 	std::cout << std::endl;
-	std::cout << "------------------------------------------------" << std::endl;
-	std::cout << "Total : " << total << ", success : " << success_count << ", errors : " << errors << std::endl;
-	std::cout << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms" << std::endl;
-	std::cout << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)" << std::endl;
-	std::cout << "GMP objects destroyed : " << gmp_obj_deleted << " / " << gmp_obj_created << " (" << gmp_leaks << " leaked)" << std::endl;
-	std::cout << "------------------------------------------------" << std::endl;
 
 	int result = abs(errors) + abs(leaks) + abs(gmp_leaks);
 	if (result == 0) {
-		std::cout << "GOOD :)" << std::endl;
+		std::cout << "│ " << pad("GOOD! ✔", w + 2) << " │" << std::endl;
 	} else {
-		std::cout << "BAD : " << result << " error(s) :(" << std::endl;
+		std::cout << "│ " << pad("BAD! : " + std::to_string(result) + " error(s) ✘", w + 2) << " │" << std::endl;
 	}
-	std::cout << "------------------------------------------------" << std::endl;
+	std::cout << "└";
+	for (unsigned i = 0; i < w + 2; ++i) std::cout << "─";
+	std::cout << "┘" << std::endl;
 
 	for (const auto& error : failed_tests) {
 		std::cout << " " << error << std::endl;
