@@ -15,6 +15,7 @@ void Test::test_booleans() {
 	section("operator !");
 	code("!true").equals("false");
 	code("!false").equals("true");
+// TODO code("!!!!!false").equals("true");
 
 	section("Boolean.operator +");
 	code("true + 'salut'").equals("'truesalut'");
