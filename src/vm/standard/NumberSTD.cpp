@@ -29,31 +29,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_log(LSNumber* x) {
-	double r = log(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x->value;
-	}
-	return r;
-}
-
-double number_log10(LSNumber* x) {
-	double r = log10(x->value);
-	if (x->refs == 0) {
-		x->value = r;
-		return x->value;
-	}
-	return r;
-}
-
-double number_pow(LSNumber* x, LSNumber* y) {
-	double r = pow(x->value, y->value);
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-
 double number_rand() {
 	return (double) rand() / RAND_MAX;
 }
@@ -275,8 +250,14 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, Type::POINTER, {Type::POINTER}, (void*) &NumberSTD::hypot_ptr_ptr, Method::NATIVE},
 		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::hypot_real_real, Method::NATIVE}
 	});
-	method("log", Type::NUMBER, Type::REAL, {}, (void*) &number_log);
-	method("log10", Type::NUMBER, Type::REAL, {}, (void*) &number_log10);
+	method("log", {
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log_real},
+	});
+	method("log10", {
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log10_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log10_real},
+	});
 	method("max", {
 		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
 		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
@@ -288,7 +269,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
 	});
 	method("pow", {
-		{Type::NUMBER, Type::REAL, {Type::NUMBER}, (void*) &number_pow},
+		{Type::POINTER, Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::pow_ptr, Method::NATIVE},
 		{Type::LONG, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int, Method::NATIVE}
 	});
 	method("round", {
@@ -375,9 +356,14 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &NumberSTD::hypot_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::hypot_real_real, Method::NATIVE},
 	});
-	static_method("log", Type::REAL, {Type::NUMBER}, (void*) &number_log);
-	static_method("log10", Type::REAL, {Type::NUMBER}, (void*) &number_log10);
-
+	static_method("log", {
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::log_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log_real, Method::NATIVE}
+	});
+	static_method("log10", {
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::log10_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log10_real, Method::NATIVE}
+	});
 	static_method("max", {
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::max_ptr_float},
@@ -400,7 +386,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
 		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE}
 	});
-	static_method("pow", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_pow);
+	static_method("pow", {
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::pow_ptr, Method::NATIVE},
+		{Type::REAL, {Type::LONG, Type::LONG}, (void*) &NumberSTD::pow_int, Method::NATIVE}
+	});
 	static_method("rand", Type::REAL, {}, (void*) &number_rand);
 	static_method("randFloat", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat);
 	static_method("randInt", Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &number_randInt);
@@ -1047,6 +1036,41 @@ Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::valu
 Compiler::value NumberSTD::hypot_real_real(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::REAL, args, +[](double x, double y) {
 		return hypot(x, y);
+	});
+}
+
+Compiler::value NumberSTD::log_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, args, +[](LSNumber* x) {
+		auto res = log(x->value);
+		LSValue::delete_temporary(x);
+		return res;
+	});
+}
+Compiler::value NumberSTD::log_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, args, +[](double x) {
+		return log(x);
+	});
+}
+
+Compiler::value NumberSTD::log10_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, args, +[](LSNumber* x) {
+		auto res = log10(x->value);
+		LSValue::delete_temporary(x);
+		return res;
+	});
+}
+Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, args, +[](double x) {
+		return log10(x);
+	});
+}
+
+Compiler::value NumberSTD::pow_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, args, +[](LSNumber* x, LSNumber* y) {
+		double r = pow(x->value, y->value);
+		LSValue::delete_temporary(x);
+		LSValue::delete_temporary(y);
+		return r;
 	});
 }
 
