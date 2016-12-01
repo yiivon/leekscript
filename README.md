@@ -31,25 +31,26 @@ make lib
 
 Usage
 -----
-
 Run a LeekScript top-level
 ```
-./leekscript
+leekscript
 ```
+Execute a file or a code snippet
+```
+leekscript my_file.leek
+leekscript "[5, 6, 7] ~~ x -> x ** 2"
+```
+Option | Effect
+------ | ------
+-v -V --version	| Print the current version
+-j -J --json	| Get the result in JSON format
+-t -T --time	| Print execution time and operations
 
-Run the tests
+Tests and coverage
+------------------
 ```
-./leekscript -test
-```
-
-Execute a file
-```
-./leekscript -f my_file.ls
-```
-
-Run a code, and get the result as JSON
-```
-./leekscript -e "my code" "{}"
+make test
+make coverage
 ```
 
 Libraries used
