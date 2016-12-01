@@ -1,44 +1,24 @@
-#include <unistd.h>
-#include <iostream>
-#include <fstream>
-#include <math.h>
 #include <algorithm>
-#include <iterator>
-#include <string>
-#include "../lib/utf8.h"
+#include <fstream>
 #include <gmp.h>
 #include <gmpxx.h>
+#include <iostream>
+#include <iterator>
+#include <math.h>
+#include <unistd.h>
+#include <string>
 
 #include "leekscript.h"
-
+#include "../lib/utf8.h"
 #include "doc/Documentation.hpp"
 #include "../benchmark/Benchmark.hpp"
 #include "vm/LSValue.hpp"
 
 using namespace std;
 
-bool param_time = false;
-bool param_verbose = false;
-bool param_exec = false;
-bool param_file = false;
-bool param_json = false;
-
-void print_errors(ls::VM::Result& result) {
-
-	#if DEBUG
-		cout << "main() " << result.program << endl;
-	#endif
-
-	for (const auto& e : result.syntaxical_errors) {
-		std::cout << "Line " << e->token->line << ": " << e->message << std::endl;
-	}
-	for (const auto& e : result.semantical_errors) {
-		std::cout << "line " << e.line << ": " << e.message() << std::endl;
-	}
-	if (result.exception != ls::VM::Exception::NO_EXCEPTION) {
-		std::cout << "Exception: " << ls::VM::exception_message(result.exception) << std::endl;
-	}
-}
+void print_errors(ls::VM::Result& result);
+void print_result(ls::VM::Result& result, bool json, bool display_time);
+bool is_file_name(std::string data);
 
 #define GREY "\033[0;90m"
 #define GREEN "\033[0;32m"
@@ -47,6 +27,7 @@ void print_errors(ls::VM::Result& result) {
 
 int main(int argc, char* argv[]) {
 
+	/** Seed random one for all */
 	srand(time(0));
 
 	/** Generate the standard functions documentation */
@@ -56,88 +37,107 @@ int main(int argc, char* argv[]) {
 	}
 
 	/** Arguments */
-	if (argc > 1 && argv[1][0] == '-') {
-		string args(argv[1]);
-		for (char c : args) {
-			if (c == 't') param_time = true;
-			else if (c == 'v') param_verbose = true;
-			else if (c == 'e') param_exec = true;
-			else if (c == 'f') param_file = true;
-			else if (c == 'j') param_json = true;
-		}
+	bool output_json = false;
+	bool display_time = false;
+	bool print_version = false;
+	std::string file_or_code;
+
+	for (int i = 1; i < argc; ++i) {
+		auto a = string(argv[i]);
+		if (a == "-j" or a == "-J" or a == "--json") output_json = true;
+		else if (a == "-t" or a == "-T" or a == "--time") display_time = true;
+		else if (a == "-v" or a == "-V" or a == "--version") print_version = true;
+		else file_or_code = a;
 	}
 
-	std::string code;
+	/** Display version? */
+	if (print_version) {
+		std::cout << "LeekScript 2.0" << std::endl;
+		return 0;
+	}
+
+	/** Input file or code snippet? */
+	if (file_or_code.size() > 0) {
+		/** Get the code **/
+		std::string code;
+		if (is_file_name(file_or_code)) {
+			ifstream ifs(file_or_code.data());
+			code = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
+			ifs.close();
+		} else {
+			code = file_or_code;
+		}
+		/** Execute **/
+		auto result = ls::VM().execute(code, "{}");
+		print_result(result, output_json, display_time);
+		return 0;
+	}
+
+	/** Interactive console mode */
+	cout << "~~~ LeekScript v2.0 ~~~" << endl;
+	string code, ctx = "{}";
 	ls::VM vm;
 
-	if (param_file || param_json) {
-
-		string file("");
-		if (argc > 2) file = argv[2];
-		if (argc == 2 && argv[1][0] != '-') file = argv[1];
-
-		// Read file
-		ifstream ifs(file.data());
-		code = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
-		ifs.close();
-
+	while (!std::cin.eof()) {
+		// Get a instruction
+		cout << ">> ";
+		std::getline(std::cin, code);
 		// Execute
-		if (param_file) {
-
-			auto result = vm.execute(code, "{}");
-			print_errors(result);
-
-			cout << result.value << endl;
-			cout << "(" << result.operations << " ops, "
-				<< result.compilation_time_ms << "ms + "
-				<< result.execution_time_ms << "ms)" << endl;
-
-		} else if (param_json) {
-
-			auto result = vm.execute(code, "{}");
-			cout << "{\"success\":true,\"ops\":" << result.operations
-				<< ",\"time\":" << result.execution_time
-				<< ",\"ctx\":" << result.context
-				<< ",\"res\":\"" << result.value << "\"}" << endl;
-		}
-
-	} else if (param_exec) {
-
-		string code = argv[2];
-		string ctx = argv[3];
-
 		auto result = vm.execute(code, ctx);
+		print_result(result, output_json, display_time);
+		// Set new context
+		ctx = result.context;
+	}
+	return 0;
+}
+
+bool is_file_name(std::string data) {
+	// Real file?
+	std::ifstream test(data);
+  	if (test) return true;
+	// Contains spaces => no
+	if (data.find_first_of("\t\n ") != string::npos) return false;
+	// Ends with '.leek' or '.ls' => yes
+	if (data.size() <= 4) return false;
+	string dot_leek = ".leek";
+	string dot_ls = ".ls";
+    if (std::equal(dot_leek.rbegin(), dot_leek.rend(), data.rbegin())) return true;
+	if (std::equal(dot_ls.rbegin(), dot_ls.rend(), data.rbegin())) return true;
+	return true;
+}
+
+void print_result(ls::VM::Result& result, bool json, bool display_time) {
+	print_errors(result);
+	if (json) {
 		cout << "{\"success\":true,\"ops\":" << result.operations
 			<< ",\"time\":" << result.execution_time
-			<< ",\"ctx\":" << result.context << ",\"res\":\""
-			<< result.value << "\"}" << endl;
-
+			<< ",\"ctx\":" << result.context
+			<< ",\"res\":\"" << result.value << "\"}" << endl;
 	} else {
-
-		cout << "~~~ LeekScript v2.0 ~~~" << endl;
-		string ctx = "{}";
-
-		while (!std::cin.eof()) {
-
-			// Get a instruction
-			cout << ">> ";
-			std::getline(std::cin, code);
-
-			// Execute
-			auto result = vm.execute(code, ctx);
-			print_errors(result);
-
-			if (result.execution_success) {
-				cout << result.value << endl;
-			}
-
+		if (result.execution_success) {
+			cout << result.value << endl;
+		}
+		if (display_time) {
 			double compilation_time = round((float) result.compilation_time / 1000) / 1000;
 			double execution_time = round((float) result.execution_time / 1000) / 1000;
 			cout << GREY << "(" << result.operations << " ops, "
 				<< compilation_time << "ms + "
 				<< execution_time << "ms)" << END_COLOR << endl;
-			ctx = result.context;
 		}
 	}
-	return 0;
+}
+
+void print_errors(ls::VM::Result& result) {
+	#if DEBUG
+		cout << "main() " << result.program << endl;
+	#endif
+	for (const auto& e : result.syntaxical_errors) {
+		std::cout << "Line " << e->token->line << ": " << e->message << std::endl;
+	}
+	for (const auto& e : result.semantical_errors) {
+		std::cout << "line " << e.line << ": " << e.message() << std::endl;
+	}
+	if (result.exception != ls::VM::Exception::NO_EXCEPTION) {
+		std::cout << "Exception: " << ls::VM::exception_message(result.exception) << std::endl;
+	}
 }
