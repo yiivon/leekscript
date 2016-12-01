@@ -7,7 +7,6 @@
 #include <gmp.h>
 #include <gmpxx.h>
 
-#include "../constants.h"
 #include "Context.hpp"
 #include "../compiler/lexical/LexicalError.hpp"
 #include "../compiler/syntaxic/SyntaxicalError.hpp"

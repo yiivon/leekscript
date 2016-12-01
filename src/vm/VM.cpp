@@ -2,7 +2,7 @@
 #include <chrono>
 
 #include "VM.hpp"
-
+#include "../constants.h"
 #include "../compiler/lexical/LexicalAnalyser.hpp"
 #include "../compiler/syntaxic/SyntaxicAnalyser.hpp"
 #include "Context.hpp"
