@@ -132,7 +132,7 @@ void print_errors(ls::VM::Result& result) {
 		cout << "main() " << result.program << endl;
 	#endif
 	for (const auto& e : result.syntaxical_errors) {
-		std::cout << "Line " << e->token->line << ": " << e->message << std::endl;
+		std::cout << "Line " << e.token->line << ": " << e.message << std::endl;
 	}
 	for (const auto& e : result.semantical_errors) {
 		std::cout << "line " << e.line << ": " << e.message() << std::endl;

@@ -34,7 +34,7 @@ class SyntaxicAnalyser {
 	Token* lt;
 	Token* nt;
 	unsigned i;
-	std::vector<SyntaxicalError*> errors;
+	std::vector<SyntaxicalError> errors;
 	long time;
 	std::vector<std::pair<unsigned,size_t>> stack;
 
@@ -79,7 +79,7 @@ public:
 	void restore_saved_state();
 	void forgot_saved_state();
 
-	std::vector<SyntaxicalError*> getErrors();
+	std::vector<SyntaxicalError> getErrors();
 	long getTime();
 };
 

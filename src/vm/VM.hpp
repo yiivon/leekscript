@@ -76,7 +76,7 @@ public:
 		bool compilation_success = false;
 		bool execution_success = false;
 		std::vector<LexicalError> lexical_errors;
-		std::vector<SyntaxicalError*> syntaxical_errors;
+		std::vector<SyntaxicalError> syntaxical_errors;
 		std::vector<SemanticError> semantical_errors;
 		Exception exception = Exception::NO_EXCEPTION;
 		std::string program;

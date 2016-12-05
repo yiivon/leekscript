@@ -52,11 +52,7 @@ SyntaxicAnalyser::SyntaxicAnalyser() {
 	i = 0;
 }
 
-SyntaxicAnalyser::~SyntaxicAnalyser() {
-	for (SyntaxicalError* error : errors) {
-		delete error;
-	}
-}
+SyntaxicAnalyser::~SyntaxicAnalyser() {}
 
 Function* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 
@@ -136,12 +132,12 @@ Block* SyntaxicAnalyser::eatBlock() {
 		if (t->type == TokenType::CLOSING_BRACE) {
 			eat();
 			if (not brace) {
-				errors.push_back(new SyntaxicalError(t, "Unexpected closing brace, forgot to open it ?"));
+				errors.push_back(SyntaxicalError(t, "Unexpected closing brace, forgot to open it ?"));
 			}
 			break;
 		} else if (t->type == TokenType::FINISHED || t->type == TokenType::ELSE || t->type == TokenType::END || t->type == TokenType::IN) {
 			if (brace) {
-				errors.push_back(new SyntaxicalError(t, "Expecting closing brace at end of the block"));
+				errors.push_back(SyntaxicalError(t, "Expecting closing brace at end of the block"));
 			}
 			break;
 		} else if (t->type == TokenType::SEMICOLON) {
@@ -252,7 +248,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 			return eatWhile();
 
 		default:
-			errors.push_back(new SyntaxicalError(t, "Unexpected token <" + to_string((int)t->type) + "> (" + t->content + ")"));
+			errors.push_back(SyntaxicalError(t, "Unexpected token <" + to_string((int)t->type) + "> (" + t->content + ")"));
 			eat();
 			return nullptr;
 	}
@@ -741,7 +737,7 @@ Value* SyntaxicAnalyser::eatValue() {
 			break;
 	}
 
-	errors.push_back(new SyntaxicalError(t, "Expected value, got <" + to_string((int)t->type) + "> (" + t->content + ")"));
+	errors.push_back(SyntaxicalError(t, "Expected value, got <" + to_string((int)t->type) + "> (" + t->content + ")"));
 	eat();
 	return nullptr;
 }
@@ -1114,7 +1110,7 @@ Break* SyntaxicAnalyser::eatBreak() {
 	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
 		int deepness = std::stoi(t->content);
 		if (deepness <= 0) {
-			errors.push_back(new SyntaxicalError(t, "Break should only be followed by a positive integer"));
+			errors.push_back(SyntaxicalError(t, "Break should only be followed by a positive integer"));
 		} else {
 			b->deepness = deepness;
 			eat();
@@ -1131,7 +1127,7 @@ Continue* SyntaxicAnalyser::eatContinue() {
 	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
 		int deepness = std::stoi(t->content);
 		if (deepness <= 0) {
-			errors.push_back(new SyntaxicalError(t, "Continue should only be followed by a positive integer"));
+			errors.push_back(SyntaxicalError(t, "Continue should only be followed by a positive integer"));
 		} else {
 			c->deepness = deepness;
 			eat();
@@ -1179,7 +1175,7 @@ Token* SyntaxicAnalyser::eat(TokenType type) {
 	nt = i < tokens.size() - 1 ? &tokens[i + 1] : nullptr;
 
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
-		errors.push_back(new SyntaxicalError(eaten, "Expected token of type <" + to_string((int)type) + ">, got <" + to_string((int)eaten->type) + "> (" + eaten->content + ")"));
+		errors.push_back(SyntaxicalError(eaten, "Expected token of type <" + to_string((int)type) + ">, got <" + to_string((int)eaten->type) + "> (" + eaten->content + ")"));
 		return new Token(type, 0, 0, "**Error**");
 	}
 	return eaten;
@@ -1199,7 +1195,7 @@ void SyntaxicAnalyser::save_current_state() {
 void SyntaxicAnalyser::restore_saved_state() {
 	if (!stack.empty()) {
 		i = stack.back().first;
-		errors.resize(stack.back().second);
+		//errors.resize(stack.back().second);
 		stack.pop_back();
 
 		lt = i > 0 ? &tokens[i-1] : nullptr;
@@ -1212,7 +1208,7 @@ void SyntaxicAnalyser::forgot_saved_state() {
 	stack.pop_back();
 }
 
-vector<SyntaxicalError*> SyntaxicAnalyser::getErrors() {
+vector<SyntaxicalError> SyntaxicAnalyser::getErrors() {
 	return errors;
 }
 
