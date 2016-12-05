@@ -345,7 +345,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("contains", {
-		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_contains},
+		{Type::BOOLEAN, {Type::POINTER, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_contains},
 		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::REAL}, (void*) &LSArray<double>::ls_contains},
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_contains}
 	});
