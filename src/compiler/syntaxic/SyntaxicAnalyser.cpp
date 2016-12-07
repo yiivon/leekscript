@@ -1195,7 +1195,7 @@ void SyntaxicAnalyser::save_current_state() {
 void SyntaxicAnalyser::restore_saved_state() {
 	if (!stack.empty()) {
 		i = stack.back().first;
-		//errors.resize(stack.back().second);
+		errors.resize(stack.back().second);
 		stack.pop_back();
 
 		lt = i > 0 ? &tokens[i-1] : nullptr;
