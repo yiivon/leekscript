@@ -122,7 +122,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 
 	if (display_errors) {
 		for (const auto& error : result.syntaxical_errors) {
-			std::cout << "Line " << error->message << std::endl;
+			std::cout << "Line " << error.message << std::endl;
 		}
 		for (const auto& error : result.semantical_errors) {
 			std::cout << "Line " << error.line << ": " << error.message() << std::endl;
