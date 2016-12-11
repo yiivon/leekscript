@@ -31,14 +31,14 @@ void Test::test_classes() {
 	code("true instanceof Boolean").equals("true");
 	code("Number instanceof Class").equals("true");
 
-/*
-	code("class A {} let a = new A").equals("{}");
-	code("class A { let b = 2 } let a = new A").equals("{}");
-	code("class A { let b = 2 } let a = new A a.b").equals("2");
+	code("class A {} A").equals("<class A>");
+	code("class A {} let a = new A a").equals("A {}");
+	code("class A { let b = 2 } let a = new A a").equals("A {}");
+//	code("class A { let b = 2 } let a = new A a.b").equals("2");
 	code("class A { let b = 2 } let a = new A a.class").equals("<class A>");
-	code("class A {} let t = [A] let a = new t[0]").equals("{}");
-	code("class A {} let a = new A let b = new a.class b.class").equals("<class A>");
-*/
+//	code("class A {} let t = [A] let a = new t[0] a").equals("A {}");
+//	code("class A {} let a = new A let b = new a.class b.class").equals("<class A>");
+
 
 //	code("let my_map = [].map; my_map([1, 2, 3], x -> x ^ 2)").equals("[1, 4, 9]");
 //	code("[].map == [].map").equals("true");

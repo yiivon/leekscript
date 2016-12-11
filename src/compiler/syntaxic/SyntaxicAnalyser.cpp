@@ -1139,10 +1139,11 @@ Continue* SyntaxicAnalyser::eatContinue() {
 
 ClassDeclaration* SyntaxicAnalyser::eatClassDeclaration() {
 
-	ClassDeclaration* cd = new ClassDeclaration();
-
 	eat(TokenType::CLASS);
-	cd->name = eatIdent()->content;
+
+	Token* token = eatIdent();
+
+	ClassDeclaration* cd = new ClassDeclaration(token);
 	eat(TokenType::OPEN_BRACE);
 
 	while (t->type == TokenType::LET) {

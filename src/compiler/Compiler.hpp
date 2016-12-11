@@ -52,6 +52,7 @@ public:
 	value new_bool(bool b) const;
 	value new_integer(int i) const;
 	value new_pointer(void* p) const;
+	value new_object(value) const;
 	value new_mpz() const;
 
 	// Operators wrapping

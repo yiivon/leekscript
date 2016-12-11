@@ -175,7 +175,7 @@ LSValue* LSObject::clone() const {
 }
 
 std::ostream& LSObject::print(std::ostream& os) const {
-	if (clazz != nullptr) os << clazz->name << L" ";
+	if (clazz != nullptr) os << clazz->name << " ";
 	os << "{";
 	for (auto i = values.begin(); i != values.end(); i++) {
 		if (i != values.begin()) os << ", ";

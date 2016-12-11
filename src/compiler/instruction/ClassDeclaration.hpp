@@ -12,10 +12,13 @@ namespace ls {
 class ClassDeclaration : public Instruction {
 public:
 
+	Token* token;
 	std::string name;
 	std::vector<VariableDeclaration*> fields;
+	SemanticVar* var;
+	LSClass* ls_class;
 
-	ClassDeclaration();
+	ClassDeclaration(Token* token);
 	virtual ~ClassDeclaration();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

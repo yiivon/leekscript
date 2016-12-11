@@ -55,10 +55,13 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 
 		if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
 			if (vv->name == "Number") type = Type::INTEGER;
-			if (vv->name == "Boolean") type = Type::BOOLEAN;
-			if (vv->name == "String") type = Type::STRING;
-			if (vv->name == "Array") type = Type::PTR_ARRAY;
-			if (vv->name == "Object") type = Type::OBJECT;
+			else if (vv->name == "Boolean") type = Type::BOOLEAN;
+			else if (vv->name == "String") type = Type::STRING;
+			else if (vv->name == "Array") type = Type::PTR_ARRAY;
+			else if (vv->name == "Object") type = Type::OBJECT;
+			else {
+				type = Type::OBJECT;
+			}
 		}
 		if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
@@ -194,21 +197,25 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					}
 					return {n, type};
 				}
-				if (vv->name == "Boolean") {
+				else if (vv->name == "Boolean") {
 					jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
 					if (type.nature == Nature::POINTER) {
 						return {VM::value_to_pointer(c.F, n, Type::BOOLEAN), type};
 					}
 					return {n, type};
 				}
-				if (vv->name == "String") {
+				else if (vv->name == "String") {
 					return {LS_CREATE_POINTER(c.F, new LSString("")), type};
 				}
-				if (vv->name == "Array") {
+				else if (vv->name == "Array") {
 					return {LS_CREATE_POINTER(c.F, new LSArray<LSValue*>()), type};
 				}
-				if (vv->name == "Object") {
+				else if (vv->name == "Object") {
 					return {LS_CREATE_POINTER(c.F, new LSObject()), type};
+				}
+				else {
+					auto clazz = expression->compile(c);
+					return c.new_object(clazz);
 				}
 			}
 

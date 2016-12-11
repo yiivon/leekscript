@@ -143,6 +143,11 @@ Compiler::value Compiler::new_pointer(void* p) const {
 Compiler::value Compiler::new_mpz() const {
 	return {VM::create_gmp_int(F, 0), Type::GMP_INT};
 }
+Compiler::value Compiler::new_object(Compiler::value clazz) const {
+	return insn_call(Type::OBJECT, {clazz}, +[](LSClass* clazz) {
+		return new LSObject(clazz);
+	});
+}
 Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
 		return v; // already a pointer
