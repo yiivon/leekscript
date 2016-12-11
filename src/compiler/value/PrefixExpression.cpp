@@ -60,7 +60,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 			else if (vv->name == "Array") type = Type::PTR_ARRAY;
 			else if (vv->name == "Object") type = Type::OBJECT;
 			else {
-				type = Type::OBJECT;
+				type = Type::POINTER;
 			}
 		}
 		if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
@@ -257,7 +257,6 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					}
 				}
 			}
-
 			break;
 		}
 		default: {

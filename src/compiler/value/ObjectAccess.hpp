@@ -20,6 +20,7 @@ public:
 	bool class_attr = false;
 	void* attr_addr;
 	void* access_function = nullptr;
+	void* obj_access_function = nullptr;
 	LSString* field_string = nullptr;
 	Type field_type;
 

@@ -18,6 +18,11 @@ public:
 	static jit_value_t unknown(jit_function_t F);
 
 	/*
+	 * Fields
+	 */
+	static Compiler::value attr_class(Compiler& c, Compiler::value a);
+
+	/*
 	 * Operators
 	 */
 	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args);

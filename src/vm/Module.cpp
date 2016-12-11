@@ -33,7 +33,12 @@ void Module::operator_(std::string name, std::initializer_list<LSClass::Operator
 
 void Module::field(std::string name, Type type) {
 	fields.push_back(ModuleField(name, type));
-	clazz->addField(name, type);
+	clazz->addField(name, type, nullptr);
+}
+
+void Module::field(std::string name, Type type, void* fun) {
+	fields.push_back(ModuleField(name, type, fun));
+	clazz->addField(name, type, fun);
 }
 
 void Module::static_field(std::string name, Type type, void* fun) {

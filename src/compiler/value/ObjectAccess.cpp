@@ -78,7 +78,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		// Object attribute
 		bool is_field = false;
 		try {
-			type = object_class->fields.at(field->content);
+			type = object_class->fields.at(field->content).type;
 			is_field = true;
 			class_attr = true;
 		} catch (exception& e) {}
@@ -90,6 +90,12 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				class_attr = true;
 			} catch (exception& e) {}
 		}
+	}
+
+	if (field->content == "class") {
+		auto c = (LSClass*) analyser->program->system_vars["Value"];
+		obj_access_function = c->fields.at("class").fun;
+		class_attr = true;
 	}
 
 	if (not access_function and not class_attr) {
@@ -127,6 +133,12 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 			return {VM::value_to_pointer(c.F, res, type), type};
 		}
 		return {res, type};
+	}
+
+	if (obj_access_function != nullptr) {
+
+		auto fun = (Compiler::value (*)(Compiler&, Compiler::value)) obj_access_function;
+		return fun(c, object->compile(c));
 	}
 
 	if (class_attr) {

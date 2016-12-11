@@ -84,7 +84,9 @@ class ModuleField {
 public:
 	std::string name;
 	Type type;
-	ModuleField(std::string name, Type type) : name(name), type(type) {}
+	void* fun;
+	ModuleField(std::string name, Type type) : name(name), type(type), fun(nullptr) {}
+	ModuleField(std::string name, Type type, void* fun) : name(name), type(type), fun(fun) {}
 };
 
 
@@ -110,6 +112,7 @@ public:
 	void static_method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
 
 	void field(std::string name, Type type);
+	void field(std::string name, Type type, void* fun);
 	void static_field(std::string name, Type type, void* fun);
 
 	void include(SemanticAnalyser*, Program*);

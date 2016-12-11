@@ -8,7 +8,15 @@ namespace ls {
 
 ValueSTD::ValueSTD() : Module("Value") {
 
+	/*
+	 * Static attributes
+	 */
 	static_field("unknown", Type::UNKNOWN, (void*) &ValueSTD::unknown);
+
+	/*
+	 * Attributes
+	 */
+	field("class", Type::CLASS, (void*) &ValueSTD::attr_class);
 
 	/*
 	 * Operators
@@ -64,12 +72,26 @@ ValueSTD::ValueSTD() : Module("Value") {
 	});
 }
 
+/*
+ * Static attributes
+ */
 jit_value_t ValueSTD::unknown(jit_function_t F) {
 	return LS_CREATE_POINTER(F,
 		LSNumber::get(floor(1 + ((double) rand() / RAND_MAX) * 100))
 	);
 }
 
+/*
+ * Attributes
+ */
+Compiler::value ValueSTD::attr_class(Compiler& c, Compiler::value a) {
+	c.insn_delete(a);
+	return c.insn_class_of(a);
+}
+
+/*
+ * Methods
+ */
 Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = c.insn_eq(c.insn_class_of(args[0]), args[1]);
 	c.insn_delete(args[0]);

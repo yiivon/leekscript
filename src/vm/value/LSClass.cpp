@@ -48,8 +48,8 @@ void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
 	static_fields.insert({name, ModuleStaticField(name, Type::FUNCTION_P, fun)});
 }
 
-void LSClass::addField(std::string name, Type type) {
-	fields.insert({name, type});
+void LSClass::addField(std::string name, Type type, void* fun) {
+	fields.insert({name, ModuleField(name, type, fun)});
 }
 
 void LSClass::addStaticField(ModuleStaticField f) {

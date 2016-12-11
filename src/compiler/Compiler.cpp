@@ -144,7 +144,7 @@ Compiler::value Compiler::new_mpz() const {
 	return {VM::create_gmp_int(F, 0), Type::GMP_INT};
 }
 Compiler::value Compiler::new_object(Compiler::value clazz) const {
-	return insn_call(Type::OBJECT, {clazz}, +[](LSClass* clazz) {
+	return insn_call(Type::POINTER, {clazz}, +[](LSClass* clazz) {
 		return new LSObject(clazz);
 	});
 }
@@ -222,6 +222,7 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 		return new_pointer(program->system_vars["Object"]);
 	if (v.t == Type::CLASS)
 		return new_pointer(program->system_vars["Class"]);
+
 	return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
 		return v->getClass();
 	});

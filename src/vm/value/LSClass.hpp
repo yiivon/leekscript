@@ -11,6 +11,7 @@ namespace ls {
 
 class Method;
 class StaticMethod;
+class ModuleField;
 class ModuleStaticField;
 
 class LSClass : public LSValue {
@@ -31,7 +32,7 @@ public:
 	LSClass* parent;
 	std::string name;
 
-	std::map<std::string, Type> fields;
+	std::map<std::string, ModuleField> fields;
 	std::map<std::string, std::vector<Method>> methods;
 	std::map<std::string, std::vector<StaticMethod>> static_methods;
 	std::map<std::string, ModuleStaticField> static_fields;
@@ -48,7 +49,7 @@ public:
 	virtual ~LSClass();
 
 	void addMethod(std::string&, std::vector<Method>);
-	void addField(std::string, Type);
+	void addField(std::string, Type, void* fun);
 	void addStaticField(ModuleStaticField f);
 	void addStaticField(std::string, Type type, LSValue*);
 	void addOperator(std::string name, std::vector<Operator>);
