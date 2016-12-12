@@ -265,22 +265,19 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 		eat(TokenType::LET);
 	}
 
-	vd->variables.push_back(eatIdent());
-
-	while (t->type == TokenType::COMMA) {
-		eat(TokenType::COMMA);
+	while (t->type == TokenType::IDENT) {
 		vd->variables.push_back(eatIdent());
-	}
 
-	if (t->type == TokenType::EQUAL) {
-
-		eat(TokenType::EQUAL);
-
-		vd->expressions.push_back(eatExpression());
-
-		while (t->type == TokenType::COMMA && vd->expressions.size() < vd->variables.size()) {
-			eat();
+		if (t->type == TokenType::EQUAL) {
+			eat(TokenType::EQUAL);
 			vd->expressions.push_back(eatExpression());
+		} else {
+			vd->expressions.push_back(nullptr);
+		}
+		if (t->type == TokenType::COMMA) {
+			eat(TokenType::COMMA);
+		} else {
+			break;
 		}
 	}
 

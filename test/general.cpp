@@ -40,7 +40,11 @@ void Test::test_general() {
 
 	header("Variables");
 	code("let a = 2 a").equals("2");
-	code("let a, b, c = 1, 2, 3 c").equals("3");
+	code("let a = 1, b = 2, c = 3").equals("(void)");
+	code("let a = 1, b = 2, c").equals("(void)");
+	code("let a = 1, b, c = 3").equals("(void)");
+	code("let a, b, c = 3").equals("(void)");
+	code("let a, b, c").equals("(void)");
 	code("let a").equals("(void)");
 	code("let a a").equals("null");
 	//code("let a a = 12 a").equals("12");
@@ -51,13 +55,13 @@ void Test::test_general() {
 	code("let 韭 = 'leek' 韭").equals("'leek'");
 	code("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ** 🐨").equals("25");
 
-	code("a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, "a");
-	code("let a = 2 let a = 5").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, "a");
+	code("a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
+	code("let a = 2 let a = 5").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, {"a"});
 
 	code("let a = 12 a").equals("12");
 	code("let a = 12 { let a = 5 } a").equals("12");
 	code("let a = 12 let b = 0 { let a = 5 b = a } b").equals("5");
-	code("{let a = 5} a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, "a");
+	code("{let a = 5} a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
 
 	code("'foo' ?? 'bar'").equals("'foo'");
 	code("null ?? 'bar'").equals("'bar'");
