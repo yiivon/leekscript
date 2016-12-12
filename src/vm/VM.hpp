@@ -101,7 +101,7 @@ public:
 	virtual ~VM();
 
 	/** Main execution function **/
-	Result execute(const std::string code, std::string ctx);
+	Result execute(const std::string code, std::string ctx, bool v1_mode = false);
 
 	/** Add a module **/
 	void add_module(Module* m);

@@ -41,6 +41,7 @@ int main(int argc, char* argv[]) {
 	bool display_time = false;
 	bool print_version = false;
 	bool debug_mode = false;
+	bool v1_mode = false;
 	std::string file_or_code;
 
 	for (int i = 1; i < argc; ++i) {
@@ -49,6 +50,7 @@ int main(int argc, char* argv[]) {
 		else if (a == "-t" or a == "-T" or a == "--time") display_time = true;
 		else if (a == "-v" or a == "-V" or a == "--version") print_version = true;
 		else if (a == "-d" or a == "-D" or a == "--debug") debug_mode = true;
+		else if (a == "-v1" or a == "-V1") v1_mode = true;
 		else file_or_code = a;
 	}
 
@@ -70,7 +72,7 @@ int main(int argc, char* argv[]) {
 			code = file_or_code;
 		}
 		/** Execute **/
-		auto result = ls::VM().execute(code, "{}");
+		auto result = ls::VM().execute(code, "{}", v1_mode);
 		print_result(result, output_json, display_time, debug_mode);
 		return 0;
 	}
@@ -85,7 +87,7 @@ int main(int argc, char* argv[]) {
 		cout << ">> ";
 		std::getline(std::cin, code);
 		// Execute
-		auto result = vm.execute(code, ctx);
+		auto result = vm.execute(code, ctx, v1_mode);
 		print_result(result, output_json, display_time, debug_mode);
 		// Set new context
 		ctx = result.context;

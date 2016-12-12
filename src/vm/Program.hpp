@@ -13,6 +13,7 @@ private:
 
 	std::string code; // The program code
 	void* closure;
+	bool v1_mode;
 
 	void compile_main(Context&);
 	void compile_jit(Compiler&, Context&, bool);
@@ -24,7 +25,7 @@ public:
 	std::map<std::string, LSValue*> system_vars;
 
 
-	Program(const std::string& code);
+	Program(const std::string& code, bool v1_mode = false);
 	virtual ~Program();
 
 	/*

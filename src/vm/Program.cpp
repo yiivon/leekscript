@@ -23,10 +23,11 @@ namespace ls {
 
 extern map<string, jit_value_t> internals;
 
-Program::Program(const std::string& code) {
+Program::Program(const std::string& code, bool v1_mode) {
 	this->code = code;
 	main = nullptr;
 	closure = nullptr;
+	this->v1_mode = v1_mode;
 }
 
 Program::~Program() {
@@ -65,7 +66,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	// Semantical analysis
 	Context context { ctx };
 	SemanticAnalyser sem;
-	sem.analyse(this, &context, vm.modules);
+	sem.analyse(this, &context, vm.modules, v1_mode);
 
 	std::ostringstream oss;
 	print(oss, true);

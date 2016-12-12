@@ -85,7 +85,7 @@ LSValue* op_mod(void*, LSValue* x, LSValue* y) {
 	return x->ls_mod(y);
 }
 
-void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<Module*>& modules) {
+void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<Module*>& modules, bool v1_mode) {
 
 	this->program = program;
 
@@ -132,6 +132,18 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	// Include custom modules
 	for (Module* module : modules) {
 		module->include(this, program);
+	}
+
+	if (v1_mode) {
+		auto debug = new LSFunction((void*) +[](LSFunction*, LSValue* v) {
+			v->print(*VM::output);
+			*VM::output << std::endl;
+		});
+		auto debug_type = Type::FUNCTION_P;
+		debug_type.setArgumentType(0, Type::POINTER);
+		debug_type.setReturnType(Type::VOID);
+		program->system_vars.insert({"debug", debug});
+		add_var(new Token("debug"), debug_type, nullptr, nullptr);
 	}
 
 	in_program = true;

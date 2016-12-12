@@ -48,7 +48,7 @@ void VM::add_module(Module* m) {
 #define YELLOW "\033[1;33m"
 #define END_COLOR "\033[0m"
 
-VM::Result VM::execute(const std::string code, std::string ctx) {
+VM::Result VM::execute(const std::string code, std::string ctx, bool v1_mode) {
 
 	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
 	VM::gmp_int_type = jit_type_create_struct(types, 3, 0);
@@ -64,7 +64,7 @@ VM::Result VM::execute(const std::string code, std::string ctx) {
 		LSValue::objs().clear();
 	#endif
 
-	Program* program = new Program(code);
+	Program* program = new Program(code, v1_mode);
 
 	// Compile
 	auto compilation_start = chrono::high_resolution_clock::now();

@@ -63,7 +63,7 @@ public:
 	SemanticAnalyser();
 	virtual ~SemanticAnalyser();
 
-	void analyse(Program*, Context*, std::vector<Module*>&);
+	void analyse(Program*, Context*, std::vector<Module*>&, bool v1_mode);
 
 	void enter_function(Function*);
 	void leave_function();
