@@ -17,7 +17,7 @@
 using namespace std;
 
 void print_errors(ls::VM::Result& result);
-void print_result(ls::VM::Result& result, bool json, bool display_time);
+void print_result(ls::VM::Result& result, bool json, bool display_time, bool semantic_tree);
 bool is_file_name(std::string data);
 
 #define GREY "\033[0;90m"
@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
 	bool output_json = false;
 	bool display_time = false;
 	bool print_version = false;
+	bool debug_mode = false;
 	std::string file_or_code;
 
 	for (int i = 1; i < argc; ++i) {
@@ -47,6 +48,7 @@ int main(int argc, char* argv[]) {
 		if (a == "-j" or a == "-J" or a == "--json") output_json = true;
 		else if (a == "-t" or a == "-T" or a == "--time") display_time = true;
 		else if (a == "-v" or a == "-V" or a == "--version") print_version = true;
+		else if (a == "-d" or a == "-D" or a == "--debug") debug_mode = true;
 		else file_or_code = a;
 	}
 
@@ -69,7 +71,7 @@ int main(int argc, char* argv[]) {
 		}
 		/** Execute **/
 		auto result = ls::VM().execute(code, "{}");
-		print_result(result, output_json, display_time);
+		print_result(result, output_json, display_time, debug_mode);
 		return 0;
 	}
 
@@ -84,7 +86,7 @@ int main(int argc, char* argv[]) {
 		std::getline(std::cin, code);
 		// Execute
 		auto result = vm.execute(code, ctx);
-		print_result(result, output_json, display_time);
+		print_result(result, output_json, display_time, debug_mode);
 		// Set new context
 		ctx = result.context;
 	}
@@ -106,7 +108,10 @@ bool is_file_name(std::string data) {
 	return true;
 }
 
-void print_result(ls::VM::Result& result, bool json, bool display_time) {
+void print_result(ls::VM::Result& result, bool json, bool display_time, bool debug_mode) {
+	if (debug_mode) {
+		cout << "main() " << result.program << endl;
+	}
 	print_errors(result);
 	if (json) {
 		cout << "{\"success\":true,\"ops\":" << result.operations
@@ -128,9 +133,6 @@ void print_result(ls::VM::Result& result, bool json, bool display_time) {
 }
 
 void print_errors(ls::VM::Result& result) {
-	#if DEBUG
-		cout << "main() " << result.program << endl;
-	#endif
 	for (const auto& e : result.syntaxical_errors) {
 		std::cout << "Line " << e.token->line << ": " << e.message << std::endl;
 	}
