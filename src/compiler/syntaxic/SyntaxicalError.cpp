@@ -4,10 +4,7 @@ using namespace std;
 
 namespace ls {
 
-SyntaxicalError::SyntaxicalError() {
-	this->token = new Token("empty");
-	this->message = "no message";
-}
+SyntaxicalError::SyntaxicalError() {}
 
 SyntaxicalError::SyntaxicalError(const SyntaxicalError& other) {
 	this->token = other.token;
