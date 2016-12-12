@@ -207,6 +207,19 @@ void Test::Input::almost(T expected, T delta) {
 	}
 }
 
+void Test::Input::quine() {
+	std::ostringstream oss;
+	ls::VM::output = &oss;
+	auto result = run();
+	ls::VM::output = &std::cout;
+
+	if (oss.str() == code) {
+		pass(code);
+	} else {
+		fail(code, oss.str());
+	}
+}
+
 void Test::Input::output(std::string expected) {
 	std::ostringstream oss;
 	ls::VM::output = &oss;

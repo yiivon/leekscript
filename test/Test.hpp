@@ -86,6 +86,7 @@ public:
 		void operations(int ops);
 		void exception(ls::VM::Exception);
 		void output(std::string expected);
+		void quine();
 		Input& timeout(int ms);
 		Input& ops_limit(long int ops);
 

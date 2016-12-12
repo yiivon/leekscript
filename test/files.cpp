@@ -12,6 +12,7 @@ void Test::test_files() {
 	file("test/code/reachable_cells.leek").equals("383");
 	file("test/code/break_and_continue.leek").equals("2504");
 	file("test/code/french.leek").equals("'cent-soixante-huit millions quatre-cent-quatre-vingt-neuf-mille-neuf-cent-quatre-vingt-dix-neuf'");
+	file("test/code/quine.leek").quine();
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
