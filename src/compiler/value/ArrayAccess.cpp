@@ -73,20 +73,22 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (key->type != Type::UNKNOWN and not key->type.isNumber()) {
 			std::string k = "<key 1>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, {k}});
 		}
 		if (key2->type != Type::UNKNOWN and not key2->type.isNumber()) {
 			std::string k = "<key 2>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, k});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, {k}});
 		}
 		type = array->type;
 
 	} else if (array->type.raw_type == RawType::ARRAY or array->type.raw_type == RawType::STRING
 		or array->type.raw_type == RawType::INTERVAL) {
 
-		if (key->type != Type::UNKNOWN and not key->type.isNumber()) {
-			std::string k = "<key 1>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, k});
+		if (key->type.raw_type != RawType::UNKNOWN and not key->type.isNumber()) {
+			std::string a = array->to_string();
+			std::string k = key->to_string();
+			std::string kt = key->type.to_string();
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, {k, a, kt}});
 		}
 
 		if (array_element_type == Type::INTEGER) {

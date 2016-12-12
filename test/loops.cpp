@@ -101,12 +101,12 @@ void Test::test_loops() {
 	 * Break & continue
 	 */
 	header("Breaks and Continues");
-	code("break").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, "");
-	code("continue").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, "");
-	code("while (true) { x -> {x break} }").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, "");
-	code("while (true) { x -> {x continue} }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, "");
-	code("while (true) { break 2 }").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, "");
-	code("while (true) { continue 2 }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, "");
+	code("break").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, {});
+	code("continue").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
+	code("while (true) { x -> {x break} }").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, {});
+	code("while (true) { x -> {x continue} }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
+	code("while (true) { break 2 }").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, {});
+	code("while (true) { continue 2 }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
 	code("let r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r").equals("14");
 	code("let r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y continue 2 } r = 0 } r").equals("23");
 	code("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");

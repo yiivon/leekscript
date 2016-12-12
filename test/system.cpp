@@ -29,7 +29,7 @@ void Test::test_system() {
 	long nano_time = get_nano_time();
 	code("System.nanoTime").almost(nano_time, 100000000L);
 
-	code("let a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, "a");
+	code("let a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, {"a"});
 
 	section("print()");
 	code("System.print(true)").output("true\n");

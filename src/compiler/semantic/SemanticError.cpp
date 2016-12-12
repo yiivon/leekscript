@@ -11,23 +11,22 @@ Json SemanticError::translation;
 SemanticError::SemanticError(Type type, unsigned line) {
 	this->type = type;
 	this->line = line;
-	this->content = "";
 }
 
-SemanticError::SemanticError(Type type, unsigned line, const string& content) {
+	SemanticError::SemanticError(Type type, unsigned line, std::vector<std::string> parameters) {
 	this->type = type;
 	this->line = line;
-	this->content = content;
+	this->parameters = parameters;
 }
 
 SemanticError::~SemanticError() {}
 
 std::string SemanticError::message() const {
 
-	return build_message(type, content);
+	return build_message(type, parameters);
 }
 
-std::string SemanticError::build_message(Type type, std::string token) {
+std::string SemanticError::build_message(Type type, std::vector<std::string> parameters) {
 
 	if (!translation_loaded) {
 		try {
@@ -39,8 +38,13 @@ std::string SemanticError::build_message(Type type, std::string token) {
 
 	try {
 		std::string m = translation[type_to_string(type)];
-		if (m.find("%s") != std::string::npos) {
-			m = m.replace(m.find("%s"), 2, token);
+		size_t pos = 0;
+		size_t i = 0;
+		while ((pos = m.find("%", pos + 1)) != std::string::npos) {
+			if (i < parameters.size()) {
+				m = m.replace(pos, 2, parameters[i]);
+			}
+			i++;
 		}
 		return m;
 	} catch (exception&) {

@@ -81,7 +81,7 @@ public:
 		void almost(T expected, T delta = 1e-10);
 		template <typename T>
 		void between(T a, T b);
-		void semantic_error(ls::SemanticError::Type error, std::string param);
+		void semantic_error(ls::SemanticError::Type error, std::vector<std::string> params);
 		void lexical_error(ls::LexicalError::Type error);
 		void operations(int ops);
 		void exception(ls::VM::Exception);

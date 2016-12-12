@@ -30,14 +30,14 @@ public:
 	static bool translation_loaded;
 	static Json translation;
 	static std::string type_to_string(Type);
-	static std::string build_message(Type, std::string);
+	static std::string build_message(Type, std::vector<std::string> parameters);
 
 	Type type;
 	unsigned line;
-	std::string content;
+	std::vector<std::string> parameters;
 
 	SemanticError(Type type, unsigned line);
-	SemanticError(Type type, unsigned line, const std::string& content);
+	SemanticError(Type type, unsigned line, std::vector<std::string> parameters);
 	virtual ~SemanticError();
 
 	std::string message() const;

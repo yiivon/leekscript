@@ -237,7 +237,7 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 		}
 		f--;
 	}
-	add_error({SemanticError::Type::UNDEFINED_VARIABLE, v->line, v->content});
+	add_error({SemanticError::Type::UNDEFINED_VARIABLE, v->line, {v->content}});
 	return nullptr;
 }
 
@@ -262,7 +262,7 @@ SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, Variab
 	}
 
 	if (variables.back().back().find(v->content) != variables.back().back().end()) {
-		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, v->content});
+		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, {v->content}});
 	}
 	variables.back().back().insert(pair<string, SemanticVar*>(
 		v->content,

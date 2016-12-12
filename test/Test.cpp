@@ -238,15 +238,15 @@ void Test::Input::between(T a, T b) {
 
 }
 
-void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::string token) {
+void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::vector<std::string> parameters) {
 
 	auto result = run(false);
 
-	std::string expected_message = ls::SemanticError::build_message(expected_type, token);
+	std::string expected_message = ls::SemanticError::build_message(expected_type, parameters);
 
 	if (result.semantical_errors.size()) {
 		ls::SemanticError e = result.semantical_errors[0];
-		if (expected_type != e.type or token != e.content) {
+		if (expected_type != e.type or parameters != e.parameters) {
 			fail(expected_message, e.message());
 		} else {
 			pass(e.message());

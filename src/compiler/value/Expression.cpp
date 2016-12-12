@@ -159,13 +159,13 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Don't use old stuff for boolean
 	if (v1->type == Type::BOOLEAN) {
-		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, op->token->line, op->character});
+		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, op->token->line, {op->character}});
 		return;
 	}
 
 	if (op->type == TokenType::IN) {
 		if (operator_fun == nullptr) {
-			analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, v1->line(), op->character});
+			analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, v1->line(), {op->character}});
 			return;
 		}
 	}
@@ -265,7 +265,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		bool is_left_value = true;
 		if (not v1->isLeftValue()) {
 			std::string c = "<v>";
-			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), c});
+			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), {c}});
 			is_left_value = false;
 		}
 

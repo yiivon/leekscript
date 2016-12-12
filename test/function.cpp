@@ -10,10 +10,10 @@ void Test::test_functions() {
 	code("function f() { return 12 } [f(), 'str']").equals("[12, 'str']");
 
 	section("Can't call a value");
-	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, "null");
-	code("12()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, "12");
-	code("'hello'()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, "'hello'");
-	code("[1, 2, 3]()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, "[1, 2, 3]");
+	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"null"});
+	code("12()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"12"});
+	code("'hello'()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"'hello'"});
+	code("[1, 2, 3]()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"[1, 2, 3]"});
 
 	section("Functions / Lambdas");
 	code("let f = x -> x f(12)").equals("12");
@@ -119,9 +119,9 @@ void Test::test_functions() {
 	//code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
 
 	section("Check argument count");
-	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "(x) → {\n    x\n}");
-	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "f");
-	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, "add");
+	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"(x) → {\n    x\n}", "1", "0"});
+	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
+	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
 
 	section("Void functions");
 	code("(x -> System.print(x))(43)").equals("(void)");

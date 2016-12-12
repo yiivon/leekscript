@@ -270,7 +270,7 @@ void Test::test_arrays() {
 
 	section("Array.removeElement()");
 	code("let a = [1, 2, 3] a.removeElement(1) a").equals("[3, 2]");
-	code("let a = [1, 2, 3] a.removeElement('key') a").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, ls::Type::INT_ARRAY.toString() + ".removeElement(" + ls::Type::STRING_TMP.toString() + ")");
+	code("let a = [1, 2, 3] a.removeElement('key') a").semantic_error(ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::INT_ARRAY.to_string() + ".removeElement(" + ls::Type::STRING_TMP.to_string() + ")"});
 
 	section("Postfix expressions");
 	code("let a = [10, ''] a[0]++").equals("11");

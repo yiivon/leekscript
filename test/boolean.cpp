@@ -72,8 +72,8 @@ void Test::test_booleans() {
 	code("[] or ''").equals("false");
 
 	section("Boolean is not a number");
-	code("false + 99").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "+");
-	code("true - 99").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "-");
+	code("false + 99").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"+"});
+	code("true - 99").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"-"});
 	//code("12 + true").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "+");
 	//code("15 - false").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "-");
 }
