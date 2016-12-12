@@ -55,12 +55,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		// analyser->add_error();
 	//}
 
-	if (container->type.element_type.size() == 1) {
-
-		key_type = Type::INTEGER; // If no key type in array key = 0, 1, 2...
-		value_type = container->type.getElementType();
-
-	} else if (container->type.raw_type == RawType::MAP) {
+	if (container->type.raw_type == RawType::MAP) {
 
 		key_type = container->type.getKeyType();
 		value_type = container->type.getElementType();
@@ -68,17 +63,16 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	} else if (container->type.raw_type == RawType::ARRAY ||
 			   container->type.raw_type == RawType::SET) {
 		key_type = Type::INTEGER;
-		value_type = Type::POINTER;
+		value_type = container->type.getElementType();
 	} else {
 		key_type = Type::POINTER;
-		value_type = Type::POINTER;
+		value_type = container->type.getElementType();
 	}
 
 	if (key != nullptr) {
 		key_var = analyser->add_var(key, key_type, nullptr, nullptr);
 	}
 	value_var = analyser->add_var(value, value_type, nullptr, nullptr);
-
 
 	analyser->enter_loop();
 	if (type == Type::VOID) {
