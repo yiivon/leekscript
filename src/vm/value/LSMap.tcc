@@ -450,6 +450,17 @@ inline std::ostream& LSMap<K, V>::print(std::ostream& os) const {
 }
 
 template <typename K, typename V>
+inline std::ostream& LSMap<K, V>::dump(std::ostream& os) const {
+	os << "[";
+	for (auto it = this->begin(); it != this->end(); ++it) {
+		if (it != this->begin()) os << " ";
+		os << it->first << " : " << it->second;
+	}
+	if (this->empty()) os << ':';
+	return os << "]";
+}
+
+template <typename K, typename V>
 inline std::string LSMap<K, V>::json() const {
 	std::string res = "[";
 	for (auto it = this->begin(); it != this->end(); ++it) {

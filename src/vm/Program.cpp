@@ -200,7 +200,7 @@ std::string Program::execute() {
 	LSValue* ptr = fun();
 	if (VM::last_exception) throw VM::last_exception;
 	std::ostringstream oss;
-	oss << ptr;
+	ptr->dump(oss);
 	LSValue::delete_temporary(ptr);
 	return oss.str();
 }

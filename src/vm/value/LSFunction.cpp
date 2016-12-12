@@ -88,6 +88,12 @@ std::ostream& LSFunction::print(std::ostream& os) const {
 	os << "<function>";
 	return os;
 }
+
+std::ostream& LSFunction::dump(std::ostream& os) const {
+	os << "<function>";
+	return os;
+}
+
 string LSFunction::json() const {
 	return "";
 }

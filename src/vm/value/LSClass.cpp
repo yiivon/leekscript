@@ -193,6 +193,11 @@ std::ostream& LSClass::print(std::ostream& os) const {
 	return os;
 }
 
+std::ostream& LSClass::dump(std::ostream& os) const {
+	os << "<class " << name << ">";
+	return os;
+}
+
 string LSClass::json() const {
 	return "class";
 }

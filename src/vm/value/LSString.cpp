@@ -339,9 +339,15 @@ LSValue* LSString::abso() const {
 }
 
 std::ostream& LSString::print(std::ostream& os) const {
+	os << (std::string) *this;
+	return os;
+}
+
+std::ostream& LSString::dump(std::ostream& os) const {
 	os << "'" << escaped('\'') << "'";
 	return os;
 }
+
 string LSString::json() const {
 	return "\"" + escaped('"') + "\"";
 }

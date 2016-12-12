@@ -460,16 +460,21 @@ LSString* LSValue::ls_json() {
 	return json;
 }
 
+std::ostream& LSValue::dump(std::ostream& os) const {
+	print(os);
+	return os;
+}
+
 }
 
 namespace std {
 	std::string to_string(ls::LSValue* value) {
 		std::ostringstream oss;
-		value->print(oss);
+		value->dump(oss);
 		return oss.str();
 	}
 	std::ostream& operator << (std::ostream& os, const ls::LSValue* value) {
-		value->print(os);
+		value->dump(os);
 		return os;
 	}
 }

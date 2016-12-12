@@ -93,6 +93,11 @@ std::ostream& LSBoolean::print(std::ostream& os) const {
 	return os;
 }
 
+std::ostream& LSBoolean::dump(std::ostream& os) const {
+	os << (value ? "true" : "false");
+	return os;
+}
+
 string LSBoolean::json() const {
 	return value ? "true" : "false";
 }

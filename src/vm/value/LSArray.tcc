@@ -2064,6 +2064,28 @@ inline std::ostream& LSArray<LSValue*>::print(std::ostream& os) const {
 }
 
 template <typename T>
+std::ostream& LSArray<T>::dump(std::ostream& os) const {
+	os << "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) os << ", ";
+		os << (*i);
+	}
+	os << "]";
+	return os;
+}
+
+template <>
+inline std::ostream& LSArray<LSValue*>::dump(std::ostream& os) const {
+	os << "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) os << ", ";
+		(*i)->dump(os);
+	}
+	os << "]";
+	return os;
+}
+
+template <typename T>
 std::string LSArray<T>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {

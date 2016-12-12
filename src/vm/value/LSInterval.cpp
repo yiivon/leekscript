@@ -63,4 +63,9 @@ std::ostream& LSInterval::print(std::ostream& os) const {
 	return os;
 }
 
+std::ostream& LSInterval::dump(std::ostream& os) const {
+	os << "[" << a << ".." << b << "]";
+	return os;
+}
+
 }

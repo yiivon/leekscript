@@ -181,7 +181,7 @@ std::ostream& LSObject::print(std::ostream& os) const {
 		if (i != values.begin()) os << ", ";
 		os << i->first;
 		os << ": ";
-		i->second->print(os);
+		i->second->dump(os);
 	}
 	os << "}";
 	return os;
