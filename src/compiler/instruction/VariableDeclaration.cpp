@@ -27,16 +27,11 @@ void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		os << variables.at(i)->content;
-		if (i < variables.size() - 1) {
-			os << ", ";
+		if (expressions[i] != nullptr) {
+			os << " = ";
+			expressions.at(i)->print(os, indent, debug);
 		}
-	}
-	if (expressions.size() > 0) {
-		os << " = ";
-	}
-	for (unsigned i = 0; i < expressions.size(); ++i) {
-		expressions.at(i)->print(os, indent, debug);
-		if (i < expressions.size() - 1) {
+		if (i < variables.size() - 1) {
 			os << ", ";
 		}
 	}
@@ -54,16 +49,14 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 		SemanticVar* v = analyser->add_var(var, Type::UNKNOWN, value, this);
 
-		if (i < expressions.size()) {
+		if (expressions[i] != nullptr) {
 			expressions[i]->analyse(analyser, Type::UNKNOWN);
 			v->type = expressions[i]->type;
 			v->value = expressions[i];
 		}
-
 		if (v->type == Type::VOID) {
-			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, var->line, var->content});
+			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, var->line, {var->content}});
 		}
-
 		vars.insert(pair<string, SemanticVar*>(var->content, v));
 	}
 }
@@ -75,7 +68,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 		std::string name = variables[i]->content;
 		SemanticVar* v = vars.at(name);
 
-		if (i < expressions.size()) {
+		if (expressions[i] != nullptr) {
 
 			Value* ex = expressions[i];
 
