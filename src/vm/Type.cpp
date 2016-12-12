@@ -251,7 +251,7 @@ void Type::toJson(ostream& os) const {
 	os << "}";
 }
 
-std::string Type::toString() const {
+std::string Type::to_string() const {
 	std::ostringstream oss;
 	oss << *this;
 	return oss.str();

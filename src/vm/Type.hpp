@@ -205,7 +205,7 @@ public:
 	Type mix(const Type& x) const;
 
 	void toJson(std::ostream&) const;
-	std::string toString() const;
+	std::string to_string() const;
 
 	bool isNumber() const;
 
