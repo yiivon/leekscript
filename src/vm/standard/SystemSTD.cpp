@@ -96,38 +96,38 @@ jit_value_t System_version(jit_function_t F) {
 }
 
 void System_print(LSValue* value) {
-	std::cout << *value;
+	value->print(*VM::output);
+	*VM::output << std::endl;
 	LSValue::delete_temporary(value);
-	std::cout << std::endl;
 }
 
 void System_print_int(int v) {
-	std::cout << v << std::endl;
+	*VM::output << v << std::endl;
 }
 
 void System_print_mpz(__mpz_struct v) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &v);
-	std::cout << buff << std::endl;
+	*VM::output << buff << std::endl;
 }
 void System_print_mpz_tmp(__mpz_struct v) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &v);
-	std::cout << buff << std::endl;
+	*VM::output << buff << std::endl;
 	mpz_clear(&v);
 	VM::gmp_values_deleted++;
 }
 
 void System_print_long(long v) {
-	std::cout << v << std::endl;
+	*VM::output << v << std::endl;
 }
 
 void System_print_bool(bool v) {
-	std::cout << std::boolalpha << v << std::endl;
+	*VM::output << std::boolalpha << v << std::endl;
 }
 
 void System_print_float(double v) {
-	std::cout << v << std::endl;
+	*VM::output << v << std::endl;
 }
 
 }

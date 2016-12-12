@@ -33,6 +33,7 @@ long VM::gmp_values_deleted = 0;
 VM::ExceptionObj* VM::last_exception = nullptr;
 jit_stack_trace_t VM::stack_trace;
 jit_context_t VM::jit_context;
+std::ostream* VM::output = &std::cout;
 
 map<string, jit_value_t> internals;
 

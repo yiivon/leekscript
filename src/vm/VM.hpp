@@ -72,6 +72,8 @@ public:
 	static jit_stack_trace_t stack_trace;
 	static jit_context_t jit_context;
 
+	static std::ostream* output;
+
 	struct Result {
 		bool compilation_success = false;
 		bool execution_success = false;
