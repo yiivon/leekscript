@@ -4,6 +4,7 @@ void Test::test_classes() {
 
 	header("Classes");
 
+	section(".class attribute");
 	code("null.class").equals("<class Null>");
 	code("true.class").equals("<class Boolean>");
 	code("false.class").equals("<class Boolean>");
@@ -20,7 +21,9 @@ void Test::test_classes() {
 	code("(-> 12).class").equals("<class Function>");
 	code("(x, y -> x + y).class").equals("<class Function>");
 	code("12.class.class").equals("<class Class>");
+	code("[null, true, 12, 'foo', [], {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Object>, <class Function>, <class Class>]");
 
+	section("instanceof operator");
 	code("12 instanceof Number").equals("true");
 	code("'yo' instanceof Number").equals("false");
 	code("'yo' instanceof String").equals("true");
@@ -31,6 +34,7 @@ void Test::test_classes() {
 	code("true instanceof Boolean").equals("true");
 	code("Number instanceof Class").equals("true");
 
+	section("Class creation");
 	code("class A {} A").equals("<class A>");
 	code("class A {} let a = new A a").equals("A {}");
 	code("class A { let b = 2 } let a = new A a").equals("A {}");
