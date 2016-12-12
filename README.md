@@ -45,6 +45,7 @@ Option | Effect
 -v -V --version	| Print the current version
 -j -J --json	| Get the result in JSON format
 -t -T --time	| Print execution time and operations
+-d -D --debug | Print debug information like types
 
 Tests and coverage
 ------------------
