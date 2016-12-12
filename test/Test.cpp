@@ -207,6 +207,19 @@ void Test::Input::almost(T expected, T delta) {
 	}
 }
 
+void Test::Input::output(std::string expected) {
+	std::ostringstream oss;
+	ls::VM::output = &oss;
+	auto result = run();
+	ls::VM::output = &std::cout;
+
+	if (oss.str() == expected) {
+		pass(expected);
+	} else {
+		fail(expected, oss.str());
+	}
+}
+
 template <typename T>
 void Test::Input::between(T a, T b) {
 

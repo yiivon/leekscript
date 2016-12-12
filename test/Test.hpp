@@ -85,6 +85,7 @@ public:
 		void lexical_error(ls::LexicalError::Type error);
 		void operations(int ops);
 		void exception(ls::VM::Exception);
+		void output(std::string expected);
 		Input& timeout(int ms);
 		Input& ops_limit(long int ops);
 
