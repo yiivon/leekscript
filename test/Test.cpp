@@ -53,7 +53,7 @@ int Test::all() {
 
 	std::ostringstream line1, line2, line3, line4;
 	line1 << "Total : " << total << ", success : " << success_count << ", errors : " << errors;
-	line2 << "Total time : " << elapsed_secs * 1000 << " ms, execution time : " << (exeTime / CLOCKS_PER_SEC) * 1000 << " ms";
+	line2 << "Total time : " << elapsed_secs * 1000 << " ms";
 	line3 << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
 	line4 << "GMP objects destroyed : " << gmp_obj_deleted << " / " << gmp_obj_created << " (" << gmp_leaks << " leaked)";
 	unsigned w = std::max(line1.str().size(), std::max(line2.str().size(), std::max(line3.str().size(), line4.str().size())));
