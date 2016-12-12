@@ -174,12 +174,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	 * OLD
 	 */
 
-	// Require float type for a division
-	if (op->type == TokenType::DIVIDE) {
-		type.raw_type = RawType::REAL;
-		v1->analyse(analyser, Type::REAL);
-	}
-
 	if (v1->type.nature == Nature::POINTER) {
 		type.nature = Nature::POINTER;
 	}

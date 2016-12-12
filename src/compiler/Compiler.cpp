@@ -115,6 +115,9 @@ Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_mul(F, a.v, b.v), Type::INTEGER};
 }
+Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_div(F, jit_insn_convert(F, a.v, LS_REAL, 0), b.v), Type::REAL};
+}
 Compiler::value Compiler::insn_bit_and(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_and(F, a.v, b.v), Type::INTEGER};
 }

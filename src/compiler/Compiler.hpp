@@ -67,6 +67,7 @@ public:
 	value insn_gt(value, value) const;
 	value insn_ge(value, value) const;
 	value insn_mul(value, value) const;
+	value insn_div(value, value) const;
 	value insn_bit_and(value, value) const;
 	value insn_bit_or(value, value) const;
 	value insn_bit_xor(value, value) const;

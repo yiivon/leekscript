@@ -51,6 +51,8 @@ public:
 	static Compiler::value mul_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mul_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value div_val_val(Compiler& c, std::vector<Compiler::value> args);
+
 	static Compiler::value pow_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value pow_gmp_int(Compiler& c, std::vector<Compiler::value> args);
 

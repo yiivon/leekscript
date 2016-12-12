@@ -133,6 +133,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_int, Method::NATIVE},
 	});
 
+	operator_("/", {
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::REAL, (void*) &NumberSTD::div_val_val, Method::NATIVE}
+	});
+
 	operator_("<", {
 		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::lt, Method::NATIVE},
 		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp, Method::NATIVE},
@@ -576,6 +580,10 @@ Compiler::value NumberSTD::mul_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::va
 	auto b_addr = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_mul);
 	return args[0];
+}
+
+Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_div(args[0], args[1]);
 }
 
 Compiler::value NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
