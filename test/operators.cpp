@@ -167,7 +167,7 @@ void Test::test_operators() {
 		"(x -> x)", "Number", "[:]", "[1: 2, 5: 12]", "[1:100]"
 	};
 	std::vector<std::string> operators = {
-		"+", "-", "/", "*", ">", "<", ">=", "<=", "==", "and", "or", "xor", "\\", "in"
+		"+", "-", "/", /* "*", too risky */ ">", "<", ">=", "<=", "==", "and", "or", "xor", "\\", "in"
 	};
 	for (int i = 0; i < 10; ++i) {
 		std::string c = values[rand() % values.size()] + " " + operators[rand() % operators.size()] + " " + values[rand() % values.size()];
