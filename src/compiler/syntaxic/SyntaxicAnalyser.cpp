@@ -1023,10 +1023,14 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		// body
 		if (t->type == TokenType::OPEN_BRACE) {
 			f->body = eatBlock();
-		} else {
+		} else if (t->type == TokenType::DO) {
 			eat(TokenType::DO);
 			f->body = eatBlock();
 			eat(TokenType::END);
+		} else {
+			auto block = new Block();
+			block->instructions.push_back(eatInstruction());
+			f->body = block;
 		}
 		return f;
 

@@ -59,6 +59,9 @@ void Test::test_loops() {
 	//code("let s = 0 for let m = [1 : 3, 2 : 2, 3 : 1]; m; let l = 0 for k,x in m { l = k } m.erase(l) { for x in m { s += x } } s").equals("14");
 	code("for let i = 0; ['', i < 10][1]; i++ {}").equals("(void)");
 
+	section("For whitout braces");
+	code("var s = 0 for (var i = 0; i < 10; i++) s += i s").equals("45");
+
 	section("For loops with returns");
 	code("for return 12; true; null {}").equals("12");
 	code("for ;; return 'hello' {}").equals("'hello'");
