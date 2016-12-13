@@ -157,9 +157,6 @@ jit_type_t VM::get_jit_type(const Type& type) {
 	return LS_INTEGER;
 }
 
-LSValue* create_null_object(int) {
-	return LSNull::get();
-}
 LSValue* create_number_object_int(int n) {
 	return LSNumber::get(n);
 }
@@ -169,17 +166,11 @@ LSValue* create_number_object_long(long n) {
 LSValue* create_bool_object(bool n) {
 	return LSBoolean::get(n);
 }
-LSValue* create_func_object(void* f) {
-	return new LSFunction(f);
-}
 LSValue* create_float_object(double n) {
 	return LSNumber::get(n);
 }
 
 void* get_conv_fun(Type type) {
-	if (type.raw_type == RawType::NULLL) {
-		return (void*) &create_null_object;
-	}
 	if (type.raw_type == RawType::INTEGER) {
 		return (void*) &create_number_object_int;
 	}
@@ -191,9 +182,6 @@ void* get_conv_fun(Type type) {
 	}
 	if (type.raw_type == RawType::BOOLEAN) {
 		return (void*) &create_bool_object;
-	}
-	if (type.raw_type == RawType::FUNCTION) {
-		return (void*) &create_func_object;
 	}
 	return (void*) &create_number_object_int;
 }
@@ -227,46 +215,17 @@ jit_value_t VM::pointer_to_value(jit_function_t F, jit_value_t v, Type type) {
 		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 0);
 		return jit_insn_call_native(F, "convert", (void*) VM_boolean_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
 	}
-	if (type == Type::INTEGER) {
-		jit_type_t args_types[1] = {LS_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 0);
-		return jit_insn_call_native(F, "convert", (void*) VM_integer_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
-	}
-	return LS_CREATE_INTEGER(F, 0);
+
+	// Integer
+	jit_type_t args_types[1] = {LS_POINTER};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 0);
+	return jit_insn_call_native(F, "convert", (void*) VM_integer_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
 }
 
 jit_value_t VM::int_to_real(jit_function_t F, jit_value_t v) {
 	jit_value_t real = jit_value_create(F, LS_REAL);
 	jit_insn_store(F, real, v);
 	return real;
-}
-
-/*
-bool VM::get_number(jit_function_t F, jit_value_t val) {
-
-	// x & (1 << 31) == 0
-
-	jit_value_t is_int = jit_insn_eq(F,
-		jit_insn_and(F, val, jit_value_create_nint_constant(F, jit_type_int, 2147483648)),
-		jit_value_create_nint_constant(F, jit_type_int, 0)
-	);
-
-	jit_value_t res;
-
-	jit_label_t label_else;
-	jit_insn_branch_if_not(F, is_int, &label_else);
-
-	return false;
-}*/
-
-int VM_get_refs(LSValue* val) {
-	return val->refs;
-}
-
-jit_value_t VM::get_refs(jit_function_t F, jit_value_t obj) {
-	jit_type_t args[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 1, 0);
-	return jit_insn_call_native(F, "get_refs", (void*) VM_get_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 void VM_inc_refs(LSValue* val) {
@@ -277,28 +236,6 @@ void VM::inc_refs(jit_function_t F, jit_value_t obj) {
 	jit_type_t args[1] = {LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
 	jit_insn_call_native(F, "inc_refs", (void*) VM_inc_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
-}
-
-void VM_inc_refs_if_not_temp(LSValue* val) {
-	if (val->refs != 0) {
-		val->refs++;
-	}
-}
-
-void VM::inc_refs_if_not_temp(jit_function_t F, jit_value_t obj) {
-	jit_type_t args[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-	jit_insn_call_native(F, "inc_refs_not_temp", (void*) VM_inc_refs_if_not_temp, sig, &obj, 1, JIT_CALL_NOTHROW);
-}
-
-void VM_dec_refs(LSValue* val) {
-	val->refs--;
-}
-
-void VM::dec_refs(jit_function_t F, jit_value_t obj) {
-	jit_type_t args[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-	jit_insn_call_native(F, "dec_refs", (void*) VM_dec_refs, sig, &obj, 1, JIT_CALL_NOTHROW);
 }
 
 void VM::delete_ref(jit_function_t F, jit_value_t obj) {
@@ -341,20 +278,6 @@ void VM::inc_ops_jit(jit_function_t F, jit_value_t amount) {
 
 	// End
 	jit_insn_label(F, &label_end);
-}
-
-void VM_print_gmp_int(__mpz_struct mpz) {
-	std::cout << "_mp_alloc: " << mpz._mp_alloc << std::endl;
-	std::cout << "_mp_size: " << mpz._mp_size << std::endl;
-	std::cout << "_mp_d: " << mpz._mp_d << std::endl;
-	char buff[1000];
-	mpz_get_str(buff, 10, &mpz);
-	cout << "VM::print_gmp_int : " << buff << endl;
-}
-void VM::print_gmp_int(jit_function_t F, jit_value_t val) {
-	jit_type_t args[1] = {get_jit_type(Type::GMP_INT)};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 0);
-	jit_insn_call_native(F, "print_gmp_int", (void*) VM_print_gmp_int, sig, &val, 1, JIT_CALL_NOTHROW);
 }
 
 LSObject* VM_create_object() {
