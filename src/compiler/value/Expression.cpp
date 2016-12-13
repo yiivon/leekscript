@@ -217,10 +217,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 		type = v1->type.mix(v2->type);
 
-		if (op->type == TokenType::DIVIDE and v1->type.isNumber() and v2->type.isNumber()) {
-			type.raw_type = RawType::REAL;
-		}
-
 		// String / String => Array<String>
 		if (op->type == TokenType::DIVIDE and (v1->type == Type::STRING or v1->type == Type::STRING_TMP) and (v2->type == Type::STRING or v2->type == Type::STRING_TMP)) {
 			type = Type::STRING_ARRAY;
