@@ -48,6 +48,10 @@ void Test::test_functions() {
 	code("let f = a, i -> a[i] f([1 2 3], 1)").equals("2");
 	code("[x -> x][0]").equals("<function>");
 
+	section("Function call without commas");
+	code("let f = x, y -> x + y f(12 7)").equals("19");
+	code("String.replace('banana' 'a' '_')").equals("'b_n_n_'");
+
 	section("Closures");
 	code("let a = 5 let f = -> a f()").equals("5");
 	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");

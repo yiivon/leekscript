@@ -471,8 +471,10 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened) 
 
 				if (t->type != TokenType::CLOSING_PARENTHESIS) {
 					fc->arguments.push_back(eatExpression());
-					while (t->type == TokenType::COMMA) {
-						eat();
+					while (t->type != TokenType::CLOSING_PARENTHESIS) {
+						if (t->type == TokenType::COMMA) {
+							eat();
+						}
 						fc->arguments.push_back(eatExpression());
 					}
 				}
