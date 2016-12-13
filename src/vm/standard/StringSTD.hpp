@@ -17,6 +17,8 @@ public:
 	virtual ~StringSTD();
 
 	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args);
+
+	static LSString* replace(LSString*, LSString*, LSString*);
 };
 
 }

@@ -19,7 +19,6 @@ bool string_endsWith(LSString* string, LSString* ending);
 int string_indexOf(LSString* haystack, LSString* needle);
 int string_length(LSString* string);
 LSString* string_map(LSString* string, LSFunction* fun);
-LSString* string_replace(LSString* string, LSString* from, LSString* to);
 int string_size(LSString* string);
 LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter);
 bool string_startsWith(const LSString* string, const LSString* starting);
@@ -56,7 +55,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("isPalindrome", Type::STRING, Type::BOOLEAN, {}, (void*) &LSString::is_palindrome);
 	method("length", Type::STRING, Type::INTEGER, {}, (void*) &string_length);
 	method("size", Type::STRING, Type::INTEGER, {}, (void*) &string_size);
-	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &string_replace);
+	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &StringSTD::replace);
 	method("reverse", Type::STRING, Type::STRING, {}, (void*) &LSString::ls_tilde);
 	method("substring", Type::STRING, Type::STRING, {Type::INTEGER, Type::INTEGER}, (void*) &string_substring);
 	method("toArray", Type::STRING, Type::PTR_ARRAY, {}, (void*) &string_toArray);
@@ -86,7 +85,7 @@ StringSTD::StringSTD() : Module("String") {
 	static_method("indexOf", Type::INTEGER, {Type::STRING, Type::STRING}, (void*) &string_indexOf);
 	static_method("length", Type::INTEGER, {Type::STRING}, (void*) &string_length);
 	static_method("size", Type::INTEGER, {Type::STRING}, (void*) &string_size);
-	static_method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &string_replace);
+	static_method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &StringSTD::replace);
 	static_method("reverse", Type::STRING, {Type::STRING}, (void*) &LSString::ls_tilde);
 	static_method("substring", Type::STRING, {Type::STRING, Type::INTEGER, Type::INTEGER}, (void*) &string_substring);
 	static_method("toArray", Type::PTR_ARRAY, {Type::STRING}, (void*) &string_toArray);
@@ -176,7 +175,7 @@ LSString* string_map(LSString* s, LSFunction* function) {
 	return (LSString*) r;
 }
 
-LSString* string_replace(LSString* string, LSString* from, LSString* to) {
+LSString* StringSTD::replace(LSString* string, LSString* from, LSString* to) {
 	std::string str(*string);
 	size_t start_pos = 0;
 	while((start_pos = str.find(*from, start_pos)) != std::string::npos) {
