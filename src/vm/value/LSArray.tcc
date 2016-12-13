@@ -656,7 +656,6 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_push_all_ptr(LSArray<LSValue*>* 
 			this->push_clone(v);
 		}
 	}
-
 	return this;
 }
 template <typename T>
@@ -671,7 +670,6 @@ inline LSArray<T>* LSArray<T>::ls_push_all_ptr(LSArray<LSValue*>* array) {
 	}
 
 	if (array->refs == 0) delete array;
-
 	return this;
 }
 
@@ -2057,7 +2055,7 @@ inline std::ostream& LSArray<LSValue*>::print(std::ostream& os) const {
 	os << "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
-		os << **i;
+		(*i)->print(os);
 	}
 	os << "]";
 	return os;
