@@ -323,15 +323,6 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 	return nullptr;
 }
 
-SemanticVar* SemanticAnalyser::get_var_direct(std::string name) {
-	try {
-		if (variables.size() > 0) {
-			return variables.back().back().at(name);
-		}
-	} catch (exception& e) {}
-	return nullptr;
-}
-
 SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
 
 	// Internal variable, before execution

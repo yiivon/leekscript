@@ -81,7 +81,6 @@ public:
 	SemanticVar* add_parameter(Token*, Type);
 
 	SemanticVar* get_var(Token* name);
-	SemanticVar* get_var_direct(std::string name);
 	std::map<std::string, SemanticVar*>& get_local_vars();
 
 	void add_error(SemanticError ex);
