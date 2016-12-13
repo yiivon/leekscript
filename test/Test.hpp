@@ -40,7 +40,9 @@ public:
 	void section(std::string);
 
 	Input _code(const std::string& _code);
+	Input code_v1(const std::string& _code);
 	Input file(const std::string& file_name);
+	Input file_v1(const std::string& file_name);
 
 	void test_general();
 	void test_operations();
@@ -68,13 +70,13 @@ public:
 		std::string _name;
 		std::string _code;
 		bool file;
+		bool v1;
 		float compilation_time;
 		float execution_time;
 		long int operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 	public:
 		Input(Test* test, const std::string& name, const std::string& _code,
-			bool file = false) : test(test), _name(name), _code(_code),
-			file(file) {};
+			bool file = false, bool v1 = false) : test(test), _name(name), _code(_code), file(file), v1(v1) {};
 		void works();
 		void _equals(std::string&& expected);
 		template <typename T>

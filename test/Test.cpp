@@ -98,6 +98,10 @@ Test::Input Test::_code(const std::string& code) {
 	return Test::Input(this, code, code);
 }
 
+Test::Input Test::code_v1(const std::string& code) {
+	return Test::Input(this, code, code, false, true);
+}
+
 Test::Input Test::file(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
@@ -105,11 +109,18 @@ Test::Input Test::file(const std::string& file_name) {
 	return Test::Input(this, file_name, code, true);
 }
 
+Test::Input Test::file_v1(const std::string& file_name) {
+	std::ifstream ifs(file_name);
+	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+	ifs.close();
+	return Test::Input(this, file_name, code, true, true);
+}
+
 ls::VM::Result Test::Input::run(bool display_errors) {
 	test->total++;
 
 	ls::VM::operation_limit = this->operation_limit;
-	auto result = test->vm.execute(_code, "{}");
+	auto result = test->vm.execute(_code, "{}", v1);
 	ls::VM::operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	test->obj_created += result.objects_created;
