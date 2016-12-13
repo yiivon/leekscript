@@ -510,16 +510,10 @@ inline LSValue* LSValue::move() {
 }
 
 inline LSValue* LSValue::move_inc() {
-	if (native) {
-		return this;
-	} else if (refs == 0) {
+	if (!native) {
 		refs++;
-		return this;
-	} else {
-		LSValue* copy = clone();
-		copy->refs++;
-		return copy;
 	}
+	return this;
 }
 
 inline void LSValue::delete_ref(LSValue* value) {
