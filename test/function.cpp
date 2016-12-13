@@ -8,6 +8,7 @@ void Test::test_functions() {
 	header("Functions");
 	code("function foo(x, y) { x + y } foo(1, 2)").equals("3");
 	code("function f() { return 12 } [f(), 'str']").equals("[12, 'str']");
+	code("function bar(u, v) return u * v - u / v end bar(12, 5)").equals("57.6");
 
 	section("Can't call a value");
 	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"null"});
