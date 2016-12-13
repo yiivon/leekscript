@@ -20,6 +20,7 @@
 #include "SemanticError.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../../vm/value/LSNumber.hpp"
+#include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSNull.hpp"
 
 #include <functional>
@@ -137,6 +138,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	if (v1_mode) {
 		auto debug = new LSFunction((void*) +[](LSFunction*, LSValue* v) {
 			v->print(*VM::output);
+			LSValue::delete_temporary(v);
 			*VM::output << std::endl;
 		});
 		auto debug_type = Type::FUNCTION_P;
@@ -144,6 +146,74 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 		debug_type.setReturnType(Type::VOID);
 		program->system_vars.insert({"debug", debug});
 		add_var(new Token("debug"), debug_type, nullptr, nullptr);
+
+		auto charAt = new LSFunction((void*) +[](LSFunction*, LSString* v, int p) {
+			auto s = v->charAt(p);
+			LSValue::delete_temporary(v);
+			return s;
+		});
+		auto charAt_type = Type::FUNCTION_P;
+		charAt_type.setArgumentType(0, Type::STRING);
+		charAt_type.setArgumentType(1, Type::INTEGER);
+		charAt_type.setReturnType(Type::STRING);
+		program->system_vars.insert({"charAt", charAt});
+		add_var(new Token("charAt"), charAt_type, nullptr, nullptr);
+
+		auto replace = new LSFunction((void*) +[](LSFunction*, LSString* string, LSString* from, LSString* to) {
+			std::string str(*string);
+			size_t start_pos = 0;
+
+			// Replace \\ by \ (like Java does)
+			std::string f = *from;
+			while((start_pos = f.find("\\\\", start_pos)) != std::string::npos) {
+				f.replace(start_pos, 2, "\\");
+				start_pos += 1;
+			}
+			start_pos = 0;
+			std::string t = *to;
+			while((start_pos = t.find("\\\\", start_pos)) != std::string::npos) {
+				t.replace(start_pos, 2, "\\");
+				start_pos += 1;
+			}
+
+			start_pos = 0;
+			while((start_pos = str.find(f, start_pos)) != std::string::npos) {
+				str.replace(start_pos, from->length(), t);
+				start_pos += t.size();
+			}
+			if (string->refs == 0) { delete string; }
+			if (from->refs == 0) { delete from; }
+			if (to->refs == 0) { delete to; }
+			return new LSString(str);
+		});
+		auto replace_type = Type::FUNCTION_P;
+		replace_type.setArgumentType(0, Type::STRING);
+		replace_type.setArgumentType(1, Type::STRING);
+		replace_type.setArgumentType(2, Type::STRING);
+		replace_type.setReturnType(Type::STRING);
+		program->system_vars.insert({"replace", replace});
+		add_var(new Token("replace"), replace_type, nullptr, nullptr);
+
+		auto count = new LSFunction((void*) +[](LSFunction*, LSArray<LSValue*>* a) {
+			int s = a->size();
+			LSValue::delete_temporary(a);
+			return s;
+		});
+		auto count_type = Type::FUNCTION_P;
+		count_type.setArgumentType(0, Type::ARRAY);
+		count_type.setReturnType(Type::INTEGER);
+		program->system_vars.insert({"count", count});
+		add_var(new Token("count"), count_type, nullptr, nullptr);
+
+		auto pushAll = new LSFunction((void*) +[](LSFunction*, LSArray<LSValue*>* a, LSArray<LSValue*>* b) {
+			return a->ls_push_all_ptr(b);
+		});
+		auto pushAll_type = Type::FUNCTION_P;
+		pushAll_type.setArgumentType(0, Type::ARRAY);
+		pushAll_type.setArgumentType(1, Type::ARRAY);
+		pushAll_type.setReturnType(Type::VOID);
+		program->system_vars.insert({"pushAll", pushAll});
+		add_var(new Token("pushAll"), pushAll_type, nullptr, nullptr);
 	}
 
 	in_program = true;
