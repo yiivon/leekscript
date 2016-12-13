@@ -8,6 +8,7 @@ void Test::test_strings() {
 	code("'").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
 	code("\"").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
 	code("'hello world").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
+	code("'\\\"'").equals("'\\\"'");
 
 //	code("'\\''").equals("'''");
 	code("\"\\\"\"").equals("'\"'");

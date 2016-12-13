@@ -337,7 +337,14 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						number = bin = hex = false;
 						string2 = true;
 						word = "";
-					} else if (string1 || (string2 && escape)) {
+					} else if (string1) {
+						if (escape) {
+							escape = false;
+							word += '\\';
+						}
+						u8_toutf8(buff, 5, &c, 1);
+						word += buff;
+					} else if (string2 && escape) {
 						escape = false;
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
