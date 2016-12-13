@@ -46,6 +46,10 @@ void Test::test_arrays() {
 	code("[true false true true]").equals("[true, false, true, true]");
 	code("[[1 2] [[3] 4 [5 6] []]]").equals("[[1, 2], [[3], 4, [5, 6], []]]");
 
+	section("Trailing comma");
+	code("[1, 2, 3, ]").equals("[1, 2, 3]");
+	code("[1,\n2,\n3,\n]").equals("[1, 2, 3]");
+
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[1, 2, 3][100]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);

@@ -801,11 +801,13 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 	// eatArray
 	Array* array = new Array();
 	array->expressions.push_back(value);
-
+	if (t->type == TokenType::COMMA) {
+		eat();
+	}
 	while (t->type != TokenType::CLOSING_BRACKET && t->type != TokenType::FINISHED) {
+		array->expressions.push_back(eatExpression());
 		if (t->type == TokenType::COMMA)
 			eat();
-		array->expressions.push_back(eatExpression());
 	}
 	eat(TokenType::CLOSING_BRACKET);
 	return array;
