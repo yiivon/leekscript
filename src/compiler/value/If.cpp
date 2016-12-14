@@ -9,11 +9,12 @@ using namespace std;
 
 namespace ls {
 
-If::If() {
+If::If(bool ternary) {
 	elze = nullptr;
 	condition = nullptr;
 	then = nullptr;
 	type = Type::UNKNOWN;
+	this->ternary = ternary;
 }
 
 If::~If() {
@@ -25,13 +26,23 @@ If::~If() {
 }
 
 void If::print(ostream& os, int indent, bool debug) const {
-	os << "if ";
-	condition->print(os, indent + 1, debug);
-	os << " ";
-	then->print(os, indent, debug);
-	if (elze != nullptr) {
-		os << " else ";
-		elze->print(os, indent, debug);
+	if (ternary) {
+		os << "(";
+		condition->print(os, indent, debug);
+		os << " ? ";
+		then->instructions[0]->print(os, indent, debug);
+		os << " : ";
+		elze->instructions[0]->print(os, indent, debug);
+		os << ")";
+	} else {
+		os << "if ";
+		condition->print(os, indent + 1, debug);
+		os << " ";
+		then->print(os, indent, debug);
+		if (elze != nullptr) {
+			os << " else ";
+			elze->print(os, indent, debug);
+		}
 	}
 	if (debug) {
 		os << " " << type;

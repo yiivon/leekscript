@@ -12,8 +12,9 @@ public:
 	Value* condition;
 	Block* then;
 	Block* elze;
+	bool ternary;
 
-	If();
+	If(bool ternary = false);
 	virtual ~If();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

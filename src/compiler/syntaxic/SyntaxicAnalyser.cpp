@@ -581,10 +581,28 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened) {
 		}
 		ex->append(op, eatSimpleExpression());
 	}
-
 	if (ex != nullptr) {
-		return ex;
+		e = ex;
 	}
+
+	// Ternary
+	if (t->type == TokenType::QUESTION_MARK) {
+		eat();
+		auto ternary = new If(true);
+		ternary->condition = e;
+
+		Block* then = new Block();
+		then->instructions.push_back(new ExpressionInstruction(eatExpression()));
+		ternary->then = then;
+
+		eat(TokenType::COLON);
+
+		Block* elze = new Block();
+		elze->instructions.push_back(new ExpressionInstruction(eatExpression()));
+		ternary->elze = elze;
+		return ternary;
+	}
+
 	return e;
 }
 
