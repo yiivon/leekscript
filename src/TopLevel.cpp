@@ -17,7 +17,7 @@
 using namespace std;
 
 void print_errors(ls::VM::Result& result);
-void print_result(ls::VM::Result& result, bool json, bool display_time, bool semantic_tree);
+void print_result(ls::VM::Result& result, bool json, bool display_time);
 bool is_file_name(std::string data);
 
 #define GREY "\033[0;90m"
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 	bool display_time = false;
 	bool print_version = false;
 	bool debug_mode = false;
-	bool v1_mode = false;
+	bool v1 = false;
 	std::string file_or_code;
 
 	for (int i = 1; i < argc; ++i) {
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
 		else if (a == "-t" or a == "-T" or a == "--time") display_time = true;
 		else if (a == "-v" or a == "-V" or a == "--version") print_version = true;
 		else if (a == "-d" or a == "-D" or a == "--debug") debug_mode = true;
-		else if (a == "-v1" or a == "-V1") v1_mode = true;
+		else if (a == "-v1" or a == "-V1") v1 = true;
 		else file_or_code = a;
 	}
 
@@ -72,8 +72,8 @@ int main(int argc, char* argv[]) {
 			code = file_or_code;
 		}
 		/** Execute **/
-		auto result = ls::VM().execute(code, "{}", v1_mode);
-		print_result(result, output_json, display_time, debug_mode);
+		auto result = ls::VM().execute(code, "{}", debug_mode, v1);
+		print_result(result, output_json, display_time);
 		return 0;
 	}
 
@@ -87,8 +87,8 @@ int main(int argc, char* argv[]) {
 		cout << ">> ";
 		std::getline(std::cin, code);
 		// Execute
-		auto result = vm.execute(code, ctx, v1_mode);
-		print_result(result, output_json, display_time, debug_mode);
+		auto result = vm.execute(code, ctx, debug_mode, v1);
+		print_result(result, output_json, display_time);
 		// Set new context
 		ctx = result.context;
 	}
@@ -110,10 +110,7 @@ bool is_file_name(std::string data) {
 	return true;
 }
 
-void print_result(ls::VM::Result& result, bool json, bool display_time, bool debug_mode) {
-	if (debug_mode) {
-		cout << "main() " << result.program << endl;
-	}
+void print_result(ls::VM::Result& result, bool json, bool display_time) {
 	print_errors(result);
 	if (json) {
 		cout << "{\"success\":true,\"ops\":" << result.operations

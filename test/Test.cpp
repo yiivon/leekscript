@@ -120,7 +120,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	test->total++;
 
 	ls::VM::operation_limit = this->operation_limit;
-	auto result = test->vm.execute(_code, "{}", v1);
+	auto result = test->vm.execute(_code, "{}", false, v1);
 	ls::VM::operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	test->obj_created += result.objects_created;
