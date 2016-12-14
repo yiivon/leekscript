@@ -110,17 +110,18 @@ void Test::test_functions() {
 
 	section("Function reflexion");
 	code("(x -> 12).return").equals("<class Number>");
-	code("(x -> x).args").equals("[null]");
+	code("(x -> x).args").equals("[<class Value>]");
 	code("Array.size((x, y, z -> x + y * z).args)").equals("3");
 	code("let f = x, y -> x f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
-	code("+.args").equals("[null, null]");
-	code("-.args").equals("[null, null]");
-	code("*.args").equals("[null, null]");
-	code("×.args").equals("[null, null]");
-	code("/.args").equals("[null, null]");
-	code("÷.args").equals("[null, null]");
-	code("%.args").equals("[null, null]");
-	code("**.args").equals("[null, null]");
+	code("+.args").equals("[<class Value>, <class Value>]");
+	code("+.return").equals("<class Value>");
+	code("-.args").equals("[<class Value>, <class Value>]");
+	code("*.args").equals("[<class Value>, <class Value>]");
+	code("×.args").equals("[<class Value>, <class Value>]");
+	code("/.args").equals("[<class Value>, <class Value>]");
+	code("÷.args").equals("[<class Value>, <class Value>]");
+	code("%.args").equals("[<class Value>, <class Value>]");
+	code("**.args").equals("[<class Value>, <class Value>]");
 	//code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
 
 	section("Check argument count");

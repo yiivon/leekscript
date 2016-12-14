@@ -97,23 +97,6 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 		add_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr, nullptr);
 	}
 
-	// Add function operators
-	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%"};
-	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod};
-
-	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
-	op_type.setArgumentType(0, Type::POINTER);
-	op_type.setArgumentType(1, Type::POINTER);
-	op_type.setReturnType(Type::POINTER);
-
-	for (unsigned o = 0; o < ops.size(); ++o) {
-		auto fun = new LSFunction(ops_funs[o]);
-		fun->args = {LSNull::get(), LSNull::get()};
-		fun->return_type = LSNull::get();
-		program->system_vars.insert({ops[o], fun});
-		add_var(new Token(ops[o]), op_type, nullptr, nullptr);
-	}
-
 	// Include STD modules
 	ValueSTD().include(this, program);
 	NullSTD().include(this, program);
@@ -133,6 +116,24 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	// Include custom modules
 	for (Module* module : modules) {
 		module->include(this, program);
+	}
+
+	// Add function operators
+	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%"};
+	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod};
+
+	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
+	op_type.setArgumentType(0, Type::POINTER);
+	op_type.setArgumentType(1, Type::POINTER);
+	op_type.setReturnType(Type::POINTER);
+	auto value_class = program->system_vars["Value"];
+
+	for (unsigned o = 0; o < ops.size(); ++o) {
+		auto fun = new LSFunction(ops_funs[o]);
+		fun->args = {value_class, value_class};
+		fun->return_type = value_class;
+		program->system_vars.insert({ops[o], fun});
+		add_var(new Token(ops[o]), op_type, nullptr, nullptr);
 	}
 
 	if (v1_mode) {

@@ -189,7 +189,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 		if (arg_class != nullptr) {
 			ls_fun->args.push_back((LSValue*) arg_class);
 		} else {
-			ls_fun->args.push_back(LSNull::get());
+			ls_fun->args.push_back(analyser->program->system_vars["Value"]);
 		}
 	}
 	auto return_class_name = type.getReturnType().raw_type->getClass();
@@ -197,7 +197,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 	if (return_class != nullptr) {
 		ls_fun->return_type = (LSValue*) return_class;
 	} else {
-		ls_fun->return_type = LSNull::get();
+		ls_fun->return_type = analyser->program->system_vars["Value"];
 	}
 }
 
