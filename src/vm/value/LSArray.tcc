@@ -1999,10 +1999,10 @@ inline bool LSArray<LSValue*>::in(LSValue* const value) const {
 	return false;
 }
 
-template <>
-inline int LSArray<int>::atv(const int i) {
+template <typename T>
+inline T LSArray<T>::atv(const int i) {
 	try {
-		return ((std::vector<int>*) this)->at(i);
+		return ((std::vector<T>*) this)->at(i);
 	} catch (...) {
 		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
@@ -2121,38 +2121,51 @@ const BaseRawType* LSArray<T>::getRawType() const {
 template <>
 inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
 
+	int index;
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		try {
-			return ((std::vector<LSValue*>*) this)->at((int) n->value)->clone();
-		} catch (std::exception& e) {
-			LSValue::delete_temporary(this);
-			LSValue::delete_temporary(key);
-			jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
-			return nullptr;
-		}
+		index = (int) n->value;
+	} else if (const LSBoolean* b = dynamic_cast<const LSBoolean*>(key)) {
+		index = (int) b->value;
+	} else {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(key);
+		jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+		return nullptr;
 	}
-	LSValue::delete_temporary(this);
-	LSValue::delete_temporary(key);
-	jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	try {
+		return ((std::vector<LSValue*>*) this)->at(index)->clone();
+	} catch (std::exception& e) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(key);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
 	return nullptr;
 }
 
 template <typename T>
 inline LSValue* LSArray<T>::at(const LSValue* key) const {
 
+	int index;
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		try {
-			return LSNumber::get(((std::vector<T>*) this)->at((int) n->value));
-		} catch (std::exception& e) {
-			LSValue::delete_temporary(this);
-			LSValue::delete_temporary(key);
-			jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
-			return nullptr;
-		}
+		index = (int) n->value;
+	} else if (const LSBoolean* b = dynamic_cast<const LSBoolean*>(key)) {
+		index = (int) b->value;
+	} else {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(key);
+		jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+		return nullptr;
 	}
-	LSValue::delete_temporary(this);
-	LSValue::delete_temporary(key);
-	jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+
+	std::cout << "index: " << index << std::endl;
+
+	try {
+		return LSNumber::get(((std::vector<T>*) this)->at(index));
+	} catch (std::exception& e) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(key);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
 	return nullptr;
 }
 

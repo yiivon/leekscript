@@ -25,6 +25,7 @@ void Test::test_arrays() {
 	code("let a = ['a'] a += 'b' a").equals("['a', 'b']");
 	code("[1, 2, 3][1]").equals("2");
 	code("let a = [1, 2, 3] a[0]").equals("1");
+	code("let a = [1.6, 2.5, 3.4] a[0]").equals("1.6");
 	code("let a = [1, 2, 3] a[0] = 5 a[0]").equals("5");
 	code("let a = [1, 2, 3] a[0] += 5 a[0]").equals("6");
 	code("let v = 12 let a = [v, 2, 3] a[0] += 5 a[0]").equals("17");

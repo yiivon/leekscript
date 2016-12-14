@@ -93,6 +93,8 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (array_element_type == Type::INTEGER) {
 			key->analyse(analyser, Type::INTEGER);
+		} else if (array_element_type == Type::REAL) {
+			key->analyse(analyser, Type::INTEGER);
 		} else {
 			key->analyse(analyser, Type::POINTER);
 		}
@@ -162,6 +164,9 @@ LSValue* access_temp(LSValue* array, LSValue* key) {
 int access_temp_value(LSArray<int>* array, int key) {
 	return array->atv(key);
 }
+double access_temp_real(LSArray<double>* array, int key) {
+	return array->atv(key);
+}
 LSValue** access_l(LSValue* array, LSValue* key) {
 	return array->atL(key);
 }
@@ -169,9 +174,7 @@ int* access_l_value(LSArray<int>* array, int key) {
 	return array->atLv(key);
 }
 int* access_l_map(LSMap<LSValue*, int>* map, LSValue* key) {
-//	std::cout << "access_l_map" << std::endl;
 	int* res = map->atLv(key);
-//	std::cout << *res << std::endl;
 	LSValue::delete_temporary(key);
 	return res;
 }
@@ -263,12 +266,17 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 		} else {
 
+			auto return_type = array_element_type == Type::REAL ? LS_REAL : LS_POINTER;
+
 			jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 0);
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, args_types, 2, 0);
 
 			auto k = key->compile(c);
 
-			void* func = array_element_type == Type::INTEGER ? (void*) access_temp_value : (void*) access_temp;
+			void* func =
+				array_element_type == Type::INTEGER ? (void*) access_temp_value
+				: array_element_type == Type::REAL ? (void*) access_temp_real
+				: (void*) access_temp;
 
 			jit_value_t args[] = {a.v, k.v};
 			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, 0);
