@@ -58,6 +58,12 @@ void Test::test_arrays() {
 	code("[5.6, 7.2][-5]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("['hello', true][2]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 
+	section("Access with booleans");
+	code("[1, 2, 3][false]").equals("1");
+	code("[1, 2, 3][true]").equals("2");
+	code("['1', '2', '3'][false]").equals("'1'");
+	code("[1.5, 2.5, 3.5][true]").equals("2.5");
+
 	section("Type changes");
 	code("let a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
 	code("let a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");

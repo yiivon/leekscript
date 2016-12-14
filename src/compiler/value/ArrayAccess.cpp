@@ -84,7 +84,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	} else if (array->type.raw_type == RawType::ARRAY or array->type.raw_type == RawType::STRING
 		or array->type.raw_type == RawType::INTERVAL) {
 
-		if (key->type.raw_type != RawType::UNKNOWN and not key->type.isNumber()) {
+		if (key->type.raw_type != RawType::UNKNOWN and not (key->type.isNumber() or key->type.raw_type == RawType::BOOLEAN)) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
