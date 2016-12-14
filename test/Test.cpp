@@ -304,9 +304,9 @@ void Test::Input::operations(int expected) {
 	auto result = run();
 
 	if (result.operations != expected) {
-		fail(std::to_string(expected), std::to_string(result.operations));
+		fail(std::to_string(expected) + " ops", std::to_string(result.operations) + " ops");
 	} else {
-		pass(std::to_string(result.operations));
+		pass(std::to_string(result.operations) + " ops");
 	}
 }
 Test::Input& Test::Input::timeout(int) {
