@@ -10,7 +10,7 @@
 #include "../../vm/value/LSBoolean.hpp"
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/Program.hpp"
-
+#include "../../vm/standard/BooleanSTD.hpp"
 using namespace std;
 
 namespace ls {
@@ -135,7 +135,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (m != nullptr) {
 
-		//std::cout << "Operator " << v1->type << " " << op->character << " " << v2->type << " found!" << std::endl;
+		// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << (void*) m->addr << std::endl;
 
 		operator_fun = m->addr;
 		is_native_method = m->native;
