@@ -55,6 +55,7 @@ void Test::test_json() {
 	// array
 	code("[].json()").equals("'[]'");
 	code("[1, 2, 3].json()").equals("'[1,2,3]'");
+	code("['a', 'b', 'c'].json()").equals("'[\"a\",\"b\",\"c\"]'");
 	// object
 	code("{}.json()").equals("'{}'");
 	code("{a: 1, b: 2, c: 3}.json()").equals("'{\"a\":1,\"b\":2,\"c\":3}'");
