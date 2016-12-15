@@ -8,14 +8,6 @@
 #include "../src/compiler/semantic/SemanticError.hpp"
 #include "../src/compiler/lexical/LexicalError.hpp"
 
-/*
-#define STR(...) #__VA_ARGS__
-#define code(...) _code(STR(__VA_ARGS__))
-#define equals(...) _equals(STR(__VA_ARGS__))
-*/
-#define code _code
-#define equals _equals
-
 class Test {
 private:
 	ls::VM vm;
@@ -39,7 +31,7 @@ public:
 	void header(std::string);
 	void section(std::string);
 
-	Input _code(const std::string& _code);
+	Input code(const std::string& _code);
 	Input code_v1(const std::string& _code);
 	Input file(const std::string& file_name);
 	Input file_v1(const std::string& file_name);
@@ -65,20 +57,20 @@ public:
 	void test_json();
 
 	class Input {
-	private:
+	public:
 		Test* test;
-		std::string _name;
-		std::string _code;
+		std::string name;
+		std::string code;
 		bool file;
 		bool v1;
 		float compilation_time;
 		float execution_time;
 		long int operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
-	public:
-		Input(Test* test, const std::string& name, const std::string& _code,
-			bool file = false, bool v1 = false) : test(test), _name(name), _code(_code), file(file), v1(v1) {};
+
+		Input(Test* test, const std::string& name, const std::string& code,
+			bool file = false, bool v1 = false) : test(test), name(name), code(code), file(file), v1(v1) {};
 		void works();
-		void _equals(std::string&& expected);
+		void equals(std::string&& expected);
 		template <typename T>
 		void almost(T expected, T delta = 1e-10);
 		template <typename T>
@@ -95,7 +87,6 @@ public:
 		ls::VM::Result run(bool display_errors = true);
 		void pass(std::string expected);
 		void fail(std::string expected, std::string actuel);
-		std::string& name() { return _name; };
 	};
 };
 

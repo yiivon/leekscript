@@ -94,7 +94,7 @@ int Test::all() {
 	return result;
 }
 
-Test::Input Test::_code(const std::string& code) {
+Test::Input Test::code(const std::string& code) {
 	return Test::Input(this, code, code);
 }
 
@@ -120,7 +120,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	test->total++;
 
 	ls::VM::operation_limit = this->operation_limit;
-	auto result = test->vm.execute(_code, "{}", false, v1);
+	auto result = test->vm.execute(code, "{}", false, v1);
 	ls::VM::operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	test->obj_created += result.objects_created;
@@ -151,7 +151,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 #define END_COLOR "\033[0m"
 
 void Test::Input::pass(std::string expected) {
-	std::cout << GREEN << "OK   " << END_COLOR << ": " << name()
+	std::cout << GREEN << "OK   " << END_COLOR << ": " << name
 	<<  "  ===>  " << expected;
 	std::cout <<  GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
@@ -160,7 +160,7 @@ void Test::Input::pass(std::string expected) {
 
 void Test::Input::fail(std::string expected, std::string actual) {
 	std::ostringstream oss;
-	oss << RED << "FAIL " << END_COLOR << ": " << name()
+	oss << RED << "FAIL " << END_COLOR << ": " << name
 	<< "  =/=>  " << expected << "  got  " << actual;
 	std::cout << oss.str();
 	std::cout << GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
@@ -179,7 +179,7 @@ void Test::Input::works() {
 	pass("works");
 }
 
-void Test::Input::_equals(std::string&& expected) {
+void Test::Input::equals(std::string&& expected) {
 
 	auto result = run();
 
