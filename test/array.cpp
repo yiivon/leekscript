@@ -40,6 +40,20 @@ void Test::test_arrays() {
 	code("['a'] + [2.5] + [1]").equals("['a', 2.5, 1]");
 	code("[1] + ['a']").equals("[1, 'a']");
 	code("['a'] + [1]").equals("['a', 1]");
+	code("[12.5] + null").equals("[12.5, null]");
+	code("let a = ['yo'] a + null").equals("['yo', null]");
+	code("[12.5] + true").equals("[12.5, true]");
+	code("['yo'] + true").equals("['yo', true]");
+	code("let a = ['yo'] a + true").equals("['yo', true]");
+	code("[15.5] + [12, ''][0]").equals("[15.5, 12]");
+	code("let a = [15.5] a + [12, ''][0]").equals("[15.5, 12]");
+	code("let a = [1] a + [12, ''][0]").equals("[1, 12]");
+	code("['yo'] + '!'").equals("['yo', '!']");
+	code("let a = ['yo'] a + '!'").equals("['yo', '!']");
+	code("let a = [5] let b = ['b'] a + b").equals("[5, 'b']");
+	code("['a'] + ['b']").equals("['a', 'b']");
+	code("let a = ['a'] a + ['b']").equals("['a', 'b']");
+
 	section("Array.operator []");
 	code("[1, 2, 3][1]").equals("2");
 	code("let a = [1, 2, 3] a[0]").equals("1");
@@ -333,6 +347,13 @@ void Test::test_arrays() {
 	code("let a = ['a', 'b', 'c'] Array.insert(a, 'hello', 6)").equals("['a', 'b', 'c', null, null, null, 'hello']");
 	code("let a = [1, 2, 3] Array.insert(a, 12, 1)").equals("[1, 12, 2, 3]");
 	code("let a = [1, 2, 3] Array.insert(a, 12, 6)").equals("[1, 2, 3, 0, 0, 0, 12]");
+
+	section("Array.isPermutation()");
+	// code("[].isPermutation([])").equals("true");
+	code("[1].isPermutation([1])").equals("true");
+	code("[1, 2, 3, 4, 5].isPermutation([4, 1, 3, 5, 2])").equals("true");
+	code("[1, 2, 3, 4, 5].isPermutation([4, 1, 3, 5, 3])").equals("false");
+	code("[1, 2, 3, 4, 5].isPermutation([1, 2, 3, 4, 5, 6])").equals("false");
 
 	section("Array.remove()");
 	code("let a = [1, 2, 3] Array.remove(a, 1)").equals("2");
