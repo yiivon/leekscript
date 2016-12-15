@@ -2099,21 +2099,7 @@ inline LSValue* LSArray<T>::at(const LSValue* key) const {
 }
 
 template <class T>
-LSValue* LSArray<T>::attr(const LSValue* key) const {
-
-	if (*((LSString*) key) == "size") {
-		return LSNumber::get(this->size());
-	}
-	if (*((LSString*) key) == "class") {
-		return getClass();
-	}
-	return LSNull::get();
-}
-
-
-template <class T>
 LSValue** LSArray<T>::atL(const LSValue* key) {
-
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		try {
 			LSValue** v = (LSValue**) &(((std::vector<T>*)this)->at((int) n->value));
