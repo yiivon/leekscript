@@ -49,7 +49,7 @@ public:
 	LSArray<int>* ls_map_int(LSFunction* function);
 	LSArray<double>* ls_map_real(LSFunction* function);
 	LSArray<LSValue*>* ls_chunk(int size = 1);
-	LSValue* ls_unique();
+	LSArray<T>* ls_unique();
 	LSValue* ls_sort();
 	void ls_iter(const void* fun);
 	bool ls_contains(T val);

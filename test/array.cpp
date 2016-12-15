@@ -186,6 +186,7 @@ void Test::test_arrays() {
 
 	section("Array.unique()");
 	code("let x = [1, 1, 2, 2, 1] x.unique() x").equals("[1, 2, 1]");
+	code("let x = [1.5, 1.5, 2.5, 2.5, 1.5] x.unique() x").equals("[1.5, 2.5, 1.5]");
 	code("let x = [1, 1, 2, 2, 1] x.sort() x.unique() x").equals("[1, 2]");
 	code("let x = ['a', 'a', 'b'] x.unique() x").equals("['a', 'b']");
 	code("let x = ['a', 'b', 'c'] x.unique() x").equals("['a', 'b', 'c']");

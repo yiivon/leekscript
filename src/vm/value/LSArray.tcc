@@ -439,8 +439,6 @@ inline LSArray<int>* LSArray<double>::ls_map_int(LSFunction* function) {
 	return new_array;
 }
 
-
-
 template <typename T>
 inline LSArray<LSValue*>* LSArray<T>::ls_chunk(int size) {
 	if (size <= 0) size = 1;
@@ -474,7 +472,7 @@ inline LSArray<LSValue*>* LSArray<T>::ls_chunk(int size) {
 }
 
 template <>
-inline LSValue* LSArray<LSValue*>::ls_unique() {
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_unique() {
 	if (this->empty()) return this;
 
 	auto it = this->begin();
@@ -495,14 +493,8 @@ inline LSValue* LSArray<LSValue*>::ls_unique() {
 	this->resize(std::distance(this->begin(), it));
 	return this;
 }
-template <>
-inline LSValue* LSArray<int>::ls_unique() {
-	auto it = std::unique(this->begin(), this->end());
-	this->resize(std::distance(this->begin(), it));
-	return this;
-}
-template <>
-inline LSValue* LSArray<double>::ls_unique() {
+template <class T>
+LSArray<T>* LSArray<T>::ls_unique() {
 	auto it = std::unique(this->begin(), this->end());
 	this->resize(std::distance(this->begin(), it));
 	return this;
