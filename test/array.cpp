@@ -208,6 +208,8 @@ void Test::test_arrays() {
 	section("Array.contains()");
 	code("Array.contains([1, 2, 3, 10, 1], 1)").equals("true");
 	code("[3, 4, 5].contains(6)").equals("false");
+	code("['a', true, {}].contains(true)").equals("true");
+	code("['a', true, {}].contains(12)").equals("false");
 
 	section("Array.isEmpty()");
 	code("Array.isEmpty([])").equals("true");

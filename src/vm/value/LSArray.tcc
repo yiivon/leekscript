@@ -537,19 +537,8 @@ inline bool LSArray<LSValue*>::ls_contains(LSValue* val) {
 	if (val->refs == 0) delete val;
 	return false;
 }
-template <>
-inline bool LSArray<double>::ls_contains(double val) {
-	for (auto v : *this) {
-		if (v == val) {
-			if (refs == 0) delete this;
-			return true;
-		}
-	}
-	if (refs == 0) delete this;
-	return false;
-}
-template <>
-inline bool LSArray<int>::ls_contains(int val) {
+template <class T>
+bool LSArray<T>::ls_contains(T val) {
 	for (auto v : *this) {
 		if (v == val) {
 			if (refs == 0) delete this;
