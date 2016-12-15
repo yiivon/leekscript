@@ -275,6 +275,7 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 10, true, 'yo', null].search('yo', 0)").equals("5");
 	code("Array.search([1, 2, 3, 10, true, 'yo', null], false, 0)").equals("-1");
 	code("[null].search(null, 0)").equals("0");
+	code("[100, 125, 112].search(12, 0)").equals("-1");
 
 	section("Array.subArray()");
 	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 3, 5)").equals("[10, true, 'yo']");

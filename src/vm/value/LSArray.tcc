@@ -861,21 +861,9 @@ inline int LSArray<LSValue*>::ls_search(LSValue* needle, int start) {
 	LSValue::delete_temporary(needle);
 	return -1;
 }
-template <>
-inline int LSArray<double>::ls_search(double needle, int start) {
 
-	for (size_t i = start; i < this->size(); i++) {
-		if (needle == (*this)[i]) {
-			if (refs == 0) delete this;
-			return i;
-		}
-	}
-	if (refs == 0) delete this;
-	return -1;
-}
-template <>
-inline int LSArray<int>::ls_search(int needle, int start) {
-
+template <class T>
+int LSArray<T>::ls_search(T needle, int start) {
 	for (size_t i = start; i < this->size(); i++) {
 		if (needle == (*this)[i]) {
 			if (refs == 0) delete this;
