@@ -3,6 +3,12 @@
 void Test::test_arrays() {
 
 	header("Arrays");
+
+	section("Constructor");
+	code("Array").equals("<class Array>");
+	code("Array()").equals("[]");
+	code("new Array").equals("[]");
+	code("new Array()").equals("[]");
 	code("[]").equals("[]");
 	code("[1]").equals("[1]");
 	code("[1, 2, 3]").equals("[1, 2, 3]");
@@ -110,13 +116,8 @@ void Test::test_arrays() {
 	code("[1, 1] == [1, 2.5]").equals("false");
 	code("[1, 2.5] == [1, 2.5]").equals("true");
 
-//	let f=x->x[0]; [f([1]), f([0..3])]
 
-	section("Constructor");
-	code("Array").equals("<class Array>");
-	code("Array()").equals("[]");
-	code("new Array").equals("[]");
-	code("new Array()").equals("[]");
+//	let f=x->x[0]; [f([1]), f([0..3])]
 
 	section("Array.size()");
 	code("Array.size([1, 'yo', true])").equals("3");
