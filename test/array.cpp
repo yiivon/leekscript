@@ -15,6 +15,18 @@ void Test::test_arrays() {
 	code("[1.21, -5, 4.55, 12, -6.7]").equals("[1.21, -5, 4.55, 12, -6.7]");
 	code("[true, false, true]").equals("[true, false, true]");
 	code("[23, true, '', {}, 123]").equals("[23, true, '', {}, 123]");
+
+	section("No commas");
+	code("[1 2 3]").equals("[1, 2, 3]");
+	code("['yo' 'ya' 'yu']").equals("['yo', 'ya', 'yu']");
+	code("[true false true true]").equals("[true, false, true, true]");
+	code("[[1 2] [[3] 4 [5 6] []]]").equals("[[1, 2], [[3], 4, [5, 6], []]]");
+
+	section("Trailing comma");
+	code("[1, 2, 3, ]").equals("[1, 2, 3]");
+	code("[1,\n2,\n3,\n]").equals("[1, 2, 3]");
+
+	section("Array.operator +");
 	code("[1, 2, 3] + [4, 5, 6]").equals("[1, 2, 3, 4, 5, 6]");
 	code("[] + 1").equals("[1]");
 	code("[] + 1 + 2 + 3").equals("[1, 2, 3]");
@@ -28,34 +40,18 @@ void Test::test_arrays() {
 	code("['a'] + [2.5] + [1]").equals("['a', 2.5, 1]");
 	code("[1] + ['a']").equals("[1, 'a']");
 	code("['a'] + [1]").equals("['a', 1]");
-	code("let a = ['a'] a += 'b' a").equals("['a', 'b']");
+	section("Array.operator []");
 	code("[1, 2, 3][1]").equals("2");
 	code("let a = [1, 2, 3] a[0]").equals("1");
 	code("let a = [1.6, 2.5, 3.4] a[0]").equals("1.6");
 	code("let a = [1, 2, 3] a[0] = 5 a[0]").equals("5");
-	code("let a = [1, 2, 3] a[0] += 5 a[0]").equals("6");
-	code("let v = 12 let a = [v, 2, 3] a[0] += 5 a[0]").equals("17");
 	code("let a = [23, 23, true, '', [], 123]; |a|").equals("6");
 	code("let a = [1, 2, 3]; ~a").equals("[3, 2, 1]");
 	code("let a = [] !a").equals("true");
 	code("let a = [1, 2, 3] a[1] = 12 a").equals("[1, 12, 3]");
 	code("[1.2, 321.42, 23.15]").equals("[1.2, 321.42, 23.15]");
 	code("[1, 2, 3, 4, 5][1:3]").equals("[2, 3, 4]");
-	code("2 in [1, 2, 3]").equals("true");
-	code("4 in [1, 2, 3]").equals("false");
-	code("'yo' in ['ya', 'yu', 'yo']").equals("true");
-	code("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }").equals("'ok'");
 	code("let a = [5, 'yolo', 12] a[1]").equals("'yolo'");
-
-	section("No commas");
-	code("[1 2 3]").equals("[1, 2, 3]");
-	code("['yo' 'ya' 'yu']").equals("['yo', 'ya', 'yu']");
-	code("[true false true true]").equals("[true, false, true, true]");
-	code("[[1 2] [[3] 4 [5 6] []]]").equals("[[1, 2], [[3], 4, [5, 6], []]]");
-
-	section("Trailing comma");
-	code("[1, 2, 3, ]").equals("[1, 2, 3]");
-	code("[1,\n2,\n3,\n]").equals("[1, 2, 3]");
 
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -96,7 +92,7 @@ void Test::test_arrays() {
 	code("[1, 2, '3'] < [1, 2, 3]").equals("false");
 	code("[1, 1, '3'] < [1, 2, 3]").equals("true");
 
-	section("Array operations");
+	section("Array.operator ~~");
 	code("[1, 2, 3, 4, 5] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25]");
 	code("[1.5, 2.5, 3.5] ~~ x -> x.floor()").equals("[1, 2, 3]");
 	code("[1, 2, 3, 4, 5] ~~ (x -> x ** 2)").equals("[1, 4, 9, 16, 25]");
@@ -107,8 +103,14 @@ void Test::test_arrays() {
 	code("[1.2, 321.42] ~~ x -> x * 1.7").equals("[2.04, 546.414]");
 	code("[1, 2, 3, 4, 5] ~~ x -> x.max(3)").equals("[3, 3, 3, 4, 5]");
 	code("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)").equals("[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
+
+	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
 	code("[1, 1] < [1, 2]").equals("true");
+
+	section("Array.operator ==");
+	code("[] == []").equals("true");
+	code("[1, 1] == [1]").equals("false");
 	code("[1, 1] == [1, 2]").equals("false");
 	code("[1, 2] == [1, 2]").equals("true");
 	code("[1, '1'] == [1, '2']").equals("false");
@@ -116,6 +118,11 @@ void Test::test_arrays() {
 	code("[1, 1] == [1, 2.5]").equals("false");
 	code("[1, 2.5] == [1, 2.5]").equals("true");
 
+	section("Array.operator in");
+	code("2 in [1, 2, 3]").equals("true");
+	code("4 in [1, 2, 3]").equals("false");
+	code("'yo' in ['ya', 'yu', 'yo']").equals("true");
+	code("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }").equals("'ok'");
 
 //	let f=x->x[0]; [f([1]), f([0..3])]
 
@@ -248,15 +255,15 @@ void Test::test_arrays() {
 	section("Array.push()");
 	code("let a = [1, 2, 3] Array.push(a, 4)").equals("[1, 2, 3, 4]");
 	code("[].push([])").equals("[[]]");
-	code("[0].pushAll([1, 2, 3])").equals("[0, 1, 2, 3]");
-	code("[0].pushAll([3.5])").equals("[0, 3]");
-	code("[0.5].pushAll(['a'])").equals("[0.5]");
 	code("let a = [1, 2] a.push(3) a").equals("[1, 2, 3]");
 //	code("let a = [1, 2] a.push(3.5) a").equals("[1, 2, 3]");
 	code("let a = [1.5, -2.9] a.push(3.5) a").equals("[1.5, -2.9, 3.5]");
 
 	section("Array.pushAll()");
 	code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
+	code("[0].pushAll([1, 2, 3])").equals("[0, 1, 2, 3]");
+	code("[0].pushAll([3.5])").equals("[0, 3]");
+	code("[0.5].pushAll(['a'])").equals("[0.5]");
 
 	section("Array.join()");
 	code("[].join('a')").equals("''");
