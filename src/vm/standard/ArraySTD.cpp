@@ -36,6 +36,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::REAL_ARRAY, Type::REAL, Type::BOOLEAN, (void*) &LSArray<double>::in},
 		{Type::INT_ARRAY, Type::INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in}
 	});
+
+	operator_("+=", {
+		{Type::REAL_ARRAY, Type::REAL, Type::REAL, (void*) &LSArray<double>::push_move}
+	});
 /*
 	Type tilde_tilde_fun_type = Type::FUNCTION_P;
 	tilde_tilde_fun_type.setArgumentType(0, Type::T);

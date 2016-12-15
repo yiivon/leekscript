@@ -72,6 +72,12 @@ void Test::test_arrays() {
 	code("let a = [1] a += <'z', 'a'> a").equals("[1, 'a', 'z']");
 	code("let a = [1] a += 'a' a").equals("[1, 'a']");
 
+	section("Array.operator +=");
+	code("let a = [1.55] a += 12.9 a").equals("[1.55, 12.9]");
+	code("let a = ['a'] a += 'b' a").equals("['a', 'b']");
+	code("let a = [1, 2, 3] a[0] += 5 a[0]").equals("6");
+	code("let v = 12 let a = [v, 2, 3] a[0] += 5 a[0]").equals("17");
+
 	section("Array.operator <");
 	code("[1, 2, 3, 4] < [1, 2, 3, 5]").equals("true");
 	code("[1, 2, 4, 4] < [1, 2, 3, 5]").equals("false");
