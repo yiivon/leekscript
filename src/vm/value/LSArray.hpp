@@ -29,7 +29,7 @@ public:
 	 * Array functions
 	 */
 	void push_clone(T value); // clone increment and push
-	void push_move(T value); // clone (if not temporaray) increment and push
+	void push_move(T value); // clone (if not temporary) increment and push
 	void push_inc(T value); // increment (if not native) and push
 
 	int int_size();
