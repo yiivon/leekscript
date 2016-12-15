@@ -501,19 +501,14 @@ LSArray<T>* LSArray<T>::ls_unique() {
 }
 
 template <>
-inline LSValue* LSArray<LSValue*>::ls_sort() {
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_sort() {
 	std::sort(this->begin(), this->end(), [](LSValue* a, LSValue* b) -> bool {
 		return *a < *b;
 	});
 	return this;
 }
-template <>
-inline LSValue* LSArray<int>::ls_sort() {
-	std::sort(this->begin(), this->end());
-	return this;
-}
-template <>
-inline LSValue* LSArray<double>::ls_sort() {
+template <class T>
+LSArray<T>* LSArray<T>::ls_sort() {
 	std::sort(this->begin(), this->end());
 	return this;
 }

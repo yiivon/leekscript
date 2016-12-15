@@ -50,7 +50,7 @@ public:
 	LSArray<double>* ls_map_real(LSFunction* function);
 	LSArray<LSValue*>* ls_chunk(int size = 1);
 	LSArray<T>* ls_unique();
-	LSValue* ls_sort();
+	LSArray<T>* ls_sort();
 	void ls_iter(const void* fun);
 	bool ls_contains(T val);
 	LSValue* ls_push(T val);
