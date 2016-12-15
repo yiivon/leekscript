@@ -242,8 +242,12 @@ void Test::test_arrays() {
 
 	section("Array.foldLeft()");
 	code("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')").equals("'concat:12310trueyonull'");
-	// TODO more tests
-	//code("Array.foldRight([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')").equals("16");
+	code("Array.foldLeft([2, 2, 3], (x, y -> x ** y), 1)").equals("1");
+	code("Array.foldLeft(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'Xabcd'");
+
+	section("Array.foldRight()");
+	code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");
+	code("Array.foldRight(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'abcdX'");
 
 	section("Array.shuffle()");
 	code("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()").equals("7");

@@ -210,16 +210,28 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_fun_type_int.setArgumentType(0, Type::POINTER);
 	fold_fun_type_int.setArgumentType(1, Type::INTEGER);
 	fold_fun_type_int.setReturnType(Type::POINTER);
-
 	method("foldLeft", {
 		{Type::PTR_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldLeft},
 		{Type::REAL_ARRAY, Type::POINTER, {fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldLeft},
 		{Type::INT_ARRAY, Type::POINTER, {fold_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldLeft},
 	});
+
+	Type fold_right_fun_type = Type::FUNCTION_P;
+	fold_right_fun_type.setArgumentType(0, Type::POINTER);
+	fold_right_fun_type.setArgumentType(1, Type::POINTER);
+	fold_right_fun_type.setReturnType(Type::POINTER);
+	Type fold_right_fun_type_float = Type::FUNCTION_P;
+	fold_right_fun_type_float.setArgumentType(0, Type::REAL);
+	fold_right_fun_type_float.setArgumentType(1, Type::POINTER);
+	fold_right_fun_type_float.setReturnType(Type::POINTER);
+	Type fold_right_fun_type_int = Type::FUNCTION_P;
+	fold_right_fun_type_int.setArgumentType(0, Type::INTEGER);
+	fold_right_fun_type_int.setArgumentType(1, Type::POINTER);
+	fold_right_fun_type_int.setReturnType(Type::POINTER);
 	method("foldRight", {
-		{Type::PTR_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
-		{Type::REAL_ARRAY, Type::POINTER, {fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
-		{Type::INT_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<int>::ls_foldRight},
+		{Type::PTR_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
+		{Type::REAL_ARRAY, Type::POINTER, {fold_right_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
+		{Type::INT_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &LSArray<int>::ls_foldRight},
 	});
 
 	method("search", {
@@ -390,9 +402,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("foldRight", {
-		{Type::POINTER, {Type::PTR_ARRAY, fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
-		{Type::POINTER, {Type::REAL_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
-		{Type::POINTER, {Type::INT_ARRAY, fold_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldRight}
+		{Type::POINTER, {Type::PTR_ARRAY, fold_right_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
+		{Type::POINTER, {Type::REAL_ARRAY, fold_right_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
+		{Type::POINTER, {Type::INT_ARRAY, fold_right_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldRight}
 	});
 
 	static_method("shuffle", {
@@ -400,6 +412,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::REAL_ARRAY, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_shuffle},
 		{Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_shuffle},
 	});
+
 	static_method("reverse", {
 		{Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_reverse},
 		{Type::REAL_ARRAY, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_reverse},

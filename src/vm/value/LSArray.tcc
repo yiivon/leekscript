@@ -789,79 +789,27 @@ inline LSArray<int>* LSArray<int>::ls_filter(LSFunction* function) {
 	}
 }
 
-
-template <>
-inline LSValue* LSArray<LSValue*>::ls_foldLeft(LSFunction* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, LSValue*, LSValue*)) function->function;
-
+template <class T>
+LSValue* LSArray<T>::ls_foldLeft(LSFunction* function, LSValue* v0) {
+	auto fun = (LSValue* (*)(void*, LSValue*, T)) function->function;
 	LSValue* result = v0->move();
-	for (auto v : *this) {
-		result = fun(function, result, v);
-	}
-	if (refs == 0) delete this;
-	return result;
-}
-template <>
-inline LSValue* LSArray<int>::ls_foldLeft(LSFunction* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, LSValue*, int)) function->function;
-
-	LSValue* result = v0->move();
-	for (auto v : *this) {
-		result = fun(function, result, v);
-	}
-	if (refs == 0) delete this;
-	return result;
-}
-template <>
-inline LSValue* LSArray<double>::ls_foldLeft(LSFunction* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, LSValue*, double)) function->function;
-
-	LSValue* result = v0->move();
-	for (auto v : *this) {
+	for (const auto& v : *this) {
 		result = fun(function, result, v);
 	}
 	if (refs == 0) delete this;
 	return result;
 }
 
-
-template <>
-inline LSValue* LSArray<LSValue*>::ls_foldRight(LSFunction* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, LSValue*, LSValue*)) function->function;
-
+template <class T>
+LSValue* LSArray<T>::ls_foldRight(LSFunction* function, LSValue* v0) {
+	auto fun = (LSValue* (*)(void*, T, LSValue*)) function->function;
 	LSValue* result = v0->move();
 	for (auto it = this->rbegin(); it != this->rend(); it++) {
-		result = fun(function, result, *it);
-		//result->print(std::cout);
-		//std::cout << std::endl;
+		result = fun(function, *it, result);
 	}
 	if (refs == 0) delete this;
 	return result;
 }
-template <>
-inline LSValue* LSArray<int>::ls_foldRight(LSFunction* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, LSValue*, int)) function->function;
-
-	LSValue* result = v0->move();
-	for (auto it = this->rbegin(); it != this->rend(); it++) {
-		result = fun(function, result, *it);
-	}
-	if (refs == 0) delete this;
-	return result;
-}
-template <>
-inline LSValue* LSArray<double>::ls_foldRight(LSFunction* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, LSValue*, double)) function->function;
-
-	LSValue* result = v0->move();
-	for (auto it = this->rbegin(); it != this->rend(); it++) {
-		result = fun(function, result, *it);
-	}
-	if (refs == 0) delete this;
-	return result;
-}
-
-
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_insert(LSValue* value, int pos) {
