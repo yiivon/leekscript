@@ -184,13 +184,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	method("first", {
 		{Type::PTR_ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::ls_first},
-		{Type::REAL_ARRAY, Type::POINTER, {}, (void*) &LSArray<double>::ls_first},
-		{Type::INT_ARRAY, Type::POINTER, {}, (void*) &LSArray<int>::ls_first},
+		{Type::REAL_ARRAY, Type::REAL, {}, (void*) &LSArray<double>::ls_first},
+		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_first},
 	});
 	method("last", {
 		{Type::PTR_ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::ls_last},
-		{Type::REAL_ARRAY, Type::POINTER, {}, (void*) &LSArray<double>::ls_last},
-		{Type::INT_ARRAY, Type::POINTER, {}, (void*) &LSArray<int>::ls_last},
+		{Type::REAL_ARRAY, Type::REAL, {}, (void*) &LSArray<double>::ls_last},
+		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_last},
 	});
 
 	Type fold_fun_type = Type::FUNCTION_P;
@@ -368,14 +368,14 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	static_method("first", {
 		{Type::POINTER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_first},
-		{Type::POINTER, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_first},
-		{Type::POINTER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_first},
+		{Type::REAL, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_first},
+		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_first},
 	});
 
 	static_method("last", {
 		{Type::POINTER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_last},
-		{Type::POINTER, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_last},
-		{Type::POINTER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_last},
+		{Type::REAL, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_last},
+		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_last},
 	});
 
 	static_method("foldLeft", {
