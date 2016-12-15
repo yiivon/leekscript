@@ -223,7 +223,6 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 			delete this;
 		}
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
-		return nullptr;
 	}
 	LSValue* first = front();
 	if (refs == 0) {
@@ -236,33 +235,19 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 	}
 	return first->move(); /* return temporary */
 }
-template <>
-inline LSValue* LSArray<double>::ls_first() {
+template <class T>
+inline T LSArray<T>::ls_first() {
 	if (this->size() == 0) {
 		if (refs == 0) {
 			delete this;
 		}
-		return LSNull::get();
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-	double first = front();
+	T first = this->front();
 	if (refs == 0) {
 		delete this;
 	}
-	return LSNumber::get(first);
-}
-template <>
-inline LSValue* LSArray<int>::ls_first() {
-	if (this->size() == 0) {
-		if (refs == 0) {
-			delete this;
-		}
-		return LSNull::get();
-	}
-	double first = front();
-	if (refs == 0) {
-		delete this;
-	}
-	return LSNumber::get(first);
+	return first;
 }
 
 template <>
@@ -272,7 +257,6 @@ inline LSValue* LSArray<LSValue*>::ls_last() {
 			delete this;
 		}
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
-		return nullptr;
 	}
 	LSValue* last = back();
 	if (refs == 0) {
@@ -284,33 +268,19 @@ inline LSValue* LSArray<LSValue*>::ls_last() {
 	}
 	return last->move();
 }
-template <>
-inline LSValue* LSArray<double>::ls_last() {
+template <class T>
+inline T LSArray<T>::ls_last() {
 	if (this->size() == 0) {
 		if (refs == 0) {
 			delete this;
 		}
-		return LSNull::get();
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-	double last = back();
+	T last = this->back();
 	if (refs == 0) {
 		delete this;
 	}
-	return LSNumber::get(last);
-}
-template <>
-inline LSValue* LSArray<int>::ls_last() {
-	if (this->size() == 0) {
-		if (refs == 0) {
-			delete this;
-		}
-		return LSNull::get();
-	}
-	double last = back();
-	if (refs == 0) {
-		delete this;
-	}
-	return LSNumber::get(last);
+	return last;
 }
 
 template <typename T>
