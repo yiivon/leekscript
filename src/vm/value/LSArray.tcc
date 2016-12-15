@@ -49,12 +49,8 @@ inline void LSArray<LSValue*>::push_inc(LSValue* value) {
 	if (!value->native) value->refs++;
 	this->push_back(value);
 }
-template <>
-inline void LSArray<int>::push_inc(int value) {
-	this->push_back(value);
-}
-template <>
-inline void LSArray<double>::push_inc(double value) {
+template <class T>
+inline void LSArray<T>::push_inc(T value) {
 	this->push_back(value);
 }
 
