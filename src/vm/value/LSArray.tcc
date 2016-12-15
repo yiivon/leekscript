@@ -514,15 +514,14 @@ LSArray<T>* LSArray<T>::ls_sort() {
 }
 
 template <class T>
-void LSArray<T>::ls_iter(const void* function) {
-
-	auto fun = (void* (*)(T)) function;
-
+void LSArray<T>::ls_iter(LSFunction* function) {
+	auto fun = (void* (*)(void*, T)) function->function;
 	for (auto v : *this) {
-		fun(v);
+		fun(function, v);
 	}
-
-	if (refs == 0) delete this;
+	if (refs == 0) {
+		delete this;
+	}
 }
 
 template <>

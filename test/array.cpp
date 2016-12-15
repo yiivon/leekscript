@@ -202,6 +202,8 @@ void Test::test_arrays() {
 	code("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("['yo', 10, 3]");
 	code("[3, 4, 5].filter(x -> x > 6)").equals("[]");
 	code("[1, 2, 3, 4, 5, 6, 7].filter(x -> x % 2 == 0)").equals("[2, 4, 6]");
+	code("let a = [3, 4, 5] a.filter(x -> x < 5)").equals("[3, 4]");
+	code("let a = ['a', 'b', 'a'] a.filter(x -> x == 'a')").equals("['a', 'a']");
 
 	section("Array.contains()");
 	code("Array.contains([1, 2, 3, 10, 1], 1)").equals("true");
