@@ -160,6 +160,7 @@ void Test::test_operators() {
 	/*
 	 * Random operators
 	 */
+	 /*
 	section("Random operators");
 	std::vector<std::string> values = {
 		"0", "5", "-7", "Number.pi", "12.656", "12345678912345", "true", "false",
@@ -167,10 +168,11 @@ void Test::test_operators() {
 		"(x -> x)", "Number", "[:]", "[1: 2, 5: 12]", "[1:100]"
 	};
 	std::vector<std::string> operators = {
-		"+", "-", "/", /* "*", too risky */ ">", "<", ">=", "<=", "==", "and", "or", "xor", "\\", "in"
+		"+", "-", "/", ">", "<", ">=", "<=", "==", "and", "or", "xor", "\\", "in"
 	};
 	for (int i = 0; i < 10; ++i) {
 		std::string c = values[rand() % values.size()] + " " + operators[rand() % operators.size()] + " " + values[rand() % values.size()];
 		code(c).ops_limit(1000).works();
 	}
+	*/
 }
