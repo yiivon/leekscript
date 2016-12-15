@@ -742,24 +742,19 @@ LSValue* LSArray<T>::ls_foldRight(LSFunction* function, LSValue* v0) {
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_insert(LSValue* value, int pos) {
-
 	if (pos >= (int) this->size()) {
 		this->resize(pos, LSNull::get());
 	}
-
 	this->insert(this->begin() + pos, value->move_inc());
-
 	return this;
 }
-template <typename T>
-inline LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
 
+template <class T>
+LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
 	if (pos >= (int) this->size()) {
 		this->resize(pos, (T) 0);
 	}
-
 	this->insert(this->begin() + pos, value);
-
 	return this;
 }
 

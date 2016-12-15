@@ -322,6 +322,8 @@ void Test::test_arrays() {
 	code("let a = [] Array.fill(a, 'test', 2)").equals("['test', 'test']");
 
 	section("Array.insert()");
+	code("let a = ['a', 'b', 'c'] Array.insert(a, 'hello', 1)").equals("['a', 'hello', 'b', 'c']");
+	code("let a = ['a', 'b', 'c'] Array.insert(a, 'hello', 6)").equals("['a', 'b', 'c', null, null, null, 'hello']");
 	code("let a = [1, 2, 3] Array.insert(a, 12, 1)").equals("[1, 12, 2, 3]");
 	code("let a = [1, 2, 3] Array.insert(a, 12, 6)").equals("[1, 2, 3, 0, 0, 0, 12]");
 
