@@ -758,15 +758,12 @@ LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
 	return this;
 }
 
-
-template <>
-inline LSArray<LSValue*>* LSArray<LSValue*>::ls_partition(LSFunction* function) {
-
-	LSArray<LSValue*>* array_true = new LSArray<LSValue*>();
-	LSArray<LSValue*>* array_false = new LSArray<LSValue*>();
-	auto fun = (bool (*)(void*, void*)) function->function;
-
-	for (auto v : *this) {
+template <class T>
+LSArray<LSValue*>* LSArray<T>::ls_partition(LSFunction* function) {
+	LSArray<T>* array_true = new LSArray<T>();
+	LSArray<T>* array_false = new LSArray<T>();
+	auto fun = (bool (*)(void*, T)) function->function;
+	for (const auto& v : *this) {
 		if (fun(function, v)) {
 			array_true->push_clone(v);
 		} else {
@@ -778,45 +775,6 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_partition(LSFunction* function) 
 	array_false->refs = 1;
 	return new LSArray<LSValue*> {array_true, array_false};
 }
-template <>
-inline LSArray<LSValue*>* LSArray<double>::ls_partition(LSFunction* function) {
-
-	LSArray<double>* array_true = new LSArray<double>();
-	LSArray<double>* array_false = new LSArray<double>();
-	auto fun = (bool (*)(void*, double)) function->function;
-
-	for (auto v : *this) {
-		if (fun(function, v)) {
-			array_true->push_back(v);
-		} else {
-			array_false->push_back(v);
-		}
-	}
-	if (refs == 0) delete this;
-	array_true->refs = 1;
-	array_false->refs = 1;
-	return new LSArray<LSValue*> {array_true, array_false};
-}
-template <>
-inline LSArray<LSValue*>* LSArray<int>::ls_partition(LSFunction* function) {
-
-	LSArray<int>* array_true = new LSArray<int>();
-	LSArray<int>* array_false = new LSArray<int>();
-	auto fun = (bool (*)(void*, int)) function->function;
-
-	for (auto v : *this) {
-		if (fun(function, v)) {
-			array_true->push_back(v);
-		} else {
-			array_false->push_back(v);
-		}
-	}
-	if (refs == 0) delete this;
-	array_true->refs = 1;
-	array_false->refs = 1;
-	return new LSArray<LSValue*> {array_true, array_false};
-}
-
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_map2(LSArray<LSValue*>* array, LSFunction* function) {
