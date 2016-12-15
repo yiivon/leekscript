@@ -41,8 +41,8 @@ public:
 	T ls_sum();
 	T ls_product();
 	double ls_average();
-	LSValue* ls_first();
-	LSValue* ls_last();
+	T ls_first();
+	T ls_last();
 	T atv(const int i);
 	int* atLv(int i);
 	LSArray<LSValue*>* ls_map(LSFunction* function);
