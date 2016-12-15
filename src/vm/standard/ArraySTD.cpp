@@ -225,8 +225,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	method("pop", {
 		{Type::PTR_ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::ls_pop},
-		{Type::REAL_ARRAY, Type::POINTER, {}, (void*) &LSArray<double>::ls_pop},
-		{Type::INT_ARRAY, Type::POINTER, {}, (void*) &LSArray<int>::ls_pop}
+		{Type::REAL_ARRAY, Type::REAL, {}, (void*) &LSArray<double>::ls_pop},
+		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_pop}
 	});
 
 	method("product", {
@@ -415,7 +415,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	static_method("pop", {
 		{Type::POINTER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_pop},
-		{Type::INTEGER, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_pop},
+		{Type::REAL, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_pop},
 		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_pop}
 	});
 
