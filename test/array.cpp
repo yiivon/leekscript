@@ -312,6 +312,9 @@ void Test::test_arrays() {
 	code("[].join('a')").equals("''");
 	code("['salut', 'ça', 'va'].join(' ')").equals("'salut ça va'");
 	code("[1, null, 'va'].join(' ')").equals("'1 null va'");
+	code("[-14, 21, -45, 5].join(' ')").equals("'-14 21 -45 5'");
+	code("[-14.67, 21.05, -45, 5.81].join(' ')").equals("'-14.67 21.05 -45 5.81'");
+	code("[12].clear().join('whatever')").equals("''");
 
 	section("Array.clear()");
 	code("let a = [1, 2, 3] a.clear() a").equals("[]");

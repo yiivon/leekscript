@@ -894,33 +894,18 @@ inline LSString* LSArray<LSValue*>::ls_join(LSString* glue) {
 	if (glue->refs == 0) delete glue;
 	return (LSString*) result;
 }
-template <>
-inline LSString* LSArray<int>::ls_join(LSString* glue) {
+
+template <class T>
+LSString* LSArray<T>::ls_join(LSString* glue) {
 	if (this->empty()) {
 		if (refs == 0) delete this;
 		if (glue->refs == 0) delete glue;
 		return new LSString();
 	}
 	size_t i = 0;
-	std::string result = std::to_string(this->operator[] (i));
+	std::string result = LSNumber::print(this->operator[] (i));
 	for (i++; i < this->size(); i++) {
-		result = result + *glue + std::to_string(this->operator[] (i));
-	}
-	if (refs == 0) delete this;
-	if (glue->refs == 0) delete glue;
-	return new LSString(result);
-}
-template <>
-inline LSString* LSArray<double>::ls_join(LSString* glue) {
-	if (this->empty()) {
-		if (refs == 0) delete this;
-		if (glue->refs == 0) delete glue;
-		return new LSString();
-	}
-	size_t i = 0;
-	std::string result = std::to_string(this->operator[] (i));
-	for (i++; i < this->size(); i++) {
-		result = result + *glue + std::to_string(this->operator[] (i));
+		result = result + *glue + LSNumber::print(this->operator[] (i));
 	}
 	if (refs == 0) delete this;
 	if (glue->refs == 0) delete glue;
@@ -937,6 +922,7 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_fill(LSValue* element, int size)
 	LSValue::delete_temporary(element); // only useful if size = 0
 	return this;
 }
+
 template <typename T>
 inline LSArray<T>* LSArray<T>::ls_fill(T element, int size) {
 	this->clear();
