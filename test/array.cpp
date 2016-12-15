@@ -260,13 +260,16 @@ void Test::test_arrays() {
 	code("Array.foldRight(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'abcdX'");
 
 	section("Array.shuffle()");
+	code("[].shuffle()");
 	code("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()").equals("7");
+	code("let a = [1, 2, 3, 10, true, 'yo', null] a.shuffle().size()").equals("7");
 
 	section("Array.reverse()");
 	code("Array.reverse([1, 2, 3, 10, true, 'yo', null])").equals("[null, 'yo', true, 10, 3, 2, 1]");
 	code("[null].reverse()").equals("[null]");
 	code("[].reverse()").equals("[]");
 	code("[1, 2, 3].reverse()").equals("[3, 2, 1]");
+	code("let a = [1, 2, 3] a.reverse()").equals("[3, 2, 1]");
 
 	section("Array.search()");
 	code("Array.search([1, 2, 3, 10, true, 'yo', null], 10, 0)").equals("3");
@@ -342,8 +345,14 @@ void Test::test_arrays() {
 //	code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key') a").equals("[0: 1, 1: 2, 2: 3]");
 
 	section("Array.removeElement()");
+	code("[].removeElement(12)").equals("false");
 	code("let a = [1, 2, 3] a.removeElement(1) a").equals("[3, 2]");
 	code("let a = [1, 2, 3] a.removeElement('key') a").semantic_error(ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::INT_ARRAY.to_string() + ".removeElement(" + ls::Type::STRING_TMP.to_string() + ")"});
+	code("[1, 2, 3].removeElement(3)").equals("true");
+	code("[1, 2, 3].removeElement(4)").equals("false");
+	code("let a = [true, 'hello', [1, 2, 3]] a.removeElement([1, 2, 3]) a").equals("[true, 'hello']");
+	code("[true, 'hello', [1, 2, 3]].removeElement('hello')").equals("true");
+	code("[true, 'hello', [1, 2, 3]].removeElement('yolo')").equals("false");
 
 	section("Postfix expressions");
 	code("let a = [10, ''] a[0]++").equals("11");
