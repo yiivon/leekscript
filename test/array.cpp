@@ -151,8 +151,11 @@ void Test::test_arrays() {
 	section("Array.map()");
 	code("Array.map([1, 2, 3], x -> x ** 2)").equals("[1, 4, 9]");
 	code("[3, 4, 5].map(x -> x ** 2)").equals("[9, 16, 25]");
+	code("let a = [3, 4, 5] a.map(x -> x ** 2)").equals("[9, 16, 25]");
 	code("[321, 213, 121].map(x -> x ** 2).size()").equals("3");
+	code("[3.2, 4.5, 5.8].map(x -> x ** 2)").equals("[10.24, 20.25, 33.64]");
 	code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
+	code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
 	code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
 
 	section("Array.map2()");

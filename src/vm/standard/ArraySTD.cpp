@@ -83,6 +83,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 	map_int_fun_type.setArgumentType(0, Type::INTEGER);
 	map_int_fun_type.setReturnType(Type::POINTER);
 
+	Type map_real_fun_type = Type::FUNCTION_P;
+	map_real_fun_type.setArgumentType(0, Type::REAL);
+	map_real_fun_type.setReturnType(Type::POINTER);
+
 	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::POINTER);
 	map_fun_type.setReturnType(Type::POINTER);
@@ -90,6 +94,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("map", {
 		{Type::PTR_ARRAY, Type::PTR_ARRAY, {map_fun_type}, (void*) &LSArray<LSValue*>::ls_map},
 		{Type::INT_ARRAY, Type::PTR_ARRAY, {map_int_fun_type}, (void*) &LSArray<int>::ls_map},
+		{Type::REAL_ARRAY, Type::PTR_ARRAY, {map_real_fun_type}, (void*) &LSArray<double>::ls_map}
 	});
 
 	method("chunk", {
