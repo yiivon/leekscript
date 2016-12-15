@@ -560,28 +560,20 @@ inline bool LSArray<int>::ls_contains(int val) {
 	return false;
 }
 
-
 template <>
-inline LSValue* LSArray<LSValue*>::ls_push(LSValue* val) {
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_push(LSValue* val) {
 	this->push_back(val->move_inc());
 	return this;
 }
-template <>
-inline LSValue* LSArray<int>::ls_push(int val) {
-	this->push_back(val);
-	return this;
-}
-template <>
-inline LSValue* LSArray<double>::ls_push(double val) {
+template <class T>
+LSArray<T>* LSArray<T>::ls_push(T val) {
 	this->push_back(val);
 	return this;
 }
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_push_all_ptr(LSArray<LSValue*>* array) {
-
 	this->reserve(this->size() + array->size());
-
 	if (array->refs == 0) {
 		for (LSValue* v : *array) {
 			this->push_back(v);
@@ -597,67 +589,54 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_push_all_ptr(LSArray<LSValue*>* 
 }
 template <typename T>
 inline LSArray<T>* LSArray<T>::ls_push_all_ptr(LSArray<LSValue*>* array) {
-
 	this->reserve(this->size() + array->size());
-
 	for (LSValue* v : *array) {
 		if (LSNumber* n = dynamic_cast<LSNumber*>(v)) {
 			this->push_back(n->value);
 		}
 	}
-
 	if (array->refs == 0) delete array;
 	return this;
 }
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_push_all_int(LSArray<int>* array) {
-
 	this->reserve(this->size() + array->size());
-
 	for (int v : *array) {
 		this->push_inc(LSNumber::get(v));
 	}
-
 	if (array->refs == 0) delete array;
 	return this;
 }
+
 template <typename T>
 inline LSArray<T>* LSArray<T>::ls_push_all_int(LSArray<int>* array) {
-
 	this->reserve(this->size() + array->size());
 	this->insert(this->end(), array->begin(), array->end());
-
 	if (array->refs == 0) delete array;
 	return this;
 }
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_push_all_flo(LSArray<double>* array) {
-
 	this->reserve(this->size() + array->size());
-
 	for (double v : *array) {
 		this->push_inc(LSNumber::get(v));
 	}
-
 	if (array->refs == 0) delete array;
 	return this;
 }
+
 template <typename T>
 inline LSArray<T>* LSArray<T>::ls_push_all_flo(LSArray<double>* array) {
-
 	this->reserve(this->size() + array->size());
 	this->insert(this->end(), array->begin(), array->end());
-
 	if (array->refs == 0) delete array;
 	return this;
 }
-
 
 template <typename T>
 inline LSArray<T>* LSArray<T>::ls_shuffle() {
-
 	if (refs == 0) {
 		for (size_t i = 0; i < this->size(); ++i) {
 			size_t j = rand() % this->size();
