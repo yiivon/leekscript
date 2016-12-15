@@ -1129,7 +1129,7 @@ inline LSValue* LSArray<int>::ls_add(LSNumber* v) {
 			if (v->refs == 0) delete v;
 			return this;
 		}
-		LSArray<double>* r = (LSArray<double>*) this->clone();
+		LSArray<int>* r = (LSArray<int>*) this->clone();
 		r->push_back(v->value);
 		if (v->refs == 0) delete v;
 		return r;
@@ -1848,7 +1848,6 @@ const BaseRawType* LSArray<T>::getRawType() const {
 
 template <>
 inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
-
 	int index;
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		index = (int) n->value;
@@ -1872,7 +1871,6 @@ inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
 
 template <typename T>
 inline LSValue* LSArray<T>::at(const LSValue* key) const {
-
 	int index;
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		index = (int) n->value;
@@ -1884,9 +1882,6 @@ inline LSValue* LSArray<T>::at(const LSValue* key) const {
 		jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 		return nullptr;
 	}
-
-	std::cout << "index: " << index << std::endl;
-
 	try {
 		return LSNumber::get(((std::vector<T>*) this)->at(index));
 	} catch (std::exception& e) {
