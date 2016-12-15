@@ -1126,17 +1126,15 @@ inline LSArray<T>* LSArray<T>::ls_fill(T element, int size) {
 	return this;
 }
 
-
 template <>
 inline LSValue* LSArray<LSValue*>::ls_max() {
 	if (this->empty()) {
 		if (refs == 0) delete this;
-		return LSNull::get();
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-
 	LSValue* max = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
-		if (*(*this)[i] < *max) {
+		if (*(*this)[i] > *max) {
 			max = (*this)[i];
 		}
 	}
@@ -1146,16 +1144,15 @@ inline LSValue* LSArray<LSValue*>::ls_max() {
 	}
 	return max;
 }
-template <typename T>
-inline T LSArray<T>::ls_max() {
+template <class T>
+T LSArray<T>::ls_max() {
 	if (this->empty()) {
 		if (refs == 0) delete this;
-		return (T) 0;
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-
 	T max = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
-		if (max < (*this)[i]) {
+		if ((*this)[i] > max) {
 			max = (*this)[i];
 		}
 	}
@@ -1167,36 +1164,34 @@ template <>
 inline LSValue* LSArray<LSValue*>::ls_min() {
 	if (this->empty()) {
 		if (refs == 0) delete this;
-		return LSNull::get();
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-
-	LSValue* max = (*this)[0];
+	LSValue* min = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
-		if (*max < *(*this)[i]) {
-			max = (*this)[i];
+		if (*(*this)[i] < *min) {
+			min = (*this)[i];
 		}
 	}
 	if (refs == 0) {
-		max = max->clone();
+		min = min->clone();
 		delete this;
 	}
-	return max;
+	return min;
 }
-template <typename T>
-inline T LSArray<T>::ls_min() {
+template <class T>
+T LSArray<T>::ls_min() {
 	if (this->empty()) {
 		if (refs == 0) delete this;
-		return (T) 0;
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-
-	T max = (*this)[0];
+	T min = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
-		if ((*this)[i] < max) {
-			max = (*this)[i];
+		if ((*this)[i] < min) {
+			min = (*this)[i];
 		}
 	}
 	if (refs == 0) delete this;
-	return max;
+	return min;
 }
 
 template <>

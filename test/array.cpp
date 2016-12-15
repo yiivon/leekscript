@@ -161,6 +161,22 @@ void Test::test_arrays() {
 	section("Array.map2()");
 	code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
 
+	section("Array.max()");
+	code("[].max()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12].clear().max()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[4, 20, 1, 4].max()").equals("20");
+	code("let a = [4, 12, 1, 4] a.max()").equals("12");
+	code("['c', 'a', 'd', 'b'].max()").equals("'d'");
+	code("let a = ['c', 'a', 'e', 'b'] a.max()").equals("'e'");
+
+	section("Array.min()");
+	code("[].min()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12].clear().min()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[4, 20, 1, 4].min()").equals("1");
+	code("let a = [4, 12, 1, 4] a.min()").equals("1");
+	code("['c', 'a', 'd', 'b'].min()").equals("'a'");
+	code("let a = ['c', 'a', 'e', 'b'] a.min()").equals("'a'");
+
 	section("Array.chunk()");
 	code("let x = [1, 2, 3, 4] x.chunk(2)").equals("[[1, 2], [3, 4]]");
 	code("let x = [1, 2, 3, 4] x.chunk(3)").equals("[[1, 2, 3], [4]]");
