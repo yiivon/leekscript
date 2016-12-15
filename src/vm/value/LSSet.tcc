@@ -292,7 +292,7 @@ LSValue** LSSet<T>::atL(const LSValue* ) {
 }
 
 template <typename T>
-inline std::ostream& LSSet<T>::print(std::ostream& os) const {
+inline std::ostream& LSSet<T>::dump(std::ostream& os) const {
 	os << "<";
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";

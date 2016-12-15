@@ -48,7 +48,6 @@ public:
 
 	bool in(K) const;
 
-	virtual std::ostream& print(std::ostream&) const override;
 	virtual std::ostream& dump(std::ostream&) const override;
 	virtual std::string json() const override;
 	virtual LSValue* clone() const override;

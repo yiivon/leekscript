@@ -2040,28 +2040,6 @@ LSValue* LSArray<T>::clone() const {
 }
 
 template <typename T>
-std::ostream& LSArray<T>::print(std::ostream& os) const {
-	os << "[";
-	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) os << ", ";
-		os << (*i);
-	}
-	os << "]";
-	return os;
-}
-
-template <>
-inline std::ostream& LSArray<LSValue*>::print(std::ostream& os) const {
-	os << "[";
-	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) os << ", ";
-		(*i)->print(os);
-	}
-	os << "]";
-	return os;
-}
-
-template <typename T>
 std::ostream& LSArray<T>::dump(std::ostream& os) const {
 	os << "[";
 	for (auto i = this->begin(); i != this->end(); i++) {

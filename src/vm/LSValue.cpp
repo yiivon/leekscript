@@ -460,8 +460,8 @@ LSString* LSValue::ls_json() {
 	return json;
 }
 
-std::ostream& LSValue::dump(std::ostream& os) const {
-	print(os);
+std::ostream& LSValue::print(std::ostream& os) const {
+	dump(os);
 	return os;
 }
 

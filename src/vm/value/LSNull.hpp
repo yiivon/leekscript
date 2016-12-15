@@ -35,7 +35,7 @@ public:
 	LSValue* attr(const LSValue* key) const override;
 	LSValue** attrL(const LSValue* key) override;
 
-	std::ostream& print(std::ostream& os) const override;
+	std::ostream& dump(std::ostream& os) const override;
 	std::string json() const override;
 
 	LSValue* getClass() const override;

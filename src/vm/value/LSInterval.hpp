@@ -37,8 +37,7 @@ public:
 	virtual LSValue* abso() const override;
 
 	virtual LSValue* clone() const override;
-	std::ostream& print(std::ostream& os) const override;
-	std::ostream& dump(std::ostream& os) const override;
+	virtual std::ostream& dump(std::ostream& os) const override;
 };
 
 }

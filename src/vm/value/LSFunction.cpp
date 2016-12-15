@@ -84,11 +84,6 @@ LSValue* LSFunction::clone() const {
 	return (LSValue*) this;
 }
 
-std::ostream& LSFunction::print(std::ostream& os) const {
-	os << "<function>";
-	return os;
-}
-
 std::ostream& LSFunction::dump(std::ostream& os) const {
 	os << "<function>";
 	return os;

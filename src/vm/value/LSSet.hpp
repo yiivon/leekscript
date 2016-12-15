@@ -47,7 +47,7 @@ public:
 
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;
-	virtual std::ostream& print(std::ostream&) const override;
+	virtual std::ostream& dump(std::ostream&) const override;
 	virtual std::string json() const override;
 	virtual LSValue* clone() const override;
 	virtual LSValue* getClass() const override;

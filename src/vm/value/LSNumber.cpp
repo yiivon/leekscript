@@ -435,7 +435,7 @@ string LSNumber::json() const {
 	return toString();
 }
 
-std::ostream& LSNumber::print(std::ostream& os) const {
+std::ostream& LSNumber::dump(std::ostream& os) const {
 	os << toString();
 	return os;
 }

@@ -53,7 +53,7 @@ LSValue** LSNull::attrL(const LSValue*) {
 	return nullptr;
 }
 
-std::ostream& LSNull::print(std::ostream& os) const {
+std::ostream& LSNull::dump(std::ostream& os) const {
 	os << "null";
 	return os;
 }

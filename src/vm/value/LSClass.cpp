@@ -188,11 +188,6 @@ LSValue* LSClass::clone() const {
 	return new LSClass(name);
 }
 
-std::ostream& LSClass::print(std::ostream& os) const {
-	os << "<class " << name << ">";
-	return os;
-}
-
 std::ostream& LSClass::dump(std::ostream& os) const {
 	os << "<class " << name << ">";
 	return os;

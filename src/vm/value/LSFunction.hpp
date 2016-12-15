@@ -51,7 +51,6 @@ public:
 
 	LSValue* clone() const;
 
-	std::ostream& print(std::ostream& os) const;
 	std::ostream& dump(std::ostream& os) const;
 	std::string json() const override;
 

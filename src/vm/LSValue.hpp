@@ -461,8 +461,8 @@ public:
 
 	virtual LSValue* abso() const;
 
-	virtual std::ostream& print(std::ostream&) const = 0;
-	virtual std::ostream& dump(std::ostream&) const;
+	virtual std::ostream& print(std::ostream&) const;
+	virtual std::ostream& dump(std::ostream&) const = 0;
 	virtual std::string json() const = 0;
 	std::string to_json() const;
 
