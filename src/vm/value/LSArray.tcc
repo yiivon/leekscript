@@ -292,45 +292,30 @@ inline bool LSArray<T>::ls_empty() {
 
 template <>
 inline LSValue* LSArray<LSValue*>::ls_pop() {
-	if (empty()) {
+	if (this->empty()) {
 		if (refs == 0) {
 			delete this;
 		}
-		return LSNull::get();
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-	LSValue* last = back();
+	LSValue* last = this->back();
 	last->refs--;
-	pop_back();
+	this->pop_back();
 	if (refs == 0) {
 		delete this;
 	}
 	return last->move();
 }
-template <>
-inline LSValue* LSArray<int>::ls_pop() {
-	if (empty()) {
+template <class T>
+inline T LSArray<T>::ls_pop() {
+	if (this->empty()) {
 		if (refs == 0) {
 			delete this;
 		}
-		return LSNull::get();
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-	LSValue* last = LSNumber::get(back());
-	pop_back();
-	if (refs == 0) {
-		delete this;
-	}
-	return last;
-}
-template <>
-inline LSValue* LSArray<double>::ls_pop() {
-	if (empty()) {
-		if (refs == 0) {
-			delete this;
-		}
-		return LSNull::get();
-	}
-	LSValue* last = LSNumber::get(back());
-	pop_back();
+	T last = this->back();
+	this->pop_back();
 	if (refs == 0) {
 		delete this;
 	}

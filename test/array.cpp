@@ -250,10 +250,16 @@ void Test::test_arrays() {
 	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 1, 1)").equals("[2]");
 
 	section("Array.pop()");
-	code("[].pop()").equals("null");
+	code("[].pop()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("Array.pop(['1', '2'])").equals("'2'");
 	code("['1', '2'].pop()").equals("'2'");
 	code("let a = ['1', '2', '3'] a.pop() a").equals("['1', '2']");
+	code("[1, 2].pop()").equals("2");
+	code("[1.9, 2.78].pop()").equals("2.78");
+	code("let a = [1, 2] a.pop()").equals("2");
+	code("let a = [1.9, 2.78] a.pop()").equals("2.78");
+	code("[12].clear().pop()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12.5].clear().pop()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Array.push()");
 	code("let a = [1, 2, 3] Array.push(a, 4)").equals("[1, 2, 3, 4]");
