@@ -214,8 +214,13 @@ void Test::test_arrays() {
 	section("Array.isEmpty()");
 	code("Array.isEmpty([])").equals("true");
 	code("[3, 4, 5].isEmpty()").equals("false");
-	//code("let a = 0 Array.iter([1,2,3], x -> a += x) a").equals("6");
-	//code("let a = 2 [1,2,3].iter(x -> a *= x) a").equals("12");
+
+	section("Array.iter()");
+	code("Array.iter([1, 2, 3], x -> System.print(x))").output("1\n2\n3\n");
+	code("[4, 5, 6].iter(x -> System.print(x))").output("4\n5\n6\n");
+	// TODO will work with capture references in closures
+	//code("let a = 0 Array.iter([1, 2, 3], x -> a += x) a").equals("6");
+	//code("let a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
 
 	section("Array.partition()");
 	code("Array.partition([1, 2, 3, 4, 5], (x -> x < 3))").equals("[[1, 2], [3, 4, 5]]");
