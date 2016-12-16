@@ -8,7 +8,8 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 
 	operator_("+", {
 		{Type::BOOLEAN, Type::STRING, Type::STRING_TMP, (void*) &BooleanSTD::add},
-		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp}
+		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp},
+		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool, Method::NATIVE}
 	});
 
 	static_method("compare", {
@@ -28,6 +29,9 @@ LSString* BooleanSTD::add(int boolean, LSString* string) {
 LSString* BooleanSTD::add_tmp(int boolean, LSString* string) {
 	(*string).insert(0, (boolean ? "true" : "false"));
 	return string;
+}
+Compiler::value BooleanSTD::add_bool(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_add(args[0], args[1]);
 }
 
 int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {

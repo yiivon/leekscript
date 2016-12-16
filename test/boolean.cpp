@@ -20,7 +20,10 @@ void Test::test_booleans() {
 	section("Boolean.operator +");
 	code("true + 'salut'").equals("'truesalut'");
 	code("false + '!'").equals("'false!'");
-	code("false + 12").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"+"});
+	code("false + 12").equals("12");
+	code("true - 1").equals("0");
+	code("true + 1").equals("2");
+	code("true + false").equals("1");
 
 	section("operator &&");
 	code("true and true").equals("true");
@@ -71,9 +74,10 @@ void Test::test_booleans() {
 	code("false or (x -> x)").equals("true");
 	code("[] or ''").equals("false");
 
-	section("Boolean is not a number");
-	code("false + 99").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"+"});
-	code("true - 99").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"-"});
-	//code("12 + true").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "+");
-	//code("15 - false").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, "-");
+	section("Boolean is a number");
+	code("false + 99").equals("99");
+	code("true - 99").equals("-98");
+	code("12 + true").equals("13");
+	code("15 - true").equals("14");
+	code("15 * true").equals("15");
 }

@@ -164,10 +164,12 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Don't use old stuff for boolean
+	/*
 	if (v1->type == Type::BOOLEAN) {
-		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, op->token->line, {op->character}});
+		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, op->token->line, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}
+	*/
 
 	if (op->type == TokenType::IN) {
 		if (operator_fun == nullptr) {
