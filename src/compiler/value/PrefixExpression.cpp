@@ -1,8 +1,8 @@
-#include "../../compiler/value/PrefixExpression.hpp"
+#include "PrefixExpression.hpp"
 
-#include "../../compiler/value/FunctionCall.hpp"
-#include "../../compiler/value/LeftValue.hpp"
-#include "../../compiler/value/VariableValue.hpp"
+#include "FunctionCall.hpp"
+#include "LeftValue.hpp"
+#include "VariableValue.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSObject.hpp"
