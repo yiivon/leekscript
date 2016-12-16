@@ -177,6 +177,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 	switch (t->type) {
 
 		case TokenType::LET:
+		case TokenType::VAR:
 		case TokenType::GLOBAL:
 			return eatVariableDeclaration();
 
@@ -259,10 +260,13 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 	VariableDeclaration* vd = new VariableDeclaration();
 
 	if (t->type == TokenType::GLOBAL) {
-		vd->global = true;
 		eat(TokenType::GLOBAL);
-	} else {
+		vd->global = true;
+	} else if (t->type == TokenType::LET) {
 		eat(TokenType::LET);
+		vd->constant = true;
+	} else {
+		eat(TokenType::VAR);
 	}
 
 	while (t->type == TokenType::IDENT) {
@@ -1060,14 +1064,13 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		// for key , value in container { body }
 		Foreach* f = new Foreach();
 
-		if (t->type == TokenType::LET) eat();
+		if (t->type == TokenType::LET or t->type == TokenType::VAR) eat();
 
 		if (nt->type == TokenType::COMMA || nt->type == TokenType::COLON) {
 			f->key = eatIdent();
 			eat();
 		}
-		if (t->type == TokenType::LET)
-			eat();
+		if (t->type == TokenType::LET or t->type == TokenType::VAR) eat();
 
 		f->value = eatIdent();
 

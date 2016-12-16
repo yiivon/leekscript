@@ -1,4 +1,5 @@
 {
+	"UNKNOWN_ERROR" : "Erreur inconnue",
 	"UNDEFINED_VARIABLE" : "Variable « %s » non définie",
 	"VARIABLE_ALREADY_DEFINED" : "Variable « %s » déjà définie",
 	"METHOD_NOT_FOUND" : "Cette méthode « %s » n'existe pas",
@@ -11,7 +12,6 @@
 	"ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER" : "Cette clé d'accès de plage au tableau « %s » doit être un nombre",
 	"VALUE_MUST_BE_A_LVALUE" : "Cette valeur « %s » doit être une l-value",
 	"WRONG_ARGUMENT_COUNT" : "La fonction « %1 » prend %2 paramètres, mais %3 sont passés",
-	"NO_SUCH_OPERATOR" : "Opérateur « %s » inconnu entre ces deux types",
-
-	"UNKNOWN_ERROR" : "Erreur inconnue"
+	"NO_SUCH_OPERATOR" : "L'opérateur %1 %2 %3 n'est pas défini",
+	"CANT_MODIFY_CONSTANT_VALUE": "Cette valeur « %s » est constante, impossible de la modifier"
 }

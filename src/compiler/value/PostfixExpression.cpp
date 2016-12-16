@@ -2,6 +2,8 @@
 
 #include "../../compiler/value/LeftValue.hpp"
 #include "../../vm/LSValue.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticError.hpp"
 
 using namespace std;
 
@@ -31,7 +33,13 @@ unsigned PostfixExpression::line() const {
 }
 
 void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+
 	expression->analyse(analyser, Type::UNKNOWN);
+
+	if (expression->type.constant) {
+		analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, expression->line(), {expression->to_string()}});
+	}
+
 	type = expression->type;
 	this->return_value = return_value;
 

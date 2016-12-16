@@ -108,7 +108,8 @@ enum class TokenType {
 	BIT_ROTATE_RIGHT_EQUALS,
 	DOUBLE_QUESTION_MARK,
 	INT_DIV,
-	THROW
+	THROW,
+	VAR
 };
 
 }

@@ -13,6 +13,7 @@ namespace ls {
 
 VariableDeclaration::VariableDeclaration() {
 	global = false;
+	constant = false;
 }
 
 VariableDeclaration::~VariableDeclaration() {
@@ -23,7 +24,7 @@ VariableDeclaration::~VariableDeclaration() {
 
 void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 
-	os << (global ? "global " : "let ");
+	os << (global ? "global " : (constant ? "let " : "var "));
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		os << variables.at(i)->content;
@@ -52,6 +53,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (expressions[i] != nullptr) {
 			expressions[i]->analyse(analyser, Type::UNKNOWN);
 			v->type = expressions[i]->type;
+			v->type.constant = constant;
 			v->value = expressions[i];
 		}
 		if (v->type == Type::VOID) {

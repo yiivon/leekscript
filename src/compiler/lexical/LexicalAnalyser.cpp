@@ -18,7 +18,7 @@ static vector<vector<string>> type_literals = {
 	{}, // Ident
 	{}, // String
 
-	{ "let", "var" }, { "global" }, { "function" }, { "return" },
+	{ "let" }, { "global" }, { "function" }, { "return" },
 	{ "break" }, { "continue" },
 
 	{ "!=", "is not", "≠" }, { "=" },
@@ -69,11 +69,10 @@ static vector<vector<string>> type_literals = {
 	{ ">>>" }, { ">>>=" },
 	{ "^<" }, { "^<=" },
 	{ "^>" }, { "^>=" },
-
 	{ "??" },
 	{ "\\" },
-
-	{ "throw" }
+	{ "throw" },
+	{ "var" }
 };
 
 LexicalAnalyser::LexicalAnalyser() {}

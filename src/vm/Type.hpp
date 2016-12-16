@@ -176,6 +176,7 @@ public:
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
 	bool temporary = false;
+	bool constant = false;
 
 	Type();
 	Type(const BaseRawType* raw_type, Nature nature, bool native = false, bool temporary = false);

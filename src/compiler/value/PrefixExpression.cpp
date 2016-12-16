@@ -6,6 +6,8 @@
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSObject.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticError.hpp"
 
 using namespace std;
 
@@ -46,6 +48,12 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 		or operatorr->type == TokenType::TILDE) {
 
 		type = expression->type;
+
+		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
+			if (expression->type.constant) {
+				analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, expression->line(), {expression->to_string()}});
+			}
+		}
 
 	} else if (operatorr->type == TokenType::NOT) {
 
