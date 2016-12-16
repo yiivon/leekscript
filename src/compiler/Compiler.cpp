@@ -95,7 +95,12 @@ Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_or(F, a.v, b.v), Type::BOOLEAN};
 }
 Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_add(F, a.v, b.v), Type::INTEGER};
+	auto result_type = [&]() {
+		if (a.t == Type::REAL or b.t == Type::REAL) return Type::REAL;
+		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
+		return Type::INTEGER;
+	}();
+	return {jit_insn_add(F, a.v, b.v), result_type};
 }
 Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_eq(F, a.v, b.v), Type::BOOLEAN};
