@@ -29,12 +29,6 @@ public:
 	bool eq(const LSNull*) const override;
 	bool lt(const LSNull*) const override;
 
-	LSValue* at (const LSValue* value) const override;
-	LSValue** atL (const LSValue* value) override;
-
-	LSValue* attr(const LSValue* key) const override;
-	LSValue** attrL(const LSValue* key) override;
-
 	std::ostream& dump(std::ostream& os) const override;
 	std::string json() const override;
 

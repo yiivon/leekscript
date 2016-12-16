@@ -167,9 +167,6 @@ LSValue** LSClass::atL(const LSValue*) {
 LSValue* LSClass::attr(const LSValue* key) const {
 	const LSString* str = dynamic_cast<const LSString*>(key);
 	if (str) {
-		if (str->compare("class") == 0) {
-			return getClass();
-		}
 		if (str->compare("name") == 0) {
 			return new LSString(name);
 		}

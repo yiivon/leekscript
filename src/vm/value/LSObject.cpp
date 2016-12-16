@@ -132,9 +132,6 @@ bool LSObject::in(LSValue* value) const {
 }
 
 LSValue* LSObject::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "class") {
-		return getClass();
-	}
 	try {
 //		cout << "attr : " << values.at(*((LSString*) key))->refs << endl;
 		return values.at(*((LSString*) key));

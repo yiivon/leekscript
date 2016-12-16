@@ -124,8 +124,6 @@ public:
 	LSValue* range(int start, int end) const override;
 	LSValue* rangeL(int start, int end) override;
 
-	LSValue** attrL(const LSValue* key) override;
-
 	LSValue* abso() const override;
 
 	std::ostream& dump(std::ostream& os) const override;

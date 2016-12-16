@@ -323,17 +323,6 @@ LSValue* LSString::rangeL(int, int) {
 	return this;
 }
 
-LSValue* LSString::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "class") {
-		return getClass();
-	}
-	return LSNull::get();
-}
-
-LSValue** LSString::attrL(const LSValue*) {
-	return nullptr;
-}
-
 LSValue* LSString::abso() const {
 	return LSNumber::get(unicode_length());
 }

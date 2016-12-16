@@ -61,9 +61,6 @@ LSValue** LSFunction::atL(const LSValue*) {
 }
 
 LSValue* LSFunction::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "class") {
-		return getClass();
-	}
 	if (*((LSString*) key) == "args") {
 		LSArray<LSValue*>* args_list = new LSArray<LSValue*>();
 		for (const auto& arg : args) {
@@ -75,9 +72,6 @@ LSValue* LSFunction::attr(const LSValue* key) const {
 		return return_type;
 	}
 	return LSNull::get();
-}
-LSValue** LSFunction::attrL(const LSValue*) {
-	return nullptr;
 }
 
 LSValue* LSFunction::clone() const {

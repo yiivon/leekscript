@@ -47,7 +47,6 @@ public:
 	LSValue** atL (const LSValue* value) override;
 
 	LSValue* attr(const LSValue* key) const override;
-	LSValue** attrL(const LSValue* key) override;
 
 	LSValue* clone() const;
 

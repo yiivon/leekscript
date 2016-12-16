@@ -1906,11 +1906,6 @@ LSValue** LSArray<T>::atL(const LSValue* key) {
 }
 
 template <class T>
-LSValue** LSArray<T>::attrL(const LSValue*) {
-	return nullptr;
-}
-
-template <class T>
 LSValue* LSArray<T>::abso() const {
 	return LSNumber::get(this->size());
 }

@@ -403,16 +403,6 @@ LSValue** LSNumber::atL(const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSNumber::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "class") {
-		return getClass();
-	}
-	return LSNull::get();
-}
-LSValue** LSNumber::attrL(const LSValue*) {
-	return nullptr;
-}
-
 LSValue* LSNumber::abso() const {
 	return LSNumber::get(abs((int) value));
 }

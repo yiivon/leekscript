@@ -36,23 +36,6 @@ bool LSNull::lt(const LSNull*) const {
 	return false;
 }
 
-LSValue* LSNull::at(const LSValue*) const {
-	return LSNull::get();
-}
-LSValue** LSNull::atL(const LSValue*) {
-	return nullptr;
-}
-
-LSValue* LSNull::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "class") {
-		return getClass();
-	}
-	return LSNull::get();
-}
-LSValue** LSNull::attrL(const LSValue*) {
-	return nullptr;
-}
-
 std::ostream& LSNull::dump(std::ostream& os) const {
 	os << "null";
 	return os;

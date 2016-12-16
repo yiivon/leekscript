@@ -105,9 +105,6 @@ public:
 	LSValue* at(const LSValue* value) const override;
 	LSValue** atL(const LSValue* value) override;
 
-	LSValue* attr(const LSValue* key) const override;
-	LSValue** attrL(const LSValue* key) override;
-
 	LSValue* abso() const override;
 
 	LSValue* clone() const override;

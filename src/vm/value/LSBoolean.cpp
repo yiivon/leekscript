@@ -74,16 +74,6 @@ LSValue** LSBoolean::atL(const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSBoolean::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "class") {
-		return getClass();
-	}
-	return LSNull::get();
-}
-LSValue** LSBoolean::attrL(const LSValue*) {
-	return nullptr;
-}
-
 LSValue* LSBoolean::clone() const {
 	return (LSValue*) this;
 }
