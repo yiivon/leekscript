@@ -378,8 +378,8 @@ void Test::test_arrays() {
 	section("Postfix expressions");
 	code("let a = [10, ''] a[0]++").equals("11");
 	code("let a = [10, ''] a[0]--").equals("9");
-	code("let v = 10 [v++, '']").equals("[10, '']");
-	code("let v = 90 [v--, '']").equals("[90, '']");
+	code("var v = 10 [v++, '']").equals("[10, '']");
+	code("var v = 90 [v--, '']").equals("[90, '']");
 
 	section("Range access");
 	code("[1 2 3 4 5 6 7 8][0:0]").equals("[1]");

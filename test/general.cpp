@@ -48,7 +48,7 @@ void Test::test_general() {
 	code("let a").equals("(void)");
 	code("let a a").equals("null");
 	//code("let a a = 12 a").equals("12");
-	code("let a = 1 let b = (a = 12) b").equals("12");
+	code("var a = 1 let b = (a = 12) b").equals("12");
 	code("let s = 'hello'").equals("(void)");
 	code("let s = 'hello' s").equals("'hello'");
 	code("let état = 12 état").equals("12");
@@ -60,7 +60,7 @@ void Test::test_general() {
 
 	code("let a = 12 a").equals("12");
 	code("let a = 12 { let a = 5 } a").equals("12");
-	code("let a = 12 let b = 0 { let a = 5 b = a } b").equals("5");
+	code("let a = 12 var b = 0 { let a = 5 b = a } b").equals("5");
 	code("{let a = 5} a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
 
 	code("'foo' ?? 'bar'").equals("'foo'");
@@ -90,4 +90,9 @@ void Test::test_general() {
 	code("false.string()").equals("'false'");
 	code("(12 > 5).string()").equals("'true'");
 	// TODO more types
+
+	section("Const values");
+	code("var c = 2 c++").equals("2");
+	code("let c = 2 c++").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; ++c").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
 }

@@ -64,10 +64,10 @@ void Test::test_numbers() {
 	code("5 * null").equals("null");
 
 	section("Numbers with variables");
-	code("let a = 2 a++").equals("2");
-	code("let a = 2; ++a").equals("3");
-	code("let a = 2 a--").equals("2");
-	code("let a = 2; --a").equals("1");
+	code("var a = 2 a++").equals("2");
+	code("var a = 2; ++a").equals("3");
+	code("var a = 2 a--").equals("2");
+	code("var a = 2; --a").equals("1");
 	code("let a = 2 a += 5").equals("7");
 	code("let a = 2 a -= 5").equals("-3");
 	code("let a = 2 a *= 5").equals("10");
