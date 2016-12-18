@@ -68,27 +68,21 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 	switch (operatorr->type) {
 
 		case TokenType::PLUS_PLUS: {
+
 			if (expression->type.nature == Nature::VALUE) {
-				//std::cout << "++ value " << std::endl;
+				//std::cout << "expression type " << expression->type << std::endl;
 
-//				jit_value_t x = expression->compile_l(c);
-				auto x = expression->compile(c);
+				auto x_addr = expression->compile_l(c);
 
-//				jit_value_t ox = jit_insn_load_relative(c.F, x, 0, jit_type_int);
-				jit_value_t ox = jit_insn_load(c.F, x.v);
+				jit_value_t x = jit_insn_load_relative(c.F, x_addr.v, 0, jit_type_int);
 
-				jit_value_t y = LS_CREATE_INTEGER(c.F, 1);
-
-//				jit_value_t sum = jit_insn_add(c.F, ox, y);
-//				jit_insn_store_relative(c.F, x, 0, sum);
-
-				jit_value_t sum = jit_insn_add(c.F, x.v, y);
-				jit_insn_store(c.F, x.v, sum);
+				auto sum = c.insn_add({x, Type::INTEGER}, c.new_integer(1));
+				jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
 
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, ox, type), type};
+					return {VM::value_to_pointer(c.F, x, type), type};
 				}
-				return {ox, type};
+				return {x, type};
 			} else {
 				args.push_back(expression->compile(c).v);
 				func = (void*) jit_inc;

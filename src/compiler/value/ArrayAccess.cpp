@@ -312,20 +312,20 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 
-	//std::cout << "compile access l " << std::endl;
-
 	auto a = array->compile(c);
+	auto k = key->compile(c);
+
+	if (array->type == Type::INT_ARRAY) {
+		return {jit_insn_add(c.F, jit_insn_load_relative(c.F, a.v, 16, LS_POINTER), jit_insn_mul(c.F, c.new_integer(4).v, k.v)), Type::POINTER};
+	}
 
 	jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 0);
-
-	auto k = key->compile(c);
 
 	jit_value_t args[] = {a.v, k.v};
 
 	void* func = nullptr;
 	if (array->type.raw_type == RawType::MAP) {
-		//std::cout << "access_l_map" << std::endl;
 		func = (void*) access_l_map;
 	} else {
 		func = (void*) access_l_value;

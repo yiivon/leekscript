@@ -5,7 +5,7 @@ paths.fill(0, 21) // TODO fill gives the array his element type
 
 function walk(x, y) {
 	if (x + y == S) {
-		paths[y] = paths[y] + 1 // TODO paths[y]++
+		paths[y]++
 		return
 	}
 	if (x > 0) walk(x - 1, y)
@@ -17,6 +17,6 @@ walk(S, S)
 
 var sum = 1l
 for (var i = 0; i < S; ++i) {
-	sum += paths[i] ** 2 // TODO x ** 2 optimization into x * x
+	sum += paths[i] * paths[i] // TODO x ** 2 optimization into x * x
 }
 return sum

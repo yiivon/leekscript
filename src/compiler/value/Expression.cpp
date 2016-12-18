@@ -490,6 +490,15 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 
+				auto v1_addr = ((LeftValue*) v1)->compile_l(c);
+				auto v2_value = v2->compile(c);
+
+				jit_insn_store_relative(c.F, v1_addr.v, 0, v2_value.v);
+				if (type.nature == Nature::POINTER) {
+					return {VM::value_to_pointer(c.F, v2_value.v, type), type};
+				}
+				return v2_value;
+
 				if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
 
 					args.push_back(l1->compile_l(c).v);
@@ -503,15 +512,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 						return {VM::value_to_pointer(c.F, v, type), type};
 					}
 					return {v, type};
-				} else {
-
-					auto x = v1->compile(c);
-					auto y = v2->compile(c);
-					jit_insn_store(c.F, x.v, y.v);
-					if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-						return {VM::value_to_pointer(c.F, y.v, type), type};
-					}
-					return y;
 				}
 			} else if (v1->type.nature == Nature::POINTER) {
 
@@ -599,10 +599,14 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
+				// std::cout << v1 << "+=" << v2 << '\n';
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
-				jit_value_t sum = jit_insn_add(c.F, x.v, y.v);
-				jit_insn_store(c.F, x.v, sum);
+				auto x = jit_insn_load_relative(c.F, x_addr.v, 0, VM::get_jit_type(v1->type));
+				//auto x = x_addr.v;
+				jit_value_t sum = jit_insn_add(c.F, x, y.v);
+				jit_insn_store_relative(c.F, x_addr.v, 0, sum);
+				//jit_insn_store(c.F, x_addr.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 					return {VM::value_to_pointer(c.F, sum, type), type};
 				}
@@ -720,7 +724,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
-				auto r = jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v));
+				auto r = jit_insn_convert(c.F, jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v)), LS_INTEGER, 0);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 					return {VM::value_to_pointer(c.F, r, Type::INTEGER), type};
 				}
