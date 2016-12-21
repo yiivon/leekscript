@@ -52,4 +52,19 @@ void Test::test_classes() {
 //	code("{}.map == {}.map").equals("true");
 //	code("[].map == {}.map").equals("false");
 //	code("let a = [].map; a == [].map").equals("true");
+
+	section("Class.operator ==");
+	code("Number == 12.class").equals("true");
+	code("Number == 'salut'.class").equals("false");
+
+	section("Class.operator <");
+	code("Number < String").equals("true");
+	code("Number < Array").equals("false");
+
+	section("Class::isTrue()");
+	code("Number ? 12 : 5").equals("12");
+	code("!(!String)").equals("true");
+
+	section("Class::clone()");
+	code("var a = Number a").equals("<class Number>");
 }
