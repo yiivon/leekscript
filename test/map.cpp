@@ -10,6 +10,10 @@ void Test::test_map() {
 	code("[1 : 1 2 : '2']").equals("[1 : 1 2 : '2']");
 	code("['1' : '1' '1' : '2' '1' : '3']").equals("['1' : '1']");
 
+	section("Map::isTrue()");
+	//code("![:]").equals("true");
+	code("![2:2]").equals("false");
+
 	section("Map.size()");
 	code("let x = [1 : 1 1 : 2 1 : 3] x.size()").equals("1");
 	code("let x = [1 : 1 1 : 2 2 : '3'] x.size()").equals("2");
