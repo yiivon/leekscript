@@ -3,6 +3,9 @@
 void Test::test_classes() {
 
 	header("Classes");
+	section("type ID");
+	code("Number.typeID()").equals("10");
+	code("[Number, ''][0].typeID()").equals("10");
 
 	section(".class attribute");
 	code("null.class").equals("<class Null>");
