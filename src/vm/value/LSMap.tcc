@@ -135,7 +135,7 @@ inline LSMap<LSValue*,LSValue*>* LSMap<LSValue*,LSValue*>::ls_clear() {
 	return this;
 }
 template <>
-inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_clear() {
+inline LSMap<LSValue*,int>* LSMap<LSValue*, int>::ls_clear() {
 	for (auto it = begin(); it != end(); ++it) {
 		LSValue::delete_ref(it->first);
 	}
@@ -143,7 +143,7 @@ inline LSMap<LSValue*,int>* LSMap<LSValue*,int>::ls_clear() {
 	return this;
 }
 template <>
-inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_clear() {
+inline LSMap<LSValue*,double>* LSMap<LSValue*, double>::ls_clear() {
 	for (auto it = begin(); it != end(); ++it) {
 		LSValue::delete_ref(it->first);
 	}
@@ -151,7 +151,7 @@ inline LSMap<LSValue*,double>* LSMap<LSValue*,double>::ls_clear() {
 	return this;
 }
 template <>
-inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_clear() {
+inline LSMap<int,LSValue*>* LSMap<int, LSValue*>::ls_clear() {
 	for (auto it = begin(); it != end(); ++it) {
 		LSValue::delete_ref(it->second);
 	}
@@ -159,18 +159,18 @@ inline LSMap<int,LSValue*>* LSMap<int,LSValue*>::ls_clear() {
 	return this;
 }
 template <>
-inline LSMap<int,int>* LSMap<int,int>::ls_clear() {
+inline LSMap<int,int>* LSMap<int, int>::ls_clear() {
 	clear();
 	return this;
 }
 template <>
-inline LSMap<int,double>* LSMap<int,double>::ls_clear() {
+inline LSMap<int,double>* LSMap<int, double>::ls_clear() {
 	clear();
 	return this;
 }
 
 template <>
-inline bool LSMap<LSValue*,LSValue*>::ls_erase(LSValue* key) {
+inline bool LSMap<LSValue*, LSValue*>::ls_erase(LSValue* key) {
 	auto it = find(key);
 	LSValue::delete_temporary(key);
 	if (it != end()) {
@@ -184,7 +184,7 @@ inline bool LSMap<LSValue*,LSValue*>::ls_erase(LSValue* key) {
 	return false;
 }
 template <>
-inline bool LSMap<LSValue*,int>::ls_erase(LSValue* key) {
+inline bool LSMap<LSValue*, int>::ls_erase(LSValue* key) {
 	auto it = find(key);
 	LSValue::delete_temporary(key);
 	if (it != end()) {
@@ -197,7 +197,7 @@ inline bool LSMap<LSValue*,int>::ls_erase(LSValue* key) {
 	return false;
 }
 template <>
-inline bool LSMap<LSValue*,double>::ls_erase(LSValue* key) {
+inline bool LSMap<LSValue*, double>::ls_erase(LSValue* key) {
 	auto it = find(key);
 	LSValue::delete_temporary(key);
 	if (it != end()) {
@@ -210,7 +210,7 @@ inline bool LSMap<LSValue*,double>::ls_erase(LSValue* key) {
 	return false;
 }
 template <>
-inline bool LSMap<int,LSValue*>::ls_erase(int key) {
+inline bool LSMap<int, LSValue*>::ls_erase(int key) {
 	auto it = find(key);
 	if (it != end()) {
 		LSValue::delete_ref(it->second);
@@ -222,13 +222,13 @@ inline bool LSMap<int,LSValue*>::ls_erase(int key) {
 	return false;
 }
 template <>
-inline bool LSMap<int,int>::ls_erase(int key) {
+inline bool LSMap<int, int>::ls_erase(int key) {
 	bool r = erase(key);
 	if (refs == 0) delete this;
 	return r;
 }
 template <>
-inline bool LSMap<int,double>::ls_erase(int key) {
+inline bool LSMap<int, double>::ls_erase(int key) {
 	bool r = erase(key);
 	if (refs == 0) delete this;
 	return r;
@@ -236,7 +236,7 @@ inline bool LSMap<int,double>::ls_erase(int key) {
 
 
 template <>
-inline LSValue* LSMap<LSValue*,LSValue*>::ls_look(LSValue* key, LSValue* def) {
+inline LSValue* LSMap<LSValue*, LSValue*>::ls_look(LSValue* key, LSValue* def) {
 	auto it = find(key);
 	LSValue::delete_temporary(key);
 	if (it != end()) {
@@ -315,13 +315,11 @@ LSArray<V>* LSMap<K, V>::values() const {
 	return array;
 }
 
-
 /*
  * LSValue methods
  */
-
 template <typename K, typename T>
-inline bool LSMap<K,T>::isTrue() const {
+inline bool LSMap<K, T>::isTrue() const {
 	return not this->empty();
 }
 
@@ -329,27 +327,7 @@ template <typename K, typename T>
 inline bool LSMap<K, T>::in(K key) const {
 	bool r = this->find(key) != this->end();
 	LSValue::delete_temporary(this);
-	return r;
-}
-template <>
-inline bool LSMap<LSValue*, int>::in(LSValue* key) const {
-	bool r = this->find(key) != this->end();
-	LSValue::delete_temporary(this);
-	LSValue::delete_temporary(key);
-	return r;
-}
-template <>
-inline bool LSMap<LSValue*, double>::in(LSValue* key) const {
-	bool r = this->find(key) != this->end();
-	LSValue::delete_temporary(this);
-	LSValue::delete_temporary(key);
-	return r;
-}
-template <>
-inline bool LSMap<LSValue*, LSValue*>::in(LSValue* key) const {
-	bool r = this->find(key) != this->end();
-	LSValue::delete_temporary(this);
-	LSValue::delete_temporary(key);
+	ls::release(key);
 	return r;
 }
 
@@ -376,7 +354,6 @@ template <typename K2, typename T2>
 inline bool LSMap<K, T>::lt(const LSMap<K2, T2>* map) const {
 	auto i = this->begin();
 	auto j = map->begin();
-
 	for (; i != this->end(); ++i, ++j) {
 		if (j == map->end()) return false;
 
@@ -501,11 +478,6 @@ inline LSValue* LSMap<K, T>::clone() const {
 template <typename K, typename T>
 inline LSValue* LSMap<K, T>::getClass() const {
 	return LSMap<K, T>::map_class;
-}
-
-template <typename K, typename T>
-inline const BaseRawType* LSMap<K,T>::getRawType() const {
-	return RawType::MAP;
 }
 
 }

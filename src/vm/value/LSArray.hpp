@@ -21,7 +21,6 @@ public:
 	LSArray(std::initializer_list<T>);
 	LSArray(const std::vector<T>&);
 	LSArray(const LSArray<T>&);
-	LSArray(Json& data);
 
 	virtual ~LSArray();
 
@@ -45,13 +44,13 @@ public:
 	T ls_last();
 	T atv(const int i);
 	int* atLv(int i);
-	LSArray<LSValue*>* ls_map(LSFunction* function);
-	LSArray<int>* ls_map_int(LSFunction* function);
-	LSArray<double>* ls_map_real(LSFunction* function);
+	template <class R>
+	LSArray<R>* ls_map(LSFunction<R>* function);
+	//LSArray<T>* ls_map(LSFunction<T>* function);
 	LSArray<LSValue*>* ls_chunk(int size = 1);
 	LSArray<T>* ls_unique();
 	LSArray<T>* ls_sort();
-	void ls_iter(LSFunction* fun);
+	void ls_iter(LSFunction<LSValue*>* fun);
 	bool ls_contains(T val);
 	LSArray<T>* ls_push(T val);
 	LSArray<T>* ls_push_all_ptr(LSArray<LSValue*>* array);
@@ -59,13 +58,15 @@ public:
 	LSArray<T>* ls_push_all_flo(LSArray<double>* array);
 	LSArray<T>* ls_shuffle();
 	LSArray<T>* ls_reverse();
-	LSArray<T>* ls_filter(LSFunction* fun);
-	LSValue* ls_foldLeft(LSFunction* function, LSValue* initial);
-	LSValue* ls_foldRight(LSFunction* function, LSValue* initial);
+	LSArray<T>* ls_filter(LSFunction<bool>* fun);
+	template <class R>
+	R ls_foldLeft(LSFunction<R>* function, R initial);
+	template <class R>
+	R ls_foldRight(LSFunction<R>* function, R initial);
 	LSArray<T>* ls_insert(T value, int pos);
-	LSArray<LSValue*>* ls_partition(LSFunction* function);
-	LSArray<LSValue*>* ls_map2(LSArray<LSValue*>*, LSFunction* function);
-	LSArray<LSValue*>* ls_map2_int(LSArray<int>*, LSFunction* function);
+	LSArray<LSValue*>* ls_partition(LSFunction<bool>* function);
+	template <class R, class T2>
+	LSArray<R>* ls_map2(LSArray<T2>*, LSFunction<R>* function);
 	int ls_search(T needle, int start);
 	LSString* ls_join(LSString* glue);
 	LSArray<T>* ls_fill(T element, int size);
@@ -91,7 +92,7 @@ public:
 	LSValue* ls_add(LSArray<int>*) override;
 	LSValue* ls_add(LSArray<double>*) override;
 	LSValue* ls_add(LSObject*) override;
-	LSValue* ls_add(LSFunction*) override;
+	LSValue* ls_add(LSFunction<LSValue*>*) override;
 	LSValue* ls_add(LSClass*) override;
 
 	LSValue* ls_add_eq(LSNull*) override;
@@ -105,7 +106,7 @@ public:
 	LSValue* ls_add_eq(LSSet<int>*) override;
 	LSValue* ls_add_eq(LSSet<double>*) override;
 	LSValue* ls_add_eq(LSObject*) override;
-	LSValue* ls_add_eq(LSFunction*) override;
+	LSValue* ls_add_eq(LSFunction<LSValue*>*) override;
 	LSValue* ls_add_eq(LSClass*) override;
 
 	bool eq(const LSArray<LSValue*>*) const override;
@@ -128,13 +129,8 @@ public:
 
 	std::ostream& dump(std::ostream& os) const override;
 	std::string json() const override;
-
 	LSValue* clone() const override;
-
 	LSValue* getClass() const override;
-
-	virtual const BaseRawType* getRawType() const override;
-
 	int typeID() const override { return 5; }
 };
 

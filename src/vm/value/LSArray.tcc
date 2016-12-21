@@ -78,20 +78,6 @@ template <typename T>
 inline LSArray<T>::LSArray(const LSArray<T>& other) : LSValue(other), std::vector<T>(other) {
 }
 
-template <class T>
-LSArray<T>::LSArray(Json& json) {
-	for (Json::iterator it = json.begin(); it != json.end(); ++it) {
-		push_clone((T) LSValue::parse(it.value()));
-	}
-}
-
-template <>
-inline LSArray<int>::LSArray(Json& json) {
-	for (Json::iterator it = json.begin(); it != json.end(); ++it) {
-		push_clone(((LSNumber*) LSValue::parse(it.value()))->value);
-	}
-}
-
 template <typename T>
 int LSArray<T>::int_size() {
 	return this->size();
@@ -168,19 +154,9 @@ inline LSValue* LSArray<LSValue*>::ls_sum() {
 	return sum;
 }
 
-template <>
-inline int LSArray<int>::ls_sum() {
-	int sum = 0;
-	for (auto v : *this) {
-		sum += v;
-	}
-	if (refs == 0) delete this;
-	return sum;
-}
-
-template <>
-inline double LSArray<double>::ls_sum() {
-	double sum = 0;
+template <class T>
+T LSArray<T>::ls_sum() {
+	T sum = 0;
 	for (auto v : *this) {
 		sum += v;
 	}
@@ -204,16 +180,10 @@ inline double LSArray<LSValue*>::ls_average() {
 	return 0; // No average for a no integer array
 }
 
-template <>
-inline double LSArray<double>::ls_average() {
-	if (size() == 0) return 0;
-	return this->ls_sum() / size();
-}
-
-template <>
-inline double LSArray<int>::ls_average() {
-	if (size() == 0) return 0;
-	return (double) this->ls_sum() / size();
+template <class T>
+double LSArray<T>::ls_average() {
+	if (this->size() == 0) return 0;
+	return (double) this->ls_sum() / this->size();
 }
 
 template <>
@@ -235,6 +205,7 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 	}
 	return first->move(); /* return temporary */
 }
+
 template <class T>
 inline T LSArray<T>::ls_first() {
 	if (this->size() == 0) {
@@ -268,6 +239,7 @@ inline LSValue* LSArray<LSValue*>::ls_last() {
 	}
 	return last->move();
 }
+
 template <class T>
 inline T LSArray<T>::ls_last() {
 	if (this->size() == 0) {
@@ -306,6 +278,7 @@ inline LSValue* LSArray<LSValue*>::ls_pop() {
 	}
 	return last->move();
 }
+
 template <class T>
 inline T LSArray<T>::ls_pop() {
 	if (this->empty()) {
@@ -331,112 +304,27 @@ inline int LSArray<T>::ls_size() {
 	return s;
 }
 
-template <>
-inline LSArray<LSValue*>* LSArray<LSValue*>::ls_map(LSFunction* function) {
+template <class T>
+template <class R>
+LSArray<R>* LSArray<T>::ls_map(LSFunction<R>* function) {
 
-	auto fun = (LSValue* (*)(void*, void*)) function->function;
+	auto fun = (R (*)(void*, T)) function->function;
 
-	if (refs == 0) {
-		/* In that case we have the abolute ownership of `this`
-		 * Then instead of commit sucide, let optimize and work inplace
-		 */
-		for (size_t i = 0; i < size(); ++i) {
-			LSValue* v = fun(function, (*this)[i]);
-			LSValue::delete_ref((*this)[i]);
-			(*this)[i] = v->move_inc();
-		}
-		return this;
-	} else {
-		LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-		new_array->reserve(size());
-		for (auto v : *this) {
-			LSValue* c = v->clone();
-			new_array->push_move(fun(function, c));
-		}
-		return new_array;
-	}
-}
+	LSArray<R>* result = new LSArray<R>();
+	result->reserve(this->size());
 
-template <>
-inline LSArray<LSValue*>* LSArray<int>::ls_map(LSFunction* function) {
-
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	new_array->reserve(this->size());
-	auto fun = (LSValue* (*)(void*, int)) function->function;
+//	std::cout << this << std::endl;
 	for (auto v : *this) {
-		new_array->push_move(fun(function, v));
+//		std::cout << v << std::endl;
+		auto m = ls::clone(v);
+		R r = fun(function, m);
+//		std::cout << r << std::endl;
+		result->push_move(r);
+//		std::cout << m << std::endl;
+		//ls::unref(m);
 	}
-	if (refs == 0) {
-		/* No other possibilities than suicide
-		 * We have to delete temporary arguments that are not returned
-		 */
-		delete this;
-	}
-	return new_array;
-}
-template <>
-inline LSArray<LSValue*>* LSArray<double>::ls_map(LSFunction* function) {
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	new_array->reserve(this->size());
-	auto fun = (LSValue* (*)(void*, double)) function->function;
-	for (auto v : *this) {
-		new_array->push_move(fun(function, v));
-	}
-	if (refs == 0) delete this;
-	return new_array;
-}
-
-template <>
-inline LSArray<double>* LSArray<int>::ls_map_real(LSFunction* function) {
-	LSArray<double>* new_array = new LSArray<double>();
-	new_array->reserve(this->size());
-	auto fun = (double (*)(void*, int)) function->function;
-	for (auto v : *this) {
-		new_array->push_back(fun(function, v));
-	}
-	if (refs == 0) delete this;
-	return new_array;
-}
-template <>
-inline LSArray<double>* LSArray<double>::ls_map_real(LSFunction* function) {
-	LSArray<double>* new_array = new LSArray<double>();
-	new_array->reserve(this->size());
-	auto fun = (double (*)(void*, double)) function->function;
-	for (auto v : *this) {
-		new_array->push_back(fun(function, v));
-	}
-	if (refs == 0) delete this;
-	return new_array;
-}
-
-template <>
-inline LSArray<int>* LSArray<int>::ls_map_int(LSFunction* function) {
-	auto fun = (int (*)(void*, int)) function->function;
-
-	if (refs == 0) {
-		for (size_t i = 0; i < size(); ++i) {
-			(*this)[i] = fun(function, (*this)[i]);
-		}
-		return this;
-	} else {
-		LSArray<int>* new_array = new LSArray<int>();
-		new_array->reserve(this->size());
-		for (auto v : *this) {
-			new_array->push_back(fun(function, v));
-		}
-		return new_array;
-	}
-}
-template <>
-inline LSArray<int>* LSArray<double>::ls_map_int(LSFunction* function) {
-	LSArray<int>* new_array = new LSArray<int>();
-	new_array->reserve(this->size());
-	auto fun = (int (*)(void*, double)) function->function;
-	for (auto v : *this) {
-		new_array->push_inc(fun(function, v));
-	}
-	if (refs == 0) delete this;
-	return new_array;
+	ls::release(this);
+	return result;
 }
 
 template <typename T>
@@ -514,7 +402,7 @@ LSArray<T>* LSArray<T>::ls_sort() {
 }
 
 template <class T>
-void LSArray<T>::ls_iter(LSFunction* function) {
+void LSArray<T>::ls_iter(LSFunction<LSValue*>* function) {
 	auto fun = (void* (*)(void*, T)) function->function;
 	for (auto v : *this) {
 		fun(function, v);
@@ -670,7 +558,7 @@ inline LSArray<T>* LSArray<T>::ls_reverse() {
 }
 
 template <>
-inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(LSFunction* function) {
+inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(LSFunction<bool>* function) {
 	auto fun = (bool (*)(void*, void*)) function->function;
 
 	if (refs == 0) {
@@ -696,7 +584,7 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(LSFunction* function) {
 }
 
 template <class T>
-LSArray<T>* LSArray<T>::ls_filter(LSFunction* function) {
+LSArray<T>* LSArray<T>::ls_filter(LSFunction<bool>* function) {
 	auto fun = (bool (*)(void*, T)) function->function;
 	if (refs == 0) {
 		for (size_t i = 0; i < this->size(); ) {
@@ -719,9 +607,10 @@ LSArray<T>* LSArray<T>::ls_filter(LSFunction* function) {
 }
 
 template <class T>
-LSValue* LSArray<T>::ls_foldLeft(LSFunction* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, LSValue*, T)) function->function;
-	LSValue* result = v0->move();
+template <class R>
+R LSArray<T>::ls_foldLeft(LSFunction<R>* function, R v0) {
+	auto fun = (R (*)(void*, R, T)) function->function;
+	R result = ls::move(v0);
 	for (const auto& v : *this) {
 		result = fun(function, result, v);
 	}
@@ -730,9 +619,10 @@ LSValue* LSArray<T>::ls_foldLeft(LSFunction* function, LSValue* v0) {
 }
 
 template <class T>
-LSValue* LSArray<T>::ls_foldRight(LSFunction* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, T, LSValue*)) function->function;
-	LSValue* result = v0->move();
+template <class R>
+R LSArray<T>::ls_foldRight(LSFunction<R>* function, R v0) {
+	auto fun = (R (*)(void*, T, R)) function->function;
+	R result = ls::move(v0);
 	for (auto it = this->rbegin(); it != this->rend(); it++) {
 		result = fun(function, *it, result);
 	}
@@ -759,7 +649,7 @@ LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
 }
 
 template <class T>
-LSArray<LSValue*>* LSArray<T>::ls_partition(LSFunction* function) {
+LSArray<LSValue*>* LSArray<T>::ls_partition(LSFunction<bool>* function) {
 	LSArray<T>* array_true = new LSArray<T>();
 	LSArray<T>* array_false = new LSArray<T>();
 	auto fun = (bool (*)(void*, T)) function->function;
@@ -776,80 +666,25 @@ LSArray<LSValue*>* LSArray<T>::ls_partition(LSFunction* function) {
 	return new LSArray<LSValue*> {array_true, array_false};
 }
 
-template <>
-inline LSArray<LSValue*>* LSArray<LSValue*>::ls_map2(LSArray<LSValue*>* array, LSFunction* function) {
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	new_array->reserve(this->size());
-	auto fun = (void* (*)(void*, void*, void*)) function->function;
-
-	for (unsigned i = 0; i < this->size(); ++i) {
-		LSValue* v1 = this->operator [] (i);
-		LSValue* v2 = ((LSArray<LSValue*>*) array)->operator [] (i);
-		LSValue* res = (LSValue*) fun(function, v1, v2);
-		new_array->push_move(res);
+template <class T>
+template <class R, class T2>
+LSArray<R>* LSArray<T>::ls_map2(LSArray<T2>* array, LSFunction<R>* function) {
+	LSArray<R>* result = new LSArray<R>();
+	result->reserve(this->size());
+	auto fun = (R (*)(void*, T, T2)) function->function;
+	for (size_t i = 0; i < this->size(); ++i) {
+		T v1 = this->operator [] (i);
+		T2 v2 = array->operator [] (i);
+		R res = fun(function, v1, v2);
+		result->push_move(res);
 	}
-	if (refs == 0) delete this;
-	if (array->refs == 0) delete array;
-	return new_array;
-}
-
-template <>
-inline LSArray<LSValue*>* LSArray<int>::ls_map2(LSArray<LSValue*>* array, LSFunction* function) {
-
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	new_array->reserve(this->size());
-	auto fun = (void* (*)(void*, void*, void*)) function->function;
-
-	for (unsigned i = 0; i < this->size(); ++i) {
-		LSValue* v1 = LSNumber::get(this->operator [] (i));
-		LSValue* v2 = array->operator [] (i);
-		LSValue* res = (LSValue*) fun(function, v1, v2);
-		new_array->push_move(res);
-	}
-	if (refs == 0) delete this;
-	if (array->refs == 0) delete array;
-	return new_array;
-}
-
-template <>
-inline LSArray<LSValue*>* LSArray<LSValue*>::ls_map2_int(LSArray<int>* array, LSFunction* function) {
-
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	new_array->reserve(this->size());
-	auto fun = (void* (*)(void*, void*, int)) function->function;
-
-	for (unsigned i = 0; i < this->size(); ++i) {
-		LSValue* v1 = this->operator [] (i);
-		int v2 = array->operator [] (i);
-		LSValue* res = (LSValue*) fun(function, v1, v2);
-		new_array->push_move(res);
-	}
-	if (refs == 0) delete this;
-	if (array->refs == 0) delete array;
-	return new_array;
-}
-
-template <>
-inline LSArray<LSValue*>* LSArray<int>::ls_map2_int(LSArray<int>* array, LSFunction* function) {
-
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-	new_array->reserve(this->size());
-	auto fun = (void* (*)(void*, int, int)) function->function;
-
-	for (unsigned i = 0; i < this->size(); ++i) {
-		int v1 = this->operator [] (i);
-		int v2 = array->operator [] (i);
-		LSValue* res = (LSValue*) fun(function, v1, v2);
-		new_array->push_move(res);
-	}
-	if (refs == 0) delete this;
-	if (array->refs == 0) delete array;
-	return new_array;
+	ls::release(this);
+	ls::release(array);
+	return result;
 }
 
 template <>
 inline int LSArray<LSValue*>::ls_search(LSValue* needle, int start) {
-
 	for (size_t i = start; i < this->size(); i++) {
 		if (*needle == *(*this)[i]) {
 			if (refs == 0) delete this;
@@ -1019,6 +854,11 @@ LSValue* LSArray<T>::ls_not() {
 	bool r = this->size() == 0;
 	if (refs == 0) delete this;
 	return LSBoolean::get(r);
+}
+
+template <class T>
+LSValue* LSArray<T>::abso() const {
+	return LSNumber::get(this->size());
 }
 
 template <class T>
@@ -1245,7 +1085,7 @@ inline LSValue* LSArray<LSValue*>::ls_add(LSObject* v) {
 }
 
 template <typename T>
-LSValue* LSArray<T>::ls_add(LSFunction* v) {
+LSValue* LSArray<T>::ls_add(LSFunction<LSValue*>* v) {
 	LSArray<LSValue*>* r = new LSArray<LSValue*>();
 	for (auto v : *this) {
 		r->push_inc(LSNumber::get(v));
@@ -1256,7 +1096,7 @@ LSValue* LSArray<T>::ls_add(LSFunction* v) {
 }
 
 template <>
-inline LSValue* LSArray<LSValue*>::ls_add(LSFunction* v) {
+inline LSValue* LSArray<LSValue*>::ls_add(LSFunction<LSValue*>* v) {
 	if (refs == 0) {
 		push_move((LSValue*) v);
 		return this;
@@ -1542,12 +1382,12 @@ inline LSValue* LSArray<T>::ls_add_eq(LSObject* v) {
 }
 
 template <>
-inline LSValue* LSArray<LSValue*>::ls_add_eq(LSFunction* v) {
+inline LSValue* LSArray<LSValue*>::ls_add_eq(LSFunction<LSValue*>* v) {
 	push_move(v);
 	return this;
 }
 template <typename T>
-inline LSValue* LSArray<T>::ls_add_eq(LSFunction* v) {
+inline LSValue* LSArray<T>::ls_add_eq(LSFunction<LSValue*>* v) {
 	LSArray<LSValue*>* r = new LSArray<LSValue*>();
 	for (auto v : *this) {
 		r->push_inc(LSNumber::get(v));
@@ -1836,16 +1676,6 @@ inline std::string LSArray<LSValue*>::json() const {
 	return res + "]";
 }
 
-template <class T>
-LSValue* LSArray<T>::getClass() const {
-	return LSArray<T>::array_class;
-}
-
-template <class T>
-const BaseRawType* LSArray<T>::getRawType() const {
-	return RawType::ARRAY;
-}
-
 template <>
 inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
 	int index;
@@ -1906,8 +1736,8 @@ LSValue** LSArray<T>::atL(const LSValue* key) {
 }
 
 template <class T>
-LSValue* LSArray<T>::abso() const {
-	return LSNumber::get(this->size());
+LSValue* LSArray<T>::getClass() const {
+	return LSArray<T>::array_class;
 }
 
 } // end of namespace ls

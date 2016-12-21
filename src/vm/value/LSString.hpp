@@ -33,12 +33,11 @@ public:
 	/*
 	 * LSValue methods
 	 */
+	LSVALUE_OPERATORS
 	bool isTrue() const override;
 
 	LSValue* ls_not() override;
 	LSValue* ls_tilde() override;
-
-	LSVALUE_OPERATORS
 
 	LSValue* ls_add(LSNull*) override;
 	LSValue* ls_add(LSBoolean*) override;
@@ -47,7 +46,7 @@ public:
 	LSValue* ls_add(LSArray<LSValue*>*) override;
 	LSValue* ls_add(LSArray<int>*) override;
 	LSValue* ls_add(LSObject*) override;
-	LSValue* ls_add(LSFunction*) override;
+	LSValue* ls_add(LSFunction<LSValue*>*) override;
 	LSValue* ls_add(LSClass*) override;
 
 	LSValue* ls_add_eq(LSNull*) override;
@@ -57,7 +56,7 @@ public:
 	LSValue* ls_add_eq(LSArray<LSValue*>*) override;
 	LSValue* ls_add_eq(LSArray<int>*) override;
 	LSValue* ls_add_eq(LSObject*) override;
-	LSValue* ls_add_eq(LSFunction*) override;
+	LSValue* ls_add_eq(LSFunction<LSValue*>*) override;
 	LSValue* ls_add_eq(LSClass*) override;
 
 	LSValue* ls_mul(LSNumber*) override;
@@ -82,10 +81,7 @@ public:
 	std::string escaped(char quote) const;
 
 	LSValue* getClass() const override;
-
 	int typeID() const override { return 4; }
-
-	virtual const BaseRawType* getRawType() const override;
 };
 
 }

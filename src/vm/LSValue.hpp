@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <map>
 
+#include "../constants.h"
 #include "../../lib/json.hpp"
 #include "Type.hpp"
 
@@ -19,7 +20,7 @@ class LSString;
 template <typename T> class LSArray;
 template <typename K, typename T> class LSMap;
 template <typename T> class LSSet;
-class LSFunction;
+template <class T> class LSFunction;
 class LSObject;
 class LSClass;
 class Context;
@@ -47,7 +48,7 @@ public:
 	static int obj_count;
 	static int obj_deleted;
 	#if DEBUG_LEAKS_DETAILS
-		static std::map<void*, LSValue*> & objs() {
+		static std::map<void*, LSValue*>& objs() {
 			static std::map<void*, LSValue*> objs;
 			return objs;
 		}
@@ -91,7 +92,7 @@ public:
 	virtual LSValue* ls_add(LSSet<int>*);
 	virtual LSValue* ls_add(LSSet<double>*);
 	virtual LSValue* ls_add(LSObject*);
-	virtual LSValue* ls_add(LSFunction*);
+	virtual LSValue* ls_add(LSFunction<LSValue*>*);
 	virtual LSValue* ls_add(LSClass*);
 
 	LSValue* ls_add_eq(LSValue* value) {
@@ -115,7 +116,7 @@ public:
 	virtual LSValue* ls_add_eq(LSSet<int>*);
 	virtual LSValue* ls_add_eq(LSSet<double>*);
 	virtual LSValue* ls_add_eq(LSObject*);
-	virtual LSValue* ls_add_eq(LSFunction*);
+	virtual LSValue* ls_add_eq(LSFunction<LSValue*>*);
 	virtual LSValue* ls_add_eq(LSClass*);
 
 	LSValue* ls_sub(LSValue* value) {
@@ -139,7 +140,7 @@ public:
 	virtual LSValue* ls_sub(LSSet<int>*);
 	virtual LSValue* ls_sub(LSSet<double>*);
 	virtual LSValue* ls_sub(LSObject*);
-	virtual LSValue* ls_sub(LSFunction*);
+	virtual LSValue* ls_sub(LSFunction<LSValue*>*);
 	virtual LSValue* ls_sub(LSClass*);
 
 	LSValue* ls_sub_eq(LSValue* value) {
@@ -163,7 +164,7 @@ public:
 	virtual LSValue* ls_sub_eq(LSSet<int>*);
 	virtual LSValue* ls_sub_eq(LSSet<double>*);
 	virtual LSValue* ls_sub_eq(LSObject*);
-	virtual LSValue* ls_sub_eq(LSFunction*);
+	virtual LSValue* ls_sub_eq(LSFunction<LSValue*>*);
 	virtual LSValue* ls_sub_eq(LSClass*);
 
 	LSValue* ls_mul(LSValue* value) {
@@ -187,7 +188,7 @@ public:
 	virtual LSValue* ls_mul(LSSet<int>*);
 	virtual LSValue* ls_mul(LSSet<double>*);
 	virtual LSValue* ls_mul(LSObject*);
-	virtual LSValue* ls_mul(LSFunction*);
+	virtual LSValue* ls_mul(LSFunction<LSValue*>*);
 	virtual LSValue* ls_mul(LSClass*);
 
 	LSValue* ls_mul_eq(LSValue* value) {
@@ -211,7 +212,7 @@ public:
 	virtual LSValue* ls_mul_eq(LSSet<int>*);
 	virtual LSValue* ls_mul_eq(LSSet<double>*);
 	virtual LSValue* ls_mul_eq(LSObject*);
-	virtual LSValue* ls_mul_eq(LSFunction*);
+	virtual LSValue* ls_mul_eq(LSFunction<LSValue*>*);
 	virtual LSValue* ls_mul_eq(LSClass*);
 
 	LSValue* ls_div(LSValue* value) {
@@ -235,7 +236,7 @@ public:
 	virtual LSValue* ls_div(LSSet<int>*);
 	virtual LSValue* ls_div(LSSet<double>*);
 	virtual LSValue* ls_div(LSObject*);
-	virtual LSValue* ls_div(LSFunction*);
+	virtual LSValue* ls_div(LSFunction<LSValue*>*);
 	virtual LSValue* ls_div(LSClass*);
 
 	LSValue* ls_int_div(LSValue* value) {
@@ -259,7 +260,7 @@ public:
 	virtual LSValue* ls_int_div(LSSet<int>*);
 	virtual LSValue* ls_int_div(LSSet<double>*);
 	virtual LSValue* ls_int_div(LSObject*);
-	virtual LSValue* ls_int_div(LSFunction*);
+	virtual LSValue* ls_int_div(LSFunction<LSValue*>*);
 	virtual LSValue* ls_int_div(LSClass*);
 
 	LSValue* ls_div_eq(LSValue* value) {
@@ -283,7 +284,7 @@ public:
 	virtual LSValue* ls_div_eq(LSSet<int>*);
 	virtual LSValue* ls_div_eq(LSSet<double>*);
 	virtual LSValue* ls_div_eq(LSObject*);
-	virtual LSValue* ls_div_eq(LSFunction*);
+	virtual LSValue* ls_div_eq(LSFunction<LSValue*>*);
 	virtual LSValue* ls_div_eq(LSClass*);
 
 	LSValue* ls_pow(LSValue* value) {
@@ -307,7 +308,7 @@ public:
 	virtual LSValue* ls_pow(LSSet<int>*);
 	virtual LSValue* ls_pow(LSSet<double>*);
 	virtual LSValue* ls_pow(LSObject*);
-	virtual LSValue* ls_pow(LSFunction*);
+	virtual LSValue* ls_pow(LSFunction<LSValue*>*);
 	virtual LSValue* ls_pow(LSClass*);
 
 	LSValue* ls_pow_eq(LSValue* value) {
@@ -331,7 +332,7 @@ public:
 	virtual LSValue* ls_pow_eq(LSSet<int>*);
 	virtual LSValue* ls_pow_eq(LSSet<double>*);
 	virtual LSValue* ls_pow_eq(LSObject*);
-	virtual LSValue* ls_pow_eq(LSFunction*);
+	virtual LSValue* ls_pow_eq(LSFunction<LSValue*>*);
 	virtual LSValue* ls_pow_eq(LSClass*);
 
 	LSValue* ls_mod(LSValue* value) {
@@ -355,7 +356,7 @@ public:
 	virtual LSValue* ls_mod(LSSet<int>*);
 	virtual LSValue* ls_mod(LSSet<double>*);
 	virtual LSValue* ls_mod(LSObject*);
-	virtual LSValue* ls_mod(LSFunction*);
+	virtual LSValue* ls_mod(LSFunction<LSValue*>*);
 	virtual LSValue* ls_mod(LSClass*);
 
 	LSValue* ls_mod_eq(LSValue* value) {
@@ -379,7 +380,7 @@ public:
 	virtual LSValue* ls_mod_eq(LSSet<int>*);
 	virtual LSValue* ls_mod_eq(LSSet<double>*);
 	virtual LSValue* ls_mod_eq(LSObject*);
-	virtual LSValue* ls_mod_eq(LSFunction*);
+	virtual LSValue* ls_mod_eq(LSFunction<LSValue*>*);
 	virtual LSValue* ls_mod_eq(LSClass*);
 
 	bool operator == (const LSValue& value) const {
@@ -408,7 +409,7 @@ public:
 	virtual bool eq(const LSSet<LSValue*>*) const;
 	virtual bool eq(const LSSet<int>*) const;
 	virtual bool eq(const LSSet<double>*) const;
-	virtual bool eq(const LSFunction*) const;
+	virtual bool eq(const LSFunction<LSValue*>*) const;
 	virtual bool eq(const LSObject*) const;
 	virtual bool eq(const LSClass*) const;
 
@@ -444,11 +445,11 @@ public:
 	virtual bool lt(const LSSet<LSValue*>*) const;
 	virtual bool lt(const LSSet<int>*) const;
 	virtual bool lt(const LSSet<double>*) const;
-	virtual bool lt(const LSFunction*) const;
+	virtual bool lt(const LSFunction<LSValue*>*) const;
 	virtual bool lt(const LSObject*) const;
 	virtual bool lt(const LSClass*) const;
 
-	virtual bool in(LSValue*) const { return false; }
+	virtual bool in(const LSValue*) const { return false; }
 
 	virtual LSValue* at(const LSValue* key) const;
 	virtual LSValue** atL(const LSValue* key);
@@ -463,12 +464,11 @@ public:
 
 	virtual std::ostream& print(std::ostream&) const;
 	virtual std::ostream& dump(std::ostream&) const = 0;
-	virtual std::string json() const = 0;
-	std::string to_json() const;
+	virtual std::string json() const;
 
 	LSString* ls_json();
 
-	virtual LSValue* clone() const = 0;
+	virtual LSValue* clone() const;
 	LSValue* clone_inc();
 	LSValue* move();
 	LSValue* move_inc();
@@ -478,8 +478,6 @@ public:
 	bool isInteger() const;
 
 	virtual int typeID() const = 0;
-
-	virtual const BaseRawType* getRawType() const = 0;
 
 	static LSValue* parse(Json& json);
 	static LSValue* get_from_json(Json& json);
@@ -501,19 +499,24 @@ inline LSValue* LSValue::clone_inc() {
 inline LSValue* LSValue::move() {
 	if (native) {
 		return this;
-	} else {
-		if (refs == 0) {
-			return this;
-		}
-		return clone();
 	}
+	if (refs == 0) {
+		return this;
+	}
+	return clone();
 }
 
 inline LSValue* LSValue::move_inc() {
-	if (!native) {
+	if (native) {
+		return this;
+	} else if (refs == 0) {
 		refs++;
+		return this;
+	} else {
+		LSValue* copy = clone();
+		copy->refs++;
+		return copy;
 	}
-	return this;
 }
 
 inline void LSValue::delete_ref(LSValue* value) {
@@ -551,7 +554,7 @@ namespace ls {
 	}
 	template <>
 	inline std::string to_json(LSValue* v) {
-		return v->to_json();
+		return v->json();
 	}
 	template <typename T>
 	bool equals(const T v1, const T v2);
@@ -562,6 +565,46 @@ namespace ls {
 	template <typename T>
 	bool equals(const T v1, const T v2) {
 		return v1 == v2;
+	}
+
+	template <class T> void release(T) {}
+	template <> inline void release(LSValue* v) {
+		LSValue::delete_temporary(v);
+	}
+	template <> inline void release(const LSValue* v) {
+		LSValue::delete_temporary(v);
+	}
+
+	template <class T> void unref(T v) {}
+	template <> inline void unref(LSValue* v) {
+		LSValue::delete_ref(v);
+	}
+	template <> inline void unref(const LSValue* v) {
+		LSValue::delete_ref((LSValue*) v);
+	}
+
+	template <class T> T move(T v) { return v; }
+	template <> inline LSValue* move(LSValue* v) {
+		return v->move();
+	}
+	template <> inline const LSValue* move(const LSValue* v) {
+		return ((LSValue*) v)->move();
+	}
+
+	template <class T> T move_inc(T v) { return v; }
+	template <> inline LSValue* move_inc(LSValue* v) {
+		return v->move_inc();
+	}
+	template <> inline const LSValue* move_inc(const LSValue* v) {
+		return ((LSValue*) v)->move_inc();
+	}
+
+	template <class T> T clone(T v) { return v; }
+	template <> inline LSValue* clone(LSValue* v) {
+		return v->clone();
+	}
+	template <> inline const LSValue* clone(const LSValue* v) {
+		return ((LSValue*) v)->clone();
 	}
 }
 

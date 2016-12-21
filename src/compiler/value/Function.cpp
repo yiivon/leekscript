@@ -99,7 +99,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type.nature = req_type.nature;
 	}
 	if (ls_fun == nullptr) {
-		ls_fun = new LSFunction(nullptr);
+		ls_fun = new LSFunction<LSValue*>(nullptr);
 		ls_fun->return_type = LSNull::get();
 	}
 	update_function_args(analyser);

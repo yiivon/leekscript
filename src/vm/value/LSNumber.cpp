@@ -434,8 +434,4 @@ LSValue* LSNumber::getClass() const {
 	return LSNumber::number_class;
 }
 
-const BaseRawType* LSNumber::getRawType() const {
-	return RawType::INTEGER;
-}
-
 }

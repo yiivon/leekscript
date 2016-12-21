@@ -86,6 +86,7 @@ LSValue* LSString::ls_add(LSNull*) {
 	}
 	return new LSString(*this + "null");
 }
+
 LSValue* LSString::ls_add(LSBoolean* boolean) {
 	if (refs == 0) {
 		this->append(boolean->value ? "true" : "false");
@@ -93,6 +94,7 @@ LSValue* LSString::ls_add(LSBoolean* boolean) {
 	}
 	return new LSString(*this + (boolean->value ? "true" : "false"));
 }
+
 LSValue* LSString::ls_add(LSNumber* value) {
 	if (refs == 0) {
 		this->append(value->toString());
@@ -103,6 +105,7 @@ LSValue* LSString::ls_add(LSNumber* value) {
 	if (value->refs == 0) delete value;
 	return r;
 }
+
 LSValue* LSString::ls_add(LSString* string) {
 	if (refs == 0) {
 		this->append(*string);
@@ -113,6 +116,7 @@ LSValue* LSString::ls_add(LSString* string) {
 	if (string->refs == 0) delete string;
 	return r;
 }
+
 LSValue* LSString::ls_add(LSArray<LSValue*>* array) {
 	if (refs == 0) {
 		this->append("<array>");
@@ -123,6 +127,7 @@ LSValue* LSString::ls_add(LSArray<LSValue*>* array) {
 	if (array->refs == 0) delete array;
 	return r;
 }
+
 LSValue* LSString::ls_add(LSArray<int>* array) {
 	if (refs == 0) {
 		this->append("<array>");
@@ -133,6 +138,7 @@ LSValue* LSString::ls_add(LSArray<int>* array) {
 	if (array->refs == 0) delete array;
 	return r;
 }
+
 LSValue* LSString::ls_add(LSObject* object) {
 	if (refs == 0) {
 		this->append("<object>");
@@ -143,7 +149,8 @@ LSValue* LSString::ls_add(LSObject* object) {
 	if (object->refs == 0) delete object;
 	return r;
 }
-LSValue* LSString::ls_add(LSFunction* function) {
+
+LSValue* LSString::ls_add(LSFunction<LSValue*>* function) {
 	if (refs == 0) {
 		this->append("<function>");
 		if (function->refs == 0) delete function;
@@ -153,6 +160,7 @@ LSValue* LSString::ls_add(LSFunction* function) {
 	if (function->refs == 0) delete function;
 	return r;
 }
+
 LSValue* LSString::ls_add(LSClass*) {
 	if (refs == 0) {
 		this->append("<class>");
@@ -195,7 +203,7 @@ LSValue* LSString::ls_add_eq(LSObject* object) {
 	if (object->refs == 0) delete object;
 	return this;
 }
-LSValue* LSString::ls_add_eq(LSFunction* function) {
+LSValue* LSString::ls_add_eq(LSFunction<LSValue*>* function) {
 	append("<function>");
 	LSValue::delete_temporary(function);
 	return this;
@@ -383,10 +391,6 @@ std::ostream& operator << (std::ostream& os, const LSString& obj) {
 
 LSValue* LSString::getClass() const {
 	return LSString::string_class;
-}
-
-const BaseRawType* LSString::getRawType() const {
-	return RawType::STRING;
 }
 
 }

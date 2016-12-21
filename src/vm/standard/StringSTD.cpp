@@ -18,7 +18,7 @@ bool string_contains(LSString* haystack, LSString* needle);
 bool string_endsWith(LSString* string, LSString* ending);
 int string_indexOf(LSString* haystack, LSString* needle);
 int string_length(LSString* string);
-LSString* string_map(LSString* string, LSFunction* fun);
+LSString* string_map(LSString* string, LSFunction<LSValue*>* fun);
 int string_size(LSString* string);
 LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter);
 bool string_startsWith(const LSString* string, const LSString* starting);
@@ -153,7 +153,7 @@ int string_length(LSString* string) {
 	return r;
 }
 
-LSString* string_map(LSString* s, LSFunction* function) {
+LSString* string_map(LSString* s, LSFunction<LSValue*>* function) {
 
 	char buff[5];
 	LSValue* r = new LSString();

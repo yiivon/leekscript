@@ -53,8 +53,6 @@ public:
 	LSValue* getClass() const override;
 
 	int typeID() const override { return 2; }
-
-	virtual const BaseRawType* getRawType() const override;
 };
 
 }

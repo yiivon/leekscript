@@ -81,20 +81,30 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	Type map_int_fun_type = Type::FUNCTION_P;
 	map_int_fun_type.setArgumentType(0, Type::INTEGER);
-	map_int_fun_type.setReturnType(Type::POINTER);
+	map_int_fun_type.setReturnType(Type::INTEGER);
+
+	Type map_int_ptr_fun_type = Type::FUNCTION_P;
+	map_int_ptr_fun_type.setArgumentType(0, Type::INTEGER);
+	map_int_ptr_fun_type.setReturnType(Type::POINTER);
 
 	Type map_real_fun_type = Type::FUNCTION_P;
 	map_real_fun_type.setArgumentType(0, Type::REAL);
-	map_real_fun_type.setReturnType(Type::POINTER);
+	map_real_fun_type.setReturnType(Type::REAL);
 
 	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::POINTER);
 	map_fun_type.setReturnType(Type::POINTER);
 
+	auto map_ptr = &LSArray<LSValue*>::ls_map<LSValue*>;
+	auto map_real = &LSArray<double>::ls_map<double>;
+	auto map_int = &LSArray<int>::ls_map<int>;
+	auto map_int_ptr = &LSArray<int>::ls_map<LSValue*>;
+
 	method("map", {
-		{Type::PTR_ARRAY, Type::PTR_ARRAY, {map_fun_type}, (void*) &LSArray<LSValue*>::ls_map},
-		{Type::INT_ARRAY, Type::PTR_ARRAY, {map_int_fun_type}, (void*) &LSArray<int>::ls_map},
-		{Type::REAL_ARRAY, Type::PTR_ARRAY, {map_real_fun_type}, (void*) &LSArray<double>::ls_map}
+		{Type::PTR_ARRAY, Type::PTR_ARRAY, {map_fun_type}, (void*) map_ptr},
+		{Type::INT_ARRAY, Type::PTR_ARRAY, {map_int_ptr_fun_type}, (void*) map_int_ptr},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {map_int_fun_type}, (void*) map_int},
+		{Type::REAL_ARRAY, Type::REAL_ARRAY, {map_real_fun_type}, (void*) map_real}
 	});
 
 	method("chunk", {
@@ -128,9 +138,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 	map2_fun_type_int.setArgumentType(1, Type::INTEGER);
 	map2_fun_type_int.setReturnType(Type::POINTER);
 
+	auto map2_ptr_ptr = &LSArray<LSValue*>::ls_map2<LSValue*, LSValue*>;
+	auto map2_ptr_int = &LSArray<LSValue*>::ls_map2<LSValue*, int>;
+
 	method("map2", {
-		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::PTR_ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::ls_map2},
-		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::ls_map2_int},
+		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::PTR_ARRAY, map2_fun_type}, (void*) map2_ptr_ptr},
+		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::INT_ARRAY, map2_fun_type_int}, (void*) map2_ptr_int},
 	});
 
 	Type iter_fun_type = Type::FUNCTION_P;
@@ -210,10 +223,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_fun_type_int.setArgumentType(0, Type::POINTER);
 	fold_fun_type_int.setArgumentType(1, Type::INTEGER);
 	fold_fun_type_int.setReturnType(Type::POINTER);
+
+	auto fold_left_ptr = &LSArray<LSValue*>::ls_foldLeft<LSValue*>;
+	auto fold_left_int = &LSArray<int>::ls_foldLeft<int>;
+	auto fold_left_real = &LSArray<double>::ls_foldLeft<double>;
+
 	method("foldLeft", {
-		{Type::PTR_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldLeft},
-		{Type::REAL_ARRAY, Type::POINTER, {fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldLeft},
-		{Type::INT_ARRAY, Type::POINTER, {fold_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldLeft},
+		{Type::PTR_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) fold_left_ptr},
+		{Type::REAL_ARRAY, Type::POINTER, {fold_fun_type_float, Type::POINTER}, (void*) fold_left_real},
+		{Type::INT_ARRAY, Type::POINTER, {fold_fun_type_int, Type::POINTER}, (void*) fold_left_int},
 	});
 
 	Type fold_right_fun_type = Type::FUNCTION_P;
@@ -228,10 +246,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_right_fun_type_int.setArgumentType(0, Type::INTEGER);
 	fold_right_fun_type_int.setArgumentType(1, Type::POINTER);
 	fold_right_fun_type_int.setReturnType(Type::POINTER);
+
+	auto fold_right_ptr = &LSArray<LSValue*>::ls_foldRight<LSValue*>;
+	auto fold_right_int = &LSArray<int>::ls_foldRight<int>;
+	auto fold_right_real = &LSArray<double>::ls_foldRight<double>;
+
 	method("foldRight", {
-		{Type::PTR_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
-		{Type::REAL_ARRAY, Type::POINTER, {fold_right_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
-		{Type::INT_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &LSArray<int>::ls_foldRight},
+		{Type::PTR_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &fold_right_ptr},
+		{Type::REAL_ARRAY, Type::POINTER, {fold_right_fun_type_float, Type::POINTER}, (void*) &fold_right_real},
+		{Type::INT_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &fold_right_int},
 	});
 
 	method("search", {
@@ -344,13 +367,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("map", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, map_fun_type}, (void*) &LSArray<LSValue*>::ls_map},
-		{Type::PTR_ARRAY, {Type::INT_ARRAY, map_int_fun_type}, (void*) &LSArray<int>::ls_map},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, map_fun_type}, (void*) map_ptr},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, map_int_fun_type}, (void*) map_int}
 	});
 
 	static_method("map2", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::PTR_ARRAY, map2_fun_type}, (void*) &LSArray<LSValue*>::ls_map2},
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::INT_ARRAY, map2_fun_type_int}, (void*) &LSArray<LSValue*>::ls_map2_int},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::PTR_ARRAY, map2_fun_type}, (void*) map2_ptr_ptr},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::INT_ARRAY, map2_fun_type_int}, (void*) map2_ptr_int},
 	});
 
 	static_method("iter", {
@@ -396,15 +419,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	static_method("foldLeft", {
-		{Type::POINTER, {Type::PTR_ARRAY, fold_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldLeft},
-		{Type::POINTER, {Type::REAL_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldLeft},
-		{Type::POINTER, {Type::INT_ARRAY, fold_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldLeft}
+		{Type::POINTER, {Type::PTR_ARRAY, fold_fun_type, Type::POINTER}, (void*) fold_left_ptr},
+		{Type::POINTER, {Type::REAL_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) fold_left_real},
+		{Type::POINTER, {Type::INT_ARRAY, fold_fun_type_int, Type::POINTER}, (void*) fold_left_int}
 	});
 
 	static_method("foldRight", {
-		{Type::POINTER, {Type::PTR_ARRAY, fold_right_fun_type, Type::POINTER}, (void*) &LSArray<LSValue*>::ls_foldRight},
-		{Type::POINTER, {Type::REAL_ARRAY, fold_right_fun_type_float, Type::POINTER}, (void*) &LSArray<double>::ls_foldRight},
-		{Type::POINTER, {Type::INT_ARRAY, fold_right_fun_type_int, Type::POINTER}, (void*) &LSArray<int>::ls_foldRight}
+		{Type::POINTER, {Type::PTR_ARRAY, fold_right_fun_type, Type::POINTER}, (void*) fold_right_ptr},
+		{Type::POINTER, {Type::REAL_ARRAY, fold_right_fun_type_float, Type::POINTER}, (void*) fold_right_real},
+		{Type::POINTER, {Type::INT_ARRAY, fold_right_fun_type_int, Type::POINTER}, (void*) fold_right_int}
 	});
 
 	static_method("shuffle", {

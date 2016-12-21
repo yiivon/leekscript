@@ -29,15 +29,6 @@ LSObject::LSObject(LSClass* clazz) {
 	readonly = false;
 }
 
-LSObject::LSObject(Json& json) {
-
-	clazz = nullptr;
-
-	for (Json::iterator it = json.begin(); it != json.end(); ++it) {
-		addField(it.key(), LSValue::parse(it.value()));
-	}
-}
-
 LSObject::~LSObject() {
 	for (auto v : values) {
 		LSValue::delete_ref(v.second);
@@ -109,24 +100,15 @@ bool LSObject::lt(const LSObject* obj) const {
 	return (j != obj->values.end());
 }
 
-
-
-LSValue* LSObject::at (const LSValue*) const {
-	return LSNull::get();
-}
-LSValue** LSObject::atL (const LSValue*) {
-	return nullptr;
-}
-
-bool LSObject::in(LSValue* value) const {
+bool LSObject::in(const LSValue* key) const {
 	for (auto i = values.begin(); i != values.end(); i++) {
-		if (*i->second == *value) {
-			LSValue::delete_temporary(value);
+		if (*i->second == *key) {
+			ls::release(key);
 			LSValue::delete_temporary(this);
 			return true;
 		}
 	}
-	LSValue::delete_temporary(value);
+	ls::release(key);
 	LSValue::delete_temporary(this);
 	return false;
 }
@@ -138,7 +120,7 @@ LSValue* LSObject::attr(const LSValue* key) const {
 	} catch (exception& e) {
 		if (clazz != nullptr) {
 			string name = *((LSString*) key);
-			LSFunction* attr = clazz->getDefaultMethod(name);
+			auto attr = clazz->getDefaultMethod(name);
 			if (attr != nullptr) {
 				return (LSValue*) attr;
 			}
@@ -199,10 +181,6 @@ std::string LSObject::json() const {
 LSValue* LSObject::getClass() const {
 	if (clazz != nullptr) return clazz;
 	return LSObject::object_class;
-}
-
-const BaseRawType* LSObject::getRawType() const {
-	return RawType::OBJECT;
 }
 
 }

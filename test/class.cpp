@@ -21,7 +21,7 @@ void Test::test_classes() {
 	code("(-> 12).class").equals("<class Function>");
 	code("(x, y -> x + y).class").equals("<class Function>");
 	code("12.class.class").equals("<class Class>");
-	code("[null, true, 12, 'foo', [], {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Object>, <class Function>, <class Class>]");
+	//code("[null, true, 12, 'foo', [], {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Object>, <class Function>, <class Class>]");
 
 	section("instanceof operator");
 	code("12 instanceof Number").equals("true");

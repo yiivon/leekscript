@@ -11,7 +11,7 @@ struct lsmap_less {
 	bool operator() (K lhs, K rhs) const;
 };
 
-template <typename K = LSValue*, typename T = LSValue*>
+template <typename K, typename T>
 class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
 public:
 	static LSValue* map_class;
@@ -53,7 +53,6 @@ public:
 	virtual LSValue* clone() const override;
 	virtual LSValue* getClass() const override;
 	virtual int typeID() const override { return 6; }
-	virtual const BaseRawType* getRawType() const override;
 };
 
 }

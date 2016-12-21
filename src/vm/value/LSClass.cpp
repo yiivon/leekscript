@@ -11,8 +11,6 @@ namespace ls {
 
 LSValue* LSClass::class_class(new LSClass("Class"));
 
-LSClass::LSClass() : LSClass("?") {}
-
 LSClass::LSClass(string name) : name(name) {
 	parent = nullptr;
 	refs = 1;
@@ -44,7 +42,7 @@ void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
 	static_methods.insert({name, method});
 
 	// Add first implementation as default method
-	LSFunction* fun = new LSFunction(method[0].addr);
+	auto fun = new LSFunction<LSValue*>(method[0].addr);
 	static_fields.insert({name, ModuleStaticField(name, Type::FUNCTION_P, fun)});
 }
 
@@ -105,13 +103,13 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 	}
 }
 
-LSFunction* LSClass::getDefaultMethod(string& name) {
+LSFunction<LSValue*>* LSClass::getDefaultMethod(string& name) {
 	try {
 		return default_methods.at(name);
 	} catch (...) {
 		try {
 			vector<Method>& impl = methods.at(name);
-			LSFunction* fun = new LSFunction(impl[0].addr);
+			auto fun = new LSFunction<LSValue*>(impl[0].addr);
 			default_methods.insert({name, fun});
 			return fun;
 		} catch (...) {}
@@ -143,25 +141,15 @@ LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type&
 }
 
 bool LSClass::isTrue() const {
-	return false;
+	return true;
 }
 
-bool LSClass::eq(const LSClass*) const {
-	return false;
+bool LSClass::eq(const LSClass* clazz) const {
+	return clazz->name == this->name;
 }
 
-bool LSClass::lt(const LSClass*) const {
-	return false;
-}
-
-
-
-LSValue* LSClass::at(const LSValue*) const {
-	return LSNull::get();
-}
-
-LSValue** LSClass::atL(const LSValue*) {
-	return nullptr;
+bool LSClass::lt(const LSClass* clazz) const {
+	return this->name < clazz->name;
 }
 
 LSValue* LSClass::attr(const LSValue* key) const {
@@ -177,29 +165,17 @@ LSValue* LSClass::attr(const LSValue* key) const {
 	return LSNull::get();
 }
 
-LSValue** LSClass::attrL(const LSValue*) {
-	return nullptr;
-}
-
-LSValue* LSClass::clone() const {
-	return new LSClass(name);
-}
-
 std::ostream& LSClass::dump(std::ostream& os) const {
 	os << "<class " << name << ">";
 	return os;
 }
 
 string LSClass::json() const {
-	return "class";
+	return "\"<class " + name + ">\"";
 }
 
 LSValue* LSClass::getClass() const {
 	return LSClass::class_class;
-}
-
-const BaseRawType* LSClass::getRawType() const {
-	return RawType::CLASS;
 }
 
 }

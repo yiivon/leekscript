@@ -118,8 +118,6 @@ public:
 	bool isInteger() const;
 
 	int typeID() const override { return 3; }
-
-	virtual const BaseRawType* getRawType() const override;
 };
 
 }

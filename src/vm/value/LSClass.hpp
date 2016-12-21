@@ -37,11 +37,10 @@ public:
 	std::map<std::string, std::vector<StaticMethod>> static_methods;
 	std::map<std::string, ModuleStaticField> static_fields;
 	std::map<std::string, std::vector<Operator>> operators;
-	std::map<std::string, LSFunction*> default_methods;
+	std::map<std::string, LSFunction<LSValue*>*> default_methods;
 
 	static LSValue* class_class;
 
-	LSClass();
 	LSClass(std::string);
 	LSClass(std::string, int refs);
 	LSClass(Json&);
@@ -56,7 +55,7 @@ public:
 
 	Method* getMethod(std::string&, Type obj_type, std::vector<Type>&);
 	void addStaticMethod(std::string& name, std::vector<StaticMethod> method);
-	LSFunction* getDefaultMethod(std::string& name);
+	LSFunction<LSValue*>* getDefaultMethod(std::string& name);
 	StaticMethod* getStaticMethod(std::string&, std::vector<Type>&);
 	Operator* getOperator(std::string& name, Type& object_type, Type& operand_type);
 
@@ -67,14 +66,7 @@ public:
 	bool eq(const LSClass*) const override;
 	bool lt(const LSClass*) const override;
 
-
-	LSValue* at (const LSValue* value) const override;
-	LSValue** atL (const LSValue* value) override;
-
 	LSValue* attr(const LSValue* key) const override;
-	LSValue** attrL(const LSValue* key) override;
-
-	LSValue* clone() const;
 
 	std::ostream& dump(std::ostream& os) const;
 	std::string json() const override;
@@ -82,8 +74,6 @@ public:
 	LSValue* getClass() const override;
 
 	int typeID() const override { return 10; }
-
-	virtual const BaseRawType* getRawType() const override;
 };
 
 }

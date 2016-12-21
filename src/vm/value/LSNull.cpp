@@ -20,10 +20,6 @@ LSNull::LSNull() {
 
 LSNull::~LSNull() {}
 
-LSValue* LSNull::clone() const {
-	return LSNull::get();
-}
-
 bool LSNull::isTrue() const {
 	return false;
 }
@@ -40,16 +36,9 @@ std::ostream& LSNull::dump(std::ostream& os) const {
 	os << "null";
 	return os;
 }
-string LSNull::json() const {
-	return "\"1|null\"";
-}
 
 LSValue* LSNull::getClass() const {
 	return LSNull::null_class;
-}
-
-const BaseRawType* LSNull::getRawType() const {
-	return RawType::NULLL;
 }
 
 }

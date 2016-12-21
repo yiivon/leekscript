@@ -25,11 +25,10 @@ Context::Context(std::string ctx) {
 	Json value = Json::parse(ctx);
 
 	for (Json::iterator it = value.begin(); it != value.end(); ++it) {
-		vars.insert({it.key(), ls::LSValue::parse(it.value())});
+		//vars.insert({it.key(), ls::LSValue::parse(it.value())});
 	}
 }
 
 Context::~Context() {}
 
 }
-

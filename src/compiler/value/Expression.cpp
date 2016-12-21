@@ -761,22 +761,29 @@ Compiler::value Expression::compile(Compiler& c) const {
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.getElementType() == Type::INTEGER) {
 				if (type.getElementType() == Type::INTEGER) {
-					ls_func = (void*) &LSArray<int>::ls_map_int;
+					auto m = &LSArray<int>::ls_map<int>;
+					ls_func = (void*) m;
 				} else if (type.getElementType() == Type::REAL) {
-					ls_func = (void*) &LSArray<int>::ls_map_real;
+					auto m = &LSArray<int>::ls_map<double>;
+					ls_func = (void*) m;
 				} else {
-					ls_func = (void*) &LSArray<int>::ls_map;
+					auto m = &LSArray<int>::ls_map<LSValue*>;
+					ls_func = (void*) m;
 				}
 			} else if (v1->type.getElementType() == Type::REAL) {
 				if (type.getElementType() == Type::REAL) {
-					ls_func = (void*) &LSArray<double>::ls_map_real;
+					auto m = &LSArray<double>::ls_map<double>;
+					ls_func = (void*) m;
 				} else if (type.getElementType() == Type::INTEGER) {
-					ls_func = (void*) &LSArray<double>::ls_map_int;
+					auto m = &LSArray<double>::ls_map<int>;
+					ls_func = (void*) m;
 				} else {
-					ls_func = (void*) &LSArray<double>::ls_map;
+					auto m = &LSArray<double>::ls_map<LSValue*>;
+					ls_func = (void*) m;
 				}
 			} else {
-				ls_func = (void*) &LSArray<LSValue*>::ls_map;
+				auto m = &LSArray<LSValue*>::ls_map<LSValue*>;
+				ls_func = (void*) m;
 			}
 			break;
 		}

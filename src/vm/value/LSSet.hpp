@@ -21,7 +21,7 @@ public:
 	virtual ~LSSet();
 
 	/*
-	 * LSSet methods;
+	 * LSSet methods
 	 */
 	int ls_size();
 	bool ls_insert(T value);
@@ -30,21 +30,17 @@ public:
 	bool ls_contains(T value);
 
 	/*
-	 * LSValue methods;
+	 * LSValue methods
 	 */
-	virtual bool isTrue() const override;
-
 	LSVALUE_OPERATORS
-
+	virtual bool isTrue() const override;
 	virtual bool eq(const LSSet<LSValue*>*) const override;
 	virtual bool eq(const LSSet<int>*) const override;
 	virtual bool eq(const LSSet<double>*) const override;
 	virtual bool lt(const LSSet<LSValue*>*) const override;
 	virtual bool lt(const LSSet<int>*) const;
 	virtual bool lt(const LSSet<double>*) const;
-
 	bool in(T) const;
-
 	virtual LSValue* at(const LSValue* key) const override;
 	virtual LSValue** atL(const LSValue* key) override;
 	virtual std::ostream& dump(std::ostream&) const override;
@@ -52,7 +48,6 @@ public:
 	virtual LSValue* clone() const override;
 	virtual LSValue* getClass() const override;
 	virtual int typeID() const override { return 7; }
-	virtual const BaseRawType* getRawType() const override;
 };
 
 }

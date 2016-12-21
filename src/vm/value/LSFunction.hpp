@@ -13,6 +13,7 @@
 
 namespace ls {
 
+template <class T = LSValue*>
 class LSFunction : public LSValue {
 public:
 
@@ -22,7 +23,6 @@ public:
 	std::vector<LSValue*> captures;
 
 	LSFunction(void* function);
-	LSFunction(Json& data);
 	virtual ~LSFunction();
 
 	void add_capture(LSValue* value);
@@ -35,31 +35,21 @@ public:
 	/*
 	 * LSValue methods
 	 */
-	bool isTrue() const override;
-
 	LSVALUE_OPERATORS
-
-	bool eq(const LSFunction*) const override;
-	bool lt(const LSFunction*) const override;
-
-
-	LSValue* at (const LSValue* value) const override;
-	LSValue** atL (const LSValue* value) override;
-
+	bool isTrue() const override;
+	bool eq(const LSFunction<LSValue*>*) const override;
+	bool lt(const LSFunction<LSValue*>*) const override;
 	LSValue* attr(const LSValue* key) const override;
-
-	LSValue* clone() const;
-
 	std::ostream& dump(std::ostream& os) const;
-	std::string json() const override;
-
+	std::string json() const;
 	LSValue* getClass() const override;
-
 	int typeID() const override { return 8; }
-
-	virtual const BaseRawType* getRawType() const override;
 };
 
 }
+
+#ifndef _GLIBCXX_EXPORT_TEMPLATE
+#include "LSFunction.tcc"
+#endif
 
 #endif

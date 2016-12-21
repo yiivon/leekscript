@@ -455,14 +455,14 @@ std::string VM::exception_message(VM::Exception expected) {
 }
 
 void VM::function_add_capture(jit_function_t F, jit_value_t fun, jit_value_t capture) {
-	VM::call(F, LS_VOID, {LS_POINTER, LS_POINTER}, {fun, capture}, +[](LSFunction* fun, LSValue* cap) {
+	VM::call(F, LS_VOID, {LS_POINTER, LS_POINTER}, {fun, capture}, +[](LSFunction<LSValue*>* fun, LSValue* cap) {
 		fun->add_capture(cap);
 	});
 }
 
 jit_value_t VM::function_get_capture(jit_function_t F, jit_value_t fun_ptr, int capture_index) {
 	jit_value_t jit_index = LS_CREATE_INTEGER(F, capture_index);
-	return VM::call(F, LS_POINTER, {LS_POINTER, LS_INTEGER}, {fun_ptr, jit_index}, +[](LSFunction* fun, int index) {
+	return VM::call(F, LS_POINTER, {LS_POINTER, LS_INTEGER}, {fun_ptr, jit_index}, +[](LSFunction<LSValue*>* fun, int index) {
 		LSValue* v = fun->get_capture(index);
 //		v->refs++;
 		return v;

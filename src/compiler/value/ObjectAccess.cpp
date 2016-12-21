@@ -144,7 +144,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	if (class_attr) {
 
 		// TODO : only functions!
-		return {LS_CREATE_POINTER(c.F, new LSFunction(attr_addr)), type};
+		return {LS_CREATE_POINTER(c.F, new LSFunction<LSValue*>(attr_addr)), type};
 
 	} else {
 

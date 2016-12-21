@@ -323,12 +323,6 @@ LSValue*LSSet<T>::getClass() const {
 	return LSSet<T>::set_class;
 }
 
-template <typename T>
-const BaseRawType*LSSet<T>::getRawType() const {
-	return RawType::SET;
-}
-
-
 }
 
 #endif

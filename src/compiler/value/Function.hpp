@@ -25,7 +25,7 @@ public:
 	std::map<std::string, SemanticVar*> vars;
 	bool function_added;
 	Function* parent;
-	LSFunction* ls_fun = nullptr;
+	LSFunction<LSValue*>* ls_fun = nullptr;
 
 	Function();
 	virtual ~Function();

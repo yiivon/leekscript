@@ -93,9 +93,11 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	enter_function(program->main);
 
 	// Add context variables
+	/*
 	for (auto var : context->vars) {
 		add_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr, nullptr);
 	}
+	*/
 
 	// Include STD modules
 	ValueSTD().include(this, program);
@@ -129,7 +131,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	auto value_class = program->system_vars["Value"];
 
 	for (unsigned o = 0; o < ops.size(); ++o) {
-		auto fun = new LSFunction(ops_funs[o]);
+		auto fun = new LSFunction<LSValue*>(ops_funs[o]);
 		fun->args = {value_class, value_class};
 		fun->return_type = value_class;
 		program->system_vars.insert({ops[o], fun});
@@ -137,7 +139,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 	}
 
 	if (v1_mode) {
-		auto debug = new LSFunction((void*) +[](LSFunction*, LSValue* v) {
+		auto debug = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSValue* v) {
 			v->print(*VM::output);
 			LSValue::delete_temporary(v);
 			*VM::output << std::endl;
@@ -148,7 +150,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 		program->system_vars.insert({"debug", debug});
 		add_var(new Token("debug"), debug_type, nullptr, nullptr);
 
-		auto charAt = new LSFunction((void*) +[](LSFunction*, LSString* v, int p) {
+		auto charAt = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSString* v, int p) {
 			auto s = v->charAt(p);
 			LSValue::delete_temporary(v);
 			return s;
@@ -160,7 +162,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 		program->system_vars.insert({"charAt", charAt});
 		add_var(new Token("charAt"), charAt_type, nullptr, nullptr);
 
-		auto replace = new LSFunction((void*) +[](LSFunction*, LSString* string, LSString* from, LSString* to) {
+		auto replace = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSString* string, LSString* from, LSString* to) {
 			std::string str(*string);
 			size_t start_pos = 0;
 
@@ -195,7 +197,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 		program->system_vars.insert({"replace", replace});
 		add_var(new Token("replace"), replace_type, nullptr, nullptr);
 
-		auto count = new LSFunction((void*) +[](LSFunction*, LSArray<LSValue*>* a) {
+		auto count = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSArray<LSValue*>* a) {
 			int s = a->size();
 			LSValue::delete_temporary(a);
 			return s;
@@ -206,7 +208,7 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 		program->system_vars.insert({"count", count});
 		add_var(new Token("count"), count_type, nullptr, nullptr);
 
-		auto pushAll = new LSFunction((void*) +[](LSFunction*, LSArray<LSValue*>* a, LSArray<LSValue*>* b) {
+		auto pushAll = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSArray<LSValue*>* a, LSArray<LSValue*>* b) {
 			return a->ls_push_all_ptr(b);
 		});
 		auto pushAll_type = Type::FUNCTION_P;

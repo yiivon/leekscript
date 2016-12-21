@@ -91,8 +91,4 @@ LSValue* LSBoolean::getClass() const {
 	return LSBoolean::boolean_class;
 }
 
-const BaseRawType* LSBoolean::getRawType() const {
-	return RawType::BOOLEAN;
-}
-
 }

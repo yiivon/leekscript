@@ -1,10 +1,3 @@
-/*
- * LSInterval.hpp
- *
- *  Created on: 5 mai 2016
- *      Author: pierre
- */
-
 #ifndef VM_VALUE_LSINTERVAL_HPP_
 #define VM_VALUE_LSINTERVAL_HPP_
 
@@ -24,7 +17,7 @@ public:
 	/*
 	 * Array methods
 	 */
-	LSArray<int>* ls_filter(LSFunction* function);
+	LSArray<int>* ls_filter(LSFunction<bool>* function);
 
 	/*
 	 * LSValue methods
