@@ -35,6 +35,8 @@ void Test::test_json() {
 	code("Json.encode([1, x -> x, 3])").equals("'[1,3]'");
 
 	section("Value.json()");
+	// null
+	code("null.json()").equals("'null'");
 	// integer
 	code("0.json()").equals("'0'");
 	code("12.json()").equals("'12'");
@@ -60,6 +62,8 @@ void Test::test_json() {
 	code("{}.json()").equals("'{}'");
 	code("{a: 1, b: 2, c: 3}.json()").equals("'{\"a\":1,\"b\":2,\"c\":3}'");
 	code("{hello: [], b: {d: 12}, ccccc: [1, 2, [], 4]}.json()").equals("'{\"b\":{\"d\":12},\"ccccc\":[1,2,[],4],\"hello\":[]}'");
+	// class
+	code("Number.json()").equals("'\"<class Number>\"'");
 
 	section("Json.decode()");
 	code("Json.decode('')").equals("null");
