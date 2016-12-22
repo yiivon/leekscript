@@ -212,8 +212,8 @@ void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<M
 			return a->ls_push_all_ptr(b);
 		});
 		auto pushAll_type = Type::FUNCTION_P;
-		pushAll_type.setArgumentType(0, Type::ARRAY);
-		pushAll_type.setArgumentType(1, Type::ARRAY);
+		pushAll_type.setArgumentType(0, Type::PTR_ARRAY);
+		pushAll_type.setArgumentType(1, Type::PTR_ARRAY);
 		pushAll_type.setReturnType(Type::VOID);
 		program->system_vars.insert({"pushAll", pushAll});
 		add_var(new Token("pushAll"), pushAll_type, nullptr, nullptr);

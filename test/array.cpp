@@ -116,7 +116,6 @@ void Test::test_arrays() {
 	code("[1, 1, '3'] < [1, 2, 3]").equals("true");
 
 	section("Array.operator ~~");
-	/*
 	code("[1, 2, 3, 4, 5] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25]");
 	code("[1.5, 2.5, 3.5] ~~ x -> x.floor()").equals("[1, 2, 3]");
 	code("[1, 2, 3, 4, 5] ~~ (x -> x ** 2)").equals("[1, 4, 9, 16, 25]");
@@ -127,7 +126,6 @@ void Test::test_arrays() {
 	code("[1.2, 321.42] ~~ x -> x * 1.7").equals("[2.04, 546.414]");
 	code("[1, 2, 3, 4, 5] ~~ x -> x.max(3)").equals("[3, 3, 3, 4, 5]");
 	code("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)").equals("[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
-	*/
 
 	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
@@ -174,17 +172,17 @@ void Test::test_arrays() {
 	code("[10, -5.7, 30.89, 66].sum()").almost(101.19);
 
 	section("Array.map()");
-	//code("Array.map([1, 2, 3], x -> x ** 2)").equals("[1, 4, 9]");
-	//code("[3, 4, 5].map(x -> x ** 2)").equals("[9, 16, 25]");
-	//code("let a = [3, 4, 5] a.map(x -> x ** 2)").equals("[9, 16, 25]");
-	//code("[321, 213, 121].map(x -> x ** 2).size()").equals("3");
-	//code("[3.2, 4.5, 5.8].map(x -> x ** 2)").equals("[10.24, 20.25, 33.64]");
-	//code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
-	//code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
-	//code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
+	code("Array.map([1, 2, 3], x -> x ** 2)").equals("[1, 4, 9]");
+	code("[3, 4, 5].map(x -> x ** 2)").equals("[9, 16, 25]");
+	code("let a = [3, 4, 5] a.map(x -> x ** 2)").equals("[9, 16, 25]");
+	code("[321, 213, 121].map(x -> x ** 2).size()").equals("3");
+	code("[3.2, 4.5, 5.8].map(x -> x ** 2)").equals("[10.24, 20.25, 33.64]");
+	code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
+	code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
+	code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
 
 	section("Array.map2()");
-	//code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
+	code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
 
 	section("Array.max()");
 	code("[].max()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);

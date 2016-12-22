@@ -307,23 +307,14 @@ inline int LSArray<T>::ls_size() {
 template <class T>
 template <class R>
 LSArray<R>* LSArray<T>::ls_map(LSFunction<R>* function) {
-
 	auto fun = (R (*)(void*, T)) function->function;
-
 	LSArray<R>* result = new LSArray<R>();
 	result->reserve(this->size());
-
-//	std::cout << this << std::endl;
 	for (auto v : *this) {
-//		std::cout << v << std::endl;
-		auto m = ls::clone(v);
-		R r = fun(function, m);
-//		std::cout << r << std::endl;
+		R r = fun(function, ls::clone(v));
 		result->push_move(r);
-//		std::cout << m << std::endl;
-		//ls::unref(m);
 	}
-	ls::release(this);
+	LSValue::delete_temporary(this);
 	return result;
 }
 
@@ -678,8 +669,8 @@ LSArray<R>* LSArray<T>::ls_map2(LSArray<T2>* array, LSFunction<R>* function) {
 		R res = fun(function, v1, v2);
 		result->push_move(res);
 	}
-	ls::release(this);
-	ls::release(array);
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(array);
 	return result;
 }
 

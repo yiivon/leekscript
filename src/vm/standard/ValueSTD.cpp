@@ -85,8 +85,9 @@ jit_value_t ValueSTD::unknown(jit_function_t F) {
  * Attributes
  */
 Compiler::value ValueSTD::attr_class(Compiler& c, Compiler::value a) {
+	auto clazz = c.insn_class_of(a);
 	c.insn_delete(a);
-	return c.insn_class_of(a);
+	return clazz;
 }
 
 /*
