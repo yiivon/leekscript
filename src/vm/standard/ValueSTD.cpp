@@ -199,8 +199,8 @@ Compiler::value ValueSTD::op_or(Compiler& c, std::vector<Compiler::value> args) 
 }
 
 Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args) {
-	auto a = c.insn_to_not_bool(args[0]);
-	auto b = c.insn_to_not_bool(args[1]);
+	auto a = c.insn_to_bool(args[0]);
+	auto b = c.insn_to_bool(args[1]);
 	auto r = c.insn_or(
 		c.insn_and(a, c.insn_not(b)),
 		c.insn_and(b, c.insn_not(a))

@@ -185,9 +185,6 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 	// TODO other types
 	return v;
 }
-Compiler::value Compiler::insn_to_not_bool(Compiler::value v) const {
-	return {jit_insn_to_not_bool(F, insn_to_bool(v).v), Type::BOOLEAN};
-}
 
 Compiler::value Compiler::insn_address_of(Compiler::value v) const {
 	return {jit_insn_address_of(F, v.v), Type::POINTER};

@@ -75,7 +75,6 @@ public:
 	// Value management
 	value insn_to_pointer(value v) const;
 	value insn_to_bool(value v) const;
-	value insn_to_not_bool(value v) const;
 	value insn_address_of(value v) const;
 	value insn_typeof(value v) const;
 	value insn_class_of(value v) const;
