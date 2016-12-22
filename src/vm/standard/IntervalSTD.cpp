@@ -17,7 +17,7 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::INTERVAL, Type::INTEGER, Type::BOOLEAN, (void*) &LSInterval::in_v}
+		{Type::INTERVAL, Type::INTEGER, Type::BOOLEAN, (void*) &LSInterval::in_v, Method::NATIVE}
 	});
 
 	/*
@@ -28,7 +28,7 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
 
 	method("filter", {
-		{Type::INTERVAL, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSInterval::ls_filter},
+		{Type::INTERVAL, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSInterval::ls_filter, Method::NATIVE},
 	});
 }
 

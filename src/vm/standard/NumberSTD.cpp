@@ -94,80 +94,80 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Operators
 	 */
 	operator_("=", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT, (void*) &NumberSTD::store_gmp_gmp, Method::NATIVE},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT, (void*) &NumberSTD::store_gmp_gmp_tmp, Method::NATIVE},
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT, (void*) &NumberSTD::store_gmp_gmp},
+		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT, (void*) &NumberSTD::store_gmp_gmp_tmp},
 	});
 
 	operator_("+", {
-		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr},
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_tmp_gmp, Method::NATIVE},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp_tmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_tmp_gmp_tmp, Method::NATIVE},
-		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_real_real, Method::NATIVE},
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_real_real, Method::NATIVE},
+		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr, Method::NATIVE},
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_tmp_gmp},
+		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp_tmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_tmp_gmp_tmp},
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_real_real},
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_real_real},
 	});
 
 	operator_("+=", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT, (void*) &NumberSTD::add_eq_gmp_gmp, Method::NATIVE}
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT, (void*) &NumberSTD::add_eq_gmp_gmp}
 	});
 
 	operator_("-", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp, Method::NATIVE},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp_tmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp_tmp, Method::NATIVE},
-		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_int, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_int, Method::NATIVE}
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp},
+		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp_tmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp_tmp},
+		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_int},
+		{Type::GMP_INT_TMP, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_int}
 	});
 
 	operator_("*", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_gmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_tmp_gmp, Method::NATIVE},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_gmp_tmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_tmp_gmp_tmp, Method::NATIVE},
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_gmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_tmp_gmp},
+		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_gmp_tmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_tmp_gmp_tmp},
 	});
 
 	operator_("**", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_gmp, Method::NATIVE},
-		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_int, Method::NATIVE},
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_gmp},
+		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_int},
 	});
 
 	operator_("/", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::REAL, (void*) &NumberSTD::div_val_val, Method::NATIVE}
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::REAL, (void*) &NumberSTD::div_val_val}
 	});
 
 	operator_("<", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::lt, Method::NATIVE},
-		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_tmp_gmp_tmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_tmp_gmp, Method::NATIVE},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp_tmp, Method::NATIVE},
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::lt},
+		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_tmp_gmp_tmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_tmp_gmp},
+		{Type::GMP_INT, Type::GMP_INT_TMP, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp_tmp},
 	});
 
 	operator_("<=", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::le, Method::NATIVE}
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::le}
 	});
 
 	operator_(">", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::gt, Method::NATIVE},
-		{Type::INTEGER, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::gt_int_gmp, Method::NATIVE}
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::gt},
+		{Type::INTEGER, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::gt_int_gmp}
 	});
 
 	operator_(">=", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::ge, Method::NATIVE}
+		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::ge}
 	});
 
 	operator_("%", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mod_gmp_gmp, Method::NATIVE},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mod_gmp_gmp_tmp, Method::NATIVE},
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mod_gmp_gmp},
+		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mod_gmp_gmp_tmp},
 	});
 
 	operator_("==", {
-		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_gmp, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_tmp_gmp, Method::NATIVE},
-		{Type::GMP_INT, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_int, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_tmp_int, Method::NATIVE},
+		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_gmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_tmp_gmp},
+		{Type::GMP_INT, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_int},
+		{Type::GMP_INT_TMP, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_tmp_int},
 	});
 
 	Type tilde_fun_type_int = Type::FUNCTION_P;
@@ -177,251 +177,267 @@ NumberSTD::NumberSTD() : Module("Number") {
 	tilde_fun_type_real.setArgumentType(0, Type::REAL);
 	tilde_fun_type_real.setReturnType(Type::POINTER);
 	operator_("~", {
-		{Type::REAL, tilde_fun_type_real, Type::POINTER, (void*) &NumberSTD::tilde_real, Method::NATIVE},
-		{Type::INTEGER, tilde_fun_type_int, Type::POINTER, (void*) &NumberSTD::tilde_int, Method::NATIVE}
+		{Type::REAL, tilde_fun_type_real, Type::POINTER, (void*) &NumberSTD::tilde_real},
+		{Type::INTEGER, tilde_fun_type_int, Type::POINTER, (void*) &NumberSTD::tilde_int}
 	});
 
 	operator_("&", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and, Method::NATIVE}
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and}
 	});
 	operator_("&=", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and_eq, Method::NATIVE}
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and_eq}
 	});
 	operator_("|", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or, Method::NATIVE}
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or}
 	});
 	operator_("|=", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or_eq, Method::NATIVE}
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or_eq}
 	});
 	operator_("^", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor, Method::NATIVE}
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor}
 	});
 	operator_("^=", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor_eq, Method::NATIVE}
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor_eq}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("abs", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::abs_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::abs_real, Method::NATIVE},
-		{Type::INTEGER, Type::INTEGER, {}, (void*) &NumberSTD::abs_real, Method::NATIVE}
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::abs_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::abs_real},
+		{Type::INTEGER, Type::INTEGER, {}, (void*) &NumberSTD::abs_real}
 	});
 	method("acos", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::acos_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::acos_real, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::acos_real},
 	});
 	method("asin", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::asin_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::asin_real, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::asin_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::asin_real},
 	});
 	method("atan", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::atan_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::atan_real, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::atan_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::atan_real},
 	});
 	method("atan2", {
-		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr},
-		{Type::POINTER, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_ptr_real},
-		{Type::REAL, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_real_real, Method::NATIVE}
+		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_ptr_real, Method::NATIVE},
+		{Type::REAL, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_real_real}
 	});
 	method("cbrt", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cbrt_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cbrt_real, Method::NATIVE}
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cbrt_real}
 	});
 	method("ceil", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::ceil_ptr}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE}
 	});
 	method("char", {
-		{Type::NUMBER, Type::POINTER, {}, (void*) &NumberSTD::char_ptr},
-		{Type::REAL, Type::STRING, {}, (void*) &NumberSTD::char_real, Method::NATIVE},
-		{Type::INTEGER, Type::STRING, {}, (void*) &NumberSTD::char_int, Method::NATIVE}
+		{Type::NUMBER, Type::POINTER, {}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
+		{Type::REAL, Type::STRING, {}, (void*) &NumberSTD::char_real},
+		{Type::INTEGER, Type::STRING, {}, (void*) &NumberSTD::char_int}
 	});
 	method("cos", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cos_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cos_real, Method::NATIVE}
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cos_real}
 	});
 	method("exp", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::exp_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::exp_real, Method::NATIVE}
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::exp_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::exp_real}
 	});
 	method("floor", {
-		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr},
-		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_real, Method::NATIVE}
+		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
+		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_real}
 	});
 	method("hypot", {
-		{Type::REAL, Type::POINTER, {Type::POINTER}, (void*) &NumberSTD::hypot_ptr_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::hypot_real_real, Method::NATIVE}
+		{Type::REAL, Type::POINTER, {Type::POINTER}, (void*) &NumberSTD::hypot_ptr_ptr},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::hypot_real_real}
 	});
 	method("log", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log_real},
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log_real, Method::NATIVE},
 	});
 	method("log10", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log10_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log10_real},
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log10_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log10_real, Method::NATIVE},
 	});
 	method("max", {
-		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
-		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::max_float_float},
+		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::max_float_float},
 	});
 	method("min", {
-		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
-		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::min_float_float},
+		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float},
 	});
 	method("pow", {
-		{Type::POINTER, Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::pow_ptr, Method::NATIVE},
-		{Type::LONG, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int, Method::NATIVE}
+		{Type::POINTER, Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::pow_ptr},
+		{Type::LONG, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int}
 	});
 	method("round", {
-		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::round_ptr}
+		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::round_ptr, Method::NATIVE}
 	});
-	method("signum", Type::NUMBER, Type::INTEGER, {}, (void*) &number_signum);
+	method("signum", {
+		{Type::NUMBER, Type::INTEGER, {}, (void*) &number_signum, Method::NATIVE}
+	});
 	method("sin", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sin_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sin_real, Method::NATIVE}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sin_real}
 	});
 	method("sqrt", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sqrt_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sqrt_real, Method::NATIVE}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sqrt_real}
 	});
 	method("tan", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::tan_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::tan_real, Method::NATIVE}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::tan_real}
 	});
-	method("toDegrees", Type::NUMBER, Type::REAL, {}, (void*) &number_toDegrees);
-	method("toRadians", Type::NUMBER, Type::REAL, {}, (void*) &number_toRadians);
-	method("isInteger", Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger);
-
+	method("toDegrees", {
+		{Type::NUMBER, Type::REAL, {}, (void*) &number_toDegrees, Method::NATIVE}
+	});
+	method("toRadians", {
+		{Type::NUMBER, Type::REAL, {}, (void*) &number_toRadians, Method::NATIVE}
+	});
+	method("isInteger", {
+		{Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger, Method::NATIVE}
+	});
 	method("isPrime", {
-		{Type::GMP_INT, Type::INTEGER, {}, (void*) &NumberSTD::is_prime, Method::NATIVE},
-		{Type::GMP_INT_TMP, Type::INTEGER, {}, (void*) &NumberSTD::is_prime_tmp, Method::NATIVE},
-		{Type::LONG, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_long, Method::NATIVE},
-		{Type::INTEGER, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_int, Method::NATIVE}
+		{Type::GMP_INT, Type::INTEGER, {}, (void*) &NumberSTD::is_prime},
+		{Type::GMP_INT_TMP, Type::INTEGER, {}, (void*) &NumberSTD::is_prime_tmp},
+		{Type::LONG, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_long},
+		{Type::INTEGER, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_int}
 	});
 
 	/*
 	 * Static methods
 	 */
 	static_method("abs", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::abs_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_real, Method::NATIVE},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_real, Method::NATIVE}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::abs_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_real},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_real}
 	});
 	static_method("acos", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::acos_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::acos_real, Method::NATIVE},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::acos_real},
 	});
 	static_method("asin", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::asin_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::asin_real, Method::NATIVE},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::asin_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::asin_real},
 	});
 	static_method("atan", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan_real, Method::NATIVE},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan_real},
 	});
 	static_method("atan2", {
-		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr},
-		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::atan2_ptr_real},
-		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::atan2_real_real, Method::NATIVE}
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::atan2_ptr_real, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::atan2_real_real}
 	});
 	static_method("cbrt", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cbrt_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cbrt_real, Method::NATIVE}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cbrt_real}
 	});
 	static_method("ceil", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr},
-		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::ceil_real, Method::NATIVE},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int, Method::NATIVE}
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::ceil_real},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int}
 	});
 	static_method("char", {
-		{Type::STRING, {Type::POINTER}, (void*) &NumberSTD::char_ptr},
-		{Type::STRING, {Type::REAL}, (void*) &NumberSTD::char_real, Method::NATIVE},
-		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int, Method::NATIVE}
+		{Type::STRING, {Type::POINTER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
+		{Type::STRING, {Type::REAL}, (void*) &NumberSTD::char_real},
+		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int}
 	});
 	static_method("cos", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cos_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cos_real, Method::NATIVE},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cos_real},
 	});
 	static_method("exp", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::exp_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::exp_real, Method::NATIVE},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::exp_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::exp_real},
 	});
 	static_method("floor", {
-		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::floor_ptr},
-		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::floor_real, Method::NATIVE},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int, Method::NATIVE},
+		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::floor_real},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int},
 	});
 	static_method("hypot", {
-		{Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &NumberSTD::hypot_ptr_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::hypot_real_real, Method::NATIVE},
+		{Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &NumberSTD::hypot_ptr_ptr},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::hypot_real_real},
 	});
 	static_method("log", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::log_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log_real, Method::NATIVE}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::log_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log_real}
 	});
 	static_method("log10", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::log10_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log10_real, Method::NATIVE}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::log10_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log10_real}
 	});
 	static_method("max", {
-		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr},
-		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::max_ptr_float},
-		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int},
-		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::max_float_ptr},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
-		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::max_int_ptr},
-		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::max_float_float, Method::NATIVE},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float, Method::NATIVE}
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::max_ptr_float, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::max_float_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::max_float_float},
+		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::max_float_float},
+		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::max_int_ptr, Method::NATIVE},
+		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::max_float_float},
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float}
 	});
 	static_method("min", {
-		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr},
-		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::min_ptr_float},
-		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::min_ptr_int},
-		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::min_float_ptr},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
-		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::min_int_ptr},
-		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float, Method::NATIVE},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float, Method::NATIVE}
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::min_ptr_float, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::min_ptr_int, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::min_float_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float},
+		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
+		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::min_int_ptr, Method::NATIVE},
+		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float},
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float}
 	});
 	static_method("pow", {
-		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::pow_ptr, Method::NATIVE},
-		{Type::REAL, {Type::LONG, Type::LONG}, (void*) &NumberSTD::pow_int, Method::NATIVE}
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::pow_ptr},
+		{Type::REAL, {Type::LONG, Type::LONG}, (void*) &NumberSTD::pow_int}
 	});
-	static_method("rand", Type::REAL, {}, (void*) &number_rand);
-	static_method("randFloat", Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat);
-	static_method("randInt", Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &number_randInt);
-
+	static_method("rand", {
+		{Type::REAL, {}, (void*) &number_rand, Method::NATIVE}
+	});
+	static_method("randFloat", {
+		{Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat, Method::NATIVE}
+	});
+	static_method("randInt", {
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &number_randInt, Method::NATIVE}
+	});
 	static_method("round", {
-		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::round_ptr},
-		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::round_real, Method::NATIVE},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::round_int, Method::NATIVE}
+		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::round_real},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::round_int}
 	});
-
-	static_method("signum", Type::INTEGER, {Type::NUMBER}, (void*) &number_signum);
-
+	static_method("signum", {
+		{Type::INTEGER, {Type::NUMBER}, (void*) &number_signum, Method::NATIVE}
+	});
 	static_method("sin", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sin_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sin_real, Method::NATIVE},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sin_real},
 	});
-
 	static_method("sqrt", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE}
 	});
-
 	static_method("tan", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::tan_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::tan_real, Method::NATIVE},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::tan_real},
 	});
-	static_method("toDegrees", Type::REAL, {Type::NUMBER}, (void*) &number_toDegrees);
-	static_method("toRadians", Type::REAL, {Type::NUMBER}, (void*) &number_toRadians);
-	static_method("isInteger", Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger);
+	static_method("toDegrees", {
+		{Type::REAL, {Type::NUMBER}, (void*) &number_toDegrees, Method::NATIVE}
+	});
+	static_method("toRadians", {
+		{Type::REAL, {Type::NUMBER}, (void*) &number_toRadians, Method::NATIVE}
+	});
+	static_method("isInteger", {
+		{Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger, Method::NATIVE}
+	});
 }
 
 Compiler::value NumberSTD::store_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
@@ -681,6 +697,7 @@ Compiler::value NumberSTD::mod_gmp_gmp(Compiler& c, std::vector<Compiler::value>
 		return *res;
 	});
 }
+
 Compiler::value NumberSTD::mod_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
 	auto a_addr = c.insn_address_of(args[0]);
 	auto b_addr = c.insn_address_of(args[1]);
@@ -694,6 +711,7 @@ Compiler::value NumberSTD::eq_gmp_gmp(Compiler& c, std::vector<Compiler::value> 
 		return mpz_cmp(&a, &b) == 0;
 	});
 }
+
 Compiler::value NumberSTD::eq_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
 	auto a_addr = c.insn_address_of(args[0]);
 	auto b_addr = c.insn_address_of(args[1]);
@@ -701,11 +719,13 @@ Compiler::value NumberSTD::eq_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::val
 	VM::delete_gmp_int(c.F, args[0].v);
 	return c.insn_eq(res, c.new_integer(0));
 }
+
 Compiler::value NumberSTD::eq_gmp_int(Compiler& c, std::vector<Compiler::value> args) {
 	auto a_addr = c.insn_address_of(args[0]);
 	auto res = c.insn_call(Type::INTEGER, {a_addr, args[1]}, &_mpz_cmp_si);
 	return c.insn_eq(res, c.new_integer(0));
 }
+
 Compiler::value NumberSTD::eq_gmp_tmp_int(Compiler& c, std::vector<Compiler::value> args) {
 	Compiler::value a_addr = c.insn_address_of(args[0]);
 	auto res = c.insn_call(Type::INTEGER, {a_addr, args[1]}, &_mpz_cmp_si);
@@ -736,22 +756,27 @@ Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> 
 Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_bit_and(args[0], args[1]);
 }
+
 Compiler::value NumberSTD::bit_and_eq(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_bit_and(args[0], args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
+
 Compiler::value NumberSTD::bit_or(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_bit_or(args[0], args[1]);
 }
+
 Compiler::value NumberSTD::bit_or_eq(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_bit_or(args[0], args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
+
 Compiler::value NumberSTD::bit_xor(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_bit_xor(args[0], args[1]);
 }
+
 Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_bit_xor(args[0], args[1]);
 	c.insn_store(args[0], res);
@@ -781,6 +806,7 @@ double NumberSTD::acos_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
+
 Compiler::value NumberSTD::acos_real(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_acos(c.F, args[0].v), Type::REAL};
 }
@@ -790,6 +816,7 @@ double NumberSTD::asin_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
+
 Compiler::value NumberSTD::asin_real(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_asin(c.F, args[0].v), Type::REAL};
 }
@@ -799,6 +826,7 @@ double NumberSTD::atan_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
+
 Compiler::value NumberSTD::atan_real(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_atan(c.F, args[0].v), Type::REAL};
 }
@@ -809,16 +837,19 @@ double NumberSTD::atan2_ptr_ptr(LSNumber* y, LSNumber* x) {
 	LSValue::delete_temporary(y);
 	return a;
 }
+
 double NumberSTD::atan2_ptr_real(LSNumber* y, double x) {
 	double a = atan2(y->value, x);
 	LSValue::delete_temporary(y);
 	return a;
 }
+
 double NumberSTD::atan2_real_ptr(double y, LSNumber* x) {
 	double a = atan2(y, x->value);
 	LSValue::delete_temporary(x);
 	return a;
 }
+
 Compiler::value NumberSTD::atan2_real_real(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_atan2(c.F, args[0].v, args[1].v), Type::REAL};
 }
@@ -830,6 +861,7 @@ LSString* NumberSTD::char_ptr(LSNumber* x) {
 	u8_toutf8(dest, 5, &n, 1);
 	return new LSString(dest);
 }
+
 Compiler::value NumberSTD::char_real(Compiler& c, vector<Compiler::value> args) {
 	return c.insn_call(Type::STRING, args, +[](double x) {
 		unsigned int n = x;
@@ -838,6 +870,7 @@ Compiler::value NumberSTD::char_real(Compiler& c, vector<Compiler::value> args) 
 		return new LSString(dest);
 	});
 }
+
 Compiler::value NumberSTD::char_int(Compiler& c, vector<Compiler::value> args) {
 	return c.insn_call(Type::STRING, args, +[](int x) {
 		unsigned int n = x;
@@ -852,6 +885,7 @@ double NumberSTD::exp_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
+
 Compiler::value NumberSTD::exp_real(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_exp(c.F, args[0].v), Type::REAL};
 }
@@ -861,9 +895,11 @@ int NumberSTD::floor_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
+
 Compiler::value NumberSTD::floor_real(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_floor(c.F, args[0].v), Type::REAL};
 }
+
 Compiler::value NumberSTD::floor_int(Compiler&, std::vector<Compiler::value> args) {
 	return args[0]; // Nothing to do
 }
@@ -873,9 +909,11 @@ int NumberSTD::round_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
+
 Compiler::value NumberSTD::round_real(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_round(c.F, args[0].v), Type::REAL};
 }
+
 Compiler::value NumberSTD::round_int(Compiler&, std::vector<Compiler::value> args) {
 	return args[0]; // Nothing to do
 }
@@ -885,9 +923,11 @@ int NumberSTD::ceil_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return a;
 }
+
 Compiler::value NumberSTD::ceil_real(Compiler& c, std::vector<Compiler::value> args) {
 	return {jit_insn_ceil(c.F, args[0].v), Type::REAL};
 }
+
 Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args) {
 	return args[0]; // Nothing to do
 }

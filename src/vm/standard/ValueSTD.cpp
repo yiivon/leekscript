@@ -22,53 +22,53 @@ ValueSTD::ValueSTD() : Module("Value") {
 	 * Operators
 	 */
 	operator_("instanceof", {
-		{Type::UNKNOWN, Type::CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof, Method::NATIVE}
+		{Type::UNKNOWN, Type::CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
 	});
 	operator_("<", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_lt, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_lt}
 	});
 	operator_("<=", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_le, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_le}
 	});
 	operator_(">", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_gt, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_gt}
 	});
 	operator_(">=", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_ge, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_ge}
 	});
 	operator_("and", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and}
 	});
 	operator_("&&", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and}
 	});
 	operator_("or", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_or, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_or}
 	});
 	operator_("xor", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_xor, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_xor}
 	});
 	operator_("&", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_and, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_and}
 	});
 	operator_("|", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_or, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_or}
 	});
 	operator_("^", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_xor, Method::NATIVE}
+		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_xor}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("string", {
- 		{Type::UNKNOWN, Type::STRING, {}, (void*) &ValueSTD::to_string, Method::NATIVE}
+ 		{Type::UNKNOWN, Type::STRING, {}, (void*) &ValueSTD::to_string}
  	});
 	method("json", {
-		{Type::UNKNOWN, Type::STRING, {}, (void*) &JsonSTD::encode, Method::NATIVE}
+		{Type::UNKNOWN, Type::STRING, {}, (void*) &JsonSTD::encode}
 	});
 	method("typeID", {
-		{Type::UNKNOWN, Type::INTEGER, {}, (void*) &ValueSTD::typeID, Method::NATIVE}
+		{Type::UNKNOWN, Type::INTEGER, {}, (void*) &ValueSTD::typeID}
 	});
 }
 

@@ -311,11 +311,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 		Compiler::value res;
 		if (is_native_method) {
-			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
-			res = fun(c, args);
-		} else {
 			auto fun = (void*) std_func;
 			res = c.insn_call(type, args, fun);
+		} else {
+			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
+			res = fun(c, args);
 		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
@@ -334,11 +334,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 		Compiler::value res;
 		if (is_native_method) {
-			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
-			res = fun(c, args);
-		} else {
 			auto fun = (void*) std_func;
 			res = c.insn_call(type, args, fun);
+		} else {
+			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
+			res = fun(c, args);
 		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {

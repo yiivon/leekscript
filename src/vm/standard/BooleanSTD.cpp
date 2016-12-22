@@ -7,19 +7,19 @@ namespace ls {
 BooleanSTD::BooleanSTD() : Module("Boolean") {
 
 	operator_("+", {
-		{Type::BOOLEAN, Type::STRING, Type::STRING_TMP, (void*) &BooleanSTD::add},
-		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp},
-		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool, Method::NATIVE}
+		{Type::BOOLEAN, Type::STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, Method::NATIVE},
+		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, Method::NATIVE},
+		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool}
 	});
 
 	static_method("compare", {
-		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
-		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
+		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val}
 	});
 
 	method("compare", {
-		{Type::POINTER, Type::INTEGER, {Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr},
-		{Type::BOOLEAN, Type::INTEGER, {Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val, Method::NATIVE}
+		{Type::POINTER, Type::INTEGER, {Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr, Method::NATIVE},
+		{Type::BOOLEAN, Type::INTEGER, {Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val}
 	});
 }
 

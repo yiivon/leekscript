@@ -464,11 +464,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 		Compiler::value res;
 		if (is_native_method) {
-			auto fun = (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) operator_fun;
-			res = fun(c, args);
-		} else {
 			auto fun = (void*) operator_fun;
 			res = c.insn_call(type, args, fun);
+		} else {
+			auto fun = (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) operator_fun;
+			res = fun(c, args);
 		}
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 			return {VM::value_to_pointer(c.F, res.v, type), type};

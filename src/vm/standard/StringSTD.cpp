@@ -39,66 +39,138 @@ LSString* plus_gmp(LSString* s, __mpz_struct mpz) {
 }
 
 StringSTD::StringSTD() : Module("String") {
-
+	/*
+	 * Operators
+	 */
 	operator_("+", {
-		{Type::STRING, Type::GMP_INT, Type::STRING, (void*) &plus_gmp}
+		{Type::STRING, Type::GMP_INT, Type::STRING, (void*) &plus_gmp, Method::NATIVE}
 	});
 	operator_("<", {
-		{Type::STRING, Type::STRING, Type::BOOLEAN, (void*) &StringSTD::lt, Method::NATIVE}
+		{Type::STRING, Type::STRING, Type::BOOLEAN, (void*) &StringSTD::lt}
 	});
-
-	method("charAt", Type::STRING, Type::STRING, {Type::INTEGER}, (void*) &LSString::charAt);
-	method("contains", Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_contains);
-	method("endsWith", Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_endsWith);
-	method("indexOf", Type::STRING, Type::INTEGER, {Type::STRING}, (void*) &string_indexOf);
-	method("isPermutation", Type::STRING, Type::BOOLEAN, {Type::POINTER}, (void*) &LSString::is_permutation);
-	method("isPalindrome", Type::STRING, Type::BOOLEAN, {}, (void*) &LSString::is_palindrome);
-	method("length", Type::STRING, Type::INTEGER, {}, (void*) &string_length);
-	method("size", Type::STRING, Type::INTEGER, {}, (void*) &string_size);
-	method("replace", Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &StringSTD::replace);
-	method("reverse", Type::STRING, Type::STRING, {}, (void*) &LSString::ls_tilde);
-	method("substring", Type::STRING, Type::STRING, {Type::INTEGER, Type::INTEGER}, (void*) &string_substring);
-	method("toArray", Type::STRING, Type::PTR_ARRAY, {}, (void*) &string_toArray);
-	method("toLower", Type::STRING, Type::STRING, {}, (void*) &string_toLower);
-	method("toUpper", Type::STRING, Type::STRING, {}, (void*) &string_toUpper);
-	method("split", Type::STRING, Type::STRING_ARRAY, {Type::STRING}, (void*) &string_split);
-	method("startsWith", Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_startsWith);
+	/*
+	 * Methods
+	 */
+	method("charAt", {
+		{Type::STRING, Type::STRING, {Type::INTEGER}, (void*) &LSString::charAt, Method::NATIVE}
+	});
+	method("contains", {
+		{Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_contains, Method::NATIVE}
+	});
+	method("endsWith", {
+		{Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_endsWith, Method::NATIVE}
+	});
+	method("indexOf", {
+		{Type::STRING, Type::INTEGER, {Type::STRING}, (void*) &string_indexOf, Method::NATIVE}
+	});
+	method("isPermutation", {
+		{Type::STRING, Type::BOOLEAN, {Type::POINTER}, (void*) &LSString::is_permutation, Method::NATIVE}
+	});
+	method("isPalindrome", {
+		{Type::STRING, Type::BOOLEAN, {}, (void*) &LSString::is_palindrome, Method::NATIVE}
+	});
+	method("length", {
+		{Type::STRING, Type::INTEGER, {}, (void*) &string_length, Method::NATIVE}
+	});
+	method("size", {
+		{Type::STRING, Type::INTEGER, {}, (void*) &string_size, Method::NATIVE}
+	});
+	method("replace", {
+		{Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &StringSTD::replace, Method::NATIVE}
+	});
+	method("reverse", {
+		{Type::STRING, Type::STRING, {}, (void*) &LSString::ls_tilde, Method::NATIVE}
+	});
+	method("substring", {
+		{Type::STRING, Type::STRING, {Type::INTEGER, Type::INTEGER}, (void*) &string_substring, Method::NATIVE}
+	});
+	method("toArray", {
+		{Type::STRING, Type::PTR_ARRAY, {}, (void*) &string_toArray, Method::NATIVE}
+	});
+	method("toLower", {
+		{Type::STRING, Type::STRING, {}, (void*) &string_toLower, Method::NATIVE}
+	});
+	method("toUpper", {
+		{Type::STRING, Type::STRING, {}, (void*) &string_toUpper, Method::NATIVE}
+	});
+	method("split", {
+		{Type::STRING, Type::STRING_ARRAY, {Type::STRING}, (void*) &string_split, Method::NATIVE}
+	});
+	method("startsWith", {
+		{Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_startsWith, Method::NATIVE}
+	});
 	method("code", {
-		{Type::STRING, Type::INTEGER, {}, (void*) &string_begin_code},
-		{Type::STRING, Type::INTEGER, {Type::INTEGER}, (void*) &string_code},
+		{Type::STRING, Type::INTEGER, {}, (void*) &string_begin_code, Method::NATIVE},
+		{Type::STRING, Type::INTEGER, {Type::INTEGER}, (void*) &string_code, Method::NATIVE},
 	});
-	method("number", Type::STRING, Type::LONG, {}, (void*) &string_number);
-
+	method("number", {
+		{Type::STRING, Type::LONG, {}, (void*) &string_number, Method::NATIVE}
+	});
 	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
-	method("map", Type::STRING, Type::STRING, {map_fun_type}, (void*) &string_map);
-
-	method("sort", Type::STRING, Type::STRING, {}, (void*) &LSString::sort);
+	method("map", {
+		{Type::STRING, Type::STRING, {map_fun_type}, (void*) &string_map, Method::NATIVE}
+	});
+	method("sort", {
+		{Type::STRING, Type::STRING, {}, (void*) &LSString::sort, Method::NATIVE}
+	});
 
 	/*
 	 * Static methods
 	 */
-	static_method("charAt", Type::STRING, {Type::STRING, Type::INTEGER}, (void*) &string_charAt);
-	static_method("contains", Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_contains);
-	static_method("endsWith", Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_endsWith);
-	static_method("indexOf", Type::INTEGER, {Type::STRING, Type::STRING}, (void*) &string_indexOf);
-	static_method("length", Type::INTEGER, {Type::STRING}, (void*) &string_length);
-	static_method("size", Type::INTEGER, {Type::STRING}, (void*) &string_size);
-	static_method("replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &StringSTD::replace);
-	static_method("reverse", Type::STRING, {Type::STRING}, (void*) &LSString::ls_tilde);
-	static_method("substring", Type::STRING, {Type::STRING, Type::INTEGER, Type::INTEGER}, (void*) &string_substring);
-	static_method("toArray", Type::PTR_ARRAY, {Type::STRING}, (void*) &string_toArray);
-	static_method("toLower", Type::STRING, {Type::STRING}, (void*) &string_toLower);
-	static_method("toUpper", Type::STRING, {Type::STRING}, (void*) &string_toUpper);
-	static_method("split", Type::STRING_ARRAY, {Type::POINTER, Type::POINTER}, (void*) &string_split);
-	static_method("startsWith", Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_startsWith);
-	static_method("map", Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map);
-	static_method("code", {
-		{Type::INTEGER, {Type::POINTER}, (void*) &string_begin_code},
-		{Type::INTEGER, {Type::STRING, Type::INTEGER}, (void*) &string_code},
+	static_method("charAt", {
+		{Type::STRING, {Type::STRING, Type::INTEGER}, (void*) &string_charAt, Method::NATIVE}
 	});
-	static_method("number", Type::LONG, {Type::POINTER}, (void*) &string_number);
+	static_method("contains", {
+		{Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_contains, Method::NATIVE}
+	});
+	static_method("endsWith", {
+		{Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_endsWith, Method::NATIVE}
+	});
+	static_method("indexOf", {
+		{Type::INTEGER, {Type::STRING, Type::STRING}, (void*) &string_indexOf, Method::NATIVE}
+	});
+	static_method("length", {
+		{Type::INTEGER, {Type::STRING}, (void*) &string_length, Method::NATIVE}
+	});
+	static_method("size", {
+		{Type::INTEGER, {Type::STRING}, (void*) &string_size, Method::NATIVE}
+	});
+	static_method("replace", {
+		{Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &StringSTD::replace, Method::NATIVE}
+	});
+	static_method("reverse", {
+		{Type::STRING, {Type::STRING}, (void*) &LSString::ls_tilde, Method::NATIVE}
+	});
+	static_method("substring", {
+		{Type::STRING, {Type::STRING, Type::INTEGER, Type::INTEGER}, (void*) &string_substring, Method::NATIVE}
+	});
+	static_method("toArray", {
+		{Type::PTR_ARRAY, {Type::STRING}, (void*) &string_toArray, Method::NATIVE}
+	});
+	static_method("toLower", {
+		{Type::STRING, {Type::STRING}, (void*) &string_toLower, Method::NATIVE}
+	});
+	static_method("toUpper", {
+		{Type::STRING, {Type::STRING}, (void*) &string_toUpper, Method::NATIVE}
+	});
+	static_method("split", {
+		{Type::STRING_ARRAY, {Type::POINTER, Type::POINTER}, (void*) &string_split, Method::NATIVE}
+	});
+	static_method("startsWith", {
+		{Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_startsWith, Method::NATIVE}
+	});
+	static_method("map", {
+		{Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map, Method::NATIVE}
+	});
+	static_method("code", {
+		{Type::INTEGER, {Type::POINTER}, (void*) &string_begin_code, Method::NATIVE},
+		{Type::INTEGER, {Type::STRING, Type::INTEGER}, (void*) &string_code, Method::NATIVE},
+	});
+	static_method("number", {
+		{Type::LONG, {Type::POINTER}, (void*) &string_number, Method::NATIVE}
+	});
 }
 
 StringSTD::~StringSTD() {}
