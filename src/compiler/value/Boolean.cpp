@@ -38,7 +38,7 @@ Compiler::value Boolean::compile(Compiler& c) const {
 		LSBoolean* b = LSBoolean::get(value);
 		return {LS_CREATE_POINTER(c.F, b), Type::BOOLEAN_P};
 	} else {
-		return {LS_CREATE_BOOLEAN(c.F, (int) value), Type::BOOLEAN};
+		return {LS_CREATE_BOOLEAN(c.F, value), Type::BOOLEAN};
 	}
 }
 
