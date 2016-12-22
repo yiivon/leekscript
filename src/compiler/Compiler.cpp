@@ -89,10 +89,10 @@ Compiler::value Compiler::insn_not(Compiler::value v) const {
 	return {jit_insn_not(F, v.v), v.t};
 }
 Compiler::value Compiler::insn_and(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_and(F, a.v, b.v), Type::BOOLEAN};
+	return {jit_insn_and(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
 }
 Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_or(F, a.v, b.v), Type::BOOLEAN};
+	return {jit_insn_or(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
 }
 Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	auto result_type = [&]() {
