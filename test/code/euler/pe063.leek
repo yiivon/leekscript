@@ -1,0 +1,11 @@
+var c = 0
+for (var power = 1m; power < 25m; power = power + 1m) {
+	for (var n = 1m; n < 10m; n = n + 1m) {
+		var s = '' + (n ** power)
+		if power == s.size() {
+			// System.print('' + n + ' ^ ' + power + ' = ' + (n ** power))
+			c++
+		}
+	}
+}
+c
