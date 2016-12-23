@@ -275,6 +275,13 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 			return new LSString(std::to_string(v));
 		});
 	}
+	if (args[0].t.raw_type == RawType::GMP_INT) {
+		return c.insn_call(Type::STRING, args, +[](__mpz_struct v) {
+			char buff[10000];
+			mpz_get_str(buff, 10, &v);
+			return new LSString(buff);
+		});
+	}
 	if (args[0].t == Type::REAL) {
 		return c.insn_call(Type::STRING, args, +[](double v) {
 			return new LSString(LSNumber::print(v));
@@ -288,6 +295,7 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 	if (args[0].t.nature == Nature::POINTER) {
 		return c.insn_call(Type::STRING, args, (void*) &LSValue::ls_json);
 	}
+	// TODO
 	std::cout << "Type non supporté !" << std::endl;
 	throw new std::exception();
 	return {nullptr, Type::VOID};
