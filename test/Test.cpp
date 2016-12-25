@@ -147,12 +147,14 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 
 #define GREY "\033[0;90m"
 #define GREEN "\033[0;32m"
+#define BLUE "\033[1;34m"
 #define RED "\033[1;31m"
 #define END_COLOR "\033[0m"
 
 void Test::Input::pass(std::string expected) {
-	std::cout << GREEN << "OK   " << END_COLOR << ": " << name
-	<<  "  ===>  " << expected;
+	std::cout << GREEN << "OK   " << END_COLOR << ": " << name;
+	if (v1) std::cout << BLUE << " [V1]" << END_COLOR;
+	std::cout <<  "  ===>  " << expected;
 	std::cout <<  GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	test->success_count++;
@@ -160,8 +162,9 @@ void Test::Input::pass(std::string expected) {
 
 void Test::Input::fail(std::string expected, std::string actual) {
 	std::ostringstream oss;
-	oss << RED << "FAIL " << END_COLOR << ": " << name
-	<< "  =/=>  " << expected << "  got  " << actual;
+	oss << RED << "FAIL " << END_COLOR << ": " << name;
+	if (v1) std::cout << BLUE << " [V1]" << END_COLOR;
+	std::cout << "  =/=>  " << expected << "  got  " << actual;
 	std::cout << oss.str();
 	std::cout << GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
