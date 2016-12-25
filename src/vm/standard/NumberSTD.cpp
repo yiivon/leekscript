@@ -29,24 +29,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-double number_rand() {
-	return (double) rand() / RAND_MAX;
-}
-
-LSNumber* number_randFloat(LSNumber* min, LSNumber* max) {
-	double r = min->value + ((double) rand() / RAND_MAX) * max->value;
-	if (min->refs == 0) delete min;
-	if (max->refs == 0) {
-		max->value = r;
-		return max;
-	}
-	return LSNumber::get(r);
-}
-
-int number_randInt(int min, int max) {
-	return floor(min + ((double) rand() / RAND_MAX) * (max - min));
-}
-
 LSNumber* number_signum(LSNumber* x) {
 	double r = 0;
 	if (x->value > 0) r = 1;
@@ -402,13 +384,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::LONG, Type::LONG}, (void*) &NumberSTD::pow_int}
 	});
 	static_method("rand", {
-		{Type::REAL, {}, (void*) &number_rand, Method::NATIVE}
+		{Type::REAL, {}, (void*) &NumberSTD::rand01, Method::NATIVE}
 	});
 	static_method("randFloat", {
-		{Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &number_randFloat, Method::NATIVE}
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::randFloat, Method::NATIVE}
 	});
 	static_method("randInt", {
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &number_randInt, Method::NATIVE}
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::randInt, Method::NATIVE}
 	});
 	static_method("round", {
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
@@ -1120,6 +1102,18 @@ Compiler::value NumberSTD::pow_ptr(Compiler& c, std::vector<Compiler::value> arg
 		LSValue::delete_temporary(y);
 		return r;
 	});
+}
+
+double NumberSTD::rand01() {
+	return (double) rand() / RAND_MAX;
+}
+
+double NumberSTD::randFloat(double min, double max) {
+	return min + ((double) rand() / RAND_MAX) * max;
+}
+
+int NumberSTD::randInt(int min, int max) {
+	return floor(((double) rand() / RAND_MAX) * (max - min));
 }
 
 }

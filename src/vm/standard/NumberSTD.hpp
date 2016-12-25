@@ -174,6 +174,10 @@ public:
 
 	static Compiler::value log10_ptr(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value log10_real(Compiler&, std::vector<Compiler::value>);
+
+	static double rand01();
+	static double randFloat(double min, double max);
+	static int randInt(int min, int max);
 };
 
 }
