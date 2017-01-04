@@ -1,0 +1,35 @@
+/* TODO
+	- fix mpz leaks
+*/
+
+var res = []
+
+var search = function(start, base, level) {
+
+	if (level == 5) {
+
+		var b = base + (10m ** (20 - 2 * level))
+		var l = Number.sqrt(b)
+		// System.print("" + start + " to " + b)
+
+		for (var j = Number.sqrt(start); j < l; j = j + 1m) {
+			var s = '' + (j ** 2)
+			for var k = 0; k < 9; {
+				if s[k * 2] != ('' + (++k)) continue 2
+			}
+			System.print("Found: " + j + " (" + s + ")")
+			res += ('' + j)
+		}
+	} else {
+		for var i = 0m; i < 10m; i = i + 1m {
+			var p = i * (10m ** (19 - 2 * level))
+			var a = start + p
+			var b = base + (level + 1) * (10m ** (18 - 2 * level)) + p
+			search(a, b, level + 1)
+		}
+	}
+}
+
+search(1020304050607080900m, 1000000000000000000m, 1)
+
+res[0].number()
