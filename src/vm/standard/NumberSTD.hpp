@@ -46,6 +46,7 @@ public:
 	static Compiler::value sub_gmp_int(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value sub_gmp_tmp_int(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value mul_int_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mul_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mul_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mul_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);

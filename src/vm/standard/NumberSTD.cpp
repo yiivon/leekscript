@@ -104,10 +104,11 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("*", {
+		{Type::INTEGER, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_int_mpz},
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_gmp},
 		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_tmp_gmp},
 		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_gmp_tmp},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_tmp_gmp_tmp},
+		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_tmp_gmp_tmp}
 	});
 
 	operator_("**", {
@@ -548,6 +549,14 @@ void mpz_mul_custom(__mpz_struct* r, __mpz_struct* a, __mpz_struct* b) {
 //	std::cout << "expected size: " << mpz_log(*a) + mpz_log(*b) << std::endl;
 	mpz_mul(r, a, b);
 //	std::cout << "size r: " << mpz_log(*r) << std::endl;
+}
+
+Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
+	auto r = c.new_mpz();
+	auto r_addr = c.insn_address_of(r);
+	auto b = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {r_addr, b, args[0]}, &mpz_mul_si);
+	return r;
 }
 
 Compiler::value NumberSTD::mul_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
