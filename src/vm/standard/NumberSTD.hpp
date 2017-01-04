@@ -151,6 +151,7 @@ public:
 	static Compiler::value tan_real(Compiler&, std::vector<Compiler::value>);
 
 	static double sqrt_ptr(LSNumber* x);
+	static Compiler::value sqrt_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value sqrt_real(Compiler&, std::vector<Compiler::value>);
 
 	static double cbrt_ptr(LSNumber* x);
