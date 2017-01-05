@@ -44,6 +44,7 @@ LSString* plus_mpz_tmp(LSString* s, __mpz_struct mpz) {
 	LSString* res = new LSString(*s + buff);
 	LSValue::delete_temporary(s);
 	mpz_clear(&mpz);
+	VM::gmp_values_deleted++;
 	return res;
 }
 
