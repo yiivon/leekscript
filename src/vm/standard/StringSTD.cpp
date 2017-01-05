@@ -38,11 +38,22 @@ LSString* plus_gmp(LSString* s, __mpz_struct mpz) {
 	return res;
 }
 
+LSString* plus_mpz_tmp(LSString* s, __mpz_struct mpz) {
+	char buff[1000];
+	mpz_get_str(buff, 10, &mpz);
+	LSString* res = new LSString(*s + buff);
+	LSValue::delete_temporary(s);
+	mpz_clear(&mpz);
+	VM::gmp_values_deleted++;
+	return res;
+}
+
 StringSTD::StringSTD() : Module("String") {
 	/*
 	 * Operators
 	 */
 	operator_("+", {
+		{Type::STRING, Type::GMP_INT_TMP, Type::STRING, (void*) &plus_mpz_tmp, Method::NATIVE},
 		{Type::STRING, Type::GMP_INT, Type::STRING, (void*) &plus_gmp, Method::NATIVE}
 	});
 	operator_("<", {
