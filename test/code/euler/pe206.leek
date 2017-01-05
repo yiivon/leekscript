@@ -1,7 +1,3 @@
-/* TODO
-	- fix mpz leaks
-*/
-
 var res = []
 var search = function(start, base, level) {
 	if (level == 5) {
