@@ -334,6 +334,11 @@ void Test::test_numbers() {
 	code("Number.hypot(34, 74)").almost(81.437092286);
 	code("Number.hypot([34, ''][0], 74)").almost(81.437092286);
 
+	section("Number.sqrt");
+	code("Number.sqrt(123456789123456789123456789)").equals("11111111066111");
+	code("Number.sqrt(55m ** 40m)").equals("11111111066111");
+	code("Number.sqrt(12m + 5m)").equals("4");
+
 	section("Object-like calls");
 	code("(-12).abs()").equals("12");
 	code("π.cos()").equals("-1");
