@@ -556,11 +556,14 @@ Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value>
 	auto r_addr = c.insn_address_of(r);
 	auto b = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {r_addr, b, args[0]}, &mpz_mul_si);
+	if (args[1].t.temporary) {
+		VM::delete_gmp_int(c.F, args[1].v);
+	}
 	return r;
 }
 
 Compiler::value NumberSTD::mul_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	Compiler::value r = {VM::create_gmp_int(c.F), Type::GMP_INT};
+	Compiler::value r = {VM::create_gmp_int(c.F), Type::GMP_INT_TMP};
 	auto r_addr = c.insn_address_of(r);
 	auto a = c.insn_address_of(args[0]);
 	auto b = c.insn_address_of(args[1]);
@@ -577,7 +580,7 @@ Compiler::value NumberSTD::mul_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler
 }
 
 Compiler::value NumberSTD::mul_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::GMP_INT, args, +[](__mpz_struct a, __mpz_struct b) {
+	return c.insn_call(Type::GMP_INT_TMP, args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_mul(&b, &a, &b);
 		return b;
 	});
@@ -595,7 +598,8 @@ Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::GMP_INT, args, +[](__mpz_struct a, __mpz_struct b) {
+	VM::inc_gmp_counter(c.F);
+	return c.insn_call(Type::GMP_INT_TMP, args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t res;
 		mpz_init(res);
 		mpz_pow_ui(res, &a, mpz_get_ui(&b));
