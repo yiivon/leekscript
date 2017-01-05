@@ -149,7 +149,7 @@ Compiler::value Compiler::new_pointer(void* p) const {
 	return {LS_CREATE_POINTER(F, p), Type::POINTER};
 }
 Compiler::value Compiler::new_mpz() const {
-	return {VM::create_gmp_int(F, 0), Type::GMP_INT};
+	return {VM::create_gmp_int(F, 0), Type::GMP_INT_TMP};
 }
 Compiler::value Compiler::new_object(Compiler::value clazz) const {
 	return insn_call(Type::POINTER, {clazz}, +[](LSClass* clazz) {
