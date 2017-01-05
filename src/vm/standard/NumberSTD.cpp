@@ -407,7 +407,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	static_method("sqrt", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
-		{Type::GMP_INT, {Type::GMP_INT}, (void*) NumberSTD::sqrt_gmp}
+		{Type::GMP_INT_TMP, {Type::GMP_INT}, (void*) NumberSTD::sqrt_gmp}
 	});
 	static_method("tan", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
@@ -1022,6 +1022,9 @@ Compiler::value NumberSTD::sqrt_gmp(Compiler& c, std::vector<Compiler::value> ar
 	auto r_addr = c.insn_address_of(r);
 	auto a_addr = c.insn_address_of(args[0]);
 	c.insn_call(Type::VOID, {r_addr, a_addr}, &mpz_sqrt);
+	if (args[0].t.temporary) {
+		VM::delete_gmp_int(c.F, args[0].v);
+	}
 	return r;
 }
 
