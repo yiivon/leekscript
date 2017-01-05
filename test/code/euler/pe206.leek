@@ -3,21 +3,14 @@
 */
 
 var res = []
-
 var search = function(start, base, level) {
-
 	if (level == 5) {
-
 		var b = base + (10m ** (20 - 2 * level))
-		var l = Number.sqrt(b)
-		// System.print("" + start + " to " + b)
-
-		for (var j = Number.sqrt(start); j < l; j = j + 1m) {
+		for (var j = Number.sqrt(start); j < Number.sqrt(b); j = j + 1m) {
 			var s = '' + (j ** 2)
 			for var k = 0; k < 9; {
 				if s[k * 2] != ('' + (++k)) continue 2
 			}
-			System.print("Found: " + j + " (" + s + ")")
 			res += ('' + j)
 		}
 	} else {

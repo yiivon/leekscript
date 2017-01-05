@@ -33,4 +33,5 @@ void Test::test_files() {
 	file("test/code/euler/pe015.leek").equals("137846528820");
 	file("test/code/euler/pe062.leek").equals("127035954683");
 	file("test/code/euler/pe063.leek").equals("49");
+	file("test/code/euler/pe206.leek").equals("1389019170");
 }
