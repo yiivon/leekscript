@@ -346,10 +346,33 @@ void Test::test_numbers() {
 	code("Number.hypot(34, 74)").almost(81.437092286);
 	code("Number.hypot([34, ''][0], 74)").almost(81.437092286);
 
+	section("Number.signum");
+	code("0.signum()").equals("0");
+	code("-0.signum()").equals("0");
+	code("12.signum()").equals("1");
+	code("12.5.signum()").equals("1");
+	code("-12.signum()").equals("-1");
+	code("-12.5.signum()").equals("-1");
+	code("Number.signum(0)").equals("0");
+	code("Number.signum(12)").equals("1");
+	code("Number.signum(-17)").equals("-1");
+
 	section("Number.sqrt");
 	code("Number.sqrt(123456789123456789123456789)").equals("11111111066111");
 	code("Number.sqrt(55m ** 20m)").equals("253295162119140625");
 	code("Number.sqrt(12m + 5m)").equals("4");
+
+	section("Number.toDegrees");
+	code("π.toDegrees()").equals("180");
+	code("(π / 2).toDegrees()").equals("90");
+	code("(-π / 2).toDegrees()").equals("-90");
+	code("0.toDegrees()").equals("0");
+
+	section("Number.toRadians");
+	code("180.toRadians()").almost(M_PI);
+	code("90.toRadians()").almost(M_PI / 2);
+	code("(-90).toRadians()").almost(-M_PI / 2);
+	code("0.toRadians()").equals("0");
 
 	section("Object-like calls");
 	code("(-12).abs()").equals("12");
