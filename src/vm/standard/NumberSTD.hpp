@@ -53,9 +53,6 @@ public:
 
 	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value lt_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value lt_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value lt_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value le(Compiler& c, std::vector<Compiler::value> args);
 

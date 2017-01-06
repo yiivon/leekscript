@@ -80,10 +80,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("<", {
 		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::lt},
-		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_tmp_gmp_tmp},
-		{Type::GMP_INT_TMP, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_tmp_gmp},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp_tmp},
+		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp}
 	});
 
 	operator_("<=", {
@@ -568,31 +565,12 @@ Compiler::value NumberSTD::lt_gmp_gmp(Compiler& c, std::vector<Compiler::value> 
 	auto a_addr = c.insn_address_of(args[0]);
 	auto b_addr = c.insn_address_of(args[1]);
 	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
-	return c.insn_lt(res, c.new_integer(0));
-}
-
-Compiler::value NumberSTD::lt_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
-	VM::delete_gmp_int(c.F, args[0].v);
-	return c.insn_lt(res, c.new_integer(0));
-}
-
-Compiler::value NumberSTD::lt_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, args, +[](__mpz_struct a, __mpz_struct b) {
-		bool res = mpz_cmp(&a, &b) < 0;
-		mpz_clear(&b);
-		VM::gmp_values_deleted++;
-		return res;
-	});
-}
-Compiler::value NumberSTD::lt_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
-	VM::delete_gmp_int(c.F, args[0].v);
-	VM::delete_gmp_int(c.F, args[1].v);
+	if (args[0].t.temporary) {
+		VM::delete_gmp_int(c.F, args[0].v);
+	}
+	if (args[1].t.temporary) {
+		VM::delete_gmp_int(c.F, args[1].v);
+	}
 	return c.insn_lt(res, c.new_integer(0));
 }
 
