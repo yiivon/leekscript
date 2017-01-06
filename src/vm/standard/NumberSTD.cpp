@@ -40,8 +40,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Operators
 	 */
 	operator_("=", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT, (void*) &NumberSTD::store_gmp_gmp},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT, (void*) &NumberSTD::store_gmp_gmp_tmp},
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::store_gmp_gmp}
 	});
 
 	operator_("+", {
@@ -383,13 +382,14 @@ Compiler::value NumberSTD::store_gmp_gmp(Compiler& c, std::vector<Compiler::valu
 	auto a = c.insn_address_of(args[0]);
 	auto b = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID,{a, b}, &mpz_set);
-	return args[0];
-}
-
-Compiler::value NumberSTD::store_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
-	VM::delete_gmp_int(c.F, args[0].v);
-	jit_insn_store(c.F, args[0].v, args[1].v);
-	return args[1];
+	if (args[1].t.temporary) {
+		return args[1];
+	} else {
+		auto r = c.new_mpz();
+		auto r_addr = c.insn_address_of(r);
+		c.insn_call(Type::VOID, {r_addr, b}, &mpz_set);
+		return r;
+	}
 }
 
 Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args) {

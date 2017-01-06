@@ -187,6 +187,9 @@ void Test::test_numbers() {
 	code("Number.phi").almost(1.618033988749894903);
 	code("Number.epsilon").almost(0.000000000000000222);
 
+	section("Number.operator =");
+	code("var a = 1m, b = 4m; a = b").equals("4");
+
 	section("Number.operator +");
 	code("1m + 2m").equals("3");
 	code("1m + (2m + 3m)").equals("6");
