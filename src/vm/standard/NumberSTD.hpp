@@ -122,6 +122,8 @@ public:
 	static Compiler::value ceil_real(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value ceil_int(Compiler&, std::vector<Compiler::value>);
 
+	static bool isInteger(LSNumber* x);
+
 	static double max_ptr_ptr(LSNumber* x, LSNumber* y);
 	static double max_ptr_float(LSNumber* x, double y);
 	static double max_ptr_int(LSNumber* x, int y);
@@ -174,6 +176,11 @@ public:
 	static double rand01();
 	static double randFloat(double min, double max);
 	static int randInt(int min, int max);
+
+	static int signum(LSNumber* x);
+
+	static double toDegrees(LSNumber* x);
+	static double toRadians(LSNumber* x);
 };
 
 }

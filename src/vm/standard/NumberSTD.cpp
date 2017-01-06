@@ -29,42 +29,6 @@ jit_value_t Number_epsilon(jit_function_t F) {
 	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
 }
 
-LSNumber* number_signum(LSNumber* x) {
-	double r = 0;
-	if (x->value > 0) r = 1;
-	if (x->value < 0) r = -1;
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
-}
-
-LSNumber* number_toDegrees(LSNumber* x) {
-	double r = (x->value * 180) / M_PI;
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
-}
-
-LSNumber* number_toRadians(LSNumber* x) {
-	double r = (x->value * M_PI) / 180;
-	if (x->refs == 0) {
-		x->value = r;
-		return x;
-	}
-	return LSNumber::get(r);
-}
-
-bool number_isInteger(LSNumber* x) {
-
-	bool is = x->value == (int) x->value;
-	if (x->refs == 0) delete x;
-	return is;
-}
-
 NumberSTD::NumberSTD() : Module("Number") {
 
 	static_field("pi", Type::REAL, (void*) &Number_pi);
@@ -257,7 +221,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::round_ptr, Method::NATIVE}
 	});
 	method("signum", {
-		{Type::NUMBER, Type::INTEGER, {}, (void*) &number_signum, Method::NATIVE}
+		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::signum, Method::NATIVE}
 	});
 	method("sin", {
 		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
@@ -272,13 +236,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::tan_real}
 	});
 	method("toDegrees", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &number_toDegrees, Method::NATIVE}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::toDegrees, Method::NATIVE}
 	});
 	method("toRadians", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &number_toRadians, Method::NATIVE}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::toRadians, Method::NATIVE}
 	});
 	method("isInteger", {
-		{Type::NUMBER, Type::BOOLEAN, {}, (void*) &number_isInteger, Method::NATIVE}
+		{Type::NUMBER, Type::BOOLEAN, {}, (void*) &NumberSTD::isInteger, Method::NATIVE}
 	});
 	method("isPrime", {
 		{Type::GMP_INT, Type::INTEGER, {}, (void*) &NumberSTD::is_prime},
@@ -393,7 +357,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::round_int}
 	});
 	static_method("signum", {
-		{Type::INTEGER, {Type::NUMBER}, (void*) &number_signum, Method::NATIVE}
+		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::signum, Method::NATIVE}
 	});
 	static_method("sin", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
@@ -408,13 +372,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::tan_real},
 	});
 	static_method("toDegrees", {
-		{Type::REAL, {Type::NUMBER}, (void*) &number_toDegrees, Method::NATIVE}
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::toDegrees, Method::NATIVE}
 	});
 	static_method("toRadians", {
-		{Type::REAL, {Type::NUMBER}, (void*) &number_toRadians, Method::NATIVE}
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::toRadians, Method::NATIVE}
 	});
 	static_method("isInteger", {
-		{Type::BOOLEAN, {Type::NUMBER}, (void*) &number_isInteger, Method::NATIVE}
+		{Type::BOOLEAN, {Type::NUMBER}, (void*) &NumberSTD::isInteger, Method::NATIVE}
 	});
 }
 
@@ -1105,5 +1069,32 @@ double NumberSTD::randFloat(double min, double max) {
 int NumberSTD::randInt(int min, int max) {
 	return floor(((double) rand() / RAND_MAX) * (max - min));
 }
+
+int NumberSTD::signum(LSNumber* x) {
+	int s = 0;
+	if (x->value > 0) s = 1;
+	if (x->value < 0) s = -1;
+	LSValue::delete_temporary(x);
+	return s;
+}
+
+double NumberSTD::toDegrees(LSNumber* x) {
+	double d = (x->value * 180) / M_PI;
+	LSValue::delete_temporary(x);
+	return d;
+}
+
+double NumberSTD::toRadians(LSNumber* x) {
+	double r = (x->value * M_PI) / 180;
+	LSValue::delete_temporary(x);
+	return r;
+}
+
+bool NumberSTD::isInteger(LSNumber* x) {
+	bool is = x->value == (int) x->value;
+	LSValue::delete_temporary(x);
+	return is;
+}
+
 
 }
