@@ -83,9 +83,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("+", {
 		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr, Method::NATIVE},
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp},
-		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_tmp_gmp},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp_tmp},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_tmp_gmp_tmp},
 		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_real_real},
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_real_real},
 	});
@@ -96,9 +93,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("-", {
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp},
-		{Type::GMP_INT_TMP, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp},
-		{Type::GMP_INT, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp_tmp},
-		{Type::GMP_INT_TMP, Type::GMP_INT_TMP, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_gmp_tmp},
 		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_int},
 		{Type::GMP_INT_TMP, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_tmp_int}
 	});
@@ -446,34 +440,19 @@ LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
 }
 
 Compiler::value NumberSTD::add_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.new_mpz();
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		if (args[1].t.temporary) return args[1];
+		return c.new_mpz();
+	}();
 	auto r_addr = c.insn_address_of(r);
 	auto a = c.insn_address_of(args[0]);
 	auto b = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_add);
+	if (args[1].t.temporary && args[1] != r) {
+		VM::delete_gmp_int(c.F, args[1].v);
+	}
 	return r;
-}
-
-Compiler::value NumberSTD::add_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::GMP_INT, args,	+[](__mpz_struct a, __mpz_struct b) {
-		mpz_add(&b, &a, &b);
-		return b;
-	});
-}
-
-Compiler::value NumberSTD::add_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
-	return args[0];
-}
-
-Compiler::value NumberSTD::add_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
-	VM::delete_gmp_int(c.F, args[1].v);
-	return args[0];
 }
 
 Compiler::value NumberSTD::add_eq_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
@@ -484,33 +463,19 @@ Compiler::value NumberSTD::add_eq_gmp_gmp(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::sub_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::GMP_INT, args, +[](__mpz_struct a, __mpz_struct b) {
-		mpz_t res;
-		mpz_init(res);
-		mpz_sub(res, &a, &b);
-		return *res;
-	});
-}
-Compiler::value NumberSTD::sub_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::GMP_INT, args, +[](__mpz_struct a, __mpz_struct b) {
-		mpz_sub(&b, &a, &b);
-		return b;
-	});
-}
-
-Compiler::value NumberSTD::sub_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_sub);
-	return args[0];
-}
-
-Compiler::value NumberSTD::sub_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args) {
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		if (args[1].t.temporary) return args[1];
+		return c.new_mpz();
+	}();
+	auto r_addr = c.insn_address_of(r);
 	auto a = c.insn_address_of(args[0]);
 	auto b = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a, a, b}, &mpz_sub);
-	VM::delete_gmp_int(c.F, args[1].v);
-	return args[0];
+	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub);
+	if (args[1].t.temporary && args[1] != r) {
+		VM::delete_gmp_int(c.F, args[1].v);
+	}
+	return r;
 }
 
 Compiler::value NumberSTD::sub_gmp_int(Compiler& c, std::vector<Compiler::value> args) {
