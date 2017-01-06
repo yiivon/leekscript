@@ -28,6 +28,12 @@ public:
 	struct value {
 		jit_value_t v;
 		Type t;
+		bool operator == (const value& o) const {
+			return v == o.v and t == o.t;
+		}
+		bool operator != (const value& o) const {
+			return v != o.v or t != o.t;
+		}
 	};
 
 	jit_function_t F = nullptr;
