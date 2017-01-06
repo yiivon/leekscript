@@ -149,10 +149,10 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		this->v2_type = op->reversed ? m->object_type : m->operand_type;
 		return_type = m->return_type;
 		type = return_type;
-		if (v1->type != this->v1_type) {
+		if (v1->type.not_temporary() != this->v1_type.not_temporary()) {
 			v1->analyse(analyser, this->v1_type);
 		}
-		if (v2->type != this->v2_type) {
+		if (v2->type.not_temporary() != this->v2_type.not_temporary()) {
 			v2->analyse(analyser, this->v2_type);
 		}
 		if (req_type.nature == Nature::POINTER) {
