@@ -187,6 +187,18 @@ void Test::test_numbers() {
 	code("Number.phi").almost(1.618033988749894903);
 	code("Number.epsilon").almost(0.000000000000000222);
 
+	section("Number.operator +");
+	code("1m + 2m").equals("3");
+	code("1m + (2m + 3m)").equals("6");
+	code("(1m + 2m) + 3m").equals("6");
+	code("(1m + 2m) + (3m + 4m)").equals("10");
+
+	section("Number.operator -");
+	code("1m - 2m").equals("-1");
+	code("1m - (2m - 3m)").equals("2");
+	code("(1m - 2m) - 3m").equals("-4");
+	code("(1m - 2m) - (3m - 4m)").equals("0");
+
 	section("Number.abs()");
 //	code("Number.abs").equals("<function>");
 	code("Number.abs(-12)").equals("12");
