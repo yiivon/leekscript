@@ -209,6 +209,7 @@ public:
 	std::string to_string() const;
 
 	bool isNumber() const;
+	Type not_temporary() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }

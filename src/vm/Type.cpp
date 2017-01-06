@@ -273,6 +273,12 @@ bool Type::operator ==(const Type& type) const {
 			arguments_types == type.arguments_types;
 }
 
+Type Type::not_temporary() const {
+	Type new_type = *this;
+	new_type.temporary = false;
+	return new_type;
+}
+
 /*
  * Can we convert type into this ?
  * {float}.compatible({int}) == true
