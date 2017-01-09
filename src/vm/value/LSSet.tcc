@@ -74,14 +74,11 @@ inline bool LSSet<T>::ls_insert(T value) {
 	return r;
 }
 
-template <>
-inline LSSet<LSValue*> *LSSet<LSValue*>::ls_clear() {
-	for (LSValue* v : *this) LSValue::delete_ref(v);
-	this->clear();
-	return this;
-}
-template <typename T>
-inline LSSet<T> *LSSet<T>::ls_clear() {
+template <class T>
+LSSet<T>* LSSet<T>::ls_clear() {
+	for (T v : *this) {
+		ls::unref(v);
+	}
 	this->clear();
 	return this;
 }
@@ -107,16 +104,10 @@ inline bool LSSet<T>::ls_erase(T value) {
 	return r;
 }
 
-template <>
-inline bool LSSet<LSValue*>::ls_contains(LSValue* value) {
-	bool r = count(value);
-	LSValue::delete_temporary(value);
-	if (refs == 0) delete this;
-	return r;
-}
-template <typename T>
-inline bool LSSet<T>::ls_contains(T value) {
+template <class T>
+bool LSSet<T>::ls_contains(T value) {
 	bool r = this->count(value);
+	ls::release(value);
 	if (refs == 0) delete this;
 	return r;
 }
@@ -126,85 +117,32 @@ bool LSSet<T>::isTrue() const {
 	return !this->empty();
 }
 
-template <>
-inline bool LSSet<LSValue*>::eq(const LSSet<LSValue*>* other) const {
-	if (size() != other->size()) return false;
-	auto it1 = begin();
-	auto it2 = other->begin();
-	while (it1 != end()) {
-		if (**it1 != **it2) return false;
-		++it1;
-		++it2;
-	}
-	return true;
-}
-template <typename T>
-inline bool LSSet<T>::eq(const LSSet<LSValue*>* other) const {
-	if (this->size() != other->size()) return false;
-	auto it1 = this->begin();
-	auto it2 = other->begin();
-	while (it1 != this->end()) {
-		LSNumber* v2 = dynamic_cast<LSNumber*>(*it2);
-		if (!v2) return false;
-		if (*it1 != v2->value) return false;
+template <class T1, class T2>
+bool set_equals(const LSSet<T1>* s1, const LSSet<T2>* s2) {
+	if (s1->size() != s2->size()) return false;
+	auto it1 = s1->begin();
+	auto it2 = s2->begin();
+	while (it1 != s1->end()) {
+		if (!ls::equals(*it1, *it2)) return false;
 		++it1;
 		++it2;
 	}
 	return true;
 }
 
-template <>
-inline bool LSSet<LSValue*>::eq(const LSSet<int>* other) const {
-	if (size() != other->size()) return false;
-	auto it1 = begin();
-	auto it2 = other->begin();
-	while (it1 != end()) {
-		LSNumber* v1 = dynamic_cast<LSNumber*>(*it1);
-		if (!v1) return false;
-		if (*it2 != v1->value) return false;
-		++it1;
-		++it2;
-	}
-	return true;
-}
-template <typename T>
-inline bool LSSet<T>::eq(const LSSet<int>* other) const {
-	if (this->size() != other->size()) return false;
-	auto it1 = this->begin();
-	auto it2 = other->begin();
-	while (it1 != this->end()) {
-		if (*it1 != *it2) return false;
-		++it1;
-		++it2;
-	}
-	return true;
+template <class T>
+bool LSSet<T>::eq(const LSSet<LSValue*>* other) const {
+	return set_equals(this, other);
 }
 
-template <>
-inline bool LSSet<LSValue*>::eq(const LSSet<double>* other) const {
-	if (size() != other->size()) return false;
-	auto it1 = begin();
-	auto it2 = other->begin();
-	while (it1 != end()) {
-		LSNumber* v1 = dynamic_cast<LSNumber*>(*it1);
-		if (!v1) return false;
-		if (*it2 != v1->value) return false;
-		++it1;
-		++it2;
-	}
-	return true;
+template <class T>
+bool LSSet<T>::eq(const LSSet<int>* other) const {
+	return set_equals(this, other);
 }
-template <typename T>
-inline bool LSSet<T>::eq(const LSSet<double>* other) const {
-	if (this->size() != other->size()) return false;
-	auto it1 = this->begin();
-	auto it2 = other->begin();
-	while (it1 != this->end()) {
-		if (*it1 != *it2) return false;
-		++it1;
-		++it2;
-	}
-	return true;
+
+template <class T>
+bool LSSet<T>::eq(const LSSet<double>* other) const {
+	return set_equals(this, other);
 }
 
 template <>
@@ -266,28 +204,12 @@ inline bool LSSet<T>::lt(const LSSet<double>* v) const {
 	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
 }
 
-template <>
-inline bool LSSet<LSValue*>::in(LSValue* value) const {
-	bool r = count(value);
-	LSValue::delete_temporary(this);
-	LSValue::delete_temporary(value);
-	return r;
-}
-template <typename T>
-inline bool LSSet<T>::in(T value) const {
+template <class T>
+bool LSSet<T>::in(T value) const {
 	bool r = this->count(value);
 	LSValue::delete_temporary(this);
+	ls::release(value);
 	return r;
-}
-
-template <typename T>
-LSValue* LSSet<T>::at(const LSValue* ) const {
-	return LSNull::get();
-}
-
-template <typename T>
-LSValue** LSSet<T>::atL(const LSValue* ) {
-	return nullptr;
 }
 
 template <typename T>
@@ -305,7 +227,7 @@ template <typename T>
 inline std::string LSSet<T>::json() const {
 	std::string res = "[";
 	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) res += ",";
+		if (i != this->begin()) res += ", ";
 		std::string json = ls::to_json(*i);
 		res += json;
 	}

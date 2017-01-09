@@ -41,8 +41,6 @@ public:
 	virtual bool lt(const LSSet<int>*) const;
 	virtual bool lt(const LSSet<double>*) const;
 	bool in(T) const;
-	virtual LSValue* at(const LSValue* key) const override;
-	virtual LSValue** atL(const LSValue* key) override;
 	virtual std::ostream& dump(std::ostream&) const override;
 	virtual std::string json() const override;
 	virtual LSValue* clone() const override;
