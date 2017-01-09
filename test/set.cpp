@@ -12,6 +12,30 @@ void Test::test_set() {
 	section("Set.operator in ()");
 	code("let s = <1, 2> 3 in s").equals("false");
 	code("let s = <1, 2> 1 in s").equals("true");
+
+	section("Set.operator ==");
+	code("<> == <>").equals("true");
+	code("<1, 2, 3> == <1, 2, 3>").equals("true");
+	code("<1, 2, 3> == <1, 2, 4>").equals("false");
+	code("<'a', 'b', 'c'> == <'a', 'b', 'c'>").equals("true");
+	code("<'a', 'b', 'c'> == <1, 2, 3>").equals("false");
+	code("<1, 2, [3, ''][0]> == <1, 2, 3>").equals("true");
+	code("<1.12, 2.12, [3.12, ''][0]> == <1.12, 2.12, 3.12>").equals("true");
+
+	section("Set.operator <");
+	code("<> < <>").equals("false");
+	code("<1> < <2>").equals("true");
+	code("<2> < <1>").equals("false");
+	code("<1, 2, 3> < <1, 2, 4>").equals("true");
+	code("<2, 2, 3> < <1, 2, 3>").equals("false");
+	code("<1.7, 2, 3.90> < <1.7, 2, 5.6>").equals("true");
+	code("<'a', 'b', 'c'> < <'a', 'b', 'd'>").equals("true");
+	code("<'a', 2, true> < <'a', 2, false>").equals("false");
+	code("<1, 2, 3> < <1, 2, []>").equals("true");
+	code("<1, 2.5, 3.5> < <1, 2.5, []>").equals("true");
+	code("<1, 2, []> < <1, 2, 3>").equals("false");
+	code("<1, 2, []> < <1, 2, 3.5>").equals("false");
+
 	section("Set.contains()");
 	code("let s = <1, 2> s.contains(3)").equals("false");
 	code("let s = <1, 2> s.contains(1)").equals("true");
