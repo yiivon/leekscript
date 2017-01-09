@@ -3,9 +3,10 @@
 void Test::test_set() {
 
 	header("Set");
-
+	section("Constructor");
 	code("<>").equals("<>");
 	code("<2, 1, 1>").equals("<1, 2>");
+	code("<1.56, -2.312, 7.23>").equals("<-2.312, 1.56, 7.23>");
 	code("<'2', '1', '1'>").equals("<'1', '2'>");
 
 	code("let s = <1, 2> s.insert(3) s").equals("<1, 2, 3>");
