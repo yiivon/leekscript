@@ -165,7 +165,7 @@ void Test::Input::fail(std::string expected, std::string actual) {
 	std::ostringstream oss;
 	oss << RED << "FAIL " << END_COLOR << ": " << name;
 	if (v1) std::cout << BLUE << " [V1]" << END_COLOR;
-	std::cout << "  =/=>  " << expected << "  got  " << actual;
+	oss << "  =/=>  " << expected << "  got  " << actual;
 	std::cout << oss.str();
 	std::cout << GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
