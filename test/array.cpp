@@ -75,6 +75,7 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4, 5][1:3]").equals("[2, 3, 4]");
 	code("let a = [5, 'yolo', 12] a[1]").equals("'yolo'");
 	code("let a = [12] a[0]++ a").equals("[13]");
+	code("[1, 2, 'a'][['salut', 2][0]]").exception(ls::VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
