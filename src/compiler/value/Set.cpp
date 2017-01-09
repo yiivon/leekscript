@@ -66,7 +66,7 @@ void Set_insert_ptr(LSSet<LSValue*>* set, LSValue* value) {
 void Set_insert_int(LSSet<int>* set, int value) {
 	set->insert(value);
 }
-void Set_insert_float(LSSet<int>* set, double value) {
+void Set_insert_float(LSSet<double>* set, double value) {
 	set->insert(value);
 }
 
@@ -88,7 +88,7 @@ Compiler::value Set::compile(Compiler& c) const {
 		auto v = ex->compile(c);
 
 		jit_type_t args[2] = {LS_POINTER, VM::get_jit_type(type.getElementType())};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 0);
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 		jit_value_t args_v[] = {s, v.v};
 		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 2, JIT_CALL_NOTHROW);
 		ops += std::log2(++i);
