@@ -62,13 +62,16 @@ void Test::test_arrays() {
 	code("['a', 'b'] + Number").equals("['a', 'b', <class Number>]");
 	code("let a = ['a', 'b'] a + Number").equals("['a', 'b', <class Number>]");
 
+	section("Array.operator ~");
+	code("let a = [1, 2, 3]; ~a").equals("[3, 2, 1]");
+	code("~[1, 2, 3]").equals("[3, 2, 1]");
+
 	section("Array.operator []");
 	code("[1, 2, 3][1]").equals("2");
 	code("let a = [1, 2, 3] a[0]").equals("1");
 	code("let a = [1.6, 2.5, 3.4] a[0]").equals("1.6");
 	code("let a = [1, 2, 3] a[0] = 5 a[0]").equals("5");
 	code("let a = [23, 23, true, '', [], 123]; |a|").equals("6");
-	code("let a = [1, 2, 3]; ~a").equals("[3, 2, 1]");
 	code("let a = [] !a").equals("true");
 	code("let a = [1, 2, 3] a[1] = 12 a").equals("[1, 12, 3]");
 	code("[1.2, 321.42, 23.15]").equals("[1.2, 321.42, 23.15]");
