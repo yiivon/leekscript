@@ -43,11 +43,6 @@ LSNumber::LSNumber(Json& json) : value(json) {}
 
 LSNumber::~LSNumber() {}
 
-int LSNumber::integer() const {
-//	return mpz_get_ui(value.get_mpz_t());
-	return 0;
-}
-
 bool LSNumber::isTrue() const {
 	return value != 0;
 }
@@ -413,6 +408,14 @@ LSValue** LSNumber::atL(const LSValue*) {
 
 LSValue* LSNumber::abso() const {
 	return LSNumber::get(abs((int) value));
+}
+
+int LSNumber::integer() const {
+	return value;
+}
+
+double LSNumber::real() const {
+	return value;
 }
 
 LSValue* LSNumber::clone() const {

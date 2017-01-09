@@ -30,8 +30,6 @@ public:
 
 	virtual ~LSNumber();
 
-	int integer() const;
-
 	/*
 	 * LSValue
 	 */
@@ -109,6 +107,9 @@ public:
 	LSValue** atL(const LSValue* value) override;
 
 	LSValue* abso() const override;
+
+	int integer() const override;
+	double real() const override;
 
 	LSValue* clone() const override;
 
