@@ -466,6 +466,9 @@ public:
 
 	virtual LSValue* abso() const;
 
+	virtual int integer() const { return 0; }
+	virtual double real() const { return 0; }
+
 	virtual std::ostream& print(std::ostream&) const;
 	virtual std::ostream& dump(std::ostream&) const = 0;
 	virtual std::string json() const;
@@ -644,11 +647,28 @@ namespace ls {
 		return ((LSValue*) v)->clone_inc();
 	}
 
-	template <class T> LSValue* pointer(T v) {
-		return new LSNumber(v);
+	template <class R, class T> R convert(T v);
+	template <class R, R> R convert(R v) { return v; }
+
+	template <> inline int convert(int v) { return v; }
+	template <> inline double convert(double v) { return v; }
+	template <> inline LSValue* convert(LSValue* v) { return v; }
+
+	template <> inline int convert(double v) { return v; }
+	template <> inline double convert(int v) { return v; }
+
+	template <> inline LSValue* convert(int v) {
+		return LSValue::get(v);
 	}
-	template <> inline LSValue* pointer(LSValue* v) { return v; }
-	template <> inline LSValue* pointer(const LSValue* v) { return (LSValue*) v; }
+	template <> inline LSValue* convert(double v) {
+		return LSValue::get(v);
+	}
+	template <> inline int convert(LSValue* v) {
+		return v->integer();
+	}
+	template <> inline double convert(LSValue* v) {
+		return v->real();
+	}
 }
 
 namespace std {
