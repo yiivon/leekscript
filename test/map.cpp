@@ -6,13 +6,18 @@ void Test::test_map() {
 
 	section("Constructor");
 	code("[:]").equals("[:]");
-	code("[1 : 1 2 : 2]").equals("[1 : 1 2 : 2]");
-	code("[1 : 1 2 : '2']").equals("[1 : 1 2 : '2']");
-	code("['1' : '1' '1' : '2' '1' : '3']").equals("['1' : '1']");
+	code("[1: 1, 2: 2]").equals("[1: 1, 2: 2]");
+	code("[1: 1, 2: '2']").equals("[1: 1, 2: '2']");
+	code("['1': '1', '1': '2', '1': '3']").equals("['1': '1']");
 
 	section("Map::isTrue()");
 	//code("![:]").equals("true");
-	code("![2:2]").equals("false");
+	code("![2: 2]").equals("false");
+
+	section("Map.operator []");
+	code("let m = [1: 1] m[1]").equals("1");
+	code("let m = ['a': 'b'] m['a']").equals("'b'");
+	//code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
 
 	section("Map.size()");
 	code("let x = [1 : 1 1 : 2 1 : 3] x.size()").equals("1");
@@ -20,26 +25,31 @@ void Test::test_map() {
 
 	section("Map.insert()");
 	code("let x = [1 : 1] x.insert(2, 2)").equals("true");
-	code("let x = ['a' : 'a'] x.insert(2, 2) x").equals("[2 : 2 'a' : 'a']");
-	code("let x = [1 : 'a'] x.insert(2, 3) x").equals("[1 : 'a' 2 : 3]");
-	code("let x = ['a' : 1] x.insert(2, 3) x").equals("[2 : 3 'a' : 1]");
+	code("let x = ['a' : 'a'] x.insert(2, 2) x").equals("[2: 2, 'a': 'a']");
+	code("let x = [1 : 'a'] x.insert(2, 3) x").equals("[1: 'a', 2: 3]");
+	code("let x = ['a' : 1] x.insert(2, 3) x").equals("[2: 3, 'a': 1]");
 	code("let x = ['a' : 1] x.insert('a', 3)").equals("false");
 
 	section("Map.clear()");
-	code("let x = [1 : 1] x.clear()").equals("[:]");
-	code("let x = ['a' : 'a'] x.clear()").equals("[:]");
+	code("let x = [:] x.clear()").equals("[:]");
+	code("let x = [1: 1] x.clear()").equals("[:]");
+	code("let x = [1: 'a'] x.clear()").equals("[:]");
+	code("let x = ['a': 1] x.clear()").equals("[:]");
+	code("let x = ['a': 'a'] x.clear()").equals("[:]");
+	code("let x = ['a': 'a', 'b': 'b'] x.clear()").equals("[:]");
 
 	section("Map.erase()");
 	code("let x = [1 : 1] x.erase(1)").equals("true");
 	code("let x = ['a' : 'a'] x.erase('a') x").equals("[:]");
-	code("let x = ['a' : 'a'] x.erase('b') x").equals("['a' : 'a']");
-	code("let x = ['a' : 1] x.erase(3.14) x").equals("['a' : 1]");
+	code("let x = ['a' : 'a'] x.erase('b') x").equals("['a': 'a']");
+	code("let x = ['a' : 1] x.erase(3.14) x").equals("['a': 1]");
 
 	section("Map.look()");
-	code("let x = [1 : 1] x.look(1,0)").equals("1");
-	code("let x = ['a' : 'a'] x.look('a','b')").equals("'a'");
-	code("let x = ['a' : 'a'] x.look('b','b')").equals("'b'");
-	code("let x = ['a' : 1] x.look(3.14,'a')").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::PTR_INT_MAP.to_string() + ".look(" + ls::Type::REAL.to_string() + ", " + ls::Type::STRING_TMP.to_string() + ")"});
+	code("let x = [1: 1] x.look(1, 0)").equals("1");
+	code("let x = ['a': 'a'] x.look('a', 'b')").equals("'a'");
+	code("let x = ['a': 'a'] x.look('b', 'b')").equals("'b'");
+	code("let x = ['a': 1] x.look(3.14, 'a')").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::PTR_INT_MAP.to_string() + ".look(" + ls::Type::REAL.to_string() + ", " + ls::Type::STRING_TMP.to_string() + ")"});
+	code("[1 : 1].look(1, 0)").equals("1");
 
 	section("Map.operator ==");
 	code("['a':'b'] == [1:1]").equals("false");
