@@ -99,6 +99,9 @@ public:
 	LSValue* ls_mod_eq(LSBoolean*) override;
 	LSValue* ls_mod_eq(LSNumber*) override;
 
+	bool operator == (int value) const override;
+	bool operator == (double value) const override;
+
 	bool eq(const LSNumber*) const override;
 	bool lt(const LSNumber*) const override;
 
