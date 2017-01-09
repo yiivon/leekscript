@@ -97,7 +97,9 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			element_type = Type::UNKNOWN;
 			for (unsigned i = 0; i < expressions.size(); ++i) {
 				Value* ex = expressions[i];
-				element_type = Type::get_compatible_type(element_type, ex->type);
+				if (element_type == Type::UNKNOWN or !element_type.compatible(ex->type)) {
+					element_type = Type::get_compatible_type(element_type, ex->type);
+				}
 			}
 			element_type.temporary = false;
 			type.setElementType(element_type);
