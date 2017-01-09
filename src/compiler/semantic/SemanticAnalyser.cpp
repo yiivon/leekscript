@@ -86,7 +86,7 @@ LSValue* op_mod(void*, LSValue* x, LSValue* y) {
 	return x->ls_mod(y);
 }
 
-void SemanticAnalyser::analyse(Program* program, Context* context, std::vector<Module*>& modules, bool v1_mode) {
+void SemanticAnalyser::analyse(Program* program, Context*, std::vector<Module*>& modules, bool v1_mode) {
 
 	this->program = program;
 
