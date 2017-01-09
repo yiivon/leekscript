@@ -639,6 +639,12 @@ namespace ls {
 	template <> inline const LSValue* clone_inc(const LSValue* v) {
 		return ((LSValue*) v)->clone_inc();
 	}
+
+	template <class T> LSValue* pointer(T v) {
+		return new LSNumber(v);
+	}
+	template <> inline LSValue* pointer(LSValue* v) { return v; }
+	template <> inline LSValue* pointer(const LSValue* v) { return (LSValue*) v; }
 }
 
 namespace std {
