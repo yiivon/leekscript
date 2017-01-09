@@ -31,6 +31,20 @@ LSValue::LSValue(const LSValue& ) : refs(0) {
 	#endif
 }
 
+template <class T>
+LSValue* LSValue::get(T v) {
+	return LSNull::get();
+}
+
+template <>
+LSValue* LSValue::get(int v) {
+	return LSNumber::get(v);
+}
+template <>
+LSValue* LSValue::get(double v) {
+	return LSNumber::get(v);
+}
+
 LSValue::~LSValue() {
 	obj_deleted++;
 	#if DEBUG_LEAKS_DETAILS

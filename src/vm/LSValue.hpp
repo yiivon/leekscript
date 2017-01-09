@@ -483,12 +483,16 @@ public:
 
 	virtual int typeID() const = 0;
 
+	template <class T> static LSValue* get(T v);
 	static LSValue* parse(Json& json);
 	static LSValue* get_from_json(Json& json);
 
 	static void delete_ref(LSValue* value);
 	static void delete_temporary(const LSValue* const value);
 };
+
+template <> LSValue* LSValue::get(int v);
+template <> LSValue* LSValue::get(double v);
 
 inline LSValue* LSValue::clone_inc() {
 	if (native) {
