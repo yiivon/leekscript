@@ -283,6 +283,8 @@ Type Type::not_temporary() const {
  * Can we convert type into this ?
  * {float}.compatible({int}) == true
  * {int*}.compatible({int}) == true
+ * {int}.compatible({float}) == false
+ * {int}.compatible({int*}) == false
  */
 bool Type::compatible(const Type& type) const {
 
@@ -462,12 +464,13 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 		return t1;
 	}
 
-	if (t1.compatible(t2)) {
-		return t1;
-	}
 	if (t2.compatible(t1)) {
 		return t2;
 	}
+	if (t1.compatible(t2)) {
+		return t1;
+	}
+
 	return Type::POINTER;
 }
 
