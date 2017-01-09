@@ -386,9 +386,13 @@ public:
 	bool operator == (const LSValue& value) const {
 		return value.req(this);
 	}
+	virtual bool operator == (int) const { return false; }
+	virtual bool operator == (double) const { return false; }
+
 	bool operator != (const LSValue& value) const {
 		return !value.req(this);
 	}
+
 	virtual bool req(const LSValue*) const = 0;
 	virtual bool eq(const LSNull*) const;
 	virtual bool eq(const LSBoolean*) const;
@@ -550,15 +554,42 @@ namespace ls {
 	inline std::string to_json(LSValue* v) {
 		return v->json();
 	}
+
 	template <typename T>
-	bool equals(const T v1, const T v2);
+	std::string print(T v) {
+		return std::to_string(v);
+	}
+	template <>
+	inline std::string print(LSValue* v) {
+		std::ostringstream oss;
+		oss << *v;
+		return oss.str();
+	}
+
+	template <class T1, class T2>
+	bool equals(const T1 v1, const T2 v2) {
+		return v1 == v2;
+	}
+
+	template <>
+	inline bool equals(double v1, ls::LSValue* v2) {
+		return v2->operator == (v1);
+	}
+	template <>
+	inline bool equals(ls::LSValue* v1, double v2) {
+		return v1->operator == (v2);
+	}
+	template <>
+	inline bool equals(int v1, ls::LSValue* v2) {
+		return v2->operator == (v1);
+	}
+	template <>
+	inline bool equals(ls::LSValue* v1, int v2) {
+		return v1->operator == (v2);
+	}
 	template <>
 	inline bool equals(ls::LSValue* v1, ls::LSValue* v2) {
 		return v1->operator == (*v2);
-	}
-	template <typename T>
-	bool equals(const T v1, const T v2) {
-		return v1 == v2;
 	}
 
 	template <class T> void release(T) {}
