@@ -34,10 +34,9 @@ inline LSSet<LSValue*>::LSSet(const LSSet<LSValue*>& other) : LSValue(other), st
 		insert(end(), v->clone_inc());
 	}
 }
-template <typename T>
-inline LSSet<T>::LSSet(const LSSet<T>& other) : LSValue(other), std::set<T, lsset_less<T>>(other) {
-}
 
+template <typename T>
+inline LSSet<T>::LSSet(const LSSet<T>& other) : LSValue(other), std::set<T, lsset_less<T>>(other) {}
 
 template <>
 inline LSSet<LSValue*>::~LSSet() {
