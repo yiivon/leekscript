@@ -58,6 +58,13 @@ void Test::test_json() {
 	code("[].json()").equals("'[]'");
 	code("[1, 2, 3].json()").equals("'[1,2,3]'");
 	code("['a', 'b', 'c'].json()").equals("'[\"a\",\"b\",\"c\"]'");
+	// set
+	code("<1, 2, 3>.json()").equals("'[1, 2, 3]'");
+	code("<'a', 'b', 'c'>.json()").equals("'[\"a\", \"b\", \"c\"]'");
+	// map
+	code("[1: 1].json()").equals("'{\"1\": 1}'");
+	code("['1': 1].json()").equals("'{\"1\": 1}'");
+	code("['a': 'b'].json()").equals("'{\"a\": \"b\"}'");
 	// object
 	code("{}.json()").equals("'{}'");
 	code("{a: 1, b: 2, c: 3}.json()").equals("'{\"a\":1,\"b\":2,\"c\":3}'");
