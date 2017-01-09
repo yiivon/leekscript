@@ -38,13 +38,9 @@ public:
 
 	static Compiler::value sub_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value sub_gmp_int(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value sub_gmp_tmp_int(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value mul_int_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mul_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mul_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mul_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mul_gmp_tmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value div_val_val(Compiler& c, std::vector<Compiler::value> args);
 
@@ -65,9 +61,7 @@ public:
 	static Compiler::value mod_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value eq_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value eq_gmp_tmp_gmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value eq_gmp_int(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value eq_gmp_tmp_int(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value tilde_int(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value tilde_real(Compiler& c, std::vector<Compiler::value> args);
