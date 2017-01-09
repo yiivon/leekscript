@@ -600,7 +600,7 @@ namespace ls {
 		LSValue::delete_temporary(v);
 	}
 
-	template <class T> void unref(T v) {}
+	template <class T> void unref(T) {}
 	template <> inline void unref(LSValue* v) {
 		LSValue::delete_ref(v);
 	}
