@@ -1667,8 +1667,8 @@ inline std::string LSArray<LSValue*>::json() const {
 	return res + "]";
 }
 
-template <>
-inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
+template <class T>
+LSValue* LSArray<T>::at(const LSValue* key) const {
 	int index;
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
 		index = (int) n->value;
@@ -1677,40 +1677,17 @@ inline LSValue* LSArray<LSValue*>::at(const LSValue* key) const {
 	} else {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
-		jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
-		return nullptr;
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_KEY_IS_NOT_NUMBER));
 	}
+	LSValue* res;
 	try {
-		return ((std::vector<LSValue*>*) this)->at(index)->clone();
+		res = ls::pointer(ls::clone(((std::vector<T>*) this)->at(index)));
 	} catch (std::exception& e) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-	return nullptr;
-}
-
-template <typename T>
-inline LSValue* LSArray<T>::at(const LSValue* key) const {
-	int index;
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		index = (int) n->value;
-	} else if (const LSBoolean* b = dynamic_cast<const LSBoolean*>(key)) {
-		index = (int) b->value;
-	} else {
-		LSValue::delete_temporary(this);
-		LSValue::delete_temporary(key);
-		jit_exception_throw((void*) VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
-		return nullptr;
-	}
-	try {
-		return LSNumber::get(((std::vector<T>*) this)->at(index));
-	} catch (std::exception& e) {
-		LSValue::delete_temporary(this);
-		LSValue::delete_temporary(key);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
-	}
-	return nullptr;
+	return res;
 }
 
 template <class T>
