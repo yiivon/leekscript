@@ -43,10 +43,9 @@ Compiler::value Throw::compile(Compiler& c) const {
 		*/
 
 		auto line = c.new_integer(token->line);
-		auto obj = c.insn_to_pointer(v);
 
-		auto ex = c.insn_call(Type::POINTER, {obj, line}, +[](LSValue* obj, int line) {
-			auto ex = new VM::ExceptionObj((VM::Exception) ((LSNumber*) obj)->value);
+		auto ex = c.insn_call(Type::POINTER, {v, line}, +[](int obj, int line) {
+			auto ex = new VM::ExceptionObj((VM::Exception) obj);
 			ex->lines.push_back(line);
 			return ex;
 		});
