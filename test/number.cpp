@@ -84,6 +84,10 @@ void Test::test_numbers() {
 	code("2.5 × 4.7").equals("11.75");
 	code("5 * 2 + 3 * 4").equals("22");
 
+	section("Number.operator %");
+	code("123456789123456789m % 234567m").equals("221463");
+	code("(12m ** 40m) % 234567m").equals("228798");
+
 	section("Number.operator &");
 	code("0 & 0").equals("0");
 	code("1 & 0").equals("0");
