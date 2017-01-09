@@ -73,6 +73,8 @@ public:
 	T ls_max();
 	T ls_min();
 	bool is_permutation(LSArray<int>*);
+	template <class T2>
+	LSValue* add_set(LSSet<T2>* set);
 
 	/*
 	 * LSValue methods
