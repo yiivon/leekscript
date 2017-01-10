@@ -443,6 +443,7 @@ void VM::store_exception(jit_function_t F, jit_value_t ex) {
 
 std::string VM::exception_message(VM::Exception expected) {
 	switch (expected) {
+	case Exception::EXCEPTION: return "exception";
 	case Exception::DIVISION_BY_ZERO: return "division_by_zero";
 	case Exception::OPERATION_LIMIT_EXCEEDED: return "too_much_operations";
 	case Exception::NUMBER_OVERFLOW: return "number_overflow";
