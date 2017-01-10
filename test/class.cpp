@@ -18,6 +18,8 @@ void Test::test_classes() {
 	code("''.class").equals("<class String>");
 	code("'salut'.class").equals("<class String>");
 	code("[].class").equals("<class Array>");
+	code("[:].class").equals("<class Map>");
+	code("<>.class").equals("<class Set>");
 	code("[1, 2, 3].class").equals("<class Array>");
 	code("{}.class").equals("<class Object>");
 	code("{a: 12, b: 'yo'}.class").equals("<class Object>");
