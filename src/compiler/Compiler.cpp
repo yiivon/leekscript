@@ -73,13 +73,6 @@ int Compiler::get_current_function_blocks() const {
 }
 
 /*
- * Utils
- */
-Compiler::value Compiler::signed_int(Compiler::value v) const {
-	return {jit_insn_convert(F, v.v, jit_type_int, 0), Type::INTEGER};
-}
-
-/*
  * Operators
  */
 void Compiler::insn_store(Compiler::value a, Compiler::value b) const {

@@ -50,9 +50,6 @@ public:
 	Compiler(Program* program);
 	virtual ~Compiler();
 
-	// Utils
-	value signed_int(value) const;
-
 	// Value creation
 	value new_null() const;
 	value new_bool(bool b) const;
