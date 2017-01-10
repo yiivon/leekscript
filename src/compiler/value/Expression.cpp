@@ -117,9 +117,20 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	v1->analyse(analyser, Type::UNKNOWN);
 	v2->analyse(analyser, Type::UNKNOWN);
 
-	if (op->type == TokenType::EQUAL) {
+	// A = B, A += B, etc. A must be a l-value
+	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
+		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
+		or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::MODULO_EQUAL
+		or op->type == TokenType::POWER_EQUAL) {
+		// TODO other operators like |= ^= &=
 		if (v1->type.constant) {
 			analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, op->token->line, {v1->to_string()}});
+		}
+		// Check if A is a l-value
+		bool is_left_value = true;
+		if (not v1->isLeftValue()) {
+			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), {v1->to_string()}});
+			is_left_value = false;
 		}
 	}
 
