@@ -17,8 +17,9 @@ Throw::~Throw() {
 }
 
 void Throw::print(ostream& os, int indent, bool debug) const {
-	os << "throw ";
+	os << "throw";
 	if (expression != nullptr) {
+		os << " ";
 		expression->print(os, indent, debug);
 	}
 }
