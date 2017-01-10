@@ -1076,14 +1076,8 @@ inline LSValue* LSArray<LSValue*>::ls_add(LSObject* v) {
 }
 
 template <typename T>
-LSValue* LSArray<T>::ls_add(LSFunction<LSValue*>* v) {
-	LSArray<LSValue*>* r = new LSArray<LSValue*>();
-	for (auto v : *this) {
-		r->push_inc(LSNumber::get(v));
-	}
-	r->push_move(v);
-	if (refs == 0) delete this;
-	return r;
+LSValue* LSArray<T>::ls_add(LSFunction<LSValue*>*) {
+	return this;
 }
 
 template <>
@@ -1098,14 +1092,8 @@ inline LSValue* LSArray<LSValue*>::ls_add(LSFunction<LSValue*>* v) {
 }
 
 template <typename T>
-LSValue* LSArray<T>::ls_add(LSClass* v) {
-	LSArray<LSValue*>* r = new LSArray<LSValue*>();
-	for (auto v : *this) {
-		r->push_inc(LSNumber::get(v));
-	}
-	r->push_back(v);
-	if (refs == 0) delete this;
-	return r;
+LSValue* LSArray<T>::ls_add(LSClass*) {
+	return this;
 }
 
 template <>
