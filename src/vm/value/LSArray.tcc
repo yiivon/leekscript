@@ -1107,10 +1107,10 @@ inline LSValue* LSArray<LSValue*>::ls_add(LSClass* v) {
 	return new_array;
 }
 
-
-/* let array = []
- * array += [1,2,3,4]
- */
+template <typename T>
+inline LSValue* LSArray<T>::ls_add_eq(LSNull*) {
+	return this;
+}
 
 template <>
 inline LSValue* LSArray<LSValue*>::ls_add_eq(LSNull* v) {
@@ -1119,35 +1119,14 @@ inline LSValue* LSArray<LSValue*>::ls_add_eq(LSNull* v) {
 }
 
 template <typename T>
-inline LSValue* LSArray<T>::ls_add_eq(LSNull* v) {
-	LSArray<LSValue*>* r = new LSArray<LSValue*>();
-	r->reserve(this->size() + 1);
-	for (T v : *this) {
-		r->push_inc(LSNumber::get(v));
-	}
-	r->push_back(v);
-	r->refs = 1;
-	LSValue::delete_ref(this);
-	return r;
+inline LSValue* LSArray<T>::ls_add_eq(LSBoolean*) {
+	return this;
 }
 
 template <>
 inline LSValue* LSArray<LSValue*>::ls_add_eq(LSBoolean* v) {
 	push_back(v);
 	return this;
-}
-
-template <typename T>
-inline LSValue* LSArray<T>::ls_add_eq(LSBoolean* v) {
-	LSArray<LSValue*>* r = new LSArray<LSValue*>();
-	r->reserve(this->size() + 1);
-	for (T v : *this) {
-		r->push_inc(LSNumber::get(v));
-	}
-	r->push_back(v);
-	r->refs = 1;
-	LSValue::delete_ref(this);
-	return r;
 }
 
 template <>
@@ -1158,40 +1137,21 @@ inline LSValue* LSArray<LSValue*>::ls_add_eq(LSNumber* v) {
 
 template <>
 inline LSValue* LSArray<double>::ls_add_eq(LSNumber* v) {
-
 	this->push_back(v->value);
 	if (v->refs == 0) delete v;
-
 	return this;
 }
 
 template <>
 inline LSValue* LSArray<int>::ls_add_eq(LSNumber* v) {
-
-	if (v->value == (int) v->value) {
-		this->push_back(v->value);
-		if (v->refs == 0) delete v;
-		return this;
-	}
-	LSArray<double>* r = new LSArray<double>();
-	r->insert(r->end(), this->begin(), this->end());
-	r->push_back(v->value);
-	if (v->refs == 0) delete v;
-	r->refs = 1;
-	LSValue::delete_ref(this);
-	return r;
+	this->push_back(v->value);
+	LSValue::delete_temporary(v);
+	return this;
 }
 
 template <typename T>
-LSValue* LSArray<T>::ls_add_eq(LSString* v) {
-	LSArray<LSValue*>* r = new LSArray<LSValue*>();
-	for (auto v : *this) {
-		r->push_inc(LSNumber::get(v));
-	}
-	r->push_move(v);
-	r->refs = 1;
-	LSValue::delete_ref(this);
-	return r;
+LSValue* LSArray<T>::ls_add_eq(LSString*) {
+	return this;
 }
 
 template <>
@@ -1241,18 +1201,8 @@ inline LSValue* LSArray<T>::ls_add_eq(LSArray<double>* array) {
 }
 
 template <>
-inline LSValue* LSArray<int>::ls_add_eq(LSArray<double>* array) {
-	LSArray<double>* r = new LSArray<double>();
-	r->reserve(this->size() + array->size());
-
-	r->insert(r->end(), this->begin(), this->end());
-	r->insert(r->end(), array->begin(), array->end());
-
-	if (array->refs == 0) delete array;
-
-	r->refs = 1;
-	LSValue::delete_ref(this);
-	return r;
+inline LSValue* LSArray<int>::ls_add_eq(LSArray<double>*) {
+	return this;
 }
 
 template <class T>
@@ -1298,16 +1248,8 @@ inline LSValue* LSArray<LSValue*>::ls_add_eq(LSObject* v) {
 	return this;
 }
 template <typename T>
-inline LSValue* LSArray<T>::ls_add_eq(LSObject* v) {
-	LSArray<LSValue*>* r = new LSArray<LSValue*>();
-	for (auto v : *this) {
-		r->push_inc(LSNumber::get(v));
-	}
-	r->push_move(v);
-
-	r->refs = 1;
-	LSValue::delete_ref(this);
-	return r;
+inline LSValue* LSArray<T>::ls_add_eq(LSObject*) {
+	return this;
 }
 
 template <>
@@ -1316,16 +1258,8 @@ inline LSValue* LSArray<LSValue*>::ls_add_eq(LSFunction<LSValue*>* v) {
 	return this;
 }
 template <typename T>
-inline LSValue* LSArray<T>::ls_add_eq(LSFunction<LSValue*>* v) {
-	LSArray<LSValue*>* r = new LSArray<LSValue*>();
-	for (auto v : *this) {
-		r->push_inc(LSNumber::get(v));
-	}
-	r->push_move(v);
-
-	r->refs = 1;
-	LSValue::delete_ref(this);
-	return r;
+inline LSValue* LSArray<T>::ls_add_eq(LSFunction<LSValue*>*) {
+	return this;
 }
 
 template <>
@@ -1334,16 +1268,8 @@ inline LSValue* LSArray<LSValue*>::ls_add_eq(LSClass* v) {
 	return this;
 }
 template <typename T>
-inline LSValue* LSArray<T>::ls_add_eq(LSClass* v) {
-	LSArray<LSValue*>* r = new LSArray<LSValue*>();
-	for (auto v : *this) {
-		r->push_inc(LSNumber::get(v));
-	}
-	r->push_back(v);
-
-	r->refs = 1;
-	LSValue::delete_ref(this);
-	return r;
+inline LSValue* LSArray<T>::ls_add_eq(LSClass*) {
+	return this;
 }
 
 template <class T, class T2>
