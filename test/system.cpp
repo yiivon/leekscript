@@ -37,6 +37,7 @@ void Test::test_system() {
 	code("System.print(123.456)").output("123.456\n");
 	code("System.print(1234567123456)").output("1234567123456\n");
 	code("System.print(12345671234561234567123456)").output("12345671234561234567123456\n");
+	code("System.print(12m ** 34m)").output("4922235242952026704037113243122008064\n");
 	code("System.print('salut !')").output("salut !\n");
 	code("System.print([1, 2, 3])").output("[1, 2, 3]\n");
 	code("System.print(['a', 'b', 'c'])").output("['a', 'b', 'c']\n");
