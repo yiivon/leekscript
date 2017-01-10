@@ -1447,24 +1447,12 @@ inline std::ostream& LSArray<LSValue*>::dump(std::ostream& os) const {
 template <typename T>
 std::string LSArray<T>::json() const {
 	std::string res = "[";
+	bool last_valid = true;
 	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) res += ",";
-		std::ostringstream oss;
-		oss << *i;
-		res += oss.str();
-	}
-	return res + "]";
-}
-
-template <>
-inline std::string LSArray<LSValue*>::json() const {
-	std::string res = "[";
-	for (auto i = this->begin(); i != this->end(); i++) {
-		std::string json = (*i)->json();
-		if (json.size() > 0) {
-			res += json;
-			if (i < this->end() - 1) res += ",";
-		}
+		if (i != this->begin() and last_valid) res += ", ";
+		auto j = ls::to_json(*i);
+		if (j.size()) res += j;
+		last_valid = j.size() > 0;
 	}
 	return res + "]";
 }
