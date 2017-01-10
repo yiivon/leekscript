@@ -95,17 +95,17 @@ void Test::test_arrays() {
 	code("[1.5, 2.5, 3.5][true]").equals("2.5");
 
 	section("Type changes");
-	code("let a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
-	code("let a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");
-	code("let a = [1.5] a += false a").equals("[1.5, false]");
-	code("let a = [1] a += <'z', 'a'> a").equals("[1, 'a', 'z']");
-	code("let a = [1] a += 'a' a").equals("[1, 'a']");
+	code("var a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
+	code("var a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");
+	code("var a = [1.5] a += false a").equals("[1.5, false]");
+	code("var a = [1] a += <'z', 'a'> a").equals("[1, 'a', 'z']");
+	code("var a = [1] a += 'a' a").equals("[1, 'a']");
 
 	section("Array.operator +=");
-	code("let a = [1.55] a += 12.9 a").equals("[1.55, 12.9]");
-	code("let a = ['a'] a += 'b' a").equals("['a', 'b']");
-	code("let a = [1, 2, 3] a[0] += 5 a[0]").equals("6");
-	code("let v = 12 let a = [v, 2, 3] a[0] += 5 a[0]").equals("17");
+	code("var a = [1.55] a += 12.9 a").equals("[1.55, 12.9]");
+	code("var a = ['a'] a += 'b' a").equals("['a', 'b']");
+	code("var a = [1, 2, 3] a[0] += 5 a[0]").equals("6");
+	code("var v = 12 var a = [v, 2, 3] a[0] += 5 a[0]").equals("17");
 
 	section("Array.operator <");
 	code("[1, 2, 3, 4] < [1, 2, 3, 5]").equals("true");

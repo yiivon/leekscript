@@ -1,5 +1,5 @@
 var sum = 2l
-for let i = 3; i < 2000000; i += 2 do
+for var i = 3; i < 2000000; i += 2 do
 	if i.isPrime() {
 		sum += i
 	}

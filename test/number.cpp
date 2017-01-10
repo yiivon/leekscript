@@ -68,12 +68,12 @@ void Test::test_numbers() {
 	code("var a = 2; ++a").equals("3");
 	code("var a = 2 a--").equals("2");
 	code("var a = 2; --a").equals("1");
-	code("let a = 2 a += 5").equals("7");
-	code("let a = 2 a -= 5").equals("-3");
-	code("let a = 2 a *= 5").equals("10");
-	code("let a = 100 a /= 5").equals("20");
-	code("let a = 56 a %= 17").equals("5");
-	code("let a = 15 a **= 2").equals("225");
+	code("var a = 2 a += 5").equals("7");
+	code("var a = 2 a -= 5").equals("-3");
+	code("var a = 2 a *= 5").equals("10");
+	code("var a = 100 a /= 5").equals("20");
+	code("var a = 56 a %= 17").equals("5");
+	code("var a = 15 a **= 2").equals("225");
 	code("let a = 1.5 a * 0.5").equals("0.75");
 
 	section("multiple operations");
