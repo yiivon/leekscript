@@ -39,8 +39,6 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		attr_types = var->attr_types;
 		if (scope != VarScope::INTERNAL and var->function != analyser->current_function()) {
 			capture_index = analyser->current_function()->capture(var);
-//			std::cout << "Capture " << var->name << " : " << capture_index << std::endl;
-			//type.nature = Nature::POINTER;
 			scope = VarScope::CAPTURE;
   		}
 	} else {
