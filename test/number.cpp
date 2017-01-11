@@ -191,6 +191,9 @@ void Test::test_numbers() {
 	code("Number.phi").almost(1.618033988749894903);
 	code("Number.epsilon").almost(0.000000000000000222);
 
+	/*
+	 * Operators
+	 */
 	section("Number.operator =");
 	code("var a = 1m, b = 4m; a = b").equals("4");
 
@@ -205,7 +208,21 @@ void Test::test_numbers() {
 	code("1m - (2m - 3m)").equals("2");
 	code("(1m - 2m) - 3m").equals("-4");
 	code("(1m - 2m) - (3m - 4m)").equals("0");
+	code("(10m + 10m) - 1").equals("19");
 
+	section("Number.operator *");
+	code("3m * 4m").equals("12");
+	code("10m + 3m * 4m").equals("22");
+
+	section("Number.operator <");
+	code("3m < 4m").equals("true");
+	code("10m < (3m * 4m)").equals("true");
+	code("(5m + 5m) < (3m * 4m)").equals("true");
+	code("(5m + 5m) < 12m").equals("true");
+
+	/*
+	 * Methods
+	 */
 	section("Number.abs()");
 //	code("Number.abs").equals("<function>");
 	code("Number.abs(-12)").equals("12");
