@@ -9,7 +9,18 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 	operator_("+", {
 		{Type::BOOLEAN, Type::STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, Method::NATIVE},
 		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, Method::NATIVE},
-		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool}
+		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool},
+		{Type::BOOLEAN, Type::NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::add_bool}
+	});
+
+	operator_("-", {
+		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::sub_bool},
+		{Type::BOOLEAN, Type::NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::sub_bool}
+	});
+
+	operator_("*", {
+		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::mul_bool},
+		{Type::BOOLEAN, Type::NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::mul_bool}
 	});
 
 	static_method("compare", {
@@ -26,12 +37,22 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 LSString* BooleanSTD::add(int boolean, LSString* string) {
 	return new LSString((boolean ? "true" : "false") + *string);
 }
+
 LSString* BooleanSTD::add_tmp(int boolean, LSString* string) {
 	(*string).insert(0, (boolean ? "true" : "false"));
 	return string;
 }
+
 Compiler::value BooleanSTD::add_bool(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_add(args[0], args[1]);
+}
+
+Compiler::value BooleanSTD::sub_bool(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_sub(args[0], args[1]);
+}
+
+Compiler::value BooleanSTD::mul_bool(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_mul(args[0], args[1]);
 }
 
 int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {

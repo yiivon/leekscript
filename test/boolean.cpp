@@ -20,10 +20,24 @@ void Test::test_booleans() {
 	section("Boolean.operator +");
 	code("true + 'salut'").equals("'truesalut'");
 	code("false + '!'").equals("'false!'");
+	code("let s = '!' false + s").equals("'false!'");
 	code("false + 12").equals("12");
-	code("true - 1").equals("0");
 	code("true + 1").equals("2");
 	code("true + false").equals("1");
+
+	section("Boolean.operator -");
+	code("true - 1").equals("0");
+	code("1 - true").equals("0");
+	code("true - false").equals("1");
+
+	section("Boolean.operator *");
+	code("12 * true").equals("12");
+	code("12 * false").equals("0");
+	code("true * 5").equals("5");
+	code("true * 5.5").equals("5.5");
+	code("false * 5.5").equals("0");
+	code("false * true").equals("0");
+	code("512 * (5 < 7)").equals("512");
 
 	section("operator &&");
 	code("true and true").equals("true");
