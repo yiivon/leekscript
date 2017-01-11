@@ -78,6 +78,9 @@ int Compiler::get_current_function_blocks() const {
 void Compiler::insn_store(Compiler::value a, Compiler::value b) const {
 	jit_insn_store(F, a.v, b.v);
 }
+void Compiler::insn_store_relative(Compiler::value a, Compiler::value b) const {
+	jit_insn_store_relative(F, a.v, 0, b.v);
+}
 Compiler::value Compiler::insn_not(Compiler::value v) const {
 	return {jit_insn_not(F, v.v), v.t};
 }
@@ -94,6 +97,14 @@ Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 		return Type::INTEGER;
 	}();
 	return {jit_insn_add(F, a.v, b.v), result_type};
+}
+Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
+	auto result_type = [&]() {
+		if (a.t == Type::REAL or b.t == Type::REAL) return Type::REAL;
+		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
+		return Type::INTEGER;
+	}();
+	return {jit_insn_sub(F, a.v, b.v), result_type};
 }
 Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_eq(F, a.v, b.v), Type::BOOLEAN};

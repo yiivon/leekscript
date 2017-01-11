@@ -60,10 +60,12 @@ public:
 
 	// Operators wrapping
 	void insn_store(value, value) const;
+	void insn_store_relative(value, value) const;
 	value insn_not(value) const;
 	value insn_and(value, value) const;
 	value insn_or(value, value) const;
 	value insn_add(value, value) const;
+	value insn_sub(value, value) const;
 	value insn_eq(value, value) const;
 	value insn_lt(value, value) const;
 	value insn_le(value, value) const;
