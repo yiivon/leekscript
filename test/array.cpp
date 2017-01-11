@@ -156,6 +156,7 @@ void Test::test_arrays() {
 	section("Array.size()");
 	code("Array.size([1, 'yo', true])").equals("3");
 	code("Array.size([6, 4, 3, 2, -11])").equals("5");
+	code("Array.size([6.8999, 5.56])").equals("2");
 	code("[1, 'yo', true].size()").equals("3");
 	code("[1, -2, 3, -12, -6].size()").equals("5");
 
