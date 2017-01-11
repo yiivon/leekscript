@@ -26,6 +26,7 @@ void Test::test_loops() {
 	code("if (false) 12 else 5").equals("5");
 	code("if (true) 12").equals("12");
 	code("if (false) 12").equals("null");
+	code("if true then 12 end").equals("12");
 
 	section("Conditions with other types");
 	code("if 1212 { 'ok' } else { 5 }").equals("'ok'");
@@ -41,6 +42,7 @@ void Test::test_loops() {
 	code("var i = 0 var a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a").equals("3");
 	code("while (true) { break }").equals("(void)");
 	code("var i = 10 while (['hello', i][1]) { i-- } i").equals("0");
+	code("var i = 0 while i < 10 do i++ end i").equals("10");
 
 	/*
 	 * For loops
@@ -71,6 +73,8 @@ void Test::test_loops() {
 	 */
 	header("Foreach loops");
 	code("for v in [1, 2, 3, 4] {}").equals("(void)");
+	code("for (v in [1, 2, 3, 4]) {}").equals("(void)");
+	code("for (v in [1, 2, 3, 4]) do end").equals("(void)");
 	code("var s = 0 for v in [1, 2, 3, 4] { s += v } s").equals("10");
 	code("var s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.97);
 	code("var s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s").equals("'salut ça va ?'");
@@ -143,4 +147,6 @@ void Test::test_loops() {
 	code("match [1] { ..[]: 1 ..[2, 2]: 2 }").equals("2");
 	code("match [1] { [2, 2]..: 1 []..: 2 }").equals("2");
 	code("let b = 'b' match 'e' { ..b: 1 1..6|0..9: 2 ..|..: 3}").equals("3");
+	code("let a = match 3 { 1 : 1 2 : 2 3 : 3 } a").equals("3");
+	code("match 2 { 1 : 1 2 : {} 3 : 3 }").equals("{}");
 }
