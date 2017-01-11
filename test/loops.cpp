@@ -118,6 +118,8 @@ void Test::test_loops() {
 	code("for var x = 0; x < 2; ++x { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
 	code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
 	code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
+	code("while (true) { break 0 }").syntaxic_error(ls::SyntaxicalError::Type::BREAK_LEVEL_ZERO, {});
+	code("while (true) { continue 0 }").syntaxic_error(ls::SyntaxicalError::Type::CONTINUE_LEVEL_ZERO, {});
 
 	/*
 	 * Match
