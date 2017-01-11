@@ -10,6 +10,9 @@ void Test::test_references() {
 	code("var a = 2; let b = @a; let c = @b; a = 7; c").equals("7");
 	code("var a = 2; let b = @a; var c = @b; c = 8; a").equals("8");
 
+	section("Reference in expression");
+	code("var a = 2; let b = (@a + 1); a = 5; b").equals("3");
+
 	section("Reference in declaration");
 	code("var a = 2, b = @a; a = 55; b").equals("55");
 	code("var a = 2, b = @a; b = 56; a").equals("56");

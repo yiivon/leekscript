@@ -7,12 +7,15 @@
 namespace ls {
 
 class SemanticVar;
+enum class VarScope;
 
 class Reference : public Value {
 public:
 
 	Token* variable;
 	SemanticVar* var;
+	int capture_index = 0;
+	VarScope scope;
 
 	Reference(Token* variable);
 	virtual ~Reference();

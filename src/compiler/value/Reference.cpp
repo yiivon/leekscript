@@ -3,6 +3,7 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
+#include "../value/Function.hpp"
 
 using namespace std;
 
@@ -30,49 +31,51 @@ unsigned Reference::line() const {
 void Reference::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	var = analyser->get_var(variable);
-	type = var->type;
-
+	if (var != nullptr) {
+		type = var->type;
+		scope = var->scope;
+		attr_types = var->attr_types;
+		if (scope != VarScope::INTERNAL and var->function != analyser->current_function()) {
+			capture_index = analyser->current_function()->capture(var);
+			scope = VarScope::CAPTURE;
+  		}
+	}
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}
-
 //	cout << "ref " << variable->content << " : " << type << endl;
 }
 
+extern map<string, jit_value_t> internals;
+
 Compiler::value Reference::compile(Compiler& c) const {
 
-//	cout << "Reference compile()" << endl;
+	if (scope == VarScope::CAPTURE) {
+		return c.insn_get_capture(capture_index, type);
+	}
 
-	/*
 	jit_value_t v;
 
-	if (var->scope == VarScope::INTERNAL) {
+	if (scope == VarScope::INTERNAL) {
+
 		v = internals[variable->content];
-	} else if (var->scope == VarScope::GLOBAL) {
-		v = globals[variable->content];
-	} else if (var->scope == VarScope::LOCAL) {
-		v = locals[variable->content];
-	} else { // var->scope == VarScope::PARAMETER
-		v = jit_value_get_param(F, var->index);
+
+	} else if (scope == VarScope::LOCAL) {
+
+		v = c.get_var(variable->content).value;
+
+	} else { /* if (scope == VarScope::PARAMETER) */
+
+		v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr
 	}
 
-	if (var->type.nature == Nature::POINTER) {
-		VM::inc_refs(F, v);
-		return v;
+	if (var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+		return {VM::value_to_pointer(c.F, v, var->type), type};
 	}
-	if (req_type.nature == Nature::POINTER) {
-		jit_value_t val = VM::value_to_pointer(F, v, req_type);
-		VM::inc_refs(F, val);
-		return val;
+	if (var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
+		return {VM::int_to_real(c.F, v), type};
 	}
-	return v;
-	*/
-
-	if (type.nature == Nature::POINTER) {
-		return c.new_null();
-	} else {
-		return {LS_CREATE_INTEGER(c.F, 0), type};
-	}
+	return {v, type};
 }
 
 }
