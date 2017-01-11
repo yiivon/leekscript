@@ -48,6 +48,7 @@ void Test::test_functions() {
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
 	code("let f = a, i -> a[i] f([1 2 3], 1)").equals("2");
 	code("[x -> x][0]").equals("<function>");
+	code("let f = x = 2 -> x + 1 f").equals("<function>");
 
 	section("Function call without commas");
 	code("let f = x, y -> x + y f(12 7)").equals("19");
@@ -131,4 +132,28 @@ void Test::test_functions() {
 
 	section("Void functions");
 	code("(x -> System.print(x))(43)").equals("(void)");
+
+	section("Reference arguments");
+	code("function inc(x) { x++ } var a = 12 inc(a) a").equals("12");
+	code("function inc(@x) { x++ }").equals("(void)"); // TODO returns 13
+	code("let inc = (@x) -> x++").equals("(void)"); // TODO
+	code("var x = 1 let f = (@x = 2) + 1 f").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"@x"});
+	code("var x = 12 (@x) null").equals("null"); // TODO no null at the end
+	code("var x = 12 (x)").equals("12");
+	code("(@x, @y) -> x + y").equals("<function>");
+	code("@x, @y -> x + y").equals("<function>");
+
+	section("Default arguments");
+	code("(x = 10) -> x").equals("<function>");
+	code("x = 10 -> x").equals("<function>");
+	code("(x = 10 -> x)").equals("<function>");
+	code("let f = (x = 10) -> x").equals("(void)"); // TODO
+	code("function f(x = 10) { x }").equals("(void)"); // TODO
+	code("let add = (x, y = 1) -> x + y").equals("(void)"); // TODO
+
+	//code("let add = (x, y = 1) -> x + y var a = 12 add(a) ").equals("13");
+	//code("let add = (x, y = 1) -> x + y var a = 12 add(a, 10) a").equals("22");
+
+	section("Wrong syntaxes");
+	code("(@2) -> 2").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
 }
