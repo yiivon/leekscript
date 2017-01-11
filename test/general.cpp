@@ -38,6 +38,10 @@ void Test::test_general() {
 	code("(((((5)))))").equals("5");
 	code("(5) * (4 + 2) - 7 / (4 - (((5))))").equals("37");
 
+	section("Line breaks");
+	code("5 \n + 5").equals("10");
+	code("5 \n - 5").equals("-5");
+
 	header("Variables");
 	code("let a = 2 a").equals("2");
 	code("let a = 1, b = 2, c = 3").equals("(void)");
@@ -55,6 +59,10 @@ void Test::test_general() {
 	code("let 韭 = 'leek' 韭").equals("'leek'");
 	code("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ** 🐨").equals("25");
 
+	section("Global variables");
+	code("global a = 2").equals("(void)");
+	code("global a = 2, b = 'a'").equals("(void)");
+
 	code("a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
 	code("let a = 2 let a = 5").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, {"a"});
 
@@ -63,6 +71,12 @@ void Test::test_general() {
 	code("let a = 12 var b = 0 { let a = 5 b = a } b").equals("5");
 	code("{let a = 5} a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
 
+	section("Syntaxic errors");
+	code("{").syntaxic_error(ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
+	code("2 + ()").syntaxic_error(ls::SyntaxicalError::Type::EXPECTED_VALUE, {")"});
+	code("let 2 = 5").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
+
+	section("?? operator");
 	code("'foo' ?? 'bar'").equals("'foo'");
 	code("null ?? 'bar'").equals("'bar'");
 	code("let a = 'foo' a ?? 'bar'").equals("'foo'");

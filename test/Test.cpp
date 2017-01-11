@@ -134,7 +134,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 
 	if (display_errors) {
 		for (const auto& error : result.syntaxical_errors) {
-			std::cout << "Line " << error.message << std::endl;
+			std::cout << "Line " << error.type << std::endl;
 		}
 		for (const auto& error : result.semantical_errors) {
 			std::cout << "Line " << error.line << ": " << error.message() << std::endl;
@@ -268,6 +268,22 @@ void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::vec
 		}
 	} else {
 		fail(expected_message, "(no exception)");
+	}
+}
+
+void Test::Input::syntaxic_error(ls::SyntaxicalError::Type expected_type, std::vector<std::string> parameters) {
+
+	auto result = run(false);
+
+	if (result.syntaxical_errors.size()) {
+		ls::SyntaxicalError e = result.syntaxical_errors[0];
+		if (expected_type != e.type or parameters != e.parameters) {
+			fail("syntaxic error " + to_string(expected_type), "syntaxic error " + to_string(e.type));
+		} else {
+			pass("syntaxic error " + to_string(e.type));
+		}
+	} else {
+		fail(to_string(expected_type), "(no exception)");
 	}
 }
 

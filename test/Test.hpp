@@ -77,6 +77,7 @@ public:
 		template <typename T>
 		void between(T a, T b);
 		void semantic_error(ls::SemanticError::Type error, std::vector<std::string> params);
+		void syntaxic_error(ls::SyntaxicalError::Type error, std::vector<std::string> params);
 		void lexical_error(ls::LexicalError::Type error);
 		void operations(int ops);
 		void exception(ls::VM::Exception);
