@@ -508,9 +508,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened) 
 				e = oa;
 				break;
 			}
-
-			default:
-				break;
+			default: {}
 		}
 	}
 
@@ -834,7 +832,7 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 	return array;
 }
 
-Set*SyntaxicAnalyser::eatSet() {
+Set* SyntaxicAnalyser::eatSet() {
 	eat(TokenType::LOWER);
 
 	Set* set = new Set();
@@ -1210,7 +1208,7 @@ Token* SyntaxicAnalyser::nextTokenAt(int pos) {
 	if (i + pos < tokens.size())
 		return &tokens[i + pos];
 	else
-		return nullptr;
+		return new Token(TokenType::FINISHED, 0, 0, "");
 }
 
 void SyntaxicAnalyser::save_current_state() {
@@ -1238,10 +1236,6 @@ void SyntaxicAnalyser::forgot_saved_state() {
 
 vector<SyntaxicalError> SyntaxicAnalyser::getErrors() {
 	return errors;
-}
-
-long SyntaxicAnalyser::getTime() {
-	return time;
 }
 
 }

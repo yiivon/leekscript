@@ -80,7 +80,6 @@ public:
 	void forgot_saved_state();
 
 	std::vector<SyntaxicalError> getErrors();
-	long getTime();
 };
 
 }
