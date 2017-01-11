@@ -9,12 +9,20 @@ namespace ls {
 class SyntaxicalError {
 public:
 
-	Token* token;
-	std::string message;
+	enum Type {
+		BLOCK_NOT_CLOSED,
+		BREAK_LEVEL_ZERO,
+		CONTINUE_LEVEL_ZERO,
+		EXPECTED_VALUE,
+		UNEXPECTED_TOKEN
+	};
 
-	SyntaxicalError();
+	Token* token;
+	Type type;
+	std::vector<std::string> parameters;
+
 	SyntaxicalError(const SyntaxicalError& error);
-	SyntaxicalError(Token* token, std::string message);
+	SyntaxicalError(Token* token, Type type, std::vector<std::string> parameters);
 	virtual ~SyntaxicalError();
 };
 
