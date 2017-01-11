@@ -266,22 +266,24 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 		eat(TokenType::VAR);
 	}
 
-	while (t->type == TokenType::IDENT) {
-		vd->variables.push_back(eatIdent());
+	vd->variables.push_back(eatIdent());
+	if (t->type == TokenType::EQUAL) {
+		eat(TokenType::EQUAL);
+		vd->expressions.push_back(eatExpression());
+	} else {
+		vd->expressions.push_back(nullptr);
+	}
 
+	while (t->type == TokenType::COMMA) {
+		eat();
+		vd->variables.push_back(eatIdent());
 		if (t->type == TokenType::EQUAL) {
 			eat(TokenType::EQUAL);
 			vd->expressions.push_back(eatExpression());
 		} else {
 			vd->expressions.push_back(nullptr);
 		}
-		if (t->type == TokenType::COMMA) {
-			eat(TokenType::COMMA);
-		} else {
-			break;
-		}
 	}
-
 	return vd;
 }
 
@@ -355,21 +357,35 @@ bool SyntaxicAnalyser::beginingOfExpression(TokenType type) {
 		or type == TokenType::FALSE or type == TokenType::NULLL;
 }
 
-Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened) {
+int SyntaxicAnalyser::findNextClosingParenthesis() {
+	int p = i;
+	int level = 1;
+	while (level > 0) {
+		auto t = tokens.at(p++).type;
+		if (t == TokenType::FINISHED) return -1;
+		if (t == TokenType::OPEN_PARENTHESIS) level++;
+		if (t == TokenType::CLOSING_PARENTHESIS) level--;
+	}
+	return p - 1;
+}
+
+int SyntaxicAnalyser::findNextArrow() {
+	int p = i;
+	while (true) {
+		auto t = tokens.at(p++).type;
+		if (t == TokenType::FINISHED) return -1;
+		if (t == TokenType::ARROW) break;
+	}
+	return p - 1;
+}
+
+Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, bool comma_list) {
 
 	Value* e = nullptr;
 
 	if (t->type == TokenType::OPEN_PARENTHESIS) {
 
-		eat();
-
-		if (t->type == TokenType::CLOSING_PARENTHESIS) {
-			eatValue(); // error, expected a value got ')', it's wrong
-		} else {
-			e = eatExpression();
-			e->parenthesis = true;
-			eat(TokenType::CLOSING_PARENTHESIS);
-		}
+		e = eatLambdaOrParenthesisExpression(pipe_opened, set_opened, comma_list);
 
 	} else if (t->type == TokenType::PIPE) {
 
@@ -431,14 +447,12 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened) 
 				ex->expression = eatSimpleExpression();
 				e = new Expression(ex);
 			}
-
 		} else {
-			e = eatValue();
+			e = eatValue(comma_list);
 		}
 	}
 
-	while (t->type == TokenType::OPEN_BRACKET || t->type == TokenType::OPEN_PARENTHESIS
-		   || t->type == TokenType::DOT) {
+	while (t->type == TokenType::OPEN_BRACKET || t->type == TokenType::OPEN_PARENTHESIS || t->type == TokenType::DOT) {
 
 		if (t->character != lt->character + lt->size)
 			break;
@@ -471,12 +485,12 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened) 
 				fc->function = e;
 
 				if (t->type != TokenType::CLOSING_PARENTHESIS) {
-					fc->arguments.push_back(eatExpression());
+					fc->arguments.push_back(eatExpression(false, false, nullptr, true));
 					while (t->type != TokenType::CLOSING_PARENTHESIS) {
 						if (t->type == TokenType::COMMA) {
 							eat();
 						}
-						fc->arguments.push_back(eatExpression());
+						fc->arguments.push_back(eatExpression(false, false, nullptr, true));
 					}
 				}
 				eat(TokenType::CLOSING_PARENTHESIS);
@@ -530,10 +544,10 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened) 
 	return e;
 }
 
-Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened) {
+Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened, Value* initial, bool comma_list) {
 
 	Expression* ex = nullptr;
-	Value* e = eatSimpleExpression(pipe_opened);
+	Value* e = (initial != nullptr) ? initial : eatSimpleExpression(pipe_opened, set_opened, comma_list);
 
 	// Opérateurs binaires
 	while (t->type == TokenType::PLUS || t->type == TokenType::MINUS ||
@@ -605,7 +619,7 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened) {
 	return e;
 }
 
-Value* SyntaxicAnalyser::eatValue() {
+Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 
 	switch (t->type) {
 
@@ -654,71 +668,10 @@ Value* SyntaxicAnalyser::eatValue() {
 			eat();
 			return new Nulll();
 
-		case TokenType::IDENT:
-		{
-			Token* ident = eatIdent();
-
-			switch (t->type) {
-
-				case TokenType::ARROW: {
-
-					Function* l = new Function();
-					l->lambda = true;
-					l->arguments.push_back(ident);
-					eat(TokenType::ARROW);
-					l->body = new Block();
-					l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
-
-					return l;
-				}
-
-				case TokenType::COMMA: {
-
-					// Là y'a une virgule, il faut voir si y'a une flèche
-					// plus loin
-					bool canBeLamda = true;
-					int pos = i;
-					while (true) {
-						if (tokens.at(pos).type == TokenType::ARROW) {
-							break;
-						}
-						if (tokens.at(pos).type != TokenType::COMMA || tokens.at(pos + 1).type != TokenType::IDENT) {
-							canBeLamda = false;
-							break;
-						}
-						pos += 2;
-					}
-
-					if (canBeLamda) {
-
-						Function* l = new Function();
-						l->lambda = true;
-						l->arguments.push_back(ident);
-						while (t->type == TokenType::COMMA) {
-							eat();
-							l->arguments.push_back(eatIdent());
-						}
-
-						eat(TokenType::ARROW);
-						l->body = new Block();
-						l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
-
-						return l;
-
-					} else {
-						return new VariableValue(ident);
-					}
-				}
-				default: {
-					return new VariableValue(ident);
-				}
-			}
-			break;
-		}
-
 		case TokenType::AROBASE:
-			eat();
-			return new Reference(eatIdent());
+		case TokenType::IDENT:
+			return eatLambdaOrParenthesisExpression(false, false, comma_list);
+			break;
 
 		case TokenType::OPEN_BRACKET:
 			return eatArrayOrMap();
@@ -758,6 +711,161 @@ Value* SyntaxicAnalyser::eatValue() {
 	return nullptr;
 }
 
+/*
+ * Starting from:
+ *   <ident>, <open_parenthesis>, <arobase>
+ * Can return:
+ *   <variable_value>, <expression>, <lambda>
+ */
+Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool set_opened, bool comma_list) {
+	bool parenthesis = false;
+	if (t->type == TokenType::OPEN_PARENTHESIS) {
+		eat();
+		parenthesis = true;
+	}
+	bool arobase = false;
+	if (t->type == TokenType::AROBASE) {
+		eat();
+		arobase = true;
+	}
+	if (arobase and t->type != TokenType::IDENT) {
+		return new VariableValue(eatIdent()); // will fail, we need an ident after an arobase
+	}
+	if (parenthesis and t->type != TokenType::IDENT) {
+		if (t->type == TokenType::CLOSING_PARENTHESIS) {
+			return eatValue(); // error, expected a value got ')', it's wrong
+		}
+		// (...)
+		auto ex = eatExpression();
+		ex->parenthesis = true;
+		eat(TokenType::CLOSING_PARENTHESIS);
+		return ex;
+	}
+	auto ident = eatIdent();
+	// var
+	if (t->type == TokenType::EQUAL) {
+		// var =
+		auto eq = eat();
+		auto ex = eatExpression();
+		// var = <ex>
+		if (parenthesis and t->type == TokenType::CLOSING_PARENTHESIS) {
+			// (var = <ex>)
+			eat();
+			if (t->type == TokenType::ARROW) {
+				// (var = <ex>) ->  [lambda]
+				return eatLambdaContinue(false, true, ident, ex, comma_list);
+			} else {
+				// (var = <ex>) <token ?>	[expression]
+				Expression* e = new Expression();
+				e->parenthesis = true;
+				if (arobase) {
+					e->v1 = new Reference(ident);
+				} else {
+					e->v1 = new VariableValue(ident);
+				}
+				e->op = new Operator(eq);
+				e->v2 = ex;
+				return e;
+			}
+		} else if (t->type == TokenType::COMMA or t->type == TokenType::ARROW) {
+			// var = <ex> ,|->  [lambda]
+			return eatLambdaContinue(parenthesis, arobase, ident, ex, comma_list);
+		} else {
+			// var = <ex> <?>
+			Expression* e = new Expression();
+			e->v1 = new VariableValue(ident);
+			e->op = new Operator(eq);
+			e->v2 = ex;
+			return eatExpression(pipe_opened, set_opened, e);
+		}
+	} else if (t->type == TokenType::ARROW) {
+		// var ->
+		return eatLambdaContinue(parenthesis, arobase, ident, nullptr, comma_list);
+	} else if (t->type == TokenType::COMMA) {
+		// var,  [lambda]
+		if (!parenthesis && comma_list) {
+			return new VariableValue(ident);
+		}
+		int p = findNextClosingParenthesis();
+		int a = findNextArrow();
+		if (parenthesis or (a != -1 and (a < p or p == -1))) {
+			return eatLambdaContinue(parenthesis, arobase, ident, nullptr, comma_list);
+		} else {
+			return new VariableValue(ident);
+		}
+	} else {
+		if (parenthesis) {
+			if (t->type == TokenType::CLOSING_PARENTHESIS) {
+				// (var)  or  (@var)
+				eat();
+				if (t->type == TokenType::ARROW) {
+					return eatLambdaContinue(false, arobase, ident, nullptr, comma_list);
+				}
+				if (arobase) {
+					return new Reference(ident);
+				} else {
+					return new VariableValue(ident);
+				}
+			} else {
+				// ( var + ... )
+				auto v = [&]() -> Value* {
+					if (arobase)
+						return new Reference(ident);
+					else
+						return new VariableValue(ident);
+				}();
+				auto ex = eatExpression(pipe_opened, set_opened, v);
+				ex->parenthesis = true;
+				eat(TokenType::CLOSING_PARENTHESIS);
+				return ex;
+			}
+		}
+		// var <?>  [expression]
+		if (arobase) {
+			return new Reference(ident);
+		} else {
+			return new VariableValue(ident);
+		}
+	}
+}
+
+/*
+ * Continue to eat a lambda starting from a comma or the arrow
+ */
+Value* SyntaxicAnalyser::eatLambdaContinue(bool parenthesis, bool arobase, Ident ident, Value* expression, bool comma_list) {
+	Function* l = new Function();
+	l->lambda = true;
+	// Add first argument
+	l->addArgument(ident.token, arobase, expression);
+	// Add other arguments
+	while (t->type == TokenType::COMMA) {
+		eat();
+		bool reference = false;
+		if (t->type == TokenType::AROBASE) {
+			eat();
+			reference = true;
+		}
+		Token* ident = eatIdent();
+		Value* defaultValue = nullptr;
+		if (t->type == TokenType::EQUAL) {
+			eat();
+			defaultValue = eatExpression();
+		}
+		l->addArgument(ident, reference, defaultValue);
+	}
+	if (t->type == TokenType::CLOSING_PARENTHESIS) {
+		eat();
+		parenthesis = false;
+	}
+	eat(TokenType::ARROW);
+	l->body = new Block();
+	l->body->instructions.push_back(new ExpressionInstruction(eatExpression(false, false, nullptr, comma_list)));
+	if (parenthesis) {
+		eat(TokenType::CLOSING_PARENTHESIS);
+	}
+	return l;
+}
+
 Value* SyntaxicAnalyser::eatArrayOrMap() {
 
 	eat(TokenType::OPEN_BRACKET);
@@ -783,7 +891,7 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 		return arrayFor;
 	}
 
-	Value* value = eatExpression();
+	Value* value = eatExpression(false, false, nullptr, true);
 
 	// eatInterval
 	if (t->type == TokenType::TWO_DOTS) {
@@ -824,7 +932,7 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 		eat();
 	}
 	while (t->type != TokenType::CLOSING_BRACKET && t->type != TokenType::FINISHED) {
-		array->expressions.push_back(eatExpression());
+		array->expressions.push_back(eatExpression(false, false, nullptr, true));
 		if (t->type == TokenType::COMMA)
 			eat();
 	}
@@ -1109,7 +1217,6 @@ Instruction* SyntaxicAnalyser::eatWhile() {
 		eat(TokenType::CLOSING_PARENTHESIS);
 	}
 	if (t->type == TokenType::OPEN_BRACE) {
-		//eat();
 		braces = true;
 	} else {
 		eat(TokenType::DO);

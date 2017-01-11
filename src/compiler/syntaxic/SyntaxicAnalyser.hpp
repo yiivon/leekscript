@@ -47,9 +47,9 @@ public:
 
 	Block* eatMain();
 	Token* eatIdent();
-	Value* eatExpression(bool pipe_opened = false, bool set_opened = false);
-	Value* eatSimpleExpression(bool pipe_opened = false, bool set_opened = false);
-	Value* eatValue();
+	Value* eatExpression(bool pipe_opened = false, bool set_opened = false, Value* initial = nullptr, bool comma_list = false);
+	Value* eatSimpleExpression(bool pipe_opened = false, bool set_opened = false, bool comma_list = false);
+	Value* eatValue(bool comma_list = false);
 	bool isObject();
 	Value* eatBlockOrObject();
 	Block* eatBlock();
@@ -68,8 +68,13 @@ public:
 	Function* eatFunction();
 	VariableDeclaration* eatFunctionDeclaration();
 	Instruction* eatInstruction();
+	Value* eatLambdaContinue(bool parenthesis, bool arobase, Ident ident, Value* expression, bool comma_list = false);
+	Value* eatLambdaOrParenthesisExpression(bool pipe_opened = false, bool set_opened = false, bool comma_list = false);
 
 	bool beginingOfExpression(TokenType type);
+	int findNextClosingParenthesis();
+	int findNextArrow();
+	bool isLambda();
 
 	Token* eat();
 	Token* eat(TokenType type);
