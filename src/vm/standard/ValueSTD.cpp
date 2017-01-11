@@ -21,6 +21,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	/*
 	 * Operators
 	 */
+	operator_("=", {
+ 		{Type::BOOLEAN, Type::BOOLEAN, Type::BOOLEAN, (void*) &ValueSTD::op_store}
+ 	});
 	operator_("instanceof", {
 		{Type::UNKNOWN, Type::CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
 	});
@@ -91,8 +94,13 @@ Compiler::value ValueSTD::attr_class(Compiler& c, Compiler::value a) {
 }
 
 /*
- * Methods
+ * Operators
  */
+Compiler::value ValueSTD::op_store(Compiler& c, std::vector<Compiler::value> args) {
+	c.insn_store_relative(args[0], args[1]);
+	return args[1];
+}
+
 Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = c.insn_eq(c.insn_class_of(args[0]), args[1]);
 	c.insn_delete(args[0]);

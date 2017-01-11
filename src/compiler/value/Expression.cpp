@@ -175,12 +175,10 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Don't use old stuff for boolean
-	/*
 	if (v1->type == Type::BOOLEAN) {
 		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, op->token->line, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}
-	*/
 
 	if (op->type == TokenType::IN) {
 		if (operator_fun == nullptr) {
@@ -467,10 +465,14 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	if (operator_fun != nullptr) {
 
-		vector<Compiler::value> args = {
-			op->reversed ? v2->compile(c) : v1->compile(c),
-			op->reversed ? v1->compile(c) : v2->compile(c)
-		};
+		vector<Compiler::value> args;
+		if (v1->type == Type::BOOLEAN and op->type == TokenType::EQUAL) {
+			args.push_back(((LeftValue*) v1)->compile_l(c));
+			args.push_back(v2->compile(c));
+		} else {
+			args.push_back(op->reversed ? v2->compile(c) : v1->compile(c));
+			args.push_back(op->reversed ? v1->compile(c) : v2->compile(c));
+		}
 
 		Compiler::value res;
 		if (is_native_method) {

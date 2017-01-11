@@ -25,6 +25,7 @@ public:
 	/*
 	 * Operators
 	 */
+	static Compiler::value op_store(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_lt(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_le(Compiler& c, std::vector<Compiler::value> args);
