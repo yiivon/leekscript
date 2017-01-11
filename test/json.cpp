@@ -25,14 +25,14 @@ void Test::test_json() {
 	code("Json.encode('hello')").equals("'\"hello\"'");
 	// array
 	code("Json.encode([])").equals("'[]'");
-	code("Json.encode([1, 2, 3])").equals("'[1,2,3]'");
+	code("Json.encode([1, 2, 3])").equals("'[1, 2, 3]'");
 	// object
 	code("Json.encode({})").equals("'{}'");
 	code("Json.encode({a: 1, b: 2, c: 3})").equals("'{\"a\":1,\"b\":2,\"c\":3}'");
-	code("Json.encode({hello: [], b: {d: 12}, ccccc: [1, 2, [], 4]})").equals("'{\"b\":{\"d\":12},\"ccccc\":[1,2,[],4],\"hello\":[]}'");
+	code("Json.encode({hello: [], b: {d: 12}, ccccc: [1, 2, [], 4]})").equals("'{\"b\":{\"d\":12},\"ccccc\":[1, 2, [], 4],\"hello\":[]}'");
 	// function : not transformable into JSON
 	code("Json.encode(x -> x)").equals("''");
-	code("Json.encode([1, x -> x, 3])").equals("'[1,3]'");
+	code("Json.encode([1, x -> x, 3])").equals("'[1, 3]'");
 
 	section("Value.json()");
 	// null
@@ -56,8 +56,8 @@ void Test::test_json() {
 	code("'hello'.json()").equals("'\"hello\"'");
 	// array
 	code("[].json()").equals("'[]'");
-	code("[1, 2, 3].json()").equals("'[1,2,3]'");
-	code("['a', 'b', 'c'].json()").equals("'[\"a\",\"b\",\"c\"]'");
+	code("[1, 2, 3].json()").equals("'[1, 2, 3]'");
+	code("['a', 'b', 'c'].json()").equals("'[\"a\", \"b\", \"c\"]'");
 	// set
 	code("<1, 2, 3>.json()").equals("'[1, 2, 3]'");
 	code("<'a', 'b', 'c'>.json()").equals("'[\"a\", \"b\", \"c\"]'");
@@ -68,7 +68,7 @@ void Test::test_json() {
 	// object
 	code("{}.json()").equals("'{}'");
 	code("{a: 1, b: 2, c: 3}.json()").equals("'{\"a\":1,\"b\":2,\"c\":3}'");
-	code("{hello: [], b: {d: 12}, ccccc: [1, 2, [], 4]}.json()").equals("'{\"b\":{\"d\":12},\"ccccc\":[1,2,[],4],\"hello\":[]}'");
+	code("{hello: [], b: {d: 12}, ccccc: [1, 2, [], 4]}.json()").equals("'{\"b\":{\"d\":12},\"ccccc\":[1, 2, [], 4],\"hello\":[]}'");
 	// class
 	code("Number.json()").equals("'\"<class Number>\"'");
 
