@@ -402,7 +402,7 @@ void Test::test_arrays() {
 	// TODO add more
 
 	section("Misc");
-	code("let a = [1, []] a[1].push('str') a");
+	code("let a = [1, []] a[1].push('str') a").equals("[1, ['str']]");
 	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
 	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
 	//code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
