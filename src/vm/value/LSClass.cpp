@@ -112,7 +112,8 @@ LSFunction<LSValue*>* LSClass::getDefaultMethod(const string& name) {
 LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type& operand_type) {
 
 	//std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
-
+	if (name == "is") name = "==";
+	if (name == "is not") name = "!=";
 	try {
 		vector<Operator>& impl = operators.at(name);
 		Operator* best = nullptr;
