@@ -22,11 +22,18 @@ ValueSTD::ValueSTD() : Module("Value") {
 	 * Operators
 	 */
 	operator_("=", {
- 		{Type::BOOLEAN, Type::BOOLEAN, Type::BOOLEAN, (void*) &ValueSTD::op_store}
+ 		{Type::BOOLEAN, Type::BOOLEAN, Type::BOOLEAN, (void*) &ValueSTD::op_store},
+		//{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::NUMBER_VALUE, (void*) &ValueSTD::op_store}
  	});
 	operator_("instanceof", {
 		{Type::UNKNOWN, Type::CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
 	});
+	operator_("==", {
+		{Type::VALUE, Type::VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_equals}
+ 	});
+	operator_("!=", {
+		{Type::VALUE, Type::VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_not_equals}
+ 	});
 	operator_("<", {
 		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_lt}
 	});
@@ -106,6 +113,14 @@ Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value
 	c.insn_delete(args[0]);
 	c.insn_delete(args[1]);
 	return r;
+}
+
+Compiler::value ValueSTD::op_equals(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_eq(args[0], args[1]);
+}
+
+Compiler::value ValueSTD::op_not_equals(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_ne(args[0], args[1]);
 }
 
 Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) {
