@@ -6,6 +6,7 @@
 namespace ls {
 
 ArraySTD::ArraySTD() : Module("Array") {
+	LSArray<LSValue*>::array_class = clazz;
 	/*
 	 * Operators
 	 */
@@ -179,7 +180,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::REAL_ARRAY, Type::REAL, {}, (void*) &LSArray<double>::ls_first, Method::NATIVE},
 		{Type::INT_ARRAY, Type::INTEGER, {}, (void*) &LSArray<int>::ls_first, Method::NATIVE},
 	});
-	
+
 	method("last", {
 		{Type::PTR_ARRAY, Type::POINTER, {}, (void*) &LSArray<LSValue*>::ls_last, Method::NATIVE},
 		{Type::REAL_ARRAY, Type::REAL, {}, (void*) &LSArray<double>::ls_last, Method::NATIVE},

@@ -15,7 +15,7 @@
 namespace ls {
 
 template <class T>
-LSValue* LSArray<T>::array_class(new LSClass("Array"));
+LSValue* LSArray<T>::array_class = nullptr;
 
 template <>
 inline LSArray<LSValue*>::~LSArray() {
@@ -1483,8 +1483,10 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 template <class T>
 LSValue** LSArray<T>::atL(const LSValue* key) {
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+		int i = (int) n->value;
+		LSValue::delete_temporary(key);
 		try {
-			LSValue** v = (LSValue**) &(((std::vector<T>*)this)->at((int) n->value));
+			LSValue** v = (LSValue**) &(((std::vector<T>*)this)->at(i));
 			return v;
 		} catch (std::exception& e) {
 			return nullptr;

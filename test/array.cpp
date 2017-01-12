@@ -401,6 +401,13 @@ void Test::test_arrays() {
 	code("[1 2 3 4 5 6 7 8][3:5]").equals("[4, 5, 6]");
 	// TODO add more
 
+	section("Misc");
+	code("let a = [1, []] a[1].push('str') a");
+	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
+	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
+	//code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
+	// code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])]").equals("[]");
+
 	/*
 	code("3 ~ x -> x ^ x").equals("27");
 	code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");

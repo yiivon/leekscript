@@ -159,6 +159,9 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
 					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field->line, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
+				} else {
+					is_unknown_method = true;
+					object = oa->object;
 				}
 			}
 		}
@@ -397,21 +400,29 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	vector<jit_value_t> args;
 	vector<jit_type_t> args_types;
 
-	// Function pointer as first argument
-	args.push_back(ls_fun_addr);
-	args_types.push_back(LS_POINTER);
+	int offset = 1;
 
-	for (int i = 0; i < arg_count - 1; ++i) {
+	if (is_unknown_method) {
+		// add 'this' object as first argument
+		args.push_back(c.insn_load(((LeftValue*) object)->compile_l(c)).v);
+		args_types.push_back(VM::get_jit_type(object->type));
+	} else {
+		// Function pointer as first argument
+		args.push_back(ls_fun_addr);
+		args_types.push_back(LS_POINTER);
+	}
+
+	for (int i = 0; i < arg_count - offset; ++i) {
 
 		args.push_back(arguments[i]->compile(c).v);
 		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			args[1 + i] = VM::move_inc_obj(c.F, args[1 + i]);
+			args[offset + i] = VM::move_inc_obj(c.F, args[offset + i]);
 		}
 		if (function->type.getArgumentType(i) == Type::GMP_INT &&
 			arguments[i]->type != Type::GMP_INT_TMP) {
-			args[1 + i] = VM::clone_gmp_int(c.F, args[1 + i]);
+			args[offset + i] = VM::clone_gmp_int(c.F, args[offset + i]);
 		}
 	}
 
@@ -422,13 +433,13 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	jit_value_t ret = jit_insn_call_indirect(c.F, fun, sig, args.data(), arg_count, 0);
 
 	// Destroy temporary arguments
-	for (int i = 0; i < arg_count; ++i) {
+	for (int i = 0; i < arg_count - offset; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			VM::delete_ref(c.F, args[1 + i]);
+			VM::delete_ref(c.F, args[offset + i]);
 		}
 		if (function->type.getArgumentType(i) == Type::GMP_INT ||
 			function->type.getArgumentType(i) == Type::GMP_INT_TMP) {
-			VM::delete_gmp_int(c.F, args[1 + i]);
+			VM::delete_gmp_int(c.F, args[offset + i]);
 		}
 	}
 	// Delete temporary function

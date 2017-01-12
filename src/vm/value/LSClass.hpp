@@ -55,7 +55,7 @@ public:
 
 	Method* getMethod(std::string&, Type obj_type, std::vector<Type>&);
 	void addStaticMethod(std::string& name, std::vector<StaticMethod> method);
-	LSFunction<LSValue*>* getDefaultMethod(std::string& name);
+	LSFunction<LSValue*>* getDefaultMethod(const std::string& name);
 	StaticMethod* getStaticMethod(std::string&, std::vector<Type>&);
 	Operator* getOperator(std::string& name, Type& object_type, Type& operand_type);
 

@@ -49,6 +49,7 @@ LSString* plus_mpz_tmp(LSString* s, __mpz_struct mpz) {
 }
 
 StringSTD::StringSTD() : Module("String") {
+	LSString::string_class = clazz;
 	/*
 	 * Operators
 	 */

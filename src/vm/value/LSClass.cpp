@@ -63,7 +63,6 @@ void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
 }
 
 Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args) {
-
 	try {
 		vector<Method>& impl = methods.at(name);
 		Method* best = nullptr;
@@ -85,7 +84,6 @@ Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args)
 }
 
 StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
-
 	try {
 		vector<StaticMethod>& impl = static_methods.at(name);
 		StaticMethod* best = nullptr;
@@ -103,17 +101,11 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 	}
 }
 
-LSFunction<LSValue*>* LSClass::getDefaultMethod(string& name) {
+LSFunction<LSValue*>* LSClass::getDefaultMethod(const string& name) {
 	try {
-		return default_methods.at(name);
-	} catch (...) {
-		try {
-			vector<Method>& impl = methods.at(name);
-			auto fun = new LSFunction<LSValue*>(impl[0].addr);
-			default_methods.insert({name, fun});
-			return fun;
-		} catch (...) {}
-	}
+		ModuleStaticField f = static_fields.at(name);
+		return (LSFunction<LSValue*>*) f.value;
+	} catch (...) {}
 	return nullptr;
 }
 

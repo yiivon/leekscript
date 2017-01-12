@@ -20,6 +20,8 @@ public:
 	void* std_func;
 	Value* this_ptr;
 	bool is_native_method = false;
+	bool is_unknown_method = false;
+	Value* object = nullptr;
 
 	FunctionCall(Token* t);
 	virtual ~FunctionCall();

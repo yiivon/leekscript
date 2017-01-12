@@ -114,11 +114,11 @@ void ObjectAccess::change_type(SemanticAnalyser*, const Type& req_type) {
 }
 
 LSValue* object_access(LSValue* o, LSString* k) {
-	return o->attr(k);
+	return o->attr(*k);
 }
 
 LSValue** object_access_l(LSValue* o, LSString* k) {
-	return o->attrL(k);
+	return o->attrL(*k);
 }
 
 Compiler::value ObjectAccess::compile(Compiler& c) const {
