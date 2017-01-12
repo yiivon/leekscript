@@ -164,7 +164,6 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 				lineComment = false;
 			}
 		} else {
-
 			if (c == '/' && nc == '/') {
 				lineComment = true;
 			} else if (c == '/' && nc == '*') {
@@ -173,11 +172,8 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 			} else if (c == '*' && nc == '/') {
 				comment--;
 				i++;
-
 			} else if (comment == 0) {
-
 				if (type == LetterType::WHITE) {
-
 					if (ident) {
 						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
@@ -198,22 +194,20 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						tokens.push_back(Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
 						other = false;
 					}
-
 				} else if (type == LetterType::LETTER) {
-
 					if (ident || string1 || string2) {
 						if (escape) {
 							escape = false;
 							if (c == 'b') {
-								word += '\b';
+								word += '\b'; // used either to erase the last character printed or to overprint it.
 							} else if (c == 'f') {
-								word += '\f';
+								word += '\f'; // to cause a printer to eject paper to the top of the next page, or a video terminal to clear the screen.
 							} else if (c == 'n') {
-								word += '\n';
+								word += '\n'; // used as the end of line marker in most UNIX systems and variants.
 							} else if (c == 'r') {
-								word += '\r';
+								word += '\r'; // used as the end of line marker in Classic Mac OS, OS-9, FLEX (and variants). A carriage return/line feed pair is used by CP/M-80 and its derivatives including DOS and Windows, and by Application Layer protocols such as HTTP.
 							} else if (c == 't') {
-								word += '\t';
+								word += '\t'; // moves the printing position some spaces to the right.
 							} else {
 								errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
 							}
@@ -256,9 +250,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 					}
-
 				} else if (type == LetterType::NUMBER) {
-
 					if (number) {
 						if (bin && c > '1') {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
@@ -284,9 +276,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 					}
-
 				} else if (type == LetterType::QUOTE) {
-
 					if (ident) {
 						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
@@ -305,10 +295,6 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (string1) {
-						if (escape) {
-							escape = false;
-							errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
-						}
 						tokens.push_back(Token(TokenType::STRING, line, character, word));
 						string1 = false;
 					} else if (other) {
@@ -320,9 +306,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						string1 = true;
 						word = "";
 					}
-
 				} else if (type == LetterType::DOUBLE_QUOTE) {
-
 					if (ident) {
 						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
@@ -348,10 +332,6 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (string2) {
-						if (escape) {
-							escape = false;
-							errors.push_back({LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, line, character});
-						}
 						tokens.push_back(Token(TokenType::STRING, line, character, word));
 						string2 = false;
 					} else if (other) {
@@ -363,9 +343,7 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 						string2 = true;
 						word = "";
 					}
-
 				} else if (type == LetterType::OTHER) {
-
 					if (ident) {
 						tokens.push_back(Token(getTokenType(word, TokenType::IDENT), line, character, word));
 						ident = false;
@@ -429,11 +407,9 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 			character = 0;
 		}
 	}
-
 	if (string1 or string2) {
 		errors.push_back({LexicalError::Type::UNTERMINATED_STRING, line, character});
 	}
-
 	return tokens;
 }
 
