@@ -10,6 +10,16 @@ void Test::test_numbers() {
 	code("-(-1)").equals("1");
 	code("π").almost(3.141592653589793116);
 
+	section("Lexical errors");
+	code("12345r").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b011001711").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0x").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0x+").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b#").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b'").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b\"").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+
 	section("Basic operations");
 	code("0 + 5").equals("5");
 	code("5 + 5").equals("10");
