@@ -76,6 +76,12 @@ void Test::test_general() {
 	code("2 + ()").syntaxic_error(ls::SyntaxicalError::Type::EXPECTED_VALUE, {")"});
 	code("let 2 = 5").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
 
+	section("Syntaxic edge cases");
+	code("let toto = 2; toto'salut'").equals("'salut'"); // string just after a ident
+	code("let toto = 2; toto\"salut\"").equals("'salut'"); // string just after a ident
+	code("12345'salut'").equals("'salut'"); // string just after a number
+	code("12345\"salut\"").equals("'salut'"); // string just after a number
+
 	section("?? operator");
 	code("'foo' ?? 'bar'").equals("'foo'");
 	code("null ?? 'bar'").equals("'bar'");
