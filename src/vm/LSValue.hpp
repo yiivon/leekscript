@@ -458,8 +458,8 @@ public:
 	virtual LSValue* at(const LSValue* key) const;
 	virtual LSValue** atL(const LSValue* key);
 
-	virtual LSValue* attr(const LSValue* key) const;
-	virtual LSValue** attrL(const LSValue* key);
+	virtual LSValue* attr(const std::string& key) const;
+	virtual LSValue** attrL(const std::string& key);
 
 	virtual LSValue* range(int start, int end) const;
 	virtual LSValue* rangeL(int start, int end);
@@ -502,7 +502,7 @@ inline LSValue* LSValue::clone_inc() {
 		return this;
 	} else {
 		LSValue* copy = clone();
-		copy->refs++;
+		copy->refs = 1;
 		return copy;
 	}
 }
@@ -522,6 +522,8 @@ inline LSValue* LSValue::move_inc() {
 		refs++;
 	}
 	return this;
+
+
 }
 
 inline void LSValue::delete_ref(LSValue* value) {

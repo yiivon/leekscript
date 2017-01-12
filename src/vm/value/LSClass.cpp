@@ -152,16 +152,13 @@ bool LSClass::lt(const LSClass* clazz) const {
 	return this->name < clazz->name;
 }
 
-LSValue* LSClass::attr(const LSValue* key) const {
-	const LSString* str = dynamic_cast<const LSString*>(key);
-	if (str) {
-		if (str->compare("name") == 0) {
-			return new LSString(name);
-		}
-		try {
-			return static_fields.at(*str).value;
-		} catch (exception&) {}
+LSValue* LSClass::attr(const std::string& key) const {
+	if (key == "name") {
+		return new LSString(name);
 	}
+	try {
+		return static_fields.at(key).value;
+	} catch (exception&) {}
 	return LSNull::get();
 }
 

@@ -113,14 +113,13 @@ bool LSObject::in(const LSValue* key) const {
 	return false;
 }
 
-LSValue* LSObject::attr(const LSValue* key) const {
+LSValue* LSObject::attr(const std::string& key) const {
 	try {
 //		cout << "attr : " << values.at(*((LSString*) key))->refs << endl;
-		return values.at(*((LSString*) key));
+		return values.at(key);
 	} catch (exception& e) {
 		if (clazz != nullptr) {
-			string name = *((LSString*) key);
-			auto attr = clazz->getDefaultMethod(name);
+			auto attr = clazz->getDefaultMethod(key);
 			if (attr != nullptr) {
 				return (LSValue*) attr;
 			}
@@ -128,12 +127,12 @@ LSValue* LSObject::attr(const LSValue* key) const {
 		return LSNull::get();
 	}
 }
-LSValue** LSObject::attrL(const LSValue* key) {
+LSValue** LSObject::attrL(const std::string& key) {
 	if (readonly) {
 		return nullptr;
 	}
 	try {
-		return &values.at(*((LSString*) key));
+		return &values.at(key);
 	} catch (exception& e) {
 		return nullptr;
 //		values.insert({*((LSString*) key), LSNull::get()});

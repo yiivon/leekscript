@@ -66,7 +66,7 @@ public:
 	bool eq(const LSClass*) const override;
 	bool lt(const LSClass*) const override;
 
-	LSValue* attr(const LSValue* key) const override;
+	LSValue* attr(const std::string& key) const override;
 
 	std::ostream& dump(std::ostream& os) const;
 	std::string json() const override;

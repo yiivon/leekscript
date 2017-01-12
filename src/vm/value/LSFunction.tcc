@@ -55,15 +55,15 @@ bool LSFunction<R>::lt(const LSFunction<LSValue*>* f) const {
 }
 
 template <class R>
-LSValue* LSFunction<R>::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "args") {
+LSValue* LSFunction<R>::attr(const std::string& key) const {
+	if (key == "args") {
 		LSArray<LSValue*>* args_list = new LSArray<LSValue*>();
 		for (const auto& arg : args) {
 			args_list->push_back(arg);
 		}
 		return args_list;
 	}
-	if (*((LSString*) key) == "return") {
+	if (key == "return") {
 		return return_type;
 	}
 	return LSNull::get();

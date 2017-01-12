@@ -374,14 +374,19 @@ LSValue** LSValue::atL(const LSValue*) {
 	return nullptr;
 }
 
-LSValue* LSValue::attr(const LSValue* key) const {
-	if (*((LSString*) key) == "class") {
+LSValue* LSValue::attr(const std::string& key) const {
+	if (key == "class") {
 		return getClass();
+	}
+	auto method = ((LSClass*) getClass())->getDefaultMethod(key);
+	if (method != nullptr) {
+		//std::cout << "method " << key << " of class " << getClass() << std::endl;
+		return method;
 	}
 	return LSNull::get();
 }
 
-LSValue** LSValue::attrL(const LSValue*) {
+LSValue** LSValue::attrL(const std::string&) {
 	return nullptr;
 }
 

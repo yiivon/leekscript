@@ -32,8 +32,8 @@ public:
 	bool eq(const LSObject*) const override;
 	bool lt(const LSObject*) const override;
 	bool in(const LSValue*) const override;
-	LSValue* attr(const LSValue* key) const override;
-	LSValue** attrL(const LSValue* key) override;
+	LSValue* attr(const std::string& key) const override;
+	LSValue** attrL(const std::string& key) override;
 	LSValue* abso() const override;
 	LSValue* clone() const override;
 	std::ostream& dump(std::ostream& os) const override;

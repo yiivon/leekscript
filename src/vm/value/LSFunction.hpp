@@ -39,7 +39,7 @@ public:
 	bool isTrue() const override;
 	bool eq(const LSFunction<LSValue*>*) const override;
 	bool lt(const LSFunction<LSValue*>*) const override;
-	LSValue* attr(const LSValue* key) const override;
+	LSValue* attr(const std::string& key) const override;
 	std::ostream& dump(std::ostream& os) const;
 	std::string json() const;
 	LSValue* getClass() const override;
