@@ -3,22 +3,52 @@
 void Test::test_strings() {
 
 	header("Strings");
-
-	// General
 	code("'").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
 	code("\"").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
 	code("'hello world").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
+
+	section("Escape sequences");
+	code("'\\\\'").equals("'\\'");
+	code("\"\\\\\"").equals("'\\'");
 	code("'\\\"'").equals("'\\\"'");
-
-//	code("'\\''").equals("'''");
 	code("\"\\\"\"").equals("'\"'");
-//	code("'aujourd\\'hui'").equals("'aujourd'hui'");
+	code("'\\''").equals("'''");
+	code("\"\\\"\"").equals("'\"'");
+	code("'aujourd\\'hui'").equals("'aujourd'hui'");
 	code("\"aujourd\\\"hui\"").equals("'aujourd\"hui'");
+	code("\"\\t\"").equals("'	'");
+	code("'\\t'").equals("'	'");
+	code("'yolo\\b'").equals("'yolo'");
+	code("'yolo\\b'.size()").equals("5");
+	code("'yolo\\byolo'").equals("'yoloyolo'");
+	code("'\\n'").equals("'\n'");
+	code("\"\\n\"").equals("'\n'");
+	code("'salut\\nça va ?'").equals("'salut\nça va ?'");
+	code("\"salut\\nça va ?\"").equals("'salut\nça va ?'");
+	code("'\\f'").equals("''");
+	code("\"\\f\"").equals("''");
+	code("'yo\\flo'").equals("'yolo'");
+	code("'\\r'").equals("''");
+	code("\"\\r\"").equals("''");
+	code("'salut\\rhello'").equals("'saluthello'");
+	code("'\\y'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\A'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\ '").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\	'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\2'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\-'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\*'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\#'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
 
+	/*
+	 * Operators
+	 */
+	section("String.operator +");
 	code("'salut ' + 'ça va ?'").equals("'salut ça va ?'");
 	code("'salut' + 12").equals("'salut12'");
 	code("'salut' + true").equals("'saluttrue'");
 	code("'salut' + null").equals("'salutnull'");
+
 	code("'salut' * 3").equals("'salutsalutsalut'");
 	code("|'salut'|").equals("5");
 	code("'abc' / '.'").equals("['abc']");

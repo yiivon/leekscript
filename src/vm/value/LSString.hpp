@@ -79,6 +79,7 @@ public:
 	std::ostream& dump(std::ostream& os) const;
 	std::string json() const override;
 	std::string escaped(char quote) const;
+	std::string escape_control_characters() const;
 
 	LSValue* getClass() const override;
 	int typeID() const override { return 4; }
