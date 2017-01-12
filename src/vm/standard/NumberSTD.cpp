@@ -51,7 +51,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("+=", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT, (void*) &NumberSTD::add_eq_gmp_gmp}
+		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_eq_gmp_gmp}
 	});
 
 	operator_("-", {
@@ -413,7 +413,11 @@ Compiler::value NumberSTD::add_eq_gmp_gmp(Compiler& c, std::vector<Compiler::val
 	auto a_addr = c.insn_address_of(args[0]);
 	auto b_addr = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
-	return args[0];
+
+	auto r = c.new_mpz();
+	auto r_addr = c.insn_address_of(r);
+	c.insn_call(Type::VOID, {r_addr, a_addr}, &mpz_init_set);
+	return r;
 }
 
 Compiler::value NumberSTD::sub_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {

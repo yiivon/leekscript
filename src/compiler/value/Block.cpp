@@ -104,8 +104,9 @@ Compiler::value Block::compile(Compiler& c) const {
 				c.leave_block(c.F);
 				return {ret, type};
 			} else if (type == Type::GMP_INT_TMP && !temporary_gmp) {
+				Compiler::value v = {VM::clone_gmp_int(c.F, val.v), type};
 				c.leave_block(c.F);
-				return {VM::clone_gmp_int(c.F, val.v), type};
+				return v;
 			} else {
 				c.leave_block(c.F);
 				return val;

@@ -167,6 +167,7 @@ void Test::test_numbers() {
 
 	section("Multiple precision numbers");
 	code("12344532132423").equals("12344532132423");
+	code("var a = 10m a").equals("10");
 	code("12344532132423m * 987657897613412m").equals("12192174652930109838844857276");
 	code("0m").equals("0");
 	code("2 ** 50").equals("-2147483648");
@@ -229,6 +230,10 @@ void Test::test_numbers() {
 	code("10m < (3m * 4m)").equals("true");
 	code("(5m + 5m) < (3m * 4m)").equals("true");
 	code("(5m + 5m) < 12m").equals("true");
+
+	section("Number.operator +=");
+	code("var a = 10m a += 4m").equals("14");
+	code("var a = 10m a += 4m a").equals("14");
 
 	/*
 	 * Methods
