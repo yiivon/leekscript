@@ -328,7 +328,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 	if (array->type.raw_type == RawType::MAP) {
 		func = (void*) access_l_map;
 	} else {
-		func = (void*) access_l_value;
+		func = (void*) access_l;
 	}
 
 	return {jit_insn_call_native(c.F, "access_l", func, sig, args, 2, JIT_CALL_NOTHROW), type};
