@@ -109,6 +109,9 @@ Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_eq(F, a.v, b.v), Type::BOOLEAN};
 }
+Compiler::value Compiler::insn_ne(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_ne(F, a.v, b.v), Type::BOOLEAN};
+}
 Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_lt(F, a.v, b.v), Type::BOOLEAN};
 }
@@ -192,6 +195,10 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 
 Compiler::value Compiler::insn_address_of(Compiler::value v) const {
 	return {jit_insn_address_of(F, v.v), Type::POINTER};
+}
+
+Compiler::value Compiler::insn_load(Compiler::value v) const {
+	return {jit_insn_load_relative(F, v.v, 0, LS_POINTER), Type::POINTER};
 }
 
 Compiler::value Compiler::insn_typeof(Compiler::value v) const {

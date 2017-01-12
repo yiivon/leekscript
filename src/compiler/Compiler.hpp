@@ -67,6 +67,7 @@ public:
 	value insn_add(value, value) const;
 	value insn_sub(value, value) const;
 	value insn_eq(value, value) const;
+	value insn_ne(value, value) const;
 	value insn_lt(value, value) const;
 	value insn_le(value, value) const;
 	value insn_gt(value, value) const;
@@ -81,6 +82,7 @@ public:
 	value insn_to_pointer(value v) const;
 	value insn_to_bool(value v) const;
 	value insn_address_of(value v) const;
+	value insn_load(value v) const;
 	value insn_typeof(value v) const;
 	value insn_class_of(value v) const;
 	void  insn_delete(value v) const;
