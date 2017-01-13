@@ -237,6 +237,9 @@ void Test::test_numbers() {
 	code("(5m + 5m) < (3m * 4m)").equals("true");
 	code("(5m + 5m) < 12m").equals("true");
 
+	section("Number.operator >");
+	code("12 > 5m").equals("true");
+
 	section("Number.operator +=");
 	code("var a = 10m a += 4m").equals("14");
 	code("var a = 10m a += 4m a").equals("14");
