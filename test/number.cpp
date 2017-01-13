@@ -97,6 +97,14 @@ void Test::test_numbers() {
 	section("Number.operator %");
 	code("123456789123456789m % 234567m").equals("221463");
 	code("(12m ** 40m) % 234567m").equals("228798");
+	code("100000m % (12m ** 3m)").equals("1504");
+	code("(100000m * 10m) % (12m ** 3m)").equals("1216");
+
+	section("Number.operator *");
+	code("(5m + 2m) * (16m * 2m)").equals("224");
+
+	section("Number.operator **");
+	code("(5m + 2m) ** (16m * 2m)").equals("1104427674243920646305299201");
 
 	section("Number.operator &");
 	code("0 & 0").equals("0");
@@ -213,6 +221,7 @@ void Test::test_numbers() {
 	code("13m == 12m").equals("false");
 	code("12m ** 5m == 12m ** 5m").equals("true");
 	code("12m ** 5m == (3m * 4m) ** 5m").equals("true");
+	code("12m ** 5m == 248832").equals("true");
 
 	section("Number.operator +");
 	code("1m + 2m").equals("3");
