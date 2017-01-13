@@ -60,10 +60,10 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //		cout << t.first << " : " << t.second << endl;
 }
 
-bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& arg_types) {
+bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& args, int level) {
 
 	if (var != nullptr and var->value != nullptr) {
-		var->value->will_take(analyser, arg_types);
+		var->value->will_take(analyser, args, level);
 		this->type = var->value->type;
 		var->type = this->type;
 	}
@@ -124,7 +124,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr
 	}
 
-	if (var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+	if (var->type.nature != Nature::UNKNOWN and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 		return {VM::value_to_pointer(c.F, v, var->type), type};
 	}
 	if (var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {

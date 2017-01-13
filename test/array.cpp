@@ -153,12 +153,16 @@ void Test::test_arrays() {
 
 //	let f=x->x[0]; [f([1]), f([0..3])]
 
+	/*
+	 * Methods
+	 */
 	section("Array.size()");
 	code("Array.size([1, 'yo', true])").equals("3");
 	code("Array.size([6, 4, 3, 2, -11])").equals("5");
 	code("Array.size([6.8999, 5.56])").equals("2");
 	code("[1, 'yo', true].size()").equals("3");
 	code("[1, -2, 3, -12, -6].size()").equals("5");
+	//code("[[1, 2, 3], 'foo'][0].size()").equals("3");
 
 	section("Array.average()");
 	code("Array.average([1, 2, 3, 4, 5, 6])").equals("3.5");
@@ -185,6 +189,7 @@ void Test::test_arrays() {
 	code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
 	code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
 	code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
+	//code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
 
 	section("Array.map2()");
 	code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");

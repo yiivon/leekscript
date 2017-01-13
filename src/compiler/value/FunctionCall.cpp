@@ -231,17 +231,18 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (Value* arg : arguments) {
 		arg->analyse(analyser, function->type.getArgumentType(a));
 		if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION) {
-			arg->will_take(analyser, function->type.getArgumentType(a).arguments_types);
+			arg->will_take(analyser, function->type.getArgumentType(a).arguments_types, 1);
 		}
 		a++;
 	}
 
-	function->will_take(analyser, arg_types);
+
+	function->will_take(analyser, arg_types, 1);
 
 	// The function is a variable
 	if (vv and vv->var and vv->var->value) {
 
-		vv->var->will_take(analyser, arg_types);
+		//vv->var->will_take(analyser, arg_types, 1);
 
 		Type ret_type = vv->var->value->type.getReturnType();
 		if (ret_type.raw_type != RawType::UNKNOWN) {
@@ -269,6 +270,13 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 //	cout << "Function call function type : " << type << endl;
+}
+
+bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
+
+	if (auto vv = dynamic_cast<VariableValue*>(function)) {
+		vv->will_take(analyser, args, level + 1);
+	}
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {

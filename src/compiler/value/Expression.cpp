@@ -296,7 +296,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
-		v2->will_take(analyser, { v1->type.getElementType() });
+		v2->will_take(analyser, { v1->type.getElementType() }, 1);
 		type = Type::PTR_ARRAY;
 		type.setElementType(v2->type.getReturnType());
 	}

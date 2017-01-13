@@ -130,7 +130,7 @@ jit_type_t VM::get_jit_type(const Type& type) {
 	if (type.nature == Nature::VOID) {
 		return LS_VOID;
 	}
-	if (type.nature == Nature::POINTER) {
+	if (type.nature == Nature::POINTER or type.nature == Nature::UNKNOWN) {
 		return LS_POINTER;
 	}
 	if (type.raw_type == RawType::UNSIGNED_LONG) {

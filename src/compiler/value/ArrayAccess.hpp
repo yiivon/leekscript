@@ -22,7 +22,7 @@ public:
 	virtual unsigned line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
-	virtual bool will_take(SemanticAnalyser* analyser, const std::vector<Type>&);
+	virtual bool will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level);
 	bool array_access_will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level);
 	virtual void change_type(SemanticAnalyser*, const Type&) override;
 

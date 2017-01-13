@@ -30,6 +30,7 @@ public:
 	virtual unsigned line() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
+	bool will_take(SemanticAnalyser*, const std::vector<Type>& args, int level);
 
 	virtual Compiler::value compile(Compiler&) const override;
 };

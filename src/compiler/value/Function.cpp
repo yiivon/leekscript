@@ -1,6 +1,7 @@
 #include "Function.hpp"
 
 #include "../semantic/SemanticAnalyser.hpp"
+#include "../instruction/ExpressionInstruction.hpp"
 #include "../../vm/value/LSFunction.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/Program.hpp"
@@ -51,6 +52,9 @@ void Function::print(std::ostream& os, int indent, bool debug) const {
 //			os << "@";
 //		}
 		os << arguments.at(i)->content;
+
+		if (debug)
+			os << " " << type.getArgumentType(i);
 //
 //		if ((Value*)defaultValues.at(i) != nullptr) {
 //			os << " = ";
@@ -62,7 +66,7 @@ void Function::print(std::ostream& os, int indent, bool debug) const {
 	body->print(os, indent, debug);
 
 	if (debug) {
-		os << " " << type;
+		//os << " " << type;
 	}
 }
 
@@ -70,6 +74,32 @@ unsigned Function::line() const {
 	return 0;
 }
 
+/*
+ * When returing a function, compile a default version with all parameters
+ * as pointers, when the function will be in the nature, there will be no
+ * problem. Inside a block, it's possible to compile a more specific version
+ * of a function in this block to speed up things
+
+let f = x -> x + '!'
+let g2 = f('hello')   // default version with pointer
+let g1 = f(10)		   // version with [x = int]
+
+let f = x -> y -> x + y
+let g = f('hello ')	// default version of f
+let h1 = g(10)			// here we act like we don't know where does 'g' come from, and take the default version with pointer
+let h2 = g('world')	// same version, pointers
+
+let f = function(a) {
+	let g = x -> x + a
+	g('hello')	// default version with pointer
+	g(12)		// version with [x = int]
+	return g	// here, g will go outside his parent, so we take the full-pointer version, regardless of the version of function f. So f can be recompile multiple times, it will not affect the arguments of g and its return type.
+}
+let r1 = f(' !')		// default version
+let r2 = f(12)			// version with number, recompiler f with a [a = int] version, it will not modify the signature of g
+r2(12)
+r2('hello')
+ */
 void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 //	cout << "Function::analyse req_type " << req_type << endl;
@@ -108,19 +138,34 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "Function type: " << type << endl;
 }
 
-bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types) {
+bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
 
 //	cout << "Function::will_take " << arg_type << " at " << pos << endl;
 
-	bool changed = type.will_take(arg_types);
+	if (level == 1) {
+		bool changed = type.will_take(args);
+		if (changed) {
+			analyse_body(analyser, Type::UNKNOWN);
+		}
+		update_function_args(analyser);
+		return changed;
+	} else {
+		if (auto ei = dynamic_cast<ExpressionInstruction*>(body->instructions[0])) {
+			if (auto f = dynamic_cast<Function*>(ei->value)) {
 
-	if (changed) {
-		analyse_body(analyser, type.getReturnType());
+				analyser->enter_function(this);
+				for (unsigned i = 0; i < arguments.size(); ++i) {
+					analyser->add_parameter(arguments[i], type.getArgumentType(i));
+				}
+
+				f->will_take(analyser, args, level - 1);
+
+				analyser->leave_function();
+
+				analyse_body(analyser, Type::UNKNOWN);
+			}
+		}
 	}
-//	cout << "Function::will_take type after " << type << endl;
-	update_function_args(analyser);
-
-	return changed;
 }
 
 void Function::must_return(SemanticAnalyser* analyser, const Type& ret_type) {
@@ -137,12 +182,12 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->enter_function(this);
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-//		cout << "arg " << i << " type : " << type.getArgumentType(i) << endl;
 		analyser->add_parameter(arguments[i], type.getArgumentType(i));
 	}
 
 	type.setReturnType(Type::UNKNOWN);
 	body->analyse(analyser, req_type);
+
 	if (type.return_types.size() > 1) { // the body contains return instruction
 		Type return_type = body->type == Type::VOID ? Type::UNKNOWN : body->type;
 		for (size_t i = 1; i < type.return_types.size(); ++i) {
@@ -212,10 +257,7 @@ Compiler::value Function::compile(Compiler& c) const {
 	vector<jit_type_t> params = {LS_POINTER}; // first arg is the function pointer
 
 	for (unsigned i = 0; i < arg_count - 1; ++i) {
-		Type t = Type::INTEGER;
-		if (i < type.getArgumentTypes().size()) {
-			t = type.getArgumentType(i);
-		}
+		Type t = type.getArgumentType(i);
 		params.push_back(VM::get_jit_type(t));
 	}
 

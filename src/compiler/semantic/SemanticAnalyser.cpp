@@ -40,10 +40,10 @@ SemanticAnalyser::SemanticAnalyser() {
 
 SemanticAnalyser::~SemanticAnalyser() {}
 
-void SemanticVar::will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types) {
+void SemanticVar::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
 	if (value != nullptr) {
-		value->will_take(analyser, arg_types);
-		this->type.will_take(arg_types);
+		value->will_take(analyser, args, level);
+		this->type.will_take(args);
 	}
 }
 

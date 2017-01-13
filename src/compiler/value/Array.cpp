@@ -117,7 +117,7 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 		if (arr != nullptr && level > 0) {
 			arr->elements_will_take(analyser, arg_types, level - 1);
 		} else {
-			expressions[i]->will_take(analyser, arg_types);
+			expressions[i]->will_take(analyser, arg_types, 1);
 		}
 	}
 

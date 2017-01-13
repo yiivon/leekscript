@@ -38,12 +38,9 @@ public:
 
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 
-	bool will_take(SemanticAnalyser*, const std::vector<Type>&) override;
-
+	bool will_take(SemanticAnalyser*, const std::vector<Type>&, int level) override;
 	void must_return(SemanticAnalyser*, const Type&) override;
-
 	void analyse_body(SemanticAnalyser*, const Type& req_type);
-
 	void update_function_args(SemanticAnalyser*);
 
 	virtual Compiler::value compile(Compiler&) const override;
