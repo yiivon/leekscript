@@ -492,13 +492,20 @@ Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	VM::inc_gmp_counter(c.F);
-	return c.insn_call(Type::GMP_INT_TMP, args, +[](__mpz_struct a, __mpz_struct b) {
-		mpz_t res;
-		mpz_init(res);
-		mpz_pow_ui(res, &a, mpz_get_ui(&b));
-		return *res;
-	});
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		if (args[1].t.temporary) return args[1];
+		return c.new_mpz();
+	}();
+	auto r_addr = c.insn_address_of(r);
+	auto a = c.insn_address_of(args[0]);
+	auto b = c.insn_address_of(args[1]);
+	auto p = c.insn_call(Type::LONG, {b}, &mpz_get_ui);
+	c.insn_call(Type::VOID, {r_addr, a, p}, &mpz_pow_ui);
+	if (args[1].t.temporary && args[1] != r) {
+		VM::delete_gmp_int(c.F, args[1].v);
+	}
+	return r;
 }
 
 __mpz_struct pow_gmp_int_lambda(__mpz_struct a, int b) throw() {
