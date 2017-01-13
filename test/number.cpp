@@ -208,6 +208,12 @@ void Test::test_numbers() {
 	section("Number.operator =");
 	code("var a = 1m, b = 4m; a = b").equals("4");
 
+	section("Number.operator ==");
+	code("12m == 12m").equals("true");
+	code("13m == 12m").equals("false");
+	code("12m ** 5m == 12m ** 5m").equals("true");
+	code("12m ** 5m == (3m * 4m) ** 5m").equals("true");
+
 	section("Number.operator +");
 	code("1m + 2m").equals("3");
 	code("1m + (2m + 3m)").equals("6");
