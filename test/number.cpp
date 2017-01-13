@@ -425,6 +425,10 @@ void Test::test_numbers() {
 	code("Number.log10(654321)").equals("5.8157908589");
 	code("Number.log10([55555, ''][0])").equals("4.7447231519");
 
+	section("Number.pow");
+	code("2.pow(10)").equals("1024");
+	code("Number.pow([10, ''][0], 5)").equals("100000");
+
 	section("Object-like calls");
 	code("(-12).abs()").equals("12");
 	code("π.cos()").equals("-1");
