@@ -235,7 +235,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	method("isPrime", {
 		{Type::GMP_INT, Type::INTEGER, {}, (void*) &NumberSTD::is_prime},
-		{Type::GMP_INT_TMP, Type::INTEGER, {}, (void*) &NumberSTD::is_prime_tmp},
 		{Type::LONG, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_long},
 		{Type::INTEGER, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_int}
 	});
@@ -925,15 +924,12 @@ Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> arg
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
 	auto v_addr = c.insn_address_of(args[0]);
 	auto reps = c.new_integer(15);
+	if (args[0].t.temporary) {
+		VM::delete_gmp_int(c.F, args[0].v);
+	}
 	return c.insn_call(Type::INTEGER, {v_addr, reps}, &mpz_probab_prime_p);
 }
-Compiler::value NumberSTD::is_prime_tmp(Compiler& c, std::vector<Compiler::value> args) {
-	auto v_addr = c.insn_address_of(args[0]);
-	auto reps = c.new_integer(15);
-	auto res = c.insn_call(Type::INTEGER, {v_addr, reps}, &mpz_probab_prime_p);
-	VM::delete_gmp_int(c.F, args[0].v);
-	return res;
-}
+
 template<typename T>
 int NumberSTD::is_prime_number(T n) {
 	if (((!(n & 1)) and n != 2) or (n < 2) || (n % 3 == 0 and n != 3)) {

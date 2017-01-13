@@ -149,7 +149,6 @@ public:
 	static Compiler::value pow_int(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value is_prime(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value is_prime_tmp(Compiler&, std::vector<Compiler::value>);
 	template<typename T>
 	static int is_prime_number(T n);
 	static Compiler::value is_prime_int(Compiler&, std::vector<Compiler::value>);
