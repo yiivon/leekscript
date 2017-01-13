@@ -413,6 +413,18 @@ void Test::test_numbers() {
 	code("(-90).toRadians()").almost(-M_PI / 2);
 	code("0.toRadians()").equals("0");
 
+	section("Number.log");
+	code("1.log()").equals("0");
+	code("123456.log()").equals("11.7236400963");
+	code("Number.log(654321)").equals("13.3913533357");
+	code("Number.log([55555, ''][0])").equals("10.9251288");
+
+	section("Number.log10");
+	code("1.log10()").equals("0");
+	code("123456.log10()").equals("5.0915122016");
+	code("Number.log10(654321)").equals("5.8157908589");
+	code("Number.log10([55555, ''][0])").equals("4.7447231519");
+
 	section("Object-like calls");
 	code("(-12).abs()").equals("12");
 	code("π.cos()").equals("-1");

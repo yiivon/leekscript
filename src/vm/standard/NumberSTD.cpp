@@ -185,12 +185,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::hypot_real_real}
 	});
 	method("log", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log_real, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log_real},
 	});
 	method("log10", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log10_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log10_real, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log10_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log10_real},
 	});
 	method("max", {
 		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
@@ -975,9 +975,7 @@ Compiler::value NumberSTD::log_ptr(Compiler& c, std::vector<Compiler::value> arg
 	});
 }
 Compiler::value NumberSTD::log_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::REAL, args, +[](double x) {
-		return log(x);
-	});
+	return {jit_insn_log(c.F, args[0].v), Type::REAL};
 }
 
 Compiler::value NumberSTD::log10_ptr(Compiler& c, std::vector<Compiler::value> args) {
@@ -988,9 +986,7 @@ Compiler::value NumberSTD::log10_ptr(Compiler& c, std::vector<Compiler::value> a
 	});
 }
 Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::REAL, args, +[](double x) {
-		return log10(x);
-	});
+	return {jit_insn_log10(c.F, args[0].v), Type::REAL};
 }
 
 Compiler::value NumberSTD::pow_ptr(Compiler& c, std::vector<Compiler::value> args) {
