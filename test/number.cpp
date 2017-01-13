@@ -451,4 +451,10 @@ void Test::test_numbers() {
 	code("4398042316799.isPrime()").equals("true");
 	code("(4398042316799m).isPrime()").equals("1");
 	code("359334085968622831041960188598043661065388726959079837.isPrime()").equals("1");
+
+	section("Number.rand()");
+	code("var a = Number.rand() a >= 0 and a <= 1").equals("true");
+	code("var a = Number.rand() a > 1").equals("false");
+	code("var a = Number.randInt(2067, 2070) a >= 2067 and a < 2070").equals("true");
+	code("var a = Number.randFloat(500, 510) a >= 500 and a < 510 and !a.isInteger()").equals("true");
 }

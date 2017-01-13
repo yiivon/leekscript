@@ -1004,11 +1004,11 @@ double NumberSTD::rand01() {
 }
 
 double NumberSTD::randFloat(double min, double max) {
-	return min + ((double) rand() / RAND_MAX) * max;
+	return min + ((double) rand() / RAND_MAX) * (max - min);
 }
 
 int NumberSTD::randInt(int min, int max) {
-	return floor(((double) rand() / RAND_MAX) * (max - min));
+	return min + floor(((double) rand() / RAND_MAX) * (max - min));
 }
 
 int NumberSTD::signum(LSNumber* x) {
