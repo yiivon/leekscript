@@ -294,7 +294,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int},
 	});
 	static_method("hypot", {
-		{Type::REAL, {Type::NUMBER, Type::NUMBER}, (void*) &NumberSTD::hypot_ptr_ptr},
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::hypot_ptr_ptr},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::hypot_real_real},
 	});
 	static_method("log", {
@@ -955,7 +955,10 @@ Compiler::value NumberSTD::is_prime_long(Compiler& c, std::vector<Compiler::valu
 
 Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::REAL, args, +[](LSNumber* x, LSNumber* y) {
-		return hypot(x->value, y->value);
+		auto r = hypot(x->value, y->value);
+		LSValue::delete_temporary(x);
+		LSValue::delete_temporary(y);
+		return r;
 	});
 }
 Compiler::value NumberSTD::hypot_real_real(Compiler& c, std::vector<Compiler::value> args) {
