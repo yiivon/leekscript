@@ -21,16 +21,16 @@ public:
 
 	void* function;
 	std::vector<LSValue*> captures;
+	// For reflexion
+	std::vector<LSValue*> args;
+	LSValue* return_type;
+
 
 	LSFunction(void* function);
 	virtual ~LSFunction();
 
 	void add_capture(LSValue* value);
 	LSValue* get_capture(int index);
-
-	// For reflexion
-	std::vector<LSValue*> args;
-	LSValue* return_type;
 
 	/*
 	 * LSValue methods
