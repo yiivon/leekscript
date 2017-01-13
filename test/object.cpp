@@ -44,6 +44,9 @@ void Test::test_objects() {
 	code("'x' in {x: 5, y: 'yo'}.keys()").equals("true");
 	code("'x' in {a: 5, y: 'yo'}.keys()").equals("false");
 
+	code("if ({x: 12}) { 5 } else { 12 }").equals("5");
+	code("if ({}) { 5 } else { 12 }").equals("12");
+
 	//section("Object.map()");
 	//code("{x: 12, y: 5}.map(x -> x + 1)", "{}");
 }
