@@ -127,10 +127,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, op->token->line, {v1->to_string()}});
 		}
 		// Check if A is a l-value
-		bool is_left_value = true;
 		if (not v1->isLeftValue()) {
 			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), {v1->to_string()}});
-			is_left_value = false;
 		}
 	}
 
