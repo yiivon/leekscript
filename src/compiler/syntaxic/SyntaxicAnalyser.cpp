@@ -486,7 +486,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 
 				if (t->type != TokenType::CLOSING_PARENTHESIS) {
 					fc->arguments.push_back(eatExpression(false, false, nullptr, true));
-					while (t->type != TokenType::CLOSING_PARENTHESIS) {
+					while (t->type != TokenType::CLOSING_PARENTHESIS && t->type != TokenType::FINISHED) {
 						if (t->type == TokenType::COMMA) {
 							eat();
 						}

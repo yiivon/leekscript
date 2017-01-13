@@ -75,6 +75,8 @@ void Test::test_general() {
 	code("{").syntaxic_error(ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
 	code("2 + ()").syntaxic_error(ls::SyntaxicalError::Type::EXPECTED_VALUE, {")"});
 	code("let 2 = 5").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
+	code("(654321").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {""});
+	code("fun(1234").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {""});
 
 	section("Syntaxic edge cases");
 	code("let toto = 2; toto'salut'").equals("'salut'"); // string just after a ident
