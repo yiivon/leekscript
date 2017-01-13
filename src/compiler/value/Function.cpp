@@ -166,6 +166,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 			}
 		}
 	}
+	return false;
 }
 
 void Function::must_return(SemanticAnalyser* analyser, const Type& ret_type) {

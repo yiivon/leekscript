@@ -273,10 +273,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 }
 
 bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
-
 	if (auto vv = dynamic_cast<VariableValue*>(function)) {
 		vv->will_take(analyser, args, level + 1);
 	}
+	return false;
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {
