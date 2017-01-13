@@ -26,7 +26,6 @@ public:
 
 	int atv(const int key) const;
 	virtual LSValue* at(const LSValue* key) const override;
-	virtual LSValue** atL(const LSValue* key) override;
 	virtual LSValue* abso() const override;
 
 	virtual LSValue* clone() const override;

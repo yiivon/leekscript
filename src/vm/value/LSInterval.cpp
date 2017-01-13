@@ -37,13 +37,7 @@ int LSInterval::atv(const int key) const {
 }
 
 LSValue* LSInterval::at(const LSValue* key) const {
-
 	return LSNumber::get(a + ((LSNumber*) key)->value);
-}
-
-LSValue** LSInterval::atL(const LSValue*) {
-	// TODO
-	return nullptr;
 }
 
 LSValue* LSInterval::abso() const {
