@@ -17,7 +17,6 @@ public:
 	bool readonly;
 
 	LSObject();
-	LSObject(std::initializer_list<std::pair<std::string, LSValue*>>);
 	LSObject(LSClass*);
 	virtual ~LSObject();
 

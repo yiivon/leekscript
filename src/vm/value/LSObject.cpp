@@ -15,15 +15,6 @@ LSObject::LSObject() {
 	readonly = false;
 }
 
-LSObject::LSObject(initializer_list<pair<std::string, LSValue*>> values) {
-
-	for (auto i : values) {
-		addField(i.first, i.second->clone());
-	}
-	clazz = nullptr;
-	readonly = false;
-}
-
 LSObject::LSObject(LSClass* clazz) {
 	this->clazz = clazz;
 	readonly = false;
