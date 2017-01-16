@@ -47,6 +47,8 @@ void Test::test_objects() {
 	code("if ({x: 12}) { 5 } else { 12 }").equals("5");
 	code("if ({}) { 5 } else { 12 }").equals("12");
 
-	//section("Object.map()");
-	//code("{x: 12, y: 5}.map(x -> x + 1)", "{}");
+	section("Object.map()");
+	code("{}.map(x -> x + 1)").equals("{}");
+	code("{x: 12, y: 5}.map(x -> x + 1)").equals("{x: 13, y: 6}");
+	code("{x: 'a', y: 'b'}.map(x -> x + ' !')").equals("{x: 'a !', y: 'b !'}");
 }

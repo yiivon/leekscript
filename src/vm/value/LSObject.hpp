@@ -24,6 +24,7 @@ public:
 	void addField(std::string name, LSValue* value);
 	LSArray<LSValue*>* ls_get_keys() const;
 	LSArray<LSValue*>* ls_get_values() const;
+	LSObject* ls_map(LSFunction<LSValue*>* fun) const;
 
 	/** LSValue methods **/
 	LSVALUE_OPERATORS

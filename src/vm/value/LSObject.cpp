@@ -49,6 +49,17 @@ LSArray<LSValue*>* LSObject::ls_get_values() const {
 	return v;
 }
 
+LSObject* LSObject::ls_map(LSFunction<LSValue*>* function) const {
+	auto fun = (LSValue* (*)(void*, LSValue*)) function->function;
+	auto result = new LSObject();
+	for (auto v : this->values) {
+		auto r = fun(function, ls::clone(v.second));
+		result->values.insert({v.first, r->move_inc()});
+	}
+	LSValue::delete_temporary(this);
+	return result;
+}
+
 /*
  * LSValue methods
  */
