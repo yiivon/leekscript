@@ -117,22 +117,18 @@ LSValue* object_access(LSValue* o, LSString* k) {
 	return o->attr(*k);
 }
 
-LSValue** object_access_l(LSValue* o, LSString* k) {
-	return o->attrL(*k);
-}
-
 Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 	// Special case for custom attributes, accessible via a function
 	if (access_function != nullptr) {
 
-		auto fun = (jit_value_t (*)(jit_function_t)) access_function;
-		jit_value_t res = fun(c.F);
+		auto fun = (Compiler::value (*)(Compiler&)) access_function;
+		Compiler::value res = fun(c);
 
 		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, res, type), type};
+			return {VM::value_to_pointer(c.F, res.v, type), type};
 		}
-		return {res, type};
+		return res;
 	}
 
 	if (obj_access_function != nullptr) {
@@ -163,6 +159,10 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	}
 }
 
+LSValue** object_access_l(LSValue* o, LSString* k) {
+	return o->attrL(*k);
+}
+
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 
 	auto o = object->compile(c);
@@ -173,7 +173,7 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	jit_value_t k = LS_CREATE_POINTER(c.F, field_string);
 	jit_value_t args[] = {o.v, k};
 
-	jit_value_t res = jit_insn_call_native(c.F, "access_l", (void*) object_access_l, sig, args, 2, JIT_CALL_NOTHROW);
+	jit_value_t res = jit_insn_call_native(c.F, "access_l", (void*) object_access_l, sig, args, 2, 0);
 
 	return {res, type};
 }

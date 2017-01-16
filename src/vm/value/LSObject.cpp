@@ -117,7 +117,6 @@ bool LSObject::in(const LSValue* key) const {
 
 LSValue* LSObject::attr(const std::string& key) const {
 	try {
-//		cout << "attr : " << values.at(*((LSString*) key))->refs << endl;
 		return values.at(key);
 	} catch (exception& e) {
 		if (clazz != nullptr) {
@@ -129,16 +128,16 @@ LSValue* LSObject::attr(const std::string& key) const {
 		return LSNull::get();
 	}
 }
+
 LSValue** LSObject::attrL(const std::string& key) {
 	if (readonly) {
-		return nullptr;
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::CANT_MODIFY_READONLY_OBJECT));
 	}
 	try {
 		return &values.at(key);
 	} catch (exception& e) {
-		return nullptr;
-//		values.insert({*((LSString*) key), LSNull::get()});
-//		return &values[*((LSString*) key)];
+		values.insert({key, LSNull::get()});
+		return &values[key];
 	}
 }
 

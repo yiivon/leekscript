@@ -451,6 +451,7 @@ std::string VM::exception_message(VM::Exception expected) {
 	case Exception::NO_SUCH_OPERATOR: return "no_such_operator";
 	case Exception::ARRAY_OUT_OF_BOUNDS: return "array_out_of_bounds";
 	case Exception::ARRAY_KEY_IS_NOT_NUMBER: return "array_key_is_not_a_number";
+	case Exception::CANT_MODIFY_READONLY_OBJECT: return "cant_modify_readonly_object";
 	}
 	return "??" + std::to_string((int) expected) + "??";
 }

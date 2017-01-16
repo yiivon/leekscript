@@ -373,10 +373,8 @@ bool jit_not_equals(LSValue* x, LSValue* y) {
 }
 
 LSValue* jit_store(LSValue** x, LSValue* y) {
-	y->refs++;
-	LSValue* r = *x = y;
-	LSValue::delete_ref(y);
-	return r;
+	LSValue::delete_ref(*x);
+	return *x = y->move_inc();
 }
 
 int jit_store_value(int* x, int y) {

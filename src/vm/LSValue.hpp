@@ -522,8 +522,6 @@ inline LSValue* LSValue::move_inc() {
 		refs++;
 	}
 	return this;
-
-
 }
 
 inline void LSValue::delete_ref(LSValue* value) {
