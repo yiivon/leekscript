@@ -109,6 +109,13 @@ void Test::test_functions() {
 	section("Function.isTrue()");
 	code("if [x -> x, 12][0] { 'ok' } else { null }").equals("'ok'");
 
+	section("Function.operator ==");
+	code("let a = x -> x; a == a").equals("true");
+	code("let a = x -> x; a == 2").equals("false");
+
+	section("Function.operator <");
+	code("let a = x -> x; a < a").equals("false");
+
 	section("STD method");
 	code("String.size").equals("<function>");
 	code("Number.cos").equals("<function>");
