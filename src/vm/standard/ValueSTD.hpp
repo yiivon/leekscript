@@ -15,7 +15,7 @@ public:
 	/*
 	 * Static fields
 	 */
-	static jit_value_t unknown(jit_function_t F);
+	static Compiler::value unknown(Compiler& c);
 
 	/*
 	 * Fields

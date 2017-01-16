@@ -13,6 +13,9 @@ class LSObject;
 class ObjectSTD : public Module {
 public:
 	ObjectSTD();
+
+	static LSObject readonly;
+	static LSNumber readonly_value;
 };
 
 }

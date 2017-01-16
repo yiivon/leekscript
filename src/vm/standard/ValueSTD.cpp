@@ -85,10 +85,8 @@ ValueSTD::ValueSTD() : Module("Value") {
 /*
  * Static attributes
  */
-jit_value_t ValueSTD::unknown(jit_function_t F) {
-	return LS_CREATE_POINTER(F,
-		LSNumber::get(floor(1 + ((double) rand() / RAND_MAX) * 100))
-	);
+Compiler::value ValueSTD::unknown(Compiler& c) {
+	return c.new_pointer(LSNumber::get(floor(1 + ((double) rand() / RAND_MAX) * 100)));
 }
 
 /*

@@ -16,17 +16,17 @@ int mpz_log(__mpz_struct n) {
 	return 64 * l + r + 1;
 }
 
-jit_value_t Number_e(jit_function_t F) {
-	return jit_value_create_float64_constant(F, jit_type_float64, M_E);
+Compiler::value Number_e(Compiler& c) {
+	return {jit_value_create_float64_constant(c.F, jit_type_float64, M_E), Type::REAL};
 }
-jit_value_t Number_phi(jit_function_t F) {
-	return jit_value_create_float64_constant(F, jit_type_float64, 1.61803398874989484820);
+Compiler::value Number_phi(Compiler& c) {
+	return {jit_value_create_float64_constant(c.F, jit_type_float64, 1.61803398874989484820), Type::REAL};
 }
-jit_value_t Number_pi(jit_function_t F) {
-	return jit_value_create_float64_constant(F, jit_type_float64, 3.14159265358979323846);
+Compiler::value Number_pi(Compiler& c) {
+	return {jit_value_create_float64_constant(c.F, jit_type_float64, 3.14159265358979323846), Type::REAL};
 }
-jit_value_t Number_epsilon(jit_function_t F) {
-	return jit_value_create_float64_constant(F, jit_type_float64, std::numeric_limits<double>::epsilon());
+Compiler::value Number_epsilon(Compiler& c) {
+	return {jit_value_create_float64_constant(c.F, jit_type_float64, std::numeric_limits<double>::epsilon()), Type::REAL};
 }
 
 NumberSTD::NumberSTD() : Module("Number") {

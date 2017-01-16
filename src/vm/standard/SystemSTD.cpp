@@ -6,12 +6,12 @@
 
 namespace ls {
 
-jit_value_t System_operations(jit_function_t F);
-jit_value_t System_version(jit_function_t F);
-jit_value_t System_time(jit_function_t F);
-jit_value_t System_millitime(jit_function_t F);
-jit_value_t System_microtime(jit_function_t F);
-jit_value_t System_nanotime(jit_function_t F);
+Compiler::value System_operations(Compiler& c);
+Compiler::value System_version(Compiler& c);
+Compiler::value System_time(Compiler& c);
+Compiler::value System_millitime(Compiler& c);
+Compiler::value System_microtime(Compiler& c);
+Compiler::value System_nanotime(Compiler& c);
 void System_print(LSValue* v);
 void System_print_int(int v);
 void System_print_mpz(__mpz_struct v);
@@ -66,33 +66,33 @@ long get_nano_time() {
 	).count();
 }
 
-jit_value_t System_operations(jit_function_t F) {
-	jit_value_t jit_ops_ptr = jit_value_create_long_constant(F, jit_type_void_ptr, (long int) &VM::operations);
-	return jit_insn_load_relative(F, jit_ops_ptr, 0, jit_type_uint);
+Compiler::value System_operations(Compiler& c) {
+	jit_value_t jit_ops_ptr = jit_value_create_long_constant(c.F, jit_type_void_ptr, (long int) &VM::operations);
+	return {jit_insn_load_relative(c.F, jit_ops_ptr, 0, jit_type_uint), Type::LONG};
 }
 
-jit_value_t System_time(jit_function_t F) {
+Compiler::value System_time(Compiler& c) {
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_LONG, {}, 0, 0);
-	return jit_insn_call_native(F, "sec_time", (void*) get_sec_time, sig, {}, 0, JIT_CALL_NOTHROW);
+	return {jit_insn_call_native(c.F, "sec_time", (void*) get_sec_time, sig, {}, 0, JIT_CALL_NOTHROW), Type::LONG};
 }
 
-jit_value_t System_millitime(jit_function_t F) {
+Compiler::value System_millitime(Compiler& c) {
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_LONG, {}, 0, 0);
-	return jit_insn_call_native(F, "milli_time", (void*) get_milli_time, sig, {}, 0, JIT_CALL_NOTHROW);
+	return {jit_insn_call_native(c.F, "milli_time", (void*) get_milli_time, sig, {}, 0, JIT_CALL_NOTHROW), Type::LONG};
 }
 
-jit_value_t System_microtime(jit_function_t F) {
+Compiler::value System_microtime(Compiler& c) {
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_LONG, {}, 0, 0);
-	return jit_insn_call_native(F, "micro_time", (void*) get_micro_time, sig, {}, 0, JIT_CALL_NOTHROW);
+	return {jit_insn_call_native(c.F, "micro_time", (void*) get_micro_time, sig, {}, 0, JIT_CALL_NOTHROW), Type::LONG};
 }
 
-jit_value_t System_nanotime(jit_function_t F) {
+Compiler::value System_nanotime(Compiler& c) {
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_LONG, {}, 0, 0);
-	return jit_insn_call_native(F, "nano_time", (void*) get_nano_time, sig, {}, 0, JIT_CALL_NOTHROW);
+	return {jit_insn_call_native(c.F, "nano_time", (void*) get_nano_time, sig, {}, 0, JIT_CALL_NOTHROW), Type::LONG};
 }
 
-jit_value_t System_version(jit_function_t F) {
-	return jit_value_create_nint_constant(F, jit_type_int, LEEKSCRIPT_VERSION);
+Compiler::value System_version(Compiler& c) {
+	return {jit_value_create_nint_constant(c.F, jit_type_int, LEEKSCRIPT_VERSION), Type::INTEGER};
 }
 
 void System_print(LSValue* value) {
