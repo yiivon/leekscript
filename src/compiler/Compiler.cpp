@@ -130,6 +130,9 @@ Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_div(F, jit_insn_convert(F, a.v, LS_REAL, 0), b.v), Type::REAL};
 }
+Compiler::value Compiler::insn_int_div(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_div(F, a.v, b.v), Type::INTEGER};
+}
 Compiler::value Compiler::insn_bit_and(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_and(F, a.v, b.v), Type::INTEGER};
 }
@@ -139,10 +142,16 @@ Compiler::value Compiler::insn_bit_or(Compiler::value a, Compiler::value b) cons
 Compiler::value Compiler::insn_bit_xor(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_xor(F, a.v, b.v), Type::INTEGER};
 }
+Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_rem(F, a.v, b.v), Type::INTEGER};
+}
 
 /*
  * Values
  */
+Compiler::value Compiler::duplicate(Compiler::value v) const {
+	return {jit_insn_load(F, v.v), v.t};
+}
 Compiler::value Compiler::new_null() const {
 	return {LS_CREATE_POINTER(F, LSNull::get()), Type::NULLL};
 }

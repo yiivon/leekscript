@@ -51,6 +51,7 @@ public:
 	virtual ~Compiler();
 
 	// Value creation
+	value duplicate(value) const;
 	value new_null() const;
 	value new_bool(bool b) const;
 	value new_integer(int i) const;
@@ -74,9 +75,11 @@ public:
 	value insn_ge(value, value) const;
 	value insn_mul(value, value) const;
 	value insn_div(value, value) const;
+	value insn_int_div(value, value) const;
 	value insn_bit_and(value, value) const;
 	value insn_bit_or(value, value) const;
 	value insn_bit_xor(value, value) const;
+	value insn_mod(value, value) const;
 
 	// Value management
 	value insn_to_pointer(value v) const;
