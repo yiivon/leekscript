@@ -347,9 +347,9 @@ LSValue* jit_mul(LSValue* x, LSValue* y) {
 LSValue* jit_div(LSValue* x, LSValue* y) {
 	return x->ls_div(y);
 }
-int jit_int_div(LSValue* x, LSValue* y) {
+long jit_int_div(LSValue* x, LSValue* y) {
 	LSValue* res = x->ls_int_div(y);
-	int v = ((LSNumber*) res)->value;
+	long v = ((LSNumber*) res)->value;
 	LSValue::delete_temporary(res);
 	return v;
 }
@@ -732,9 +732,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
-				auto r = jit_insn_convert(c.F, jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v)), LS_INTEGER, 0);
+				auto r = jit_insn_convert(c.F, jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v)), VM::get_jit_type(type), 0);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r, Type::INTEGER), type};
+					return {VM::value_to_pointer(c.F, r, type), type};
 				}
 				return {r, type};
 			} else {
