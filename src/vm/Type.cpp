@@ -261,6 +261,10 @@ bool Type::isNumber() const {
 	return dynamic_cast<const NumberRawType*>(raw_type) != nullptr;
 }
 
+bool Type::iterable() const {
+	return raw_type->iterable();
+}
+
 bool Type::operator ==(const Type& type) const {
 	return raw_type == type.raw_type &&
 			nature == type.nature &&

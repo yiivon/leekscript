@@ -13,5 +13,6 @@
 	"VALUE_MUST_BE_A_LVALUE" : "Cette valeur « %s » doit être une l-value",
 	"WRONG_ARGUMENT_COUNT" : "La fonction « %1 » prend %2 paramètres, mais %3 sont passés",
 	"NO_SUCH_OPERATOR" : "L'opérateur %1 %2 %3 n'est pas défini",
-	"CANT_MODIFY_CONSTANT_VALUE": "Cette valeur « %s » est constante, impossible de la modifier"
+	"CANT_MODIFY_CONSTANT_VALUE": "Cette valeur « %s » est constante, impossible de la modifier",
+	"VALUE_NOT_ITERABLE" : "Cette valeur « %s » n'est pas iterable"
 }

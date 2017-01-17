@@ -69,6 +69,7 @@ std::string SemanticError::type_to_string(Type type) {
 		case Type::WRONG_ARGUMENT_COUNT: return "WRONG_ARGUMENT_COUNT";
 		case Type::NO_SUCH_OPERATOR: return "NO_SUCH_OPERATOR";
 		case Type::CANT_MODIFY_CONSTANT_VALUE: return "CANT_MODIFY_CONSTANT_VALUE";
+		case Type::VALUE_NOT_ITERABLE: return "VALUE_NOT_ITERABLE";
 		default:
 			return "UNKNOWN_ERROR";
 	}

@@ -17,6 +17,7 @@ public:
 	virtual const std::string getName() const { return "?"; }
 	virtual const std::string getClass() const { return "?"; }
 	virtual const std::string getJsonName() const { return "?"; }
+	virtual bool iterable() const { return false; }
 };
 
 class VoidRawType : public BaseRawType {
@@ -47,6 +48,7 @@ public:
 	virtual const std::string getName() const { return "number"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
+	virtual bool iterable() const { return true; }
 };
 
 class IntegerRawType : public NumberRawType {
@@ -83,6 +85,7 @@ public:
 	virtual const std::string getName() const { return "string"; }
 	virtual const std::string getClass() const { return "String"; }
 	virtual const std::string getJsonName() const { return "string"; }
+	virtual bool iterable() const { return true; }
 };
 
 class ArrayRawType : public BaseRawType {
@@ -91,6 +94,7 @@ public:
 	virtual const std::string getName() const { return "array"; }
 	virtual const std::string getClass() const { return "Array"; }
 	virtual const std::string getJsonName() const { return "array"; }
+	virtual bool iterable() const { return true; }
 };
 
 class MapRawType : public BaseRawType {
@@ -99,6 +103,7 @@ public:
 	virtual const std::string getName() const { return "map"; }
 	virtual const std::string getClass() const { return "Map"; }
 	virtual const std::string getJsonName() const { return "map"; }
+	virtual bool iterable() const { return true; }
 };
 
 class SetRawType : public BaseRawType {
@@ -107,6 +112,7 @@ public:
 	virtual const std::string getName() const { return "set"; }
 	virtual const std::string getClass() const { return "Set"; }
 	virtual const std::string getJsonName() const { return "set"; }
+	virtual bool iterable() const { return true; }
 };
 
 class IntervalRawType : public BaseRawType {
@@ -115,6 +121,7 @@ public:
 	virtual const std::string getName() const { return "interval"; }
 	virtual const std::string getClass() const { return "Interval"; }
 	virtual const std::string getJsonName() const { return "interval"; }
+	virtual bool iterable() const { return true; }
 };
 
 class ObjectRawType : public BaseRawType {
@@ -123,6 +130,7 @@ public:
 	virtual const std::string getName() const { return "object"; }
 	virtual const std::string getClass() const { return "Object"; }
 	virtual const std::string getJsonName() const { return "object"; }
+	virtual bool iterable() const { return true; }
 };
 
 class FunctionRawType : public BaseRawType {
@@ -209,6 +217,7 @@ public:
 	std::string to_string() const;
 
 	bool isNumber() const;
+	bool iterable() const;
 	Type not_temporary() const;
 
 	bool operator ==(const Type& type) const;

@@ -50,10 +50,9 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	container->analyse(analyser, Type::UNKNOWN);
 
-	//if (not container->iterable()) {
-		// TODO
-		// analyser->add_error();
-	//}
+	if (container->type != Type::UNKNOWN and not container->type.iterable()) {
+		analyser->add_error({SemanticError::Type::VALUE_NOT_ITERABLE, container->line(), {container->type.to_string()}});
+	}
 
 	if (container->type.raw_type == RawType::MAP) {
 
