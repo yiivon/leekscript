@@ -187,9 +187,11 @@ void Test::Input::equals(std::string&& expected) {
 
 	auto result = run();
 
+	std::string errors;
 	if (result.semantical_errors.size()) {
 		for (const auto& error : result.semantical_errors) {
 			std::cout << "Semantic error: " << error.message() << std::endl;
+			errors += error.message();
 		}
 	}
 	if (result.value == expected) {
@@ -199,7 +201,7 @@ void Test::Input::equals(std::string&& expected) {
 		if (result.exception != ls::VM::Exception::NO_EXCEPTION) {
 			actual = "Unexpected exception: " + ls::VM::exception_message(result.exception);
 		}
-		fail(expected, actual);
+		fail(expected, actual + errors);
 	}
 }
 
