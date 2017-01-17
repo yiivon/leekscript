@@ -297,11 +297,15 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 		});
 	}
 	if (args[0].t.raw_type == RawType::GMP_INT) {
-		return c.insn_call(Type::STRING, args, +[](__mpz_struct v) {
+		auto s = c.insn_call(Type::STRING, args, +[](__mpz_struct v) {
 			char buff[10000];
 			mpz_get_str(buff, 10, &v);
 			return new LSString(buff);
 		});
+		if (args[0].t.temporary) {
+			VM::delete_gmp_int(c.F, args[0].v);
+		}
+		return s;
 	}
 	if (args[0].t == Type::REAL) {
 		return c.insn_call(Type::STRING, args, +[](double v) {
