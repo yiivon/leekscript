@@ -197,8 +197,8 @@ Compiler::value Compiler::insn_address_of(Compiler::value v) const {
 	return {jit_insn_address_of(F, v.v), Type::POINTER};
 }
 
-Compiler::value Compiler::insn_load(Compiler::value v) const {
-	return {jit_insn_load_relative(F, v.v, 0, LS_POINTER), Type::POINTER};
+Compiler::value Compiler::insn_load(Compiler::value v, int pos, Type t) const {
+	return {jit_insn_load_relative(F, v.v, pos, VM::get_jit_type(t)), t};
 }
 
 Compiler::value Compiler::insn_typeof(Compiler::value v) const {
