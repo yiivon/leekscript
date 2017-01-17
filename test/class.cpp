@@ -28,6 +28,18 @@ void Test::test_classes() {
 	code("12.class.class").equals("<class Class>");
 	code("[null, true, 12, 'foo', [], [1:12], <>, {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Map>, <class Set>, <class Object>, <class Function>, <class Class>]");
 
+	section("Class.name");
+	code("Null.name").equals("'Null'");
+	code("Boolean.name").equals("'Boolean'");
+	code("Number.name").equals("'Number'");
+	code("String.name").equals("'String'");
+	code("Array.name").equals("'Array'");
+	code("Set.name").equals("'Set'");
+	code("Map.name").equals("'Map'");
+	code("Object.name").equals("'Object'");
+	code("Function.name").equals("'Function'");
+	code("Class.name").equals("'Class'");
+
 	section("instanceof operator");
 	code("12 instanceof Number").equals("true");
 	code("'yo' instanceof Number").equals("false");
