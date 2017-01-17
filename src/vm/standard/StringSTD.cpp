@@ -72,6 +72,13 @@ StringSTD::StringSTD() : Module("String") {
 	method("endsWith", {
 		{Type::STRING, Type::BOOLEAN, {Type::STRING}, (void*) &string_endsWith, Method::NATIVE}
 	});
+	Type fold_fun_type = Type::FUNCTION_P;
+	fold_fun_type.setArgumentType(0, Type::POINTER);
+	fold_fun_type.setArgumentType(1, Type::STRING);
+	fold_fun_type.setReturnType(Type::POINTER);
+	method("fold", {
+		{Type::STRING, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSString::ls_foldLeft, Method::NATIVE}
+	});
 	method("indexOf", {
 		{Type::STRING, Type::INTEGER, {Type::STRING}, (void*) &string_indexOf, Method::NATIVE}
 	});

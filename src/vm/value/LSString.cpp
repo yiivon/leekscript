@@ -51,6 +51,25 @@ bool LSString::is_palindrome() const {
 	return r;
 }
 
+LSValue* LSString::ls_foldLeft(LSFunction<LSValue*>* function, LSValue* v0) {
+	char buff[5];
+	auto fun = (LSValue* (*)(void*, LSValue*, LSValue*)) function->function;
+	const char* string_chars = this->c_str();
+	int i = 0;
+	int l = strlen(string_chars);
+	LSValue* result = ls::move(v0);
+	while (i < l) {
+		u_int32_t c = u8_nextchar(string_chars, &i);
+		u8_toutf8(buff, 5, &c, 1);
+		LSString* ch = new LSString(buff);
+		ch->refs = 1;
+		result = fun(function, result, ch);
+		LSValue::delete_ref(ch);
+	}
+	LSValue::delete_temporary(this);
+	return result;
+}
+
 /*
  * LSValue methods
  */
