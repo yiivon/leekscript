@@ -148,16 +148,6 @@ void Test::test_operators() {
 	code("{} >= {}").equals("true");
 
 	/*
-	 * Integral division
-	 */
-	 header("Integral division");
-	code("10 \\ 2").equals("5");
-	code("10 \\ 4").equals("2");
-	code("2432431 \\ 2313").equals("1051");
-	code("let a = [420987, 'a', 546] a[0] \\ a[2]").equals("771");
-	code("[420987, 'a', 546][0] \\ 12").equals("35082");
-
-	/*
 	 * Random operators
 	 */
 	 /*

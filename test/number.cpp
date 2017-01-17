@@ -253,6 +253,13 @@ void Test::test_numbers() {
 	code("var a = 10m a += 4m").equals("14");
 	code("var a = 10m a += 4m a").equals("14");
 
+	section("Number.operator \\");
+	code("10 \\ 2").equals("5");
+	code("10 \\ 4").equals("2");
+	code("2432431 \\ 2313").equals("1051");
+	code("let a = [420987, 'a', 546] a[0] \\ a[2]").equals("771");
+	code("[420987, 'a', 546][0] \\ 12").equals("35082");
+	code("12345678912345l \\ 1234").equals("10004602035");
 	/*
 	 * Methods
 	 */
