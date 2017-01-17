@@ -204,6 +204,7 @@ public:
 	const std::vector<Type>& getArgumentTypes() const;
 
 	const Type& getElementType() const;
+	const Type& element() const;
 	void setElementType(const Type&);
 
 	const Type& getKeyType() const;

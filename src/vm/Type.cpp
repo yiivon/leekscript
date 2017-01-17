@@ -161,6 +161,11 @@ const Type& Type::getElementType() const {
 	}
 	return Type::UNKNOWN;
 }
+
+const Type& Type::element() const {
+	return getElementType();
+}
+
 void Type::setElementType(const Type& type) {
 	if (element_type.size() == 0) {
 		element_type.push_back(type);
