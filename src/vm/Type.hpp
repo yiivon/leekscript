@@ -18,6 +18,7 @@ public:
 	virtual const std::string getClass() const { return "?"; }
 	virtual const std::string getJsonName() const { return "?"; }
 	virtual bool iterable() const { return false; }
+	virtual int size() const { return 64; }
 };
 
 class VoidRawType : public BaseRawType {
@@ -40,6 +41,7 @@ public:
 	virtual const std::string getName() const { return "bool"; }
 	virtual const std::string getClass() const { return "Boolean"; }
 	virtual const std::string getJsonName() const { return "boolean"; }
+	virtual int size() const { return 32; }
 };
 
 class NumberRawType : public BaseRawType {
@@ -56,6 +58,7 @@ public:
 	virtual const std::string getName() const { return "int"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
+	virtual int size() const { return 32; }
 };
 
 class GmpIntRawType : public NumberRawType {
@@ -219,6 +222,7 @@ public:
 
 	bool isNumber() const;
 	bool iterable() const;
+	int size() const;
 	Type not_temporary() const;
 
 	bool operator ==(const Type& type) const;

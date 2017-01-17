@@ -270,6 +270,10 @@ bool Type::iterable() const {
 	return raw_type->iterable();
 }
 
+int Type::size() const {
+	return raw_type->size();
+}
+
 bool Type::operator ==(const Type& type) const {
 	return raw_type == type.raw_type &&
 			nature == type.nature &&
