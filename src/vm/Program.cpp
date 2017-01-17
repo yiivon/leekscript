@@ -190,13 +190,6 @@ std::string Program::execute() {
 		return std::to_string(res);
 	}
 
-	if (output_type.raw_type == RawType::FUNCTION and output_type.nature == Nature::VALUE) {
-		auto fun = (void* (*)()) closure;
-		fun();
-		if (VM::last_exception) throw VM::last_exception;
-		return "<function>";
-	}
-
 	auto fun = (LSValue* (*)()) closure;
 	LSValue* ptr = fun();
 	if (VM::last_exception) throw VM::last_exception;
