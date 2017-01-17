@@ -43,6 +43,25 @@ LSNumber::LSNumber(Json& json) : value(json) {}
 
 LSNumber::~LSNumber() {}
 
+/*
+ * LSNumber methods
+ */
+LSValue* LSNumber::ls_fold(LSFunction<LSValue*>* function, LSValue* v0) {
+	auto fun = (LSValue* (*)(void*, LSValue*, int)) function->function;
+	LSValue* result = ls::move(v0);
+	int number = this->value;
+	while (number) {
+        int digit = number % 10;
+		result = fun(function, result, digit);
+        number /= 10;
+    }
+	LSValue::delete_temporary(this);
+	return result;
+}
+
+/*
+ * LSValue methods
+ */
 bool LSNumber::isTrue() const {
 	return value != 0;
 }

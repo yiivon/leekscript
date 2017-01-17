@@ -176,6 +176,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::exp_ptr, Method::NATIVE},
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::exp_real}
 	});
+	Type fold_fun_type = Type::FUNCTION_P;
+	fold_fun_type.setArgumentType(0, Type::POINTER);
+	fold_fun_type.setArgumentType(1, Type::INTEGER);
+	fold_fun_type.setReturnType(Type::POINTER);
+	method("fold", {
+		{Type::POINTER, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSNumber::ls_fold, Method::NATIVE}
+	});
 	method("floor", {
 		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
 		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_real}

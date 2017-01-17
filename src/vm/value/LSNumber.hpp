@@ -31,6 +31,11 @@ public:
 	virtual ~LSNumber();
 
 	/*
+	 * LSNumber
+	 */
+	LSValue* ls_fold(LSFunction<LSValue*>* function, LSValue* v0);
+
+	/*
 	 * LSValue
 	 */
 	bool isTrue() const override;
