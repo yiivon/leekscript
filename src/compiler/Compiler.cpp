@@ -290,6 +290,67 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 }
 
 /*
+ * Iterators
+ */
+Compiler::value Compiler::iterator_begin(Compiler::value v) const {
+	if (v.t.raw_type == RawType::ARRAY) {
+		Compiler::value it = {jit_value_create(F, VM::get_jit_type(v.t)), v.t};
+		insn_store(it, insn_load(v, 16));
+		return it;
+	}
+	if (v.t.raw_type == RawType::MAP) {
+
+	}
+	if (v.t == Type::INTEGER) {
+		Compiler::value it = {jit_value_create(F, VM::get_jit_type(v.t)), v.t};
+		insn_store(it, v);
+		return it;
+	}
+	std::cout << "Error: no begin() for type " << v.t << std::endl;
+}
+
+Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
+	if (v.t.raw_type == RawType::ARRAY) {
+		return insn_eq(it, insn_load(v, 24));
+	}
+	if (v.t == Type::INTEGER) {
+		return insn_eq(it, new_integer(0));
+	}
+	std::cout << "Error: no end() for type " << v.t << std::endl;
+}
+
+Compiler::value Compiler::iterator_get(Compiler::value it) const {
+	if (it.t.raw_type == RawType::ARRAY) {
+		return insn_load(it, 0, it.t.getElementType());
+	}
+	if (it.t == Type::INTEGER) {
+		return insn_mod(it, new_integer(10));
+	}
+	std::cout << "Error: no get() for type " << it.t << std::endl;
+}
+
+Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) const {
+	if (it.t.raw_type == RawType::ARRAY) {
+		return insn_int_div(insn_sub(it, insn_load(v, 16)), new_integer(it.t.element().size() / 8));
+	}
+	if (it.t == Type::INTEGER) {
+		return insn_mod(it, new_integer(10));
+	}
+	std::cout << "Error: no get() for type " << it.t << std::endl;
+}
+
+void Compiler::iterator_increment(Compiler::value it) const {
+	if (it.t.raw_type == RawType::ARRAY) {
+		insn_store(it, insn_add(it, new_integer(it.t.element().size() / 8)));
+		return;
+	} else if (it.t == Type::INTEGER) {
+		insn_store(it, insn_int_div(it, new_integer(10)));
+		return;
+	}
+	std::cout << "Error: no increment() for type " << it.t << std::endl;
+}
+
+/*
  * Variables
  */
 void Compiler::add_var(const std::string& name, jit_value_t value, const Type& type, bool ref) {

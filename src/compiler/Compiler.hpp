@@ -92,6 +92,13 @@ public:
 	value insn_array_size(value v) const;
 	value insn_get_capture(int index, Type type) const;
 
+	// Iterators
+	value iterator_begin(value v) const;
+	value iterator_end(value v, value it) const;
+	value iterator_get(value it) const;
+	value iterator_key(value v, value it) const;
+	void iterator_increment(value it) const;
+
 	// Call functions
 	template <typename R, typename... A>
 	value insn_call(Type return_type, std::vector<value> args, R(*func)(A...)) const {
