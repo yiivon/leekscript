@@ -299,13 +299,49 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		return it;
 	}
 	if (v.t.raw_type == RawType::MAP) {
+		/*
+		std::cout << "sizeof int: " << sizeof(int) << std::endl;
+		std::cout << "sizeof double: " << sizeof(double) << std::endl;
+		std::cout << "sizeof lsmap: " << sizeof(LSMap<int, int>) << std::endl;
+		std::cout << "sizeof lsvalue: " << sizeof(LSValue) << std::endl;
+		std::cout << "sizeof map: " << sizeof(map<int,int>) << std::endl;
+		std::cout << "sizeof rb_tree: " << sizeof(_Rb_tree<int,int,_Select1st<int>,std::less<int>>) << std::endl;
+		std::cout << "sizeof lsmap_less: " << sizeof(lsmap_less<int>) << std::endl;
+		std::cout << "sizeof _Rb_tree_color: " << sizeof(_Rb_tree_color) << std::endl;
+		std::cout << "sizeof size_t: " << sizeof(size_t) << std::endl;
 
+		insn_call(Type::VOID, {v}, (void*)+[](LSMap<int, int>* map) {
+			std::cout << "map addr: " << (void*)map << std::endl;
+			std::cout << "map native addr: " << (void*)&map->native << std::endl;
+			std::cout << "map first elem: " << (void*)&map->begin()->first << std::endl;
+		});
+
+		insn_call(Type::VOID, {v}, (void*)+[](void* ptr){
+			std::cout << "map jit: " << ptr << std::endl;
+		});
+
+		auto size = insn_load(v, 56);
+		insn_call(Type::VOID, {size}, (void*)+[](int ptr){
+			std::cout << "map size jit: " << ptr << std::endl;
+		});
+		*/
+		auto begin = insn_load(v, 40, v.t);
+		/*
+		for (int i = 32; i < 64; ++i) {
+			auto hh = insn_load(begin, i);
+			insn_call(Type::VOID, {hh}, (void*)+[](void* ptr){
+				std::cout << "ptr: " << ptr << std::endl;
+			});
+		}
+		*/
+		return begin;
 	}
 	if (v.t == Type::INTEGER) {
 		Compiler::value it = {jit_value_create(F, VM::get_jit_type(v.t)), v.t};
 		insn_store(it, v);
 		return it;
 	}
+	// TODO sets strings intervals
 	std::cout << "Error: no begin() for type " << v.t << std::endl;
 }
 
@@ -313,29 +349,44 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	if (v.t.raw_type == RawType::ARRAY) {
 		return insn_eq(it, insn_load(v, 24));
 	}
+	if (v.t.raw_type == RawType::MAP) {
+		auto end = insn_add(v, new_integer(24)); // end_ptr = &map + 24
+		return insn_eq(it, end);
+	}
 	if (v.t == Type::INTEGER) {
 		return insn_eq(it, new_integer(0));
 	}
+	// TODO sets strings intervals
 	std::cout << "Error: no end() for type " << v.t << std::endl;
-}
-
-Compiler::value Compiler::iterator_get(Compiler::value it) const {
-	if (it.t.raw_type == RawType::ARRAY) {
-		return insn_load(it, 0, it.t.getElementType());
-	}
-	if (it.t == Type::INTEGER) {
-		return insn_mod(it, new_integer(10));
-	}
-	std::cout << "Error: no get() for type " << it.t << std::endl;
 }
 
 Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) const {
 	if (it.t.raw_type == RawType::ARRAY) {
 		return insn_int_div(insn_sub(it, insn_load(v, 16)), new_integer(it.t.element().size() / 8));
 	}
+	if (it.t.raw_type == RawType::MAP) {
+		auto key = insn_load(it, 32, it.t.getKeyType());
+		return key;
+	}
 	if (it.t == Type::INTEGER) {
 		return insn_mod(it, new_integer(10));
 	}
+	// TODO sets strings intervals
+	std::cout << "Error: no get() for type " << it.t << std::endl;
+}
+
+Compiler::value Compiler::iterator_get(Compiler::value it) const {
+	if (it.t.raw_type == RawType::ARRAY) {
+		return insn_load(it, 0, it.t.getElementType());
+	}
+	if (it.t.raw_type == RawType::MAP) {
+		auto element = insn_load(it, 32 + 8, it.t.element());
+		return element;
+	}
+	if (it.t == Type::INTEGER) {
+		return insn_mod(it, new_integer(10));
+	}
+	// TODO sets strings intervals
 	std::cout << "Error: no get() for type " << it.t << std::endl;
 }
 
@@ -343,7 +394,15 @@ void Compiler::iterator_increment(Compiler::value it) const {
 	if (it.t.raw_type == RawType::ARRAY) {
 		insn_store(it, insn_add(it, new_integer(it.t.element().size() / 8)));
 		return;
-	} else if (it.t == Type::INTEGER) {
+	}
+	if (it.t.raw_type == RawType::MAP) {
+		insn_store(it, insn_call(Type::POINTER, {it}, (void*) +[](LSMap<int, int>::iterator it) {
+			it++;
+			return it;
+		}));
+		return;
+	}
+	if (it.t == Type::INTEGER) {
 		insn_store(it, insn_int_div(it, new_integer(10)));
 		return;
 	}

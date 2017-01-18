@@ -86,10 +86,10 @@ void Test::test_loops() {
 //	code("let y = '' for k, x in { let x = [1: 2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	code("var y = '' for k, x in { let x = [1: 2.5] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2.5 3:4 '");
 	code("var y = '' for k, x in { let x = [1: '2'] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
-	code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
-	code("var y = 'test' for x in 'salut' { y = x } y").equals("'test'");
+	//code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
+	//code("var y = 'test' for x in 'salut' { y = x } y").equals("'test'");
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
-	code("var y = '' for k, x in { let x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
+	//code("var y = '' for k, x in { let x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
 	//code("let fs = [] fs.push(s -> {let sum = 0 for v in s {sum += v} sum}) fs[0](<1,2>)").equals("3");
 	//code("let fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
 
@@ -102,7 +102,7 @@ void Test::test_loops() {
 	code("[for x in [1, 2, 3] { x }]").equals("[1, 2, 3]");
 	code("let a = ['a': 'b', 'c': 'd'] [for k, x in a { k + x }]").equals("['ab', 'cd']");
 	code("[for x in [1, 2, 3] {[ for y in [1, 2, 3] { if y == 2 continue x * y }] }]").equals("[[1, 3], [2, 6], [3, 9]]");
-	code("let sorted = [for x in <5, 2, 4, 1, 3> { x }] sorted").equals("[1, 2, 3, 4, 5]");
+	//code("let sorted = [for x in <5, 2, 4, 1, 3> { x }] sorted").equals("[1, 2, 3, 4, 5]");
 
 	/*
 	 * Break & continue
