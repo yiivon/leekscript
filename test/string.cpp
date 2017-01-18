@@ -82,7 +82,6 @@ void Test::test_strings() {
 	code("'韭' + '♫'").equals("'韭♫'");
 	code("|'♫👽'|").equals("2");
 	code("'♫👽'.size()").equals("2");
-
 	code("'☣🦆🧀𑚉𒒫𑓇𐏊'.size()").equals("7");
 	code("'௵௵a௵௵' / 'a'").equals("['௵௵', '௵௵']");
 	code("'a☂a' / '☂'").equals("['a', 'a']");
@@ -90,7 +89,18 @@ void Test::test_strings() {
 	code("'ↂↂ' × 3").equals("'ↂↂↂↂↂↂ'");
 	code("'ḀḂḈḊḖḞḠḦḮḰḸḾṊṎṖ'[5:9]").equals("'ḞḠḦḮḰ'");
 
-	// String standard library
+	/*
+	 * Iteration
+	 */
+	code("for c in 'bonjour' { System.print(c) }").output("b\no\nn\nj\no\nu\nr\n");
+	code("for (c in '汉堡 漢堡') { System.print(c) }").output("汉\n堡\n \n漢\n堡\n");
+	code("[for c in 'salut' { c }]").equals("['s', 'a', 'l', 'u', 't']");
+	code("[for c in 'salut' { (c.code() + 2).char() }]").equals("['u', 'c', 'n', 'w', 'v']");
+	code("let a = [for c in 'salut' { (c.code() + 2).char() }] a.join('')").equals("'ucnwv'");
+
+	/*
+	 * String standard library
+	 */
 	header("String standard library");
 	code("String").equals("<class String>");
 	code("String()").equals("''");
