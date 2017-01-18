@@ -279,6 +279,7 @@ public:
 	static const Type PTR_ARRAY_ARRAY;
 	static const Type REAL_ARRAY_ARRAY;
 	static const Type INT_ARRAY_ARRAY;
+	static const Type STRING_ITERATOR;
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww);

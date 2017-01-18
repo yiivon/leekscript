@@ -15,6 +15,34 @@ namespace ls {
 
 LSValue* LSString::string_class(new LSClass("String"));
 
+LSString::iterator LSString::iterator_begin(LSString* s) {
+	return {(char*) s->c_str(), 0, 0, 0};
+}
+
+void LSString::iterator_next(LSString::iterator* it) {
+	if (it->index == it->next_index) {
+		u8_nextchar((char*) it->buffer, &it->index);
+		it->next_index = it->index;
+	} else {
+		it->index = it->next_index;
+	}
+}
+
+u_int32_t LSString::iterator_get(LSString::iterator* it) {
+	if (it->index == it->next_index) {
+		int index = it->index;
+		u_int32_t c = u8_nextchar(it->buffer, &index);
+		it->next_index = index;
+		it->character = c;
+	}
+	return it->character;
+}
+
+bool LSString::iterator_end(LSString::iterator* it) {
+	bool end = it->buffer[it->index] == 0;
+	return end;
+}
+
 LSString::LSString() {}
 LSString::LSString(const char value) : string(string(1, value)) {}
 LSString::LSString(const char* value) : string(value) {}

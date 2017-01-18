@@ -13,8 +13,19 @@ namespace ls {
 class LSString : public LSValue, public std::string {
 public:
 
+	struct iterator {
+		char* buffer;
+		int index;
+		int next_index;
+		u_int32_t character;
+	};
+
 	static LSValue* string_class;
 	static u_int32_t u8_char_at(char* s, int pos);
+	static iterator iterator_begin(LSString* s);
+	static void iterator_next(iterator* it);
+	static u_int32_t iterator_get(iterator* it);
+	static bool iterator_end(iterator* it);
 
 	LSString();
 	LSString(char);

@@ -65,6 +65,9 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			   container->type.raw_type == RawType::LONG) {
 		key_type = Type::INTEGER;
 		value_type = Type::INTEGER;
+	} else if (container->type.raw_type == RawType::STRING) {
+		key_type = Type::INTEGER;
+		value_type = Type::STRING;
 	} else {
 		key_type = Type::POINTER;
 		value_type = container->type.getElementType();
@@ -103,7 +106,6 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (container->type.must_manage_memory()) {
 		VM::inc_refs(c.F, container_v.v);
 	}
-
 	c.add_var("{array}", container_v.v, container->type, false);
 
 	// Create variables
@@ -137,16 +139,13 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (key != nullptr) {
 		jit_insn_store(c.F, key_v, c.iterator_key(container_v, it).v);
 	}
-
 	// Body
 	auto body_v = body->compile(c);
 	if (output_v && body_v.v) {
 		VM::push_move_array(c.F, type.getElementType(), output_v, body_v.v);
 	}
-
 	// it++
 	jit_insn_label(c.F, &label_it);
-
 	c.iterator_increment(it);
 
 	// jump to cond
@@ -159,7 +158,6 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	jit_value_t return_v = VM::clone_obj(c.F, output_v); // otherwise it is delete by the c.leave_block
 	c.leave_block(c.F); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block
-
 	return {return_v, type};
 }
 

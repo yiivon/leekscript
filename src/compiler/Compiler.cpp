@@ -4,6 +4,7 @@
 #include "../vm/value/LSArray.hpp"
 #include "../vm/value/LSMap.hpp"
 #include "../vm/Program.hpp"
+#include "../../lib/utf8.h"
 
 using namespace std;
 
@@ -35,8 +36,6 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
-
-//			std::cout << "delete " << var.first  << std::endl;
 
 			if (it->second.reference == true) {
 				continue;
@@ -309,47 +308,30 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		insn_store(it, insn_load(v, 16));
 		return it;
 	}
+	if (v.t.raw_type == RawType::STRING) {
+		jit_type_t types[4] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int};
+		auto string_iterator = jit_type_create_struct(types, 4, 0);
+		Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
+		auto addr = insn_address_of(it);
+		insn_call(Type::VOID, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
+			auto i = LSString::iterator_begin(str);
+			it->buffer = i.buffer;
+			it->index = 0;
+			it->next_index = 0;
+		});
+		return it;
+	}
 	if (v.t.raw_type == RawType::MAP) {
-		/*
-		std::cout << "sizeof int: " << sizeof(int) << std::endl;
-		std::cout << "sizeof double: " << sizeof(double) << std::endl;
-		std::cout << "sizeof lsmap: " << sizeof(LSMap<int, int>) << std::endl;
-		std::cout << "sizeof lsvalue: " << sizeof(LSValue) << std::endl;
-		std::cout << "sizeof map: " << sizeof(map<int,int>) << std::endl;
-		std::cout << "sizeof rb_tree: " << sizeof(_Rb_tree<int,int,_Select1st<int>,std::less<int>>) << std::endl;
-		std::cout << "sizeof lsmap_less: " << sizeof(lsmap_less<int>) << std::endl;
-		std::cout << "sizeof _Rb_tree_color: " << sizeof(_Rb_tree_color) << std::endl;
-		std::cout << "sizeof size_t: " << sizeof(size_t) << std::endl;
-
-		insn_call(Type::VOID, {v}, (void*)+[](LSMap<int, int>* map) {
-			std::cout << "map addr: " << (void*)map << std::endl;
-			std::cout << "map native addr: " << (void*)&map->native << std::endl;
-			std::cout << "map first elem: " << (void*)&map->begin()->first << std::endl;
-		});
-
-		insn_call(Type::VOID, {v}, (void*)+[](void* ptr){
-			std::cout << "map jit: " << ptr << std::endl;
-		});
-
-		auto size = insn_load(v, 56);
-		insn_call(Type::VOID, {size}, (void*)+[](int ptr){
-			std::cout << "map size jit: " << ptr << std::endl;
-		});
-		*/
-		auto begin = insn_load(v, 40, v.t);
-		/*
-		for (int i = 32; i < 64; ++i) {
-			auto hh = insn_load(begin, i);
-			insn_call(Type::VOID, {hh}, (void*)+[](void* ptr){
-				std::cout << "ptr: " << ptr << std::endl;
-			});
-		}
-		*/
-		return begin;
+		return insn_load(v, 40, v.t);
 	}
 	if (v.t == Type::INTEGER) {
-		Compiler::value it = {jit_value_create(F, VM::get_jit_type(v.t)), v.t};
-		insn_store(it, v);
+		jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_int};
+		auto integer_iterator = jit_type_create_struct(types, 3, 0);
+		Compiler::value it = {jit_value_create(F, integer_iterator), Type::LONG};
+		auto addr = jit_insn_address_of(F, it.v);
+		jit_insn_store_relative(F, addr, 0, v.v);
+		jit_insn_store_relative(F, addr, 4, to_int(insn_pow(new_integer(10), to_int(insn_log10(v)))).v);
+		jit_insn_store_relative(F, addr, 8, new_integer(0).v);
 		return it;
 	}
 	// TODO sets strings intervals
@@ -360,12 +342,18 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	if (v.t.raw_type == RawType::ARRAY) {
 		return insn_eq(it, insn_load(v, 24));
 	}
+	if (it.t == Type::STRING_ITERATOR) {
+		auto addr = insn_address_of(it);
+		return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
+	}
 	if (v.t.raw_type == RawType::MAP) {
 		auto end = insn_add(v, new_integer(24)); // end_ptr = &map + 24
 		return insn_eq(it, end);
 	}
 	if (v.t == Type::INTEGER) {
-		return insn_eq(it, new_integer(0));
+		auto addr = insn_address_of(it);
+		auto p = insn_load(addr, 4, Type::INTEGER);
+		return insn_eq(p, new_integer(0));
 	}
 	// TODO sets strings intervals
 	std::cout << "Error: no end() for type " << v.t << std::endl;
@@ -379,23 +367,36 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) co
 		auto key = insn_load(it, 32, it.t.getKeyType());
 		return key;
 	}
-	if (it.t == Type::INTEGER) {
-		return insn_mod(it, new_integer(10));
+	if (it.t == Type::LONG) {
+		auto addr = insn_address_of(it);
+		return insn_load(addr, 8, Type::INTEGER);
 	}
 	// TODO sets strings intervals
-	std::cout << "Error: no get() for type " << it.t << std::endl;
+	std::cout << "Error: no key() for type " << it.t << std::endl;
 }
 
 Compiler::value Compiler::iterator_get(Compiler::value it) const {
 	if (it.t.raw_type == RawType::ARRAY) {
 		return insn_load(it, 0, it.t.getElementType());
 	}
+	if (it.t == Type::STRING_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto int_char = insn_call(Type::INTEGER, {addr}, &LSString::iterator_get);
+		return insn_call(Type::STRING, {int_char}, (void*) +[](unsigned int c) {
+			char dest[5];
+			u8_toutf8(dest, 5, &c, 1);
+			return new LSString(dest);
+		});
+	}
 	if (it.t.raw_type == RawType::MAP) {
 		auto element = insn_load(it, 32 + 8, it.t.element());
 		return element;
 	}
-	if (it.t == Type::INTEGER) {
-		return insn_mod(it, new_integer(10));
+	if (it.t == Type::LONG) {
+		auto addr = insn_address_of(it);
+		auto n = insn_load(addr, 0, Type::INTEGER);
+		auto p = insn_load(addr, 4, Type::INTEGER);
+		return insn_int_div(n, p);
 	}
 	// TODO sets strings intervals
 	std::cout << "Error: no get() for type " << it.t << std::endl;
@@ -406,6 +407,11 @@ void Compiler::iterator_increment(Compiler::value it) const {
 		insn_store(it, insn_add(it, new_integer(it.t.element().size() / 8)));
 		return;
 	}
+	if (it.t == Type::STRING_ITERATOR) {
+		auto addr = insn_address_of(it);
+		insn_call(Type::VOID, {addr}, &LSString::iterator_next);
+		return;
+	}
 	if (it.t.raw_type == RawType::MAP) {
 		insn_store(it, insn_call(Type::POINTER, {it}, (void*) +[](LSMap<int, int>::iterator it) {
 			it++;
@@ -413,8 +419,14 @@ void Compiler::iterator_increment(Compiler::value it) const {
 		}));
 		return;
 	}
-	if (it.t == Type::INTEGER) {
-		insn_store(it, insn_int_div(it, new_integer(10)));
+	if (it.t == Type::LONG) {
+		auto addr = insn_address_of(it);
+		auto n = insn_load(addr, 0, Type::INTEGER);
+		auto p = insn_load(addr, 4, Type::INTEGER);
+		auto i = insn_load(addr, 8, Type::INTEGER);
+		jit_insn_store_relative(F, addr.v, 0, insn_mod(n, p).v);
+		jit_insn_store_relative(F, addr.v, 4, insn_int_div(p, new_integer(10)).v);
+		jit_insn_store_relative(F, addr.v, 8, insn_add(i, new_integer(1)).v);
 		return;
 	}
 	std::cout << "Error: no increment() for type " << it.t << std::endl;
