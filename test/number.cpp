@@ -260,6 +260,13 @@ void Test::test_numbers() {
 	code("let a = [420987, 'a', 546] a[0] \\ a[2]").equals("771");
 	code("[420987, 'a', 546][0] \\ 12").equals("35082");
 	code("12345678912345l \\ 1234").equals("10004602035");
+
+	/*
+	 * Iteration
+	 */
+	section("Number iterators");
+	code("for d in 654321 { System.print(d) }").output("1\n2\n3\n4\n5\n6\n");
+
 	/*
 	 * Methods
 	 */
