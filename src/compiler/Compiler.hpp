@@ -59,6 +59,9 @@ public:
 	value new_object(value) const;
 	value new_mpz() const;
 
+	// Conversions
+	value to_int(value) const;
+
 	// Operators wrapping
 	void insn_store(value, value) const;
 	void insn_store_relative(value, value) const;
@@ -80,6 +83,8 @@ public:
 	value insn_bit_or(value, value) const;
 	value insn_bit_xor(value, value) const;
 	value insn_mod(value, value) const;
+	value insn_pow(value, value) const;
+	value insn_log10(value) const;
 
 	// Value management
 	value insn_to_pointer(value v) const;

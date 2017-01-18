@@ -145,6 +145,12 @@ Compiler::value Compiler::insn_bit_xor(Compiler::value a, Compiler::value b) con
 Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_rem(F, a.v, b.v), Type::INTEGER};
 }
+Compiler::value Compiler::insn_pow(Compiler::value a, Compiler::value b) const {
+	return {jit_insn_pow(F, a.v, b.v), Type::INTEGER};
+}
+Compiler::value Compiler::insn_log10(Compiler::value a) const {
+	return {jit_insn_log10(F, a.v), Type::INTEGER};
+}
 
 /*
  * Values
@@ -172,6 +178,11 @@ Compiler::value Compiler::new_object(Compiler::value clazz) const {
 		return new LSObject(clazz);
 	});
 }
+
+Compiler::value Compiler::to_int(Compiler::value v) const {
+	return {jit_insn_convert(F, v.v, LS_INTEGER, 0), Type::INTEGER};
+}
+
 Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
 		return v; // already a pointer
