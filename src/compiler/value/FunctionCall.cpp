@@ -136,7 +136,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
 				}
 			}
-
 		} else {  // "salut".size()
 
 			Method* m = nullptr;
@@ -165,28 +164,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				}
 			}
 		}
-		/*
-		if (object_type == Type::PTR_ARRAY) {
-			cout << "array" << endl;
-
-			cout << "type before: " << function->type << endl;
-
-			for (unsigned int i = 0; i < function->type.arguments_types.size(); ++i) {
-				cout << "arg " << i << " type : " << function->type.getArgumentType(i) << endl;
-				Type arg = function->type.getArgumentType(i);
-				if (arg.raw_type == RawType::FUNCTION) {
-					for (unsigned int j = 0; j < arg.getArgumentTypes().size(); ++j) {
-						if (arg.getArgumentType(j) == Type::PTR_ARRAY_ELEMENT) {
-							cout << "set arg " << j << " : " << object_type.getElementType() << endl;
-							arg.setArgumentType(j, object_type.getElementType());
-							function->type.setArgumentType(i, arg);
-						}
-					}
-				}
-			}
-			cout << "type after: " << function->type << endl;
-		}
-		*/
 	}
 
 	vv = dynamic_cast<VariableValue*>(function);
@@ -261,6 +238,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //			type = Type::POINTER; // When the function is unknown, the return type is a pointer
 		}
 		*/
+	}
+
+	a = 0;
+	for (Value* arg : arguments) {
+		Type t = function->type.getArgumentType(a);
+		if (t == Type::UNKNOWN) t = Type::POINTER;
+		arg->analyse(analyser, t);
+		a++;
 	}
 
 	return_type = function->type.getReturnType();

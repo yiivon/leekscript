@@ -91,6 +91,16 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			// Re-analyze expressions with the supported type
 			for (size_t i = 0; i < expressions.size(); ++i) {
 				expressions[i]->analyse(analyser, supported_type);
+				if (expressions[i]->type.raw_type == RawType::FUNCTION) {
+					std::vector<Type> types;
+					for (int p = 0; p < expressions[i]->type.getArgumentTypes().size(); ++p) {
+						types.push_back(Type::POINTER);
+					}
+					if (types.size() > 0) {
+						expressions[i]->will_take(analyser, types, 1);
+					}
+					expressions[i]->must_return(analyser, Type::POINTER);
+				}
 			}
 
 			// Second computation of the array type
