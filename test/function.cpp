@@ -74,6 +74,7 @@ void Test::test_functions() {
 
 	section("Functions in array");
 	code("var a = [12, x -> x + 7] a[1](12)").equals("19");
+	code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
 
 	section("Operator ~ ");
 	code("let a = 10 a ~ x -> x ** 2").equals("100");
