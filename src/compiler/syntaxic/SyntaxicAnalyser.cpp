@@ -379,77 +379,81 @@ int SyntaxicAnalyser::findNextArrow() {
 	return p - 1;
 }
 
-Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, bool comma_list) {
+Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, bool comma_list, Value* initial) {
 
 	Value* e = nullptr;
 
-	if (t->type == TokenType::OPEN_PARENTHESIS) {
+	if (initial == nullptr) {
+		if (t->type == TokenType::OPEN_PARENTHESIS) {
 
-		e = eatLambdaOrParenthesisExpression(pipe_opened, set_opened, comma_list);
+			e = eatLambdaOrParenthesisExpression(pipe_opened, set_opened, comma_list);
 
-	} else if (t->type == TokenType::PIPE) {
+		} else if (t->type == TokenType::PIPE) {
 
-		eat();
-		AbsoluteValue* av = new AbsoluteValue();
-		av->expression = eatExpression(true);
-		eat(TokenType::PIPE);
-		e = new Expression(av);
+			eat();
+			AbsoluteValue* av = new AbsoluteValue();
+			av->expression = eatExpression(true);
+			eat(TokenType::PIPE);
+			e = new Expression(av);
 
-	} else {
-
-		// Opérateurs unaires préfixe
-		if (t->type == TokenType::NEW || t->type == TokenType::MINUS ||
-			t->type == TokenType::PLUS || t->type == TokenType::NOT ||
-			t->type == TokenType::MINUS_MINUS || t->type == TokenType::PLUS_PLUS
-			|| t->type == TokenType::TILDE) {
-
-			if (t->type == TokenType::MINUS && nt != nullptr && t->line == nt->line) {
-
-				Token* minus = eat();
-				Operator* op = new Operator(minus);
-
-				if (beginingOfExpression(t->type)) {
-
-					Value* ex = eatExpression(pipe_opened, set_opened);
-					Expression* expr = dynamic_cast<Expression*>(ex);
-
-					if (expr and expr->op->priority >= op->priority) {
-						PrefixExpression* pexp = new PrefixExpression();
-						pexp->operatorr = op;
-						pexp->expression = expr->v1;
-						expr->v1 = pexp;
-						e = expr;
-					} else {
-						PrefixExpression* pe = new PrefixExpression();
-						pe->operatorr = op;
-						pe->expression = ex;
-						e = pe;
-					}
-				} else {
-					// No expression after the -, so it's the variable '-'
-					e = new VariableValue(minus);
-				}
-
-			} else if (t->type == TokenType::PLUS) {
-
-				Token* plus = eat(); // eat the +
-
-				if (beginingOfExpression(t->type)) {
-					e = eatExpression(pipe_opened);
-				} else {
-					// No expression after the +, so it's the variable '+'
-					e = new VariableValue(plus);
-				}
-
-			} else {
-				PrefixExpression* ex = new PrefixExpression();
-				ex->operatorr = new Operator(eat());
-				ex->expression = eatSimpleExpression();
-				e = new Expression(ex);
-			}
 		} else {
-			e = eatValue(comma_list);
+
+			// Opérateurs unaires préfixe
+			if (t->type == TokenType::NEW || t->type == TokenType::MINUS ||
+				t->type == TokenType::PLUS || t->type == TokenType::NOT ||
+				t->type == TokenType::MINUS_MINUS || t->type == TokenType::PLUS_PLUS
+				|| t->type == TokenType::TILDE) {
+
+				if (t->type == TokenType::MINUS && nt != nullptr && t->line == nt->line) {
+
+					Token* minus = eat();
+					Operator* op = new Operator(minus);
+
+					if (beginingOfExpression(t->type)) {
+
+						Value* ex = eatExpression(pipe_opened, set_opened);
+						Expression* expr = dynamic_cast<Expression*>(ex);
+
+						if (expr and expr->op->priority >= op->priority) {
+							PrefixExpression* pexp = new PrefixExpression();
+							pexp->operatorr = op;
+							pexp->expression = expr->v1;
+							expr->v1 = pexp;
+							e = expr;
+						} else {
+							PrefixExpression* pe = new PrefixExpression();
+							pe->operatorr = op;
+							pe->expression = ex;
+							e = pe;
+						}
+					} else {
+						// No expression after the -, so it's the variable '-'
+						e = new VariableValue(minus);
+					}
+
+				} else if (t->type == TokenType::PLUS) {
+
+					Token* plus = eat(); // eat the +
+
+					if (beginingOfExpression(t->type)) {
+						e = eatExpression(pipe_opened);
+					} else {
+						// No expression after the +, so it's the variable '+'
+						e = new VariableValue(plus);
+					}
+
+				} else {
+					PrefixExpression* ex = new PrefixExpression();
+					ex->operatorr = new Operator(eat());
+					ex->expression = eatSimpleExpression();
+					e = new Expression(ex);
+				}
+			} else {
+				e = eatValue(comma_list);
+			}
 		}
+	} else {
+		e = initial;
 	}
 
 	while (t->type == TokenType::OPEN_BRACKET || t->type == TokenType::OPEN_PARENTHESIS || t->type == TokenType::DOT) {
@@ -458,7 +462,6 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 			break;
 
 		switch (t->type) {
-
 			case TokenType::OPEN_BRACKET: {
 
 				ArrayAccess* aa = new ArrayAccess();
@@ -476,7 +479,6 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 				e = aa;
 				break;
 			}
-
 			case TokenType::OPEN_PARENTHESIS: {
 
 				Token* par = eat(TokenType::OPEN_PARENTHESIS);
@@ -498,7 +500,6 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 				e = fc;
 				break;
 			}
-
 			case TokenType::DOT: {
 
 				ObjectAccess* oa = new ObjectAccess();
@@ -810,7 +811,8 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 					else
 						return new VariableValue(ident);
 				}();
-				auto ex = eatExpression(pipe_opened, set_opened, v);
+				auto exx = eatSimpleExpression(false, false, false, v);
+				auto ex = eatExpression(pipe_opened, set_opened, exx);
 				ex->parenthesis = true;
 				eat(TokenType::CLOSING_PARENTHESIS);
 				return ex;

@@ -48,7 +48,7 @@ public:
 	Block* eatMain();
 	Token* eatIdent();
 	Value* eatExpression(bool pipe_opened = false, bool set_opened = false, Value* initial = nullptr, bool comma_list = false);
-	Value* eatSimpleExpression(bool pipe_opened = false, bool set_opened = false, bool comma_list = false);
+	Value* eatSimpleExpression(bool pipe_opened = false, bool set_opened = false, bool comma_list = false, Value* initial = nullptr);
 	Value* eatValue(bool comma_list = false);
 	bool isObject();
 	Value* eatBlockOrObject();
