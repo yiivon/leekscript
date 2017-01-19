@@ -283,6 +283,11 @@ Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> a
 }
 
 Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> args) {
+	if (args[0].t == Type::BOOLEAN) {
+		return c.insn_call(Type::STRING, args, +[](bool b) {
+			return new LSString(b ? "true" : "false");
+		});
+	}
 	if (args[0].t == Type::INTEGER) {
 		return c.insn_call(Type::STRING, args, +[](int v) {
 			return new LSString(std::to_string(v));
@@ -309,18 +314,8 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 			return new LSString(LSNumber::print(v));
 		});
 	}
-	if (args[0].t == Type::BOOLEAN) {
-		return c.insn_call(Type::STRING, args, +[](bool b) {
-			return new LSString(b ? "true" : "false");
-		});
-	}
-	if (args[0].t.nature == Nature::POINTER) {
-		return c.insn_call(Type::STRING, args, (void*) &LSValue::ls_json);
-	}
-	// TODO
-	std::cout << "Type non supporté !" << std::endl;
-	throw new std::exception();
-	return {nullptr, Type::VOID};
+	// Default type : pointer
+	return c.insn_call(Type::STRING, args, (void*) &LSValue::ls_json);
 }
 
 Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args) {

@@ -113,7 +113,6 @@ void Test::test_general() {
 	code("true.string()").equals("'true'");
 	code("false.string()").equals("'false'");
 	code("(12 > 5).string()").equals("'true'");
-	// TODO more types
 
 	section("Const values");
 	code("var c = 2 c++").equals("2");
