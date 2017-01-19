@@ -505,15 +505,17 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::SWAP: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y_addr = ((LeftValue*) v2)->compile_l(c);
+				auto x = c.insn_load(x_addr, 0, v1->type);
+				auto y = c.insn_load(y_addr, 0, v2->type);
 				jit_value_t t = jit_insn_load(c.F, x.v);
-				jit_insn_store(c.F, x.v, y.v);
-				jit_insn_store(c.F, y.v, t);
+				jit_insn_store_relative(c.F, x_addr.v, 0, y.v);
+				jit_insn_store_relative(c.F, y_addr.v, 0, t);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 					return {VM::value_to_pointer(c.F, x.v, type), type};
 				}
-				return x;
+				return y;
 			} else {
 				args.push_back(((LeftValue*) v1)->compile_l(c).v);
 				args.push_back(((LeftValue*) v2)->compile_l(c).v);
