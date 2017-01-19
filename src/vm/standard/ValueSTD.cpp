@@ -235,17 +235,16 @@ Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> a
 	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])},
 	+[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(x)) != nullptr and
-			(b = dynamic_cast<LSNumber*>(y)) != nullptr) {
-			auto res = (int) a->value & (int) b->value;
+		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
+			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
 			LSValue::delete_temporary(y);
-			return res;
+			jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 		}
+		auto res = (int) a->value & (int) b->value;
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-		return 0;
+		return res;
 	});
 }
 
@@ -253,17 +252,16 @@ Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> ar
 	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])},
 	+[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(x)) != nullptr and
-			(b = dynamic_cast<LSNumber*>(y)) != nullptr) {
-			auto res = (int) a->value | (int) b->value;
+		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
+			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
 			LSValue::delete_temporary(y);
-			return res;
+			jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 		}
+		auto res = (int) a->value | (int) b->value;
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-		return 0;
+		return res;
 	});
 }
 
@@ -271,17 +269,16 @@ Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> a
 	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])},
 	+[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(x)) != nullptr and
-			(b = dynamic_cast<LSNumber*>(y)) != nullptr) {
-			auto res = (int) a->value ^ (int) b->value;
+		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
+			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
 			LSValue::delete_temporary(y);
-			return res;
+			jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 		}
+		auto res = (int) a->value ^ (int) b->value;
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-		return 0;
+		return res;
 	});
 }
 

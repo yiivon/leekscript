@@ -215,7 +215,13 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
 		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
-		or op->type == TokenType::SWAP or op->type == TokenType::INT_DIV) {
+		or op->type == TokenType::SWAP or op->type == TokenType::INT_DIV
+		or op->type == TokenType::BIT_AND_EQUALS or op->type == TokenType::BIT_OR_EQUALS
+		or op->type == TokenType::BIT_XOR_EQUALS
+		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
+		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
+		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS
+		) {
 
 		// Set the correct type nature for the two members
 		if (array_push) {
@@ -395,35 +401,59 @@ LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->ls_pow_eq(y);
 }
-LSValue* jit_bit_shl(LSValue* x, LSValue* y) {
+int jit_bit_and_equal(LSValue* x, LSValue* y) {
+	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value & (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return LSNull::get();
+	return ((LSNumber*) x)->value;
 }
-LSValue* jit_bit_shl_equal(LSValue* x, LSValue* y) {
+int jit_bit_or_equal(LSValue* x, LSValue* y) {
+	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value | (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return LSNull::get();
+	return ((LSNumber*) x)->value;
 }
-LSValue* jit_bit_shr(LSValue* x, LSValue* y) {
+int jit_bit_xor_equal(LSValue* x, LSValue* y) {
+	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value ^ (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return LSNull::get();
+	return ((LSNumber*) x)->value;
 }
-LSValue* jit_bit_shr_equal(LSValue* x, LSValue* y) {
+int jit_bit_shl(LSValue* x, LSValue* y) {
+	int r = (int) ((LSNumber*) x)->value << (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return LSNull::get();
+	return r;
 }
-LSValue* jit_bit_shr_unsigned(LSValue* x, LSValue* y) {
+int jit_bit_shl_equal(LSValue* x, LSValue* y) {
+	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value << (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return LSNull::get();
+	return ((LSNumber*) x)->value;
 }
-LSValue* jit_bit_shr_unsigned_equal(LSValue* x, LSValue* y) {
+int jit_bit_shr(LSValue* x, LSValue* y) {
+	int r = (int) ((LSNumber*) x)->value >> (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return LSNull::get();
+	return r;
+}
+int jit_bit_shr_equal(LSValue* x, LSValue* y) {
+	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value >> (int) ((LSNumber*) y)->value;
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return ((LSNumber*) x)->value;
+}
+int jit_bit_shr_unsigned(LSValue* x, LSValue* y) {
+	int r = (uint32_t) ((LSNumber*) x)->value >> (uint32_t) ((LSNumber*) y)->value;
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
+}
+int jit_bit_shr_unsigned_equal(LSValue* x, LSValue* y) {
+	((LSNumber*) x)->value = (uint32_t) ((LSNumber*) x)->value >> (uint32_t) ((LSNumber*) y)->value;
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return ((LSNumber*) x)->value;
 }
 bool jit_is_null(LSValue* v) {
 	return v->typeID() == 1;
@@ -725,6 +755,18 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto m = &LSArray<LSValue*>::ls_map<LSValue*>;
 				ls_func = (void*) m;
 			}
+			break;
+		}
+		case TokenType::BIT_AND_EQUALS : {
+			ls_func = (void*) &jit_bit_and_equal;
+			break;
+		}
+		case TokenType::BIT_OR_EQUALS : {
+			ls_func = (void*) &jit_bit_or_equal;
+			break;
+		}
+		case TokenType::BIT_XOR_EQUALS : {
+			ls_func = (void*) &jit_bit_xor_equal;
 			break;
 		}
 		case TokenType::BIT_SHIFT_LEFT : {
