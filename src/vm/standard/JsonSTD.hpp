@@ -2,8 +2,6 @@
 #define JSON_STD_HPP
 
 #include "../VM.hpp"
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
-#include "../../vm/Program.hpp"
 #include "../Module.hpp"
 
 namespace ls {
