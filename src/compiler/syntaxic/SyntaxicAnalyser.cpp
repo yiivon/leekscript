@@ -627,6 +627,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		case TokenType::DIVIDE:
 		case TokenType::POWER:
 		case TokenType::TERNARY:
+		case TokenType::INT_DIV:
 		{
 			VariableValue* v = new VariableValue(t);
 			eat();

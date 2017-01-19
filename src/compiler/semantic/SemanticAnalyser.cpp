@@ -73,11 +73,8 @@ LSValue* op_mul(void*, LSValue* x, LSValue* y) {
 LSValue* op_div(void*, LSValue* x, LSValue* y) {
 	return x->ls_div(y);
 }
-int op_int_div(void*, LSValue* x, LSValue* y) {
-	LSValue* res = x->ls_int_div(y);
-	int v = ((LSNumber*) res)->value;
-	LSValue::delete_temporary(res);
-	return v;
+LSValue* op_int_div(void*, LSValue* x, LSValue* y) {
+	return x->ls_int_div(y);
 }
 LSValue* op_pow(void*, LSValue* x, LSValue* y) {
 	return x->ls_pow(y);
@@ -121,8 +118,8 @@ void SemanticAnalyser::analyse(Program* program, Context*, std::vector<Module*>&
 	}
 
 	// Add function operators
-	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%"};
-	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod};
+	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\"};
+	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
 
 	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
 	op_type.setArgumentType(0, Type::POINTER);
