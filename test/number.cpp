@@ -242,10 +242,17 @@ void Test::test_numbers() {
 	code("(1m - 2m) - 3m").equals("-4");
 	code("(1m - 2m) - (3m - 4m)").equals("0");
 	code("(10m + 10m) - 1").equals("19");
+	code("[15, ''][0] - [3, ''][0]").equals("12");
 
 	section("Number.operator *");
 	code("3m * 4m").equals("12");
 	code("10m + 3m * 4m").equals("22");
+
+	section("Number.operator **=");
+	code("[5, ''][0] **= 4").equals("625");
+
+	section("Number.operator %");
+	code("[721, ''][0] % [57, ''][0]").equals("37");
 
 	section("Number.operator <");
 	code("3m < 4m").equals("true");
@@ -253,8 +260,14 @@ void Test::test_numbers() {
 	code("(5m + 5m) < (3m * 4m)").equals("true");
 	code("(5m + 5m) < 12m").equals("true");
 
+	section("Number.operator <=");
+	code("3 <= 4").equals("true");
+	code("3 <= []").equals("true");
+	code("3 <= [4, ''][0]").equals("true");
+
 	section("Number.operator >");
 	code("12 > 5m").equals("true");
+	code("[] > true").equals("true");
 
 	section("Number.operator +=");
 	code("var a = 10m a += 4m").equals("14");
