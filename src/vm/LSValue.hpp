@@ -33,7 +33,7 @@ class Context;
 	LSValue* ls_rmul(LSValue* value) override     { return value->ls_mul(this); } \
 	LSValue* ls_rmul_eq(LSValue* value) override  { return value->ls_mul_eq(this); } \
 	LSValue* ls_rdiv(LSValue* value) override     { return value->ls_div(this); } \
-	LSValue* ls_rint_div(LSValue* value) override { return value->ls_div(this); } \
+	LSValue* ls_rint_div(LSValue* value) override { return value->ls_int_div(this); } \
 	LSValue* ls_rdiv_eq(LSValue* value) override  { return value->ls_div_eq(this); } \
 	LSValue* ls_rpow(LSValue* value) override     { return value->ls_pow(this); } \
 	LSValue* ls_rpow_eq(LSValue* value) override  { return value->ls_pow_eq(this); } \
