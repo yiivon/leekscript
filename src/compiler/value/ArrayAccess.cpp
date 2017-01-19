@@ -173,11 +173,6 @@ LSValue** access_l(LSValue* array, LSValue* key) {
 int* access_l_value(LSArray<int>* array, int key) {
 	return array->atLv(key);
 }
-int* access_l_map(LSMap<LSValue*, int>* map, LSValue* key) {
-	int* res = map->atLv(key);
-	LSValue::delete_temporary(key);
-	return res;
-}
 
 LSValue* range(LSValue* array, int start, int end) {
 	LSValue* r = array->range(start, end);
@@ -319,18 +314,20 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		return {jit_insn_add(c.F, jit_insn_load_relative(c.F, a.v, 16, LS_POINTER), jit_insn_mul(c.F, c.new_integer(4).v, k.v)), Type::POINTER};
 	}
 
-	jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 0);
-
-	jit_value_t args[] = {a.v, k.v};
-
-	void* func = nullptr;
-	if (array->type.raw_type == RawType::MAP) {
-		func = (void*) access_l_map;
+	if (array->type == Type::PTR_PTR_MAP) {
+		return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, LSValue*>* map, LSValue* key) {
+			LSValue** res = map->atL(key);
+			LSValue::delete_temporary(key);
+			return res;
+		});
+	} else if (array->type == Type::PTR_INT_MAP) {
+		return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, int>* map, LSValue* key) {
+			int* res = map->atLv(key);
+			LSValue::delete_temporary(key);
+			return res;
+		});
 	} else {
-		func = (void*) access_l;
+		return c.insn_call(type, {a, k}, (void*) access_l);
 	}
-
-	return {jit_insn_call_native(c.F, "access_l", func, sig, args, 2, JIT_CALL_NOTHROW), type};
 }
 }

@@ -17,8 +17,20 @@ void Test::test_map() {
 	section("Map.operator []");
 	code("let m = [1: 1] m[1]").equals("1");
 	code("let m = ['a': 'b'] m['a']").equals("'b'");
-	//code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
+	code("let m = [5: 12] m[5]").equals("12");
+	code("let m = [5: 12.5] m[5]").equals("12.5");
+	code("let m = [5.5: 12] m[5.5]").equals("12");
+	code("let m = [5.5: 12.5] m[5.5]").equals("12.5");
+	code("let m = ['salut': 12] m['salut']").equals("12");
+	code("let m = ['salut': 12.5] m['salut']").equals("12.5");
+	code("let m = ['salut': 'yolo'] m['salut']").equals("'yolo'");
+	code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
+	code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
+	//code("let m = ['salut': 12] m['salut'] = 13 m['salut']").equals("13");
 
+	/*
+	 * Methods
+	 */
 	section("Map.size()");
 	code("let x = [1 : 1 1 : 2 1 : 3] x.size()").equals("1");
 	code("let x = [1 : 1 1 : 2 2 : '3'] x.size()").equals("2");
@@ -63,18 +75,6 @@ void Test::test_map() {
 	code("let m = ['salut': 12] 'salut' in m").equals("true");
 	code("let m = ['salut': 12] 'salum' in m").equals("false");
 	code("let m = ['salut': 12] 12 in m.values()").equals("true");
-
-	section("Map.operator []");
-	code("let m = [5: 12] m[5]").equals("12");
-	code("let m = [5: 12.5] m[5]").equals("12.5");
-	code("let m = [5.5: 12] m[5.5]").equals("12");
-	code("let m = [5.5: 12.5] m[5.5]").equals("12.5");
-	code("let m = ['salut': 12] m['salut']").equals("12");
-	code("let m = ['salut': 12.5] m['salut']").equals("12.5");
-	code("let m = ['salut': 'yolo'] m['salut']").equals("'yolo'");
-
-	section("Map.operator [] left-value");
-	code("let m = ['salut': 12] m['salut'] = 13 m['salut']").equals("13");
 
 	section("Map.values()");
 	code("let m = [5: 1, 7: 2, -21: 3] m.values()").equals("[3, 1, 2]");

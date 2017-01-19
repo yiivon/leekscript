@@ -163,13 +163,13 @@ V LSMap<K, V>::at(const K key) const {
 
 template <typename K, typename T>
 inline LSValue** LSMap<K, T>::atL(const LSValue*) {
-	return &LSNull::null_var;
+	return nullptr;
 }
 
 template <>
 inline LSValue** LSMap<LSValue*, LSValue*>::atL(const LSValue* key) {
 	try {
-		return (LSValue**) &((std::map<LSValue*, LSValue*>*) this)->at((LSValue*) key);
+		return (LSValue**) &((std::map<LSValue*, LSValue*, lsmap_less<LSValue*>>*) this)->at((LSValue*) key);
 	} catch (std::exception&) {
 		return nullptr;
 	}
