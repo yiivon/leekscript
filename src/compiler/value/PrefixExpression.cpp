@@ -48,6 +48,9 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 		or operatorr->type == TokenType::TILDE) {
 
 		type = expression->type;
+		if (type == Type::GMP_INT) {
+			type = Type::GMP_INT_TMP;
+		}
 
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
@@ -167,7 +170,20 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MINUS: {
-			if (expression->type.nature == Nature::VALUE) {
+			if (expression->type.not_temporary() == Type::GMP_INT) {
+				auto x = expression->compile(c);
+				auto r = [&]() {
+					if (x.t.temporary) {
+						return x;
+					} else {
+						return c.new_mpz();
+					}
+				}();
+				auto x_addr = c.insn_address_of(x);
+				auto r_addr = c.insn_address_of(r);
+				c.insn_call(Type::VOID, {r_addr, x_addr}, &mpz_neg);
+				return r;
+			} else if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
 				jit_value_t r = jit_insn_neg(c.F, x.v);
 				if (type.nature == Nature::POINTER) {
