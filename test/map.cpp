@@ -14,6 +14,28 @@ void Test::test_map() {
 	//code("![:]").equals("true");
 	code("![2: 2]").equals("false");
 
+	section("Array of maps");
+	code("[[:], [1: 1], [1: 2]]").equals("[[:], [1: 1], [1: 2]]");
+	code("let m = ['a': 'b'] [m]").equals("[['a': 'b']]");
+
+	/*
+	 * Operators
+	 */
+	section("Map.operator []");
+
+	section("Map.operator ==");
+	code("['a':'b'] == [1:1]").equals("false");
+	//code("let x = ['a' : 'b'] let y = [1 : 1] x.clear() == y.clear()").equals("true");
+
+	section("Map.operator <");
+	//code("['a':1 'b':2] < ['a':1 'b':3]").equals("true");
+	code("[1:1 2:0] < [1:1 2:true]").equals("false");
+
+	section("Map.operator in");
+	code("let m = ['salut': 12] 'salut' in m").equals("true");
+	code("let m = ['salut': 12] 'salum' in m").equals("false");
+	code("let m = ['salut': 12] 12 in m.values()").equals("true");
+
 	section("Map.operator []");
 	code("let m = [1: 1] m[1]").equals("1");
 	code("let m = ['a': 'b'] m['a']").equals("'b'");
@@ -63,33 +85,14 @@ void Test::test_map() {
 	code("let x = ['a': 1] x.look(3.14, 'a')").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::PTR_INT_MAP.to_string() + ".look(" + ls::Type::REAL.to_string() + ", " + ls::Type::STRING_TMP.to_string() + ")"});
 	code("[1 : 1].look(1, 0)").equals("1");
 
-	section("Map.operator ==");
-	code("['a':'b'] == [1:1]").equals("false");
-	//code("let x = ['a' : 'b'] let y = [1 : 1] x.clear() == y.clear()").equals("true");
-
-	section("Map.operator <");
-	//code("['a':1 'b':2] < ['a':1 'b':3]").equals("true");
-	code("[1:1 2:0] < [1:1 2:true]").equals("false");
-
-	section("Map.operator in");
-	code("let m = ['salut': 12] 'salut' in m").equals("true");
-	code("let m = ['salut': 12] 'salum' in m").equals("false");
-	code("let m = ['salut': 12] 12 in m.values()").equals("true");
-
 	section("Map.values()");
 	code("let m = [5: 1, 7: 2, -21: 3] m.values()").equals("[3, 1, 2]");
 	code("let m = [5: 1.5, 7: 2.5, -21: 3.5] m.values()").equals("[3.5, 1.5, 2.5]");
 	code("let m = [5: [], 7: 'str', -21: true] m.values()").equals("[true, [], 'str']");
-
 	code("[5.5: 10, 7.2: 100, -21.95: 1000].values()").equals("[1000, 10, 100]");
 	code("[5.1: 12.1, -7.6: 0, 14.88: -0xfe5a].values()").equals("[0, 12.1, -65114]");
 	code("[-1.111: ':)', 6.6: ':/', 9: ':D'].values()").equals("[':)', ':/', ':D']");
-
 	code("['yolo': 3, false: 1, 12: 4].values()").equals("[1, 4, 3]");
 	code("[[]: 3.7, [1: 2]: 1.3, {x: 12}: 4.8].values()").equals("[3.7, 1.3, 4.8]");
-	code("[(x, y -> x + y): (x, y -> x - y), null: 'null', <'a', 'b'>: 0].values()").equals("['null', 0, <function>]");
-
-	section("Array of maps");
-	code("[[:], [1: 1], [1: 2]]").equals("[[:], [1: 1], [1: 2]]");
-	code("let m = ['a': 'b'] [m]").equals("[['a': 'b']]");
+	//code("[(x, y -> x + y): (x, y -> x - y), null: 'null', <'a', 'b'>: 0].values()").equals("['null', 0, <function>]");
 }
