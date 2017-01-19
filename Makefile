@@ -124,5 +124,11 @@ clean:
 cloc:
 	cloc . --exclude-dir=.git,lib,build
 
+doc:
+	doxygen
+	@echo "------------------------"
+	@echo "Documentation generated."
+	@echo "------------------------"
+
 # Objects dependencies
 -include $(DEPS)
