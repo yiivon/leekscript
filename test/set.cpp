@@ -9,6 +9,10 @@ void Test::test_set() {
 	code("<1.56, -2.312, 7.23>").equals("<-2.312, 1.56, 7.23>");
 	code("<'2', '1', '1'>").equals("<'1', '2'>");
 
+	section("Set.isTrue()");
+	code("if <1, 2> then 5 else 12 end").equals("5");
+	code("if <> then 5 else 12 end").equals("12");
+
 	section("Set.operator in ()");
 	code("let s = <1, 2> 3 in s").equals("false");
 	code("let s = <1, 2> 1 in s").equals("true");
@@ -46,9 +50,14 @@ void Test::test_set() {
 	section("Set.erase()");
 	code("let s = <1, 2> s.erase(3)").equals("false");
 	code("let s = <1, 2> s.erase(1)").equals("true");
+	code("let s = <'a', 'b'> s.erase('a')").equals("true");
+	code("let s = <'a', 'b'> s.erase('c')").equals("false");
 
 	section("Set.insert()");
 	code("let s = <1, 2> s.insert(3) s").equals("<1, 2, 3>");
+	code("let s = <'a', 'b'> s.insert('c') s").equals("<'a', 'b', 'c'>");
+	code("<'a'>.insert('b')").equals("true");
+	code("<'a'>.insert('a')").equals("false");
 
 	section("Set.size()");
 	code("<>.size()").equals("0");
