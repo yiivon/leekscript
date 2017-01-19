@@ -58,6 +58,8 @@ void Test::test_general() {
 	code("let état = 12 état").equals("12");
 	code("let 韭 = 'leek' 韭").equals("'leek'");
 	code("let ♫☯🐖👽 = 5 let 🐨 = 2 ♫☯🐖👽 ** 🐨").equals("25");
+	code("var a = 2 [a = 10]").equals("[10]");
+	code("var a = 2 ['a', a = 10]").equals("['a', 10]");
 
 	section("Global variables");
 	code("global a = 2").equals("(void)");
@@ -117,4 +119,6 @@ void Test::test_general() {
 	code("var c = 2 c++").equals("2");
 	code("let c = 2 c++").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
 	code("let c = 2; ++c").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; c = 5").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; c += 5").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
 }

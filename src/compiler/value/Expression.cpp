@@ -372,15 +372,6 @@ bool jit_not_equals(LSValue* x, LSValue* y) {
 	return r;
 }
 
-LSValue* jit_store(LSValue** x, LSValue* y) {
-	LSValue::delete_ref(*x);
-	return *x = y->move_inc();
-}
-
-int jit_store_value(int* x, int y) {
-	return *x = y;
-}
-
 LSValue* jit_swap(LSValue** x, LSValue** y) {
 	LSValue* tmp = *x;
 	*x = *y;
@@ -388,21 +379,12 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 	return *x;
 }
 
-LSValue* jit_add_equal(LSValue* x, LSValue* y) {
-	return x->ls_add_eq(y);
-}
 int jit_array_push_int(LSArray<int>* x, int y) {
 	x->push_move(y);
 	return y;
 }
-int jit_add_equal_value(int* x, int y) {
-	return *x += y;
-}
 LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
 	return x->ls_sub_eq(y);
-}
-LSValue* jit_mul_equal(LSValue* x, LSValue* y) {
-	return x->ls_mul_eq(y);
 }
 LSValue* jit_div_equal(LSValue* x, LSValue* y) {
 	return x->ls_div_eq(y);
@@ -500,63 +482,23 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 				auto v1_addr = ((LeftValue*) v1)->compile_l(c);
 				auto v2_value = v2->compile(c);
-
 				jit_insn_store_relative(c.F, v1_addr.v, 0, v2_value.v);
 				if (type.nature == Nature::POINTER) {
 					return {VM::value_to_pointer(c.F, v2_value.v, type), type};
 				}
 				return v2_value;
 
-				if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
-
-					args.push_back(l1->compile_l(c).v);
-					args.push_back(v2->compile(c).v);
-
-					jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-					jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 2, 0);
-					jit_value_t v = jit_insn_call_native(c.F, "", (void*) jit_store_value, sig, args.data(), 2, JIT_CALL_NOTHROW);
-
-					if (type.nature == Nature::POINTER) {
-						return {VM::value_to_pointer(c.F, v, type), type};
-					}
-					return {v, type};
-				}
 			} else if (v1->type.nature == Nature::POINTER) {
 
-				if (dynamic_cast<ArrayAccess*>(v1)) {
+				auto x = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+					LSValue::delete_ref(*x);
+					*x = y->move_inc();
+				});
+				return y;
 
-					args.push_back(((LeftValue*) v1)->compile_l(c).v);
-					args.push_back(v2->compile(c).v);
-
-					if (v1->type.must_manage_memory()) {
-						args[1] = VM::move_inc_obj(c.F, args[1]);
-					}
-
-					ls_func = (void*) &jit_store;
-
-				} else if (dynamic_cast<VariableValue*>(v1)) {
-
-					auto x = v1->compile(c);
-					auto y = v2->compile(c);
-
-					if (v2->type.must_manage_memory()) {
-						y.v = VM::move_inc_obj(c.F, y.v);
-					}
-					if (v1->type.must_manage_memory()) {
-						VM::delete_ref(c.F, x.v);
-					}
-					jit_insn_store(c.F, x.v, y.v);
-					return y;
-
-				} else {
-					args.push_back(((LeftValue*) v1)->compile_l(c).v);
-					args.push_back(v2->compile(c).v);
-					ls_func = (void*) &jit_store;
-				}
 			} else {
-				cout << "type : " << type << endl;
-				cout << "v1: " << v1->type << endl;
-				cout << "v2: " << v2->type << endl;
 				throw new runtime_error("value = pointer !");
 			}
 			break;
@@ -591,36 +533,22 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return {res, type};
 			}
 
-			if (ArrayAccess* l1 = dynamic_cast<ArrayAccess*>(v1)) {
-
-				args.push_back(l1->compile_l(c).v);
-				args.push_back(v2->compile(c).v);
-
-				jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-				jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 2, 0);
-				jit_value_t v = jit_insn_call_native(c.F, "", (void*) jit_add_equal_value, sig, args.data(), 2, JIT_CALL_NOTHROW);
-
-				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, v, type), type};
-				}
-				return {v, type};
-			}
-
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				// std::cout << v1 << "+=" << v2 << '\n';
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
-				auto x = jit_insn_load_relative(c.F, x_addr.v, 0, VM::get_jit_type(v1->type));
-				//auto x = x_addr.v;
-				jit_value_t sum = jit_insn_add(c.F, x, y.v);
-				jit_insn_store_relative(c.F, x_addr.v, 0, sum);
-				//jit_insn_store(c.F, x_addr.v, sum);
+				auto x = c.insn_load(x_addr, 0, v1->type);
+				auto sum = c.insn_add(x, y);
+				jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum, type), type};
+					return {VM::value_to_pointer(c.F, sum.v, type), type};
 				}
-				return {sum, type};
+				return sum;
 			} else {
-				ls_func = (void*) &jit_add_equal;
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+					return (*x)->ls_add_eq(y);
+				});
 			}
 			break;
 		}
@@ -641,9 +569,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::TIMES_EQUAL: {
-
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				jit_value_t sum = jit_insn_mul(c.F, x.v, y.v);
@@ -653,7 +579,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 				return {sum, type};
 			} else {
-				ls_func = (void*) &jit_mul_equal;
+				auto x = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+					return (*x)->ls_mul_eq(y);
+				});
 			}
 			break;
 		}
