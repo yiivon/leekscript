@@ -16,7 +16,8 @@ public:
 	struct iterator {
 		char* buffer;
 		int index;
-		int next_index;
+		int pos;
+		int next_pos;
 		u_int32_t character;
 	};
 
@@ -25,6 +26,7 @@ public:
 	static iterator iterator_begin(LSString* s);
 	static void iterator_next(iterator* it);
 	static u_int32_t iterator_get(iterator* it);
+	static int iterator_key(LSString::iterator* it);
 	static bool iterator_end(iterator* it);
 
 	LSString();

@@ -309,15 +309,17 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		return it;
 	}
 	if (v.t.raw_type == RawType::STRING) {
-		jit_type_t types[4] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int};
-		auto string_iterator = jit_type_create_struct(types, 4, 0);
+		jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
+		auto string_iterator = jit_type_create_struct(types, 5, 0);
 		Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
 		auto addr = insn_address_of(it);
 		insn_call(Type::VOID, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
 			auto i = LSString::iterator_begin(str);
 			it->buffer = i.buffer;
 			it->index = 0;
-			it->next_index = 0;
+			it->pos = 0;
+			it->next_pos = 0;
+			it->character = 0;
 		});
 		return it;
 	}
@@ -334,7 +336,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_insn_store_relative(F, addr, 8, new_integer(0).v);
 		return it;
 	}
-	// TODO sets strings intervals
+	// TODO sets intervals
 	std::cout << "Error: no begin() for type " << v.t << std::endl;
 }
 
@@ -355,13 +357,17 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 		auto p = insn_load(addr, 4, Type::INTEGER);
 		return insn_eq(p, new_integer(0));
 	}
-	// TODO sets strings intervals
+	// TODO sets intervals
 	std::cout << "Error: no end() for type " << v.t << std::endl;
 }
 
 Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) const {
 	if (it.t.raw_type == RawType::ARRAY) {
 		return insn_int_div(insn_sub(it, insn_load(v, 16)), new_integer(it.t.element().size() / 8));
+	}
+	if (it.t == Type::STRING_ITERATOR) {
+		auto addr = insn_address_of(it);
+		return insn_call(Type::INTEGER, {addr}, &LSString::iterator_key);
 	}
 	if (it.t.raw_type == RawType::MAP) {
 		auto key = insn_load(it, 32, it.t.getKeyType());
@@ -371,7 +377,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) co
 		auto addr = insn_address_of(it);
 		return insn_load(addr, 8, Type::INTEGER);
 	}
-	// TODO sets strings intervals
+	// TODO sets intervals
 	std::cout << "Error: no key() for type " << it.t << std::endl;
 }
 
@@ -398,7 +404,7 @@ Compiler::value Compiler::iterator_get(Compiler::value it) const {
 		auto p = insn_load(addr, 4, Type::INTEGER);
 		return insn_int_div(n, p);
 	}
-	// TODO sets strings intervals
+	// TODO sets intervals
 	std::cout << "Error: no get() for type " << it.t << std::endl;
 }
 
@@ -429,6 +435,7 @@ void Compiler::iterator_increment(Compiler::value it) const {
 		jit_insn_store_relative(F, addr.v, 8, insn_add(i, new_integer(1)).v);
 		return;
 	}
+	// TODO sets intervals
 	std::cout << "Error: no increment() for type " << it.t << std::endl;
 }
 

@@ -16,30 +16,35 @@ namespace ls {
 LSValue* LSString::string_class(new LSClass("String"));
 
 LSString::iterator LSString::iterator_begin(LSString* s) {
-	return {(char*) s->c_str(), 0, 0, 0};
+	return {(char*) s->c_str(), 0, 0, 0, 0};
 }
 
 void LSString::iterator_next(LSString::iterator* it) {
-	if (it->index == it->next_index) {
-		u8_nextchar((char*) it->buffer, &it->index);
-		it->next_index = it->index;
+	if (it->pos == it->next_pos) {
+		u8_nextchar((char*) it->buffer, &it->pos);
+		it->next_pos = it->pos;
 	} else {
-		it->index = it->next_index;
+		it->pos = it->next_pos;
 	}
+	it->index++;
 }
 
 u_int32_t LSString::iterator_get(LSString::iterator* it) {
-	if (it->index == it->next_index) {
-		int index = it->index;
-		u_int32_t c = u8_nextchar(it->buffer, &index);
-		it->next_index = index;
+	if (it->pos == it->next_pos) {
+		int pos = it->pos;
+		u_int32_t c = u8_nextchar(it->buffer, &pos);
+		it->next_pos = pos;
 		it->character = c;
 	}
 	return it->character;
 }
 
+int LSString::iterator_key(LSString::iterator* it) {
+	return it->index;
+}
+
 bool LSString::iterator_end(LSString::iterator* it) {
-	bool end = it->buffer[it->index] == 0;
+	bool end = it->buffer[it->pos] == 0;
 	return end;
 }
 
