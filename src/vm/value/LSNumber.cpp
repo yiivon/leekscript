@@ -182,6 +182,7 @@ LSValue* LSNumber::ls_sub(LSBoolean* boolean) {
 LSValue* LSNumber::ls_sub(LSNumber* number) {
 	if (refs == 0) {
 		value -= number->value;
+		if (number->refs == 0) delete number;
 		return this;
 	}
 	if (number->refs == 0) {
