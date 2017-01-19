@@ -93,7 +93,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 				expressions[i]->analyse(analyser, supported_type);
 				if (expressions[i]->type.raw_type == RawType::FUNCTION) {
 					std::vector<Type> types;
-					for (int p = 0; p < expressions[i]->type.getArgumentTypes().size(); ++p) {
+					for (unsigned p = 0; p < expressions[i]->type.getArgumentTypes().size(); ++p) {
 						types.push_back(Type::POINTER);
 					}
 					if (types.size() > 0) {
