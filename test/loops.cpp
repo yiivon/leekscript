@@ -93,6 +93,10 @@ void Test::test_loops() {
 	//code("let fs = [] fs.push(s -> {let sum = 0 for v in s {sum += v} sum}) fs[0](<1,2>)").equals("3");
 	//code("let fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
 
+	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::NULLL.to_string()});
+	code("for x in true {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::BOOLEAN.to_string()});
+	code("for x in Number {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::CLASS.to_string()});
+
 	/*
 	 * Array For
 	 */
