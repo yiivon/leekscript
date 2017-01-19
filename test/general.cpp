@@ -98,6 +98,7 @@ void Test::test_general() {
 	code("let a = null let b = null a ?? b ?? ':)'").equals("':)'");
 
 	section("Value.string()");
+	code("Value.unknown.string().size() <= 3").equals("true");
 	// integer
 	code("0.string()").equals("'0'");
 	code("12.string()").equals("'12'");
