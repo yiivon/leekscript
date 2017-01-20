@@ -53,18 +53,12 @@ public:
 	virtual LSValue* sub(LSValue*) override;
 	virtual LSValue* sub_eq(LSValue*) override;
 	virtual LSValue* mul(LSValue*) override;
+	virtual LSValue* mul_eq(LSValue*) override;
 	virtual LSValue* div(LSValue*) override;
+	virtual LSValue* div_eq(LSValue*) override;
 	LSVALUE_OPERATORS
 
-	LSValue* ls_mul_eq(LSNull*) override;
-	LSValue* ls_mul_eq(LSBoolean*) override;
-	LSValue* ls_mul_eq(LSNumber*) override;
-
 	LSValue* ls_int_div(LSNumber*) override;
-
-	LSValue* ls_div_eq(LSNull*) override;
-	LSValue* ls_div_eq(LSBoolean*) override;
-	LSValue* ls_div_eq(LSNumber*) override;
 
 	LSValue* ls_pow(LSNull*) override;
 	LSValue* ls_pow(LSBoolean*) override;

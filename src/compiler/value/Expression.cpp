@@ -396,7 +396,7 @@ LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
 	return x->sub_eq(y);
 }
 LSValue* jit_div_equal(LSValue* x, LSValue* y) {
-	return x->ls_div_eq(y);
+	return x->div_eq(y);
 }
 LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 	return x->ls_mod_eq(y);
@@ -617,7 +617,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->ls_mul_eq(y);
+					return (*x)->mul_eq(y);
 				});
 			}
 			break;
