@@ -26,8 +26,6 @@ class LSClass;
 class Context;
 
 #define LSVALUE_OPERATORS \
-	LSValue* ls_rmod(LSValue* value) override     { return value->ls_mod(this); } \
-	LSValue* ls_rmod_eq(LSValue* value) override  { return value->ls_mod_eq(this); } \
 	bool req(const LSValue* value) const override { return value->eq(this); } \
 	bool rlt(const LSValue* value) const override { return value->lt(this); } \
 
@@ -72,54 +70,8 @@ public:
 	virtual LSValue* int_div_eq(LSValue*);
 	virtual LSValue* pow(LSValue*);
 	virtual LSValue* pow_eq(LSValue*);
-
-	LSValue* ls_mod(LSValue* value) {
-		return value->ls_rmod(this);
-	}
-	virtual LSValue* ls_rmod(LSValue*) = 0;
-	virtual LSValue* ls_mod(LSNull*);
-	virtual LSValue* ls_mod(LSBoolean*);
-	virtual LSValue* ls_mod(LSNumber*);
-	virtual LSValue* ls_mod(LSString*);
-	virtual LSValue* ls_mod(LSArray<LSValue*>*);
-	virtual LSValue* ls_mod(LSArray<int>*);
-	virtual LSValue* ls_mod(LSArray<double>*);
-	virtual LSValue* ls_mod(LSMap<LSValue*,LSValue*>*);
-	virtual LSValue* ls_mod(LSMap<LSValue*,int>*);
-	virtual LSValue* ls_mod(LSMap<LSValue*,double>*);
-	virtual LSValue* ls_mod(LSMap<int,LSValue*>*);
-	virtual LSValue* ls_mod(LSMap<int,int>*);
-	virtual LSValue* ls_mod(LSMap<int,double>*);
-	virtual LSValue* ls_mod(LSSet<LSValue*>*);
-	virtual LSValue* ls_mod(LSSet<int>*);
-	virtual LSValue* ls_mod(LSSet<double>*);
-	virtual LSValue* ls_mod(LSObject*);
-	virtual LSValue* ls_mod(LSFunction<LSValue*>*);
-	virtual LSValue* ls_mod(LSClass*);
-
-	LSValue* ls_mod_eq(LSValue* value) {
-		return value->ls_rmod_eq(this);
-	}
-	virtual LSValue* ls_rmod_eq(LSValue*) = 0;
-	virtual LSValue* ls_mod_eq(LSNull*);
-	virtual LSValue* ls_mod_eq(LSBoolean*);
-	virtual LSValue* ls_mod_eq(LSNumber*);
-	virtual LSValue* ls_mod_eq(LSString*);
-	virtual LSValue* ls_mod_eq(LSArray<LSValue*>*);
-	virtual LSValue* ls_mod_eq(LSArray<int>*);
-	virtual LSValue* ls_mod_eq(LSArray<double>*);
-	virtual LSValue* ls_mod_eq(LSMap<LSValue*,LSValue*>*);
-	virtual LSValue* ls_mod_eq(LSMap<LSValue*,int>*);
-	virtual LSValue* ls_mod_eq(LSMap<LSValue*,double>*);
-	virtual LSValue* ls_mod_eq(LSMap<int,LSValue*>*);
-	virtual LSValue* ls_mod_eq(LSMap<int,int>*);
-	virtual LSValue* ls_mod_eq(LSMap<int,double>*);
-	virtual LSValue* ls_mod_eq(LSSet<LSValue*>*);
-	virtual LSValue* ls_mod_eq(LSSet<int>*);
-	virtual LSValue* ls_mod_eq(LSSet<double>*);
-	virtual LSValue* ls_mod_eq(LSObject*);
-	virtual LSValue* ls_mod_eq(LSFunction<LSValue*>*);
-	virtual LSValue* ls_mod_eq(LSClass*);
+	virtual LSValue* mod(LSValue*);
+	virtual LSValue* mod_eq(LSValue*);
 
 	bool operator == (const LSValue& value) const {
 		return value.req(this);

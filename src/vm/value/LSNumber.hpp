@@ -60,15 +60,9 @@ public:
 	virtual LSValue* int_div_eq(LSValue*) override;
 	virtual LSValue* pow(LSValue*) override;
 	virtual LSValue* pow_eq(LSValue*) override;
+	virtual LSValue* mod(LSValue*) override;
+	virtual LSValue* mod_eq(LSValue*) override;
 	LSVALUE_OPERATORS
-	
-	LSValue* ls_mod(LSNull*) override;
-	LSValue* ls_mod(LSBoolean*) override;
-	LSValue* ls_mod(LSNumber*) override;
-
-	LSValue* ls_mod_eq(LSNull*) override;
-	LSValue* ls_mod_eq(LSBoolean*) override;
-	LSValue* ls_mod_eq(LSNumber*) override;
 
 	bool operator == (int value) const override;
 	bool operator == (double value) const override;

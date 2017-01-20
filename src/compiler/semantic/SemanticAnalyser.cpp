@@ -80,7 +80,7 @@ LSValue* op_pow(void*, LSValue* x, LSValue* y) {
 	return x->pow(y);
 }
 LSValue* op_mod(void*, LSValue* x, LSValue* y) {
-	return x->ls_mod(y);
+	return x->mod(y);
 }
 
 void SemanticAnalyser::analyse(Program* program, Context*, std::vector<Module*>& modules, bool v1_mode) {

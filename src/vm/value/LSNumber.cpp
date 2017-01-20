@@ -384,45 +384,41 @@ LSValue* LSNumber::pow_eq(LSValue* v) {
 	return LSNull::get();
 }
 
-LSValue* LSNumber::ls_mod(LSNull*) {
-	if (refs == 0) {
+LSValue* LSNumber::mod(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (refs == 0) {
+			value = 0;
+			return this;
+		}
+		return LSNumber::get(0);
+	}
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (refs == 0) {
+			value = fmod(value, number->value);
+			if (number->refs == 0) delete number;
+			return this;
+		}
+		if (number->refs == 0) {
+			number->value = fmod(value, number->value);
+			return number;
+		}
+		return LSNumber::get(fmod(value, number->value));
+	}
+	LSValue::delete_temporary(this);
+	return LSNull::get();
+}
+
+LSValue* LSNumber::mod_eq(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
 		value = 0;
 		return this;
 	}
-	return LSNumber::get(0);
-}
-LSValue* LSNumber::ls_mod(LSBoolean*) {
-	if (refs == 0) {
-		value = 0;
-		return this;
-	}
-	return LSNumber::get(0);
-}
-LSValue* LSNumber::ls_mod(LSNumber* number) {
-	if (refs == 0) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
 		value = fmod(value, number->value);
 		if (number->refs == 0) delete number;
 		return this;
 	}
-	if (number->refs == 0) {
-		number->value = fmod(value, number->value);
-		return number;
-	}
-	return LSNumber::get(fmod(value, number->value));
-}
-
-LSValue* LSNumber::ls_mod_eq(LSNull*) {
-	value = 0;
-	return this;
-}
-LSValue* LSNumber::ls_mod_eq(LSBoolean*) {
-	value = 0;
-	return this;
-}
-LSValue* LSNumber::ls_mod_eq(LSNumber* number) {
-	value = fmod(value, number->value);
-	if (number->refs == 0) delete number;
-	return this;
+	return LSNull::get();
 }
 
 bool LSNumber::operator == (int v) const {

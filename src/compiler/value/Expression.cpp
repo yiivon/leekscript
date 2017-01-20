@@ -366,7 +366,7 @@ LSValue* jit_pow(LSValue* x, LSValue* y) {
 	return x->pow(y);
 }
 LSValue* jit_mod(LSValue* x, LSValue* y) {
-	return x->ls_mod(y);
+	return x->mod(y);
 }
 bool jit_equals(LSValue* x, LSValue* y) {
 	bool r = *x == *y;
@@ -399,7 +399,7 @@ LSValue* jit_div_equal(LSValue* x, LSValue* y) {
 	return x->div_eq(y);
 }
 LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
-	return x->ls_mod_eq(y);
+	return x->mod_eq(y);
 }
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->pow_eq(y);
