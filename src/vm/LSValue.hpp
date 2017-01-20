@@ -496,6 +496,16 @@ namespace ls {
 		LSValue::delete_ref((LSValue*) v);
 	}
 
+	template <class T> T oneref(T v) { return v; }
+	template <> inline LSValue* oneref(LSValue* v) {
+		v->refs = 1;
+		return v;
+	}
+	template <> inline const LSValue* oneref(const LSValue* v) {
+		((LSValue*) v)->refs = 1;
+		return v;
+	}
+
 	template <class T> T move(T v) { return v; }
 	template <> inline LSValue* move(LSValue* v) {
 		return v->move();
