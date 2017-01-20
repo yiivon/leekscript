@@ -62,16 +62,16 @@ void SemanticVar::must_be_pointer(SemanticAnalyser* analyser) {
 }
 
 LSValue* op_add(void*, LSValue* x, LSValue* y) {
-	return x->ls_add(y);
+	return x->add(y);
 }
 LSValue* op_sub(void*, LSValue* x, LSValue* y) {
-	return x->ls_sub(y);
+	return x->sub(y);
 }
 LSValue* op_mul(void*, LSValue* x, LSValue* y) {
-	return x->ls_mul(y);
+	return x->mul(y);
 }
 LSValue* op_div(void*, LSValue* x, LSValue* y) {
-	return x->ls_div(y);
+	return x->div(y);
 }
 LSValue* op_int_div(void*, LSValue* x, LSValue* y) {
 	return x->ls_int_div(y);

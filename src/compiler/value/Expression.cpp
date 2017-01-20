@@ -342,16 +342,16 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 }
 
 LSValue* jit_add(LSValue* x, LSValue* y) {
-	return x->ls_add(y);
+	return x->add(y);
 }
 LSValue* jit_sub(LSValue* x, LSValue* y) {
-	return x->ls_sub(y);
+	return x->sub(y);
 }
 LSValue* jit_mul(LSValue* x, LSValue* y) {
-	return x->ls_mul(y);
+	return x->mul(y);
 }
 LSValue* jit_div(LSValue* x, LSValue* y) {
-	return x->ls_div(y);
+	return x->div(y);
 }
 long jit_int_div(LSValue* x, LSValue* y) {
 	LSValue* res = x->ls_int_div(y);
@@ -579,7 +579,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->ls_add_eq(y);
+					return (*x)->add_eq(y);
 				});
 			}
 			break;

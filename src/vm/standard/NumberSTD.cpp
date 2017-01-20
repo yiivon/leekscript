@@ -396,7 +396,7 @@ Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
-	return b->ls_radd(LSNumber::get(a));
+	return LSNumber::get(a)->add(b);
 }
 
 Compiler::value NumberSTD::add_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
