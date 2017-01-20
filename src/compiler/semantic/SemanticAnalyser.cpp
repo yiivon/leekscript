@@ -74,7 +74,7 @@ LSValue* op_div(void*, LSValue* x, LSValue* y) {
 	return x->div(y);
 }
 LSValue* op_int_div(void*, LSValue* x, LSValue* y) {
-	return x->ls_int_div(y);
+	return x->int_div(y);
 }
 LSValue* op_pow(void*, LSValue* x, LSValue* y) {
 	return x->ls_pow(y);

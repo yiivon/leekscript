@@ -284,20 +284,6 @@ LSValue* LSNumber::div(LSValue* v) {
 	return LSNull::get();
 }
 
-LSValue* LSNumber::ls_int_div(LSNumber* number) {
-	if (refs == 0) {
-		value /= number->value;
-		value = floor(value);
-		if (number->refs == 0) delete number;
-		return this;
-	}
-	if (number->refs == 0) {
-		number->value = floor(value / number->value);
-		return number;
-	}
-	return LSNumber::get(floor(value / number->value));
-}
-
 LSValue* LSNumber::div_eq(LSValue* v) {
 	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
 		if (!boolean->value) {
@@ -307,6 +293,51 @@ LSValue* LSNumber::div_eq(LSValue* v) {
 	}
 	if (auto number = dynamic_cast<LSNumber*>(v)) {
 		value /= number->value;
+		if (number->refs == 0) delete number;
+		return this;
+	}
+	return LSNull::get();
+}
+
+LSValue* LSNumber::int_div(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (boolean->value) {
+			return this;
+		}
+		if (refs == 0) {
+			value = NAN;
+			return this;
+		}
+		return LSNumber::get(NAN);
+	}
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (refs == 0) {
+			value /= number->value;
+			value = floor(value);
+			if (number->refs == 0) delete number;
+			return this;
+		}
+		if (number->refs == 0) {
+			number->value = floor(value / number->value);
+			return number;
+		}
+		return LSNumber::get(floor(value / number->value));
+	}
+	LSValue::delete_temporary(this);
+	return LSNull::get();
+}
+
+LSValue* LSNumber::int_div_eq(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (!boolean->value) {
+			value = NAN;
+		}
+		value = floor(value);
+		return this;
+	}
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		value /= number->value;
+		value = floor(value);
 		if (number->refs == 0) delete number;
 		return this;
 	}

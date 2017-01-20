@@ -357,7 +357,7 @@ LSValue* jit_div(LSValue* x, LSValue* y) {
 	return x->div(y);
 }
 long jit_int_div(LSValue* x, LSValue* y) {
-	LSValue* res = x->ls_int_div(y);
+	LSValue* res = x->int_div(y);
 	long v = ((LSNumber*) res)->value;
 	LSValue::delete_temporary(res);
 	return v;
