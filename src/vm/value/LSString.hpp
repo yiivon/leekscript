@@ -47,34 +47,16 @@ public:
 	/*
 	 * LSValue methods
 	 */
+	virtual LSValue* add(LSValue* v) override;
+	virtual LSValue* add_eq(LSValue* v) override;
+	virtual LSValue* mul(LSValue* v) override;
+	virtual LSValue* div(LSValue* v) override;
 	LSVALUE_OPERATORS
+
 	bool isTrue() const override;
 
 	LSValue* ls_not() override;
 	LSValue* ls_tilde() override;
-
-	LSValue* ls_add(LSNull*) override;
-	LSValue* ls_add(LSBoolean*) override;
-	LSValue* ls_add(LSNumber*) override;
-	LSValue* ls_add(LSString*) override;
-	LSValue* ls_add(LSArray<LSValue*>*) override;
-	LSValue* ls_add(LSArray<int>*) override;
-	LSValue* ls_add(LSObject*) override;
-	LSValue* ls_add(LSFunction<LSValue*>*) override;
-	LSValue* ls_add(LSClass*) override;
-
-	LSValue* ls_add_eq(LSNull*) override;
-	LSValue* ls_add_eq(LSBoolean*) override;
-	LSValue* ls_add_eq(LSNumber*) override;
-	LSValue* ls_add_eq(LSString*) override;
-	LSValue* ls_add_eq(LSArray<LSValue*>*) override;
-	LSValue* ls_add_eq(LSArray<int>*) override;
-	LSValue* ls_add_eq(LSObject*) override;
-	LSValue* ls_add_eq(LSFunction<LSValue*>*) override;
-	LSValue* ls_add_eq(LSClass*) override;
-
-	LSValue* ls_mul(LSNumber*) override;
-	LSValue* ls_div(LSString*) override;
 
 	bool eq(const LSString*) const override;
 	bool lt(const LSString*) const override;

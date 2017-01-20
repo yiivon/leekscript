@@ -131,195 +131,79 @@ LSValue* LSString::ls_tilde() {
 	return new LSString(reversed);
 }
 
-LSValue* LSString::ls_add(LSNull*) {
+LSValue* LSString::add(LSValue* v) {
 	if (refs == 0) {
-		this->append("null");
+		this->append(v->to_string());
+		LSValue::delete_temporary(v);
 		return this;
 	}
-	return new LSString(*this + "null");
-}
-
-LSValue* LSString::ls_add(LSBoolean* boolean) {
-	if (refs == 0) {
-		this->append(boolean->value ? "true" : "false");
-		return this;
-	}
-	return new LSString(*this + (boolean->value ? "true" : "false"));
-}
-
-LSValue* LSString::ls_add(LSNumber* value) {
-	if (refs == 0) {
-		this->append(value->toString());
-		if (value->refs == 0) delete value;
-		return this;
-	}
-	LSValue* r = new LSString(*this + value->toString());
-	if (value->refs == 0) delete value;
+	auto r = new LSString(*this + v->to_string());
+	LSValue::delete_temporary(v);
 	return r;
 }
 
-LSValue* LSString::ls_add(LSString* string) {
-	if (refs == 0) {
-		this->append(*string);
-		if (string->refs == 0) delete string;
-		return this;
-	}
-	LSValue* r = new LSString(*this + *string);
-	if (string->refs == 0) delete string;
-	return r;
-}
-
-LSValue* LSString::ls_add(LSArray<LSValue*>* array) {
-	if (refs == 0) {
-		this->append("<array>");
-		if (array->refs == 0) delete array;
-		return this;
-	}
-	LSValue* r = new LSString(*this + "<array>");
-	if (array->refs == 0) delete array;
-	return r;
-}
-
-LSValue* LSString::ls_add(LSArray<int>* array) {
-	if (refs == 0) {
-		this->append("<array>");
-		if (array->refs == 0) delete array;
-		return this;
-	}
-	LSValue* r = new LSString(*this + "<array>");
-	if (array->refs == 0) delete array;
-	return r;
-}
-
-LSValue* LSString::ls_add(LSObject* object) {
-	if (refs == 0) {
-		this->append("<object>");
-		if (object->refs == 0) delete object;
-		return this;
-	}
-	LSValue* r = new LSString(*this + "<object>");
-	if (object->refs == 0) delete object;
-	return r;
-}
-
-LSValue* LSString::ls_add(LSFunction<LSValue*>* function) {
-	if (refs == 0) {
-		this->append("<function>");
-		if (function->refs == 0) delete function;
-		return this;
-	}
-	LSValue* r = new LSString(*this + "<function>");
-	if (function->refs == 0) delete function;
-	return r;
-}
-
-LSValue* LSString::ls_add(LSClass*) {
-	if (refs == 0) {
-		this->append("<class>");
-		return this;
-	}
-	LSValue* r = new LSString(*this + "<class>");
-	return r;
-}
-
-LSValue* LSString::ls_add_eq(LSNull*) {
-	append("null");
-	return this;
-}
-LSValue* LSString::ls_add_eq(LSBoolean* boolean) {
-	append(boolean->value ? "true" : "false");
-	return this;
-}
-LSValue* LSString::ls_add_eq(LSNumber* value) {
-	append(value->toString());
-	if (value->refs == 0) delete value;
-	return this;
-}
-LSValue* LSString::ls_add_eq(LSString* string) {
-	append(*string);
-	if (string->refs == 0) delete string;
-	return this;
-}
-LSValue* LSString::ls_add_eq(LSArray<LSValue*>* array) {
-	append("<array>");
-	if (array->refs == 0) delete array;
-	return this;
-}
-LSValue* LSString::ls_add_eq(LSArray<int>* array) {
-	append("<array>");
-	if (array->refs == 0) delete array;
-	return this;
-}
-LSValue* LSString::ls_add_eq(LSObject* object) {
-	append("<object>");
-	if (object->refs == 0) delete object;
-	return this;
-}
-LSValue* LSString::ls_add_eq(LSFunction<LSValue*>* function) {
-	append("<function>");
-	LSValue::delete_temporary(function);
-	return this;
-}
-LSValue* LSString::ls_add_eq(LSClass*) {
-	append("<class>");
+LSValue* LSString::add_eq(LSValue* v) {
+	append(v->to_string());
+	LSValue::delete_temporary(v);
 	return this;
 }
 
-LSValue* LSString::ls_mul(LSNumber* number) {
-	string r;
-	for (int i = 0; i < number->value; ++i) {
-		r += *this;
-	}
-	if (number->refs == 0) delete number;
-	if (refs == 0) {
-		*this = r;
-		return this;
-	}
-	return new LSString(r);
-}
-
-LSValue* LSString::ls_div(LSString* s) {
-
-	char buff[5];
-	char* string_chars = (char*) this->c_str();
-
-	LSArray<LSValue*>* array = new LSArray<LSValue*>();
-
-	if (s->size() == 0) {
-		int i = 0;
-		int l = strlen(string_chars);
-		while (i < l) {
-			u_int32_t c = u8_nextchar(string_chars, &i);
-			u8_toutf8(buff, 5, &c, 1);
-			LSString* ch = new LSString(buff);
-			array->push_inc(ch);
+LSValue* LSString::mul(LSValue* v) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		string r;
+		for (int i = 0; i < number->value; ++i) {
+			r += *this;
 		}
- 	} else {
+		if (number->refs == 0) delete number;
+		if (refs == 0) {
+			*this = r;
+			return this;
+		}
+		return new LSString(r);
+	}
+	LSValue::delete_temporary(this);
+	return LSNull::get();
+}
 
- 		u_int32_t separator = u8_char_at((char*) s->c_str(), 0);
-		int i = 0;
-		int l = strlen(string_chars);
-		std::string item = "";
-		while (i < l) {
-			u_int32_t c = u8_nextchar(string_chars, &i);
-			if (c == separator) {
-				array->push_inc(new LSString(item));
-				item = "";
-			} else {
+LSValue* LSString::div(LSValue* v) {
+	if (auto string = dynamic_cast<LSString*>(v)) {
+
+		char buff[5];
+		char* string_chars = (char*) this->c_str();
+		auto array = new LSArray<LSValue*>();
+
+		if (string->size() == 0) {
+			int i = 0;
+			int l = strlen(string_chars);
+			while (i < l) {
+				u_int32_t c = u8_nextchar(string_chars, &i);
 				u8_toutf8(buff, 5, &c, 1);
-				item += buff;
+				LSString* ch = new LSString(buff);
+				array->push_inc(ch);
 			}
-		}
-		array->push_inc(new LSString(item));
-//		stringstream ss(*this);
-//		string item;
-//		while (getline(ss, item, s->operator[] (0))) {
-//			array->push_no_clone(new LSString(item));
-//		}
- 	}
-	if (s->refs == 0) delete s;
-	if (refs == 0) delete this;
-	return array;
+	 	} else {
+	 		u_int32_t separator = u8_char_at((char*) string->c_str(), 0);
+			int i = 0;
+			int l = strlen(string_chars);
+			std::string item = "";
+			while (i < l) {
+				u_int32_t c = u8_nextchar(string_chars, &i);
+				if (c == separator) {
+					array->push_inc(new LSString(item));
+					item = "";
+				} else {
+					u8_toutf8(buff, 5, &c, 1);
+					item += buff;
+				}
+			}
+			array->push_inc(new LSString(item));
+	 	}
+		if (string->refs == 0) delete string;
+		if (refs == 0) delete this;
+		return array;
+	}
+	LSValue::delete_temporary(this);
+	return LSNull::get();
 }
 
 bool LSString::eq(const LSString* str) const {
@@ -329,7 +213,6 @@ bool LSString::eq(const LSString* str) const {
 bool LSString::lt(const LSString* str) const {
 	return compare(*str) < 0;
 }
-
 
 u_int32_t LSString::u8_char_at(char* s, int pos) {
 	int i = 0;
@@ -344,7 +227,6 @@ u_int32_t LSString::u8_char_at(char* s, int pos) {
 
 LSValue* LSString::at(const LSValue* key) const {
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-//		return new LSString(this->operator[] ((int) n->value));
 		char buff[5];
 		u_int32_t c = u8_char_at((char*) this->c_str(), (int) n->value);
 		u8_toutf8(buff, 5, &c, 1);
