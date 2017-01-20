@@ -32,7 +32,10 @@ void Test::test_arrays() {
 	code("[] + 1 + 2 + 3").equals("[1, 2, 3]");
 	code("[1] + 2").equals("[1, 2]");
 	code("[1] + 0.5").equals("[1, 0.5]");
-	code("[1] + 0.5 + 'a' + null").equals("[1, 0.5, 'a', null]");
+	code("[0.5] + 'a'").equals("[0.5, 'a']");
+	code("['a'] + ['b']").equals("['a', 'b']");
+	code("[1] + 0.5 + 'a'").equals("[1, 0.5, 'a']");
+	code("[1] + 0.5 + 'a' + 'b'").equals("[1, 0.5, 'a', 'b']");
 	code("[1] + null").equals("[1, null]");
 	code("[1] + true").equals("[1, true]");
 	code("[1] + [2] + [3]").equals("[1, 2, 3]");
