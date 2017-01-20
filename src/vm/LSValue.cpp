@@ -379,6 +379,12 @@ LSValue* LSValue::get_from_json(Json& json) {
 	throw std::exception();
 }
 
+std::string LSValue::to_string() const {
+	std::ostringstream oss;
+	print(oss);
+	return oss.str();
+}
+
 LSString* LSValue::ls_json() {
 	LSString* json = new LSString(this->json());
 	LSValue::delete_temporary(this);

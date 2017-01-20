@@ -350,6 +350,7 @@ public:
 	virtual int integer() const { return 0; }
 	virtual double real() const { return 0; }
 
+	virtual std::string to_string() const;
 	virtual std::ostream& print(std::ostream&) const;
 	virtual std::ostream& dump(std::ostream&) const = 0;
 	virtual std::string json() const;
