@@ -52,7 +52,7 @@ public:
 	virtual std::string json() const override;
 	virtual LSValue* clone() const override;
 	virtual LSValue* getClass() const override;
-	virtual int typeID() const override { return 6; }
+	virtual int typeID() const override;
 };
 
 }

@@ -78,7 +78,7 @@ public:
 	std::string escape_control_characters() const;
 
 	LSValue* getClass() const override;
-	int typeID() const override { return 4; }
+	int typeID() const override;
 };
 
 }

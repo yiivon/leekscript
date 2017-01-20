@@ -244,6 +244,11 @@ LSValue*LSSet<T>::getClass() const {
 	return LSSet<T>::set_class;
 }
 
+template <typename T>
+int LSSet<T>::typeID() const {
+	return 7;
+}
+
 }
 
 #endif

@@ -85,4 +85,9 @@ LSValue* LSFunction<R>::getClass() const {
 	return LSFunction::function_class;
 }
 
+template <class R>
+int LSFunction<R>::typeID() const {
+	return 8;
+}
+
 }

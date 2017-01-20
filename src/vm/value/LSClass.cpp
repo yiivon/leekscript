@@ -168,4 +168,8 @@ LSValue* LSClass::getClass() const {
 	return LSClass::class_class;
 }
 
+int LSClass::typeID() const {
+	return 10;
+}
+
 }

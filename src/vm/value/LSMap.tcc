@@ -239,6 +239,11 @@ inline LSValue* LSMap<K, T>::getClass() const {
 	return LSMap<K, T>::map_class;
 }
 
+template <typename K, typename T>
+int LSMap<K, T>::typeID() const {
+	return 6;
+}
+
 }
 
 #endif

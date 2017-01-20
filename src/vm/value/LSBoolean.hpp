@@ -50,7 +50,7 @@ public:
 
 	LSValue* getClass() const override;
 
-	int typeID() const override { return 2; }
+	int typeID() const override;
 };
 
 }

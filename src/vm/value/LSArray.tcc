@@ -1321,6 +1321,11 @@ LSValue* LSArray<T>::getClass() const {
 	return LSArray<T>::array_class;
 }
 
+template <class T>
+int LSArray<T>::typeID() const {
+	return 5;
+}
+
 } // end of namespace ls
 
 #endif

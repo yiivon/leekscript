@@ -102,4 +102,8 @@ LSValue* LSBoolean::getClass() const {
 	return LSBoolean::boolean_class;
 }
 
+int LSBoolean::typeID() const {
+	return 2;
+}
+
 }

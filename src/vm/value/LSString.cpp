@@ -338,4 +338,8 @@ LSValue* LSString::getClass() const {
 	return LSString::string_class;
 }
 
+int LSString::typeID() const {
+	return 4;
+}
+
 }

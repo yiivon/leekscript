@@ -463,4 +463,8 @@ LSValue* LSNumber::getClass() const {
 	return LSNumber::number_class;
 }
 
+int LSNumber::typeID() const {
+	return 3;
+}
+
 }

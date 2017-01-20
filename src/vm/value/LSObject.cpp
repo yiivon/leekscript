@@ -183,4 +183,8 @@ LSValue* LSObject::getClass() const {
 	return LSObject::object_class;
 }
 
+int LSObject::typeID() const {
+	return 9;
+}
+
 }

@@ -41,4 +41,8 @@ LSValue* LSNull::getClass() const {
 	return LSNull::null_class;
 }
 
+int LSNull::typeID() const {
+	return 1;
+}
+
 }
