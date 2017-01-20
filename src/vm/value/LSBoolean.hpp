@@ -33,11 +33,9 @@ public:
 	LSValue* ls_not() override;
 	LSValue* ls_tilde() override;
 
+	LSValue* add(LSValue* v) override;
+	LSValue* sub(LSValue* v) override;
 	LSVALUE_OPERATORS
-
-	LSValue* ls_add(LSNumber*) override;
-	LSValue* ls_add(LSString* s) override;
-	LSValue* ls_sub(LSNumber*) override;
 
 	bool eq(const LSBoolean*) const override;
 	bool lt(const LSBoolean*) const override;

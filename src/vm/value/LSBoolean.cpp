@@ -33,30 +33,41 @@ LSValue* LSBoolean::ls_tilde() {
 	return LSBoolean::get(!value);
 }
 
-LSValue* LSBoolean::ls_add(LSNumber* n) {
-	if (this->value) {
-		if (n->refs == 0) {
-			n->value += 1;
-			return n;
+LSValue* LSBoolean::add(LSValue* v) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (this->value) {
+			if (number->refs == 0) {
+				number->value += 1;
+				return number;
+			}
+			return LSNumber::get(number->value + 1);
 		}
-		return LSNumber::get(n->value + 1);
+		return number;
 	}
-	return n;
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		return LSNumber::get(value + boolean->value);
+	}
+	if (auto string = dynamic_cast<LSString*>(v)) {
+		return new LSString((value ? "true" : "false") + *string);
+	}
+	return LSNull::get();
 }
 
-LSValue* LSBoolean::ls_add(LSString* s) {
-	return new LSString((value ? "true" : "false") + *s);
-}
-
-LSValue* LSBoolean::ls_sub(LSNumber* n) {
-	if (this->value) {
-		if (n->refs == 0) {
-			n->value = 1 - n->value;
-			return n;
+LSValue* LSBoolean::sub(LSValue* v) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (this->value) {
+			if (number->refs == 0) {
+				number->value = 1 - number->value;
+				return number;
+			}
+			return LSNumber::get(1 - number->value);
 		}
-		return LSNumber::get(1 - n->value);
+		return number;
 	}
-	return n;
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		return LSNumber::get(value - boolean->value);
+	}
+	return LSNull::get();
 }
 
 bool LSBoolean::eq(const LSBoolean* boolean) const {
