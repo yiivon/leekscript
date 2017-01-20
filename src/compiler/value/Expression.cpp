@@ -335,6 +335,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
 	}
+	if (req_type == Type::VOID) {
+		type = Type::VOID;
+	}
 	if (req_type.raw_type == RawType::REAL) {
 		conversion = type;
 		type.raw_type = RawType::REAL;
