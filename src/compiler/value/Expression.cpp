@@ -393,7 +393,7 @@ int jit_array_push_int(LSArray<int>* x, int y) {
 	return y;
 }
 LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
-	return x->ls_sub_eq(y);
+	return x->sub_eq(y);
 }
 LSValue* jit_div_equal(LSValue* x, LSValue* y) {
 	return x->ls_div_eq(y);

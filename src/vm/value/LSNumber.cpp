@@ -193,16 +193,16 @@ LSValue* LSNumber::sub(LSValue* v) {
 	return LSNull::get();
 }
 
-LSValue* LSNumber::ls_sub_eq(LSNull*) {
-	return this;
-}
-LSValue* LSNumber::ls_sub_eq(LSBoolean* boolean) {
-	value -= boolean->value;
-	return this;
-}
-LSValue* LSNumber::ls_sub_eq(LSNumber* number) {
-	value -= number->value;
-	if (number->refs == 0) delete number;
+LSValue* LSNumber::sub_eq(LSValue* v) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		value -= number->value;
+		if (number->refs == 0) delete number;
+		return this;
+	}
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		value -= boolean->value;
+	}
+	LSValue::delete_temporary(this);
 	return this;
 }
 
