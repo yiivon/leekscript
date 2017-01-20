@@ -48,37 +48,20 @@ public:
 	LSValue* ls_predec() override;
 	LSValue* ls_dec() override;
 
+	virtual LSValue* add(LSValue*) override;
+	virtual LSValue* add_eq(LSValue*) override;
+	virtual LSValue* sub(LSValue*) override;
+	virtual LSValue* mul(LSValue*) override;
+	virtual LSValue* div(LSValue*) override;
 	LSVALUE_OPERATORS
-
-	LSValue* ls_add(LSNull*) override;
-	LSValue* ls_add(LSBoolean*) override;
-	LSValue* ls_add(LSNumber*) override;
-	LSValue* ls_add(LSString*) override;
-
-	LSValue* ls_add_eq(LSNull*) override;
-	LSValue* ls_add_eq(LSBoolean*) override;
-	LSValue* ls_add_eq(LSNumber*) override;
-
-	LSValue* ls_sub(LSNull*) override;
-	LSValue* ls_sub(LSBoolean*) override;
-	LSValue* ls_sub(LSNumber*) override;
 
 	LSValue* ls_sub_eq(LSNull*) override;
 	LSValue* ls_sub_eq(LSBoolean*) override;
 	LSValue* ls_sub_eq(LSNumber*) override;
 
-	LSValue* ls_mul(LSNull*) override;
-	LSValue* ls_mul(LSBoolean*) override;
-	LSValue* ls_mul(LSNumber*) override;
-	LSValue* ls_mul(LSString*) override;
-
 	LSValue* ls_mul_eq(LSNull*) override;
 	LSValue* ls_mul_eq(LSBoolean*) override;
 	LSValue* ls_mul_eq(LSNumber*) override;
-
-	LSValue* ls_div(LSNull*) override;
-	LSValue* ls_div(LSBoolean*) override;
-	LSValue* ls_div(LSNumber*) override;
 
 	LSValue* ls_int_div(LSNumber*) override;
 

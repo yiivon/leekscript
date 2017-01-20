@@ -120,76 +120,77 @@ LSValue* LSNumber::ls_dec() {
 	return r;
 }
 
-LSValue* LSNumber::ls_add(LSNull*) {
+LSValue* LSNumber::add(LSValue* v) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (refs == 0) {
+			value += number->value;
+			if (number->refs == 0) delete number;
+			return this;
+		}
+		if (number->refs == 0) {
+			number->value += value;
+			return number;
+		}
+		return LSNumber::get(this->value + number->value);
+	}
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (boolean->value) {
+			if (refs == 0) {
+				this->value += 1;
+				return this;
+			}
+			return LSNumber::get(value + 1);
+		}
+		return this;
+	}
+	if (auto string = dynamic_cast<LSString*>(v)) {
+		LSValue* r = new LSString(toString() + *string);
+		LSValue::delete_temporary(this);
+		if (string->refs == 0) delete string;
+		return r;
+	}
 	LSValue::delete_temporary(this);
 	return LSNull::get();
 }
-LSValue* LSNumber::ls_add(LSBoolean* boolean) {
-	if (boolean->value) {
-		if (refs == 0) {
-			this->value += 1;
-			return this;
-		}
-		return LSNumber::get(value + 1);
+
+LSValue* LSNumber::add_eq(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		value += boolean->value;
+		return this;
 	}
-	return this;
-}
-LSValue* LSNumber::ls_add(LSString* string) {
-	LSValue* r = new LSString(toString() + *string);
-	if (refs == 0) delete this;
-	if (string->refs == 0) delete string;
-	return r;
-}
-LSValue* LSNumber::ls_add(LSNumber* number) {
-	if (refs == 0) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
 		value += number->value;
 		if (number->refs == 0) delete number;
 		return this;
 	}
-	if (number->refs == 0) {
-		number->value += value;
-		return number;
-	}
-	return LSNumber::get(this->value + number->value);
-}
-
-LSValue* LSNumber::ls_add_eq(LSNull*) {
 	return LSNull::get();
 }
-LSValue* LSNumber::ls_add_eq(LSBoolean* boolean) {
-	value += boolean->value;
-	return this;
-}
-LSValue* LSNumber::ls_add_eq(LSNumber* number) {
-	value += number->value;
-	if (number->refs == 0) delete number;
-	return this;
-}
 
-LSValue* LSNumber::ls_sub(LSNull*) {
-	return LSNull::get();
-}
-LSValue* LSNumber::ls_sub(LSBoolean* boolean) {
-	if (boolean->value) {
+LSValue* LSNumber::sub(LSValue* v) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
 		if (refs == 0) {
-			this->value -= 1;
+			value -= number->value;
+			if (number->refs == 0) delete number;
 			return this;
 		}
-		return LSNumber::get(value - 1);
+		if (number->refs == 0) {
+			number->value = this->value - number->value;
+			return number;
+		}
+		return LSNumber::get(this->value - number->value);
 	}
-	return this;
-}
-LSValue* LSNumber::ls_sub(LSNumber* number) {
-	if (refs == 0) {
-		value -= number->value;
-		if (number->refs == 0) delete number;
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (boolean->value) {
+			if (refs == 0) {
+				this->value -= 1;
+				return this;
+			}
+			return LSNumber::get(value - 1);
+		}
 		return this;
 	}
-	if (number->refs == 0) {
-		number->value = this->value - number->value;
-		return number;
-	}
-	return LSNumber::get(this->value - number->value);
+	LSValue::delete_temporary(this);
+	return LSNull::get();
 }
 
 LSValue* LSNumber::ls_sub_eq(LSNull*) {
@@ -205,45 +206,43 @@ LSValue* LSNumber::ls_sub_eq(LSNumber* number) {
 	return this;
 }
 
-LSValue* LSNumber::ls_mul(LSNull*) {
+LSValue* LSNumber::mul(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (boolean->value) {
+			return this;
+		}
+		if (refs == 0) {
+			value = 0;
+			return this;
+		}
+		return LSNumber::get(0);
+	}
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (refs == 0) {
+			value *= number->value;
+			if (number->refs == 0) delete number;
+			return this;
+		}
+		if (number->refs == 0) {
+			number->value *= value;
+			return number;
+		}
+		return LSNumber::get(value * number->value);
+	}
+	if (auto string = dynamic_cast<LSString*>(v)) {
+		std::string r;
+		for (int i = 0; i < value; ++i) {
+			r += *string;
+		}
+		if (refs == 0) delete this;
+		if (string->refs == 0) {
+			*string = r;
+			return string;
+		}
+		return new LSString(r);
+	}
 	LSValue::delete_temporary(this);
 	return LSNull::get();
-}
-LSValue* LSNumber::ls_mul(LSBoolean* boolean) {
-	if (boolean->value) {
-		return this;
-	}
-	if (refs == 0) {
-		value = 0;
-		return this;
-	}
-	return LSNumber::get(0);
-}
-LSValue* LSNumber::ls_mul(LSNumber* number) {
-	if (refs == 0) {
-		value *= number->value;
-		if (number->refs == 0) delete number;
-		return this;
-	}
-	if (number->refs == 0) {
-		number->value *= value;
-		return number;
-	}
-	return LSNumber::get(value * number->value);
-}
-
-LSValue*LSNumber::ls_mul(LSString* str) {
-	string r;
-	for (int i = 0; i < value; ++i) {
-		r += *str;
-	}
-	if (refs == 0) delete this;
-
-	if (str->refs == 0) {
-		*str = r;
-		return str;
-	}
-	return new LSString(r);
 }
 
 LSValue* LSNumber::ls_mul_eq(LSNull*) {
@@ -259,32 +258,31 @@ LSValue* LSNumber::ls_mul_eq(LSNumber* number) {
 	return this;
 }
 
-LSValue* LSNumber::ls_div(LSNull*) {
+LSValue* LSNumber::div(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (boolean->value) {
+			return this;
+		}
+		if (refs == 0) {
+			value = NAN;
+			return this;
+		}
+		return LSNumber::get(NAN);
+	}
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (refs == 0) {
+			value /= number->value;
+			if (number->refs == 0) delete number;
+			return this;
+		}
+		if (number->refs == 0) {
+			number->value = value / number->value;
+			return number;
+		}
+		return LSNumber::get(value / number->value);
+	}
 	LSValue::delete_temporary(this);
 	return LSNull::get();
-}
-LSValue* LSNumber::ls_div(LSBoolean* boolean) {
-	if (boolean->value) {
-		return this;
-	}
-	if (refs == 0) {
-		value = NAN;
-		return this;
-	}
-	return LSNumber::get(NAN);
-}
-
-LSValue* LSNumber::ls_div(LSNumber* number) {
-	if (refs == 0) {
-		value /= number->value;
-		if (number->refs == 0) delete number;
-		return this;
-	}
-	if (number->refs == 0) {
-		number->value = value / number->value;
-		return number;
-	}
-	return LSNumber::get(value / number->value);
 }
 
 LSValue* LSNumber::ls_int_div(LSNumber* number) {
@@ -448,7 +446,7 @@ bool LSNumber::isInteger() const {
 
 string LSNumber::toString() const {
 
-	if (isInteger()) return to_string((int)value);
+	if (isInteger()) return std::to_string((int)value);
 
 	return LSNumber::print(value);
 }
