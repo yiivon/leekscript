@@ -26,7 +26,6 @@ class LSClass;
 class Context;
 
 #define LSVALUE_OPERATORS \
-	LSValue* ls_radd_eq(LSValue* value) override  { return value->ls_add_eq(this); } \
 	LSValue* ls_rsub_eq(LSValue* value) override  { return value->ls_sub_eq(this); } \
 	LSValue* ls_rmul_eq(LSValue* value) override  { return value->ls_mul_eq(this); } \
 	LSValue* ls_rint_div(LSValue* value) override { return value->ls_int_div(this); } \
@@ -66,30 +65,6 @@ public:
 	virtual LSValue* ls_inc(); // x++
 	virtual LSValue* ls_predec();
 	virtual LSValue* ls_dec();
-
-	LSValue* ls_add_eq(LSValue* value) {
-		return value->ls_radd_eq(this);
-	}
-	virtual LSValue* ls_radd_eq(LSValue*) = 0;
-	virtual LSValue* ls_add_eq(LSNull*);
-	virtual LSValue* ls_add_eq(LSBoolean*);
-	virtual LSValue* ls_add_eq(LSNumber*);
-	virtual LSValue* ls_add_eq(LSString*);
-	virtual LSValue* ls_add_eq(LSArray<LSValue*>*);
-	virtual LSValue* ls_add_eq(LSArray<int>*);
-	virtual LSValue* ls_add_eq(LSArray<double>*);
-	virtual LSValue* ls_add_eq(LSMap<LSValue*,LSValue*>*);
-	virtual LSValue* ls_add_eq(LSMap<LSValue*,int>*);
-	virtual LSValue* ls_add_eq(LSMap<LSValue*,double>*);
-	virtual LSValue* ls_add_eq(LSMap<int,LSValue*>*);
-	virtual LSValue* ls_add_eq(LSMap<int,int>*);
-	virtual LSValue* ls_add_eq(LSMap<int,double>*);
-	virtual LSValue* ls_add_eq(LSSet<LSValue*>*);
-	virtual LSValue* ls_add_eq(LSSet<int>*);
-	virtual LSValue* ls_add_eq(LSSet<double>*);
-	virtual LSValue* ls_add_eq(LSObject*);
-	virtual LSValue* ls_add_eq(LSFunction<LSValue*>*);
-	virtual LSValue* ls_add_eq(LSClass*);
 
 	virtual LSValue* add(LSValue*);
 	virtual LSValue* add_eq(LSValue*);
