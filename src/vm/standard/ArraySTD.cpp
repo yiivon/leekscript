@@ -284,6 +284,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY, Type::INT_ARRAY, {Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::ls_insert, Method::NATIVE}
 	});
 
+	method("random", {
+		{Type::PTR_ARRAY, Type::PTR_ARRAY, {Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_random, Method::NATIVE},
+		{Type::REAL_ARRAY, Type::REAL_ARRAY, {Type::INTEGER}, (void*) &LSArray<double>::ls_random, Method::NATIVE},
+		{Type::INT_ARRAY, Type::INT_ARRAY, {Type::INTEGER}, (void*) &LSArray<int>::ls_random, Method::NATIVE}
+	});
+
 	method("remove", {
 		{Type::PTR_ARRAY, Type::POINTER, {Type::INTEGER}, (void*)&LSArray<LSValue*>::ls_remove, Method::NATIVE},
 		{Type::REAL_ARRAY, Type::REAL, {Type::INTEGER}, (void*)&LSArray<double>::ls_remove, Method::NATIVE},
@@ -407,6 +413,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_shuffle, Method::NATIVE},
 		{Type::REAL_ARRAY, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_shuffle, Method::NATIVE},
 		{Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_shuffle, Method::NATIVE},
+	});
+
+	static_method("random", {
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_random, Method::NATIVE},
+		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::INTEGER}, (void*) &LSArray<double>::ls_random, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER}, (void*) &LSArray<int>::ls_random, Method::NATIVE}
 	});
 
 	static_method("reverse", {

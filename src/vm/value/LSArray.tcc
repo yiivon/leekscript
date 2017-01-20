@@ -503,30 +503,34 @@ inline LSArray<T>* LSArray<T>::ls_push_all_flo(LSArray<double>* array) {
 	return this;
 }
 
-template <typename T>
-inline LSArray<T>* LSArray<T>::ls_shuffle() {
-	if (refs == 0) {
-		for (size_t i = 0; i < this->size(); ++i) {
-			size_t j = rand() % this->size();
-			T tmp = (*this)[i];
-			(*this)[i] = (*this)[j];
-			(*this)[j] = tmp;
-		}
-		return this;
-	} else {
-		LSArray<T>* new_array = new LSArray<T>();
-		new_array->reserve(this->size());
-		for (auto v : *this) {
-			new_array->push_clone(v);
-		}
-		for (size_t i = 0; i < new_array->size(); ++i) {
-			size_t j = rand() % new_array->size();
-			T tmp = (*new_array)[i];
-			(*new_array)[i] = (*new_array)[j];
-			(*new_array)[j] = tmp;
-		}
-		return new_array;
+template <class T>
+void shuffle_array(LSArray<T>* array, size_t permutations) {
+	for (size_t i = 0; i < permutations; ++i) {
+		size_t j = rand() % array->size();
+		if (i == j) continue;
+		T tmp = (*array)[i];
+		(*array)[i] = (*array)[j];
+		(*array)[j] = tmp;
 	}
+}
+
+template <typename T>
+LSArray<T>* LSArray<T>::ls_shuffle() {
+	auto array = refs == 0 ? this : (LSArray<T>*) this->clone();
+	shuffle_array(array, array->size());
+	return array;
+}
+
+template <typename T>
+LSArray<T>* LSArray<T>::ls_random(int n) {
+	n = std::max(0, std::min(n, (int) this->size()));
+	auto result = refs == 0 ? this : (LSArray<T>*) this->clone();
+	shuffle_array(result, n);
+	for (auto i = result->begin() + n; i != result->end(); ++i) {
+		ls::unref(*i);
+	}
+	result->erase(result->begin() + n, result->end());
+	return result;
 }
 
 template <typename T>

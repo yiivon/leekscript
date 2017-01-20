@@ -75,6 +75,7 @@ public:
 	bool is_permutation(LSArray<int>*);
 	template <class T2>
 	LSValue* add_set(LSSet<T2>* set);
+	LSArray<T>* ls_random(int n);
 
 	/*
 	 * LSValue methods
