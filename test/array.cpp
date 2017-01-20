@@ -97,18 +97,28 @@ void Test::test_arrays() {
 	code("['1', '2', '3'][false]").equals("'1'");
 	code("[1.5, 2.5, 3.5][true]").equals("2.5");
 
-	section("Type changes");
-	code("var a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
-	code("var a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");
-	code("var a = [1.5] a += false a").equals("[1.5, false]");
-	code("var a = [1] a += <'z', 'a'> a").equals("[1, 'a', 'z']");
-	code("var a = [1] a += 'a' a").equals("[1, 'a']");
-
 	section("Array.operator +=");
 	code("var a = [1.55] a += 12.9 a").equals("[1.55, 12.9]");
 	code("var a = ['a'] a += 'b' a").equals("['a', 'b']");
 	code("var a = [1, 2, 3] a[0] += 5 a[0]").equals("6");
 	code("var v = 12 var a = [v, 2, 3] a[0] += 5 a[0]").equals("17");
+	code("var a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
+	code("var a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");
+	code("var a = [1.5] a += false a").equals("[1.5, false]");
+	code("var a = [1] a += <2, 3> a").equals("[1, 2, 3]");
+	code("var a = [1] a += <5.5, 7.314> a").equals("[1, 5.5, 7.314]");
+	code("var a = [1] a += <'z', 'a'> a").equals("[1, 'a', 'z']");
+	code("var a = [1] a += 'a' a").equals("[1, 'a']");
+	code("var a = [[1]] a[0] += [12, ''][0] a[0]").equals("[1, 12]");
+	code("var a = [1.11] a += [2, 3] a").equals("[1.11, 2, 3]");
+	code("var a = [[1.55]] a[0] += [12.9, ''][0] a[0]").equals("[1.55, 12.9]");
+	code("var a = [[1.55]] a[0] += [-1.5, 6.7] a[0]").equals("[1.55, -1.5, 6.7]");
+	code("var a = [[1.55]] a[0] += <8, 4> a[0]").equals("[1.55, 4, 8]");
+	code("var a = [[1.55]] a[0] += < -8.5, 4.7> a[0]").equals("[1.55, -8.5, 4.7]");
+	code("var a = ['a'] a += [1, 2]").equals("['a', 1, 2]");
+	code("var a = ['a'] a += [1.5, 2.5]").equals("['a', 1.5, 2.5]");
+	code("var a = ['a'] a += <1, 2>").equals("['a', 1, 2]");
+	code("var a = ['a'] a += <1.5, 2.5>").equals("['a', 1.5, 2.5]");
 
 	section("Array.operator <");
 	code("[1, 2, 3, 4] < [1, 2, 3, 5]").equals("true");
