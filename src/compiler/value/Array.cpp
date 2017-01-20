@@ -151,7 +151,7 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 //	std::cout << "Array::will_store(" << type << ")" << std::endl;
 
 	Type added_type = type;
-	if (added_type.raw_type == RawType::ARRAY) {
+	if (added_type.raw_type == RawType::ARRAY or added_type.raw_type == RawType::SET) {
 		added_type = added_type.getElementType();
 	}
 	Type current_type = this->type.getElementType();
