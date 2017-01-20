@@ -24,12 +24,15 @@ bool LSNull::isTrue() const {
 	return false;
 }
 
-bool LSNull::eq(const LSNull*) const {
-	return true;
+bool LSNull::eq(const LSValue* v) const {
+	return dynamic_cast<const LSNull*>(v);
 }
 
-bool LSNull::lt(const LSNull*) const {
-	return false;
+bool LSNull::lt(const LSValue* v) const {
+	if (dynamic_cast<const LSNull*>(v)) {
+		return false;
+	}
+	return LSValue::lt(v);
 }
 
 std::ostream& LSNull::dump(std::ostream& os) const {

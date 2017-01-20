@@ -47,19 +47,17 @@ public:
 	/*
 	 * LSValue methods
 	 */
+	bool isTrue() const override;
+
+	LSValue* ls_not() override;
+ 	LSValue* ls_tilde() override;
+
 	virtual LSValue* add(LSValue* v) override;
 	virtual LSValue* add_eq(LSValue* v) override;
 	virtual LSValue* mul(LSValue* v) override;
 	virtual LSValue* div(LSValue* v) override;
-	LSVALUE_OPERATORS
-
-	bool isTrue() const override;
-
-	LSValue* ls_not() override;
-	LSValue* ls_tilde() override;
-
-	bool eq(const LSString*) const override;
-	bool lt(const LSString*) const override;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;

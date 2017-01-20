@@ -137,51 +137,13 @@ LSValue* LSValue::mod_eq(LSValue* v) {
 	return LSNull::get();
 }
 
-bool LSValue::eq(const LSNull*) const                        { return false; }
-bool LSValue::eq(const LSBoolean*) const                     { return false; }
-bool LSValue::eq(const LSNumber*) const                      { return false; }
-bool LSValue::eq(const LSString*) const                      { return false; }
-bool LSValue::eq(const LSArray<LSValue*>*) const             { return false; }
-bool LSValue::eq(const LSArray<int>*) const                  { return false; }
-bool LSValue::eq(const LSArray<double>*) const               { return false; }
-bool LSValue::eq(const LSMap<LSValue*,LSValue*>*) const      { return false; }
-bool LSValue::eq(const LSMap<LSValue*,int>*) const           { return false; }
-bool LSValue::eq(const LSMap<LSValue*,double>*) const        { return false; }
-bool LSValue::eq(const LSMap<int,LSValue*>*) const           { return false; }
-bool LSValue::eq(const LSMap<int,int>*) const                { return false; }
-bool LSValue::eq(const LSMap<int,double>*) const             { return false; }
-bool LSValue::eq(const LSMap<double,LSValue*>*) const        { return false; }
-bool LSValue::eq(const LSMap<double,int>*) const             { return false; }
-bool LSValue::eq(const LSMap<double,double>*) const          { return false; }
-bool LSValue::eq(const LSSet<LSValue*>*) const               { return false; }
-bool LSValue::eq(const LSSet<int>*) const                    { return false; }
-bool LSValue::eq(const LSSet<double>*) const                 { return false; }
-bool LSValue::eq(const LSFunction<LSValue*>*) const                    { return false; }
-bool LSValue::eq(const LSObject*) const                      { return false; }
-bool LSValue::eq(const LSClass*) const                       { return false; }
+bool LSValue::eq(const LSValue*) const {
+	return false;
+}
 
-bool LSValue::lt(const LSNull*) const                        { return typeID() < 1; }
-bool LSValue::lt(const LSBoolean*) const                     { return typeID() < 2; }
-bool LSValue::lt(const LSNumber*) const                      { return typeID() < 3; }
-bool LSValue::lt(const LSString*) const                      { return typeID() < 4; }
-bool LSValue::lt(const LSArray<LSValue*>*) const             { return typeID() < 5; }
-bool LSValue::lt(const LSArray<int>*) const                  { return typeID() < 5; }
-bool LSValue::lt(const LSArray<double>*) const               { return typeID() < 5; }
-bool LSValue::lt(const LSMap<LSValue*,LSValue*>*) const      { return typeID() < 6; }
-bool LSValue::lt(const LSMap<LSValue*,int>*) const           { return typeID() < 6; }
-bool LSValue::lt(const LSMap<LSValue*,double>*) const        { return typeID() < 6; }
-bool LSValue::lt(const LSMap<int,LSValue*>*) const           { return typeID() < 6; }
-bool LSValue::lt(const LSMap<int,int>*) const                { return typeID() < 6; }
-bool LSValue::lt(const LSMap<int,double>*) const             { return typeID() < 6; }
-bool LSValue::lt(const LSMap<double,LSValue*>*) const        { return typeID() < 6; }
-bool LSValue::lt(const LSMap<double,int>*) const             { return typeID() < 6; }
-bool LSValue::lt(const LSMap<double,double>*) const          { return typeID() < 6; }
-bool LSValue::lt(const LSSet<LSValue*>*) const               { return typeID() < 7; }
-bool LSValue::lt(const LSSet<int>*) const                    { return typeID() < 7; }
-bool LSValue::lt(const LSSet<double>*) const                 { return typeID() < 7; }
-bool LSValue::lt(const LSFunction<LSValue*>*) const                    { return typeID() < 8; }
-bool LSValue::lt(const LSObject*) const                      { return typeID() < 9; }
-bool LSValue::lt(const LSClass*) const                       { return typeID() < 10; }
+bool LSValue::lt(const LSValue* v) const {
+	return typeID() < v->typeID();
+}
 
 LSValue* LSValue::at(const LSValue*) const {
 	return LSNull::get();

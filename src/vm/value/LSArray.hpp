@@ -87,15 +87,8 @@ public:
 
 	LSValue* add(LSValue* v) override;
 	LSValue* add_eq(LSValue* v) override;
-	LSVALUE_OPERATORS
-
-	bool eq(const LSArray<LSValue*>*) const override;
-	bool eq(const LSArray<int>*) const override;
-	bool eq(const LSArray<double>*) const override;
-
-	bool lt(const LSArray<LSValue*>*) const override;
-	bool lt(const LSArray<int>*) const override;
-	bool lt(const LSArray<double>*) const override;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 
 	bool in(const T) const;
 

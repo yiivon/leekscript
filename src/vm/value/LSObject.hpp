@@ -27,10 +27,9 @@ public:
 	LSObject* ls_map(LSFunction<LSValue*>* fun) const;
 
 	/** LSValue methods **/
-	LSVALUE_OPERATORS
 	bool isTrue() const override;
-	bool eq(const LSObject*) const override;
-	bool lt(const LSObject*) const override;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 	bool in(const LSValue*) const override;
 	LSValue* attr(const std::string& key) const override;
 	LSValue** attrL(const std::string& key) override;

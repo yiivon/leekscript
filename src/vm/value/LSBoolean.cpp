@@ -70,12 +70,18 @@ LSValue* LSBoolean::sub(LSValue* v) {
 	return LSNull::get();
 }
 
-bool LSBoolean::eq(const LSBoolean* boolean) const {
-	return boolean->value == this->value;
+bool LSBoolean::eq(const LSValue* v) const {
+	if (auto boolean = dynamic_cast<const LSBoolean*>(v)) {
+		return boolean->value == this->value;
+	}
+	return false;
 }
 
-bool LSBoolean::lt(const LSBoolean* boolean) const {
-	return this->value < boolean->value;
+bool LSBoolean::lt(const LSValue* v) const {
+	if (auto boolean = dynamic_cast<const LSBoolean*>(v)) {
+		return this->value < boolean->value;
+	}
+	return LSValue::lt(v);
 }
 
 LSValue* LSBoolean::at(const LSValue*) const {

@@ -385,7 +385,7 @@ LSValue* LSNumber::pow_eq(LSValue* v) {
 }
 
 LSValue* LSNumber::mod(LSValue* v) {
-	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+	if (dynamic_cast<LSBoolean*>(v)) {
 		if (refs == 0) {
 			value = 0;
 			return this;
@@ -409,7 +409,7 @@ LSValue* LSNumber::mod(LSValue* v) {
 }
 
 LSValue* LSNumber::mod_eq(LSValue* v) {
-	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+	if (dynamic_cast<LSBoolean*>(v)) {
 		value = 0;
 		return this;
 	}
@@ -429,12 +429,26 @@ bool LSNumber::operator == (double v) const {
 	return value == v;
 }
 
-bool LSNumber::eq(const LSNumber* number) const {
-	return this->value == number->value;
+bool LSNumber::operator < (int v) const {
+	return value < v;
 }
 
-bool LSNumber::lt(const LSNumber* number) const {
-	return this->value < number->value;
+bool LSNumber::operator < (double v) const {
+	return value < v;
+}
+
+bool LSNumber::eq(const LSValue* v) const {
+	if (auto number = dynamic_cast<const LSNumber*>(v)) {
+		return this->value == number->value;
+	}
+	return false;
+}
+
+bool LSNumber::lt(const LSValue* v) const {
+	if (auto number = dynamic_cast<const LSNumber*>(v)) {
+		return this->value < number->value;
+	}
+	return LSValue::lt(v);
 }
 
 LSValue* LSNumber::at(const LSValue*) const {

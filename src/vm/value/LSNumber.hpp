@@ -62,13 +62,13 @@ public:
 	virtual LSValue* pow_eq(LSValue*) override;
 	virtual LSValue* mod(LSValue*) override;
 	virtual LSValue* mod_eq(LSValue*) override;
-	LSVALUE_OPERATORS
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 
 	bool operator == (int value) const override;
 	bool operator == (double value) const override;
-
-	bool eq(const LSNumber*) const override;
-	bool lt(const LSNumber*) const override;
+	bool operator < (int value) const override;
+	bool operator < (double value) const override;
 
 	LSValue* at(const LSValue* value) const override;
 	LSValue** atL(const LSValue* value) override;

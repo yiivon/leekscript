@@ -27,19 +27,18 @@ public:
 	bool ls_erase(K key);
 	T ls_look(K key, T def);
 	LSArray<T>* values() const;
+	template <class K2, class T2>
+	bool map_equals(const LSMap<K2, T2>* map) const;
+	template <class K2, class T2>
+	bool map_lt(const LSMap<K2, T2>* map) const;
 
 	/*
 	 * LSValue methods;
 	 */
 	virtual bool isTrue() const override;
 
-	LSVALUE_OPERATORS
-
-	template <typename K2, typename T2>
-	bool eq(const LSMap<K2, T2>*) const;
-
-	template <typename K2, typename T2>
-	bool lt(const LSMap<K2, T2>*) const;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 
 	T at(const K key) const;
 

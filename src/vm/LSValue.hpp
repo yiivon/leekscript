@@ -25,10 +25,6 @@ class LSObject;
 class LSClass;
 class Context;
 
-#define LSVALUE_OPERATORS \
-	bool req(const LSValue* value) const override { return value->eq(this); } \
-	bool rlt(const LSValue* value) const override { return value->lt(this); } \
-
 class LSValue {
 public:
 
@@ -74,74 +70,31 @@ public:
 	virtual LSValue* mod_eq(LSValue*);
 
 	bool operator == (const LSValue& value) const {
-		return value.req(this);
+		return this->eq(&value);
 	}
 	virtual bool operator == (int) const { return false; }
 	virtual bool operator == (double) const { return false; }
+	virtual bool operator < (int) const { return false; }
+	virtual bool operator < (double) const { return false; }
 
 	bool operator != (const LSValue& value) const {
-		return !value.req(this);
+		return !this->eq(&value);
 	}
-
-	virtual bool req(const LSValue*) const = 0;
-	virtual bool eq(const LSNull*) const;
-	virtual bool eq(const LSBoolean*) const;
-	virtual bool eq(const LSNumber*) const;
-	virtual bool eq(const LSString*) const;
-	virtual bool eq(const LSArray<LSValue*>*) const;
-	virtual bool eq(const LSArray<int>*) const;
-	virtual bool eq(const LSArray<double>*) const;
-	virtual bool eq(const LSMap<LSValue*,LSValue*>*) const;
-	virtual bool eq(const LSMap<LSValue*,int>*) const;
-	virtual bool eq(const LSMap<LSValue*,double>*) const;
-	virtual bool eq(const LSMap<int,LSValue*>*) const;
-	virtual bool eq(const LSMap<int,int>*) const;
-	virtual bool eq(const LSMap<int,double>*) const;
-	virtual bool eq(const LSMap<double,LSValue*>*) const;
-	virtual bool eq(const LSMap<double,int>*) const;
-	virtual bool eq(const LSMap<double,double>*) const;
-	virtual bool eq(const LSSet<LSValue*>*) const;
-	virtual bool eq(const LSSet<int>*) const;
-	virtual bool eq(const LSSet<double>*) const;
-	virtual bool eq(const LSFunction<LSValue*>*) const;
-	virtual bool eq(const LSObject*) const;
-	virtual bool eq(const LSClass*) const;
+	virtual bool eq(const LSValue*) const;
 
 	bool operator < (const LSValue& value) const {
-		return value.rlt(this);
+		return this->lt(&value);
 	}
 	bool operator > (const LSValue& value) const {
 		return !(*this == value) && !(*this < value);
 	}
-	bool operator <=(const LSValue& value) const {
+	bool operator <= (const LSValue& value) const {
 		return (*this == value) || (*this < value);
 	}
-	bool operator >=(const LSValue& value) const {
+	bool operator >= (const LSValue& value) const {
 		return !(*this < value);
 	}
-	virtual bool rlt(const LSValue*) const = 0;
-	virtual bool lt(const LSNull*) const;
-	virtual bool lt(const LSBoolean*) const;
-	virtual bool lt(const LSNumber*) const;
-	virtual bool lt(const LSString*) const;
-	virtual bool lt(const LSArray<LSValue*>*) const;
-	virtual bool lt(const LSArray<int>*) const;
-	virtual bool lt(const LSArray<double>*) const;
-	virtual bool lt(const LSMap<LSValue*,LSValue*>*) const;
-	virtual bool lt(const LSMap<LSValue*,int>*) const;
-	virtual bool lt(const LSMap<LSValue*,double>*) const;
-	virtual bool lt(const LSMap<int,LSValue*>*) const;
-	virtual bool lt(const LSMap<int,int>*) const;
-	virtual bool lt(const LSMap<int,double>*) const;
-	virtual bool lt(const LSMap<double,LSValue*>*) const;
-	virtual bool lt(const LSMap<double,int>*) const;
-	virtual bool lt(const LSMap<double,double>*) const;
-	virtual bool lt(const LSSet<LSValue*>*) const;
-	virtual bool lt(const LSSet<int>*) const;
-	virtual bool lt(const LSSet<double>*) const;
-	virtual bool lt(const LSFunction<LSValue*>*) const;
-	virtual bool lt(const LSObject*) const;
-	virtual bool lt(const LSClass*) const;
+	virtual bool lt(const LSValue*) const;
 
 	virtual bool in(const LSValue*) const { return false; }
 
@@ -268,7 +221,6 @@ namespace ls {
 	bool equals(const T1 v1, const T2 v2) {
 		return v1 == v2;
 	}
-
 	template <>
 	inline bool equals(double v1, ls::LSValue* v2) {
 		return v2->operator == (v1);
@@ -289,6 +241,32 @@ namespace ls {
 	inline bool equals(ls::LSValue* v1, ls::LSValue* v2) {
 		return v1->operator == (*v2);
 	}
+
+	template <class T1, class T2>
+	bool lt(const T1 v1, const T2 v2) {
+		return v1 < v2;
+	}
+	template <>
+	inline bool lt(double v1, ls::LSValue* v2) {
+		return v2->operator < (v1);
+	}
+	template <>
+	inline bool lt(ls::LSValue* v1, double v2) {
+		return v1->operator < (v2);
+	}
+	template <>
+	inline bool lt(int v1, ls::LSValue* v2) {
+		return v2->operator < (v1);
+	}
+	template <>
+	inline bool lt(ls::LSValue* v1, int v2) {
+		return v1->operator < (v2);
+	}
+	template <>
+	inline bool lt(ls::LSValue* v1, ls::LSValue* v2) {
+		return v1->operator < (*v2);
+	}
+
 
 	template <class T> void release(T) {}
 	template <> inline void release(LSValue* v) {

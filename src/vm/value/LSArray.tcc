@@ -1106,18 +1106,17 @@ bool array_equals(const LSArray<T>* self, const LSArray<T2>* array) {
 }
 
 template <class T>
-bool LSArray<T>::eq(const LSArray<LSValue*>* array) const {
-	return array_equals(this, array);
-}
-
-template <class T>
-bool LSArray<T>::eq(const LSArray<int>* array) const {
-	return array_equals(this, array);
-}
-
-template <class T>
-bool LSArray<T>::eq(const LSArray<double>* array) const {
-	return array_equals(this, array);
+bool LSArray<T>::eq(const LSValue* v) const {
+	if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
+		return array_equals(this, array);
+	}
+	if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
+		return array_equals(this, array);
+	}
+	if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
+		return array_equals(this, array);
+	}
+	return false;
 }
 
 template <class T, class T2>
@@ -1136,45 +1135,43 @@ bool array_lt(const LSArray<T>* self, const LSArray<T2>* array) {
 }
 
 template <typename T>
-inline bool LSArray<T>::lt(const LSArray<LSValue*>* v) const {
-	auto i = this->begin();
-	auto j = v->begin();
-	while (i != this->end()) {
-		if (j == v->end()) return false;
-		if ((*j)->typeID() < 3) return false;
-		if (3 < (*j)->typeID()) return true;
-		if (*i < ((LSNumber*) *j)->value) return true;
-		if (((LSNumber*) *j)->value < *i) return false;
-		++i; ++j;
+inline bool LSArray<T>::lt(const LSValue* v) const {
+	if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
+		auto i = this->begin();
+		auto j = array->begin();
+		while (i != this->end()) {
+			if (j == array->end()) return false;
+			if ((*j)->typeID() < 3) return false;
+			if (3 < (*j)->typeID()) return true;
+			if (*i < ((LSNumber*) *j)->value) return true;
+			if (((LSNumber*) *j)->value < *i) return false;
+			++i; ++j;
+		}
+		return j != array->end();
 	}
-	return (j != v->end());
+	if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
+		return std::lexicographical_compare(this->begin(), this->end(), array->begin(), array->end());
+	}
+	if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
+		return std::lexicographical_compare(this->begin(), this->end(), array->begin(), array->end());
+	}
+	return LSValue::lt(v);
 }
 
 template <>
-inline bool LSArray<LSValue*>::lt(const LSArray<LSValue*>* v) const {
-	return std::lexicographical_compare(begin(), end(), v->begin(), v->end(), [](const LSValue* a, const LSValue* b) -> bool {
-		return *a < *b;
-	});
-}
-
-template <>
-inline bool LSArray<LSValue*>::lt(const LSArray<int>* v) const {
-	return array_lt(this, v);
-}
-
-template <typename T>
-inline bool LSArray<T>::lt(const LSArray<int>* v) const {
-	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
-}
-
-template <>
-inline bool LSArray<LSValue*>::lt(const LSArray<double>* v) const {
-	return array_lt(this, v);
-}
-
-template <typename T>
-inline bool LSArray<T>::lt(const LSArray<double>* v) const {
-	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
+inline bool LSArray<LSValue*>::lt(const LSValue* v) const {
+	if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
+		return std::lexicographical_compare(begin(), end(), array->begin(), array->end(), [](const LSValue* a, const LSValue* b) -> bool {
+			return *a < *b;
+		});
+	}
+	if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
+		return array_lt(this, array);
+	}
+	if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
+		return array_lt(this, array);
+	}
+	return LSValue::lt(v);
 }
 
 template <typename T>

@@ -68,38 +68,44 @@ bool LSObject::isTrue() const {
 	return values.size() > 0;
 }
 
-bool LSObject::eq(const LSObject* obj) const {
-	if ((!clazz && obj->clazz) || (clazz && !obj->clazz)) return false;
-	if (clazz && *clazz != *obj->clazz) return false;
-	if (values.size() != obj->values.size()) return false;
-	auto i = values.begin();
-	auto j = obj->values.begin();
-	for (; i != values.end(); ++i, ++j) {
-		if (i->first != j->first) return false;
-		if (*i->second != *j->second) return false;
+bool LSObject::eq(const LSValue* v) const {
+	if (auto obj = dynamic_cast<const LSObject*>(v)) {
+		if ((!clazz && obj->clazz) || (clazz && !obj->clazz)) return false;
+		if (clazz && *clazz != *obj->clazz) return false;
+		if (values.size() != obj->values.size()) return false;
+		auto i = values.begin();
+		auto j = obj->values.begin();
+		for (; i != values.end(); ++i, ++j) {
+			if (i->first != j->first) return false;
+			if (*i->second != *j->second) return false;
+		}
+		return true;
 	}
-	return true;
+	return false;
 }
 
-bool LSObject::lt(const LSObject* obj) const {
-	if (!clazz && obj->clazz) return true;
-	if (clazz && !obj->clazz) return false;
-	if (clazz && *clazz != *obj->clazz) return *clazz < *obj->clazz;
-	auto i = values.begin();
-	auto j = obj->values.begin();
-	while (i != values.end()) {
-		if (j == obj->values.end()) return false;
-		// i < j => true
-		// j < i => false
-		int x = i->first.compare(j->first);
-		if (x < 0) return true;
-		if (x > 0) return false;
-		if (*i->second != *j->second) {
-			return *i->second < *j->second;
+bool LSObject::lt(const LSValue* v) const {
+	if (auto obj = dynamic_cast<const LSObject*>(v)) {
+		if (!clazz && obj->clazz) return true;
+		if (clazz && !obj->clazz) return false;
+		if (clazz && *clazz != *obj->clazz) return *clazz < *obj->clazz;
+		auto i = values.begin();
+		auto j = obj->values.begin();
+		while (i != values.end()) {
+			if (j == obj->values.end()) return false;
+			// i < j => true
+			// j < i => false
+			int x = i->first.compare(j->first);
+			if (x < 0) return true;
+			if (x > 0) return false;
+			if (*i->second != *j->second) {
+				return *i->second < *j->second;
+			}
+			++i; ++j;
 		}
-		++i; ++j;
+		return (j != obj->values.end());
 	}
-	return (j != obj->values.end());
+	return LSValue::lt(v);
 }
 
 bool LSObject::in(const LSValue* key) const {

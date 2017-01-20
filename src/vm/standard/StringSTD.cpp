@@ -196,7 +196,7 @@ StringSTD::~StringSTD() {}
 
 Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, LSValue* b) {
-		return b->rlt(a);
+		return a->lt(b);
 	});
 	c.insn_delete(args[0]);
 	c.insn_delete(args[1]);

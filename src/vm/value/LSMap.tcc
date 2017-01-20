@@ -120,35 +120,77 @@ bool LSMap<K, T>::in(K key) const {
 
 template <class K, class T>
 template <class K2, class T2>
-bool LSMap<K, T>::eq(const LSMap<K2, T2>* value) const {
-	if (this->size() != value->size()) {
+bool LSMap<K, T>::map_equals(const LSMap<K2, T2>* map) const {
+	if (this->size() != map->size()) {
 		return false;
 	}
 	auto i = this->begin();
-	auto j = value->begin();
+	auto j = map->begin();
 	while (i != this->end()) {
-		if (j == value->end()) return false;
-		if (*i->first != *j->first) return false;
-		if (*i->second != *j->second) return false;
+		if (j == map->end()) return false; // TODO to remove
+		if (!ls::equals(i->first, j->first)) return false;
+		if (!ls::equals(i->second, j->second)) return false;
 		++j;
 		++i;
 	}
-	return j == value->end();
+	return j == map->end();
+}
+
+template <class K, class T>
+bool LSMap<K, T>::eq(const LSValue* v) const {
+	if (auto map = dynamic_cast<const LSMap<LSValue*, LSValue*>*>(v))
+		return map_equals(map);
+	if (auto map = dynamic_cast<const LSMap<LSValue*, double>*>(v))
+		return map_equals(map);
+	if (auto map = dynamic_cast<const LSMap<LSValue*, int>*>(v))
+		return map_equals(map);
+	if (auto map = dynamic_cast<const LSMap<int, LSValue*>*>(v))
+		return map_equals(map);
+	if (auto map = dynamic_cast<const LSMap<double, LSValue*>*>(v))
+		return map_equals(map);
+	if (auto map = dynamic_cast<const LSMap<int, double>*>(v))
+		return map_equals(map);
+	if (auto map = dynamic_cast<const LSMap<int, int>*>(v))
+		return map_equals(map);
+	if (auto map = dynamic_cast<const LSMap<double, double>*>(v))
+		return map_equals(map);
+	return false;
 }
 
 template <class K, class T>
 template <class K2, class T2>
-bool LSMap<K, T>::lt(const LSMap<K2, T2>* map) const {
+bool LSMap<K, T>::map_lt(const LSMap<K2, T2>* map) const {
 	auto i = this->begin();
 	auto j = map->begin();
 	for (; i != this->end(); ++i, ++j) {
 		if (j == map->end()) return false;
-		if (i->first < j->first) return true;
-		if (j->first < i->first) return false;
-		if (i->second < j->second) return true;
-		if (j->second < i->second) return false;
+		if (ls::lt(i->first, j->first)) return true;
+		if (ls::lt(j->first, i->first)) return false;
+		if (ls::lt(i->second, j->second)) return true;
+		if (ls::lt(j->second, i->second)) return false;
 	}
 	return j != map->end();
+}
+
+template <class K, class T>
+bool LSMap<K, T>::lt(const LSValue* v) const {
+	if (auto map = dynamic_cast<const LSMap<LSValue*, LSValue*>*>(v))
+		return map_lt(map);
+	if (auto map = dynamic_cast<const LSMap<LSValue*, double>*>(v))
+		return map_lt(map);
+	if (auto map = dynamic_cast<const LSMap<LSValue*, int>*>(v))
+		return map_lt(map);
+	if (auto map = dynamic_cast<const LSMap<int, LSValue*>*>(v))
+		return map_lt(map);
+	if (auto map = dynamic_cast<const LSMap<double, LSValue*>*>(v))
+		return map_lt(map);
+	if (auto map = dynamic_cast<const LSMap<int, double>*>(v))
+		return map_lt(map);
+	if (auto map = dynamic_cast<const LSMap<int, int>*>(v))
+		return map_lt(map);
+	if (auto map = dynamic_cast<const LSMap<double, double>*>(v))
+		return map_lt(map);
+	return LSValue::lt(v);
 }
 
 template <class K, class V>

@@ -131,77 +131,74 @@ bool set_equals(const LSSet<T1>* s1, const LSSet<T2>* s2) {
 }
 
 template <class T>
-bool LSSet<T>::eq(const LSSet<LSValue*>* other) const {
-	return set_equals(this, other);
+bool LSSet<T>::eq(const LSValue* v) const {
+	if (auto set = dynamic_cast<const LSSet<LSValue*>*>(v)) {
+		return set_equals(this, set);
+	}
+	if (auto set = dynamic_cast<const LSSet<int>*>(v)) {
+		return set_equals(this, set);
+	}
+	if (auto set = dynamic_cast<const LSSet<double>*>(v)) {
+		return set_equals(this, set);
+	}
+	return false;
 }
 
 template <class T>
-bool LSSet<T>::eq(const LSSet<int>* other) const {
-	return set_equals(this, other);
-}
-
-template <class T>
-bool LSSet<T>::eq(const LSSet<double>* other) const {
-	return set_equals(this, other);
-}
-
-template <>
-inline bool LSSet<LSValue*>::lt(const LSSet<LSValue*>* set) const {
-	return std::lexicographical_compare(begin(), end(), set->begin(), set->end(), [](LSValue* a, LSValue* b) -> bool {
-		return *a < *b;
-	});
-}
-template <typename T>
-inline bool LSSet<T>::lt(const LSSet<LSValue*>* set) const {
+template <class T2>
+bool LSSet<T>::set_lt(const LSSet<T2>* set) const {
 	auto i = this->begin();
 	auto j = set->begin();
 	while (i != this->end()) {
 		if (j == set->end()) return false;
-		if ((*j)->typeID() < 3) return false;
-		if (3 < (*j)->typeID()) return true;
-		if (*i < ((LSNumber*) *j)->value) return true;
-		if (((LSNumber*) *j)->value < *i) return false;
-		++i; ++j;
-	}
-	return (j != set->end());
-}
-
-template <>
-inline bool LSSet<LSValue*>::lt(const LSSet<int>* v) const {
-	auto i = begin();
-	auto j = v->begin();
-	while (i != end()) {
-		if (j == v->end()) return false;
 		if (3 < (*i)->typeID()) return false;
 		if ((*i)->typeID() < 3) return true;
 		if (((LSNumber*) *i)->value < *j) return true;
 		if (*j < ((LSNumber*) *i)->value) return false;
-		++i; ++j;
+		++i;
+		++j;
 	}
-	return (j != v->end());
-}
-template <typename T>
-inline bool LSSet<T>::lt(const LSSet<int>* v) const {
-	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
+	return j != set->end();
 }
 
 template <>
-inline bool LSSet<LSValue*>::lt(const LSSet<double>* v) const {
-	auto i = begin();
-	auto j = v->begin();
-	while (i != end()) {
-		if (j == v->end()) return false;
-		if (3 < (*i)->typeID()) return false;
-		if ((*i)->typeID() < 3) return true;
-		if (((LSNumber*) *i)->value < *j) return true;
-		if (*j < ((LSNumber*) *i)->value) return false;
-		++i; ++j;
+inline bool LSSet<LSValue*>::lt(const LSValue* v) const {
+	if (auto set = dynamic_cast<const LSSet<LSValue*>*>(v)) {
+		return std::lexicographical_compare(begin(), end(), set->begin(), set->end(), [](LSValue* a, LSValue* b) -> bool {
+			return *a < *b;
+		});
 	}
-	return (j != v->end());
+	if (auto set = dynamic_cast<const LSSet<int>*>(v)) {
+		return set_lt(set);
+	}
+	if (auto set = dynamic_cast<const LSSet<double>*>(v)) {
+		return set_lt(set);
+	}
+	return LSValue::lt(v);
 }
+
 template <typename T>
-inline bool LSSet<T>::lt(const LSSet<double>* v) const {
-	return std::lexicographical_compare(this->begin(), this->end(), v->begin(), v->end());
+inline bool LSSet<T>::lt(const LSValue* v) const {
+	if (auto set = dynamic_cast<const LSSet<LSValue*>*>(v)) {
+		auto i = this->begin();
+		auto j = set->begin();
+		while (i != this->end()) {
+			if (j == set->end()) return false;
+			if ((*j)->typeID() < 3) return false;
+			if (3 < (*j)->typeID()) return true;
+			if (*i < ((LSNumber*) *j)->value) return true;
+			if (((LSNumber*) *j)->value < *i) return false;
+			++i; ++j;
+		}
+		return j != set->end();
+	}
+	if (auto set = dynamic_cast<const LSSet<int>*>(v)) {
+		return std::lexicographical_compare(this->begin(), this->end(), set->begin(), set->end());
+	}
+	if (auto set = dynamic_cast<const LSSet<double>*>(v)) {
+		return std::lexicographical_compare(this->begin(), this->end(), set->begin(), set->end());
+	}
+	return LSValue::lt(v);
 }
 
 template <class T>

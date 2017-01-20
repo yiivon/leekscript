@@ -19,10 +19,9 @@ public:
 
 	~LSNull();
 
-	LSVALUE_OPERATORS
 	bool isTrue() const override;
-	bool eq(const LSNull*) const override;
-	bool lt(const LSNull*) const override;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 	std::ostream& dump(std::ostream& os) const override;
 	LSValue* getClass() const override;
 	int typeID() const override;

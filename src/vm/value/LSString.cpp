@@ -206,12 +206,18 @@ LSValue* LSString::div(LSValue* v) {
 	return LSNull::get();
 }
 
-bool LSString::eq(const LSString* str) const {
-	return compare(*str) == 0;
+bool LSString::eq(const LSValue* v) const {
+	if (auto str = dynamic_cast<const LSString*>(v)) {
+		return compare(*str) == 0;
+	}
+	return false;
 }
 
-bool LSString::lt(const LSString* str) const {
-	return compare(*str) < 0;
+bool LSString::lt(const LSValue* v) const {
+	if (auto str = dynamic_cast<const LSString*>(v)) {
+		return compare(*str) < 0;
+	}
+	return LSValue::lt(v);
 }
 
 u_int32_t LSString::u8_char_at(char* s, int pos) {

@@ -61,10 +61,8 @@ public:
 
 	bool isTrue() const override;
 
-	LSVALUE_OPERATORS
-
-	bool eq(const LSClass*) const override;
-	bool lt(const LSClass*) const override;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 
 	LSValue* attr(const std::string& key) const override;
 

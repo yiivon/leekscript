@@ -28,18 +28,15 @@ public:
 	LSSet<T>* ls_clear();
 	bool ls_erase(T value);
 	bool ls_contains(T value);
+	template <class T2>
+	bool set_lt(const LSSet<T2>* set) const;
 
 	/*
 	 * LSValue methods
 	 */
-	LSVALUE_OPERATORS
 	virtual bool isTrue() const override;
-	virtual bool eq(const LSSet<LSValue*>*) const override;
-	virtual bool eq(const LSSet<int>*) const override;
-	virtual bool eq(const LSSet<double>*) const override;
-	virtual bool lt(const LSSet<LSValue*>*) const override;
-	virtual bool lt(const LSSet<int>*) const;
-	virtual bool lt(const LSSet<double>*) const;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 	bool in(T) const;
 	virtual std::ostream& dump(std::ostream&) const override;
 	virtual std::string json() const override;

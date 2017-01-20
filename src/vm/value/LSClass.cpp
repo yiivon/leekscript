@@ -137,12 +137,18 @@ bool LSClass::isTrue() const {
 	return true;
 }
 
-bool LSClass::eq(const LSClass* clazz) const {
-	return clazz->name == this->name;
+bool LSClass::eq(const LSValue* v) const {
+	if (auto clazz = dynamic_cast<const LSClass*>(v)) {
+		return clazz->name == this->name;
+	}
+	return false;
 }
 
-bool LSClass::lt(const LSClass* clazz) const {
-	return this->name < clazz->name;
+bool LSClass::lt(const LSValue* v) const {
+	if (auto clazz = dynamic_cast<const LSClass*>(v)) {
+		return this->name < clazz->name;
+	}
+	return LSValue::lt(v);
 }
 
 LSValue* LSClass::attr(const std::string& key) const {

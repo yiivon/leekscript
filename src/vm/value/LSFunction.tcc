@@ -45,13 +45,19 @@ bool LSFunction<R>::isTrue() const {
 }
 
 template <class R>
-bool LSFunction<R>::eq(const LSFunction<LSValue*>* f) const {
-	return function == f->function;
+bool LSFunction<R>::eq(const LSValue* v) const {
+	if (auto f = dynamic_cast<const LSFunction<LSValue*>*>(v)) {
+		return function == f->function;
+	}
+	return false;
 }
 
 template <class R>
-bool LSFunction<R>::lt(const LSFunction<LSValue*>* f) const {
-	return function < f->function;
+bool LSFunction<R>::lt(const LSValue* v) const {
+	if (auto f = dynamic_cast<const LSFunction<LSValue*>*>(v)) {
+		return function < f->function;
+	}
+	return LSValue::lt(v);
 }
 
 template <class R>

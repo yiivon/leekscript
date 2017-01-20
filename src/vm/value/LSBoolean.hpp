@@ -35,10 +35,8 @@ public:
 
 	LSValue* add(LSValue* v) override;
 	LSValue* sub(LSValue* v) override;
-	LSVALUE_OPERATORS
-
-	bool eq(const LSBoolean*) const override;
-	bool lt(const LSBoolean*) const override;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 
 	LSValue* at (const LSValue* value) const override;
 	LSValue** atL (const LSValue* value) override;

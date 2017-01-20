@@ -35,10 +35,9 @@ public:
 	/*
 	 * LSValue methods
 	 */
-	LSVALUE_OPERATORS
 	bool isTrue() const override;
-	bool eq(const LSFunction<LSValue*>*) const override;
-	bool lt(const LSFunction<LSValue*>*) const override;
+	bool eq(const LSValue*) const override;
+	bool lt(const LSValue*) const override;
 	LSValue* attr(const std::string& key) const override;
 	std::ostream& dump(std::ostream& os) const;
 	std::string json() const;
