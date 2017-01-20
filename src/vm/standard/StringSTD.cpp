@@ -259,7 +259,7 @@ LSString* string_map(LSString* s, LSFunction<LSValue*>* function) {
 		u8_toutf8(buff, 5, &c, 1);
 		LSString* ch = new LSString(buff);
 		ch->refs = 1;
-		r->ls_add_eq(fun(function, ch));
+		r->add_eq(fun(function, ch));
 		LSValue::delete_ref(ch);
 	}
 	LSValue::delete_temporary(s);
