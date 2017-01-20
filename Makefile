@@ -122,7 +122,7 @@ clean:
 # Line couning with cloc.
 # `apt-get install cloc`
 cloc:
-	cloc . --exclude-dir=.git,lib,build
+	cloc . --exclude-dir=.git,lib,build,doxygen
 
 doc:
 	doxygen
