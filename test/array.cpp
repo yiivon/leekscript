@@ -190,7 +190,7 @@ void Test::test_arrays() {
 	code("[10, -5, 30, 66].sum()").equals("101");
 	code("Array.sum(['ab', 'cd', 'ef'])").equals("'abcdef'");
 	code("['ab', 'cd', 'ef'].sum()").equals("'abcdef'");
-	code("['abc', true, 12, [1, 2]].sum()").equals("'abctrue12<array>'");
+	code("['abc', true, 12, [1, 2]].sum()").equals("'abctrue12[1, 2]'");
 	code("[10, -5.7, 30.89, 66].sum()").almost(101.19);
 
 	section("Array.map()");
