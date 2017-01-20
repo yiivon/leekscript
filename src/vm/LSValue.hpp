@@ -26,8 +26,6 @@ class LSClass;
 class Context;
 
 #define LSVALUE_OPERATORS \
-	LSValue* ls_rpow(LSValue* value) override     { return value->ls_pow(this); } \
-	LSValue* ls_rpow_eq(LSValue* value) override  { return value->ls_pow_eq(this); } \
 	LSValue* ls_rmod(LSValue* value) override     { return value->ls_mod(this); } \
 	LSValue* ls_rmod_eq(LSValue* value) override  { return value->ls_mod_eq(this); } \
 	bool req(const LSValue* value) const override { return value->eq(this); } \
@@ -72,54 +70,8 @@ public:
 	virtual LSValue* div_eq(LSValue*);
 	virtual LSValue* int_div(LSValue*);
 	virtual LSValue* int_div_eq(LSValue*);
-
-	LSValue* ls_pow(LSValue* value) {
-		return value->ls_rpow(this);
-	}
-	virtual LSValue* ls_rpow(LSValue*) = 0;
-	virtual LSValue* ls_pow(LSNull*);
-	virtual LSValue* ls_pow(LSBoolean*);
-	virtual LSValue* ls_pow(LSNumber*);
-	virtual LSValue* ls_pow(LSString*);
-	virtual LSValue* ls_pow(LSArray<LSValue*>*);
-	virtual LSValue* ls_pow(LSArray<int>*);
-	virtual LSValue* ls_pow(LSArray<double>*);
-	virtual LSValue* ls_pow(LSMap<LSValue*,LSValue*>*);
-	virtual LSValue* ls_pow(LSMap<LSValue*,int>*);
-	virtual LSValue* ls_pow(LSMap<LSValue*,double>*);
-	virtual LSValue* ls_pow(LSMap<int,LSValue*>*);
-	virtual LSValue* ls_pow(LSMap<int,int>*);
-	virtual LSValue* ls_pow(LSMap<int,double>*);
-	virtual LSValue* ls_pow(LSSet<LSValue*>*);
-	virtual LSValue* ls_pow(LSSet<int>*);
-	virtual LSValue* ls_pow(LSSet<double>*);
-	virtual LSValue* ls_pow(LSObject*);
-	virtual LSValue* ls_pow(LSFunction<LSValue*>*);
-	virtual LSValue* ls_pow(LSClass*);
-
-	LSValue* ls_pow_eq(LSValue* value) {
-		return value->ls_rpow_eq(this);
-	}
-	virtual LSValue* ls_rpow_eq(LSValue*) = 0;
-	virtual LSValue* ls_pow_eq(LSNull*);
-	virtual LSValue* ls_pow_eq(LSBoolean*);
-	virtual LSValue* ls_pow_eq(LSNumber*);
-	virtual LSValue* ls_pow_eq(LSString*);
-	virtual LSValue* ls_pow_eq(LSArray<LSValue*>*);
-	virtual LSValue* ls_pow_eq(LSArray<int>*);
-	virtual LSValue* ls_pow_eq(LSArray<double>*);
-	virtual LSValue* ls_pow_eq(LSMap<LSValue*,LSValue*>*);
-	virtual LSValue* ls_pow_eq(LSMap<LSValue*,int>*);
-	virtual LSValue* ls_pow_eq(LSMap<LSValue*,double>*);
-	virtual LSValue* ls_pow_eq(LSMap<int,LSValue*>*);
-	virtual LSValue* ls_pow_eq(LSMap<int,int>*);
-	virtual LSValue* ls_pow_eq(LSMap<int,double>*);
-	virtual LSValue* ls_pow_eq(LSSet<LSValue*>*);
-	virtual LSValue* ls_pow_eq(LSSet<int>*);
-	virtual LSValue* ls_pow_eq(LSSet<double>*);
-	virtual LSValue* ls_pow_eq(LSObject*);
-	virtual LSValue* ls_pow_eq(LSFunction<LSValue*>*);
-	virtual LSValue* ls_pow_eq(LSClass*);
+	virtual LSValue* pow(LSValue*);
+	virtual LSValue* pow_eq(LSValue*);
 
 	LSValue* ls_mod(LSValue* value) {
 		return value->ls_rmod(this);

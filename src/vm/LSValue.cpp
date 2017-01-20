@@ -115,45 +115,16 @@ LSValue* LSValue::int_div_eq(LSValue* v) {
 	return LSNull::get();
 }
 
-LSValue* LSValue::ls_pow(LSNull*)                            { delete_temporary(this); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSBoolean*)                         { delete_temporary(this); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSNumber* value)                    { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSString* value)                    { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSArray<LSValue*>* value)           { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSArray<int>* value)                { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSArray<double>* value)             { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSMap<LSValue*,LSValue*>* value)    { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSMap<LSValue*,int>* value)         { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSMap<LSValue*,double>* value)      { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSMap<int,LSValue*>* value)         { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSMap<int,int>* value)              { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSMap<int,double>* value)           { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSSet<LSValue*>* value)             { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSSet<int>* value)                  { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSSet<double>* value)               { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSObject* value)                    { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSFunction<LSValue*>* value)                  { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
-LSValue* LSValue::ls_pow(LSClass* value)                     { delete_temporary(this); delete_temporary(value); return LSNull::get(); }
+LSValue* LSValue::pow(LSValue* v) {
+	delete_temporary(this);
+	delete_temporary(v);
+	return LSNull::get();
+}
 
-LSValue* LSValue::ls_pow_eq(LSNull*)                         { return this; }
-LSValue* LSValue::ls_pow_eq(LSBoolean*)                      { return this; }
-LSValue* LSValue::ls_pow_eq(LSNumber* value)                 { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSString* value)                 { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSArray<LSValue*>* value)        { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSArray<int>* value)             { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSArray<double>* value)          { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSMap<LSValue*,LSValue*>* value) { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSMap<LSValue*,int>* value)      { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSMap<LSValue*,double>* value)   { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSMap<int,LSValue*>* value)      { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSMap<int,int>* value)           { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSMap<int,double>* value)        { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSSet<LSValue*>* value)          { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSSet<int>* value)               { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSSet<double>* value)            { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSObject* value)                 { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSFunction<LSValue*>* value)               { delete_temporary(value); return this; }
-LSValue* LSValue::ls_pow_eq(LSClass* value)                  { delete_temporary(value); return this; }
+LSValue* LSValue::pow_eq(LSValue* v) {
+	delete_temporary(v);
+	return LSNull::get();
+}
 
 LSValue* LSValue::ls_mod(LSNull*)                            { delete_temporary(this); return LSNull::get(); }
 LSValue* LSValue::ls_mod(LSBoolean*)                         { delete_temporary(this); return LSNull::get(); }

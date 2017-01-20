@@ -363,7 +363,7 @@ long jit_int_div(LSValue* x, LSValue* y) {
 	return v;
 }
 LSValue* jit_pow(LSValue* x, LSValue* y) {
-	return x->ls_pow(y);
+	return x->pow(y);
 }
 LSValue* jit_mod(LSValue* x, LSValue* y) {
 	return x->ls_mod(y);
@@ -402,7 +402,7 @@ LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 	return x->ls_mod_eq(y);
 }
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
-	return x->ls_pow_eq(y);
+	return x->pow_eq(y);
 }
 int jit_bit_and_equal(LSValue* x, LSValue* y) {
 	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value & (int) ((LSNumber*) y)->value;

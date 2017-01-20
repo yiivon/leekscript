@@ -344,48 +344,44 @@ LSValue* LSNumber::int_div_eq(LSValue* v) {
 	return LSNull::get();
 }
 
-LSValue* LSNumber::ls_pow(LSNull*) {
-	if (refs == 0) {
-		value = 1;
-		return this;
+LSValue* LSNumber::pow(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (boolean->value) {
+			return this;
+		}
+		if (refs == 0) {
+			value = 1;
+			return this;
+		}
+		return LSNumber::get(1);
 	}
-	return LSNumber::get(1);
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (refs == 0) {
+			value = std::pow(value, number->value);
+			if (number->refs == 0) delete number;
+			return this;
+		}
+		if (number->refs == 0) {
+			number->value = std::pow(value, number->value);
+			return number;
+		}
+		return LSNumber::get(std::pow(value, number->value));
+	}
+	LSValue::delete_temporary(this);
+	return LSNull::get();
 }
-LSValue* LSNumber::ls_pow(LSBoolean* boolean) {
-	if (boolean->value) {
+
+LSValue* LSNumber::pow_eq(LSValue* v) {
+	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+		if (!boolean->value) value = 1;
 		return this;
 	}
-	if (refs == 0) {
-		value = 1;
-		return this;
-	}
-	return LSNumber::get(1);
-}
-LSValue* LSNumber::ls_pow(LSNumber* number) {
-	if (refs == 0) {
-		value = pow(value, number->value);
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		value = std::pow(value, number->value);
 		if (number->refs == 0) delete number;
 		return this;
 	}
-	if (number->refs == 0) {
-		number->value = pow(value, number->value);
-		return number;
-	}
-	return LSNumber::get(pow(value, number->value));
-}
-
-LSValue* LSNumber::ls_pow_eq(LSNull*) {
-	value = 1;
-	return this;
-}
-LSValue* LSNumber::ls_pow_eq(LSBoolean* boolean) {
-	if (!boolean->value) value = 1;
-	return this;
-}
-LSValue* LSNumber::ls_pow_eq(LSNumber* number) {
-	value = pow(value, number->value);
-	if (number->refs == 0) delete number;
-	return this;
+	return LSNull::get();
 }
 
 LSValue* LSNumber::ls_mod(LSNull*) {
