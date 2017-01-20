@@ -374,6 +374,19 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4, 5].isPermutation([4, 1, 3, 5, 3])").equals("false");
 	code("[1, 2, 3, 4, 5].isPermutation([1, 2, 3, 4, 5, 6])").equals("false");
 
+	section("Array.random()");
+	code("[].random(1)").equals("[]");
+	code("[1, 2, 3].random(3).size()").equals("3");
+	code("[1, 2, 3].random(3).sum()").equals("6");
+	code("[1, 2, 3].random(0)").equals("[]");
+	code("[1, 2, 3].random(-10)").equals("[]");
+	code("['a', 'b', 'c'].random(2).size()").equals("2");
+	code("[1, 2, 3].random(1000).size()").equals("3");
+	code("['a', 'b', 'c'].random(0)").equals("[]");
+	code("let a = ['a', 'b', 'c'] a.random(0)").equals("[]");
+	code("let a = ['a', 'b', 'c'] a.random(1).size()").equals("1");
+	code("let a = ['a', 'b', 'c'] a.random(3).size()").equals("3");
+
 	section("Array.remove()");
 	code("let a = [1, 2, 3] Array.remove(a, 1)").equals("2");
 	code("let a = [1, 2, 3] Array.remove(a, 1) a").equals("[1, 3]");
