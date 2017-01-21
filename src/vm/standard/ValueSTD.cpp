@@ -94,7 +94,7 @@ Compiler::value ValueSTD::unknown(Compiler& c) {
  */
 Compiler::value ValueSTD::attr_class(Compiler& c, Compiler::value a) {
 	auto clazz = c.insn_class_of(a);
-	c.insn_delete(a);
+	c.insn_delete_temporary(a);
 	return clazz;
 }
 
@@ -108,8 +108,8 @@ Compiler::value ValueSTD::op_store(Compiler& c, std::vector<Compiler::value> arg
 
 Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = c.insn_eq(c.insn_class_of(args[0]), args[1]);
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
 	return r;
 }
 
@@ -136,8 +136,8 @@ Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) 
 		return res;
 	} else {
 		auto res = c.insn_lt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
-		c.insn_delete(args[0]);
-		c.insn_delete(args[1]);
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
 		return res;
 	}
 }
@@ -157,8 +157,8 @@ Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) 
 		return res;
 	} else {
 		auto res = c.insn_le(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
-		c.insn_delete(args[0]);
-		c.insn_delete(args[1]);
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
 		return res;
 	}
 }
@@ -178,8 +178,8 @@ Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) 
 		return res;
 	} else {
 		auto res = c.insn_gt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
-		c.insn_delete(args[0]);
-		c.insn_delete(args[1]);
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
 		return res;
 	}
 }
@@ -199,23 +199,23 @@ Compiler::value ValueSTD::op_ge(Compiler& c, std::vector<Compiler::value> args) 
 		return res;
 	} else {
 		auto res = c.insn_ge(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
-		c.insn_delete(args[0]);
-		c.insn_delete(args[1]);
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
 		return res;
 	}
 }
 
 Compiler::value ValueSTD::op_and(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_and(c.insn_to_bool(args[0]), c.insn_to_bool(args[1]));
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
 	return res;
 }
 
 Compiler::value ValueSTD::op_or(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_or(c.insn_to_bool(args[0]), c.insn_to_bool(args[1]));
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
 	return res;
 }
 
@@ -226,8 +226,8 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 		c.insn_and(a, c.insn_not(b)),
 		c.insn_and(b, c.insn_not(a))
 	);
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
 	return r;
 }
 

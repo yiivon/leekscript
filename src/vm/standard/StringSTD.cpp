@@ -198,8 +198,8 @@ Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, LSValue* b) {
 		return a->lt(b);
 	});
-	c.insn_delete(args[0]);
-	c.insn_delete(args[1]);
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
 	return res;
 }
 
