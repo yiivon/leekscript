@@ -119,6 +119,7 @@ void Test::test_arrays() {
 	code("var a = ['a'] a += [1.5, 2.5]").equals("['a', 1.5, 2.5]");
 	code("var a = ['a'] a += <1, 2>").equals("['a', 1, 2]");
 	code("var a = ['a'] a += <1.5, 2.5>").equals("['a', 1.5, 2.5]");
+	code("var a = ['a'] var b = <'b'> a += b a").equals("['a', 'b']");
 
 	section("Array.operator <");
 	code("[1, 2, 3, 4] < [1, 2, 3, 5]").equals("true");
