@@ -48,8 +48,8 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 	}
 }
 
-LSValue* jit_inc(LSValue* x) {
-	return x->ls_inc();
+LSValue* jit_inc(LSValue** x) {
+
 }
 LSValue* jit_dec(LSValue* x) {
 	return x->ls_dec();
@@ -59,18 +59,11 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 
 	VM::inc_ops(c.F, 1);
 
-	jit_type_t args_types[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 1, 0);
-	vector<jit_value_t> args;
-
-	void* func = nullptr;
-
 	switch (operatorr->type) {
 
 		case TokenType::PLUS_PLUS: {
 
 			if (expression->type.nature == Nature::VALUE) {
-				//std::cout << "expression type " << expression->type << std::endl;
 
 				auto x_addr = expression->compile_l(c);
 
@@ -84,8 +77,11 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				}
 				return {x, type};
 			} else {
-				args.push_back(expression->compile(c).v);
-				func = (void*) jit_inc;
+				auto e = expression->compile_l(c);
+				return c.insn_call(Type::POINTER, {e}, (void*) +[](LSValue** x) {
+					std::cout << "inc ++ " << *x << std::endl;
+					return (*x)->ls_inc();
+				});
 			}
 			break;
 		}
@@ -101,14 +97,15 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				}
 				return {ox, type};
 			} else {
-				args.push_back(expression->compile(c).v);
-				func = (void*) jit_dec;
+				auto e = expression->compile_l(c);
+				return c.insn_call(Type::POINTER, {e}, (void*) +[](LSValue** x) {
+					return (*x)->ls_dec();
+				});
 			}
 			break;
 		}
 		default: {}
 	}
-	return {jit_insn_call_native(c.F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW), type};
 }
 
 }
