@@ -52,6 +52,7 @@ public:
 
 	// Value creation
 	value duplicate(value) const;
+	value clone(value) const;
 	value new_null() const;
 	value new_bool(bool b) const;
 	value new_integer(int i) const;

@@ -157,6 +157,14 @@ Compiler::value Compiler::insn_log10(Compiler::value a) const {
 Compiler::value Compiler::duplicate(Compiler::value v) const {
 	return {jit_insn_load(F, v.v), v.t};
 }
+Compiler::value Compiler::clone(Compiler::value v) const {
+	if (v.t.nature == Nature::POINTER) {
+		return insn_call(v.t, {v}, (void*)+[](LSValue* value) {
+			return value->clone();
+		});
+	}
+	return v;
+}
 Compiler::value Compiler::new_null() const {
 	return {LS_CREATE_POINTER(F, LSNull::get()), Type::NULLL};
 }
