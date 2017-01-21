@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <stack>
+#include <functional>
 
 #include "../vm/Type.hpp"
 
@@ -105,6 +106,9 @@ public:
 	value iterator_get(value it) const;
 	value iterator_key(value v, value it) const;
 	void iterator_increment(value it) const;
+
+	// Controls
+	void insn_if(value v, std::function<void()> then) const;
 
 	// Call functions
 	template <typename R, typename... A>

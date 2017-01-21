@@ -454,6 +454,16 @@ void Compiler::iterator_increment(Compiler::value it) const {
 }
 
 /*
+ * Controls
+ */
+void Compiler::insn_if(Compiler::value condition, std::function<void()> then) const {
+	jit_label_t label_end = jit_label_undefined;
+	jit_insn_branch_if_not(F, condition.v, &label_end);
+	then();
+	jit_insn_label(F, &label_end);
+}
+
+/*
  * Variables
  */
 void Compiler::add_var(const std::string& name, jit_value_t value, const Type& type, bool ref) {
