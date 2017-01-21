@@ -238,6 +238,7 @@ Type Type::mix(const Type& x) const {
 	if (*this == Type::UNKNOWN or x == Type::UNKNOWN) return Type::UNKNOWN;
 	if (nature == Nature::POINTER || x.nature == Nature::POINTER) return Type::POINTER;
 	if (raw_type == RawType::REAL || x.raw_type == RawType::REAL) return Type::REAL;
+	if (raw_type == RawType::LONG || x.raw_type == RawType::LONG) return Type::LONG;
 	if (raw_type == RawType::INTEGER || x.raw_type == RawType::INTEGER) return Type::INTEGER;
 	return x;
 }
