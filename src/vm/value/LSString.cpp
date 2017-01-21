@@ -60,6 +60,13 @@ LSString* LSString::charAt(int index) const {
 	return new LSString(this->operator[] (index));
 }
 
+LSString* LSString::codePointAt(int index) const {
+	char buff[5];
+	u_int32_t c = u8_char_at((char*) this->c_str(), index);
+	u8_toutf8(buff, 5, &c, 1);
+	return new LSString(buff);
+}
+
 int LSString::unicode_length() const {
 	return u8_strlen(this->c_str());
 }

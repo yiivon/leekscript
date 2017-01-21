@@ -38,6 +38,7 @@ public:
 	virtual ~LSString();
 
 	LSString* charAt(int index) const;
+	LSString* codePointAt(int index) const;
 	int unicode_length() const;
 	bool is_permutation(LSString* other);
 	LSString* sort();
