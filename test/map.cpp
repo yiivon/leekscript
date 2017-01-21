@@ -13,6 +13,7 @@ void Test::test_map() {
 	section("Map::isTrue()");
 	//code("![:]").equals("true");
 	code("![2: 2]").equals("false");
+	code("if ([2: 2]) { 12 } else { 5 }").equals("12");
 
 	section("Array of maps");
 	code("[[:], [1: 1], [1: 2]]").equals("[[:], [1: 1], [1: 2]]");
