@@ -17,6 +17,7 @@ walk(S, S)
 
 var sum = 1l
 for (var i = 0; i < S; ++i) {
-	sum += paths[i] * paths[i] // TODO x ** 2 optimization into x * x
+	var long = (0l + paths[i]) * paths[i]
+	sum += long
 }
 return sum
