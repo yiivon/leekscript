@@ -25,7 +25,9 @@ void Test::test_map() {
 	section("Map.operator []");
 
 	section("Map.operator ==");
-	code("['a':'b'] == [1:1]").equals("false");
+	code("['a': 'b'] == [1: 1]").equals("false");
+	code("['a': 'b'] == ['a': 'b']").equals("true");
+	code("['a': 'b'] == ['a': 'b', 'c': 'd']").equals("false");
 	//code("let x = ['a' : 'b'] let y = [1 : 1] x.clear() == y.clear()").equals("true");
 
 	section("Map.operator <");
