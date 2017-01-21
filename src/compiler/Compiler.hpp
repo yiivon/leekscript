@@ -109,6 +109,7 @@ public:
 
 	// Controls
 	void insn_if(value v, std::function<void()> then) const;
+	void insn_throw(value v) const;
 
 	// Call functions
 	template <typename R, typename... A>

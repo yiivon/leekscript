@@ -463,6 +463,10 @@ void Compiler::insn_if(Compiler::value condition, std::function<void()> then) co
 	jit_insn_label(F, &label_end);
 }
 
+void Compiler::insn_throw(Compiler::value v) const {
+	jit_insn_throw(F, v.v);
+}
+
 /*
  * Variables
  */
