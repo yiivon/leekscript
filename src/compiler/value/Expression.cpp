@@ -104,6 +104,7 @@ unsigned Expression::line() const {
 
 void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
+	operator_fun = nullptr;
 	operations = 1;
 	type = Type::VALUE;
 
