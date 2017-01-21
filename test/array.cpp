@@ -422,8 +422,10 @@ void Test::test_arrays() {
 	code("[true, 'hello', [1, 2, 3]].removeElement('yolo')").equals("false");
 
 	section("Postfix expressions");
-	code("let a = [10, ''] a[0]++").equals("11");
-	code("let a = [10, ''] a[0]--").equals("9");
+	code("let a = [10, ''] a[0]++").equals("10");
+	code("let a = [10, ''] a[0]++ a[0]").equals("11");
+	code("let a = [10, ''] a[0]--").equals("10");
+	code("let a = [10, ''] a[0]-- a[0]").equals("9");
 	code("var v = 10 [v++, '']").equals("[10, '']");
 	code("var v = 90 [v--, '']").equals("[90, '']");
 
