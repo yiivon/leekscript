@@ -51,7 +51,8 @@ void Test::test_map() {
 	code("let m = ['salut': 'yolo'] m['salut']").equals("'yolo'");
 	code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
 	code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
-	//code("let m = ['salut': 12] m['salut'] = 13 m['salut']").equals("13");
+	code("let m = ['salut': 12] m['salut'] = 13 m['salut']").equals("13");
+	code("let m = ['salut': 'yo'] m['salut'] = 'ya' m['salut']").equals("'ya'");
 
 	/*
 	 * Methods
