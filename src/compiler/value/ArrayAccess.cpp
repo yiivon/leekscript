@@ -90,13 +90,10 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			std::string kt = key->type.to_string();
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, {k, a, kt}});
 		}
+		key->analyse(analyser, Type::INTEGER);
 
-		if (array_element_type == Type::INTEGER) {
-			key->analyse(analyser, Type::INTEGER);
-		} else if (array_element_type == Type::REAL) {
-			key->analyse(analyser, Type::INTEGER);
-		} else {
-			key->analyse(analyser, Type::POINTER);
+		if (array->type.raw_type == RawType::STRING) {
+			type = Type::STRING;
 		}
 
 	} else if (array->type.raw_type == RawType::MAP) {
@@ -155,25 +152,6 @@ void ArrayAccess::change_type(SemanticAnalyser*, const Type&) {
 	// TODO
 }
 
-/*
- * Array
- */
-LSValue* access_temp(LSValue* array, LSValue* key) {
-	return array->at(key);
-}
-int access_temp_value(LSArray<int>* array, int key) {
-	return array->atv(key);
-}
-double access_temp_real(LSArray<double>* array, int key) {
-	return array->atv(key);
-}
-LSValue** access_l(LSValue* array, LSValue* key) {
-	return array->atL(key);
-}
-int* access_l_value(LSArray<int>* array, int key) {
-	return array->atLv(key);
-}
-
 LSValue* range(LSValue* array, int start, int end) {
 	LSValue* r = array->range(start, end);
 	LSValue::delete_temporary(array);
@@ -188,6 +166,8 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 	auto a = array->compile(c);
 
+	VM::inc_ops(c.F, 2); // Array access : 2 operations
+
 	if (key2 == nullptr) {
 
 		if (array->type == Type::INTERVAL) {
@@ -201,9 +181,6 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			jit_value_t res = jit_insn_call_native(c.F, "access", (void*) interval_access, sig, args, 2, JIT_CALL_NOTHROW);
 
 			VM::delete_temporary(c.F, a.v);
-
-			// Array access : 2 operations
-			VM::inc_ops(c.F, 2);
 
 			if (type.nature == Nature::POINTER) {
 				return {VM::value_to_pointer(c.F, res, type), type};
@@ -259,35 +236,60 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			}
 			return {res, type};
 
-		} else {
-
-			auto return_type = array_element_type == Type::REAL ? LS_REAL : LS_POINTER;
-
-			jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, args_types, 2, 0);
+		} else if (array->type.raw_type == RawType::STRING or array->type.raw_type == RawType::ARRAY) {
 
 			auto k = key->compile(c);
 
-			void* func =
-				array_element_type == Type::INTEGER ? (void*) access_temp_value
-				: array_element_type == Type::REAL ? (void*) access_temp_real
-				: (void*) access_temp;
-
-			jit_value_t args[] = {a.v, k.v};
-			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, 0);
-
-			if (key->type.must_manage_memory()) {
-				VM::delete_temporary(c.F, k.v);
+			if (k.t.nature == Nature::POINTER) {
+				k = c.insn_call(Type::INTEGER, {a, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
+					if (dynamic_cast<LSNumber*>(key_pointer)) {
+						int key_int = ((LSNumber*) key_pointer)->value;
+						LSValue::delete_temporary(key_pointer);
+						return key_int;
+					} else {
+						LSValue::delete_temporary(array);
+						LSValue::delete_temporary(key_pointer);
+						jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_KEY_IS_NOT_NUMBER));
+					}
+				});
 			}
-			VM::delete_temporary(c.F, a.v);
+			k = c.to_int(k);
 
-			// Array access : 2 operations
-			VM::inc_ops(c.F, 2);
+			if (array->type.raw_type == RawType::STRING) {
 
-			if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-				return {VM::value_to_pointer(c.F, res, type), type};
+				auto e = c.insn_call(Type::STRING, {a, k}, (void*) &LSString::codePointAt);
+				c.insn_delete_temporary(a);
+				return e;
+
+			} else {
+
+				auto array_size = c.insn_array_size(a);
+				c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
+					c.insn_delete_temporary(a);
+					c.insn_delete(a);
+					c.insn_throw(c.insn_call(Type::POINTER, {}, (void*) +[]() {
+						return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
+					}));
+				});
+
+				auto e = c.insn_load(c.insn_add(c.insn_load(a, 16, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k)), 0, array_element_type);
+				e = c.clone(e);
+				c.insn_delete_temporary(a);
+
+				if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
+					return {VM::value_to_pointer(c.F, e.v, type), type};
+				}
+				return e;
 			}
-			return {res, type};
+		} else {
+			// Unknown type, call generic at() operator
+			auto k = key->compile(c);
+			auto e = c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSValue* array, LSValue* key) {
+				return array->at(key);
+			});
+			c.insn_delete_temporary(a);
+			c.insn_delete_temporary(k);
+			return e;
 		}
 
 	} else {
@@ -310,24 +312,38 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 	auto a = array->compile(c);
 	auto k = key->compile(c);
 
-	if (array->type == Type::INT_ARRAY) {
-		return {jit_insn_add(c.F, jit_insn_load_relative(c.F, a.v, 16, LS_POINTER), jit_insn_mul(c.F, c.new_integer(4).v, k.v)), Type::POINTER};
-	}
+	if (array->type.raw_type == RawType::ARRAY) {
+		auto array_size = c.insn_array_size(a);
+		c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
+			c.insn_delete(a);
+			c.insn_throw(c.insn_call(Type::POINTER, {}, (void*) +[]() {
+				return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
+			}));
+		});
+		return c.insn_add(c.insn_load(a, 16, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k));
 
-	if (array->type == Type::PTR_PTR_MAP) {
+	} else if (array->type == Type::PTR_PTR_MAP) {
+
 		return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, LSValue*>* map, LSValue* key) {
 			LSValue** res = map->atL(key);
 			LSValue::delete_temporary(key);
 			return res;
 		});
 	} else if (array->type == Type::PTR_INT_MAP) {
+
 		return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, int>* map, LSValue* key) {
 			int* res = map->atLv(key);
 			LSValue::delete_temporary(key);
 			return res;
 		});
 	} else {
-		return c.insn_call(type, {a, k}, (void*) access_l);
+		if (k.t == Type::INTEGER) {
+			k = {VM::value_to_pointer(c.F, k.v, Type::INTEGER), Type::POINTER};
+		}
+		return c.insn_call(type, {a, k}, (void*) +[](LSValue* array, LSValue* key) {
+			return array->atL(key);
+		});
 	}
 }
+
 }

@@ -42,8 +42,6 @@ public:
 	double ls_average();
 	T ls_first();
 	T ls_last();
-	T atv(const int i);
-	int* atLv(int i);
 	template <class R>
 	LSArray<R>* ls_map(LSFunction<R>* function);
 	//LSArray<T>* ls_map(LSFunction<T>* function);
