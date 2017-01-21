@@ -193,6 +193,7 @@ void Test::test_numbers() {
 	code("Number.char([126.784, 'hello'][0])").equals("'~'");
 	code("let c = 65 (c.char())").equals("'A'");
 	code("let c = 65 (c.char() + '!')").equals("'A!'");
+	code("0x2764.char()").equals("'❤'");
 
 	section("Multiple precision numbers");
 	code("12344532132423").equals("12344532132423");
