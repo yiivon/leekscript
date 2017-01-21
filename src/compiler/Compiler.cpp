@@ -273,6 +273,12 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 
 void Compiler::insn_delete(Compiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
+		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_ref);
+	}
+}
+
+void Compiler::insn_delete_temporary(Compiler::value v) const {
+	if (v.t.nature == Nature::POINTER) {
 		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
 	}
 }
