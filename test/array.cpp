@@ -82,6 +82,7 @@ void Test::test_arrays() {
 	code("let a = [5, 'yolo', 12] a[1]").equals("'yolo'");
 	code("let a = [12] a[0]++ a").equals("[13]");
 	code("[1, 2, 'a'][['salut', 2][0]]").exception(ls::VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	// code("let a = [[12], ''][0] a[0]++ a").equals("[13]");
 
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -90,6 +91,9 @@ void Test::test_arrays() {
 //	code("let a = [1, 2, 3] a[10]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[5.6, 7.2][-5]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("['hello', true][2]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let a = [1, 2, 3] a[100] = 12").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let a = [1, 2, 3] a[-100] = 12").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	// code("let a = [[12], ''][0] a[100]++ a").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Access with booleans");
 	code("[1, 2, 3][false]").equals("1");
