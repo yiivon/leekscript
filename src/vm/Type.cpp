@@ -540,11 +540,21 @@ ostream& operator << (ostream& os, const Type& type) {
 			os << YELLOW << "?";
 		}
 	} else if (type.raw_type == RawType::FUNCTION) {
-		os << BLUE << "fun(";
+		if (type.nature == Nature::POINTER) {
+			os << BLUE;
+		}
+		os << "fun(";
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
 			os << type.arguments_types[t];
+			if (type.nature == Nature::POINTER) {
+				os << BLUE;
+			}
+		}
+		if (type.nature == Nature::POINTER) {
 			os << BLUE;
+		} else {
+			os << color;
 		}
 		os << ") → " << type.getReturnType();
 	} else if (type.raw_type == RawType::STRING || type.raw_type == RawType::CLASS
