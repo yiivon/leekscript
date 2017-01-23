@@ -57,8 +57,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (container->type.raw_type == RawType::MAP) {
 		key_type = container->type.getKeyType();
 		value_type = container->type.getElementType();
-	} else if (container->type.raw_type == RawType::ARRAY ||
-			   container->type.raw_type == RawType::SET) {
+	} else if (container->type.raw_type == RawType::ARRAY or container->type.raw_type == RawType::INTERVAL or container->type.raw_type == RawType::SET) {
 		key_type = Type::INTEGER;
 		value_type = container->type.getElementType();
 	} else if (container->type.raw_type == RawType::INTEGER ||

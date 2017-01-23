@@ -322,6 +322,15 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		insn_store(it, insn_load(v, 16));
 		return it;
 	}
+	if (v.t.raw_type == RawType::INTERVAL) {
+		jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
+		auto interval_iterator = jit_type_create_struct(types, 2, 0);
+		Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
+		auto addr = insn_address_of(it);
+		jit_insn_store_relative(F, addr.v, 0, v.v);
+		jit_insn_store_relative(F, addr.v, 8, insn_load(v, 40, Type::INTEGER).v);
+		return it;
+	}
 	if (v.t.raw_type == RawType::STRING) {
 		jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
 		auto string_iterator = jit_type_create_struct(types, 5, 0);
@@ -358,6 +367,13 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	if (v.t.raw_type == RawType::ARRAY) {
 		return insn_eq(it, insn_load(v, 24));
 	}
+	if (it.t == Type::INTERVAL_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto interval = insn_load(addr, 0, Type::POINTER);
+		auto end = insn_load(interval, 44, Type::INTEGER);
+		auto pos = insn_load(addr, 8, Type::INTEGER);
+		return insn_gt(pos, end);
+	}
 	if (it.t == Type::STRING_ITERATOR) {
 		auto addr = insn_address_of(it);
 		return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
@@ -379,6 +395,13 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) co
 	if (it.t.raw_type == RawType::ARRAY) {
 		return insn_int_div(insn_sub(it, insn_load(v, 16)), new_integer(it.t.element().size() / 8));
 	}
+	if (it.t == Type::INTERVAL_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto interval = insn_load(addr, 0);
+		auto start = insn_load(interval, 40);
+		auto e = insn_load(addr, 8, Type::INTEGER);
+		return insn_sub(e, start);
+	}
 	if (it.t == Type::STRING_ITERATOR) {
 		auto addr = insn_address_of(it);
 		return insn_call(Type::INTEGER, {addr}, &LSString::iterator_key);
@@ -398,6 +421,11 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) co
 Compiler::value Compiler::iterator_get(Compiler::value it) const {
 	if (it.t.raw_type == RawType::ARRAY) {
 		return insn_load(it, 0, it.t.getElementType());
+	}
+	if (it.t == Type::INTERVAL_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto e = insn_load(addr, 8, Type::INTEGER);
+		return e;
 	}
 	if (it.t == Type::STRING_ITERATOR) {
 		auto addr = insn_address_of(it);
@@ -425,6 +453,12 @@ Compiler::value Compiler::iterator_get(Compiler::value it) const {
 void Compiler::iterator_increment(Compiler::value it) const {
 	if (it.t.raw_type == RawType::ARRAY) {
 		insn_store(it, insn_add(it, new_integer(it.t.element().size() / 8)));
+		return;
+	}
+	if (it.t == Type::INTERVAL_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto pos = insn_load(addr, 8, Type::INTEGER);
+		insn_store_relative(addr, 8, insn_add(pos, new_integer(1)));
 		return;
 	}
 	if (it.t == Type::STRING_ITERATOR) {

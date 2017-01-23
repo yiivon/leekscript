@@ -75,7 +75,8 @@ const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
 const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
 
-const Type Type::STRING_ITERATOR(RawType::UNKNOWN, Nature::VALUE);
+const Type Type::STRING_ITERATOR(RawType::UNKNOWN, Nature::VALUE, Type::STRING);
+const Type Type::INTERVAL_ITERATOR(RawType::UNKNOWN, Nature::VALUE, Type::INTEGER);
 
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
