@@ -26,6 +26,16 @@ void Test::test_intervals() {
 	code("|[0..1]|").equals("2");
 	code("|[1..100]|").equals("100");
 
+	section("Iteration");
+	code("for k, i in [1..0] { System.print(k + ' => ' + i) }").output("");
+	code("for k, i in [1..1] { System.print(k + ' => ' + i) }").output("0 => 1\n");
+	code("for k, i in [5..7] { System.print(k + ' => ' + i) }").output("0 => 5\n1 => 6\n2 => 7\n");
+	code("var s = 0 for i in [100..110] { s += i } s").equals("1155");
+	code("var s = 0 for k, i in [100..110] { s += k * i } s").equals("5885");
+
+	/*
+	 * Methods
+	 */
 	section("Interval.filter()");
 	code("[1..6].filter(x -> x > 3)").equals("[4, 5, 6]");
 	code("[1..6].filter(x -> x < 3)").equals("[1, 2]");
