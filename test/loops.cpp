@@ -33,6 +33,27 @@ void Test::test_loops() {
 	code("if ['str', true][0] { 12 } else { 5 }").equals("12");
 	code("if null { 12 } else { 5 }").equals("5");
 
+	section("Ternary conditions");
+	code("true ? 5 : 12").equals("5");
+	code("false ? 5 : 12").equals("12");
+	code("true ? 'a' : 'b'").equals("'a'");
+	code("false ? 'a' : 'b'").equals("'b'");
+	code("true ? 'a' : 5").equals("'a'");
+	code("false ? 'a' : 5").equals("5");
+	code("true ? 5 : 'b'").equals("5");
+	code("false ? 5 : 'b'").equals("'b'");
+	code("'good' ? 5 : 12").equals("5");
+	code("'' ? 5 : 12").equals("12");
+	code("'good' ? 'a' : 'b'").equals("'a'");
+	code("true ? true ? 5 : 12 : 7").equals("5");
+	code("true ? false ? 5 : 12 : 7").equals("12");
+	code("false ? false ? 5 : 12 : 7").equals("7");
+	code("false ? true ? 5 : 12 : 7").equals("7");
+	code("true ? true ? true ? 5 : 12 : 7 : 8").equals("5");
+	code("true ? true ? false ? 5 : 12 : 7 : 8").equals("12");
+	code("true ? false ? false ? 5 : 12 : 7 : 8").equals("7");
+	code("(5 > 10) ? 'a' : (4 == 2 ** 2) ? 'yes' : 'no'").equals("'yes'");
+
 	/*
 	 * While loops
 	 */
