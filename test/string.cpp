@@ -92,6 +92,7 @@ void Test::test_strings() {
 	/*
 	 * Iteration
 	 */
+	section("String iteration");
 	code("for c in 'bonjour' { System.print(c) }").output("b\no\nn\nj\no\nu\nr\n");
 	code("for (c in '汉堡 漢堡') { System.print(c) }").output("汉\n堡\n \n漢\n堡\n");
 	code("[for c in 'salut' { c }]").equals("['s', 'a', 'l', 'u', 't']");
