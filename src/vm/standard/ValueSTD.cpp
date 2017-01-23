@@ -102,7 +102,7 @@ Compiler::value ValueSTD::attr_class(Compiler& c, Compiler::value a) {
  * Operators
  */
 Compiler::value ValueSTD::op_store(Compiler& c, std::vector<Compiler::value> args) {
-	c.insn_store_relative(args[0], args[1]);
+	c.insn_store_relative(args[0], 0, args[1]);
 	return args[1];
 }
 

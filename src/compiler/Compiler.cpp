@@ -77,8 +77,8 @@ int Compiler::get_current_function_blocks() const {
 void Compiler::insn_store(Compiler::value a, Compiler::value b) const {
 	jit_insn_store(F, a.v, b.v);
 }
-void Compiler::insn_store_relative(Compiler::value a, Compiler::value b) const {
-	jit_insn_store_relative(F, a.v, 0, b.v);
+void Compiler::insn_store_relative(Compiler::value a, int pos, Compiler::value b) const {
+	jit_insn_store_relative(F, a.v, pos, b.v);
 }
 Compiler::value Compiler::insn_not(Compiler::value v) const {
 	return {jit_insn_not(F, v.v), v.t};
