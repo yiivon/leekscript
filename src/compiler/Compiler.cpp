@@ -359,8 +359,6 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_insn_store_relative(F, addr, 8, new_integer(0).v);
 		return it;
 	}
-	// TODO sets intervals
-	std::cout << "Error: no begin() for type " << v.t << std::endl;
 }
 
 Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
@@ -387,8 +385,6 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 		auto p = insn_load(addr, 4, Type::INTEGER);
 		return insn_eq(p, new_integer(0));
 	}
-	// TODO sets intervals
-	std::cout << "Error: no end() for type " << v.t << std::endl;
 }
 
 Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) const {
@@ -414,8 +410,6 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) co
 		auto addr = insn_address_of(it);
 		return insn_load(addr, 8, Type::INTEGER);
 	}
-	// TODO sets intervals
-	std::cout << "Error: no key() for type " << it.t << std::endl;
 }
 
 Compiler::value Compiler::iterator_get(Compiler::value it) const {
@@ -446,13 +440,12 @@ Compiler::value Compiler::iterator_get(Compiler::value it) const {
 		auto p = insn_load(addr, 4, Type::INTEGER);
 		return insn_int_div(n, p);
 	}
-	// TODO sets intervals
-	std::cout << "Error: no get() for type " << it.t << std::endl;
 }
 
 void Compiler::iterator_increment(Compiler::value it) const {
 	if (it.t.raw_type == RawType::ARRAY) {
 		insn_store(it, insn_add(it, new_integer(it.t.element().size() / 8)));
+		//insn_store(it, insn_add(it, insn_mul(new_integer(16), new_integer(it.t.element().size() / 8)) ));
 		return;
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
@@ -483,8 +476,6 @@ void Compiler::iterator_increment(Compiler::value it) const {
 		jit_insn_store_relative(F, addr.v, 8, insn_add(i, new_integer(1)).v);
 		return;
 	}
-	// TODO sets intervals
-	std::cout << "Error: no increment() for type " << it.t << std::endl;
 }
 
 /*

@@ -140,6 +140,12 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	}
 	// Body
 	auto body_v = body->compile(c);
+	/*
+	for (int i = 0; i < 15; ++i) {
+		body->compile(c);
+	}
+	*/
+
 	if (output_v && body_v.v) {
 		VM::push_move_array(c.F, type.getElementType(), output_v, body_v.v);
 	}
