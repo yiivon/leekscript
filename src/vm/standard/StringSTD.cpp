@@ -54,6 +54,8 @@ StringSTD::StringSTD() : Module("String") {
 	 * Operators
 	 */
 	operator_("+", {
+		{Type::STRING, Type::INTEGER, Type::STRING, (void*) &StringSTD::add_int, Method::NATIVE},
+		{Type::STRING, Type::REAL, Type::STRING, (void*) &StringSTD::add_real, Method::NATIVE},
 		{Type::STRING, Type::GMP_INT, Type::STRING, (void*) &plus_gmp, Method::NATIVE},
 		{Type::STRING, Type::GMP_INT_TMP, Type::STRING, (void*) &plus_mpz_tmp, Method::NATIVE}
 	});
@@ -194,6 +196,27 @@ StringSTD::StringSTD() : Module("String") {
 
 StringSTD::~StringSTD() {}
 
+/*
+ * Operators
+ */
+LSString* StringSTD::add_int(LSString* s, int i) {
+	if (s->refs == 0) {
+		s->append(std::to_string(i));
+		return s;
+	} else {
+		return new LSString(*s + std::to_string(i));
+	}
+}
+
+LSString* StringSTD::add_real(LSString* s, double i) {
+	if (s->refs == 0) {
+		s->append(LSNumber::print(i));
+		return s;
+	} else {
+		return new LSString(*s + LSNumber::print(i));
+	}
+}
+
 Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, LSValue* b) {
 		return a->lt(b);
@@ -203,6 +226,9 @@ Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 	return res;
 }
 
+/*
+ * Methods
+ */
 LSValue* string_charAt(LSString* string, int index) {
 	LSValue* r = new LSString(string->operator[] (index));
 	LSValue::delete_temporary(string);
