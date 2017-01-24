@@ -133,6 +133,7 @@ int main(int, char**) {
 	cout << "├───────────────────────┼────────────────┼────────────────┼────────────────┼────────────────┤" << endl;
 
 	long t = chronotime([&]() {
+		benchmark("cubic_permutations");
 		benchmark("branch_prediction");
 		benchmark("primes_sieve");
 		benchmark("factorials");
