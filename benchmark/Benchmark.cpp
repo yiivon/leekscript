@@ -135,6 +135,7 @@ int main(int, char**) {
 	long t = chronotime([&]() {
 		benchmark("branch_prediction");
 		benchmark("primes_sieve");
+		benchmark("factorials");
 	});
 
 	cout << "└───────────────────────┴────────────────┴────────────────┴────────────────┴────────────────┘" << endl;
