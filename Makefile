@@ -17,6 +17,7 @@ OBJ := $(patsubst %.cpp,build/default/%.o,$(SRC))
 DEPS := $(patsubst %.cpp,build/deps/%.d,$(SRC))
 
 OBJ_TOPLEVEL = build/default/src/TopLevel.o
+OBJ_BENCHMARK = build/benchmark/Benchmark.o
 OBJ_TEST := $(patsubst %.cpp,build/default/%.o,$(TEST_SRC))
 OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 OBJ_COVERAGE := $(patsubst %.cpp,build/coverage/%.o,$(SRC))
@@ -87,6 +88,22 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE) $(OBJ_TEST)
 # Run tests/
 test: build/leekscript-test
 	@build/leekscript-test
+
+# Benchmark
+benchmark-dir:
+	@mkdir -p build/benchmark
+
+build/benchmark/Benchmark.o: benchmark/Benchmark.cpp
+	g++ -c $(OPTIM) $(DEPFLAGS) $(FLAGS) -o "$@" "$<"
+
+build/leekscript-benchmark: benchmark-dir build/leekscript $(OBJ_BENCHMARK)
+	g++ $(FLAGS) -o build/leekscript-benchmark $(OBJ_BENCHMARK)
+	@echo "-------------------------"
+	@echo "Benchmark build finished!"
+	@echo "-------------------------"
+
+benchmark: build/leekscript-benchmark
+	@build/leekscript-benchmark
 
 # Valgrind
 valgrind:
