@@ -118,7 +118,7 @@ void print_result(ls::VM::Result& result, bool json, bool display_time) {
 			<< ",\"ctx\":" << result.context
 			<< ",\"res\":\"" << result.value << "\"}" << endl;
 	} else {
-		if (result.execution_success) {
+		if (result.execution_success && result.value != "(void)") {
 			cout << result.value << endl;
 		}
 		if (display_time) {
