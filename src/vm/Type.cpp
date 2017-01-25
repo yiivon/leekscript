@@ -275,6 +275,9 @@ bool Type::iterable() const {
 }
 
 int Type::size() const {
+	if (nature == Nature::POINTER) {
+		return 64;
+	}
 	return raw_type->size();
 }
 
