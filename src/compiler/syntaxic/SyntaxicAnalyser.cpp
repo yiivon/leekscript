@@ -757,7 +757,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 				Expression* e = new Expression();
 				e->parenthesis = true;
 				if (arobase) {
-					e->v1 = new Reference(ident);
+					e->v1 = new Reference(new VariableValue(ident));
 				} else {
 					e->v1 = new VariableValue(ident);
 				}
@@ -800,7 +800,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 					return eatLambdaContinue(false, arobase, ident, nullptr, comma_list);
 				}
 				if (arobase) {
-					return new Reference(ident);
+					return new Reference(new VariableValue(ident));
 				} else {
 					return new VariableValue(ident);
 				}
@@ -808,7 +808,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 				// ( var + ... )
 				auto v = [&]() -> Value* {
 					if (arobase)
-						return new Reference(ident);
+						return new Reference(new VariableValue(ident));
 					else
 						return new VariableValue(ident);
 				}();
@@ -821,7 +821,9 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		}
 		// var <?>  [expression]
 		if (arobase) {
-			return new Reference(ident);
+			auto v = new VariableValue(ident);
+			auto ex = eatSimpleExpression(false, false, false, v);
+			return new Reference(ex);
 		} else {
 			return new VariableValue(ident);
 		}
