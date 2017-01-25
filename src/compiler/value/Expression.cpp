@@ -393,12 +393,6 @@ int jit_array_push_int(LSArray<int>* x, int y) {
 	x->push_move(y);
 	return y;
 }
-LSValue* jit_sub_equal(LSValue* x, LSValue* y) {
-	return x->sub_eq(y);
-}
-LSValue* jit_div_equal(LSValue* x, LSValue* y) {
-	return x->div_eq(y);
-}
 LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 	return x->mod_eq(y);
 }
@@ -600,7 +594,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 				return {sum, type};
 			} else {
-				ls_func = (void*) &jit_sub_equal;
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+					return (*x)->sub_eq(y);
+				});
 			}
 			break;
 		}
@@ -637,7 +635,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 				return {sum, type};
 			} else {
-				ls_func = (void*) &jit_div_equal;
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+					return (*x)->div_eq(y);
+				});
 			}
 			break;
 		}
