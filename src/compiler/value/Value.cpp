@@ -34,6 +34,8 @@ void Value::must_return(SemanticAnalyser*, const Type& ret_type) {
 	type.setReturnType(ret_type);
 }
 
+void Value::will_be_in_array(SemanticAnalyser*) {}
+
 bool Value::isLeftValue() const {
 	return false;
 }

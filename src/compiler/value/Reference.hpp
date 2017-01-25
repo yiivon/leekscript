@@ -16,6 +16,7 @@ public:
 	SemanticVar* var;
 	int capture_index = 0;
 	VarScope scope;
+	bool in_array = false;
 
 	Reference(Token* variable);
 	virtual ~Reference();
@@ -23,6 +24,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual unsigned line() const override;
 
+	virtual void will_be_in_array(SemanticAnalyser*) override;
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 
 	virtual Compiler::value compile(Compiler&) const override;

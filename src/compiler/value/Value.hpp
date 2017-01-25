@@ -35,6 +35,7 @@ public:
 	virtual bool will_store(SemanticAnalyser*, const Type&);
 	virtual bool must_be_pointer(SemanticAnalyser*);
 	virtual void must_return(SemanticAnalyser*, const Type&);
+	virtual void will_be_in_array(SemanticAnalyser*);
 	virtual void analyse(SemanticAnalyser*, const Type&) = 0;
 
 	virtual Compiler::value compile(Compiler&) const = 0;

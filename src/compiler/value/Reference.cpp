@@ -28,6 +28,10 @@ unsigned Reference::line() const {
 	return 0;
 }
 
+void Reference::will_be_in_array(SemanticAnalyser*) {
+	in_array = true;
+}
+
 void Reference::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	var = analyser->get_var(variable);

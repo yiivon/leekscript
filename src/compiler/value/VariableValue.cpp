@@ -31,7 +31,6 @@ unsigned VariableValue::line() const {
 }
 
 void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-
 	var = analyser->get_var(token);
 	if (var != nullptr) {
 		type = var->type;
@@ -96,6 +95,11 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 		var->type = type;
 		this->type = type;
 	}
+}
+
+bool VariableValue::must_be_pointer(SemanticAnalyser* analyser) {
+	var->type.nature = Nature::POINTER;
+	this->type.nature = Nature::POINTER;
 }
 
 extern map<string, jit_value_t> internals;

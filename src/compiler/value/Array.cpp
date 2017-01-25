@@ -63,9 +63,11 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			Type element_type = Type::UNKNOWN;
 			Type supported_type = Type::UNKNOWN;
 
+			// First analyse pass
 			for (size_t i = 0; i < expressions.size(); ++i) {
 
 				Value* ex = expressions[i];
+				ex->will_be_in_array(analyser);
 				ex->analyse(analyser, Type::UNKNOWN);
 
 				if (ex->constant == false) {
