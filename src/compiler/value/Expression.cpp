@@ -506,6 +506,27 @@ Compiler::value Expression::compile(Compiler& c) const {
 	switch (op->type) {
 		case TokenType::EQUAL: {
 
+			auto varval = dynamic_cast<VariableValue*>(v1);
+			if (varval != nullptr and varval->scope == VarScope::LOCAL and c.get_var(varval->name).reference) {
+				std::cout << " ref = " << std::endl;
+				if (v1->type.must_manage_memory()) {
+					auto v1v = v1->compile(c);
+					VM::delete_ref(c.F, v1v.v);
+				}
+				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v2->type));
+				c.add_var(varval->name, var, v2->type, false);
+				auto v2_value = v2->compile(c);
+				if (v2->type.must_manage_memory()) {
+					v2_value.v = VM::move_inc_obj(c.F, v2_value.v);
+				}
+				jit_insn_store(c.F, var, v2_value.v);
+
+				if (type.nature == Nature::POINTER) {
+					return {VM::value_to_pointer(c.F, v2_value.v, type), type};
+				}
+				return v2_value;
+			}
+
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 
 				auto v1_addr = ((LeftValue*) v1)->compile_l(c);
@@ -520,6 +541,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 				auto x = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
+
 				c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue::delete_ref(*x);
 					*x = y->move_inc();

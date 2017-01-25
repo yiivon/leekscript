@@ -75,8 +75,17 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			Value* ex = expressions[i];
 
 			if (Reference* ref = dynamic_cast<Reference*>(ex)) {
-				jit_value_t val = c.get_var(ref->variable->content).value;
-				c.add_var(name, val, v->type, true);
+				if (ref->name != "") {
+					jit_value_t val = c.get_var(ref->name).value;
+					if (v->type.must_manage_memory()) {
+						VM::inc_refs(c.F, val);
+					}
+					c.add_var(name, val, v->type, true);
+				} else {
+					auto val = ref->compile(c);
+					VM::inc_refs(c.F, val.v);
+					c.add_var(name, val.v, v->type, true);
+				}
 			} else {
 				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v->type));
 				c.add_var(name, var, Type::POINTER, false);

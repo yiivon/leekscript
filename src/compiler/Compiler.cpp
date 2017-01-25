@@ -36,10 +36,6 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
-
-			if (it->second.reference == true) {
-				continue;
-			}
 			if (it->second.type.must_manage_memory()) {
 				VM::delete_ref(F, it->second.value);
 			}
