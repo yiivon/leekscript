@@ -79,7 +79,6 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 			} else {
 				auto e = expression->compile_l(c);
 				return c.insn_call(Type::POINTER, {e}, (void*) +[](LSValue** x) {
-					std::cout << "inc ++ " << *x << std::endl;
 					return (*x)->ls_inc();
 				});
 			}
