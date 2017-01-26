@@ -6,4 +6,5 @@ void Test::test_exceptions() {
 	code("throw 2").ops_limit(1000).exception(ls::VM::Exception::OPERATION_LIMIT_EXCEEDED);
 
 	code("throw").exception(ls::VM::Exception::EXCEPTION);
+	code("12").exception(ls::VM::Exception::NO_EXCEPTION);
 }
