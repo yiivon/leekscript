@@ -139,9 +139,6 @@ jit_type_t VM::get_jit_type(const Type& type) {
 	if (type.raw_type == RawType::UNSIGNED_INTEGER) {
 		return jit_type_uint;
 	}
-	if (type.raw_type == RawType::INTEGER) {
-		return LS_INTEGER;
-	}
 	if (type.raw_type == RawType::GMP_INT) {
 		return VM::gmp_int_type;
 	}
