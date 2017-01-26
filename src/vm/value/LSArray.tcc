@@ -1249,7 +1249,6 @@ LSValue** LSArray<T>::atL(const LSValue* key) {
 			res = (LSValue**) &(((std::vector<T>*)this)->at(i));
 		} catch (...) {
 			LSValue::delete_temporary(this);
-			LSValue::delete_temporary(key);
 			jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 		}
 	}
