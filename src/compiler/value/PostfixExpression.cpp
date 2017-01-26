@@ -44,13 +44,6 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 	}
 }
 
-LSValue* jit_inc(LSValue** x) {
-
-}
-LSValue* jit_dec(LSValue* x) {
-	return x->ls_dec();
-}
-
 Compiler::value PostfixExpression::compile(Compiler& c) const {
 
 	VM::inc_ops(c.F, 1);
