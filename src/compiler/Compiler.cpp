@@ -150,9 +150,6 @@ Compiler::value Compiler::insn_log10(Compiler::value a) const {
 /*
  * Values
  */
-Compiler::value Compiler::duplicate(Compiler::value v) const {
-	return {jit_insn_load(F, v.v), v.t};
-}
 Compiler::value Compiler::clone(Compiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
 		return insn_call(v.t, {v}, (void*)+[](LSValue* value) {

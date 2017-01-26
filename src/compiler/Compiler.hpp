@@ -52,7 +52,6 @@ public:
 	virtual ~Compiler();
 
 	// Value creation
-	value duplicate(value) const;
 	value clone(value) const;
 	value new_null() const;
 	value new_bool(bool b) const;
