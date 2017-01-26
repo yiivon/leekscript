@@ -83,6 +83,14 @@ void Test::test_arrays() {
 	code("let a = [12] a[0]++ a").equals("[13]");
 	code("[1, 2, 'a'][['salut', 2][0]]").exception(ls::VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	// code("let a = [[12], ''][0] a[0]++ a").equals("[13]");
+	section("[] operator on unknown arrays");
+	code("let v = [['a', 'b'], 12] v[0][0]").equals("'a'");
+	code("let v = [['a', 'b'], 12] v[0][1]").equals("'b'");
+	code("let v = [['a', 'b'], 12] v[0][true]").equals("'b'");
+	code("[['a', 'b'], 12][0][['yolo', 1][0]]").exception(ls::VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	code("[['a', 'b'], 12][0][2]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
+	//code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);

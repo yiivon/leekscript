@@ -305,7 +305,13 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 
-	auto a = array->compile(c);
+	Compiler::value a = [&]() {
+		if (auto la = dynamic_cast<LeftValue*>(array)) {
+			return c.insn_load(la->compile_l(c), 0, array->type);
+		} else {
+			return array->compile(c);
+		}
+	}();
 	auto k = key->compile(c);
 
 	if (array->type.raw_type == RawType::ARRAY) {
