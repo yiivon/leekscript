@@ -94,7 +94,6 @@ public:
 	LSValue** atL(const LSValue* value) override;
 
 	LSValue* range(int start, int end) const override;
-	LSValue* rangeL(int start, int end) override;
 
 	LSValue* abso() const override;
 

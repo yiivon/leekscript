@@ -1217,11 +1217,6 @@ inline LSValue* LSArray<T>::range(int start, int end) const {
 }
 
 template <class T>
-LSValue* LSArray<T>::rangeL(int, int) {
-	return this;
-}
-
-template <class T>
 LSValue* LSArray<T>::at(const LSValue* key) const {
 	int index = 0;
 	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
