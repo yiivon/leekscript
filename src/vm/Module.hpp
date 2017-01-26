@@ -90,7 +90,7 @@ public:
 };
 
 
-class Module : public Type {
+class Module {
 public:
 
 	std::string name;
