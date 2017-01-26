@@ -36,10 +36,6 @@ void ObjectAccess::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned ObjectAccess::line() const {
-	return 0;
-}
-
 void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (field_string == nullptr) {

@@ -41,10 +41,6 @@ void ArrayAccess::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned ArrayAccess::line() const {
-	return 0;
-}
-
 void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	array->analyse(analyser, Type::UNKNOWN);

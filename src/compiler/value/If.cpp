@@ -49,10 +49,6 @@ void If::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned If::line() const {
-	return 0;
-}
-
 void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	condition->analyse(analyser, Type::UNKNOWN);

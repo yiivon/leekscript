@@ -18,10 +18,6 @@ void ArrayFor::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned ArrayFor::line() const {
-	return 0;
-}
-
 void ArrayFor::analyse(SemanticAnalyser* analyser, const Type&) {
 	forr->analyse(analyser, Type::PTR_ARRAY);
 	type = forr->type;

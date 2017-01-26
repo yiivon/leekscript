@@ -22,10 +22,6 @@ void Set::print(ostream& os, int indent, bool debug) const {
 	if (debug) os << " " << type;
 }
 
-unsigned Set::line() const {
-	return 0;
-}
-
 void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	Type element_type = Type::UNKNOWN;

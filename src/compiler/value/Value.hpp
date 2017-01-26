@@ -28,7 +28,7 @@ public:
 	virtual void print(std::ostream&, int indent = 0, bool debug = false) const = 0;
 	std::string to_string() const;
 
-	virtual unsigned line() const = 0;
+	virtual unsigned line() const { return 0; };
 
 	virtual bool will_take(SemanticAnalyser*, const std::vector<Type>& args_type, int level);
 	virtual bool will_take_element(SemanticAnalyser*, const Type);

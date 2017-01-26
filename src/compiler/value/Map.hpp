@@ -16,7 +16,6 @@ public:
 	virtual ~Map();
 
 	virtual void print(std::ostream&, int indent = 0, bool debug = false) const override;
-	virtual unsigned line() const override;
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 	virtual Compiler::value compile(Compiler&) const override;
 };

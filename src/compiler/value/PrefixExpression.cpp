@@ -34,10 +34,6 @@ void PrefixExpression::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned PrefixExpression::line() const {
-	return 0;
-}
-
 void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	expression->analyse(analyser, Type::UNKNOWN);

@@ -22,10 +22,6 @@ void Boolean::print(std::ostream& os, int, bool debug) const {
 	}
 }
 
-unsigned Boolean::line() const {
-	return 0;
-}
-
 void Boolean::analyse(SemanticAnalyser*, const Type& req_type) {
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = Nature::POINTER;

@@ -20,10 +20,6 @@ void Nulll::print(ostream& os, int, bool debug) const {
 	}
 }
 
-unsigned Nulll::line() const {
-	return 0;
-}
-
 void Nulll::analyse(SemanticAnalyser*, const Type&) {
 	// nothing to do, always a pointer
 }

@@ -26,10 +26,6 @@ void Reference::print(ostream& os, int, bool debug) const {
 	}
 }
 
-unsigned Reference::line() const {
-	return 0;
-}
-
 void Reference::will_be_in_array(SemanticAnalyser*) {
 	in_array = true;
 }

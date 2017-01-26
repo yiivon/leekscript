@@ -21,10 +21,6 @@ void AbsoluteValue::print(std::ostream& os, int, bool debug) const {
 	os << "|";
 }
 
-unsigned AbsoluteValue::line() const {
-	return 0;
-}
-
 void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	expression->analyse(analyser, Type::POINTER);

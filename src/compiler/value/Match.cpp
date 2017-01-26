@@ -46,10 +46,6 @@ void Match::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned Match::line() const {
-	return 0;
-}
-
 void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 
 	bool any_pointer = false;

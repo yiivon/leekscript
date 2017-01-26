@@ -38,10 +38,6 @@ void Map::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned Map::line() const {
-	return 0;
-}
-
 void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	Type key_type = Type::UNKNOWN;

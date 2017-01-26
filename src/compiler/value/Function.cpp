@@ -70,10 +70,6 @@ void Function::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned Function::line() const {
-	return 0;
-}
-
 /*
  * When returing a function, compile a default version with all parameters
  * as pointers, when the function will be in the nature, there will be no

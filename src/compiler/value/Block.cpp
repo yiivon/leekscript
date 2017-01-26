@@ -33,10 +33,6 @@ void Block::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned Block::line() const {
-	return 0;
-}
-
 void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	analyser->enter_block();
