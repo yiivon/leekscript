@@ -94,6 +94,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 		}
 		default: {}
 	}
+	return {nullptr, Type::UNKNOWN};
 }
 
 }
