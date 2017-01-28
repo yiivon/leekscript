@@ -111,7 +111,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (object_type.raw_type == RawType::CLASS) { // String.size("salut")
 
 			string clazz = ((VariableValue*) oa->object)->name;
-			LSClass* object_class = (LSClass*) analyser->program->system_vars[clazz];
+			LSClass* object_class = (LSClass*) analyser->vm->system_vars[clazz];
 			StaticMethod* sm = object_class->getStaticMethod(oa->field->content, arg_types);
 
 			if (sm != nullptr) {
@@ -119,7 +119,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				function->type = sm->type;
 				is_native_method = sm->native;
 			} else {
-				LSClass* value_class = (LSClass*) analyser->program->system_vars["Value"];
+				LSClass* value_class = (LSClass*) analyser->vm->system_vars["Value"];
 				Method* m = value_class->getMethod(oa->field->content, object_type, arg_types);
 
 				if (m != nullptr) {
@@ -136,11 +136,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 			Method* m = nullptr;
 			if (object_type.raw_type != RawType::UNKNOWN) {
-				LSClass* object_class = (LSClass*) analyser->program->system_vars[object_type.clazz];
+				LSClass* object_class = (LSClass*) analyser->vm->system_vars[object_type.clazz];
 				m = object_class->getMethod(oa->field->content, object_type, arg_types);
 			}
 			if (m == nullptr) {
-				LSClass* value_class = (LSClass*) analyser->program->system_vars["Value"];
+				LSClass* value_class = (LSClass*) analyser->vm->system_vars["Value"];
 				m = value_class->getMethod(oa->field->content, object_type, arg_types);
 			}
 			if (m != nullptr) {

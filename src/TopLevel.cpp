@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 			code = file_or_code;
 		}
 		/** Execute **/
-		auto result = ls::VM().execute(code, "{}", debug_mode, v1);
+		auto result = ls::VM(v1).execute(code, "{}", debug_mode);
 		print_result(result, output_json, display_time);
 		return 0;
 	}
@@ -80,14 +80,14 @@ int main(int argc, char* argv[]) {
 	/** Interactive console mode */
 	cout << "~~~ LeekScript v2.0 ~~~" << endl;
 	string code, ctx = "{}";
-	ls::VM vm;
+	ls::VM vm(v1);
 
 	while (!std::cin.eof()) {
 		// Get a instruction
 		cout << ">> ";
 		std::getline(std::cin, code);
 		// Execute
-		auto result = vm.execute(code, ctx, debug_mode, v1);
+		auto result = vm.execute(code, ctx, debug_mode);
 		print_result(result, output_json, display_time);
 		// Set new context
 		ctx = result.context;

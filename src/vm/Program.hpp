@@ -13,19 +13,16 @@ private:
 
 	std::string code; // The program code
 	void* closure;
-	bool v1_mode;
 
-	void compile_main(Context&);
-	void compile_jit(Compiler&, Context&, bool);
+	void compile_main(VM& vm, Context&);
+	void compile_jit(VM& vm, Compiler&, Context&, bool);
 
 public:
 
 	Function* main;
 	std::vector<Function*> functions;
-	std::map<std::string, LSValue*> system_vars;
 
-
-	Program(const std::string& code, bool v1_mode = false);
+	Program(const std::string& code);
 	virtual ~Program();
 
 	/*

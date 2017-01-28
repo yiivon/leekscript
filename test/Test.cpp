@@ -4,7 +4,7 @@
 
 std::vector<std::string> Test::failed_tests;
 
-Test::Test() {
+Test::Test() : vmv1(true) {
 	total = 0;
 	success_count = 0;
 	exeTime = 0;
@@ -121,7 +121,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	test->total++;
 
 	ls::VM::operation_limit = this->operation_limit;
-	auto result = test->vm.execute(code, "{}", false, v1);
+	auto result = (v1 ? test->vmv1 : test->vm).execute(code, "{}", false);
 	ls::VM::operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	test->obj_created += result.objects_created;

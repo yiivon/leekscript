@@ -23,19 +23,15 @@ namespace ls {
 
 extern map<string, jit_value_t> internals;
 
-Program::Program(const std::string& code, bool v1_mode) {
+Program::Program(const std::string& code) {
 	this->code = code;
 	main = nullptr;
 	closure = nullptr;
-	this->v1_mode = v1_mode;
 }
 
 Program::~Program() {
 	if (main != nullptr) {
 		delete main;
-	}
-	for (auto v : system_vars) {
-		delete v.second;
 	}
 }
 
@@ -66,7 +62,8 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	// Semantical analysis
 	Context context { ctx };
 	SemanticAnalyser sem;
-	sem.analyse(this, &context, vm.modules, v1_mode);
+	sem.vm = &vm;
+	sem.analyse(this, &context, vm.modules);
 
 	std::ostringstream oss;
 	print(oss, true);
@@ -80,16 +77,17 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 
 	// Compilation
 	internals.clear();
-	this->compile_main(context);
+	this->compile_main(vm, context);
 
 	// Result
 	result.compilation_success = true;
 	return result;
 }
 
-void Program::compile_main(Context& context) {
+void Program::compile_main(VM& vm, Context& context) {
 
 	Compiler c(this);
+	c.vm = &vm;
 
 	jit_init();
 	VM::jit_context = jit_context_create();
@@ -101,7 +99,7 @@ void Program::compile_main(Context& context) {
 	jit_insn_uses_catcher(F);
 	c.enter_function(F);
 
-	compile_jit(c, context, false);
+	compile_jit(vm, c, context, false);
 
 	// catch (ex) {
 	jit_value_t ex = jit_insn_start_catcher(F);
@@ -231,10 +229,10 @@ void Program_push_pointer(LSArray<LSValue*>* array, LSValue* value) {
 }
 */
 
-void Program::compile_jit(Compiler& c, Context&, bool) {
+void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
 
 	// System internal variables
-	for (auto var : system_vars) {
+	for (auto var : vm.system_vars) {
 
 		string name = var.first;
 		LSValue* value = var.second;

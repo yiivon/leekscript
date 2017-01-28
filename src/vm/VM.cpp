@@ -12,14 +12,178 @@
 #include "value/LSArray.hpp"
 #include "Program.hpp"
 #include "value/LSObject.hpp"
+#include "standard/ValueSTD.hpp"
+#include "standard/NullSTD.hpp"
+#include "standard/NumberSTD.hpp"
+#include "standard/BooleanSTD.hpp"
+#include "standard/StringSTD.hpp"
+#include "standard/ArraySTD.hpp"
+#include "standard/MapSTD.hpp"
+#include "standard/SetSTD.hpp"
+#include "standard/ObjectSTD.hpp"
+#include "standard/SystemSTD.hpp"
+#include "standard/FunctionSTD.hpp"
+#include "standard/ClassSTD.hpp"
+#include "standard/IntervalSTD.hpp"
+#include "standard/JsonSTD.hpp"
 
 using namespace std;
 
 namespace ls {
 
-VM::VM() {}
+void VM::add_internal_var(std::string name, Type type) {
+	auto v = new Token(name);
+	internal_vars.insert(pair<string, SemanticVar*>(
+		v->content,
+		new SemanticVar(v->content, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr)
+	));
+}
 
-VM::~VM() {}
+LSValue* op_add(void*, LSValue* x, LSValue* y) {
+	return x->add(y);
+}
+LSValue* op_sub(void*, LSValue* x, LSValue* y) {
+	return x->sub(y);
+}
+LSValue* op_mul(void*, LSValue* x, LSValue* y) {
+	return x->mul(y);
+}
+LSValue* op_div(void*, LSValue* x, LSValue* y) {
+	return x->div(y);
+}
+LSValue* op_int_div(void*, LSValue* x, LSValue* y) {
+	return x->int_div(y);
+}
+LSValue* op_pow(void*, LSValue* x, LSValue* y) {
+	return x->pow(y);
+}
+LSValue* op_mod(void*, LSValue* x, LSValue* y) {
+	return x->mod(y);
+}
+
+VM::VM(bool v1) {
+
+	// Include STD modules
+	add_module(new ValueSTD());
+	add_module(new NullSTD());
+	add_module(new BooleanSTD());
+	add_module(new NumberSTD());
+	add_module(new StringSTD());
+	add_module(new ArraySTD());
+	add_module(new MapSTD());
+	add_module(new SetSTD());
+	add_module(new ObjectSTD());
+	add_module(new FunctionSTD());
+	add_module(new ClassSTD());
+	add_module(new SystemSTD());
+	add_module(new IntervalSTD());
+	add_module(new JsonSTD());
+
+	// Add function operators
+	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\"};
+	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
+
+	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
+	op_type.setArgumentType(0, Type::POINTER);
+	op_type.setArgumentType(1, Type::POINTER);
+	op_type.setReturnType(Type::POINTER);
+	auto value_class = system_vars["Value"];
+
+	for (unsigned o = 0; o < ops.size(); ++o) {
+		auto fun = new LSFunction<LSValue*>(ops_funs[o]);
+		fun->args = {value_class, value_class};
+		fun->return_type = value_class;
+		system_vars.insert({ops[o], fun});
+		add_internal_var(ops[o], op_type);
+	}
+
+	if (v1) {
+		auto debug = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSValue* v) {
+			v->print(*VM::output);
+			LSValue::delete_temporary(v);
+			*VM::output << std::endl;
+		});
+		auto debug_type = Type::FUNCTION_P;
+		debug_type.setArgumentType(0, Type::POINTER);
+		debug_type.setReturnType(Type::VOID);
+		system_vars.insert({"debug", debug});
+		add_internal_var("debug", debug_type);
+
+		auto charAt = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSString* v, int p) {
+			auto s = v->charAt(p);
+			LSValue::delete_temporary(v);
+			return s;
+		});
+		auto charAt_type = Type::FUNCTION_P;
+		charAt_type.setArgumentType(0, Type::STRING);
+		charAt_type.setArgumentType(1, Type::INTEGER);
+		charAt_type.setReturnType(Type::STRING);
+		system_vars.insert({"charAt", charAt});
+		add_internal_var("charAt", charAt_type);
+
+		auto replace = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSString* string, LSString* from, LSString* to) {
+			std::string str(*string);
+			size_t start_pos = 0;
+
+			// Replace \\ by \ (like Java does)
+			std::string f = *from;
+			while((start_pos = f.find("\\\\", start_pos)) != std::string::npos) {
+				f.replace(start_pos, 2, "\\");
+				start_pos += 1;
+			}
+			start_pos = 0;
+			std::string t = *to;
+			while((start_pos = t.find("\\\\", start_pos)) != std::string::npos) {
+				t.replace(start_pos, 2, "\\");
+				start_pos += 1;
+			}
+
+			start_pos = 0;
+			while((start_pos = str.find(f, start_pos)) != std::string::npos) {
+				str.replace(start_pos, from->length(), t);
+				start_pos += t.size();
+			}
+			if (string->refs == 0) { delete string; }
+			if (from->refs == 0) { delete from; }
+			if (to->refs == 0) { delete to; }
+			return new LSString(str);
+		});
+		auto replace_type = Type::FUNCTION_P;
+		replace_type.setArgumentType(0, Type::STRING);
+		replace_type.setArgumentType(1, Type::STRING);
+		replace_type.setArgumentType(2, Type::STRING);
+		replace_type.setReturnType(Type::STRING);
+		system_vars.insert({"replace", replace});
+		add_internal_var("replace", replace_type);
+
+		auto count = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSArray<LSValue*>* a) {
+			int s = a->size();
+			LSValue::delete_temporary(a);
+			return s;
+		});
+		auto count_type = Type::FUNCTION_P;
+		count_type.setArgumentType(0, Type::ARRAY);
+		count_type.setReturnType(Type::INTEGER);
+		system_vars.insert({"count", count});
+		add_internal_var("count", count_type);
+
+		auto pushAll = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSArray<LSValue*>* a, LSArray<LSValue*>* b) {
+			return a->ls_push_all_ptr(b);
+		});
+		auto pushAll_type = Type::FUNCTION_P;
+		pushAll_type.setArgumentType(0, Type::PTR_ARRAY);
+		pushAll_type.setArgumentType(1, Type::PTR_ARRAY);
+		pushAll_type.setReturnType(Type::VOID);
+		system_vars.insert({"pushAll", pushAll});
+		add_internal_var("pushAll", pushAll_type);
+	}
+}
+
+VM::~VM() {
+	for (auto& module : modules) {
+		delete module;
+	}
+}
 
 const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;
 unsigned int VM::operations = 0;
@@ -38,7 +202,13 @@ std::ostream* VM::output = &std::cout;
 map<string, jit_value_t> internals;
 
 void VM::add_module(Module* m) {
+
 	modules.push_back(m);
+	system_vars.insert({m->name, m->clazz});
+
+	Type const_class = Type::CLASS;
+	const_class.constant = true;
+	add_internal_var(m->name, const_class);
 }
 
 #define GREY "\033[0;90m"
@@ -48,7 +218,7 @@ void VM::add_module(Module* m) {
 #define YELLOW "\033[1;33m"
 #define END_COLOR "\033[0m"
 
-VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool v1) {
+VM::Result VM::execute(const std::string code, std::string ctx, bool debug) {
 
 	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
 	VM::gmp_int_type = jit_type_create_struct(types, 3, 0);
@@ -64,7 +234,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 		LSValue::objs().clear();
 	#endif
 
-	Program* program = new Program(code, v1);
+	Program* program = new Program(code);
 
 	// Compile
 	auto compilation_start = chrono::high_resolution_clock::now();

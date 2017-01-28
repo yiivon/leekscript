@@ -3,25 +3,12 @@
 #include "../../compiler/instruction/ExpressionInstruction.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Context.hpp"
-#include "../../vm/standard/ValueSTD.hpp"
-#include "../../vm/standard/NullSTD.hpp"
-#include "../../vm/standard/NumberSTD.hpp"
-#include "../../vm/standard/BooleanSTD.hpp"
-#include "../../vm/standard/StringSTD.hpp"
-#include "../../vm/standard/ArraySTD.hpp"
-#include "../../vm/standard/MapSTD.hpp"
-#include "../../vm/standard/SetSTD.hpp"
-#include "../../vm/standard/ObjectSTD.hpp"
-#include "../../vm/standard/SystemSTD.hpp"
-#include "../../vm/standard/FunctionSTD.hpp"
-#include "../../vm/standard/ClassSTD.hpp"
-#include "../../vm/standard/IntervalSTD.hpp"
-#include "../../vm/standard/JsonSTD.hpp"
 #include "SemanticError.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSNull.hpp"
+#include "../../vm/Module.hpp"
 
 #include <functional>
 
@@ -61,29 +48,7 @@ void SemanticVar::must_be_pointer(SemanticAnalyser* analyser) {
 	}
 }
 
-LSValue* op_add(void*, LSValue* x, LSValue* y) {
-	return x->add(y);
-}
-LSValue* op_sub(void*, LSValue* x, LSValue* y) {
-	return x->sub(y);
-}
-LSValue* op_mul(void*, LSValue* x, LSValue* y) {
-	return x->mul(y);
-}
-LSValue* op_div(void*, LSValue* x, LSValue* y) {
-	return x->div(y);
-}
-LSValue* op_int_div(void*, LSValue* x, LSValue* y) {
-	return x->int_div(y);
-}
-LSValue* op_pow(void*, LSValue* x, LSValue* y) {
-	return x->pow(y);
-}
-LSValue* op_mod(void*, LSValue* x, LSValue* y) {
-	return x->mod(y);
-}
-
-void SemanticAnalyser::analyse(Program* program, Context*, std::vector<Module*>& modules, bool v1_mode) {
+void SemanticAnalyser::analyse(Program* program, Context*, std::vector<Module*>& modules) {
 
 	this->program = program;
 
@@ -95,126 +60,6 @@ void SemanticAnalyser::analyse(Program* program, Context*, std::vector<Module*>&
 		add_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr, nullptr);
 	}
 	*/
-
-	// Include STD modules
-	ValueSTD().include(this, program);
-	NullSTD().include(this, program);
-	BooleanSTD().include(this, program);
-	NumberSTD().include(this, program);
-	StringSTD().include(this, program);
-	ArraySTD().include(this, program);
-	MapSTD().include(this, program);
-	SetSTD().include(this, program);
-	ObjectSTD().include(this, program);
-	FunctionSTD().include(this, program);
-	ClassSTD().include(this, program);
-	SystemSTD().include(this, program);
-	IntervalSTD().include(this, program);
-	JsonSTD().include(this, program);
-
-	// Include custom modules
-	for (Module* module : modules) {
-		module->include(this, program);
-	}
-
-	// Add function operators
-	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\"};
-	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
-
-	Type op_type = Type(RawType::FUNCTION, Nature::POINTER);
-	op_type.setArgumentType(0, Type::POINTER);
-	op_type.setArgumentType(1, Type::POINTER);
-	op_type.setReturnType(Type::POINTER);
-	auto value_class = program->system_vars["Value"];
-
-	for (unsigned o = 0; o < ops.size(); ++o) {
-		auto fun = new LSFunction<LSValue*>(ops_funs[o]);
-		fun->args = {value_class, value_class};
-		fun->return_type = value_class;
-		program->system_vars.insert({ops[o], fun});
-		add_var(new Token(ops[o]), op_type, nullptr, nullptr);
-	}
-
-	if (v1_mode) {
-		auto debug = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSValue* v) {
-			v->print(*VM::output);
-			LSValue::delete_temporary(v);
-			*VM::output << std::endl;
-		});
-		auto debug_type = Type::FUNCTION_P;
-		debug_type.setArgumentType(0, Type::POINTER);
-		debug_type.setReturnType(Type::VOID);
-		program->system_vars.insert({"debug", debug});
-		add_var(new Token("debug"), debug_type, nullptr, nullptr);
-
-		auto charAt = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSString* v, int p) {
-			auto s = v->charAt(p);
-			LSValue::delete_temporary(v);
-			return s;
-		});
-		auto charAt_type = Type::FUNCTION_P;
-		charAt_type.setArgumentType(0, Type::STRING);
-		charAt_type.setArgumentType(1, Type::INTEGER);
-		charAt_type.setReturnType(Type::STRING);
-		program->system_vars.insert({"charAt", charAt});
-		add_var(new Token("charAt"), charAt_type, nullptr, nullptr);
-
-		auto replace = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSString* string, LSString* from, LSString* to) {
-			std::string str(*string);
-			size_t start_pos = 0;
-
-			// Replace \\ by \ (like Java does)
-			std::string f = *from;
-			while((start_pos = f.find("\\\\", start_pos)) != std::string::npos) {
-				f.replace(start_pos, 2, "\\");
-				start_pos += 1;
-			}
-			start_pos = 0;
-			std::string t = *to;
-			while((start_pos = t.find("\\\\", start_pos)) != std::string::npos) {
-				t.replace(start_pos, 2, "\\");
-				start_pos += 1;
-			}
-
-			start_pos = 0;
-			while((start_pos = str.find(f, start_pos)) != std::string::npos) {
-				str.replace(start_pos, from->length(), t);
-				start_pos += t.size();
-			}
-			if (string->refs == 0) { delete string; }
-			if (from->refs == 0) { delete from; }
-			if (to->refs == 0) { delete to; }
-			return new LSString(str);
-		});
-		auto replace_type = Type::FUNCTION_P;
-		replace_type.setArgumentType(0, Type::STRING);
-		replace_type.setArgumentType(1, Type::STRING);
-		replace_type.setArgumentType(2, Type::STRING);
-		replace_type.setReturnType(Type::STRING);
-		program->system_vars.insert({"replace", replace});
-		add_var(new Token("replace"), replace_type, nullptr, nullptr);
-
-		auto count = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSArray<LSValue*>* a) {
-			int s = a->size();
-			LSValue::delete_temporary(a);
-			return s;
-		});
-		auto count_type = Type::FUNCTION_P;
-		count_type.setArgumentType(0, Type::ARRAY);
-		count_type.setReturnType(Type::INTEGER);
-		program->system_vars.insert({"count", count});
-		add_var(new Token("count"), count_type, nullptr, nullptr);
-
-		auto pushAll = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSArray<LSValue*>* a, LSArray<LSValue*>* b) {
-			return a->ls_push_all_ptr(b);
-		});
-		auto pushAll_type = Type::FUNCTION_P;
-		pushAll_type.setArgumentType(0, Type::PTR_ARRAY);
-		pushAll_type.setArgumentType(1, Type::PTR_ARRAY);
-		pushAll_type.setReturnType(Type::VOID);
-		program->system_vars.insert({"pushAll", pushAll});
-		add_var(new Token("pushAll"), pushAll_type, nullptr, nullptr);
-	}
 
 	in_program = true;
 
@@ -298,7 +143,7 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 
 	// Search in interval variables : global for the program
 	try {
-		return internal_vars.at(v->content);
+		return vm->internal_vars.at(v->content);
 	} catch (exception& e) {}
 
 	// Search recursively in the functions
@@ -324,15 +169,6 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 }
 
 SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
-
-	// Internal variable, before execution
-	if (!in_program) {
-		internal_vars.insert(pair<string, SemanticVar*>(
-			v->content,
-			new SemanticVar(v->content, VarScope::INTERNAL, type, 0, value, vd, current_function())
-		));
-		return internal_vars.at(v->content);
-	}
 
 	if (variables.back().back().find(v->content) != variables.back().back().end()) {
 		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, {v->content}});

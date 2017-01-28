@@ -136,7 +136,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	this->v1_type = op->reversed ? v2->type : v1->type;
 	this->v2_type = op->reversed ? v1->type : v2->type;
 
-	LSClass* object_class = (LSClass*) analyser->program->system_vars[this->v1_type.clazz];
+	LSClass* object_class = (LSClass*) analyser->vm->system_vars[this->v1_type.clazz];
 	LSClass::Operator* m = nullptr;
 
 	if (object_class) {
@@ -145,7 +145,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	if (m == nullptr) {
 		// Search in the Value class if not found
-		auto value_class = (LSClass*) analyser->program->system_vars["Value"];
+		auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
 		m = value_class->getOperator(op->character, this->v1_type, this->v2_type);
 	}
 

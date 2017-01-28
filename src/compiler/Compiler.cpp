@@ -239,25 +239,25 @@ Compiler::value Compiler::insn_typeof(Compiler::value v) const {
 
 Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 	if (v.t == Type::NULLL)
-		return new_pointer(program->system_vars["Null"]);
+		return new_pointer(vm->system_vars["Null"]);
 	if (v.t == Type::BOOLEAN)
-		return new_pointer(program->system_vars["Boolean"]);
+		return new_pointer(vm->system_vars["Boolean"]);
 	if (v.t.isNumber())
-		return new_pointer(program->system_vars["Number"]);
+		return new_pointer(vm->system_vars["Number"]);
 	if (v.t == Type::STRING)
-		return new_pointer(program->system_vars["String"]);
+		return new_pointer(vm->system_vars["String"]);
 	if (v.t.raw_type == RawType::ARRAY or v.t == Type::INTERVAL)
-		return new_pointer(program->system_vars["Array"]);
+		return new_pointer(vm->system_vars["Array"]);
 	if (v.t.raw_type == RawType::MAP)
-		return new_pointer(program->system_vars["Map"]);
+		return new_pointer(vm->system_vars["Map"]);
 	if (v.t.raw_type == RawType::SET)
-		return new_pointer(program->system_vars["Set"]);
+		return new_pointer(vm->system_vars["Set"]);
 	if (v.t.raw_type == RawType::FUNCTION)
-		return new_pointer(program->system_vars["Function"]);
+		return new_pointer(vm->system_vars["Function"]);
 	if (v.t == Type::OBJECT)
-		return new_pointer(program->system_vars["Object"]);
+		return new_pointer(vm->system_vars["Object"]);
 	if (v.t == Type::CLASS)
-		return new_pointer(program->system_vars["Class"]);
+		return new_pointer(vm->system_vars["Class"]);
 
 	return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
 		return v->getClass();

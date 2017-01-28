@@ -20,14 +20,6 @@ Module::Module(std::string name) : name(name) {
 
 Module::~Module() {}
 
-void Module::include(SemanticAnalyser* analyser, Program* program) {
-
-	program->system_vars.insert({name, clazz});
-	Type const_class = Type::CLASS;
-	const_class.constant = true;
-	analyser->add_var(new Token(name), const_class, nullptr, nullptr);
-}
-
 void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
 	vector<LSClass::Operator> operators = impl;
 	clazz->addOperator(name, operators);

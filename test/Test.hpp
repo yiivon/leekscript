@@ -11,6 +11,7 @@
 class Test {
 private:
 	ls::VM vm;
+	ls::VM vmv1;
 	int total;
 	int success_count;
 	double exeTime;

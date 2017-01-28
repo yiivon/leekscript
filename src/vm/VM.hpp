@@ -39,6 +39,7 @@ class Program;
 class LSValue;
 class LexicalError;
 class Compiler;
+class SemanticVar;
 
 class VM {
 public:
@@ -98,15 +99,18 @@ public:
 	};
 
 	std::vector<Module*> modules;
+	std::map<std::string, LSValue*> system_vars;
+	std::map<std::string, SemanticVar*> internal_vars;
 
-	VM();
+	VM(bool v1 = false);
 	virtual ~VM();
 
 	/** Main execution function **/
-	Result execute(const std::string code, std::string ctx, bool debug = false, bool v1 = false);
+	Result execute(const std::string code, std::string ctx, bool debug = false);
 
 	/** Add a module **/
 	void add_module(Module* m);
+	void add_internal_var(std::string name, Type type);
 	static jit_type_t get_jit_type(const Type& type);
 
 	/** Value creation **/

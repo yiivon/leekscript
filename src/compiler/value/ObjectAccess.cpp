@@ -47,8 +47,8 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Get the object class : 12 => Number
 	object_class_name = object->type.clazz;
 	LSClass* object_class = nullptr;
-	if (analyser->program->system_vars.find(object_class_name) != analyser->program->system_vars.end()) {
-		object_class = (LSClass*) analyser->program->system_vars[object_class_name];
+	if (analyser->vm->system_vars.find(object_class_name) != analyser->vm->system_vars.end()) {
+		object_class = (LSClass*) analyser->vm->system_vars[object_class_name];
 	}
 
 	// Static attribute? (Number.PI <= static attr)
@@ -57,7 +57,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
 
 		class_name = vv->name;
-		LSClass* std_class = (LSClass*) analyser->program->system_vars[class_name];
+		LSClass* std_class = (LSClass*) analyser->vm->system_vars[class_name];
 
 		ModuleStaticField& mod_field = std_class->static_fields[field->content];
 		type = mod_field.type;
@@ -89,7 +89,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	if (field->content == "class") {
-		auto c = (LSClass*) analyser->program->system_vars["Value"];
+		auto c = (LSClass*) analyser->vm->system_vars["Value"];
 		obj_access_function = c->fields.at("class").fun;
 		class_attr = true;
 	}

@@ -227,19 +227,19 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 	ls_fun->args.clear();
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		auto& clazz = type.getArgumentType(i).raw_type->getClass();
-		LSClass* arg_class = (LSClass*) analyser->program->system_vars[clazz];
+		LSClass* arg_class = (LSClass*) analyser->vm->system_vars[clazz];
 		if (arg_class != nullptr) {
 			ls_fun->args.push_back((LSValue*) arg_class);
 		} else {
-			ls_fun->args.push_back(analyser->program->system_vars["Value"]);
+			ls_fun->args.push_back(analyser->vm->system_vars["Value"]);
 		}
 	}
 	auto return_class_name = type.getReturnType().raw_type->getClass();
-	LSClass* return_class = (LSClass*) analyser->program->system_vars[return_class_name];
+	LSClass* return_class = (LSClass*) analyser->vm->system_vars[return_class_name];
 	if (return_class != nullptr) {
 		ls_fun->return_type = (LSValue*) return_class;
 	} else {
-		ls_fun->return_type = analyser->program->system_vars["Value"];
+		ls_fun->return_type = analyser->vm->system_vars["Value"];
 	}
 }
 

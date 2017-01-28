@@ -12,6 +12,7 @@
 namespace ls {
 
 class Program;
+class VM;
 
 class CompilerVar {
 public:
@@ -47,6 +48,7 @@ public:
 	std::vector<std::map<std::string, CompilerVar>> variables;
 
 	Program* program;
+	VM* vm;
 
 	Compiler(Program* program);
 	virtual ~Compiler();

@@ -115,7 +115,6 @@ public:
 	void field(std::string name, Type type, void* fun);
 	void static_field(std::string name, Type type, void* fun);
 
-	void include(SemanticAnalyser*, Program*);
 	void generate_doc(std::ostream& os, std::string translation);
 };
 

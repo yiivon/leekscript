@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 
+#include "../../vm/VM.hpp"
 #include "../../vm/Type.hpp"
 #include "SemanticError.hpp"
 
@@ -48,9 +49,9 @@ class SemanticAnalyser {
 public:
 
 	Program* program;
+	VM* vm;
 	bool in_program = false;
 
-	std::map<std::string, SemanticVar*> internal_vars;
 	std::vector<std::vector<std::map<std::string, SemanticVar*>>> variables;
 	std::vector<std::map<std::string, SemanticVar*>> parameters;
 
@@ -63,7 +64,7 @@ public:
 	SemanticAnalyser();
 	virtual ~SemanticAnalyser();
 
-	void analyse(Program*, Context*, std::vector<Module*>&, bool v1_mode);
+	void analyse(Program*, Context*, std::vector<Module*>&);
 
 	void enter_function(Function*);
 	void leave_function();
