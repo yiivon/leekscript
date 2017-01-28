@@ -48,7 +48,7 @@ void SemanticVar::must_be_pointer(SemanticAnalyser* analyser) {
 	}
 }
 
-void SemanticAnalyser::analyse(Program* program, Context*, std::vector<Module*>& modules) {
+void SemanticAnalyser::analyse(Program* program, Context*) {
 
 	this->program = program;
 

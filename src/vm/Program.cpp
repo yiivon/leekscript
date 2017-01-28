@@ -63,7 +63,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	Context context { ctx };
 	SemanticAnalyser sem;
 	sem.vm = &vm;
-	sem.analyse(this, &context, vm.modules);
+	sem.analyse(this, &context);
 
 	std::ostringstream oss;
 	print(oss, true);
