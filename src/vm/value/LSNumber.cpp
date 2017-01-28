@@ -35,8 +35,6 @@ std::string LSNumber::print(double d) {
 	return s;
 }
 
-LSNumber::LSNumber() : value(0) {}
-
 LSNumber::LSNumber(NUMBER_TYPE value) : value(value) {}
 
 LSNumber::LSNumber(Json& json) : value(json) {}
@@ -449,14 +447,6 @@ bool LSNumber::lt(const LSValue* v) const {
 		return this->value < number->value;
 	}
 	return LSValue::lt(v);
-}
-
-LSValue* LSNumber::at(const LSValue*) const {
-	return LSNull::get();
-}
-
-LSValue** LSNumber::atL(const LSValue*) {
-	return nullptr;
 }
 
 LSValue* LSNumber::abso() const {

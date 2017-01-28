@@ -24,7 +24,6 @@ public:
 	static LSNumber* get(NUMBER_TYPE);
 	static std::string print(double);
 
-	LSNumber();
 	LSNumber(NUMBER_TYPE value);
 	LSNumber(Json& data);
 
@@ -69,9 +68,6 @@ public:
 	bool operator == (double value) const override;
 	bool operator < (int value) const override;
 	bool operator < (double value) const override;
-
-	LSValue* at(const LSValue* value) const override;
-	LSValue** atL(const LSValue* value) override;
 
 	LSValue* abso() const override;
 
