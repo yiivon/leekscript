@@ -38,9 +38,6 @@ public:
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 
-	LSValue* at (const LSValue* value) const override;
-	LSValue** atL (const LSValue* value) override;
-
 	LSValue* clone() const;
 
 	std::ostream& dump(std::ostream& os) const;

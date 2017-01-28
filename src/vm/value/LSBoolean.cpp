@@ -84,13 +84,6 @@ bool LSBoolean::lt(const LSValue* v) const {
 	return LSValue::lt(v);
 }
 
-LSValue* LSBoolean::at(const LSValue*) const {
-	return LSNull::get();
-}
-LSValue** LSBoolean::atL(const LSValue*) {
-	return nullptr;
-}
-
 LSValue* LSBoolean::clone() const {
 	return (LSValue*) this;
 }
