@@ -37,6 +37,7 @@ void Test::test_booleans() {
 	code("true - 1").equals("0");
 	code("1 - true").equals("0");
 	code("true - false").equals("1");
+	code("[true, ''][0] - 5").equals("-4");
 
 	section("Boolean.operator *");
 	code("12 * true").equals("12");
