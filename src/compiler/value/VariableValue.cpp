@@ -97,9 +97,10 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	}
 }
 
-bool VariableValue::must_be_pointer(SemanticAnalyser* analyser) {
+bool VariableValue::must_be_pointer(SemanticAnalyser*) {
 	var->type.nature = Nature::POINTER;
 	this->type.nature = Nature::POINTER;
+	return true;
 }
 
 extern map<string, jit_value_t> internals;
