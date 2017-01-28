@@ -61,10 +61,8 @@ public:
 	bool lt(const LSValue*) const override;
 
 	LSValue* at (const LSValue* value) const override;
-	LSValue** atL (const LSValue* value) override;
 
 	LSValue* range(int start, int end) const override;
-	LSValue* rangeL(int start, int end) override;
 
 	LSValue* abso() const override;
 

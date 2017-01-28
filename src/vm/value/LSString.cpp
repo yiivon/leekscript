@@ -248,11 +248,6 @@ LSValue* LSString::at(const LSValue* key) const {
 	return LSNull::get();
 }
 
-LSValue** LSString::atL(const LSValue*) {
-	// TODO
-	return nullptr;
-}
-
 LSValue* LSString::range(int start, int end) const {
 
 	char buff[5];
@@ -272,10 +267,6 @@ LSValue* LSString::range(int start, int end) const {
 	}
 	return new LSString(new_string);
 //	return new LSString(this->substr(start, end - start + 1));
-}
-LSValue* LSString::rangeL(int, int) {
-	// TODO
-	return this;
 }
 
 LSValue* LSString::abso() const {
@@ -340,11 +331,6 @@ string LSString::escaped(char quote) const {
 
 LSValue* LSString::clone() const {
 	return new LSString((std::string) *this);
-}
-
-std::ostream& operator << (std::ostream& os, const LSString& obj) {
-	os << obj;
-	return os;
 }
 
 LSValue* LSString::getClass() const {
