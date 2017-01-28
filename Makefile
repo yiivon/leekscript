@@ -122,12 +122,10 @@ travis:
 # `apt-get install lcov`
 coverage: build/leekscript-coverage
 	mkdir -p build/html
-	cp -R src/ build/coverage/
-	lcov --quiet --no-external --rc lcov_branch_coverage=1 --zerocounters --directory build/coverage/src --base-directory build/coverage/src
-	lcov --quiet --no-external --rc lcov_branch_coverage=1 --capture --initial --directory build/coverage/src --base-directory build/coverage/src --output-file build/html/app.info
+	lcov --quiet --no-external --rc lcov_branch_coverage=1 --capture --initial --directory build/coverage/src --base-directory src --output-file build/html/app.info
 	build/leekscript-coverage
-	lcov --quiet --no-external --rc lcov_branch_coverage=1 --no-checksum --directory build/coverage/src --base-directory build/coverage/src --capture --output-file build/html/app.info
-	cd build/html; genhtml --precision 2 --branch-coverage app.info
+	lcov --quiet --no-external --rc lcov_branch_coverage=1 --capture --directory build/coverage/src --base-directory src --output-file build/html/app.info
+	cd build/html; genhtml --ignore-errors source --legend --precision 2 --branch-coverage app.info
 
 # Clean every build files by destroying the build/ folder.
 clean:
