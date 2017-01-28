@@ -47,11 +47,12 @@ Option | Effect
 -t -T --time	| Print execution time and operations
 -d -D --debug | Print debug information like types
 
-Tests, coverage and doc
+Tests, coverage, benchmark, doc
 ------------------
 ```
 make test
 make coverage
+make benchmark
 make doc
 ```
 
