@@ -37,8 +37,6 @@ std::string LSNumber::print(double d) {
 
 LSNumber::LSNumber(NUMBER_TYPE value) : value(value) {}
 
-LSNumber::LSNumber(Json& json) : value(json) {}
-
 LSNumber::~LSNumber() {}
 
 /*

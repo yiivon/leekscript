@@ -25,7 +25,6 @@ public:
 	static std::string print(double);
 
 	LSNumber(NUMBER_TYPE value);
-	LSNumber(Json& data);
 
 	virtual ~LSNumber();
 
