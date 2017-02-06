@@ -185,7 +185,9 @@ inline double LSArray<LSValue*>::ls_average() {
 template <class T>
 double LSArray<T>::ls_average() {
 	if (this->size() == 0) return 0;
-	return (double) this->ls_sum() / this->size();
+	int size = this->size();
+	double sum = this->ls_sum(); // this can be destroyed in ls_sum()
+	return sum / size;
 }
 
 template <>
