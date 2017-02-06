@@ -24,8 +24,6 @@ public:
 		return value ? true_val : false_val;
 	}
 
-	LSBoolean(Json& data);
-
 	virtual ~LSBoolean();
 
 	bool isTrue() const override;

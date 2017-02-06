@@ -17,8 +17,6 @@ LSBoolean::LSBoolean(bool value) : value(value) {
 	native = true;
 }
 
-LSBoolean::LSBoolean(Json& json) : LSBoolean((bool) json) {}
-
 LSBoolean::~LSBoolean() {}
 
 bool LSBoolean::isTrue() const {
