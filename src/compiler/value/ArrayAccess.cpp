@@ -260,6 +260,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			} else {
 
+				// k < 0 or k >= size
 				auto array_size = c.insn_array_size(a);
 				c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
 					c.insn_delete_temporary(a);
