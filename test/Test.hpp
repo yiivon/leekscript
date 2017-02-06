@@ -72,7 +72,7 @@ public:
 		Input(Test* test, const std::string& name, const std::string& code,
 			bool file = false, bool v1 = false) : test(test), name(name), code(code), file(file), v1(v1) {};
 		void works();
-		void equals(std::string&& expected);
+		void equals(std::string expected);
 		template <typename T>
 		void almost(T expected, T delta = 1e-10);
 		template <typename T>

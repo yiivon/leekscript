@@ -183,7 +183,7 @@ void Test::Input::works() {
 	pass("works");
 }
 
-void Test::Input::equals(std::string&& expected) {
+void Test::Input::equals(std::string expected) {
 
 	auto result = run();
 
