@@ -28,7 +28,7 @@ LSValue* LSBoolean::ls_not() {
 }
 
 LSValue* LSBoolean::ls_tilde() {
-	return LSBoolean::get(!value);
+	return LSNumber::get(~value);
 }
 
 LSValue* LSBoolean::ls_minus() {
@@ -42,7 +42,9 @@ LSValue* LSBoolean::add(LSValue* v) {
 				number->value += 1;
 				return number;
 			}
-			return LSNumber::get(number->value + 1);
+			auto r = LSNumber::get(number->value + 1);
+			LSValue::delete_temporary(number);
+			return r;
 		}
 		return number;
 	}
@@ -50,8 +52,10 @@ LSValue* LSBoolean::add(LSValue* v) {
 		return LSNumber::get(value + boolean->value);
 	}
 	if (auto string = dynamic_cast<LSString*>(v)) {
+		LSValue::delete_temporary(string);
 		return new LSString((value ? "true" : "false") + *string);
 	}
+	LSValue::delete_temporary(v);
 	return LSNull::get();
 }
 
@@ -69,6 +73,7 @@ LSValue* LSBoolean::sub(LSValue* v) {
 	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
 		return LSNumber::get(value - boolean->value);
 	}
+	LSValue::delete_temporary(v);
 	return LSNull::get();
 }
 
