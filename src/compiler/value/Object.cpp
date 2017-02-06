@@ -43,25 +43,18 @@ void Object::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 }
 
-void push_object(LSObject* o, std::string* k, LSValue* v) {
-	o->addField(*k, v);
-}
-
 Compiler::value Object::compile(Compiler& c) const {
 
-	jit_value_t object = VM::create_object(c.F);
-
-	jit_type_t args[3] = {LS_POINTER, LS_POINTER, LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 0);
+	Compiler::value object = {VM::create_object(c.F), Type::OBJECT};
 
 	for (unsigned i = 0; i < keys.size(); ++i) {
-		jit_value_t k = LS_CREATE_POINTER(c.F, &keys.at(i)->token->content);
+		auto k = c.new_pointer((void*) &keys.at(i).content);
 		auto v = values[i]->compile(c);
-		jit_value_t args[] = {object, k, v.v};
-		jit_insn_call_native(c.F, "push", (void*) push_object, sig, args, 3, JIT_CALL_NOTHROW);
+		c.insn_call(Type::VOID, {object, k, v}, +[](LSObject* o, std::string* k, LSValue* v) {
+			o->addField(*k, v);
+		});
 	}
-
-	return {object, Type::OBJECT};
+	return object;
 }
 
 }
