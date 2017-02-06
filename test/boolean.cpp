@@ -41,12 +41,25 @@ void Test::test_booleans() {
 	code("false + 12").equals("12");
 	code("true + 1").equals("2");
 	code("true + false").equals("1");
+	code("var a = [false, ''] var b = a[0]; b + 12").equals("12");
+	code("var a = [true, ''] var b = a[0]; b + 12").equals("13");
+	code("var a = [false, ''] var b = a[0]; b + true").equals("1");
+	code("var a = [true, ''] var b = a[0]; b + false").equals("1");
+	code("var a = [false, ''] var b = a[0]; b + false").equals("0");
+	code("var a = [true, ''] var b = a[0]; b + true").equals("2");
+	code("var a = [false, ''] var b = a[0]; b + ' !'").equals("'false !'");
+	code("var a = [true, ''] var b = a[0]; b + ' !'").equals("'true !'");
+	code("var a = [true, ''] var b = a[0]; b + []").equals("null");
 
 	section("Boolean.operator -");
 	code("true - 1").equals("0");
 	code("1 - true").equals("0");
 	code("true - false").equals("1");
 	code("[true, ''][0] - 5").equals("-4");
+	code("var a = [true, ''] var b = a[0]; b - 12").equals("-11");
+	code("var a = [false, ''] var b = a[0]; b - false").equals("0");
+	code("var a = [true, ''] var b = a[0]; b - false").equals("1");
+	code("var a = [true, ''] var b = a[0]; b - 'yolo'").equals("null");
 
 	section("Boolean.operator *");
 	code("12 * true").equals("12");
