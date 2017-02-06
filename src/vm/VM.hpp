@@ -84,9 +84,9 @@ public:
 		std::vector<SyntaxicalError> syntaxical_errors;
 		std::vector<SemanticError> semantical_errors;
 		Exception exception = Exception::NO_EXCEPTION;
-		std::string program;
-		std::string value;
-		std::string context;
+		std::string program = "";
+		std::string value = "";
+		std::string context = "";
 		long compilation_time = 0;
 		long compilation_time_ms = 0;
 		long execution_time = 0;
