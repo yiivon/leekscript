@@ -400,22 +400,22 @@ LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->pow_eq(y);
 }
 int jit_bit_and_equal(LSValue* x, LSValue* y) {
-	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value & (int) ((LSNumber*) y)->value;
+	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value & (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return ((LSNumber*) x)->value;
+	return r;
 }
 int jit_bit_or_equal(LSValue* x, LSValue* y) {
-	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value | (int) ((LSNumber*) y)->value;
+	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value | (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return ((LSNumber*) x)->value;
+	return r;
 }
 int jit_bit_xor_equal(LSValue* x, LSValue* y) {
-	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value ^ (int) ((LSNumber*) y)->value;
+	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value ^ (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return ((LSNumber*) x)->value;
+	return r;
 }
 int jit_bit_shl(LSValue* x, LSValue* y) {
 	int r = (int) ((LSNumber*) x)->value << (int) ((LSNumber*) y)->value;
@@ -424,10 +424,10 @@ int jit_bit_shl(LSValue* x, LSValue* y) {
 	return r;
 }
 int jit_bit_shl_equal(LSValue* x, LSValue* y) {
-	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value << (int) ((LSNumber*) y)->value;
+	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value << (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return ((LSNumber*) x)->value;
+	return r;
 }
 int jit_bit_shr(LSValue* x, LSValue* y) {
 	int r = (int) ((LSNumber*) x)->value >> (int) ((LSNumber*) y)->value;
@@ -436,10 +436,10 @@ int jit_bit_shr(LSValue* x, LSValue* y) {
 	return r;
 }
 int jit_bit_shr_equal(LSValue* x, LSValue* y) {
-	((LSNumber*) x)->value = (int) ((LSNumber*) x)->value >> (int) ((LSNumber*) y)->value;
+	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value >> (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return ((LSNumber*) x)->value;
+	return r;
 }
 int jit_bit_shr_unsigned(LSValue* x, LSValue* y) {
 	int r = (uint32_t) ((LSNumber*) x)->value >> (uint32_t) ((LSNumber*) y)->value;
@@ -448,10 +448,10 @@ int jit_bit_shr_unsigned(LSValue* x, LSValue* y) {
 	return r;
 }
 int jit_bit_shr_unsigned_equal(LSValue* x, LSValue* y) {
-	((LSNumber*) x)->value = (uint32_t) ((LSNumber*) x)->value >> (uint32_t) ((LSNumber*) y)->value;
+	int r = ((LSNumber*) x)->value = (uint32_t) ((LSNumber*) x)->value >> (uint32_t) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return ((LSNumber*) x)->value;
+	return r;
 }
 bool jit_is_null(LSValue* v) {
 	return v->typeID() == 1;
