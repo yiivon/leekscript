@@ -106,8 +106,8 @@ benchmark: build/leekscript-benchmark
 	@build/leekscript-benchmark
 
 # Valgrind
-valgrind:
-	valgrind -v leekscript-test
+valgrind: build/leekscript-test
+	valgrind -v build/leekscript-test
 
 # Travis task, useless in local.
 # Build a leekscript docker image, compile, run tests and run cpp-coveralls
