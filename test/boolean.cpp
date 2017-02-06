@@ -12,10 +12,19 @@ void Test::test_booleans() {
 	code("true").equals("true");
 	code("false").equals("false");
 
-	section("operator !");
+	section("Boolean.operator !");
 	code("!true").equals("false");
 	code("!false").equals("true");
-// TODO code("!!!!!false").equals("true");
+	// TODO code("!!!!!false").equals("true");
+	code("var a = [true, ''] var b = a[0]; !b").equals("false");
+
+	section("Boolean.operator -");
+	code("var a = [true, ''] var b = a[0]; -b").equals("-1");
+	code("var a = [false, ''] var b = a[0]; -b").equals("0");
+
+	section("Boolean.operator ~");
+	code("var a = [true, ''] var b = a[0]; ~b").equals("-2");
+	code("var a = [false, ''] var b = a[0]; ~b").equals("-1");
 
 	section("Boolean.operator ==");
 	code("true == false").equals("false");
