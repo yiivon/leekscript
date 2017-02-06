@@ -31,6 +31,10 @@ LSValue* LSBoolean::ls_tilde() {
 	return LSBoolean::get(!value);
 }
 
+LSValue* LSBoolean::ls_minus() {
+	return LSNumber::get(-value);
+}
+
 LSValue* LSBoolean::add(LSValue* v) {
 	if (auto number = dynamic_cast<LSNumber*>(v)) {
 		if (this->value) {
