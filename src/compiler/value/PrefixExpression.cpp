@@ -38,10 +38,16 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 
 	expression->analyse(analyser, Type::UNKNOWN);
 
+	if (operatorr->type == TokenType::TILDE) {
+		type = expression->type;
+		if (type == Type::BOOLEAN) {
+			type = Type::INTEGER;
+		}
+	}
+
 	if (operatorr->type == TokenType::PLUS_PLUS
 		or operatorr->type == TokenType::MINUS_MINUS
-		or operatorr->type == TokenType::MINUS
-		or operatorr->type == TokenType::TILDE) {
+		or operatorr->type == TokenType::MINUS) {
 
 		type = expression->type;
 		if (type == Type::GMP_INT) {
