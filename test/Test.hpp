@@ -65,8 +65,8 @@ public:
 		std::string code;
 		bool file;
 		bool v1;
-		float compilation_time;
-		float execution_time;
+		float compilation_time = 0;
+		float execution_time = 0;
 		long int operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 		Input(Test* test, const std::string& name, const std::string& code,
