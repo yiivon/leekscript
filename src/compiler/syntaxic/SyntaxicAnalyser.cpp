@@ -156,7 +156,7 @@ Object* SyntaxicAnalyser::eatObject() {
 
 	while (t->type == TokenType::IDENT) {
 
-		o->keys.push_back(new Ident(eatIdent()));
+		o->keys.push_back(*eatIdent());
 		eat(TokenType::COLON);
 		o->values.push_back(eatExpression());
 

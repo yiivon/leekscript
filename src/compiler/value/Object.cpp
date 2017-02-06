@@ -1,4 +1,4 @@
-#include "../../compiler/value/Object.hpp"
+#include "Object.hpp"
 
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSString.hpp"
@@ -13,9 +13,9 @@ Object::Object() {
 }
 
 Object::~Object() {
-	for (auto key : keys) {
-		delete key;
-	}
+	// for (auto key : keys) {
+		// delete key;
+	// }
 	for (auto ex : values) {
 		delete ex;
 	}
@@ -24,7 +24,7 @@ Object::~Object() {
 void Object::print(ostream& os, int indent, bool debug) const {
 	os << "{";
 	for (unsigned i = 0; i < keys.size(); ++i) {
-		os << keys.at(i)->token->content;
+		os << keys.at(i).content;
 		os << ": ";
 		values.at(i)->print(os, indent);
 		if (i < keys.size() - 1) {
