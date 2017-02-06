@@ -43,6 +43,9 @@ void Test::test_strings() {
 	/*
 	 * Operators
 	 */
+	section("String.operator !");
+	code("!'hello'").equals("false");
+
 	section("String.operator +");
 	code("'salut ' + 'ça va ?'").equals("'salut ça va ?'");
 	code("'salut' + 12").equals("'salut12'");
