@@ -109,7 +109,8 @@ enum class TokenType {
 	DOUBLE_QUESTION_MARK,
 	INT_DIV,
 	THROW,
-	VAR
+	VAR,
+	INT_DIV_EQUAL
 };
 
 }

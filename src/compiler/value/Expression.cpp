@@ -122,7 +122,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
 		or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::MODULO_EQUAL
-		or op->type == TokenType::POWER_EQUAL) {
+		or op->type == TokenType::POWER_EQUAL or op->type == TokenType::INT_DIV_EQUAL) {
 		// TODO other operators like |= ^= &=
 		if (v1->type.constant) {
 			analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, op->token->line, {v1->to_string()}});
@@ -217,6 +217,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
 		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
 		or op->type == TokenType::SWAP or op->type == TokenType::INT_DIV
+		or op->type == TokenType::INT_DIV_EQUAL
 		or op->type == TokenType::BIT_AND_EQUALS or op->type == TokenType::BIT_OR_EQUALS
 		or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
@@ -315,7 +316,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// int div => result is int
-	if (op->type == TokenType::INT_DIV) {
+	if (op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL) {
 		type = v1->type == Type::LONG ? Type::LONG : Type::INTEGER;
 	}
 
@@ -729,6 +730,28 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return {r, type};
 			} else {
 				ls_func = (void*) &jit_int_div;
+			}
+			break;
+		}
+		case TokenType::INT_DIV_EQUAL: {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				auto x = c.insn_load(x_addr, 0, v1->type);
+				auto r = jit_insn_convert(c.F, jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v)), VM::get_jit_type(type), 0);
+				jit_insn_store_relative(c.F, x_addr.v, 0, r);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return {VM::value_to_pointer(c.F, r, type), type};
+				}
+				return {r, type};
+			} else {
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+					LSValue* res = (*x)->int_div_eq(y);
+					long v = ((LSNumber*) res)->value;
+					return v;
+				});
 			}
 			break;
 		}

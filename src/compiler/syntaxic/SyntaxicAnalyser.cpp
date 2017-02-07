@@ -549,7 +549,7 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened, Value*
 	// Opérateurs binaires
 	while (t->type == TokenType::PLUS || t->type == TokenType::MINUS ||
 		   t->type == TokenType::TIMES || t->type == TokenType::DIVIDE ||
-		   t->type == TokenType::INT_DIV ||
+		   t->type == TokenType::INT_DIV || t->type == TokenType::INT_DIV_EQUAL ||
 		   t->type == TokenType::MODULO || t->type == TokenType::AND ||
 		   t->type == TokenType::OR || t->type == TokenType::XOR ||
 		   t->type == TokenType::EQUAL || t->type == TokenType::POWER ||

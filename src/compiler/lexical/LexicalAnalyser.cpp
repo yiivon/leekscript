@@ -72,7 +72,8 @@ static vector<vector<string>> type_literals = {
 	{ "??" },
 	{ "\\" },
 	{ "throw" },
-	{ "var" }
+	{ "var" },
+	{ "\\=" }
 };
 
 LexicalAnalyser::LexicalAnalyser() {}
