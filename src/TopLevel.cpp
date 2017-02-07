@@ -132,8 +132,11 @@ void print_result(ls::VM::Result& result, bool json, bool display_time) {
 }
 
 void print_errors(ls::VM::Result& result) {
+	for (const auto& e : result.lexical_errors) {
+		std::cout << "Line " << e.line << ": " << e.message() << std::endl;
+	}
 	for (const auto& e : result.syntaxical_errors) {
-		std::cout << "Line " << e.token->line << ": " << e.type << std::endl;
+		std::cout << "Line " << e.token->line << ": " << e.message() << std::endl;
 	}
 	for (const auto& e : result.semantical_errors) {
 		std::cout << "line " << e.line << ": " << e.message() << std::endl;
