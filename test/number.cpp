@@ -72,11 +72,11 @@ void Test::test_numbers() {
 	code("null == 0").equals("false");
 	code("null < 0").equals("true");
 	code("null + 5").equals("null");
-	code("5 + null").equals("null");
-	code("5 / null").equals("null");
+	code("5 + null").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("5 / null").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("null / 12").equals("null");
 	code("null * 5").equals("null");
-	code("5 * null").equals("null");
+	code("5 * null").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	section("Numbers with variables");
 	code("var a = 2 a++").equals("2");
@@ -99,26 +99,219 @@ void Test::test_numbers() {
 	code("2.5 × 4.7").equals("11.75");
 	code("5 * 2 + 3 * 4").equals("22");
 
+	section("String conversions");
+	code("65.char()").equals("'A'");
+	code("Number.char(65)").equals("'A'");
+	code("126.char()").equals("'~'");
+	code("Number.char(128040)").equals("'🐨'");
+	code("126.784.char()").equals("'~'");
+	code("Number.char([126.784, 'hello'][0])").equals("'~'");
+	code("let c = 65 (c.char())").equals("'A'");
+	code("let c = 65 (c.char() + '!')").equals("'A!'");
+	code("0x2764.char()").equals("'❤'");
+
+	section("Multiple precision numbers");
+	code("12344532132423").equals("12344532132423");
+	code("var a = 10m a").equals("10");
+	code("0m").equals("0");
+	code("0xf45eab5c9d13aab44376beff").equals("75628790656539575381594128127");
+
+	section("Integer division by zero");
+	code("1 \\ 0").exception(ls::VM::Exception::DIVISION_BY_ZERO);
+	code("1 % 0").exception(ls::VM::Exception::DIVISION_BY_ZERO);
+
+	/*
+	 * Number standard library
+	 */
+	header("Number standard library");
+	section("Constructor");
+	code("Number").equals("<class Number>");
+	code("Number()").equals("0");
+	code("[Number(), 'str']").equals("[0, 'str']");
+	code("new Number").equals("0");
+	code("new Number()").equals("0");
+	code("new Number(12)").equals("12");
+
+	section("Constants");
+	code("Number.pi").almost(3.141592653589793116);
+	code("2 × Number.pi").almost(6.283185307179586232);
+	code("Number.e").almost(2.718281828459045091);
+	code("Number.phi").almost(1.618033988749894903);
+	code("Number.epsilon").almost(0.000000000000000222);
+
+	/*
+	 * Operators
+	 */
+	section("Number.operator unary -");
+ 	code("var a = [12, ''] var b = a[0]; -b").equals("-12");
+
+ 	section("Number.operator unary !");
+ 	code("var a = [12, ''] var b = a[0]; !b").equals("false");
+
+ 	section("Number.operator unary ~");
+ 	code("var a = [12, ''] var b = a[0]; ~b").equals("-13");
+
+	section("Number.operator ++x");
+	code("var a = 20★; ++a").equals("21");
+	code("var a = 30★; ++a a").equals("31");
+
+	section("Number.operator --x");
+	code("var a = 20★; --a").equals("19");
+	code("var a = 30★; --a a").equals("29");
+
+	section("Number.operator =");
+	code("var a = 1m, b = 4m; a = b").equals("4");
+
+	section("Number.operator ==");
+	code("12m == 12m").equals("true");
+	code("13m == 12m").equals("false");
+	code("12m ** 5m == 12m ** 5m").equals("true");
+	code("12m ** 5m == (3m * 4m) ** 5m").equals("true");
+	code("12m ** 5m == 248832").equals("true");
+
+	section("Number.operator +");
+	code("1m + 2m").equals("3");
+	code("1m + (2m + 3m)").equals("6");
+	code("(1m + 2m) + 3m").equals("6");
+	code("(1m + 2m) + (3m + 4m)").equals("10");
+	code("15★ + false").equals("15");
+	code("15★ + true").equals("16");
+	code("let a = 15★ a + true").equals("16");
+
+	section("Number.operator +=");
+	code("var a = 15★ a += true a").equals("16");
+	code("var a = 15★ a += []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15★ a += [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
 	section("Number.operator -");
-	code("var a = [12, ''] var b = a[0]; -b").equals("-12");
+	code("1m - 2m").equals("-1");
+	code("1m - (2m - 3m)").equals("2");
+	code("(1m - 2m) - 3m").equals("-4");
+	code("(1m - 2m) - (3m - 4m)").equals("0");
+	code("(10m + 10m) - 1").equals("19");
+	code("15★ - 3★").equals("12");
+	code("1000m - 12").equals("988");
+	code("1000m - (-12)").equals("1012");
+	code("15★ - false").equals("15");
+	code("15★ - true").equals("14");
+	code("let a = 15★ a - true").equals("14");
+	code("12★ - []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("let a = 100★ a - 20").equals("80");
 
-	section("Number.operator !");
-	code("var a = [12, ''] var b = a[0]; !b").equals("false");
+	section("Number.operator -=");
+	code("var a = 15★ a -= true a").equals("14");
+	code("var a = 15★ a -= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15★ a -= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
-	section("Number.operator ~");
-	code("var a = [12, ''] var b = a[0]; ~b").equals("-13");
+	section("Number.operator *");
+	code("3m * 4m").equals("12");
+	code("10m + 3m * 4m").equals("22");
+	code("(5m + 2m) * (16m * 2m)").equals("224");
+	code("12★ * false").equals("0");
+	code("let a = 13★; a * false").equals("0");
+	code("13★ * true").equals("13");
+	code("7★ * 2").equals("14");
+	code("let a = 6★; a * 3").equals("18");
+	code("14★ * []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("12344532132423m * 987657897613412m").equals("12192174652930109838844857276");
+	code("5 * 'yo'").equals("'yoyoyoyoyo'");
+
+	section("Number.operator *=");
+	code("var a = 15★ a *= true a").equals("15");
+	code("var a = 15★ a *= false a").equals("0");
+	code("var a = 15★ a *= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15★ a *= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("Number.operator **");
+	code("14★ ** 3").equals("2744");
+	code("14★ ** true").equals("14");
+	code("14★ ** false").equals("1");
+	code("let a = 14★ a ** false").equals("1");
+	code("14★ ** []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("2 ** 50").equals("-2147483648");
+	code("2m ** 50").equals("1125899906842624");
+	code("(5m + 2m) ** (16m * 2m)").equals("1104427674243920646305299201");
+	//code("123m ** 1900").exception(ls::VM::Exception::NUMBER_OVERFLOW);
+
+	section("Number.operator **=");
+	code("var a = 5★; a **= 4").equals("625");
+	code("var a = 5★; a **= true").equals("5");
+	code("var a = 5★; a **= false").equals("1");
+	code("var a = 5★; a **= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator %");
+	code("721★ % 57★").equals("37");
+	code("let a = 721★ a % 57").equals("37");
+	code("let a = 721★ a % []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("721★ % true").equals("0");
+	code("721★ % false").equals("0");
+	code("let a = 721★ a % false").equals("0");
+	code("let a = 721★ a % true").equals("0");
 	code("123456789123456789m % 234567m").equals("221463");
 	code("(12m ** 40m) % 234567m").equals("228798");
 	code("100000m % (12m ** 3m)").equals("1504");
 	code("(100000m * 10m) % (12m ** 3m)").equals("1216");
 
-	section("Number.operator *");
-	code("(5m + 2m) * (16m * 2m)").equals("224");
+	section("Number.operator %=");
+	code("var a = 721★ a %= true").equals("0");
+	code("var a = 721★ a %= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
-	section("Number.operator **");
-	code("(5m + 2m) ** (16m * 2m)").equals("1104427674243920646305299201");
+	section("Number.operator /");
+	code("12★ / false").equals("nan");
+	code("let a = 13★; a / false").equals("nan");
+	code("13★ / true").equals("13");
+	code("14★ / 2").equals("7");
+	code("let a = 18★; a / 3").equals("6");
+	code("14★ / []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("Number.operator /=");
+	code("var a = 12★ a /= true a").equals("12");
+	code("var a = 12★ a /= false a").equals("nan");
+	code("var a = 12★ a /= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 12★ a /= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("Number.operator <");
+	code("3m < 4m").equals("true");
+	code("10m < (3m * 4m)").equals("true");
+	code("(5m + 5m) < (3m * 4m)").equals("true");
+	code("(5m + 5m) < 12m").equals("true");
+
+	section("Number.operator <=");
+	code("3 <= 4").equals("true");
+	code("3 <= []").equals("true");
+	code("3 <= 4★").equals("true");
+
+	section("Number.operator >");
+	code("12 > 5m").equals("true");
+	code("[] > true").equals("true");
+
+	section("Number.operator +=");
+	code("var a = 10m a += 4m").equals("14");
+	code("var a = 10m a += 4m a").equals("14");
+
+	section("Number.operator \\");
+	code("10 \\ 2").equals("5");
+	code("10 \\ 4").equals("2");
+	code("2432431 \\ 2313").equals("1051");
+	code("let a = 420987★ a \\ 546★").equals("771");
+	code("420987★ \\ 12").equals("35082");
+	code("12345678912345l \\ 1234").equals("10004602035");
+	code("12★ \\ false").exception(ls::VM::Exception::DIVISION_BY_ZERO);
+	code("let a = 13★; a \\ false").exception(ls::VM::Exception::DIVISION_BY_ZERO);
+	code("13★ \\ true").equals("13");
+	code("17★ \\ 4").equals("4");
+	code("let a = 10.7★; a \\ true").equals("10");
+	code("let a = 10★; a \\ 4").equals("2");
+	code("14★ \\ []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("67.89★ \\ 1").equals("67");
+
+	section("Number.operator \\=");
+	code("var a = 12★ a \\= 5").equals("2");
+	code("var a = 30★ a \\= 4 a").equals("7");
+	code("var a = 12★ a \\= true a").equals("12");
+	code("var a = 12★ a \\= false a").exception(ls::VM::Exception::DIVISION_BY_ZERO);
+	code("var a = 12★ a \\= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 12★ a \\= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator &");
 	code("0 & 0").equals("0");
@@ -126,11 +319,11 @@ void Test::test_numbers() {
 	code("1 & 1").equals("1");
 	code("5 & 12").equals("4");
 	code("87619 & 18431").equals("17987");
-	code("[87619, ''][0] & [18431, ''][0]").equals("17987");
+	code("87619★ & [18431, ''][0]").equals("17987");
 	code("let a = 87619 a &= 18431").equals("17987");
 	code("let a = 87619 a &= 18431 a").equals("17987");
-	code("[87619, ''][0] & 18431").equals("17987");
-	code("[87619, ''][0] &= 18431").equals("17987");
+	code("87619★ & 18431").equals("17987");
+	code("87619★ &= 18431").equals("17987");
 	code("[12, 'hello'][1] & 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator |");
@@ -192,118 +385,6 @@ void Test::test_numbers() {
 	code("let a = -155 a >>>= 4").equals("268435446");
 	code("let a = -155 a >>>= 5 a").equals("134217723");
 	code("var a = [-155, ''] a[0] >>>= 5").equals("134217723");
-
-	section("String conversions");
-	code("65.char()").equals("'A'");
-	code("Number.char(65)").equals("'A'");
-	code("126.char()").equals("'~'");
-	code("Number.char(128040)").equals("'🐨'");
-	code("126.784.char()").equals("'~'");
-	code("Number.char([126.784, 'hello'][0])").equals("'~'");
-	code("let c = 65 (c.char())").equals("'A'");
-	code("let c = 65 (c.char() + '!')").equals("'A!'");
-	code("0x2764.char()").equals("'❤'");
-
-	section("Multiple precision numbers");
-	code("12344532132423").equals("12344532132423");
-	code("var a = 10m a").equals("10");
-	code("12344532132423m * 987657897613412m").equals("12192174652930109838844857276");
-	code("0m").equals("0");
-	code("2 ** 50").equals("-2147483648");
-	code("2m ** 50").equals("1125899906842624");
-	code("0xf45eab5c9d13aab44376beff").equals("75628790656539575381594128127");
-	code("1000m - 12").equals("988");
-	code("1000m - (-12)").equals("1012");
-
-	section("Overflow");
-	//code("123m ** 1900").exception(ls::VM::Exception::NUMBER_OVERFLOW);
-
-	section("Integer division by zero");
-	code("1 \\ 0").exception(ls::VM::Exception::DIVISION_BY_ZERO);
-	code("1 % 0").exception(ls::VM::Exception::DIVISION_BY_ZERO);
-
-	/*
-	 * Number standard library
-	 */
-	header("Number standard library");
-	section("Constructor");
-	code("Number").equals("<class Number>");
-	code("Number()").equals("0");
-	code("[Number(), 'str']").equals("[0, 'str']");
-	code("new Number").equals("0");
-	code("new Number()").equals("0");
-	code("new Number(12)").equals("12");
-
-	section("Constants");
-	code("Number.pi").almost(3.141592653589793116);
-	code("2 × Number.pi").almost(6.283185307179586232);
-	code("Number.e").almost(2.718281828459045091);
-	code("Number.phi").almost(1.618033988749894903);
-	code("Number.epsilon").almost(0.000000000000000222);
-
-	/*
-	 * Operators
-	 */
-	section("Number.operator =");
-	code("var a = 1m, b = 4m; a = b").equals("4");
-
-	section("Number.operator ==");
-	code("12m == 12m").equals("true");
-	code("13m == 12m").equals("false");
-	code("12m ** 5m == 12m ** 5m").equals("true");
-	code("12m ** 5m == (3m * 4m) ** 5m").equals("true");
-	code("12m ** 5m == 248832").equals("true");
-
-	section("Number.operator +");
-	code("1m + 2m").equals("3");
-	code("1m + (2m + 3m)").equals("6");
-	code("(1m + 2m) + 3m").equals("6");
-	code("(1m + 2m) + (3m + 4m)").equals("10");
-
-	section("Number.operator -");
-	code("1m - 2m").equals("-1");
-	code("1m - (2m - 3m)").equals("2");
-	code("(1m - 2m) - 3m").equals("-4");
-	code("(1m - 2m) - (3m - 4m)").equals("0");
-	code("(10m + 10m) - 1").equals("19");
-	code("[15, ''][0] - [3, ''][0]").equals("12");
-
-	section("Number.operator *");
-	code("3m * 4m").equals("12");
-	code("10m + 3m * 4m").equals("22");
-
-	section("Number.operator **=");
-	code("[5, ''][0] **= 4").equals("625");
-
-	section("Number.operator %");
-	code("[721, ''][0] % [57, ''][0]").equals("37");
-
-	section("Number.operator <");
-	code("3m < 4m").equals("true");
-	code("10m < (3m * 4m)").equals("true");
-	code("(5m + 5m) < (3m * 4m)").equals("true");
-	code("(5m + 5m) < 12m").equals("true");
-
-	section("Number.operator <=");
-	code("3 <= 4").equals("true");
-	code("3 <= []").equals("true");
-	code("3 <= [4, ''][0]").equals("true");
-
-	section("Number.operator >");
-	code("12 > 5m").equals("true");
-	code("[] > true").equals("true");
-
-	section("Number.operator +=");
-	code("var a = 10m a += 4m").equals("14");
-	code("var a = 10m a += 4m a").equals("14");
-
-	section("Number.operator \\");
-	code("10 \\ 2").equals("5");
-	code("10 \\ 4").equals("2");
-	code("2432431 \\ 2313").equals("1051");
-	code("let a = [420987, 'a', 546] a[0] \\ a[2]").equals("771");
-	code("[420987, 'a', 546][0] \\ 12").equals("35082");
-	code("12345678912345l \\ 1234").equals("10004602035");
 
 	/*
 	 * Iteration
