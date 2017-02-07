@@ -45,6 +45,7 @@ public:
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<jit_label_t*> loops_end_labels;
 	std::vector<jit_label_t*> loops_cond_labels;
+	std::vector<std::vector<CompilerVar>> function_variables;
 	std::vector<std::map<std::string, CompilerVar>> variables;
 
 	Program* program;
@@ -126,6 +127,7 @@ public:
 	void enter_function(jit_function_t F);
 	void leave_function();
 	int get_current_function_blocks() const;
+	void delete_function_variables();
 
 	// Variables
 	void add_var(const std::string& name, jit_value_t value, const Type& type, bool ref);

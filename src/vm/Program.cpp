@@ -103,6 +103,7 @@ void Program::compile_main(VM& vm, Context& context) {
 
 	// catch (ex) {
 	jit_value_t ex = jit_insn_start_catcher(F);
+	c.delete_function_variables();
 	VM::store_exception(F, ex);
 	jit_insn_rethrow_unhandled(F);
 

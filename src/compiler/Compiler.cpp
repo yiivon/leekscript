@@ -49,8 +49,24 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 	}
 }
 
+void Compiler::delete_function_variables() {
+
+	for (const auto& v : function_variables.back()) {
+		if (v.type.must_manage_memory()) {
+			VM::delete_ref(F, v.value);
+		}
+		if (v.type == Type::GMP_INT_TMP) {
+			VM::delete_gmp_int(F, v.value);
+		}
+		if (v.type == Type::GMP_INT) {
+			VM::delete_gmp_int(F, v.value);
+		}
+	}
+}
+
 void Compiler::enter_function(jit_function_t F) {
 	variables.push_back(std::map<std::string, CompilerVar> {});
+	function_variables.push_back(std::vector<CompilerVar> {});
 	functions.push(F);
 	functions_blocks.push_back(0);
 	this->F = F;
@@ -58,6 +74,7 @@ void Compiler::enter_function(jit_function_t F) {
 
 void Compiler::leave_function() {
 	variables.pop_back();
+	function_variables.pop_back();
 	functions.pop();
 	functions_blocks.pop_back();
 	this->F = functions.top();
@@ -490,6 +507,7 @@ void Compiler::insn_throw(Compiler::value v) const {
  */
 void Compiler::add_var(const std::string& name, jit_value_t value, const Type& type, bool ref) {
 	variables.back()[name] = {value, type, ref};
+	function_variables.back().push_back({value, type, ref});
 }
 
 CompilerVar& Compiler::get_var(const std::string& name) {
