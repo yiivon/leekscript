@@ -110,6 +110,7 @@ enum class TokenType {
 	INT_DIV,
 	THROW,
 	VAR,
+	STAR,
 	INT_DIV_EQUAL
 };
 

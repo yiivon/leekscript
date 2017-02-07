@@ -638,6 +638,10 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		{
 			Number* n = new Number(t->content, t);
 			eat();
+			if (t->type == TokenType::STAR) {
+				n->pointer = true;
+				eat();
+			}
 			return n;
 		}
 

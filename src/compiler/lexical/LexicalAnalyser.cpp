@@ -73,6 +73,7 @@ static vector<vector<string>> type_literals = {
 	{ "\\" },
 	{ "throw" },
 	{ "var" },
+	{ "★" },
 	{ "\\=" }
 };
 
@@ -235,6 +236,12 @@ vector<Token> LexicalAnalyser::parseTokens(string code) {
 							tokens.push_back(Token(TokenType::NUMBER, line, character, word));
 							number = bin = hex = false;
 							word = "";
+						} else if (c == 0x00002605) { // '★'
+							tokens.push_back(Token(TokenType::NUMBER, line, character, word));
+							number = bin = hex = false;
+							word = "";
+							u8_toutf8(buff, 5, &c, 1);
+							tokens.push_back(Token(TokenType::STAR, line, character, std::string(buff)));
 						} else {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 							tokens.push_back(Token(TokenType::NUMBER, line, character, word));

@@ -18,6 +18,7 @@ public:
 	double double_value = 0;
 	mpz_t mpz_value;
 	bool mpz_value_initialized = false;
+	bool pointer = false;
 
 	Number(std::string value, Token* token);
 	virtual ~Number();
