@@ -24,6 +24,8 @@ public:
 	SyntaxicalError(const SyntaxicalError& error);
 	SyntaxicalError(Token* token, Type type, std::vector<std::string> parameters);
 	virtual ~SyntaxicalError();
+
+	std::string message() const;
 };
 
 }
