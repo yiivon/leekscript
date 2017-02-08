@@ -249,6 +249,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	/*
 	 * Static methods
 	 */
+	static_method("int", {
+		{Type::INTEGER, {Type::UNKNOWN}, (void*) &NumberSTD::_int}
+	});
 	static_method("abs", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::abs_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_real},
@@ -665,6 +668,10 @@ Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> 
 /*
  * Methods
  */
+
+Compiler::value NumberSTD::_int(Compiler&, std::vector<Compiler::value> args) {
+	return {args[0].v, Type::INTEGER};
+}
 
 double NumberSTD::abs_ptr(LSNumber* x) {
 	// TODO check args

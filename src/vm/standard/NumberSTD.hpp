@@ -76,6 +76,8 @@ public:
 	/*
 	 * Methods
 	 */
+	static Compiler::value _int(Compiler&, std::vector<Compiler::value>);
+
 	static double abs_ptr(LSNumber* x);
 	static Compiler::value abs_real(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value abs_int(Compiler&, std::vector<Compiler::value>);
