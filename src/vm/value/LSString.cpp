@@ -156,20 +156,22 @@ LSValue* LSString::add_eq(LSValue* v) {
 }
 
 LSValue* LSString::mul(LSValue* v) {
-	if (auto number = dynamic_cast<LSNumber*>(v)) {
-		string r;
-		for (int i = 0; i < number->value; ++i) {
-			r += *this;
-		}
-		if (number->refs == 0) delete number;
-		if (refs == 0) {
-			*this = r;
-			return this;
-		}
-		return new LSString(r);
+	auto number = dynamic_cast<LSNumber*>(v);
+	if (!number) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(v);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 	}
-	LSValue::delete_temporary(this);
-	return LSNull::get();
+	string r;
+	for (int i = 0; i < number->value; ++i) {
+		r += *this;
+	}
+	if (number->refs == 0) delete number;
+	if (refs == 0) {
+		*this = r;
+		return this;
+	}
+	return new LSString(r);
 }
 
 LSValue* LSString::div(LSValue* v) {
