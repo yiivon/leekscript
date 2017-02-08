@@ -52,14 +52,29 @@ void Test::test_strings() {
 	code("'salut' + true").equals("'saluttrue'");
 	code("'salut' + null").equals("'salutnull'");
 
+	section("String.operator *");
 	code("'salut' * 3").equals("'salutsalutsalut'");
+	code("'salut' * (1 + 2)").equals("'salutsalutsalut'");
+	code("('salut' * 1) + 2").equals("'salut2'");
+	code("'hello' * 'abc'").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("String.operator |x|");
 	code("|'salut'|").equals("5");
+
+	section("String.operator /");
+	code("'azerty' / ''").equals("['a', 'z', 'e', 'r', 't', 'y']");
 	code("'abc' / '.'").equals("['abc']");
 	code("'ab.c' / '.'").equals("['ab', 'c']");
 	code("'.ab.c' / '.'").equals("['', 'ab', 'c']");
 	code("'abc.' / '.'").equals("['abc', '']");
 	code("'.aaaaa.bbbb.ccc.dd.e.' / '.'").equals("['', 'aaaaa', 'bbbb', 'ccc', 'dd', 'e', '']");
+	code("('hello.world.how.are.you' / '.').size()").equals("5");
+	code("'hello' / 2").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("String.operator~");
 	code("~'bonjour'").equals("'ruojnob'");
+
+	section("String.operator []");
 	code("'bonjour'[3]").equals("'j'");
 	code("'bonjour'['hello']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "'bonjour'", ls::Type::STRING_TMP.to_string()});
 	code("~('salut' + ' ca va ?')").equals("'? av ac tulas'");
@@ -67,11 +82,13 @@ void Test::test_strings() {
 	code("'bonjour'['a':5]").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
 	code("'bonjour'[2:'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 2>"});
 	code("'bonjour'['a':'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
-	code("'salut' * (1 + 2)").equals("'salutsalutsalut'");
-	code("('salut' * 1) + 2").equals("'salut2'");
-	code("('hello.world.how.are.you' / '.').size()").equals("5");
+	code("let a = ['bonjour', 2][0] a[3]").equals("'j'");
+
+	section("String.operator ==");
 	code("'test' == 'etst'").equals("false");
 	code("'test' == 'test'").equals("true");
+
+	section("String.operator <");
 	code("'aaaa' < 'aaba'").equals("true");
 	code("'aaab' < 'aaaa'").equals("false");
 	code("'test' < 'test'").equals("false");
@@ -172,8 +189,18 @@ void Test::test_strings() {
 	code("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 	code("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 
+	section("String.number()");
 	code("String.number('1234567')").equals("1234567");
 	code("String.number('1469215478186644')").equals("1469215478186644");
 	code("'1234567'.number()").equals("1234567");
 	code("'1469215478186644'.number()").equals("1469215478186644");
+
+	section("String.is_permutation()");
+	code("''.isPermutation('')").equals("true");
+	code("'A'.isPermutation('A')").equals("true");
+	code("'A'.isPermutation('a')").equals("false");
+	code("'abcde'.isPermutation('abcde')").equals("true");
+	code("'abcde'.isPermutation('beacd')").equals("true");
+	code("'abcde'.isPermutation('beaca')").equals("false");
+	code("'aaa'.isPermutation('aaaa')").equals("false");
 }
