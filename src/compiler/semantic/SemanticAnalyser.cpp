@@ -27,20 +27,6 @@ SemanticAnalyser::SemanticAnalyser() {
 
 SemanticAnalyser::~SemanticAnalyser() {}
 
-void SemanticVar::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
-	if (value != nullptr) {
-		value->will_take(analyser, args, level);
-		this->type.will_take(args);
-	}
-}
-
-void SemanticVar::will_take_element(SemanticAnalyser* analyser, const Type& type) {
-	if (value != nullptr) {
-		value->will_take_element(analyser, type);
-		this->type.will_take_element(type);
-	}
-}
-
 void SemanticVar::must_be_pointer(SemanticAnalyser* analyser) {
 	if (value != nullptr) {
 		value->must_be_pointer(analyser);
