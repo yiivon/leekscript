@@ -80,7 +80,6 @@ void SemanticAnalyser::enter_function(Function* f) {
 }
 
 void SemanticAnalyser::leave_function() {
-
 	variables.pop_back();
 	parameters.pop_back();
 	functions_stack.pop();
@@ -96,9 +95,6 @@ void SemanticAnalyser::leave_block() {
 }
 
 Function* SemanticAnalyser::current_function() const {
-	if (functions_stack.empty()) {
-		return nullptr;
-	}
 	return functions_stack.top();
 }
 
