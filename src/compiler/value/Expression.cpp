@@ -550,7 +550,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return y;
 
 			} else {
-				throw new runtime_error("value = pointer !");
+				std::cout << "Invalid " << v1->to_string() << " = " << v2->to_string() << std::endl;
 			}
 			break;
 		}
