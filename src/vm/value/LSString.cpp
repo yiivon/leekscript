@@ -175,44 +175,44 @@ LSValue* LSString::mul(LSValue* v) {
 }
 
 LSValue* LSString::div(LSValue* v) {
-	if (auto string = dynamic_cast<LSString*>(v)) {
-
-		char buff[5];
-		char* string_chars = (char*) this->c_str();
-		auto array = new LSArray<LSValue*>();
-
-		if (string->size() == 0) {
-			int i = 0;
-			int l = strlen(string_chars);
-			while (i < l) {
-				u_int32_t c = u8_nextchar(string_chars, &i);
-				u8_toutf8(buff, 5, &c, 1);
-				LSString* ch = new LSString(buff);
-				array->push_inc(ch);
-			}
-	 	} else {
-	 		u_int32_t separator = u8_char_at((char*) string->c_str(), 0);
-			int i = 0;
-			int l = strlen(string_chars);
-			std::string item = "";
-			while (i < l) {
-				u_int32_t c = u8_nextchar(string_chars, &i);
-				if (c == separator) {
-					array->push_inc(new LSString(item));
-					item = "";
-				} else {
-					u8_toutf8(buff, 5, &c, 1);
-					item += buff;
-				}
-			}
-			array->push_inc(new LSString(item));
-	 	}
-		if (string->refs == 0) delete string;
-		if (refs == 0) delete this;
-		return array;
+	auto string = dynamic_cast<LSString*>(v);
+	if (!string) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(v);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 	}
-	LSValue::delete_temporary(this);
-	return LSNull::get();
+	char buff[5];
+	char* string_chars = (char*) this->c_str();
+	auto array = new LSArray<LSValue*>();
+	if (string->size() == 0) {
+		int i = 0;
+		int l = strlen(string_chars);
+		while (i < l) {
+			u_int32_t c = u8_nextchar(string_chars, &i);
+			u8_toutf8(buff, 5, &c, 1);
+			LSString* ch = new LSString(buff);
+			array->push_inc(ch);
+		}
+ 	} else {
+ 		u_int32_t separator = u8_char_at((char*) string->c_str(), 0);
+		int i = 0;
+		int l = strlen(string_chars);
+		std::string item = "";
+		while (i < l) {
+			u_int32_t c = u8_nextchar(string_chars, &i);
+			if (c == separator) {
+				array->push_inc(new LSString(item));
+				item = "";
+			} else {
+				u8_toutf8(buff, 5, &c, 1);
+				item += buff;
+			}
+		}
+		array->push_inc(new LSString(item));
+ 	}
+	if (string->refs == 0) delete string;
+	if (refs == 0) delete this;
+	return array;
 }
 
 bool LSString::eq(const LSValue* v) const {
