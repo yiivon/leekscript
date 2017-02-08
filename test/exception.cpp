@@ -7,4 +7,7 @@ void Test::test_exceptions() {
 
 	code("throw").exception(ls::VM::Exception::EXCEPTION);
 	code("12").exception(ls::VM::Exception::NO_EXCEPTION);
+
+	code("var a = 12m; throw").exception(ls::VM::Exception::EXCEPTION);
+	code("var a = 12m + 5m; throw").exception(ls::VM::Exception::EXCEPTION);
 }
