@@ -99,6 +99,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 					val.v = VM::move_inc_obj(c.F, val.v);
 				}
 				c.set_var_type(name, ex->type);
+				c.add_function_var(name, var, v->type);
 
 				if (v->type == Type::GMP_INT) {
 					jit_insn_store(c.F, var, VM::clone_gmp_int(c.F, val.v));

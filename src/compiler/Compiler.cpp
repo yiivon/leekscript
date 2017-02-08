@@ -32,9 +32,7 @@ void Compiler::leave_block(jit_function_t F) {
 }
 
 void Compiler::delete_variables_block(jit_function_t F, int deepness) {
-
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
-
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			if (it->second.type.must_manage_memory()) {
 				VM::delete_ref(F, it->second.value);
@@ -50,7 +48,6 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 }
 
 void Compiler::delete_function_variables() {
-
 	for (const auto& v : function_variables.back()) {
 		if (v.type.must_manage_memory()) {
 			VM::delete_ref(F, v.value);
@@ -507,7 +504,10 @@ void Compiler::insn_throw(Compiler::value v) const {
  */
 void Compiler::add_var(const std::string& name, jit_value_t value, const Type& type, bool ref) {
 	variables.back()[name] = {value, type, ref};
-	function_variables.back().push_back({value, type, ref});
+}
+
+void Compiler::add_function_var(const std::string& name, jit_value_t value, const Type& type) {
+	function_variables.back().push_back({value, type, false});
 }
 
 CompilerVar& Compiler::get_var(const std::string& name) {
@@ -523,18 +523,6 @@ CompilerVar& Compiler::get_var(const std::string& name) {
 void Compiler::set_var_type(std::string& name, const Type& type) {
 	variables.back()[name].type = type;
 }
-
-/*
-void Compiler::set_var_type(std::string& name, const Type& type) {
-	variables.back().at(name).type = type;
-}
-*/
-
-/*
-std::map<std::string, CompilerVar> Compiler::get_vars() {
-	return variables.back();
-}
-*/
 
 void Compiler::enter_loop(jit_label_t* end_label, jit_label_t* cond_label) {
 	loops_end_labels.push_back(end_label);

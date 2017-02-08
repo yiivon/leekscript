@@ -118,7 +118,7 @@ void Test::test_strings() {
 	// code("[for c in 'salut' { c }]").equals("['s', 'a', 'l', 'u', 't']");
 	// code("[for c in 'salut' { (c.code() + 2).char() }]").equals("['u', 'c', 'n', 'w', 'v']");
 	// code("let a = [for c in 'salut' { (c.code() + 2).char() }] a.join('')").equals("'ucnwv'");
-	// code("var r = '' for k : c in 'azerty' { r += k + '_' + c + '_' } r").equals("'0_a_1_z_2_e_3_r_4_t_5_y_'");
+	code("var r = '' for k : c in 'azerty' { r += k + '_' + c + '_' } r").equals("'0_a_1_z_2_e_3_r_4_t_5_y_'");
 
 	/*
 	 * String standard library
