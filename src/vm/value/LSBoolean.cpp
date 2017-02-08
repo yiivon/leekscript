@@ -68,7 +68,12 @@ LSValue* LSBoolean::sub(LSValue* v) {
 			}
 			return LSNumber::get(1 - number->value);
 		}
-		return number;
+		if (number->refs == 0) {
+			number->value = -number->value;
+			return number;
+		}
+		LSValue::delete_temporary(this);
+		return LSNumber::get(-number->value);
 	}
 	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
 		return LSNumber::get(value - boolean->value);

@@ -50,6 +50,9 @@ void Test::test_booleans() {
 	code("var a = [false, ''] var b = a[0]; b + ' !'").equals("'false !'");
 	code("var a = [true, ''] var b = a[0]; b + ' !'").equals("'true !'");
 	code("var a = [true, ''] var b = a[0]; b + []").equals("null");
+	code("var a = [true, ''][0] var b = [12, ''][0] a + b").equals("13");
+	code("var a = [false, ''][0] var b = [12, ''][0] a + b").equals("12");
+	code("var a = [false, ''][0] a + 12").equals("12");
 
 	section("Boolean.operator -");
 	code("true - 1").equals("0");
@@ -60,6 +63,10 @@ void Test::test_booleans() {
 	code("var a = [false, ''] var b = a[0]; b - false").equals("0");
 	code("var a = [true, ''] var b = a[0]; b - false").equals("1");
 	code("var a = [true, ''] var b = a[0]; b - 'yolo'").equals("null");
+	code("var a = [true, ''][0] var b = [12, ''][0] a - b").equals("-11");
+	code("var a = [false, ''][0] var b = [16, ''][0] a - b").equals("-16");
+	code("var a = [false, ''][0] var b = [12, ''][0] a - b").equals("-12");
+	code("var a = [false, ''][0] a - 12").equals("-12");
 
 	section("Boolean.operator *");
 	code("12 * true").equals("12");
