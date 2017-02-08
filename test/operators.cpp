@@ -47,6 +47,19 @@ void Test::test_operators() {
 	code("let a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
 	code("let a = ['a', 'b', 'c', 'd'] a[0] <=> a[3] a").equals("['d', 'b', 'c', 'a']");
 
+	header("Invalid operators");
+	code("'hello' ** 5").equals("null");
+	code("null / 5").equals("null");
+	code("null % 5").equals("null");
+	code("null - 5").equals("null");
+	code("var a = null a += 5").equals("null");
+	code("var a = null a -= 5").equals("null");
+	code("var a = null a *= 5").equals("null");
+	code("var a = null a /= 5").equals("null");
+	code("var a = null a **= 5").equals("null");
+	code("var a = null a %= 5").equals("null");
+	code("let a = null a[0]").equals("null");
+
 	/*
 	a ~~ b => (a ~~ b)
 	a ~ ~b => a ~ (~b)
