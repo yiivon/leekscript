@@ -11,11 +11,10 @@ function sequence_length(n) {
 			1 + Number.int(sequence_length(n / 2));
 		}
 	}
-	var ni = 0 ni += n
-	var c = cache[ni]
+	var c = cache[n]
 	if c return c
 
-	return cache[ni] = if n % 2 {
+	return cache[n] = if n % 2 {
 		1 + Number.int(sequence_length(3 * n + 1))
 	} else {
 		1 + Number.int(sequence_length(n / 2))
