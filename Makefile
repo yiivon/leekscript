@@ -10,6 +10,7 @@ BUILD_DIR := $(addprefix build/default/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/default/,$(TEST_DIR))
 BUILD_DIR += $(addprefix build/shared/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/coverage/,$(SRC_DIR))
+BUILD_DIR += $(addprefix build/profile/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/deps/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/deps/,$(TEST_DIR))
 
@@ -21,6 +22,7 @@ OBJ_BENCHMARK = build/benchmark/Benchmark.o
 OBJ_TEST := $(patsubst %.cpp,build/default/%.o,$(TEST_SRC))
 OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 OBJ_COVERAGE := $(patsubst %.cpp,build/coverage/%.o,$(SRC))
+OBJ_PROFILE := $(patsubst %.cpp,build/profile/%.o,$(SRC))
 
 OPTIM := -O2
 FLAGS := -std=c++17 -g3 -Wall -Wextra -Wno-pmf-conversions
@@ -48,6 +50,10 @@ build/shared/%.o: %.cpp
 
 build/coverage/%.o: %.cpp
 	g++ -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o "$@" "$<"
+	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
+
+build/profile/%.o: %.cpp
+	g++ -c $(OPTIM) $(FLAGS) -pg -o "$@" "$<"
 	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 $(BUILD_DIR):
@@ -126,6 +132,17 @@ coverage: build/leekscript-coverage
 	build/leekscript-coverage
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --capture --directory build/coverage/src --base-directory src --output-file build/html/app.info
 	cd build/html; genhtml --ignore-errors source --legend --precision 2 --branch-coverage app.info
+
+# Build with profile flags enabled
+build/leekscript-profile: $(BUILD_DIR) $(OBJ_PROFILE) $(OBJ_TEST)
+	g++ $(FLAGS) -pg -o build/leekscript-profile $(OBJ_PROFILE) $(OBJ_TEST) $(LIBS)
+	@echo "--------------------------"
+	@echo "Build (profile) finished!"
+	@echo "--------------------------"
+
+profile: build/leekscript-profile
+	gprof build/leekscript-profile > profile.stats
+	gprof2dot profile.stats | dot -Tpng -o output.png
 
 # Clean every build files by destroying the build/ folder.
 clean:
