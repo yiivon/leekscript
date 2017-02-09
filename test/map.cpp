@@ -22,8 +22,6 @@ void Test::test_map() {
 	/*
 	 * Operators
 	 */
-	section("Map.operator []");
-
 	section("Map.operator ==");
 	code("['a': 'b'] == [1: 1]").equals("false");
 	code("['a': 'b'] == ['a': 'b']").equals("true");
@@ -53,6 +51,9 @@ void Test::test_map() {
 	code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
 	code("let m = ['salut': 12] m['salut'] = 13 m['salut']").equals("13");
 	code("let m = ['salut': 'yo'] m['salut'] = 'ya' m['salut']").equals("'ya'");
+	code("let m = [5: 12] m[5.7]").equals("12");
+	code("let m = [5: 12] m['salut']").semantic_error(ls::SemanticError::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::STRING_TMP.to_string()});
+	code("let m = [5.7: 'hello'] m['salut']").semantic_error(ls::SemanticError::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::STRING_TMP.to_string()});
 
 	/*
 	 * Methods

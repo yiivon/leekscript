@@ -94,6 +94,8 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	} else if (array->type.raw_type == RawType::MAP) {
 
+		key->analyse(analyser, Type::UNKNOWN);
+
 		if (map_key_type == Type::INTEGER) {
 			key->analyse(analyser, Type::INTEGER);
 		} else if (map_key_type == Type::REAL) {
@@ -101,6 +103,16 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		} else {
 			key->analyse(analyser, Type::POINTER);
 		}
+
+		if (map_key_type != Type::POINTER) {
+			if (map_key_type.nature == Nature::VALUE and key->type.nature == Nature::POINTER) {
+				std::string a = array->to_string();
+				std::string k = key->to_string();
+				std::string kt = key->type.to_string();
+				analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, 0, {k, a, kt}});
+			}
+		}
+
 	} else {
 		key->analyse(analyser, Type::POINTER);
 	}
