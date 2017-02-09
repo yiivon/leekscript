@@ -39,12 +39,19 @@ Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) 
 			return new LSString(b ? "true" : "false");
 		});
 	}
-	if (args[0].t.nature == Nature::POINTER) {
-		return c.insn_call(Type::STRING, args, (void*) &LSValue::ls_json);
+	if (args[0].t.not_temporary() == Type::GMP_INT) {
+		auto s = c.insn_call(Type::STRING, args, +[](__mpz_struct v) {
+			char buff[10000];
+			mpz_get_str(buff, 10, &v);
+			return new LSString(buff);
+		});
+		if (args[0].t.temporary) {
+			VM::delete_gmp_int(c.F, args[0].v);
+		}
+		return s;
 	}
-	std::cout << "Type non supporté !" << std::endl;
-	throw new std::exception();
-	return {nullptr, Type::VOID};
+	// Default type : pointer
+	return c.insn_call(Type::STRING, args, (void*) &LSValue::ls_json);
 }
 
 Compiler::value JsonSTD::decode(Compiler& c, std::vector<Compiler::value> args) {

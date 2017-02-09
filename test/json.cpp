@@ -16,6 +16,10 @@ void Test::test_json() {
 	// long
 	code("Json.encode(1l)").equals("'1'");
 	code("Json.encode(1234567890987)").equals("'1234567890987'");
+	// mpz
+	code("Json.encode(1m)").equals("'1'");
+	code("Json.encode(123456789098712345678909871234567890987m)").equals("'123456789098712345678909871234567890987'");
+	code("Json.encode(15m ** 5)").equals("'759375'");
 	// boolean
 	code("Json.encode(true)").equals("'true'");
 	code("Json.encode(false)").equals("'false'");
