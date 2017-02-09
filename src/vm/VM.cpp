@@ -246,7 +246,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug) {
 	}
 
 	// Execute
-	std::string value;
+	std::string value = "";
 	if (result.compilation_success) {
 
 		auto exe_start = chrono::high_resolution_clock::now();
