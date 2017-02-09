@@ -108,10 +108,12 @@ build/leekscript-benchmark: benchmark-dir build/leekscript $(OBJ_BENCHMARK)
 	@echo "Benchmark build finished!"
 	@echo "-------------------------"
 
+# Run a benchmark
 benchmark: build/leekscript-benchmark
 	@build/leekscript-benchmark
 
 # Valgrind
+# `apt install valgrind`
 valgrind: build/leekscript-test
 	valgrind --verbose --track-origins=yes build/leekscript-test
 
@@ -125,7 +127,7 @@ travis:
 	       && cpp-coveralls -i src/ --gcov-options='-rp'"
 
 # Coverage results with lcov.
-# `apt-get install lcov`
+# `apt install lcov`
 coverage: build/leekscript-coverage
 	mkdir -p build/html
 	lcov --quiet --no-external --rc lcov_branch_coverage=1 --capture --initial --directory build/coverage/src --base-directory src --output-file build/html/app.info
@@ -140,10 +142,13 @@ build/leekscript-profile: $(BUILD_DIR) $(OBJ_PROFILE) $(OBJ_TEST)
 	@echo "Build (profile) finished!"
 	@echo "--------------------------"
 
+# gprof profiling, results displayed by gprof2dot & dot
 profile: build/leekscript-profile
 	gprof build/leekscript-profile > profile.stats
 	gprof2dot profile.stats | dot -Tpng -o output.png
 
+# callgrind profiling, results displayed by kcachegrind
+# `apt install kcachegrind`
 callgrind: build/leekscript-test
 	valgrind --tool=callgrind --dump-instr=yes --callgrind-out-file=build/profile/callgrind.out build/leekscript-test
 	kcachegrind build/profile/callgrind.out
@@ -161,6 +166,7 @@ clean:
 cloc:
 	cloc . --exclude-dir=.git,lib,build,doxygen
 
+# Documentation with doxygen
 doc:
 	doxygen
 	@echo "------------------------"
