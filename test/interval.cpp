@@ -5,6 +5,13 @@ void Test::test_intervals() {
 	header("Intervals");
 	code("[1..10]").equals("[1..10]");
 	code("[1..Number.sqrt(1989)]").equals("[1..44]");
+	code("[5..5]").equals("[5]");
+	code("[-100..0]").equals("[-100..0]");
+	code("[0..44.523]").equals("[0..44]");
+	code("[0l..544l]").equals("[0..544]");
+	code("[45.73..248l]").equals("[45..248]");
+	// TODO intervals with mpz
+	//code("[15m..50m]").equals("[15..50]");
 
 	section("Interval.operator in");
 	code("145 in [1..1000]").equals("true");
@@ -12,6 +19,8 @@ void Test::test_intervals() {
 	code("1000 in [1..1000]").equals("true");
 	code("0 in [1..1000]").equals("false");
 	code("1001 in [1..1000]").equals("false");
+	// TODO generic in operator
+	//code("'a' in [[1..1000], ''][0]").equals("false");
 
 	section("Interval.operator []");
 	code("[0..1000][500]").equals("500");
