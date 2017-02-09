@@ -51,8 +51,9 @@ Tests, coverage, Valgrind, benchmark, doc
 ------------------
 ```
 make test
-make coverage
-make valgrind
+make coverage # test coverage by gcov + lcov
+make valgrind # valgrind default tool 
+make callgrind # valgrind callgrind tool
 make benchmark
 make doc
 ```
