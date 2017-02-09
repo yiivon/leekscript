@@ -170,10 +170,12 @@ inline LSValue* LSValue::move_inc() {
 
 inline void LSValue::delete_ref(LSValue* value) {
 
+	// TODO Remove this nullptr check
 	if (value == nullptr) return;
+
 	if (value->native) return;
 	if (value->refs == 0) return;
-
+	
 	value->refs--;
 	if (value->refs == 0) {
 		delete value;
@@ -182,9 +184,10 @@ inline void LSValue::delete_ref(LSValue* value) {
 
 inline void LSValue::delete_temporary(const LSValue* const value) {
 
+	// TODO Remove this nullptr check
 	if (value == nullptr) return;
-	if (value->native) return;
 
+	if (value->native) return;
 	if (value->refs == 0) {
 		delete value;
 	}
