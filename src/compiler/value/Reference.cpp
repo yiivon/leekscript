@@ -15,6 +15,7 @@ Reference::Reference(Value* value)
 	: Value(), value(value), var(nullptr)
 {
 	type = Type::VALUE;
+	scope = VarScope::LOCAL;
 }
 
 Reference::~Reference() {}
