@@ -49,7 +49,7 @@ Option | Effect
 
 Tests, coverage, Valgrind, benchmark, doc
 ------------------
-```
+```shell
 make test
 make coverage # test coverage by gcov + lcov
 make valgrind # valgrind default tool 
