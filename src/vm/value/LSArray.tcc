@@ -213,24 +213,18 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 template <class T>
 inline T LSArray<T>::ls_first() {
 	if (this->size() == 0) {
-		if (refs == 0) {
-			delete this;
-		}
+		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	T first = this->front();
-	if (refs == 0) {
-		delete this;
-	}
+	LSValue::delete_temporary(this);
 	return first;
 }
 
 template <>
 inline LSValue* LSArray<LSValue*>::ls_last() {
 	if (this->size() == 0) {
-		if (refs == 0) {
-			delete this;
-		}
+		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	LSValue* last = back();
@@ -247,15 +241,11 @@ inline LSValue* LSArray<LSValue*>::ls_last() {
 template <class T>
 inline T LSArray<T>::ls_last() {
 	if (this->size() == 0) {
-		if (refs == 0) {
-			delete this;
-		}
+		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	T last = this->back();
-	if (refs == 0) {
-		delete this;
-	}
+	LSValue::delete_temporary(this);
 	return last;
 }
 
