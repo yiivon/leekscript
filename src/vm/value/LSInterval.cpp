@@ -33,11 +33,29 @@ bool LSInterval::in_v(int value) const {
 }
 
 int LSInterval::atv(const int key) const {
+	int size = b - a + 1;
+	if (key < 0 or key >= size) {
+		LSValue::delete_temporary(this);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
 	return a + key;
 }
 
 LSValue* LSInterval::at(const LSValue* key) const {
-	return LSNumber::get(a + ((LSNumber*) key)->value);
+	auto n = dynamic_cast<const LSNumber*>(key);
+	if (!n) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(key);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_KEY_IS_NOT_NUMBER));
+	}
+	int size = b - a + 1;
+	int index = n->value;
+	if (index < 0 or index >= size) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(key);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+	return LSNumber::get(a + index);
 }
 
 int LSInterval::abso() const {
