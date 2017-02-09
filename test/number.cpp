@@ -629,6 +629,7 @@ void Test::test_numbers() {
 	code("4.isPrime()").equals("false");
 	code("5.isPrime()").equals("true");
 	code("1993.isPrime()").equals("true");
+	code("3972049.isPrime()").equals("false");
 	code("(1993l).isPrime()").equals("true");
 	code("4398042316799.isPrime()").equals("true");
 	code("(4398042316799m).isPrime()").equals("1");
