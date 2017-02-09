@@ -83,6 +83,12 @@ void Test::test_arrays() {
 	code("let a = [12] a[0]++ a").equals("[13]");
 	code("[1, 2, 'a'][['salut', 2][0]]").exception(ls::VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	//code("let a = [[12], ''][0] a[0]++ a").equals("[13]");
+	code("let a = [1, 2, 3] a[0l]").equals("1");
+	code("let a = [1, 2, 3] a[2l]").equals("3");
+	// TODO array access with gmp numbers
+	//code("let a = [1, 2, 3] a[2m]").equals("3");
+	code("let a = ['a', 'b', 'c'] a[0.5]").equals("'a'");
+	code("let a = ['a', 'b', 'c'] a[1.9]").equals("'b'");
 
 	section("[] operator on unknown arrays");
 	code("let v = [['a', 'b'], 12] v[0][0]").equals("'a'");
