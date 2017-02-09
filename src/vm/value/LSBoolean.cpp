@@ -96,6 +96,10 @@ bool LSBoolean::lt(const LSValue* v) const {
 	return LSValue::lt(v);
 }
 
+int LSBoolean::abso() const {
+	return value;
+}
+
 LSValue* LSBoolean::clone() const {
 	return (LSValue*) this;
 }

@@ -95,7 +95,7 @@ public:
 
 	LSValue* range(int start, int end) const override;
 
-	LSValue* abso() const override;
+	int abso() const override;
 
 	std::ostream& dump(std::ostream& os) const override;
 	std::string json() const override;

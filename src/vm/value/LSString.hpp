@@ -64,7 +64,7 @@ public:
 
 	LSValue* range(int start, int end) const override;
 
-	LSValue* abso() const override;
+	int abso() const override;
 
 	LSValue* clone() const override;
 

@@ -271,8 +271,8 @@ LSValue* LSString::range(int start, int end) const {
 //	return new LSString(this->substr(start, end - start + 1));
 }
 
-LSValue* LSString::abso() const {
-	return LSNumber::get(unicode_length());
+int LSString::abso() const {
+	return unicode_length();
 }
 
 std::ostream& LSString::print(std::ostream& os) const {

@@ -456,8 +456,8 @@ bool LSNumber::lt(const LSValue* v) const {
 	return LSValue::lt(v);
 }
 
-LSValue* LSNumber::abso() const {
-	return LSNumber::get(abs((int) value));
+int LSNumber::abso() const {
+	return abs((int) value);
 }
 
 int LSNumber::integer() const {

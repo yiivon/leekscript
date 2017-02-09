@@ -854,8 +854,8 @@ LSValue* LSArray<T>::ls_not() {
 }
 
 template <class T>
-LSValue* LSArray<T>::abso() const {
-	return LSNumber::get(this->size());
+int LSArray<T>::abso() const {
+	return this->size();
 }
 
 template <class T>

@@ -40,12 +40,11 @@ LSValue* LSInterval::at(const LSValue* key) const {
 	return LSNumber::get(a + ((LSNumber*) key)->value);
 }
 
-LSValue* LSInterval::abso() const {
-	return LSNumber::get(b - a + 1);
+int LSInterval::abso() const {
+	return b - a + 1;
 }
 
 LSValue* LSInterval::clone() const {
-
 	LSInterval* new_interval = new LSInterval();
 	new_interval->a = a;
 	new_interval->b = b;

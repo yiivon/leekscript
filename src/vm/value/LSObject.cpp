@@ -147,8 +147,8 @@ LSValue** LSObject::attrL(const std::string& key) {
 	}
 }
 
-LSValue* LSObject::abso() const {
-	return LSNumber::get(values.size());
+int LSObject::abso() const {
+	return values.size();
 }
 
 LSValue* LSObject::clone() const {

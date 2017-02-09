@@ -177,8 +177,8 @@ LSValue* LSValue::rangeL(int, int) {
 	return this;
 }
 
-LSValue* LSValue::abso() const {
-	return LSNull::get();
+int LSValue::abso() const {
+	return 0;
 }
 
 LSValue* LSValue::clone() const {

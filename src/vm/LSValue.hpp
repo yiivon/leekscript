@@ -107,7 +107,7 @@ public:
 	virtual LSValue* range(int start, int end) const;
 	virtual LSValue* rangeL(int start, int end);
 
-	virtual LSValue* abso() const;
+	virtual int abso() const;
 
 	virtual int integer() const { return 0; }
 	virtual double real() const { return 0; }

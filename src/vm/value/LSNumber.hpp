@@ -68,7 +68,7 @@ public:
 	bool operator < (int value) const override;
 	bool operator < (double value) const override;
 
-	LSValue* abso() const override;
+	int abso() const override;
 
 	int integer() const override;
 	double real() const override;
