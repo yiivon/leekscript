@@ -144,6 +144,10 @@ profile: build/leekscript-profile
 	gprof build/leekscript-profile > profile.stats
 	gprof2dot profile.stats | dot -Tpng -o output.png
 
+callgrind: build/leekscript-test
+	valgrind --tool=callgrind --dump-instr=yes --callgrind-out-file=build/profile/callgrind.out build/leekscript-test
+	kcachegrind build/profile/callgrind.out
+
 # Clean every build files by destroying the build/ folder.
 clean:
 	rm -rf build
