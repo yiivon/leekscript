@@ -19,6 +19,10 @@ SyntaxicalError::SyntaxicalError(Token* token, Type type, std::vector<std::strin
 SyntaxicalError::~SyntaxicalError() {}
 
 std::string SyntaxicalError::message() const {
+	return build_message(type, {});
+}
+
+std::string SyntaxicalError::build_message(Type type, std::vector<std::string> parameters) {
 	return std::string("syntaxical_error<") + std::to_string((int) type) + std::string(">");
 }
 

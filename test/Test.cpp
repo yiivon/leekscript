@@ -26,6 +26,10 @@ int Test::all() {
 	clock_t begin = clock();
 	exeTime = 0;
 
+	auto a = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
+	std::cout << a->message() << std::endl;
+	delete a;
+
 	test_general();
 	test_booleans();
 	test_numbers();
@@ -269,7 +273,7 @@ void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::vec
 			pass(e.message());
 		}
 	} else {
-		fail(expected_message, "(no exception)");
+		fail(expected_message, "(no semantical error)");
 	}
 }
 
@@ -277,15 +281,17 @@ void Test::Input::syntaxic_error(ls::SyntaxicalError::Type expected_type, std::v
 
 	auto result = run(false);
 
+	std::string expected_message = ls::SyntaxicalError::build_message(expected_type, parameters);
+
 	if (result.syntaxical_errors.size()) {
 		ls::SyntaxicalError e = result.syntaxical_errors[0];
 		if (expected_type != e.type or parameters != e.parameters) {
-			fail("syntaxic error " + to_string(expected_type), "syntaxic error " + to_string(e.type));
+			fail(expected_message, e.message());
 		} else {
-			pass("syntaxic error " + to_string(e.type));
+			pass(e.message());
 		}
 	} else {
-		fail(to_string(expected_type), "(no exception)");
+		fail(to_string(expected_type), "(no syntaxical error)");
 	}
 }
 
@@ -303,7 +309,7 @@ void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 			pass(e.message());
 		}
 	} else {
-		fail(expected_message, "(no exception)");
+		fail(expected_message, "(no lexical error)");
 	}
 }
 

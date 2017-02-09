@@ -21,6 +21,8 @@ public:
 	Type type;
 	std::vector<std::string> parameters;
 
+	static std::string build_message(Type, std::vector<std::string> parameters);
+
 	SyntaxicalError(const SyntaxicalError& error);
 	SyntaxicalError(Token* token, Type type, std::vector<std::string> parameters);
 	virtual ~SyntaxicalError();
