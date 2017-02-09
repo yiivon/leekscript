@@ -12,6 +12,10 @@ void Test::test_booleans() {
 	code("true").equals("true");
 	code("false").equals("false");
 
+	section("Boolean.operator |x|");
+	code("|true|").equals("1");
+	code("|false|").equals("0");
+
 	section("Boolean.operator !");
 	code("!true").equals("false");
 	code("!false").equals("true");
