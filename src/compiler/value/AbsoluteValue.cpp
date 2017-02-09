@@ -19,6 +19,9 @@ void AbsoluteValue::print(std::ostream& os, int, bool debug) const {
 	os << "|";
 	expression->print(os, debug);
 	os << "|";
+	if (debug) {
+		os << " " << type;
+	}
 }
 
 void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
