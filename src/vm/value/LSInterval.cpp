@@ -82,7 +82,11 @@ LSValue* LSInterval::clone() const {
 }
 
 std::ostream& LSInterval::dump(std::ostream& os) const {
-	os << "[" << a << ".." << b << "]";
+	if (a == b) {
+		os << "[" << a << "]";
+	} else {
+		os << "[" << a << ".." << b << "]";
+	}
 	return os;
 }
 
