@@ -35,7 +35,7 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			if (it->second.type.must_manage_memory()) {
-				VM::delete_ref(F, it->second.value);
+				insn_delete({it->second.value, Type::POINTER});
 			}
 			if (it->second.type == Type::GMP_INT_TMP) {
 				VM::delete_gmp_int(F, it->second.value);
@@ -50,7 +50,7 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 void Compiler::delete_function_variables() {
 	for (const auto& v : function_variables.back()) {
 		if (v.type.must_manage_memory()) {
-			VM::delete_ref(F, v.value);
+			insn_delete({v.value, Type::POINTER});
 		}
 		if (v.type == Type::GMP_INT_TMP) {
 			VM::delete_gmp_int(F, v.value);

@@ -424,7 +424,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// Destroy temporary arguments
 	for (int i = 0; i < arg_count - offset; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			VM::delete_ref(c.F, args[offset + i]);
+			c.insn_delete({args[offset + i], Type::POINTER});
 		}
 		if (function->type.getArgumentType(i) == Type::GMP_INT ||
 			function->type.getArgumentType(i) == Type::GMP_INT_TMP) {

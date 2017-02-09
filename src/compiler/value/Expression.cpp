@@ -512,7 +512,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				std::cout << " ref = " << std::endl;
 				if (v1->type.must_manage_memory()) {
 					auto v1v = v1->compile(c);
-					VM::delete_ref(c.F, v1v.v);
+					c.insn_delete(v1v);
 				}
 				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v2->type));
 				c.add_var(varval->name, var, v2->type, false);
