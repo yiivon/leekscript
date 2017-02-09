@@ -148,12 +148,6 @@ void ArrayAccess::change_type(SemanticAnalyser*, const Type&) {
 	// TODO
 }
 
-LSValue* range(LSValue* array, int start, int end) {
-	LSValue* r = array->range(start, end);
-	LSValue::delete_temporary(array);
-	return r;
-}
-
 int interval_access(const LSInterval* interval, int pos) {
 	return interval->atv(pos);
 }
@@ -292,16 +286,14 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 	} else {
 
-		jit_type_t args_types[3] = {LS_POINTER, LS_INTEGER, LS_INTEGER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 3, 0);
-
 		auto start = key->compile(c);
 		auto end = key2->compile(c);
-		jit_value_t args[] = {a.v, start.v, end.v};
 
-		jit_value_t result = jit_insn_call_native(c.F, "range", (void*) range, sig, args, 3, JIT_CALL_NOTHROW);
-
-		return {result, type};
+		return c.insn_call(Type::POINTER, {a, start, end}, (void*) +[](LSValue* a, int start, int end) {
+			auto r = a->range(start, end);
+			LSValue::delete_temporary(a);
+			return r;
+		});
 	}
 }
 
