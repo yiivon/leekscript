@@ -26,6 +26,7 @@ public:
 
 	int atv(const int key) const;
 	virtual LSValue* at(const LSValue* key) const override;
+	LSValue* range(int start, int end) const override;
 	virtual int abso() const override;
 
 	virtual LSValue* clone() const override;

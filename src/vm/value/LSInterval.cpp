@@ -58,6 +58,18 @@ LSValue* LSInterval::at(const LSValue* key) const {
 	return LSNumber::get(a + index);
 }
 
+LSValue* LSInterval::range(int start, int end) const {
+	int size = b - a + 1;
+	if (start < 0 or start >= size or end >= b) {
+		LSValue::delete_temporary(this);
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+	auto new_interval = new LSInterval();
+	new_interval->a = a + start;
+	new_interval->b = a + end;
+	return new_interval;
+}
+
 int LSInterval::abso() const {
 	return b - a + 1;
 }

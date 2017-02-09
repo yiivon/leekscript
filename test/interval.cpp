@@ -25,6 +25,15 @@ void Test::test_intervals() {
 	code("[1..10][50]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[1..10][-10]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 
+	section("Interval.operator [:]");
+	code("[5..5][0:0]").equals("[5]");
+	code("[1..10][3:5]").equals("[4..6]");
+	code("[1..10000000][500000:600000]").equals("[500001..600001]");
+	code("[1..10][100:200]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10][-1:5]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10][20:5]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10][5:20]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+
 	section("|Interval|");
 	code("|[0..1]|").equals("2");
 	code("|[1..100]|").equals("100");
