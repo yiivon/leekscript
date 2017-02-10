@@ -84,6 +84,10 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	return result;
 }
 
+void Program::analyse(SemanticAnalyser* analyser) {
+	main->analyse(analyser, Type::UNKNOWN);
+}
+
 void Program::compile_main(VM& vm, Context& context) {
 
 	Compiler c(this);

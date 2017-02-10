@@ -2,10 +2,10 @@
 #define PROGRAM_HPP
 
 #include "../compiler/value/Function.hpp"
-#include "../compiler/semantic/SemanticAnalyser.hpp"
 
 namespace ls {
 
+class SemanticAnalser;
 class LSValue;
 
 class Program {
@@ -24,6 +24,8 @@ public:
 
 	Program(const std::string& code);
 	virtual ~Program();
+
+	void analyse(SemanticAnalyser* analyser);
 
 	/*
 	 * Compile the program with a VM and a context (json)

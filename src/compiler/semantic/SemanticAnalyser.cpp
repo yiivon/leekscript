@@ -45,21 +45,7 @@ void SemanticAnalyser::analyse(Program* program, Context*) {
 		add_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr, nullptr);
 	}
 	*/
-
-	program->main->type.setReturnType(Type::UNKNOWN);
-	program->main->body->analyse(this, Type::UNKNOWN);
-	if (program->main->type.return_types.size() > 1) { // the body contains return instruction
-		Type return_type = program->main->body->type;
-		for (size_t i = 1; i < program->main->type.return_types.size(); ++i) {
-			return_type = Type::get_compatible_type(return_type, program->main->type.return_types[i]);
-		}
-		program->main->type.return_types.clear();
-		program->main->type.setReturnType(return_type);
-		program->main->body->analyse(this, return_type); // second pass
-	} else {
-		program->main->type.setReturnType(program->main->body->type);
-	}
-
+	program->analyse(this);
 	program->functions = functions;
 }
 
