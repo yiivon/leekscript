@@ -244,15 +244,14 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			if (k.t.nature == Nature::POINTER) {
 				k = c.insn_call(Type::INTEGER, {a, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
-					int key_int;
-					if (dynamic_cast<LSNumber*>(key_pointer)) {
-						key_int = ((LSNumber*) key_pointer)->value;
-						LSValue::delete_temporary(key_pointer);
-					} else {
+					auto n = dynamic_cast<LSNumber*>(key_pointer);
+					if (!n) {
 						LSValue::delete_temporary(array);
 						LSValue::delete_temporary(key_pointer);
 						jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_KEY_IS_NOT_NUMBER));
 					}
+					int key_int = n->value;
+					LSValue::delete_temporary(key_pointer);
 					return key_int;
 				});
 			}
