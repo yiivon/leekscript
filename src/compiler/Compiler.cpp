@@ -506,7 +506,7 @@ void Compiler::add_var(const std::string& name, jit_value_t value, const Type& t
 	variables.back()[name] = {value, type, ref};
 }
 
-void Compiler::add_function_var(const std::string& name, jit_value_t value, const Type& type) {
+void Compiler::add_function_var(jit_value_t value, const Type& type) {
 	function_variables.back().push_back({value, type, false});
 }
 
