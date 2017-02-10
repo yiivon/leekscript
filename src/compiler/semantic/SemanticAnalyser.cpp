@@ -18,7 +18,6 @@ namespace ls {
 
 SemanticAnalyser::SemanticAnalyser() {
 	program = nullptr;
-	in_program = false;
 //	loops.push(0);
 //	variables.push_back(vector<map<std::string, SemanticVar*>> {});
 //	functions_stack.push(nullptr); // The first function is the main function of the program
@@ -46,8 +45,6 @@ void SemanticAnalyser::analyse(Program* program, Context*) {
 		add_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr, nullptr);
 	}
 	*/
-
-	in_program = true;
 
 	program->main->type.setReturnType(Type::UNKNOWN);
 	program->main->body->analyse(this, Type::UNKNOWN);

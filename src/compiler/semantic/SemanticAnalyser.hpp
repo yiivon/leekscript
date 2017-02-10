@@ -48,7 +48,6 @@ public:
 
 	Program* program;
 	VM* vm;
-	bool in_program = false;
 
 	std::vector<std::vector<std::map<std::string, SemanticVar*>>> variables;
 	std::vector<std::map<std::string, SemanticVar*>> parameters;
