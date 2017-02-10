@@ -189,11 +189,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	/*
 	 * OLD
 	 */
-
-	if (v1->type.nature == Nature::POINTER) {
-		type.nature = Nature::POINTER;
-	}
-	if (v2->type.nature == Nature::POINTER) {
+	if (v1->type.nature == Nature::POINTER or v2->type.nature == Nature::POINTER) {
 		type.nature = Nature::POINTER;
 	}
 	constant = v1->constant and v2->constant;
@@ -509,7 +505,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			auto varval = dynamic_cast<VariableValue*>(v1);
 			if (varval != nullptr and varval->scope == VarScope::LOCAL and c.get_var(varval->name).reference) {
-				std::cout << " ref = " << std::endl;
 				if (v1->type.must_manage_memory()) {
 					auto v1v = v1->compile(c);
 					c.insn_delete(v1v);
