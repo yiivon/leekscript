@@ -16,6 +16,13 @@ void Test::test_functions() {
 	code("'hello'()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"'hello'"});
 	code("[1, 2, 3]()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"[1, 2, 3]"});
 
+	section("Simple returns");
+	code("1; 2").equals("2");
+	code("return 1").equals("1");
+	code("return 'a'").equals("'a'");
+	code("let x = 'yolo' return '1'; 2").equals("'1'");
+	code("let x = '1' return x; 2").equals("'1'");
+
 	section("Functions / Lambdas");
 	code("let f = x -> x f(12)").equals("12");
 	code("let f = x -> x ** 2 f(12)").equals("144");
@@ -39,9 +46,6 @@ void Test::test_functions() {
 	code("let f = x -> -> 'salut' f(5)()").equals("'salut'");
 	code("let f = x -> [x, x, x] f(44)").equals("[44, 44, 44]");
 	code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
-	code("1; 2").equals("2");
-	code("let x = 'yolo' return '1'; 2").equals("'1'");
-	code("let x = '1' return x; 2").equals("'1'");
 	code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
 	code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
