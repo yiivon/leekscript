@@ -61,7 +61,10 @@ void Test::test_classes() {
 //	code("class A {} let t = [A] let a = new t[0] a").equals("A {}");
 //	code("class A {} let a = new A let b = new a.class b.class").equals("<class A>");
 
-
+	section("Methods access");
+	// code("[].map").equals("<function>");
+	// code("[].azertyuiop").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"azertyuiop", "Array"});
+	// code("[[], ''][0].azertyuiop").equals("null");
 //	code("let my_map = [].map; my_map([1, 2, 3], x -> x ^ 2)").equals("[1, 4, 9]");
 //	code("[].map == [].map").equals("true");
 //	code("{}.map == {}.map").equals("true");
