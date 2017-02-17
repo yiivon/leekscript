@@ -135,8 +135,13 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 
 SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
 
+	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
+		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, {v->content}});
+		return nullptr;
+	}
 	if (variables.back().back().find(v->content) != variables.back().back().end()) {
 		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, {v->content}});
+		return nullptr;
 	}
 	variables.back().back().insert(pair<string, SemanticVar*>(
 		v->content,

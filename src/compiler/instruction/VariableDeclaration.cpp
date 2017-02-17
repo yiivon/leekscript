@@ -49,7 +49,10 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		Value* value = nullptr;
 
 		SemanticVar* v = analyser->add_var(var, Type::UNKNOWN, value, this);
-
+		if (v == nullptr) {
+			continue;
+		}
+		
 		if (expressions[i] != nullptr) {
 			expressions[i]->analyse(analyser, Type::UNKNOWN);
 			v->type = expressions[i]->type;
