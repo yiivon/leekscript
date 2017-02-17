@@ -499,6 +499,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &ArraySTD::size}
 	});
 
+	static_method("sort", {
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_sort, Method::NATIVE},
+		{Type::REAL_ARRAY, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_sort, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_sort, Method::NATIVE},
+	});
+
 	static_method("sum", {
 		{Type::POINTER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_sum, Method::NATIVE},
 		{Type::POINTER, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_sum, Method::NATIVE},

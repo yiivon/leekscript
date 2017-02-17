@@ -267,6 +267,7 @@ void Test::test_arrays() {
 	code("let x = ['foo', 'yop', 'abc'] x.sort() x").equals("['abc', 'foo', 'yop']");
 	code("let x = [[[]], [[], [], []], [[], []]]; x.sort() x").equals("[[[]], [[], []], [[], [], []]]");
 	code("let x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x").equals("[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
+	code("Array.sort([3, 2, 1])").equals("[1, 2, 3]");
 
 	section("Array.filter()");
 	code("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("['yo', 10, 3]");
