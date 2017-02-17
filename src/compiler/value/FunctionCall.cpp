@@ -385,11 +385,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 
 	/** Arguments */
-	int arg_count = arguments.size() + 1;
+	int offset = 1;
+
+	int arg_count = arguments.size() + offset;
 	vector<jit_value_t> args;
 	vector<jit_type_t> args_types;
-
-	int offset = 1;
 
 	if (is_unknown_method) {
 		// add 'this' object as first argument
