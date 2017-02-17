@@ -181,8 +181,8 @@ Compiler::value Compiler::new_bool(bool b) const {
 Compiler::value Compiler::new_integer(int i) const {
 	return {LS_CREATE_INTEGER(F, i), Type::INTEGER};
 }
-Compiler::value Compiler::new_pointer(void* p) const {
-	return {LS_CREATE_POINTER(F, p), Type::POINTER};
+Compiler::value Compiler::new_pointer(const void* p) const {
+	return {LS_CREATE_POINTER(F, (void*) p), Type::POINTER};
 }
 Compiler::value Compiler::new_mpz() const {
 	return {VM::create_gmp_int(F, 0), Type::GMP_INT_TMP};
