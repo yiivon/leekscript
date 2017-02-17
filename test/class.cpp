@@ -40,6 +40,7 @@ void Test::test_classes() {
 	code("Object.name").equals("'Object'");
 	code("Function.name").equals("'Function'");
 	code("Class.name").equals("'Class'");
+	code("[Array, ''][0].name").equals("'Array'");
 
 	section("instanceof operator");
 	code("12 instanceof Number").equals("true");
