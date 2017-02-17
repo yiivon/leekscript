@@ -18,10 +18,16 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 		return c.new_pointer(&ObjectSTD::readonly);
 	});
 
+	/*
+	 * Operators
+	 */
 	operator_("in", {
 		{Type::OBJECT, Type::POINTER, Type::BOOLEAN, (void*) &LSObject::in, Method::NATIVE}
 	});
 
+	/*
+	 * Methods
+	 */
 	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::POINTER);
 	map_fun_type.setReturnType(Type::POINTER);
@@ -34,6 +40,13 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	});
 	method("values", {
 		{Type::OBJECT, Type::PTR_ARRAY, {}, (void*) &LSObject::ls_get_values, Method::NATIVE}
+	});
+
+	/*
+	 * Static methods
+	 */
+	static_method("values", {
+		{Type::PTR_ARRAY, {Type::OBJECT}, (void*) &LSObject::ls_get_values, Method::NATIVE}
 	});
 }
 
