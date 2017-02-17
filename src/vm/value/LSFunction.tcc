@@ -72,7 +72,7 @@ LSValue* LSFunction<R>::attr(const std::string& key) const {
 	if (key == "return") {
 		return return_type;
 	}
-	return LSNull::get();
+	return LSValue::attr(key);
 }
 
 template <class R>

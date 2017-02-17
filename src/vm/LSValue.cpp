@@ -158,11 +158,10 @@ LSValue* LSValue::attr(const std::string& key) const {
 		return getClass();
 	}
 	auto method = ((LSClass*) getClass())->getDefaultMethod(key);
-	if (method != nullptr) {
-		//std::cout << "method " << key << " of class " << getClass() << std::endl;
-		return method;
+	if (method == nullptr) {
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_ATTRIBUTE));
 	}
-	return LSNull::get();
+	return method;
 }
 
 LSValue** LSValue::attrL(const std::string&) {

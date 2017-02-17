@@ -19,9 +19,8 @@ public:
 	std::string class_name;
 	bool class_attr = false;
 	void* attr_addr;
+	void* static_access_function = nullptr;
 	void* access_function = nullptr;
-	void* obj_access_function = nullptr;
-	LSString* field_string = nullptr;
 	Type field_type;
 
 	ObjectAccess();

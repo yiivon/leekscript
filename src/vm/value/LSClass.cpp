@@ -43,7 +43,8 @@ void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
 
 	// Add first implementation as default method
 	auto fun = new LSFunction<LSValue*>(method[0].addr);
-	static_fields.insert({name, ModuleStaticField(name, Type::FUNCTION_P, fun)});
+	Type type = method[0].type;
+	static_fields.insert({name, ModuleStaticField(name, type, fun)});
 }
 
 void LSClass::addField(std::string name, Type type, void* fun) {
@@ -105,8 +106,9 @@ LSFunction<LSValue*>* LSClass::getDefaultMethod(const string& name) {
 	try {
 		ModuleStaticField f = static_fields.at(name);
 		return (LSFunction<LSValue*>*) f.value;
-	} catch (...) {}
-	return nullptr;
+	} catch (...) {
+		return nullptr;
+	}
 }
 
 LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type& operand_type) {
@@ -157,8 +159,9 @@ LSValue* LSClass::attr(const std::string& key) const {
 	}
 	try {
 		return static_fields.at(key).value;
-	} catch (exception&) {}
-	return LSNull::get();
+	} catch (exception&) {
+		return LSValue::attr(key);
+	}
 }
 
 std::ostream& LSClass::dump(std::ostream& os) const {

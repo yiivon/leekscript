@@ -125,13 +125,7 @@ LSValue* LSObject::attr(const std::string& key) const {
 	try {
 		return values.at(key);
 	} catch (exception& e) {
-		if (clazz != nullptr) {
-			auto attr = clazz->getDefaultMethod(key);
-			if (attr != nullptr) {
-				return (LSValue*) attr;
-			}
-		}
-		return LSNull::get();
+		return LSValue::attr(key);
 	}
 }
 
