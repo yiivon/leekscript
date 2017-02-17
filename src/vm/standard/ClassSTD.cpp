@@ -6,6 +6,10 @@ namespace ls {
 ClassSTD::ClassSTD() : Module("Class") {
 
 	LSClass::clazz = clazz;
+
+	field("name", Type::STRING);
+
+
 }
 
 }
