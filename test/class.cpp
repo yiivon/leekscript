@@ -42,6 +42,9 @@ void Test::test_classes() {
 	code("Class.name").equals("'Class'");
 	code("[Array, ''][0].name").equals("'Array'");
 
+	section("Class.attr");
+	code("Number.toto").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"toto", "Number"});
+
 	section("instanceof operator");
 	code("12 instanceof Number").equals("true");
 	code("'yo' instanceof Number").equals("false");
