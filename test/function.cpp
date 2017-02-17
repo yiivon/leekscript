@@ -127,7 +127,7 @@ void Test::test_functions() {
 
 	section("STD method");
 	code("String.size").equals("<function>");
-	code("Number.cos").equals("<function>");
+	//code("Number.cos").equals("<function>");
 
 	section("Function reflexion");
 	code("(x -> 12).return").equals("<class Number>");
