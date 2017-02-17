@@ -380,6 +380,11 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_method("isInteger", {
 		{Type::BOOLEAN, {Type::NUMBER}, (void*) &NumberSTD::isInteger, Method::NATIVE}
 	});
+	static_method("isPrime", {
+		{Type::INTEGER, {Type::GMP_INT}, (void*) &NumberSTD::is_prime},
+		{Type::BOOLEAN, {Type::LONG}, (void*) &NumberSTD::is_prime_long},
+		{Type::BOOLEAN, {Type::INTEGER}, (void*) &NumberSTD::is_prime_int}
+	});
 }
 
 Compiler::value NumberSTD::store_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
