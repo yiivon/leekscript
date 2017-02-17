@@ -19,7 +19,7 @@ void Test::test_objects() {
 	section("Objects with functions");
 	code("var f = obj -> obj.a f({a: 'foo'})").equals("'foo'");
 	code("var f = obj -> obj.a [f({a: 'foo'}), f({a: 'bar'})]").equals("['foo', 'bar']");
-	code("var f = obj -> obj.a [f(12), f({a: 'bar'})]").equals("[null, 'bar']");
+	code("var f = obj -> obj.a [f(12), f({a: 'bar'})]").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"a", "Number"});
 
 	section("No commas");
 	code("{a: 12 b: 5}").equals("{a: 12, b: 5}");
