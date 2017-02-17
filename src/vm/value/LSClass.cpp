@@ -9,7 +9,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSClass::class_class(new LSClass("Class"));
+LSValue* LSClass::clazz = new LSClass("Class");
 
 LSClass::LSClass(string name) : name(name) {
 	parent = nullptr;
@@ -171,7 +171,7 @@ string LSClass::json() const {
 }
 
 LSValue* LSClass::getClass() const {
-	return LSClass::class_class;
+	return LSClass::clazz;
 }
 
 int LSClass::typeID() const {

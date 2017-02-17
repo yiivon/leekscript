@@ -10,7 +10,7 @@ using namespace std;
 
 namespace ls {
 
-LSClass* LSNumber::number_class = new LSClass("Number");
+LSClass* LSNumber::clazz = new LSClass("Number");
 
 LSNumber* LSNumber::get(NUMBER_TYPE i) {
 	return new LSNumber(i);
@@ -505,7 +505,7 @@ std::ostream& LSNumber::dump(std::ostream& os) const {
 }
 
 LSValue* LSNumber::getClass() const {
-	return LSNumber::number_class;
+	return LSNumber::clazz;
 }
 
 int LSNumber::typeID() const {

@@ -15,7 +15,7 @@
 namespace ls {
 
 template <class T>
-LSValue* LSArray<T>::array_class = nullptr;
+LSValue* LSArray<T>::clazz = nullptr;
 
 template <>
 inline LSArray<LSValue*>::~LSArray() {
@@ -1289,7 +1289,7 @@ std::string LSArray<T>::json() const {
 
 template <class T>
 LSValue* LSArray<T>::getClass() const {
-	return LSArray<T>::array_class;
+	return LSArray<T>::clazz;
 }
 
 template <class T>

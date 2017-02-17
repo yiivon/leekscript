@@ -20,7 +20,7 @@ public:
 
 	NUMBER_TYPE value;
 
-	static LSClass* number_class;
+	static LSClass* clazz;
 	static LSNumber* get(NUMBER_TYPE);
 	static std::string print(double);
 

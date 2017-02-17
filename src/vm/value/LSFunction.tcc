@@ -9,7 +9,7 @@ using namespace std;
 namespace ls {
 
 template <class R>
-LSClass* LSFunction<R>::function_class = new LSClass("Function");
+LSClass* LSFunction<R>::clazz = new LSClass("Function");
 
 template <class R>
 LSFunction<R>::LSFunction(void* function) {
@@ -88,7 +88,7 @@ string LSFunction<R>::json() const {
 
 template <class R>
 LSValue* LSFunction<R>::getClass() const {
-	return LSFunction::function_class;
+	return LSFunction::clazz;
 }
 
 template <class R>

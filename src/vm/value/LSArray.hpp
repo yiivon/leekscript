@@ -15,7 +15,7 @@ template <typename T>
 class LSArray : public LSValue, public std::vector<T> {
 public:
 
-	static LSValue* array_class;
+	static LSValue* clazz;
 
 	LSArray();
 	LSArray(std::initializer_list<T>);

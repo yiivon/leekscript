@@ -8,6 +8,8 @@ LSNumber ObjectSTD::readonly_value(12);
 
 ObjectSTD::ObjectSTD() : Module("Object") {
 
+	LSObject::object_class = clazz;
+
 	readonly.values.insert({"v", &readonly_value});
 	readonly.readonly = true;
 	readonly.native = true;

@@ -6,7 +6,11 @@
 namespace ls {
 
 ArraySTD::ArraySTD() : Module("Array") {
-	LSArray<LSValue*>::array_class = clazz;
+
+	LSArray<LSValue*>::clazz = clazz;
+	LSArray<int>::clazz = clazz;
+	LSArray<double>::clazz = clazz;
+
 	/*
 	 * Operators
 	 */

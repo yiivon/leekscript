@@ -39,7 +39,7 @@ public:
 	std::map<std::string, std::vector<Operator>> operators;
 	std::map<std::string, LSFunction<LSValue*>*> default_methods;
 
-	static LSValue* class_class;
+	static LSValue* clazz;
 
 	LSClass(std::string);
 	LSClass(std::string, int refs);

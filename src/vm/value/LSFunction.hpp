@@ -17,7 +17,7 @@ template <class T = LSValue*>
 class LSFunction : public LSValue {
 public:
 
-	static LSClass* function_class;
+	static LSClass* clazz;
 
 	void* function;
 	std::vector<LSValue*> captures;

@@ -31,6 +31,8 @@ Compiler::value Number_epsilon(Compiler& c) {
 
 NumberSTD::NumberSTD() : Module("Number") {
 
+	LSNumber::clazz = clazz;
+
 	static_field("pi", Type::REAL, (void*) &Number_pi);
 	static_field("e", Type::REAL, (void*) &Number_e);
 	static_field("phi", Type::REAL, (void*) &Number_phi);
