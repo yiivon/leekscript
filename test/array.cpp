@@ -171,6 +171,7 @@ void Test::test_arrays() {
 	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
 	code("[1, 1] < [1, 2]").equals("true");
+	code("['a', 'b'] < [1.5, 2.8]").equals("false");
 
 	section("Array.operator ==");
 	code("[] == []").equals("true");
