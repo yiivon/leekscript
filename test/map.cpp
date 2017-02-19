@@ -30,7 +30,8 @@ void Test::test_map() {
 
 	section("Map.operator <");
 	//code("['a':1 'b':2] < ['a':1 'b':3]").equals("true");
-	code("[1:1 2:0] < [1:1 2:true]").equals("false");
+	code("[1: 1, 2: 0] < [1: 1, 2: true]").equals("false");
+	code("[1: 1, 2: 'a'] < [1: 1.5, 2: 5.5]").equals("true");
 
 	section("Map.operator in");
 	code("let m = ['salut': 12] 'salut' in m").equals("true");
