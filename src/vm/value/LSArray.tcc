@@ -1094,7 +1094,8 @@ bool array_equals(const LSArray<T>* self, const LSArray<T2>* array) {
 	}
 	auto j = array->begin();
 	for (auto i = self->begin(); i != self->end(); i++, j++) {
-		if (!ls::equals(*j, *i)) return false;
+		if (!ls::equals(*j, *i))
+			return false;
 	}
 	return true;
 }
@@ -1118,11 +1119,16 @@ bool array_lt(const LSArray<T>* self, const LSArray<T2>* array) {
 	auto i = self->begin();
 	auto j = array->begin();
 	while (i != self->end()) {
-		if (j == array->end()) return false;
-		if (3 < (*i)->typeID()) return false;
-		if ((*i)->typeID() < 3) return true;
-		if (((LSNumber*) *i)->value < *j) return true;
-		if (*j < ((LSNumber*) *i)->value) return false;
+		if (j == array->end())
+			return false;
+		if ((*i)->typeID() > 3)
+			return false;
+		if ((*i)->typeID() < 3)
+			return true;
+		if (((LSNumber*) *i)->value < *j)
+			return true;
+		if (*j < ((LSNumber*) *i)->value)
+			return false;
 		++i; ++j;
 	}
 	return j != array->end();
@@ -1134,11 +1140,16 @@ inline bool LSArray<T>::lt(const LSValue* v) const {
 		auto i = this->begin();
 		auto j = array->begin();
 		while (i != this->end()) {
-			if (j == array->end()) return false;
-			if ((*j)->typeID() < 3) return false;
-			if (3 < (*j)->typeID()) return true;
-			if (*i < ((LSNumber*) *j)->value) return true;
-			if (((LSNumber*) *j)->value < *i) return false;
+			if (j == array->end())
+				return false;
+			if ((*j)->typeID() < 3)
+				return false;
+			if ((*j)->typeID() > 3)
+				return true;
+			if (*i < ((LSNumber*) *j)->value)
+				return true;
+			if (((LSNumber*) *j)->value < *i)
+				return false;
 			++i; ++j;
 		}
 		return j != array->end();
@@ -1279,9 +1290,11 @@ std::string LSArray<T>::json() const {
 	std::string res = "[";
 	bool last_valid = true;
 	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin() and last_valid) res += ", ";
+		if (i != this->begin() and last_valid)
+			res += ", ";
 		auto j = ls::to_json(*i);
-		if (j.size()) res += j;
+		if (j.size())
+			res += j;
 		last_valid = j.size() > 0;
 	}
 	return res + "]";
