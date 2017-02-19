@@ -172,6 +172,14 @@ void Test::test_arrays() {
 	code("[1] < [1, 2]").equals("true");
 	code("[1, 1] < [1, 2]").equals("true");
 	code("['a', 'b'] < [1.5, 2.8]").equals("false");
+	code("[1, 2] < [1, 2, 'c']").equals("true");
+	code("[1, 2] < [1, null]").equals("false");
+	code("[1, 2] < [1, 'a']").equals("true");
+	code("[1, 2] < [1, 5, 'a']").equals("true");
+	code("[1, 2] < [1, 1, 'a']").equals("false");
+	code("[1, 'a'] < [1]").equals("false");
+	code("[1, null] < [1, 2]").equals("true");
+	code("[1, 'a'] < [0, 2]").equals("false");
 
 	section("Array.operator ==");
 	code("[] == []").equals("true");
