@@ -1063,10 +1063,8 @@ inline LSValue* LSArray<double>::add_eq(LSValue* v) {
 	if (auto set = dynamic_cast<LSSet<double>*>(v)) {
 		return add_set(set);
 	}
-	if (auto set = dynamic_cast<LSSet<int>*>(v)) {
-		return add_set(set);
-	}
-	return this;
+	auto set = dynamic_cast<LSSet<int>*>(v);
+	return add_set(set);
 }
 
 template <>
@@ -1081,10 +1079,8 @@ inline LSValue* LSArray<int>::add_eq(LSValue* v) {
 		this->insert(this->end(), array->begin(), array->end());
 		return this;
 	}
-	if (auto set = dynamic_cast<LSSet<int>*>(v)) {
-		return add_set(set);
-	}
-	return this;
+	auto set = dynamic_cast<LSSet<int>*>(v);
+	return add_set(set);
 }
 
 template <class T, class T2>
