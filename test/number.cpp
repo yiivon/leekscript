@@ -182,6 +182,8 @@ void Test::test_numbers() {
 	code("var a = 15★ a += true a").equals("16");
 	code("var a = 15★ a += []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = 15★ a += [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 10m a += 4m").equals("14");
+	code("var a = 10m a += 4m a").equals("14");
 
 	section("Number.operator -");
 	code("1m - 2m").equals("-1");
@@ -284,10 +286,6 @@ void Test::test_numbers() {
 	section("Number.operator >");
 	code("12 > 5m").equals("true");
 	code("[] > true").equals("true");
-
-	section("Number.operator +=");
-	code("var a = 10m a += 4m").equals("14");
-	code("var a = 10m a += 4m a").equals("14");
 
 	section("Number.operator \\");
 	code("10 \\ 2").equals("5");
