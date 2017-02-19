@@ -144,18 +144,6 @@ void Test::test_arrays() {
 	code("var a = [['a'], ''][0] var b = [12] a + b").equals("['a', 12]");
 	code("var a = [['a'], ''][0] var b = [12.9] a + b").equals("['a', 12.9]");
 
-	section("Array.operator <");
-	code("[1, 2, 3, 4] < [1, 2, 3, 5]").equals("true");
-	code("[1, 2, 4, 4] < [1, 2, 3, 5]").equals("false");
-	code("[1, 2, 3, 4.1] < [1, 2, 3, 5.1]").equals("true");
-	code("[1, 2, 4, 4.1] < [1, 2, 3, 5.1]").equals("false");
-	code("['1', '2', '3', '4'] < ['1', '2', '3', '5']").equals("true");
-	code("['1', '2', '4', '4'] < ['1', '2', '3', '5']").equals("false");
-	code("[1, 2, 3, 4] < [1, 2, 3, 5.1]").equals("true");
-	code("[1, 2, 4, 4.1] < [1, 2, 3, 5]").equals("false");
-	code("[1, 2, '3'] < [1, 2, 3]").equals("false");
-	code("[1, 1, '3'] < [1, 2, 3]").equals("true");
-
 	section("Array.operator ~~");
 	code("[1, 2, 3, 4, 5] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25]");
 	code("[1.5, 2.5, 3.5] ~~ x -> x.floor()").equals("[1, 2, 3]");
@@ -180,6 +168,16 @@ void Test::test_arrays() {
 	code("[1, 'a'] < [1]").equals("false");
 	code("[1, null] < [1, 2]").equals("true");
 	code("[1, 'a'] < [0, 2]").equals("false");
+	code("[1, 2, 3, 4] < [1, 2, 3, 5]").equals("true");
+	code("[1, 2, 4, 4] < [1, 2, 3, 5]").equals("false");
+	code("[1, 2, 3, 4.1] < [1, 2, 3, 5.1]").equals("true");
+	code("[1, 2, 4, 4.1] < [1, 2, 3, 5.1]").equals("false");
+	code("['1', '2', '3', '4'] < ['1', '2', '3', '5']").equals("true");
+	code("['1', '2', '4', '4'] < ['1', '2', '3', '5']").equals("false");
+	code("[1, 2, 3, 4] < [1, 2, 3, 5.1]").equals("true");
+	code("[1, 2, 4, 4.1] < [1, 2, 3, 5]").equals("false");
+	code("[1, 2, '3'] < [1, 2, 3]").equals("false");
+	code("[1, 1, '3'] < [1, 2, 3]").equals("true");
 
 	section("Array.operator ==");
 	code("[] == []").equals("true");
