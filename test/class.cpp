@@ -4,8 +4,8 @@ void Test::test_classes() {
 
 	header("Classes");
 	section("type ID");
-	code("Number.typeID()").equals("10");
-	code("[Number, ''][0].typeID()").equals("10");
+	code("Number.typeID()").equals("11");
+	code("[Number, ''][0].typeID()").equals("11");
 	code("Number = 12").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"Number"});
 
 	section(".class attribute");

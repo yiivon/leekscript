@@ -21,9 +21,10 @@ LSValueType LSValue::STRING = 4;
 LSValueType LSValue::ARRAY = 5;
 LSValueType LSValue::MAP = 6;
 LSValueType LSValue::SET = 7;
-LSValueType LSValue::FUNCTION = 8;
-LSValueType LSValue::OBJECT = 9;
-LSValueType LSValue::CLASS = 10;
+LSValueType LSValue::INTERVAL = 8;
+LSValueType LSValue::FUNCTION = 9;
+LSValueType LSValue::OBJECT = 10;
+LSValueType LSValue::CLASS = 11;
 
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;

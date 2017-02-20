@@ -5,8 +5,10 @@
 
 namespace ls {
 
-class LSInterval : public LSArray<int> {
+class LSInterval : public LSValue {
 public:
+
+	static LSValue* clazz;
 
 	int a = 0;
 	int b = 0;
@@ -22,6 +24,7 @@ public:
 	/*
 	 * LSValue methods
 	 */
+	virtual bool isTrue() const;
 	bool in_v(int) const;
 
 	int atv(const int key) const;
@@ -31,6 +34,7 @@ public:
 
 	virtual LSValue* clone() const override;
 	virtual std::ostream& dump(std::ostream& os) const override;
+	LSValue* getClass() const override;
 };
 
 }

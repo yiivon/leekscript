@@ -8,7 +8,9 @@ using namespace std;
 
 namespace ls {
 
-LSInterval::LSInterval() {}
+LSValue* LSInterval::clazz = nullptr;
+
+LSInterval::LSInterval() : LSValue(INTERVAL) {}
 
 LSInterval::~LSInterval() {}
 
@@ -24,6 +26,10 @@ LSArray<int>* LSInterval::ls_filter(LSFunction<bool>* function) {
 	}
 	if (this->refs == 0) delete this;
 	return new_array;
+}
+
+bool LSInterval::isTrue() const {
+	return b >= a;
 }
 
 bool LSInterval::in_v(int value) const {
@@ -88,6 +94,10 @@ std::ostream& LSInterval::dump(std::ostream& os) const {
 		os << "[" << a << ".." << b << "]";
 	}
 	return os;
+}
+
+LSValue* LSInterval::getClass() const {
+	return LSInterval::clazz;
 }
 
 }

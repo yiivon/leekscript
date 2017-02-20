@@ -38,6 +38,7 @@ public:
 	static LSValueType ARRAY;
 	static LSValueType MAP;
 	static LSValueType SET;
+	static LSValueType INTERVAL;
 	static LSValueType FUNCTION;
 	static LSValueType OBJECT;
 	static LSValueType CLASS;
