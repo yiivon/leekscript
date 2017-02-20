@@ -36,7 +36,8 @@ LSValue* LSBoolean::ls_minus() {
 }
 
 LSValue* LSBoolean::add(LSValue* v) {
-	if (auto number = dynamic_cast<LSNumber*>(v)) {
+	if (v->type == NUMBER) {
+		auto number = static_cast<LSNumber*>(v);
 		if (this->value) {
 			if (number->refs == 0) {
 				number->value += 1;
@@ -48,10 +49,12 @@ LSValue* LSBoolean::add(LSValue* v) {
 		}
 		return number;
 	}
-	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+	if (v->type == BOOLEAN) {
+		auto boolean = static_cast<LSBoolean*>(v);
 		return LSNumber::get(value + boolean->value);
 	}
-	if (auto string = dynamic_cast<LSString*>(v)) {
+	if (v->type == STRING) {
+		auto string = static_cast<LSString*>(v);
 		LSValue::delete_temporary(string);
 		return new LSString((value ? "true" : "false") + *string);
 	}
@@ -60,7 +63,8 @@ LSValue* LSBoolean::add(LSValue* v) {
 }
 
 LSValue* LSBoolean::sub(LSValue* v) {
-	if (auto number = dynamic_cast<LSNumber*>(v)) {
+	if (v->type == NUMBER) {
+		auto number = static_cast<LSNumber*>(v);
 		if (this->value) {
 			if (number->refs == 0) {
 				number->value = 1 - number->value;
@@ -75,7 +79,8 @@ LSValue* LSBoolean::sub(LSValue* v) {
 		LSValue::delete_temporary(this);
 		return LSNumber::get(-number->value);
 	}
-	if (auto boolean = dynamic_cast<LSBoolean*>(v)) {
+	if (v->type == BOOLEAN) {
+		auto boolean = static_cast<LSBoolean*>(v);
 		return LSNumber::get(value - boolean->value);
 	}
 	LSValue::delete_temporary(v);
@@ -83,14 +88,16 @@ LSValue* LSBoolean::sub(LSValue* v) {
 }
 
 bool LSBoolean::eq(const LSValue* v) const {
-	if (auto boolean = dynamic_cast<const LSBoolean*>(v)) {
+	if (v->type == BOOLEAN) {
+		auto boolean = static_cast<const LSBoolean*>(v);
 		return boolean->value == this->value;
 	}
 	return false;
 }
 
 bool LSBoolean::lt(const LSValue* v) const {
-	if (auto boolean = dynamic_cast<const LSBoolean*>(v)) {
+	if (v->type == BOOLEAN) {
+		auto boolean = static_cast<const LSBoolean*>(v);
 		return this->value < boolean->value;
 	}
 	return LSValue::lt(v);
