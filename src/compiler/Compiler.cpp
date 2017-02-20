@@ -236,16 +236,17 @@ Compiler::value Compiler::insn_load(Compiler::value v, int pos, Type t) const {
 }
 
 Compiler::value Compiler::insn_typeof(Compiler::value v) const {
-	if (v.t == Type::NULLL) return new_integer(1);
-	if (v.t == Type::BOOLEAN) return new_integer(2);
-	if (v.t.isNumber()) return new_integer(3);
-	if (v.t == Type::STRING) return new_integer(4);
-	if (v.t == Type::ARRAY or v.t == Type::INTERVAL) return new_integer(5);
-	if (v.t == Type::MAP) return new_integer(6);
-	if (v.t == Type::SET) return new_integer(7);
-	if (v.t == Type::FUNCTION) return new_integer(8);
-	if (v.t == Type::OBJECT) return new_integer(9);
-	if (v.t == Type::CLASS) return new_integer(10);
+	if (v.t == Type::NULLL) return new_integer(LSValue::NULLL);
+	if (v.t == Type::BOOLEAN) return new_integer(LSValue::BOOLEAN);
+	if (v.t.isNumber()) return new_integer(LSValue::NUMBER);
+	if (v.t == Type::STRING) return new_integer(LSValue::STRING);
+	if (v.t == Type::ARRAY) return new_integer(LSValue::ARRAY);
+	if (v.t == Type::MAP) return new_integer(LSValue::MAP);
+	if (v.t == Type::SET) return new_integer(LSValue::SET);
+	if (v.t == Type::INTERVAL) return new_integer(LSValue::INTERVAL);
+	if (v.t == Type::FUNCTION) return new_integer(LSValue::FUNCTION);
+	if (v.t == Type::OBJECT) return new_integer(LSValue::OBJECT);
+	if (v.t == Type::CLASS) return new_integer(LSValue::CLASS);
 	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
 		return v->type;
 	});
