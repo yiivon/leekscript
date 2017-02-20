@@ -945,6 +945,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 			jit_insn_store(c.F, args[0], v);
 		}
 
+		if (type.nature == Nature::VOID && ls_returned_type.nature == Nature::POINTER) {
+			c.insn_delete_temporary({v, Type::POINTER});
+		}
+
 		if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
 			return {VM::value_to_pointer(c.F, v, ls_returned_type), type};
 		}
