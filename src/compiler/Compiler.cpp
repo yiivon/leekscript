@@ -338,7 +338,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
 		auto addr = insn_address_of(it);
 		jit_insn_store_relative(F, addr.v, 0, v.v);
-		jit_insn_store_relative(F, addr.v, 8, insn_load(v, 48, Type::INTEGER).v);
+		jit_insn_store_relative(F, addr.v, 8, insn_load(v, 20, Type::INTEGER).v);
 		return it;
 	}
 	if (v.t.raw_type == RawType::STRING) {
@@ -378,7 +378,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	if (it.t == Type::INTERVAL_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto interval = insn_load(addr, 0, Type::POINTER);
-		auto end = insn_load(interval, 52, Type::INTEGER);
+		auto end = insn_load(interval, 24, Type::INTEGER);
 		auto pos = insn_load(addr, 8, Type::INTEGER);
 		return insn_gt(pos, end);
 	}
@@ -404,7 +404,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) co
 	if (it.t == Type::INTERVAL_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto interval = insn_load(addr, 0);
-		auto start = insn_load(interval, 48);
+		auto start = insn_load(interval, 20);
 		auto e = insn_load(addr, 8, Type::INTEGER);
 		return insn_sub(e, start);
 	}
