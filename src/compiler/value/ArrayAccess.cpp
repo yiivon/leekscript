@@ -275,7 +275,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 					}));
 				});
 
-				auto e = c.insn_load(c.insn_add(c.insn_load(a, 16, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k)), 0, array_element_type);
+				auto e = c.insn_load(c.insn_add(c.insn_load(a, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k)), 0, array_element_type);
 				e = c.clone(e);
 				c.insn_delete_temporary(a);
 
@@ -327,7 +327,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 				return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
 			}));
 		});
-		return c.insn_add(c.insn_load(a, 16, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k));
+		return c.insn_add(c.insn_load(a, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k));
 
 	} else if (array->type == Type::PTR_PTR_MAP) {
 

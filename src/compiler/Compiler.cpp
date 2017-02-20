@@ -326,7 +326,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t.raw_type == RawType::ARRAY) {
 		Compiler::value it = {jit_value_create(F, VM::get_jit_type(v.t)), v.t};
-		insn_store(it, insn_load(v, 16));
+		insn_store(it, insn_load(v, 24));
 		return it;
 	}
 	if (v.t.raw_type == RawType::INTERVAL) {
@@ -335,7 +335,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
 		auto addr = insn_address_of(it);
 		jit_insn_store_relative(F, addr.v, 0, v.v);
-		jit_insn_store_relative(F, addr.v, 8, insn_load(v, 40, Type::INTEGER).v);
+		jit_insn_store_relative(F, addr.v, 8, insn_load(v, 48, Type::INTEGER).v);
 		return it;
 	}
 	if (v.t.raw_type == RawType::STRING) {
@@ -354,7 +354,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		return it;
 	}
 	if (v.t.raw_type == RawType::MAP) {
-		return insn_load(v, 40, v.t);
+		return insn_load(v, 48, v.t);
 	}
 	if (v.t == Type::INTEGER) {
 		jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_int};
@@ -370,12 +370,12 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 
 Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
 	if (v.t.raw_type == RawType::ARRAY) {
-		return insn_eq(it, insn_load(v, 24));
+		return insn_eq(it, insn_load(v, 32));
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto interval = insn_load(addr, 0, Type::POINTER);
-		auto end = insn_load(interval, 44, Type::INTEGER);
+		auto end = insn_load(interval, 52, Type::INTEGER);
 		auto pos = insn_load(addr, 8, Type::INTEGER);
 		return insn_gt(pos, end);
 	}
@@ -384,7 +384,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 		return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
 	}
 	if (v.t.raw_type == RawType::MAP) {
-		auto end = insn_add(v, new_integer(24)); // end_ptr = &map + 24
+		auto end = insn_add(v, new_integer(32)); // end_ptr = &map + 24
 		return insn_eq(it, end);
 	}
 	if (v.t == Type::INTEGER) {
@@ -396,12 +396,12 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 
 Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) const {
 	if (it.t.raw_type == RawType::ARRAY) {
-		return insn_int_div(insn_sub(it, insn_load(v, 16)), new_integer(it.t.element().size() / 8));
+		return insn_int_div(insn_sub(it, insn_load(v, 24)), new_integer(it.t.element().size() / 8));
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto interval = insn_load(addr, 0);
-		auto start = insn_load(interval, 40);
+		auto start = insn_load(interval, 48);
 		auto e = insn_load(addr, 8, Type::INTEGER);
 		return insn_sub(e, start);
 	}

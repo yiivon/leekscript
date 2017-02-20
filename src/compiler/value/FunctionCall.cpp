@@ -379,7 +379,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	if (function->type.nature == Nature::POINTER) {
 		ls_fun_addr = function->compile(c).v;
-		fun = jit_insn_load_relative(c.F, ls_fun_addr, 16, LS_POINTER);
+		fun = jit_insn_load_relative(c.F, ls_fun_addr, 24, LS_POINTER);
 	} else {
 		fun = function->compile(c).v;
 	}
