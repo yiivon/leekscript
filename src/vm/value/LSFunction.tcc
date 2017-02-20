@@ -12,7 +12,7 @@ template <class R>
 LSClass* LSFunction<R>::clazz = new LSClass("Function");
 
 template <class R>
-LSFunction<R>::LSFunction(void* function) {
+LSFunction<R>::LSFunction(void* function) : LSValue(FUNCTION) {
 	this->function = function;
 	this->refs = 1;
 	this->native = true;
@@ -89,11 +89,6 @@ string LSFunction<R>::json() const {
 template <class R>
 LSValue* LSFunction<R>::getClass() const {
 	return LSFunction::clazz;
-}
-
-template <class R>
-int LSFunction<R>::typeID() const {
-	return 8;
 }
 
 }

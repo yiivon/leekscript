@@ -451,7 +451,7 @@ int jit_bit_shr_unsigned_equal(LSValue* x, LSValue* y) {
 	return r;
 }
 bool jit_is_null(LSValue* v) {
-	return v->typeID() == 1;
+	return v->type == LSValue::NULLL;
 }
 
 Compiler::value Expression::compile(Compiler& c) const {

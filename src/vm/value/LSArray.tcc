@@ -55,10 +55,10 @@ inline void LSArray<T>::push_inc(T value) {
 }
 
 template <class T>
-LSArray<T>::LSArray() {}
+LSArray<T>::LSArray() : LSValue(LSValue::ARRAY) {}
 
 template <class T>
-LSArray<T>::LSArray(std::initializer_list<T> values_list) {
+LSArray<T>::LSArray(std::initializer_list<T> values_list) : LSArray<T>() {
 	for (auto i : values_list) {
 		this->push_back(i);
 	}
@@ -1117,9 +1117,9 @@ bool array_lt(const LSArray<T>* self, const LSArray<T2>* array) {
 	while (i != self->end()) {
 		if (j == array->end())
 			return false;
-		if ((*i)->typeID() > 3)
+		if ((*i)->type > 3)
 			return false;
-		if ((*i)->typeID() < 3)
+		if ((*i)->type < 3)
 			return true;
 		if (((LSNumber*) *i)->value < *j)
 			return true;
@@ -1138,9 +1138,9 @@ inline bool LSArray<T>::lt(const LSValue* v) const {
 		while (i != this->end()) {
 			if (j == array->end())
 				return false;
-			if ((*j)->typeID() < 3)
+			if ((*j)->type < 3)
 				return false;
-			if ((*j)->typeID() > 3)
+			if ((*j)->type > 3)
 				return true;
 			if (*i < ((LSNumber*) *j)->value)
 				return true;
@@ -1299,11 +1299,6 @@ std::string LSArray<T>::json() const {
 template <class T>
 LSValue* LSArray<T>::getClass() const {
 	return LSArray<T>::clazz;
-}
-
-template <class T>
-int LSArray<T>::typeID() const {
-	return 5;
 }
 
 } // end of namespace ls

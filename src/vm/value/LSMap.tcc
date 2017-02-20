@@ -23,7 +23,7 @@ template <class K, class T>
 LSValue* LSMap<K, T>::map_class(new LSClass("Map"));
 
 template <class K, class T>
-LSMap<K, T>::LSMap() {}
+LSMap<K, T>::LSMap() : LSValue(MAP) {}
 
 template <class K, class V>
 LSMap<K, V>::~LSMap() {
@@ -279,11 +279,6 @@ LSValue* LSMap<K, V>::clone() const {
 template <typename K, typename T>
 inline LSValue* LSMap<K, T>::getClass() const {
 	return LSMap<K, T>::map_class;
-}
-
-template <typename K, typename T>
-int LSMap<K, T>::typeID() const {
-	return 6;
 }
 
 }

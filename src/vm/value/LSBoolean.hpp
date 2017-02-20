@@ -45,8 +45,6 @@ public:
 	std::string json() const override;
 
 	LSValue* getClass() const override;
-
-	int typeID() const override;
 };
 
 }

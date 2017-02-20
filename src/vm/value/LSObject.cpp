@@ -10,14 +10,13 @@ namespace ls {
 
 LSValue* LSObject::object_class(new LSClass("Object"));
 
-LSObject::LSObject() {
+LSObject::LSObject() : LSValue(OBJECT) {
 	clazz = nullptr;
 	readonly = false;
 }
 
-LSObject::LSObject(LSClass* clazz) {
+LSObject::LSObject(LSClass* clazz) : LSObject() {
 	this->clazz = clazz;
-	readonly = false;
 }
 
 LSObject::~LSObject() {
@@ -181,10 +180,6 @@ std::string LSObject::json() const {
 LSValue* LSObject::getClass() const {
 	if (clazz != nullptr) return clazz;
 	return LSObject::object_class;
-}
-
-int LSObject::typeID() const {
-	return 9;
 }
 
 }

@@ -42,7 +42,6 @@ public:
 	std::ostream& dump(std::ostream& os) const;
 	std::string json() const;
 	LSValue* getClass() const override;
-	int typeID() const override;
 };
 
 }

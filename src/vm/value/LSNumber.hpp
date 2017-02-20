@@ -82,8 +82,6 @@ public:
 	LSValue* getClass() const override;
 
 	bool isInteger() const;
-
-	int typeID() const override;
 };
 
 }

@@ -11,15 +11,13 @@ namespace ls {
 
 LSValue* LSClass::clazz = new LSClass("Class");
 
-LSClass::LSClass(string name) : name(name) {
+LSClass::LSClass(string name) : LSValue(CLASS), name(name) {
 	parent = nullptr;
 	refs = 1;
 	native = true;
 }
 
-LSClass::LSClass(Json&) {
-	parent = nullptr;
-	native = true;
+LSClass::LSClass(Json&) : LSClass("?") {
 	// TODO
 }
 
@@ -175,10 +173,6 @@ string LSClass::json() const {
 
 LSValue* LSClass::getClass() const {
 	return LSClass::clazz;
-}
-
-int LSClass::typeID() const {
-	return 10;
 }
 
 }

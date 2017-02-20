@@ -21,12 +21,8 @@ inline bool lsset_less<T>::operator()(T lhs, T rhs) const {
 template <typename T>
 LSValue* LSSet<T>::set_class(new LSClass("Set"));
 
-template <>
-inline LSSet<LSValue*>::LSSet() {}
-template <>
-inline LSSet<double>::LSSet() {}
-template <>
-inline LSSet<int>::LSSet() {}
+template <class T>
+inline LSSet<T>::LSSet() : LSValue(SET) {}
 
 template <>
 inline LSSet<LSValue*>::LSSet(const LSSet<LSValue*>& other) : LSValue(other), std::set<LSValue*, lsset_less<LSValue*>>() {
@@ -151,8 +147,8 @@ bool LSSet<T>::set_lt(const LSSet<T2>* set) const {
 	auto j = set->begin();
 	while (i != this->end()) {
 		if (j == set->end()) return false;
-		if (3 < (*i)->typeID()) return false;
-		if ((*i)->typeID() < 3) return true;
+		if (3 < (*i)->type) return false;
+		if ((*i)->type < 3) return true;
 		if (((LSNumber*) *i)->value < *j) return true;
 		if (*j < ((LSNumber*) *i)->value) return false;
 		++i;
@@ -184,8 +180,8 @@ inline bool LSSet<T>::lt(const LSValue* v) const {
 		auto j = set->begin();
 		while (i != this->end()) {
 			if (j == set->end()) return false;
-			if ((*j)->typeID() < 3) return false;
-			if (3 < (*j)->typeID()) return true;
+			if ((*j)->type < 3) return false;
+			if (3 < (*j)->type) return true;
 			if (*i < ((LSNumber*) *j)->value) return true;
 			if (((LSNumber*) *j)->value < *i) return false;
 			++i; ++j;
@@ -239,11 +235,6 @@ inline LSValue* LSSet<T>::clone() const {
 template <typename T>
 LSValue*LSSet<T>::getClass() const {
 	return LSSet<T>::set_class;
-}
-
-template <typename T>
-int LSSet<T>::typeID() const {
-	return 7;
 }
 
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cstddef>
+#include <cstdint>
 #include <map>
 
 #include "../constants.h"
@@ -25,8 +26,21 @@ class LSObject;
 class LSClass;
 class Context;
 
+typedef u_int8_t LSValueType;
+
 class LSValue {
 public:
+
+	static LSValueType NULLL;
+	static LSValueType BOOLEAN;
+	static LSValueType NUMBER;
+	static LSValueType STRING;
+	static LSValueType ARRAY;
+	static LSValueType MAP;
+	static LSValueType SET;
+	static LSValueType FUNCTION;
+	static LSValueType OBJECT;
+	static LSValueType CLASS;
 
 	static int obj_count;
 	static int obj_deleted;
@@ -37,10 +51,11 @@ public:
 		}
 	#endif
 
+	LSValueType type;
 	int refs = 0;
 	bool native = false;
 
-	LSValue();
+	LSValue(LSValueType type);
 	LSValue(const LSValue& other);
 	virtual ~LSValue() = 0;
 
@@ -128,8 +143,6 @@ public:
 
 	bool isInteger() const;
 
-	virtual int typeID() const = 0;
-
 	template <class T> static LSValue* get(T v);
 	static LSValue* parse(Json& json);
 	static LSValue* get_from_json(Json& json);
@@ -175,7 +188,7 @@ inline void LSValue::delete_ref(LSValue* value) {
 
 	if (value->native) return;
 	if (value->refs == 0) return;
-	
+
 	value->refs--;
 	if (value->refs == 0) {
 		delete value;

@@ -247,7 +247,7 @@ Compiler::value Compiler::insn_typeof(Compiler::value v) const {
 	if (v.t == Type::OBJECT) return new_integer(9);
 	if (v.t == Type::CLASS) return new_integer(10);
 	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
-		return v->typeID();
+		return v->type;
 	});
 }
 

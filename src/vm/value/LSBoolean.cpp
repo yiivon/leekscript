@@ -12,7 +12,7 @@ LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
 LSBoolean* LSBoolean::false_val(new LSBoolean(false));
 LSBoolean* LSBoolean::true_val(new LSBoolean(true));
 
-LSBoolean::LSBoolean(bool value) : value(value) {
+LSBoolean::LSBoolean(bool value) : LSValue(BOOLEAN), value(value) {
 	refs = 1;
 	native = true;
 }
@@ -115,10 +115,6 @@ string LSBoolean::json() const {
 
 LSValue* LSBoolean::getClass() const {
 	return LSBoolean::boolean_class;
-}
-
-int LSBoolean::typeID() const {
-	return 2;
 }
 
 }

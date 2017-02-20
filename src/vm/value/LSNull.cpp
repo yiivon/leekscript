@@ -13,7 +13,7 @@ LSValue* LSNull::get() {
 	return null_var;
 }
 
-LSNull::LSNull() {
+LSNull::LSNull() : LSValue(LSValue::NULLL) {
 	refs = 1;
 	native = true;
 }
@@ -42,10 +42,6 @@ std::ostream& LSNull::dump(std::ostream& os) const {
 
 LSValue* LSNull::getClass() const {
 	return LSNull::null_class;
-}
-
-int LSNull::typeID() const {
-	return 1;
 }
 
 }

@@ -24,7 +24,6 @@ public:
 	bool lt(const LSValue*) const override;
 	std::ostream& dump(std::ostream& os) const override;
 	LSValue* getClass() const override;
-	int typeID() const override;
 };
 
 }

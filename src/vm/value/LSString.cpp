@@ -48,11 +48,11 @@ bool LSString::iterator_end(LSString::iterator* it) {
 	return end;
 }
 
-LSString::LSString() {}
-LSString::LSString(const char value) : string(string(1, value)) {}
-LSString::LSString(const char* value) : string(value) {}
-LSString::LSString(const string& value) : string(value) {}
-LSString::LSString(const Json& json) : string(json.get<std::string>()) {}
+LSString::LSString() : LSValue(STRING) {}
+LSString::LSString(const char value) : LSValue(STRING), string(string(1, value)) {}
+LSString::LSString(const char* value) : LSValue(STRING), string(value) {}
+LSString::LSString(const string& value) : LSValue(STRING), string(value) {}
+LSString::LSString(const Json& json) : LSValue(STRING), string(json.get<std::string>()) {}
 
 LSString::~LSString() {}
 
@@ -337,10 +337,6 @@ LSValue* LSString::clone() const {
 
 LSValue* LSString::getClass() const {
 	return LSString::string_class;
-}
-
-int LSString::typeID() const {
-	return 4;
 }
 
 }

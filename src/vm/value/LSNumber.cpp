@@ -35,7 +35,7 @@ std::string LSNumber::print(double d) {
 	return s;
 }
 
-LSNumber::LSNumber(NUMBER_TYPE value) : value(value) {}
+LSNumber::LSNumber(NUMBER_TYPE value) : LSValue(NUMBER), value(value) {}
 
 LSNumber::~LSNumber() {}
 
@@ -506,10 +506,6 @@ std::ostream& LSNumber::dump(std::ostream& os) const {
 
 LSValue* LSNumber::getClass() const {
 	return LSNumber::clazz;
-}
-
-int LSNumber::typeID() const {
-	return 3;
 }
 
 }

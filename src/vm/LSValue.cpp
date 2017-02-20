@@ -14,17 +14,28 @@ using namespace std;
 
 namespace ls {
 
+LSValueType LSValue::NULLL = 1;
+LSValueType LSValue::BOOLEAN = 2;
+LSValueType LSValue::NUMBER = 3;
+LSValueType LSValue::STRING = 4;
+LSValueType LSValue::ARRAY = 5;
+LSValueType LSValue::MAP = 6;
+LSValueType LSValue::SET = 7;
+LSValueType LSValue::FUNCTION = 8;
+LSValueType LSValue::OBJECT = 9;
+LSValueType LSValue::CLASS = 10;
+
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
 
-LSValue::LSValue() : refs(0) {
+LSValue::LSValue(LSValueType type) : type(type), refs(0) {
 	obj_count++;
 	#if DEBUG_LEAKS_DETAILS
 		objs().insert({this, this});
 	#endif
 }
 
-LSValue::LSValue(const LSValue& ) : refs(0) {
+LSValue::LSValue(const LSValue& o) : type(o.type), refs(0) {
 	obj_count++;
 	#if DEBUG_LEAKS_DETAILS
 		objs().insert({this, this});
@@ -142,7 +153,7 @@ bool LSValue::eq(const LSValue*) const {
 }
 
 bool LSValue::lt(const LSValue* v) const {
-	return typeID() < v->typeID();
+	return type < v->type;
 }
 
 LSValue* LSValue::at(const LSValue*) const {
