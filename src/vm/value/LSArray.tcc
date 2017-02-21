@@ -886,23 +886,25 @@ LSValue* LSArray<T>::add_set(LSSet<T2>* set) {
 
 template <>
 inline LSValue* LSArray<LSValue*>::add(LSValue* v) {
-	if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
-		if (refs == 0) {
-			return ls_push_all_ptr(array);
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
+			if (refs == 0) {
+				return ls_push_all_ptr(array);
+			}
+			return ((LSArray<LSValue*>*) this->clone())->ls_push_all_ptr(array);
 		}
-		return ((LSArray<LSValue*>*) this->clone())->ls_push_all_ptr(array);
-	}
-	if (auto array = dynamic_cast<LSArray<int>*>(v)) {
-		if (refs == 0) {
-			return ls_push_all_int(array);
+		if (auto array = dynamic_cast<LSArray<int>*>(v)) {
+			if (refs == 0) {
+				return ls_push_all_int(array);
+			}
+			return ((LSArray<LSValue*>*) this->clone())->ls_push_all_int(array);
 		}
-		return ((LSArray<LSValue*>*) this->clone())->ls_push_all_int(array);
-	}
-	if (auto array = dynamic_cast<LSArray<double>*>(v)) {
-		if (refs == 0) {
-			return ls_push_all_flo(array);
+		if (auto array = dynamic_cast<LSArray<double>*>(v)) {
+			if (refs == 0) {
+				return ls_push_all_flo(array);
+			}
+			return ((LSArray<LSValue*>*) this->clone())->ls_push_all_flo(array);
 		}
-		return ((LSArray<LSValue*>*) this->clone())->ls_push_all_flo(array);
 	}
 	if (refs == 0) {
 		this->push_move(v);
@@ -958,40 +960,42 @@ inline LSValue* LSArray<double>::add(LSValue* v) {
 
 template <>
 inline LSValue* LSArray<int>::add(LSValue* v) {
-	if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
-		auto ret = new LSArray<LSValue*>();
-		ret->reserve(this->size() + array->size());
-		for (auto v : *this) {
-			ret->push_inc(LSNumber::get(v));
-		}
-		if (array->refs == 0) {
-			for (auto v : *array) {
-				ret->push_back(v);
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
+			auto ret = new LSArray<LSValue*>();
+			ret->reserve(this->size() + array->size());
+			for (auto v : *this) {
+				ret->push_inc(LSNumber::get(v));
 			}
-			array->clear();
-			delete array;
-		} else {
-			for (auto v : *array) {
-				ret->push_clone(v);
+			if (array->refs == 0) {
+				for (auto v : *array) {
+					ret->push_back(v);
+				}
+				array->clear();
+				delete array;
+			} else {
+				for (auto v : *array) {
+					ret->push_clone(v);
+				}
 			}
+			if (refs == 0) delete this;
+			return ret;
 		}
-		if (refs == 0) delete this;
-		return ret;
-	}
-	if (auto array = dynamic_cast<LSArray<int>*>(v)) {
-		if (refs == 0) {
-			return ls_push_all_int(array);
+		if (auto array = dynamic_cast<LSArray<int>*>(v)) {
+			if (refs == 0) {
+				return ls_push_all_int(array);
+			}
+			return ((LSArray<int>*) this->clone())->ls_push_all_int(array);
 		}
-		return ((LSArray<int>*) this->clone())->ls_push_all_int(array);
-	}
-	if (auto array = dynamic_cast<LSArray<double>*>(v)) {
-		auto ret = new LSArray<double>();
-		ret->reserve(this->size() + array->size());
-		ret->insert(ret->end(), this->begin(), this->end());
-		ret->insert(ret->end(), array->begin(), array->end());
-		if (refs == 0) delete this;
-		if (array->refs == 0) delete array;
-		return ret;
+		if (auto array = dynamic_cast<LSArray<double>*>(v)) {
+			auto ret = new LSArray<double>();
+			ret->reserve(this->size() + array->size());
+			ret->insert(ret->end(), this->begin(), this->end());
+			ret->insert(ret->end(), array->begin(), array->end());
+			if (refs == 0) delete this;
+			if (array->refs == 0) delete array;
+			return ret;
+		}
 	}
 	if (auto number = dynamic_cast<LSNumber*>(v)) {
 		if (number->value == (int) number->value) {
@@ -1025,14 +1029,16 @@ inline LSValue* LSArray<int>::add(LSValue* v) {
 
 template <>
 inline LSValue* LSArray<LSValue*>::add_eq(LSValue* v) {
-	if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
-		return ls_push_all_ptr(array);
-	}
-	if (auto array = dynamic_cast<LSArray<int>*>(v)) {
-		return ls_push_all_int(array);
-	}
-	if (auto array = dynamic_cast<LSArray<double>*>(v)) {
-		return ls_push_all_flo(array);
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
+			return ls_push_all_ptr(array);
+		}
+		if (auto array = dynamic_cast<LSArray<int>*>(v)) {
+			return ls_push_all_int(array);
+		}
+		if (auto array = dynamic_cast<LSArray<double>*>(v)) {
+			return ls_push_all_flo(array);
+		}
 	}
 	if (auto set = dynamic_cast<LSSet<LSValue*>*>(v)) {
 		return add_set(set);
@@ -1049,19 +1055,21 @@ inline LSValue* LSArray<LSValue*>::add_eq(LSValue* v) {
 
 template <>
 inline LSValue* LSArray<double>::add_eq(LSValue* v) {
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<LSArray<double>*>(v)) {
+			return ls_push_all_flo(array);
+		}
+		if (auto array = dynamic_cast<LSArray<int>*>(v)) {
+			return ls_push_all_int(array);
+		}
+	}
+	if (auto set = dynamic_cast<LSSet<double>*>(v)) {
+		return add_set(set);
+	}
 	if (auto number = dynamic_cast<LSNumber*>(v)) {
 		this->push_back(number->value);
 		LSValue::delete_temporary(number);
 		return this;
-	}
-	if (auto array = dynamic_cast<LSArray<double>*>(v)) {
-		return ls_push_all_flo(array);
-	}
-	if (auto array = dynamic_cast<LSArray<int>*>(v)) {
-		return ls_push_all_int(array);
-	}
-	if (auto set = dynamic_cast<LSSet<double>*>(v)) {
-		return add_set(set);
 	}
 	auto set = dynamic_cast<LSSet<int>*>(v);
 	return add_set(set);
@@ -1098,14 +1106,16 @@ bool array_equals(const LSArray<T>* self, const LSArray<T2>* array) {
 
 template <class T>
 bool LSArray<T>::eq(const LSValue* v) const {
-	if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
-		return array_equals(this, array);
-	}
-	if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
-		return array_equals(this, array);
-	}
-	if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
-		return array_equals(this, array);
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
+			return array_equals(this, array);
+		}
+		if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
+			return array_equals(this, array);
+		}
+		if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
+			return array_equals(this, array);
+		}
 	}
 	return false;
 }
@@ -1132,45 +1142,49 @@ bool array_lt(const LSArray<T>* self, const LSArray<T2>* array) {
 
 template <typename T>
 inline bool LSArray<T>::lt(const LSValue* v) const {
-	if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
-		auto i = this->begin();
-		auto j = array->begin();
-		while (i != this->end()) {
-			if (j == array->end())
-				return false;
-			if ((*j)->type < 3)
-				return false;
-			if ((*j)->type > 3)
-				return true;
-			if (*i < ((LSNumber*) *j)->value)
-				return true;
-			if (((LSNumber*) *j)->value < *i)
-				return false;
-			++i; ++j;
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
+			auto i = this->begin();
+			auto j = array->begin();
+			while (i != this->end()) {
+				if (j == array->end())
+					return false;
+				if ((*j)->type < 3)
+					return false;
+				if ((*j)->type > 3)
+					return true;
+				if (*i < ((LSNumber*) *j)->value)
+					return true;
+				if (((LSNumber*) *j)->value < *i)
+					return false;
+				++i; ++j;
+			}
+			return j != array->end();
 		}
-		return j != array->end();
-	}
-	if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
-		return std::lexicographical_compare(this->begin(), this->end(), array->begin(), array->end());
-	}
-	if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
-		return std::lexicographical_compare(this->begin(), this->end(), array->begin(), array->end());
+		if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
+			return std::lexicographical_compare(this->begin(), this->end(), array->begin(), array->end());
+		}
+		if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
+			return std::lexicographical_compare(this->begin(), this->end(), array->begin(), array->end());
+		}
 	}
 	return LSValue::lt(v);
 }
 
 template <>
 inline bool LSArray<LSValue*>::lt(const LSValue* v) const {
-	if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
-		return std::lexicographical_compare(begin(), end(), array->begin(), array->end(), [](const LSValue* a, const LSValue* b) -> bool {
-			return *a < *b;
-		});
-	}
-	if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
-		return array_lt(this, array);
-	}
-	if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
-		return array_lt(this, array);
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<const LSArray<LSValue*>*>(v)) {
+			return std::lexicographical_compare(begin(), end(), array->begin(), array->end(), [](const LSValue* a, const LSValue* b) -> bool {
+				return *a < *b;
+			});
+		}
+		if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
+			return array_lt(this, array);
+		}
+		if (auto array = dynamic_cast<const LSArray<double>*>(v)) {
+			return array_lt(this, array);
+		}
 	}
 	return LSValue::lt(v);
 }
