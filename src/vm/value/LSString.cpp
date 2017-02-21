@@ -156,12 +156,12 @@ LSValue* LSString::add_eq(LSValue* v) {
 }
 
 LSValue* LSString::mul(LSValue* v) {
-	auto number = dynamic_cast<LSNumber*>(v);
-	if (!number) {
+	if (v->type != NUMBER) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 	}
+	auto number = static_cast<LSNumber*>(v);
 	string r;
 	for (int i = 0; i < number->value; ++i) {
 		r += *this;
@@ -175,12 +175,12 @@ LSValue* LSString::mul(LSValue* v) {
 }
 
 LSValue* LSString::div(LSValue* v) {
-	auto string = dynamic_cast<LSString*>(v);
-	if (!string) {
+	if (v->type != STRING) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
 	}
+	auto string = static_cast<LSString*>(v);
 	char buff[5];
 	char* string_chars = (char*) this->c_str();
 	auto array = new LSArray<LSValue*>();
@@ -216,14 +216,16 @@ LSValue* LSString::div(LSValue* v) {
 }
 
 bool LSString::eq(const LSValue* v) const {
-	if (auto str = dynamic_cast<const LSString*>(v)) {
+	if (v->type == STRING) {
+		auto str = static_cast<const LSString*>(v);
 		return compare(*str) == 0;
 	}
 	return false;
 }
 
 bool LSString::lt(const LSValue* v) const {
-	if (auto str = dynamic_cast<const LSString*>(v)) {
+	if (v->type == STRING) {
+		auto str = static_cast<const LSString*>(v);
 		return compare(*str) < 0;
 	}
 	return LSValue::lt(v);
@@ -241,7 +243,8 @@ u_int32_t LSString::u8_char_at(char* s, int pos) {
 }
 
 LSValue* LSString::at(const LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+	if (key->type == NUMBER) {
+		const LSNumber* n = static_cast<const LSNumber*>(key);
 		char buff[5];
 		u_int32_t c = u8_char_at((char*) this->c_str(), (int) n->value);
 		u8_toutf8(buff, 5, &c, 1);
