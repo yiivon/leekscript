@@ -267,7 +267,7 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 		return new_pointer(vm->system_vars["Map"]);
 	if (v.t.raw_type == RawType::SET)
 		return new_pointer(vm->system_vars["Set"]);
-	if (v.t == Type::INTERVAL)
+	if (v.t.raw_type == RawType::INTERVAL)
 		return new_pointer(vm->system_vars["Interval"]);
 	if (v.t.raw_type == RawType::FUNCTION)
 		return new_pointer(vm->system_vars["Function"]);

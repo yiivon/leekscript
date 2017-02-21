@@ -13,6 +13,8 @@ namespace ls {
 
 IntervalSTD::IntervalSTD() : Module("Interval") {
 
+	LSInterval::clazz = clazz;
+
 	/*
 	 * Operators
 	 */

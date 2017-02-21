@@ -19,6 +19,7 @@ void Test::test_classes() {
 	code("''.class").equals("<class String>");
 	code("'salut'.class").equals("<class String>");
 	code("[].class").equals("<class Array>");
+	code("[1..12].class").equals("<class Interval>");
 	code("[:].class").equals("<class Map>");
 	code("<>.class").equals("<class Set>");
 	code("[1, 2, 3].class").equals("<class Array>");
@@ -27,7 +28,7 @@ void Test::test_classes() {
 	code("(-> 12).class").equals("<class Function>");
 	code("(x, y -> x + y).class").equals("<class Function>");
 	code("12.class.class").equals("<class Class>");
-	code("[null, true, 12, 'foo', [], [1:12], <>, {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Map>, <class Set>, <class Object>, <class Function>, <class Class>]");
+	code("[null, true, 12, 'foo', [], [1..12], [1:12], <>, {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Interval>, <class Map>, <class Set>, <class Object>, <class Function>, <class Class>]");
 
 	section("Class.name");
 	code("Null.name").equals("'Null'");
@@ -35,6 +36,7 @@ void Test::test_classes() {
 	code("Number.name").equals("'Number'");
 	code("String.name").equals("'String'");
 	code("Array.name").equals("'Array'");
+	code("Interval.name").equals("'Interval'");
 	code("Set.name").equals("'Set'");
 	code("Map.name").equals("'Map'");
 	code("Object.name").equals("'Object'");
@@ -50,6 +52,7 @@ void Test::test_classes() {
 	code("'yo' instanceof Number").equals("false");
 	code("'yo' instanceof String").equals("true");
 	code("[1, 2, 3] instanceof Array").equals("true");
+	code("[1..12] instanceof Interval").equals("true");
 	code("{a: 12} instanceof Object").equals("true");
 	code("(-> 12) instanceof Function").equals("true");
 	code("null instanceof Null").equals("true");
