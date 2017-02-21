@@ -1,10 +1,3 @@
-/*
- * IntervalSTD.cpp
- *
- *  Created on: 4 nov. 2016
- *      Author: pierre
- */
-
 #include "IntervalSTD.hpp"
 
 #include "../value/LSInterval.hpp"
