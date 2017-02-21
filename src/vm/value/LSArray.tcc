@@ -1040,14 +1040,16 @@ inline LSValue* LSArray<LSValue*>::add_eq(LSValue* v) {
 			return ls_push_all_flo(array);
 		}
 	}
-	if (auto set = dynamic_cast<LSSet<LSValue*>*>(v)) {
-		return add_set(set);
-	}
-	if (auto set = dynamic_cast<LSSet<int>*>(v)) {
-		return add_set(set);
-	}
-	if (auto set = dynamic_cast<LSSet<double>*>(v)) {
-		return add_set(set);
+	if (v->type == SET) {
+		if (auto set = dynamic_cast<LSSet<LSValue*>*>(v)) {
+			return add_set(set);
+		}
+		if (auto set = dynamic_cast<LSSet<int>*>(v)) {
+			return add_set(set);
+		}
+		if (auto set = dynamic_cast<LSSet<double>*>(v)) {
+			return add_set(set);
+		}
 	}
 	push_move(v);
 	return this;
