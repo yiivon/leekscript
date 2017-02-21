@@ -1129,9 +1129,9 @@ bool array_lt(const LSArray<T>* self, const LSArray<T2>* array) {
 	while (i != self->end()) {
 		if (j == array->end())
 			return false;
-		if ((*i)->type > 3)
+		if ((*i)->type > LSValue::NUMBER)
 			return false;
-		if ((*i)->type < 3)
+		if ((*i)->type < LSValue::NUMBER)
 			return true;
 		if (((LSNumber*) *i)->value < *j)
 			return true;
@@ -1151,9 +1151,9 @@ inline bool LSArray<T>::lt(const LSValue* v) const {
 			while (i != this->end()) {
 				if (j == array->end())
 					return false;
-				if ((*j)->type < 3)
+				if ((*j)->type < LSValue::NUMBER)
 					return false;
-				if ((*j)->type > 3)
+				if ((*j)->type > LSValue::NUMBER)
 					return true;
 				if (*i < ((LSNumber*) *j)->value)
 					return true;
