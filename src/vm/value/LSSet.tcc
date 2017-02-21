@@ -147,8 +147,8 @@ bool LSSet<T>::set_lt(const LSSet<T2>* set) const {
 	auto j = set->begin();
 	while (i != this->end()) {
 		if (j == set->end()) return false;
-		if (3 < (*i)->type) return false;
-		if ((*i)->type < 3) return true;
+		if ((*i)->type > LSValue::NUMBER) return false;
+		if ((*i)->type < LSValue::NUMBER) return true;
 		if (((LSNumber*) *i)->value < *j) return true;
 		if (*j < ((LSNumber*) *i)->value) return false;
 		++i;
@@ -180,8 +180,8 @@ inline bool LSSet<T>::lt(const LSValue* v) const {
 		auto j = set->begin();
 		while (i != this->end()) {
 			if (j == set->end()) return false;
-			if ((*j)->type < 3) return false;
-			if (3 < (*j)->type) return true;
+			if ((*j)->type < LSValue::NUMBER) return false;
+			if ((*j)->type > LSValue::NUMBER) return true;
 			if (*i < ((LSNumber*) *j)->value) return true;
 			if (((LSNumber*) *j)->value < *i) return false;
 			++i; ++j;
