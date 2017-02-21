@@ -48,12 +48,12 @@ int LSInterval::atv(const int key) const {
 }
 
 LSValue* LSInterval::at(const LSValue* key) const {
-	auto n = dynamic_cast<const LSNumber*>(key);
-	if (!n) {
+	if (key->type != NUMBER) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_KEY_IS_NOT_NUMBER));
 	}
+	auto n = static_cast<const LSNumber*>(key);
 	int size = b - a + 1;
 	int index = n->value;
 	if (index < 0 or index >= size) {
