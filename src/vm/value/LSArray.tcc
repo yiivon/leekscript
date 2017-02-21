@@ -1234,9 +1234,11 @@ inline LSValue* LSArray<T>::range(int start, int end) const {
 template <class T>
 LSValue* LSArray<T>::at(const LSValue* key) const {
 	int index = 0;
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+	if (key->type == NUMBER) {
+		auto n = static_cast<const LSNumber*>(key);
 		index = (int) n->value;
-	} else if (const LSBoolean* b = dynamic_cast<const LSBoolean*>(key)) {
+	} else if (key->type == BOOLEAN) {
+		auto b = static_cast<const LSBoolean*>(key);
 		index = (int) b->value;
 	} else {
 		LSValue::delete_temporary(this);
@@ -1257,7 +1259,8 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 template <class T>
 LSValue** LSArray<T>::atL(const LSValue* key) {
 	LSValue** res = nullptr;
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+	if (key->type == NUMBER) {
+		auto n = static_cast<const LSNumber*>(key);
 		int i = (int) n->value;
 		LSValue::delete_temporary(key);
 		try {
