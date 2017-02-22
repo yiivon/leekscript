@@ -521,6 +521,11 @@ void Compiler::set_var_type(std::string& name, const Type& type) {
 	variables.back()[name].type = type;
 }
 
+void Compiler::update_var(std::string& name, jit_value_t value, const Type& type) {
+	variables.back()[name].value = value;
+	variables.back()[name].type = type;
+}
+
 void Compiler::enter_loop(jit_label_t* end_label, jit_label_t* cond_label) {
 	loops_end_labels.push_back(end_label);
 	loops_cond_labels.push_back(cond_label);
