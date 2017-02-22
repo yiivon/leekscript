@@ -136,7 +136,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			equal_previous_type = v1->type;
 			if (v1->type.nature == Nature::VALUE and v1->type != v2->type.not_temporary()) {
 				auto left_v1 = static_cast<LeftValue*>(v1);
-				std::cout << v1->type << " ==> " << v2->type.not_temporary() << std::endl;
 				left_v1->change_type(analyser, v2->type.not_temporary());
 			}
 		}
@@ -244,6 +243,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			}
 		}
 		type = v1->type.mix(v2->type);
+		if (type == Type::GMP_INT) {
+			type.temporary = true;
+		}
 
 		// String / String => Array<String>
 		if (op->type == TokenType::DIVIDE and (v1->type == Type::STRING or v1->type == Type::STRING_TMP) and (v2->type == Type::STRING or v2->type == Type::STRING_TMP)) {
@@ -341,9 +343,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// At the end the require nature is taken into account
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
-	}
-	if (req_type == Type::VOID) {
-		type = Type::VOID;
 	}
 	if (req_type.raw_type == RawType::REAL) {
 		conversion = type;
@@ -536,6 +535,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			auto vv = dynamic_cast<VariableValue*>(v1);
 			if (vv != nullptr and equal_previous_type != v1->type) {
+				//std::cout << v1->type << " = " << v2->type << std::endl;
 				// we have a variable, like
 				// var a = 12 a = 'hello' or
 				// var a = 12 a = 200l
@@ -546,41 +546,54 @@ Compiler::value Expression::compile(Compiler& c) const {
 				c.update_var(vv->name, var, v1->type);
 
 				auto y = v2->compile(c);
-				std::cout << "y type : " << v2->type << std::endl;
 				if (v2->type.must_manage_memory()) {
 					y.v = VM::move_inc_obj(c.F, y.v);
 				}
 				if (equal_previous_type == Type::GMP_INT) {
-					VM::delete_gmp_int(c.F, v1_addr.v);
+					//VM::delete_gmp_int(c.F, v1_addr.v);
 				}
-				jit_insn_store(c.F, var, y.v);
-
+				if (v2->type == Type::GMP_INT) {
+					//std::cout << "clone mpz" << std::endl;
+					jit_insn_store(c.F, var, VM::clone_gmp_int(c.F, y.v));
+				} else {
+					jit_insn_store(c.F, var, y.v);
+				}
 				if (v2->type == Type::GMP_INT_TMP) {
 					return {VM::clone_gmp_int(c.F, y.v), Type::GMP_INT_TMP};
 				}
 				return y;
 
 			} else if (equal_previous_type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-
-				auto v1_addr = ((LeftValue*) v1)->compile_l(c);
-				auto v2_value = v2->compile(c);
-				jit_insn_store_relative(c.F, v1_addr.v, 0, v2_value.v);
-				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, v2_value.v, type), type};
+				auto y = v2->compile(c);
+				if (v1->type == Type::GMP_INT) {
+					auto x = v1->compile(c);
+					auto a = c.insn_address_of(x);
+					auto b = c.insn_address_of(y);
+					c.insn_call(Type::VOID, {a, b}, &mpz_set);
+					if (y.t.temporary) {
+						return y;
+					} else {
+						auto r = c.new_mpz();
+						auto r_addr = c.insn_address_of(r);
+						c.insn_call(Type::VOID, {r_addr, b}, &mpz_set);
+						return r;
+					}
+				} else {
+					auto v1_addr = ((LeftValue*) v1)->compile_l(c);
+					jit_insn_store_relative(c.F, v1_addr.v, 0, y.v);
+					if (type.nature == Nature::POINTER) {
+						return {VM::value_to_pointer(c.F, y.v, type), type};
+					}
+					return y;
 				}
-				return v2_value;
-
 			} else if (equal_previous_type.nature == Nature::POINTER) {
-
 				auto x = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
-
 				c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue::delete_ref(*x);
 					*x = y->move_inc();
 				});
 				return y;
-
 			}  else {
 				std::cout << "Invalid " << v1->to_string() << " = " << v2->to_string() << std::endl;
 			}
