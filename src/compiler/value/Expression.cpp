@@ -126,15 +126,18 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		// TODO other operators like |= ^= &=
 		if (v1->type.constant) {
 			analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, op->token->line, {v1->to_string()}});
+			return; // don't analyse more
 		}
 		// Check if A is a l-value
 		if (not v1->isLeftValue()) {
 			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), {v1->to_string()}});
+			return; // don't analyse more
 		}
 		// Change the type of x for operator =
-		if (op->type == TokenType::EQUAL and v1->isLeftValue()) {
-			equal_previous_type = v1->type;
-			if (v1->type.nature == Nature::VALUE and v1->type != v2->type.not_temporary()) {
+		equal_previous_type = v1->type;
+		auto vv = dynamic_cast<VariableValue*>(v1);
+		if (vv and op->type == TokenType::EQUAL) {
+			if (v1->type != v2->type.not_temporary()) {
 				auto left_v1 = static_cast<LeftValue*>(v1);
 				left_v1->change_type(analyser, v2->type.not_temporary());
 			}
@@ -229,20 +232,27 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS
 		) {
 
+		auto vv = dynamic_cast<VariableValue*>(v1);
+
 		// Set the correct type nature for the two members
 		if (array_push) {
 			if (v1->type.getElementType().nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
 				v2->analyse(analyser, Type::POINTER);
 			}
 		} else {
-			if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER and !(v1->isLeftValue() and op->type == TokenType::EQUAL)) {
+			if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
 				v1->analyse(analyser, Type::POINTER);
 			}
-			if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
+			if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
 				v2->analyse(analyser, Type::POINTER);
 			}
 		}
-		type = v1->type.mix(v2->type);
+
+		if (op->type == TokenType::EQUAL and vv != nullptr) {
+			type = v2->type;
+		} else {
+			type = v1->type.mix(v2->type);
+		}
 		if (type == Type::GMP_INT) {
 			type.temporary = true;
 		}
@@ -510,6 +520,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	switch (op->type) {
 		case TokenType::EQUAL: {
+			//std::cout << "(" << equal_previous_type << ", " << v1->type << ") = " << v2->type << std::endl;
 
 			// Reference, like : a = @b
 			auto varval = dynamic_cast<VariableValue*>(v1);
@@ -535,32 +546,41 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			auto vv = dynamic_cast<VariableValue*>(v1);
 			if (vv != nullptr and equal_previous_type != v1->type) {
-				//std::cout << v1->type << " = " << v2->type << std::endl;
-				// we have a variable, like
-				// var a = 12 a = 'hello' or
-				// var a = 12 a = 200l
-				// create a new variable a and replace the old one
-				auto v1_addr = ((LeftValue*) v1)->compile_l(c);
 
+				// we have a variable, like
+				// var a = 12 a = 'hello' or var a = 12 a = 200l
+				// create a new variable a and replace the old one
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+
+				// Create a new variable
 				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v1->type));
 				c.update_var(vv->name, var, v1->type);
 
-				auto y = v2->compile(c);
+				// Clone the object if it's not temporary
 				if (v2->type.must_manage_memory()) {
 					y.v = VM::move_inc_obj(c.F, y.v);
 				}
-				if (equal_previous_type == Type::GMP_INT) {
-					//VM::delete_gmp_int(c.F, v1_addr.v);
-				}
 				if (v2->type == Type::GMP_INT) {
-					//std::cout << "clone mpz" << std::endl;
-					jit_insn_store(c.F, var, VM::clone_gmp_int(c.F, y.v));
+					y.v = VM::clone_gmp_int(c.F, y.v);
+				}
+				// Delete previous variable reference
+				if (equal_previous_type.must_manage_memory()) {
+					std::cout << "delete old var "<< std::endl;
+					c.insn_call(Type::VOID, {x_addr}, (void*) +[](LSValue** x) {
+						LSValue::delete_ref(*x);
+					});
+				}
+				// Store
+				if (v2->type.not_temporary() == Type::GMP_INT) {
+					auto a = c.insn_address_of({var, Type::GMP_INT});
+					auto b = c.insn_address_of(y);
+					c.insn_call(Type::VOID, {a, b}, &mpz_init_set);
+					return {VM::clone_gmp_int(c.F, var), Type::GMP_INT_TMP};
 				} else {
 					jit_insn_store(c.F, var, y.v);
 				}
-				if (v2->type == Type::GMP_INT_TMP) {
-					return {VM::clone_gmp_int(c.F, y.v), Type::GMP_INT_TMP};
-				}
+
 				return y;
 
 			} else if (equal_previous_type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
@@ -594,8 +614,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 					*x = y->move_inc();
 				});
 				return y;
-			}  else {
-				std::cout << "Invalid " << v1->to_string() << " = " << v2->to_string() << std::endl;
+			} else {
+				std::cout << "Invalid " << v1->to_string() << " (" << equal_previous_type << " => " << v1->type << ") = " << v2->to_string() << " (" << v2->type << ")" << std::endl;
 			}
 			break;
 		}

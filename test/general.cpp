@@ -123,6 +123,14 @@ void Test::test_general() {
 	code("let c = 2; c += 5").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
 
 	section("Type changes");
+	code("var a a = 12").equals("12");
+	code("var a a = 12 a").equals("12");
+	code("var a a = 12.5").equals("12.5");
+	code("var a a = 12.5 a").equals("12.5");
+	code("var a a = 'a'").equals("'a'");
+	code("var a a = 'a' a").equals("'a'");
+	code("var a a = 12m").equals("12");
+	//code("var a a = 12m a").equals("12");
 	code("var a = 2 a = 'hello'").equals("'hello'");
 	code("var a = 2 a = 'hello' a").equals("'hello'");
 	code("var a = 2 a = [1, 2] a").equals("[1, 2]");
@@ -134,8 +142,10 @@ void Test::test_general() {
 	code("var a = 200l a = 5 a").equals("5");
 	code("var a = 5.5 a = 200l a").equals("200");
 	code("var a = 5.5 a = 2").equals("2");
-	//code("var a = 5.5 a = 1000m").equals("1000");
+	code("var a = 5.5 a = 1000m").equals("1000");
 	//code("var a = 5.5 a = 2m ** 100").equals("1267650600228229401496703205376");
 	//code("var a = 2m a = 5").equals("5");
 	//code("var a = 5.5 System.print(a) a = 2 System.print(a) a = 200l System.print(a) a = 1000m System.print(a) a = 'hello' System.print(a)").equals("5.5\n2\n200\n1000\nhello\n");
+
+	// var a = [] a = 5m
 }

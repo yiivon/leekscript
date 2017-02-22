@@ -52,12 +52,14 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (v == nullptr) {
 			continue;
 		}
-		
+
 		if (expressions[i] != nullptr) {
 			expressions[i]->analyse(analyser, Type::UNKNOWN);
 			v->type = expressions[i]->type;
 			v->type.constant = constant;
 			v->value = expressions[i];
+		} else {
+			v->type = Type::NULLL;
 		}
 		if (v->type == Type::VOID) {
 			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, var->line, {var->content}});
