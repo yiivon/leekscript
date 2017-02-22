@@ -37,10 +37,7 @@ void Compiler::delete_variables_block(jit_function_t F, int deepness) {
 			if (it->second.type.must_manage_memory()) {
 				insn_delete({it->second.value, Type::POINTER});
 			}
-			if (it->second.type == Type::GMP_INT_TMP) {
-				VM::delete_gmp_int(F, it->second.value);
-			}
-			if (it->second.type == Type::GMP_INT) {
+			if (it->second.type.not_temporary() == Type::GMP_INT) {
 				VM::delete_gmp_int(F, it->second.value);
 			}
 		}
@@ -52,10 +49,7 @@ void Compiler::delete_function_variables() {
 		if (v.type.must_manage_memory()) {
 			insn_delete({v.value, Type::POINTER});
 		}
-		if (v.type == Type::GMP_INT_TMP) {
-			VM::delete_gmp_int(F, v.value);
-		}
-		if (v.type == Type::GMP_INT) {
+		if (v.type.not_temporary() == Type::GMP_INT) {
 			VM::delete_gmp_int(F, v.value);
 		}
 	}
