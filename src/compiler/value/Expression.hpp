@@ -24,6 +24,7 @@ public:
 	Type v1_type;
 	Type v2_type;
 	Type return_type;
+	Type equal_previous_type;
 
 	Expression();
 	Expression(Value*);

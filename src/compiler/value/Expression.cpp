@@ -131,6 +131,15 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (not v1->isLeftValue()) {
 			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), {v1->to_string()}});
 		}
+		// Change the type of x for operator =
+		if (op->type == TokenType::EQUAL and v1->isLeftValue()) {
+			equal_previous_type = v1->type;
+			if (v1->type.nature == Nature::VALUE and v1->type != v2->type.not_temporary()) {
+				auto left_v1 = static_cast<LeftValue*>(v1);
+				std::cout << v1->type << " ==> " << v2->type.not_temporary() << std::endl;
+				left_v1->change_type(analyser, v2->type.not_temporary());
+			}
+		}
 	}
 
 	this->v1_type = op->reversed ? v2->type : v1->type;
@@ -227,7 +236,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				v2->analyse(analyser, Type::POINTER);
 			}
 		} else {
-			if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
+			if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER and !(v1->isLeftValue() and op->type == TokenType::EQUAL)) {
 				v1->analyse(analyser, Type::POINTER);
 			}
 			if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
@@ -503,8 +512,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 	switch (op->type) {
 		case TokenType::EQUAL: {
 
+			// Reference, like : a = @b
 			auto varval = dynamic_cast<VariableValue*>(v1);
 			if (varval != nullptr and varval->scope == VarScope::LOCAL and c.get_var(varval->name).reference) {
+
 				if (v1->type.must_manage_memory()) {
 					auto v1v = v1->compile(c);
 					c.insn_delete(v1v);
@@ -523,7 +534,33 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return v2_value;
 			}
 
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			auto vv = dynamic_cast<VariableValue*>(v1);
+			if (vv != nullptr and equal_previous_type != v1->type) {
+				// we have a variable, like
+				// var a = 12 a = 'hello' or
+				// var a = 12 a = 200l
+				// create a new variable a and replace the old one
+				auto v1_addr = ((LeftValue*) v1)->compile_l(c);
+
+				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v1->type));
+				c.update_var(vv->name, var, v1->type);
+
+				auto y = v2->compile(c);
+				std::cout << "y type : " << v2->type << std::endl;
+				if (v2->type.must_manage_memory()) {
+					y.v = VM::move_inc_obj(c.F, y.v);
+				}
+				if (equal_previous_type == Type::GMP_INT) {
+					VM::delete_gmp_int(c.F, v1_addr.v);
+				}
+				jit_insn_store(c.F, var, y.v);
+
+				if (v2->type == Type::GMP_INT_TMP) {
+					return {VM::clone_gmp_int(c.F, y.v), Type::GMP_INT_TMP};
+				}
+				return y;
+
+			} else if (equal_previous_type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 
 				auto v1_addr = ((LeftValue*) v1)->compile_l(c);
 				auto v2_value = v2->compile(c);
@@ -533,7 +570,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 				return v2_value;
 
-			} else if (v1->type.nature == Nature::POINTER) {
+			} else if (equal_previous_type.nature == Nature::POINTER) {
 
 				auto x = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
@@ -544,7 +581,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				});
 				return y;
 
-			} else {
+			}  else {
 				std::cout << "Invalid " << v1->to_string() << " = " << v2->to_string() << std::endl;
 			}
 			break;
