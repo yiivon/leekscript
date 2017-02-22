@@ -159,6 +159,11 @@ void Test::test_numbers() {
 	code("var a = 20★; --a").equals("19");
 	code("var a = 30★; --a a").equals("29");
 
+	section("Number.operator x++");
+	code("var a = 20m; a++").equals("20");
+	code("var a = 20m; a++ a").equals("21");
+	code("var a = 20m; let b = a++ b").equals("20");
+
 	section("Number.operator =");
 	code("var a = 1m, b = 4m; a = b").equals("4");
 

@@ -37,6 +37,9 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 	}
 
 	type = expression->type;
+	if (type == Type::GMP_INT) {
+		type.temporary = true;
+	}
 	this->return_value = return_value;
 
 	if (req_type.nature == Nature::POINTER) {
@@ -52,7 +55,16 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 
 		case TokenType::PLUS_PLUS: {
 
-			if (expression->type.nature == Nature::VALUE) {
+			if (expression->type == Type::GMP_INT) {
+
+				auto x = expression->compile(c);
+				auto r = VM::clone_gmp_int(c.F, x.v);
+				auto x_addr = c.insn_address_of(x);
+				auto one = c.new_integer(1);
+				c.insn_call(Type::VOID, {x_addr, x_addr, one}, &mpz_add_ui);
+				return {r, Type::GMP_INT_TMP};
+
+			} else if (expression->type.nature == Nature::VALUE) {
 
 				auto x_addr = expression->compile_l(c);
 

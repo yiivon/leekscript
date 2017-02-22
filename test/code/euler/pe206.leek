@@ -2,7 +2,7 @@ var res = ''
 var search = function(start, base, level) {
 	if (level == 5) {
 		var b = base + (10m ** (20 - 2 * level))
-		for (var j = Number.sqrt(start); j < Number.sqrt(b); j = j + 1) {
+		for (var j = Number.sqrt(start); j < Number.sqrt(b); j++) {
 			var s = '' + (j ** 2)
 			for var k = 0; k < 9; {
 				if s[k * 2] != ('' + (++k)) continue 2
@@ -10,7 +10,7 @@ var search = function(start, base, level) {
 			res += ('' + j)
 		}
 	} else {
-		for var i = 0m; i < 10m; i = i + 1 {
+		for var i = 0m; i < 10m; i++ {
 			var p = i * (10m ** (19 - 2 * level))
 			var a = start + p
 			var b = base + (level + 1) * (10m ** (18 - 2 * level)) + p
