@@ -48,6 +48,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("+", {
 		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr, Method::NATIVE},
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp},
+		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::add_mpz_int},
 		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_real_real},
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_real_real},
 	});
@@ -422,6 +423,18 @@ Compiler::value NumberSTD::add_gmp_gmp(Compiler& c, std::vector<Compiler::value>
 	if (args[1].t.temporary && args[1] != r) {
 		VM::delete_gmp_int(c.F, args[1].v);
 	}
+	return r;
+}
+
+Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		return c.new_mpz();
+	}();
+	auto r_addr = c.insn_address_of(r);
+	auto a = c.insn_address_of(args[0]);
+	auto b = args[1];
+	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_add_ui);
 	return r;
 }
 

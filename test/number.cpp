@@ -177,6 +177,7 @@ void Test::test_numbers() {
 	code("15★ + false").equals("15");
 	code("15★ + true").equals("16");
 	code("let a = 15★ a + true").equals("16");
+	code("10000m + 15").equals("10015");
 
 	section("Number.operator +=");
 	code("var a = 15★ a += true a").equals("16");
