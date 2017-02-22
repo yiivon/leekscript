@@ -102,7 +102,7 @@ LetterType LexicalAnalyser::getLetterType(char32_t c) {
 
 TokenType LexicalAnalyser::getTokenType(string word, TokenType by_default) {
 	for (size_t j = 0; j < type_literals.size(); ++j) {
-		for (string text : type_literals[j]) {
+		for (const auto& text : type_literals[j]) {
 			if (word == text) return (TokenType) j;
 		}
 	}
