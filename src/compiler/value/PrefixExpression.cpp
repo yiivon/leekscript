@@ -50,7 +50,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 		or operatorr->type == TokenType::MINUS) {
 
 		type = expression->type;
-		if (type == Type::GMP_INT) {
+		if (type == Type::GMP_INT and operatorr->type == TokenType::MINUS) {
 			type = Type::GMP_INT_TMP;
 		}
 
@@ -126,7 +126,13 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 	switch (operatorr->type) {
 
 		case TokenType::PLUS_PLUS: {
-			if (expression->type.nature == Nature::VALUE) {
+			if (expression->type == Type::GMP_INT) {
+				auto x = expression->compile(c);
+				auto x_addr = c.insn_address_of(x);
+				auto one = c.new_integer(1);
+				c.insn_call(Type::VOID, {x_addr, x_addr, one}, &mpz_add_ui);
+				return x;
+			} else if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
 				auto y = c.new_integer(1);
 				jit_value_t sum = jit_insn_add(c.F, x.v, y.v);
