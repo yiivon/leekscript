@@ -390,7 +390,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 Compiler::value NumberSTD::store_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
 	auto a = c.insn_address_of(args[0]);
 	auto b = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID,{a, b}, &mpz_set);
+	c.insn_call(Type::VOID, {a, b}, &mpz_set);
 	if (args[1].t.temporary) {
 		return args[1];
 	} else {
