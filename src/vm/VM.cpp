@@ -62,6 +62,8 @@ LSValue* op_mod(void*, LSValue* x, LSValue* y) {
 }
 
 VM::VM(bool v1) {
+	// Init static class members
+	LSNull::static_init();
 
 	// Include STD modules
 	add_module(new ValueSTD());

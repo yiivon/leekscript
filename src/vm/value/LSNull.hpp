@@ -16,6 +16,9 @@ private:
 public:
 	static LSValue* get();
 	static LSClass* null_class;
+	static void static_init() {
+		LSNull::null_var = new LSNull();
+	}
 
 	~LSNull();
 
