@@ -65,7 +65,7 @@ public:
 
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;
 	static unsigned int operations;
-	static const bool enable_operations;
+	static bool enable_operations;
 	static unsigned long int operation_limit;
 
 	static jit_type_t gmp_int_type;
@@ -107,7 +107,7 @@ public:
 	virtual ~VM();
 
 	/** Main execution function **/
-	Result execute(const std::string code, std::string ctx, bool debug = false);
+	Result execute(const std::string code, std::string ctx, bool debug = false, bool ops = true);
 
 	/** Add a module **/
 	void add_module(Module* m);

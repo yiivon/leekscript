@@ -187,7 +187,7 @@ VM::~VM() {
 
 const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;
 unsigned int VM::operations = 0;
-const bool VM::enable_operations = true;
+bool VM::enable_operations = true;
 unsigned long int VM::operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
 jit_type_t VM::gmp_int_type;
@@ -218,7 +218,7 @@ void VM::add_module(Module* m) {
 #define YELLOW "\033[1;33m"
 #define END_COLOR "\033[0m"
 
-VM::Result VM::execute(const std::string code, std::string ctx, bool debug) {
+VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool ops) {
 
 	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
 	VM::gmp_int_type = jit_type_create_struct(types, 3, 0);
@@ -230,6 +230,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug) {
 	VM::gmp_values_deleted = 0;
 	VM::operations = 0;
 	VM::last_exception = nullptr;
+	VM::enable_operations = ops;
 	#if DEBUG_LEAKS_DETAILS
 		LSValue::objs().clear();
 	#endif
@@ -275,6 +276,8 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug) {
 
 	// Cleaning
 	delete program;
+
+	VM::enable_operations = true;
 
 	result.objects_created = LSValue::obj_count;
 	result.objects_deleted = LSValue::obj_deleted;

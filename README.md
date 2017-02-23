@@ -46,6 +46,7 @@ Option | Effect
 -j -J --json	| Get the result in JSON format
 -t -T --time	| Print execution time and operations
 -d -D --debug | Print debug information like types
+-nop --no-operations | Disable operations counting
 
 Tests, coverage, Valgrind, benchmark, doc
 ------------------
