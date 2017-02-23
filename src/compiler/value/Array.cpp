@@ -165,27 +165,18 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	return false;
 }
 
-LSInterval* LSArray_create_interval(int a, int b) {
-	LSInterval* interval = new LSInterval();
-	interval->a = a;
-	interval->b = b;
-	return interval;
-}
-
 Compiler::value Array::compile(Compiler& c) const {
 
 	if (interval) {
-
-		auto a = expressions[0]->compile(c);
-		auto b = expressions[1]->compile(c);
-
-		jit_type_t args[2] = {LS_INTEGER, LS_INTEGER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 2, 0);
-		jit_value_t args_v[] = {a.v, b.v};
-
-		jit_value_t interval = jit_insn_call_native(c.F, "new", (void*) LSArray_create_interval, sig, args_v, 2, JIT_CALL_NOTHROW);
-
-		return {interval, Type::INTERVAL};
+		Compiler::value a = {expressions[0]->compile(c).v, Type::INTEGER};
+		Compiler::value b = {expressions[1]->compile(c).v, Type::INTEGER};
+		return c.insn_call(Type::INTERVAL, {a, b}, +[](int a, int b) {
+			// TODO a better constructor?
+			LSInterval* interval = new LSInterval();
+			interval->a = a;
+			interval->b = b;
+			return interval;
+		});
 	}
 
 	Compiler::value array = {VM::create_array(c.F, type.getElementType(), expressions.size()), type};
