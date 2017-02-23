@@ -242,8 +242,8 @@ void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
 		string name = var.first;
 		LSValue* value = var.second;
 
-		jit_value_t jit_val = LS_CREATE_POINTER(c.F, value);
-		internals.insert(pair<string, jit_value_t>(name, jit_val));
+		auto val = c.new_pointer(value);
+		internals.insert(pair<string, jit_value_t>(name, val.v));
 	}
 
 	// User context variables

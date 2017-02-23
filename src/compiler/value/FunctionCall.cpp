@@ -283,13 +283,13 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			if (arguments.size() > 0) {
 				return arguments[0]->compile(c);
 			}
-			return {LS_CREATE_POINTER(c.F, new LSString("")), type};
+			return {c.new_pointer(new LSString("")).v, type};
 		}
 		if (vv->name == "Array") {
-			return {LS_CREATE_POINTER(c.F, new LSArray<LSValue*>()), type};
+			return {c.new_pointer(new LSArray<LSValue*>()).v, type};
 		}
 		if (vv->name == "Object") {
-			return {LS_CREATE_POINTER(c.F, new LSObject()), type};
+			return {c.new_pointer(new LSObject()).v, type};
 		}
 	}
 
@@ -375,11 +375,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Default function : f(12) */
 	jit_value_t fun;
-	jit_value_t ls_fun_addr = LS_CREATE_POINTER(c.F, nullptr);
+	auto ls_fun_addr = c.new_pointer(nullptr);
 
 	if (function->type.nature == Nature::POINTER) {
-		ls_fun_addr = function->compile(c).v;
-		fun = jit_insn_load_relative(c.F, ls_fun_addr, 24, LS_POINTER);
+		ls_fun_addr = function->compile(c);
+		fun = jit_insn_load_relative(c.F, ls_fun_addr.v, 24, LS_POINTER);
 	} else {
 		fun = function->compile(c).v;
 	}
@@ -397,7 +397,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		args_types.push_back(VM::get_jit_type(object->type));
 	} else {
 		// Function pointer as first argument
-		args.push_back(ls_fun_addr);
+		args.push_back(ls_fun_addr.v);
 		args_types.push_back(LS_POINTER);
 	}
 

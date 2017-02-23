@@ -237,13 +237,13 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return {n, type};
 				}
 				else if (vv->name == "String") {
-					return {LS_CREATE_POINTER(c.F, new LSString("")), type};
+					return {c.new_pointer(new LSString("")).v, type};
 				}
 				else if (vv->name == "Array") {
-					return {LS_CREATE_POINTER(c.F, new LSArray<LSValue*>()), type};
+					return {c.new_pointer(new LSArray<LSValue*>()).v, type};
 				}
 				else if (vv->name == "Object") {
-					return {LS_CREATE_POINTER(c.F, new LSObject()), type};
+					return {c.new_pointer(new LSObject()).v, type};
 				}
 				else {
 					auto clazz = expression->compile(c);
@@ -279,13 +279,13 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						if (fc->arguments.size() > 0) {
 							return fc->arguments[0]->compile(c);
 						}
-						return {LS_CREATE_POINTER(c.F, new LSString("")), type};
+						return {c.new_pointer(new LSString("")).v, type};
 					}
 					if (vv->name == "Array") {
-						return {LS_CREATE_POINTER(c.F, new LSArray<LSValue*>()), type};
+						return {c.new_pointer(new LSArray<LSValue*>()).v, type};
 					}
 					if (vv->name == "Object") {
-						return {LS_CREATE_POINTER(c.F, new LSObject()), type};
+						return {c.new_pointer(new LSObject()).v, type};
 					}
 				}
 			}

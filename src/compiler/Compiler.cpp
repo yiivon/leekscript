@@ -167,7 +167,7 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 	return v;
 }
 Compiler::value Compiler::new_null() const {
-	return {LS_CREATE_POINTER(F, LSNull::get()), Type::NULLL};
+	return {jit_value_create_long_constant(F, LS_POINTER, (long) LSNull::get()), Type::NULLL};
 }
 Compiler::value Compiler::new_bool(bool b) const {
 	return {LS_CREATE_BOOLEAN(F, b), Type::BOOLEAN};
@@ -176,7 +176,7 @@ Compiler::value Compiler::new_integer(int i) const {
 	return {LS_CREATE_INTEGER(F, i), Type::INTEGER};
 }
 Compiler::value Compiler::new_pointer(const void* p) const {
-	return {LS_CREATE_POINTER(F, (void*) p), Type::POINTER};
+	return {jit_value_create_long_constant(F, LS_POINTER, (long)(void*)(p)), Type::POINTER};
 }
 Compiler::value Compiler::new_mpz() const {
 	return {VM::create_gmp_int(F, 0), Type::GMP_INT_TMP};

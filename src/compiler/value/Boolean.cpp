@@ -29,10 +29,9 @@ void Boolean::analyse(SemanticAnalyser*, const Type& req_type) {
 }
 
 Compiler::value Boolean::compile(Compiler& c) const {
-
 	if (type.nature == Nature::POINTER) {
 		LSBoolean* b = LSBoolean::get(value);
-		return {LS_CREATE_POINTER(c.F, b), Type::BOOLEAN_P};
+		return {c.new_pointer(b).v, Type::BOOLEAN_P};
 	} else {
 		return {LS_CREATE_BOOLEAN(c.F, value), Type::BOOLEAN};
 	}

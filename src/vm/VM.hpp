@@ -29,7 +29,6 @@
 #define LS_CREATE_BOOLEAN(F, X) jit_value_create_nint_constant((F), LS_INTEGER, (X))
 #define LS_CREATE_LONG(F, X) jit_value_create_long_constant((F), LS_LONG, (X))
 #define LS_CREATE_REAL(F, X) jit_value_create_float64_constant((F), LS_REAL, (X))
-#define LS_CREATE_POINTER(F, X) jit_value_create_constant((F), new jit_constant_t { LS_POINTER, {(X)} })
 
 namespace ls {
 

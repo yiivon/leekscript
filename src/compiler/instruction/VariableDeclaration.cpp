@@ -96,7 +96,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				c.add_var(name, var, Type::POINTER, false);
 
 				if (Function* f = dynamic_cast<Function*>(ex)) {
-					jit_insn_store(c.F, var, LS_CREATE_POINTER(c.F, (void*) f->ls_fun));
+					jit_insn_store(c.F, var, c.new_pointer((void*) f->ls_fun).v);
 				}
 
 				auto val = ex->compile(c);

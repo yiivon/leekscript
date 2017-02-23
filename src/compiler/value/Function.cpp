@@ -293,7 +293,7 @@ Compiler::value Function::compile(Compiler& c) const {
 
 	if (type.nature == Nature::POINTER) {
 		ls_fun->function = f;
-		jit_value_t jit_fun = LS_CREATE_POINTER(c.F, ls_fun);
+		jit_value_t jit_fun = c.new_pointer(ls_fun).v;
 		for (const auto& cap : captures) {
 			jit_value_t jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
@@ -310,7 +310,7 @@ Compiler::value Function::compile(Compiler& c) const {
 		}
 		return {jit_fun, type};
 	} else {
-		return {LS_CREATE_POINTER(c.F, f), type};
+		return {c.new_pointer(f).v, type};
 	}
 }
 

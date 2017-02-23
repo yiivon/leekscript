@@ -123,7 +123,7 @@ Compiler::value Number::compile(Compiler& c) const {
 		jit_value_set_addressable(gmp_struct);
 		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 0, LS_CREATE_INTEGER(c.F, mpz_value->_mp_alloc));
 		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 4, LS_CREATE_INTEGER(c.F, mpz_value->_mp_size));
-		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 8, LS_CREATE_POINTER(c.F, mpz_value->_mp_d));
+		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 8, c.new_pointer(mpz_value->_mp_d).v);
 
 		return {gmp_struct, Type::GMP_INT};
 	}

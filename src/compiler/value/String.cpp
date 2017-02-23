@@ -1,5 +1,4 @@
 #include "../../compiler/value/String.hpp"
-
 #include "../../vm/value/LSString.hpp"
 
 using namespace std;
@@ -34,18 +33,11 @@ void String::analyse(SemanticAnalyser*, const Type&) {
 	// Nothing to do, always a pointer
 }
 
-LSValue* String_create(LSString* s) {
-	return s->clone();
-}
-
 Compiler::value String::compile(Compiler& c) const {
-
-	jit_value_t base = LS_CREATE_POINTER(c.F, ls_string);
-
-	jit_type_t args_types[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 1, 0);
-
-	return {jit_insn_call_native(c.F, "create", (void*) String_create, sig, &base, 1, JIT_CALL_NOTHROW), Type::STRING};
+	auto base = c.new_pointer(ls_string);
+	return c.insn_call(Type::STRING, {base}, (void*) +[](LSString* s) {
+		return s->clone();
+	});
 }
 
 }
