@@ -1,4 +1,4 @@
-SRC_DIR := src/vm src/vm/value src/vm/standard src/doc \
+SRC_DIR := src/vm src/vm/value src/vm/standard src/vm/legacy src/doc \
 src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic \
 src/compiler/value src/compiler/instruction src/util lib
 TEST_DIR := test

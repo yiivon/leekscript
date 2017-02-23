@@ -26,6 +26,7 @@
 #include "standard/ClassSTD.hpp"
 #include "standard/IntervalSTD.hpp"
 #include "standard/JsonSTD.hpp"
+#include "legacy/Functions.hpp"
 
 using namespace std;
 
@@ -100,85 +101,9 @@ VM::VM(bool v1) : compiler(this) {
 		add_internal_var(ops[o], op_type);
 	}
 
+	// Add v1 functions
 	if (v1) {
-		auto debug = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSValue* v) {
-			v->print(*VM::output);
-			LSValue::delete_temporary(v);
-			*VM::output << std::endl;
-		});
-		auto debug_type = Type::FUNCTION_P;
-		debug_type.setArgumentType(0, Type::POINTER);
-		debug_type.setReturnType(Type::VOID);
-		system_vars.insert({"debug", debug});
-		add_internal_var("debug", debug_type);
-
-		auto charAt = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSString* v, int p) {
-			auto s = v->charAt(p);
-			LSValue::delete_temporary(v);
-			return s;
-		});
-		auto charAt_type = Type::FUNCTION_P;
-		charAt_type.setArgumentType(0, Type::STRING);
-		charAt_type.setArgumentType(1, Type::INTEGER);
-		charAt_type.setReturnType(Type::STRING);
-		system_vars.insert({"charAt", charAt});
-		add_internal_var("charAt", charAt_type);
-
-		auto replace = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSString* string, LSString* from, LSString* to) {
-			std::string str(*string);
-			size_t start_pos = 0;
-
-			// Replace \\ by \ (like Java does)
-			std::string f = *from;
-			while((start_pos = f.find("\\\\", start_pos)) != std::string::npos) {
-				f.replace(start_pos, 2, "\\");
-				start_pos += 1;
-			}
-			start_pos = 0;
-			std::string t = *to;
-			while((start_pos = t.find("\\\\", start_pos)) != std::string::npos) {
-				t.replace(start_pos, 2, "\\");
-				start_pos += 1;
-			}
-
-			start_pos = 0;
-			while((start_pos = str.find(f, start_pos)) != std::string::npos) {
-				str.replace(start_pos, from->length(), t);
-				start_pos += t.size();
-			}
-			if (string->refs == 0) { delete string; }
-			if (from->refs == 0) { delete from; }
-			if (to->refs == 0) { delete to; }
-			return new LSString(str);
-		});
-		auto replace_type = Type::FUNCTION_P;
-		replace_type.setArgumentType(0, Type::STRING);
-		replace_type.setArgumentType(1, Type::STRING);
-		replace_type.setArgumentType(2, Type::STRING);
-		replace_type.setReturnType(Type::STRING);
-		system_vars.insert({"replace", replace});
-		add_internal_var("replace", replace_type);
-
-		auto count = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSArray<LSValue*>* a) {
-			int s = a->size();
-			LSValue::delete_temporary(a);
-			return s;
-		});
-		auto count_type = Type::FUNCTION_P;
-		count_type.setArgumentType(0, Type::ARRAY);
-		count_type.setReturnType(Type::INTEGER);
-		system_vars.insert({"count", count});
-		add_internal_var("count", count_type);
-
-		auto pushAll = new LSFunction<LSValue*>((void*) +[](LSFunction<LSValue*>*, LSArray<LSValue*>* a, LSArray<LSValue*>* b) {
-			return a->ls_push_all_ptr(b);
-		});
-		auto pushAll_type = Type::FUNCTION_P;
-		pushAll_type.setArgumentType(0, Type::PTR_ARRAY);
-		pushAll_type.setArgumentType(1, Type::PTR_ARRAY);
-		pushAll_type.setReturnType(Type::VOID);
-		system_vars.insert({"pushAll", pushAll});
-		add_internal_var("pushAll", pushAll_type);
+		legacy::Functions::create(this);
 	}
 }
 
