@@ -534,7 +534,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				c.add_var(varval->name, var, v2->type, false);
 				auto v2_value = v2->compile(c);
 				if (v2->type.must_manage_memory()) {
-					v2_value.v = VM::move_inc_obj(c.F, v2_value.v);
+					v2_value = c.insn_move_inc(v2_value);
 				}
 				jit_insn_store(c.F, var, v2_value.v);
 
@@ -559,14 +559,13 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 				// Clone the object if it's not temporary
 				if (v2->type.must_manage_memory()) {
-					y.v = VM::move_inc_obj(c.F, y.v);
+					y = c.insn_move_inc(y);
 				}
 				if (v2->type == Type::GMP_INT) {
 					y.v = VM::clone_gmp_int(c.F, y.v);
 				}
 				// Delete previous variable reference
 				if (equal_previous_type.must_manage_memory()) {
-					std::cout << "delete old var "<< std::endl;
 					c.insn_call(Type::VOID, {x_addr}, (void*) +[](LSValue** x) {
 						LSValue::delete_ref(*x);
 					});

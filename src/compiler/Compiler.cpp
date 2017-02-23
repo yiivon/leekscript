@@ -332,6 +332,12 @@ void Compiler::insn_push_move_array(Compiler::value array, Compiler::value value
 	}
 }
 
+Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
+	return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
+		return v->move_inc();
+	});
+}
+
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
 	std::vector<jit_value_t> jit_args;
 	std::vector<jit_type_t> arg_types;

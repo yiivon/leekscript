@@ -101,7 +101,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 
 				auto val = ex->compile(c);
 				if (ex->type.must_manage_memory()) {
-					val.v = VM::move_inc_obj(c.F, val.v);
+					val = c.insn_move_inc(val);
 				}
 				c.set_var_type(name, ex->type);
 				c.add_function_var(var, v->type);

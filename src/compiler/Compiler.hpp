@@ -103,6 +103,7 @@ public:
 	value insn_array_size(value v) const;
 	value insn_get_capture(int index, Type type) const;
 	void  insn_push_move_array(value array, value element) const;
+	value insn_move_inc(value) const;
 
 	// Iterators
 	value iterator_begin(value v) const;
