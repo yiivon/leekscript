@@ -14,7 +14,7 @@ struct lsmap_less {
 template <typename K, typename T>
 class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
 public:
-	static LSValue* map_class;
+	static LSValue* clazz;
 
 	LSMap();
 	virtual ~LSMap();

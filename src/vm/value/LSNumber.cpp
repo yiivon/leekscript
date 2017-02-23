@@ -10,7 +10,7 @@ using namespace std;
 
 namespace ls {
 
-LSClass* LSNumber::clazz = new LSClass("Number");
+LSClass* LSNumber::clazz;
 
 LSNumber* LSNumber::get(NUMBER_TYPE i) {
 	return new LSNumber(i);

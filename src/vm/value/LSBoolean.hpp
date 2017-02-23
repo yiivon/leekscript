@@ -17,7 +17,7 @@ public:
 
 	const bool value;
 
-	static LSValue* boolean_class;
+	static LSValue* clazz;
 	static LSBoolean* false_val;
 	static LSBoolean* true_val;
 	static LSBoolean* get(bool value) {

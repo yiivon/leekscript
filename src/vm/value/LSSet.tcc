@@ -19,7 +19,7 @@ inline bool lsset_less<T>::operator()(T lhs, T rhs) const {
 }
 
 template <typename T>
-LSValue* LSSet<T>::set_class(new LSClass("Set"));
+LSValue* LSSet<T>::clazz;
 
 template <class T>
 inline LSSet<T>::LSSet() : LSValue(SET) {}
@@ -244,7 +244,7 @@ inline LSValue* LSSet<T>::clone() const {
 
 template <typename T>
 LSValue*LSSet<T>::getClass() const {
-	return LSSet<T>::set_class;
+	return LSSet<T>::clazz;
 }
 
 }

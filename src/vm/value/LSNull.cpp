@@ -6,8 +6,8 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSNull::null_var = new LSNull();
-LSClass* LSNull::null_class = new LSClass("Null");
+LSValue* LSNull::null_var;
+LSClass* LSNull::clazz;
 
 LSValue* LSNull::get() {
 	return null_var;
@@ -41,7 +41,7 @@ std::ostream& LSNull::dump(std::ostream& os) const {
 }
 
 LSValue* LSNull::getClass() const {
-	return LSNull::null_class;
+	return LSNull::clazz;
 }
 
 }

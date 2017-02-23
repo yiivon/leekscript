@@ -13,7 +13,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSString::string_class(new LSClass("String"));
+LSValue* LSString::string_class;
 
 LSString::iterator LSString::iterator_begin(LSString* s) {
 	return {(char*) s->c_str(), 0, 0, 0, 0};

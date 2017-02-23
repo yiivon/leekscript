@@ -6,6 +6,8 @@ namespace ls {
 
 BooleanSTD::BooleanSTD() : Module("Boolean") {
 
+	LSBoolean::clazz = clazz;
+
 	operator_("+", {
 		{Type::BOOLEAN, Type::STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, Method::NATIVE},
 		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, Method::NATIVE},

@@ -13,6 +13,16 @@ int map_size(const LSMap<LSValue*,LSValue*>* map) {
 
 MapSTD::MapSTD() : Module("Map") {
 
+	LSMap<LSValue*, LSValue*>::clazz = clazz;
+	LSMap<LSValue*, int>::clazz = clazz;
+	LSMap<LSValue*, double>::clazz = clazz;
+	LSMap<int, LSValue*>::clazz = clazz;
+	LSMap<int, int>::clazz = clazz;
+	LSMap<int, double>::clazz = clazz;
+	LSMap<double, LSValue*>::clazz = clazz;
+	LSMap<double, int>::clazz = clazz;
+	LSMap<double, double>::clazz = clazz;
+
 	operator_("in", {
 		{Type::PTR_PTR_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, LSValue*>::in, Method::NATIVE},
 		{Type::PTR_REAL_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, double>::in, Method::NATIVE},

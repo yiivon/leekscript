@@ -9,7 +9,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSClass::clazz = new LSClass("Class");
+LSValue* LSClass::clazz;
 
 LSClass::LSClass(string name) : LSValue(CLASS), name(name) {
 	parent = nullptr;

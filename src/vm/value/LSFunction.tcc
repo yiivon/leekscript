@@ -9,7 +9,7 @@ using namespace std;
 namespace ls {
 
 template <class R>
-LSClass* LSFunction<R>::clazz = new LSClass("Function");
+LSClass* LSFunction<R>::clazz;
 
 template <class R>
 LSFunction<R>::LSFunction(void* function) : LSValue(FUNCTION) {

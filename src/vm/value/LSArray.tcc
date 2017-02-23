@@ -15,7 +15,7 @@
 namespace ls {
 
 template <class T>
-LSValue* LSArray<T>::clazz = nullptr;
+LSValue* LSArray<T>::clazz;
 
 template <>
 inline LSArray<LSValue*>::~LSArray() {

@@ -14,7 +14,7 @@ struct lsset_less {
 template <typename T>
 class LSSet : public LSValue, public std::set<T, lsset_less<T>> {
 public:
-	static LSValue* set_class;
+	static LSValue* clazz;
 
 	LSSet();
 	LSSet(const LSSet<T>& other);

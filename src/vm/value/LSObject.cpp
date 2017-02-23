@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSObject::object_class(new LSClass("Object"));
+LSValue* LSObject::object_class;
 
 LSObject::LSObject() : LSValue(OBJECT) {
 	clazz = nullptr;

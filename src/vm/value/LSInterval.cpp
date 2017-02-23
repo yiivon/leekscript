@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSInterval::clazz = nullptr;
+LSValue* LSInterval::clazz;
 
 LSInterval::LSInterval() : LSValue(INTERVAL) {}
 

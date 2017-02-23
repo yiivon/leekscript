@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ls {
 
-LSValue* LSBoolean::boolean_class(new LSClass("Boolean"));
+LSValue* LSBoolean::clazz;
 LSBoolean* LSBoolean::false_val(new LSBoolean(false));
 LSBoolean* LSBoolean::true_val(new LSBoolean(true));
 
@@ -121,7 +121,7 @@ string LSBoolean::json() const {
 }
 
 LSValue* LSBoolean::getClass() const {
-	return LSBoolean::boolean_class;
+	return LSBoolean::clazz;
 }
 
 }
