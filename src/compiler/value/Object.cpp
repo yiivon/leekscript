@@ -13,9 +13,6 @@ Object::Object() {
 }
 
 Object::~Object() {
-	// for (auto key : keys) {
-		// delete key;
-	// }
 	for (auto ex : values) {
 		delete ex;
 	}
@@ -45,7 +42,7 @@ void Object::analyse(SemanticAnalyser* analyser, const Type&) {
 
 Compiler::value Object::compile(Compiler& c) const {
 
-	Compiler::value object = {VM::create_object(c.F), Type::OBJECT};
+	auto object = c.new_object();
 
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		auto k = c.new_pointer((void*) &keys.at(i).content);

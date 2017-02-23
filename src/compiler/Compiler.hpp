@@ -60,7 +60,8 @@ public:
 	value new_bool(bool b) const;
 	value new_integer(int i) const;
 	value new_pointer(const void* p) const;
-	value new_object(value) const;
+	value new_object() const;
+	value new_object_class(value clazz) const;
 	value new_mpz() const;
 
 	// Conversions

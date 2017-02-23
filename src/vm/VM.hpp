@@ -114,7 +114,6 @@ public:
 	static jit_type_t get_jit_type(const Type& type);
 
 	/** Value creation **/
-	static jit_value_t create_object(jit_function_t F);
 	static jit_value_t create_array(jit_function_t F, const Type& element_type,
 		int cap = 0);
 	static void push_move_array(jit_function_t F, const Type& element_type,

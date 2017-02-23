@@ -247,7 +247,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				else {
 					auto clazz = expression->compile(c);
-					return c.new_object(clazz);
+					return c.new_object_class(clazz);
 				}
 			}
 

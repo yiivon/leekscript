@@ -181,7 +181,12 @@ Compiler::value Compiler::new_pointer(const void* p) const {
 Compiler::value Compiler::new_mpz() const {
 	return {VM::create_gmp_int(F, 0), Type::GMP_INT_TMP};
 }
-Compiler::value Compiler::new_object(Compiler::value clazz) const {
+Compiler::value Compiler::new_object() const {
+	return insn_call(Type::OBJECT, {}, +[]() {
+		return new LSObject();
+	});
+}
+Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
 	return insn_call(Type::POINTER, {clazz}, +[](LSClass* clazz) {
 		return new LSObject(clazz);
 	});
