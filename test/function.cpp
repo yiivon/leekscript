@@ -85,6 +85,7 @@ void Test::test_functions() {
 	code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
 
 	section("Function operators");
+	// TODO parsing issue
 //	code("+(1, 2)").equals("3");
 //	code("+([1], 2)").equals("[1, 2]");
 //	code("+('test', 2)").equals("'test2'");
@@ -100,6 +101,7 @@ void Test::test_functions() {
 	code("÷('banana', 'n')").equals("['ba', 'a', 'a']");
 	code("**(2, 11)").equals("2048");
 	code("%(48, 5)").equals("3");
+	// TODO lexical bug
 	//code("\\(72, 7)").equals("10");
 	code("let p = +; p(1, 2)").equals("3");
 	code("let p = +; p('test', 2)").equals("'test2'");
@@ -145,6 +147,7 @@ void Test::test_functions() {
 	//code("÷.args").equals("[<class Value>, <class Value>]");
 	//code("%.args").equals("[<class Value>, <class Value>]");
 	//code("**.args").equals("[<class Value>, <class Value>]");
+	// TODO manage multiple versions of functions
 	//code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
 
 	section("Check argument count");
