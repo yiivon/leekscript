@@ -372,15 +372,6 @@ void VM::inc_ops_jit(jit_function_t F, jit_value_t amount) {
 	jit_insn_label(F, &label_end);
 }
 
-LSObject* VM_create_object() {
-	return new LSObject();
-}
-
-jit_value_t VM::create_object(jit_function_t F) {
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, {}, 0, 0);
-	return jit_insn_call_native(F, "create_object", (void*) VM_create_object, sig, {}, 0, JIT_CALL_NOTHROW);
-}
-
 LSArray<LSValue*>* VM_create_array_ptr(int cap) {
 	LSArray<LSValue*>* array = new LSArray<LSValue*>();
 	array->reserve(cap);
@@ -413,35 +404,6 @@ jit_value_t VM::create_array(jit_function_t F, const Type& element_type, int cap
 	return jit_insn_call_native(F, "create_array", (void*) VM_create_array_ptr, sig, &s, 1, JIT_CALL_NOTHROW);
 }
 
-void VM_push_array_ptr(LSArray<LSValue*>* array, LSValue* value) {
-	array->push_move(value);
-}
-
-void VM_push_array_int(LSArray<int>* array, int value) {
-	array->push_back(value);
-}
-
-void VM_push_array_float(LSArray<double>* array, double value) {
-	array->push_back(value);
-}
-
-void VM::push_move_array(jit_function_t F, const Type& element_type, jit_value_t array, jit_value_t value) {
-	/* Because of the move, there is no need to call delete_temporary on the pushed value.
-	 * If value points to a temporary variable his ownership will be transfer to the array.
-	 */
-	jit_type_t args[2] = {LS_POINTER, get_jit_type(element_type)};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
-	jit_value_t args_v[] = {array, value};
-
-	if (element_type == Type::INTEGER) {
-		jit_insn_call_native(F, "push_array", (void*) VM_push_array_int, sig, args_v, 2, JIT_CALL_NOTHROW);
-	} else if (element_type == Type::REAL) {
-		jit_insn_call_native(F, "push_array", (void*) VM_push_array_float, sig, args_v, 2, JIT_CALL_NOTHROW);
-	} else {
-		jit_insn_call_native(F, "push_array", (void*) VM_push_array_ptr, sig, args_v, 2, JIT_CALL_NOTHROW);
-	}
-}
-
 jit_value_t VM::create_gmp_int(jit_function_t F, long value) {
 
 	jit_value_t gmp_struct = jit_value_create(F, gmp_int_type);
@@ -464,16 +426,6 @@ jit_value_t VM::move_obj(jit_function_t F, jit_value_t ptr) {
 	jit_type_t args[1] = {LS_POINTER};
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 1, 0);
 	return jit_insn_call_native(F, "move", (void*) VM_move, sig, &ptr, 1, JIT_CALL_NOTHROW);
-}
-
-LSValue* VM_move_inc(LSValue* val) {
-	return val->move_inc();
-}
-
-jit_value_t VM::move_inc_obj(jit_function_t F, jit_value_t ptr) {
-	jit_type_t args[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 1, 0);
-	return jit_insn_call_native(F, "move_inc", (void*) VM_move_inc, sig, &ptr, 1, JIT_CALL_NOTHROW);
 }
 
 LSValue* VM_clone(LSValue* val) {
