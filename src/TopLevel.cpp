@@ -13,12 +13,12 @@
 #include "doc/Documentation.hpp"
 #include "../benchmark/Benchmark.hpp"
 #include "vm/LSValue.hpp"
+#include "util/Util.hpp"
 
 using namespace std;
 
 void print_errors(ls::VM::Result& result);
 void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops);
-bool is_file_name(std::string data);
 
 #define GREY "\033[0;90m"
 #define GREEN "\033[0;32m"
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 	if (file_or_code.size() > 0) {
 		/** Get the code **/
 		std::string code;
-		if (is_file_name(file_or_code)) {
+		if (Util::is_file_name(file_or_code)) {
 			ifstream ifs(file_or_code.data());
 			code = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
 			ifs.close();
@@ -98,21 +98,6 @@ int main(int argc, char* argv[]) {
 }
 
 void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops) {
-bool is_file_name(std::string data) {
-	// Real file?
-	std::ifstream test(data);
-  	if (test) return true;
-	// Contains spaces => no
-	if (data.find_first_of("\t\n ") != string::npos) return false;
-	// Ends with '.leek' or '.ls' => yes
-	if (data.size() <= 4) return false;
-	string dot_leek = ".leek";
-	string dot_ls = ".ls";
-    if (std::equal(dot_leek.rbegin(), dot_leek.rend(), data.rbegin())) return true;
-	if (std::equal(dot_ls.rbegin(), dot_ls.rend(), data.rbegin())) return true;
-	return true;
-}
-
 	print_errors(result);
 	if (json) {
 		cout << "{\"success\":true,\"ops\":" << result.operations
