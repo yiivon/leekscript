@@ -61,7 +61,8 @@ LSValue* op_mod(void*, LSValue* x, LSValue* y) {
 	return x->mod(y);
 }
 
-VM::VM(bool v1) {
+VM::VM(bool v1) : compiler(this) {
+
 	// Init static class members
 	LSNull::static_init();
 

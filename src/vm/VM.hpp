@@ -101,6 +101,7 @@ public:
 	std::vector<Module*> modules;
 	std::map<std::string, LSValue*> system_vars;
 	std::map<std::string, SemanticVar*> internal_vars;
+	Compiler compiler;
 
 	VM(bool v1 = false);
 	virtual ~VM();

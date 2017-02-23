@@ -90,8 +90,7 @@ void Program::analyse(SemanticAnalyser* analyser) {
 
 void Program::compile_main(VM& vm, Context& context) {
 
-	Compiler c(this);
-	c.vm = &vm;
+	vm.compiler.program = this;
 
 	jit_init();
 	VM::jit_context = jit_context_create();
@@ -101,13 +100,13 @@ void Program::compile_main(VM& vm, Context& context) {
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(main->type.getReturnType()), params, 0, 0);
 	jit_function_t F = jit_function_create(VM::jit_context, signature);
 	jit_insn_uses_catcher(F);
-	c.enter_function(F);
+	vm.compiler.enter_function(F);
 
-	compile_jit(vm, c, context, false);
+	compile_jit(vm, vm.compiler, context, false);
 
 	// catch (ex) {
 	jit_value_t ex = jit_insn_start_catcher(F);
-	c.delete_function_variables();
+	vm.compiler.delete_function_variables();
 	VM::store_exception(F, ex);
 	jit_insn_rethrow_unhandled(F);
 

@@ -51,7 +51,7 @@ public:
 	Program* program;
 	VM* vm;
 
-	Compiler(Program* program);
+	Compiler(VM* vm);
 	virtual ~Compiler();
 
 	// Value creation
