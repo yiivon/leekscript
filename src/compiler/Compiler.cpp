@@ -313,6 +313,25 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	return {v, type};
 }
 
+void Compiler::insn_push_move_array(Compiler::value array, Compiler::value value) const {
+	/* Because of the move, there is no need to call delete_temporary on the pushed value.
+	 * If value points to a temporary variable his ownership will be transfer to the array.
+	 */
+	if (array.t.getElementType() == Type::INTEGER) {
+		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<int>* array, int value) {
+			array->push_back(value);
+		});
+	} else if (array.t.getElementType() == Type::REAL) {
+		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<double>* array, double value) {
+			array->push_back(value);
+		});
+	} else {
+		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
+			array->push_move(value);
+		});
+	}
+}
+
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
 	std::vector<jit_value_t> jit_args;
 	std::vector<jit_type_t> arg_types;

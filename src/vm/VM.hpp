@@ -117,8 +117,6 @@ public:
 	/** Value creation **/
 	static jit_value_t create_array(jit_function_t F, const Type& element_type,
 		int cap = 0);
-	static void push_move_array(jit_function_t F, const Type& element_type,
-		jit_value_t array, jit_value_t value);
 	static jit_value_t create_gmp_int(jit_function_t F, long value = 0);
 
 	/** Conversions **/

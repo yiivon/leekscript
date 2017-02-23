@@ -102,6 +102,7 @@ public:
 	void  insn_delete_temporary(value v) const;
 	value insn_array_size(value v) const;
 	value insn_get_capture(int index, Type type) const;
+	void  insn_push_move_array(value array, value element) const;
 
 	// Iterators
 	value iterator_begin(value v) const;

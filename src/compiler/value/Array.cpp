@@ -188,18 +188,17 @@ Compiler::value Array::compile(Compiler& c) const {
 		return {interval, Type::INTERVAL};
 	}
 
-	jit_value_t array = VM::create_array(c.F, type.getElementType(), expressions.size());
+	Compiler::value array = {VM::create_array(c.F, type.getElementType(), expressions.size()), type};
 
 	for (Value* val : expressions) {
-
 		auto v = val->compile(c);
-		VM::push_move_array(c.F, type.getElementType(), array, v.v);
+		c.insn_push_move_array(array, {v.v, type.getElementType()});
 	}
 
 	// size of the array + 1 operations
 	VM::inc_ops(c.F, expressions.size() + 1);
 
-	return {array, type};
+	return array;
 }
 
 }
