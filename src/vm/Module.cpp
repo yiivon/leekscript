@@ -18,7 +18,9 @@ Module::Module(std::string name) : name(name) {
 	clazz = new LSClass(name);
 }
 
-Module::~Module() {}
+Module::~Module() {
+	delete clazz;
+}
 
 void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
 	vector<LSClass::Operator> operators = impl;
