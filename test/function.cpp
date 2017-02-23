@@ -124,6 +124,7 @@ void Test::test_functions() {
 
 	section("Function.operator <");
 	code("let a = x -> x; a < a").equals("false");
+	code("[x -> x, ''][0] < 5").equals("false");
 
 	section("STD method");
 	//code("String.size").equals("<function>");
