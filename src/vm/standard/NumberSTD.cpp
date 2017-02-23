@@ -41,10 +41,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 	/*
 	 * Operators
 	 */
-	operator_("=", {
-		//{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::store_gmp_gmp}
-	});
-
 	operator_("+", {
 		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr, Method::NATIVE},
 		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp},
@@ -386,20 +382,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::BOOLEAN, {Type::LONG}, (void*) &NumberSTD::is_prime_long},
 		{Type::BOOLEAN, {Type::INTEGER}, (void*) &NumberSTD::is_prime_int}
 	});
-}
-
-Compiler::value NumberSTD::store_gmp_gmp(Compiler& c, std::vector<Compiler::value> args) {
-	auto a = c.insn_address_of(args[0]);
-	auto b = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a, b}, &mpz_set);
-	if (args[1].t.temporary) {
-		return args[1];
-	} else {
-		auto r = c.new_mpz();
-		auto r_addr = c.insn_address_of(r);
-		c.insn_call(Type::VOID, {r_addr, b}, &mpz_set);
-		return r;
-	}
 }
 
 Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args) {

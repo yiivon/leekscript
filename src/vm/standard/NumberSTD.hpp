@@ -27,9 +27,6 @@ public:
 	/*
 	 * Operators
 	 */
-	static Compiler::value store_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value store_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
-
 	static Compiler::value add_real_real(Compiler& c, std::vector<Compiler::value>);
 	static LSValue* add_int_ptr(int a, LSValue* b);
 	static Compiler::value add_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
