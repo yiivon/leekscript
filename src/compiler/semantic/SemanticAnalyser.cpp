@@ -100,7 +100,7 @@ bool SemanticAnalyser::in_loop(int deepness) const {
 SemanticVar* SemanticAnalyser::add_parameter(Token* v, Type type) {
 
 	SemanticVar* arg = new SemanticVar(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function());
-	parameters.back().insert(pair<string, SemanticVar*>(v->content, arg));
+	parameters.back().insert({v->content, arg});
 	return arg;
 }
 
