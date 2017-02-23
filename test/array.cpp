@@ -178,6 +178,7 @@ void Test::test_arrays() {
 	code("[1, 2, 4, 4.1] < [1, 2, 3, 5]").equals("false");
 	code("[1, 2, '3'] < [1, 2, 3]").equals("false");
 	code("[1, 1, '3'] < [1, 2, 3]").equals("true");
+	code("[[1, 2, 3], 1][0] < 5").equals("false");
 
 	section("Array.operator ==");
 	code("[] == []").equals("true");
