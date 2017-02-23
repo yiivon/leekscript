@@ -348,10 +348,6 @@ LSValue* LSNumber::int_div(LSValue* v) {
 LSValue* LSNumber::int_div_eq(LSValue* v) {
 	if (v->type == NUMBER) {
 		auto number = static_cast<LSNumber*>(v);
-		if (!number) {
-			LSValue::delete_temporary(v);
-			jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-		}
 		value /= number->value;
 		value = floor(value);
 		LSValue::delete_temporary(number);
@@ -374,11 +370,6 @@ LSValue* LSNumber::int_div_eq(LSValue* v) {
 LSValue* LSNumber::pow(LSValue* v) {
 	if (v->type == NUMBER) {
 		auto number = static_cast<LSNumber*>(v);
-		if (!number) {
-			LSValue::delete_temporary(this);
-			LSValue::delete_temporary(v);
-			jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-		}
 		if (refs == 0) {
 			value = std::pow(value, number->value);
 			if (number->refs == 0) delete number;
