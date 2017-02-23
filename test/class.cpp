@@ -63,8 +63,9 @@ void Test::test_classes() {
 	code("class A {} A").equals("<class A>");
 	code("class A {} let a = new A a").equals("A {}");
 	code("class A { let b = 2 } let a = new A a").equals("A {}");
-//	code("class A { let b = 2 } let a = new A a.b").equals("2");
 	code("class A { let b = 2 } let a = new A a.class").equals("<class A>");
+	// TODO classes implementation
+//	code("class A { let b = 2 } let a = new A a.b").equals("2");
 //	code("class A {} let t = [A] let a = new t[0] a").equals("A {}");
 //	code("class A {} let a = new A let b = new a.class b.class").equals("<class A>");
 
