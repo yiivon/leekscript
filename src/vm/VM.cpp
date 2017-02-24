@@ -32,13 +32,21 @@ using namespace std;
 
 namespace ls {
 
-void VM::add_internal_var(std::string name, Type type) {
-	auto v = new Token(name);
-	internal_vars.insert(pair<string, SemanticVar*>(
-		v->content,
-		new SemanticVar(v->content, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr)
-	));
-}
+const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;
+unsigned int VM::operations = 0;
+bool VM::enable_operations = true;
+unsigned long int VM::operation_limit = VM::DEFAULT_OPERATION_LIMIT;
+
+jit_type_t VM::gmp_int_type;
+long VM::gmp_values_created = 0;
+long VM::gmp_values_deleted = 0;
+
+VM::ExceptionObj* VM::last_exception = nullptr;
+jit_stack_trace_t VM::stack_trace;
+jit_context_t VM::jit_context;
+std::ostream* VM::output = &std::cout;
+
+map<string, jit_value_t> internals;
 
 LSValue* op_add(void*, LSValue* x, LSValue* y) {
 	return x->add(y);
@@ -119,22 +127,6 @@ VM::~VM() {
 	}
 }
 
-const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;
-unsigned int VM::operations = 0;
-bool VM::enable_operations = true;
-unsigned long int VM::operation_limit = VM::DEFAULT_OPERATION_LIMIT;
-
-jit_type_t VM::gmp_int_type;
-long VM::gmp_values_created = 0;
-long VM::gmp_values_deleted = 0;
-
-VM::ExceptionObj* VM::last_exception = nullptr;
-jit_stack_trace_t VM::stack_trace;
-jit_context_t VM::jit_context;
-std::ostream* VM::output = &std::cout;
-
-map<string, jit_value_t> internals;
-
 void VM::add_module(Module* m) {
 
 	modules.push_back(m);
@@ -210,9 +202,9 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 
 	// Cleaning
 	delete program;
-
 	VM::enable_operations = true;
 
+	// Results
 	result.objects_created = LSValue::obj_count;
 	result.objects_deleted = LSValue::obj_deleted;
 	result.gmp_objects_created = VM::gmp_values_created;
@@ -259,6 +251,13 @@ jit_type_t VM::get_jit_type(const Type& type) {
 		return LS_REAL;
 	}
 	return LS_INTEGER;
+}
+
+void VM::add_internal_var(std::string name, Type type) {
+	internal_vars.insert(pair<string, SemanticVar*>(
+		name,
+		new SemanticVar(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr)
+	));
 }
 
 LSValue* create_number_object_int(int n) {
