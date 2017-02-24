@@ -20,8 +20,17 @@ public:
 	static LSValue* clazz;
 	static LSBoolean* false_val;
 	static LSBoolean* true_val;
+	static LSBoolean* create(bool value) {
+		return new LSBoolean(value);
+	}
 	static LSBoolean* get(bool value) {
 		return value ? true_val : false_val;
+	}
+	static void set_true_value(LSBoolean* v) {
+		true_val = v;
+	}
+	static void set_false_value(LSBoolean* v) {
+		false_val = v;
 	}
 
 	virtual ~LSBoolean();

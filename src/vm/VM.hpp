@@ -103,6 +103,8 @@ public:
 	std::map<std::string, SemanticVar*> internal_vars;
 	Compiler compiler;
 	LSNull* null_value;
+	LSBoolean* true_value;
+	LSBoolean* false_value;
 
 	VM(bool v1 = false);
 	virtual ~VM();

@@ -9,8 +9,8 @@ using namespace std;
 namespace ls {
 
 LSValue* LSBoolean::clazz;
-LSBoolean* LSBoolean::false_val(new LSBoolean(false));
-LSBoolean* LSBoolean::true_val(new LSBoolean(true));
+LSBoolean* LSBoolean::false_val;
+LSBoolean* LSBoolean::true_val;
 
 LSBoolean::LSBoolean(bool value) : LSValue(BOOLEAN), value(value) {
 	refs = 1;

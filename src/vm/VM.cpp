@@ -73,6 +73,8 @@ LSValue* op_mod(void*, LSValue* x, LSValue* y) {
 VM::VM(bool v1) : compiler(this) {
 
 	null_value = LSNull::create();
+	true_value = LSBoolean::create(true);
+	false_value = LSBoolean::create(false);
 
 	// Include STD modules
 	add_module(new ValueSTD());
@@ -125,6 +127,8 @@ VM::~VM() {
 		delete fun.second;
 	}
 	delete null_value;
+	delete true_value;
+	delete false_value;
 }
 
 void VM::add_module(Module* m) {
@@ -150,6 +154,9 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	VM::gmp_int_type = jit_type_create_struct(types, 3, 0);
 
 	// Reset
+	LSNull::set_null_value(this->null_value);
+	LSBoolean::set_true_value(this->true_value);
+	LSBoolean::set_false_value(this->false_value);
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
 	VM::gmp_values_created = 0;
