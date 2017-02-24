@@ -111,6 +111,12 @@ VM::~VM() {
 	for (auto& module : modules) {
 		delete module;
 	}
+	for (auto& var : internal_vars) {
+		delete var.second;
+	}
+	for (auto& fun : system_vars) {
+		delete fun.second;
+	}
 }
 
 const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;

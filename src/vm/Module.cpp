@@ -19,7 +19,7 @@ Module::Module(std::string name) : name(name) {
 }
 
 Module::~Module() {
-	delete clazz;
+	//delete clazz;
 }
 
 void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
