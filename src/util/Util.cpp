@@ -28,5 +28,6 @@ bool Util::is_file_name(std::string data) {
 	string dot_ls = ".ls";
     if (std::equal(dot_leek.rbegin(), dot_leek.rend(), data.rbegin())) return true;
 	if (std::equal(dot_ls.rbegin(), dot_ls.rend(), data.rbegin())) return true;
-	return true;
+	// Not a file
+	return false;
 }
