@@ -78,12 +78,6 @@ bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
 	return false;
 }
 
-void VariableValue::must_return(SemanticAnalyser* analyser, const Type& ret_type) {
-
-	var->value->must_return(analyser, ret_type);
-	type.setReturnType(ret_type);
-}
-
 /*
  * let a = 12 // integer
  * a = 5.6 // float
@@ -95,12 +89,6 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 		var->type = type;
 		this->type = type;
 	}
-}
-
-bool VariableValue::must_be_pointer(SemanticAnalyser*) {
-	var->type.nature = Nature::POINTER;
-	this->type.nature = Nature::POINTER;
-	return true;
 }
 
 extern map<string, jit_value_t> internals;
