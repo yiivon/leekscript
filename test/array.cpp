@@ -82,6 +82,7 @@ void Test::test_arrays() {
 	code("let a = [5, 'yolo', 12] a[1]").equals("'yolo'");
 	code("let a = [12] a[0]++ a").equals("[13]");
 	code("[1, 2, 'a'][['salut', 2][0]]").exception(ls::VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	code("['a', 'b', 'c'][[2, ''][0]]").equals("'c'");
 	//code("let a = [[12], ''][0] a[0]++ a").equals("[13]");
 	code("let a = [1, 2, 3] a[0l]").equals("1");
 	code("let a = [1, 2, 3] a[2l]").equals("3");
