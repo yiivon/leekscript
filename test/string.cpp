@@ -203,4 +203,8 @@ void Test::test_strings() {
 	code("'abcde'.isPermutation('beacd')").equals("true");
 	code("'abcde'.isPermutation('beaca')").equals("false");
 	code("'aaa'.isPermutation('aaaa')").equals("false");
+
+	section("v1 string replace()");
+	code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
+	code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
 }
