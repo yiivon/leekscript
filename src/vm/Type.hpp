@@ -154,6 +154,26 @@ public:
 
 class RawType {
 public:
+	static const BaseRawType _UNKNOWN;
+	static const VoidRawType _VOID;
+	static const NullRawType _NULLL;
+	static const BooleanRawType _BOOLEAN;
+	static const NumberRawType _NUMBER;
+	static const GmpIntRawType _GMP_INT;
+	static const IntegerRawType _UNSIGNED_INTEGER;
+	static const IntegerRawType _INTEGER;
+	static const LongRawType _UNSIGNED_LONG;
+	static const LongRawType _LONG;
+	static const FloatRawType _REAL;
+	static const StringRawType _STRING;
+	static const ArrayRawType _ARRAY;
+	static const MapRawType _MAP;
+	static const SetRawType _SET;
+	static const IntervalRawType _INTERVAL;
+	static const ObjectRawType _OBJECT;
+	static const FunctionRawType _FUNCTION;
+	static const ClassRawType _CLASS;
+	
 	static const BaseRawType* const UNKNOWN;
 	static const VoidRawType* const VOID;
 	static const NullRawType* const NULLL;

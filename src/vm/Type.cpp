@@ -6,25 +6,45 @@ using namespace std;
 
 namespace ls {
 
-const BaseRawType* const RawType::UNKNOWN = new BaseRawType();
-const VoidRawType* const RawType::VOID = new VoidRawType();
-const NullRawType* const RawType::NULLL = new NullRawType();
-const BooleanRawType* const RawType::BOOLEAN = new BooleanRawType();
-const NumberRawType* const RawType::NUMBER = new NumberRawType();
-const IntegerRawType* const RawType::INTEGER = new IntegerRawType();
-const IntegerRawType* const RawType::UNSIGNED_INTEGER = new IntegerRawType();
-const GmpIntRawType* const RawType::GMP_INT = new GmpIntRawType();
-const LongRawType* const RawType::LONG = new LongRawType();
-const LongRawType* const RawType::UNSIGNED_LONG = new LongRawType();
-const FloatRawType* const RawType::REAL = new FloatRawType();
-const StringRawType* const RawType::STRING = new StringRawType();
-const ArrayRawType* const RawType::ARRAY = new ArrayRawType();
-const MapRawType* const RawType::MAP = new MapRawType();
-const SetRawType* const RawType::SET = new SetRawType();
-const IntervalRawType* const RawType::INTERVAL = new IntervalRawType();
-const ObjectRawType* const RawType::OBJECT = new ObjectRawType();
-const FunctionRawType* const RawType::FUNCTION = new FunctionRawType();
-const ClassRawType* const RawType::CLASS = new ClassRawType();
+const BaseRawType RawType::_UNKNOWN;
+const VoidRawType RawType::_VOID;
+const NullRawType RawType::_NULLL;
+const BooleanRawType RawType::_BOOLEAN;
+const NumberRawType RawType::_NUMBER;
+const GmpIntRawType RawType::_GMP_INT;
+const IntegerRawType RawType::_UNSIGNED_INTEGER;
+const IntegerRawType RawType::_INTEGER;
+const LongRawType RawType::_UNSIGNED_LONG;
+const LongRawType RawType::_LONG;
+const FloatRawType RawType::_REAL;
+const StringRawType RawType::_STRING;
+const ArrayRawType RawType::_ARRAY;
+const MapRawType RawType::_MAP;
+const SetRawType RawType::_SET;
+const IntervalRawType RawType::_INTERVAL;
+const ObjectRawType RawType::_OBJECT;
+const FunctionRawType RawType::_FUNCTION;
+const ClassRawType RawType::_CLASS;
+
+const BaseRawType* const RawType::UNKNOWN = &_UNKNOWN;
+const VoidRawType* const RawType::VOID = &_VOID;
+const NullRawType* const RawType::NULLL = &_NULLL;
+const BooleanRawType* const RawType::BOOLEAN = &_BOOLEAN;
+const NumberRawType* const RawType::NUMBER = &_NUMBER;
+const IntegerRawType* const RawType::INTEGER = &_INTEGER;
+const IntegerRawType* const RawType::UNSIGNED_INTEGER = &_UNSIGNED_INTEGER;
+const GmpIntRawType* const RawType::GMP_INT = &_GMP_INT;
+const LongRawType* const RawType::LONG = &_LONG;
+const LongRawType* const RawType::UNSIGNED_LONG = &_UNSIGNED_LONG;
+const FloatRawType* const RawType::REAL = &_REAL;
+const StringRawType* const RawType::STRING = &_STRING;
+const ArrayRawType* const RawType::ARRAY = &_ARRAY;
+const MapRawType* const RawType::MAP = &_MAP;
+const SetRawType* const RawType::SET = &_SET;
+const IntervalRawType* const RawType::INTERVAL = &_INTERVAL;
+const ObjectRawType* const RawType::OBJECT = &_OBJECT;
+const FunctionRawType* const RawType::FUNCTION = &_FUNCTION;
+const ClassRawType* const RawType::CLASS = &_CLASS;
 
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
 
