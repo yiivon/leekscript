@@ -36,10 +36,8 @@ public:
 	VariableDeclaration* vd;
 	Function* function; // In which function the variable is declared
 
-	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value,
-		VariableDeclaration* vd, Function* function) :
+	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function) :
 		name(name), scope(scope), type(type), index(index), value(value), vd(vd), function(function) {}
-
 	void must_be_pointer(SemanticAnalyser*);
 };
 
