@@ -50,6 +50,8 @@ int Test::all() {
 	test_json();
 	test_files();
 	test_doc();
+	test_utils();
+
 
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
 	int errors = (total - success_count);

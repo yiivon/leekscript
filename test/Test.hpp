@@ -57,6 +57,7 @@ public:
 	void test_intervals();
 	void test_json();
 	void test_exceptions();
+	void test_utils();
 
 	class Input {
 	public:
