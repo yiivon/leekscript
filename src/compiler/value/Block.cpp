@@ -72,18 +72,6 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 }
 
-LSValue* Block_move(LSValue* value) {
-	/* Move the value if it's a temporary variable
-	 * or if it's only attached to the current block.
-	 */
-	if (value->refs <= 1 /*|| value->native()*/) {
-		value->refs = 0;
-		return value;
-	}
-	return value->clone();
-}
-
-
 Compiler::value Block::compile(Compiler& c) const {
 
 	c.enter_block();
@@ -97,11 +85,18 @@ Compiler::value Block::compile(Compiler& c) const {
 		}
 		if (i == instructions.size() - 1) {
 			if (type.must_manage_memory()) {
-				jit_type_t args[1] = {LS_POINTER};
-				jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 1, 0);
-				jit_value_t ret = jit_insn_call_native(c.F, "true_move", (void*) Block_move, sig, &val.v, 1, JIT_CALL_NOTHROW);
+				auto ret = c.insn_call(type, {val}, +[](LSValue* value) {
+					/* Move the value if it's a temporary variable
+					 * or if it's only attached to the current block.
+					 */
+					if (value->refs <= 1 /*|| value->native()*/) {
+						value->refs = 0;
+						return value;
+					}
+					return value->clone();
+				});
 				c.leave_block(c.F);
-				return {ret, type};
+				return ret;
 			} else if (type == Type::GMP_INT_TMP && !temporary_gmp) {
 				Compiler::value v = {VM::clone_gmp_int(c.F, val.v), type};
 				c.leave_block(c.F);
