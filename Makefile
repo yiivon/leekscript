@@ -115,7 +115,7 @@ benchmark: build/leekscript-benchmark
 # Valgrind
 # `apt install valgrind`
 valgrind: build/leekscript-test
-	valgrind --verbose --track-origins=yes --leak-check=full build/leekscript-test
+	valgrind --verbose --track-origins=yes --leak-check=full --show-leak-kinds=all build/leekscript-test
 
 # Travis task, useless in local.
 # Build a leekscript docker image, compile, run tests and run cpp-coveralls
