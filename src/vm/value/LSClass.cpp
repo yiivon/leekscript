@@ -1,5 +1,4 @@
 #include "LSClass.hpp"
-#include "LSNull.hpp"
 #include "LSString.hpp"
 #include "LSNumber.hpp"
 #include "LSFunction.hpp"
