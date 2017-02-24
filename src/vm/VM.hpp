@@ -102,6 +102,7 @@ public:
 	std::map<std::string, LSValue*> system_vars;
 	std::map<std::string, SemanticVar*> internal_vars;
 	Compiler compiler;
+	LSNull* null_value;
 
 	VM(bool v1 = false);
 	virtual ~VM();

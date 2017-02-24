@@ -72,8 +72,7 @@ LSValue* op_mod(void*, LSValue* x, LSValue* y) {
 
 VM::VM(bool v1) : compiler(this) {
 
-	// Init static class members
-	LSNull::static_init();
+	null_value = LSNull::create();
 
 	// Include STD modules
 	add_module(new ValueSTD());
@@ -125,6 +124,7 @@ VM::~VM() {
 	for (auto& fun : system_vars) {
 		delete fun.second;
 	}
+	delete null_value;
 }
 
 void VM::add_module(Module* m) {
