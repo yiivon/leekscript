@@ -110,6 +110,13 @@ bool LSMap<K, T>::isTrue() const {
 }
 
 template <class K, class T>
+LSValue* LSMap<K, T>::ls_not() {
+	bool r = this->size() == 0;
+	if (refs == 0) delete this;
+	return LSBoolean::get(r);
+}
+
+template <class K, class T>
 bool LSMap<K, T>::in(K key) const {
 	bool r = this->find(key) != this->end();
 	LSValue::delete_temporary(this);
