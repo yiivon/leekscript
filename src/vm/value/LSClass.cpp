@@ -136,6 +136,10 @@ bool LSClass::isTrue() const {
 	return true;
 }
 
+LSValue* LSClass::ls_not() {
+	return LSBoolean::get(false);
+}
+
 bool LSClass::eq(const LSValue* v) const {
 	if (auto clazz = dynamic_cast<const LSClass*>(v)) {
 		return clazz->name == this->name;
