@@ -42,7 +42,6 @@ public:
 	static LSValue* clazz;
 
 	LSClass(std::string);
-	LSClass(std::string, int refs);
 	LSClass(Json&);
 
 	virtual ~LSClass();
