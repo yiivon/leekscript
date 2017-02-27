@@ -345,9 +345,19 @@ void Compiler::insn_push_move_array(Compiler::value array, Compiler::value value
 }
 
 Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
-	return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
-		return v->move_inc();
-	});
+	if (value.t.must_manage_memory()) {
+		return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
+			return v->move_inc();
+		});
+	}
+	if (value.t.temporary) {
+		return value;
+	}
+	if (value.t == Type::GMP_INT) {
+		return insn_clone_mpz(value);
+	} else {
+		return value;
+	}
 }
 
 Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
