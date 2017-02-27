@@ -619,7 +619,7 @@ Compiler::value NumberSTD::eq_gmp_int(Compiler& c, std::vector<Compiler::value> 
 
 Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> args) {
 	jit_type_t arg_types[] = {LS_POINTER, LS_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 0);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 1);
 	auto i = args[0].v;
 	auto f = args[1].v;
 	auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
@@ -629,7 +629,7 @@ Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> a
 
 Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> args) {
 	jit_type_t arg_types[] = {LS_POINTER, LS_REAL};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 0);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 1);
 	auto r = args[0].v;
 	auto f = args[1].v;
 	auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);

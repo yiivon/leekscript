@@ -175,7 +175,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		if (array->type == Type::INTERVAL) {
 
 			jit_type_t args_types[2] = {LS_POINTER, LS_INTEGER};
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 2, 0);
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 2, 1);
 
 			auto k = key->compile(c);
 
@@ -192,7 +192,6 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		} else if (array->type.raw_type == RawType::MAP) {
 
 			jit_type_t args_types[2] = {LS_POINTER, VM::get_jit_type(map_key_type)};
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(array_element_type), args_types, 2, 0);
 
 			auto k = key->compile(c);
 
@@ -223,8 +222,10 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				}
 			}
 
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(array_element_type), args_types, 2, 1);
 			jit_value_t args[] = {a.v, k.v};
 			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, 0);
+			jit_type_free(sig);
 
 			if (key->type.must_manage_memory()) {
 				VM::delete_temporary(c.F, k.v);

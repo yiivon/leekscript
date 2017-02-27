@@ -348,8 +348,10 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		jit_args.push_back(arg.v);
 		arg_types.push_back(VM::get_jit_type(arg.t));
 	}
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(return_type), arg_types.data(), arg_types.size(), 0);
-	return {jit_insn_call_native(F, "call", func, sig, jit_args.data(), arg_types.size(), 0), return_type};
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(return_type), arg_types.data(), arg_types.size(), 1);
+	Compiler::value v = {jit_insn_call_native(F, "call", func, sig, jit_args.data(), arg_types.size(), 0), return_type};
+	jit_type_free(sig);
+	return v;
 }
 
 /*
@@ -363,7 +365,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	}
 	if (v.t.raw_type == RawType::INTERVAL) {
 		jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
-		auto interval_iterator = jit_type_create_struct(types, 2, 0);
+		auto interval_iterator = jit_type_create_struct(types, 2, 1);
 		Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
 		auto addr = insn_address_of(it);
 		jit_insn_store_relative(F, addr.v, 0, v.v);
@@ -372,7 +374,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	}
 	if (v.t.raw_type == RawType::STRING) {
 		jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
-		auto string_iterator = jit_type_create_struct(types, 5, 0);
+		auto string_iterator = jit_type_create_struct(types, 5, 1);
 		Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
 		auto addr = insn_address_of(it);
 		insn_call(Type::VOID, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
@@ -390,7 +392,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	}
 	if (v.t == Type::INTEGER) {
 		jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_int};
-		auto integer_iterator = jit_type_create_struct(types, 3, 0);
+		auto integer_iterator = jit_type_create_struct(types, 3, 1);
 		Compiler::value it = {jit_value_create(F, integer_iterator), Type::LONG};
 		auto addr = jit_insn_address_of(F, it.v);
 		jit_insn_store_relative(F, addr, 0, v.v);

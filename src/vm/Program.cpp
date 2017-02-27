@@ -97,7 +97,7 @@ void Program::compile_main(VM& vm, Context& context) {
 	jit_context_build_start(VM::jit_context);
 
 	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(main->type.getReturnType()), params, 0, 0);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(main->type.getReturnType()), params, 0, 1);
 	jit_function_t F = jit_function_create(VM::jit_context, signature);
 	jit_insn_uses_catcher(F);
 	vm.compiler.enter_function(F);

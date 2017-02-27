@@ -417,9 +417,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	jit_type_t jit_return_type = VM::get_jit_type(type);
 
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), arg_count, 0);
-
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), args_types.size(), 1);
 	jit_value_t ret = jit_insn_call_indirect(c.F, fun, sig, args.data(), arg_count, 0);
+	jit_type_free(sig);
 
 	// Destroy temporary arguments
 	for (int i = 0; i < arg_count - offset; ++i) {

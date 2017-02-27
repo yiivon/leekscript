@@ -641,13 +641,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 		case TokenType::PLUS_EQUAL: {
 
 			if (v1->type == Type::INT_ARRAY and v2->type == Type::INTEGER) {
-				args.push_back(v1->compile(c).v);
-				args.push_back(v2->compile(c).v);
-				jit_value_t res = VM::call(c.F, LS_INTEGER, {LS_POINTER, LS_INTEGER}, args, &jit_array_push_int);
+				auto res = c.insn_call(Type::INTEGER, {v1->compile(c), v2->compile(c)}, &jit_array_push_int);
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, res, type), type};
+					return {VM::value_to_pointer(c.F, res.v, type), type};
 				}
-				return {res, type};
+				return res;
 			}
 
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
@@ -954,7 +952,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			jit_type_t args_types[2] = {LS_POINTER};
 			auto x = v1->compile(c);
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 0);
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 1);
 			jit_value_t r = jit_insn_call_native(c.F, "is_null", (void*) jit_is_null, sig, &x.v, 1, JIT_CALL_NOTHROW);
 
 			jit_insn_branch_if(c.F, r, &label_else);
@@ -1002,7 +1000,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 	} else {
 
 		jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 0);
+		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 1);
 
 		if (args.size() == 0) {
 			args.push_back(v1->compile(c).v);
@@ -1019,9 +1017,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 
 		if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
+			jit_type_free(sig);
 			return {VM::value_to_pointer(c.F, v, ls_returned_type), type};
 		}
-
+		jit_type_free(sig);
 		return {v, type};
 	}
 }

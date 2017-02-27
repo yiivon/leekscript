@@ -76,19 +76,22 @@ Compiler::value Set::compile(Compiler& c) const {
 
 	unsigned ops = 1;
 
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, {}, 0, 0);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, {}, 0, 1);
 	jit_value_t s = jit_insn_call_native(c.F, "create_set", (void*) create, sig, {}, 0, JIT_CALL_NOTHROW);
+	jit_type_free(sig);
+
+	jit_type_t args[2] = {LS_POINTER, VM::get_jit_type(type.getElementType())};
+	sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 1);
 
 	double i = 0;
 	for (Value* ex : expressions) {
 		auto v = ex->compile(c);
 
-		jit_type_t args[2] = {LS_POINTER, VM::get_jit_type(type.getElementType())};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 0);
 		jit_value_t args_v[] = {s, v.v};
 		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 2, JIT_CALL_NOTHROW);
 		ops += std::log2(++i);
 	}
+	jit_type_free(sig);
 
 	VM::inc_ops(c.F, ops);
 

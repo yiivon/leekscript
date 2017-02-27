@@ -260,8 +260,9 @@ Compiler::value Function::compile(Compiler& c) const {
 
 	jit_type_t return_type = VM::get_jit_type(type.getReturnType());
 
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 0);
-	jit_function_t function = jit_function_create(context, signature);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
+	((Function*) this)->jit_function = jit_function_create(context, signature);
+	jit_type_free(signature);
 
 //	cout << "return type : " << type.getReturnType() << endl;
 
