@@ -50,9 +50,12 @@ SyntaxicAnalyser::SyntaxicAnalyser() {
 	nt = nullptr;
 	t = nullptr;
 	i = 0;
+	finished_token = new Token(TokenType::FINISHED, 0, 0, "");
 }
 
-SyntaxicAnalyser::~SyntaxicAnalyser() {}
+SyntaxicAnalyser::~SyntaxicAnalyser() {
+	delete finished_token;
+}
 
 Function* SyntaxicAnalyser::analyse(vector<Token>& tokens) {
 
@@ -1304,7 +1307,7 @@ Token* SyntaxicAnalyser::eat(TokenType type) {
 	if (i < tokens.size() - 1) {
 		t = &tokens[++i];
 	} else {
-		t = new Token(TokenType::FINISHED, 0, 0, "");
+		t = finished_token;
 	}
 	nt = i < tokens.size() - 1 ? &tokens[i + 1] : nullptr;
 

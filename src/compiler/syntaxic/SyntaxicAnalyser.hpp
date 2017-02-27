@@ -37,6 +37,7 @@ class SyntaxicAnalyser {
 	std::vector<SyntaxicalError> errors;
 	long time;
 	std::vector<std::pair<unsigned,size_t>> stack;
+	Token* finished_token;
 
 public:
 
