@@ -118,6 +118,8 @@ void Program::compile_main(VM& vm, Context& context) {
 	//jit_dump_function(fopen("main_compiled", "w"), F, "main");
 
 	closure = jit_function_to_closure(F);
+	
+	jit_type_free(signature);
 }
 
 /*
