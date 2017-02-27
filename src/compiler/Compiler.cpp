@@ -12,9 +12,7 @@ namespace ls {
 
 Compiler::Compiler(VM* vm) : vm(vm) {}
 
-Compiler::~Compiler() {
-
-}
+Compiler::~Compiler() {}
 
 void Compiler::enter_block() {
 	variables.push_back(std::map<std::string, CompilerVar> {});
