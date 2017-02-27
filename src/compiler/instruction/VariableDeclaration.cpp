@@ -100,17 +100,12 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				}
 
 				auto val = ex->compile(c);
-				if (ex->type.must_manage_memory()) {
-					val = c.insn_move_inc(val);
-				}
+				val = c.insn_move_inc(val);
+
 				c.set_var_type(name, ex->type);
 				c.add_function_var(var, v->type);
 
-				if (v->type == Type::GMP_INT) {
-					jit_insn_store(c.F, var, VM::clone_gmp_int(c.F, val.v));
-				} else {
-					jit_insn_store(c.F, var, val.v);
-				}
+				jit_insn_store(c.F, var, val.v);
 			}
 		} else {
 
