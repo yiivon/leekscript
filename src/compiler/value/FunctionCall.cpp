@@ -37,7 +37,7 @@ FunctionCall::FunctionCall(Token* t) {
 
 FunctionCall::~FunctionCall() {
 	delete function;
-	for (auto arg : arguments) {
+	for (const auto& arg : arguments) {
 		delete arg;
 	}
 }

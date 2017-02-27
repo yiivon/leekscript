@@ -14,6 +14,9 @@ ClassDeclaration::ClassDeclaration(Token* token) : token(token) {
 }
 
 ClassDeclaration::~ClassDeclaration() {
+	for (const auto& vd : fields) {
+		delete vd;
+	}
 	delete ls_class;
 }
 

@@ -13,7 +13,7 @@ Array::Array() {
 }
 
 Array::~Array() {
-	for (auto ex : expressions) {
+	for (const auto& ex : expressions) {
 		delete ex;
 	}
 }
