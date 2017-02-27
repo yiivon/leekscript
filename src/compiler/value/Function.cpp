@@ -26,6 +26,9 @@ Function::~Function() {
 	if (ls_fun != nullptr) {
 		delete ls_fun;
 	}
+	if (context) {
+		jit_context_destroy(context);
+	}
 }
 
 void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
@@ -247,7 +250,7 @@ Compiler::value Function::compile(Compiler& c) const {
 
 //	cout << "Function::compile : " << type << endl;
 
-	jit_context_t context = jit_context_create();
+	((Function*) this)->context = jit_context_create();
 	jit_context_build_start(context);
 
 	unsigned arg_count = arguments.size() + 1;
@@ -266,24 +269,24 @@ Compiler::value Function::compile(Compiler& c) const {
 
 //	cout << "return type : " << type.getReturnType() << endl;
 
-	c.enter_function(function);
+	c.enter_function(jit_function);
 
 	// Execute function
 	auto res = body->compile(c);
 
 	// Return
-	jit_insn_return(function, res.v);
+	jit_insn_return(jit_function, res.v);
 
-	jit_insn_rethrow_unhandled(function);
+	jit_insn_rethrow_unhandled(jit_function);
 
 	//jit_dump_function(fopen("f_uncompiled", "w"), function, "f");
 
-	jit_function_compile(function);
+	jit_function_compile(jit_function);
 	jit_context_build_end(context);
 
 	//jit_dump_function(fopen("f_compiled", "w"), function, "f");
 
-	void* f = jit_function_to_closure(function);
+	void* f = jit_function_to_closure(jit_function);
 
 //	cout << "function : " << f << endl;
 

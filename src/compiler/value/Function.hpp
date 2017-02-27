@@ -26,6 +26,8 @@ public:
 	bool function_added;
 	Function* parent;
 	LSFunction<LSValue*>* ls_fun = nullptr;
+	jit_function_t jit_function;
+	jit_context_t context = nullptr;
 
 	Function();
 	virtual ~Function();
