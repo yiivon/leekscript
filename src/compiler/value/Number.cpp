@@ -73,8 +73,10 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 			// TODO floating-point large values
 		}
 	} else {
-		mpz_init_set_str(mpz_value, clean_value.c_str(), base);
-		mpz_value_initialized = true;
+		if (!mpz_value_initialized) {
+			mpz_init_set_str(mpz_value, clean_value.c_str(), base);
+			mpz_value_initialized = true;
+		}
 
 		if (!mp_number and !long_number and mpz_fits_sint_p(mpz_value)) {
 			type = Type::INTEGER;
