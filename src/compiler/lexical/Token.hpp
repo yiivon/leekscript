@@ -17,7 +17,6 @@ public:
 	unsigned line;
 	unsigned size;
 
-	Token(std::string content);
 	Token(TokenType type, unsigned int line, unsigned int character, std::string content);
 	virtual ~Token();
 };

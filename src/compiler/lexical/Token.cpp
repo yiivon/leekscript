@@ -6,14 +6,6 @@ using namespace std;
 
 namespace ls {
 
-Token::Token(std::string content) {
-	character = -1;
-	line = -1;
-	type = TokenType::UNKNOW;
-	this->content = content;
-	size = 0;
-}
-
 Token::Token(TokenType type, unsigned int line, unsigned int character, string content) {
 
 	this->type = type;
