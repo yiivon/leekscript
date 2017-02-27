@@ -63,7 +63,7 @@ public:
 	value new_pointer(const void* p) const;
 	value new_object() const;
 	value new_object_class(value clazz) const;
-	value new_mpz() const;
+	value new_mpz(long value = 0) const;
 
 	// Conversions
 	value to_int(value) const;

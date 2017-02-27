@@ -181,8 +181,14 @@ Compiler::value Compiler::new_long(long l) const {
 Compiler::value Compiler::new_pointer(const void* p) const {
 	return {jit_value_create_long_constant(F, LS_POINTER, (long)(void*)(p)), Type::POINTER};
 }
-Compiler::value Compiler::new_mpz() const {
-	return {VM::create_gmp_int(F, 0), Type::GMP_INT_TMP};
+Compiler::value Compiler::new_mpz(long value) const {
+	jit_value_t gmp_struct = jit_value_create(F, VM::gmp_int_type);
+	jit_value_set_addressable(gmp_struct);
+	auto gmp_addr = insn_address_of({gmp_struct, Type::GMP_INT});
+	auto jit_value = new_long(value);
+	insn_call(Type::VOID, {gmp_addr, jit_value}, &mpz_init_set_ui);
+	VM::inc_gmp_counter(F);
+	return {gmp_struct, Type::GMP_INT_TMP};
 }
 Compiler::value Compiler::new_object() const {
 	return insn_call(Type::OBJECT, {}, +[]() {

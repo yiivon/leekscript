@@ -394,20 +394,6 @@ jit_value_t VM::create_array(jit_function_t F, const Type& element_type, int cap
 	return v;
 }
 
-jit_value_t VM::create_gmp_int(jit_function_t F, long value) {
-
-	jit_value_t gmp_struct = jit_value_create(F, gmp_int_type);
-	jit_value_set_addressable(gmp_struct);
-
-	jit_value_t gmp_addr = jit_insn_address_of(F, gmp_struct);
-	jit_value_t jit_value = LS_CREATE_LONG(F, value);
-	VM::call(F, LS_VOID, {LS_POINTER, LS_LONG}, {gmp_addr, jit_value}, &mpz_init_set_ui);
-
-	VM::inc_gmp_counter(F);
-
-	return gmp_struct;
-}
-
 LSValue* VM_move(LSValue* val) {
 	return val->move();
 }
