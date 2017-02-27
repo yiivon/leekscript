@@ -943,6 +943,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x = v1->compile(c);
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 1);
 			jit_value_t r = jit_insn_call_native(c.F, "is_null", (void*) jit_is_null, sig, &x.v, 1, JIT_CALL_NOTHROW);
+			jit_type_free(sig);
 
 			jit_insn_branch_if(c.F, r, &label_else);
 
