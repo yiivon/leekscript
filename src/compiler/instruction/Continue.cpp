@@ -31,7 +31,7 @@ void Continue::analyse(SemanticAnalyser* analyser, const Type&) {
 
 Compiler::value Continue::compile(Compiler& c) const {
 
-	c.delete_variables_block(c.F, c.get_current_loop_blocks(deepness));
+	c.delete_variables_block(c.get_current_loop_blocks(deepness));
 
 	jit_insn_branch(c.F, c.get_current_loop_cond_label(deepness));
 

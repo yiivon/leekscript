@@ -95,19 +95,19 @@ Compiler::value Block::compile(Compiler& c) const {
 					}
 					return value->clone();
 				});
-				c.leave_block(c.F);
+				c.leave_block();
 				return ret;
 			} else if (type == Type::GMP_INT_TMP && !temporary_gmp) {
 				Compiler::value v = {VM::clone_gmp_int(c.F, val.v), type};
-				c.leave_block(c.F);
+				c.leave_block();
 				return v;
 			} else {
-				c.leave_block(c.F);
+				c.leave_block();
 				return val;
 			}
 		}
 	}
-	c.leave_block(c.F);
+	c.leave_block();
 
 	if (type.nature == Nature::POINTER) {
 		return c.new_null();

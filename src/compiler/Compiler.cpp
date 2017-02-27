@@ -22,8 +22,8 @@ void Compiler::enter_block() {
 	functions_blocks.back()++;
 }
 
-void Compiler::leave_block(jit_function_t F) {
-	delete_variables_block(F, 1);
+void Compiler::leave_block() {
+	delete_variables_block(1);
 	variables.pop_back();
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()--;
@@ -31,7 +31,7 @@ void Compiler::leave_block(jit_function_t F) {
 	functions_blocks.back()--;
 }
 
-void Compiler::delete_variables_block(jit_function_t F, int deepness) {
+void Compiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			if (it->second.type.must_manage_memory()) {

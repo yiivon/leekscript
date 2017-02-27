@@ -126,8 +126,8 @@ public:
 
 	// Blocks
 	void enter_block();
-	void leave_block(jit_function_t F);
-	void delete_variables_block(jit_function_t F, int deepness); // delete all variables in the #deepness current blocks
+	void leave_block();
+	void delete_variables_block(int deepness); // delete all variables in the #deepness current blocks
 	void enter_function(jit_function_t F);
 	void leave_function();
 	int get_current_function_blocks() const;

@@ -103,7 +103,7 @@ Compiler::value For::compile(Compiler& c) const {
 		ins->compile(c);
 		if (dynamic_cast<Return*>(ins)) {
 			jit_value_t return_v = VM::clone_obj(c.F, output_v);
-			c.leave_block(c.F);
+			c.leave_block();
 			return {return_v, type};
 		}
 	}
@@ -143,13 +143,13 @@ Compiler::value For::compile(Compiler& c) const {
 			break;
 		}
 	}
-	c.leave_block(c.F);
+	c.leave_block();
 	jit_insn_branch(c.F, &label_cond);
 
 	// End
 	jit_insn_label(c.F, &label_end);
 	jit_value_t return_v = VM::clone_obj(c.F, output_v);
-	c.leave_block(c.F);
+	c.leave_block();
 	return {return_v, type};
 }
 

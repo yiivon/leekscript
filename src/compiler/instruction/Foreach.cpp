@@ -162,7 +162,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	jit_insn_label(c.F, &label_end);
 
 	jit_value_t return_v = VM::clone_obj(c.F, output_v); // otherwise it is delete by the c.leave_block
-	c.leave_block(c.F); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block
+	c.leave_block(); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block
 	return {return_v, type};
 }
 

@@ -49,10 +49,10 @@ Compiler::value Return::compile(Compiler& c) const {
 
 		if (expression->type.must_manage_memory()) {
 			jit_value_t r = VM::move_obj(c.F, v.v);
-			c.delete_variables_block(c.F, c.get_current_function_blocks());
+			c.delete_variables_block(c.get_current_function_blocks());
 			jit_insn_return(c.F, r);
 		} else {
-			c.delete_variables_block(c.F, c.get_current_function_blocks());
+			c.delete_variables_block(c.get_current_function_blocks());
 			jit_insn_return(c.F, v.v);
 		}
 	}
