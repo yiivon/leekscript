@@ -52,8 +52,7 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 		clean_value = clean_value.substr(0, clean_value.size() - 1);
 	}
 	// Floating-point?
-	bool floating = std::find(clean_value.begin(), clean_value.end(), '.') != clean_value.end()
-					or req_type.raw_type == RawType::REAL;
+	bool floating = std::find(clean_value.begin(), clean_value.end(), '.') != clean_value.end() or req_type.raw_type == RawType::REAL;
 
 	// Determine the possible container for the number
 	if (floating) {
