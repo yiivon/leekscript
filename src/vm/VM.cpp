@@ -183,6 +183,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 		auto exe_start = chrono::high_resolution_clock::now();
 		try {
 			value = program->execute();
+			jit_context_destroy(VM::jit_context);
 			result.execution_success = true;
 		} catch (VM::ExceptionObj* ex) {
 			result.exception = ex->type;
