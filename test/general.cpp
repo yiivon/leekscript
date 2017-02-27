@@ -129,7 +129,7 @@ void Test::test_general() {
 	code("var a a = 12.5 a").equals("12.5");
 	code("var a a = 'a'").equals("'a'");
 	code("var a a = 'a' a").equals("'a'");
-	code("var a a = 12m").equals("12");
+	//code("var a a = 12m").equals("12");
 	//code("var a a = 12m a").equals("12");
 	code("var a = 2 a = 'hello'").equals("'hello'");
 	code("var a = 2 a = 'hello' a").equals("'hello'");
