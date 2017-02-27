@@ -45,6 +45,7 @@ void Documentation::generate(ostream& os) {
 	os << "}\n";
 
 	for (const auto& m : modules) {
+		delete m->clazz;
 		delete m;
 	}
 }
