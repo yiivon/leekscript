@@ -624,7 +624,9 @@ Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> a
 	auto f = args[1].v;
 	auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
 	jit_value_t jit_args[] = {f, i};
-	return {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
+	Compiler::value r = {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
+	jit_type_free(sig);
+	return r;
 }
 
 Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> args) {
@@ -634,7 +636,9 @@ Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> 
 	auto f = args[1].v;
 	auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
 	jit_value_t jit_args[] = {f, r};
-	return {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
+	Compiler::value res = {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
+	jit_type_free(sig);
+	return res;
 }
 
 Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args) {
