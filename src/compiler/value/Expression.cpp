@@ -557,13 +557,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v1->type));
 				c.update_var(vv->name, var, v1->type);
 
-				// Clone the object if it's not temporary
-				if (v2->type.must_manage_memory()) {
-					y = c.insn_move_inc(y);
-				}
-				if (v2->type == Type::GMP_INT) {
-					y.v = VM::clone_gmp_int(c.F, y.v);
-				}
+				// Move the object
+				y = c.insn_move_inc(y);
+
 				// Delete previous variable reference
 				if (equal_previous_type.must_manage_memory()) {
 					c.insn_call(Type::VOID, {x_addr}, (void*) +[](LSValue** x) {
@@ -571,14 +567,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 					});
 				}
 				// Store
-				if (v2->type.not_temporary() == Type::GMP_INT) {
-					auto a = c.insn_address_of({var, Type::GMP_INT});
-					auto b = c.insn_address_of(y);
-					c.insn_call(Type::VOID, {a, b}, &mpz_init_set);
-					return {VM::clone_gmp_int(c.F, var), Type::GMP_INT_TMP};
-				} else {
-					jit_insn_store(c.F, var, y.v);
-				}
+				jit_insn_store(c.F, var, y.v);
 
 				return y;
 
