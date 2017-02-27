@@ -294,7 +294,7 @@ Compiler::value Function::compile(Compiler& c) const {
 
 	if (type.nature == Nature::POINTER) {
 		ls_fun->function = f;
-		jit_value_t jit_fun = c.new_pointer(ls_fun).v;
+		auto jit_fun = c.new_pointer(ls_fun);
 		for (const auto& cap : captures) {
 			jit_value_t jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
@@ -307,9 +307,9 @@ Compiler::value Function::compile(Compiler& c) const {
 			if (cap->type.nature != Nature::POINTER) {
 				jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->type);
 			}
-			VM::function_add_capture(c.F, jit_fun, jit_cap);
+			c.function_add_capture(jit_fun, {jit_cap, Type::POINTER});
 		}
-		return {jit_fun, type};
+		return {jit_fun.v, type};
 	} else {
 		return {c.new_pointer(f).v, type};
 	}

@@ -137,10 +137,6 @@ public:
 	static jit_value_t clone_obj(jit_function_t F, jit_value_t ptr);
 	static void inc_gmp_counter(jit_function_t F);
 
-	/** Captures **/
-	static void function_add_capture(jit_function_t F, jit_value_t, jit_value_t);
-	static jit_value_t function_get_capture(jit_function_t F, jit_value_t fun_ptr, int capture_index);
-
 	/** Utilities **/
 	static void print_gmp_int(jit_function_t F, jit_value_t val);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);

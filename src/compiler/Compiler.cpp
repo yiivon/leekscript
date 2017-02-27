@@ -312,12 +312,17 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_get_capture(int index, Type type) const {
-	jit_value_t fun = jit_value_get_param(F, 0); // function pointer
-	jit_value_t v =	VM::function_get_capture(F, fun, index);
+	Compiler::value fun = {jit_value_get_param(F, 0), Type::POINTER}; // function pointer
+	auto jit_index = new_integer(index);
+	auto v = insn_call(Type::POINTER, {fun, jit_index}, +[](LSFunction<LSValue*>* fun, int index) {
+		LSValue* v = fun->get_capture(index);
+//		v->refs++;
+		return v;
+	});
 	if (type.nature == Nature::VALUE) {
-		v = VM::pointer_to_value(F, v, type);
+		v.v = VM::pointer_to_value(F, v.v, type);
 	}
-	return {v, type};
+	return {v.v, type};
 }
 
 void Compiler::insn_push_move_array(Compiler::value array, Compiler::value value) const {
@@ -356,6 +361,12 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	Compiler::value v = {jit_insn_call_native(F, "call", func, sig, jit_args.data(), arg_types.size(), 0), return_type};
 	jit_type_free(sig);
 	return v;
+}
+
+void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) {
+	insn_call(Type::VOID, {fun, capture}, +[](LSFunction<LSValue*>* fun, LSValue* cap) {
+		fun->add_capture(cap);
+	});
 }
 
 /*
