@@ -18,7 +18,9 @@ Reference::Reference(Value* value)
 	scope = VarScope::LOCAL;
 }
 
-Reference::~Reference() {}
+Reference::~Reference() {
+	delete value;
+}
 
 void Reference::print(ostream& os, int, bool debug) const {
 	os << "@" << value->to_string();
