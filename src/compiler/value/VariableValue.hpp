@@ -16,7 +16,7 @@ public:
 
 	std::string name;
 	Token* token;
-	SemanticVar* var;
+	std::shared_ptr<SemanticVar> var;
 	int capture_index = 0;
 	VarScope scope;
 

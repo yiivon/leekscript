@@ -13,7 +13,7 @@ class Reference : public Value {
 public:
 
 	Value* value;
-	SemanticVar* var;
+	std::shared_ptr<SemanticVar> var;
 	int capture_index = 0;
 	VarScope scope;
 	std::string name;

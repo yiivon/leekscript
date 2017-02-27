@@ -52,11 +52,11 @@ void SemanticAnalyser::analyse(Program* program, Context*) {
 void SemanticAnalyser::enter_function(Function* f) {
 
 	// Create function scope
-	variables.push_back(vector<map<std::string, SemanticVar*>> {});
+	variables.push_back(vector<map<std::string, std::shared_ptr<SemanticVar>>> {});
 	// First function block
-	variables.back().push_back(map<std::string, SemanticVar*> {});
+	variables.back().push_back(map<std::string, std::shared_ptr<SemanticVar>> {});
 	// Parameters
-	parameters.push_back(map<std::string, SemanticVar*> {});
+	parameters.push_back(map<std::string, std::shared_ptr<SemanticVar>> {});
 
 	loops.push(0);
 	functions_stack.push(f);
@@ -70,7 +70,7 @@ void SemanticAnalyser::leave_function() {
 }
 
 void SemanticAnalyser::enter_block() {
-	variables.back().push_back(map<std::string, SemanticVar*> {});
+	variables.back().push_back(map<std::string, std::shared_ptr<SemanticVar>> {});
 }
 
 void SemanticAnalyser::leave_block() {
@@ -97,14 +97,14 @@ bool SemanticAnalyser::in_loop(int deepness) const {
 	return loops.top() >= deepness;
 }
 
-SemanticVar* SemanticAnalyser::add_parameter(Token* v, Type type) {
+std::shared_ptr<SemanticVar> SemanticAnalyser::add_parameter(Token* v, Type type) {
 
-	SemanticVar* arg = new SemanticVar(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function());
+	auto arg = std::make_shared<SemanticVar>(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function());
 	parameters.back().insert({v->content, arg});
 	return arg;
 }
 
-SemanticVar* SemanticAnalyser::get_var(Token* v) {
+std::shared_ptr<SemanticVar> SemanticAnalyser::get_var(Token* v) {
 
 	// Search in interval variables : global for the program
 	try {
@@ -133,7 +133,7 @@ SemanticVar* SemanticAnalyser::get_var(Token* v) {
 	return nullptr;
 }
 
-SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
+std::shared_ptr<SemanticVar> SemanticAnalyser::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
 
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
 		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, {v->content}});
@@ -143,9 +143,9 @@ SemanticVar* SemanticAnalyser::add_var(Token* v, Type type, Value* value, Variab
 		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, {v->content}});
 		return nullptr;
 	}
-	variables.back().back().insert(pair<string, SemanticVar*>(
+	variables.back().back().insert(pair<string, std::shared_ptr<SemanticVar>>(
 		v->content,
-		new SemanticVar(v->content, VarScope::LOCAL, type, 0, value, vd, current_function())
+		std::make_shared<SemanticVar>(v->content, VarScope::LOCAL, type, 0, value, vd, current_function())
 	));
 	return variables.back().back().at(v->content);
 }
@@ -154,7 +154,7 @@ void SemanticAnalyser::add_function(Function* l) {
 	functions.push_back(l);
 }
 
-map<string, SemanticVar*>& SemanticAnalyser::get_local_vars() {
+map<string, std::shared_ptr<SemanticVar>>& SemanticAnalyser::get_local_vars() {
 	return variables.back().back();
 }
 

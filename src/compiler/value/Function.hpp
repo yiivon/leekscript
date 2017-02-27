@@ -19,10 +19,10 @@ public:
 	std::vector<Token*> arguments;
 	std::vector<bool> references;
 	std::vector<Value*> defaultValues;
-	std::vector<SemanticVar*> captures;
+	std::vector<std::shared_ptr<SemanticVar>> captures;
 	Block* body;
 	int pos;
-	std::map<std::string, SemanticVar*> vars;
+	std::map<std::string, std::shared_ptr<SemanticVar>> vars;
 	bool function_added;
 	Function* parent;
 	LSFunction<LSValue*>* ls_fun = nullptr;
@@ -31,7 +31,7 @@ public:
 	virtual ~Function();
 
 	void addArgument(Token* token, bool reference, Value* defaultValue);
-	int capture(SemanticVar* var);
+	int capture(std::shared_ptr<SemanticVar> var);
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 

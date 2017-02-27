@@ -15,7 +15,7 @@ public:
 	Token* token;
 	std::string name;
 	std::vector<VariableDeclaration*> fields;
-	SemanticVar* var;
+	std::shared_ptr<SemanticVar> var;
 	LSClass* ls_class;
 
 	ClassDeclaration(Token* token);

@@ -120,9 +120,6 @@ VM::~VM() {
 	for (auto& module : modules) {
 		delete module;
 	}
-	for (auto& var : internal_vars) {
-		delete var.second;
-	}
 	for (auto& fun : system_vars) {
 		delete fun.second;
 	}
@@ -261,10 +258,9 @@ jit_type_t VM::get_jit_type(const Type& type) {
 }
 
 void VM::add_internal_var(std::string name, Type type) {
-	internal_vars.insert(pair<string, SemanticVar*>(
-		name,
-		new SemanticVar(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr)
-	));
+	internal_vars.insert({name,
+		std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr)
+	});
 }
 
 LSValue* create_number_object_int(int n) {

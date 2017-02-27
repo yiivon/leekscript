@@ -47,8 +47,8 @@ public:
 	Program* program;
 	VM* vm;
 
-	std::vector<std::vector<std::map<std::string, SemanticVar*>>> variables;
-	std::vector<std::map<std::string, SemanticVar*>> parameters;
+	std::vector<std::vector<std::map<std::string, std::shared_ptr<SemanticVar>>>> variables;
+	std::vector<std::map<std::string, std::shared_ptr<SemanticVar>>> parameters;
 
 	std::vector<Function*> functions;
 	std::stack<Function*> functions_stack;
@@ -73,11 +73,11 @@ public:
 	void leave_loop();
 	bool in_loop(int deepness) const;
 
-	SemanticVar* add_var(Token*, Type, Value*, VariableDeclaration*);
-	SemanticVar* add_parameter(Token*, Type);
+	std::shared_ptr<SemanticVar> add_var(Token*, Type, Value*, VariableDeclaration*);
+	std::shared_ptr<SemanticVar> add_parameter(Token*, Type);
 
-	SemanticVar* get_var(Token* name);
-	std::map<std::string, SemanticVar*>& get_local_vars();
+	std::shared_ptr<SemanticVar> get_var(Token* name);
+	std::map<std::string, std::shared_ptr<SemanticVar>>& get_local_vars();
 
 	void add_error(SemanticError ex);
 

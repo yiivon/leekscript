@@ -207,7 +207,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "function analyse body : " << type << endl;
 }
 
-int Function::capture(SemanticVar* var) {
+int Function::capture(std::shared_ptr<SemanticVar> var) {
 
 	if (std::find(captures.begin(), captures.end(), var) == captures.end()) {
 

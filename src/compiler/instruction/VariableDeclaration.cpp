@@ -48,7 +48,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		Token* var = variables[i];
 		Value* value = nullptr;
 
-		SemanticVar* v = analyser->add_var(var, Type::UNKNOWN, value, this);
+		auto v = analyser->add_var(var, Type::UNKNOWN, value, this);
 		if (v == nullptr) {
 			continue;
 		}
@@ -64,7 +64,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (v->type == Type::VOID) {
 			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, var->line, {var->content}});
 		}
-		vars.insert(pair<string, SemanticVar*>(var->content, v));
+		vars.insert({var->content, v});
 	}
 }
 
@@ -73,7 +73,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
 		std::string name = variables[i]->content;
-		SemanticVar* v = vars.at(name);
+		auto v = vars.at(name);
 
 		if (expressions[i] != nullptr) {
 
