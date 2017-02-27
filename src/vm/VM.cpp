@@ -208,6 +208,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	// Cleaning
 	delete program;
 	VM::enable_operations = true;
+	jit_type_free(VM::gmp_int_type);
 
 	// Results
 	result.objects_created = LSValue::obj_count;
