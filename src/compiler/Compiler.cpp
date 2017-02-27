@@ -177,6 +177,9 @@ Compiler::value Compiler::new_bool(bool b) const {
 Compiler::value Compiler::new_integer(int i) const {
 	return {LS_CREATE_INTEGER(F, i), Type::INTEGER};
 }
+Compiler::value Compiler::new_long(long l) const {
+	return {LS_CREATE_LONG(F, l), Type::LONG};
+}
 Compiler::value Compiler::new_pointer(const void* p) const {
 	return {jit_value_create_long_constant(F, LS_POINTER, (long)(void*)(p)), Type::POINTER};
 }
