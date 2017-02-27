@@ -350,6 +350,26 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 	});
 }
 
+Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
+	jit_value_t new_mpz = jit_value_create(F, VM::gmp_int_type);
+	jit_value_set_addressable(new_mpz);
+	Compiler::value r = {new_mpz, Type::GMP_INT_TMP};
+	auto r_addr = insn_address_of(r);
+	auto gmp_addr = insn_address_of(mpz);
+	insn_call(Type::VOID, {r_addr, gmp_addr}, &mpz_init_set);
+	VM::inc_gmp_counter(F);
+	return r;
+}
+
+void Compiler::insn_delete_mpz(Compiler::value mpz) const {
+	auto gmp_addr = insn_address_of(mpz);
+	insn_call(Type::VOID, {gmp_addr}, &mpz_clear);
+	// Increment gmp values counter
+	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_deleted);
+	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
+	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
+}
+
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
 	std::vector<jit_value_t> jit_args;
 	std::vector<jit_type_t> arg_types;

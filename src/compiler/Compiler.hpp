@@ -105,6 +105,8 @@ public:
 	value insn_get_capture(int index, Type type) const;
 	void  insn_push_move_array(value array, value element) const;
 	value insn_move_inc(value) const;
+	value insn_clone_mpz(value mpz) const;
+	void  insn_delete_mpz(value mpz) const;
 
 	// Iterators
 	value iterator_begin(value v) const;
