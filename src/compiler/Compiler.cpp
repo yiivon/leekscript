@@ -591,4 +591,33 @@ int Compiler::get_current_loop_blocks(int deepness) const {
 	return sum;
 }
 
+void Compiler::inc_ops(int amount) {
+	inc_ops_jit(new_integer(amount));
+}
+
+void Compiler::inc_ops_jit(Compiler::value amount) {
+	// Operations enabled?
+	if (not VM::enable_operations) return;
+
+	// Variable counter pointer
+	jit_value_t jit_ops_ptr = jit_value_create_long_constant(F, LS_POINTER, (long int) &VM::operations);
+
+	// Increment counter
+	jit_value_t jit_ops = jit_insn_load_relative(F, jit_ops_ptr, 0, jit_type_uint);
+	jit_insn_store_relative(F, jit_ops_ptr, 0, jit_insn_add(F, jit_ops, amount.v));
+
+	// Compare to the limit
+	jit_value_t compare = jit_insn_gt(F, jit_ops, jit_value_create_nint_constant(F, jit_type_uint, VM::operation_limit));
+	jit_label_t label_end = jit_label_undefined;
+	jit_insn_branch_if_not(F, compare, &label_end);
+
+	// If greater than the limit, throw exception
+	jit_insn_throw(F, insn_call(Type::POINTER, {}, +[]() {
+		return new VM::ExceptionObj(VM::Exception::OPERATION_LIMIT_EXCEEDED);
+	}).v);
+
+	// End
+	jit_insn_label(F, &label_end);
+}
+
 }

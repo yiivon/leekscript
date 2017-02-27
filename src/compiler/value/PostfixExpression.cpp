@@ -49,7 +49,7 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 
 Compiler::value PostfixExpression::compile(Compiler& c) const {
 
-	VM::inc_ops(c.F, 1);
+	c.inc_ops(1);
 
 	switch (operatorr->type) {
 

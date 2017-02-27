@@ -168,7 +168,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 	auto a = array->compile(c);
 
-	VM::inc_ops(c.F, 2); // Array access : 2 operations
+	c.inc_ops(2); // Array access : 2 operations
 
 	if (key2 == nullptr) {
 
@@ -232,7 +232,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			}
 			VM::delete_temporary(c.F, a.v);
 
-			VM::inc_ops(c.F, 2);
+			c.inc_ops(2);
 
 			if (array_element_type == Type::INTEGER and type.nature == Nature::POINTER) {
 				return {VM::value_to_pointer(c.F, res, type), type};

@@ -93,7 +93,7 @@ Compiler::value Set::compile(Compiler& c) const {
 	}
 	jit_type_free(sig);
 
-	VM::inc_ops(c.F, ops);
+	c.inc_ops(ops);
 
 	return {s, type};
 }

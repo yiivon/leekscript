@@ -216,7 +216,7 @@ Compiler::value Map::compile(Compiler &c) const {
 	}
 	jit_type_free(sig);
 
-	VM::inc_ops(c.F, ops);
+	c.inc_ops(ops);
 
 	return {map, type};
 }

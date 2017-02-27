@@ -538,7 +538,7 @@ Compiler::value NumberSTD::pow_gmp_int(Compiler& c, std::vector<Compiler::value>
 	jit_insn_label(c.F, &label_end);
 
 	// Ops: size of the theorical result
-	VM::inc_ops_jit(c.F, r_size.v);
+	c.inc_ops_jit(r_size);
 
 	VM::inc_gmp_counter(c.F);
 	return c.insn_call(Type::GMP_INT_TMP, args, &pow_gmp_int_lambda);

@@ -358,36 +358,6 @@ void VM::delete_temporary(jit_function_t F, jit_value_t obj) {
 	jit_type_free(sig);
 }
 
-void VM::inc_ops(jit_function_t F, int amount) {
-	jit_value_t amount_jit = LS_CREATE_INTEGER(F, amount);
-	inc_ops_jit(F, amount_jit);
-}
-
-void VM::inc_ops_jit(jit_function_t F, jit_value_t amount) {
-	// Operations enabled?
-	if (not enable_operations) return;
-
-	// Variable counter pointer
-	jit_value_t jit_ops_ptr = jit_value_create_long_constant(F, LS_POINTER, (long int) &VM::operations);
-
-	// Increment counter
-	jit_value_t jit_ops = jit_insn_load_relative(F, jit_ops_ptr, 0, jit_type_uint);
-	jit_insn_store_relative(F, jit_ops_ptr, 0, jit_insn_add(F, jit_ops, amount));
-
-	// Compare to the limit
-	jit_value_t compare = jit_insn_gt(F, jit_ops, jit_value_create_nint_constant(F, jit_type_uint, VM::operation_limit));
-	jit_label_t label_end = jit_label_undefined;
-	jit_insn_branch_if_not(F, compare, &label_end);
-
-	// If greater than the limit, throw exception
-	jit_insn_throw(F, VM::call(F, jit_type_void_ptr, {}, {}, +[]() {
-		return new VM::ExceptionObj(VM::Exception::OPERATION_LIMIT_EXCEEDED);
-	}));
-
-	// End
-	jit_insn_label(F, &label_end);
-}
-
 LSArray<LSValue*>* VM_create_array_ptr(int cap) {
 	LSArray<LSValue*>* array = new LSArray<LSValue*>();
 	array->reserve(cap);

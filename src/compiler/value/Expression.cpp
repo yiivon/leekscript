@@ -481,7 +481,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	// Increment operations
 	if (operations > 0) {
-		VM::inc_ops(c.F, operations);
+		c.inc_ops(operations);
 	}
 
 	if (operator_fun != nullptr) {

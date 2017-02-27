@@ -147,6 +147,11 @@ public:
 	jit_label_t* get_current_loop_end_label(int deepness) const;
 	jit_label_t* get_current_loop_cond_label(int deepness) const;
 	int get_current_loop_blocks(int deepness) const;
+
+	/** Operations **/
+	void inc_ops(int add);
+	void inc_ops_jit(value add);
+	void get_operations();
 };
 
 }

@@ -187,7 +187,7 @@ Compiler::value Array::compile(Compiler& c) const {
 	}
 
 	// size of the array + 1 operations
-	VM::inc_ops(c.F, expressions.size() + 1);
+	c.inc_ops(expressions.size() + 1);
 
 	return array;
 }

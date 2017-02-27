@@ -41,7 +41,7 @@ Compiler::value While::compile(Compiler& c) const {
 
 	// condition
 	jit_insn_label(c.F, &label_cond);
-	VM::inc_ops(c.F, 1);
+	c.inc_ops(1);
 	auto cond = condition->compile(c);
 	if (condition->type.nature == Nature::POINTER) {
 		jit_value_t cond_bool = VM::is_true(c.F, cond.v);

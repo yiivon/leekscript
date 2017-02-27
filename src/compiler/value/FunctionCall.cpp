@@ -437,7 +437,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	//}
 
 	// Custom function call : 1 op
-	VM::inc_ops(c.F, 1);
+	c.inc_ops(1);
 
 	if (return_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 		return {VM::value_to_pointer(c.F, ret, type), type};

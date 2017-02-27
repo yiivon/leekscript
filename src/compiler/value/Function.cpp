@@ -290,7 +290,7 @@ Compiler::value Function::compile(Compiler& c) const {
 	c.leave_function();
 
 	// Create a function : 1 op
-	VM::inc_ops(c.F, 1);
+	c.inc_ops(1);
 
 	if (type.nature == Nature::POINTER) {
 		ls_fun->function = f;

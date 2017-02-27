@@ -110,7 +110,7 @@ Compiler::value For::compile(Compiler& c) const {
 
 	// Cond
 	jit_insn_label(c.F, &label_cond);
-	VM::inc_ops(c.F, 1);
+	c.inc_ops(1);
 	if (condition != nullptr) {
 		auto condition_v = condition->compile(c);
 		if (condition->type.nature == Nature::POINTER) {
