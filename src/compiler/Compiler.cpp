@@ -412,6 +412,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
 		auto interval_iterator = jit_type_create_struct(types, 2, 1);
 		Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
+		jit_type_free(interval_iterator);
 		auto addr = insn_address_of(it);
 		jit_insn_store_relative(F, addr.v, 0, v.v);
 		jit_insn_store_relative(F, addr.v, 8, insn_load(v, 20, Type::INTEGER).v);
@@ -421,6 +422,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
 		auto string_iterator = jit_type_create_struct(types, 5, 1);
 		Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
+		jit_type_free(string_iterator);
 		auto addr = insn_address_of(it);
 		insn_call(Type::VOID, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
 			auto i = LSString::iterator_begin(str);
@@ -439,6 +441,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_int};
 		auto integer_iterator = jit_type_create_struct(types, 3, 1);
 		Compiler::value it = {jit_value_create(F, integer_iterator), Type::LONG};
+		jit_type_free(integer_iterator);
 		auto addr = jit_insn_address_of(F, it.v);
 		jit_insn_store_relative(F, addr, 0, v.v);
 		jit_insn_store_relative(F, addr, 4, to_int(insn_pow(new_integer(10), to_int(insn_log10(v)))).v);
