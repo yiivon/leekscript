@@ -68,6 +68,7 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 				mpf_t gmp;
 				mpf_init_set_str(gmp, clean_value.c_str(), base);
 				double_value = mpf_get_d(gmp);
+				mpf_clear(gmp);
 			}
 			// TODO floating-point large values
 		}
