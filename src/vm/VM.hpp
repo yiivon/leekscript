@@ -142,18 +142,6 @@ public:
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
 	static void store_exception(jit_function_t F, jit_value_t ex);
 	static std::string exception_message(VM::Exception expected);
-
-	template <typename R, typename... A>
-	static jit_value_t call(jit_function_t& f, jit_type_t return_type, std::vector<jit_type_t> types, std::vector<jit_value_t> args, R(*func)(A...))
-	{
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, types.data(), types.size(), 0);
-		return jit_insn_call_native(f, "VM::call", (void*) func, sig, args.data(), types.size(), 0);
-	}
-	static jit_value_t call(jit_function_t& f, jit_type_t return_type, std::vector<jit_type_t> types, std::vector<jit_value_t> args, void* func)
-	{
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type, types.data(), types.size(), 0);
-		return jit_insn_call_native(f, "VM::call", func, sig, args.data(), types.size(), 0);
-	}
 };
 
 }
