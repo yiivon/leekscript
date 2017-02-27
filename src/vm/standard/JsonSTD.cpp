@@ -46,7 +46,7 @@ Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) 
 			return new LSString(buff);
 		});
 		if (args[0].t.temporary) {
-			VM::delete_gmp_int(c.F, args[0].v);
+			c.insn_delete_mpz(args[0]);
 		}
 		return s;
 	}

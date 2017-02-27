@@ -411,7 +411,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 		if (function->type.getArgumentType(i) == Type::GMP_INT &&
 			arguments[i]->type != Type::GMP_INT_TMP) {
-			args[offset + i] = VM::clone_gmp_int(c.F, args[offset + i]);
+			args[offset + i] = c.insn_clone_mpz({args[offset + i], Type::GMP_INT}).v;
 		}
 	}
 
@@ -428,7 +428,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 		if (function->type.getArgumentType(i) == Type::GMP_INT ||
 			function->type.getArgumentType(i) == Type::GMP_INT_TMP) {
-			VM::delete_gmp_int(c.F, args[offset + i]);
+			c.insn_delete_mpz({args[offset + i], Type::GMP_INT});
 		}
 	}
 	// Delete temporary function

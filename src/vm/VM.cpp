@@ -418,26 +418,6 @@ jit_value_t VM::clone_obj(jit_function_t F, jit_value_t ptr) {
 	return v;
 }
 
-void VM::delete_gmp_int(jit_function_t F, jit_value_t gmp) {
-
-	jit_value_t gmp_addr = jit_insn_address_of(F, gmp);
-	VM::call(F, LS_VOID, {LS_POINTER}, {gmp_addr}, &mpz_clear);
-
-	// Increment gmp values counter
-	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_deleted);
-	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
-	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
-}
-
-jit_value_t VM::clone_gmp_int(jit_function_t F, jit_value_t gmp) {
-
-	jit_value_t r = VM::create_gmp_int(F);
-	jit_value_t r_addr = jit_insn_address_of(F, r);
-	jit_value_t gmp_addr = jit_insn_address_of(F, gmp);
-	VM::call(F, LS_VOID, {LS_POINTER, LS_POINTER}, {r_addr, gmp_addr}, &mpz_init_set);
-	return r;
-}
-
 void VM::inc_gmp_counter(jit_function_t F) {
 
 	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_created);

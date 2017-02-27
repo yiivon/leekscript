@@ -403,7 +403,7 @@ Compiler::value NumberSTD::add_gmp_gmp(Compiler& c, std::vector<Compiler::value>
 	auto b = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_add);
 	if (args[1].t.temporary && args[1] != r) {
-		VM::delete_gmp_int(c.F, args[1].v);
+		c.insn_delete_mpz(args[1]);
 	}
 	return r;
 }
@@ -442,7 +442,7 @@ Compiler::value NumberSTD::sub_gmp_gmp(Compiler& c, std::vector<Compiler::value>
 	auto b = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub);
 	if (args[1].t.temporary && args[1] != r) {
-		VM::delete_gmp_int(c.F, args[1].v);
+		c.insn_delete_mpz(args[1]);
 	}
 	return r;
 }
@@ -467,7 +467,7 @@ Compiler::value NumberSTD::sub_gmp_int(Compiler& c, std::vector<Compiler::value>
 	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub_ui);
 	jit_insn_label(c.F, &label_end);
 	if (args[0].t.temporary) {
-		VM::delete_gmp_int(c.F, args[0].v);
+		c.insn_delete_mpz(args[0]);
 	}
 	return r;
 }
@@ -478,7 +478,7 @@ Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value>
 	auto b = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {r_addr, b, args[0]}, &mpz_mul_si);
 	if (args[1].t.temporary) {
-		VM::delete_gmp_int(c.F, args[1].v);
+		c.insn_delete_mpz(args[1]);
 	}
 	return r;
 }
@@ -494,7 +494,7 @@ Compiler::value NumberSTD::mul_gmp_gmp(Compiler& c, std::vector<Compiler::value>
 	auto b = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_mul);
 	if (args[1].t.temporary && args[1] != r) {
-		VM::delete_gmp_int(c.F, args[1].v);
+		c.insn_delete_mpz(args[1]);
 	}
 	return r;
 }
@@ -515,7 +515,7 @@ Compiler::value NumberSTD::pow_gmp_gmp(Compiler& c, std::vector<Compiler::value>
 	auto p = c.insn_call(Type::LONG, {b}, &mpz_get_ui);
 	c.insn_call(Type::VOID, {r_addr, a, p}, &mpz_pow_ui);
 	if (args[1].t.temporary && args[1] != r) {
-		VM::delete_gmp_int(c.F, args[1].v);
+		c.insn_delete_mpz(args[1]);
 	}
 	return r;
 }
@@ -553,10 +553,10 @@ Compiler::value NumberSTD::lt_gmp_gmp(Compiler& c, std::vector<Compiler::value> 
 	auto b_addr = c.insn_address_of(args[1]);
 	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
 	if (args[0].t.temporary) {
-		VM::delete_gmp_int(c.F, args[0].v);
+		c.insn_delete_mpz(args[0]);
 	}
 	if (args[1].t.temporary) {
-		VM::delete_gmp_int(c.F, args[1].v);
+		c.insn_delete_mpz(args[1]);
 	}
 	return c.insn_lt(res, c.new_integer(0));
 }
@@ -590,7 +590,7 @@ Compiler::value NumberSTD::mod_gmp_gmp(Compiler& c, std::vector<Compiler::value>
 	auto b = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_mod);
 	if (args[1].t.temporary && args[1] != r) {
-		VM::delete_gmp_int(c.F, args[1].v);
+		c.insn_delete_mpz(args[1]);
 	}
 	return r;
 }
@@ -600,10 +600,10 @@ Compiler::value NumberSTD::eq_gmp_gmp(Compiler& c, std::vector<Compiler::value> 
 	auto b_addr = c.insn_address_of(args[1]);
 	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp);
 	if (args[0].t.temporary) {
-		VM::delete_gmp_int(c.F, args[0].v);
+		c.insn_delete_mpz(args[0]);
 	}
 	if (args[1].t.temporary) {
-		VM::delete_gmp_int(c.F, args[1].v);
+		c.insn_delete_mpz(args[1]);
 	}
 	return c.insn_eq(res, c.new_integer(0));
 }
@@ -612,7 +612,7 @@ Compiler::value NumberSTD::eq_gmp_int(Compiler& c, std::vector<Compiler::value> 
 	auto a_addr = c.insn_address_of(args[0]);
 	auto res = c.insn_call(Type::INTEGER, {a_addr, args[1]}, &_mpz_cmp_si);
 	if (args[0].t.temporary) {
-		VM::delete_gmp_int(c.F, args[0].v);
+		c.insn_delete_mpz(args[0]);
 	}
 	return c.insn_eq(res, c.new_integer(0));
 }
@@ -919,7 +919,7 @@ Compiler::value NumberSTD::sqrt_gmp(Compiler& c, std::vector<Compiler::value> ar
 	auto a_addr = c.insn_address_of(args[0]);
 	c.insn_call(Type::VOID, {r_addr, a_addr}, &mpz_sqrt);
 	if (args[0].t.temporary) {
-		VM::delete_gmp_int(c.F, args[0].v);
+		c.insn_delete_mpz(args[0]);
 	}
 	return r;
 }
@@ -948,7 +948,7 @@ Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> ar
 	auto v_addr = c.insn_address_of(args[0]);
 	auto reps = c.new_integer(15);
 	if (args[0].t.temporary) {
-		VM::delete_gmp_int(c.F, args[0].v);
+		c.insn_delete_mpz(args[0]);
 	}
 	return c.insn_call(Type::INTEGER, {v_addr, reps}, &mpz_probab_prime_p);
 }

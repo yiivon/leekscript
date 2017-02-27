@@ -58,11 +58,11 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 			if (expression->type == Type::GMP_INT) {
 
 				auto x = expression->compile(c);
-				auto r = VM::clone_gmp_int(c.F, x.v);
+				auto r = c.insn_clone_mpz(x);
 				auto x_addr = c.insn_address_of(x);
 				auto one = c.new_integer(1);
 				c.insn_call(Type::VOID, {x_addr, x_addr, one}, &mpz_add_ui);
-				return {r, Type::GMP_INT_TMP};
+				return r;
 
 			} else if (expression->type.nature == Nature::VALUE) {
 

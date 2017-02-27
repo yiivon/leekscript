@@ -35,7 +35,7 @@ Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 			VM::delete_temporary(c.F, v.v);
 		}
 		if (value->type == Type::GMP_INT_TMP) {
-			VM::delete_gmp_int(c.F, v.v);
+			c.insn_delete_mpz(v);
 		}
 		return {nullptr, Type::UNKNOWN};
 	} else {
