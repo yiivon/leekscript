@@ -181,6 +181,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			jit_value_t args[] = {a.v, k.v};
 			jit_value_t res = jit_insn_call_native(c.F, "access", (void*) interval_access, sig, args, 2, 0);
+			jit_type_free(sig);
 
 			VM::delete_temporary(c.F, a.v);
 
