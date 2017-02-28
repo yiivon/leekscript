@@ -419,6 +419,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), args_types.size(), 1);
 	jit_value_t ret = jit_insn_call_indirect(c.F, fun, sig, args.data(), arg_count, 0);
+	// FIXME Not a fail : need two free() here ^^
+	jit_type_free(sig);
 	jit_type_free(sig);
 
 	// Destroy temporary arguments
