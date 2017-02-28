@@ -9,10 +9,11 @@
 namespace ls {
 
 class LSObject : public LSValue {
+private:
+	std::map<std::string, LSValue*> values;
 public:
 	static LSValue* object_class;
 
-	std::map<std::string, LSValue*> values;
 	LSClass* clazz;
 	bool readonly;
 
