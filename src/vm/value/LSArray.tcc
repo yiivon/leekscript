@@ -755,7 +755,7 @@ inline LSArray<T>* LSArray<T>::ls_fill(T element, int size) {
 template <>
 inline LSValue* LSArray<LSValue*>::ls_max() {
 	if (this->empty()) {
-		if (refs == 0) delete this;
+		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	LSValue* max = (*this)[0];
@@ -766,14 +766,14 @@ inline LSValue* LSArray<LSValue*>::ls_max() {
 	}
 	if (refs == 0) {
 		max = max->clone();
-		delete this;
+		LSValue::delete_temporary(this);
 	}
 	return max;
 }
 template <class T>
 T LSArray<T>::ls_max() {
 	if (this->empty()) {
-		if (refs == 0) delete this;
+		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	T max = (*this)[0];
@@ -789,7 +789,7 @@ T LSArray<T>::ls_max() {
 template <>
 inline LSValue* LSArray<LSValue*>::ls_min() {
 	if (this->empty()) {
-		if (refs == 0) delete this;
+		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	LSValue* min = (*this)[0];
@@ -800,7 +800,7 @@ inline LSValue* LSArray<LSValue*>::ls_min() {
 	}
 	if (refs == 0) {
 		min = min->clone();
-		delete this;
+		LSValue::delete_temporary(this);
 	}
 	return min;
 }

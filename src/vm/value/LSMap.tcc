@@ -67,10 +67,10 @@ bool LSMap<K, V>::ls_erase(K key) {
 		ls::unref(it->first);
 		ls::unref(it->second);
 		this->erase(it);
-		if (refs == 0) delete this;
+		LSValue::delete_temporary(this);
 		return true;
 	}
-	if (refs == 0) delete this;
+	LSValue::delete_temporary(this);
 	return false;
 }
 
@@ -82,12 +82,12 @@ V LSMap<K, V>::ls_look(K key, V def) {
 		ls::release(def);
 		if (refs == 0) {
 			V r = ls::clone(it->second);
-			delete this;
+			LSValue::delete_temporary(this);
 			return r;
 		}
 		return it->second;
 	}
-	if (refs == 0) delete this;
+	LSValue::delete_temporary(this);
 	return def;
 }
 

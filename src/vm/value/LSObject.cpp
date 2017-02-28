@@ -31,7 +31,7 @@ void LSObject::addField(string name, LSValue* var) {
 }
 
 LSArray<LSValue*>* LSObject::ls_get_keys() const {
-	LSArray<LSValue*>* keys = new LSArray<LSValue*>();
+	auto keys = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
 		keys->push_inc(new LSString(i->first));
 	}
@@ -40,7 +40,7 @@ LSArray<LSValue*>* LSObject::ls_get_keys() const {
 }
 
 LSArray<LSValue*>* LSObject::ls_get_values() const {
-	LSArray<LSValue*>* v = new LSArray<LSValue*>();
+	auto v = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
 		v->push_clone(i->second);
 	}
