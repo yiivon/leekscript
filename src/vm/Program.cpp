@@ -134,6 +134,7 @@ void* handler(int type) {
 	trace->size = 1;
 	trace->items[0] = pc;
 	unsigned int line = jit_stack_trace_get_offset(VM::jit_context, trace, 0);
+	jit_free(trace);
 
 	VM::ExceptionObj* ex = new VM::ExceptionObj((VM::Exception) type);
 	ex->lines.push_back(line);
