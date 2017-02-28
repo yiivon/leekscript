@@ -1311,7 +1311,7 @@ Token* SyntaxicAnalyser::eat(TokenType type) {
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
 		errors.push_back(SyntaxicalError(eaten, SyntaxicalError::Type::UNEXPECTED_TOKEN, {eaten->content}));
 		std::cout << "unexpected token : " << to_string((int) type) << " != " << to_string((int) eaten->type) << " (" << eaten->content << ") char " << eaten->character << std::endl;
-		return new Token(type, 0, 0, "**Error**");
+		return finished_token;
 	}
 	return eaten;
 }
@@ -1320,7 +1320,7 @@ Token* SyntaxicAnalyser::nextTokenAt(int pos) {
 	if (i + pos < tokens.size())
 		return &tokens[i + pos];
 	else
-		return new Token(TokenType::FINISHED, 0, 0, "");
+		return finished_token;
 }
 
 void SyntaxicAnalyser::save_current_state() {
