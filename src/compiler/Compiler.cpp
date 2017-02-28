@@ -301,6 +301,12 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 	}
 }
 
+void Compiler::insn_delete_not_temporary(value v) const {
+	if (v.t.nature == Nature::POINTER) {
+		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_not_temporary);
+	}
+}
+
 Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 	if (v.t == Type::INT_ARRAY) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size);
@@ -378,6 +384,14 @@ void Compiler::insn_delete_mpz(Compiler::value mpz) const {
 	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_deleted);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
+}
+
+void Compiler::insn_inc_refs(value v) const {
+	if (v.t.must_manage_memory()) {
+		insn_call(Type::VOID, {v}, (void*) +[](LSValue* v) {
+			v->refs++;
+		});
+	}
 }
 
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {

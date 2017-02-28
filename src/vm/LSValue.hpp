@@ -150,6 +150,7 @@ public:
 
 	static void delete_ref(LSValue* value);
 	static void delete_temporary(const LSValue* const value);
+	static void delete_not_temporary(LSValue* value);
 };
 
 template <> LSValue* LSValue::get(int v);
@@ -202,6 +203,20 @@ inline void LSValue::delete_temporary(const LSValue* const value) {
 	if (value == nullptr) return;
 
 	if (value->native) return;
+	if (value->refs == 0) {
+		delete value;
+	}
+}
+
+inline void LSValue::delete_not_temporary(LSValue* value) {
+
+	// TODO Remove this nullptr check
+	if (value == nullptr) return;
+
+	if (value->native) return;
+	if (value->refs == 0) return;
+
+	value->refs--;
 	if (value->refs == 0) {
 		delete value;
 	}
