@@ -25,6 +25,7 @@ Function::~Function() {
 	}
 	if (ls_fun != nullptr) {
 		delete ls_fun;
+		ls_fun = nullptr;
 	}
 	if (context) {
 		jit_context_destroy(context);
