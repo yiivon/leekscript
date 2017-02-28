@@ -20,15 +20,20 @@ LSFunction<R>::LSFunction(void* function) : LSValue(FUNCTION) {
 
 template <class R>
 LSFunction<R>::~LSFunction() {
-	for (auto capture : captures) {
-		LSValue::delete_ref(capture);
+	for (size_t i = 0; i < captures.size(); ++i) {
+		if (!captures_native[i]) {
+			LSValue::delete_ref(captures[i]);
+		}
 	}
 }
 
 template <class R>
 void LSFunction<R>::add_capture(LSValue* value) {
-	value->refs++;
+	if (!value->native) {
+		value->refs++;
+	}
 	captures.push_back(value);
+	captures_native.push_back(value->native);
 }
 
 template <class R>
