@@ -15,8 +15,7 @@ using namespace std;
 
 namespace ls {
 
-ObjectAccess::ObjectAccess() {
-	field = nullptr;
+ObjectAccess::ObjectAccess(Token& token) : field(token) {
 	object = nullptr;
 	type = Type::POINTER;
 	class_attr = false;
@@ -29,7 +28,7 @@ ObjectAccess::~ObjectAccess() {
 
 void ObjectAccess::print(ostream& os, int indent, bool debug) const {
 	object->print(os, indent, debug);
-	os << "." << field->content;
+	os << "." << field.content;
 	if (debug) {
 		os << " " << type;
 	}
@@ -54,9 +53,9 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		LSClass* std_class = (LSClass*) analyser->vm->system_vars[vv->name];
 
-		if (std_class->static_fields.find(field->content) != std_class->static_fields.end()) {
+		if (std_class->static_fields.find(field.content) != std_class->static_fields.end()) {
 
-			ModuleStaticField& mod_field = std_class->static_fields[field->content];
+			ModuleStaticField& mod_field = std_class->static_fields[field.content];
 			type = mod_field.type;
 
 			if (mod_field.fun != nullptr) {
@@ -73,7 +72,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (!found and object_class != nullptr) {
 		// Attribute : (x -> x).return
 		try {
-			auto f = object_class->fields.at(field->content);
+			auto f = object_class->fields.at(field.content);
 			type = f.type;
 			if (f.fun != nullptr) {
 				access_function = f.fun;
@@ -81,7 +80,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		} catch (...) {
 			// Attribute in Value?
 			try {
-				auto f = value_class->fields.at(field->content);
+				auto f = value_class->fields.at(field.content);
 				type = f.type;
 				if (f.fun != nullptr) {
 					access_function = f.fun;
@@ -89,22 +88,22 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			} catch (...) {
 				// Method : 12.abs
 				try {
-					Method f = object_class->methods.at(field->content)[0];
+					Method f = object_class->methods.at(field.content)[0];
 					type = f.type;
 					attr_addr = f.addr;
 					class_attr = true;
 				} catch (...) {
 					try {
-						Method f = value_class->methods.at(field->content)[0];
+						Method f = value_class->methods.at(field.content)[0];
 						type = f.type;
 						attr_addr = f.addr;
 						//class_attr = true;
 					} catch (...) {
 						if (object_class->name != "Object") {
 							if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
-								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, field->line, {field->content, vv->name}});
+								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, field.line, {field.content, vv->name}});
 							} else {
-								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, field->line, {field->content, object_class->name}});
+								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, field.line, {field.content, object_class->name}});
 							}
 							return;
 						}
@@ -157,7 +156,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		return c.new_pointer(attr_addr);
 	} else {
 		auto o = object->compile(c);
-		auto k = c.new_pointer(&field->content);
+		auto k = c.new_pointer(&field.content);
 		auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
 		});
@@ -168,7 +167,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	auto o = object->compile(c);
-	auto k = c.new_pointer(&field->content);
+	auto k = c.new_pointer(&field.content);
 	auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attrL(*key);
 	});

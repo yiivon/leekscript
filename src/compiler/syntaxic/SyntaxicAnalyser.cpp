@@ -503,20 +503,19 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 			}
 			case TokenType::DOT: {
 
-				ObjectAccess* oa = new ObjectAccess();
+				ObjectAccess* oa;
 				eat(TokenType::DOT);
 
-				oa->object = e;
-
 				if (t->type == TokenType::NEW || t->type == TokenType::CLASS) {
-					oa->field = t;
+					oa = new ObjectAccess(*t);
 					eat();
 				} else if (t->type == TokenType::RETURN) {
 					Token* token = eat();
-					oa->field = token;
+					oa = new ObjectAccess(*token);
 				} else {
-					oa->field = eatIdent();
+					oa = new ObjectAccess(*eatIdent());
 				}
+				oa->object = e;
 				e = oa;
 				break;
 			}

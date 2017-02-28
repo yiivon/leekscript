@@ -93,7 +93,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	ObjectAccess* oa = dynamic_cast<ObjectAccess*>(function);
 	if (oa != nullptr) {
 
-		string field_name = oa->field->content;
+		string field_name = oa->field.content;
 		Type object_type = oa->object->type;
 
 		vector<Type> arg_types;
@@ -112,7 +112,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 			string clazz = ((VariableValue*) oa->object)->name;
 			LSClass* object_class = (LSClass*) analyser->vm->system_vars[clazz];
-			StaticMethod* sm = object_class->getStaticMethod(oa->field->content, arg_types);
+			StaticMethod* sm = object_class->getStaticMethod(oa->field.content, arg_types);
 
 			if (sm != nullptr) {
 				std_func = sm->addr;
@@ -120,7 +120,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				is_native_method = sm->native;
 			} else {
 				LSClass* value_class = (LSClass*) analyser->vm->system_vars["Value"];
-				Method* m = value_class->getMethod(oa->field->content, object_type, arg_types);
+				Method* m = value_class->getMethod(oa->field.content, object_type, arg_types);
 
 				if (m != nullptr) {
 					this_ptr = oa->object;
@@ -129,7 +129,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					function->type = m->type;
 					is_native_method = m->native;
 				} else {
-					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
+					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, oa->field.line, {clazz + "::" + oa->field.content + "(" + args_string + ")"}});
 				}
 			}
 		} else {  // "salut".size()
@@ -137,11 +137,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			Method* m = nullptr;
 			if (object_type.raw_type != RawType::UNKNOWN) {
 				LSClass* object_class = (LSClass*) analyser->vm->system_vars[object_type.clazz];
-				m = object_class->getMethod(oa->field->content, object_type, arg_types);
+				m = object_class->getMethod(oa->field.content, object_type, arg_types);
 			}
 			if (m == nullptr) {
 				LSClass* value_class = (LSClass*) analyser->vm->system_vars["Value"];
-				m = value_class->getMethod(oa->field->content, object_type, arg_types);
+				m = value_class->getMethod(oa->field.content, object_type, arg_types);
 			}
 			if (m != nullptr) {
 				this_ptr = oa->object;
@@ -153,7 +153,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				if (object_type.raw_type != RawType::UNKNOWN) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
-					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field->line, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
+					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field.line, {obj_type_ss.str() + "." + oa->field.content + "(" + args_string + ")"}});
 				} else {
 					is_unknown_method = true;
 					object = oa->object;

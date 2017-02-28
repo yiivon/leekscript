@@ -14,7 +14,7 @@ class ObjectAccess : public LeftValue {
 public:
 
 	Value* object;
-	Token* field;
+	Token field;
 	std::string object_class_name;
 	std::string class_name;
 	bool class_attr = false;
@@ -23,7 +23,7 @@ public:
 	void* access_function = nullptr;
 	Type field_type;
 
-	ObjectAccess();
+	ObjectAccess(Token& token);
 	virtual ~ObjectAccess();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
