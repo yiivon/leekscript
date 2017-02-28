@@ -10,15 +10,19 @@ namespace ls {
 For::For() {}
 
 For::~For() {
-	for (Instruction* ins : inits) delete ins;
 	delete condition;
-	for (Instruction* ins : increments) delete ins;
 	delete body;
+	for (Instruction* ins : inits) {
+		delete ins;
+	}
+	for (Instruction* ins : increments) {
+		delete ins;
+	}
 }
 
 void For::print(ostream& os, int indent, bool debug) const {
 	os << "for";
-	for (Instruction* ins : inits) {
+	for (auto ins : inits) {
 		os << " ";
 		ins->print(os, indent + 1, debug);
 	}
@@ -27,7 +31,7 @@ void For::print(ostream& os, int indent, bool debug) const {
 		condition->print(os, indent + 1, debug);
 	}
 	os << ";";
-	for (Instruction* ins : increments) {
+	for (auto ins : increments) {
 		os << " ";
 		ins->print(os, indent + 1, debug);
 	}
