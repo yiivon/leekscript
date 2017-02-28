@@ -951,10 +951,11 @@ Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> arg
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
 	auto v_addr = c.insn_address_of(args[0]);
 	auto reps = c.new_integer(15);
+	auto res = c.insn_call(Type::INTEGER, {v_addr, reps}, &mpz_probab_prime_p);
 	if (args[0].t.temporary) {
 		c.insn_delete_mpz(args[0]);
 	}
-	return c.insn_call(Type::INTEGER, {v_addr, reps}, &mpz_probab_prime_p);
+	return res;
 }
 
 template<typename T>
