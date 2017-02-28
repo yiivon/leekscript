@@ -323,7 +323,7 @@ int string_size(LSString* string) {
 }
 
 LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter) {
-	LSArray<LSValue*>* parts = new LSArray<LSValue*>();
+	auto parts = new LSArray<LSValue*>();
 	if (*delimiter == "") {
 		for (char c : *string) {
 			parts->push_inc(new LSString(c));
