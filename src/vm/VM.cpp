@@ -189,6 +189,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 			for (auto l : ex->lines) {
 				std::cout << "    > line " << l << std::endl;
 			}
+			delete ex;
 		}
 		auto exe_end = chrono::high_resolution_clock::now();
 
