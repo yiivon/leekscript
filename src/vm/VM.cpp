@@ -183,7 +183,6 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 		auto exe_start = chrono::high_resolution_clock::now();
 		try {
 			value = program->execute();
-			jit_context_destroy(VM::jit_context);
 			result.execution_success = true;
 		} catch (VM::ExceptionObj* ex) {
 			result.exception = ex->type;
@@ -209,6 +208,9 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	delete program;
 	VM::enable_operations = true;
 	jit_type_free(VM::gmp_int_type);
+	if (result.compilation_success) {
+		jit_context_destroy(VM::jit_context);
+	}
 
 	// Results
 	result.objects_created = LSValue::obj_count;
