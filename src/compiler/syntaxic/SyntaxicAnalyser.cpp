@@ -408,12 +408,10 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 				|| t->type == TokenType::TILDE) {
 
 				if (t->type == TokenType::MINUS && nt != nullptr && t->line == nt->line) {
-
 					Token* minus = eat();
-					Operator* op = new Operator(minus);
-
 					if (beginingOfExpression(t->type)) {
 
+						Operator* op = new Operator(minus);
 						Value* ex = eatExpression(pipe_opened, set_opened);
 						Expression* expr = dynamic_cast<Expression*>(ex);
 
