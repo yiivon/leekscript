@@ -41,7 +41,7 @@ build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
 	@echo "---------------"
 
 build/default/%.o: %.cpp
-	g++ -c $(OPTIM) $(DEPFLAGS) $(FLAGS) -o "$@" "$<"
+	g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
 	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/shared/%.o: %.cpp
@@ -100,7 +100,7 @@ benchmark-dir:
 	@mkdir -p build/benchmark
 
 build/benchmark/Benchmark.o: benchmark/Benchmark.cpp
-	g++ -c $(OPTIM) $(DEPFLAGS) $(FLAGS) -o "$@" "$<"
+	g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
 
 build/leekscript-benchmark: benchmark-dir build/leekscript $(OBJ_BENCHMARK)
 	g++ $(FLAGS) -o build/leekscript-benchmark $(OBJ_BENCHMARK)
