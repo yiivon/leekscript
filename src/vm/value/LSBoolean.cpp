@@ -55,8 +55,9 @@ LSValue* LSBoolean::add(LSValue* v) {
 	}
 	if (v->type == STRING) {
 		auto string = static_cast<LSString*>(v);
+		auto res = new LSString((value ? "true" : "false") + *string);
 		LSValue::delete_temporary(string);
-		return new LSString((value ? "true" : "false") + *string);
+		return res;
 	}
 	LSValue::delete_temporary(v);
 	return LSNull::get();
