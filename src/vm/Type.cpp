@@ -1,6 +1,7 @@
 #include "Type.hpp"
 #include "../constants.h"
 #include <sstream>
+#include "../../lib/utf8.h"
 
 using namespace std;
 
@@ -45,6 +46,8 @@ const IntervalRawType* const RawType::INTERVAL = &_INTERVAL;
 const ObjectRawType* const RawType::OBJECT = &_OBJECT;
 const FunctionRawType* const RawType::FUNCTION = &_FUNCTION;
 const ClassRawType* const RawType::CLASS = &_CLASS;
+
+unsigned int Type::placeholder_counter = 0;
 
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
 
@@ -528,6 +531,17 @@ string Type::get_nature_symbol(const Nature& nature) {
 	default:
 		return "???";
 	}
+}
+
+Type Type::generate_new_placeholder_type() {
+	Type type;
+	type.nature = Nature::VALUE;
+	u_int32_t character = 0x03B1 + placeholder_counter;
+	char buff[5];
+	u8_toutf8(buff, 5, &character, 1);
+	type.raw_type = new PlaceholderRawType(std::string { buff });
+	placeholder_counter++;
+	return type;
 }
 
 #if PRINT_TYPES_COLORS

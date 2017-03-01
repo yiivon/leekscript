@@ -152,6 +152,16 @@ public:
 	virtual const std::string getJsonName() const { return "class"; }
 };
 
+class PlaceholderRawType : public BaseRawType {
+public:
+	std::string name;
+	PlaceholderRawType(std::string name) : name(name) {}
+	virtual int id() const { return 11; }
+	virtual const std::string getName() const { return name; }
+	virtual const std::string getClass() const { return name; }
+	virtual const std::string getJsonName() const { return name; }
+};
+
 class RawType {
 public:
 	static const BaseRawType _UNKNOWN;
@@ -253,6 +263,8 @@ public:
 	/*
 	 * Static part
 	 */
+	static unsigned int placeholder_counter;
+
 	static const Type VOID;
 	static const Type VALUE;
 	static const Type POINTER;
@@ -307,10 +319,12 @@ public:
 	static bool more_specific(const Type& old, const Type& neww);
 	static Type get_compatible_type(const Type& t1, const Type& t2);
 	static std::string get_nature_symbol(const Nature& nature);
+	static Type generate_new_placeholder_type();
 };
 
 std::ostream& operator << (std::ostream&, const Type&);
 std::ostream& operator << (std::ostream&, const std::vector<Type>&);
+bool operator < (const Type&, const Type&);
 
 }
 
