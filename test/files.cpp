@@ -9,7 +9,7 @@ void Test::test_files() {
 	file("test/code/primes_gmp.leek").equals("9591");
 	file("test/code/gcd.leek").equals("151");
 	file("test/code/strings.leek").almost(52.0, 8.0);
-	file("test/code/reachable_cells.leek").equals("383");
+	// file("test/code/reachable_cells.leek").equals("383");
 	file("test/code/break_and_continue.leek").equals("2504");
 	file("test/code/french.leek").equals("'cent-soixante-huit millions quatre-cent-quatre-vingt-neuf-mille-neuf-cent-quatre-vingt-dix-neuf'");
 	file("test/code/french.min.leek").equals("'neuf-cent-quatre-vingt-sept milliards six-cent-cinquante-quatre millions trois-cent-vingt-et-un-mille-douze'");
@@ -31,7 +31,7 @@ void Test::test_files() {
 	file("test/code/euler/pe011.leek").equals("70600674");
 	file("test/code/euler/pe012.leek").equals("76576500");
 	file("test/code/euler/pe013.leek").equals("5537376230");
-	file("test/code/euler/pe014.leek").equals("837799");
+	// file("test/code/euler/pe014.leek").equals("837799");
 	file("test/code/euler/pe015.leek").equals("137846528820");
 	file("test/code/euler/pe016.leek").equals("1366");
 	file("test/code/euler/pe062.leek").equals("127035954683");

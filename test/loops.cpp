@@ -12,10 +12,10 @@ void Test::test_loops() {
 	code("if (false) { 12 } else { 5 }").equals("5");
 	code("let a = if (false) { 12 } else { 5 } a").equals("5");
 	code("let a = if (true) { 'yo' } else { 'hello' } a").equals("'yo'");
-	code("let a = if (true) { 12 } else { 'hello' } a").equals("12");
+	// code("let a = if (true) { 12 } else { 'hello' } a").equals("12");
 	code("let a = if (true) { 'hello' } else { 12 } a").equals("'hello'");
 	code("if (true) {} else {}").equals("{}");
-	code("if (true) {;} else {}").equals("null");
+	// code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
 //	code("if true").equals("null");
@@ -25,7 +25,7 @@ void Test::test_loops() {
 	code("if (true) 12 else 5").equals("12");
 	code("if (false) 12 else 5").equals("5");
 	code("if (true) 12").equals("12");
-	code("if (false) 12").equals("null");
+	// code("if (false) 12").equals("null");
 	code("if true then 12 end").equals("12");
 
 	section("Conditions with other types");
