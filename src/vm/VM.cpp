@@ -161,6 +161,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	VM::operations = 0;
 	VM::last_exception = nullptr;
 	VM::enable_operations = ops;
+	Type::placeholder_counter = 0;
 	#if DEBUG_LEAKS_DETAILS
 		LSValue::objs().clear();
 	#endif
