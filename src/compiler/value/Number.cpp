@@ -23,7 +23,7 @@ Number::~Number() {
 void Number::print(ostream& os, int, bool debug) const {
 	os << value;
 	if (debug) {
-		os << " " << type;
+		os << " " << types;
 	}
 }
 
@@ -98,6 +98,7 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}
+	types = type;
 }
 
 Compiler::value Number::compile(Compiler& c) const {

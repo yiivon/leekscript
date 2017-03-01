@@ -9,6 +9,7 @@ String::String(string& value, Token* token) {
 	this->value = value;
 	this->token = token;
 	type = Type::STRING;
+	types = Type::STRING;
 	type.temporary = true;
 	constant = true;
 	ls_string = new LSString(value);

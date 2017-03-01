@@ -118,6 +118,17 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	v1->analyse(analyser, Type::UNKNOWN);
 	v2->analyse(analyser, Type::UNKNOWN);
 
+	if (dynamic_cast<const PlaceholderRawType*>(v1->type.raw_type)) {
+		type = v1->type;
+		types = type;
+		return;
+	}
+	if (dynamic_cast<const PlaceholderRawType*>(v2->type.raw_type)) {
+		type = v2->type;
+		types = type;
+		return;
+	}
+
 	// A = B, A += B, etc. A must be a l-value
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL

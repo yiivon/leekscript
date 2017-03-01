@@ -208,6 +208,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 	vars = analyser->get_local_vars();
 	analyser->leave_function();
 
+	types = type;
 //	cout << "function analyse body : " << type << endl;
 }
 

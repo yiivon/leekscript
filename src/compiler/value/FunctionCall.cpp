@@ -54,7 +54,7 @@ void FunctionCall::print(std::ostream& os, int indent, bool debug) const {
 	}
 	os << ")";
 	if (debug) {
-		os << " " << type;
+		os << " " << types;
 	}
 }
 
@@ -249,6 +249,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
 	}
+	types = type;
 
 //	cout << "Function call function type : " << type << endl;
 }

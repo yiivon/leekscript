@@ -23,6 +23,7 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 	} else {
 		value->analyse(analyser, req_type);
 		type = value->type;
+		types = value->types;
 	}
 }
 

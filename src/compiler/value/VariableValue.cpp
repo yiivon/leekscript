@@ -22,7 +22,7 @@ VariableValue::~VariableValue() {}
 void VariableValue::print(ostream& os, int, bool debug) const {
 	os << token->content;
 	if (debug) {
-		os << " " << type;
+		os << " " << types;
 	}
 }
 
@@ -57,6 +57,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "var scope : " << (int)var->scope << endl;
 //	for (auto t : attr_types)
 //		cout << t.first << " : " << t.second << endl;
+	types = type;
 }
 
 bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& args, int level) {

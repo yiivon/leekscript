@@ -29,7 +29,7 @@ void Block::print(ostream& os, int indent, bool debug) const {
 	}
 	os << tabs(indent) << "}";
 	if (debug) {
-		os << " " << type;
+		os << " " << types;
 	}
 }
 
@@ -47,6 +47,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			// Last instruction : must return the required type
 			instructions[i]->analyse(analyser, req_type);
 			type = instructions[i]->type;
+			types = instructions[i]->types;
 		}
 		// A return instruction
 		if (dynamic_cast<Return*>(instructions[i])) {

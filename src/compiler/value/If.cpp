@@ -45,7 +45,7 @@ void If::print(ostream& os, int indent, bool debug) const {
 		}
 	}
 	if (debug) {
-		os << " " << type;
+		os << " " << types;
 	}
 }
 
