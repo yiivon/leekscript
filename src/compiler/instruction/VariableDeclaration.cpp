@@ -58,6 +58,9 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 			v->type = expressions[i]->type;
 			v->type.constant = constant;
 			v->value = expressions[i];
+			if (Function* f = dynamic_cast<Function*>(expressions[i])) {
+				f->name = var->content;
+			}
 		} else {
 			v->type = Type::NULLL;
 		}

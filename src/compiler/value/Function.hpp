@@ -28,6 +28,7 @@ public:
 	LSFunction<LSValue*>* ls_fun = nullptr;
 	jit_function_t jit_function;
 	jit_context_t context = nullptr;
+	std::string name;
 
 	Function();
 	virtual ~Function();
