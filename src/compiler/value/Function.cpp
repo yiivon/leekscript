@@ -200,16 +200,30 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 	type.setReturnType(Type::UNKNOWN);
 	body->analyse(analyser, req_type);
 
-	if (type.return_types.size() > 1) { // the body contains return instruction
-		Type return_type = body->type == Type::VOID ? Type::UNKNOWN : body->type;
-		for (size_t i = 1; i < type.return_types.size(); ++i) {
-			return_type = Type::get_compatible_type(return_type, type.return_types[i]);
+	TypeList return_types;
+	// Ignore recursive types
+	for (const auto& t : body->types) {
+		if (placeholder_type != Type::UNKNOWN and t == placeholder_type) {
+			continue;
+		}
+		return_types.add(t);
+	}
+
+	if (body->types.size() >= 2) {
+		// The body had multiple types, compute a compatible type and re-analyse it
+		Type return_type = return_types[0];
+		for (const auto& t : return_types) {
+			return_type = Type::get_compatible_type(return_type, t);
 		}
 		type.return_types.clear();
 		type.setReturnType(return_type);
 		body->analyse(analyser, return_type); // second pass
 	} else {
-		type.setReturnType(body->type);
+		if (return_types.size() > 0) {
+			type.setReturnType(return_types[0]);
+		} else {
+			type.setReturnType(body->type);
+		}
 	}
 
 	if (type.getReturnType() == Type::MPZ) {

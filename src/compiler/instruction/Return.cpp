@@ -23,18 +23,17 @@ void Return::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
-void Return::analyse(SemanticAnalyser* analyser, const Type& ) {
+void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	Function* f = analyser->current_function();
 
 	if (expression != nullptr) {
-		if (f->type.getReturnType() == Type::UNKNOWN) {
-			expression->analyse(analyser, Type::UNKNOWN);
-			f->type.setReturnType(Type::UNKNOWN); // ensure that the vector is not empty
-			f->type.return_types.push_back(expression->type);
-		} else {
-			expression->analyse(analyser, f->type.getReturnType());
+		Type required_type = Type::UNKNOWN;
+		if (f->type.getReturnType() != Type::UNKNOWN) {
+			required_type = f->type.getReturnType();
 		}
+		expression->analyse(analyser, required_type);
+		f->body->types.add(expression->type);
 	}
 	function = f;
 	in_function = true;

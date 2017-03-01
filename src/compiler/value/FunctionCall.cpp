@@ -209,17 +209,19 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		a++;
 	}
 
-
 	function->will_take(analyser, arg_types, 1);
 
 	// The function is a variable
 	if (vv and vv->var and vv->var->value) {
 
 		//vv->var->will_take(analyser, arg_types, 1);
-
-		Type ret_type = vv->var->value->type.getReturnType();
-		if (ret_type.raw_type != RawType::UNKNOWN) {
-			type = ret_type;
+		if (vv->var->name == analyser->current_function()->name) {
+			type = analyser->current_function()->getReturnType();
+		} else {
+			Type ret_type = vv->var->value->type.getReturnType();
+			if (ret_type.raw_type != RawType::UNKNOWN) {
+				type = ret_type;
+			}
 		}
 	} else {
 		Type ret_type = function->type.getReturnType();

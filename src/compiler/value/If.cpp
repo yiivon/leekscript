@@ -51,24 +51,17 @@ void If::print(ostream& os, int indent, bool debug) const {
 
 void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
+	types.clear();
+
 	condition->analyse(analyser, Type::UNKNOWN);
-	then->analyse(analyser, Type::UNKNOWN);
+	then->analyse(analyser, req_type);
+
+	types.add(then->types);
 
 	if (elze != nullptr) {
 
-		if (then->type != Type::VOID && req_type != Type::VOID) {
-			analyser->set_potential_return_type(then->type);
-		}
+		elze->analyse(analyser, req_type);
 
-		elze->analyse(analyser, Type::UNKNOWN);
-
-		if (elze->type != Type::VOID && req_type != Type::VOID) {
-			analyser->set_potential_return_type(elze->type);
-		}
-
-//		if (req_type == Type::VOID) {
-//			type = Type::VOID;
-//		} else
 		if (then->type == Type::VOID) { // then contains return instruction
 			type = elze->type;
 		} else if (elze->type == Type::VOID) { // elze contains return instruction
@@ -76,20 +69,21 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		} else {
 			type = Type::get_compatible_type(then->type, elze->type);
 		}
+		types.add(elze->types);
 
-		then->analyse(analyser, type);
+		//then->analyse(analyser, type);
 
-		if (elze->type != type) {
-			elze->analyse(analyser, type);
-		}
+		//if (elze->type != type) {
+		//	elze->analyse(analyser, type);
+		//}
 	} else {
 
-		if (req_type == Type::VOID) {
-			type = Type::VOID;
-		} else {
-			type = Type::POINTER; // Pointer because the else will give null
-		}
-		then->analyse(analyser, type);
+		// if (req_type == Type::VOID) {
+			// type = Type::VOID;
+		// } else {
+			//type = Type::POINTER; // Pointer because the else will give null
+		// }
+		//then->analyse(analyser, type);
 	}
 
 	if (req_type.nature == Nature::POINTER) {

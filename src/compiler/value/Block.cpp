@@ -38,6 +38,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->enter_block();
 
 	type = Type::VOID;
+	types.clear();
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		if (i < instructions.size() - 1) {
@@ -47,7 +48,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			// Last instruction : must return the required type
 			instructions[i]->analyse(analyser, req_type);
 			type = instructions[i]->type;
-			types = instructions[i]->types;
+			types.add(instructions[i]->types);
 		}
 		// A return instruction
 		if (dynamic_cast<Return*>(instructions[i])) {
