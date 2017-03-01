@@ -50,8 +50,8 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 		or operatorr->type == TokenType::MINUS) {
 
 		type = expression->type;
-		if (type == Type::GMP_INT and operatorr->type == TokenType::MINUS) {
-			type = Type::GMP_INT_TMP;
+		if (type == Type::MPZ and operatorr->type == TokenType::MINUS) {
+			type = Type::MPZ_TMP;
 		}
 
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
@@ -125,7 +125,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 	switch (operatorr->type) {
 
 		case TokenType::PLUS_PLUS: {
-			if (expression->type == Type::GMP_INT) {
+			if (expression->type == Type::MPZ) {
 				auto x = expression->compile(c);
 				auto x_addr = c.insn_address_of(x);
 				auto one = c.new_integer(1);
@@ -177,7 +177,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MINUS: {
-			if (expression->type.not_temporary() == Type::GMP_INT) {
+			if (expression->type.not_temporary() == Type::MPZ) {
 				auto x = expression->compile(c);
 				auto r = [&]() {
 					if (x.t.temporary) {

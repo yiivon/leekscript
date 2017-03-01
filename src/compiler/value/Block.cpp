@@ -65,9 +65,9 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			type = Type::VOID;
 		}
 	}
-	if (type == Type::GMP_INT) {
-		type = Type::GMP_INT_TMP;
-	} else if (type == Type::GMP_INT_TMP) {
+	if (type == Type::MPZ) {
+		type = Type::MPZ_TMP;
+	} else if (type == Type::MPZ_TMP) {
 		temporary_gmp = true;
 	}
 }
@@ -97,7 +97,7 @@ Compiler::value Block::compile(Compiler& c) const {
 				});
 				c.leave_block();
 				return ret;
-			} else if (type == Type::GMP_INT_TMP && !temporary_gmp) {
+			} else if (type == Type::MPZ_TMP && !temporary_gmp) {
 				auto v = c.insn_clone_mpz(val);
 				c.leave_block();
 				return v;

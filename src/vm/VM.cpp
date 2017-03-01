@@ -247,7 +247,7 @@ jit_type_t VM::get_jit_type(const Type& type) {
 	if (type.raw_type == RawType::UNSIGNED_INTEGER) {
 		return jit_type_uint;
 	}
-	if (type.raw_type == RawType::GMP_INT) {
+	if (type.raw_type == RawType::MPZ) {
 		return VM::gmp_int_type;
 	}
 	if (type.raw_type == RawType::BOOLEAN) {

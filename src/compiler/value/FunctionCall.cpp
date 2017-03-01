@@ -409,9 +409,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
 			args[offset + i] = c.insn_move_inc({args[offset + i], function->type.getArgumentType(i)}).v;
 		}
-		if (function->type.getArgumentType(i) == Type::GMP_INT &&
-			arguments[i]->type != Type::GMP_INT_TMP) {
-			args[offset + i] = c.insn_clone_mpz({args[offset + i], Type::GMP_INT}).v;
+		if (function->type.getArgumentType(i) == Type::MPZ &&
+			arguments[i]->type != Type::MPZ_TMP) {
+			args[offset + i] = c.insn_clone_mpz({args[offset + i], Type::MPZ}).v;
 		}
 	}
 
@@ -428,9 +428,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
 			c.insn_delete({args[offset + i], Type::POINTER});
 		}
-		if (function->type.getArgumentType(i) == Type::GMP_INT ||
-			function->type.getArgumentType(i) == Type::GMP_INT_TMP) {
-			c.insn_delete_mpz({args[offset + i], Type::GMP_INT});
+		if (function->type.getArgumentType(i) == Type::MPZ ||
+			function->type.getArgumentType(i) == Type::MPZ_TMP) {
+			c.insn_delete_mpz({args[offset + i], Type::MPZ});
 		}
 	}
 	// Delete temporary function

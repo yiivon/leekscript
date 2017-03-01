@@ -43,29 +43,29 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 */
 	operator_("+", {
 		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr, Method::NATIVE},
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_gmp_gmp},
-		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::add_mpz_int},
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::add_gmp_gmp},
+		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::add_mpz_int},
 		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_real_real},
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_real_real},
 	});
 
 	operator_("+=", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::add_eq_gmp_gmp}
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::add_eq_gmp_gmp}
 	});
 
 	operator_("-", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_gmp},
-		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::sub_gmp_int}
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::sub_gmp_gmp},
+		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::sub_gmp_int}
 	});
 
 	operator_("*", {
-		{Type::INTEGER, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_int_mpz},
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mul_gmp_gmp}
+		{Type::INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_gmp_gmp}
 	});
 
 	operator_("**", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_gmp},
-		{Type::GMP_INT, Type::INTEGER, Type::GMP_INT_TMP, (void*) &NumberSTD::pow_gmp_int},
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::pow_gmp_gmp},
+		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::pow_gmp_int},
 	});
 
 	operator_("/", {
@@ -74,7 +74,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("<", {
 		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::lt},
-		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp}
+		{Type::MPZ, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::lt_gmp_gmp}
 	});
 
 	operator_("<=", {
@@ -83,7 +83,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_(">", {
 		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::gt},
-		{Type::INTEGER, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::gt_int_gmp}
+		{Type::INTEGER, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::gt_int_gmp}
 	});
 
 	operator_(">=", {
@@ -91,12 +91,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("%", {
-		{Type::GMP_INT, Type::GMP_INT, Type::GMP_INT_TMP, (void*) &NumberSTD::mod_gmp_gmp}
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_gmp_gmp}
 	});
 
 	operator_("==", {
-		{Type::GMP_INT, Type::GMP_INT, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_gmp},
-		{Type::GMP_INT, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_int}
+		{Type::MPZ, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_gmp},
+		{Type::MPZ, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_gmp_int}
 	});
 
 	Type tilde_fun_type_int = Type::FUNCTION_P;
@@ -240,7 +240,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::NUMBER, Type::BOOLEAN, {}, (void*) &NumberSTD::isInteger, Method::NATIVE}
 	});
 	method("isPrime", {
-		{Type::GMP_INT, Type::INTEGER, {}, (void*) &NumberSTD::is_prime},
+		{Type::MPZ, Type::INTEGER, {}, (void*) &NumberSTD::is_prime},
 		{Type::LONG, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_long},
 		{Type::INTEGER, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_int}
 	});
@@ -362,7 +362,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	static_method("sqrt", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
-		{Type::GMP_INT_TMP, {Type::GMP_INT}, (void*) NumberSTD::sqrt_gmp}
+		{Type::MPZ_TMP, {Type::MPZ}, (void*) NumberSTD::sqrt_gmp}
 	});
 	static_method("tan", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
@@ -378,7 +378,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::BOOLEAN, {Type::NUMBER}, (void*) &NumberSTD::isInteger, Method::NATIVE}
 	});
 	static_method("isPrime", {
-		{Type::INTEGER, {Type::GMP_INT}, (void*) &NumberSTD::is_prime},
+		{Type::INTEGER, {Type::MPZ}, (void*) &NumberSTD::is_prime},
 		{Type::BOOLEAN, {Type::LONG}, (void*) &NumberSTD::is_prime_long},
 		{Type::BOOLEAN, {Type::INTEGER}, (void*) &NumberSTD::is_prime_int}
 	});
@@ -537,7 +537,7 @@ Compiler::value NumberSTD::pow_gmp_int(Compiler& c, std::vector<Compiler::value>
 	c.inc_ops_jit(r_size);
 
 	VM::inc_gmp_counter(c.F);
-	return c.insn_call(Type::GMP_INT_TMP, args, &pow_gmp_int_lambda);
+	return c.insn_call(Type::MPZ_TMP, args, &pow_gmp_int_lambda);
 }
 
 Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args) {

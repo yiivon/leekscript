@@ -37,7 +37,7 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 	}
 
 	type = expression->type;
-	if (type == Type::GMP_INT) {
+	if (type == Type::MPZ) {
 		type.temporary = true;
 	}
 	this->return_value = return_value;
@@ -55,7 +55,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 
 		case TokenType::PLUS_PLUS: {
 
-			if (expression->type == Type::GMP_INT) {
+			if (expression->type == Type::MPZ) {
 
 				auto x = expression->compile(c);
 				auto r = c.insn_clone_mpz(x);

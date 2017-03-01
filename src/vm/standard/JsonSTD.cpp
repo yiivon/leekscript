@@ -39,7 +39,7 @@ Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) 
 			return new LSString(b ? "true" : "false");
 		});
 	}
-	if (args[0].t.not_temporary() == Type::GMP_INT) {
+	if (args[0].t.not_temporary() == Type::MPZ) {
 		auto s = c.insn_call(Type::STRING, args, +[](__mpz_struct v) {
 			char buff[10000];
 			mpz_get_str(buff, 10, &v);

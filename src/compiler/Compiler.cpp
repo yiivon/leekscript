@@ -37,8 +37,8 @@ void Compiler::delete_variables_block(int deepness) {
 			if (it->second.type.must_manage_memory()) {
 				insn_delete({it->second.value, Type::POINTER});
 			}
-			if (it->second.type.not_temporary() == Type::GMP_INT) {
-				insn_delete_mpz({it->second.value, Type::GMP_INT});
+			if (it->second.type.not_temporary() == Type::MPZ) {
+				insn_delete_mpz({it->second.value, Type::MPZ});
 			}
 		}
 	}
@@ -49,8 +49,8 @@ void Compiler::delete_function_variables() {
 		if (v.type.must_manage_memory()) {
 			insn_delete({v.value, Type::POINTER});
 		}
-		if (v.type.not_temporary() == Type::GMP_INT) {
-			insn_delete_mpz({v.value, Type::GMP_INT});
+		if (v.type.not_temporary() == Type::MPZ) {
+			insn_delete_mpz({v.value, Type::MPZ});
 		}
 	}
 }
@@ -184,11 +184,11 @@ Compiler::value Compiler::new_pointer(const void* p) const {
 Compiler::value Compiler::new_mpz(long value) const {
 	jit_value_t gmp_struct = jit_value_create(F, VM::gmp_int_type);
 	jit_value_set_addressable(gmp_struct);
-	auto gmp_addr = insn_address_of({gmp_struct, Type::GMP_INT});
+	auto gmp_addr = insn_address_of({gmp_struct, Type::MPZ});
 	auto jit_value = new_long(value);
 	insn_call(Type::VOID, {gmp_addr, jit_value}, &mpz_init_set_ui);
 	VM::inc_gmp_counter(F);
-	return {gmp_struct, Type::GMP_INT_TMP};
+	return {gmp_struct, Type::MPZ_TMP};
 }
 Compiler::value Compiler::new_object() const {
 	return insn_call(Type::OBJECT, {}, +[]() {
@@ -359,7 +359,7 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 	if (value.t.temporary) {
 		return value;
 	}
-	if (value.t == Type::GMP_INT) {
+	if (value.t == Type::MPZ) {
 		return insn_clone_mpz(value);
 	} else {
 		return value;
@@ -369,7 +369,7 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 	jit_value_t new_mpz = jit_value_create(F, VM::gmp_int_type);
 	jit_value_set_addressable(new_mpz);
-	Compiler::value r = {new_mpz, Type::GMP_INT_TMP};
+	Compiler::value r = {new_mpz, Type::MPZ_TMP};
 	auto r_addr = insn_address_of(r);
 	auto gmp_addr = insn_address_of(mpz);
 	insn_call(Type::VOID, {r_addr, gmp_addr}, &mpz_init_set);

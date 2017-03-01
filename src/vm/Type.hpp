@@ -61,9 +61,9 @@ public:
 	virtual int size() const { return 32; }
 };
 
-class GmpIntRawType : public NumberRawType {
+class MpzRawType : public NumberRawType {
 public:
-	virtual const std::string getName() const { return "gmp_int"; }
+	virtual const std::string getName() const { return "mpz"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
 };
@@ -159,7 +159,7 @@ public:
 	static const NullRawType _NULLL;
 	static const BooleanRawType _BOOLEAN;
 	static const NumberRawType _NUMBER;
-	static const GmpIntRawType _GMP_INT;
+	static const MpzRawType _MPZ;
 	static const IntegerRawType _UNSIGNED_INTEGER;
 	static const IntegerRawType _INTEGER;
 	static const LongRawType _UNSIGNED_LONG;
@@ -173,13 +173,13 @@ public:
 	static const ObjectRawType _OBJECT;
 	static const FunctionRawType _FUNCTION;
 	static const ClassRawType _CLASS;
-	
+
 	static const BaseRawType* const UNKNOWN;
 	static const VoidRawType* const VOID;
 	static const NullRawType* const NULLL;
 	static const BooleanRawType* const BOOLEAN;
 	static const NumberRawType* const NUMBER;
-	static const GmpIntRawType* const GMP_INT;
+	static const MpzRawType* const MPZ;
 	static const IntegerRawType* const UNSIGNED_INTEGER;
 	static const IntegerRawType* const INTEGER;
 	static const LongRawType* const UNSIGNED_LONG;
@@ -265,8 +265,8 @@ public:
 	static const Type NUMBER;
 	static const Type INTEGER;
 	static const Type UNSIGNED_INTEGER;
-	static const Type GMP_INT;
-	static const Type GMP_INT_TMP;
+	static const Type MPZ;
+	static const Type MPZ_TMP;
 	static const Type LONG;
 	static const Type UNSIGNED_LONG;
 	static const Type REAL;

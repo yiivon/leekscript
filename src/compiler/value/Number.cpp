@@ -87,7 +87,7 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 			long_value = mpz_get_si(mpz_value);
 			double_value = long_value;
 		} else {
-			type = Type::GMP_INT;
+			type = Type::MPZ;
 		}
 	}
 
@@ -113,7 +113,7 @@ Compiler::value Number::compile(Compiler& c) const {
 		return {LS_CREATE_REAL(c.F, double_value), type};
 	}
 
-	if (type.raw_type == RawType::GMP_INT) {
+	if (type.raw_type == RawType::MPZ) {
 
 /*
 		jit_value_t string_jit = LS_CREATE_POINTER(c.F, (void*)&clean_value);
@@ -127,7 +127,7 @@ Compiler::value Number::compile(Compiler& c) const {
 		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 4, LS_CREATE_INTEGER(c.F, mpz_value->_mp_size));
 		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 8, c.new_pointer(mpz_value->_mp_d).v);
 
-		return {gmp_struct, Type::GMP_INT};
+		return {gmp_struct, Type::MPZ};
 	}
 
 	return {LS_CREATE_INTEGER(c.F, int_value), type};

@@ -168,7 +168,7 @@ std::string Program::execute() {
 		return std::to_string(res);
 	}
 
-	if (output_type == Type::GMP_INT_TMP or output_type == Type::GMP_INT) {
+	if (output_type == Type::MPZ_TMP or output_type == Type::MPZ) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
 		if (VM::last_exception) throw VM::last_exception;

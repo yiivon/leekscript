@@ -201,8 +201,8 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 		type.setReturnType(body->type);
 	}
 
-	if (type.getReturnType() == Type::GMP_INT) {
-		type.setReturnType(Type::GMP_INT_TMP);
+	if (type.getReturnType() == Type::MPZ) {
+		type.setReturnType(Type::MPZ_TMP);
 	}
 
 	vars = analyser->get_local_vars();

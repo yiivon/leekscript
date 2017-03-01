@@ -253,7 +253,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		} else {
 			type = v1->type.mix(v2->type);
 		}
-		if (type == Type::GMP_INT) {
+		if (type == Type::MPZ) {
 			type.temporary = true;
 		}
 
@@ -573,7 +573,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			} else if (equal_previous_type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto y = v2->compile(c);
-				if (v1->type == Type::GMP_INT) {
+				if (v1->type == Type::MPZ) {
 					auto x = v1->compile(c);
 					auto a = c.insn_address_of(x);
 					auto b = c.insn_address_of(y);
