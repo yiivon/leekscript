@@ -65,10 +65,10 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 			try {
 				double_value = std::stod(clean_value);
 			} catch (...) {
-				mpf_t gmp;
-				mpf_init_set_str(gmp, clean_value.c_str(), base);
-				double_value = mpf_get_d(gmp);
-				mpf_clear(gmp);
+				mpf_t mpz;
+				mpf_init_set_str(mpz, clean_value.c_str(), base);
+				double_value = mpf_get_d(mpz);
+				mpf_clear(mpz);
 			}
 			// TODO floating-point large values
 		}
@@ -115,19 +115,13 @@ Compiler::value Number::compile(Compiler& c) const {
 
 	if (type.raw_type == RawType::MPZ) {
 
-/*
-		jit_value_t string_jit = LS_CREATE_POINTER(c.F, (void*)&clean_value);
-		jit_value_t base_jit = LS_CREATE_INTEGER(c.F, base);
-		jit_value_t gmp_struct =
-		VM::call(c.F, VM::gmp_int_type, {LS_POINTER, LS_INTEGER}, {string_jit, base_jit}, &new_mpz);
-*/
-		jit_value_t gmp_struct = jit_value_create(c.F, VM::gmp_int_type);
-		jit_value_set_addressable(gmp_struct);
-		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 0, LS_CREATE_INTEGER(c.F, mpz_value->_mp_alloc));
-		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 4, LS_CREATE_INTEGER(c.F, mpz_value->_mp_size));
-		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, gmp_struct), 8, c.new_pointer(mpz_value->_mp_d).v);
+		jit_value_t mpz_struct = jit_value_create(c.F, VM::mpz_type);
+		jit_value_set_addressable(mpz_struct);
+		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, mpz_struct), 0, LS_CREATE_INTEGER(c.F, mpz_value->_mp_alloc));
+		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, mpz_struct), 4, LS_CREATE_INTEGER(c.F, mpz_value->_mp_size));
+		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, mpz_struct), 8, c.new_pointer(mpz_value->_mp_d).v);
 
-		return {gmp_struct, Type::MPZ};
+		return {mpz_struct, Type::MPZ};
 	}
 
 	return {LS_CREATE_INTEGER(c.F, int_value), type};

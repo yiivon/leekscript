@@ -30,7 +30,7 @@ int string_begin_code(const LSString*);
 int string_code(const LSString*, int pos);
 long string_number(const LSString*);
 
-LSString* plus_gmp(LSString* s, __mpz_struct mpz) {
+LSString* plus_mpz(LSString* s, __mpz_struct mpz) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &mpz);
 	LSString* res = new LSString(*s + buff);
@@ -44,7 +44,7 @@ LSString* plus_mpz_tmp(LSString* s, __mpz_struct mpz) {
 	LSString* res = new LSString(*s + buff);
 	LSValue::delete_temporary(s);
 	mpz_clear(&mpz);
-	VM::gmp_values_deleted++;
+	VM::mpz_deleted++;
 	return res;
 }
 
@@ -58,7 +58,7 @@ StringSTD::StringSTD() : Module("String") {
 	operator_("+", {
 		{Type::STRING, Type::INTEGER, Type::STRING, (void*) &StringSTD::add_int, Method::NATIVE},
 		{Type::STRING, Type::REAL, Type::STRING, (void*) &StringSTD::add_real, Method::NATIVE},
-		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_gmp, Method::NATIVE},
+		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_mpz, Method::NATIVE},
 		{Type::STRING, Type::MPZ_TMP, Type::STRING, (void*) &plus_mpz_tmp, Method::NATIVE}
 	});
 	operator_("<", {

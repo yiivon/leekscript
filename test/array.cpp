@@ -86,7 +86,7 @@ void Test::test_arrays() {
 	//code("let a = [[12], ''][0] a[0]++ a").equals("[13]");
 	code("let a = [1, 2, 3] a[0l]").equals("1");
 	code("let a = [1, 2, 3] a[2l]").equals("3");
-	// TODO array access with gmp numbers
+	// TODO array access with mpz numbers
 	//code("let a = [1, 2, 3] a[2m]").equals("3");
 	code("let a = ['a', 'b', 'c'] a[0.5]").equals("'a'");
 	code("let a = ['a', 'b', 'c'] a[1.9]").equals("'b'");

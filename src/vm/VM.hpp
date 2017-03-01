@@ -67,9 +67,9 @@ public:
 	static bool enable_operations;
 	static unsigned long int operation_limit;
 
-	static jit_type_t gmp_int_type;
-	static long gmp_values_created;
-	static long gmp_values_deleted;
+	static jit_type_t mpz_type;
+	static long mpz_created;
+	static long mpz_deleted;
 
 	static ExceptionObj* last_exception;
 	static jit_stack_trace_t stack_trace;
@@ -94,8 +94,8 @@ public:
 		long operations = 0;
 		int objects_created = 0;
 		int objects_deleted = 0;
-		int gmp_objects_created = 0;
-		int gmp_objects_deleted = 0;
+		int mpz_objects_created = 0;
+		int mpz_objects_deleted = 0;
 	};
 
 	std::vector<Module*> modules;
@@ -135,10 +135,10 @@ public:
 	static jit_value_t move_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t move_inc_obj(jit_function_t F, jit_value_t ptr);
 	static jit_value_t clone_obj(jit_function_t F, jit_value_t ptr);
-	static void inc_gmp_counter(jit_function_t F);
+	static void inc_mpz_counter(jit_function_t F);
 
 	/** Utilities **/
-	static void print_gmp_int(jit_function_t F, jit_value_t val);
+	static void print_mpz_int(jit_function_t F, jit_value_t val);
 	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
 	static void store_exception(jit_function_t F, jit_value_t ex);
 	static std::string exception_message(VM::Exception expected);

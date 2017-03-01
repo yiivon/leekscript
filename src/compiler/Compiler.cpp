@@ -182,13 +182,13 @@ Compiler::value Compiler::new_pointer(const void* p) const {
 	return {jit_value_create_long_constant(F, LS_POINTER, (long)(void*)(p)), Type::POINTER};
 }
 Compiler::value Compiler::new_mpz(long value) const {
-	jit_value_t gmp_struct = jit_value_create(F, VM::gmp_int_type);
-	jit_value_set_addressable(gmp_struct);
-	auto gmp_addr = insn_address_of({gmp_struct, Type::MPZ});
+	jit_value_t mpz_struct = jit_value_create(F, VM::mpz_type);
+	jit_value_set_addressable(mpz_struct);
+	auto mpz_addr = insn_address_of({mpz_struct, Type::MPZ});
 	auto jit_value = new_long(value);
-	insn_call(Type::VOID, {gmp_addr, jit_value}, &mpz_init_set_ui);
-	VM::inc_gmp_counter(F);
-	return {gmp_struct, Type::MPZ_TMP};
+	insn_call(Type::VOID, {mpz_addr, jit_value}, &mpz_init_set_ui);
+	VM::inc_mpz_counter(F);
+	return {mpz_struct, Type::MPZ_TMP};
 }
 Compiler::value Compiler::new_object() const {
 	return insn_call(Type::OBJECT, {}, +[]() {
@@ -367,21 +367,21 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 }
 
 Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
-	jit_value_t new_mpz = jit_value_create(F, VM::gmp_int_type);
+	jit_value_t new_mpz = jit_value_create(F, VM::mpz_type);
 	jit_value_set_addressable(new_mpz);
 	Compiler::value r = {new_mpz, Type::MPZ_TMP};
 	auto r_addr = insn_address_of(r);
-	auto gmp_addr = insn_address_of(mpz);
-	insn_call(Type::VOID, {r_addr, gmp_addr}, &mpz_init_set);
-	VM::inc_gmp_counter(F);
+	auto mpz_addr = insn_address_of(mpz);
+	insn_call(Type::VOID, {r_addr, mpz_addr}, &mpz_init_set);
+	VM::inc_mpz_counter(F);
 	return r;
 }
 
 void Compiler::insn_delete_mpz(Compiler::value mpz) const {
-	auto gmp_addr = insn_address_of(mpz);
-	insn_call(Type::VOID, {gmp_addr}, &mpz_clear);
-	// Increment gmp values counter
-	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_deleted);
+	auto mpz_addr = insn_address_of(mpz);
+	insn_call(Type::VOID, {mpz_addr}, &mpz_clear);
+	// Increment mpz values counter
+	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::mpz_deleted);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }

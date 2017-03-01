@@ -17,8 +17,8 @@ private:
 	double exeTime;
 	int obj_created;
 	int obj_deleted;
-	int gmp_obj_created;
-	int gmp_obj_deleted;
+	int mpz_obj_created;
+	int mpz_obj_deleted;
 	static std::vector<std::string> failed_tests;
 
 public:

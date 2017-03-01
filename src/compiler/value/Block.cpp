@@ -68,7 +68,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (type == Type::MPZ) {
 		type = Type::MPZ_TMP;
 	} else if (type == Type::MPZ_TMP) {
-		temporary_gmp = true;
+		temporary_mpz = true;
 	}
 }
 
@@ -97,7 +97,7 @@ Compiler::value Block::compile(Compiler& c) const {
 				});
 				c.leave_block();
 				return ret;
-			} else if (type == Type::MPZ_TMP && !temporary_gmp) {
+			} else if (type == Type::MPZ_TMP && !temporary_mpz) {
 				auto v = c.insn_clone_mpz(val);
 				c.leave_block();
 				return v;

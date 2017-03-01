@@ -37,9 +37,9 @@ unsigned int VM::operations = 0;
 bool VM::enable_operations = true;
 unsigned long int VM::operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
-jit_type_t VM::gmp_int_type;
-long VM::gmp_values_created = 0;
-long VM::gmp_values_deleted = 0;
+jit_type_t VM::mpz_type;
+long VM::mpz_created = 0;
+long VM::mpz_deleted = 0;
 
 VM::ExceptionObj* VM::last_exception = nullptr;
 jit_stack_trace_t VM::stack_trace;
@@ -148,7 +148,7 @@ void VM::add_module(Module* m) {
 VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool ops) {
 
 	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
-	VM::gmp_int_type = jit_type_create_struct(types, 3, 1);
+	VM::mpz_type = jit_type_create_struct(types, 3, 1);
 
 	// Reset
 	LSNull::set_null_value(this->null_value);
@@ -156,8 +156,8 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	LSBoolean::set_false_value(this->false_value);
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
-	VM::gmp_values_created = 0;
-	VM::gmp_values_deleted = 0;
+	VM::mpz_created = 0;
+	VM::mpz_deleted = 0;
 	VM::operations = 0;
 	VM::last_exception = nullptr;
 	VM::enable_operations = ops;
@@ -208,7 +208,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	// Cleaning
 	delete program;
 	VM::enable_operations = true;
-	jit_type_free(VM::gmp_int_type);
+	jit_type_free(VM::mpz_type);
 	if (result.compilation_success) {
 		jit_context_destroy(VM::jit_context);
 	}
@@ -216,8 +216,8 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	// Results
 	result.objects_created = LSValue::obj_count;
 	result.objects_deleted = LSValue::obj_deleted;
-	result.gmp_objects_created = VM::gmp_values_created;
-	result.gmp_objects_deleted = VM::gmp_values_deleted;
+	result.mpz_objects_created = VM::mpz_created;
+	result.mpz_objects_deleted = VM::mpz_deleted;
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		cout << RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
@@ -227,8 +227,8 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 			}
 		#endif
 	}
-	if (VM::gmp_values_deleted != VM::gmp_values_created) {
-		cout << RED << "/!\\ " << VM::gmp_values_deleted << " / " << VM::gmp_values_created << " (" << (VM::gmp_values_created - VM::gmp_values_deleted) << " gmp leaked)" << END_COLOR << endl;
+	if (VM::mpz_deleted != VM::mpz_created) {
+		cout << RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << endl;
 	}
 
 	return result;
@@ -248,7 +248,7 @@ jit_type_t VM::get_jit_type(const Type& type) {
 		return jit_type_uint;
 	}
 	if (type.raw_type == RawType::MPZ) {
-		return VM::gmp_int_type;
+		return VM::mpz_type;
 	}
 	if (type.raw_type == RawType::BOOLEAN) {
 		return LS_BOOLEAN;
@@ -422,9 +422,9 @@ jit_value_t VM::clone_obj(jit_function_t F, jit_value_t ptr) {
 	return v;
 }
 
-void VM::inc_gmp_counter(jit_function_t F) {
+void VM::inc_mpz_counter(jit_function_t F) {
 
-	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::gmp_values_created);
+	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::mpz_created);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }

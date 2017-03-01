@@ -11,7 +11,7 @@ class Block : public Value {
 public:
 
 	std::vector<Instruction*> instructions;
-	bool temporary_gmp = false;
+	bool temporary_mpz = false;
 
 	Block();
 	virtual ~Block();

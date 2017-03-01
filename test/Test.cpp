@@ -10,8 +10,8 @@ Test::Test() : vmv1(true) {
 	exeTime = 0;
 	obj_deleted = 0;
 	obj_created = 0;
-	gmp_obj_deleted = 0;
-	gmp_obj_created = 0;
+	mpz_obj_deleted = 0;
+	mpz_obj_created = 0;
 }
 
 Test::~Test() {}
@@ -55,13 +55,13 @@ int Test::all() {
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
 	int errors = (total - success_count);
 	int leaks = (obj_created - obj_deleted);
-	int gmp_leaks = (gmp_obj_created - gmp_obj_deleted);
+	int mpz_leaks = (mpz_obj_created - mpz_obj_deleted);
 
 	std::ostringstream line1, line2, line3, line4;
 	line1 << "Total : " << total << ", success : " << success_count << ", errors : " << errors;
 	line2 << "Total time : " << elapsed_secs * 1000 << " ms";
 	line3 << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
-	line4 << "GMP objects destroyed : " << gmp_obj_deleted << " / " << gmp_obj_created << " (" << gmp_leaks << " leaked)";
+	line4 << "MPZ objects destroyed : " << mpz_obj_deleted << " / " << mpz_obj_created << " (" << mpz_leaks << " leaked)";
 	unsigned w = std::max(line1.str().size(), std::max(line2.str().size(), std::max(line3.str().size(), line4.str().size())));
 
 	auto pad = [](std::string s, int l) {
@@ -81,7 +81,7 @@ int Test::all() {
 	std::cout << "┤";
 	std::cout << std::endl;
 
-	int result = abs(errors) + abs(leaks) + abs(gmp_leaks);
+	int result = abs(errors) + abs(leaks) + abs(mpz_leaks);
 	if (result == 0) {
 		std::cout << "│ " << pad("GOOD! ✔", w + 2) << " │" << std::endl;
 	} else {
@@ -131,8 +131,8 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 
 	test->obj_created += result.objects_created;
 	test->obj_deleted += result.objects_deleted;
-	test->gmp_obj_created += result.gmp_objects_created;
-	test->gmp_obj_deleted += result.gmp_objects_deleted;
+	test->mpz_obj_created += result.mpz_objects_created;
+	test->mpz_obj_deleted += result.mpz_objects_deleted;
 
 	compilation_time = round((float) result.compilation_time / 1000) / 1000;
 	execution_time = round((float) result.execution_time / 1000) / 1000;

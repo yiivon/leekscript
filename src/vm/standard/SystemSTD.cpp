@@ -111,7 +111,7 @@ void System_print_mpz_tmp(__mpz_struct v) {
 	mpz_get_str(buff, 10, &v);
 	*VM::output << buff << std::endl;
 	mpz_clear(&v);
-	VM::gmp_values_deleted++;
+	VM::mpz_deleted++;
 }
 
 void System_print_long(long v) {

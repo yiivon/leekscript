@@ -175,7 +175,7 @@ std::string Program::execute() {
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
 		mpz_clear(&ret);
-		VM::gmp_values_deleted++;
+		VM::mpz_deleted++;
 		return std::string(buff);
 	}
 

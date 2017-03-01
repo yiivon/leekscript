@@ -29,37 +29,37 @@ public:
 	 */
 	static Compiler::value add_real_real(Compiler& c, std::vector<Compiler::value>);
 	static LSValue* add_int_ptr(int a, LSValue* b);
-	static Compiler::value add_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value add_mpz_int(Compiler& c, std::vector<Compiler::value> args);
 
-	static Compiler::value add_eq_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 
-	static Compiler::value sub_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value sub_gmp_int(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value sub_mpz_int(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value mul_int_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mul_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value div_val_val(Compiler& c, std::vector<Compiler::value> args);
 
-	static Compiler::value pow_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value pow_gmp_int(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value pow_mpz_int(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value lt_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value lt_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value le(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value gt(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value gt_int_gmp(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value gt_int_mpz(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value ge(Compiler& c, std::vector<Compiler::value> args);
 
-	static Compiler::value mod_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mod_gmp_gmp_tmp(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value mod_mpz_mpz_tmp(Compiler& c, std::vector<Compiler::value> args);
 
-	static Compiler::value eq_gmp_gmp(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value eq_gmp_int(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value eq_mpz_int(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value tilde_int(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value tilde_real(Compiler& c, std::vector<Compiler::value> args);
@@ -139,7 +139,7 @@ public:
 	static Compiler::value tan_real(Compiler&, std::vector<Compiler::value>);
 
 	static double sqrt_ptr(LSNumber* x);
-	static Compiler::value sqrt_gmp(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value sqrt_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value sqrt_real(Compiler&, std::vector<Compiler::value>);
 
 	static double cbrt_ptr(LSNumber* x);
