@@ -29,12 +29,14 @@ public:
 	jit_function_t jit_function;
 	jit_context_t context = nullptr;
 	std::string name;
+	Type placeholder_type;
 
 	Function();
 	virtual ~Function();
 
 	void addArgument(Token* token, bool reference, Value* defaultValue);
 	int capture(std::shared_ptr<SemanticVar> var);
+	Type getReturnType();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 

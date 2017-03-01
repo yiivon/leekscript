@@ -38,6 +38,17 @@ void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
 	defaultValues.push_back(defaultValue);
 }
 
+Type Function::getReturnType() {
+	if (type.getReturnType() == Type::UNKNOWN) {
+		if (placeholder_type == Type::UNKNOWN) {
+			placeholder_type = Type::generate_new_placeholder_type();
+		}
+		return placeholder_type;
+	} else {
+		return type.getReturnType();
+	}
+}
+
 void Function::print(std::ostream& os, int indent, bool debug) const {
 
 	if (captures.size() > 0) {
