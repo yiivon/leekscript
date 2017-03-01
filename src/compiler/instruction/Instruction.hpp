@@ -3,7 +3,7 @@
 
 #include <ostream>
 #include "../Compiler.hpp"
-#include "../../vm/Type.hpp"
+#include "../../vm/TypeList.hpp"
 
 namespace ls {
 
@@ -14,6 +14,7 @@ class Instruction {
 public:
 
 	Type type = Type::VOID;
+	TypeList types;
 
 	virtual ~Instruction() = 0;
 

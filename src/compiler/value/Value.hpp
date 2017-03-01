@@ -6,7 +6,7 @@
 
 #include "../../vm/VM.hpp"
 #include "../Compiler.hpp"
-#include "../../vm/Type.hpp"
+#include "../../vm/TypeList.hpp"
 
 namespace ls {
 
@@ -16,6 +16,7 @@ class Value {
 public:
 
 	Type type;
+	TypeList types;
 	std::map<std::string, Type> attr_types;
 	bool constant;
 	bool parenthesis = false;
