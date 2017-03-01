@@ -118,7 +118,7 @@ void Program::compile_main(VM& vm, Context& context) {
 	//jit_dump_function(fopen("main_compiled", "w"), F, "main");
 
 	closure = jit_function_to_closure(F);
-	
+
 	jit_type_free(signature);
 }
 
@@ -130,7 +130,7 @@ void* handler(int type) {
 
 	void* frame = __builtin_frame_address(1);
 	void* pc = jit_get_return_address(frame);
-	auto trace = (jit_stack_trace_t) jit_malloc(sizeof(unsigned int) + sizeof(void*));
+	auto trace = (jit_stack_trace_t) jit_malloc(sizeof(struct jit_stack_trace));
 	trace->size = 1;
 	trace->items[0] = pc;
 	unsigned int line = jit_stack_trace_get_offset(VM::jit_context, trace, 0);
