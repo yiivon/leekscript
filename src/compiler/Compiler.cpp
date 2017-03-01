@@ -34,24 +34,14 @@ void Compiler::leave_block() {
 void Compiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
-			if (it->second.type.must_manage_memory()) {
-				insn_delete({it->second.value, Type::POINTER});
-			}
-			if (it->second.type.not_temporary() == Type::MPZ) {
-				insn_delete_mpz({it->second.value, Type::MPZ});
-			}
+			insn_delete({it->second.value, it->second.type});
 		}
 	}
 }
 
 void Compiler::delete_function_variables() {
 	for (const auto& v : function_variables.back()) {
-		if (v.type.must_manage_memory()) {
-			insn_delete({v.value, Type::POINTER});
-		}
-		if (v.type.not_temporary() == Type::MPZ) {
-			insn_delete_mpz({v.value, Type::MPZ});
-		}
+		insn_delete({v.value, v.type});
 	}
 }
 
@@ -290,8 +280,10 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 }
 
 void Compiler::insn_delete(Compiler::value v) const {
-	if (v.t.nature == Nature::POINTER) {
+	if (v.t.must_manage_memory()) {
 		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_ref);
+	} else if (v.t.not_temporary() == Type::MPZ) {
+		insn_delete_mpz(v);
 	}
 }
 
