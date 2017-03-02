@@ -10,6 +10,7 @@ public:
 
 	static std::string read_file(std::string file);
 	static bool is_file_name(std::string data);
+	static std::string replace_all(std::string& haystack, const std::string& needle, const std::string& replacement);
 };
 
 #endif

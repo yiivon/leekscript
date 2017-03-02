@@ -103,7 +103,7 @@ void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops
 		cout << "{\"success\":true,\"ops\":" << result.operations
 			<< ",\"time\":" << result.execution_time
 			<< ",\"ctx\":" << result.context
-			<< ",\"res\":\"" << result.value << "\"}" << endl;
+			<< ",\"res\":\"" << Util::replace_all(result.value, "\"", "\\\"") << "\"}" << endl;
 	} else {
 		if (result.execution_success && result.value != "(void)") {
 			cout << result.value << endl;

@@ -31,3 +31,12 @@ bool Util::is_file_name(std::string data) {
 	// Not a file
 	return false;
 }
+
+string Util::replace_all(string& haystack, const string& needle, const string& replacement) {
+	size_t pos = 0;
+    while ((pos = haystack.find(needle, pos)) != std::string::npos) {
+         haystack.replace(pos, needle.length(), replacement);
+         pos += replacement.length();
+    }
+    return haystack;
+}
