@@ -103,6 +103,7 @@ void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops
 		print_errors(result, oss);
 		std::string res = oss.str() + result.value;
 		res = Util::replace_all(res, "\"", "\\\"");
+		res = Util::replace_all(res, "\n", "");
 		cout << "{\"success\":true,\"ops\":" << result.operations
 			<< ",\"time\":" << result.execution_time
 			<< ",\"ctx\":" << result.context
