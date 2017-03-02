@@ -17,7 +17,7 @@
 
 using namespace std;
 
-void print_errors(ls::VM::Result& result);
+void print_errors(ls::VM::Result& result, std::ostream& os);
 void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops);
 
 #define GREY "\033[0;90m"
@@ -98,13 +98,17 @@ int main(int argc, char* argv[]) {
 }
 
 void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops) {
-	print_errors(result);
 	if (json) {
+		std::ostringstream oss;
+		print_errors(result, oss);
+		std::string res = oss.str() + result.value;
+		res = Util::replace_all(res, "\"", "\\\"");
 		cout << "{\"success\":true,\"ops\":" << result.operations
 			<< ",\"time\":" << result.execution_time
 			<< ",\"ctx\":" << result.context
-			<< ",\"res\":\"" << Util::replace_all(result.value, "\"", "\\\"") << "\"}" << endl;
+			<< ",\"res\":\"" << res << "\"}" << endl;
 	} else {
+		print_errors(result, std::cout);
 		if (result.execution_success && result.value != "(void)") {
 			cout << result.value << endl;
 		}
@@ -120,17 +124,17 @@ void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops
 	}
 }
 
-void print_errors(ls::VM::Result& result) {
+void print_errors(ls::VM::Result& result, std::ostream& os) {
 	for (const auto& e : result.lexical_errors) {
-		std::cout << "Line " << e.line << ": " << e.message() << std::endl;
+		os << "Line " << e.line << ": " << e.message() << std::endl;
 	}
 	for (const auto& e : result.syntaxical_errors) {
-		std::cout << "Line " << e.token->line << ": " << e.message() << std::endl;
+		os << "Line " << e.token->line << ": " << e.message() << std::endl;
 	}
 	for (const auto& e : result.semantical_errors) {
-		std::cout << "line " << e.line << ": " << e.message() << std::endl;
+		os << "Line " << e.line << ": " << e.message() << std::endl;
 	}
 	if (result.exception != ls::VM::Exception::NO_EXCEPTION) {
-		std::cout << "Exception: " << ls::VM::exception_message(result.exception) << std::endl;
+		os << "Exception: " << ls::VM::exception_message(result.exception) << std::endl;
 	}
 }
