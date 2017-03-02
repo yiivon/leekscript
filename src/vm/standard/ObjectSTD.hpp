@@ -15,7 +15,7 @@ public:
 	ObjectSTD();
 
 	static LSObject readonly;
-	static LSNumber readonly_value;
+	static LSNumber* readonly_value;
 };
 
 }

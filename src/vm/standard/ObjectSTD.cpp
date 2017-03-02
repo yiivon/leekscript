@@ -4,13 +4,13 @@
 namespace ls {
 
 LSObject ObjectSTD::readonly;
-LSNumber ObjectSTD::readonly_value(12);
+LSNumber* ObjectSTD::readonly_value = LSNumber::get(12);
 
 ObjectSTD::ObjectSTD() : Module("Object") {
 
 	LSObject::object_class = clazz;
 
-	readonly.addField("v", &readonly_value);
+	readonly.addField("v", readonly_value);
 	readonly.readonly = true;
 	readonly.native = true;
 
