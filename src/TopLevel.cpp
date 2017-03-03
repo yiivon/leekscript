@@ -43,6 +43,7 @@ int main(int argc, char* argv[]) {
 	bool debug_mode = false;
 	bool v1 = false;
 	bool ops = true;
+	bool example = false;
 	std::string file_or_code;
 
 	for (int i = 1; i < argc; ++i) {
@@ -53,12 +54,19 @@ int main(int argc, char* argv[]) {
 		else if (a == "-d" or a == "-D" or a == "--debug") debug_mode = true;
 		else if (a == "-v1" or a == "-V1") v1 = true;
 		else if (a == "-nop" or a == "--no-operations") ops = false;
+		else if (a == "-e" or a == "--example") example = true;
 		else file_or_code = a;
 	}
 
 	/** Display version? */
 	if (print_version) {
 		std::cout << "LeekScript 2.0" << std::endl;
+		return 0;
+	}
+	/** Output an example code */
+	if (example) {
+		auto codes = Util::read_file_lines("src/doc/examples.txt");
+		std::cout << codes[rand() % codes.size()] << std::endl;
 		return 0;
 	}
 
