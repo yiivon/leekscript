@@ -5,6 +5,8 @@
 #include <ctime>
 #include <sstream>
 #include <fstream>
+#include <istream>
+#include <iterator>
 #include <queue>
 
 using namespace std;
@@ -14,6 +16,15 @@ string Util::read_file(string file) {
 	string content = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
 	ifs.close();
 	return content;
+}
+
+vector<string> Util::read_file_lines(string file) {
+	ifstream f(file);
+	std::vector<std::string> lines;
+	for (std::string line; std::getline(f, line);) {
+		lines.push_back(line);
+	}
+	return lines;
 }
 
 bool Util::is_file_name(std::string data) {
