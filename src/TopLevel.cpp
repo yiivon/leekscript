@@ -7,6 +7,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <string>
+#include <chrono>
 
 #include "leekscript.h"
 #include "../lib/utf8.h"
@@ -28,7 +29,10 @@ void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops
 int main(int argc, char* argv[]) {
 
 	/** Seed random one for all */
-	srand(time(0));
+	long ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
+	srand(ns);
 
 	/** Generate the standard functions documentation */
 	if (argc > 1 && string(argv[1]) == "-doc") {
