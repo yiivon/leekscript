@@ -43,6 +43,7 @@ leekscript "[5, 6, 7] ~~ x -> x ** 2"
 Option | Effect
 ------ | ------
 -v -V --version	| Print the current version
+-e -E --example | Output an example code
 -j -J --json	| Get the result in JSON format
 -t -T --time	| Print execution time and operations
 -d -D --debug | Print debug information like types
