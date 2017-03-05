@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 		else if (a == "-d" or a == "-D" or a == "--debug") debug_mode = true;
 		else if (a == "-v1" or a == "-V1") v1 = true;
 		else if (a == "-nop" or a == "--no-operations") ops = false;
-		else if (a == "-e" or a == "--example") example = true;
+		else if (a == "-e" or a == "-E" or a == "--example") example = true;
 		else file_or_code = a;
 	}
 
