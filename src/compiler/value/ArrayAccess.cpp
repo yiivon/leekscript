@@ -260,24 +260,21 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			}
 			k = c.to_int(k);
 
-			if (array->type.raw_type == RawType::STRING) {
+			// Check index : k < 0 or k >= size
+			auto array_size = c.insn_array_size(a);
+			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
+				c.insn_delete_temporary(a);
+				c.insn_delete(a);
+				c.insn_throw(c.insn_call(Type::POINTER, {}, (void*) +[]() {
+					return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
+				}));
+			});
 
+			if (array->type.raw_type == RawType::STRING) {
 				auto e = c.insn_call(Type::STRING, {a, k}, (void*) &LSString::codePointAt);
 				c.insn_delete_temporary(a);
 				return e;
-
 			} else {
-
-				// k < 0 or k >= size
-				auto array_size = c.insn_array_size(a);
-				c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
-					c.insn_delete_temporary(a);
-					c.insn_delete(a);
-					c.insn_throw(c.insn_call(Type::POINTER, {}, (void*) +[]() {
-						return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
-					}));
-				});
-
 				auto e = c.insn_load(c.insn_add(c.insn_load(a, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k)), 0, array_element_type);
 				e = c.clone(e);
 				c.insn_delete_temporary(a);

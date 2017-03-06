@@ -110,6 +110,10 @@ LSValue* LSString::ls_foldLeft(LSFunction<LSValue*>* function, LSValue* v0) {
 	return result;
 }
 
+int LSString::int_size() const {
+	return size();
+}
+
 /*
  * LSValue methods
  */

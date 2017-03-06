@@ -44,6 +44,7 @@ public:
 	LSString* sort();
 	bool is_palindrome() const;
 	LSValue* ls_foldLeft(LSFunction<LSValue*>*, LSValue* v0);
+	int int_size() const;
 
 	/*
 	 * LSValue methods

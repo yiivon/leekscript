@@ -304,7 +304,9 @@ void Compiler::insn_delete_not_temporary(value v) const {
 }
 
 Compiler::value Compiler::insn_array_size(Compiler::value v) const {
-	if (v.t == Type::INT_ARRAY) {
+	if (v.t.not_temporary() == Type::STRING) {
+		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size);
+	} else if (v.t == Type::INT_ARRAY) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size);
 	} else if (v.t == Type::REAL_ARRAY) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size);
