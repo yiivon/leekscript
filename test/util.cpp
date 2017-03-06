@@ -8,4 +8,6 @@ void Test::test_utils() {
 	Util::is_file_name("salut.leek"); // true
 	Util::is_file_name("hello.ls"); // true
 	Util::is_file_name("helloworld"); // false
+
+	Util::read_file_lines("Makefile");
 }
