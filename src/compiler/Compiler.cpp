@@ -192,6 +192,10 @@ Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
 }
 
 Compiler::value Compiler::to_int(Compiler::value v) const {
+	if (v.t.not_temporary() == Type::MPZ) {
+		auto v_addr = insn_address_of(v);
+		return to_int(insn_call(Type::LONG, {v_addr}, &mpz_get_si));
+	}
 	return {jit_insn_convert(F, v.v, LS_INTEGER, 0), Type::INTEGER};
 }
 
