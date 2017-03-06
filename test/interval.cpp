@@ -19,8 +19,9 @@ void Test::test_intervals() {
 	code("1000 in [1..1000]").equals("true");
 	code("0 in [1..1000]").equals("false");
 	code("1001 in [1..1000]").equals("false");
-	// TODO generic in operator
-	//code("'a' in [[1..1000], ''][0]").equals("false");
+	code("'a' in [[1..1000], ''][0]").equals("false");
+	code("500 in [[1..1000], ''][0]").equals("true");
+	code("1500 in [[1..1000], ''][0]").equals("false");
 
 	section("Interval.operator []");
 	code("[0..1000][500]").equals("500");

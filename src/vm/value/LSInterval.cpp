@@ -32,7 +32,20 @@ bool LSInterval::isTrue() const {
 	return b >= a;
 }
 
-bool LSInterval::in_v(int value) const {
+bool LSInterval::in(const LSValue* const value) const {
+	if (value->type != LSValue::NUMBER) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(value);
+		return false;
+	}
+	int v = static_cast<const LSNumber*>(value)->value;
+	bool res = v >= a and v <= b;
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(value);
+	return res;
+}
+
+bool LSInterval::in_i(const int value) const {
 	bool res = value >= a and value <= b;
 	LSValue::delete_temporary(this);
 	return res;

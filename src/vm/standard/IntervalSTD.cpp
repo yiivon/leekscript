@@ -12,7 +12,7 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::INTERVAL, Type::INTEGER, Type::BOOLEAN, (void*) &LSInterval::in_v, Method::NATIVE}
+		{Type::INTERVAL, Type::INTEGER, Type::BOOLEAN, (void*) &LSInterval::in_i, Method::NATIVE}
 	});
 
 	/*
