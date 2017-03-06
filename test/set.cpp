@@ -13,6 +13,9 @@ void Test::test_set() {
 	code("if <1, 2> then 5 else 12 end").equals("5");
 	code("if <> then 5 else 12 end").equals("12");
 
+	/*
+	 * Operators
+	 */
 	section("Set.operator in ()");
 	code("let s = <1, 2> 3 in s").equals("false");
 	code("let s = <1, 2> 1 in s").equals("true");
@@ -40,6 +43,28 @@ void Test::test_set() {
 	code("<1, 2, []> < <1, 2, 3>").equals("false");
 	code("<1, 2, []> < <1, 2, 3.5>").equals("false");
 
+	section("Set.operator +=");
+	code("var s = <> s += 0 s").equals("<0>");
+	code("var s = <> s += 0.5 s").equals("<0.5>");
+	code("var s = <> s += 'a' s").equals("<'a'>");
+	code("var s = <1> s += 0 s").equals("<0, 1>");
+	code("var s = <1.5> s += 0.5 s").equals("<0.5, 1.5>");
+	code("var s = <'b'> s += 'a' s").equals("<'a', 'b'>");
+	code("var s = <1, 2> s += 'a' s").equals("<1, 2, 'a'>");
+	code("var s = <'a', 'b'> s += 1 s").equals("<1, 'a', 'b'>");
+	code("var s = <1, 2> s += <3, 4> s").equals("<1, 2, 3, 4>");
+	code("var s = <1, 2> s += <3.2, 4.9> s").equals("<1, 2, 3.2, 4.9>");
+	code("var s = <1, 2> s += <'a', 'b'> s").equals("<1, 2, 'a', 'b'>");
+	code("var s = <1.5, 2.9> s += <3, 4> s").equals("<1.5, 2.9, 3, 4>");
+	code("var s = <1.5, 2.9> s += <3.2, 4.9> s").equals("<1.5, 2.9, 3.2, 4.9>");
+	code("var s = <1.5, 2.9> s += <'a', 'b'> s").equals("<1.5, 2.9, 'a', 'b'>");
+	code("var s = <'a', 'b'> s += <3, 4> s").equals("<3, 4, 'a', 'b'>");
+	code("var s = <'a', 'b'> s += <3.2, 4.9> s").equals("<3.2, 4.9, 'a', 'b'>");
+	code("var s = <'a', 'b'> s += <'c', 'd'> s").equals("<'a', 'b', 'c', 'd'>");
+
+	/*
+	 * Methods
+	 */
 	section("Set.contains()");
 	code("let s = <1, 2> s.contains(3)").equals("false");
 	code("let s = <1, 2> s.contains(1)").equals("true");
@@ -70,7 +95,4 @@ void Test::test_set() {
 
 	section("Set clone()");
 	code("let s = <1, 2, 3> [s]").equals("[<1, 2, 3>]");
-
-	// Type changes
-	// code("let s = <1, 2> s += 'a' s").equals("<1, 2, 'a'>");
 }

@@ -216,7 +216,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	constant = v1->constant and v2->constant;
 
-	bool array_push = v1->type.raw_type == RawType::ARRAY and op->type == TokenType::PLUS_EQUAL;
+	bool array_push = (v1->type.raw_type == RawType::ARRAY or v1->type.raw_type == RawType::SET) and op->type == TokenType::PLUS_EQUAL;
 
 	// array += ?  ==>  will take the type of ?
 	if (array_push) {

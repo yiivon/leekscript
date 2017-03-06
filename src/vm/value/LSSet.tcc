@@ -63,6 +63,7 @@ inline bool LSSet<LSValue*>::ls_insert(LSValue* value) {
 	if (refs == 0) delete this;
 	return false;
 }
+
 template <typename T>
 inline bool LSSet<T>::ls_insert(T value) {
 	bool r = this->insert(value).second;
@@ -111,6 +112,67 @@ bool LSSet<T>::ls_contains(T value) {
 template <typename T>
 bool LSSet<T>::isTrue() const {
 	return !this->empty();
+}
+
+template <>
+inline LSValue* LSSet<int>::add_eq(LSValue* v) {
+	if (v->type == LSValue::NUMBER) {
+		int vv = static_cast<LSNumber*>(v)->value;
+		this->insert(this->end(), vv);
+	}
+	if (v->type == LSValue::SET) {
+		if (auto s = dynamic_cast<LSSet<int>*>(v)) {
+			this->insert(s->begin(), s->end());
+		}
+	}
+	LSValue::delete_temporary(v);
+	return this;
+}
+
+template <>
+inline LSValue* LSSet<double>::add_eq(LSValue* v) {
+	if (v->type == LSValue::NUMBER) {
+		double vv = static_cast<LSNumber*>(v)->value;
+		this->insert(this->end(), vv);
+	}
+	if (v->type == LSValue::SET) {
+		if (auto s = dynamic_cast<LSSet<int>*>(v)) {
+			this->insert(s->begin(), s->end());
+		}
+		if (auto s = dynamic_cast<LSSet<double>*>(v)) {
+			this->insert(s->begin(), s->end());
+		}
+	}
+	LSValue::delete_temporary(v);
+	return this;
+}
+
+template <>
+inline LSValue* LSSet<LSValue*>::add_eq(LSValue* v) {
+	if (v->type == LSValue::SET) {
+		if (auto s = dynamic_cast<LSSet<LSValue*>*>(v)) {
+			for (auto e : *s)
+				this->insert(this->end(), e->clone_inc());
+		}
+		if (auto s = dynamic_cast<LSSet<int>*>(v)) {
+			for (auto e : *s) {
+				auto n = LSNumber::get(e);
+				n->refs = 1;
+				this->insert(this->end(), n);
+			}
+		}
+		if (auto s = dynamic_cast<LSSet<double>*>(v)) {
+			for (auto e : *s) {
+				auto n = LSNumber::get(e);
+				n->refs = 1;
+				this->insert(this->end(), n);
+			}
+		}
+		LSValue::delete_temporary(v);
+		return this;
+	}
+	this->insert(this->end(), v->move_inc());
+	return this;
 }
 
 template <class T1, class T2>

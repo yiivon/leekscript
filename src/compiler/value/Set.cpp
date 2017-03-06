@@ -48,6 +48,26 @@ void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 	type = Type(RawType::SET, Nature::POINTER, element_type);
 }
 
+bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
+
+	Type added_type = type;
+	if (added_type.raw_type == RawType::ARRAY or added_type.raw_type == RawType::SET) {
+		added_type = added_type.getElementType();
+	}
+	Type current_type = this->type.getElementType();
+	if (expressions.size() == 0) {
+		this->type.setElementType(added_type);
+	} else {
+		this->type.setElementType(Type::get_compatible_type(current_type, added_type));
+	}
+	// Re-analyze expressions with the new type
+	for (size_t i = 0; i < expressions.size(); ++i) {
+		expressions[i]->analyse(analyser, this->type.getElementType());
+	}
+	this->types = type;
+	return false;
+}
+
 LSSet<LSValue*>* Set_create_ptr() { return new LSSet<LSValue*>(); }
 LSSet<int>* Set_create_int()      { return new LSSet<int>();      }
 LSSet<double>* Set_create_float() { return new LSSet<double>();   }
