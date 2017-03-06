@@ -75,6 +75,7 @@ bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
 		var->value->will_store(analyser, type);
 		this->type = var->value->type;
 		var->type = this->type;
+		types = this->type;
 	}
 	return false;
 }

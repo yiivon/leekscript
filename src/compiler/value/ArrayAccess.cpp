@@ -124,8 +124,6 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int) {
 
-//	cout << "ArrayAccess::will_take " << arg_type << " at " << pos << endl;
-
 	type.will_take(args);
 
 	if (Array* arr = dynamic_cast<Array*>(array)) {
@@ -156,8 +154,11 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::
 	return false;
 }
 
-void ArrayAccess::change_type(SemanticAnalyser*, const Type&) {
-	// TODO
+void ArrayAccess::change_type(SemanticAnalyser* analyser, const Type& type) {
+	array->will_store(analyser, type);
+	this->type = array->type.getElementType();
+	this->types = this->type;
+	array_element_type = this->type;
 }
 
 int interval_access(const LSInterval* interval, int pos) {
