@@ -67,6 +67,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("^", {
 		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_xor}
 	});
+	operator_("in", {
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_in}
+	});
 
 	/*
 	 * Methods
@@ -280,6 +283,18 @@ Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> a
 		LSValue::delete_temporary(y);
 		return res;
 	});
+}
+
+Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) {
+	if (args[1].t == Type::INTEGER) {
+		return c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, int b) {
+			return a->in_i(b);
+		});
+	} else {
+		return c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, LSValue* b) {
+			return a->in(b);
+		});
+	}
 }
 
 Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> args) {
