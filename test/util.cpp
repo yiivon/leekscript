@@ -10,4 +10,9 @@ void Test::test_utils() {
 	Util::is_file_name("helloworld"); // false
 
 	Util::read_file_lines("Makefile");
+
+	std::string haystack = "bonjour";
+	std::string needle = "o";
+	std::string replacement = "_";
+	std::string res = Util::replace_all(haystack, needle, replacement);
 }
