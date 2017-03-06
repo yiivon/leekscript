@@ -538,6 +538,9 @@ void Test::test_numbers() {
 	code("Number.cbrt(['', 1728][1])").almost(12.0, 0.00000000000001);
 //	code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
 
+	section("Number.int()");
+	code("Number.int(15.5)").equals("15");
+
 	section("Number.isInteger()");
 	code("Number.isInteger(12)").equals("true");
 	code("Number.isInteger(0)").equals("true");
