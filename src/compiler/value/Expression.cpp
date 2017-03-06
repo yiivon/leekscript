@@ -660,7 +660,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return sum;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
 				});

@@ -58,6 +58,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 
 			Type element_type = Type::UNKNOWN;
 			Type supported_type = Type::UNKNOWN;
+			auto homogeneous = true;
 
 			// First analyse pass
 			for (size_t i = 0; i < expressions.size(); ++i) {
@@ -68,6 +69,9 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 
 				if (ex->constant == false) {
 					constant = false;
+				}
+				if (element_type != Type::UNKNOWN and element_type != ex->type) {
+					homogeneous = false;
 				}
 				element_type = Type::get_compatible_type(element_type, ex->type);
 			}
@@ -87,28 +91,32 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			}
 
 			// Re-analyze expressions with the supported type
+			// and second computation of the array type
+			element_type = Type::UNKNOWN;
 			for (size_t i = 0; i < expressions.size(); ++i) {
-				expressions[i]->analyse(analyser, supported_type);
-				if (expressions[i]->type.raw_type == RawType::FUNCTION) {
+				auto ex = expressions[i];
+				ex->analyse(analyser, supported_type);
+				if (!homogeneous and ex->type.raw_type == RawType::ARRAY) {
+					// If the array stores other arrays of different types,
+					// force those arrays to store pointers. (To avoid having
+					// unknown array<int> inside arrays.
+					ex->will_store(analyser, Type::POINTER);
+				}
+				if (ex->type.raw_type == RawType::FUNCTION) {
 					std::vector<Type> types;
-					for (unsigned p = 0; p < expressions[i]->type.getArgumentTypes().size(); ++p) {
+					for (unsigned p = 0; p < ex->type.getArgumentTypes().size(); ++p) {
 						types.push_back(Type::POINTER);
 					}
 					if (types.size() > 0) {
-						expressions[i]->will_take(analyser, types, 1);
+						ex->will_take(analyser, types, 1);
 					}
-					expressions[i]->must_return(analyser, Type::POINTER);
+					ex->must_return(analyser, Type::POINTER);
 				}
-			}
-
-			// Second computation of the array type
-			element_type = Type::UNKNOWN;
-			for (unsigned i = 0; i < expressions.size(); ++i) {
-				Value* ex = expressions[i];
 				if (element_type == Type::UNKNOWN or !element_type.compatible(ex->type)) {
 					element_type = Type::get_compatible_type(element_type, ex->type);
 				}
 			}
+
 			element_type.temporary = false;
 			type.setElementType(element_type);
 		}
