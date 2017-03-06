@@ -1192,9 +1192,13 @@ inline bool LSArray<LSValue*>::lt(const LSValue* v) const {
 }
 
 template <typename T>
-inline bool LSArray<T>::in(const T value) const {
+inline bool LSArray<T>::in(const LSValue* const value) const {
+	if (value->type != LSValue::NUMBER) {
+		return false;
+	}
+	T v = static_cast<const LSNumber*>(value)->value;
 	for (auto i = this->begin(); i != this->end(); i++) {
-		if (*i == value) {
+		if (*i == v) {
 			LSValue::delete_temporary(this);
 			return true;
 		}
@@ -1204,7 +1208,7 @@ inline bool LSArray<T>::in(const T value) const {
 }
 
 template <>
-inline bool LSArray<LSValue*>::in(LSValue* const value) const {
+inline bool LSArray<LSValue*>::in(const LSValue* const value) const {
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (**i == *value) {
 			LSValue::delete_temporary(this);
@@ -1214,6 +1218,18 @@ inline bool LSArray<LSValue*>::in(LSValue* const value) const {
 	}
 	LSValue::delete_temporary(this);
 	LSValue::delete_temporary(value);
+	return false;
+}
+
+template <typename T>
+bool LSArray<T>::in_i(const int v) const {
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (ls::equals(*i, v)) {
+			LSValue::delete_temporary(this);
+			return true;
+		}
+	}
+	LSValue::delete_temporary(this);
 	return false;
 }
 

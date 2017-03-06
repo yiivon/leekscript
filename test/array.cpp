@@ -196,6 +196,7 @@ void Test::test_arrays() {
 	code("4 in [1, 2, 3]").equals("false");
 	code("'yo' in ['ya', 'yu', 'yo']").equals("true");
 	code("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }").equals("'ok'");
+	code("'a' in [['a', 'b', 'c'], ''][0]").equals("true");
 
 //	let f=x->x[0]; [f([1]), f([0..3])]
 

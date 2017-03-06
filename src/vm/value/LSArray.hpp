@@ -88,7 +88,8 @@ public:
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 
-	bool in(const T) const;
+	virtual bool in(const LSValue* const) const override;
+	virtual bool in_i(const int) const override;
 
 	LSValue* at(const LSValue* value) const override;
 	LSValue** atL(const LSValue* value) override;

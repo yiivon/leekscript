@@ -20,7 +20,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	operator_("in", {
 		{Type::PTR_ARRAY, Type::POINTER, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in, Method::NATIVE},
 		{Type::REAL_ARRAY, Type::REAL, Type::BOOLEAN, (void*) &LSArray<double>::in, Method::NATIVE},
-		{Type::INT_ARRAY, Type::INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in, Method::NATIVE}
+		{Type::INT_ARRAY, Type::INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in_i, Method::NATIVE}
 	});
 	operator_("+=", {
 		{Type::REAL_ARRAY, Type::REAL, Type::REAL, (void*) &LSArray<double>::push_move, Method::NATIVE}
