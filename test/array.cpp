@@ -499,4 +499,8 @@ void Test::test_arrays() {
 	// let a = [for let i = 0; i < 100; i++ do i end]
 	// a[10:*]
 	// a[] = 12 (a += 12)
+
+	section("Array v1 pushAll");
+	// TODO pushAll function must take first array as reference
+	// code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("['a', 'b', 'c']");
 }
