@@ -31,14 +31,14 @@ int LSValue::obj_deleted = 0;
 
 LSValue::LSValue(LSValueType type) : type(type), refs(0) {
 	obj_count++;
-	#if DEBUG_LEAKS_DETAILS
+	#if DEBUG_LEAKS
 		objs().insert({this, this});
 	#endif
 }
 
 LSValue::LSValue(const LSValue& o) : type(o.type), refs(0) {
 	obj_count++;
-	#if DEBUG_LEAKS_DETAILS
+	#if DEBUG_LEAKS
 		objs().insert({this, this});
 	#endif
 }
@@ -59,7 +59,7 @@ LSValue* LSValue::get(double v) {
 
 LSValue::~LSValue() {
 	obj_deleted++;
-	#if DEBUG_LEAKS_DETAILS
+	#if DEBUG_LEAKS
 		objs().erase(this);
 	#endif
 }

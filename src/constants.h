@@ -1,7 +1,5 @@
 #define LEEKSCRIPT_VERSION	2
 
 #define DEBUG_PRGM_TYPES	0
-#define DEBUG_LEAKS 		0
-#define DEBUG_LEAKS_DETAILS 0
+#define DEBUG_LEAKS 		1
 #define PRINT_TYPES_COLORS	1
-

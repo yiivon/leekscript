@@ -162,7 +162,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	VM::last_exception = nullptr;
 	VM::enable_operations = ops;
 	Type::placeholder_counter = 0;
-	#if DEBUG_LEAKS_DETAILS
+	#if DEBUG_LEAKS
 		LSValue::objs().clear();
 	#endif
 
@@ -222,7 +222,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		cout << RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
-		#if DEBUG_LEAKS_DETAILS
+		#if DEBUG_LEAKS
 			for (auto o : LSValue::objs()) {
 				std::cout << o.second << " (" << o.second->refs << " refs)" << endl;
 			}
