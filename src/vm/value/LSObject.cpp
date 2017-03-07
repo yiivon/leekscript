@@ -147,6 +147,7 @@ int LSObject::abso() const {
 LSValue* LSObject::clone() const {
 	if (native) return (LSValue*) this;
 	LSObject* obj = new LSObject();
+	obj->clazz = clazz;
 	for (auto i = values.begin(); i != values.end(); i++) {
 		obj->values.insert({i->first, i->second->clone_inc()});
 	}
