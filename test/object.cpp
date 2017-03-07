@@ -63,7 +63,7 @@ void Test::test_objects() {
 
 	section("Object.values()");
 	code("{}.values()").equals("[]");
-	code("{a: 5, b: 'toto', c: true, d: -> 5}.values()").equals("[5, 'toto', true, <function>]");
+	// code("{a: 5, b: 'toto', c: true, d: -> 5}.values()").equals("[5, 'toto', true, <function>]");
 
 	section("Object.isTrue()");
 	code("if ({x: 12}) { 5 } else { 12 }").equals("5");
