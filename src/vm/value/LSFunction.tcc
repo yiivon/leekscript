@@ -14,26 +14,22 @@ LSClass* LSFunction<R>::clazz;
 template <class R>
 LSFunction<R>::LSFunction(void* function) : LSValue(FUNCTION) {
 	this->function = function;
-	this->refs = 1;
-	this->native = true;
 }
 
 template <class R>
 LSFunction<R>::~LSFunction() {
 	for (size_t i = 0; i < captures.size(); ++i) {
-		if (!captures_native[i]) {
+		if (captures[i] != this)
 			LSValue::delete_ref(captures[i]);
-		}
 	}
 }
 
 template <class R>
 void LSFunction<R>::add_capture(LSValue* value) {
-	if (!value->native) {
+	if (!value->native && value != this) {
 		value->refs++;
 	}
 	captures.push_back(value);
-	captures_native.push_back(value->native);
 }
 
 template <class R>

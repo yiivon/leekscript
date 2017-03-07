@@ -23,7 +23,7 @@ LSClass::LSClass(Json&) : LSClass("?") {
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
 		if (s.second.value != nullptr) {
-			delete s.second.value;
+			LSValue::delete_ref(s.second.value);
 		}
 	}
 	for (auto m : default_methods) {
@@ -40,6 +40,7 @@ void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
 
 	// Add first implementation as default method
 	auto fun = new LSFunction<LSValue*>(method[0].addr);
+	fun->refs = 1;
 	Type type = method[0].type;
 	static_fields.insert({name, ModuleStaticField(name, type, fun)});
 }
@@ -102,6 +103,7 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 LSFunction<LSValue*>* LSClass::getDefaultMethod(const string& name) {
 	try {
 		ModuleStaticField f = static_fields.at(name);
+		f.value->refs++;
 		return (LSFunction<LSValue*>*) f.value;
 	} catch (...) {
 		return nullptr;

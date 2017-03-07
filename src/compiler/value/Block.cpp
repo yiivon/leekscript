@@ -88,11 +88,7 @@ Compiler::value Block::compile(Compiler& c) const {
 		if (i == instructions.size() - 1) {
 			if (type.must_manage_memory()) {
 				auto ret = c.insn_call(type, {val}, +[](LSValue* value) {
-					/* Move the value if it's a temporary variable
-					 * or if it's only attached to the current block.
-					 */
-					if (value->refs <= 1 /*|| value->native()*/) {
-						value->refs = 0;
+					if (value->refs == 0 || value->native) {
 						return value;
 					}
 					return value->clone();

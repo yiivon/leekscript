@@ -264,7 +264,6 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			auto array_size = c.insn_array_size(a);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
 				c.insn_delete_temporary(a);
-				c.insn_delete(a);
 				c.insn_throw(c.insn_call(Type::POINTER, {}, (void*) +[]() {
 					return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
 				}));
@@ -322,7 +321,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 	if (array->type.raw_type == RawType::ARRAY) {
 		auto array_size = c.insn_array_size(a);
 		c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
-			c.insn_delete(a);
+			c.insn_delete_temporary(a);
 			c.insn_throw(c.insn_call(Type::POINTER, {}, (void*) +[]() {
 				return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
 			}));

@@ -104,6 +104,7 @@ VM::VM(bool v1) : compiler(this) {
 
 	for (unsigned o = 0; o < ops.size(); ++o) {
 		auto fun = new LSFunction<LSValue*>(ops_funs[o]);
+		fun->refs = 1;
 		fun->args = {value_class, value_class};
 		fun->return_type = value_class;
 		system_vars.insert({ops[o], fun});

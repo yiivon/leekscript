@@ -198,7 +198,7 @@ std::string Program::execute() {
 	if (VM::last_exception) throw VM::last_exception;
 	std::ostringstream oss;
 	ptr->dump(oss);
-	LSValue::delete_temporary(ptr);
+	LSValue::delete_ref(ptr);
 	return oss.str();
 }
 

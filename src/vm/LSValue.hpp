@@ -178,31 +178,26 @@ inline LSValue* LSValue::move() {
 }
 
 inline LSValue* LSValue::move_inc() {
-	if (!native) {
-		refs++;
+	if (native) {
+		return this;
 	}
-	return this;
+	if (refs == 0) {
+		refs++;
+		return this;
+	}
+	auto v = clone();
+	v->refs++;
+	return v;
 }
 
 inline void LSValue::delete_ref(LSValue* value) {
-
-	// TODO Remove this nullptr check
-	if (value == nullptr) return;
-
 	if (value->native) return;
-	if (value->refs == 0) return;
-
-	value->refs--;
-	if (value->refs == 0) {
+	if (value->refs == 0 || --value->refs == 0) {
 		delete value;
 	}
 }
 
 inline void LSValue::delete_temporary(const LSValue* const value) {
-
-	// TODO Remove this nullptr check
-	if (value == nullptr) return;
-
 	if (value->native) return;
 	if (value->refs == 0) {
 		delete value;
@@ -210,13 +205,8 @@ inline void LSValue::delete_temporary(const LSValue* const value) {
 }
 
 inline void LSValue::delete_not_temporary(LSValue* value) {
-
-	// TODO Remove this nullptr check
-	if (value == nullptr) return;
-
 	if (value->native) return;
 	if (value->refs == 0) return;
-
 	value->refs--;
 	if (value->refs == 0) {
 		delete value;

@@ -24,7 +24,7 @@ Function::~Function() {
 		delete value;
 	}
 	if (ls_fun != nullptr) {
-		delete ls_fun;
+		LSValue::delete_ref(ls_fun);
 		ls_fun = nullptr;
 	}
 	if (context) {
@@ -141,6 +141,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	if (ls_fun == nullptr) {
 		ls_fun = new LSFunction<LSValue*>(nullptr);
+		ls_fun->refs = 1;
 		ls_fun->return_type = LSNull::get();
 	}
 	update_function_args(analyser);
