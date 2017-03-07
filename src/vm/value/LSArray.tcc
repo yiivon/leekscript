@@ -198,16 +198,13 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 		}
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-	LSValue* first = front();
+	auto first = front();
 	if (refs == 0) {
-		if (first->refs == 1) {
-			(*this)[0] = nullptr;
-			first->refs = 0;
-		}
+		first->refs++;
 		delete this;
-		// In that case `first` will survive
+		first->refs--;
 	}
-	return first->move(); /* return temporary */
+	return first->move();
 }
 
 template <class T>
@@ -227,13 +224,11 @@ inline LSValue* LSArray<LSValue*>::ls_last() {
 		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-	LSValue* last = back();
+	auto last = back();
 	if (refs == 0) {
-		if (last->refs == 1) {
-			pop_back();
-			last->refs = 0;
-		}
+		last->refs++;
 		delete this;
+		last->refs--;
 	}
 	return last->move();
 }
