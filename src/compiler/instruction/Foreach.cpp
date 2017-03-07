@@ -110,8 +110,11 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	// Create variables
 	jit_type_t jit_value_type = VM::get_jit_type(value_type);
 	jit_value_t value_v = jit_value_create(c.F, jit_value_type);
+	jit_insn_store(c.F, value_v, c.new_integer(0).v);
 	jit_type_t jit_key_type = VM::get_jit_type(key_type);
 	jit_value_t key_v = key ? jit_value_create(c.F, jit_key_type) : nullptr;
+	if (key)
+		jit_insn_store(c.F, key_v, c.new_integer(0).v);
 
 	c.add_var(value->content, value_v, value_type, true);
 	if (key) c.add_var(key->content, key_v, key_type, true);
@@ -132,11 +135,11 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	jit_insn_branch_if(c.F, finished.v, &label_end);
 
 	// Get Value
-	jit_insn_store(c.F, value_v, c.iterator_get(it).v);
+	jit_insn_store(c.F, value_v, c.iterator_get(it, {value_v, value_type}).v);
 
 	// Get Key
 	if (key != nullptr) {
-		jit_insn_store(c.F, key_v, c.iterator_key(container_v, it).v);
+		jit_insn_store(c.F, key_v, c.iterator_key(container_v, it, {key_v, key_type}).v);
 	}
 	// Body
 	auto body_v = body->compile(c);

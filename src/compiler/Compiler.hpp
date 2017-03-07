@@ -113,8 +113,8 @@ public:
 	// Iterators
 	value iterator_begin(value v) const;
 	value iterator_end(value v, value it) const;
-	value iterator_get(value it) const;
-	value iterator_key(value v, value it) const;
+	value iterator_get(value it, value previous) const;
+	value iterator_key(value v, value it, value previous) const;
 	void iterator_increment(value it) const;
 
 	// Controls

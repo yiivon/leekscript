@@ -488,7 +488,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	}
 }
 
-Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) const {
+Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Compiler::value previous) const {
 	if (it.t.raw_type == RawType::ARRAY) {
 		return insn_int_div(insn_sub(it, insn_load(v, 24)), new_integer(it.t.element().size() / 8));
 	}
@@ -504,7 +504,14 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) co
 		return insn_call(Type::INTEGER, {addr}, &LSString::iterator_key);
 	}
 	if (it.t.raw_type == RawType::MAP) {
+		if (previous.t.must_manage_memory()) {
+			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
+				if (previous != nullptr)
+					LSValue::delete_ref(previous);
+			});
+		}
 		auto key = insn_load(it, 32, it.t.getKeyType());
+		insn_inc_refs(key);
 		return key;
 	}
 	if (it.t == Type::LONG) {
@@ -513,9 +520,17 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it) co
 	}
 }
 
-Compiler::value Compiler::iterator_get(Compiler::value it) const {
+Compiler::value Compiler::iterator_get(Compiler::value it, Compiler::value previous) const {
 	if (it.t.raw_type == RawType::ARRAY) {
-		return insn_load(it, 0, it.t.getElementType());
+		if (previous.t.must_manage_memory()) {
+			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
+				if (previous != nullptr)
+					LSValue::delete_ref(previous);
+			});
+		}
+		auto e = insn_load(it, 0, it.t.getElementType());
+		insn_inc_refs(e);
+		return e;
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
 		auto addr = insn_address_of(it);
@@ -525,15 +540,27 @@ Compiler::value Compiler::iterator_get(Compiler::value it) const {
 	if (it.t == Type::STRING_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto int_char = insn_call(Type::INTEGER, {addr}, &LSString::iterator_get);
-		return insn_call(Type::STRING, {int_char}, (void*) +[](unsigned int c) {
+		return insn_call(Type::STRING, {int_char, previous}, (void*) +[](unsigned int c, LSString* previous) {
+			if (previous != nullptr) {
+				LSValue::delete_ref(previous);
+			}
 			char dest[5];
 			u8_toutf8(dest, 5, &c, 1);
-			return new LSString(dest);
+			auto s = new LSString(dest);
+			s->refs = 1;
+			return s;
 		});
 	}
 	if (it.t.raw_type == RawType::MAP) {
-		auto element = insn_load(it, 32 + 8, it.t.element());
-		return element;
+		if (previous.t.must_manage_memory()) {
+			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
+				if (previous != nullptr)
+					LSValue::delete_ref(previous);
+			});
+		}
+		auto e = insn_load(it, 32 + 8, it.t.element());
+		insn_inc_refs(e);
+		return e;
 	}
 	if (it.t == Type::LONG) {
 		auto addr = insn_address_of(it);
