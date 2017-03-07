@@ -69,6 +69,7 @@ public:
 		float compilation_time = 0;
 		float execution_time = 0;
 		long int operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
+		ls::VM::Result result;
 
 		Input(Test* test, const std::string& name, const std::string& code,
 			bool file = false, bool v1 = false) : test(test), name(name), code(code), file(file), v1(v1) {};

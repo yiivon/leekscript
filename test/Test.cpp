@@ -129,6 +129,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	auto result = (v1 ? test->vmv1 : test->vm).execute(code, "{}", false, true);
 	ls::VM::operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
+	this->result = result;
 	test->obj_created += result.objects_created;
 	test->obj_deleted += result.objects_deleted;
 	test->mpz_obj_created += result.mpz_objects_created;
@@ -158,12 +159,18 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 #define END_COLOR "\033[0m"
 
 void Test::Input::pass(std::string expected) {
-	std::cout << GREEN << "OK   " << END_COLOR << ": " << name;
-	if (v1) std::cout << BLUE << " [V1]" << END_COLOR;
-	std::cout <<  "  ===>  " << expected;
+	std::ostringstream oss;
+	oss << GREEN << "OK   " << END_COLOR << ": " << name;
+	if (v1) oss << BLUE << " [V1]" << END_COLOR;
+	oss <<  "  ===>  " << expected;
+	std::cout << oss.str();
 	std::cout <<  GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	test->success_count++;
+	if (result.objects_created != result.objects_deleted) {
+		oss << RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
+		failed_tests.push_back(oss.str());
+	}
 }
 
 void Test::Input::fail(std::string expected, std::string actual) {
