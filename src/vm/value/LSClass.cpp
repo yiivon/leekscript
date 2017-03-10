@@ -23,6 +23,8 @@ LSClass::LSClass(Json&) : LSClass("?") {
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
 		if (s.second.value != nullptr) {
+			// FIXME dirty hack to remove values with too much references
+			if (s.second.value->refs == 2) LSValue::delete_ref(s.second.value);
 			LSValue::delete_ref(s.second.value);
 		}
 	}
