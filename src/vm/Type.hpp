@@ -12,13 +12,18 @@ enum class Nature {
 
 class BaseRawType {
 public:
-	virtual ~BaseRawType() {}
+	virtual ~BaseRawType() = 0;
 	virtual int id() const { return 0; }
 	virtual const std::string getName() const { return "?"; }
 	virtual const std::string getClass() const { return "?"; }
 	virtual const std::string getJsonName() const { return "?"; }
 	virtual bool iterable() const { return false; }
 	virtual int size() const { return 64; }
+};
+
+class UnknownRawType : public BaseRawType {
+public:
+	virtual ~UnknownRawType() {}
 };
 
 class VoidRawType : public BaseRawType {
@@ -156,6 +161,7 @@ class PlaceholderRawType : public BaseRawType {
 public:
 	std::string name;
 	PlaceholderRawType(std::string name) : name(name) {}
+	virtual ~PlaceholderRawType() {}
 	virtual int id() const { return 11; }
 	virtual const std::string getName() const { return name; }
 	virtual const std::string getClass() const { return name; }
@@ -164,7 +170,7 @@ public:
 
 class RawType {
 public:
-	static const BaseRawType _UNKNOWN;
+	static const UnknownRawType _UNKNOWN;
 	static const VoidRawType _VOID;
 	static const NullRawType _NULLL;
 	static const BooleanRawType _BOOLEAN;
@@ -184,7 +190,7 @@ public:
 	static const FunctionRawType _FUNCTION;
 	static const ClassRawType _CLASS;
 
-	static const BaseRawType* const UNKNOWN;
+	static const UnknownRawType* const UNKNOWN;
 	static const VoidRawType* const VOID;
 	static const NullRawType* const NULLL;
 	static const BooleanRawType* const BOOLEAN;
@@ -203,6 +209,9 @@ public:
 	static const ObjectRawType* const OBJECT;
 	static const FunctionRawType* const FUNCTION;
 	static const ClassRawType* const CLASS;
+
+	static std::vector<const BaseRawType*> placeholder_types;
+	static void clear_placeholder_types();
 };
 
 class Type {

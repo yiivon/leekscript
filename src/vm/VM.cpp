@@ -214,6 +214,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	if (result.compilation_success) {
 		jit_context_destroy(VM::jit_context);
 	}
+	RawType::clear_placeholder_types();
 
 	// Results
 	result.objects_created = LSValue::obj_count;

@@ -7,7 +7,9 @@ using namespace std;
 
 namespace ls {
 
-const BaseRawType RawType::_UNKNOWN;
+BaseRawType::~BaseRawType() {}
+
+const UnknownRawType RawType::_UNKNOWN;
 const VoidRawType RawType::_VOID;
 const NullRawType RawType::_NULLL;
 const BooleanRawType RawType::_BOOLEAN;
@@ -27,7 +29,7 @@ const ObjectRawType RawType::_OBJECT;
 const FunctionRawType RawType::_FUNCTION;
 const ClassRawType RawType::_CLASS;
 
-const BaseRawType* const RawType::UNKNOWN = &_UNKNOWN;
+const UnknownRawType* const RawType::UNKNOWN = &_UNKNOWN;
 const VoidRawType* const RawType::VOID = &_VOID;
 const NullRawType* const RawType::NULLL = &_NULLL;
 const BooleanRawType* const RawType::BOOLEAN = &_BOOLEAN;
@@ -46,6 +48,14 @@ const IntervalRawType* const RawType::INTERVAL = &_INTERVAL;
 const ObjectRawType* const RawType::OBJECT = &_OBJECT;
 const FunctionRawType* const RawType::FUNCTION = &_FUNCTION;
 const ClassRawType* const RawType::CLASS = &_CLASS;
+
+std::vector<const BaseRawType*> RawType::placeholder_types;
+
+void RawType::clear_placeholder_types() {
+	for (const auto& t : placeholder_types)
+		delete t;
+	placeholder_types.clear();
+}
 
 unsigned int Type::placeholder_counter = 0;
 
@@ -541,6 +551,7 @@ Type Type::generate_new_placeholder_type() {
 	u8_toutf8(buff, 5, &character, 1);
 	type.raw_type = new PlaceholderRawType(std::string { buff });
 	placeholder_counter++;
+	RawType::placeholder_types.push_back(type.raw_type);
 	return type;
 }
 
