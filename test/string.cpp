@@ -51,6 +51,7 @@ void Test::test_strings() {
 	code("'salut' + 12").equals("'salut12'");
 	code("'salut' + true").equals("'saluttrue'");
 	code("'salut' + null").equals("'salutnull'");
+	code("'salut' + 12.8").equals("'salut12.8'");
 
 	section("String.operator *");
 	code("'salut' * 3").equals("'salutsalutsalut'");
