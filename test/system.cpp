@@ -41,6 +41,9 @@ void Test::test_system() {
 	code("System.print('salut !')").output("salut !\n");
 	code("System.print([1, 2, 3])").output("[1, 2, 3]\n");
 	code("System.print(['a', 'b', 'c'])").output("['a', 'b', 'c']\n");
+
+	section("v1 debug");
+	code_v1("debug('hello')").output("hello\n");
 }
 
 long get_sec_time() {
