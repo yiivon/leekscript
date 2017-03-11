@@ -48,16 +48,16 @@ void Test::test_operators() {
 	code("let a = ['a', 'b', 'c', 'd'] a[0] <=> a[3] a").equals("['d', 'b', 'c', 'a']");
 
 	header("Invalid operators");
-	code("'hello' ** 5").equals("null");
-	code("null / 5").equals("null");
-	code("null % 5").equals("null");
-	code("null - 5").equals("null");
-	code("var a = null a += 5").equals("null");
-	code("var a = null a -= 5").equals("null");
-	code("var a = null a *= 5").equals("null");
-	code("var a = null a /= 5").equals("null");
-	code("var a = null a **= 5").equals("null");
-	code("var a = null a %= 5").equals("null");
+	code("'hello' ** 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("null / 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("null % 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("null - 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a += 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a -= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a *= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a /= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a **= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a %= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("let a = null a[0]").equals("null");
 
 	/*

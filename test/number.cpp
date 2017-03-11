@@ -71,11 +71,11 @@ void Test::test_numbers() {
 	section("null must not be considered as 0");
 	code("null == 0").equals("false");
 	code("null < 0").equals("true");
-	code("null + 5").equals("null");
+	code("null + 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("5 + null").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("5 / null").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("null / 12").equals("null");
-	code("null * 5").equals("null");
+	code("null / 12").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("null * 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("5 * null").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	section("Numbers with variables");
