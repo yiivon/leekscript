@@ -503,5 +503,9 @@ void Test::test_arrays() {
 
 	section("Array v1 pushAll");
 	// TODO pushAll function must take first array as reference
-	// code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("['a', 'b', 'c']");
+	code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("[]");
+
+	section("Array v1 count");
+	code_v1("var a = ['a', 'b', 'c'] count(a)").equals("3");
+
 }
