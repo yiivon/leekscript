@@ -262,6 +262,7 @@ void Test::test_arrays() {
 	code("let x = [1, 2, 3, 4] x.chunk(2)").equals("[[1, 2], [3, 4]]");
 	code("let x = [1, 2, 3, 4] x.chunk(3)").equals("[[1, 2, 3], [4]]");
 	code("let x = [1, 2, 3, 4] x.chunk()").equals("[[1], [2], [3], [4]]");
+	code("let x = ['a', 'b', 'c', 'd'] x.chunk()").equals("[['a'], ['b'], ['c'], ['d']]");
 	code("let x = [1.6, 2.5, 3.1, 4.67] x.chunk()").equals("[[1.6], [2.5], [3.1], [4.67]]");
 	// code("let x = ['hello', x -> x, true, Number] x.chunk()").equals("[['hello'], [<function>], [true], [<class Number>]]");
 
