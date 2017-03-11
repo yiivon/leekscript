@@ -106,13 +106,6 @@ Compiler::value Block::compile(Compiler& c) const {
 		}
 	}
 	c.leave_block();
-
-	if (type.nature == Nature::POINTER) {
-		return c.new_null();
-	}
-	if (type.nature == Nature::VALUE) {
-		return {jit_value_create_nint_constant(c.F, VM::get_jit_type(type), 0), type};
-	}
 	return {nullptr, Type::UNKNOWN};
 }
 
