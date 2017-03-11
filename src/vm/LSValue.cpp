@@ -217,11 +217,6 @@ LSValue* LSValue::clone() const {
 	return (LSValue*) this;
 }
 
-//std::ostream& operator << (std::ostream& os, LSValue& value) {
-//	value.print(os);
-//	return os;
-//}
-
 bool LSValue::isInteger() const {
 	if (const LSNumber* v = dynamic_cast<const LSNumber*>(this)) {
 		return v->isInteger();
