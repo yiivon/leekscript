@@ -1257,13 +1257,15 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_KEY_IS_NOT_NUMBER));
 	}
 	LSValue* res = nullptr;
+	bool ex = false;
 	try {
 		res = ls::convert<LSValue*>(ls::clone(((std::vector<T>*) this)->at(index)));
-	} catch (...) {
+	} catch (std::exception const & e) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		ex = true;
 	}
+	if (ex) jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	return res;
 }
 
@@ -1274,12 +1276,14 @@ LSValue** LSArray<T>::atL(const LSValue* key) {
 		auto n = static_cast<const LSNumber*>(key);
 		int i = (int) n->value;
 		LSValue::delete_temporary(key);
+		bool ex = false;
 		try {
-			res = (LSValue**) &(((std::vector<T>*)this)->at(i));
-		} catch (...) {
+			res = (LSValue**) &(((std::vector<T>*) this)->at(i));
+		} catch (std::exception const & e) {
 			LSValue::delete_temporary(this);
-			jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+			ex = true;
 		}
+		if (ex) jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	return res;
 }
