@@ -64,13 +64,34 @@ LSValue::~LSValue() {
 	#endif
 }
 
-LSValue* LSValue::ls_minus()                                 { delete_temporary(this); return LSNull::get(); }
-LSValue* LSValue::ls_not()                                   { delete_temporary(this); return LSNull::get(); }
-LSValue* LSValue::ls_tilde()                                 { delete_temporary(this); return LSNull::get(); }
-LSValue* LSValue::ls_preinc()                                { delete_temporary(this); return LSNull::get(); }
-LSValue* LSValue::ls_inc()                                   { delete_temporary(this); return LSNull::get(); }
-LSValue* LSValue::ls_predec()                                { delete_temporary(this); return LSNull::get(); }
-LSValue* LSValue::ls_dec()                                   { delete_temporary(this); return LSNull::get(); }
+LSValue* LSValue::ls_minus() {
+	delete_temporary(this);
+	return LSNull::get();
+}
+LSValue* LSValue::ls_not() {
+	delete_temporary(this);
+	return LSNull::get();
+}
+LSValue* LSValue::ls_tilde() {
+	delete_temporary(this);
+	return LSNull::get();
+}
+LSValue* LSValue::ls_preinc() {
+	delete_temporary(this);
+	return LSNull::get();
+}
+LSValue* LSValue::ls_inc() {
+	delete_temporary(this);
+	return LSNull::get();
+}
+LSValue* LSValue::ls_predec() {
+	delete_temporary(this);
+	return LSNull::get();
+}
+LSValue* LSValue::ls_dec() {
+	delete_temporary(this);
+	return LSNull::get();
+}
 
 LSValue* LSValue::add(LSValue* v) {
 	delete_temporary(this);
