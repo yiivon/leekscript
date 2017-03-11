@@ -16,10 +16,6 @@ LSClass::LSClass(string name) : LSValue(CLASS), name(name) {
 	native = true;
 }
 
-LSClass::LSClass(Json&) : LSClass("?") {
-	// TODO
-}
-
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
 		if (s.second.value != nullptr) {
