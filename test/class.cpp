@@ -50,6 +50,10 @@ void Test::test_classes() {
 	section("Class.operator ==");
 	code("Number == 12").equals("false");
 
+	section("Class.operator <");
+	code("Number < 12").equals("false");
+	code("12 < Number").equals("true");
+
 	section("instanceof operator");
 	code("12 instanceof Number").equals("true");
 	code("'yo' instanceof Number").equals("false");
