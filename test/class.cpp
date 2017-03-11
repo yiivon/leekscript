@@ -47,6 +47,9 @@ void Test::test_classes() {
 	section("Class.attr");
 	code("Number.toto").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"toto", "Number"});
 
+	section("Class.operator ==");
+	code("Number == 12").equals("false");
+
 	section("instanceof operator");
 	code("12 instanceof Number").equals("true");
 	code("'yo' instanceof Number").equals("false");
