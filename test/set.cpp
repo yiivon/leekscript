@@ -29,6 +29,7 @@ void Test::test_set() {
 	code("<'a', 'b', 'c'> == <1, 2, 3>").equals("false");
 	code("<1, 2, [3, ''][0]> == <1, 2, 3>").equals("true");
 	code("<1.12, 2.12, [3.12, ''][0]> == <1.12, 2.12, 3.12>").equals("true");
+	code("<1, 2, 3> == [1, 2, 3]").equals("false");
 
 	section("Set.operator <");
 	code("<> < <>").equals("false");
