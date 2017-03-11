@@ -297,12 +297,6 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 	}
 }
 
-void Compiler::insn_delete_not_temporary(value v) const {
-	if (v.t.nature == Nature::POINTER) {
-		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_not_temporary);
-	}
-}
-
 Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 	if (v.t.not_temporary() == Type::STRING) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size);

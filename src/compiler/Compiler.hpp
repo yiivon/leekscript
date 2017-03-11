@@ -101,7 +101,6 @@ public:
 	value insn_class_of(value v) const;
 	void  insn_delete(value v) const;
 	void  insn_delete_temporary(value v) const;
-	void  insn_delete_not_temporary(value v) const;
 	value insn_array_size(value v) const;
 	value insn_get_capture(int index, Type type) const;
 	void  insn_push_move_array(value array, value element) const;
