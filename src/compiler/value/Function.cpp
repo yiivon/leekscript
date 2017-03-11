@@ -323,27 +323,24 @@ Compiler::value Function::compile(Compiler& c) const {
 	// Create a function : 1 op
 	c.inc_ops(1);
 
-	if (type.nature == Nature::POINTER) {
-		ls_fun->function = f;
-		auto jit_fun = c.new_pointer(ls_fun);
-		for (const auto& cap : captures) {
-			jit_value_t jit_cap;
-			if (cap->scope == VarScope::LOCAL) {
-//				std::cout << "capture local" << std::endl;
-				jit_cap = c.get_var(cap->name).value;
-			} else {
-//				std::cout << "capture parameter" << std::endl;
-				jit_cap = jit_value_get_param(c.F, 1 + cap->index);
-			}
-			if (cap->type.nature != Nature::POINTER) {
-				jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->type);
-			}
-			c.function_add_capture(jit_fun, {jit_cap, Type::POINTER});
+	// Function are always pointers for now
+	// functions as a simple pointer value can be like :
+	// {c.new_pointer(f).v, type};
+	ls_fun->function = f;
+	auto jit_fun = c.new_pointer(ls_fun);
+	for (const auto& cap : captures) {
+		jit_value_t jit_cap;
+		if (cap->scope == VarScope::LOCAL) {
+			jit_cap = c.get_var(cap->name).value;
+		} else {
+			jit_cap = jit_value_get_param(c.F, 1 + cap->index);
 		}
-		return {jit_fun.v, type};
-	} else {
-		return {c.new_pointer(f).v, type};
+		if (cap->type.nature != Nature::POINTER) {
+			jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->type);
+		}
+		c.function_add_capture(jit_fun, {jit_cap, Type::POINTER});
 	}
+	return {jit_fun.v, type};
 }
 
 }
