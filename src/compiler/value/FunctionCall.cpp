@@ -33,6 +33,7 @@ FunctionCall::FunctionCall(Token* t) {
 	type = Type::UNKNOWN;
 	std_func = nullptr;
 	this_ptr = nullptr;
+	constant = false;
 }
 
 FunctionCall::~FunctionCall() {
@@ -59,10 +60,6 @@ void FunctionCall::print(std::ostream& os, int indent, bool debug) const {
 }
 
 void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-
-//	cout << "function call analyse : " << req_type << endl;
-
-	constant = false;
 
 	function->analyse(analyser, Type::UNKNOWN);
 
@@ -252,8 +249,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type.nature = req_type.nature;
 	}
 	types = type;
-
-//	cout << "Function call function type : " << type << endl;
 }
 
 bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
