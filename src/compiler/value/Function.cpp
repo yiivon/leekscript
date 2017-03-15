@@ -63,18 +63,17 @@ void Function::print(std::ostream& os, int indent, bool debug) const {
 	os << "(";
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		if (i > 0) os << ", ";
-//		if (references.at(i)) {
-//			os << "@";
-//		}
+		if (references.at(i)) {
+			os << "@";
+		}
 		os << arguments.at(i)->content;
-
 		if (debug)
 			os << " " << type.getArgumentType(i);
-//
-//		if ((Value*)defaultValues.at(i) != nullptr) {
-//			os << " = ";
-//			defaultValues.at(i)->print(os);
-//		}
+
+		if (defaultValues.at(i) != nullptr) {
+			os << " = ";
+			defaultValues.at(i)->print(os);
+		}
 	}
 
 	os << ") → ";
