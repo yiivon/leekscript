@@ -755,7 +755,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 			eat();
 			if (t->type == TokenType::ARROW) {
 				// (var = <ex>) ->  [lambda]
-				return eatLambdaContinue(false, true, ident, ex, comma_list);
+				return eatLambdaContinue(false, arobase, ident, ex, comma_list);
 			} else {
 				// (var = <ex>) <token ?>	[expression]
 				Expression* e = new Expression();
