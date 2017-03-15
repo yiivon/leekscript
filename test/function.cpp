@@ -79,8 +79,8 @@ void Test::test_functions() {
 	code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
 
 	section("Functions in array");
-	code("var a = [12, x -> x + 7] a[1](12)").equals("19");
-	code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
+	// code("var a = [12, x -> x + 7] a[1](12)").equals("19");
+	// code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
 
 	section("Operator ~ ");
 	code("let a = 10 a ~ x -> x ** 2").equals("100");
