@@ -183,29 +183,40 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	// Check argument count
-	if (function->type.raw_type == RawType::FUNCTION && function->type.getArgumentTypes().size() != arguments.size()) {
-		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	function->line(), {
-			function->to_string(),
-			std::to_string(function->type.getArgumentTypes().size()),
-			std::to_string(arguments.size())
-		}});
-		type = Type::UNKNOWN;
-		return;
-	}
-
+	// Analyse arguments a second time with their required types
 	vector<Type> arg_types;
-	for (auto arg : arguments) {
+	for (auto& arg : arguments) {
 		arg_types.push_back(arg->type);
 	}
 
+	bool arguments_valid = arguments.size() <= function->type.getArgumentTypes().size();
+	auto total_arguments_passed = std::max(arguments.size(), function->type.getArgumentTypes().size());
 	a = 0;
-	for (Value* arg : arguments) {
-		arg->analyse(analyser, function->type.getArgumentType(a));
-		if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION) {
-			arg->will_take(analyser, function->type.getArgumentType(a).arguments_types, 1);
+	for (auto& argument_type : function->type.getArgumentTypes()) {
+		if (a < arguments.size()) {
+			// OK, the argument is present in the call
+			arguments[a]->analyse(analyser, argument_type);
+			if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION) {
+				arguments[a]->will_take(analyser, function->type.getArgumentType(a).arguments_types, 1);
+			}
+		} else if (function->type.argumentHasDefault(a)) {
+			// OK, there's no argument in the call but a default value is set.
+		} else {
+			// Missing argument
+			arguments_valid = false;
+			total_arguments_passed--;
 		}
 		a++;
+	}
+
+	if (function->type.raw_type == RawType::FUNCTION and !arguments_valid) {
+		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	function->line(), {
+			function->to_string(),
+			std::to_string(function->type.getArgumentTypes().size()),
+			std::to_string(total_arguments_passed)
+		}});
+		type = Type::UNKNOWN;
+		return;
 	}
 
 	function->will_take(analyser, arg_types, 1);
@@ -380,7 +391,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Arguments */
 	int offset = 1;
 
-	int arg_count = arguments.size() + offset;
+	int arg_count = function->type.getArgumentTypes().size() + offset;
 	vector<jit_value_t> args;
 	vector<jit_type_t> args_types;
 
@@ -394,17 +405,28 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		args_types.push_back(LS_POINTER);
 	}
 
-	for (int i = 0; i < arg_count - offset; ++i) {
+	auto function_object = dynamic_cast<Function*>(function);
+	if (!function_object) {
+		auto vv = dynamic_cast<VariableValue*>(function);
+		if (vv) {
+			function_object = static_cast<Function*>(vv->var->value);
+		}
+	}
 
-		args.push_back(arguments[i]->compile(c).v);
+	for (int i = 0; i < arg_count - offset; ++i) {
+		if (i < arguments.size()) {
+			args.push_back(arguments[i]->compile(c).v);
+			if (function->type.getArgumentType(i) == Type::MPZ &&
+				arguments[i]->type != Type::MPZ_TMP) {
+				args[offset + i] = c.insn_clone_mpz({args[offset + i], Type::MPZ}).v;
+			}
+		} else {
+			args.push_back(function_object->defaultValues[i]->compile(c).v);
+		}
 		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 
 		if (function->type.getArgumentType(i).must_manage_memory()) {
 			args[offset + i] = c.insn_move_inc({args[offset + i], function->type.getArgumentType(i)}).v;
-		}
-		if (function->type.getArgumentType(i) == Type::MPZ &&
-			arguments[i]->type != Type::MPZ_TMP) {
-			args[offset + i] = c.insn_clone_mpz({args[offset + i], Type::MPZ}).v;
 		}
 	}
 

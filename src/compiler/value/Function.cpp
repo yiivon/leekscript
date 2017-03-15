@@ -126,7 +126,12 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	type = Type::FUNCTION_P;
 
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		type.setArgumentType(i, Type::UNKNOWN);
+		auto argument_type = Type::UNKNOWN;
+		if (defaultValues[i] != nullptr) {
+			defaultValues[i]->analyse(analyser, Type::UNKNOWN);
+			argument_type = defaultValues[i]->type;
+		}
+		type.setArgumentType(i, argument_type, defaultValues[i] != nullptr);
 	}
 
 	for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
