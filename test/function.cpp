@@ -171,15 +171,28 @@ void Test::test_functions() {
 	// code("@x, @y -> x + y").equals("<function>");
 
 	section("Default arguments");
+	// TODO crash
 	// code("(x = 10) -> x").equals("<function>");
 	// code("x = 10 -> x").equals("<function>");
 	// code("(x = 10 -> x)").equals("<function>");
-	code("let f = (x = 10) -> x").equals("(void)"); // TODO
-	code("function f(x = 10) { x }").equals("(void)"); // TODO
-	code("let add = (x, y = 1) -> x + y").equals("(void)"); // TODO
-
-	//code("let add = (x, y = 1) -> x + y var a = 12 add(a) ").equals("13");
-	//code("let add = (x, y = 1) -> x + y var a = 12 add(a, 10) a").equals("22");
+	code("let f = x = 10 -> x f()").equals("10");
+	code("let f = (x = 10) -> x f()").equals("10");
+	code("let f = (x = -10) -> x f()").equals("-10");
+	code("let f = (x = 10) -> x f(5)").equals("5");
+	code("let f = (x = 12.12) -> x f()").equals("12.12");
+	code("let f = (x = 12.12) -> x f(5)").equals("5");
+	code("let f = (x = 1212l) -> x f()").equals("1212");
+	code("let f = (x = 1212l) -> x f(5)").equals("5");
+	code("function f(x = 10) { x } f()").equals("10");
+	code("let add = (x, y = 1) -> x + y add(5)").equals("6");
+	code("let add = (x, y = 1) -> x + y add(5, 3)").equals("8");
+	code("let add = (x, y = 1) -> x + y add()").semantic_error(ls::SemanticError::WRONG_ARGUMENT_COUNT, {"add", "2", "1"});
+	code("let f = (x = 'a', y = 'b') -> x + y f()").equals("'ab'");
+	code("let f = (x = 'a', y = 'b') -> x + y f(100, 12)").equals("112");
+	code("let f = (x = 'a', y = 'b') -> x + y f(100)").equals("'100b'");
+	code("let f = (x = 'a', y = 'b') -> x + y f(100)").equals("'100b'");
+	code("let add = (x, y = 1) -> x + y var a = 12 add(a)").equals("13");
+	code("let add = (x, y = 1) -> x + y var a = 12 add(a, 10)").equals("22");
 
 	section("Wrong syntaxes");
 	code("(@2) -> 2").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
