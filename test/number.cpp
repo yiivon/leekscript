@@ -157,15 +157,26 @@ void Test::test_numbers() {
 	code("var a = 20m; ++a").equals("21");
 	code("var a = 20m; ++a a").equals("21");
 	code("var a = 20m; let b = ++a b").equals("21");
+	code("++5").equals("6");
 
 	section("Number.operator --x");
 	code("var a = 20★; --a").equals("19");
 	code("var a = 30★; --a a").equals("29");
+	code("--5").equals("4");
 
 	section("Number.operator x++");
 	code("var a = 20m; a++").equals("20");
 	code("var a = 20m; a++ a").equals("21");
 	code("var a = 20m; let b = a++ b").equals("20");
+	// FIXME Crashing
+	// code("5++").equals("5");
+
+	section("Number.operator x--");
+	// TODO not implemented
+	// code("var a = 20m; a--").equals("20");
+	// code("var a = 20m; a-- a").equals("19");
+	// code("var a = 20m; let b = a-- b").equals("20");
+	code("5--").equals("5");
 
 	section("Number.operator =");
 	code("var a = 1m, b = 4m; a = b").equals("4");
