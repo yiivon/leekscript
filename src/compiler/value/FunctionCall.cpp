@@ -63,6 +63,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	function->analyse(analyser, Type::UNKNOWN);
 
+	// The function call be called?
 	if (function->type.raw_type != RawType::UNKNOWN and
 		function->type.raw_type != RawType::FUNCTION and
 		function->type.raw_type != RawType::CLASS) {
@@ -70,14 +71,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			function->line(), {function->to_string()}});
 	}
 
+	// Analyse all arguments a first time
 	int a = 0;
-	for (Value* arg : arguments) {
-//		arg->analyse(analyser, function->type.getArgumentType(a++));
+	for (auto& arg : arguments) {
 		arg->analyse(analyser, Type::UNKNOWN);
 	}
 
 	// Standard library constructors
-	VariableValue* vv = dynamic_cast<VariableValue*>(function);
+	auto vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		if (vv->name == "Number") type = Type::INTEGER;
 		if (vv->name == "Boolean") type = Type::BOOLEAN;
@@ -87,11 +88,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Detect standard library functions
-	ObjectAccess* oa = dynamic_cast<ObjectAccess*>(function);
+	auto oa = dynamic_cast<ObjectAccess*>(function);
 	if (oa != nullptr) {
 
-		string field_name = oa->field.content;
-		Type object_type = oa->object->type;
+		auto field_name = oa->field.content;
+		auto object_type = oa->object->type;
 
 		vector<Type> arg_types;
 		for (auto arg : arguments) {
@@ -159,13 +160,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
+	// Operator function?
 	vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
-		string name = vv->name;
+		auto name = vv->name;
 		if (name == "+" or name == "-" or name == "*" or name == "/" or name == "**" or name == "%") {
 			bool isByValue = true;
 			Type effectiveType;
-			for (Value* arg : arguments) {
+			for (auto& arg : arguments) {
 				arg->analyse(analyser, Type::UNKNOWN);
 				effectiveType = arg->type;
 				if (arg->type.nature != Nature::VALUE) {
@@ -211,34 +213,27 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// The function is a variable
 	if (vv and vv->var and vv->var->value) {
 
-		//vv->var->will_take(analyser, arg_types, 1);
 		if (vv->var->name == analyser->current_function()->name) {
 			type = analyser->current_function()->getReturnType();
 		} else {
-			Type ret_type = vv->var->value->type.getReturnType();
+			auto ret_type = vv->var->value->type.getReturnType();
 			if (ret_type.raw_type != RawType::UNKNOWN) {
 				type = ret_type;
 			}
 		}
 	} else {
-		Type ret_type = function->type.getReturnType();
+		auto ret_type = function->type.getReturnType();
 		if (ret_type.nature != Nature::UNKNOWN) {
 			type = ret_type;
 		}
-		/*
-		if (ret_type.raw_type != RawType::UNKNOWN) {
-			type = ret_type;
-		} else {
-			// TODO : to be able to remove temporary variable we must know the nature
-//			type = Type::POINTER; // When the function is unknown, the return type is a pointer
-		}
-		*/
 	}
 
 	a = 0;
-	for (Value* arg : arguments) {
-		Type t = function->type.getArgumentType(a);
-		if (t == Type::UNKNOWN) t = Type::POINTER;
+	for (auto& arg : arguments) {
+		auto t = function->type.getArgumentType(a);
+		if (t == Type::UNKNOWN) {
+			t = Type::POINTER;
+		}
 		arg->analyse(analyser, t);
 		a++;
 	}
