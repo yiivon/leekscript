@@ -245,6 +245,7 @@ public:
 	void setArgumentType(size_t index, Type type, bool has_default = false);
 	const Type& getArgumentType(size_t index) const;
 	const std::vector<Type>& getArgumentTypes() const;
+	bool argumentHasDefault(size_t index) const;
 
 	const Type& getElementType() const;
 	const Type& element() const;

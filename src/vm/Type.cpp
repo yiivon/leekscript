@@ -196,6 +196,13 @@ const std::vector<Type>& Type::getArgumentTypes() const {
 	return arguments_types;
 }
 
+bool Type::argumentHasDefault(size_t index) const {
+	if (index >= arguments_has_default.size()) {
+		return false;
+	}
+	return arguments_has_default[index];
+}
+
 const Type& Type::getElementType() const {
 	if (element_type.size()) {
 		return element_type[0];
