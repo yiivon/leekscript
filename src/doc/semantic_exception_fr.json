@@ -11,7 +11,7 @@
 	"ARRAY_ACCESS_KEY_MUST_BE_NUMBER" : "Cette clé « %1 » d'accès au tableau « %2 » doit être un nombre, mais est de type %3",
 	"ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER" : "Cette clé d'accès de plage au tableau « %s » doit être un nombre",
 	"VALUE_MUST_BE_A_LVALUE" : "Cette valeur « %s » doit être une l-value",
-	"WRONG_ARGUMENT_COUNT" : "La fonction « %1 » prend %2 paramètres, mais %3 sont passés",
+	"WRONG_ARGUMENT_COUNT" : "La fonction « %1 » prend %2 paramètre(s), mais %3 sont passés",
 	"NO_SUCH_OPERATOR" : "L'opérateur %1 %2 %3 n'est pas défini",
 	"CANT_MODIFY_CONSTANT_VALUE": "Cette valeur « %s » est constante, impossible de la modifier",
 	"VALUE_NOT_ITERABLE" : "Cette valeur « %1 » de type %2 n'est pas itérable",
