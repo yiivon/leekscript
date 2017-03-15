@@ -169,11 +169,16 @@ void Type::addArgumentType(Type type) {
 	arguments_types.push_back(type);
 }
 
-void Type::setArgumentType(size_t index, Type type) {
+void Type::setArgumentType(size_t index, Type type, bool has_default) {
 	while (arguments_types.size() <= index) {
 		arguments_types.push_back(Type::UNKNOWN);
 	}
 	arguments_types[index] = type;
+
+	while (arguments_has_default.size() <= index) {
+		arguments_has_default.push_back(false);
+	}
+	arguments_has_default[index] = has_default;
 }
 
 /*

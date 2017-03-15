@@ -225,6 +225,7 @@ public:
 	std::vector<Type> key_type;
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
+	std::vector<bool> arguments_has_default;
 	bool temporary = false;
 	bool constant = false;
 
@@ -241,7 +242,7 @@ public:
 	void setReturnType(Type type);
 
 	void addArgumentType(Type type);
-	void setArgumentType(size_t index, Type type);
+	void setArgumentType(size_t index, Type type, bool has_default = false);
 	const Type& getArgumentType(size_t index) const;
 	const std::vector<Type>& getArgumentTypes() const;
 
