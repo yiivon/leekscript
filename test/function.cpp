@@ -194,6 +194,23 @@ void Test::test_functions() {
 	code("let add = (x, y = 1) -> x + y var a = 12 add(a)").equals("13");
 	code("let add = (x, y = 1) -> x + y var a = 12 add(a, 10)").equals("22");
 
+	section("Default arguments : advanced");
+	code("let f = (x = [1, 2, 3]) -> x.size() f()").equals("3");
+	code("let f = (x = [1, 2, 3]) -> x.size() f([])").equals("0");
+	code("let f = (x = [1, 2, 3]) -> x.size() f([1, 2, 3, 4, 5])").equals("5");
+	// TODO wrong result
+	// code("let f = (x = [1, 2, 3]) -> x.size() f('bonjour')").equals("7");
+
+	section("Default arguments : expert");
+	// TODO crash
+	// code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
+	code("let f = (x = (y = 'abcd') -> y.size()) -> x f([])").equals("[]");
+	code("let f = (x = (y = 'abcd') -> y.size()) -> x f(2)").equals("2");
+	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
+	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
+	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
+	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
+
 	section("Wrong syntaxes");
 	code("(@2) -> 2").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
 }
