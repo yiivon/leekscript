@@ -92,6 +92,8 @@ void Test::test_objects() {
 
 	section("Object.values()");
 	code("{}.values()").equals("[]");
+	code("{a: 1}.values()").equals("[1]");
+	code("{a: 1, b: 1}.values()").equals("[1, 1]");
 	// code("{a: 5, b: 'toto', c: true, d: -> 5}.values()").equals("[5, 'toto', true, <function>]");
 
 	section("Object.isTrue()");
