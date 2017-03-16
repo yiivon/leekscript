@@ -190,7 +190,8 @@ Compiler::value Array::compile(Compiler& c) const {
 
 	for (Value* val : expressions) {
 		auto v = val->compile(c);
-		c.insn_push_move_array(array, {v.v, type.getElementType()});
+		v = c.insn_move(v);
+		c.insn_push_array(array, {v.v, type.getElementType()});
 	}
 
 	// size of the array + 1 operations

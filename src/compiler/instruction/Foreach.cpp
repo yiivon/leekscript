@@ -150,7 +150,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	*/
 
 	if (output_v && body_v.v) {
-		c.insn_push_move_array({output_v, type}, body_v);
+		c.insn_push_array({output_v, type}, body_v);
 	}
 	// it++
 	jit_insn_label(c.F, &label_it);

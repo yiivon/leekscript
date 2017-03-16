@@ -133,7 +133,7 @@ Compiler::value For::compile(Compiler& c) const {
 	auto body_v = body->compile(c);
 	if (output_v && body_v.v) {
 		// transfer the ownership of the temporary variable `body_v`
-		c.insn_push_move_array({output_v, type}, body_v);
+		c.insn_push_array({output_v, type}, body_v);
 	}
 	c.leave_loop();
 	jit_insn_label(c.F, &label_inc);

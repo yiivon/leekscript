@@ -323,10 +323,7 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	return {v.v, type};
 }
 
-void Compiler::insn_push_move_array(Compiler::value array, Compiler::value value) const {
-	/* Because of the move, there is no need to call delete_temporary on the pushed value.
-	 * If value points to a temporary variable his ownership will be transfer to the array.
-	 */
+void Compiler::insn_push_array(Compiler::value array, Compiler::value value) const {
 	if (array.t.getElementType() == Type::INTEGER) {
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<int>* array, int value) {
 			array->push_back(value);
@@ -337,7 +334,7 @@ void Compiler::insn_push_move_array(Compiler::value array, Compiler::value value
 		});
 	} else {
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
-			array->push_move(value);
+			array->push_inc(value);
 		});
 	}
 }
