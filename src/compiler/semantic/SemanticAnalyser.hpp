@@ -67,7 +67,6 @@ public:
 	void leave_block();
 	void add_function(Function*);
 	Function* current_function() const;
-	void set_potential_return_type(Type type);
 
 	void enter_loop();
 	void leave_loop();

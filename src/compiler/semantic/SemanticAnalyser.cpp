@@ -81,10 +81,6 @@ Function* SemanticAnalyser::current_function() const {
 	return functions_stack.top();
 }
 
-void SemanticAnalyser::set_potential_return_type(Type type) {
-	current_function()->type.setReturnType(type);
-}
-
 void SemanticAnalyser::enter_loop() {
 	loops.top()++;
 }
