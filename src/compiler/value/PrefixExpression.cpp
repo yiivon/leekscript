@@ -298,7 +298,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		}
 	}
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 1, 1);
-	jit_value_t result = jit_insn_call_native(c.F, "", func, sig, args.data(), 1, JIT_CALL_NOTHROW);
+	jit_value_t result = jit_insn_call_native(c.F, "", func, sig, args.data(), 1, 0);
 	jit_type_free(sig);
 
 	if (operatorr->type == TokenType::NOT) {
