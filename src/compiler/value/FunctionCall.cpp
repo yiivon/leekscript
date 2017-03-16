@@ -72,7 +72,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Analyse all arguments a first time
-	int a = 0;
 	for (auto& arg : arguments) {
 		arg->analyse(analyser, Type::UNKNOWN);
 	}
@@ -191,7 +190,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	bool arguments_valid = arguments.size() <= function->type.getArgumentTypes().size();
 	auto total_arguments_passed = std::max(arguments.size(), function->type.getArgumentTypes().size());
-	a = 0;
+	size_t a = 0;
 	for (auto& argument_type : function->type.getArgumentTypes()) {
 		if (a < arguments.size()) {
 			// OK, the argument is present in the call
@@ -223,7 +222,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// The function is a variable
 	if (vv and vv->var and vv->var->value) {
-
 		if (vv->var->name == analyser->current_function()->name) {
 			type = analyser->current_function()->getReturnType();
 		} else {
@@ -389,9 +387,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 
 	/** Arguments */
-	int offset = 1;
+	size_t offset = 1;
 
-	int arg_count = function->type.getArgumentTypes().size() + offset;
+	size_t arg_count = function->type.getArgumentTypes().size() + offset;
 	vector<jit_value_t> args;
 	vector<jit_type_t> args_types;
 
@@ -413,7 +411,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 	}
 
-	for (int i = 0; i < arg_count - offset; ++i) {
+	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
 			args.push_back(arguments[i]->compile(c).v);
 			if (function->type.getArgumentType(i) == Type::MPZ &&
@@ -439,7 +437,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	jit_type_free(sig);
 
 	// Destroy temporary arguments
-	for (int i = 0; i < arg_count - offset; ++i) {
+	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
 			c.insn_delete({args[offset + i], Type::POINTER});
 		}
