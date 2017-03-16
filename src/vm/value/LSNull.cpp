@@ -20,7 +20,7 @@ LSNull::LSNull() : LSValue(LSValue::NULLL) {
 
 LSNull::~LSNull() {}
 
-bool LSNull::isTrue() const {
+bool LSNull::to_bool() const {
 	return false;
 }
 

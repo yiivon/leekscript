@@ -117,7 +117,7 @@ int LSString::int_size() const {
 /*
  * LSValue methods
  */
-bool LSString::isTrue() const {
+bool LSString::to_bool() const {
 	return size() > 0;
 }
 

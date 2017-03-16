@@ -110,7 +110,7 @@ bool LSSet<T>::ls_contains(T value) {
 }
 
 template <typename T>
-bool LSSet<T>::isTrue() const {
+bool LSSet<T>::to_bool() const {
 	return !this->empty();
 }
 

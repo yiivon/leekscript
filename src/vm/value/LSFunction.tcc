@@ -41,7 +41,7 @@ LSValue* LSFunction<R>::get_capture(int index) {
  * LSValue methods
  */
 template <class R>
-bool LSFunction<R>::isTrue() const {
+bool LSFunction<R>::to_bool() const {
 	return true;
 }
 

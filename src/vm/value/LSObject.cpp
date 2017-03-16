@@ -63,7 +63,7 @@ LSObject* LSObject::ls_map(LSFunction<LSValue*>* function) const {
  * LSValue methods
  */
 
-bool LSObject::isTrue() const {
+bool LSObject::to_bool() const {
 	return values.size() > 0;
 }
 

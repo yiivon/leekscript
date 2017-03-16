@@ -57,7 +57,7 @@ public:
 	StaticMethod* getStaticMethod(std::string&, std::vector<Type>&);
 	Operator* getOperator(std::string& name, Type& object_type, Type& operand_type);
 
-	bool isTrue() const override;
+	bool to_bool() const override;
 	virtual LSValue* ls_not() override;
 
 	bool eq(const LSValue*) const override;

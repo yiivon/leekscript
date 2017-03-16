@@ -827,7 +827,7 @@ inline bool LSArray<int>::is_permutation(LSArray<int>* other) {
  * LSValue methods
  */
 template <class T>
-bool LSArray<T>::isTrue() const {
+bool LSArray<T>::to_bool() const {
 	return this->size() > 0;
 }
 

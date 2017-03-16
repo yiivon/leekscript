@@ -36,8 +36,7 @@ public:
 	/*
 	 * LSValue
 	 */
-	bool isTrue() const override;
-
+	bool to_bool() const override;
 	LSValue* ls_minus() override;
 	LSValue* ls_not() override;
 	LSValue* ls_tilde() override;

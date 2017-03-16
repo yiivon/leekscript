@@ -433,7 +433,7 @@ void VM::inc_mpz_counter(jit_function_t F) {
 }
 
 bool VM_is_true(LSValue* val) {
-	return val->isTrue();
+	return val->to_bool();
 }
 
 jit_value_t VM::is_true(jit_function_t F, jit_value_t ptr) {

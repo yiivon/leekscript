@@ -128,7 +128,7 @@ LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type&
 	}
 }
 
-bool LSClass::isTrue() const {
+bool LSClass::to_bool() const {
 	return true;
 }
 

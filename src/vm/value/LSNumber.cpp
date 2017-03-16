@@ -58,7 +58,7 @@ LSValue* LSNumber::ls_fold(LSFunction<LSValue*>* function, LSValue* v0) {
 /*
  * LSValue methods
  */
-bool LSNumber::isTrue() const {
+bool LSNumber::to_bool() const {
 	return value != 0;
 }
 

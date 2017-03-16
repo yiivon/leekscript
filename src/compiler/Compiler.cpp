@@ -216,11 +216,11 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		return {jit_insn_to_bool(F, v.v), Type::BOOLEAN};
 	}
 	if (v.t.raw_type == RawType::STRING) {
-		return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::isTrue);
+		return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool);
 	}
 	if (v.t.raw_type == RawType::ARRAY) {
 		// Always take LSArray<int>, but the array is not necessarily of this type
-		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::isTrue);
+		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool);
 	}
 	if (v.t.raw_type == RawType::FUNCTION) {
 		return new_bool(true);

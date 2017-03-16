@@ -28,7 +28,7 @@ public:
 	LSObject* ls_map(LSFunction<LSValue*>* fun) const;
 
 	/** LSValue methods **/
-	bool isTrue() const override;
+	bool to_bool() const override;
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 	bool in(const LSValue*) const override;

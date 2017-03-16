@@ -19,7 +19,7 @@ LSBoolean::LSBoolean(bool value) : LSValue(BOOLEAN), value(value) {
 
 LSBoolean::~LSBoolean() {}
 
-bool LSBoolean::isTrue() const {
+bool LSBoolean::to_bool() const {
 	return value;
 }
 

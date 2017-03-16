@@ -105,7 +105,7 @@ LSArray<V>* LSMap<K, V>::values() const {
  * LSValue methods
  */
 template <class K, class T>
-bool LSMap<K, T>::isTrue() const {
+bool LSMap<K, T>::to_bool() const {
 	return not this->empty();
 }
 

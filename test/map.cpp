@@ -10,7 +10,7 @@ void Test::test_map() {
 	code("[1: 1, 2: '2']").equals("[1: 1, 2: '2']");
 	code("['1': '1', '1': '2', '1': '3']").equals("['1': '1']");
 
-	section("Map::isTrue()");
+	section("Map::to_bool()");
 	//code("![:]").equals("true");
 	code("![2: 2]").equals("false");
 	code("if ([2: 2]) { 12 } else { 5 }").equals("12");

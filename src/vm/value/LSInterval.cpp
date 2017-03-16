@@ -28,7 +28,7 @@ LSArray<int>* LSInterval::ls_filter(LSFunction<bool>* function) {
 	return new_array;
 }
 
-bool LSInterval::isTrue() const {
+bool LSInterval::to_bool() const {
 	return b >= a;
 }
 

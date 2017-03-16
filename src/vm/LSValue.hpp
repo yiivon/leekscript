@@ -60,8 +60,7 @@ public:
 	LSValue(const LSValue& other);
 	virtual ~LSValue() = 0;
 
-	virtual bool isTrue() const = 0;
-
+	virtual bool to_bool() const = 0;
 	virtual LSValue* ls_minus();
 	virtual LSValue* ls_not();
 	virtual LSValue* ls_tilde();

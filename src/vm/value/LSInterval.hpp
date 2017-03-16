@@ -24,7 +24,7 @@ public:
 	/*
 	 * LSValue methods
 	 */
-	virtual bool isTrue() const;
+	virtual bool to_bool() const;
 	virtual bool in(const LSValue* const) const override;
 	virtual bool in_i(const int) const override;
 

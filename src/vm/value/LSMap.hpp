@@ -35,7 +35,7 @@ public:
 	/*
 	 * LSValue methods;
 	 */
-	virtual bool isTrue() const override;
+	virtual bool to_bool() const override;
 	virtual LSValue* ls_not() override;
 
 	bool eq(const LSValue*) const override;
