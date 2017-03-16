@@ -36,6 +36,14 @@ bool LSInterval::ls_not() const {
 	return b < a;
 }
 
+bool LSInterval::eq(const LSValue* v) const {
+	if (v->type == INTERVAL) {
+		auto interval = static_cast<const LSInterval*>(v);
+		return interval->a == a and interval->b == b;
+	}
+	return false;
+}
+
 bool LSInterval::in(const LSValue* const value) const {
 	if (value->type != LSValue::NUMBER) {
 		LSValue::delete_temporary(this);

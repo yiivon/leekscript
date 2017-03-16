@@ -184,10 +184,6 @@ LSValue* LSValue::mod_eq(LSValue* v) {
 	return nullptr;
 }
 
-bool LSValue::eq(const LSValue*) const {
-	return false;
-}
-
 bool LSValue::lt(const LSValue* v) const {
 	return type < v->type;
 }

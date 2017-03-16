@@ -26,6 +26,7 @@ public:
 	 */
 	virtual bool to_bool() const;
 	virtual bool ls_not() const;
+	virtual bool eq(const LSValue*) const override;
 	virtual bool in(const LSValue* const) const override;
 	virtual bool in_i(const int) const override;
 

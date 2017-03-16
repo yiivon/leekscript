@@ -95,7 +95,7 @@ public:
 	bool operator != (const LSValue& value) const {
 		return !this->eq(&value);
 	}
-	virtual bool eq(const LSValue*) const;
+	virtual bool eq(const LSValue*) const = 0;
 
 	bool operator < (const LSValue& value) const {
 		return this->lt(&value);
