@@ -65,8 +65,10 @@ void Test::test_general() {
 	code("global a = 2").equals("(void)");
 	code("global a = 2, b = 'a'").equals("(void)");
 
+	section("Variable already defined");
 	code("a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
 	code("let a = 2 let a = 5").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, {"a"});
+	code("let Number = 2").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, {"Number"});
 
 	code("let a = 12 a").equals("12");
 	code("let a = 12 { let a = 5 } a").equals("12");
