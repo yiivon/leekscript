@@ -13,6 +13,10 @@ void Test::test_intervals() {
 	// TODO intervals with mpz
 	//code("[15m..50m]").equals("[15..50]");
 
+	section("Interval.operator !");
+	code("![1..1000]").equals("false");
+	code("![1..0]").equals("true");
+
 	section("Interval.operator in");
 	code("145 in [1..1000]").equals("true");
 	code("1 in [1..1000]").equals("true");

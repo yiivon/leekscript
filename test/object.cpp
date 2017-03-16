@@ -29,6 +29,10 @@ void Test::test_objects() {
 	/*
 	 * Operators
 	 */
+	section("Object.operator !");
+	code("!{}").equals("true");
+ 	code("!{a: 32}").equals("false");
+
 	section("Object.operator | |");
 	code("let a = {a: 32, b: 'toto', c: false}; |a|").equals("3");
 

@@ -59,6 +59,7 @@ void Test::test_operators() {
 	code("var a = null a **= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = null a %= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("let a = null a[0]").equals("null");
+	code("let a = null !a").equals("true");
 
 	/*
 	a ~~ b => (a ~~ b)
