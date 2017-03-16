@@ -203,7 +203,8 @@ V LSMap<K, V>::at(const K key) const {
 		auto map = (std::map<K, V, lsmap_less<K>>*) this;
 		return map->at(key);
 	} catch (std::exception&) {
-		return V();
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		assert(false); // LCOV_EXCL_LINE
 	}
 }
 
@@ -214,37 +215,56 @@ inline LSValue** LSMap<K, T>::atL(const LSValue*) {
 
 template <>
 inline LSValue** LSMap<LSValue*, LSValue*>::atL(const LSValue* key) {
+	auto map = (std::map<LSValue*, LSValue*, lsmap_less<LSValue*>>*) this;
 	try {
-		return (LSValue**) &((std::map<LSValue*, LSValue*, lsmap_less<LSValue*>>*) this)->at((LSValue*) key);
+		return &map->at((LSValue*) key);
 	} catch (std::exception&) {
-		return nullptr;
+		((LSValue*) key)->refs++;
+		auto r = map->insert({(LSValue*) key, LSNull::get()});
+		return &r.first->second;
 	}
 }
 
 template <>
 inline LSValue** LSMap<int, LSValue*>::atL(const LSValue* key) {
-
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+	auto map = (std::map<int, LSValue*, lsmap_less<int>>*) this;
+	if (auto n = dynamic_cast<const LSNumber*>(key)) {
+		double kv = n->value;
+		LSValue::delete_temporary(key);
 		try {
-			return (LSValue**) &((std::map<int,LSValue*>*) this)->at((int) n->value);
+			return &map->at(kv);
 		} catch (std::exception&) {
-			return nullptr;
+			auto r = map->insert({kv, LSNull::get()});
+			return &r.first->second;
 		}
 	}
 	return nullptr;
 }
 
 template <typename K, typename T>
-inline int* LSMap<K, T>::atLv(const LSValue*) const {
+inline int* LSMap<K, T>::atLv(LSValue* key) const {
+	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
+		auto map = (std::map<K, T, lsmap_less<K>>*) this;
+		double kv = n->value;
+		LSValue::delete_temporary(key);
+		try {
+			return &map->at(kv);
+		} catch (std::exception&) {
+			auto r = map->insert({kv, 0});
+			return &r.first->second;
+		}
+	}
 	return nullptr;
 }
 template <>
-inline int* LSMap<LSValue*, int>::atLv(const LSValue* key) const {
+inline int* LSMap<LSValue*, int>::atLv(LSValue* key) const {
+	auto map = (std::map<LSValue*, int, lsmap_less<LSValue*>>*) this;
 	try {
-		auto map = (std::map<LSValue*, int, lsmap_less<LSValue*>>*) this;
 		return &map->at((LSValue*) key);
 	} catch (std::exception&) {
-		return nullptr;
+		key->refs++;
+		auto r = map->insert({(LSValue*) key, 0});
+		return &r.first->second;
 	}
 }
 

@@ -55,6 +55,12 @@ void Test::test_map() {
 	code("let m = [5: 12] m[5.7]").equals("12");
 	code("let m = [5: 12] m['salut']").semantic_error(ls::SemanticError::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::STRING_TMP.to_string()});
 	code("let m = [5.7: 'hello'] m['salut']").semantic_error(ls::SemanticError::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::STRING_TMP.to_string()});
+	code("var m = [1: 'a', 2: 'b'] m[2] = 'B' m").equals("[1: 'a', 2: 'B']");
+	code("var m = [1: 'a', 2: 'b'] m[3]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("var m = [1: 2, 3: 4] m[5] = 6 m").equals("[1: 2, 3: 4, 5: 6]");
+	code("var m = ['a': 2, 'b': 4] m['c'] = 6 m").equals("['a': 2, 'b': 4, 'c': 6]");
+	code("var m = [1: 'a', 2: 'b'] m[3] = 'c' m").equals("[1: 'a', 2: 'b', 3: 'c']");
+	code("var m = ['a': '2', 'b': '4'] m['c'] = '6' m").equals("['a': '2', 'b': '4', 'c': '6']");
 
 	/*
 	 * Methods
