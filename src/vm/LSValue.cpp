@@ -104,91 +104,91 @@ LSValue* LSValue::add(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::add_eq(LSValue* v) {
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::sub(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::sub_eq(LSValue* v) {
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::mul(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::mul_eq(LSValue* v) {
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::div(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::div_eq(LSValue* v) {
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::int_div(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::int_div_eq(LSValue* v) {
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::pow(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::pow_eq(LSValue* v) {
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::mod(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::mod_eq(LSValue* v) {
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
-	return nullptr;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 bool LSValue::lt(const LSValue* v) const {
