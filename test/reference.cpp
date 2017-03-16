@@ -38,8 +38,7 @@ void Test::test_references() {
 
 	section("Reference in array");
 	code("var v = 10; var a = [v]; a[0]++; v").equals("10");
-	// TODO a copy is done somewhere
-	// code("var v = 10; var a = [@v]; a[0]++; v").equals("11");
+	code("var v = 10; var a = [@v]; a[0]++; v").equals("11");
 	code("var v = 10; var a = [1, @v, 3] a[1] = 5 v").equals("10");
 
 	section("Reference of array element");
@@ -51,6 +50,5 @@ void Test::test_references() {
 	code("var a = ['a', 12]; var e = @a[1]; a[1] = 5; e").equals("12");
 
 	section("Reference = reference");
-	// TODO a copy is done somewhere
-	// code("var a = 'a', b = 'b'; var c = @a; c = @b; c += '!'; [a, b]").equals("['a', 'b!']");
+	code("var a = 'a', b = 'b'; var c = @a; c = @b; c += '!'; [a, b]").equals("['a', 'b!']");
 }
