@@ -17,6 +17,10 @@ void Test::test_intervals() {
 	code("![1..1000]").equals("false");
 	code("![1..0]").equals("true");
 
+	section("Interval.operator to_bool");
+	code("[1..1000] ? 2 : 5").equals("2");
+	code("[1..0] ? 2 : 5").equals("5");
+
 	section("Interval.operator in");
 	code("145 in [1..1000]").equals("true");
 	code("1 in [1..1000]").equals("true");
@@ -26,6 +30,7 @@ void Test::test_intervals() {
 	code("'a' in [[1..1000], ''][0]").equals("false");
 	code("500 in [[1..1000], ''][0]").equals("true");
 	code("1500 in [[1..1000], ''][0]").equals("false");
+	code("500★ in [[1..1000], ''][0]").equals("true");
 
 	section("Interval.operator []");
 	code("[0..1000][500]").equals("500");
