@@ -32,7 +32,6 @@ std::string SemanticError::build_message(Type type, std::vector<std::string> par
 		try {
 			translation = Json::parse(Util::read_file("src/doc/semantic_exception_fr.json"));
 		} catch (exception&) {}
-
 		translation_loaded = true;
 	}
 
