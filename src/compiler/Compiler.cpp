@@ -386,6 +386,15 @@ void Compiler::insn_inc_refs(value v) const {
 	}
 }
 
+Compiler::value Compiler::insn_move(Compiler::value v) const {
+	if (v.t.must_manage_memory() and !v.t.temporary and !v.t.reference) {
+		return insn_call(v.t, {v}, (void*) +[](LSValue* v) {
+			return v->move();
+		});
+	}
+	return v;
+}
+
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
 	std::vector<jit_value_t> jit_args;
 	std::vector<jit_type_t> arg_types;
