@@ -22,16 +22,25 @@ void Test::test_map() {
 	/*
 	 * Operators
 	 */
+	std::vector<std::string> maps = {"[5: 5]", "[5: 9.99]", "[5: 'abc']", "[9.99: 5]", "[9.99: 9.99]", "['abc': 5]", "['abc': 9.99]", "['abc': 'abc']"};
+
 	section("Map.operator ==");
 	code("['a': 'b'] == [1: 1]").equals("false");
 	code("['a': 'b'] == ['a': 'b']").equals("true");
 	code("['a': 'b'] == ['a': 'b', 'c': 'd']").equals("false");
-	//code("let x = ['a' : 'b'] let y = [1 : 1] x.clear() == y.clear()").equals("true");
+	code("let x = ['a' : 'b'] let y = [1 : 1] x.clear() == y.clear()").equals("true");
+	for (auto& m1 : maps)
+		for (auto& m2 : maps)
+			code(m1 + " == " + m2).equals(m1 == m2 ? "true" : "false");
+	code("[12.5: 9.99] == 'hello'").equals("false");
 
 	section("Map.operator <");
-	//code("['a':1 'b':2] < ['a':1 'b':3]").equals("true");
+	code("['a': 1, 'b': 2] < ['a': 1, 'b': 3]").equals("true");
 	code("[1: 1, 2: 0] < [1: 1, 2: true]").equals("false");
 	code("[1: 1, 2: 'a'] < [1: 1.5, 2: 5.5]").equals("true");
+	for (size_t i = 0; i < maps.size(); ++i)
+		for (size_t j = 0; j < maps.size(); ++j)
+			code(maps[i] + " < " + maps[j]).equals(i < j ? "true" : "false");
 
 	section("Map.operator in");
 	code("let m = ['salut': 12] 'salut' in m").equals("true");

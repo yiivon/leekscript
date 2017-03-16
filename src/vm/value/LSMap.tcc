@@ -158,6 +158,8 @@ bool LSMap<K, T>::eq(const LSValue* v) const {
 		return map_equals(map);
 	if (auto map = dynamic_cast<const LSMap<double, double>*>(v))
 		return map_equals(map);
+	if (auto map = dynamic_cast<const LSMap<double, int>*>(v))
+		return map_equals(map);
 	return false;
 }
 
@@ -193,6 +195,8 @@ bool LSMap<K, T>::lt(const LSValue* v) const {
 	if (auto map = dynamic_cast<const LSMap<int, int>*>(v))
 		return map_lt(map);
 	if (auto map = dynamic_cast<const LSMap<double, double>*>(v))
+		return map_lt(map);
+	if (auto map = dynamic_cast<const LSMap<double, int>*>(v))
 		return map_lt(map);
 	return LSValue::lt(v);
 }
