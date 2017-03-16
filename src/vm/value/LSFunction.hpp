@@ -36,6 +36,7 @@ public:
 	 * LSValue methods
 	 */
 	bool to_bool() const override;
+	bool ls_not() const override;
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 	LSValue* attr(const std::string& key) const override;

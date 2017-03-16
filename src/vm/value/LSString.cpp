@@ -121,10 +121,8 @@ bool LSString::to_bool() const {
 	return size() > 0;
 }
 
-LSValue* LSString::ls_not() {
-	bool r = size() == 0;
-	if (refs == 0) delete this;
-	return LSBoolean::get(r);
+bool LSString::ls_not() const {
+	return size() == 0;
 }
 
 LSValue* LSString::ls_tilde() {

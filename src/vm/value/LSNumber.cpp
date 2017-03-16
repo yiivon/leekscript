@@ -62,18 +62,18 @@ bool LSNumber::to_bool() const {
 	return value != 0;
 }
 
+bool LSNumber::ls_not() const {
+	bool r = value == 0;
+	LSValue::delete_temporary(this);
+	return r;
+}
+
 LSValue* LSNumber::ls_minus() {
 	if (refs == 0) {
 		value = -value;
 		return this;
 	}
 	return LSNumber::get(-value);
-}
-
-LSValue* LSNumber::ls_not() {
-	bool r = value == 0;
-	LSValue::delete_temporary(this);
-	return LSBoolean::get(r);
 }
 
 LSValue* LSNumber::ls_tilde() {

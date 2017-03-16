@@ -100,7 +100,10 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 }
 
 LSValue* jit_not(LSValue* x) {
-	return x->ls_not();
+	// TODO optimization, don't create a LSBoolean
+	auto r = LSBoolean::get(x->ls_not());
+	LSValue::delete_temporary(x);
+	return r;
 }
 LSValue* jit_minus(LSValue* x) {
 	return x->ls_minus();

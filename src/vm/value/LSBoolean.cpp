@@ -23,8 +23,8 @@ bool LSBoolean::to_bool() const {
 	return value;
 }
 
-LSValue* LSBoolean::ls_not() {
-	return LSBoolean::get(!value);
+bool LSBoolean::ls_not() const {
+	return !value;
 }
 
 LSValue* LSBoolean::ls_tilde() {

@@ -132,8 +132,8 @@ bool LSClass::to_bool() const {
 	return true;
 }
 
-LSValue* LSClass::ls_not() {
-	return LSBoolean::get(false);
+bool LSClass::ls_not() const {
+	return false;
 }
 
 bool LSClass::eq(const LSValue* v) const {

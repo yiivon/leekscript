@@ -114,6 +114,11 @@ bool LSSet<T>::to_bool() const {
 	return !this->empty();
 }
 
+template <typename T>
+bool LSSet<T>::ls_not() const {
+	return this->empty();
+}
+
 template <>
 inline LSValue* LSSet<int>::add_eq(LSValue* v) {
 	if (v->type == LSValue::NUMBER) {

@@ -79,7 +79,7 @@ public:
 	 * LSValue methods
 	 */
 	bool to_bool() const override;
-	LSValue* ls_not() override;
+	bool ls_not() const override;
 	LSValue* ls_tilde() override;
 
 	LSValue* add(LSValue* v) override;

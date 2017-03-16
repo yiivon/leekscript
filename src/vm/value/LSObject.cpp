@@ -67,6 +67,10 @@ bool LSObject::to_bool() const {
 	return values.size() > 0;
 }
 
+bool LSObject::ls_not() const {
+	return values.size() == 0;
+}
+
 bool LSObject::eq(const LSValue* v) const {
 	if (auto obj = dynamic_cast<const LSObject*>(v)) {
 		if ((!clazz && obj->clazz) || (clazz && !obj->clazz)) return false;

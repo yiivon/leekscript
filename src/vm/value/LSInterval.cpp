@@ -32,6 +32,10 @@ bool LSInterval::to_bool() const {
 	return b >= a;
 }
 
+bool LSInterval::ls_not() const {
+	return b < a;
+}
+
 bool LSInterval::in(const LSValue* const value) const {
 	if (value->type != LSValue::NUMBER) {
 		LSValue::delete_temporary(this);

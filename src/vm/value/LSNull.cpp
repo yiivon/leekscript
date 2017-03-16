@@ -24,6 +24,10 @@ bool LSNull::to_bool() const {
 	return false;
 }
 
+bool LSNull::ls_not() const {
+	return true;
+}
+
 bool LSNull::eq(const LSValue* v) const {
 	return dynamic_cast<const LSNull*>(v);
 }

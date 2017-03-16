@@ -36,7 +36,7 @@ public:
 	virtual ~LSBoolean();
 
 	bool to_bool() const override;
-	LSValue* ls_not() override;
+	bool ls_not() const override;
 	LSValue* ls_tilde() override;
 	LSValue* ls_minus() override;
 

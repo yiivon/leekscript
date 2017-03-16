@@ -110,10 +110,8 @@ bool LSMap<K, T>::to_bool() const {
 }
 
 template <class K, class T>
-LSValue* LSMap<K, T>::ls_not() {
-	bool r = this->size() == 0;
-	if (refs == 0) delete this;
-	return LSBoolean::get(r);
+bool LSMap<K, T>::ls_not() const {
+	return this->size() == 0;
 }
 
 template <class K, class T>

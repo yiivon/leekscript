@@ -832,10 +832,10 @@ bool LSArray<T>::to_bool() const {
 }
 
 template <class T>
-LSValue* LSArray<T>::ls_not() {
+bool LSArray<T>::ls_not() const {
 	bool r = this->size() == 0;
-	if (refs == 0) delete this;
-	return LSBoolean::get(r);
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 template <class T>

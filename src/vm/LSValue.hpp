@@ -61,8 +61,8 @@ public:
 	virtual ~LSValue() = 0;
 
 	virtual bool to_bool() const = 0;
+	virtual bool ls_not() const = 0;
 	virtual LSValue* ls_minus();
-	virtual LSValue* ls_not();
 	virtual LSValue* ls_tilde();
 	virtual LSValue* ls_preinc(); // ++x
 	virtual LSValue* ls_inc(); // x++

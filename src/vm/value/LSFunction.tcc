@@ -46,6 +46,11 @@ bool LSFunction<R>::to_bool() const {
 }
 
 template <class R>
+bool LSFunction<R>::ls_not() const {
+	return false;
+}
+
+template <class R>
 bool LSFunction<R>::eq(const LSValue* v) const {
 	if (auto f = dynamic_cast<const LSFunction<LSValue*>*>(v)) {
 		return function == f->function;
