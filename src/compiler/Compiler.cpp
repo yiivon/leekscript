@@ -344,9 +344,14 @@ void Compiler::insn_push_move_array(Compiler::value array, Compiler::value value
 
 Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 	if (value.t.must_manage_memory()) {
-		return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
-			return v->move_inc();
-		});
+		if (value.t.reference) {
+			insn_inc_refs(value);
+			return value;
+		} else {
+			return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
+				return v->move_inc();
+			});
+		}
 	}
 	if (value.t.temporary) {
 		return value;
