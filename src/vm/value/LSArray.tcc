@@ -1189,15 +1189,19 @@ inline bool LSArray<LSValue*>::lt(const LSValue* v) const {
 template <typename T>
 inline bool LSArray<T>::in(const LSValue* const value) const {
 	if (value->type != LSValue::NUMBER) {
+		LSValue::delete_temporary(value);
+		LSValue::delete_temporary(this);
 		return false;
 	}
 	T v = static_cast<const LSNumber*>(value)->value;
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (*i == v) {
+			LSValue::delete_temporary(value);
 			LSValue::delete_temporary(this);
 			return true;
 		}
 	}
+	LSValue::delete_temporary(value);
 	LSValue::delete_temporary(this);
 	return false;
 }
