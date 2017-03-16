@@ -635,6 +635,8 @@ ostream& operator << (ostream& os, const Type& type) {
 
 	if (type.temporary && type != Type::REAL) {
 		os << "&&";
+	} else if (type.reference) {
+		os << "&";
 	}
 
 	return os;

@@ -228,6 +228,7 @@ public:
 	std::vector<bool> arguments_has_default;
 	bool temporary = false;
 	bool constant = false;
+	bool reference = false;
 
 	Type();
 	Type(const BaseRawType* raw_type, Nature nature, bool native = false, bool temporary = false);
