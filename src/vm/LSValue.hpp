@@ -270,7 +270,7 @@ namespace ls {
 	}
 	template <>
 	inline bool lt(double v1, ls::LSValue* v2) {
-		return v2->operator < (v1);
+		return !(v2->operator == (v1)) and !(v2->operator < (v1));
 	}
 	template <>
 	inline bool lt(ls::LSValue* v1, double v2) {
@@ -278,7 +278,7 @@ namespace ls {
 	}
 	template <>
 	inline bool lt(int v1, ls::LSValue* v2) {
-		return v2->operator < (v1);
+		return !(v2->operator == (v1)) and !(v2->operator < (v1));
 	}
 	template <>
 	inline bool lt(ls::LSValue* v1, int v2) {

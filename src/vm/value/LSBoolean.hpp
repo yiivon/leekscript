@@ -44,6 +44,8 @@ public:
 	LSValue* sub(LSValue* v) override;
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
+	bool operator < (int value) const override;
+	bool operator < (double value) const override;
 
 	int abso() const override;
 

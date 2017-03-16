@@ -104,6 +104,14 @@ bool LSBoolean::lt(const LSValue* v) const {
 	return LSValue::lt(v);
 }
 
+bool LSBoolean::operator < (int) const {
+	return true;
+}
+
+bool LSBoolean::operator < (double) const {
+	return true;
+}
+
 int LSBoolean::abso() const {
 	return value;
 }
