@@ -46,16 +46,16 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Static attribute? (Number.PI <= static attr)
-	VariableValue* vv = dynamic_cast<VariableValue*>(object);
+	auto vv = dynamic_cast<VariableValue*>(object);
 
 	bool found = false;
 	if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
 
-		LSClass* std_class = (LSClass*) analyser->vm->system_vars[vv->name];
+		auto std_class = (LSClass*) analyser->vm->system_vars[vv->name];
 
 		if (std_class->static_fields.find(field.content) != std_class->static_fields.end()) {
 
-			ModuleStaticField& mod_field = std_class->static_fields[field.content];
+			auto mod_field = std_class->static_fields[field.content];
 			type = mod_field.type;
 
 			if (mod_field.fun != nullptr) {
@@ -66,7 +66,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	LSClass* value_class = (LSClass*) analyser->vm->system_vars["Value"];
+	auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
 
 	// Attribute? Fields and methods ([1, 2, 3].length, 12.abs)
 	if (!found and object_class != nullptr) {
@@ -120,8 +120,6 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}
-
-//	cout << "object_access '" << field->content << "' type : " << type << endl;
 }
 
 void ObjectAccess::change_type(SemanticAnalyser*, const Type& req_type) {
