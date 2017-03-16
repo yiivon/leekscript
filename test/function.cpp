@@ -82,6 +82,9 @@ void Test::test_functions() {
 	/*
 	 * Operators
 	 */
+	section("Function.operator !");
+ 	code("!(x -> x)").equals("false");
+
 	section("Function.operator ~");
 	code("~(x -> x)").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
