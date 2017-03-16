@@ -61,6 +61,22 @@ void Test::test_objects() {
 	code("{a: 2} == {b: 2}").equals("false");
 	code("{a: 2} == {a: 2}").equals("true");
 
+	section("Object.operator <");
+	code("{} < {}").equals("false");
+	code("{a: 2} < {a: 3}").equals("true");
+	code("{a: 2} < {a: 1}").equals("false");
+	code("{a: 'b'} < {a: 'c'}").equals("true");
+	code("{a: 'b'} < {a: 'a'}").equals("false");
+	code("{b: 2} < {c: 2}").equals("true");
+	code("{b: 2} < {a: 2}").equals("false");
+	code("{a: 1} < {a: 1, b: 2}").equals("true");
+	code("{a: 1, b: 2} < {a: 1}").equals("false");
+	code("{a: 0, b: 2} < {a: 1}").equals("true");
+	code("class A {} class B {} new A < new B").equals("true");
+	code("class A {} class B {} new B < new A").equals("false");
+	code("class A {} {} < new A").equals("true");
+	code("class A {} new A < {}").equals("false");
+
 	/*
 	 * Methods
 	 */

@@ -92,13 +92,17 @@ bool LSObject::eq(const LSValue* v) const {
 
 bool LSObject::lt(const LSValue* v) const {
 	if (auto obj = dynamic_cast<const LSObject*>(v)) {
-		if (!clazz && obj->clazz) return true;
-		if (clazz && !obj->clazz) return false;
-		if (clazz && *clazz != *obj->clazz) return *clazz < *obj->clazz;
+		if (!clazz && obj->clazz)
+			return true;
+		if (clazz && !obj->clazz)
+			return false;
+		if (clazz && *clazz != *obj->clazz)
+			return *clazz < *obj->clazz;
 		auto i = values.begin();
 		auto j = obj->values.begin();
 		while (i != values.end()) {
-			if (j == obj->values.end()) return false;
+			if (j == obj->values.end())
+				return false;
 			// i < j => true
 			// j < i => false
 			int x = i->first.compare(j->first);
@@ -109,7 +113,7 @@ bool LSObject::lt(const LSValue* v) const {
 			}
 			++i; ++j;
 		}
-		return (j != obj->values.end());
+		return j != obj->values.end();
 	}
 	return LSValue::lt(v);
 }
