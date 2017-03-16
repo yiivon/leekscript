@@ -193,6 +193,8 @@ void Test::test_functions() {
 	code("var x = 12 (x)").equals("12");
 	// code("(@x, @y) -> x + y").equals("<function>");
 	// code("@x, @y -> x + y").equals("<function>");
+	code("let f = (@x, @y) -> x + y").equals("(void)");
+	code("let f = @x, @y -> x + y").equals("(void)");
 
 	section("Default arguments");
 	// TODO crash
