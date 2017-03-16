@@ -2,9 +2,6 @@
 
 void Test::test_functions() {
 
-	/*
-	 * Functions
-	 */
 	header("Functions");
 	code("function foo(x, y) { x + y } foo(1, 2)").equals("3");
 	code("function f() { return 12 } [f(), 'str']").equals("[12, 'str']");
@@ -82,9 +79,33 @@ void Test::test_functions() {
 	// code("var a = [12, x -> x + 7] a[1](12)").equals("19");
 	// code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
 
+	/*
+	 * Operators
+	 */
+	section("Function.operator ~");
+	code("~(x -> x)").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("Function.operator ++x");
+	code("++(x -> x)").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("Function.operator --x");
+	code("--(x -> x)").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	// section("Function.operator x++");
+	// code("(x -> x)++").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	// section("Function.operator x--");
+	// code("(x -> x)--").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
 	section("Operator ~ ");
 	code("let a = 10 a ~ x -> x ** 2").equals("100");
 	code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
+
+	section("Operator []");
+	code("let f = x -> x f[2] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+
+	section("Operator []");
+	code("let f = x -> x f[2] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	section("Function operators");
 	// TODO parsing issue
