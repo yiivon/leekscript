@@ -631,13 +631,12 @@ ostream& operator << (ostream& os, const Type& type) {
 	} else {
 		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 	}
-	os << END_COLOR;
-
 	if (type.temporary && type != Type::REAL) {
 		os << "&&";
 	} else if (type.reference) {
 		os << "&";
 	}
+	os << END_COLOR;
 
 	return os;
 }
