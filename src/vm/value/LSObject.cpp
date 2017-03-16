@@ -73,14 +73,17 @@ bool LSObject::ls_not() const {
 
 bool LSObject::eq(const LSValue* v) const {
 	if (auto obj = dynamic_cast<const LSObject*>(v)) {
-		if ((!clazz && obj->clazz) || (clazz && !obj->clazz)) return false;
-		if (clazz && *clazz != *obj->clazz) return false;
-		if (values.size() != obj->values.size()) return false;
+		if ((!clazz && obj->clazz) || (clazz && !obj->clazz))
+			return false;
+		if (clazz && *clazz != *obj->clazz)
+			return false;
+		if (values.size() != obj->values.size())
+			return false;
 		auto i = values.begin();
 		auto j = obj->values.begin();
 		for (; i != values.end(); ++i, ++j) {
-			if (i->first != j->first) return false;
-			if (*i->second != *j->second) return false;
+			if (i->first != j->first or *i->second != *j->second)
+				return false;
 		}
 		return true;
 	}
