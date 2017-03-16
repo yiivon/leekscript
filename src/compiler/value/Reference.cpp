@@ -64,6 +64,7 @@ void Reference::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}
+	type.reference = true;
 //	cout << "ref " << variable->content << " : " << type << endl;
 }
 
