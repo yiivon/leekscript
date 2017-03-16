@@ -199,8 +199,10 @@ LSValue* LSValue::at(const LSValue*) const {
 	return LSNull::get();
 }
 
-LSValue** LSValue::atL(const LSValue*) {
-	return nullptr;
+LSValue** LSValue::atL(const LSValue* v) {
+	delete_temporary(v);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::attr(const std::string& key) const {
