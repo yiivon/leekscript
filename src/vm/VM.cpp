@@ -175,7 +175,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	auto compilation_end = chrono::high_resolution_clock::now();
 
 	if (debug) {
-		std::cout << "main() " << result.program << std::endl;
+		std::cout << "main() " << result.program << std::endl; // LCOV_EXCL_LINE
 	}
 
 	// Execute
@@ -223,15 +223,18 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	result.mpz_objects_deleted = VM::mpz_deleted;
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
+		// LCOV_EXCL_START
 		cout << RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
 		#if DEBUG_LEAKS
+
 			for (auto o : LSValue::objs()) {
 				std::cout << o.second << " (" << o.second->refs << " refs)" << endl;
 			}
 		#endif
+		// LCOV_EXCL_STOP
 	}
 	if (VM::mpz_deleted != VM::mpz_created) {
-		cout << RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << endl;
+		cout << RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << endl; // LCOV_EXCL_LINE
 	}
 
 	return result;
