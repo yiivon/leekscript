@@ -53,6 +53,7 @@ void Test::test_classes() {
 	section("Class.operator <");
 	code("Number < 12").equals("false");
 	code("12 < Number").equals("true");
+	code("[Number, 2][0] < 12").equals("false");
 
 	section("instanceof operator");
 	code("12 instanceof Number").equals("true");
