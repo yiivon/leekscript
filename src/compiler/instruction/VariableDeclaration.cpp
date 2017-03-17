@@ -87,12 +87,12 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				if (ref->name != "") {
 					jit_value_t val = c.get_var(ref->name).value;
 					if (v->type.must_manage_memory()) {
-						VM::inc_refs(c.F, val);
+						c.insn_inc_refs({val, v->type});
 					}
 					c.add_var(name, val, v->type, true);
 				} else {
 					auto val = ref->compile(c);
-					VM::inc_refs(c.F, val.v);
+					c.insn_inc_refs(val);
 					c.add_var(name, val.v, v->type, true);
 				}
 			} else {

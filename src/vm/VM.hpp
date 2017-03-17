@@ -128,7 +128,6 @@ public:
 
 	/** Ref counting and memory management **/
 	static jit_value_t get_refs(jit_function_t F, jit_value_t obj);
-	static void inc_refs(jit_function_t F, jit_value_t obj);
 	static void inc_refs_if_not_temp(jit_function_t F, jit_value_t obj);
 	static void dec_refs(jit_function_t F, jit_value_t obj);
 	static void delete_temporary(jit_function_t F, jit_value_t obj);

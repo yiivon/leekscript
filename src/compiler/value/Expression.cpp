@@ -945,7 +945,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		case TokenType::DOUBLE_QUESTION_MARK: {
 
 			// x ?? y ==> if (x != null) { x } else { y }
-
 			jit_label_t label_end = jit_label_undefined;
 			jit_label_t label_else = jit_label_undefined;
 			jit_value_t v = jit_value_create(c.F, LS_POINTER);
@@ -957,19 +956,14 @@ Compiler::value Expression::compile(Compiler& c) const {
 			jit_type_free(sig);
 
 			jit_insn_branch_if(c.F, r, &label_else);
-
 			// then {
 			jit_insn_store(c.F, v, x.v);
-//			VM::inc_refs(c.F, x);
-
 			// else
 			jit_insn_branch(c.F, &label_end);
 			jit_insn_label(c.F, &label_else);
 			// {
-
 			auto y = v2->compile(c);
 			jit_insn_store(c.F, v, y.v);
-//			VM::inc_refs(c.F, y);
 
 			jit_insn_label(c.F, &label_end);
 
