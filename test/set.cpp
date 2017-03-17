@@ -10,16 +10,27 @@ void Test::test_set() {
 	code("<'2', '1', '1'>").equals("<'1', '2'>");
 	code("<1l, 2l, 3l>").equals("<1, 2, 3>");
 
-	section("Set.isTrue()");
-	code("if <1, 2> then 5 else 12 end").equals("5");
-	code("if <> then 5 else 12 end").equals("12");
-
 	/*
 	 * Operators
 	 */
+	section("Set.to_bool()");
+ 	code("if <1, 2> then 5 else 12 end").equals("5");
+	code("if <1.5> then 5 else 12 end").equals("5");
+ 	code("if <> then 5 else 12 end").equals("12");
+
+	section("Set.operator ! ()");
+	code("!<1, 2>").equals("false");
+	code("!<1.5, 2.5>").equals("false");
+	code("!<'a', 'b'>").equals("false");
+	code("!<>").equals("true");
+
 	section("Set.operator in ()");
 	code("let s = <1, 2> 3 in s").equals("false");
 	code("let s = <1, 2> 1 in s").equals("true");
+	code("let s = <1.5, 2.5> 3.5 in s").equals("false");
+	code("let s = <1.5, 2.5> 1.5 in s").equals("true");
+	code("let s = <'a', 'b'> 'a' in s").equals("true");
+	code("let s = <'a', 'b'> 12 in s").equals("false");
 
 	section("Set.operator ==");
 	code("<> == <>").equals("true");
