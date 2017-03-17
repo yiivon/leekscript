@@ -58,7 +58,6 @@ void Test::test_map() {
 	code("let m = ['salut': 12.5] m['salut']").equals("12.5");
 	code("let m = ['salut': 'yolo'] m['salut']").equals("'yolo'");
 	code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
-	code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
 	code("let m = ['salut': 12] m['salut'] = 13 m['salut']").equals("13");
 	code("let m = ['salut': 'yo'] m['salut'] = 'ya' m['salut']").equals("'ya'");
 	code("let m = [5: 12] m[5.7]").equals("12");
@@ -68,8 +67,25 @@ void Test::test_map() {
 	code("var m = [1: 'a', 2: 'b'] m[3]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("var m = [1: 2, 3: 4] m[5] = 6 m").equals("[1: 2, 3: 4, 5: 6]");
 	code("var m = ['a': 2, 'b': 4] m['c'] = 6 m").equals("['a': 2, 'b': 4, 'c': 6]");
+	code("var m = ['a': 2.5, 'b': 4.8] m['c'] = 6.9 m").equals("['a': 2.5, 'b': 4.8, 'c': 6.9]");
 	code("var m = [1: 'a', 2: 'b'] m[3] = 'c' m").equals("[1: 'a', 2: 'b', 3: 'c']");
 	code("var m = ['a': '2', 'b': '4'] m['c'] = '6' m").equals("['a': '2', 'b': '4', 'c': '6']");
+	code("var m = [1: 2, 3: 4] m[3] = 6 m").equals("[1: 2, 3: 6]");
+	code("var m = [1.5: 2, 3.5: 4] m[3.5] = 6 m").equals("[1.5: 2, 3.5: 6]");
+	code("var m = ['1': 2, '3': 4] m['3'] = 6 m").equals("['1': 2, '3': 6]");
+
+	section("Map.operator [] on unknown maps");
+	code("var m = ptr(['a': '2']) m['c'] = '6' m").equals("['a': '2', 'c': '6']");
+	code("var m = ptr([2: 'a']) m[3] = 'b' m").equals("[2: 'a', 3: 'b']");
+	code("var m = ptr([2.5: 'a']) m[3.6] = 'b' m").equals("[2.5: 'a', 3.6: 'b']");
+	code("var m = ptr(['a': 2]) m['c'] = 6 m").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var m = ptr(['a': 2.2]) m['c'] = 6.6 m").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var m = ptr([2: 2]) m[3] = 6 m").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var m = ptr([2.5: 2]) m[3.5] = 6 m").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var m = ptr([2.5: 2.8]) m[3.5] = 6 m").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var m = ptr([2: 2.8]) m[3] = 6 m").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var m = ptr([2: 'a']) m['toto'] = 'b' m").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var m = ptr([2.5: 'a']) m['toto'] = 'b' m").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	/*
 	 * Methods
