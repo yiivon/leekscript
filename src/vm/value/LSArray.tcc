@@ -1082,6 +1082,7 @@ inline LSValue* LSArray<int>::add_eq(LSValue* v) {
 	if (auto array = dynamic_cast<LSArray<int>*>(v)) {
 		this->reserve(this->size() + array->size());
 		this->insert(this->end(), array->begin(), array->end());
+		LSValue::delete_temporary(v);
 		return this;
 	}
 	auto set = dynamic_cast<LSSet<int>*>(v);
