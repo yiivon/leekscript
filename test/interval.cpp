@@ -32,6 +32,13 @@ void Test::test_intervals() {
 	code("1500 in [[1..1000], ''][0]").equals("false");
 	code("500★ in [[1..1000], ''][0]").equals("true");
 
+	section("Interval.operator ==");
+	code("[1..1000] == [1..1000]").equals("true");
+	code("[1..1000] == [1..500]").equals("false");
+	code("[1..1000] == 12").equals("false");
+	// TODO
+	// code("[1..10] == [1 2 3 4 5 6 7 8 9 10]").equals("true");
+
 	section("Interval.operator []");
 	code("[0..1000][500]").equals("500");
 	code("[1..1000][500]").equals("501");
