@@ -17,6 +17,7 @@ void Test::test_files() {
 	// TODO pushAll doesn't work
 	// file_v1("test/code/quine_zwik.leek").quine();
 	file("test/code/dynamic_operators").works();
+	file("test/code/euler1.leek").equals("2333316668");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
