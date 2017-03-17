@@ -80,15 +80,19 @@ void Test::test_set() {
 
 	section("Set.clear()");
 	code("let s = <1, 2> s.clear() s").equals("<>");
+	code("let s = <'a', 'b'> s.clear() s").equals("<>");
+	code("let s = <1.5, 2.5> s.clear() s").equals("<>");
 
 	section("Set.erase()");
 	code("let s = <1, 2> s.erase(3)").equals("false");
 	code("let s = <1, 2> s.erase(1)").equals("true");
+	code("let s = <1, 2, 3.3> s.erase(3.3)").equals("true");
 	code("let s = <'a', 'b'> s.erase('a')").equals("true");
 	code("let s = <'a', 'b'> s.erase('c')").equals("false");
 
 	section("Set.insert()");
 	code("let s = <1, 2> s.insert(3) s").equals("<1, 2, 3>");
+	code("let s = <1, 2.5> s.insert(3.5) s").equals("<1, 2.5, 3.5>");
 	code("let s = <'a', 'b'> s.insert('c') s").equals("<'a', 'b', 'c'>");
 	code("<'a'>.insert('b')").equals("true");
 	code("<'a'>.insert('a')").equals("false");
