@@ -44,7 +44,7 @@ public:
 	T at(const K key) const;
 
 	virtual LSValue** atL(const LSValue* key) override;
-	int* atLv(LSValue* key) const;
+	T* atL_base(K key) const;
 
 	bool in(K) const;
 

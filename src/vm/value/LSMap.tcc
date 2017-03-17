@@ -203,71 +203,66 @@ bool LSMap<K, T>::lt(const LSValue* v) const {
 
 template <class K, class V>
 V LSMap<K, V>::at(const K key) const {
+	bool ex = false;
 	try {
 		auto map = (std::map<K, V, lsmap_less<K>>*) this;
 		return map->at(key);
 	} catch (std::exception&) {
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
-		assert(false); // LCOV_EXCL_LINE
+		ex = true;
 	}
+	if (ex)
+		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+	assert(false); // LCOV_EXCL_LINE
 }
 
 template <typename K, typename T>
-inline LSValue** LSMap<K, T>::atL(const LSValue*) {
-	return nullptr;
+inline LSValue** LSMap<K, T>::atL(const LSValue* key) {
+	// Can't apply default atL operator on maps with non-pointer values,
+	// like map<K, int> and map<K, double>
+	LSValue::delete_temporary(key);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
 }
 
 template <>
 inline LSValue** LSMap<LSValue*, LSValue*>::atL(const LSValue* key) {
-	auto map = (std::map<LSValue*, LSValue*, lsmap_less<LSValue*>>*) this;
-	try {
-		return &map->at((LSValue*) key);
-	} catch (std::exception&) {
-		((LSValue*) key)->refs++;
-		auto r = map->insert({(LSValue*) key, LSNull::get()});
-		return &r.first->second;
-	}
+	return this->atL_base((LSValue*) key);
 }
 
 template <>
 inline LSValue** LSMap<int, LSValue*>::atL(const LSValue* key) {
-	auto map = (std::map<int, LSValue*, lsmap_less<int>>*) this;
-	if (auto n = dynamic_cast<const LSNumber*>(key)) {
-		double kv = n->value;
+	if (key->type == NUMBER) {
+		auto r = this->atL_base(static_cast<const LSNumber*>(key)->value);
 		LSValue::delete_temporary(key);
-		try {
-			return &map->at(kv);
-		} catch (std::exception&) {
-			auto r = map->insert({kv, LSNull::get()});
-			return &r.first->second;
-		}
+		return r;
 	}
-	return nullptr;
+	LSValue::delete_temporary(key);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
 }
 
-template <typename K, typename T>
-inline int* LSMap<K, T>::atLv(LSValue* key) const {
-	if (const LSNumber* n = dynamic_cast<const LSNumber*>(key)) {
-		auto map = (std::map<K, T, lsmap_less<K>>*) this;
-		double kv = n->value;
-		LSValue::delete_temporary(key);
-		try {
-			return &map->at(kv);
-		} catch (std::exception&) {
-			auto r = map->insert({kv, 0});
-			return &r.first->second;
-		}
-	}
-	return nullptr;
-}
 template <>
-inline int* LSMap<LSValue*, int>::atLv(LSValue* key) const {
-	auto map = (std::map<LSValue*, int, lsmap_less<LSValue*>>*) this;
+inline LSValue** LSMap<double, LSValue*>::atL(const LSValue* key) {
+	if (key->type == NUMBER) {
+		auto r = this->atL_base(static_cast<const LSNumber*>(key)->value);
+		LSValue::delete_temporary(key);
+		return r;
+	}
+	LSValue::delete_temporary(key);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
+}
+
+template <class K, class T>
+inline T* LSMap<K, T>::atL_base(K key) const {
+	auto map = (std::map<K, T, lsmap_less<K>>*) this;
 	try {
-		return &map->at((LSValue*) key);
+		auto r = &map->at(key);
+		ls::release(key);
+		return r;
 	} catch (std::exception&) {
-		key->refs++;
-		auto r = map->insert({(LSValue*) key, 0});
+		ls::move_inc(key);
+		auto r = map->insert({key, ls::construct<T>()});
 		return &r.first->second;
 	}
 }

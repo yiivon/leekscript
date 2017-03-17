@@ -331,25 +331,37 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 
 	} else if (array->type.raw_type == RawType::MAP) {
 
-		if (array->type == Type::PTR_PTR_MAP) {
-			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, LSValue*>* map, LSValue* key) {
-				LSValue** res = map->atL(key);
-				LSValue::delete_temporary(key);
-				return res;
-			});
-		} else if (array->type == Type::PTR_INT_MAP) {
+		if (array->type == Type::PTR_INT_MAP) {
 			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, int>* map, LSValue* key) {
-				int* res = map->atLv(key);
-				LSValue::delete_temporary(key);
-				return res;
+				return map->atL_base(key);
+			});
+		} else if (array->type == Type::PTR_REAL_MAP) {
+			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, double>* map, LSValue* key) {
+				return map->atL_base(key);
+			});
+		} else if (array->type == Type::REAL_PTR_MAP) {
+			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<double, LSValue*>* map, double key) {
+				return map->atL_base(key);
+			});
+		} else if (array->type == Type::REAL_INT_MAP) {
+			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<double, int>* map, double key) {
+				return map->atL_base(key);
 			});
 		} else if (array->type == Type::INT_PTR_MAP) {
 			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<int, LSValue*>* map, int key) {
-				return map->atL(LSNumber::get(key));
+				return map->atL_base(key);
 			});
 		} else if (array->type == Type::INT_INT_MAP) {
 			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<int, int>* map, int key) {
-				return map->atLv(LSNumber::get(key));
+				return map->atL_base(key);
+			});
+		} else if (array->type == Type::INT_INT_MAP) {
+			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<int, int>* map, int key) {
+				return map->atL_base(key);
+			});
+		} else {
+			return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, LSValue*>* map, LSValue* key) {
+				return map->atL_base(key);
 			});
 		}
 	} else {
