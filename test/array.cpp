@@ -64,6 +64,8 @@ void Test::test_arrays() {
 	code("let a = ['a', 'b'] a + (x -> x)").equals("['a', 'b', <function>]");
 	code("['a', 'b'] + Number").equals("['a', 'b', <class Number>]");
 	code("let a = ['a', 'b'] a + Number").equals("['a', 'b', <class Number>]");
+	code("let a = [1, 2] a + [3, 4]").equals("[1, 2, 3, 4]");
+	code("let a = ['a'] [3.5, 4.6] + a").equals("[3.5, 4.6, 'a']");
 
 	section("Array.operator ~");
 	code("let a = [1, 2, 3]; ~a").equals("[3, 2, 1]");
@@ -182,6 +184,7 @@ void Test::test_arrays() {
 	code("[1, 2, '3'] < [1, 2, 3]").equals("false");
 	code("[1, 1, '3'] < [1, 2, 3]").equals("true");
 	code("[[1, 2, 3], 1][0] < 5").equals("false");
+	code("ptr([1, 2, 3]) < <>").equals("true");
 
 	section("Array.operator ==");
 	code("[] == []").equals("true");
@@ -280,6 +283,7 @@ void Test::test_arrays() {
 
 	section("Array.sort()");
 	code("let x = [3, 1, 2] x.sort() x").equals("[1, 2, 3]");
+	code("let x = [3.1, 3.2, 2.7] x.sort() x").equals("[2.7, 3.1, 3.2]");
 	code("let x = ['foo', 'yop', 'abc'] x.sort() x").equals("['abc', 'foo', 'yop']");
 	code("let x = [[[]], [[], [], []], [[], []]]; x.sort() x").equals("[[[]], [[], []], [[], [], []]]");
 	code("let x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x").equals("[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
