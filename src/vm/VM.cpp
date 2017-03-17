@@ -244,12 +244,6 @@ jit_type_t VM::get_jit_type(const Type& type) {
 	if (type.nature == Nature::POINTER or type.nature == Nature::UNKNOWN) {
 		return LS_POINTER;
 	}
-	if (type.raw_type == RawType::UNSIGNED_LONG) {
-		return jit_type_ulong;
-	}
-	if (type.raw_type == RawType::UNSIGNED_INTEGER) {
-		return jit_type_uint;
-	}
 	if (type.raw_type == RawType::MPZ) {
 		return VM::mpz_type;
 	}

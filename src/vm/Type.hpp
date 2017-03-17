@@ -176,9 +176,7 @@ public:
 	static const BooleanRawType _BOOLEAN;
 	static const NumberRawType _NUMBER;
 	static const MpzRawType _MPZ;
-	static const IntegerRawType _UNSIGNED_INTEGER;
 	static const IntegerRawType _INTEGER;
-	static const LongRawType _UNSIGNED_LONG;
 	static const LongRawType _LONG;
 	static const FloatRawType _REAL;
 	static const StringRawType _STRING;
@@ -196,9 +194,7 @@ public:
 	static const BooleanRawType* const BOOLEAN;
 	static const NumberRawType* const NUMBER;
 	static const MpzRawType* const MPZ;
-	static const IntegerRawType* const UNSIGNED_INTEGER;
 	static const IntegerRawType* const INTEGER;
-	static const LongRawType* const UNSIGNED_LONG;
 	static const LongRawType* const LONG;
 	static const FloatRawType* const REAL;
 	static const StringRawType* const STRING;
@@ -288,11 +284,9 @@ public:
 	static const Type NUMBER_VALUE;
 	static const Type NUMBER;
 	static const Type INTEGER;
-	static const Type UNSIGNED_INTEGER;
 	static const Type MPZ;
 	static const Type MPZ_TMP;
 	static const Type LONG;
-	static const Type UNSIGNED_LONG;
 	static const Type REAL;
 	static const Type STRING;
 	static const Type STRING_TMP;
