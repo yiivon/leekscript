@@ -8,6 +8,8 @@ namespace ls {
 SetSTD::SetSTD() : Module("Set") {
 
 	LSSet<LSValue*>::clazz = clazz;
+	LSSet<int>::clazz = clazz;
+	LSSet<double>::clazz = clazz;
 
 	/*
 	 * Operators
