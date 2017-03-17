@@ -64,6 +64,7 @@ void Test::test_json() {
 	code("['a', 'b', 'c'].json()").equals("'[\"a\", \"b\", \"c\"]'");
 	// set
 	code("<1, 2, 3>.json()").equals("'[1, 2, 3]'");
+	code("<9.99>.json()").equals("'[9.990000]'");
 	code("<'a', 'b', 'c'>.json()").equals("'[\"a\", \"b\", \"c\"]'");
 	// map
 	code("[1: 1].json()").equals("'{\"1\": 1}'");
