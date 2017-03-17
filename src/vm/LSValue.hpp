@@ -317,6 +317,14 @@ namespace ls {
 		return v;
 	}
 
+	template <class T> void increfs(T v) {}
+	template <> inline void increfs(LSValue* v) {
+		v->refs++;
+	}
+	template <> inline void increfs(const LSValue* v) {
+		((LSValue*) v)->refs++;
+	}
+
 	template <class T> T move(T v) { return v; }
 	template <> inline LSValue* move(LSValue* v) {
 		return v->move();
