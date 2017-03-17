@@ -215,13 +215,9 @@ bool LSSet<T>::set_lt(const LSSet<T2>* set) const {
 	while (i != this->end()) {
 		if (j == set->end())
 			return false;
-		if ((*i)->type > LSValue::NUMBER)
-			return false;
-		if ((*i)->type < LSValue::NUMBER)
+		if (ls::lt(*i, *j))
 			return true;
-		if (((LSNumber*) *i)->value < *j)
-			return true;
-		if (*j < ((LSNumber*) *i)->value)
+		if (ls::lt(*j, *i))
 			return false;
 		++i;
 		++j;
@@ -248,22 +244,7 @@ inline bool LSSet<LSValue*>::lt(const LSValue* v) const {
 template <typename T>
 inline bool LSSet<T>::lt(const LSValue* v) const {
 	if (auto set = dynamic_cast<const LSSet<LSValue*>*>(v)) {
-		auto i = this->begin();
-		auto j = set->begin();
-		while (i != this->end()) {
-			if (j == set->end())
-				return false;
-			if ((*j)->type < LSValue::NUMBER)
-				return false;
-			if ((*j)->type > LSValue::NUMBER)
-				return true;
-			if (*i < ((LSNumber*) *j)->value)
-				return true;
-			if (((LSNumber*) *j)->value < *i)
-				return false;
-			++i; ++j;
-		}
-		return j != set->end();
+		return set_lt(set);
 	}
 	if (auto set = dynamic_cast<const LSSet<int>*>(v)) {
 		return std::lexicographical_compare(this->begin(), this->end(), set->begin(), set->end());
