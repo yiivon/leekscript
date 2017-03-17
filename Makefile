@@ -26,7 +26,7 @@ OBJ_PROFILE := $(patsubst %.cpp,build/profile/%.o,$(SRC))
 
 OPTIM := -O2
 FLAGS := -std=c++17 -g3 -Wall -Wextra -Wno-pmf-conversions
-LIBS := -ljit -lgmpxx -lgmp
+LIBS := -ljit -lgmp
 MAKEFLAGS += --jobs=$(shell nproc)
 
 .PHONY: test
