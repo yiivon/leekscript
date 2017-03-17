@@ -291,7 +291,7 @@ inline LSValue* LSSet<T>::clone() const {
 }
 
 template <typename T>
-LSValue*LSSet<T>::getClass() const {
+LSValue* LSSet<T>::getClass() const {
 	return LSSet<T>::clazz;
 }
 
