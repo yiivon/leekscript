@@ -22,7 +22,7 @@ void Test::test_map() {
 	/*
 	 * Operators
 	 */
-	std::vector<std::string> maps = {"[5: 5]", "[5: 9.99]", "[5: 'abc']", "[9.99: 5]", "[9.99: 9.99]", "['abc': 5]", "['abc': 9.99]", "['abc': 'abc']"};
+	std::vector<std::string> maps = {"[5: 5]", "[5: 9.99]", "[5: 'abc']", "[9.99: 5]", "[9.99: 9.99]", "[9.99: 'abc']", "['abc': 5]", "['abc': 9.99]", "['abc': 'abc']"};
 
 	section("Map.operator ==");
 	code("['a': 'b'] == [1: 1]").equals("false");
