@@ -43,6 +43,10 @@ LSValue::LSValue(const LSValue& o) : type(o.type), refs(0) {
 	#endif
 }
 
+LSValue* LSValue::get() {
+	return LSNull::get();
+}
+
 template <class T>
 LSValue* LSValue::get(T v) {
 	return LSNull::get();

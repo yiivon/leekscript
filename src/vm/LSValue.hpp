@@ -144,6 +144,7 @@ public:
 
 	bool isInteger() const;
 
+	static LSValue* get();
 	template <class T> static LSValue* get(T v);
 	static LSValue* parse(Json& json);
 	static LSValue* get_from_json(Json& json);
@@ -369,6 +370,14 @@ namespace ls {
 	}
 	template <> inline double convert(LSValue* v) {
 		return v->real();
+	}
+
+	template <class T> T construct() { return {}; }
+	template <> inline LSValue* construct() {
+		return LSValue::get();
+	}
+	template <> inline const LSValue* construct() {
+		return LSValue::get();
 	}
 }
 
