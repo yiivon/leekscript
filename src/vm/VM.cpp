@@ -70,6 +70,10 @@ LSValue* op_mod(void*, LSValue* x, LSValue* y) {
 	return x->mod(y);
 }
 
+LSValue* ptr_fun(void*, LSValue* v) {
+	return v->move();
+}
+
 VM::VM(bool v1) : compiler(this) {
 
 	null_value = LSNull::create();
@@ -110,6 +114,16 @@ VM::VM(bool v1) : compiler(this) {
 		system_vars.insert({ops[o], fun});
 		add_internal_var(ops[o], op_type);
 	}
+
+	Type ptr_type = Type(RawType::FUNCTION, Nature::POINTER);
+	ptr_type.setArgumentType(0, Type::POINTER);
+	ptr_type.setReturnType(Type::POINTER);
+	auto fun = new LSFunction<LSValue*>((void*) ptr_fun);
+	fun->refs = 1;
+	fun->args = {value_class};
+	fun->return_type = value_class;
+	system_vars.insert({"ptr", fun});
+	add_internal_var("ptr", ptr_type);
 
 	// Add v1 functions
 	if (v1) {
