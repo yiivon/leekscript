@@ -74,15 +74,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	/*
 	 * Methods
 	 */
-	method("string", {
- 		{Type::UNKNOWN, Type::STRING, {}, (void*) &ValueSTD::to_string}
- 	});
-	method("json", {
-		{Type::UNKNOWN, Type::STRING, {}, (void*) &JsonSTD::encode}
-	});
-	method("typeID", {
-		{Type::UNKNOWN, Type::INTEGER, {}, (void*) &ValueSTD::typeID}
-	});
+	method("string", Type::UNKNOWN, Type::STRING, {}, (void*) &ValueSTD::to_string);
+	method("json", Type::UNKNOWN, Type::STRING, {}, (void*) &JsonSTD::encode);
+	method("typeID", Type::UNKNOWN, Type::INTEGER, {}, (void*) &ValueSTD::typeID);
 }
 
 /*
