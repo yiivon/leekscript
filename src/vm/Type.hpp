@@ -14,7 +14,7 @@ class BaseRawType {
 public:
 	virtual ~BaseRawType() = 0;
 	virtual int id() const { return 0; }
-	virtual const std::string getName() const { return "?"; }
+	virtual const std::string getName() const = 0;
 	virtual const std::string getClass() const { return "?"; }
 	virtual const std::string getJsonName() const { return "?"; }
 	virtual bool iterable() const { return false; }
@@ -24,6 +24,7 @@ public:
 class UnknownRawType : public BaseRawType {
 public:
 	virtual ~UnknownRawType() {}
+	virtual const std::string getName() const { return "?"; }
 };
 
 class VoidRawType : public BaseRawType {
