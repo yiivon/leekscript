@@ -240,13 +240,6 @@ LSValue* LSValue::clone() const {
 	return (LSValue*) this;
 }
 
-bool LSValue::isInteger() const {
-	if (const LSNumber* v = dynamic_cast<const LSNumber*>(this)) {
-		return v->isInteger();
-	}
-	return false;
-}
-
 LSValue* LSValue::get_from_json(Json& json) {
 	switch (json.type()) {
 		case Json::value_t::null:

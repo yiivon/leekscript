@@ -142,8 +142,6 @@ public:
 
 	virtual LSValue* getClass() const = 0;
 
-	bool isInteger() const;
-
 	static LSValue* get();
 	template <class T> static LSValue* get(T v);
 	static LSValue* parse(Json& json);
