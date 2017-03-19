@@ -107,9 +107,6 @@ void Test::test_functions() {
 	section("Operator []");
 	code("let f = x -> x f[2] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
-	section("Operator []");
-	code("let f = x -> x f[2] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-
 	section("Function operators");
 	// TODO parsing issue
 //	code("+(1, 2)").equals("3");
