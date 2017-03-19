@@ -263,6 +263,11 @@ bool LSSet<T>::in(T value) const {
 	return r;
 }
 
+template <class T>
+int LSSet<T>::abso() const {
+	return this->size();
+}
+
 template <typename T>
 inline std::ostream& LSSet<T>::dump(std::ostream& os) const {
 	os << "<";

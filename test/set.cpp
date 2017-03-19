@@ -24,6 +24,12 @@ void Test::test_set() {
 	code("!<'a', 'b'>").equals("false");
 	code("!<>").equals("true");
 
+	section("Set.operator |x|");
+	code("|<>|").equals("0");
+	code("|<1, 2, 3>|").equals("3");
+	code("|<1.2, 2.6132>|").equals("2");
+	code("|<'a', 'c', 'b', 'd'>|").equals("4");
+
 	section("Set.operator in ()");
 	code("let s = <1, 2> 3 in s").equals("false");
 	code("let s = <1, 2> 1 in s").equals("true");
