@@ -215,6 +215,7 @@ LSValue* LSValue::attr(const std::string& key) const {
 	}
 	auto method = ((LSClass*) getClass())->getDefaultMethod(key);
 	if (method == nullptr) {
+		LSValue::delete_temporary(this);
 		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_ATTRIBUTE));
 	}
 	return method;
