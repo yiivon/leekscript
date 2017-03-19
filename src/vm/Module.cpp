@@ -66,9 +66,8 @@ void Module::static_method(string name, Type return_type, initializer_list<Type>
 void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
 	ifstream f;
-	try {
-		f.open(translation_file);
-	} catch (std::exception& e) {
+	f.open(translation_file);
+	if (!f.good()) {
 		return; // no file
 	}
 	stringstream j;
