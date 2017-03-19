@@ -17,7 +17,7 @@ LSInterval::~LSInterval() {}
 LSArray<int>* LSInterval::ls_filter(LSFunction<bool>* function) {
 	auto fun = (bool (*)(void*, int)) function->function;
 
-	LSArray<int>* new_array = new LSArray<int>();
+	auto new_array = new LSArray<int>();
 
 	int i = this->a;
 	while (i <= b) {
