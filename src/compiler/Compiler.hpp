@@ -128,6 +128,7 @@ public:
 	}
 	value insn_call(Type return_type, std::vector<value> args, void* func) const;
 	void function_add_capture(Compiler::value fun, Compiler::value capture);
+	void log(const std::string&& str) const;
 
 	// Blocks
 	void enter_block();

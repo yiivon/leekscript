@@ -416,6 +416,14 @@ void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture
 	});
 }
 
+void Compiler::log(const std::string&& str) const {
+	auto s = new_pointer(new std::string(str));
+	insn_call(Type::VOID, {s}, +[](std::string* s) {
+		std::cout << *s << std::endl;
+		delete s;
+	});
+}
+
 /*
  * Iterators
  */
