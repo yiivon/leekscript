@@ -221,19 +221,27 @@ LSValue* LSValue::attr(const std::string& key) const {
 }
 
 LSValue** LSValue::attrL(const std::string&) {
-	return nullptr;
+	delete_temporary(this);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::range(int, int) const {
-	return clone();
+	delete_temporary(this);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::rangeL(int, int) {
-	return this;
+	delete_temporary(this);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
 }
 
 int LSValue::abso() const {
-	return 0;
+	delete_temporary(this);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
 }
 
 LSValue* LSValue::clone() const {
