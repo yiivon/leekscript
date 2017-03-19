@@ -18,9 +18,7 @@ Documentation::Documentation() {}
 
 Documentation::~Documentation() {}
 
-void Documentation::generate(ostream& os) {
-
-	string lang = "fr";
+void Documentation::generate(ostream& os, std::string lang) {
 
 	vector<Module*> modules;
 
