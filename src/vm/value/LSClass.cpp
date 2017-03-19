@@ -99,9 +99,13 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 }
 
 LSFunction<LSValue*>* LSClass::getDefaultMethod(const string& name) {
-	ModuleStaticField f = static_fields.at(name);
-	f.value->refs++;
-	return (LSFunction<LSValue*>*) f.value;
+	try {
+		ModuleStaticField f = static_fields.at(name);
+		f.value->refs++;
+		return (LSFunction<LSValue*>*) f.value;
+	} catch (...) {
+		return nullptr;
+	}
 }
 
 LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type& operand_type) {
