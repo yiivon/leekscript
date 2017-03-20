@@ -18,6 +18,9 @@ void Test::test_general() {
 	auto a = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
 	std::cout << a->message() << std::endl;
 	delete a;
+	// Print a list of types
+	std::vector<ls::Type> types { ls::Type::INTEGER, ls::Type::STRING, ls::Type::REAL_ARRAY };
+	std::cout << types << std::endl;
 
 	header("Basic codes");
 	code("").equals("(void)");
