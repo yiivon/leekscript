@@ -417,7 +417,7 @@ void Test::test_numbers() {
 	 * Methods
 	 */
 	section("Number.abs()");
-//	code("Number.abs").equals("<function>");
+	code("Number.abs").equals("<function>");
 	code("Number.abs(-12)").equals("12");
 	code("Number.abs(-12.67)").almost(12.67);
 	code("Number.abs(['a', -15][1])").equals("15");

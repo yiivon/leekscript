@@ -132,5 +132,5 @@ void Test::test_map() {
 	code("[-1.111: ':)', 6.6: ':/', 9: ':D'].values()").equals("[':)', ':/', ':D']");
 	code("['yolo': 3, false: 1, 12: 4].values()").equals("[1, 4, 3]");
 	code("[[]: 3.7, [1: 2]: 1.3, {x: 12}: 4.8].values()").equals("[3.7, 1.3, 4.8]");
-	//code("[(x, y -> x + y): (x, y -> x - y), null: 'null', <'a', 'b'>: 0].values()").equals("['null', 0, <function>]");
+	code("[(x, y -> x + y): (x, y -> x - y), null: 'null', <'a', 'b'>: 0].values()").equals("['null', 0, <function>]");
 }

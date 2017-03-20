@@ -48,8 +48,8 @@ void Test::test_functions() {
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
 	code("let f = a, i -> a[i] f([1 2 3], 1)").equals("2");
-	// code("[x -> x][0]").equals("<function>");
-	// code("let f = x = 2 -> x + 1 f").equals("<function>");
+	code("[x -> x][0]").equals("<function>");
+	code("let f = x = 2 -> x + 1 f").equals("<function>");
 	code("let f = b -> if b { 2 } else { 3 } f(false)").equals("3");
 	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
 
@@ -59,15 +59,21 @@ void Test::test_functions() {
 
 	section("Closures");
 	code("let a = 5 let f = -> a f()").equals("5");
-	//code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	code("let a = 5 let f = -> @a f()").equals("5");
+	code("let a = 12 let f = -> -> a f()()").equals("12");
+	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
+	code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
+	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
 	code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
-	//code("let f = x -> y -> x + y f(5)(12)").equals("17");
+	code("let f = x -> y -> x + y f(5)(12)").equals("17");
 	code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
 	code("let f = x -> x (-> f(12))()").equals("12");
 	code("let f = x -> x let g = x -> f(x) g(12)").equals("12");
 	code("let g = x -> x ** 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
 	code("let a = 5 let f = x -> x < a [1, 2, 3, 4, 5, 6].filter(f)").equals("[1, 2, 3, 4]");
 	code("var g = x => { var y = 2; return x + y } g(10)").equals("12");
+	code("let a = 12, b = 13, c = 14 let f = x -> x + a + b + c f(5)").equals("44");
 
 	section("Recursive");
 	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
@@ -136,7 +142,7 @@ void Test::test_functions() {
 	code("let p = % p(48, 5)").equals("3");
 	code("let p = ** p(2, 11)").equals("2048");
 	code("let p = \\ p(72, 7)").equals("10");
-	// code("+").equals("<function>");
+	code("+").equals("<function>");
 	code("+.class").equals("<class Function>");
 	code("let p = +; p.class").equals("<class Function>");
 
@@ -152,8 +158,8 @@ void Test::test_functions() {
 	code("[x -> x, ''][0] < 5").equals("false");
 
 	section("STD method");
-	//code("String.size").equals("<function>");
-	//code("Number.cos").equals("<function>");
+	code("String.size").equals("<function>");
+	code("Number.cos").equals("<function>");
 
 	section("Function reflexion");
 	code("(x -> 12).return").equals("<class Number>");
@@ -188,16 +194,16 @@ void Test::test_functions() {
 	code("var x = 1 let f = (@x = 2) + 1 f").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"@x"});
 	code("var x = 12 (@x) null").equals("null"); // TODO no null at the end
 	code("var x = 12 (x)").equals("12");
-	// code("(@x, @y) -> x + y").equals("<function>");
-	// code("@x, @y -> x + y").equals("<function>");
+	code("(@x, @y) -> x + y").equals("<function>");
+	code("@x, @y -> x + y").equals("<function>");
 	code("let f = (@x, @y) -> x + y").equals("(void)");
 	code("let f = @x, @y -> x + y").equals("(void)");
 
 	section("Default arguments");
 	// TODO crash
-	// code("(x = 10) -> x").equals("<function>");
-	// code("x = 10 -> x").equals("<function>");
-	// code("(x = 10 -> x)").equals("<function>");
+	code("(x = 10) -> x").equals("<function>");
+	code("x = 10 -> x").equals("<function>");
+	code("(x = 10 -> x)").equals("<function>");
 	code("let f = x = 10 -> x f()").equals("10");
 	code("let f = (x = 10) -> x f()").equals("10");
 	code("let f = (x = -10) -> x f()").equals("-10");
@@ -226,7 +232,7 @@ void Test::test_functions() {
 
 	section("Default arguments : expert");
 	// TODO crash
-	// code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
+	code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f([])").equals("[]");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f(2)").equals("2");
 	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
