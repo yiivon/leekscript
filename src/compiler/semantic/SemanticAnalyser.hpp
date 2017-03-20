@@ -32,12 +32,17 @@ public:
 	Type type;
 	std::map<std::string, Type> attr_types;
 	int index;
+	int parent_index;
 	Value* value;
 	VariableDeclaration* vd;
 	Function* function; // In which function the variable is declared
+	Type initial_type;
 
 	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function) :
-		name(name), scope(scope), type(type), index(index), value(value), vd(vd), function(function) {}
+		name(name), scope(scope), type(type), index(index), parent_index(0), value(value), vd(vd), function(function), initial_type(type) {}
+
+	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), type(o.type), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), initial_type(type) {}
+	
 	void must_be_pointer(SemanticAnalyser*);
 };
 

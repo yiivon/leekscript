@@ -19,9 +19,7 @@ LSClass::LSClass(string name) : LSValue(CLASS), name(name) {
 LSClass::~LSClass() {
 	for (auto s : static_fields) {
 		if (s.second.value != nullptr) {
-			// FIXME dirty hack to remove values with too much references
-			if (s.second.value->refs == 2) LSValue::delete_ref(s.second.value);
-			LSValue::delete_ref(s.second.value);
+			delete s.second.value;
 		}
 	}
 	for (auto m : default_methods) {
@@ -39,6 +37,7 @@ void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
 	// Add first implementation as default method
 	auto fun = new LSFunction<LSValue*>(method[0].addr);
 	fun->refs = 1;
+	fun->native = true;
 	Type type = method[0].type;
 	static_fields.insert({name, ModuleStaticField(name, type, fun)});
 }

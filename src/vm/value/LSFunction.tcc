@@ -82,6 +82,11 @@ LSValue* LSFunction<R>::attr(const std::string& key) const {
 }
 
 template <class R>
+LSValue* LSFunction<R>::clone() const {
+	return (LSValue*) this;
+}
+
+template <class R>
 std::ostream& LSFunction<R>::dump(std::ostream& os) const {
 	os << "<function>";
 	return os;

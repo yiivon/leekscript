@@ -24,7 +24,7 @@ Function::~Function() {
 		delete value;
 	}
 	if (ls_fun != nullptr) {
-		LSValue::delete_ref(ls_fun);
+		delete ls_fun;
 		ls_fun = nullptr;
 	}
 	if (context) {
@@ -114,8 +114,6 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 //	cout << "Function::analyse req_type " << req_type << endl;
 
-	captures.clear();
-
 	parent = analyser->current_function();
 
 	if (!function_added) {
@@ -146,6 +144,8 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (ls_fun == nullptr) {
 		ls_fun = new LSFunction<LSValue*>(nullptr);
 		ls_fun->refs = 1;
+		ls_fun->native = true;
+
 		ls_fun->return_type = LSNull::get();
 	}
 	update_function_args(analyser);
@@ -196,6 +196,8 @@ void Function::must_return(SemanticAnalyser* analyser, const Type& ret_type) {
 
 void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 
+	captures.clear();
+
 	analyser->enter_function(this);
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
@@ -243,19 +245,21 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 }
 
 int Function::capture(std::shared_ptr<SemanticVar> var) {
+	for (size_t i = 0; i < captures.size(); ++i) {
+		if (captures[i]->name == var->name)
+			return i;
+	}
+	var = std::make_shared<SemanticVar>(*var);
+	captures.push_back(var);
 
-	if (std::find(captures.begin(), captures.end(), var) == captures.end()) {
-
-//		cout << "Function::capture " << var->name << endl;
-
-		captures.push_back(var);
-
-		if (var->function != parent) {
-			parent->capture(var);
-		}
+	if (var->function != parent) {
+		auto new_var = std::make_shared<SemanticVar>(*var);
+		new_var->index = parent->capture(new_var);
+		var->scope = VarScope::CAPTURE;
+		var->parent_index = new_var->index;
 	}
 	type.nature = Nature::POINTER;
-	return std::distance(captures.begin(), std::find(captures.begin(), captures.end(), var));
+	return captures.size() - 1;
 }
 
 void Function::update_function_args(SemanticAnalyser* analyser) {
@@ -280,47 +284,46 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 
 Compiler::value Function::compile(Compiler& c) const {
 
-//	cout << "Function::compile : " << type << endl;
+	// Add captures
+	auto jit_fun = c.new_pointer(ls_fun);
+	for (const auto& cap : captures) {
+		jit_value_t jit_cap;
+		if (cap->scope == VarScope::LOCAL) {
+			jit_cap = c.get_var(cap->name).value;
+		} else if (cap->scope == VarScope::CAPTURE) {
+			jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
+		} else {
+			jit_cap = jit_value_get_param(c.F, 1 + cap->index);
+		}
+		if (cap->initial_type.nature != Nature::POINTER) {
+			jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->initial_type);
+		}
+		c.function_add_capture(jit_fun, {jit_cap, cap->type});
+	}
 
 	((Function*) this)->context = jit_context_create();
 	jit_context_build_start(context);
 
 	unsigned arg_count = arguments.size() + 1;
 	vector<jit_type_t> params = {LS_POINTER}; // first arg is the function pointer
-
 	for (unsigned i = 0; i < arg_count - 1; ++i) {
 		Type t = type.getArgumentType(i);
 		params.push_back(VM::get_jit_type(t));
 	}
-
 	jit_type_t return_type = VM::get_jit_type(type.getReturnType());
-
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
 	((Function*) this)->jit_function = jit_function_create(context, signature);
 	jit_type_free(signature);
 
-//	cout << "return type : " << type.getReturnType() << endl;
-
 	c.enter_function(jit_function);
 
-	// Execute function
 	auto res = body->compile(c);
 
-	// Return
 	jit_insn_return(jit_function, res.v);
-
 	jit_insn_rethrow_unhandled(jit_function);
-
-	//jit_dump_function(fopen("f_uncompiled", "w"), function, "f");
 
 	jit_function_compile(jit_function);
 	jit_context_build_end(context);
-
-	//jit_dump_function(fopen("f_compiled", "w"), function, "f");
-
-	void* f = jit_function_to_closure(jit_function);
-
-//	cout << "function : " << f << endl;
 
 	c.leave_function();
 
@@ -330,20 +333,9 @@ Compiler::value Function::compile(Compiler& c) const {
 	// Function are always pointers for now
 	// functions as a simple pointer value can be like :
 	// {c.new_pointer(f).v, type};
+	void* f = jit_function_to_closure(jit_function);
 	ls_fun->function = f;
-	auto jit_fun = c.new_pointer(ls_fun);
-	for (const auto& cap : captures) {
-		jit_value_t jit_cap;
-		if (cap->scope == VarScope::LOCAL) {
-			jit_cap = c.get_var(cap->name).value;
-		} else {
-			jit_cap = jit_value_get_param(c.F, 1 + cap->index);
-		}
-		if (cap->type.nature != Nature::POINTER) {
-			jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->type);
-		}
-		c.function_add_capture(jit_fun, {jit_cap, Type::POINTER});
-	}
+
 	return {jit_fun.v, type};
 }
 

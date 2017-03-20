@@ -40,6 +40,7 @@ public:
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 	LSValue* attr(const std::string& key) const override;
+	LSValue* clone() const override;
 	std::ostream& dump(std::ostream& os) const;
 	std::string json() const;
 	LSValue* getClass() const override;

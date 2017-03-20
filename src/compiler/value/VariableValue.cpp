@@ -31,13 +31,17 @@ unsigned VariableValue::line() const {
 }
 
 void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+
 	var = analyser->get_var(token);
+
 	if (var != nullptr) {
 		type = var->type;
+		var->initial_type = type;
 		scope = var->scope;
 		attr_types = var->attr_types;
 		if (scope != VarScope::INTERNAL and var->function != analyser->current_function()) {
 			capture_index = analyser->current_function()->capture(var);
+			var->index = capture_index;
 			scope = VarScope::CAPTURE;
   		}
 	} else {
@@ -97,7 +101,7 @@ extern map<string, jit_value_t> internals;
 
 Compiler::value VariableValue::compile(Compiler& c) const {
 
-//	cout << "compile vv " << name->content << " : " << type << endl;
+	// cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << endl;
 //	cout << "req type : " << req_type << endl;
 
 	if (scope == VarScope::CAPTURE) {
