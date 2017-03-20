@@ -160,7 +160,7 @@ inline LSValue* LSValue::clone_inc() {
 		return this;
 	} else {
 		LSValue* copy = clone();
-		copy->refs = 1;
+		copy->refs++;
 		return copy;
 	}
 }
