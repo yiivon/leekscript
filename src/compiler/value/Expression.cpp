@@ -308,15 +308,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::POWER_EQUAL) {
 		// TODO other operators like |= ^= &=
 
-		// Check if A is a l-value
-		bool is_left_value = true;
-		if (not v1->isLeftValue()) {
-			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), {v1->to_string()}});
-			is_left_value = false;
-		}
-
 		// A += B, A -= B
-		if (is_left_value and (op->type == TokenType::PLUS_EQUAL or op->type == TokenType::MINUS_EQUAL)) {
+		if (op->type == TokenType::PLUS_EQUAL or op->type == TokenType::MINUS_EQUAL) {
 			if (v1->type == Type::INTEGER and v2->type == Type::REAL) {
 				((LeftValue*) v1)->change_type(analyser, Type::REAL);
 			}
