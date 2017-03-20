@@ -607,9 +607,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 				});
 				return y;
 			} else {
-				std::cout << "Invalid " << v1->to_string() << " (" << equal_previous_type << " => " << v1->type << ") = " << v2->to_string() << " (" << v2->type << ")" << std::endl;
+				std::cout << "Invalid " << v1->to_string() << " (" << equal_previous_type << " => " << v1->type << ") = " << v2->to_string() << " (" << v2->type << ")" << std::endl; // LCOV_EXCL_LINE
+				assert(false); // LCOV_EXCL_LINE
 			}
-			break;
 		}
 		case TokenType::SWAP: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
@@ -964,10 +964,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		default: {
-			std::cout << "no such operator to compile : " << op->character << std::endl;
-			throw new exception();
+			std::cout << "No such operator to compile : " << op->character << std::endl; // LCOV_EXCL_LINE
+			assert(false); // LCOV_EXCL_LINE
 		}
-		}
+	}
 
 	if (use_jit_func) {
 
