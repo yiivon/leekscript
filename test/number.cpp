@@ -404,6 +404,9 @@ void Test::test_numbers() {
 	code("let a = -155 a >>>= 5 a").equals("134217723");
 	code("var a = [-155, ''] a[0] >>>= 5").equals("134217723");
 
+	section("Number.operator |x|");
+	code("var a = -12 [] + |a|").equals("[12]");
+
 	/*
 	 * Iteration
 	 */

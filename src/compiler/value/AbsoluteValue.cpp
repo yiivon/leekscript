@@ -38,6 +38,9 @@ Compiler::value AbsoluteValue::compile(Compiler& c) const {
 		return v->abso();
 	});
 	c.insn_delete_temporary(ex);
+	if (type.nature == Nature::POINTER) {
+		abso = c.insn_to_pointer(abso);
+	}
 	return abso;
 }
 
