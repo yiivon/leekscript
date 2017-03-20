@@ -18,6 +18,7 @@ public:
 	virtual const std::string getClass() const { return "?"; }
 	virtual const std::string getJsonName() const { return "?"; }
 	virtual bool iterable() const { return false; }
+	virtual bool is_container() const { return false; }
 	virtual int size() const { return 64; }
 };
 
@@ -95,6 +96,7 @@ public:
 	virtual const std::string getClass() const { return "String"; }
 	virtual const std::string getJsonName() const { return "string"; }
 	virtual bool iterable() const { return true; }
+	virtual bool is_container() const { return true; }
 };
 
 class ArrayRawType : public BaseRawType {
@@ -104,6 +106,7 @@ public:
 	virtual const std::string getClass() const { return "Array"; }
 	virtual const std::string getJsonName() const { return "array"; }
 	virtual bool iterable() const { return true; }
+	virtual bool is_container() const { return true; }
 };
 
 class MapRawType : public BaseRawType {
@@ -113,6 +116,7 @@ public:
 	virtual const std::string getClass() const { return "Map"; }
 	virtual const std::string getJsonName() const { return "map"; }
 	virtual bool iterable() const { return true; }
+	virtual bool is_container() const { return true; }
 };
 
 class SetRawType : public BaseRawType {
@@ -131,6 +135,7 @@ public:
 	virtual const std::string getClass() const { return "Interval"; }
 	virtual const std::string getJsonName() const { return "interval"; }
 	virtual bool iterable() const { return true; }
+	virtual bool is_container() const { return true; }
 };
 
 class ObjectRawType : public BaseRawType {
@@ -261,6 +266,7 @@ public:
 
 	bool isNumber() const;
 	bool iterable() const;
+	bool is_container() const;
 	int size() const;
 	Type not_temporary() const;
 

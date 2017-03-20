@@ -313,6 +313,10 @@ bool Type::iterable() const {
 	return raw_type->iterable();
 }
 
+bool Type::is_container() const {
+	return raw_type->is_container();
+}
+
 int Type::size() const {
 	if (nature == Nature::POINTER) {
 		return 64;
