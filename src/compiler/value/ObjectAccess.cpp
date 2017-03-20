@@ -136,7 +136,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		Compiler::value res = fun(c);
 
 		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, res.v, type), type};
+			return {VM::value_to_pointer(c.F, res.v, field_type), type};
 		}
 		return res;
 	}

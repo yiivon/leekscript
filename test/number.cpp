@@ -134,6 +134,7 @@ void Test::test_numbers() {
 
 	section("Constants");
 	code("Number.pi").almost(3.141592653589793116);
+	code("['', Number.pi]").equals("['', 3.1415926536]");
 	code("2 × Number.pi").almost(6.283185307179586232);
 	code("Number.e").almost(2.718281828459045091);
 	code("Number.phi").almost(1.618033988749894903);
