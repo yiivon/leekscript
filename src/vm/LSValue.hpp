@@ -388,7 +388,6 @@ namespace ls {
 }
 
 namespace std {
-	std::string to_string(ls::LSValue* value);
 	std::ostream& operator << (std::ostream&, const ls::LSValue*);
 }
 

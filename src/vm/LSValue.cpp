@@ -307,11 +307,6 @@ std::string LSValue::json() const {
 }
 
 namespace std {
-	std::string to_string(ls::LSValue* value) {
-		std::ostringstream oss;
-		value->dump(oss);
-		return oss.str();
-	}
 	std::ostream& operator << (std::ostream& os, const ls::LSValue* value) {
 		value->dump(os);
 		return os;
