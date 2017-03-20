@@ -69,9 +69,6 @@ public:
 
 	int abso() const override;
 
-	int integer() const override;
-	double real() const override;
-
 	LSValue* clone() const override;
 
 	std::ostream& dump(std::ostream& os) const override;

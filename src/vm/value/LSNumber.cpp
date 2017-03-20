@@ -490,14 +490,6 @@ int LSNumber::abso() const {
 	return abs((int) value);
 }
 
-int LSNumber::integer() const {
-	return value;
-}
-
-double LSNumber::real() const {
-	return value;
-}
-
 LSValue* LSNumber::clone() const {
 	return LSNumber::get(this->value);
 }
