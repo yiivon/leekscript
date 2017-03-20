@@ -194,7 +194,7 @@ std::string Program::execute() {
 	}
 
 	auto fun = (LSValue* (*)()) closure;
-	LSValue* ptr = fun();
+	auto ptr = fun();
 	if (VM::last_exception) throw VM::last_exception;
 	std::ostringstream oss;
 	ptr->dump(oss);
