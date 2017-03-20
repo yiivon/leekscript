@@ -14,6 +14,12 @@ using namespace std;
 void Test::test_general() {
 
 	header("General");
+	// Print a syntaxical error
+	auto a = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
+	std::cout << a->message() << std::endl;
+	delete a;
+
+	header("Basic codes");
 	code("").equals("(void)");
 	code(" ").equals("(void)"); // classic space
 	code(" ").equals("(void)"); // unbreakable space

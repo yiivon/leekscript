@@ -26,10 +26,6 @@ int Test::all() {
 	clock_t begin = clock();
 	exeTime = 0;
 
-	auto a = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
-	std::cout << a->message() << std::endl;
-	delete a;
-
 	test_general();
 	test_booleans();
 	test_numbers();
