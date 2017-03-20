@@ -31,7 +31,7 @@ std::string SemanticError::build_message(Type type, std::vector<std::string> par
 	if (!translation_loaded) {
 		try {
 			translation = Json::parse(Util::read_file("src/doc/semantic_exception_fr.json"));
-		} catch (exception&) {}
+		} catch (exception&) {} // LCOV_EXCL_LINE
 		translation_loaded = true;
 	}
 
@@ -46,8 +46,8 @@ std::string SemanticError::build_message(Type type, std::vector<std::string> par
 			i++;
 		}
 		return m;
-	} catch (exception&) {
-		return type_to_string(type);
+	} catch (exception&) { // LCOV_EXCL_LINE
+		return type_to_string(type); // LCOV_EXCL_LINE
 	}
 }
 
