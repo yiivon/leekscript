@@ -21,6 +21,7 @@ public:
 
 	void* function;
 	std::vector<LSValue*> captures;
+	std::vector<bool> captures_native;
 	// For reflexion
 	std::vector<LSValue*> args;
 	LSValue* return_type;

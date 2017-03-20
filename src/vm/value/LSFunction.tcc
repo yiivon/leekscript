@@ -19,7 +19,7 @@ LSFunction<R>::LSFunction(void* function) : LSValue(FUNCTION) {
 template <class R>
 LSFunction<R>::~LSFunction() {
 	for (size_t i = 0; i < captures.size(); ++i) {
-		if (captures[i] != this)
+		if (!captures_native[i] and captures[i] != this)
 			LSValue::delete_ref(captures[i]);
 	}
 }
@@ -30,6 +30,7 @@ void LSFunction<R>::add_capture(LSValue* value) {
 		value->refs++;
 	}
 	captures.push_back(value);
+	captures_native.push_back(value->native);
 }
 
 template <class R>
