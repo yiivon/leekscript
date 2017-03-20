@@ -58,13 +58,13 @@ void Test::test_operators() {
 	code("var a = null a /= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = null a **= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = null a %= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("let a = null a[0]").equals("null");
+	code("let a = null a[0]").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"a"});
 	code("let a = null !a").equals("true");
 	code("|null|").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("null[2] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("null[2:5]").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("null[2:5] = 4").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-
+	code("null[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
+	code("null[2:5]").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
+	code("null[2:5] = 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
+	code("2[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"2"});
 	/*
 	a ~~ b => (a ~~ b)
 	a ~ ~b => a ~ (~b)

@@ -44,6 +44,12 @@ void ArrayAccess::print(std::ostream& os, int indent, bool debug) const {
 void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	array->analyse(analyser, Type::UNKNOWN);
+
+	if (array->type.raw_type != RawType::UNKNOWN and !array->type.is_container()) {
+		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, 0, {array->to_string()}});
+		return;
+	}
+
 	key->analyse(analyser, Type::UNKNOWN);
 	constant = array->constant && key->constant;
 

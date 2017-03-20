@@ -16,5 +16,6 @@
 	"CANT_MODIFY_CONSTANT_VALUE": "Cette valeur « %s » est constante, impossible de la modifier",
 	"VALUE_NOT_ITERABLE" : "Cette valeur « %1 » de type %2 n'est pas itérable",
 	"INVALID_MAP_KEY": "Cette clé « %1 » d'accès à la map « %2 » doit être un nombre, mais est de type %3",
-	"NO_SUCH_ATTRIBUTE": "L'attribut « %1 » n'existe pas dans la classe %2"
+	"NO_SUCH_ATTRIBUTE": "L'attribut « %1 » n'existe pas dans la classe %2",
+	"VALUE_MUST_BE_A_CONTAINER": "Cette valeur « %s » doit être un conteneur"
 }
