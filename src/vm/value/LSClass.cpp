@@ -50,10 +50,6 @@ void LSClass::addStaticField(ModuleStaticField f) {
 	static_fields.insert({f.name, f});
 }
 
-void LSClass::addStaticField(std::string name, Type type, LSValue* value) {
-	static_fields.insert({name, ModuleStaticField(name, type, value)});
-}
-
 void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
 	operators.insert({name, impl});
 }
