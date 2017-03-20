@@ -242,7 +242,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			c.inc_ops(2);
 
-			if (array_element_type == Type::INTEGER and type.nature == Nature::POINTER) {
+			if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 				return {VM::value_to_pointer(c.F, res, type), type};
 			}
 			return {res, type};
