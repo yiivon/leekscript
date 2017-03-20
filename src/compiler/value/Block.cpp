@@ -88,10 +88,7 @@ Compiler::value Block::compile(Compiler& c) const {
 		if (i == instructions.size() - 1) {
 			if (type.must_manage_memory()) {
 				auto ret = c.insn_call(type, {val}, +[](LSValue* value) {
-					if (value->refs == 0 || value->native) {
-						return value;
-					}
-					return value->clone();
+					return value->move();
 				});
 				c.leave_block();
 				return ret;
