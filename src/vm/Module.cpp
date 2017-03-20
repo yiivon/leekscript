@@ -82,8 +82,8 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 	Json translation;
 	try {
 		translation = Json::parse(str);
-	} catch (std::exception& e) {
-		return; // error parsing json
+	} catch (std::exception& e) { // LCOV_EXCL_LINE
+		assert(false); // LCOV_EXCL_LINE
 	}
 
 	map<std::string, Json> translation_map;
