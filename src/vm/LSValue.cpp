@@ -276,7 +276,7 @@ LSValue* LSValue::get_from_json(Json& json) {
 			return object;
 		}
 		case Json::value_t::discarded:
-			return LSNull::get();
+			assert(false); // LCOV_EXCL_LINE
 	}
 	throw std::exception();
 }
