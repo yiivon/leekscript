@@ -416,6 +416,7 @@ void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture
 	});
 }
 
+// LCOV_EXCL_START
 void Compiler::log(const std::string&& str) const {
 	auto s = new_pointer(new std::string(str));
 	insn_call(Type::VOID, {s}, +[](std::string* s) {
@@ -423,6 +424,7 @@ void Compiler::log(const std::string&& str) const {
 		delete s;
 	});
 }
+// LCOV_EXCL_STOP
 
 /*
  * Iterators
