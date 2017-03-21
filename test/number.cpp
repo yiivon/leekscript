@@ -217,6 +217,7 @@ void Test::test_numbers() {
 	code("var a = 15★ a += [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = 10m a += 4m").equals("14");
 	code("var a = 10m a += 4m a").equals("14");
+	code("var a = 15 ['', a += 7]").equals("['', 22]");
 
 	section("Number.operator -");
 	code("1m - 2m").equals("-1");
@@ -237,6 +238,7 @@ void Test::test_numbers() {
 	code("var a = 15★ a -= true a").equals("14");
 	code("var a = 15★ a -= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = 15★ a -= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15 ['', a -= 6]").equals("['', 9]");
 
 	section("Number.operator *");
 	code("3m * 4m").equals("12");
@@ -256,6 +258,7 @@ void Test::test_numbers() {
 	code("var a = 15★ a *= false a").equals("0");
 	code("var a = 15★ a *= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = 15★ a *= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15★; ['', a *= 2]").equals("['', 30]");
 
 	section("Number.operator **");
 	code("14★ ** 3").equals("2744");
@@ -273,6 +276,7 @@ void Test::test_numbers() {
 	code("var a = 5★; a **= true").equals("5");
 	code("var a = 5★; a **= false").equals("1");
 	code("var a = 5★; a **= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 5★; ['', a **= 4]").equals("['', 625]");
 
 	section("Number.operator %");
 	code("721★ % 57★").equals("37");
@@ -335,14 +339,17 @@ void Test::test_numbers() {
 	code("let a = 10★; a \\ 4").equals("2");
 	code("14★ \\ []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("67.89★ \\ 1").equals("67");
+	code("['', 10 \\ 2]").equals("['', 5]");
 
 	section("Number.operator \\=");
+	code("var a = 12 a \\= 5").equals("2");
 	code("var a = 12★ a \\= 5").equals("2");
 	code("var a = 30★ a \\= 4 a").equals("7");
 	code("var a = 12★ a \\= true a").equals("12");
 	code("var a = 12★ a \\= false a").exception(ls::VM::Exception::DIVISION_BY_ZERO);
 	code("var a = 12★ a \\= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = 12★ a \\= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 12 ['', a \\= 5]").equals("['', 2]");
 
 	section("Number.operator &");
 	code("0 & 0").equals("0");
