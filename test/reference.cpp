@@ -53,4 +53,8 @@ void Test::test_references() {
 
 	section("Reference = reference");
 	code("var a = 'a', b = 'b'; var c = @a; c = @b; c += '!'; [a, b]").equals("['a', 'b!']");
+
+	section("Reference of internal variable");
+	// TODO
+	// code("let a = @Number a").equals("<class>");
 }
