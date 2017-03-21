@@ -160,6 +160,7 @@ void Test::test_numbers() {
 
  	section("Number.operator unary ~");
  	code("var a = [12, ''] var b = a[0]; ~b").equals("-13");
+	code("var a = 12 ['', ~a]").equals("['', -13]");
 
 	section("Number.operator ++x");
 	code("var a = 20★; ++a").equals("21");
