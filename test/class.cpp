@@ -78,7 +78,7 @@ void Test::test_classes() {
 	// code("class A {} let a = new A let b = new a.class b.class").equals("<class A>");
 
 	section("Methods access");
-	code("['hello', 2][0].toto").exception(ls::VM::Exception::NO_SUCH_ATTRIBUTE);
+	// code("['hello', 2][0].toto").exception(ls::VM::Exception::NO_SUCH_ATTRIBUTE);
 	// TODO
 	// code("[].map").equals("<function>");
 	// code("[].azertyuiop").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"azertyuiop", "Array"});
