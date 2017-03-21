@@ -86,11 +86,9 @@ void Test::test_operators() {
 	res ?? 12 // res ? res : 12
 	*/
 
-
 	/*
 	 * Compare
 	 */
-
 	header("Comparison");
 	code("null < null").equals("false");
 	code("null < true").equals("true");
