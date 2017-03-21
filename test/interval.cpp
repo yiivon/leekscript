@@ -50,6 +50,7 @@ void Test::test_intervals() {
 	code("let i = ['', [10..20]][1] i['hello']").exception(ls::VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	code("[1..10][50]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[1..10][-10]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("['', [1..10][5]]").equals("['', 6]");
 
 	section("Interval.operator [:]");
 	code("[5..5][0:0]").equals("[5]");
