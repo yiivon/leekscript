@@ -25,6 +25,7 @@ void Test::test_booleans() {
 	// TODO
 	// code("!!!!!false").equals("true");
 	code("var a = [true, ''] var b = a[0]; !b").equals("false");
+	code("var a = true ['', !a]").equals("['', false]");
 
 	section("Boolean.operator -");
 	code("var a = [true, ''] var b = a[0]; -b").equals("-1");
