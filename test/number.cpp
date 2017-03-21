@@ -169,11 +169,13 @@ void Test::test_numbers() {
 	code("var a = 20m; ++a a").equals("21");
 	code("var a = 20m; let b = ++a b").equals("21");
 	code("++5").equals("6");
+	code("var a = 5 ['', ++a]").equals("['', 6]");
 
 	section("Number.operator --x");
 	code("var a = 20★; --a").equals("19");
 	code("var a = 30★; --a a").equals("29");
 	code("--5").equals("4");
+	code("var a = 5 ['', --a]").equals("['', 4]");
 
 	section("Number.operator x++");
 	code("var a = 20m; a++").equals("20");
