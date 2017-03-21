@@ -112,7 +112,7 @@ void Test::test_functions() {
 	code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
 
 	section("Operator []");
-	code("let f = x -> x f[2] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("let f = x -> x f[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
 
 	section("Function operators");
 	// TODO parsing issue
