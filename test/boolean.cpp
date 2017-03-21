@@ -32,6 +32,8 @@ void Test::test_booleans() {
 	code("var a = [false, ''] var b = a[0]; -b").equals("0");
 
 	section("Boolean.operator ~");
+	code("~true").equals("-2");
+	code("~false").equals("-1");
 	code("var a = [true, ''] var b = a[0]; ~b").equals("-2");
 	code("var a = [false, ''] var b = a[0]; ~b").equals("-1");
 
