@@ -51,6 +51,7 @@ void Test::test_intervals() {
 	code("[1..10][50]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[1..10][-10]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("['', [1..10][5]]").equals("['', 6]");
+	code("let a = [1..10] a[5] = 2").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 
 	section("Interval.operator [:]");
 	code("[5..5][0:0]").equals("[5]");
