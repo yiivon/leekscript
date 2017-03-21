@@ -492,7 +492,8 @@ void Test::test_numbers() {
 	code("Number.cos(π)").equals("-1");
 	code("Number.cos(π / 2)").almost(0.0);
 	code("π.cos()").equals("-1");
-//	code("['', π][1].cos()").equals("-1");
+	// TODO
+	// code("['', π][1].cos()").equals("-1");
 	code("Number.cos(['', π][1])").equals("-1");
 
 	section("Number.acos()");
@@ -539,9 +540,11 @@ void Test::test_numbers() {
 	code("Number.atan2(0, -1)").almost(M_PI);
 	code("Number.atan2(12.12, 42.42)").almost(0.278299659005111333);
 	code("1.atan2(1)").almost(M_PI / 4);
-	//code("['', -1][1].atan2(1)").almost(-M_PI / 4);
+	// TODO
+	// code("['', -1][1].atan2(1)").almost(-M_PI / 4);
 	code("1.atan2(['', -1][1])").almost(3 * M_PI / 4);
-	//code("['', -1][1].atan2(['', -1][1])").almost(-3 * M_PI / 4);
+	// TODO
+	// code("['', -1][1].atan2(['', -1][1])").almost(-3 * M_PI / 4);
 	code("Number.atan2(1, 1)").almost(M_PI / 4);
 	code("Number.atan2(['', -1][1], 1)").almost(-M_PI / 4);
 	code("Number.atan2(1, ['', -1][1])").almost(3 * M_PI / 4);
@@ -551,7 +554,8 @@ void Test::test_numbers() {
 	code("Number.cbrt(1728)").almost(12.0, 1e-14);
 	code("1728.cbrt()").almost(12.0, 0.00000000000001);
 	code("Number.cbrt(['', 1728][1])").almost(12.0, 0.00000000000001);
-//	code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
+	// TODO
+	// code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
 
 	section("Number.int()");
 	code("Number.int(15.5)").equals("15");
@@ -631,14 +635,13 @@ void Test::test_numbers() {
 	code("12.2.ceil()").equals("13");
 	code("12.8.round()").equals("13");
 	code("-12.8.round()").equals("-13");
-	/*
-	code("2.pow(10)").equals("1024");
-	code("0.isInteger()").equals("true");
-	code("56.7.isInteger()").equals("false");
-	code("(-56.7).isInteger()").equals("false");
-	code("3.max(5)").equals("5");
-	code("5.max(3)").equals("5");
-	*/
+	// TODO
+	// code("2.pow(10)").equals("1024");
+	// code("0.isInteger()").equals("true");
+	// code("56.7.isInteger()").equals("false");
+	// code("(-56.7).isInteger()").equals("false");
+	// code("3.max(5)").equals("5");
+	// code("5.max(3)").equals("5");
 
 	section("Combinated");
 	code("3.max(5).min(2)").equals("2");

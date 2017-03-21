@@ -19,7 +19,8 @@ void Test::test_booleans() {
 	section("Boolean.operator !");
 	code("!true").equals("false");
 	code("!false").equals("true");
-	// TODO code("!!!!!false").equals("true");
+	// TODO
+	// code("!!!!!false").equals("true");
 	code("var a = [true, ''] var b = a[0]; !b").equals("false");
 
 	section("Boolean.operator -");
@@ -115,10 +116,11 @@ void Test::test_booleans() {
 	code("true.compare(true)").equals("0");
 	code("false.compare(false)").equals("0");
 	code("false.compare(true)").equals("-1");
-	//code("[true, ''][0].compare([false, ''][0])").equals("1");
-	//code("[true, ''][0].compare([true, ''][0])").equals("0");
-	//code("[false, ''][0].compare([false, ''][0])").equals("0");
-	//code("[false, ''][0].compare([true, ''][0])").equals("-1");
+	// TODO
+	// code("[true, ''][0].compare([false, ''][0])").equals("1");
+	// code("[true, ''][0].compare([true, ''][0])").equals("0");
+	// code("[false, ''][0].compare([false, ''][0])").equals("0");
+	// code("[false, ''][0].compare([true, ''][0])").equals("-1");
 
 	section("Conversions");
 	code("12 and 'aaa'").equals("true");

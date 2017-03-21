@@ -207,8 +207,8 @@ void Test::test_arrays() {
 	code("2★ in [1, 2, 3]").equals("true");
 	code("4★ in [1, 2, 3]").equals("false");
 	code("'salut' in [1, 2, 3]").equals("false");
-
-//	let f=x->x[0]; [f([1]), f([0..3])]
+	// TODO
+	// let f = x -> x[0]; [f([1]), f([0..3])]
 
 	/*
 	 * Methods
@@ -219,7 +219,8 @@ void Test::test_arrays() {
 	code("Array.size([6.8999, 5.56])").equals("2");
 	code("[1, 'yo', true].size()").equals("3");
 	code("[1, -2, 3, -12, -6].size()").equals("5");
-	//code("[[1, 2, 3], 'foo'][0].size()").equals("3");
+	// TODO
+	// code("[[1, 2, 3], 'foo'][0].size()").equals("3");
 
 	section("Array.average()");
 	code("Array.average([1, 2, 3, 4, 5, 6])").equals("3.5");
@@ -246,7 +247,8 @@ void Test::test_arrays() {
 	code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
 	code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
 	code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
-	//code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
+	// TODO
+	// code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
 
 	section("Array.map2()");
 	code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
@@ -312,8 +314,8 @@ void Test::test_arrays() {
 	code("Array.iter([1, 2, 3], x -> System.print(x))").output("1\n2\n3\n");
 	code("[4, 5, 6].iter(x -> System.print(x))").output("4\n5\n6\n");
 	// TODO will work with capture references in closures
-	//code("let a = 0 Array.iter([1, 2, 3], x -> a += x) a").equals("6");
-	//code("let a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
+	// code("let a = 0 Array.iter([1, 2, 3], x -> a += x) a").equals("6");
+	// code("let a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
 
 	section("Array.partition()");
 	code("Array.partition([1, 2, 3, 4, 5], (x -> x < 3))").equals("[[1, 2], [3, 4, 5]]");
@@ -321,6 +323,7 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4, 5].partition(x -> x > 3)").equals("[[4, 5], [1, 2, 3]]");
 	code("[1, 2, 3, 4, 5].partition(x -> x == 3)").equals("[[3], [1, 2, 4, 5]]");
 	code("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)").equals("[[5, 6], [3, 4]]");
+	// TODO
 	// code("[1, 2, 3, 4, 5].partition(x -> 'yolo')").equals("**error**");
 
 	section("Array.first()");
@@ -341,7 +344,7 @@ void Test::test_arrays() {
 	code("[12].clear().last()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12.5].clear().last()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	// TODO : the return type of first() must be the element type of the array if it's homogeneous
-//	code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");
+	// code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");
 
 	section("Array.foldLeft()");
 	code("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')").equals("'concat:12310trueyonull'");
@@ -395,7 +398,8 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3] Array.push(a, 4)").equals("[1, 2, 3, 4]");
 	code("[].push([])").equals("[[]]");
 	code("let a = [1, 2] a.push(3) a").equals("[1, 2, 3]");
-//	code("let a = [1, 2] a.push(3.5) a").equals("[1, 2, 3]");
+	// TODO
+	// code("let a = [1, 2] a.push(3.5) a").equals("[1, 2, 3]");
 	code("let a = [1.5, -2.9] a.push(3.5) a").equals("[1.5, -2.9, 3.5]");
 
 	section("Array.pushAll()");
@@ -428,6 +432,7 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3] Array.insert(a, 12, 6)").equals("[1, 2, 3, 0, 0, 0, 12]");
 
 	section("Array.isPermutation()");
+	// TODO
 	// code("[].isPermutation([])").equals("true");
 	code("[1].isPermutation([1])").equals("true");
 	code("[1, 2, 3, 4, 5].isPermutation([4, 1, 3, 5, 2])").equals("true");
@@ -453,9 +458,10 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3] Array.remove(a, 1)").equals("2");
 	code("let a = [1, 'yo', true] Array.remove(a, 1)").equals("'yo'");
 
-//	code("let a = [] Array.removeKey(a, 'key')").equals("null");
-//	code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key')").equals("'test'");
-//	code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key') a").equals("[0: 1, 1: 2, 2: 3]");
+	// TODO
+	// code("let a = [] Array.removeKey(a, 'key')").equals("null");
+	// code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key')").equals("'test'");
+	// code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key') a").equals("[0: 1, 1: 2, 2: 3]");
 
 	section("Array.removeElement()");
 	code("[].removeElement(12)").equals("false");
@@ -485,7 +491,7 @@ void Test::test_arrays() {
 	code("let a = [1, []] a[1].push('str') a").equals("[1, ['str']]");
 	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
 	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
-	//code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
+	// code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
 	// code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])]").equals("[]");
 
 	/*

@@ -12,19 +12,23 @@ void Test::test_loops() {
 	code("if (false) { 12 } else { 5 }").equals("5");
 	code("let a = if (false) { 12 } else { 5 } a").equals("5");
 	code("let a = if (true) { 'yo' } else { 'hello' } a").equals("'yo'");
+	// TODO
 	// code("let a = if (true) { 12 } else { 'hello' } a").equals("12");
 	code("let a = if (true) { 'hello' } else { 12 } a").equals("'hello'");
 	code("if (true) {} else {}").equals("{}");
+	// TODO
 	// code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
-//	code("if true").equals("null");
-//	code("if true else").equals("null"); crash
+	// TODO
+	// code("if true").equals("null");
+	// code("if true else").equals("null"); crash
 	code("if (true) {a: 12} else {b: 5}").equals("{a: 12}");
 	code("if (true) { {a: 12} } else { {b: 5} }").equals("{a: 12}");
 	code("if (true) 12 else 5").equals("12");
 	code("if (false) 12 else 5").equals("5");
 	code("if (true) 12").equals("12");
+	// TODO
 	// code("if (false) 12").equals("null");
 	code("if true then 12 end").equals("12");
 
@@ -80,7 +84,8 @@ void Test::test_loops() {
 	code("var a = 0 for var i = 0; i < 10; i++ { a++ } a").equals("10");
 	code("var a = 0 for var i = 0; i < 10; i++ { if i < 5 { continue } a++ } a").equals("5");
 	code("var c = 0 for var t = []; t.size() < 10; t.push('x') { c++ } c").equals("10");
-	//code("let s = 0 for let m = [1 : 3, 2 : 2, 3 : 1]; m; let l = 0 for k,x in m { l = k } m.erase(l) { for x in m { s += x } } s").equals("14");
+	// TODO wrong result
+	// code("var s = 0 for let m = [1: 3, 2: 2, 3: 1]; m; var l = 0 for k, x in m { l = k } m.erase(l) { for x in m { s += x } } s").equals("14");
 	code("for var i = 0; ['', i < 10][1]; i++ {}").equals("(void)");
 
 	section("For whitout braces");
@@ -105,15 +110,20 @@ void Test::test_loops() {
 	code("var s = '' for k : v in ['a': 1, 'b': 2, 'c': 3, 'd': 4] { s += v * k } s").equals("'abbcccdddd'");
 	code("(a -> { var s = 0; for x in a { s += x } s })([1, 2, 3, 4.25])").equals("10.25");
 	code("var y = '' for k, x in { let x = [] x.push(4) x } { y += k + ':' + x + ' ' } y").equals("'0:4 '");
-//	code("let y = '' for k, x in { let x = [1: 2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
+	// TODO wrong result
+	// code("var y = '' for k, x in { let x = [1: 2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	code("var y = '' for k, x in { let x = [1: 2.5] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2.5 3:4 '");
 	code("var y = '' for k, x in { let x = [1: '2'] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
-	//code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
-	//code("var y = 'test' for x in 'salut' { y = x } y").equals("'test'");
+	// TODO crash
+	// code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
+	code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
-	//code("var y = '' for k, x in { let x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
-	//code("let fs = [] fs.push(s -> {let sum = 0 for v in s {sum += v} sum}) fs[0](<1,2>)").equals("3");
-	//code("let fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
+	// TODO crash
+	// code("var y = '' for k, x in { let x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
+	// TODO crash
+	// code("let fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3");
+	// TODO crash
+	// code("let fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
 
 	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::NULLL.to_string()});
 	code("for x in true {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::BOOLEAN.to_string()});
@@ -128,7 +138,8 @@ void Test::test_loops() {
 	code("[for x in [1, 2, 3] { x }]").equals("[1, 2, 3]");
 	code("let a = ['a': 'b', 'c': 'd'] [for k, x in a { k + x }]").equals("['ab', 'cd']");
 	code("[for x in [1, 2, 3] {[ for y in [1, 2, 3] { if y == 2 continue x * y }] }]").equals("[[1, 3], [2, 6], [3, 9]]");
-	//code("let sorted = [for x in <5, 2, 4, 1, 3> { x }] sorted").equals("[1, 2, 3, 4, 5]");
+	// TODO set iterators
+	// code("let sorted = [for x in <5, 2, 4, 1, 3> { x }] sorted").equals("[1, 2, 3, 4, 5]");
 	code("[for i in [1..10] { i }]").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 
 	/*

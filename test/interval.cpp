@@ -11,7 +11,7 @@ void Test::test_intervals() {
 	code("[0l..544l]").equals("[0..544]");
 	code("[45.73..248l]").equals("[45..248]");
 	// TODO intervals with mpz
-	//code("[15m..50m]").equals("[15..50]");
+	// code("[15m..50m]").equals("[15..50]");
 
 	section("Interval.operator !");
 	code("![1..1000]").equals("false");

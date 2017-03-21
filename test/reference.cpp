@@ -19,7 +19,8 @@ void Test::test_references() {
 	code("var a = 2, b = @a; b = 56; a").equals("2");
 
 	section("Basic references with strings");
-	//code("var a = 'hello'; var b = @a; a = 'world'; b").equals("'hello'");
+	// TODO
+	// code("var a = 'hello'; var b = @a; a = 'world'; b").equals("'hello'");
 	code("var a = 'hello'; var b = @a; a += '!'; b").equals("'hello!'");
 	code("var a = 'hello'; var b = @a; b += '!'; a").equals("'hello!'");
 	code("var a = true; var b = @a; b = false; b").equals("false");
@@ -33,7 +34,8 @@ void Test::test_references() {
 	code("var a = ['a', 'b', 'c']; var b = @a; b.push([12]); a").equals("['a', 'b', 'c', [12]]");
 
 	section("Type changes");
-	//code("var a = 12; var b = @a; b = 'salut'; a").equals("12");
+	// TODO
+	// code("var a = 12; var b = @a; b = 'salut'; a").equals("12");
 	code("var a = [1, 2, 3]; var b = @a; b = 'salut'; a").equals("[1, 2, 3]");
 
 	section("Reference in array");
