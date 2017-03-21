@@ -71,6 +71,7 @@ void Test::test_operators() {
 	code("'hello'[2:5] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("let a = [null, ''][0] a[2:5]").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = [null, ''][0] a[2:5] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = [null, ''][0] a.toto = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	/*
 	a ~~ b => (a ~~ b)
 	a ~ ~b => a ~ (~b)
