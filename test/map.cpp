@@ -77,6 +77,8 @@ void Test::test_map() {
 	code("var m = [1.5: 2.5, 3.5: 4.5] m[3.5] = 6.5 m").equals("[1.5: 2.5, 3.5: 6.5]");
 	code("var m = ['1': 2, '3': 4] m['3'] = 6 m").equals("['1': 2, '3': 6]");
 	code("var m = [1.5: 'a', 2.5: 'b'] m[2.5] = 'c' m").equals("[1.5: 'a', 2.5: 'c']");
+	code("['', [1: 2][1]]").equals("['', 2]");
+	code("['', [1: 2.5][1]]").equals("['', 2.5]");
 
 	section("Map.operator [] on unknown maps");
 	code("var m = ptr(['a': '2']) m['c'] = '6' m").equals("['a': '2', 'c': '6']");
