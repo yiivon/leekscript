@@ -127,10 +127,18 @@ void Test::test_numbers() {
 	section("Constructor");
 	code("Number").equals("<class Number>");
 	code("Number()").equals("0");
+	// TODO
+	// code("Number(12)").equals("12");
 	code("[Number(), 'str']").equals("[0, 'str']");
 	code("new Number").equals("0");
 	code("new Number()").equals("0");
 	code("new Number(12)").equals("12");
+	code("['', new Number()]").equals("['', 0]");
+	code("['', new Number]").equals("['', 0]");
+	code("['', Number()]").equals("['', 0]");
+	code("['', new Number(12)]").equals("['', 12]");
+	// TODO
+	// code("['', Number(12)]").equals("['', 12]");
 
 	section("Constants");
 	code("Number.pi").almost(3.141592653589793116);
