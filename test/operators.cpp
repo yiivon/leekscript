@@ -4,8 +4,8 @@ void Test::test_operators() {
 
 	header("Operator =");
 
-	//code("let a a = 2").equals("2");
-	//code("let a a = 2 a").equals("2");
+	code("let a a = 2").equals("2");
+	code("let a a = 2 a").equals("2");
 	code("2 = 2").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"2"});
 	code("'hello' = 2").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
 	code("[] = 2").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"[]"});
