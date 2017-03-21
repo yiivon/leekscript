@@ -81,8 +81,8 @@ void Test::test_classes() {
 	// code("['hello', 2][0].toto").exception(ls::VM::Exception::NO_SUCH_ATTRIBUTE);
 	// TODO
 	// code("[].map").equals("<function>");
-	// code("[].azertyuiop").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"azertyuiop", "Array"});
-	// code("[[], ''][0].azertyuiop").equals("null");
+	code("[].azertyuiop").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"azertyuiop", "Array"});
+	code("[[], ''][0].azertyuiop").exception(ls::VM::Exception::NO_SUCH_ATTRIBUTE);
 	// TODO
 	// code("let my_map = [].map; my_map([1, 2, 3], x -> x ^ 2)").equals("[1, 4, 9]");
 	// code("[].map == [].map").equals("true");
