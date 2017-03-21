@@ -27,8 +27,8 @@ void Test::test_classes() {
 	code("{a: 12, b: 'yo'}.class").equals("<class Object>");
 	code("(-> 12).class").equals("<class Function>");
 	code("(x, y -> x + y).class").equals("<class Function>");
-	code("12.class.class").equals("<class Class>");
-	code("[null, true, 12, 'foo', [], [1..12], [1:12], <>, <1.5>, <'a'>, {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Interval>, <class Map>, <class Set>, <class Set>, <class Set>, <class Object>, <class Function>, <class Class>]");
+	// code("12.class.class").equals("<class Class>");
+	// code("[null, true, 12, 'foo', [], [1..12], [1:12], <>, <1.5>, <'a'>, {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Interval>, <class Map>, <class Set>, <class Set>, <class Set>, <class Object>, <class Function>, <class Class>]");
 
 	section("Class.name");
 	code("Null.name").equals("'Null'");
