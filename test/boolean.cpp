@@ -11,6 +11,9 @@ void Test::test_booleans() {
 	code("new Boolean()").equals("false");
 	code("true").equals("true");
 	code("false").equals("false");
+	code("['', Boolean()]").equals("['', false]");
+	code("['', new Boolean()]").equals("['', false]");
+	code("['', new Boolean]").equals("['', false]");
 
 	section("Boolean.operator |x|");
 	code("|true|").equals("1");
