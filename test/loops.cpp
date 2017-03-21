@@ -174,7 +174,7 @@ void Test::test_loops() {
 	code("match 'a' { 1 : 1 'a' : 'a' }").equals("'a'");
 	code("match 1 { 1 : 1 'a' : 'a' }").equals("1");
 	code("match 1 { 1|2 : 1 'a'|[]|{} : 'a' }").equals("1");
-	//code("match 1 { (4 - 2)|2| |-1| : 1 'a'|[]|{} : 'a' }").equals("1");
+	code("match 1 { (4 - 2)|2| |-1| : 1 'a'|[]|{} : 'a' }").equals("1");
 	code("match 1 + 5 { (4 + 1)|2|8 : 1 'a'|[]|{} : 'a' }").equals("null");
 	code("match 50 { 0..50: 1 50..100: 2 }").equals("2");
 	code("match 50 { ..50: 1 50..: 2 }").equals("2");
