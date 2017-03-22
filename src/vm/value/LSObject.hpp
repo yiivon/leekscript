@@ -9,7 +9,7 @@
 namespace ls {
 
 class LSObject : public LSValue {
-private:
+protected:
 	std::map<std::string, LSValue*> values;
 public:
 	static LSValue* object_class;
