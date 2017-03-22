@@ -65,7 +65,7 @@ LSArray<T>::LSArray(std::initializer_list<T> values_list) : LSArray<T>() {
 }
 
 template <class T>
-LSArray<T>::LSArray(const std::vector<T>& vec) : LSValue(), std::vector<T>(vec) {}
+LSArray<T>::LSArray(const std::vector<T>& vec) : LSValue(LSValue::ARRAY), std::vector<T>(vec) {}
 
 template <>
 inline LSArray<LSValue*>::LSArray(const LSArray<LSValue*>& other) : LSValue(other), std::vector<LSValue*>() {
