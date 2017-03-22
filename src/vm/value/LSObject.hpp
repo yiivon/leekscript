@@ -23,6 +23,7 @@ public:
 
 	/** LSObject methods **/
 	void addField(std::string name, LSValue* value);
+	LSValue* getField(std::string name);
 	LSArray<LSValue*>* ls_get_keys() const;
 	LSArray<LSValue*>* ls_get_values() const;
 	LSObject* ls_map(LSFunction<LSValue*>* fun) const;

@@ -30,6 +30,10 @@ void LSObject::addField(string name, LSValue* var) {
 	var->refs++;
 }
 
+LSValue* LSObject::getField(std::string name) {
+	return this->values.at(name);
+}
+
 LSArray<LSValue*>* LSObject::ls_get_keys() const {
 	auto keys = new LSArray<LSValue*>();
 	for (auto i = values.begin(); i != values.end(); i++) {
