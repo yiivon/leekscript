@@ -425,6 +425,7 @@ void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture
 	});
 }
 
+// Debug-only function
 // LCOV_EXCL_START
 void Compiler::log(const std::string&& str) const {
 	auto s = new_pointer(new std::string(str));
