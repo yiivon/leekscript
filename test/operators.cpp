@@ -46,6 +46,7 @@ void Test::test_operators() {
 	code("let a = ['a'] let b = ['b'] a[0] <=> b[0] [a, b]").equals("[['b'], ['a']]");
 	code("let a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
 	code("let a = ['a', 'b', 'c', 'd'] a[0] <=> a[3] a").equals("['d', 'b', 'c', 'a']");
+	code("let a = 2 let b = 5 ['', a <=> b]").equals("['', 5]");
 
 	header("Invalid operators");
 	code("'hello' ** 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);

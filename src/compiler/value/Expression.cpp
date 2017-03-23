@@ -615,7 +615,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_insn_store_relative(c.F, x_addr.v, 0, y.v);
 				jit_insn_store_relative(c.F, y_addr.v, 0, t);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, x.v, type), type};
+					return {VM::value_to_pointer(c.F, y.v, type), type};
 				}
 				return y;
 			} else {
