@@ -649,7 +649,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MINUS_EQUAL: {
-
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
@@ -688,7 +687,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::DIVIDE_EQUAL: {
-
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
@@ -710,7 +708,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MODULO_EQUAL: {
-
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
@@ -726,7 +723,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::POWER_EQUAL: {
-
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
@@ -924,7 +920,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::DOUBLE_QUESTION_MARK: {
-
 			// x ?? y ==> if (x != null) { x } else { y }
 			jit_label_t label_end = jit_label_undefined;
 			jit_label_t label_else = jit_label_undefined;
@@ -980,20 +975,15 @@ Compiler::value Expression::compile(Compiler& c) const {
 			args.push_back(v2->compile(c).v);
 		}
 		jit_value_t v = jit_insn_call_native(c.F, "", ls_func, sig, args.data(), 2, 0);
+		jit_type_free(sig);
 
 		if (store_result_in_v1) {
 			jit_insn_store(c.F, args[0], v);
 		}
 
-		if (type.nature == Nature::VOID && ls_returned_type.nature == Nature::POINTER) {
-			c.insn_delete_temporary({v, Type::POINTER});
-		}
-
 		if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
-			jit_type_free(sig);
 			return {VM::value_to_pointer(c.F, v, ls_returned_type), type};
 		}
-		jit_type_free(sig);
 		return {v, type};
 	}
 }
