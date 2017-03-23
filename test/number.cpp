@@ -333,6 +333,8 @@ void Test::test_numbers() {
 	section("Number.operator >");
 	code("12 > 5m").equals("true");
 	code("[] > true").equals("true");
+	// TODO
+	// code("-100m > 0").equals("false");
 
 	section("Number.operator \\");
 	code("10 \\ 2").equals("5");
