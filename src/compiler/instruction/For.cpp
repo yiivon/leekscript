@@ -118,9 +118,9 @@ Compiler::value For::compile(Compiler& c) const {
 	if (condition != nullptr) {
 		auto condition_v = condition->compile(c);
 		if (condition->type.nature == Nature::POINTER) {
-			jit_value_t bool_v = VM::is_true(c.F, condition_v.v);
-			jit_insn_branch_if_not(c.F, bool_v, &label_end);
+			auto bool_v = c.insn_to_bool(condition_v);
 			c.insn_delete_temporary(condition_v);
+			jit_insn_branch_if_not(c.F, bool_v.v, &label_end);
 		} else {
 			jit_insn_branch_if_not(c.F, condition_v.v, &label_end);
 		}

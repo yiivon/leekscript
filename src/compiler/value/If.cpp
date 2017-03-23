@@ -107,9 +107,9 @@ Compiler::value If::compile(Compiler& c) const {
 	auto cond = condition->compile(c);
 
 	if (condition->type.nature == Nature::POINTER) {
-		jit_value_t cond_bool = VM::is_true(c.F, cond.v);
-		jit_insn_branch_if_not(c.F, cond_bool, &label_else);
+		auto cond_bool = c.insn_to_bool(cond);
 		c.insn_delete_temporary(cond);
+		jit_insn_branch_if_not(c.F, cond_bool.v, &label_else);
 	} else {
 		jit_insn_branch_if_not(c.F, cond.v, &label_else);
 	}

@@ -434,18 +434,6 @@ void VM::inc_mpz_counter(jit_function_t F) {
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
 
-bool VM_is_true(LSValue* val) {
-	return val->to_bool();
-}
-
-jit_value_t VM::is_true(jit_function_t F, jit_value_t ptr) {
-	jit_type_t args[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args, 1, 1);
-	auto v = jit_insn_call_native(F, "is_true", (void*) VM_is_true, sig, &ptr, 1, JIT_CALL_NOTHROW);
-	jit_type_free(sig);
-	return v;
-}
-
 void VM::store_exception(jit_function_t F, jit_value_t ex) {
 	/*
 	VM::call(F, LS_VOID, {}, {}, +[] () {

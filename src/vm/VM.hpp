@@ -137,7 +137,6 @@ public:
 
 	/** Utilities **/
 	static void print_mpz_int(jit_function_t F, jit_value_t val);
-	static jit_value_t is_true(jit_function_t F, jit_value_t ptr);
 	static void store_exception(jit_function_t F, jit_value_t ex);
 	static std::string exception_message(VM::Exception expected);
 };
