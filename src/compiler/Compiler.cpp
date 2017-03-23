@@ -227,8 +227,13 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 	if (v.t.raw_type == RawType::FUNCTION) {
 		return new_bool(true);
 	}
-	// TODO other types
-	return v;
+	if (v.t.raw_type == RawType::MPZ) {
+		// TODO
+		return v;
+	}
+	return insn_call(Type::BOOLEAN, {v}, +[](LSValue* v) {
+		return v->to_bool();
+	});
 }
 
 Compiler::value Compiler::insn_address_of(Compiler::value v) const {
