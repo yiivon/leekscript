@@ -30,6 +30,8 @@ void Test::test_general() {
 	ls::LSObject o;
 	o.addField("test", ls::LSNumber::get(12));
 	std::cout << o.getField("test") << std::endl;
+	// Print unknown type nature (should not be printed elsewhere)
+	std::cout << ls::Type::get_nature_symbol(ls::Nature::UNKNOWN) << std::endl;
 
 	header("Basic codes");
 	code("").equals("(void)");
