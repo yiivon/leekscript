@@ -361,13 +361,6 @@ jit_value_t VM::int_to_real(jit_function_t F, jit_value_t v) {
 	return real;
 }
 
-void VM::delete_temporary(jit_function_t F, jit_value_t obj) {
-	jit_type_t args[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 1, 1);
-	jit_insn_call_native(F, "delete_temporary", (void*) &LSValue::delete_temporary, sig, &obj, 1, JIT_CALL_NOTHROW);
-	jit_type_free(sig);
-}
-
 LSArray<LSValue*>* VM_create_array_ptr(int cap) {
 	LSArray<LSValue*>* array = new LSArray<LSValue*>();
 	array->reserve(cap);
