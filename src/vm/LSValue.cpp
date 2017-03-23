@@ -199,6 +199,19 @@ bool LSValue::lt(const LSValue* v) const {
 	return type < v->type;
 }
 
+bool LSValue::in(const LSValue* const v) const {
+	delete_temporary(v);
+	delete_temporary(this);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
+}
+
+bool LSValue::in_i(const int) const {
+	delete_temporary(this);
+	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
+}
+
 LSValue* LSValue::at(const LSValue* v) const {
 	delete_temporary(v);
 	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));

@@ -111,8 +111,8 @@ public:
 	}
 	virtual bool lt(const LSValue*) const;
 
-	virtual bool in(const LSValue* const) const { return false; }
-	virtual bool in_i(const int) const { return false; }
+	virtual bool in(const LSValue* const) const;
+	virtual bool in_i(const int) const;
 
 	virtual LSValue* at(const LSValue* key) const;
 	virtual LSValue** atL(const LSValue* key);
