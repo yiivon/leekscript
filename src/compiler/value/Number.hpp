@@ -17,6 +17,7 @@ public:
 	long long_value = 0;
 	double double_value = 0;
 	mpz_t mpz_value;
+	mpf_t mpf_value;
 	bool mpz_value_initialized = false;
 	bool pointer = false;
 

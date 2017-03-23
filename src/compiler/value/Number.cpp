@@ -56,28 +56,29 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 
 	// Determine the possible container for the number
 	if (floating) {
-		if (mp_number) {
-			//type = Type::GMP_REAL TODO
-			type = Type::REAL;
-			double_value = std::stod(clean_value);
-		} else {
-			type = Type::REAL;
+		if (!mp_number) {
 			try {
 				double_value = std::stod(clean_value);
-			} catch (...) {
-				mpf_t mpz;
-				mpf_init_set_str(mpz, clean_value.c_str(), base);
-				double_value = mpf_get_d(mpz);
-				mpf_clear(mpz);
+			} catch (...) { // LCOV_EXCL_LINE
+				mp_number = true; // number too large, GMP needed LCOV_EXCL_LINE
 			}
-			// TODO floating-point large values
+		}
+		if (mp_number) {
+			// LCOV_EXCL_START
+			if (!mpz_value_initialized) {
+				mpf_init_set_str(mpf_value, clean_value.c_str(), base);
+				mpz_value_initialized = true;
+			}
+			assert(false && "No support for mpf numbers yet");
+			// LCOV_EXCL_STOP
+		} else {
+			type = Type::REAL;
 		}
 	} else {
 		if (!mpz_value_initialized) {
 			mpz_init_set_str(mpz_value, clean_value.c_str(), base);
 			mpz_value_initialized = true;
 		}
-
 		if (!mp_number and !long_number and mpz_fits_sint_p(mpz_value)) {
 			type = Type::INTEGER;
 			int_value = mpz_get_si(mpz_value);
