@@ -407,10 +407,6 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 	return *x;
 }
 
-int jit_array_push_int(LSArray<int>* x, int y) {
-	x->push_move(y);
-	return y;
-}
 LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 	return x->mod_eq(y);
 }
@@ -631,15 +627,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::PLUS_EQUAL: {
-
-			if (v1->type == Type::INT_ARRAY and v2->type == Type::INTEGER) {
-				auto res = c.insn_call(Type::INTEGER, {v1->compile(c), v2->compile(c)}, &jit_array_push_int);
-				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, res.v, type), type};
-				}
-				return res;
-			}
-
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
