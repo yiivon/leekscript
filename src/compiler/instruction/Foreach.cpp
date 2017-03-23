@@ -97,7 +97,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
 		output_v = VM::create_array(c.F, type.getElementType());
 		c.insn_inc_refs({output_v, type});
-		c.add_var("{output}", output_v, type, false); // Why create variable ? in case of `break 2` the output must be deleted
+		c.add_var("{output}", output_v, type, false); // Why create variable? in case of `break 2` the output must be deleted
 	}
 
 	auto container_v = container->compile(c);
