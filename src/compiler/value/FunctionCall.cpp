@@ -379,12 +379,12 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	jit_value_t fun;
 	auto ls_fun_addr = c.new_pointer(nullptr);
 
-	if (function->type.nature == Nature::POINTER) {
+	// if (function->type.nature == Nature::POINTER) {
 		ls_fun_addr = function->compile(c);
 		fun = jit_insn_load_relative(c.F, ls_fun_addr.v, 24, LS_POINTER);
-	} else {
-		fun = function->compile(c).v;
-	}
+	// } else {
+		// fun = function->compile(c).v;
+	// }
 
 	/** Arguments */
 	size_t offset = 1;
