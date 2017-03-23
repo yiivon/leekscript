@@ -611,8 +611,6 @@ ostream& operator << (ostream& os, const Type& type) {
 		}
 		if (type.nature == Nature::POINTER) {
 			os << BLUE;
-		} else {
-			os << color;
 		}
 		os << ") → " << type.getReturnType();
 	} else if (type.raw_type == RawType::STRING || type.raw_type == RawType::CLASS
