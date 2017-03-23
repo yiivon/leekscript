@@ -32,7 +32,7 @@ void LSString::iterator_next(LSString::iterator* it) {
 u_int32_t LSString::iterator_get(LSString::iterator* it) {
 	if (it->pos == it->next_pos) {
 		int pos = it->pos;
-		u_int32_t c = u8_nextchar(it->buffer, &pos);
+		auto c = u8_nextchar(it->buffer, &pos);
 		it->next_pos = pos;
 		it->character = c;
 	}
@@ -97,7 +97,7 @@ LSValue* LSString::ls_foldLeft(LSFunction<LSValue*>* function, LSValue* v0) {
 	const char* string_chars = this->c_str();
 	int i = 0;
 	int l = strlen(string_chars);
-	LSValue* result = ls::move(v0);
+	auto result = ls::move(v0);
 	while (i < l) {
 		u_int32_t c = u8_nextchar(string_chars, &i);
 		u8_toutf8(buff, 5, &c, 1);
