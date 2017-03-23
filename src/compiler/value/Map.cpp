@@ -207,12 +207,8 @@ Compiler::value Map::compile(Compiler &c) const {
 		jit_value_t args_v[] = {map, k.v, v.v};
 		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 3, JIT_CALL_NOTHROW); ops += std::log2(i + 1);
 
-		if (type.getKeyType().must_manage_memory()) {
-			VM::delete_temporary(c.F, k.v);
-		}
-		if (type.getElementType().must_manage_memory()) {
-			VM::delete_temporary(c.F, v.v);
-		}
+		c.insn_delete_temporary(k);
+		c.insn_delete_temporary(v);
 	}
 	jit_type_free(sig);
 

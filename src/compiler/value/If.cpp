@@ -108,10 +108,8 @@ Compiler::value If::compile(Compiler& c) const {
 
 	if (condition->type.nature == Nature::POINTER) {
 		jit_value_t cond_bool = VM::is_true(c.F, cond.v);
-		if (condition->type.must_manage_memory()) {
-			VM::delete_temporary(c.F, cond.v);
-		}
 		jit_insn_branch_if_not(c.F, cond_bool, &label_else);
+		c.insn_delete_temporary(cond);
 	} else {
 		jit_insn_branch_if_not(c.F, cond.v, &label_else);
 	}

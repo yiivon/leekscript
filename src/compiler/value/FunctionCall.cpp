@@ -446,10 +446,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			c.insn_delete_mpz({args[offset + i], Type::MPZ});
 		}
 	}
-	// Delete temporary function
-	//if (function->type.must_manage_memory()) {
-		VM::delete_temporary(c.F, fun);
-	//}
+	c.insn_delete_temporary({fun, type});
 
 	// Custom function call : 1 op
 	c.inc_ops(1);

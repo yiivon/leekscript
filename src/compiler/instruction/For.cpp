@@ -119,10 +119,8 @@ Compiler::value For::compile(Compiler& c) const {
 		auto condition_v = condition->compile(c);
 		if (condition->type.nature == Nature::POINTER) {
 			jit_value_t bool_v = VM::is_true(c.F, condition_v.v);
-			if (condition->type.must_manage_memory()) {
-				VM::delete_temporary(c.F, condition_v.v);
-			}
 			jit_insn_branch_if_not(c.F, bool_v, &label_end);
+			c.insn_delete_temporary(condition_v);
 		} else {
 			jit_insn_branch_if_not(c.F, condition_v.v, &label_end);
 		}

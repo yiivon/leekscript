@@ -190,7 +190,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			jit_value_t res = jit_insn_call_native(c.F, "access", (void*) interval_access, sig, args, 2, 0);
 			jit_type_free(sig);
 
-			VM::delete_temporary(c.F, a.v);
+			c.insn_delete_temporary(a);
 
 			if (type.nature == Nature::POINTER) {
 				return {VM::value_to_pointer(c.F, res, type), type};
@@ -235,10 +235,10 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, 0);
 			jit_type_free(sig);
 
-			if (key->type.must_manage_memory()) {
-				VM::delete_temporary(c.F, k.v);
-			}
-			VM::delete_temporary(c.F, a.v);
+			// if (key->type.must_manage_memory()) {
+				c.insn_delete_temporary(k);
+			// }
+			c.insn_delete_temporary(a);
 
 			c.inc_ops(2);
 
