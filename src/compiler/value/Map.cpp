@@ -58,15 +58,11 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 	value_type.temporary = false;
 
 	if (key_type == Type::INTEGER or key_type == Type::REAL) {
-	} else if (key_type.raw_type == RawType::FUNCTION) {
-		key_type.nature = Nature::POINTER;
 	} else {
 		key_type = Type::POINTER;
 		key_type.setReturnType(Type::POINTER);
 	}
 	if (value_type == Type::INTEGER || value_type == Type::REAL) {
-	} else if (value_type.raw_type == RawType::FUNCTION) {
-		value_type.nature = Nature::POINTER;
 	} else {
 		value_type = Type::POINTER;
 		value_type.setReturnType(Type::POINTER);
