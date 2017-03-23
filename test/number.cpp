@@ -158,6 +158,7 @@ void Test::test_numbers() {
 	section("Number.operator unary -");
  	code("var a = [12, ''] var b = a[0]; -b").equals("-12");
 	code("-(12m ** 2)").equals("-144");
+	code("-100m").equals("-100");
 
  	section("Number.operator unary !");
  	code("var a = [12, ''] var b = a[0]; !b").equals("false");
