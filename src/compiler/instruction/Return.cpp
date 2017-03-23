@@ -46,14 +46,9 @@ Compiler::value Return::compile(Compiler& c) const {
 
 		auto v = expression->compile(c);
 
-		if (expression->type.must_manage_memory()) {
-			jit_value_t r = VM::move_obj(c.F, v.v);
-			c.delete_variables_block(c.get_current_function_blocks());
-			jit_insn_return(c.F, r);
-		} else {
-			c.delete_variables_block(c.get_current_function_blocks());
-			jit_insn_return(c.F, v.v);
-		}
+		auto r = c.insn_move(v);
+		c.delete_variables_block(c.get_current_function_blocks());
+		jit_insn_return(c.F, r.v);
 	}
 
 	jit_insn_return(c.F, LS_CREATE_INTEGER(c.F, 0));
