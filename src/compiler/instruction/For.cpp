@@ -138,7 +138,7 @@ Compiler::value For::compile(Compiler& c) const {
 
 	// Inc
 	c.enter_block();
-	for (Instruction* ins : increments) {
+	for (auto& ins : increments) {
 		ins->compile(c);
 		if (dynamic_cast<Return*>(ins)) {
 			break;
