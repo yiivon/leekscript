@@ -129,6 +129,12 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		return;
 	}
 
+	// in operator : v1 must be a container
+	if (op->type == TokenType::IN and v2->type.raw_type != RawType::UNKNOWN and !v2->type.is_container()) {
+		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, v2->line(), {v2->to_string()}});
+		return;
+	}
+
 	// A = B, A += B, etc. A must be a l-value
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
@@ -199,13 +205,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (v1->type == Type::BOOLEAN) {
 		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, op->token->line, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
-	}
-
-	if (op->type == TokenType::IN) {
-		if (operator_fun == nullptr) {
-			analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, v1->line(), {v1->type.to_string(), op->character, v2->type.to_string()}});
-			return;
-		}
 	}
 
 	/*

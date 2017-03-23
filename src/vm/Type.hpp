@@ -126,6 +126,7 @@ public:
 	virtual const std::string getClass() const { return "Set"; }
 	virtual const std::string getJsonName() const { return "set"; }
 	virtual bool iterable() const { return true; }
+	virtual bool is_container() const { return true; }
 };
 
 class IntervalRawType : public BaseRawType {
@@ -145,6 +146,7 @@ public:
 	virtual const std::string getClass() const { return "Object"; }
 	virtual const std::string getJsonName() const { return "object"; }
 	virtual bool iterable() const { return true; }
+	virtual bool is_container() const { return true; }
 };
 
 class FunctionRawType : public BaseRawType {
