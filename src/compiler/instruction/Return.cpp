@@ -51,7 +51,7 @@ Compiler::value Return::compile(Compiler& c) const {
 		jit_insn_return(c.F, r.v);
 	}
 
-	jit_insn_return(c.F, LS_CREATE_INTEGER(c.F, 0));
+	jit_insn_return(c.F, c.new_integer(0).v);
 	return {nullptr, Type::UNKNOWN};
 }
 
