@@ -182,7 +182,9 @@ Compiler::value Compiler::new_mpz(long value) const {
 }
 Compiler::value Compiler::new_object() const {
 	return insn_call(Type::OBJECT, {}, +[]() {
-		return new LSObject();
+		// FIXME coverage doesn't work for the one line version
+		auto o = new LSObject();
+		return o;
 	});
 }
 Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
