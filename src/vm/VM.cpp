@@ -408,20 +408,7 @@ jit_value_t VM::move_obj(jit_function_t F, jit_value_t ptr) {
 	return v;
 }
 
-LSValue* VM_clone(LSValue* val) {
-	return val->clone();
-}
-
-jit_value_t VM::clone_obj(jit_function_t F, jit_value_t ptr) {
-	jit_type_t args[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 1, 1);
-	auto v = jit_insn_call_native(F, "clone", (void*) VM_clone, sig, &ptr, 1, JIT_CALL_NOTHROW);
-	jit_type_free(sig);
-	return v;
-}
-
 void VM::inc_mpz_counter(jit_function_t F) {
-
 	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::mpz_created);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
