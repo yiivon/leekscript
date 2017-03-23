@@ -267,7 +267,7 @@ void Test::test_numbers() {
 	code("var a = 15★ a *= false a").equals("0");
 	code("var a = 15★ a *= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = 15★ a *= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = 15★; ['', a *= 2]").equals("['', 30]");
+	code("var a = 15; ['', a *= 2]").equals("['', 30]");
 
 	section("Number.operator **");
 	code("14★ ** 3").equals("2744");
@@ -285,7 +285,7 @@ void Test::test_numbers() {
 	code("var a = 5★; a **= true").equals("5");
 	code("var a = 5★; a **= false").equals("1");
 	code("var a = 5★; a **= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = 5★; ['', a **= 4]").equals("['', 625]");
+	code("var a = 5; ['', a **= 4]").equals("['', 625]");
 
 	section("Number.operator %");
 	code("721★ % 57★").equals("37");
@@ -317,6 +317,7 @@ void Test::test_numbers() {
 	code("var a = 12★ a /= false a").equals("nan");
 	code("var a = 12★ a /= []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("var a = 12★ a /= [] a").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15; ['', a /= 2]").equals("['', 7.5]");
 
 	section("Number.operator <");
 	code("3m < 4m").equals("true");
@@ -411,6 +412,7 @@ void Test::test_numbers() {
 	code("let a = 123 a <<= 11").equals("251904");
 	code("let a = 123 a <<= 13 a").equals("1007616");
 	code("var a = [123, ''] a[0] <<= 13").equals("1007616");
+	code("var a = 123 ['', a <<= 13]").equals("['', 1007616]");
 
 	code("0 >> 0").equals("0");
 	code("1 >> 0").equals("1");
@@ -425,6 +427,7 @@ void Test::test_numbers() {
 	code("let a = 123123123 a >>= 6").equals("1923798");
 	code("let a = 123123123 a >>= 7 a").equals("961899");
 	code("var a = [123123123, ''] a[0] >>= 7").equals("961899");
+	code("var a = 12345 ['', a >>= 8]").equals("['', 48]");
 
 	code("155 >>> 3").equals("19");
 	code("-155 >>> 3").equals("536870892");
@@ -432,6 +435,7 @@ void Test::test_numbers() {
 	code("let a = -155 a >>>= 4").equals("268435446");
 	code("let a = -155 a >>>= 5 a").equals("134217723");
 	code("var a = [-155, ''] a[0] >>>= 5").equals("134217723");
+	code("var a = -155 ['', a >>>= 5]").equals("['', 134217723]");
 
 	section("Number.operator |x|");
 	code("var a = -12 [] + |a|").equals("[12]");
