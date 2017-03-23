@@ -196,6 +196,10 @@ void Test::test_numbers() {
 	// code("var a = 20m; let b = a-- b").equals("20");
 	code("5--").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 
+	section("Number.operator in");
+	// TODO idea : a in b returns true if a is a divisor of b
+	code("2 in 12").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"12"});
+
 	section("Number.operator =");
 	code("var a = 1m, b = 4m; a = b").equals("4");
 
