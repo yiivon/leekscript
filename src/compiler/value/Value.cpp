@@ -14,10 +14,6 @@ bool Value::will_take(SemanticAnalyser*, const std::vector<Type>& args_type, int
 	return type.will_take(args_type);
 }
 
-bool Value::will_take_element(SemanticAnalyser*, const Type arg_type) {
-	return type.will_take_element(arg_type);
-}
-
 bool Value::will_store(SemanticAnalyser*, const Type&) {
 	return false;
 }

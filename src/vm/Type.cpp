@@ -230,9 +230,6 @@ void Type::setKeyType(const Type& type) {
 	}
 }
 
-/*
- *
- */
 bool Type::will_take(const std::vector<Type>& args_type) {
 
 	bool changed = false;
@@ -250,30 +247,11 @@ bool Type::will_take(const std::vector<Type>& args_type) {
 				changed = true;
 			}
 		}
-
 	}
-
 	return changed;
 }
 
-bool Type::will_take_element(const Type& element_type) {
-
-	if (raw_type != RawType::ARRAY) {
-		return false;
-	}
-
-	Type current = getElementType();
-
-	if (current == element_type) {
-		return false;
-	}
-
-	setElementType(element_type);
-	return true;
-}
-
 Type Type::mix(const Type& x) const {
-
 	if (*this == x) return *this;
 	if (*this == Type::UNKNOWN or x == Type::UNKNOWN) return Type::UNKNOWN;
 	if (nature == Nature::POINTER || x.nature == Nature::POINTER) return Type::POINTER;

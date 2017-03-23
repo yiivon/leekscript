@@ -258,7 +258,6 @@ public:
 	void setKeyType(const Type&);
 
 	bool will_take(const std::vector<Type>& args_type);
-	bool will_take_element(const Type& arg_type);
 	Type mix(const Type& x) const;
 
 	void toJson(std::ostream&) const;

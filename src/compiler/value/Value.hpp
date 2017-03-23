@@ -32,7 +32,6 @@ public:
 	virtual unsigned line() const { return 0; };
 
 	virtual bool will_take(SemanticAnalyser*, const std::vector<Type>& args_type, int level);
-	virtual bool will_take_element(SemanticAnalyser*, const Type);
 	virtual bool will_store(SemanticAnalyser*, const Type&);
 	virtual bool must_be_pointer(SemanticAnalyser*);
 	virtual void must_return(SemanticAnalyser*, const Type&);
