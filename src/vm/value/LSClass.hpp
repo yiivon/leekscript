@@ -37,7 +37,6 @@ public:
 	std::map<std::string, std::vector<StaticMethod>> static_methods;
 	std::map<std::string, ModuleStaticField> static_fields;
 	std::map<std::string, std::vector<Operator>> operators;
-	std::map<std::string, LSFunction<LSValue*>*> default_methods;
 
 	static LSValue* clazz;
 

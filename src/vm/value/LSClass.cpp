@@ -22,9 +22,6 @@ LSClass::~LSClass() {
 			delete s.second.value;
 		}
 	}
-	for (auto m : default_methods) {
-		delete m.second;
-	}
 }
 
 void LSClass::addMethod(string& name, vector<Method> method) {
