@@ -358,7 +358,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type.nature = req_type.nature;
 	}
 	if (req_type.raw_type == RawType::REAL) {
-		conversion = type;
 		type.raw_type = RawType::REAL;
 	}
 }
@@ -965,9 +964,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 		if (type.nature == Nature::POINTER) {
 			return {VM::value_to_pointer(c.F, r, jit_returned_type), type};
-		}
-		if (conversion == Type::INTEGER and type.raw_type == RawType::REAL) {
-			return {VM::int_to_real(c.F, r), type};
 		}
 		return {r, type};
 
