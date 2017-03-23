@@ -26,6 +26,10 @@ void Test::test_general() {
 	program->compile(vm, "{}");
 	std::cout << program << std::endl;
 	delete program;
+	// LSObject getField
+	ls::LSObject o;
+	o.addField("test", ls::LSNumber::get(12));
+	std::cout << o.getField("test") << std::endl;
 
 	header("Basic codes");
 	code("").equals("(void)");
