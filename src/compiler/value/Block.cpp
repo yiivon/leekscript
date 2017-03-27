@@ -3,6 +3,7 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../instruction/Return.hpp"
+#include "../instruction/Throw.hpp"
 #include "../../vm/VM.hpp"
 
 using namespace std;
@@ -51,7 +52,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			types.add(instructions[i]->types);
 		}
 		// A return instruction
-		if (dynamic_cast<Return*>(instructions[i])) {
+		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
 			type = Type::VOID; // This block has really no type
 			analyser->leave_block();
 			return; // no need to compile after a return
@@ -82,7 +83,7 @@ Compiler::value Block::compile(Compiler& c) const {
 
 		auto val = instructions[i]->compile(c);
 
-		if (dynamic_cast<Return*>(instructions[i])) {
+		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
 			break; // no need to compile after a return
 		}
 		if (i == instructions.size() - 1) {
