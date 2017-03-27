@@ -58,7 +58,8 @@ static int operator_priorities[] = {
 	0, 0, 0, 0, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0,
 	8, /* ?? */
 	2, /* \ */
-	0
+	0, 0, 0, 0,
+	8
 };
 
 Operator::Operator(Token* token) {

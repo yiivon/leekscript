@@ -111,7 +111,8 @@ enum class TokenType {
 	THROW,
 	VAR,
 	STAR,
-	INT_DIV_EQUAL
+	INT_DIV_EQUAL,
+	CATCH_ELSE
 };
 
 }
