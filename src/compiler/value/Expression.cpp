@@ -239,7 +239,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS
+		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE
 		) {
 
 		auto vv = dynamic_cast<VariableValue*>(v1);
@@ -944,6 +944,33 @@ Compiler::value Expression::compile(Compiler& c) const {
 			jit_insn_label(c.F, &label_end);
 
 			return {v, type};
+			break;
+		}
+		case TokenType::CATCH_ELSE: {
+
+			jit_label_t try_start = jit_label_undefined;
+			jit_label_t try_end = jit_label_undefined;
+			jit_label_t exception_thrown = jit_label_undefined;
+			jit_label_t no_exception = jit_label_undefined;
+
+			jit_insn_label(c.F, &try_start);
+			auto r = jit_value_create(c.F, VM::get_jit_type(type));
+			jit_insn_store(c.F, r, v1->compile(c).v);
+			jit_insn_label(c.F, &try_end);
+
+			jit_insn_branch(c.F, &no_exception);
+			jit_insn_label(c.F, &exception_thrown);
+
+			c.add_catcher(try_start, try_end, exception_thrown);
+
+			auto y = v2->compile(c);
+			if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				y = {VM::value_to_pointer(c.F, y.v, v2->type), type};
+			}
+			jit_insn_store(c.F, r, y.v);
+			jit_insn_label(c.F, &no_exception);
+			return {r, type};
+
 			break;
 		}
 		default: {

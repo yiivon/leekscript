@@ -314,13 +314,29 @@ Compiler::value Function::compile(Compiler& c) const {
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
 	((Function*) this)->jit_function = jit_function_create(context, signature);
 	jit_type_free(signature);
+	jit_insn_uses_catcher(jit_function);
 
 	c.enter_function(jit_function);
 
 	auto res = body->compile(c);
 
 	jit_insn_return(jit_function, res.v);
-	jit_insn_rethrow_unhandled(jit_function);
+
+	// catch (ex)
+	jit_insn_start_catcher(jit_function);
+	auto catchers = c.catchers.back();
+	if (catchers.size() > 0) {
+		for (size_t i = 0; i < catchers.size() - 1; ++i) {
+			auto ca = catchers[i];
+			jit_insn_branch_if_pc_not_in_range(c.F, ca.start, ca.end, &ca.next);
+			jit_insn_branch(c.F, &ca.handler);
+			jit_insn_label(c.F, &ca.next);
+		}
+		jit_insn_branch(c.F, &catchers.back().handler);
+	} else {
+		c.delete_function_variables();
+		jit_insn_rethrow_unhandled(jit_function);
+	}
 
 	jit_function_compile(jit_function);
 	jit_context_build_end(context);

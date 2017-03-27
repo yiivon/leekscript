@@ -106,9 +106,19 @@ void Program::compile_main(VM& vm, Context& context) {
 
 	// catch (ex) {
 	jit_value_t ex = jit_insn_start_catcher(F);
-	vm.compiler.delete_function_variables();
-	VM::store_exception(F, ex);
-	jit_insn_rethrow_unhandled(F);
+	auto catchers = vm.compiler.catchers.back();
+	if (catchers.size() > 0) {
+		for (size_t i = 0; i < catchers.size() - 1; ++i) {
+			auto ca = catchers[i];
+			jit_insn_branch_if_pc_not_in_range(F, ca.start, ca.end, &ca.next);
+			jit_insn_branch(F, &ca.handler);
+			jit_insn_label(F, &ca.next);
+		}
+		jit_insn_branch(F, &catchers.back().handler);
+	} else {
+		vm.compiler.delete_function_variables();
+		VM::store_exception(F, ex);
+	}
 
 	//jit_dump_function(fopen("main_uncompiled", "w"), F, "main");
 
