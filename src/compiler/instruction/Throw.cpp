@@ -49,7 +49,7 @@ Compiler::value Throw::compile(Compiler& c) const {
 	auto line = c.new_integer(token->line);
 
 	auto ex = c.insn_call(Type::POINTER, {exception, line}, +[](int obj, int line) {
-		std::cout << "ex " << obj << std::endl;
+		// std::cout << "ex " << obj << std::endl;
 		auto ex = new VM::ExceptionObj((VM::Exception) obj);
 		ex->lines.push_back(line);
 		return ex;
