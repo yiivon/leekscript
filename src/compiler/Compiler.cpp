@@ -50,6 +50,7 @@ void Compiler::enter_function(jit_function_t F) {
 	function_variables.push_back(std::vector<CompilerVar> {});
 	functions.push(F);
 	functions_blocks.push_back(0);
+	catchers.push_back({});
 	this->F = F;
 }
 
@@ -58,6 +59,7 @@ void Compiler::leave_function() {
 	function_variables.pop_back();
 	functions.pop();
 	functions_blocks.pop_back();
+	catchers.pop_back();
 	this->F = functions.top();
 }
 
@@ -730,6 +732,10 @@ void Compiler::inc_ops_jit(Compiler::value amount) {
 
 	// End
 	jit_insn_label(F, &label_end);
+}
+
+void Compiler::add_catcher(jit_label_t start, jit_label_t end, jit_label_t handler) {
+	catchers.back().push_back({start, end, handler, jit_label_undefined});
 }
 
 }

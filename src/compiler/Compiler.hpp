@@ -38,6 +38,13 @@ public:
 		}
 	};
 
+	struct catcher {
+		jit_label_t start;
+		jit_label_t end;
+		jit_label_t handler;
+		jit_label_t next;
+	};
+
 	jit_function_t F = nullptr;
 	std::stack<jit_function_t> functions;
 	std::vector<int> functions_blocks; // how many blocks are open in the current loop
@@ -47,6 +54,7 @@ public:
 	std::vector<jit_label_t*> loops_cond_labels;
 	std::vector<std::vector<CompilerVar>> function_variables;
 	std::vector<std::map<std::string, CompilerVar>> variables;
+	std::vector<std::vector<catcher>> catchers;
 
 	Program* program;
 	VM* vm;
@@ -158,6 +166,9 @@ public:
 	void inc_ops(int add);
 	void inc_ops_jit(value add);
 	void get_operations();
+
+	/** Exceptions **/
+	void add_catcher(jit_label_t start, jit_label_t end, jit_label_t handler);
 };
 
 }
