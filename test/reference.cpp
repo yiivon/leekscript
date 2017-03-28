@@ -57,4 +57,7 @@ void Test::test_references() {
 	section("Reference of internal variable");
 	// TODO
 	// code("let a = @Number a").equals("<class>");
+
+	section("Reference assignment convertion to pointer");
+	code("var a = 12, v = @a ['', v = 2]").equals("['', 2]");
 }
