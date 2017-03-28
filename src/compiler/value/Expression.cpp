@@ -523,8 +523,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	switch (op->type) {
 		case TokenType::EQUAL: {
-			//std::cout << "(" << equal_previous_type << ", " << v1->type << ") = " << v2->type << std::endl;
-
 			// Reference, like : a = @b
 			auto varval = dynamic_cast<VariableValue*>(v1);
 			if (varval != nullptr and varval->scope == VarScope::LOCAL and c.get_var(varval->name).reference) {
