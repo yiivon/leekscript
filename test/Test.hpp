@@ -38,6 +38,7 @@ public:
 	Input file_v1(const std::string& file_name);
 
 	void test_general();
+	void test_types();
 	void test_operations();
 	void test_operators();
 	void test_references();

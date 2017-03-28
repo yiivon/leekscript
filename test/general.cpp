@@ -18,9 +18,6 @@ void Test::test_general() {
 	auto a = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
 	std::cout << a->message() << std::endl;
 	delete a;
-	// Print a list of types
-	std::vector<ls::Type> types { ls::Type::INTEGER, ls::Type::STRING, ls::Type::REAL_ARRAY };
-	std::cout << types << std::endl;
 	// Print a program
 	auto program = new ls::Program("2 + 2");
 	program->compile(vm, "{}");
@@ -30,8 +27,6 @@ void Test::test_general() {
 	ls::LSObject o;
 	o.addField("test", ls::LSNumber::get(12));
 	std::cout << o.getField("test") << std::endl;
-	// Print unknown type nature (should not be printed elsewhere)
-	std::cout << ls::Type::get_nature_symbol(ls::Nature::UNKNOWN) << std::endl;
 
 	header("Basic codes");
 	code("").equals("(void)");

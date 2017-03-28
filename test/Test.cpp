@@ -27,6 +27,7 @@ int Test::all() {
 	exeTime = 0;
 
 	test_general();
+	test_types();
 	test_booleans();
 	test_numbers();
 	test_strings();
