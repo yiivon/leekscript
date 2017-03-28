@@ -55,7 +55,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (std_class->static_fields.find(field.content) != std_class->static_fields.end()) {
 
-			auto mod_field = std_class->static_fields[field.content];
+			auto mod_field = std_class->static_fields.at(field.content);
 			type = mod_field.type;
 
 			if (mod_field.fun != nullptr) {

@@ -71,7 +71,6 @@ public:
 	void* fun = nullptr;
 	LSValue* value = nullptr;
 
-	ModuleStaticField() {}
 	ModuleStaticField(const ModuleStaticField& f)
 	: name(f.name), type(f.type), fun(f.fun), value(f.value) {}
 	ModuleStaticField(std::string name, Type type, LSValue* value)
