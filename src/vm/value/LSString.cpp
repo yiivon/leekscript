@@ -21,8 +21,10 @@ LSString::iterator LSString::iterator_begin(LSString* s) {
 
 void LSString::iterator_next(LSString::iterator* it) {
 	if (it->pos == it->next_pos) {
-		u8_nextchar((char*) it->buffer, &it->pos);
-		it->next_pos = it->pos;
+		assert(false); // LCOV_EXCL_LINE
+		// Uncomment to be able to call next without having call get() before
+		// u8_nextchar((char*) it->buffer, &it->pos);
+		// it->next_pos = it->pos;
 	} else {
 		it->pos = it->next_pos;
 	}
