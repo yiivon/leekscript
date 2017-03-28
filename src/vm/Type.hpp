@@ -49,7 +49,6 @@ public:
 	virtual const std::string getName() const { return "bool"; }
 	virtual const std::string getClass() const { return "Boolean"; }
 	virtual const std::string getJsonName() const { return "boolean"; }
-	virtual int size() const { return 32; }
 };
 
 class NumberRawType : public BaseRawType {
@@ -172,10 +171,7 @@ public:
 	PlaceholderRawType(std::string name) : name(name) {}
 	virtual ~PlaceholderRawType() {}
 	virtual int id() const { assert(false); } // LCOV_EXCL_LINE
-	virtual int id() const { return 11; }
 	virtual const std::string getName() const { return name; }
-	virtual const std::string getClass() const { return name; }
-	virtual const std::string getJsonName() const { return name; }
 };
 
 class RawType {
