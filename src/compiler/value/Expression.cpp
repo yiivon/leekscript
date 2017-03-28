@@ -307,13 +307,15 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::POWER_EQUAL) {
 		// TODO other operators like |= ^= &=
 
-		// A += B, A -= B
-		if (op->type == TokenType::PLUS_EQUAL or op->type == TokenType::MINUS_EQUAL) {
-			if (v1->type == Type::INTEGER and v2->type == Type::REAL) {
-				((LeftValue*) v1)->change_type(analyser, Type::REAL);
+		if (op->type == TokenType::EQUAL) {
+			if (v1->type.not_temporary() != v2->type.not_temporary()) {
+				((LeftValue*) v1)->change_type(analyser, v2->type);
+			}
+		} else {
+			if (Type::more_specific(v2->type, v1->type)) {
+				((LeftValue*) v1)->change_type(analyser, v2->type);
 			}
 		}
-
 		store_result_in_v1 = true;
 	}
 

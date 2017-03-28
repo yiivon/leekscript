@@ -122,9 +122,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 }
 
-void ObjectAccess::change_type(SemanticAnalyser*, const Type& req_type) {
-	type = req_type;
-}
+void ObjectAccess::change_type(SemanticAnalyser*, const Type& req_type) {}
 
 Compiler::value ObjectAccess::compile(Compiler& c) const {
 
