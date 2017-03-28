@@ -21,8 +21,6 @@ struct jit_stack_trace {
 
 namespace ls {
 
-extern map<string, jit_value_t> internals;
-
 Program::Program(const std::string& code) {
 	this->code = code;
 	main = nullptr;

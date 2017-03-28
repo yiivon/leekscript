@@ -68,8 +68,6 @@ void Reference::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 //	cout << "ref " << variable->content << " : " << type << endl;
 }
 
-extern map<string, jit_value_t> internals;
-
 Compiler::value Reference::compile(Compiler& c) const {
 
 	if (scope == VarScope::CAPTURE) {
@@ -79,7 +77,7 @@ Compiler::value Reference::compile(Compiler& c) const {
 	if (name != "") {
 		jit_value_t v;
 		if (scope == VarScope::INTERNAL) {
-			v = internals[name];
+			v = c.vm->internals[name];
 		} else if (scope == VarScope::LOCAL) {
 			v = c.get_var(name).value;
 		} else { /* if (scope == VarScope::PARAMETER) */

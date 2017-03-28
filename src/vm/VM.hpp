@@ -90,6 +90,7 @@ public:
 	std::vector<Module*> modules;
 	std::map<std::string, LSValue*> system_vars;
 	std::map<std::string, std::shared_ptr<SemanticVar>> internal_vars;
+	std::map<std::string, jit_value_t> internals;
 	Compiler compiler;
 	LSNull* null_value;
 	LSBoolean* true_value;

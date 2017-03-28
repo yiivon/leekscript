@@ -97,8 +97,6 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	}
 }
 
-extern map<string, jit_value_t> internals;
-
 Compiler::value VariableValue::compile(Compiler& c) const {
 
 	// cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << endl;
@@ -112,7 +110,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 
 	if (scope == VarScope::INTERNAL) {
 
-		v = internals[name];
+		v = c.vm->internals[name];
 
 	} else if (scope == VarScope::LOCAL) {
 

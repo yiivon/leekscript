@@ -34,8 +34,6 @@ namespace ls {
 
 const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;
 jit_type_t VM::mpz_type;
-
-map<string, jit_value_t> internals;
 VM* VM::current_vm = nullptr;
 
 LSValue* op_add(void*, LSValue* x, LSValue* y) {
