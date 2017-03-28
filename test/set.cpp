@@ -89,6 +89,11 @@ void Test::test_set() {
 	code("var s = <'a', 'b'> s += <'c', 'd'> s").equals("<'a', 'b', 'c', 'd'>");
 
 	/*
+	 * Iteration
+	 */
+	code("var s = '' for v in <5, 'hello'> { s += v } s").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"<5, 'hello'>", ls::Type::PTR_SET.to_string()}); // TODO .equals("'5hello'");
+
+	/*
 	 * Methods
 	 */
 	section("Set.contains()");

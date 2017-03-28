@@ -125,7 +125,7 @@ public:
 	virtual const std::string getName() const { return "set"; }
 	virtual const std::string getClass() const { return "Set"; }
 	virtual const std::string getJsonName() const { return "set"; }
-	virtual bool iterable() const { return true; }
+	virtual bool iterable() const { return false; } // TODO not iterable for now
 	virtual bool is_container() const { return true; }
 };
 
@@ -145,7 +145,7 @@ public:
 	virtual const std::string getName() const { return "object"; }
 	virtual const std::string getClass() const { return "Object"; }
 	virtual const std::string getJsonName() const { return "object"; }
-	virtual bool iterable() const { return true; }
+	virtual bool iterable() const { return false; } // TODO not iterable for now
 	virtual bool is_container() const { return true; }
 };
 
