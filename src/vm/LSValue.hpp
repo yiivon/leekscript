@@ -125,9 +125,6 @@ public:
 
 	virtual int abso() const;
 
-	virtual int integer() const { return 0; }
-	virtual double real() const { return 0; }
-
 	virtual std::string to_string() const;
 	virtual std::ostream& print(std::ostream&) const;
 	virtual std::ostream& dump(std::ostream&) const = 0;
@@ -370,12 +367,6 @@ namespace ls {
 	}
 	template <> inline LSValue* convert(double v) {
 		return LSValue::get(v);
-	}
-	template <> inline int convert(LSValue* v) {
-		return v->integer();
-	}
-	template <> inline double convert(LSValue* v) {
-		return v->real();
 	}
 
 	template <class T> T construct() { return {}; }
