@@ -468,52 +468,27 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 }
 
 Type Type::get_compatible_type(const Type& t1, const Type& t2) {
-
 	if (t1 == t2) {
 		return t1;
 	}
-
 	if (t1.nature == Nature::POINTER and t2.nature == Nature::VALUE) {
-		if (t1.raw_type == t2.raw_type) {
-			if (t1.element_type == t2.element_type
-					&& t1.key_type == t2.key_type
-					&& t1.return_types == t2.return_types
-					&& t1.arguments_types == t2.arguments_types) {
-				return t1; // They are identical except the Nature
-			}
-			return Type(t1.raw_type, Nature::POINTER); // They have the same raw_type : for example {function* ({int})->{int}} and {function ({int})->{void}}
-		}
 		return Type::POINTER;
 	}
-
-	// symmetric of last it statement
 	if (t2.nature == Nature::POINTER and t1.nature == Nature::VALUE) {
-		if (t2.raw_type == t1.raw_type) {
-			if (t2.element_type == t1.element_type
-					&& t1.key_type == t2.key_type
-					&& t2.return_types == t1.return_types
-					&& t2.arguments_types == t1.arguments_types) {
-				return t2;
-			}
-			return Type(t2.raw_type, Nature::POINTER);
-		}
 		return Type::POINTER;
 	}
-
 	if (t1.raw_type == RawType::UNKNOWN) {
 		return t2;
 	}
 	if (t2.raw_type == RawType::UNKNOWN) {
 		return t1;
 	}
-
 	if (t2.compatible(t1)) {
 		return t2;
 	}
 	if (t1.compatible(t2)) {
 		return t1;
 	}
-
 	return Type::POINTER;
 }
 
