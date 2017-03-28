@@ -30,6 +30,7 @@ public:
 	jit_context_t context = nullptr;
 	std::string name;
 	Type placeholder_type;
+	bool is_main_function = false;
 
 	Function();
 	virtual ~Function();

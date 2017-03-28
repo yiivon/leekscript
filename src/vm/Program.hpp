@@ -14,9 +14,6 @@ private:
 	std::string code; // The program code
 	void* closure;
 
-	void compile_main(VM& vm, Context&);
-	void compile_jit(VM& vm, Compiler&, Context&, bool);
-
 public:
 
 	Function* main;

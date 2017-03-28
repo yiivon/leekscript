@@ -27,7 +27,7 @@ Function::~Function() {
 		delete ls_fun;
 		ls_fun = nullptr;
 	}
-	if (context) {
+	if (context && !is_main_function) {
 		jit_context_destroy(context);
 	}
 }
@@ -284,25 +284,29 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 
 Compiler::value Function::compile(Compiler& c) const {
 
-	// Add captures
-	auto jit_fun = c.new_pointer(ls_fun);
-	for (const auto& cap : captures) {
-		jit_value_t jit_cap;
-		if (cap->scope == VarScope::LOCAL) {
-			jit_cap = c.get_var(cap->name).value;
-		} else if (cap->scope == VarScope::CAPTURE) {
-			jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
-		} else {
-			jit_cap = jit_value_get_param(c.F, 1 + cap->index);
+	// Add captures (for sub functions only)
+	Compiler::value jit_fun;
+	if (!is_main_function) {
+		jit_fun = c.new_pointer(ls_fun);
+		for (const auto& cap : captures) {
+			jit_value_t jit_cap;
+			if (cap->scope == VarScope::LOCAL) {
+				jit_cap = c.get_var(cap->name).value;
+			} else if (cap->scope == VarScope::CAPTURE) {
+				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
+			} else {
+				jit_cap = jit_value_get_param(c.F, 1 + cap->index);
+			}
+			if (cap->initial_type.nature != Nature::POINTER) {
+				jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->initial_type);
+			}
+			c.function_add_capture(jit_fun, {jit_cap, cap->type});
 		}
-		if (cap->initial_type.nature != Nature::POINTER) {
-			jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->initial_type);
-		}
-		c.function_add_capture(jit_fun, {jit_cap, cap->type});
 	}
 
 	((Function*) this)->context = jit_context_create();
 	jit_context_build_start(context);
+	if (is_main_function) c.vm->jit_context = context;
 
 	unsigned arg_count = arguments.size() + 1;
 	vector<jit_type_t> params = {LS_POINTER}; // first arg is the function pointer
@@ -318,33 +322,48 @@ Compiler::value Function::compile(Compiler& c) const {
 
 	c.enter_function(jit_function);
 
+	// System internal variables (for main function only)
+	if (is_main_function) {
+		for (auto var : c.vm->system_vars) {
+			auto name = var.first;
+			auto value = var.second;
+			auto val = c.new_pointer(value);
+			c.vm->internals.insert(pair<string, jit_value_t>(name, val.v));
+		}
+	}
+
 	auto res = body->compile(c);
 
 	jit_insn_return(jit_function, res.v);
 
 	// catch (ex)
-	jit_insn_start_catcher(jit_function);
+	auto ex = jit_insn_start_catcher(jit_function);
 	auto catchers = c.catchers.back();
 	if (catchers.size() > 0) {
 		for (size_t i = 0; i < catchers.size() - 1; ++i) {
 			auto ca = catchers[i];
-			jit_insn_branch_if_pc_not_in_range(c.F, ca.start, ca.end, &ca.next);
-			jit_insn_branch(c.F, &ca.handler);
-			jit_insn_label(c.F, &ca.next);
+			jit_insn_branch_if_pc_not_in_range(jit_function, ca.start, ca.end, &ca.next);
+			jit_insn_branch(jit_function, &ca.handler);
+			jit_insn_label(jit_function, &ca.next);
 		}
-		jit_insn_branch(c.F, &catchers.back().handler);
+		jit_insn_branch(jit_function, &catchers.back().handler);
 	} else {
 		c.delete_function_variables();
-		jit_insn_rethrow_unhandled(jit_function);
+		if (is_main_function) {
+			VM::store_exception(jit_function, ex);
+		} else {
+			jit_insn_rethrow_unhandled(jit_function);
+		}
 	}
 
 	jit_function_compile(jit_function);
 	jit_context_build_end(context);
 
-	c.leave_function();
-
-	// Create a function : 1 op
-	c.inc_ops(1);
+	if (!is_main_function) {
+		c.leave_function();
+		// Create a function : 1 op
+		c.inc_ops(1);
+	}
 
 	// Function are always pointers for now
 	// functions as a simple pointer value can be like :
@@ -352,7 +371,11 @@ Compiler::value Function::compile(Compiler& c) const {
 	void* f = jit_function_to_closure(jit_function);
 	ls_fun->function = f;
 
-	return {jit_fun.v, type};
+	if (is_main_function) {
+		return {nullptr, Type::VOID};
+	} else {
+		return {jit_fun.v, type};
+	}
 }
 
 }

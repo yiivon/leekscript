@@ -52,6 +52,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	// Syntaxical analysis
 	SyntaxicAnalyser syn;
 	this->main = syn.analyse(tokens);
+	this->main->is_main_function = true;
 
 	if (syn.getErrors().size() > 0) {
 		result.compilation_success = false;
@@ -76,8 +77,12 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	}
 
 	// Compilation
-	internals.clear();
-	this->compile_main(vm, context);
+	jit_init();
+	vm.internals.clear();
+	vm.compiler.program = this;
+	main->compile(vm.compiler);
+	closure = main->ls_fun->function;
+	vm.compiler.leave_function();
 
 	// Result
 	result.compilation_success = true;
@@ -86,50 +91,6 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 
 void Program::analyse(SemanticAnalyser* analyser) {
 	main->analyse(analyser, Type::UNKNOWN);
-}
-
-void Program::compile_main(VM& vm, Context& context) {
-
-	vm.compiler.program = this;
-
-	jit_init();
-	VM::jit_context = jit_context_create();
-	jit_context_build_start(VM::jit_context);
-
-	jit_type_t params[0] = {};
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(main->type.getReturnType()), params, 0, 1);
-	jit_function_t F = jit_function_create(VM::jit_context, signature);
-	jit_insn_uses_catcher(F);
-	vm.compiler.enter_function(F);
-
-	compile_jit(vm, vm.compiler, context, false);
-
-	// catch (ex) {
-	jit_value_t ex = jit_insn_start_catcher(F);
-	auto catchers = vm.compiler.catchers.back();
-	if (catchers.size() > 0) {
-		for (size_t i = 0; i < catchers.size() - 1; ++i) {
-			auto ca = catchers[i];
-			jit_insn_branch_if_pc_not_in_range(F, ca.start, ca.end, &ca.next);
-			jit_insn_branch(F, &ca.handler);
-			jit_insn_label(F, &ca.next);
-		}
-		jit_insn_branch(F, &catchers.back().handler);
-	} else {
-		vm.compiler.delete_function_variables();
-		VM::store_exception(F, ex);
-	}
-
-	//jit_dump_function(fopen("main_uncompiled", "w"), F, "main");
-
-	jit_function_compile(F);
-	jit_context_build_end(VM::jit_context);
-
-	//jit_dump_function(fopen("main_compiled", "w"), F, "main");
-
-	closure = jit_function_to_closure(F);
-
-	jit_type_free(signature);
 }
 
 /*
@@ -221,40 +182,7 @@ std::ostream& operator << (std::ostream& os, const Program* program) {
 	return os;
 }
 
-/*
-extern map<string, jit_value_t> internals;
-
-LSArray<LSValue*>* Program_create_array() {
-	return new LSArray<LSValue*>();
-}
-void Program_push_null(LSArray<LSValue*>* array, int) {
-	array->push_clone(LSNull::get());
-}
-void Program_push_boolean(LSArray<LSValue*>* array, int value) {
-	array->push_clone(LSBoolean::get(value));
-}
-void Program_push_integer(LSArray<LSValue*>* array, int value) {
-	array->push_clone(LSNumber::get(value));
-}
-void Program_push_function(LSArray<LSValue*>* array, void* value) {
-	array->push_clone(new LSFunction(value));
-}
-void Program_push_pointer(LSArray<LSValue*>* array, LSValue* value) {
-	array->push_clone(value);
-}
-*/
-
-void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
-
-	// System internal variables
-	for (auto var : vm.system_vars) {
-
-		string name = var.first;
-		LSValue* value = var.second;
-
-		auto val = c.new_pointer(value);
-		internals.insert(pair<string, jit_value_t>(name, val.v));
-	}
+// void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
 
 	// User context variables
 	/*
@@ -275,8 +203,8 @@ void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
 	}
 	*/
 
-	jit_value_t res = main->body->compile(c).v;
-	jit_insn_return(c.F, res);
+	// jit_value_t res = main->body->compile(c).v;
+	// jit_insn_return(c.F, res);
 
 	/*
 	if (toplevel) {
@@ -346,6 +274,6 @@ void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
 		jit_insn_return(F, array);
 	}
 	*/
-}
+// }
 
 }
