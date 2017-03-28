@@ -33,20 +33,10 @@ using namespace std;
 namespace ls {
 
 const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;
-unsigned int VM::operations = 0;
-bool VM::enable_operations = true;
-unsigned long int VM::operation_limit = VM::DEFAULT_OPERATION_LIMIT;
-
 jit_type_t VM::mpz_type;
-long VM::mpz_created = 0;
-long VM::mpz_deleted = 0;
-
-VM::ExceptionObj* VM::last_exception = nullptr;
-jit_stack_trace_t VM::stack_trace;
-jit_context_t VM::jit_context;
-std::ostream* VM::output = &std::cout;
 
 map<string, jit_value_t> internals;
+VM* VM::current_vm = nullptr;
 
 LSValue* op_add(void*, LSValue* x, LSValue* y) {
 	return x->add(y);
@@ -75,6 +65,8 @@ LSValue* ptr_fun(void*, LSValue* v) {
 }
 
 VM::VM(bool v1) : compiler(this) {
+
+	operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
 	null_value = LSNull::create();
 	true_value = LSBoolean::create(true);
@@ -145,6 +137,10 @@ VM::~VM() {
 	delete false_value;
 }
 
+VM* VM::current() {
+	return current_vm;
+}
+
 void VM::add_module(Module* m) {
 
 	modules.push_back(m);
@@ -168,6 +164,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	VM::mpz_type = jit_type_create_struct(types, 3, 1);
 
 	// Reset
+	VM::current_vm = this;
 	LSNull::set_null_value(this->null_value);
 	LSBoolean::set_true_value(this->true_value);
 	LSBoolean::set_false_value(this->false_value);
@@ -183,7 +180,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 		LSValue::objs().clear();
 	#endif
 
-	Program* program = new Program(code);
+	auto program = new Program(code);
 
 	// Compile
 	auto compilation_start = chrono::high_resolution_clock::now();
@@ -200,7 +197,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 
 		auto exe_start = chrono::high_resolution_clock::now();
 		try {
-			value = program->execute();
+			value = program->execute(*this);
 			result.execution_success = true;
 		} catch (VM::ExceptionObj* ex) {
 			result.exception = ex->type;
@@ -397,7 +394,7 @@ jit_value_t VM::create_array(jit_function_t F, const Type& element_type, int cap
 }
 
 void VM::inc_mpz_counter(jit_function_t F) {
-	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::mpz_created);
+	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::current()->mpz_created);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
@@ -408,7 +405,7 @@ void VM::store_exception(jit_function_t F, jit_value_t ex) {
 		std::cout << "Exception saved!" << std::endl;
 	});
 	*/
-	jit_value_t vm_ex_ptr = jit_value_create_long_constant(F, LS_POINTER, (long int) &VM::last_exception);
+	jit_value_t vm_ex_ptr = jit_value_create_long_constant(F, LS_POINTER, (long int) &VM::current()->last_exception);
 	jit_insn_store_relative(F, vm_ex_ptr, 0, ex);
 }
 

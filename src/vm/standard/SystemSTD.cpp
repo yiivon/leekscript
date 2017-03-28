@@ -67,7 +67,7 @@ long get_nano_time() {
 }
 
 Compiler::value System_operations(Compiler& c) {
-	jit_value_t jit_ops_ptr = jit_value_create_long_constant(c.F, jit_type_void_ptr, (long int) &VM::operations);
+	jit_value_t jit_ops_ptr = jit_value_create_long_constant(c.F, jit_type_void_ptr, (long int) &c.vm->operations);
 	return {jit_insn_load_relative(c.F, jit_ops_ptr, 0, jit_type_uint), Type::LONG};
 }
 
@@ -92,38 +92,38 @@ Compiler::value System_version(Compiler& c) {
 }
 
 void System_print(LSValue* value) {
-	value->print(*VM::output);
-	*VM::output << std::endl;
+	value->print(*VM::current()->output);
+	*VM::current()->output << std::endl;
 	LSValue::delete_temporary(value);
 }
 
 void System_print_int(int v) {
-	*VM::output << v << std::endl;
+	*VM::current()->output << v << std::endl;
 }
 
 void System_print_mpz(__mpz_struct v) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &v);
-	*VM::output << buff << std::endl;
+	*VM::current()->output << buff << std::endl;
 }
 void System_print_mpz_tmp(__mpz_struct v) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &v);
-	*VM::output << buff << std::endl;
+	*VM::current()->output << buff << std::endl;
 	mpz_clear(&v);
-	VM::mpz_deleted++;
+	VM::current()->mpz_deleted++;
 }
 
 void System_print_long(long v) {
-	*VM::output << v << std::endl;
+	*VM::current()->output << v << std::endl;
 }
 
 void System_print_bool(bool v) {
-	*VM::output << std::boolalpha << v << std::endl;
+	*VM::current()->output << std::boolalpha << v << std::endl;
 }
 
 void System_print_float(double v) {
-	*VM::output << v << std::endl;
+	*VM::current()->output << v << std::endl;
 }
 
 }

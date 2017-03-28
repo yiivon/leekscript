@@ -121,9 +121,10 @@ Test::Input Test::file_v1(const std::string& file_name) {
 ls::VM::Result Test::Input::run(bool display_errors) {
 	test->total++;
 
-	ls::VM::operation_limit = this->operation_limit;
-	auto result = (v1 ? test->vmv1 : test->vm).execute(code, "{}", false, true);
-	ls::VM::operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
+	auto vm = v1 ? &test->vmv1 : &test->vm;
+	vm->operation_limit = this->operation_limit;
+	auto result = vm->execute(code, "{}", false, true);
+	vm->operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	this->result = result;
 	test->obj_created += result.objects_created;
@@ -234,9 +235,10 @@ void Test::Input::almost(T expected, T delta) {
 
 void Test::Input::quine() {
 	std::ostringstream oss;
-	ls::VM::output = &oss;
+	auto vm = v1 ? &test->vmv1 : &test->vm;
+	vm->output = &oss;
 	auto result = run();
-	ls::VM::output = &std::cout;
+	vm->output = &std::cout;
 
 	if (oss.str() == code) {
 		pass(code);
@@ -247,9 +249,10 @@ void Test::Input::quine() {
 
 void Test::Input::output(std::string expected) {
 	std::ostringstream oss;
-	ls::VM::output = &oss;
+	auto vm = v1 ? &test->vmv1 : &test->vm;
+	vm->output = &oss;
 	auto result = run();
-	ls::VM::output = &std::cout;
+	vm->output = &std::cout;
 
 	if (oss.str() == expected) {
 		pass(expected);

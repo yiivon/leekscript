@@ -63,19 +63,8 @@ public:
 	};
 
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;
-	static unsigned int operations;
-	static bool enable_operations;
-	static unsigned long int operation_limit;
-
 	static jit_type_t mpz_type;
-	static long mpz_created;
-	static long mpz_deleted;
-
-	static ExceptionObj* last_exception;
-	static jit_stack_trace_t stack_trace;
-	static jit_context_t jit_context;
-
-	static std::ostream* output;
+	static VM* current_vm;
 
 	struct Result {
 		bool compilation_success = false;
@@ -105,9 +94,20 @@ public:
 	LSNull* null_value;
 	LSBoolean* true_value;
 	LSBoolean* false_value;
+	unsigned int operations = 0;
+	bool enable_operations = true;
+	unsigned long int operation_limit;
+	std::ostream* output = &std::cout;
+	long mpz_created = 0;
+	long mpz_deleted = 0;
+	ExceptionObj* last_exception = nullptr;
+	jit_stack_trace_t stack_trace;
+	jit_context_t jit_context;
 
 	VM(bool v1 = false);
 	virtual ~VM();
+
+	static VM* current();
 
 	/** Main execution function **/
 	Result execute(const std::string code, std::string ctx, bool debug = false, bool ops = true);

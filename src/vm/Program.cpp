@@ -104,15 +104,15 @@ void* handler(int type) {
 	auto trace = (jit_stack_trace_t) jit_malloc(sizeof(struct jit_stack_trace));
 	trace->size = 1;
 	trace->items[0] = pc;
-	unsigned int line = jit_stack_trace_get_offset(VM::jit_context, trace, 0);
+	unsigned int line = jit_stack_trace_get_offset(VM::current()->jit_context, trace, 0);
 	jit_free(trace);
 
-	VM::ExceptionObj* ex = new VM::ExceptionObj((VM::Exception) type);
+	auto ex = new VM::ExceptionObj((VM::Exception) type);
 	ex->lines.push_back(line);
 	return ex;
 }
 
-std::string Program::execute() {
+std::string Program::execute(VM& vm) {
 
 	jit_exception_set_handler(&handler);
 
@@ -121,52 +121,52 @@ std::string Program::execute() {
 	if (output_type == Type::VOID) {
 		auto fun = (void (*)()) closure;
 		fun();
-		if (VM::last_exception) throw VM::last_exception;
+		if (vm.last_exception) throw vm.last_exception;
 		return "(void)";
 	}
 
 	if (output_type == Type::BOOLEAN) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
-		if (VM::last_exception) throw VM::last_exception;
+		if (vm.last_exception) throw vm.last_exception;
 		return res ? "true" : "false";
 	}
 
 	if (output_type == Type::INTEGER) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
-		if (VM::last_exception) throw VM::last_exception;
+		if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
 
 	if (output_type == Type::MPZ_TMP or output_type == Type::MPZ) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
-		if (VM::last_exception) throw VM::last_exception;
+		if (vm.last_exception) throw vm.last_exception;
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
 		mpz_clear(&ret);
-		VM::mpz_deleted++;
+		vm.mpz_deleted++;
 		return std::string(buff);
 	}
 
 	if (output_type == Type::REAL) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
-		if (VM::last_exception) throw VM::last_exception;
+		if (vm.last_exception) throw vm.last_exception;
 		return LSNumber::print(res);
 	}
 
 	if (output_type == Type::LONG) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
-		if (VM::last_exception) throw VM::last_exception;
+		if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
 
 	auto fun = (LSValue* (*)()) closure;
 	auto ptr = fun();
-	if (VM::last_exception) throw VM::last_exception;
+	if (vm.last_exception) throw vm.last_exception;
 	std::ostringstream oss;
 	ptr->dump(oss);
 	LSValue::delete_ref(ptr);

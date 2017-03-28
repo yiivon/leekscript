@@ -30,9 +30,9 @@ public:
 	VM::Result compile(VM& vm, const std::string& context);
 
 	/*
-	 * Execute the program and get a LSValue* result
+	 * Execute the program and get a std::string result
 	 */
-	std::string execute();
+	std::string execute(VM& vm);
 
 	void print(std::ostream& os, bool debug = false) const;
 };

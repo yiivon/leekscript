@@ -25,9 +25,9 @@ void Functions::create(VM* vm) {
 }
 
 void Functions::v1_debug(LSFunction<LSValue*>*, LSValue* v) {
-	v->print(*VM::output);
+	v->print(*VM::current()->output);
 	LSValue::delete_temporary(v);
-	*VM::output << std::endl;
+	*VM::current()->output << std::endl;
 }
 
 LSValue* Functions::v1_charAt(LSFunction<LSValue*>*, LSString* v, int p) {
