@@ -220,7 +220,7 @@ const Type& Type::getKeyType() const {
 	if (key_type.size()) {
 		return key_type[0];
 	}
-	return Type::UNKNOWN;
+	assert(false); // LCOV_EXCL_LINE
 }
 void Type::setKeyType(const Type& type) {
 	if (key_type.size() == 0) {
@@ -259,7 +259,7 @@ Type Type::mix(const Type& x) const {
 	if (raw_type == RawType::REAL || x.raw_type == RawType::REAL) return Type::REAL;
 	if (raw_type == RawType::LONG || x.raw_type == RawType::LONG) return Type::LONG;
 	if (raw_type == RawType::INTEGER || x.raw_type == RawType::INTEGER) return Type::INTEGER;
-	return Type::POINTER;
+	assert(false); // LCOV_EXCL_LINE
 }
 
 void Type::toJson(ostream& os) const {
