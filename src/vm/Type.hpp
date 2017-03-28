@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 namespace ls {
 
@@ -170,6 +171,7 @@ public:
 	std::string name;
 	PlaceholderRawType(std::string name) : name(name) {}
 	virtual ~PlaceholderRawType() {}
+	virtual int id() const { assert(false); } // LCOV_EXCL_LINE
 	virtual int id() const { return 11; }
 	virtual const std::string getName() const { return name; }
 	virtual const std::string getClass() const { return name; }
