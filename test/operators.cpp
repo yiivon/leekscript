@@ -129,6 +129,13 @@ void Test::test_operators() {
 	code("[] < []").equals("false");
 	code("[] < {}").equals("true");
 
+	code("[1..10] < null").equals("false");
+	code("[1..10] < true").equals("false");
+	code("[1..10] < 1").equals("false");
+	code("[1..10] < 'a'").equals("false");
+	code("[1..10] < []").equals("false");
+	code("[1..10] < {}").equals("true");
+
 	code("{} < null").equals("false");
 	code("{} < true").equals("false");
 	code("{} < 1").equals("false");
