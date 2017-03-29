@@ -838,8 +838,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 					auto m = &LSArray<double>::ls_map<int>;
 					ls_func = (void*) m;
 				} else {
-					auto m = &LSArray<double>::ls_map<LSValue*>;
-					ls_func = (void*) m;
+					// FIXME Ugly style to fix uncovered line
+					auto m = &LSArray<double>::ls_map<LSValue*>; ls_func = (void*) m;
 				}
 			} else {
 				auto m = &LSArray<LSValue*>::ls_map<LSValue*>;
