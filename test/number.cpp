@@ -632,6 +632,8 @@ void Test::test_numbers() {
 	code("Number.sqrt(123456789123456789123456789)").equals("11111111066111");
 	code("Number.sqrt(55m ** 20m)").equals("253295162119140625");
 	code("Number.sqrt(12m + 5m)").equals("4");
+	code("var n = 12; n.sqrt()").equals("3.4641016151");
+	code("var n = 12; (@n).sqrt()").equals("3.4641016151");
 
 	section("Number.toDegrees");
 	code("π.toDegrees()").equals("180");
