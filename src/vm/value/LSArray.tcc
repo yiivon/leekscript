@@ -833,9 +833,7 @@ bool LSArray<T>::to_bool() const {
 
 template <class T>
 bool LSArray<T>::ls_not() const {
-	bool r = this->size() == 0;
-	LSValue::delete_temporary(this);
-	return r;
+	return this->size() == 0;
 }
 
 template <class T>

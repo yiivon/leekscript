@@ -72,6 +72,11 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3]; ~a").equals("[3, 2, 1]");
 	code("~[1, 2, 3]").equals("[3, 2, 1]");
 
+	section("Array.operator !");
+	code("let a = [1, 2, 3]; !a").equals("false");
+	code("![1, 2, 3]").equals("false");
+	code("![1.5, 2.5, 3.5]").equals("false");
+	code("![]").equals("true");
 	section("Array.operator []");
 	code("[1, 2, 3][1]").equals("2");
 	code("let a = [1, 2, 3] a[0]").equals("1");
