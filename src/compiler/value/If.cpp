@@ -85,12 +85,8 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		// }
 		//then->analyse(analyser, type);
 	}
-
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
-	}
-	if (type == Type::MPZ) {
-		type = Type::MPZ_TMP;
 	}
 }
 
