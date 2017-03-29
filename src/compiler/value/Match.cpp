@@ -221,7 +221,6 @@ jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 				c.insn_delete_temporary(b);
 			}
 		}
-
 		jit_value_t lt = nullptr;
 		if (end) {
 			auto e = end->compile(c);
@@ -234,7 +233,6 @@ jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 			}
 		}
 		jit_type_free(sig);
-
 		if (ge) {
 			if (lt) {
 				return jit_insn_and(c.F, ge, lt);
@@ -242,13 +240,8 @@ jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 				return ge;
 			}
 		} else {
-			if (lt) {
-				return lt;
-			} else {
-				return nullptr; // équivalent à default
-			}
+			return lt;
 		}
-
 	} else {
 		jit_value_t cond;
 		auto p = begin->compile(c);
