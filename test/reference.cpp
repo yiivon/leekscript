@@ -55,9 +55,16 @@ void Test::test_references() {
 	code("var a = 'a', b = 'b'; var c = @a; c = @b; c += '!'; [a, b]").equals("['a', 'b!']");
 
 	section("Reference of internal variable");
-	// TODO
-	// code("let a = @Number a").equals("<class>");
+	code("let a = Number a").equals("<class Number>");
+	code("let a = @Number a").equals("<class Number>");
+	code("@Number").equals("<class Number>");
 
 	section("Reference assignment convertion to pointer");
 	code("var a = 12, v = @a ['', v = 2]").equals("['', 2]");
+
+	section("Reference on parameter");
+	code("function f(a) { a++ a } f(10)").equals("11");
+	code("function f(a) { var b = a b++ a } f(10)").equals("10");
+	code("function f(a) { var b = @a b++ a } f(10)").equals("11");
+	code("function f(a) { (@a + 2) } f(10)").equals("12");
 }

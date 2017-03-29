@@ -85,8 +85,15 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 
 			if (Reference* ref = dynamic_cast<Reference*>(ex)) {
 				if (ref->name != "") {
-					jit_value_t val = c.get_var(ref->name).value;
-					if (v->type.must_manage_memory()) {
+					jit_value_t val;
+					if (ref->scope == VarScope::LOCAL) {
+						val = c.get_var(ref->name).value;
+					} else if (ref->scope == VarScope::INTERNAL) {
+						val = c.vm->internals.at(ref->name);
+					} else {
+						val = jit_value_get_param(c.F, 1 + ref->var->index);
+					}
+					if (v->type.must_manage_memory() && ref->scope != VarScope::INTERNAL) {
 						c.insn_inc_refs({val, v->type});
 					}
 					c.add_var(name, val, v->type, true);
