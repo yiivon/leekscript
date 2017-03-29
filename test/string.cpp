@@ -223,6 +223,7 @@ void Test::test_strings() {
 	code("[128040][0].char()").equals("'🐨'");
 	code("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 	code("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
+	code("[String.code('♫'), '']").equals("[9835, '']");
 
 	section("String.number()");
 	code("String.number('1234567')").equals("1234567");
