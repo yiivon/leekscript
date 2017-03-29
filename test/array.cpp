@@ -257,6 +257,10 @@ void Test::test_arrays() {
 	code("['abc', true, 12, [1, 2]].sum()").equals("'abctrue12[1, 2]'");
 	code("[10, -5.7, 30.89, 66].sum()").almost(101.19);
 
+	section("Array.product()");
+	code("[1, 2, 3, 4].product()").equals("24");
+	code("[1.5, 2.5, 3.5, 4.5].product()").equals("59.0625");
+
 	section("Array.map()");
 	code("Array.map([1, 2, 3], x -> x ** 2)").equals("[1, 4, 9]");
 	code("[3, 4, 5].map(x -> x ** 2)").equals("[9, 16, 25]");
@@ -279,6 +283,7 @@ void Test::test_arrays() {
 	code("let a = [4, 12, 1, 4] a.max()").equals("12");
 	code("['c', 'a', 'd', 'b'].max()").equals("'d'");
 	code("let a = ['c', 'a', 'e', 'b'] a.max()").equals("'e'");
+	code("[4, 20.5, 1, 4].max()").equals("20.5");
 
 	section("Array.min()");
 	code("[].min()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -287,6 +292,7 @@ void Test::test_arrays() {
 	code("let a = [4, 12, 1, 4] a.min()").equals("1");
 	code("['c', 'a', 'd', 'b'].min()").equals("'a'");
 	code("let a = ['c', 'a', 'e', 'b'] a.min()").equals("'a'");
+	code("[4, 20.5, 1.5, 4].min()").equals("1.5");
 
 	section("Array.chunk()");
 	code("let x = [1, 2, 3, 4] x.chunk(2)").equals("[[1, 2], [3, 4]]");
@@ -322,6 +328,8 @@ void Test::test_arrays() {
 	section("Array.contains()");
 	code("Array.contains([1, 2, 3, 10, 1], 1)").equals("true");
 	code("[3, 4, 5].contains(6)").equals("false");
+	code("[3.5, 4.5, 5.5].contains(6.5)").equals("false");
+	code("[3.5, 4.5, 6.5].contains(6.5)").equals("true");
 	code("['a', true, {}].contains(true)").equals("true");
 	code("['a', true, {}].contains(12)").equals("false");
 
@@ -376,6 +384,7 @@ void Test::test_arrays() {
 
 	section("Array.shuffle()");
 	code("[].shuffle()");
+	code("[1.5, 2.5].shuffle().size()").equals("2");
 	code("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()").equals("7");
 	code("let a = [1, 2, 3, 10, true, 'yo', null] a.shuffle().size()").equals("7");
 
@@ -384,6 +393,7 @@ void Test::test_arrays() {
 	code("[null].reverse()").equals("[null]");
 	code("[].reverse()").equals("[]");
 	code("[1, 2, 3].reverse()").equals("[3, 2, 1]");
+	code("[1.5, 2.5, 3.5].reverse()").equals("[3.5, 2.5, 1.5]");
 	code("let a = [1, 2, 3] a.reverse()").equals("[3, 2, 1]");
 
 	section("Array.search()");
@@ -442,7 +452,11 @@ void Test::test_arrays() {
 
 	section("Array.fill()");
 	code("let a = [1, 2, 3] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
+	// TODO should be possible
+	// code("let a = [1, 2, 3] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
 	code("let a = [] Array.fill(a, 'test', 2)").equals("['test', 'test']");
+	code("let a = [1.5] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
+	code("let a = [1.5] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
 
 	section("Array.insert()");
 	code("let a = ['a', 'b', 'c'] Array.insert(a, 'hello', 1)").equals("['a', 'hello', 'b', 'c']");
