@@ -59,7 +59,9 @@ void Test::test_references() {
 	code("let a = @Number a").equals("<class Number>");
 	code("@Number").equals("<class Number>");
 
-	section("Reference assignment convertion to pointer");
+	section("Reference convertion to pointer");
+	code("var v = 2 ['', @v]").equals("['', 2]");
+	code("var v = 2 ptr(@v)").equals("2");
 	code("var a = 12, v = @a ['', v = 2]").equals("['', 2]");
 
 	section("Reference on parameter");
