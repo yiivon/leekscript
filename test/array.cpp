@@ -237,6 +237,7 @@ void Test::test_arrays() {
 	code("Array.size([6.8999, 5.56])").equals("2");
 	code("[1, 'yo', true].size()").equals("3");
 	code("[1, -2, 3, -12, -6].size()").equals("5");
+	code("[1, 2, 3].size").equals("<function>");
 	// TODO
 	// code("[[1, 2, 3], 'foo'][0].size()").equals("3");
 
