@@ -462,6 +462,8 @@ void Test::test_numbers() {
 	code("Number.abs(['a', -15][1])").equals("15");
 	code("(-17).abs()").equals("17");
 	code("(-19.5).abs()").equals("19.5");
+	code("12.abs").equals("<function>");
+	code("12.abs").equals("<function>");
 
 	section("Number.exp()");
 	code("Number.exp(0)").equals("1");

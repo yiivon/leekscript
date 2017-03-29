@@ -149,7 +149,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 	if (class_attr) {
 		// TODO : only functions!
-		return c.new_pointer(attr_addr);
+		return c.new_pointer(new LSFunction<LSValue*>(attr_addr));
 	} else {
 		auto o = object->compile(c);
 		auto k = c.new_pointer(&field.content);
