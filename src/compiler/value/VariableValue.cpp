@@ -84,12 +84,6 @@ bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
 	return false;
 }
 
-/*
- * let a = 12 // integer
- * a = 5.6 // float
- * a = 12 // integer
- * a += 1.2 // float at the previous assignment
- */
 void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	if (var != nullptr) {
 		var->type = type;
