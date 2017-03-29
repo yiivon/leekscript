@@ -174,6 +174,8 @@ void Test::test_loops() {
 	 * Match
 	 */
 	header("Match");
+	code("match 50 {}").equals("null");
+	code("match 50 { ..: 4 }").equals("4");
 	code("match 3 { 1 : 1 2 : 2 3 : 3 }").equals("3");
 	code("match 3 { 1 : 1 2 : 2 .. : 3 }").equals("3");
 	code("match 'a' { 'a' : 1 'b' : 2 .. : 3 }").equals("1");
@@ -187,6 +189,7 @@ void Test::test_loops() {
 	code("match 50 { ..50: 1 50..: 2 }").equals("2");
 	code("match 50 { ..10: 1 ..100: 2 }").equals("2");
 	code("match 50 { ..100: 1 ..100: 2 }").equals("1");
+	code("match 50 { 100..0: 4 }").equals("null");
 	code("let e = 'e' match e { ..'b': 1 ..'z': 2 }").equals("2");
 	code("match 'e' { 'z'..: 1 'b'..: 2 }").equals("2");
 	code("match [1] { ..[]: 1 ..[2, 2]: 2 }").equals("2");
