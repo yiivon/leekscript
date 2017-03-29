@@ -47,6 +47,10 @@ void Test::test_set() {
 	code("<1, 2, [3, ''][0]> == <1, 2, 3>").equals("true");
 	code("<1.12, 2.12, [3.12, ''][0]> == <1.12, 2.12, 3.12>").equals("true");
 	code("<1, 2, 3> == [1, 2, 3]").equals("false");
+	std::vector<std::string> sets { "<>", "<1, 2, 3>", "<1.5, 2.5, 3.5>", "<'a', 'b', 'c'>"};
+	for (size_t i = 0; i < sets.size(); ++i)
+		for (size_t j = 0; j < sets.size(); ++j)
+			code(sets.at(i) + " == " + sets.at(j)).equals(i == j ? "true" : "false");
 
 	section("Set.operator <");
 	code("<> < <>").equals("false");
@@ -68,6 +72,10 @@ void Test::test_set() {
 	code("<1, 2, 3> < <1, 2>").equals("false");
 	code("ptr(<1, 2, 3>) < ptr(<>)").equals("false");
 	code("<1, 2, 3, 4> < <1, 2, 3, []>").equals("true");
+	code("ptr(<'a', 'b'>) < ptr('a')").equals("false");
+	for (size_t i = 0; i < sets.size(); ++i)
+		for (size_t j = 0; j < sets.size(); ++j)
+			code(sets.at(i) + " < " + sets.at(j)).equals(i < j ? "true" : "false");
 
 	section("Set.operator +=");
 	code("var s = <> s += 0 s").equals("<0>");
