@@ -74,9 +74,6 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		try {
 			auto f = object_class->fields.at(field.content);
 			type = f.type;
-			if (f.fun != nullptr) {
-				access_function = f.fun;
-			}
 		} catch (...) {
 			// Attribute in Value?
 			try {
