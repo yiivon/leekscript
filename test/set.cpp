@@ -107,6 +107,10 @@ void Test::test_set() {
 	section("Set.contains()");
 	code("let s = <1, 2> s.contains(3)").equals("false");
 	code("let s = <1, 2> s.contains(1)").equals("true");
+	code("let s = <1.5, 2.5> s.contains(1.5)").equals("true");
+	code("let s = <1.5, 2.5> s.contains(3.5)").equals("false");
+	code("let s = <'a', 'b'> s.contains('b')").equals("true");
+	code("let s = <'a', 'b'> s.contains('c')").equals("false");
 
 	section("Set.clear()");
 	code("let s = <1, 2> s.clear() s").equals("<>");
