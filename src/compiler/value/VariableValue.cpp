@@ -101,17 +101,11 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	}
 
 	jit_value_t v;
-
 	if (scope == VarScope::INTERNAL) {
-
-		v = c.vm->internals[name];
-
+		v = c.vm->internals.at(name);
 	} else if (scope == VarScope::LOCAL) {
-
 		v = c.get_var(name).value;
-
 	} else { /* if (scope == VarScope::PARAMETER) */
-
 		v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr
 	}
 

@@ -77,7 +77,7 @@ Compiler::value Reference::compile(Compiler& c) const {
 	if (name != "") {
 		jit_value_t v;
 		if (scope == VarScope::INTERNAL) {
-			v = c.vm->internals[name];
+			v = c.vm->internals.at(name);
 		} else if (scope == VarScope::LOCAL) {
 			v = c.get_var(name).value;
 		} else { /* if (scope == VarScope::PARAMETER) */
