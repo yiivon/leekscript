@@ -179,6 +179,7 @@ void Test::test_arrays() {
 	code("[1.2, 321.42] ~~ x -> x * 1.7").equals("[2.04, 546.414]");
 	code("[1, 2, 3, 4, 5] ~~ x -> x.max(3)").equals("[3, 3, 3, 4, 5]");
 	code("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)").equals("[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
+	code("[1, 2, 3, 4] ~~ x -> x + 0.5").equals("[1.5, 2.5, 3.5, 4.5]");
 
 	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
