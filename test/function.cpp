@@ -201,7 +201,6 @@ void Test::test_functions() {
 	code("let f = @x, @y -> x + y").equals("(void)");
 
 	section("Default arguments");
-	// TODO crash
 	code("(x = 10) -> x").equals("<function>");
 	code("x = 10 -> x").equals("<function>");
 	code("(x = 10 -> x)").equals("<function>");
@@ -232,7 +231,6 @@ void Test::test_functions() {
 	// code("let f = (x = [1, 2, 3]) -> x.size() f('bonjour')").equals("7");
 
 	section("Default arguments : expert");
-	// TODO crash
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f([])").equals("[]");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f(2)").equals("2");
