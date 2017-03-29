@@ -115,11 +115,10 @@ void Test::test_functions() {
 	code("let f = x -> x f[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
 
 	section("Function operators");
-	// TODO parsing issue
-//	code("+(1, 2)").equals("3");
-//	code("+([1], 2)").equals("[1, 2]");
-//	code("+('test', 2)").equals("'test2'");
-//	code("-(9, 2)").equals("7");
+	code("(+)(1, 2)").equals("3");
+	code("(+)([1], 2)").equals("[1, 2]");
+	code("(+)('test', 2)").equals("'test2'");
+	code("(-)(9, 2)").equals("7");
 	code("*(5, 8)").equals("40");
 	code("*('test', 2)").equals("'testtest'");
 	code("×(5, 8)").equals("40");
@@ -132,7 +131,8 @@ void Test::test_functions() {
 	code("**(2, 11)").equals("2048");
 	code("%(48, 5)").equals("3");
 	// TODO lexical bug
-	//code("\\(72, 7)").equals("10");
+	// code("\\(72, 7)").equals("10");
+	code("(\\)(72, 7)").equals("10");
 	code("['', **(2, 11)]").equals("['', 2048]");
 	code("let p = +; p(1, 2)").equals("3");
 	code("let p = +; p('test', 2)").equals("'test2'");
