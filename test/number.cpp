@@ -352,6 +352,7 @@ void Test::test_numbers() {
 	code("14★ \\ []").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
 	code("67.89★ \\ 1").equals("67");
 	code("['', 10 \\ 2]").equals("['', 5]");
+	code("['', 10★ \\ 2]").equals("['', 5]");
 
 	section("Number.operator \\=");
 	code("var a = 12 a \\= 5").equals("2");

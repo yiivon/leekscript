@@ -769,6 +769,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return {r, type};
 			} else {
 				ls_func = (void*) &jit_int_div;
+				ls_returned_type = Type::LONG;
 			}
 			break;
 		}
