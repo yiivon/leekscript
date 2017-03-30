@@ -11,6 +11,7 @@ BUILD_DIR += $(addprefix build/default/,$(TEST_DIR))
 BUILD_DIR += $(addprefix build/shared/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/coverage/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/profile/,$(SRC_DIR))
+BUILD_DIR += $(addprefix build/sanitized/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/deps/,$(SRC_DIR))
 BUILD_DIR += $(addprefix build/deps/,$(TEST_DIR))
 
@@ -23,9 +24,11 @@ OBJ_TEST := $(patsubst %.cpp,build/default/%.o,$(TEST_SRC))
 OBJ_LIB := $(patsubst %.cpp,build/shared/%.o,$(SRC))
 OBJ_COVERAGE := $(patsubst %.cpp,build/coverage/%.o,$(SRC))
 OBJ_PROFILE := $(patsubst %.cpp,build/profile/%.o,$(SRC))
+OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 OPTIM := -O2
 FLAGS := -std=c++17 -g3 -Wall -Wextra -Wno-pmf-conversions
+SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
 LIBS := -ljit -lgmp
 MAKEFLAGS += --jobs=$(shell nproc)
 
@@ -54,6 +57,10 @@ build/coverage/%.o: %.cpp
 
 build/profile/%.o: %.cpp
 	g++ -c $(OPTIM) $(FLAGS) -pg -o "$@" "$<"
+	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
+
+build/sanitized/%.o: %.cpp
+	g++ -c $(OPTIM) $(FLAGS) $(SANITIZE_FLAGS) -o "$@" "$<"
 	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 $(BUILD_DIR):
@@ -91,7 +98,7 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE) $(OBJ_TEST)
 	@echo "Build (coverage) finished!"
 	@echo "--------------------------"
 
-# Run tests/
+# Run tests
 test: build/leekscript-test
 	@build/leekscript-test
 
@@ -146,6 +153,16 @@ build/leekscript-profile: $(BUILD_DIR) $(OBJ_PROFILE) $(OBJ_TEST)
 profile: build/leekscript-profile
 	gprof build/leekscript-profile > profile.stats
 	gprof2dot profile.stats | dot -Tpng -o output.png
+
+# Build with sanitize flags enabled
+build/leekscript-sanitized: $(BUILD_DIR) $(OBJ_SANITIZED) $(OBJ_TEST)
+	g++ $(FLAGS) $(SANITIZE_FLAGS) -o build/leekscript-sanitized $(OBJ_SANITIZED) $(OBJ_TEST) $(LIBS)
+	@echo "--------------------------"
+	@echo "Build (profile) finished!"
+	@echo "--------------------------"
+
+sanitized: build/leekscript-sanitized
+	@build/leekscript-sanitized
 
 # callgrind profiling, results displayed by kcachegrind
 # `apt install kcachegrind`
