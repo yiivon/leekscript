@@ -105,10 +105,10 @@ public:
 	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
 
 	void method(std::string name, std::initializer_list<Method>);
-	void method(std::string name, Type obj_type, Type return_type, std::initializer_list<Type> args, void* addr);
+	void method(std::string name, Type obj_type, Type return_type, std::initializer_list<Type> args, void* addr, bool native = false);
 
 	void static_method(std::string name, std::initializer_list<StaticMethod>);
-	void static_method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr);
+	void static_method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr, bool native = false);
 
 	void field(std::string name, Type type);
 	void field(std::string name, Type type, void* fun);

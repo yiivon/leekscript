@@ -48,9 +48,9 @@ void Module::method(std::string name, initializer_list<Method> impl) {
 	clazz->addMethod(name, methods);
 }
 
-void Module::method(std::string name, Type obj_type, Type return_type, initializer_list<Type> args, void* addr) {
-	methods.push_back(ModuleMethod(name, {{obj_type, return_type, args, addr}}));
-	clazz->addMethod(name, {{obj_type, return_type, args, addr}});
+void Module::method(std::string name, Type obj_type, Type return_type, initializer_list<Type> args, void* addr, bool native) {
+	methods.push_back(ModuleMethod(name, {{obj_type, return_type, args, addr, native}}));
+	clazz->addMethod(name, {{obj_type, return_type, args, addr, native}});
 }
 
 void Module::static_method(string name, initializer_list<StaticMethod> impl) {
@@ -58,9 +58,9 @@ void Module::static_method(string name, initializer_list<StaticMethod> impl) {
 	clazz->addStaticMethod(name, impl);
 }
 
-void Module::static_method(string name, Type return_type, initializer_list<Type> args, void* addr) {
-	static_methods.push_back(ModuleStaticMethod(name, {{return_type, args, addr}}));
-	clazz->addStaticMethod(name, {{return_type, args, addr}});
+void Module::static_method(string name, Type return_type, initializer_list<Type> args, void* addr, bool native) {
+	static_methods.push_back(ModuleStaticMethod(name, {{return_type, args, addr, native}}));
+	clazz->addStaticMethod(name, {{return_type, args, addr, native}});
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {
