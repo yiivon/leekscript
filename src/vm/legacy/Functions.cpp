@@ -7,7 +7,9 @@ namespace legacy {
 
 void Functions::add(VM* vm, std::string name, Type return_type, std::vector<Type> args, void* fun) {
 	auto f = new LSFunction<LSValue*>(fun);
+	f->native = true;
 	auto type = Type::FUNCTION_P;
+	type.native = true;
 	type.setReturnType(return_type);
 	for (size_t i = 0; i < args.size(); ++i) {
 		type.setArgumentType(i, args.at(i));
