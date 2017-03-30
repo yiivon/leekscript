@@ -160,7 +160,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cbrt_real}
 	});
 	method("ceil", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE}
+		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE}
 	});
 	method("char", {
 		{Type::NUMBER, Type::POINTER, {}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
