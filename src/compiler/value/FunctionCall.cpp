@@ -446,7 +446,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			c.insn_delete_mpz({args[offset + i], Type::MPZ});
 		}
 	}
-	c.insn_delete_temporary({fun, type});
+	c.insn_delete_temporary(ls_fun_addr);
 
 	// Custom function call : 1 op
 	c.inc_ops(1);
