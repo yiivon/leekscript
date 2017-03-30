@@ -301,7 +301,7 @@ void Compiler::insn_delete(Compiler::value v) const {
 }
 
 void Compiler::insn_delete_temporary(Compiler::value v) const {
-	if (v.t.nature == Nature::POINTER) {
+	if (v.t.must_manage_memory()) {
 		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
 	} else if (v.t == Type::MPZ_TMP) {
 		insn_delete_mpz(v);
