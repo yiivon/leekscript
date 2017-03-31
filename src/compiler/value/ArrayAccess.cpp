@@ -271,9 +271,12 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			// Check index : k < 0 or k >= size
 			auto array_size = c.insn_array_size(a);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
+				auto line = c.new_integer(array->line());
 				c.insn_delete_temporary(a);
-				c.insn_throw(c.insn_call(Type::POINTER, {}, +[]() {
-					return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
+				c.insn_throw(c.insn_call(Type::POINTER, {line}, +[](int line) {
+					auto ex = new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
+					ex->lines.push_back(line);
+					return ex;
 				}));
 			});
 
