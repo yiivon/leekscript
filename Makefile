@@ -158,7 +158,7 @@ profile: build/leekscript-profile
 build/leekscript-sanitized: $(BUILD_DIR) $(OBJ_SANITIZED) $(OBJ_TEST)
 	g++ $(FLAGS) $(SANITIZE_FLAGS) -o build/leekscript-sanitized $(OBJ_SANITIZED) $(OBJ_TEST) $(LIBS)
 	@echo "--------------------------"
-	@echo "Build (profile) finished!"
+	@echo "Build (sanitized) finished!"
 	@echo "--------------------------"
 
 sanitized: build/leekscript-sanitized
