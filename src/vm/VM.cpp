@@ -223,7 +223,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	VM::enable_operations = true;
 	jit_type_free(VM::mpz_type);
 	if (result.compilation_success) {
-		jit_context_destroy(VM::jit_context);
+		jit_context_destroy(VM::current()->jit_context);
 	}
 	RawType::clear_placeholder_types();
 
