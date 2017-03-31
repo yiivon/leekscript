@@ -225,12 +225,12 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 			}
 		}
 		case TokenType::THROW: {
-			eat();
+			auto throw_token = eat();
 			if (t->type == TokenType::FINISHED or t->type == TokenType::CLOSING_BRACE
 				or t->type == TokenType::ELSE or t->type == TokenType::END) {
-				return new Throw(t);
+				return new Throw(throw_token);
 			} else {
-				return new Throw(t, eatExpression());
+				return new Throw(throw_token, eatExpression());
 			}
 		}
 		case TokenType::BREAK:
