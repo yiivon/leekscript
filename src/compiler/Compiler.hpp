@@ -16,6 +16,7 @@ class VM;
 
 class CompilerVar {
 public:
+	// TODO replace by a compiler value
 	jit_value_t value;
 	Type type;
 	bool reference;
