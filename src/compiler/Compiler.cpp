@@ -404,12 +404,25 @@ void Compiler::insn_delete_mpz(Compiler::value mpz) const {
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
 
-void Compiler::insn_inc_refs(value v) const {
+Compiler::value Compiler::insn_inc_refs(value v) const {
 	if (v.t.must_manage_memory()) {
-		insn_call(Type::VOID, {v}, (void*) +[](LSValue* v) {
-			v->refs++;
-		});
+		auto new_refs = insn_add(insn_refs(v), new_integer(1));
+		insn_store_relative(v, 12, new_refs);
+		return new_refs;
 	}
+	return new_integer(0);
+}
+
+Compiler::value Compiler::insn_dec_refs(value v, value previous) const {
+	if (v.t.must_manage_memory()) {
+		if (previous.v == nullptr) {
+			previous = insn_refs(v);
+		}
+		auto new_refs = insn_sub(previous, new_integer(1));
+		insn_store_relative(v, 12, new_refs);
+		return new_refs;
+	}
+	return new_integer(0);
 }
 
 Compiler::value Compiler::insn_move(Compiler::value v) const {
