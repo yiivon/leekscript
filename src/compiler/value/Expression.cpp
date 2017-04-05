@@ -548,25 +548,27 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto vv = dynamic_cast<VariableValue*>(v1);
 			if (vv != nullptr and equal_previous_type != v1->type) {
 
+				// std::cout << v1->to_string() << " (" << v1->type << ") = " << v2->to_string() << " (" << v2->type << ")" << std::endl;
+
 				// we have a variable, like
 				// var a = 12 a = 'hello' or var a = 12 a = 200l
 				// create a new variable a and replace the old one
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+
+				// Delete previous variable reference
+				if (equal_previous_type.must_manage_memory()) {
+					auto v = c.get_var(vv->name);
+					c.insn_delete({v.value, v.type});
+				}
+
 				auto y = v2->compile(c);
+
+				// Move the object
+				y = c.insn_move_inc(y);
 
 				// Create a new variable
 				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v1->type));
 				c.update_var(vv->name, var, v1->type);
 
-				// Move the object
-				y = c.insn_move_inc(y);
-
-				// Delete previous variable reference
-				if (equal_previous_type.must_manage_memory()) {
-					c.insn_call(Type::VOID, {x_addr}, (void*) +[](LSValue** x) {
-						LSValue::delete_ref(*x);
-					});
-				}
 				// Store
 				jit_insn_store(c.F, var, y.v);
 
