@@ -305,6 +305,11 @@ Compiler::value Compiler::insn_refs(Compiler::value v) const {
 	return insn_load(v, 12, Type::INTEGER);
 }
 
+Compiler::value Compiler::insn_native(Compiler::value v) const {
+	assert(v.t.must_manage_memory());
+	return insn_load(v, 16, Type::BOOLEAN);
+}
+
 void Compiler::insn_delete_temporary(Compiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);

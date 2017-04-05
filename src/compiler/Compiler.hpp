@@ -119,6 +119,7 @@ public:
 	void  insn_inc_refs(value v) const;
 	value insn_move(value v) const;
 	value insn_refs(value v) const;
+	value insn_native(value v) const;
 
 	// Iterators
 	value iterator_begin(value v) const;
