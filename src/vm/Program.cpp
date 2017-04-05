@@ -39,7 +39,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 
 	// Lexical analysis
 	LexicalAnalyser lex;
-	vector<Token> tokens = lex.analyse(code);
+	auto tokens = lex.analyse(code);
 
 	if (lex.errors.size()) {
 		result.compilation_success = false;
