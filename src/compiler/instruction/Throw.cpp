@@ -8,7 +8,7 @@ using namespace std;
 namespace ls {
 
 Throw::Throw(Token* token, Value* v) {
-	this->token = token;
+	this->token.reset(token);
 	expression = v;
 }
 

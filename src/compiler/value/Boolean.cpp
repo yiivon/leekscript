@@ -7,8 +7,9 @@ using namespace std;
 
 namespace ls {
 
-Boolean::Boolean(bool value) {
-	this->value = value;
+Boolean::Boolean(Token* token) {
+	this->token.reset(token);
+	this->value = token->type == TokenType::TRUE;
 	type = Type::BOOLEAN;
 	constant = true;
 }

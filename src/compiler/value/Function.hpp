@@ -16,7 +16,7 @@ class Function : public Value {
 public:
 
 	bool lambda = false;
-	std::vector<Token*> arguments;
+	std::vector<std::unique_ptr<Token>> arguments;
 	std::vector<bool> references;
 	std::vector<Value*> defaultValues;
 	std::vector<std::shared_ptr<SemanticVar>> captures;

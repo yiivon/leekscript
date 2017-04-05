@@ -33,7 +33,7 @@ Function::~Function() {
 }
 
 void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
-	arguments.push_back(name);
+	arguments.push_back(std::unique_ptr<Token> { name });
 	references.push_back(reference);
 	defaultValues.push_back(defaultValue);
 }
@@ -171,7 +171,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 				analyser->enter_function(this);
 				for (unsigned i = 0; i < arguments.size(); ++i) {
-					analyser->add_parameter(arguments[i], type.getArgumentType(i));
+					analyser->add_parameter(arguments[i].get(), type.getArgumentType(i));
 				}
 
 				f->will_take(analyser, args, level - 1);
@@ -201,7 +201,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->enter_function(this);
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		analyser->add_parameter(arguments[i], type.getArgumentType(i));
+		analyser->add_parameter(arguments[i].get(), type.getArgumentType(i));
 	}
 
 	type.setReturnType(Type::UNKNOWN);

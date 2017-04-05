@@ -9,7 +9,7 @@ namespace ls {
 class Throw : public Instruction {
 public:
 
-	Token* token;
+	std::unique_ptr<Token> token;
 	Value* expression;
 
 	Throw(Token* token, Value* = nullptr);

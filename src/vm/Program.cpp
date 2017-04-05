@@ -44,6 +44,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	if (lex.errors.size()) {
 		result.compilation_success = false;
 		result.lexical_errors = lex.errors;
+		for (auto& t : tokens) delete t;
 		return result;
 	}
 

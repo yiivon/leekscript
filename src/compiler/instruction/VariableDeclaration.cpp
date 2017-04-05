@@ -45,10 +45,10 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
-		Token* var = variables[i];
+		auto& var = variables.at(i);
 		Value* value = nullptr;
 
-		auto v = analyser->add_var(var, Type::UNKNOWN, value, this);
+		auto v = analyser->add_var(var.get(), Type::UNKNOWN, value, this);
 		if (v == nullptr) {
 			continue;
 		}

@@ -266,7 +266,10 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 		eat(TokenType::VAR);
 	}
 
-	vd->variables.push_back(eatIdent());
+	auto ident = eatIdent();
+	if (ident != finished_token) {
+		vd->variables.push_back(std::unique_ptr<Token> { ident });
+	}
 	if (t->type == TokenType::EQUAL) {
 		eat(TokenType::EQUAL);
 		vd->expressions.push_back(eatExpression());
@@ -276,7 +279,10 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 
 	while (t->type == TokenType::COMMA) {
 		eat();
-		vd->variables.push_back(eatIdent());
+		ident = eatIdent();
+		if (ident != finished_token) {
+			vd->variables.push_back(std::unique_ptr<Token> { ident });
+		}
 		if (t->type == TokenType::EQUAL) {
 			eat(TokenType::EQUAL);
 			vd->expressions.push_back(eatExpression());
@@ -342,7 +348,7 @@ VariableDeclaration* SyntaxicAnalyser::eatFunctionDeclaration() {
 	VariableDeclaration* vd = new VariableDeclaration();
 	vd->global = true;
 
-	vd->variables.push_back(eatIdent());
+	vd->variables.push_back(std::unique_ptr<Token> { eatIdent() });
 	vd->expressions.push_back(eatFunction());
 
 	return vd;
@@ -408,9 +414,9 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 					auto minus = eat_get();
 					if (beginingOfExpression(t->type)) {
 
-						Operator* op = new Operator(minus);
-						Value* ex = eatExpression(pipe_opened, set_opened);
-						Expression* expr = dynamic_cast<Expression*>(ex);
+						auto op = new Operator(minus);
+						auto ex = eatExpression(pipe_opened, set_opened);
+						auto expr = dynamic_cast<Expression*>(ex);
 
 						if (expr and expr->op->priority >= op->priority) {
 							PrefixExpression* pexp = new PrefixExpression();
@@ -434,6 +440,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 					auto plus = eat_get(); // eat the +
 
 					if (beginingOfExpression(t->type)) {
+						delete plus;
 						e = eatExpression(pipe_opened);
 					} else {
 						// No expression after the +, so it's the variable '+'
@@ -504,11 +511,9 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 				eat(TokenType::DOT);
 
 				if (t->type == TokenType::NEW || t->type == TokenType::CLASS) {
-					oa = new ObjectAccess(t);
-					eat();
+					oa = new ObjectAccess(eat_get());
 				} else if (t->type == TokenType::RETURN) {
-					auto token = eat_get();
-					oa = new ObjectAccess(token);
+					oa = new ObjectAccess(eat_get());
 				} else {
 					oa = new ObjectAccess(eatIdent());
 				}
@@ -653,7 +658,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		case TokenType::TRUE:
 		case TokenType::FALSE:
 		{
-			return new Boolean(eat_get()->type == TokenType::TRUE);
+			return new Boolean(eat_get());
 		}
 
 		case TokenType::NULLL:
@@ -721,7 +726,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		arobase = true;
 	}
 	if (arobase and t->type != TokenType::IDENT) {
-		eatIdent(); // will fail, we need an ident after an arobase
+		eat(TokenType::IDENT); // will fail, we need an ident after an arobase
 		return new Nulll();
 	}
 	if (parenthesis and t->type != TokenType::IDENT) {
@@ -746,6 +751,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 			eat();
 			if (t->type == TokenType::ARROW) {
 				// (var = <ex>) ->  [lambda]
+				delete eq;
 				return eatLambdaContinue(false, arobase, ident, ex, comma_list);
 			} else {
 				// (var = <ex>) <token ?>	[expression]
@@ -762,6 +768,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 			}
 		} else if (t->type == TokenType::COMMA or t->type == TokenType::ARROW) {
 			// var = <ex> ,|->  [lambda]
+			delete eq;
 			return eatLambdaContinue(parenthesis, arobase, ident, ex, comma_list);
 		} else {
 			// var = <ex> <?>

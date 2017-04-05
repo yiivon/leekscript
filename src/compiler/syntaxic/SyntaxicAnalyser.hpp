@@ -31,7 +31,7 @@ class SyntaxicAnalyser {
 
 	std::vector<Token*> tokens;
 	Token* t;
-	size_t last_character = 0;
+	int last_character = 0;
 	size_t last_line = 0;
 	size_t last_size = 0;
 	Token* nt;

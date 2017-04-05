@@ -12,7 +12,7 @@ namespace ls {
 class ClassDeclaration : public Instruction {
 public:
 
-	Token* token;
+	std::unique_ptr<Token> token;
 	std::string name;
 	std::vector<VariableDeclaration*> fields;
 	std::shared_ptr<SemanticVar> var;

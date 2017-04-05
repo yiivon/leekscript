@@ -7,8 +7,9 @@ using namespace std;
 
 namespace ls {
 
-ClassDeclaration::ClassDeclaration(Token* token) : token(token) {
+ClassDeclaration::ClassDeclaration(Token* token) {
 	name = token->content;
+	this->token.reset(token);
 	var = nullptr;
 	ls_class = new LSClass(name);
 }
@@ -31,9 +32,9 @@ void ClassDeclaration::print(ostream& os, int indent, bool debug) const {
 
 void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	var = analyser->add_var(token, Type::CLASS, nullptr, nullptr);
+	var = analyser->add_var(token.get(), Type::CLASS, nullptr, nullptr);
 
-	for (VariableDeclaration* vd : fields) {
+	for (auto vd : fields) {
 		vd->analyse(analyser, Type::UNKNOWN);
 	}
 }
