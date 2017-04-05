@@ -194,7 +194,6 @@ inline void LSValue::delete_ref(LSValue* value) {
 }
 
 inline void LSValue::delete_temporary(const LSValue* const value) {
-	if (value->native) return;
 	if (value->refs == 0) {
 		delete value;
 	}
