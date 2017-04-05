@@ -152,7 +152,7 @@ Object* SyntaxicAnalyser::eatObject() {
 
 	eat(TokenType::OPEN_BRACE);
 
-	Object* o = new Object();
+	auto o = new Object();
 
 	while (t->type == TokenType::IDENT) {
 
@@ -254,7 +254,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 
 VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 
-	VariableDeclaration* vd = new VariableDeclaration();
+	auto vd = new VariableDeclaration();
 
 	if (t->type == TokenType::GLOBAL) {
 		eat(TokenType::GLOBAL);
@@ -311,7 +311,7 @@ Function* SyntaxicAnalyser::eatFunction() {
 			reference = true;
 		}
 
-		Token* ident = eatIdent();
+		auto ident = eatIdent();
 
 		Value* defaultValue = nullptr;
 		if (t->type == TokenType::EQUAL) {
@@ -345,7 +345,7 @@ VariableDeclaration* SyntaxicAnalyser::eatFunctionDeclaration() {
 
 	eat(TokenType::FUNCTION);
 
-	VariableDeclaration* vd = new VariableDeclaration();
+	auto vd = new VariableDeclaration();
 	vd->global = true;
 
 	vd->variables.push_back(std::unique_ptr<Token> { eatIdent() });
@@ -397,7 +397,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 		} else if (t->type == TokenType::PIPE) {
 
 			eat();
-			AbsoluteValue* av = new AbsoluteValue();
+			auto av = new AbsoluteValue();
 			av->expression = eatExpression(true);
 			eat(TokenType::PIPE);
 			e = new Expression(av);
@@ -419,13 +419,13 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 						auto expr = dynamic_cast<Expression*>(ex);
 
 						if (expr and expr->op->priority >= op->priority) {
-							PrefixExpression* pexp = new PrefixExpression();
+							auto pexp = new PrefixExpression();
 							pexp->operatorr = op;
 							pexp->expression = expr->v1;
 							expr->v1 = pexp;
 							e = expr;
 						} else {
-							PrefixExpression* pe = new PrefixExpression();
+							auto pe = new PrefixExpression();
 							pe->operatorr = op;
 							pe->expression = ex;
 							e = pe;
@@ -469,7 +469,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 		switch (t->type) {
 			case TokenType::OPEN_BRACKET: {
 
-				ArrayAccess* aa = new ArrayAccess();
+				auto aa = new ArrayAccess();
 				eat(TokenType::OPEN_BRACKET);
 
 				aa->array = e;
@@ -488,7 +488,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 
 				auto par = eat_get(TokenType::OPEN_PARENTHESIS);
 
-				FunctionCall* fc = new FunctionCall(par);
+				auto fc = new FunctionCall(par);
 				fc->function = e;
 
 				if (t->type != TokenType::CLOSING_PARENTHESIS) {
@@ -531,7 +531,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 		if (last_line == t->line) {
 
 			auto op = eat_get();
-			PostfixExpression* ex = new PostfixExpression();
+			auto ex = new PostfixExpression();
 
 			ex->operatorr = new Operator(op);
 			ex->expression = (LeftValue*) e;
@@ -583,7 +583,7 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened, Value*
 		auto op = new Operator(eat_get());
 
 		if (ex == nullptr) {
-			if (Expression* exx = dynamic_cast<Expression*>(e)) {
+			if (auto exx = dynamic_cast<Expression*>(e)) {
 				ex = exx;
 			} else {
 				ex = new Expression();
@@ -602,13 +602,13 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened, Value*
 		auto ternary = new If(true);
 		ternary->condition = e;
 
-		Block* then = new Block();
+		auto then = new Block();
 		then->instructions.push_back(new ExpressionInstruction(eatExpression()));
 		ternary->then = then;
 
 		eat(TokenType::COLON);
 
-		Block* elze = new Block();
+		auto elze = new Block();
 		elze->instructions.push_back(new ExpressionInstruction(eatExpression()));
 		ternary->elze = elze;
 		return ternary;
@@ -836,7 +836,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
  * Continue to eat a lambda starting from a comma or the arrow
  */
 Value* SyntaxicAnalyser::eatLambdaContinue(bool parenthesis, bool arobase, Ident ident, Value* expression, bool comma_list) {
-	Function* l = new Function();
+	auto l = new Function();
 	l->lambda = true;
 	// Add first argument
 	l->addArgument(ident.token, arobase, expression);
@@ -848,7 +848,7 @@ Value* SyntaxicAnalyser::eatLambdaContinue(bool parenthesis, bool arobase, Ident
 			eat();
 			reference = true;
 		}
-		Token* ident = eatIdent();
+		auto ident = eatIdent();
 		Value* defaultValue = nullptr;
 		if (t->type == TokenType::EQUAL) {
 			eat();
@@ -946,7 +946,7 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 Set* SyntaxicAnalyser::eatSet() {
 	eat(TokenType::LOWER);
 
-	Set* set = new Set();
+	auto set = new Set();
 
 	if (t->type == TokenType::GREATER) {
 		eat();
@@ -986,7 +986,7 @@ If* SyntaxicAnalyser::eatIf() {
 		if (dynamic_cast<Block*>(v)) {
 			iff->then = (Block*) v;
 		} else {
-			Block* block = new Block();
+			auto block = new Block();
 			block->instructions.push_back(new ExpressionInstruction(v));
 			iff->then = block;
 		}
@@ -1279,9 +1279,9 @@ ClassDeclaration* SyntaxicAnalyser::eatClassDeclaration() {
 
 	eat(TokenType::CLASS);
 
-	Token* token = eatIdent();
+	auto token = eatIdent();
 
-	ClassDeclaration* cd = new ClassDeclaration(token);
+	auto cd = new ClassDeclaration(token);
 	eat(TokenType::OPEN_BRACE);
 
 	while (t->type == TokenType::LET) {
