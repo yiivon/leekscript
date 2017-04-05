@@ -73,8 +73,6 @@ Operator::Operator(Token* token) {
 //	cout << "operator " << character << " (" << (int)token->type << ") : " << priority << endl;
 }
 
-Operator::~Operator() {}
-
 void Operator::print(std::ostream& os) {
 	os << character;
 }

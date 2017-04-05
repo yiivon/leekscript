@@ -16,7 +16,6 @@ public:
 	bool reversed;
 
 	Operator(Token* token);
-	virtual ~Operator();
 
 	void print(std::ostream&);
 };
