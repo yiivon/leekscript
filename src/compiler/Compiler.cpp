@@ -300,6 +300,11 @@ void Compiler::insn_delete(Compiler::value v) const {
 	}
 }
 
+Compiler::value Compiler::insn_refs(Compiler::value v) const {
+	assert(v.t.must_manage_memory());
+	return insn_load(v, 12, Type::INTEGER);
+}
+
 void Compiler::insn_delete_temporary(Compiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
