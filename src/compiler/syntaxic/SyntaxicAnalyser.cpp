@@ -71,7 +71,7 @@ Function* SyntaxicAnalyser::analyse(vector<Token*>& tokens) {
 
 Block* SyntaxicAnalyser::eatMain() {
 
-	Block* block = new Block();
+	auto block = new Block();
 
 	while (true) {
 		if (t->type == TokenType::FINISHED) {
@@ -80,13 +80,12 @@ Block* SyntaxicAnalyser::eatMain() {
 		} else if (t->type == TokenType::SEMICOLON) {
 			eat();
 		} else {
-			Instruction* ins = eatInstruction();
+			auto ins = eatInstruction();
 			if (ins) {
 				block->instructions.push_back(ins);
 			}
 		}
 	}
-
 	return block;
 }
 
@@ -294,7 +293,7 @@ Function* SyntaxicAnalyser::eatFunction() {
 		eat();
 	}
 
-	Function* f = new Function();
+	auto f = new Function();
 
 	eat(TokenType::OPEN_PARENTHESIS);
 
@@ -906,7 +905,7 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 	// eatMap
 	if (t->type == TokenType::COLON) {
 
-		Map* map = new Map();
+		auto map = new Map();
 		map->keys.push_back(value);
 		eat();
 		map->values.push_back(eatExpression());
@@ -960,7 +959,7 @@ Set* SyntaxicAnalyser::eatSet() {
 
 If* SyntaxicAnalyser::eatIf() {
 
-	If* iff = new If();
+	auto iff = new If();
 
 	eat(TokenType::IF);
 
