@@ -14,8 +14,8 @@ namespace ls {
 class Foreach : public Instruction {
 public:
 
-	Token* key;
-	Token* value;
+	std::unique_ptr<Token> key;
+	std::unique_ptr<Token> value;
 	Value* container;
 	Block* body;
 	Type key_type;

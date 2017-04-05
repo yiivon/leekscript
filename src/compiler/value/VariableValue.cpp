@@ -12,7 +12,7 @@ namespace ls {
 
 VariableValue::VariableValue(Token* token) {
 	this->name = token->content;
-	this->token = token;
+	this->token.reset(token);
 	this->var = nullptr;
 	constant = false;
 }
@@ -30,7 +30,7 @@ unsigned VariableValue::line() const {
 
 void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	var = analyser->get_var(token);
+	var = analyser->get_var(token.get());
 
 	if (var != nullptr) {
 		type = var->type;

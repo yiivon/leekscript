@@ -11,7 +11,7 @@ namespace ls {
 class Object : public Value {
 public:
 
-	std::vector<Token> keys;
+	std::vector<std::unique_ptr<Token>> keys;
 	std::vector<Value*> values;
 
 	Object();

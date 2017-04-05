@@ -10,7 +10,7 @@ namespace ls {
 
 Number::Number(std::string value, Token* token) {
 	this->value = value;
-	this->token = token;
+	this->token.reset(token);
 	constant = true;
 }
 

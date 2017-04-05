@@ -15,7 +15,7 @@ class VariableValue : public LeftValue {
 public:
 
 	std::string name;
-	Token* token;
+	std::unique_ptr<Token> token;
 	std::shared_ptr<SemanticVar> var;
 	int capture_index = 0;
 	VarScope scope;

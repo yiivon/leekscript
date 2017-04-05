@@ -1,6 +1,7 @@
 #ifndef OPERATOR_HPP
 #define OPERATOR_HPP
 
+#include <memory>
 #include "../../compiler/lexical/Token.hpp"
 
 namespace ls {
@@ -8,7 +9,7 @@ namespace ls {
 class Operator {
 public:
 
-	Token* token;
+	std::unique_ptr<Token> token;
 	TokenType type;
 	std::string character;
 	int priority;

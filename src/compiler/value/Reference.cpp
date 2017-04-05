@@ -39,7 +39,7 @@ void Reference::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (auto variable = dynamic_cast<VariableValue*>(value)) {
 
-		var = analyser->get_var(variable->token);
+		var = analyser->get_var(variable->token.get());
 
 		if (var != nullptr) {
 			if (in_array) {

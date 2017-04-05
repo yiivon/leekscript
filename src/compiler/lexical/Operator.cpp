@@ -64,7 +64,7 @@ static int operator_priorities[] = {
 
 Operator::Operator(Token* token) {
 
-	this->token = token;
+	this->token.reset(token);
 	this->type = token->type;
 	this->character = token->content;
 	this->priority = operator_priorities[(int) token->type];

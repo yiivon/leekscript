@@ -5,14 +5,13 @@ using namespace std;
 
 namespace ls {
 
-String::String(string& value, Token* token) {
-	this->value = value;
-	this->token = token;
+String::String(Token* token) {
+	this->token.reset(token);
 	type = Type::STRING;
 	types = Type::STRING;
 	type.temporary = true;
 	constant = true;
-	ls_string = new LSString(value);
+	ls_string = new LSString(token->content);
 }
 
 String::~String() {
@@ -20,7 +19,7 @@ String::~String() {
 }
 
 void String::print(ostream& os, int, bool debug) const {
-	os << "'" << value << "'";
+	os << "'" << token->content << "'";
 	if (debug) {
 		os << " " << type;
 	}

@@ -29,9 +29,11 @@ class Continue;
 
 class SyntaxicAnalyser {
 
-	std::vector<Token> tokens;
+	std::vector<Token*> tokens;
 	Token* t;
-	Token* lt;
+	size_t last_character = 0;
+	size_t last_line = 0;
+	size_t last_size = 0;
 	Token* nt;
 	unsigned i;
 	std::vector<SyntaxicalError> errors;
@@ -44,7 +46,7 @@ public:
 	SyntaxicAnalyser();
 	~SyntaxicAnalyser();
 
-	Function* analyse(std::vector<Token>&);
+	Function* analyse(std::vector<Token*>&);
 
 	Block* eatMain();
 	Token* eatIdent();
@@ -77,8 +79,10 @@ public:
 	int findNextArrow();
 	bool isLambda();
 
-	Token* eat();
-	Token* eat(TokenType type);
+	Token* eat_get();
+	void eat();
+	Token* eat_get(TokenType type);
+	void eat(TokenType type);
 	Token* nextTokenAt(int pos);
 
 	void save_current_state();

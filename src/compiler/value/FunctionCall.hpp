@@ -10,7 +10,7 @@ namespace ls {
 class FunctionCall : public Value {
 public:
 
-	Token* token;
+	std::unique_ptr<Token> token;
 	Value* function;
 	std::vector<Value*> arguments;
 

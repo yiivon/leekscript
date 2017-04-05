@@ -9,7 +9,7 @@ namespace ls {
 class Number : public Value {
 public:
 
-	Token* token;
+	std::unique_ptr<Token> token;
 	std::string value;
 	std::string clean_value;
 	int base = 10;
