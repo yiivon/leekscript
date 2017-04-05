@@ -18,7 +18,6 @@ public:
 	unsigned size;
 
 	Token(TokenType type, unsigned int line, unsigned int character, std::string content);
-	virtual ~Token();
 };
 
 std::ostream& operator << (std::ostream& os, Token& var);

@@ -21,6 +21,4 @@ Token::Token(TokenType type, unsigned int line, unsigned int character, string c
 	}
 }
 
-Token::~Token() {}
-
 }
