@@ -643,6 +643,13 @@ void Compiler::insn_if(Compiler::value condition, std::function<void()> then) co
 	jit_insn_label(F, &label_end);
 }
 
+void Compiler::insn_if_not(Compiler::value condition, std::function<void()> then) const {
+	jit_label_t label_end = jit_label_undefined;
+	jit_insn_branch_if(F, condition.v, &label_end);
+	then();
+	jit_insn_label(F, &label_end);
+}
+
 void Compiler::insn_throw(Compiler::value v) const {
 	jit_insn_throw(F, v.v);
 }
