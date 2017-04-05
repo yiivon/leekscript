@@ -85,10 +85,6 @@ public:
 	void eat(TokenType type);
 	Token* nextTokenAt(int pos);
 
-	void save_current_state();
-	void restore_saved_state();
-	void forgot_saved_state();
-
 	std::vector<SyntaxicalError> getErrors();
 };
 

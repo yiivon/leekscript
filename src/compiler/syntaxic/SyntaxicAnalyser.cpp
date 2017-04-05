@@ -1100,21 +1100,31 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		eat();
 	}
 
-	save_current_state();
-	vector<Instruction*> inits;
-	while (true) {
-		if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::IN || t->type == TokenType::OPEN_BRACE) {
-			break;
+	// Foreach:
+	// for v in || for var v in || for k, v in
+	// for var k, v in || for k, var v in || for var k, var v in
+	auto t1 = t->type, t2 = nt->type, t3 = nextTokenAt(2)->type, t4 = nextTokenAt(3)->type, t5 = nextTokenAt(4)->type, t6 = nextTokenAt(5)->type;
+	auto var = TokenType::VAR, let = TokenType::LET, ident = TokenType::IDENT, comma = TokenType::COMMA, colon = TokenType::COLON, in = TokenType::IN;
+	bool is_foreach = (t1 == ident and t2 == in)
+		or ((t1 == var or t1 == let) and t2 == ident and t3 == in)
+		or (t1 == ident and (t2 == comma or t2 == colon) and t3 == ident and t4 == in)
+		or ((t1 == var or t1 == let) and t2 == ident and (t3 == comma or t3 == colon) and t4 == ident and t5 == in)
+		or (t1 == ident and (t2 == comma or t2 == colon) and (t3 == var or t3 == let) and t4 == ident and t5 == in)
+		or ((t1 == var or t1 == let) and t2 == ident and (t3 == comma or t3 == colon) and (t4 == var or t4 == let) and t5 == ident and t6 == in);
+
+	if (!is_foreach) {
+
+		vector<Instruction*> inits;
+		while (true) {
+			if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::IN || t->type == TokenType::OPEN_BRACE) {
+				break;
+			}
+			auto ins = eatInstruction();
+			if (ins) inits.push_back(ins);
 		}
-		Instruction* ins = eatInstruction();
-		if (ins) inits.push_back(ins);
-	}
 
-	if (errors.empty() && t->type == TokenType::SEMICOLON) {
-		forgot_saved_state();
-
-		// for inits ; condition ; increments { body }
-		For* f = new For();
+		// for inits; condition; increments { body }
+		auto f = new For();
 
 		// init
 		f->inits = inits;
@@ -1156,9 +1166,6 @@ Instruction* SyntaxicAnalyser::eatFor() {
 		return f;
 
 	} else {
-
-		for (Instruction* ins : inits) delete ins;
-		restore_saved_state();
 
 		// for key , value in container { body }
 		auto f = new Foreach();
@@ -1326,29 +1333,6 @@ Token* SyntaxicAnalyser::nextTokenAt(int pos) {
 		return tokens[i + pos];
 	else
 		return finished_token;
-}
-
-void SyntaxicAnalyser::save_current_state() {
-	stack.push_back(make_pair(i, errors.size()));
-}
-
-void SyntaxicAnalyser::restore_saved_state() {
-
-	if (!stack.empty()) {
-		i = stack.back().first;
-		while (errors.size() > stack.back().second) {
-			errors.pop_back();
-		}
-		stack.pop_back();
-
-		lt = i > 0 ? &tokens[i-1] : nullptr;
-		t = i < tokens.size() ? &tokens[i] : nullptr;
-		nt = i+1 < tokens.size() ? &tokens[i+1] : nullptr;
-	}
-}
-
-void SyntaxicAnalyser::forgot_saved_state() {
-	stack.pop_back();
 }
 
 vector<SyntaxicalError> SyntaxicAnalyser::getErrors() {
