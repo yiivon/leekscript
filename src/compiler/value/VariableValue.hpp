@@ -21,7 +21,6 @@ public:
 	VarScope scope;
 
 	VariableValue(Token* token);
-	virtual ~VariableValue();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual unsigned line() const override;
