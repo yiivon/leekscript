@@ -144,6 +144,7 @@ public:
 	static LSValue* parse(Json& json);
 	static LSValue* get_from_json(Json& json);
 
+	static void free(const LSValue*);
 	static void delete_ref(LSValue* value);
 	static void delete_temporary(const LSValue* const value);
 	static void delete_not_temporary(LSValue* value);
@@ -197,6 +198,10 @@ inline void LSValue::delete_temporary(const LSValue* const value) {
 	if (value->refs == 0) {
 		delete value;
 	}
+}
+
+inline void LSValue::free(const LSValue* value) {
+	delete value;
 }
 
 inline void LSValue::delete_not_temporary(LSValue* value) {
