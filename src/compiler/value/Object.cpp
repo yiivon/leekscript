@@ -35,7 +35,7 @@ void Object::print(ostream& os, int indent, bool debug) const {
 }
 
 void Object::analyse(SemanticAnalyser* analyser, const Type&) {
-	for (Value* value : values) {
+	for (auto& value : values) {
 		value->analyse(analyser, Type::POINTER);
 	}
 }
