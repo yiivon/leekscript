@@ -312,7 +312,10 @@ Compiler::value Compiler::insn_native(Compiler::value v) const {
 
 void Compiler::insn_delete_temporary(Compiler::value v) const {
 	if (v.t.must_manage_memory()) {
-		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
+		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
+		insn_if_not(insn_refs(v), [&]() {
+			insn_call(Type::VOID, {v}, (void*) &LSValue::free);
+		});
 	} else if (v.t == Type::MPZ_TMP) {
 		insn_delete_mpz(v);
 	}
