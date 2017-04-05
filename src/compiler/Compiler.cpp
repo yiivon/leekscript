@@ -294,7 +294,15 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 
 void Compiler::insn_delete(Compiler::value v) const {
 	if (v.t.must_manage_memory()) {
-		insn_call(Type::VOID, {v}, (void*) &LSValue::delete_ref);
+		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_ref);
+		insn_if_not(insn_native(v), [&]() {
+			auto refs = insn_refs(v);
+			insn_if(refs, [&]() {
+				insn_if_not(insn_dec_refs(v, refs), [&]() {
+					insn_call(Type::VOID, {v}, (void*) &LSValue::free);
+				});
+			});
+		});
 	} else if (v.t.not_temporary() == Type::MPZ) {
 		insn_delete_mpz(v);
 	}
