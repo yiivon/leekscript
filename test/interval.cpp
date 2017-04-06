@@ -94,6 +94,8 @@ void Test::test_intervals() {
 	code("[0..10].filter(-> true)").equals("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 	code("[-5..5].filter(-> true)").equals("[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]");
 	code("[1..10000].filter(x -> x.isPrime() && (x + 256).isPrime()).size()").equals("197");
+	// TODO
+	// code("[1..10000].filter(isPrime)").equals("");
 
 	section("Interval clone()");
 	code("let i = [1..10] [i]").equals("[[1..10]]");
