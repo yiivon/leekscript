@@ -29,6 +29,9 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	method("sum", {
 		{Type::INTERVAL, Type::LONG, {}, (void*) &LSInterval::ls_sum, Method::NATIVE},
 	});
+	method("product", {
+		{Type::INTERVAL, Type::LONG, {}, (void*) &LSInterval::ls_product, Method::NATIVE},
+	});
 }
 
 IntervalSTD::~IntervalSTD() {}

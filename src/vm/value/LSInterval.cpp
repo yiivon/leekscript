@@ -34,6 +34,15 @@ long LSInterval::ls_sum() {
 	return sum;
 }
 
+long LSInterval::ls_product() {
+	long product = 1;
+	for (int i = a; i <= b; ++i) {
+		product *= i;
+	}
+	LSValue::delete_temporary(this);
+	return product;
+}
+
 bool LSInterval::to_bool() const {
 	return b >= a;
 }

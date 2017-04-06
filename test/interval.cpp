@@ -108,6 +108,15 @@ void Test::test_intervals() {
 	code("[-100..0].sum() + [0..200].sum()").equals("15050");
 	code("[-100..200].sum()").equals("15050");
 
+	section("Interval.product");
+	code("[1..0].product()").equals("1");
+	code("[1..1].product()").equals("1");
+	code("[6..6].product()").equals("6");
+	code("[1..5].product()").equals("120");
+	code("[1..10].product()").equals("3628800");
+	code("[5..7].product()").equals("210");
+	code("[-7..7].product()").equals("0");
+
 	section("Interval clone()");
 	code("let i = [1..10] [i]").equals("[[1..10]]");
 }
