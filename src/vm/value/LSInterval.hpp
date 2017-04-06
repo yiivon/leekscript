@@ -20,6 +20,7 @@ public:
 	 * Array methods
 	 */
 	LSArray<int>* ls_filter(LSFunction<bool>* function);
+	long ls_sum();
 
 	/*
 	 * LSValue methods

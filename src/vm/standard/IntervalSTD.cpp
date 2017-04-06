@@ -25,6 +25,10 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	method("filter", {
 		{Type::INTERVAL, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSInterval::ls_filter, Method::NATIVE},
 	});
+
+	method("sum", {
+		{Type::INTERVAL, Type::LONG, {}, (void*) &LSInterval::ls_sum, Method::NATIVE},
+	});
 }
 
 IntervalSTD::~IntervalSTD() {}

@@ -97,6 +97,17 @@ void Test::test_intervals() {
 	// TODO
 	// code("[1..10000].filter(isPrime)").equals("");
 
+	section("Interval.sum");
+	code("[1..0].sum()").equals("0");
+	code("[1..1].sum()").equals("1");
+	code("[1..5].sum()").equals("15");
+	code("[5..10].sum()").equals("45");
+	code("[1..10].sum()").equals("55");
+	code("[1..10000].sum()").equals("50005000");
+	code("[-100..100].sum()").equals("0");
+	code("[-100..0].sum() + [0..200].sum()").equals("15050");
+	code("[-100..200].sum()").equals("15050");
+
 	section("Interval clone()");
 	code("let i = [1..10] [i]").equals("[[1..10]]");
 }

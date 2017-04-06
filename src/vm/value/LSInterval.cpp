@@ -28,6 +28,12 @@ LSArray<int>* LSInterval::ls_filter(LSFunction<bool>* function) {
 	return new_array;
 }
 
+long LSInterval::ls_sum() {
+	auto sum = (b - a + 1) * (a + b) / 2;
+	LSValue::delete_temporary(this);
+	return sum;
+}
+
 bool LSInterval::to_bool() const {
 	return b >= a;
 }
