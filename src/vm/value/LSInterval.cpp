@@ -35,6 +35,10 @@ long LSInterval::ls_sum() {
 }
 
 long LSInterval::ls_product() {
+	if (a <= 0 and b > 0) {
+		LSValue::delete_temporary(this);
+		return 0;
+	}
 	long product = 1;
 	for (int i = a; i <= b; ++i) {
 		product *= i;
