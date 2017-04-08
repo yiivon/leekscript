@@ -70,7 +70,7 @@ LSValue::~LSValue() {
 
 LSValue* LSValue::ls_minus() {
 	delete_temporary(this);
-	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	jit_exception_throw(VM::get_exception_object<0>(VM::Exception::NO_SUCH_OPERATOR));
 	assert(false); // LCOV_EXCL_LINE
 }
 
@@ -146,7 +146,10 @@ LSValue* LSValue::mul_eq(LSValue* v) {
 LSValue* LSValue::div(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
-	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+
+	auto ex2 = VM::get_exception_object<0>(2);
+
+	jit_exception_throw(ex2);
 	assert(false); // LCOV_EXCL_LINE
 }
 
