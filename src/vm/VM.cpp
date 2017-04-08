@@ -202,11 +202,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 			value = program->execute(*this);
 			result.execution_success = true;
 		} catch (VM::ExceptionObj* ex) {
-			result.exception = ex->type;
-			for (auto l : ex->lines) {
-				std::cout << "    > line " << l << std::endl;
-			}
-			delete ex;
+			result.exception = ex;
 		}
 		auto exe_end = chrono::high_resolution_clock::now();
 

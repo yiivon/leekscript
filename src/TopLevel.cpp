@@ -24,6 +24,7 @@ void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops
 #define GREY "\033[0;90m"
 #define GREEN "\033[0;32m"
 #define RED "\033[1;31m"
+#define BOLD "\033[1;1m"
 #define END_COLOR "\033[0m"
 
 int main(int argc, char* argv[]) {
@@ -150,7 +151,27 @@ void print_errors(ls::VM::Result& result, std::ostream& os) {
 	for (const auto& e : result.semantical_errors) {
 		os << "Line " << e.line << ": " << e.message() << std::endl;
 	}
-	if (result.exception != ls::VM::Exception::NO_EXCEPTION) {
-		os << "Exception: " << ls::VM::exception_message(result.exception) << std::endl;
+	if (result.exception != nullptr) {
+		auto pad = [](std::string s, int l) {
+			l -= s.size();
+			while (l-- > 0) s = " " + s;
+			return s;
+		};
+		os << "Unhandled exception " << BOLD << ls::VM::exception_message(result.exception->type) << END_COLOR << std::endl;
+		size_t padding = 0;
+		for (auto& f : result.exception->functions) {
+			padding = fmax(padding, f.size() + 2);
+		}
+		for (size_t l = 0; l < result.exception->lines.size(); ++l) {
+			auto line = result.exception->lines[l];
+			auto function = result.exception->functions[l];
+			auto file = result.exception->files[l];
+			auto pc = result.exception->pcs[l];
+			auto frame = result.exception->frames[l];
+			std::cout << BOLD << "    > " << END_COLOR << pad(function + "()", padding) << " @ " << BOLD << file << ":" << line << END_COLOR;
+			std::cout << " (" << pc << " - " << frame << ")";
+			std::cout << std::endl;
+		}
+		delete result.exception;
 	}
 }
