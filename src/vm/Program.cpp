@@ -78,11 +78,13 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 
 	// Compilation
 	jit_init();
+	jit_context_build_start(vm.jit_context);
 	vm.internals.clear();
 	vm.compiler.program = this;
 	main->compile(vm.compiler);
 	closure = main->ls_fun->function;
 	vm.compiler.leave_function();
+	jit_context_build_end(vm.jit_context);
 
 	// Result
 	result.compilation_success = true;
