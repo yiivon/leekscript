@@ -56,6 +56,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (expressions[i] != nullptr) {
 			if (Function* f = dynamic_cast<Function*>(expressions[i])) {
 				f->name = var->content;
+				f->file = VM::current()->file_name;
 			}
 			expressions[i]->analyse(analyser, Type::UNKNOWN);
 			v->type = expressions[i]->type;

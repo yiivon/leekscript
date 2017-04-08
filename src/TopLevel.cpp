@@ -78,15 +78,18 @@ int main(int argc, char* argv[]) {
 	if (file_or_code.size() > 0) {
 		/** Get the code **/
 		std::string code;
+		std::string file_name;
 		if (Util::is_file_name(file_or_code)) {
 			ifstream ifs(file_or_code.data());
 			code = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
 			ifs.close();
+			file_name = file_or_code;
 		} else {
 			code = file_or_code;
+			file_name = "(snippet)";
 		}
 		/** Execute **/
-		auto result = ls::VM(v1).execute(code, "{}", debug_mode, ops);
+		auto result = ls::VM(v1).execute(code, "{}", file_name, debug_mode, ops);
 		print_result(result, output_json, display_time, ops);
 		return 0;
 	}
@@ -101,7 +104,7 @@ int main(int argc, char* argv[]) {
 		cout << ">> ";
 		std::getline(std::cin, code);
 		// Execute
-		auto result = vm.execute(code, ctx, debug_mode, ops);
+		auto result = vm.execute(code, ctx, file_or_code, debug_mode, ops);
 		print_result(result, output_json, display_time, ops);
 		// Set new context
 		ctx = result.context;

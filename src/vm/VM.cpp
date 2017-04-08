@@ -159,12 +159,13 @@ void VM::add_module(Module* m) {
 #define YELLOW "\033[1;33m"
 #define END_COLOR "\033[0m"
 
-VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool ops) {
+VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops) {
 
 	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
 	VM::mpz_type = jit_type_create_struct(types, 3, 1);
 
 	// Reset
+	this->file_name = file_name;
 	VM::current_vm = this;
 	LSNull::set_null_value(this->null_value);
 	LSBoolean::set_true_value(this->true_value);
@@ -181,7 +182,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 		LSValue::objs().clear();
 	#endif
 
-	auto program = new Program(code);
+	auto program = new Program(code, file_name);
 
 	// Compile
 	auto compilation_start = chrono::high_resolution_clock::now();

@@ -104,6 +104,7 @@ public:
 	ExceptionObj* last_exception = nullptr;
 	jit_stack_trace_t stack_trace;
 	jit_context_t jit_context;
+	std::string file_name;
 
 	VM(bool v1 = false);
 	virtual ~VM();
@@ -111,7 +112,7 @@ public:
 	static VM* current();
 
 	/** Main execution function **/
-	Result execute(const std::string code, std::string ctx, bool debug = false, bool ops = true);
+	Result execute(const std::string code, std::string ctx, std::string file_name, bool debug = false, bool ops = true);
 
 	/** Add a module **/
 	void add_module(Module* m);

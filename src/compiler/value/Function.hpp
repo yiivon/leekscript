@@ -31,6 +31,7 @@ public:
 	std::string name;
 	Type placeholder_type;
 	bool is_main_function = false;
+	std::string file;
 
 	Function();
 	virtual ~Function();

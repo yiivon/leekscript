@@ -12,6 +12,7 @@ class Program {
 private:
 
 	std::string code; // The program code
+	std::string file_name;
 	void* closure;
 
 public:
@@ -19,7 +20,7 @@ public:
 	Function* main;
 	std::vector<Function*> functions;
 
-	Program(const std::string& code);
+	Program(const std::string& code, const std::string& file_name);
 	virtual ~Program();
 
 	void analyse(SemanticAnalyser* analyser);

@@ -21,8 +21,9 @@ struct jit_stack_trace {
 
 namespace ls {
 
-Program::Program(const std::string& code) {
+Program::Program(const std::string& code, const std::string& file_name) {
 	this->code = code;
+	this->file_name = file_name;
 	main = nullptr;
 	closure = nullptr;
 }
@@ -89,6 +90,8 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 }
 
 void Program::analyse(SemanticAnalyser* analyser) {
+	main->name = "main";
+	main->file = file_name;
 	main->analyse(analyser, Type::UNKNOWN);
 }
 
