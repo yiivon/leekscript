@@ -175,6 +175,8 @@ int interval_access(const LSInterval* interval, int pos) {
 
 Compiler::value ArrayAccess::compile(Compiler& c) const {
 
+	jit_insn_mark_offset(c.F, open_bracket->line);
+
 	auto a = array->compile(c);
 
 	c.inc_ops(2); // Array access : 2 operations
@@ -273,11 +275,9 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
 				auto line = c.new_integer(array->line());
 				c.insn_delete_temporary(a);
-				c.insn_throw(c.insn_call(Type::POINTER, {line}, +[](int line) {
-					auto ex = new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
-					ex->lines.push_back(line);
-					return ex;
-				}));
+				auto type = c.new_integer(VM::Exception::ARRAY_OUT_OF_BOUNDS);
+				auto ex = c.insn_call(Type::POINTER, {type}, &VM::get_exception_object<0>);
+				jit_insn_throw(c.F, ex.v);
 			});
 
 			if (array->type.raw_type == RawType::STRING) {
@@ -337,9 +337,9 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			auto array_size = c.insn_array_size(a);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
 				c.insn_delete_temporary(a);
-				c.insn_throw(c.insn_call(Type::POINTER, {}, +[]() {
-					return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
-				}));
+				auto type = c.new_integer(VM::Exception::ARRAY_OUT_OF_BOUNDS);
+				auto ex = c.insn_call(Type::POINTER, {type}, &VM::get_exception_object<0>);
+				jit_insn_throw(c.F, ex.v);
 			});
 			return c.insn_add(c.insn_load(a, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k));
 

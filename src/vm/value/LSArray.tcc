@@ -1286,7 +1286,7 @@ LSValue** LSArray<T>::atL(const LSValue* key) {
 			LSValue::delete_temporary(this);
 			ex = true;
 		}
-		if (ex) jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		if (ex) jit_exception_throw(VM::get_exception_object<2>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	return res;
 }
