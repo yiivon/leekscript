@@ -399,11 +399,6 @@ void VM::inc_mpz_counter(jit_function_t F) {
 }
 
 void VM::store_exception(jit_function_t F, jit_value_t ex) {
-	/*
-	VM::call(F, LS_VOID, {}, {}, +[] () {
-		std::cout << "Exception saved!" << std::endl;
-	});
-	*/
 	jit_value_t vm_ex_ptr = jit_value_create_long_constant(F, LS_POINTER, (long int) &VM::current()->last_exception);
 	jit_insn_store_relative(F, vm_ex_ptr, 0, ex);
 }
