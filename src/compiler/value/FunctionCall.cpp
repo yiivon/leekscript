@@ -432,6 +432,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 	}
 
+	jit_insn_mark_offset(c.F, line());
+
 	jit_type_t jit_return_type = VM::get_jit_type(type);
 
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), args_types.size(), 1);
