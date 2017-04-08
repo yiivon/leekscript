@@ -304,10 +304,6 @@ Compiler::value Function::compile(Compiler& c) const {
 		}
 	}
 
-	((Function*) this)->context = jit_context_create();
-	jit_context_build_start(context);
-	if (is_main_function) c.vm->jit_context = context;
-
 	unsigned arg_count = arguments.size() + 1;
 	vector<jit_type_t> params = {LS_POINTER}; // first arg is the function pointer
 	for (unsigned i = 0; i < arg_count - 1; ++i) {
@@ -316,7 +312,7 @@ Compiler::value Function::compile(Compiler& c) const {
 	}
 	jit_type_t return_type = VM::get_jit_type(type.getReturnType());
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
-	((Function*) this)->jit_function = jit_function_create(context, signature);
+	((Function*) this)->jit_function = jit_function_create(c.vm->jit_context, signature);
 	jit_type_free(signature);
 	jit_insn_uses_catcher(jit_function);
 
@@ -357,7 +353,6 @@ Compiler::value Function::compile(Compiler& c) const {
 	}
 
 	jit_function_compile(jit_function);
-	jit_context_build_end(context);
 
 	if (!is_main_function) {
 		c.leave_function();

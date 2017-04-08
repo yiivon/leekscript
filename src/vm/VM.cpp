@@ -64,6 +64,8 @@ LSValue* ptr_fun(void*, LSValue* v) {
 
 VM::VM(bool v1) : compiler(this) {
 
+	jit_context = jit_context_create();
+
 	operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
 	null_value = LSNull::create();
@@ -133,6 +135,7 @@ VM::~VM() {
 	delete null_value;
 	delete true_value;
 	delete false_value;
+	jit_context_destroy(jit_context);
 }
 
 VM* VM::current() {
@@ -222,9 +225,6 @@ VM::Result VM::execute(const std::string code, std::string ctx, bool debug, bool
 	delete program;
 	VM::enable_operations = true;
 	jit_type_free(VM::mpz_type);
-	if (result.compilation_success) {
-		jit_context_destroy(VM::current()->jit_context);
-	}
 	RawType::clear_placeholder_types();
 
 	// Results
