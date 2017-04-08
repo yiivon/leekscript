@@ -313,6 +313,8 @@ Compiler::value Function::compile(Compiler& c) const {
 	jit_type_t return_type = VM::get_jit_type(type.getReturnType());
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
 	((Function*) this)->jit_function = jit_function_create(c.vm->jit_context, signature);
+	jit_function_set_meta(jit_function, 12, new std::string(name), nullptr, 0);
+	jit_function_set_meta(jit_function, 13, new std::string(file), nullptr, 0);
 	jit_type_free(signature);
 	jit_insn_uses_catcher(jit_function);
 
@@ -346,7 +348,7 @@ Compiler::value Function::compile(Compiler& c) const {
 	} else {
 		c.delete_function_variables();
 		if (is_main_function) {
-			VM::store_exception(jit_function, ex);
+			c.vm->store_exception(jit_function, ex);
 		} else {
 			jit_insn_rethrow_unhandled(jit_function);
 		}

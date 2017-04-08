@@ -11,13 +11,7 @@
 #include "../compiler/semantic/SemanticAnalyser.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
 
-
 using namespace std;
-
-struct jit_stack_trace {
-	unsigned int size;
-	void* items[1];
-};
 
 namespace ls {
 
@@ -97,28 +91,10 @@ void Program::analyse(SemanticAnalyser* analyser) {
 	main->analyse(analyser, Type::UNKNOWN);
 }
 
-/*
- * Handle a native JIT exception, like division by zero etc.
- * The exception is transformed directly into a VM::ExceptionObj
- */
-void* handler(int type) {
-
-	void* frame = __builtin_frame_address(1);
-	void* pc = jit_get_return_address(frame);
-	auto trace = (jit_stack_trace_t) jit_malloc(sizeof(struct jit_stack_trace));
-	trace->size = 1;
-	trace->items[0] = pc;
-	unsigned int line = jit_stack_trace_get_offset(VM::current()->jit_context, trace, 0);
-	jit_free(trace);
-
-	auto ex = new VM::ExceptionObj((VM::Exception) type);
-	ex->lines.push_back(line);
-	return ex;
-}
-
 std::string Program::execute(VM& vm) {
 
-	jit_exception_set_handler(&handler);
+	auto handler = &VM::get_exception_object<1>;
+	jit_exception_set_handler(handler);
 
 	Type output_type = main->type.getReturnType();
 

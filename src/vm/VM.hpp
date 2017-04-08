@@ -30,6 +30,11 @@
 #define LS_CREATE_LONG(F, X) jit_value_create_long_constant((F), LS_LONG, (X))
 #define LS_CREATE_REAL(F, X) jit_value_create_float64_constant((F), LS_REAL, (X))
 
+struct jit_stack_trace {
+	unsigned int size;
+	void* items[1];
+};
+
 namespace ls {
 
 class Type;
@@ -59,6 +64,10 @@ public:
 	struct ExceptionObj {
 		Exception type;
 		std::vector<int> lines;
+		std::vector<std::string> files;
+		std::vector<std::string> functions;
+		std::vector<void*> pcs;
+		std::vector<void*> frames;
 		ExceptionObj(Exception type) : type(type) {}
 	};
 
@@ -72,7 +81,7 @@ public:
 		std::vector<LexicalError> lexical_errors;
 		std::vector<SyntaxicalError> syntaxical_errors;
 		std::vector<SemanticError> semantical_errors;
-		Exception exception = Exception::NO_EXCEPTION;
+		ExceptionObj* exception = nullptr;
 		std::string program = "";
 		std::string value = "";
 		std::string context = "";
@@ -136,8 +145,35 @@ public:
 
 	/** Utilities **/
 	static void print_mpz_int(jit_function_t F, jit_value_t val);
-	static void store_exception(jit_function_t F, jit_value_t ex);
+	void store_exception(jit_function_t F, jit_value_t ex);
 	static std::string exception_message(VM::Exception expected);
+
+	template <unsigned int level>
+	inline static void* get_exception_object(int obj) {
+		auto ex = new VM::ExceptionObj((VM::Exception) obj);
+		auto frame = __builtin_frame_address(level);
+		auto pc = jit_get_return_address(frame);
+		auto trace = (jit_stack_trace_t) jit_malloc(sizeof(struct jit_stack_trace));
+		trace->size = 1;
+		auto context = VM::current()->jit_context;
+		while (true) {
+			ex->pcs.push_back(pc);
+			ex->frames.push_back(frame);
+			trace->items[0] = pc;
+			unsigned int line = jit_stack_trace_get_offset(context, trace, 0);
+			if (ex->lines.size() > 1 && line == JIT_NO_OFFSET) break;
+			ex->lines.push_back(line);
+			auto function = jit_function_from_pc(context, pc, nullptr);
+			auto name = function ? (std::string*) jit_function_get_meta(function, 12) : nullptr;
+			auto file = function ? (std::string*) jit_function_get_meta(function, 13) : nullptr;
+			ex->files.push_back(file == nullptr ? "?" : *file);
+			ex->functions.push_back(name == nullptr ? "?" : *name);
+			frame = jit_get_next_frame_address(frame);
+			pc = jit_get_return_address(frame);
+		}
+		jit_free(trace);
+		return ex;
+	}
 };
 
 }
