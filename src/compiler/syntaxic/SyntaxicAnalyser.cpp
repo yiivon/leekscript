@@ -470,7 +470,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 			case TokenType::OPEN_BRACKET: {
 
 				auto aa = new ArrayAccess();
-				eat(TokenType::OPEN_BRACKET);
+				aa->open_bracket.reset(eat_get(TokenType::OPEN_BRACKET));
 
 				aa->array = e;
 				aa->key = eatExpression();
