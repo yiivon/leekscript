@@ -59,6 +59,10 @@ void FunctionCall::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
+unsigned FunctionCall::line() const {
+	return token->line;
+}
+
 void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	function->analyse(analyser, Type::UNKNOWN);
