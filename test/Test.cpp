@@ -124,7 +124,7 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->operation_limit = this->operation_limit;
-	auto result = vm->execute(code, "{}", false, true);
+	auto result = vm->execute(code, "{}", "test", false, true);
 	vm->operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	this->result = result;
@@ -208,8 +208,8 @@ void Test::Input::equals(std::string expected) {
 		pass(expected);
 	} else {
 		auto actual = result.value;
-		if (result.exception != ls::VM::Exception::NO_EXCEPTION) {
-			actual = "Unexpected exception: " + ls::VM::exception_message(result.exception);
+		if (result.exception != nullptr && result.exception->type != ls::VM::Exception::NO_EXCEPTION) {
+			actual = "Unexpected exception: " + ls::VM::exception_message(result.exception->type);
 		}
 		fail(expected, actual + errors);
 	}
@@ -299,7 +299,7 @@ void Test::Input::syntaxic_error(ls::SyntaxicalError::Type expected_type, std::v
 			pass(e.message());
 		}
 	} else {
-		fail(to_string(expected_type), "(no syntaxical error)");
+		fail(std::to_string(expected_type), "(no syntaxical error)");
 	}
 }
 
@@ -326,9 +326,9 @@ void Test::Input::exception(ls::VM::Exception expected) {
 	auto result = run(false);
 
 	std::string expected_message = ls::VM::exception_message(expected);
-	std::string actual_message = ls::VM::exception_message(result.exception);
+	std::string actual_message = ls::VM::exception_message(result.exception != nullptr ? result.exception->type : ls::VM::Exception::NO_EXCEPTION);
 
-	if (result.exception != expected) {
+	if (result.exception != nullptr && result.exception->type != expected) {
 		fail(expected_message, actual_message);
 	} else {
 		pass("throw exception « " + expected_message + " »");

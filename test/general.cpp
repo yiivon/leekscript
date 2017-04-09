@@ -21,7 +21,7 @@ void Test::test_general() {
 	std::cout << a->message() << std::endl;
 	delete a;
 	// Print a program
-	auto program = new ls::Program("2 + 2");
+	auto program = new ls::Program("2 + 2", "test");
 	program->compile(vm, "{}");
 	std::cout << program << std::endl;
 	delete program;
