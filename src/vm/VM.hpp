@@ -152,30 +152,53 @@ public:
 	void store_exception(jit_function_t F, jit_value_t ex);
 	static std::string exception_message(VM::Exception expected);
 
-	template <unsigned int level>
-	inline static void* get_exception_object(int obj) {
-		auto ex = new VM::ExceptionObj((VM::Exception) obj);
-		auto frame = __builtin_frame_address(level);
-		auto pc = jit_get_return_address(frame);
+	static unsigned int get_offset(jit_context_t context, void* pc) {
 		auto trace = (jit_stack_trace_t) jit_malloc(sizeof(struct jit_stack_trace));
 		trace->size = 1;
+		trace->items[0] = pc;
+		auto line = jit_stack_trace_get_offset(context, trace, 0);
+		jit_free(trace);
+		return line;
+	}
+
+	template <unsigned int level>
+	static void* get_exception_object(int obj) {
+		auto ex = new VM::ExceptionObj((VM::Exception) obj);
 		auto context = VM::current()->jit_context;
+		auto frame = __builtin_frame_address(level);
+		// std::cout << "first frame = " << frame << std::endl;
+		for (int i = 0; i < 10; ++i) {
+			// frame = jit_get_next_frame_address(frame);
+			// std::cout << "frame = " << frame << std::endl;
+		}
+		size_t N = 16;
+		void* array[N];
+		size_t size = backtrace(array, N);
+		for (size_t i = 0; i < size; ++i) {
+			// std::cout << "backtrace["<<i<<"] = " << array[i] << std::endl;
+		}
+		auto pc = array[size - 1]; // take last C++ stacktrace pc as first jit pc
+		// std::cout << "first pc = " << pc << std::endl;
+		int i = 0;
 		while (true) {
+			auto line = get_offset(context, pc);
+			// std::cout << "pc = " << pc << " line = " << line << std::endl;
+			if (line == JIT_NO_OFFSET) break;
 			ex->pcs.push_back(pc);
 			ex->frames.push_back(frame);
-			trace->items[0] = pc;
-			unsigned int line = jit_stack_trace_get_offset(context, trace, 0);
-			if (ex->lines.size() > 1 && line == JIT_NO_OFFSET) break;
 			ex->lines.push_back(line);
-			auto function = jit_function_from_pc(context, pc, nullptr);
-			auto name = function ? (std::string*) jit_function_get_meta(function, 12) : nullptr;
-			auto file = function ? (std::string*) jit_function_get_meta(function, 13) : nullptr;
+			auto fun = jit_function_from_pc(context, pc, nullptr);
+			auto name = fun ? (std::string*) jit_function_get_meta(fun, 12) : nullptr;
+			// std::cout << "name = " << (name == nullptr ? "?" : *name) << std::endl;
+			auto file = fun ? (std::string*) jit_function_get_meta(fun, 13) : nullptr;
 			ex->files.push_back(file == nullptr ? "?" : *file);
 			ex->functions.push_back(name == nullptr ? "?" : *name);
 			frame = jit_get_next_frame_address(frame);
+			// std::cout << "next frame = " << frame << std::endl;
 			pc = jit_get_return_address(frame);
+			// std::cout << "next pc = " << pc << std::endl;
+			if (i++ > 10) break;
 		}
-		jit_free(trace);
 		return ex;
 	}
 };
