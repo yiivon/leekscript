@@ -6,8 +6,7 @@ using namespace std;
 
 namespace ls {
 
-Set::Set() {
-}
+Set::Set() {}
 
 Set::~Set() {
 	for (auto ex : expressions) delete ex;
