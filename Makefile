@@ -178,6 +178,11 @@ clean:
 	@echo "Project cleaned."
 	@echo "----------------"
 
+# Check useless headers and stuff using cppclean
+# `pip install --upgrade cppclean`
+cppclean:
+	cppclean .
+
 # Line couning with cloc.
 # `apt-get install cloc`
 cloc:
