@@ -333,13 +333,14 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		// Compile the key
 		auto k = key->compile(c);
 		// Access
+		jit_insn_mark_offset(c.F, open_bracket->line);
 		if (array->type.raw_type == RawType::ARRAY) {
 			auto array_size = c.insn_array_size(a);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
 				c.insn_delete_temporary(a);
-				auto type = c.new_integer(VM::Exception::ARRAY_OUT_OF_BOUNDS);
-				auto ex = c.insn_call(Type::POINTER, {type}, &VM::get_exception_object<0>);
-				jit_insn_throw(c.F, ex.v);
+				c.insn_throw(c.insn_call(Type::POINTER, {}, +[]() {
+					return new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS);
+				}));
 			});
 			return c.insn_add(c.insn_load(a, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k));
 
@@ -393,7 +394,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 	} else {
 		auto start = key->compile(c);
 		auto end = key2->compile(c);
-
+		jit_insn_mark_offset(c.F, open_bracket->line);
 		return c.insn_call(Type::POINTER, {a, start, end}, (void*) +[](LSValue* a, int start, int end) {
 			// TODO
 			a->rangeL(start, end);

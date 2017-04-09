@@ -1274,21 +1274,18 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 
 template <class T>
 LSValue** LSArray<T>::atL(const LSValue* key) {
-	LSValue** res = nullptr;
-	if (key->type == NUMBER) {
-		auto n = static_cast<const LSNumber*>(key);
-		int i = (int) n->value;
-		LSValue::delete_temporary(key);
-		bool ex = false;
-		try {
-			res = (LSValue**) &(((std::vector<T>*) this)->at(i));
-		} catch (std::exception const & e) {
-			LSValue::delete_temporary(this);
-			ex = true;
-		}
-		if (ex) jit_exception_throw(VM::get_exception_object<2>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+	if (key->type != NUMBER) {
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_KEY_IS_NOT_NUMBER));
 	}
-	return res;
+	auto n = static_cast<const LSNumber*>(key);
+	int i = (int) n->value;
+	LSValue::delete_temporary(key);
+	if (i < 0 || (size_t) i >= this->size()) {
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+	return (LSValue**) &((std::vector<T>*) this)->operator [](i);
 }
 
 template <class T>
