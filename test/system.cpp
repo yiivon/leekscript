@@ -3,10 +3,29 @@
 #include <chrono>
 #include "../src/compiler/semantic/SemanticError.hpp"
 
-long get_sec_time();
-long get_milli_time();
-long get_micro_time();
-long get_nano_time();
+long get_sec_time() {
+	return std::chrono::duration_cast<std::chrono::seconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
+}
+
+long get_milli_time() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
+}
+
+long get_micro_time() {
+	return std::chrono::duration_cast<std::chrono::microseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
+}
+
+long get_nano_time() {
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
+}
 
 void Test::test_system() {
 
@@ -44,28 +63,4 @@ void Test::test_system() {
 
 	section("v1 debug");
 	code_v1("debug('hello')").output("hello\n");
-}
-
-long get_sec_time() {
-	return std::chrono::duration_cast<std::chrono::seconds>(
-		std::chrono::system_clock::now().time_since_epoch()
-	).count();
-}
-
-long get_milli_time() {
-	return std::chrono::duration_cast<std::chrono::milliseconds>(
-		std::chrono::system_clock::now().time_since_epoch()
-	).count();
-}
-
-long get_micro_time() {
-	return std::chrono::duration_cast<std::chrono::microseconds>(
-		std::chrono::system_clock::now().time_since_epoch()
-	).count();
-}
-
-long get_nano_time() {
-	return std::chrono::duration_cast<std::chrono::nanoseconds>(
-		std::chrono::system_clock::now().time_since_epoch()
-	).count();
 }
