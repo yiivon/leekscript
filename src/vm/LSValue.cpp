@@ -145,10 +145,7 @@ LSValue* LSValue::mul_eq(LSValue* v) {
 LSValue* LSValue::div(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);
-
-	auto ex2 = VM::get_exception_object<0>(2);
-
-	jit_exception_throw(ex2);
+	jit_exception_throw(VM::get_exception_object<1>(VM::Exception::NO_SUCH_OPERATOR));
 	assert(false); // LCOV_EXCL_LINE
 }
 
