@@ -169,7 +169,7 @@ void print_errors(ls::VM::Result& result, std::ostream& os) {
 			auto pc = result.exception->pcs[l];
 			auto frame = result.exception->frames[l];
 			std::cout << BOLD << "    > " << END_COLOR << pad(function + "()", padding) << " @ " << BOLD << file << ":" << line << END_COLOR;
-			std::cout << " (" << pc << " - " << frame << ")";
+			std::cout << " (frame: " << frame << ", pc: " << pc << ")";
 			std::cout << std::endl;
 		}
 		delete result.exception;
