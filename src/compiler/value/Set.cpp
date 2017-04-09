@@ -26,7 +26,7 @@ void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	Type element_type = Type::UNKNOWN;
 
-	for (Value* ex : expressions) {
+	for (auto& ex : expressions) {
 		ex->analyse(analyser, Type::UNKNOWN);
 		element_type = Type::get_compatible_type(element_type, ex->type);
 	}
@@ -40,7 +40,7 @@ void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 
 	constant = true;
-	for (Value* ex : expressions) {
+	for (auto& ex : expressions) {
 		ex->analyse(analyser, element_type);
 		constant = constant && ex->constant;
 	}
