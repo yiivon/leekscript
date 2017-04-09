@@ -1,9 +1,6 @@
 #ifndef VM_STANDARD_STRINGSTD_HPP_
 #define VM_STANDARD_STRINGSTD_HPP_
 
-#include "../VM.hpp"
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
-#include "../../vm/Program.hpp"
 #include "../Module.hpp"
 
 namespace ls {

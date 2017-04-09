@@ -1,8 +1,10 @@
 #include "NumberSTD.hpp"
 
 #include "../value/LSNumber.hpp"
+#include "../value/LSString.hpp"
 #include "../../../lib/utf8.h"
 #include "../../compiler/Compiler.hpp"
+#include "../VM.hpp"
 
 using namespace std;
 

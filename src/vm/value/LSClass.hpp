@@ -1,10 +1,9 @@
 #ifndef LSCLASS_HPP_
 #define LSCLASS_HPP_
 
-#include "../LSValue.hpp"
 #include <string>
 #include <map>
-#include "../../../lib/json.hpp"
+#include "../LSValue.hpp"
 #include "../Type.hpp"
 
 namespace ls {

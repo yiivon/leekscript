@@ -4,7 +4,6 @@
 #include "../../vm/value/LSNumber.hpp"
 #include "../instruction/Return.hpp"
 #include "../instruction/Throw.hpp"
-#include "../../vm/VM.hpp"
 
 using namespace std;
 

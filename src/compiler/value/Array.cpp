@@ -1,5 +1,4 @@
 #include "Array.hpp"
-#include "../../vm/VM.hpp"
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSInterval.hpp"
 #include <math.h>

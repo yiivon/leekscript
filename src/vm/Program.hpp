@@ -5,9 +5,6 @@
 
 namespace ls {
 
-class SemanticAnalser;
-class LSValue;
-
 class Program {
 private:
 

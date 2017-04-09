@@ -2,11 +2,10 @@
 #define LSOBJECT_HPP_
 
 #include "../LSValue.hpp"
-#include "LSClass.hpp"
-#include "../../../lib/json.hpp"
-#include "../Type.hpp"
 
 namespace ls {
+
+class LSClass;
 
 class LSObject : public LSValue {
 protected:

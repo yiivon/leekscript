@@ -7,7 +7,6 @@
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
 #include "../../compiler/value/Expression.hpp"
 #include "../lexical/Ident.hpp"
-#include "../../vm/VM.hpp"
 
 namespace ls {
 

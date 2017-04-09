@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include "../LSValue.hpp"
-#include "../Type.hpp"
 
 namespace ls {
 

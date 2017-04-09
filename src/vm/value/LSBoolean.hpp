@@ -2,9 +2,7 @@
 #define LSBOOLEAN_HPP_
 
 #include <string>
-#include "../../../lib/json.hpp"
 #include "../LSValue.hpp"
-#include "../Type.hpp"
 
 namespace ls {
 

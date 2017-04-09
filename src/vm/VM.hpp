@@ -6,13 +6,16 @@
 #include <jit/jit.h>
 #include <gmp.h>
 #include <gmpxx.h>
+#include <stdio.h>
+#include <execinfo.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#include "Context.hpp"
 #include "../compiler/lexical/LexicalError.hpp"
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
 #include "../compiler/Compiler.hpp"
-#include "../vm/value/LSNumber.hpp"
 
 #define OPERATION_LIMIT 10000000
 
@@ -41,9 +44,10 @@ class Type;
 class Module;
 class Program;
 class LSValue;
-class LexicalError;
-class Compiler;
 class SemanticVar;
+class LSNull;
+class LSBoolean;
+template <class R> class LSFunction;
 
 class VM {
 public:

@@ -2,11 +2,11 @@
 #define REFERENCE_HPP
 
 #include "../../compiler/value/Value.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
 #include "../lexical/Ident.hpp"
 
 namespace ls {
 
-class SemanticVar;
 enum class VarScope;
 
 class Reference : public Value {

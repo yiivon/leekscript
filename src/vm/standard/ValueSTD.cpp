@@ -3,6 +3,7 @@
 #include "../value/LSBoolean.hpp"
 #include "../value/LSString.hpp"
 #include "../value/LSNumber.hpp"
+#include "../../vm/VM.hpp"
 
 namespace ls {
 

@@ -1,6 +1,8 @@
 #ifndef NUMBER_HPP
 #define NUMBER_HPP
 
+#include <memory>
+#include <gmp.h>
 #include "../../compiler/value/Value.hpp"
 #include "../lexical/Token.hpp"
 

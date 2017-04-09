@@ -6,14 +6,11 @@
 #include <iostream>
 #include <gmp.h>
 #include <gmpxx.h>
-
 #include "../LSValue.hpp"
-#include "LSString.hpp"
-#include "LSClass.hpp"
-#include "../../../lib/json.hpp"
-#include "../Type.hpp"
 
 namespace ls {
+
+class LSClass;
 
 class LSNumber : public LSValue {
 public:

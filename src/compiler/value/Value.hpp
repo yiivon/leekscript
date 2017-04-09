@@ -3,8 +3,6 @@
 
 #include <map>
 #include <vector>
-
-#include "../../vm/VM.hpp"
 #include "../Compiler.hpp"
 #include "../../vm/TypeList.hpp"
 

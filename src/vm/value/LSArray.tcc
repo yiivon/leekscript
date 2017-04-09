@@ -1,16 +1,16 @@
 #ifndef LS_ARRAY_TCC
 #define LS_ARRAY_TCC
 
+#include <algorithm>
 #include "../LSValue.hpp"
 #include "../VM.hpp"
 #include "LSNull.hpp"
 #include "LSNumber.hpp"
 #include "LSBoolean.hpp"
 #include "LSFunction.hpp"
+#include "LSString.hpp"
 #include "LSObject.hpp"
 #include "LSSet.hpp"
-
-#include <algorithm>
 
 namespace ls {
 

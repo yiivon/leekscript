@@ -8,7 +8,6 @@
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
 
-
 using namespace std;
 
 namespace ls {

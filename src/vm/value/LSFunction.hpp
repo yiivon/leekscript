@@ -5,11 +5,9 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-#include "../LSValue.hpp"
 #include <map>
 #include <jit/jit.h>
-#include "../../../lib/json.hpp"
-#include "../Type.hpp"
+#include "../LSValue.hpp"
 
 namespace ls {
 
@@ -25,7 +23,6 @@ public:
 	// For reflexion
 	std::vector<LSValue*> args;
 	LSValue* return_type;
-
 
 	LSFunction(void* function);
 	virtual ~LSFunction();

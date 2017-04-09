@@ -13,7 +13,6 @@
 
 namespace ls {
 
-class LSVar;
 class LSNull;
 class LSBoolean;
 class LSNumber;

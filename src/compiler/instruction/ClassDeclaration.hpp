@@ -3,11 +3,13 @@
 
 #include <vector>
 
-#include "../../compiler/instruction/Instruction.hpp"
-#include "../../compiler/instruction/VariableDeclaration.hpp"
-#include "../../compiler/lexical/Ident.hpp"
+#include "Instruction.hpp"
+#include "VariableDeclaration.hpp"
+#include "../lexical/Ident.hpp"
 
 namespace ls {
+
+class LSClass;
 
 class ClassDeclaration : public Instruction {
 public:

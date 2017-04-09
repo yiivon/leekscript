@@ -1,5 +1,6 @@
 #include "ObjectSTD.hpp"
 #include "../value/LSObject.hpp"
+#include "../value/LSNumber.hpp"
 
 namespace ls {
 

@@ -2,7 +2,6 @@
 #include <sstream>
 #include <string.h>
 #include <vector>
-#include "VM.hpp"
 #include "../../lib/json.hpp"
 using namespace std;
 

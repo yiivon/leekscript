@@ -12,6 +12,7 @@
 #include "value/LSArray.hpp"
 #include "Program.hpp"
 #include "value/LSObject.hpp"
+#include "value/LSFunction.hpp"
 #include "standard/ValueSTD.hpp"
 #include "standard/NullSTD.hpp"
 #include "standard/NumberSTD.hpp"

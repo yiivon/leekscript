@@ -2,8 +2,9 @@
 #define FUNCTIONCALL_HPP
 
 #include <vector>
-
-#include "../../compiler/value/Value.hpp"
+#include <memory>
+#include "Value.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 

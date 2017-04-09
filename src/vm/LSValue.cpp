@@ -8,7 +8,6 @@
 #include "value/LSSet.hpp"
 #include "value/LSObject.hpp"
 #include "value/LSFunction.hpp"
-#include "VM.hpp"
 
 using namespace std;
 

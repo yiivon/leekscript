@@ -1,5 +1,6 @@
 #include "Match.hpp"
 #include "../../vm/LSValue.hpp"
+#include "../../vm/VM.hpp"
 
 using namespace std;
 

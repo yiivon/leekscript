@@ -1,3 +1,4 @@
+#include <sstream>
 #include "Value.hpp"
 #include "../../vm/Type.hpp"
 

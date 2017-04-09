@@ -3,10 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include "../src/leekscript.h"
 #include "../src/vm/VM.hpp"
-#include "../src/compiler/semantic/SemanticError.hpp"
-#include "../src/compiler/lexical/LexicalError.hpp"
+#include "../src/vm/value/LSNumber.hpp"
 
 class Test {
 private:

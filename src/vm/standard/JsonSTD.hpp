@@ -1,7 +1,6 @@
 #ifndef JSON_STD_HPP
 #define JSON_STD_HPP
 
-#include "../VM.hpp"
 #include "../Module.hpp"
 
 namespace ls {

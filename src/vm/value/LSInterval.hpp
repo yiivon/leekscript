@@ -1,9 +1,11 @@
 #ifndef VM_VALUE_LSINTERVAL_HPP_
 #define VM_VALUE_LSINTERVAL_HPP_
 
-#include "LSArray.hpp"
+#include "../LSValue.hpp"
 
 namespace ls {
+
+template <class R> class LSFunction;
 
 class LSInterval : public LSValue {
 public:

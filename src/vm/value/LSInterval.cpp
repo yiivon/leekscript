@@ -2,6 +2,7 @@
 
 #include "LSInterval.hpp"
 #include "LSNumber.hpp"
+#include "LSFunction.hpp"
 #include "LSNull.hpp"
 
 using namespace std;

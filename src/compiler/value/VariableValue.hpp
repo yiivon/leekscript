@@ -1,15 +1,16 @@
 #ifndef VARIABLEVALUE_HPP
 #define VARIABLEVALUE_HPP
 
-#include "../lexical/Ident.hpp"
-#include "../value/LeftValue.hpp"
-#include "../Compiler.hpp"
+#include <memory>
+#include "LeftValue.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
 
 namespace ls {
 
 class Value;
 class SemanticVar;
 enum class VarScope;
+class Compiler;
 
 class VariableValue : public LeftValue {
 public:

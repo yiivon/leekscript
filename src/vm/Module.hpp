@@ -3,15 +3,13 @@
 
 #include <string>
 #include <vector>
-
-#include "../compiler/semantic/SemanticAnalyser.hpp"
 #include "Type.hpp"
-#include "Program.hpp"
 #include "value/LSClass.hpp"
+#include "../compiler/Compiler.hpp"
 
 namespace ls {
 
-class LSClass;
+class LSValue;
 
 class StaticMethod {
 public:

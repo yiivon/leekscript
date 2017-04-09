@@ -1,8 +1,9 @@
 #ifndef BOOLEAN_HPP
 #define BOOLEAN_HPP
 
-#include "../../compiler/value/Value.hpp"
-
+#include <memory>
+#include "Value.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 

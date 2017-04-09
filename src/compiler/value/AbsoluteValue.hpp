@@ -1,7 +1,7 @@
 #ifndef ABSOLUTEVALUE_HPP
 #define ABSOLUTEVALUE_HPP
 
-#include "../../compiler/value/Expression.hpp"
+#include "Value.hpp"
 
 namespace ls {
 

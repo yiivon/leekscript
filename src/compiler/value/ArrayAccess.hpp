@@ -1,8 +1,10 @@
 #ifndef ARRAYACCESS_HPP
 #define ARRAYACCESS_HPP
 
-#include "../../compiler/value/LeftValue.hpp"
-#include "../../compiler/value/Value.hpp"
+#include <memory>
+#include "LeftValue.hpp"
+#include "Value.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 
