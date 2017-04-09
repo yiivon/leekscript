@@ -27,9 +27,6 @@ Function::~Function() {
 		delete ls_fun;
 		ls_fun = nullptr;
 	}
-	if (context && !is_main_function) {
-		jit_context_destroy(context);
-	}
 }
 
 void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
