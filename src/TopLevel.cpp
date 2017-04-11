@@ -18,7 +18,7 @@
 
 using namespace std;
 
-void print_errors(ls::VM::Result& result, std::ostream& os);
+void print_errors(ls::VM::Result& result, std::ostream& os, bool json);
 void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops);
 
 #define GREY "\033[0;90m"
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
 void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops) {
 	if (json) {
 		std::ostringstream oss;
-		print_errors(result, oss);
+		print_errors(result, oss, json);
 		std::string res = oss.str() + result.value;
 		res = Util::replace_all(res, "\"", "\\\"");
 		res = Util::replace_all(res, "\n", "");
@@ -125,7 +125,7 @@ void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops
 			<< ",\"ctx\":" << result.context
 			<< ",\"res\":\"" << res << "\"}" << endl;
 	} else {
-		print_errors(result, std::cout);
+		print_errors(result, std::cout, json);
 		if (result.execution_success && result.value != "(void)") {
 			cout << result.value << endl;
 		}
@@ -141,7 +141,7 @@ void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops
 	}
 }
 
-void print_errors(ls::VM::Result& result, std::ostream& os) {
+void print_errors(ls::VM::Result& result, std::ostream& os, bool json) {
 	for (const auto& e : result.lexical_errors) {
 		os << "Line " << e.line << ": " << e.message() << std::endl;
 	}
@@ -152,7 +152,7 @@ void print_errors(ls::VM::Result& result, std::ostream& os) {
 		os << "Line " << e.line << ": " << e.message() << std::endl;
 	}
 	if (result.exception != nullptr) {
-		os << result.exception->to_string();
+		os << result.exception->to_string(json ? false : true);
 		delete result.exception;
 	}
 }

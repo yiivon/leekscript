@@ -88,7 +88,7 @@ public:
 		Exception type;
 		std::vector<exception_frame> frames;
 		ExceptionObj(Exception type) : type(type) {}
-		std::string to_string() const {
+		std::string to_string(bool colors = true) const {
 			auto pad = [](std::string s, int l) {
 				l -= s.size();
 				while (l-- > 0) s = " " + s;
@@ -99,9 +99,9 @@ public:
 				padding = fmax(padding, f.function.size() + 2);
 			}
 			std::ostringstream oss;
-			oss << "Exception " << BOLD << VM::exception_message(type) << END_COLOR << std::endl;
+			oss << "Exception " << (colors ? BOLD : "") << VM::exception_message(type) << (colors ? END_COLOR : "") << std::endl;
 			for (const auto& f : frames) {
-				oss << BOLD << "    > " << END_COLOR << pad(f.function + "()", padding) << " @ " << BOLD << f.file << ":" << f.line << END_COLOR;
+				oss << (colors ? BOLD : "") << "    > " << (colors ? END_COLOR : "") << pad(f.function + "()", padding) << " @ " << (colors ? BOLD : "") << f.file << ":" << f.line << (colors ? END_COLOR : "");
 				oss << " (frame: " << f.frame << ", pc: " << f.pc << ")";
 				oss << std::endl;
 			}
