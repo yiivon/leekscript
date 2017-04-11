@@ -477,12 +477,12 @@ bool jit_is_null(LSValue* v) {
 
 Compiler::value Expression::compile(Compiler& c) const {
 
-	jit_insn_mark_offset(c.F, line());
-
 	// No operator : compile v1 and return
 	if (op == nullptr) {
 		return v1->compile(c);
 	}
+
+	jit_insn_mark_offset(c.F, line());
 
 	// Increment operations
 	if (operations > 0) {
