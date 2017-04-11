@@ -77,7 +77,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	vm.compiler.program = this;
 	main->compile(vm.compiler);
 	closure = main->ls_fun->function;
-	vm.compiler.leave_function();
+	// vm.compiler.leave_function();
 	jit_context_build_end(vm.jit_context);
 
 	// Result
