@@ -65,13 +65,22 @@ public:
 		NO_SUCH_ATTRIBUTE = 8
 	};
 
+	struct exception_frame {
+		size_t line;
+		std::string file;
+		std::string function;
+		void* frame;
+		void* pc;
+		exception_frame() {}
+		exception_frame(std::string function, size_t line) : line(line), function(function) {}
+		bool operator == (const exception_frame& o) const {
+			return line == o.line && function == o.function;
+		}
+	};
+
 	struct ExceptionObj {
 		Exception type;
-		std::vector<int> lines;
-		std::vector<std::string> files;
-		std::vector<std::string> functions;
-		std::vector<void*> pcs;
-		std::vector<void*> frames;
+		std::vector<exception_frame> frames;
 		ExceptionObj(Exception type) : type(type) {}
 	};
 
@@ -166,38 +175,25 @@ public:
 		auto ex = new VM::ExceptionObj((VM::Exception) obj);
 		auto context = VM::current()->jit_context;
 		auto frame = __builtin_frame_address(level);
-		// std::cout << "first frame = " << frame << std::endl;
-		for (int i = 0; i < 10; ++i) {
-			// frame = jit_get_next_frame_address(frame);
-			// std::cout << "frame = " << frame << std::endl;
-		}
 		size_t N = 16;
 		void* array[N];
 		size_t size = backtrace(array, N);
-		for (size_t i = 0; i < size; ++i) {
-			// std::cout << "backtrace["<<i<<"] = " << array[i] << std::endl;
-		}
 		auto pc = array[size - 1]; // take last C++ stacktrace pc as first jit pc
-		// std::cout << "first pc = " << pc << std::endl;
-		int i = 0;
 		while (true) {
 			auto line = get_offset(context, pc);
-			// std::cout << "pc = " << pc << " line = " << line << std::endl;
 			if (line == JIT_NO_OFFSET) break;
-			ex->pcs.push_back(pc);
-			ex->frames.push_back(frame);
-			ex->lines.push_back(line);
+			VM::exception_frame frame_object;
+			frame_object.pc = pc;
+			frame_object.frame = frame;
+			frame_object.line = line;
 			auto fun = jit_function_from_pc(context, pc, nullptr);
 			auto name = fun ? (std::string*) jit_function_get_meta(fun, 12) : nullptr;
-			// std::cout << "name = " << (name == nullptr ? "?" : *name) << std::endl;
 			auto file = fun ? (std::string*) jit_function_get_meta(fun, 13) : nullptr;
-			ex->files.push_back(file == nullptr ? "?" : *file);
-			ex->functions.push_back(name == nullptr ? "?" : *name);
+			frame_object.file = file == nullptr ? "?" : *file;
+			frame_object.function = name == nullptr ? "?" : *name;
+			ex->frames.emplace_back(frame_object);
 			frame = jit_get_next_frame_address(frame);
-			// std::cout << "next frame = " << frame << std::endl;
 			pc = jit_get_return_address(frame);
-			// std::cout << "next pc = " << pc << std::endl;
-			if (i++ > 10) break;
 		}
 		return ex;
 	}
