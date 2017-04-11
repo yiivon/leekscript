@@ -152,26 +152,7 @@ void print_errors(ls::VM::Result& result, std::ostream& os) {
 		os << "Line " << e.line << ": " << e.message() << std::endl;
 	}
 	if (result.exception != nullptr) {
-		auto pad = [](std::string s, int l) {
-			l -= s.size();
-			while (l-- > 0) s = " " + s;
-			return s;
-		};
-		os << "Unhandled exception " << BOLD << ls::VM::exception_message(result.exception->type) << END_COLOR << std::endl;
-		size_t padding = 0;
-		for (auto& f : result.exception->functions) {
-			padding = fmax(padding, f.size() + 2);
-		}
-		for (size_t l = 0; l < result.exception->lines.size(); ++l) {
-			auto line = result.exception->lines[l];
-			auto function = result.exception->functions[l];
-			auto file = result.exception->files[l];
-			auto pc = result.exception->pcs[l];
-			auto frame = result.exception->frames[l];
-			std::cout << BOLD << "    > " << END_COLOR << pad(function + "()", padding) << " @ " << BOLD << file << ":" << line << END_COLOR;
-			std::cout << " (frame: " << frame << ", pc: " << pc << ")";
-			std::cout << std::endl;
-		}
+		os << result.exception->to_string();
 		delete result.exception;
 	}
 }

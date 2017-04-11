@@ -33,6 +33,12 @@
 #define LS_CREATE_LONG(F, X) jit_value_create_long_constant((F), LS_LONG, (X))
 #define LS_CREATE_REAL(F, X) jit_value_create_float64_constant((F), LS_REAL, (X))
 
+#define GREY "\033[0;90m"
+#define GREEN "\033[0;32m"
+#define RED "\033[1;31m"
+#define BOLD "\033[1;1m"
+#define END_COLOR "\033[0m"
+
 struct jit_stack_trace {
 	unsigned int size;
 	void* items[1];
@@ -82,6 +88,25 @@ public:
 		Exception type;
 		std::vector<exception_frame> frames;
 		ExceptionObj(Exception type) : type(type) {}
+		std::string to_string() const {
+			auto pad = [](std::string s, int l) {
+				l -= s.size();
+				while (l-- > 0) s = " " + s;
+				return s;
+			};
+			size_t padding = 0;
+			for (auto& f : frames) {
+				padding = fmax(padding, f.function.size() + 2);
+			}
+			std::ostringstream oss;
+			oss << "Exception " << BOLD << VM::exception_message(type) << END_COLOR << std::endl;
+			for (const auto& f : frames) {
+				oss << BOLD << "    > " << END_COLOR << pad(f.function + "()", padding) << " @ " << BOLD << f.file << ":" << f.line << END_COLOR;
+				oss << " (frame: " << f.frame << ", pc: " << f.pc << ")";
+				oss << std::endl;
+			}
+			return oss.str();
+		}
 	};
 
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;
