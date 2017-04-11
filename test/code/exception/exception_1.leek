@@ -1,0 +1,27 @@
+function crash() {
+	//null / 5
+	//throw 2
+	2 % 0
+	//1000m ** 1000
+	//let a = [[], 0][0] a[0] = 2
+	//let a = [[], 0][0] a[a] = 2
+}
+
+function power(x) {
+	let a = 2
+	crash()
+}
+
+function will_crash(a) {
+	let b = 3
+	power(12)
+}
+
+function do_something() {
+	let c = 4
+	will_crash(3)
+}
+
+do_something()
+
+2 + 2

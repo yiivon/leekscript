@@ -29,4 +29,9 @@ void Test::test_exceptions() {
 	code("let f = -> { var s = 'leak?' { [][0] } !? 7 } f()").equals("7");
 	// TODO a leak in the inner block
 	// code("let f = -> { var s = 'leak1' { var s = 'leak2' [][0] } !? 8 } f()").equals("8");
+
+	section("Stacktraces");
+	file("test/code/exception/exception_1.leek").exception(ls::VM::Exception::DIVISION_BY_ZERO, {
+		{"crash", 4}, {"power", 12}, {"will_crash", 17}, {"do_something", 22}, {"main", 25}
+	});
 }
