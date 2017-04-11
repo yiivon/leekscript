@@ -7,6 +7,7 @@
 #include <fstream>
 #include <istream>
 #include <iterator>
+#include <algorithm>
 #include <queue>
 
 using namespace std;
@@ -50,4 +51,12 @@ string Util::replace_all(string& haystack, const string& needle, const string& r
          pos += replacement.length();
     }
     return haystack;
+}
+
+std::string Util::file_short_name(std::string path) {
+	return {
+		std::find_if(path.rbegin(), path.rend(), [](char c) {
+			return c == '/';
+		}).base(), path.end()
+	};
 }

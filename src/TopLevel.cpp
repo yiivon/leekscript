@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 			ifstream ifs(file_or_code.data());
 			code = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
 			ifs.close();
-			file_name = file_or_code;
+			file_name = Util::file_short_name(file_or_code);
 		} else {
 			code = file_or_code;
 			file_name = "(snippet)";

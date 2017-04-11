@@ -12,6 +12,7 @@ public:
 	static std::vector<std::string> read_file_lines(std::string file);
 	static bool is_file_name(std::string data);
 	static std::string replace_all(std::string& haystack, const std::string& needle, const std::string& replacement);
+	static std::string file_short_name(std::string path);
 };
 
 #endif
