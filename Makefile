@@ -174,6 +174,7 @@ callgrind: build/leekscript-test
 clean:
 	rm -rf build
 	find . -type f -name '*.d' -delete
+	rm -rf doxygen
 	@echo "----------------"
 	@echo "Project cleaned."
 	@echo "----------------"
