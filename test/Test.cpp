@@ -321,17 +321,20 @@ void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 	}
 }
 
-void Test::Input::exception(ls::VM::Exception expected) {
+void Test::Input::exception(ls::VM::Exception expected, std::vector<ls::VM::exception_frame> frames) {
 
 	auto result = run(false);
 
-	std::string expected_message = ls::VM::exception_message(expected);
-	std::string actual_message = ls::VM::exception_message(result.exception != nullptr ? result.exception->type : ls::VM::Exception::NO_EXCEPTION);
+	auto actual_type = result.exception != nullptr ? result.exception->type : ls::VM::Exception::NO_EXCEPTION;
 
-	if (result.exception != nullptr && result.exception->type != expected) {
-		fail(expected_message, actual_message);
+	if (actual_type == expected /* && result.exception->frames == frames */) {
+		pass(result.exception != nullptr ? result.exception->to_string() : "(no exception)");
 	} else {
-		pass("throw exception « " + expected_message + " »");
+		ls::VM::ExceptionObj expected_exception(expected);
+		expected_exception.frames = frames;
+		auto expected_message = expected_exception.to_string();
+		auto actual_message = result.exception == nullptr ? "(no exception)" : result.exception->to_string();
+		fail(expected_message, actual_message);
 	}
 }
 
