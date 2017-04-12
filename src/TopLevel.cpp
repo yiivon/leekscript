@@ -21,12 +21,6 @@ using namespace std;
 void print_errors(ls::VM::Result& result, std::ostream& os, bool json);
 void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops);
 
-#define GREY "\033[0;90m"
-#define GREEN "\033[0;32m"
-#define RED "\033[1;31m"
-#define BOLD "\033[1;1m"
-#define END_COLOR "\033[0m"
-
 int main(int argc, char* argv[]) {
 
 	/** Seed random one for all */
