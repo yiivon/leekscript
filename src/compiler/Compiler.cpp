@@ -767,9 +767,9 @@ void Compiler::inc_ops_jit(Compiler::value amount) {
 	jit_insn_branch_if_not(F, compare, &label_end);
 
 	// If greater than the limit, throw exception
-	jit_insn_throw(F, insn_call(Type::POINTER, {}, +[]() {
-		return new VM::ExceptionObj(VM::Exception::OPERATION_LIMIT_EXCEEDED);
-	}).v);
+	auto type = new_integer(VM::Exception::OPERATION_LIMIT_EXCEEDED);
+	auto ex = insn_call(Type::POINTER, {type}, &VM::get_exception_object<0>);
+	jit_insn_throw(F, ex.v);
 
 	// End
 	jit_insn_label(F, &label_end);
