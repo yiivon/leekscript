@@ -14,8 +14,12 @@ void Test::test_exceptions() {
 	section("Exceptions - Avoid leaks");
 	code("var x = 'hello' [][0]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("var x = 'hello' throw").exception(ls::VM::Exception::EXCEPTION);
-	code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("let f = -> { var x = 'hello' throw } f()").exception(ls::VM::Exception::EXCEPTION);
+	code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS, {
+		{"f", 1}, {"main", 1}
+	});
+	code("let f = -> { var x = 'hello' throw } f()").exception(ls::VM::Exception::EXCEPTION, {
+		{"f", 1}, {"main", 1}
+	});
 
 	section("Catch-else operator");
 	code("2 !? 5").equals("2");
