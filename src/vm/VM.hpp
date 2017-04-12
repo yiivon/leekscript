@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "../constants.h"
 #include "../compiler/lexical/LexicalError.hpp"
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
@@ -102,7 +103,9 @@ public:
 			oss << "Exception " << (colors ? BOLD : "") << VM::exception_message(type) << (colors ? END_COLOR : "") << std::endl;
 			for (const auto& f : frames) {
 				oss << (colors ? BOLD : "") << "    > " << (colors ? END_COLOR : "") << pad(f.function + "()", padding) << " @ " << (colors ? BOLD : "") << f.file << ":" << f.line << (colors ? END_COLOR : "");
-				oss << " (frame: " << f.frame << ", pc: " << f.pc << ")";
+				#if STACKTRACE_DETAILS
+					oss << " (frame: " << f.frame << ", pc: " << f.pc << ")";
+				#endif
 				oss << std::endl;
 			}
 			return oss.str();
