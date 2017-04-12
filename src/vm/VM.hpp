@@ -79,7 +79,7 @@ public:
 		void* frame;
 		void* pc;
 		exception_frame() {}
-		exception_frame(std::string function, size_t line) : line(line), function(function) {}
+		exception_frame(std::string function, size_t line) : line(line), file("test"), function(function) {}
 		bool operator == (const exception_frame& o) const {
 			return line == o.line && function == o.function;
 		}
