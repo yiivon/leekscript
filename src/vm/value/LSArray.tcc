@@ -196,7 +196,7 @@ inline LSValue* LSArray<LSValue*>::ls_first() {
 		if (refs == 0) {
 			delete this;
 		}
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	auto first = front();
 	if (refs == 0) {
@@ -211,7 +211,7 @@ template <class T>
 inline T LSArray<T>::ls_first() {
 	if (this->size() == 0) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	T first = this->front();
 	LSValue::delete_temporary(this);
@@ -222,7 +222,7 @@ template <>
 inline LSValue* LSArray<LSValue*>::ls_last() {
 	if (this->size() == 0) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	auto last = back();
 	if (refs == 0) {
@@ -237,7 +237,7 @@ template <class T>
 inline T LSArray<T>::ls_last() {
 	if (this->size() == 0) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	T last = this->back();
 	LSValue::delete_temporary(this);
@@ -257,7 +257,7 @@ inline LSValue* LSArray<LSValue*>::ls_pop() {
 		if (refs == 0) {
 			delete this;
 		}
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	LSValue* last = this->back();
 	last->refs--;
@@ -274,7 +274,7 @@ inline T LSArray<T>::ls_pop() {
 		if (refs == 0) {
 			delete this;
 		}
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	T last = this->back();
 	this->pop_back();
@@ -751,7 +751,8 @@ template <>
 inline LSValue* LSArray<LSValue*>::ls_max() {
 	if (this->empty()) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	LSValue* max = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
@@ -769,7 +770,8 @@ template <class T>
 T LSArray<T>::ls_max() {
 	if (this->empty()) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	T max = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
@@ -785,7 +787,7 @@ template <>
 inline LSValue* LSArray<LSValue*>::ls_min() {
 	if (this->empty()) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	LSValue* min = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
@@ -803,7 +805,7 @@ template <class T>
 T LSArray<T>::ls_min() {
 	if (this->empty()) {
 		if (refs == 0) delete this;
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(VM::get_exception_object<1>(VM::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	T min = (*this)[0];
 	for (size_t i = 1; i < this->size(); ++i) {
