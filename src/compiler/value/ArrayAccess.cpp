@@ -90,7 +90,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, 0, {k, a, kt}});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, key->line(), {k, a, kt}});
 		}
 		key->analyse(analyser, Type::INTEGER);
 
