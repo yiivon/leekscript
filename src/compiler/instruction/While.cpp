@@ -26,6 +26,10 @@ void While::print(ostream& os, int indent, bool debug) const {
 	body->print(os, indent, debug);
 }
 
+unsigned int While::line() const {
+	return token->line;
+}
+
 void While::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	condition->analyse(analyser, Type::UNKNOWN);
@@ -39,6 +43,8 @@ Compiler::value While::compile(Compiler& c) const {
 	jit_label_t label_cond = jit_label_undefined;
 	jit_label_t label_end = jit_label_undefined;
 
+	jit_insn_mark_offset(c.F, line());
+	
 	// condition
 	jit_insn_label(c.F, &label_cond);
 	c.inc_ops(1);

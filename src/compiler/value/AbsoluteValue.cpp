@@ -23,6 +23,10 @@ void AbsoluteValue::print(std::ostream& os, int, bool debug) const {
 	}
 }
 
+unsigned AbsoluteValue::line() const {
+	return open_pipe->line;
+}
+
 void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	expression->analyse(analyser, Type::POINTER);
 	constant = expression->constant;
@@ -33,6 +37,7 @@ void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 Compiler::value AbsoluteValue::compile(Compiler& c) const {
 	auto ex = expression->compile(c);
+	jit_insn_mark_offset(c.F, line());
 	auto abso = c.insn_call(Type::INTEGER, {ex}, (void*) +[](LSValue* v) {
 		return v->abso();
 	});
