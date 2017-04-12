@@ -32,6 +32,18 @@ void Test::test_exceptions() {
 
 	section("Stacktraces");
 	file("test/code/exception/exception_1.leek").exception(ls::VM::Exception::DIVISION_BY_ZERO, {
-		{"crash", 4}, {"power", 12}, {"will_crash", 17}, {"do_something", 22}, {"main", 25}
+		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+	});
+	file("test/code/exception/exception_2.leek").exception(ls::VM::Exception::NO_SUCH_OPERATOR, {
+		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+	});
+	file("test/code/exception/exception_3.leek").exception(ls::VM::Exception::EXCEPTION, {
+		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+	});
+	file("test/code/exception/exception_4.leek").exception(ls::VM::Exception::NUMBER_OVERFLOW, {
+		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+	});
+	file("test/code/exception/exception_5.leek").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS, {
+		{"crash", 3}, {"power", 8}, {"will_crash", 13}, {"do_something", 18}, {"main", 21}
 	});
 }

@@ -1,5 +1,5 @@
 function crash() {
-	2 % 0
+	1000m ** 1000
 }
 
 function power(x) {

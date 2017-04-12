@@ -1,5 +1,6 @@
 function crash() {
-	2 % 0
+	let a = [[], 0][0]
+	a[0] = 2
 }
 
 function power(x) {
