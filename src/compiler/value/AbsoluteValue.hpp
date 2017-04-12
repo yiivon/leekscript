@@ -1,7 +1,9 @@
 #ifndef ABSOLUTEVALUE_HPP
 #define ABSOLUTEVALUE_HPP
 
+#include <memory>
 #include "Value.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 
@@ -9,6 +11,7 @@ class AbsoluteValue : public Value {
 public:
 
 	Value* expression;
+	std::unique_ptr<Token> open_pipe;
 
 	AbsoluteValue();
 	virtual ~AbsoluteValue();

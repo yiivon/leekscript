@@ -396,8 +396,9 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 
 		} else if (t->type == TokenType::PIPE) {
 
-			eat();
+			auto open_pipe = eat_get();
 			auto av = new AbsoluteValue();
+			av->open_pipe.reset(open_pipe);
 			av->expression = eatExpression(true);
 			eat(TokenType::PIPE);
 			e = new Expression(av);
