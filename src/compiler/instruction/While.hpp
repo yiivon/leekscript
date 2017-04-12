@@ -17,6 +17,7 @@ public:
 
 	Value* condition;
 	Block* body;
+	std::unique_ptr<Token> token;
 
 	While();
 	virtual ~While();

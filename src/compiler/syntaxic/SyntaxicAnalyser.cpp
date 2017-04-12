@@ -1209,9 +1209,10 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 Instruction* SyntaxicAnalyser::eatWhile() {
 
-	eat(TokenType::WHILE);
+	auto while_token = eat_get(TokenType::WHILE);
 
-	While* w = new While();
+	auto w = new While();
+	w->token.reset(while_token);
 
 	bool parenthesis = false;
 	bool braces = false;
