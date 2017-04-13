@@ -15,6 +15,7 @@ public:
 	Value* key;
 	Value* key2;
 	std::unique_ptr<Token> open_bracket;
+	std::unique_ptr<Token> close_bracket;
 	Type array_element_type;
 	Type map_key_type;
 

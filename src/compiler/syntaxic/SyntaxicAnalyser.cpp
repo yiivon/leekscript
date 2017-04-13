@@ -481,7 +481,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 					aa->key2 = eatExpression();
 				}
 
-				eat(TokenType::CLOSING_BRACKET);
+				aa->close_bracket.reset(eat_get(TokenType::CLOSING_BRACKET));
 				e = aa;
 				break;
 			}
