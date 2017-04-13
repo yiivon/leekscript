@@ -40,6 +40,7 @@ public:
 	Location location;
 	Location focus;
 	std::vector<std::string> parameters;
+	std::string file;
 
 	SemanticError(Type type, Location location, Location focus);
 	SemanticError(Type type, Location location, Location focus, std::vector<std::string> parameters);

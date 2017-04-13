@@ -155,6 +155,7 @@ map<string, std::shared_ptr<SemanticVar>>& SemanticAnalyser::get_local_vars() {
 }
 
 void SemanticAnalyser::add_error(SemanticError ex) {
+	ex.file = program->file_name;
 	errors.push_back(ex);
 }
 

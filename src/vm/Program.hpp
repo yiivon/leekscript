@@ -9,13 +9,13 @@ class Program {
 private:
 
 	std::string code; // The program code
-	std::string file_name;
 	void* closure;
 
 public:
 
 	Function* main;
 	std::vector<Function*> functions;
+	std::string file_name;
 
 	Program(const std::string& code, const std::string& file_name);
 	virtual ~Program();
