@@ -501,7 +501,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 						fc->arguments.push_back(eatExpression(false, false, nullptr, true));
 					}
 				}
-				eat(TokenType::CLOSING_PARENTHESIS);
+				fc->closing_parenthesis.reset(eat_get(TokenType::CLOSING_PARENTHESIS));
 
 				e = fc;
 				break;

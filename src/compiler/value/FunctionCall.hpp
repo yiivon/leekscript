@@ -14,6 +14,7 @@ public:
 	std::unique_ptr<Token> token;
 	Value* function;
 	std::vector<Value*> arguments;
+	std::unique_ptr<Token> closing_parenthesis;
 
 	bool is_native = false;
 	std::string native_func;
