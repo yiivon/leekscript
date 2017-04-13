@@ -519,22 +519,6 @@ Type Type::generate_new_placeholder_type() {
 	return type;
 }
 
-#if PRINT_TYPES_COLORS
-	#define GREY "\033[0;90m"
-	#define GREEN "\033[0;32m"
-	#define RED "\033[1;31m"
-	#define BLUE "\033[1;34m"
-	#define YELLOW "\033[1;33m"
-	#define END_COLOR "\033[0m"
-#else
-	#define GREY ""
-	#define GREEN ""
-	#define RED ""
-	#define BLUE ""
-	#define YELLOW ""
-	#define END_COLOR ""
-#endif
-
 ostream& operator << (ostream& os, const Type& type) {
 
 	if (type == Type::VOID) {
@@ -553,31 +537,31 @@ ostream& operator << (ostream& os, const Type& type) {
 		}
 	} else if (type.raw_type == RawType::FUNCTION) {
 		if (type.nature == Nature::POINTER) {
-			os << BLUE;
+			os << BLUE_BOLD;
 		}
 		os << "fun(";
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
 			os << type.arguments_types[t];
 			if (type.nature == Nature::POINTER) {
-				os << BLUE;
+				os << BLUE_BOLD;
 			}
 		}
 		if (type.nature == Nature::POINTER) {
-			os << BLUE;
+			os << BLUE_BOLD;
 		}
 		os << ") → " << type.getReturnType();
 	} else if (type.raw_type == RawType::STRING || type.raw_type == RawType::CLASS
 		|| type.raw_type == RawType::OBJECT || type.raw_type == RawType::NULLL
 		|| type.raw_type == RawType::INTERVAL) {
-		os << BLUE << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
+		os << BLUE_BOLD << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
 	} else if (type.raw_type == RawType::ARRAY || type.raw_type == RawType::SET) {
-		os << BLUE << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
-		os << "<" << type.getElementType() << BLUE << ">";
+		os << BLUE_BOLD << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
+		os << "<" << type.getElementType() << BLUE_BOLD << ">";
 	} else if (type.raw_type == RawType::MAP) {
-		os << BLUE << type.raw_type->getName();
-		os << "<" << type.getKeyType() << BLUE
-			<< ", " << type.getElementType() << BLUE << ">";
+		os << BLUE_BOLD << type.raw_type->getName();
+		os << "<" << type.getKeyType() << BLUE_BOLD
+			<< ", " << type.getElementType() << BLUE_BOLD << ">";
 	} else {
 		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 	}
