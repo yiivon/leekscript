@@ -28,6 +28,10 @@ void PostfixExpression::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location PostfixExpression::location() const {
+	return expression->location(); // TODO add the op
+}
+
 void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	expression->analyse(analyser, Type::UNKNOWN);

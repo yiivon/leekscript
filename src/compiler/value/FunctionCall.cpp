@@ -59,8 +59,8 @@ void FunctionCall::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned FunctionCall::line() const {
-	return token->line;
+Location FunctionCall::location() const {
+	return {function->location().start, closing_parenthesis->location.end};
 }
 
 void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -432,7 +432,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 	}
 
-	jit_insn_mark_offset(c.F, line());
+	jit_insn_mark_offset(c.F, location().start.line);
 
 	jit_type_t jit_return_type = VM::get_jit_type(type);
 

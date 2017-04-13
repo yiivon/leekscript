@@ -34,8 +34,8 @@ void PrefixExpression::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned PrefixExpression::line() const {
-	return operatorr->token->line;
+Location PrefixExpression::location() const {
+	return {operatorr->token->location.start, expression->location().end};
 }
 
 void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -124,7 +124,7 @@ LSValue* jit_pre_tilde(LSValue* v) {
 
 Compiler::value PrefixExpression::compile(Compiler& c) const {
 
-	jit_insn_mark_offset(c.F, line());
+	jit_insn_mark_offset(c.F, location().start.line);
 
 	jit_type_t args_types[1] = {LS_POINTER};
 	vector<jit_value_t> args;

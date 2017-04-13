@@ -23,8 +23,8 @@ void AbsoluteValue::print(std::ostream& os, int, bool debug) const {
 	}
 }
 
-unsigned AbsoluteValue::line() const {
-	return open_pipe->line;
+Location AbsoluteValue::location() const {
+	return {open_pipe->location.start, close_pipe->location.end};
 }
 
 void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -37,7 +37,7 @@ void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 Compiler::value AbsoluteValue::compile(Compiler& c) const {
 	auto ex = expression->compile(c);
-	jit_insn_mark_offset(c.F, line());
+	jit_insn_mark_offset(c.F, location().start.line);
 	auto abso = c.insn_call(Type::INTEGER, {ex}, (void*) +[](LSValue* v) {
 		return v->abso();
 	});

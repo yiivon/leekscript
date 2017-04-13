@@ -33,6 +33,10 @@ void Block::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location Block::location() const {
+	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+}
+
 void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	analyser->enter_block();

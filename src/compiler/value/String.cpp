@@ -25,8 +25,8 @@ void String::print(ostream& os, int, bool debug) const {
 	}
 }
 
-unsigned String::line() const {
-	return token->line;
+Location String::location() const {
+	return token->location;
 }
 
 void String::analyse(SemanticAnalyser*, const Type&) {

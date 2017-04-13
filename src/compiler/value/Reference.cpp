@@ -29,6 +29,10 @@ void Reference::print(ostream& os, int, bool debug) const {
 	}
 }
 
+Location Reference::location() const {
+	return value->location(); // TODO take the '@'
+}
+
 void Reference::will_be_in_array(SemanticAnalyser*) {
 	in_array = true;
 }

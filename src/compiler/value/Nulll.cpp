@@ -18,6 +18,10 @@ void Nulll::print(ostream& os, int, bool debug) const {
 	}
 }
 
+Location Nulll::location() const {
+	return token->location;
+}
+
 void Nulll::analyse(SemanticAnalyser*, const Type&) {
 	// nothing to do, always a pointer
 }

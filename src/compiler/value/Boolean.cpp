@@ -21,6 +21,10 @@ void Boolean::print(std::ostream& os, int, bool debug) const {
 	}
 }
 
+Location Boolean::location() const {
+	return token->location;
+}
+
 void Boolean::analyse(SemanticAnalyser*, const Type& req_type) {
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = Nature::POINTER;

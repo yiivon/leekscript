@@ -49,6 +49,10 @@ void If::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location If::location() const {
+	return condition->location(); // TODO better
+}
+
 void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	types.clear();

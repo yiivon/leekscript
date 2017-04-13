@@ -5,6 +5,7 @@
 #include <vector>
 #include "../Compiler.hpp"
 #include "../../vm/TypeList.hpp"
+#include "../lexical/Location.hpp"
 
 namespace ls {
 
@@ -27,7 +28,7 @@ public:
 	virtual void print(std::ostream&, int indent = 0, bool debug = false) const = 0;
 	std::string to_string() const;
 
-	virtual unsigned line() const { return 0; };
+	virtual Location location() const = 0;
 
 	virtual bool will_take(SemanticAnalyser*, const std::vector<Type>& args_type, int level);
 	virtual bool will_store(SemanticAnalyser*, const Type&);

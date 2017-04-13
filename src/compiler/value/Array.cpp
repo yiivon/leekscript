@@ -41,6 +41,10 @@ void Array::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location Array::location() const {
+	return {opening_bracket->location.start, closing_bracket->location.end};
+}
+
 void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	constant = true;

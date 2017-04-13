@@ -98,8 +98,8 @@ void Expression::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
-unsigned Expression::line() const {
-	return op->token->line;
+Location Expression::location() const {
+	return op->token->location;
 }
 
 void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
@@ -482,7 +482,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return v1->compile(c);
 	}
 
-	jit_insn_mark_offset(c.F, line());
+	jit_insn_mark_offset(c.F, location().start.line);
 
 	// Increment operations
 	if (operations > 0) {
@@ -986,7 +986,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	if (use_jit_func) {
 
-		jit_insn_mark_offset(c.F, line());
+		jit_insn_mark_offset(c.F, location().start.line);
 
 		auto x = v1->compile(c);
 		auto y = v2->compile(c);

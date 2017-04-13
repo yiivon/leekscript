@@ -18,6 +18,10 @@ void ArrayFor::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location ArrayFor::location() const {
+	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+}
+
 void ArrayFor::analyse(SemanticAnalyser* analyser, const Type&) {
 	forr->analyse(analyser, Type::PTR_ARRAY);
 	type = forr->type;

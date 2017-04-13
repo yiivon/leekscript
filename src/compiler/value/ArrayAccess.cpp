@@ -41,6 +41,10 @@ void ArrayAccess::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location ArrayAccess::location() const {
+	return {array->location().start, close_bracket->location.end};
+}
+
 void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	array->analyse(analyser, Type::UNKNOWN);

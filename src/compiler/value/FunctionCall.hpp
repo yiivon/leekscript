@@ -29,7 +29,7 @@ public:
 	virtual ~FunctionCall();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
-	virtual unsigned line() const override;
+	virtual Location location() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 	bool will_take(SemanticAnalyser*, const std::vector<Type>& args, int level);

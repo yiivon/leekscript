@@ -24,8 +24,8 @@ void VariableValue::print(ostream& os, int, bool debug) const {
 	}
 }
 
-unsigned VariableValue::line() const {
-	return token->line;
+Location VariableValue::location() const {
+	return token->location;
 }
 
 void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {

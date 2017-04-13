@@ -34,6 +34,10 @@ void Object::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location Object::location() const {
+	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+}
+
 void Object::analyse(SemanticAnalyser* analyser, const Type&) {
 	for (auto& value : values) {
 		value->analyse(analyser, Type::POINTER);

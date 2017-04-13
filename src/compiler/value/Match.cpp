@@ -47,6 +47,10 @@ void Match::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location Match::location() const {
+	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+}
+
 void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 
 	bool any_pointer = false;

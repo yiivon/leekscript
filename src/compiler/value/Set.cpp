@@ -22,6 +22,10 @@ void Set::print(ostream& os, int indent, bool debug) const {
 	if (debug) os << " " << type;
 }
 
+Location Set::location() const {
+	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+}
+
 void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	Type element_type = Type::UNKNOWN;

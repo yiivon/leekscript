@@ -27,8 +27,8 @@ void Number::print(ostream& os, int, bool debug) const {
 	}
 }
 
-unsigned Number::line() const {
-	return token->line;
+Location Number::location() const {
+	return token->location;
 }
 
 void Number::analyse(SemanticAnalyser*, const Type& req_type) {

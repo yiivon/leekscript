@@ -38,6 +38,10 @@ void Map::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location Map::location() const {
+	return {opening_bracket->location.start, closing_bracket->location.end};
+}
+
 void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	Type key_type = Type::UNKNOWN;

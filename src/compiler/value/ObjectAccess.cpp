@@ -35,6 +35,10 @@ void ObjectAccess::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location ObjectAccess::location() const {
+	return {object->location().start, field->location.end};
+}
+
 void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	object->analyse(analyser, Type::UNKNOWN);

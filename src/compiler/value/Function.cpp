@@ -81,6 +81,10 @@ void Function::print(std::ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location Function::location() const {
+	return body->location();
+}
+
 /*
  * When returing a function, compile a default version with all parameters
  * as pointers, when the function will be in the nature, there will be no
