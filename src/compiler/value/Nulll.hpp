@@ -1,15 +1,18 @@
 #ifndef NULLL_HPP
 #define NULLL_HPP
 
-#include "../../compiler/value/Value.hpp"
+#include <memory>
+#include "Value.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 
 class Nulll : public Value {
 public:
 
-	Nulll();
-	virtual ~Nulll();
+	std::unique_ptr<Token> token;
+
+	Nulll(Token* token);
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 

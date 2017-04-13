@@ -1,17 +1,15 @@
-#include "../../compiler/value/Nulll.hpp"
-
+#include "Nulll.hpp"
 #include "../../vm/value/LSNull.hpp"
 
 using namespace std;
 
 namespace ls {
 
-Nulll::Nulll() {
+Nulll::Nulll(Token* token) {
 	type = Type::NULLL;
 	constant = true;
+	this->token.reset(token);
 }
-
-Nulll::~Nulll() {}
 
 void Nulll::print(ostream& os, int, bool debug) const {
 	os << "null";

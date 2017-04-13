@@ -663,8 +663,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		}
 
 		case TokenType::NULLL:
-			eat();
-			return new Nulll();
+			return new Nulll(eat_get());
 
 		case TokenType::AROBASE:
 		case TokenType::IDENT:
@@ -728,7 +727,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 	}
 	if (arobase and t->type != TokenType::IDENT) {
 		eat(TokenType::IDENT); // will fail, we need an ident after an arobase
-		return new Nulll();
+		return new Nulll(nullptr);
 	}
 	if (parenthesis and t->type != TokenType::IDENT) {
 		if (t->type == TokenType::CLOSING_PARENTHESIS) {
