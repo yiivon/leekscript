@@ -50,7 +50,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	array->analyse(analyser, Type::UNKNOWN);
 
 	if (array->type.raw_type != RawType::UNKNOWN and !array->type.is_container()) {
-		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, 0, {array->to_string()}});
+		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
 		return;
 	}
 
@@ -79,11 +79,11 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (key->type != Type::UNKNOWN and not key->type.isNumber()) {
 			std::string k = "<key 1>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, {k}});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
 		}
 		if (key2->type != Type::UNKNOWN and not key2->type.isNumber()) {
 			std::string k = "<key 2>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, 0, {k}});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
 		}
 		type = array->type;
 
@@ -94,7 +94,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, key->line(), {k, a, kt}});
+			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
 		}
 		key->analyse(analyser, Type::INTEGER);
 
@@ -119,7 +119,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				std::string a = array->to_string();
 				std::string k = key->to_string();
 				std::string kt = key->type.to_string();
-				analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, 0, {k, a, kt}});
+				analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
 			}
 		}
 
@@ -179,7 +179,7 @@ int interval_access(const LSInterval* interval, int pos) {
 
 Compiler::value ArrayAccess::compile(Compiler& c) const {
 
-	jit_insn_mark_offset(c.F, open_bracket->line);
+	jit_insn_mark_offset(c.F, open_bracket->location.start.line);
 
 	auto a = array->compile(c);
 
@@ -337,7 +337,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		// Compile the key
 		auto k = key->compile(c);
 		// Access
-		jit_insn_mark_offset(c.F, open_bracket->line);
+		jit_insn_mark_offset(c.F, location().start.line);
 		if (array->type.raw_type == RawType::ARRAY) {
 			auto array_size = c.insn_array_size(a);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
@@ -398,7 +398,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 	} else {
 		auto start = key->compile(c);
 		auto end = key2->compile(c);
-		jit_insn_mark_offset(c.F, open_bracket->line);
+		jit_insn_mark_offset(c.F, open_bracket->location.start.line);
 		return c.insn_call(Type::POINTER, {a, start, end}, (void*) +[](LSValue* a, int start, int end) {
 			// TODO
 			a->rangeL(start, end);
