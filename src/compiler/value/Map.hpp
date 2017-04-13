@@ -2,13 +2,16 @@
 #define MAP_HPP
 
 #include <vector>
-
+#include <memory>
 #include "Value.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 
 class Map : public Value {
 public:
+	std::unique_ptr<Token> opening_bracket;
+	std::unique_ptr<Token> closing_bracket;
 	std::vector<Value*> keys;
 	std::vector<Value*> values;
 

@@ -2,14 +2,17 @@
 #define ARRAY_HPP
 
 #include <vector>
-
+#include <memory>
 #include "Value.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 
 class Array : public Value {
 public:
 
+	std::unique_ptr<Token> opening_bracket;
+	std::unique_ptr<Token> closing_bracket;
 	std::vector<Value*> expressions;
 	bool interval = false;
 

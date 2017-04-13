@@ -871,19 +871,23 @@ Value* SyntaxicAnalyser::eatLambdaContinue(bool parenthesis, bool arobase, Ident
 
 Value* SyntaxicAnalyser::eatArrayOrMap() {
 
-	eat(TokenType::OPEN_BRACKET);
+	auto opening_bracket = eat_get(TokenType::OPEN_BRACKET);
 
 	// Empty array
 	if (t->type == TokenType::CLOSING_BRACKET) {
-		eat();
-		return new Array();
+		auto array = new Array();
+		array->opening_bracket.reset(opening_bracket);
+		array->closing_bracket.reset(eat_get());
+		return array;
 	}
 
 	// Empty map
 	if (t->type == TokenType::COLON) {
 		eat();
-		eat(TokenType::CLOSING_BRACKET);
-		return new Map();
+		auto map = new Map();
+		map->opening_bracket.reset(opening_bracket);
+		map->closing_bracket.reset(eat_get());
+		return map;
 	}
 
 	// Array For
@@ -900,12 +904,13 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 	if (t->type == TokenType::TWO_DOTS) {
 
 		Array* interval = new Array();
+		interval->opening_bracket.reset(opening_bracket);
 		interval->interval = true;
 		interval->expressions.push_back(value);
 		eat();
 		interval->expressions.push_back(eatExpression());
 
-		eat(TokenType::CLOSING_BRACKET);
+		interval->closing_bracket.reset(eat_get(TokenType::CLOSING_BRACKET));
 		return interval;
 	}
 
@@ -913,6 +918,7 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 	if (t->type == TokenType::COLON) {
 
 		auto map = new Map();
+		map->opening_bracket.reset(opening_bracket);
 		map->keys.push_back(value);
 		eat();
 		map->values.push_back(eatExpression());
@@ -924,12 +930,13 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 			eat(TokenType::COLON);
 			map->values.push_back(eatExpression());
 		}
-		eat(TokenType::CLOSING_BRACKET);
+		map->closing_bracket.reset(eat_get(TokenType::CLOSING_BRACKET));
 		return map;
 	}
 
 	// eatArray
-	Array* array = new Array();
+	auto array = new Array();
+	array->opening_bracket.reset(opening_bracket);
 	array->expressions.push_back(value);
 	if (t->type == TokenType::COMMA) {
 		eat();
@@ -939,7 +946,7 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 		if (t->type == TokenType::COMMA)
 			eat();
 	}
-	eat(TokenType::CLOSING_BRACKET);
+	array->closing_bracket.reset(eat_get(TokenType::CLOSING_BRACKET));
 	return array;
 }
 
