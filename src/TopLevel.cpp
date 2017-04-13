@@ -140,7 +140,7 @@ void print_errors(ls::VM::Result& result, std::ostream& os, bool json) {
 		os << "Line " << e.line << ": " << e.message() << std::endl;
 	}
 	for (const auto& e : result.syntaxical_errors) {
-		os << "Line " << e.token->line << ": " << e.message() << std::endl;
+		os << "Line " << e.token->location.start.line << ": " << e.message() << std::endl;
 	}
 	for (const auto& e : result.semantical_errors) {
 		os << "Line " << e.line << ": " << e.message() << std::endl;

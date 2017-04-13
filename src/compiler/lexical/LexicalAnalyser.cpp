@@ -114,7 +114,7 @@ vector<Token*> LexicalAnalyser::analyse(std::string code) {
 
 	vector<Token*> tokens = LexicalAnalyser::parseTokens(code + " ");
 
-	tokens.push_back(new Token(TokenType::FINISHED, 0, 1, ""));
+	tokens.push_back(new Token(TokenType::FINISHED, 0, 0, 1, ""));
 
 	for (size_t i = 0; i < tokens.size(); ++i) {
 		if (i + 1 < tokens.size() && tokens[i]->content == "is" && tokens[i + 1]->content == "not") {
@@ -178,13 +178,13 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 			} else if (comment == 0) {
 				if (type == LetterType::WHITE) {
 					if (ident) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), i, line, character, word));
 						ident = false;
 					} else if (number) {
 						if ((bin || hex) && word.size() == 2) {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 						}
-						tokens.push_back(new Token(TokenType::NUMBER, line, character, word));
+						tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
 						number = bin = hex = false;
 					} else if (string1 || string2) {
 						if (escape) {
@@ -194,7 +194,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), i, line, character, word));
 						other = false;
 					}
 				} else if (type == LetterType::LETTER) {
@@ -229,27 +229,27 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 							word += buff;
 						} else if (c == 'l' or c == 'L') {
 							word += "l";
-							tokens.push_back(new Token(TokenType::NUMBER, line, character, word));
+							tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
 							number = bin = hex = false;
 							word = "";
 						} else if (c == 'm' or c == 'M') {
 							word += "m";
-							tokens.push_back(new Token(TokenType::NUMBER, line, character, word));
+							tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
 							number = bin = hex = false;
 							word = "";
 						} else if (c == 0x00002605) { // '★'
-							tokens.push_back(new Token(TokenType::NUMBER, line, character, word));
+							tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
 							number = bin = hex = false;
 							word = "";
 							u8_toutf8(buff, 5, &c, 1);
-							tokens.push_back(new Token(TokenType::STAR, line, character, std::string(buff)));
+							tokens.push_back(new Token(TokenType::STAR, i, line, character, std::string(buff)));
 						} else {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
-							tokens.push_back(new Token(TokenType::NUMBER, line, character, word));
+							tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
 							number = bin = hex = false;
 						}
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), i, line, character, word));
 						other = false;
 						ident = true;
 						u8_toutf8(buff, 5, &c, 1);
@@ -275,7 +275,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), i, line, character, word));
 						other = false;
 						number = true;
 						u8_toutf8(buff, 5, &c, 1);
@@ -287,7 +287,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 					}
 				} else if (type == LetterType::QUOTE) {
 					if (ident) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), i, line, character, word));
 						ident = false;
 						string1 = true;
 						word = "";
@@ -295,7 +295,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 						if ((bin || hex) && word.size() == 2) {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 						}
-						tokens.push_back(new Token(TokenType::NUMBER, line, character, word));
+						tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
 						number = bin = hex = false;
 						string1 = true;
 						word = "";
@@ -304,10 +304,10 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (string1) {
-						tokens.push_back(new Token(TokenType::STRING, line, character, word));
+						tokens.push_back(new Token(TokenType::STRING, i, line, character, word));
 						string1 = false;
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), i, line, character, word));
 						other = false;
 						string1 = true;
 						word = "";
@@ -317,7 +317,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 					}
 				} else if (type == LetterType::DOUBLE_QUOTE) {
 					if (ident) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), i, line, character, word));
 						ident = false;
 						string2 = true;
 						word = "";
@@ -325,7 +325,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 						if ((bin || hex) && word.size() == 2) {
 							errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 						}
-						tokens.push_back(new Token(TokenType::NUMBER, line, character, word));
+						tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
 						number = bin = hex = false;
 						string2 = true;
 						word = "";
@@ -341,10 +341,10 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word += buff;
 					} else if (string2) {
-						tokens.push_back(new Token(TokenType::STRING, line, character, word));
+						tokens.push_back(new Token(TokenType::STRING, i, line, character, word));
 						string2 = false;
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), i, line, character, word));
 						other = false;
 						string2 = true;
 						word = "";
@@ -354,7 +354,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 					}
 				} else if (type == LetterType::OTHER) {
 					if (ident) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), line, character, word));
+						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), i, line, character, word));
 						ident = false;
 						other = true;
 						u8_toutf8(buff, 5, &c, 1);
@@ -367,7 +367,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 							if ((bin || hex) && word.size() == 2) {
 								errors.push_back({LexicalError::Type::NUMBER_INVALID_REPRESENTATION, line, character});
 							}
-							tokens.push_back(new Token(TokenType::NUMBER, line, character, word));
+							tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
 							number = bin = hex = false;
 							other = true;
 							u8_toutf8(buff, 5, &c, 1);
@@ -396,7 +396,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 							}
 						}
 						if (!is_longer) {
-							tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), line, character, word));
+							tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), i, line, character, word));
 							u8_toutf8(buff, 5, &c, 1);
 							word = buff;
 						} else {
