@@ -152,10 +152,10 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::
 
 	type.will_take(arg_types);
 
-	if (Array* arr = dynamic_cast<Array*>(array)) {
+	if (auto arr = dynamic_cast<Array*>(array)) {
 		arr->elements_will_take(analyser, arg_types, level);
 	}
-	if (ArrayAccess* arr = dynamic_cast<ArrayAccess*>(array)) {
+	if (auto arr = dynamic_cast<ArrayAccess*>(array)) {
 		arr->array_access_will_take(analyser, arg_types, level + 1);
 	}
 
