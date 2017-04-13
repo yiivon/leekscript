@@ -71,8 +71,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (function->type.raw_type != RawType::UNKNOWN and
 		function->type.raw_type != RawType::FUNCTION and
 		function->type.raw_type != RawType::CLASS) {
-		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE,
-			function->line(), {function->to_string()}});
+		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 
 	// Analyse all arguments a first time
@@ -130,7 +129,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					function->type = m->type;
 					is_native_method = m->native;
 				} else {
-					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, oa->field->line, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
+					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
 				}
 			}
 		} else {  // "salut".size()
@@ -154,7 +153,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				if (object_type.raw_type != RawType::UNKNOWN) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
-					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, oa->field->line, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
+					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
 				} else {
 					is_unknown_method = true;
 					object = oa->object;
@@ -213,7 +212,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	if (function->type.raw_type == RawType::FUNCTION and !arguments_valid) {
-		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	function->line(), {
+		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), function->location(), {
 			function->to_string(),
 			std::to_string(function->type.getArgumentTypes().size()),
 			std::to_string(total_arguments_passed)

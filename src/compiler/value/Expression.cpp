@@ -131,7 +131,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// in operator : v1 must be a container
 	if (op->type == TokenType::IN and v2->type.raw_type != RawType::UNKNOWN and !v2->type.is_container()) {
-		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, v2->line(), {v2->to_string()}});
+		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
 		return;
 	}
 
@@ -142,12 +142,12 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::POWER_EQUAL or op->type == TokenType::INT_DIV_EQUAL) {
 		// TODO other operators like |= ^= &=
 		if (v1->type.constant) {
-			analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, op->token->line, {v1->to_string()}});
+			analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), op->token->location, {v1->to_string()}});
 			return; // don't analyse more
 		}
 		// Check if A is a l-value
 		if (not v1->isLeftValue()) {
-			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, v1->line(), {v1->to_string()}});
+			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), v1->location(), {v1->to_string()}});
 			return; // don't analyse more
 		}
 		// Change the type of x for operator =
@@ -203,7 +203,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Don't use old stuff for boolean
 	if (v1->type == Type::BOOLEAN) {
-		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, op->token->line, {v1->type.to_string(), op->character, v2->type.to_string()}});
+		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), location(), {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}
 

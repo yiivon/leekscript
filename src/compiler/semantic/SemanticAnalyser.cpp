@@ -125,18 +125,18 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::get_var(Token* v) {
 		}
 		f--;
 	}
-	add_error({SemanticError::Type::UNDEFINED_VARIABLE, v->line, {v->content}});
+	add_error({SemanticError::Type::UNDEFINED_VARIABLE, v->location, v->location, {v->content}});
 	return nullptr;
 }
 
 std::shared_ptr<SemanticVar> SemanticAnalyser::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
 
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
-		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, {v->content}});
+		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
 	if (variables.back().back().find(v->content) != variables.back().back().end()) {
-		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->line, {v->content}});
+		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
 	variables.back().back().insert(pair<string, std::shared_ptr<SemanticVar>>(

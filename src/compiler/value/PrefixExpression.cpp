@@ -60,7 +60,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
-				analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, expression->line(), {expression->to_string()}});
+				analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
 			}
 		}
 

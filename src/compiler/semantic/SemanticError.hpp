@@ -37,11 +37,12 @@ public:
 	static std::string build_message(Type, std::vector<std::string> parameters);
 
 	Type type;
-	unsigned line;
+	Location location;
+	Location focus;
 	std::vector<std::string> parameters;
 
-	SemanticError(Type type, unsigned line);
-	SemanticError(Type type, unsigned line, std::vector<std::string> parameters);
+	SemanticError(Type type, Location location, Location focus);
+	SemanticError(Type type, Location location, Location focus, std::vector<std::string> parameters);
 	virtual ~SemanticError();
 
 	std::string message() const;

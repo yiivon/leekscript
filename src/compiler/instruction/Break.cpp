@@ -23,7 +23,7 @@ void Break::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	// break must be in a loop
 	if (!analyser->in_loop(deepness)) {
-		analyser->add_error({SemanticError::Type::BREAK_MUST_BE_IN_LOOP, 0});
+		analyser->add_error({SemanticError::Type::BREAK_MUST_BE_IN_LOOP, token->location, token->location});
 	}
 }
 

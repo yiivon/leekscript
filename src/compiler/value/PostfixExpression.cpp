@@ -37,10 +37,10 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 	expression->analyse(analyser, Type::UNKNOWN);
 
 	if (expression->type.constant) {
-		analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, expression->line(), {expression->to_string()}});
+		analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
 	}
 	if (!expression->isLeftValue()) {
-		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, expression->line(), {expression->to_string()}});
+		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
 	}
 
 	type = expression->type;

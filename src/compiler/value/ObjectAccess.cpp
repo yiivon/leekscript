@@ -103,9 +103,9 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					} catch (...) {
 						if (object_class->name != "Object") {
 							if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
-								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, field->line, {field->content, vv->name}});
+								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, vv->name}});
 							} else {
-								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, field->line, {field->content, object_class->name}});
+								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, object_class->name}});
 							}
 							return;
 						}

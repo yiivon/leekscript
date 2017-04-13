@@ -1,13 +1,16 @@
 #ifndef BREAK_HPP
 #define BREAK_HPP
 
-#include "../../compiler/instruction/Instruction.hpp"
+#include <memory>
+#include "Instruction.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 
 class Break : public Instruction {
 public:
 
+	std::unique_ptr<Token> token;
 	int deepness;
 
 	Break();

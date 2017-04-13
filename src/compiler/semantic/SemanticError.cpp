@@ -8,16 +8,9 @@ namespace ls {
 bool SemanticError::translation_loaded = false;
 Json SemanticError::translation;
 
-SemanticError::SemanticError(Type type, unsigned line) {
-	this->type = type;
-	this->line = line;
-}
+SemanticError::SemanticError(Type type, Location location, Location focus) : type(type), location(location), focus(focus) {}
 
-	SemanticError::SemanticError(Type type, unsigned line, std::vector<std::string> parameters) {
-	this->type = type;
-	this->line = line;
-	this->parameters = parameters;
-}
+SemanticError::SemanticError(Type type, Location location, Location focus, std::vector<std::string> parameters) : type(type), location(location), focus(focus), parameters(parameters) {}
 
 SemanticError::~SemanticError() {}
 
