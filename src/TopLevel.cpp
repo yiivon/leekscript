@@ -143,7 +143,7 @@ void print_errors(ls::VM::Result& result, std::ostream& os, bool json) {
 		os << "Line " << e.token->location.start.line << ": " << e.message() << std::endl;
 	}
 	for (const auto& e : result.semantical_errors) {
-		os << "Line " << e.line << ": " << e.message() << std::endl;
+		os << BOLD << e.file << ":" << e.location.start.line << END_COLOR << ": " << e.underline_code << std::endl << "   ▶ " << e.message() << std::endl << std::endl;
 	}
 	if (result.exception != nullptr) {
 		os << result.exception->to_string(json ? false : true);
