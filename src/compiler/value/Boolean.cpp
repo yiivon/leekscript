@@ -14,8 +14,6 @@ Boolean::Boolean(Token* token) {
 	constant = true;
 }
 
-Boolean::~Boolean() {}
-
 void Boolean::print(std::ostream& os, int, bool debug) const {
 	os << (value ? "true" : "false");
 	if (debug) {

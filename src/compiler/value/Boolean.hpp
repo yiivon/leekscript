@@ -14,7 +14,6 @@ public:
 	bool value;
 
 	Boolean(Token* token);
-	virtual ~Boolean();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 
