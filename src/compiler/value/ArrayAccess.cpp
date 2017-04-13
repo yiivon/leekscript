@@ -277,7 +277,6 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			// Check index : k < 0 or k >= size
 			auto array_size = c.insn_array_size(a);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
-				auto line = c.new_integer(array->line());
 				c.insn_delete_temporary(a);
 				auto type = c.new_integer(VM::Exception::ARRAY_OUT_OF_BOUNDS);
 				auto ex = c.insn_call(Type::POINTER, {type}, &VM::get_exception_object<0>);
