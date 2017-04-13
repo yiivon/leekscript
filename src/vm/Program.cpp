@@ -10,6 +10,7 @@
 #include "Context.hpp"
 #include "../compiler/semantic/SemanticAnalyser.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
+#include "../util/Util.hpp"
 
 using namespace std;
 
@@ -160,6 +161,42 @@ void Program::print(ostream& os, bool debug) const {
 std::ostream& operator << (std::ostream& os, const Program* program) {
 	program->print(os, false);
 	return os;
+}
+
+std::string Program::underline_code(Location location, Location focus) const {
+	auto padding = 10ul;
+	auto start = padding > location.start.raw ? 0ul : location.start.raw - padding;
+	auto end = std::min(code.size(), location.end.raw + padding);
+	auto padding_left = std::min(padding, location.start.raw - start);
+	auto padding_right = std::min(padding, end - location.end.raw);
+	auto ellipsis_left = start > 0;
+	auto ellipsis_right = end < code.size();
+
+	auto extract = code.substr(start, end - start);
+	auto underlined = extract.substr(padding_left, end - start - padding_left - padding_right);
+	auto before = extract.substr(0, padding_left);
+	auto after = extract.substr(extract.size() - padding_right, padding_right);
+
+	size_t p = before.rfind('\n');
+	if (p != std::string::npos) {
+		before = before.substr(p + 1, before.size() - p);
+		ellipsis_left = false;
+	}
+	p = after.find('\n');
+	if (p != std::string::npos) {
+		after = after.substr(0, p);
+		ellipsis_right = false;
+	}
+
+	auto focus_start = focus.start.raw - location.start.raw;
+	auto focus_size = focus.end.raw - focus.start.raw;
+	underlined = underlined.substr(0, focus_start)
+		+ YELLOW + underlined.substr(focus_start, focus_size) + END_COLOR
+		+ UNDERLINE + underlined.substr(focus_size + focus_start);
+
+	return (ellipsis_left ? (GREY "[...]" END_COLOR) : "") + before
+		+ UNDERLINE + underlined + END_STYLE
+		+ after + (ellipsis_right ? (GREY "[...]" END_COLOR) : "") ;
 }
 
 // void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {

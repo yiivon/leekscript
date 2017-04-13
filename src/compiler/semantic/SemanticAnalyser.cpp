@@ -155,6 +155,7 @@ map<string, std::shared_ptr<SemanticVar>>& SemanticAnalyser::get_local_vars() {
 }
 
 void SemanticAnalyser::add_error(SemanticError ex) {
+	ex.underline_code = program->underline_code(ex.location, ex.focus);
 	ex.file = program->file_name;
 	errors.push_back(ex);
 }

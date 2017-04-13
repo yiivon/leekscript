@@ -33,6 +33,8 @@ public:
 	std::string execute(VM& vm);
 
 	void print(std::ostream& os, bool debug = false) const;
+
+	std::string underline_code(Location location, Location focus) const;
 };
 
 std::ostream& operator << (std::ostream& os, const Program* program);
