@@ -49,7 +49,7 @@ SyntaxicAnalyser::SyntaxicAnalyser() {
 	nt = nullptr;
 	t = nullptr;
 	i = 0;
-	finished_token = new Token(TokenType::FINISHED, 0, 0, "");
+	finished_token = new Token(TokenType::FINISHED, 0, 0, 0, "");
 }
 
 SyntaxicAnalyser::~SyntaxicAnalyser() {
@@ -411,7 +411,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 				t->type == TokenType::MINUS_MINUS || t->type == TokenType::PLUS_PLUS
 				|| t->type == TokenType::TILDE) {
 
-				if (t->type == TokenType::MINUS && nt != nullptr && t->line == nt->line) {
+				if (t->type == TokenType::MINUS && nt != nullptr && t->location.start.line == nt->location.start.line) {
 					auto minus = eat_get();
 					if (beginingOfExpression(t->type)) {
 
@@ -464,7 +464,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 
 	while (t->type == TokenType::OPEN_BRACKET || t->type == TokenType::OPEN_PARENTHESIS || t->type == TokenType::DOT) {
 
-		if (t->character != last_character + last_size)
+		if (t->location.start.column != last_character + last_size)
 			break;
 
 		switch (t->type) {
@@ -529,7 +529,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 	// Opérateurs unaires postfixes
 	if (t->type == TokenType::MINUS_MINUS || t->type == TokenType::PLUS_PLUS) {
 
-		if (last_line == t->line) {
+		if (last_line == t->location.start.line) {
 
 			auto op = eat_get();
 			auto ex = new PostfixExpression();
@@ -578,7 +578,7 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened, Value*
 		   t->type == TokenType::DOUBLE_QUESTION_MARK || t->type == TokenType::CATCH_ELSE
 		   ) {
 
-		if (t->type == TokenType::MINUS && t->line != last_line && nt != nullptr && t->line == nt->line)
+		if (t->type == TokenType::MINUS && t->location.start.line != last_line && nt != nullptr && t->location.start.line == nt->location.start.line)
 			break;
 
 		auto op = new Operator(eat_get());
@@ -1319,8 +1319,8 @@ Token* SyntaxicAnalyser::eat_get(TokenType type) {
 
 	auto eaten = t;
 
-	last_character = t->character;
-	last_line = t->line;
+	last_character = t->location.start.column;
+	last_line = t->location.start.line;
 	last_size = t->size;
 	if (i < tokens.size() - 1) {
 		t = tokens[++i];
@@ -1331,7 +1331,7 @@ Token* SyntaxicAnalyser::eat_get(TokenType type) {
 
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
 		errors.push_back(SyntaxicalError(eaten, SyntaxicalError::Type::UNEXPECTED_TOKEN, {eaten->content}));
-		std::cout << "unexpected token : " << to_string((int) type) << " != " << to_string((int) eaten->type) << " (" << eaten->content << ") char " << eaten->character << std::endl;
+		std::cout << "unexpected token : " << to_string((int) type) << " != " << to_string((int) eaten->type) << " (" << eaten->content << ") char " << eaten->location.start.column << std::endl;
 		return finished_token;
 	}
 	return eaten;
