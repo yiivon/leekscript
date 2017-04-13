@@ -22,7 +22,7 @@ Block::~Block() {
 void Block::print(ostream& os, int indent, bool debug) const {
 	os << "{";
 	os << endl;
-	for (Instruction* instruction : instructions) {
+	for (auto& instruction : instructions) {
 		os << tabs(indent + 1);
 		instruction->print(os, indent + 1, debug);
 		os << endl;
