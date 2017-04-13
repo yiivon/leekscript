@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 		cout << ">> ";
 		std::getline(std::cin, code);
 		// Execute
-		auto result = vm.execute(code, ctx, file_or_code, debug_mode, ops);
+		auto result = vm.execute(code, ctx, "(top-level)", debug_mode, ops);
 		print_result(result, output_json, display_time, ops);
 		// Set new context
 		ctx = result.context;
