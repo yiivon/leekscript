@@ -27,7 +27,7 @@ void While::print(ostream& os, int indent, bool debug) const {
 }
 
 unsigned int While::line() const {
-	return token->line;
+	return token->location.start.line;
 }
 
 void While::analyse(SemanticAnalyser* analyser, const Type&) {
