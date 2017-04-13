@@ -400,7 +400,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 			auto av = new AbsoluteValue();
 			av->open_pipe.reset(open_pipe);
 			av->expression = eatExpression(true);
-			eat(TokenType::PIPE);
+			av->close_pipe.reset(eat_get(TokenType::PIPE));
 			e = new Expression(av);
 
 		} else {

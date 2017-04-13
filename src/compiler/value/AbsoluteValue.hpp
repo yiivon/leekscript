@@ -12,6 +12,7 @@ public:
 
 	Value* expression;
 	std::unique_ptr<Token> open_pipe;
+	std::unique_ptr<Token> close_pipe;
 
 	AbsoluteValue();
 	virtual ~AbsoluteValue();
