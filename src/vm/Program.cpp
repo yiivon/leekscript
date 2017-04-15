@@ -194,9 +194,14 @@ std::string Program::underline_code(Location location, Location focus) const {
 		+ YELLOW + underlined.substr(focus_start, focus_size) + END_COLOR
 		+ UNDERLINE + underlined.substr(focus_size + focus_start);
 
-	return (ellipsis_left ? (GREY "[...]" END_COLOR) : "") + before
-		+ UNDERLINE + underlined + END_STYLE
-		+ after + (ellipsis_right ? (GREY "[...]" END_COLOR) : "") ;
+	if (before.size() and before.front() != ' ')
+		before = ' ' + before;
+	if (after.size() and after.back() != ' ')
+		after = after + ' ';
+
+	return (ellipsis_left ? (GREY "[...]" END_COLOR) : "")
+		+ before + UNDERLINE + underlined + END_STYLE + after
+		+ (ellipsis_right ? (GREY "[...]" END_COLOR) : "");
 }
 
 // void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
