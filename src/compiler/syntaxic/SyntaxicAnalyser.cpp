@@ -1250,8 +1250,9 @@ Instruction* SyntaxicAnalyser::eatWhile() {
 }
 
 Break* SyntaxicAnalyser::eatBreak() {
-	eat(TokenType::BREAK);
+	auto token = eat_get(TokenType::BREAK);
 	Break* b = new Break();
+	b->token.reset(token);
 
 	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
 		int deepness = std::stoi(t->content);
