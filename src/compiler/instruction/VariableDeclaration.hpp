@@ -20,6 +20,7 @@ public:
 	std::vector<std::unique_ptr<Token>> variables;
 	std::vector<Value*> expressions;
 	std::map<std::string, std::shared_ptr<SemanticVar>> vars;
+	std::unique_ptr<Token> keyword;
 
 	VariableDeclaration();
 	virtual ~VariableDeclaration();

@@ -257,13 +257,13 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 	auto vd = new VariableDeclaration();
 
 	if (t->type == TokenType::GLOBAL) {
-		eat(TokenType::GLOBAL);
+		vd->keyword.reset(eat_get(TokenType::GLOBAL));
 		vd->global = true;
 	} else if (t->type == TokenType::LET) {
-		eat(TokenType::LET);
+		vd->keyword.reset(eat_get(TokenType::LET));
 		vd->constant = true;
 	} else {
-		eat(TokenType::VAR);
+		vd->keyword.reset(eat_get(TokenType::VAR));
 	}
 
 	auto ident = eatIdent();
