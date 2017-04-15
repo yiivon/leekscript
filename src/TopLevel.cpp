@@ -142,8 +142,11 @@ void print_errors(ls::VM::Result& result, std::ostream& os, bool json) {
 	for (const auto& e : result.syntaxical_errors) {
 		os << "Line " << e.token->location.start.line << ": " << e.message() << std::endl;
 	}
+	bool first = true;
 	for (const auto& e : result.semantical_errors) {
-		os << BOLD << e.file << ":" << e.location.start.line << END_COLOR << ": " << e.underline_code << std::endl << "   ▶ " << e.message() << std::endl << std::endl;
+		if (!first) std::cout << std::endl;
+		os << BOLD << e.file << ":" << e.location.start.line << END_COLOR << ": " << e.underline_code << std::endl << "   ▶ " << e.message() << std::endl;
+		first = false;
 	}
 	if (result.exception != nullptr) {
 		os << result.exception->to_string(json ? false : true);
