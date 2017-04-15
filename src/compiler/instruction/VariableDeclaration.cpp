@@ -72,7 +72,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 			v->type = Type::NULLL;
 		}
 		if (v->type == Type::VOID) {
-			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, var->location, var->location, {var->content}});
+			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
 		}
 		vars.insert({var->content, v});
 	}
