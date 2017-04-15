@@ -24,6 +24,10 @@ void Throw::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location Throw::location() const {
+	return expression->location();
+}
+
 void Throw::analyse(SemanticAnalyser* analyser, const Type&) {
 	if (expression != nullptr) {
 		expression->analyse(analyser, Type::UNKNOWN);

@@ -38,6 +38,10 @@ void Foreach::print(ostream& os, int indent, bool debug) const {
 	body->print(os, indent, debug);
 }
 
+Location Foreach::location() const {
+	return {{0, 0, 0}, {0, 0, 0}};
+}
+
 void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (req_type.raw_type == RawType::ARRAY && req_type.nature == Nature::POINTER) {

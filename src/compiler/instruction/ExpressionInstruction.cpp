@@ -16,6 +16,10 @@ void ExpressionInstruction::print(ostream& os, int indent, bool debug) const {
 	value->print(os, indent, debug);
 }
 
+Location ExpressionInstruction::location() const {
+	return value->location();
+}
+
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type == Type::VOID) {
 		value->analyse(analyser, Type::VOID);

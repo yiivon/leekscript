@@ -30,6 +30,10 @@ void ClassDeclaration::print(ostream& os, int indent, bool debug) const {
 	os << "}";
 }
 
+Location ClassDeclaration::location() const {
+	return token->location;
+}
+
 void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	var = analyser->add_var(token.get(), Type::CLASS, nullptr, nullptr);

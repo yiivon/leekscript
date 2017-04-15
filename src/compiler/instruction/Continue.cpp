@@ -21,6 +21,10 @@ void Continue::print(std::ostream& os, int, bool) const {
 	}
 }
 
+Location Continue::location() const {
+	return {{0, 0, 0}, {0, 0, 0}};
+}
+
 void Continue::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	// continue must be in a loop

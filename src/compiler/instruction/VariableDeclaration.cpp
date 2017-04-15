@@ -38,6 +38,11 @@ void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 	}
 }
 
+Location VariableDeclaration::location() const {
+	auto end = variables.size() > expressions.size() ? variables.back()->location.end : expressions.back()->location().end;
+	return {keyword->location.start, end};
+}
+
 void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	type = Type::VOID;

@@ -4,6 +4,7 @@
 #include <ostream>
 #include "../Compiler.hpp"
 #include "../../vm/TypeList.hpp"
+#include "../lexical/Token.hpp"
 
 namespace ls {
 
@@ -19,8 +20,8 @@ public:
 	virtual ~Instruction() = 0;
 
 	virtual void print(std::ostream&, int indent, bool debug) const = 0;
-	virtual unsigned line() const { return 0; };
-	
+	virtual Location location() const = 0;
+
 	virtual void analyse(SemanticAnalyser* analyser, const Type& type) = 0;
 
  	virtual Compiler::value compile(Compiler&) const = 0;

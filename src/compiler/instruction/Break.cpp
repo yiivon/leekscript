@@ -19,6 +19,10 @@ void Break::print(ostream& os, int, bool) const {
 	}
 }
 
+Location Break::location() const {
+	return token->location;
+}
+
 void Break::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	// break must be in a loop

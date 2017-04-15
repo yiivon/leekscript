@@ -40,6 +40,10 @@ void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 	type = Type::VOID;
 }
 
+Location Return::location() const {
+	return expression->location();
+}
+
 Compiler::value Return::compile(Compiler& c) const {
 
 	if (expression != nullptr) {
