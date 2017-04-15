@@ -212,7 +212,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	if (function->type.raw_type == RawType::FUNCTION and !arguments_valid) {
-		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), function->location(), {
+		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
 			function->to_string(),
 			std::to_string(function->type.getArgumentTypes().size()),
 			std::to_string(total_arguments_passed)
