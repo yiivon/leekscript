@@ -49,12 +49,9 @@ SyntaxicAnalyser::SyntaxicAnalyser() {
 	nt = nullptr;
 	t = nullptr;
 	i = 0;
-	finished_token = new Token(TokenType::FINISHED, 0, 0, 0, "");
 }
 
-SyntaxicAnalyser::~SyntaxicAnalyser() {
-	delete finished_token;
-}
+SyntaxicAnalyser::~SyntaxicAnalyser() {}
 
 Function* SyntaxicAnalyser::analyse(vector<Token*>& tokens) {
 
@@ -267,9 +264,7 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 	}
 
 	auto ident = eatIdent();
-	if (ident != finished_token) {
-		vd->variables.push_back(std::unique_ptr<Token> { ident });
-	}
+	vd->variables.push_back(std::unique_ptr<Token> { ident });
 	if (t->type == TokenType::EQUAL) {
 		eat(TokenType::EQUAL);
 		vd->expressions.push_back(eatExpression());
@@ -280,9 +275,7 @@ VariableDeclaration* SyntaxicAnalyser::eatVariableDeclaration() {
 	while (t->type == TokenType::COMMA) {
 		eat();
 		ident = eatIdent();
-		if (ident != finished_token) {
-			vd->variables.push_back(std::unique_ptr<Token> { ident });
-		}
+		vd->variables.push_back(std::unique_ptr<Token> { ident });
 		if (t->type == TokenType::EQUAL) {
 			eat(TokenType::EQUAL);
 			vd->expressions.push_back(eatExpression());
@@ -1313,7 +1306,7 @@ void SyntaxicAnalyser::eat() {
 void SyntaxicAnalyser::eat(TokenType type) {
 	auto old = t;
 	eat_get(type);
-	if (old != nullptr and old != finished_token) {
+	if (old != nullptr) {
 		delete old;
 	}
 }
@@ -1332,14 +1325,14 @@ Token* SyntaxicAnalyser::eat_get(TokenType type) {
 	if (i < tokens.size() - 1) {
 		t = tokens[++i];
 	} else {
-		t = finished_token;
+		t = new Token(TokenType::FINISHED, 0, 0, 0, "");
 	}
 	nt = i < tokens.size() - 1 ? tokens[i + 1] : nullptr;
 
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
 		errors.push_back(SyntaxicalError(eaten, SyntaxicalError::Type::UNEXPECTED_TOKEN, {eaten->content}));
 		std::cout << "unexpected token : " << to_string((int) type) << " != " << to_string((int) eaten->type) << " (" << eaten->content << ") char " << eaten->location.start.column << std::endl;
-		return finished_token;
+		return new Token(TokenType::FINISHED, 0, 0, 0, "");
 	}
 	return eaten;
 }
@@ -1348,7 +1341,7 @@ Token* SyntaxicAnalyser::nextTokenAt(int pos) {
 	if (i + pos < tokens.size())
 		return tokens[i + pos];
 	else
-		return finished_token;
+		return new Token(TokenType::FINISHED, 0, 0, 0, "");
 }
 
 vector<SyntaxicalError> SyntaxicAnalyser::getErrors() {
