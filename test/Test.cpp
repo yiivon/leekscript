@@ -150,12 +150,6 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	return result;
 }
 
-#define GREY "\033[0;90m"
-#define GREEN "\033[0;32m"
-#define BLUE "\033[1;34m"
-#define RED "\033[1;31m"
-#define END_COLOR "\033[0m"
-
 void Test::Input::pass(std::string expected) {
 	std::ostringstream oss;
 	oss << GREEN << "OK   " << END_COLOR << ": " << name;
