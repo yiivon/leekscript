@@ -1,6 +1,6 @@
 {
 	"UNKNOWN_ERROR" : "Erreur inconnue",
-	"UNDEFINED_VARIABLE" : "Variable « %s » non définie",
+	"UNDEFINED_VARIABLE" : "Variable « %s » non déclarée",
 	"VARIABLE_ALREADY_DEFINED" : "Variable « %s » déjà définie",
 	"METHOD_NOT_FOUND" : "Cette méthode « %s » n'existe pas",
 	"STATIC_METHOD_NOT_FOUND" : "Cette méthode statique « %s » n'existe pas",
