@@ -99,7 +99,9 @@ void Expression::print(std::ostream& os, int indent, bool debug) const {
 }
 
 Location Expression::location() const {
-	return op->token->location;
+	auto start = v1->location().start;
+	auto end = op == nullptr ? v1->location().end : v2->location().end;
+	return {start, end};
 }
 
 void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
