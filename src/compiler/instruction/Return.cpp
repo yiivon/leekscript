@@ -25,7 +25,7 @@ void Return::print(ostream& os, int indent, bool debug) const {
 
 void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	Function* f = analyser->current_function();
+	auto f = analyser->current_function();
 
 	if (expression != nullptr) {
 		Type required_type = Type::UNKNOWN;
