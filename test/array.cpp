@@ -134,6 +134,14 @@ void Test::test_arrays() {
 	code("['1', '2', '3'][false]").equals("'1'");
 	code("[1.5, 2.5, 3.5][true]").equals("2.5");
 
+	section("Push with empty array access");
+	code("var a = [] a[] = 12 a").equals("[12]");
+	code("var a = [1, 2] a[] = 3 a").equals("[1, 2, 3]");
+	code("var a = [1, 2] a[] = 3 a").equals("[1, 2, 3]");
+	code("var a = [] a[] = 'a' a").equals("['a']");
+	code("var a = ['a', 'b'] a[] = 'c' a").equals("['a', 'b', 'c']");
+	code("var a = [1, 'b', true] a[] = x -> x a").equals("[1, 'b', true, <function>]");
+
 	section("Array.operator +=");
 	code("var a = [1.55] a += 12.9 a").equals("[1.55, 12.9]");
 	code("var a = ['a'] a += 'b' a").equals("['a', 'b']");

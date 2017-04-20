@@ -30,7 +30,9 @@ ArrayAccess::~ArrayAccess() {
 void ArrayAccess::print(std::ostream& os, int indent, bool debug) const {
 	array->print(os, indent, debug);
 	os << "[";
-	key->print(os, indent, debug);
+	if (key != nullptr) {
+		key->print(os, indent, debug);
+	}
 	if (key2 != nullptr) {
 		os << ":";
 		key2->print(os, indent, debug);
@@ -51,6 +53,10 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (array->type.raw_type != RawType::UNKNOWN and !array->type.is_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
+		return;
+	}
+
+	if (key == nullptr) {
 		return;
 	}
 

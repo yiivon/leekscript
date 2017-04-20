@@ -527,6 +527,16 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	switch (op->type) {
 		case TokenType::EQUAL: {
+			// array[] = 12, array push
+			auto array_access = dynamic_cast<ArrayAccess*>(v1);
+			if (array_access && array_access->key == nullptr) {
+				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
+				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+					return (*x)->add_eq(y);
+				});
+			}
+
 			// Reference, like : a = @b
 			auto varval = dynamic_cast<VariableValue*>(v1);
 			if (varval != nullptr and varval->scope == VarScope::LOCAL and c.get_var(varval->name).reference) {

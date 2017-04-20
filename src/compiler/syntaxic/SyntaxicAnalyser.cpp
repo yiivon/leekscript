@@ -467,7 +467,11 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 				aa->open_bracket.reset(eat_get(TokenType::OPEN_BRACKET));
 
 				aa->array = e;
-				aa->key = eatExpression();
+				if (t->type == TokenType::CLOSING_BRACKET) {
+					aa->key = nullptr;
+				} else {
+					aa->key = eatExpression();
+				}
 
 				if (t->type == TokenType::COLON) {
 					eat();
