@@ -6,8 +6,8 @@
 #include <map>
 #include <stack>
 #include <functional>
-
 #include "../vm/Type.hpp"
+#include "../vm/Exception.hpp"
 
 namespace ls {
 
@@ -133,6 +133,7 @@ public:
 	void insn_if(value v, std::function<void()> then) const;
 	void insn_if_not(value v, std::function<void()> then) const;
 	void insn_throw(value v) const;
+	void insn_throw_object(vm::Exception type) const;
 
 	// Call functions
 	template <typename R, typename... A>

@@ -44,8 +44,7 @@ Compiler::value Throw::compile(Compiler& c) const {
 	jit_insn_mark_offset(c.F, token->location.start.line);
 
 	auto ex = c.insn_call(Type::POINTER, {exception}, &VM::get_exception_object<0>);
-
-	jit_insn_throw(c.F, ex.v);
+	c.insn_throw(ex);
 
 	return {nullptr, Type::UNKNOWN};
 }

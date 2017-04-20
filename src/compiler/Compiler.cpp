@@ -688,6 +688,12 @@ void Compiler::insn_throw(Compiler::value v) const {
 	jit_insn_throw(F, v.v);
 }
 
+void Compiler::insn_throw_object(vm::Exception type) const {
+	auto t = new_integer(type);
+	auto ex = insn_call(Type::POINTER, {t}, &VM::get_exception_object<0>);
+	insn_throw(ex);
+}
+
 /*
  * Variables
  */
@@ -767,9 +773,7 @@ void Compiler::inc_ops_jit(Compiler::value amount) {
 	jit_insn_branch_if_not(F, compare, &label_end);
 
 	// If greater than the limit, throw exception
-	auto type = new_integer(VM::Exception::OPERATION_LIMIT_EXCEEDED);
-	auto ex = insn_call(Type::POINTER, {type}, &VM::get_exception_object<0>);
-	jit_insn_throw(F, ex.v);
+	insn_throw_object(vm::Exception::OPERATION_LIMIT_EXCEEDED);
 
 	// End
 	jit_insn_label(F, &label_end);

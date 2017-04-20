@@ -533,9 +533,7 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	jit_label_t label_end = jit_label_undefined;
 	jit_insn_branch_if(c.F, cond.v, &label_end);
 
-	auto type = c.new_integer(VM::Exception::NUMBER_OVERFLOW);
-	auto ex = c.insn_call(Type::POINTER, {type}, &VM::get_exception_object<0>);
-	jit_insn_throw(c.F, ex.v);
+	c.insn_throw_object(vm::Exception::NUMBER_OVERFLOW);
 
 	jit_insn_label(c.F, &label_end);
 
