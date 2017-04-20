@@ -273,6 +273,7 @@ public:
 	inline bool operator !=(const Type& type) const { return !(*this == type); }
 
 	bool compatible(const Type& type) const;
+	bool may_be_compatible(const Type& type) const;
 
 	/*
 	 * Static part
@@ -327,6 +328,7 @@ public:
 	static const Type INTERVAL_ITERATOR;
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
+	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww);
 	static bool more_specific(const Type& old, const Type& neww);
 	static Type get_compatible_type(const Type& t1, const Type& t2);

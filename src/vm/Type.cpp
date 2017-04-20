@@ -408,6 +408,25 @@ bool Type::list_compatible(const std::vector<Type>& expected, const std::vector<
 	return true;
 }
 
+bool Type::may_be_compatible(const Type& type) const {
+	if (compatible(type)) {
+		return true;
+	}
+	// Example: Number.abs(number*) => we allow to call with a unknown pointer
+	if (this->nature == Nature::POINTER and type == Type::POINTER) {
+		return true;
+	}
+	return false;
+}
+
+bool Type::list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual) {
+	if (expected.size() != actual.size()) return false;
+	for (size_t i = 0; i < expected.size(); ++i) {
+		if (not expected[i].may_be_compatible(actual[i])) return false;
+	}
+	return true;
+}
+
 bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww) {
 
 	if (old.size() != neww.size()) return false;
