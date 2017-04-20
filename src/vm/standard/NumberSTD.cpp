@@ -135,9 +135,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Methods
 	 */
 	method("abs", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::abs_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::abs_real},
-		{Type::INTEGER, Type::INTEGER, {}, (void*) &NumberSTD::abs_real}
+		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::abs_ptr},
+		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::abs_number},
+		{Type::INTEGER, Type::INTEGER, {}, (void*) &NumberSTD::abs_number}
 	});
 	method("acos", {
 		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
@@ -254,9 +254,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::UNKNOWN}, (void*) &NumberSTD::_int}
 	});
 	static_method("abs", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::abs_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_real},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_real}
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::abs_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_number},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_number}
 	});
 	static_method("acos", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
@@ -683,18 +683,16 @@ Compiler::value NumberSTD::_int(Compiler&, std::vector<Compiler::value> args) {
 	return {args[0].v, Type::INTEGER};
 }
 
-double NumberSTD::abs_ptr(LSNumber* x) {
-	// TODO check args
-	// VM::check_arg(args, {LS_NUMBER})
-	// Number.abs(["hello", 12][0])
-	// ==>  Execution error Number.abs(number x) : first parameter 'x' is not a number but a string.
-
-	double a = fabs(x->value);
-	LSValue::delete_temporary(x);
-	return a;
+Compiler::value NumberSTD::abs_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, {args[0]}, +[](LSNumber* n) {
+		auto a = fabs(n->value);
+		LSValue::delete_temporary(n);
+		return a;
+	});
 }
-Compiler::value NumberSTD::abs_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_abs(c.F, args[0].v), Type::REAL};
+
+Compiler::value NumberSTD::abs_number(Compiler& c, std::vector<Compiler::value> args) {
+	return {jit_insn_abs(c.F, args[0].v), args[0].t};
 }
 
 double NumberSTD::acos_ptr(LSNumber* x) {
