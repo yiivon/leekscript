@@ -302,7 +302,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	if (this_ptr != nullptr) {
 
 		vector<Compiler::value> args = { this_ptr->compile(c) };
-		vector<LSValueType> lsvalue_types = { this_ptr->type.id() };
+		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr->type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments[i]->compile(c));
 			lsvalue_types.push_back(function->type.getArgumentType(i).id());
@@ -331,7 +331,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		vector<LSValueType> lsvalue_types;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments[i]->compile(c));
-			lsvalue_types.push_back(function->type.getArgumentType(i).id());
+			lsvalue_types.push_back((LSValueType) function->type.getArgumentType(i).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
 
