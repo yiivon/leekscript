@@ -58,7 +58,7 @@ Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args)
 
 		for (Method& m : impl) {
 
-			if (m.obj_type.compatible(obj_type) and Type::list_compatible(m.type.arguments_types, args)) {
+			if (m.obj_type.may_be_compatible(obj_type) and Type::list_may_be_compatible(m.type.arguments_types, args)) {
 				if (best == nullptr or
 					Type::list_more_specific(best->type.arguments_types, m.type.arguments_types) or
 					Type::more_specific(best->obj_type, m.obj_type) /* old, new */) {
@@ -78,7 +78,7 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 		StaticMethod* best = nullptr;
 
 		for (auto& m : impl) {
-			if (Type::list_compatible(m.type.arguments_types, args)) {
+			if (Type::list_may_be_compatible(m.type.arguments_types, args)) {
 				if (best == nullptr or Type::list_more_specific(best->type.arguments_types, m.type.arguments_types)) {
 					best = &m;
 				}

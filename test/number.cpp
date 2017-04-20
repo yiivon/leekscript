@@ -464,6 +464,7 @@ void Test::test_numbers() {
 	code("(-19.5).abs()").equals("19.5");
 	code("12.abs").equals("<function>");
 	code("12.abs").equals("<function>");
+	code("Number.abs([1, 'salut'][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
 
 	section("Number.exp()");
 	code("Number.exp(0)").equals("1");
@@ -509,6 +510,8 @@ void Test::test_numbers() {
 	code("Number.max(15.7, 12.8)").equals("15.7");
 	code("Number.max([15.7, ''][0], 12.8)").equals("15.7");
 	code("Number.max(5.5, [12.8, ''][0])").equals("12.8");
+	code("2.max([7.5, ''][0])").equals("7.5");
+	code("2.max([7.5, ''][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
 
 	section("Number.min()");
 	code("Number.min(5, 12)").equals("5");
