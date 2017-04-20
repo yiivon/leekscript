@@ -5,6 +5,7 @@
 #include "../vm/value/LSMap.hpp"
 #include "../vm/Program.hpp"
 #include "../../lib/utf8.h"
+#include "../vm/LSValue.hpp"
 
 using namespace std;
 
@@ -781,6 +782,22 @@ void Compiler::inc_ops_jit(Compiler::value amount) {
 
 void Compiler::add_catcher(jit_label_t start, jit_label_t end, jit_label_t handler) {
 	catchers.back().push_back({start, end, handler, jit_label_undefined});
+}
+
+void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LSValueType> types) const {
+	for (size_t i = 0; i < args.size(); ++i) {
+		auto arg = args[i];
+		auto type = types[i];
+		if (arg.t.nature != Nature::VALUE and type != 0) {
+			auto type = types[i];
+			insn_if(insn_ne(insn_typeof(arg), new_integer(type)), [&]() {
+				for (auto& a : args) {
+					insn_delete_temporary(a);
+				}
+				insn_throw_object(vm::Exception::WRONG_ARGUMENT_TYPE);
+			});
+		}
+	}
 }
 
 }

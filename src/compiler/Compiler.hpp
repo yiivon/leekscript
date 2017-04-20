@@ -8,6 +8,7 @@
 #include <functional>
 #include "../vm/Type.hpp"
 #include "../vm/Exception.hpp"
+#include "../vm/LSValue.hpp"
 
 namespace ls {
 
@@ -175,6 +176,7 @@ public:
 
 	/** Exceptions **/
 	void add_catcher(jit_label_t start, jit_label_t end, jit_label_t handler);
+	void insn_check_args(std::vector<value> args, std::vector<LSValueType> types) const;
 };
 
 }
