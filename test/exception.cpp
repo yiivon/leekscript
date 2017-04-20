@@ -3,21 +3,21 @@
 void Test::test_exceptions() {
 
 	header("Exceptions");
-	code("throw 2").ops_limit(1000).exception(ls::VM::Exception::OPERATION_LIMIT_EXCEEDED);
+	code("throw 2").ops_limit(1000).exception(ls::vm::Exception::OPERATION_LIMIT_EXCEEDED);
 
-	code("throw").exception(ls::VM::Exception::EXCEPTION);
-	code("12").exception(ls::VM::Exception::NO_EXCEPTION);
+	code("throw").exception(ls::vm::Exception::EXCEPTION);
+	code("12").exception(ls::vm::Exception::NO_EXCEPTION);
 
-	code("var a = 12m; throw").exception(ls::VM::Exception::EXCEPTION);
-	code("var a = 12m + 5m; throw").exception(ls::VM::Exception::EXCEPTION);
+	code("var a = 12m; throw").exception(ls::vm::Exception::EXCEPTION);
+	code("var a = 12m + 5m; throw").exception(ls::vm::Exception::EXCEPTION);
 
 	section("Exceptions - Avoid leaks");
-	code("var x = 'hello' [][0]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("var x = 'hello' throw").exception(ls::VM::Exception::EXCEPTION);
-	code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS, {
+	code("var x = 'hello' [][0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("var x = 'hello' throw").exception(ls::vm::Exception::EXCEPTION);
+	code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
 		{"f", 1}, {"main", 1}
 	});
-	code("let f = -> { var x = 'hello' throw } f()").exception(ls::VM::Exception::EXCEPTION, {
+	code("let f = -> { var x = 'hello' throw } f()").exception(ls::vm::Exception::EXCEPTION, {
 		{"f", 1}, {"main", 1}
 	});
 
@@ -35,19 +35,19 @@ void Test::test_exceptions() {
 	// code("let f = -> { var s = 'leak1' { var s = 'leak2' [][0] } !? 8 } f()").equals("8");
 
 	section("Stacktraces");
-	file("test/code/exception/exception_1.leek").exception(ls::VM::Exception::DIVISION_BY_ZERO, {
+	file("test/code/exception/exception_1.leek").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	file("test/code/exception/exception_2.leek").exception(ls::VM::Exception::NO_SUCH_OPERATOR, {
+	file("test/code/exception/exception_2.leek").exception(ls::vm::Exception::NO_SUCH_OPERATOR, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	file("test/code/exception/exception_3.leek").exception(ls::VM::Exception::EXCEPTION, {
+	file("test/code/exception/exception_3.leek").exception(ls::vm::Exception::EXCEPTION, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	file("test/code/exception/exception_4.leek").exception(ls::VM::Exception::NUMBER_OVERFLOW, {
+	file("test/code/exception/exception_4.leek").exception(ls::vm::Exception::NUMBER_OVERFLOW, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	file("test/code/exception/exception_5.leek").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS, {
+	file("test/code/exception/exception_5.leek").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
 		{"crash", 3}, {"power", 8}, {"will_crash", 13}, {"do_something", 18}, {"main", 21}
 	});
 }

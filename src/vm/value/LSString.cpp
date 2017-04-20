@@ -163,7 +163,7 @@ LSValue* LSString::mul(LSValue* v) {
 	if (v->type != NUMBER) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
 	}
 	auto number = static_cast<LSNumber*>(v);
 	string r;
@@ -182,7 +182,7 @@ LSValue* LSString::div(LSValue* v) {
 	if (v->type != STRING) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
 	}
 	auto string = static_cast<LSString*>(v);
 	char buff[5];

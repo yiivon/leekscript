@@ -265,7 +265,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 					if (!n) {
 						LSValue::delete_temporary(array);
 						LSValue::delete_temporary(key_pointer);
-						jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_KEY_IS_NOT_NUMBER));
+						jit_exception_throw(new vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER));
 					}
 					int key_int = n->value;
 					LSValue::delete_temporary(key_pointer);

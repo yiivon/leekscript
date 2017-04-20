@@ -36,7 +36,7 @@ void Throw::analyse(SemanticAnalyser* analyser, const Type&) {
 
 Compiler::value Throw::compile(Compiler& c) const {
 
-	auto exception = c.new_integer((int) VM::Exception::EXCEPTION);
+	auto exception = c.new_integer((int) vm::Exception::EXCEPTION);
 	if (expression != nullptr) {
 		exception = expression->compile(c);
 	}

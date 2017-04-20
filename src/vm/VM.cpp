@@ -195,7 +195,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 		try {
 			value = program->execute(*this);
 			result.execution_success = true;
-		} catch (VM::ExceptionObj* ex) {
+		} catch (vm::ExceptionObj* ex) {
 			result.exception = ex;
 		}
 		auto exe_end = chrono::high_resolution_clock::now();
@@ -393,18 +393,18 @@ void VM::store_exception(jit_function_t F, jit_value_t ex) {
 	jit_insn_store_relative(F, vm_ex_ptr, 0, ex);
 }
 
-std::string VM::exception_message(VM::Exception expected) {
+std::string VM::exception_message(vm::Exception expected) {
 	switch (expected) {
-	case Exception::EXCEPTION: return "exception";
-	case Exception::DIVISION_BY_ZERO: return "division_by_zero";
-	case Exception::OPERATION_LIMIT_EXCEEDED: return "too_much_operations";
-	case Exception::NUMBER_OVERFLOW: return "number_overflow";
-	case Exception::NO_EXCEPTION: return "no_exception";
-	case Exception::NO_SUCH_OPERATOR: return "no_such_operator";
-	case Exception::ARRAY_OUT_OF_BOUNDS: return "array_out_of_bounds";
-	case Exception::ARRAY_KEY_IS_NOT_NUMBER: return "array_key_is_not_a_number";
-	case Exception::CANT_MODIFY_READONLY_OBJECT: return "cant_modify_readonly_object";
-	case Exception::NO_SUCH_ATTRIBUTE: return "NO_SUCH_ATTRIBUTE";
+	case vm::Exception::EXCEPTION: return "exception";
+	case vm::Exception::DIVISION_BY_ZERO: return "division_by_zero";
+	case vm::Exception::OPERATION_LIMIT_EXCEEDED: return "too_much_operations";
+	case vm::Exception::NUMBER_OVERFLOW: return "number_overflow";
+	case vm::Exception::NO_EXCEPTION: return "no_exception";
+	case vm::Exception::NO_SUCH_OPERATOR: return "no_such_operator";
+	case vm::Exception::ARRAY_OUT_OF_BOUNDS: return "array_out_of_bounds";
+	case vm::Exception::ARRAY_KEY_IS_NOT_NUMBER: return "array_key_is_not_a_number";
+	case vm::Exception::CANT_MODIFY_READONLY_OBJECT: return "cant_modify_readonly_object";
+	case vm::Exception::NO_SUCH_ATTRIBUTE: return "NO_SUCH_ATTRIBUTE";
 	}
 	return "??" + std::to_string((int) expected) + "??";
 }

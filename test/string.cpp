@@ -47,14 +47,14 @@ void Test::test_strings() {
 	code("!'hello'").equals("false");
 
 	section("String.operator -");
-	code("-'hello'").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("-'hello'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator x++");
 	code("'hello'++").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
-	code("var a = 'hello' a++").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 'hello' a++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator x--");
-	code("var a = 'hello' a--").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 'hello' a--").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator +");
 	code("'salut ' + 'ça va ?'").equals("'salut ça va ?'");
@@ -67,7 +67,7 @@ void Test::test_strings() {
 	code("'salut' * 3").equals("'salutsalutsalut'");
 	code("'salut' * (1 + 2)").equals("'salutsalutsalut'");
 	code("('salut' * 1) + 2").equals("'salut2'");
-	code("'hello' * 'abc'").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("'hello' * 'abc'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator |x|");
 	code("|'salut'|").equals("5");
@@ -80,13 +80,13 @@ void Test::test_strings() {
 	code("'abc.' / '.'").equals("['abc', '']");
 	code("'.aaaaa.bbbb.ccc.dd.e.' / '.'").equals("['', 'aaaaa', 'bbbb', 'ccc', 'dd', 'e', '']");
 	code("('hello.world.how.are.you' / '.').size()").equals("5");
-	code("'hello' / 2").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("'hello' / 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\");
-	code("'azerty' \\ ''").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\=");
-	code("var a = 'azerty' a \\= ''").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("var a = 'azerty' a \\= ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator~");
 	code("~'bonjour'").equals("'ruojnob'");
@@ -100,9 +100,9 @@ void Test::test_strings() {
 	code("'bonjour'[2:'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 2>"});
 	code("'bonjour'['a':'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
 	code("let a = ['bonjour', 2][0] a[3]").equals("'j'");
-	code("'hello'[-1]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("''[0]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("'yoyo'[1000]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("'hello'[-1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("''[0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("'yoyo'[1000]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("String.operator ==");
 	code("'test' == 'etst'").equals("false");

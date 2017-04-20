@@ -53,7 +53,7 @@ void Test::test_objects() {
 	code("let a = {b: 12} a.b %= 10").equals("2");
 	code("let o = {} o.new_val = 12 o").equals("{new_val: 12}");
 	code("let o = {a: 'a'} o.b = 'b' o").equals("{a: 'a', b: 'b'}");
-	code("Object.readonly.v = 5").exception(ls::VM::Exception::CANT_MODIFY_READONLY_OBJECT);
+	code("Object.readonly.v = 5").exception(ls::vm::Exception::CANT_MODIFY_READONLY_OBJECT);
 	code("let o = [{}, ''][0] o.values").equals("<function>");
 
 	section("Object.operator ==");

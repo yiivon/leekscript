@@ -50,32 +50,32 @@ void Test::test_operators() {
 	code("let a = 2 let b = 5 ['', a <=> b]").equals("['', 5]");
 
 	header("Invalid operators");
-	code("'hello' ** 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("null / 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("null % 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("null - 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = null a += 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = null a -= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = null a *= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = null a /= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = null a **= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = null a %= 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("'hello' ** 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("null / 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("null % 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("null - 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a += 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a -= 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a *= 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a /= 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a **= 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = null a %= 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("let a = null a[0]").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"a"});
 	code("let a = null !a").equals("true");
-	code("|null|").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("|null|").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("null[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
-	code("let a = [null, ''][0] a[2]").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("let a = [null, ''][0] a[2] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("let a = [null, ''][0] a[2]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("let a = [null, ''][0] a[2] = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("null[2:5]").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
 	code("null[2:5] = 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
 	code("(5 + 2) += 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5 + 2"});
 	code("2[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"2"});
-	code("'hello'[2:5] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("let a = [null, ''][0] a[2:5]").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = [null, ''][0] a[2:5] = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("var a = [null, ''][0] a.toto = 5").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("12 in [12, ''][0]").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
-	code("'hello' in [12, ''][0]").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("'hello'[2:5] = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("let a = [null, ''][0] a[2:5]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = [null, ''][0] a[2:5] = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = [null, ''][0] a.toto = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("12 in [12, ''][0]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("'hello' in [12, ''][0]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	/*
 	a ~~ b => (a ~~ b)

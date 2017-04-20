@@ -211,7 +211,7 @@ V LSMap<K, V>::at(const K key) const {
 		ex = true;
 	}
 	if (ex)
-		jit_exception_throw(new VM::ExceptionObj(VM::Exception::ARRAY_OUT_OF_BOUNDS));
+		jit_exception_throw(new vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS));
 	assert(false); // LCOV_EXCL_LINE
 }
 
@@ -220,7 +220,7 @@ inline LSValue** LSMap<K, T>::atL(const LSValue* key) {
 	// Can't apply default atL operator on maps with non-pointer values,
 	// like map<K, int> and map<K, double>
 	LSValue::delete_temporary(key);
-	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
 	assert(false); // LCOV_EXCL_LINE
 }
 
@@ -237,7 +237,7 @@ inline LSValue** LSMap<int, LSValue*>::atL(const LSValue* key) {
 		return r;
 	}
 	LSValue::delete_temporary(key);
-	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
 	assert(false); // LCOV_EXCL_LINE
 }
 
@@ -249,7 +249,7 @@ inline LSValue** LSMap<double, LSValue*>::atL(const LSValue* key) {
 		return r;
 	}
 	LSValue::delete_temporary(key);
-	jit_exception_throw(new VM::ExceptionObj(VM::Exception::NO_SUCH_OPERATOR));
+	jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
 	assert(false); // LCOV_EXCL_LINE
 }
 

@@ -202,7 +202,7 @@ void Test::Input::equals(std::string expected) {
 		pass(expected);
 	} else {
 		auto actual = result.value;
-		if (result.exception != nullptr && result.exception->type != ls::VM::Exception::NO_EXCEPTION) {
+		if (result.exception != nullptr && result.exception->type != ls::vm::Exception::NO_EXCEPTION) {
 			actual = "Unexpected exception: " + ls::VM::exception_message(result.exception->type);
 		}
 		fail(expected, actual + errors);
@@ -315,17 +315,17 @@ void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 	}
 }
 
-void Test::Input::exception(ls::VM::Exception expected, std::vector<ls::VM::exception_frame> frames) {
+void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exception_frame> frames) {
 
 	auto result = run(false);
 
-	auto actual_type = result.exception != nullptr ? result.exception->type : ls::VM::Exception::NO_EXCEPTION;
-	auto actual_frames = result.exception != nullptr ? result.exception->frames : std::vector<ls::VM::exception_frame>();
+	auto actual_type = result.exception != nullptr ? result.exception->type : ls::vm::Exception::NO_EXCEPTION;
+	auto actual_frames = result.exception != nullptr ? result.exception->frames : std::vector<ls::vm::exception_frame>();
 
-	if (actual_type == expected /*&& (actual_frames == frames || expected == ls::VM::Exception::NO_EXCEPTION) || actual_frames.size() == 0*/) {
+	if (actual_type == expected /*&& (actual_frames == frames || expected == ls::vm::Exception::NO_EXCEPTION) || actual_frames.size() == 0*/) {
 		pass(result.exception != nullptr ? result.exception->to_string() : "(no exception)");
 	} else {
-		ls::VM::ExceptionObj expected_exception(expected);
+		ls::vm::ExceptionObj expected_exception(expected);
 		expected_exception.frames = frames;
 		auto expected_message = expected_exception.to_string();
 		auto actual_message = result.exception == nullptr ? "(no exception)" : result.exception->to_string();

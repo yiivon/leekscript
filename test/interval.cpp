@@ -45,22 +45,22 @@ void Test::test_intervals() {
 	code("[1000..2000][12]").equals("1012");
 	code("[-100..0][5]").equals("-95");
 	code("['', [10..20]][1][5]").equals("15");
-	code("['', [10..20]][1][50]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("['', [10..20]][1][50]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[1..10]['hello']").semantic_error( ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "[1..10]", ls::Type::STRING_TMP.to_string()});
-	code("let i = ['', [10..20]][1] i['hello']").exception(ls::VM::Exception::ARRAY_KEY_IS_NOT_NUMBER);
-	code("[1..10][50]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("[1..10][-10]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let i = ['', [10..20]][1] i['hello']").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	code("[1..10][50]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10][-10]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("['', [1..10][5]]").equals("['', 6]");
-	code("let a = [1..10] a[5] = 2").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("let a = [1..10] a[5] = 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Interval.operator [:]");
 	code("[5..5][0:0]").equals("[5]");
 	code("[1..10][3:5]").equals("[4..6]");
 	code("[1..10000000][500000:600000]").equals("[500001..600001]");
-	code("[1..10][100:200]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("[1..10][-1:5]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("[1..10][20:5]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("[1..10][5:20]").exception(ls::VM::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10][100:200]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10][-1:5]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10][20:5]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10][5:20]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("|Interval|");
 	code("|[0..1]|").equals("2");

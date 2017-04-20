@@ -82,7 +82,7 @@ public:
 		void syntaxic_error(ls::SyntaxicalError::Type error, std::vector<std::string> params);
 		void lexical_error(ls::LexicalError::Type error);
 		void operations(int ops);
-		void exception(ls::VM::Exception, std::vector<ls::VM::exception_frame> frames = {{"main", 1}});
+		void exception(ls::vm::Exception, std::vector<ls::vm::exception_frame> frames = {{"main", 1}});
 		void output(std::string expected);
 		void quine();
 		Input& timeout(int ms);

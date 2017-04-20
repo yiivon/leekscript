@@ -93,19 +93,19 @@ void Test::test_functions() {
  	code("!(x -> x)").equals("false");
 
 	section("Function.operator ~");
-	code("~(x -> x)").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("~(x -> x)").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Function.operator ++x");
-	code("++(x -> x)").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("++(x -> x)").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Function.operator --x");
-	code("--(x -> x)").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	code("--(x -> x)").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	// section("Function.operator x++");
-	// code("(x -> x)++").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	// code("(x -> x)++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	// section("Function.operator x--");
-	// code("(x -> x)--").exception(ls::VM::Exception::NO_SUCH_OPERATOR);
+	// code("(x -> x)--").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Operator ~ ");
 	code("let a = 10 a ~ x -> x ** 2").equals("100");

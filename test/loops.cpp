@@ -80,7 +80,7 @@ void Test::test_loops() {
 	 * For loops
 	 */
 	header("For loops");
-	code("for var i = 0; ; i++ {}").ops_limit(1000).exception(ls::VM::Exception::OPERATION_LIMIT_EXCEEDED);
+	code("for var i = 0; ; i++ {}").ops_limit(1000).exception(ls::vm::Exception::OPERATION_LIMIT_EXCEEDED);
 	code("for var i = 0; false; i++ {}").equals("(void)");
 	code("for var i = 0; i < 10; i++ {}").equals("(void)");
 	code("var s = 0 for var i = 0; i < 5; i++ do s += i end s").equals("10");

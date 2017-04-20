@@ -17,6 +17,7 @@
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
 #include "../compiler/Compiler.hpp"
+#include "Exception.hpp"
 
 #define OPERATION_LIMIT 10000000
 
@@ -53,59 +54,6 @@ template <class R> class LSFunction;
 class VM {
 public:
 
-	enum Exception {
-		DIVISION_BY_ZERO = -2,
-		NO_EXCEPTION = 0,
-		EXCEPTION = 1,
-		OPERATION_LIMIT_EXCEEDED = 2,
-		NUMBER_OVERFLOW = 3,
-		NO_SUCH_OPERATOR = 4,
-		ARRAY_OUT_OF_BOUNDS = 5,
-		ARRAY_KEY_IS_NOT_NUMBER = 6,
-		CANT_MODIFY_READONLY_OBJECT = 7,
-		NO_SUCH_ATTRIBUTE = 8
-	};
-
-	struct exception_frame {
-		size_t line;
-		std::string file;
-		std::string function;
-		void* frame;
-		void* pc;
-		exception_frame() {}
-		exception_frame(std::string function, size_t line) : line(line), file("test"), function(function) {}
-		bool operator == (const exception_frame& o) const {
-			return line == o.line && function == o.function;
-		}
-	};
-
-	struct ExceptionObj {
-		Exception type;
-		std::vector<exception_frame> frames;
-		ExceptionObj(Exception type) : type(type) {}
-		std::string to_string(bool colors = true) const {
-			auto pad = [](std::string s, int l) {
-				l -= s.size();
-				while (l-- > 0) s = " " + s;
-				return s;
-			};
-			size_t padding = 0;
-			for (auto& f : frames) {
-				padding = fmax(padding, f.function.size() + 2);
-			}
-			std::ostringstream oss;
-			oss << "Exception " << (colors ? BOLD : "") << VM::exception_message(type) << (colors ? END_COLOR : "") << std::endl;
-			for (const auto& f : frames) {
-				oss << (colors ? BOLD : "") << "    > " << (colors ? END_COLOR : "") << pad(f.function + "()", padding) << " @ " << (colors ? BOLD : "") << f.file << ":" << f.line << (colors ? END_COLOR : "");
-				#if STACKTRACE_DETAILS
-					oss << " (frame: " << f.frame << ", pc: " << f.pc << ")";
-				#endif
-				oss << std::endl;
-			}
-			return oss.str();
-		}
-	};
-
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;
 	static jit_type_t mpz_type;
 	static VM* current_vm;
@@ -116,7 +64,7 @@ public:
 		std::vector<LexicalError> lexical_errors;
 		std::vector<SyntaxicalError> syntaxical_errors;
 		std::vector<SemanticError> semantical_errors;
-		ExceptionObj* exception = nullptr;
+		vm::ExceptionObj* exception = nullptr;
 		std::string program = "";
 		std::string value = "";
 		std::string context = "";
@@ -145,7 +93,7 @@ public:
 	std::ostream* output = &std::cout;
 	long mpz_created = 0;
 	long mpz_deleted = 0;
-	ExceptionObj* last_exception = nullptr;
+	vm::ExceptionObj* last_exception = nullptr;
 	jit_stack_trace_t stack_trace;
 	jit_context_t jit_context;
 	std::string file_name;
@@ -181,7 +129,7 @@ public:
 	/** Utilities **/
 	static void print_mpz_int(jit_function_t F, jit_value_t val);
 	void store_exception(jit_function_t F, jit_value_t ex);
-	static std::string exception_message(VM::Exception expected);
+	static std::string exception_message(vm::Exception expected);
 
 	static unsigned int get_offset(jit_context_t context, void* pc) {
 		auto trace = (jit_stack_trace_t) jit_malloc(sizeof(struct jit_stack_trace));
@@ -194,7 +142,7 @@ public:
 
 	template <unsigned int level>
 	static void* get_exception_object(int obj) {
-		auto ex = new VM::ExceptionObj((VM::Exception) obj);
+		auto ex = new vm::ExceptionObj((vm::Exception) obj);
 		auto context = VM::current()->jit_context;
 		auto frame = __builtin_frame_address(level);
 		size_t N = 16;
@@ -204,7 +152,7 @@ public:
 		while (true) {
 			auto line = get_offset(context, pc);
 			if (line == JIT_NO_OFFSET) break;
-			VM::exception_frame frame_object;
+			vm::exception_frame frame_object;
 			frame_object.pc = pc;
 			frame_object.frame = frame;
 			frame_object.line = line;
