@@ -201,7 +201,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log10_real},
 	});
 	method("max", {
-		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
+		{Type::POINTER, Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::max_float_float},
 		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::max_float_float},
 	});
