@@ -44,6 +44,8 @@ struct ExceptionObj {
 	std::vector<exception_frame> frames;
 	ExceptionObj(Exception type) : type(type) {}
 	std::string to_string(bool colors = true) const;
+
+	static std::string exception_message(vm::Exception expected);
 };
 
 }

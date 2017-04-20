@@ -203,7 +203,7 @@ void Test::Input::equals(std::string expected) {
 	} else {
 		auto actual = result.value;
 		if (result.exception != nullptr && result.exception->type != ls::vm::Exception::NO_EXCEPTION) {
-			actual = "Unexpected exception: " + ls::VM::exception_message(result.exception->type);
+			actual = "Unexpected exception: " + ls::vm::ExceptionObj::exception_message(result.exception->type);
 		}
 		fail(expected, actual + errors);
 	}

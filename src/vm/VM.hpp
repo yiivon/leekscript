@@ -129,7 +129,6 @@ public:
 	/** Utilities **/
 	static void print_mpz_int(jit_function_t F, jit_value_t val);
 	void store_exception(jit_function_t F, jit_value_t ex);
-	static std::string exception_message(vm::Exception expected);
 
 	static unsigned int get_offset(jit_context_t context, void* pc) {
 		auto trace = (jit_stack_trace_t) jit_malloc(sizeof(struct jit_stack_trace));
