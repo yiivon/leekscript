@@ -38,6 +38,7 @@ std::string ExceptionObj::exception_message(vm::Exception expected) {
 	case vm::Exception::ARRAY_KEY_IS_NOT_NUMBER: return "array_key_is_not_a_number";
 	case vm::Exception::CANT_MODIFY_READONLY_OBJECT: return "cant_modify_readonly_object";
 	case vm::Exception::NO_SUCH_ATTRIBUTE: return "no_such_attribute";
+	case vm::Exception::WRONG_ARGUMENT_TYPE: return "wrong_argument_type";
 	}
 	return "??" + std::to_string((int) expected) + "??";
 }
