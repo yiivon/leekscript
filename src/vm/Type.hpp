@@ -131,7 +131,7 @@ public:
 
 class IntervalRawType : public BaseRawType {
 public:
-	virtual int id() const { return 5; }
+	virtual int id() const { return 8; }
 	virtual const std::string getName() const { return "interval"; }
 	virtual const std::string getClass() const { return "Interval"; }
 	virtual const std::string getJsonName() const { return "interval"; }
@@ -141,7 +141,7 @@ public:
 
 class ObjectRawType : public BaseRawType {
 public:
-	virtual int id() const { return 9; }
+	virtual int id() const { return 10; }
 	virtual const std::string getName() const { return "object"; }
 	virtual const std::string getClass() const { return "Object"; }
 	virtual const std::string getJsonName() const { return "object"; }
@@ -151,7 +151,7 @@ public:
 
 class FunctionRawType : public BaseRawType {
 public:
-	virtual int id() const { return 8; }
+	virtual int id() const { return 9; }
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getClass() const { return "Function"; }
 	virtual const std::string getJsonName() const { return "function"; }
@@ -159,7 +159,7 @@ public:
 
 class ClassRawType : public BaseRawType {
 public:
-	virtual int id() const { return 10; }
+	virtual int id() const { return 11; }
 	virtual const std::string getName() const { return "class"; }
 	virtual const std::string getClass() const { return "Class"; }
 	virtual const std::string getJsonName() const { return "class"; }
