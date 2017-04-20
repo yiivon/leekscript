@@ -19,7 +19,7 @@
 using namespace std;
 
 void print_errors(ls::VM::Result& result, std::ostream& os, bool json);
-void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops);
+void print_result(ls::VM::Result& result, const std::string& output, bool json, bool display_time, bool ops);
 
 int main(int argc, char* argv[]) {
 
@@ -84,8 +84,13 @@ int main(int argc, char* argv[]) {
 			file_name = "(snippet)";
 		}
 		/** Execute **/
-		auto result = ls::VM(v1).execute(code, "{}", file_name, debug_mode, ops);
-		print_result(result, output_json, display_time, ops);
+		ls::VM vm {v1};
+		std::ostringstream oss;
+		if (output_json)
+			vm.output = &oss;
+		auto result = vm.execute(code, "{}", file_name, debug_mode, ops);
+		vm.output = &std::cout;
+		print_result(result, oss.str(), output_json, display_time, ops);
 		return 0;
 	}
 
@@ -100,14 +105,14 @@ int main(int argc, char* argv[]) {
 		std::getline(std::cin, code);
 		// Execute
 		auto result = vm.execute(code, ctx, "(top-level)", debug_mode, ops);
-		print_result(result, output_json, display_time, ops);
+		print_result(result, "", output_json, display_time, ops);
 		// Set new context
 		ctx = result.context;
 	}
 	return 0;
 }
 
-void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops) {
+void print_result(ls::VM::Result& result, const std::string& output, bool json, bool display_time, bool ops) {
 	if (json) {
 		std::ostringstream oss;
 		print_errors(result, oss, json);
@@ -117,7 +122,9 @@ void print_result(ls::VM::Result& result, bool json, bool display_time, bool ops
 		cout << "{\"success\":true,\"ops\":" << result.operations
 			<< ",\"time\":" << result.execution_time
 			<< ",\"ctx\":" << result.context
-			<< ",\"res\":\"" << res << "\"}" << endl;
+			<< ",\"res\":\"" << res << "\""
+			<< ",\"output\":" << Json(output)
+			<< "}" << endl;
 	} else {
 		print_errors(result, std::cout, json);
 		if (result.execution_success && result.value != "(void)") {
