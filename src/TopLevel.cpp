@@ -10,6 +10,7 @@
 #include <chrono>
 
 #include "leekscript.h"
+#include "constants.h"
 #include "../lib/utf8.h"
 #include "doc/Documentation.hpp"
 #include "../benchmark/Benchmark.hpp"
