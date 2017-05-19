@@ -540,6 +540,17 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_insn_store_relative(F, addr, 8, new_integer(0).v);
 		return it;
 	}
+	if (v.t == Type::LONG) {
+		jit_type_t types[3] = {jit_type_long, jit_type_long, jit_type_int};
+		auto long_iterator = jit_type_create_struct(types, 3, 1);
+		Compiler::value it = {jit_value_create(F, long_iterator), Type::LONG_ITERATOR};
+		jit_type_free(long_iterator);
+		auto addr = jit_insn_address_of(F, it.v);
+		jit_insn_store_relative(F, addr, 0, v.v);
+		jit_insn_store_relative(F, addr, 8, to_long(insn_pow(new_integer(10), to_int(insn_log10(v)))).v);
+		jit_insn_store_relative(F, addr, 16, new_long(0).v);
+		return it;
+	}
 }
 
 Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
@@ -570,6 +581,11 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	if (it.t == Type::INTEGER_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto p = insn_load(addr, 4, Type::INTEGER);
+		return insn_eq(p, new_integer(0));
+	}
+	if (it.t == Type::LONG_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto p = insn_load(addr, 8, Type::LONG);
 		return insn_eq(p, new_integer(0));
 	}
 }
@@ -607,6 +623,10 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 	if (it.t == Type::INTEGER_ITERATOR) {
 		auto addr = insn_address_of(it);
 		return insn_load(addr, 8, Type::INTEGER);
+	}
+	if (it.t == Type::LONG_ITERATOR) {
+		auto addr = insn_address_of(it);
+		return insn_load(addr, 16, Type::INTEGER);
 	}
 }
 
@@ -671,6 +691,12 @@ Compiler::value Compiler::iterator_get(Compiler::value it, Compiler::value previ
 		auto p = insn_load(addr, 4, Type::INTEGER);
 		return insn_int_div(n, p);
 	}
+	if (it.t == Type::LONG_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto n = insn_load(addr, 0, Type::LONG);
+		auto p = insn_load(addr, 8, Type::LONG);
+		return insn_int_div(n, p);
+	}
 }
 
 void Compiler::iterator_increment(Compiler::value it) const {
@@ -715,6 +741,16 @@ void Compiler::iterator_increment(Compiler::value it) const {
 		jit_insn_store_relative(F, addr.v, 0, insn_mod(n, p).v);
 		jit_insn_store_relative(F, addr.v, 4, insn_int_div(p, new_integer(10)).v);
 		jit_insn_store_relative(F, addr.v, 8, insn_add(i, new_integer(1)).v);
+		return;
+	}
+	if (it.t == Type::LONG_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto n = insn_load(addr, 0, Type::LONG);
+		auto p = insn_load(addr, 8, Type::LONG);
+		auto i = insn_load(addr, 16, Type::INTEGER);
+		jit_insn_store_relative(F, addr.v, 0, insn_mod(n, p).v);
+		jit_insn_store_relative(F, addr.v, 8, insn_int_div(p, new_integer(10)).v);
+		jit_insn_store_relative(F, addr.v, 16, insn_add(i, new_integer(1)).v);
 		return;
 	}
 }
