@@ -314,7 +314,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				((LeftValue*) v1)->change_type(analyser, v2->type);
 			}
 		} else {
-			if (Type::more_specific(v2->type, v1->type)) {
+			if (!array_push && Type::more_specific(v2->type, v1->type)) {
 				((LeftValue*) v1)->change_type(analyser, v2->type);
 			}
 		}
