@@ -346,6 +346,7 @@ public:
 	static const Type SET_ITERATOR;
 	static const Type INTEGER_ITERATOR;
 	static const Type LONG_ITERATOR;
+	static const Type MPZ_ITERATOR;
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);

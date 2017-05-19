@@ -107,6 +107,7 @@ const Type Type::INTERVAL_ITERATOR(RawType::INTERVAL, Nature::VALUE, Type::INTEG
 const Type Type::SET_ITERATOR(RawType::SET, Nature::VALUE, Type::UNKNOWN);
 const Type Type::INTEGER_ITERATOR(RawType::INTEGER, Nature::VALUE, Type::INTEGER);
 const Type Type::LONG_ITERATOR(RawType::LONG, Nature::VALUE, Type::INTEGER);
+const Type Type::MPZ_ITERATOR(RawType::MPZ, Nature::VALUE, Type::INTEGER);
 
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
