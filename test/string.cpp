@@ -113,7 +113,7 @@ void Test::test_strings() {
 	code("'aaab' < 'aaaa'").equals("false");
 	code("'test' < 'test'").equals("false");
 
-	// Unicode
+	section("Unicode");
 	code("'韭'").equals("'韭'");
 	code("'♫☯🐖👽'").equals("'♫☯🐖👽'");
 	code("'a♫b☯c🐖d👽'").equals("'a♫b☯c🐖d👽'");
@@ -151,8 +151,12 @@ void Test::test_strings() {
 	code("new String('salut')").equals("'salut'");
 	code("String()").equals("''");
 	code("String('yo')").equals("'yo'");
-	code("String.size('salut')").equals("5");
 	code("['hello'.size(), 'str']").equals("[5, 'str']");
+
+	section("String.size()");
+	code("String.size('salut')").equals("5");
+	code("'a'.size == 'b'.size").equals("true");
+	code("[1, 'salut tout le monde'][1].size()").equals("19");
 
 	section("String.toUpper()");
 	code("String.toUpper('')").equals("''");
