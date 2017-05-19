@@ -302,9 +302,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	if (this_ptr != nullptr) {
 
 		vector<Compiler::value> args = { this_ptr->compile(c) };
+		this_ptr->compile_end(c);
 		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr->type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments[i]->compile(c));
+			arguments[i]->compile_end(c);
 			lsvalue_types.push_back(function->type.getArgumentType(i).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
@@ -331,6 +333,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		vector<LSValueType> lsvalue_types;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments[i]->compile(c));
+			arguments[i]->compile_end(c);
 			lsvalue_types.push_back((LSValueType) function->type.getArgumentType(i).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
@@ -423,6 +426,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
 			args.push_back(arguments[i]->compile(c).v);
+			arguments[i]->compile_end(c);
 			if (function->type.getArgumentType(i) == Type::MPZ &&
 				arguments[i]->type != Type::MPZ_TMP) {
 				args[offset + i] = c.insn_clone_mpz({args[offset + i], Type::MPZ}).v;

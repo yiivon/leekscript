@@ -121,6 +121,7 @@ Compiler::value For::compile(Compiler& c) const {
 	c.inc_ops(1);
 	if (condition != nullptr) {
 		auto condition_v = condition->compile(c);
+		condition->compile_end(c);
 		if (condition->type.nature == Nature::POINTER) {
 			auto bool_v = c.insn_to_bool(condition_v);
 			c.insn_delete_temporary(condition_v);

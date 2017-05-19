@@ -501,6 +501,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			args.push_back(op->reversed ? v2->compile(c) : v1->compile(c));
 			args.push_back(op->reversed ? v1->compile(c) : v2->compile(c));
 		}
+		v1->compile_end(c);
+		v2->compile_end(c);
 
 		Compiler::value res;
 		if (is_native_method) {
@@ -532,6 +534,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (array_access && array_access->key == nullptr) {
 				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
 				auto y = c.insn_to_pointer(v2->compile(c));
+				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
 				});
@@ -543,11 +546,13 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 				if (v1->type.must_manage_memory()) {
 					auto v1v = v1->compile(c);
+					v1->compile_end(c);
 					c.insn_delete(v1v);
 				}
 				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v2->type));
 				c.add_var(varval->name, var, v2->type, false);
 				auto v2_value = v2->compile(c);
+				v2->compile_end(c);
 				if (v2->type.must_manage_memory()) {
 					v2_value = c.insn_move_inc(v2_value);
 				}
@@ -575,6 +580,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 
 				// Move the object
 				y = c.insn_move_inc(y);
@@ -590,8 +596,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			} else if (equal_previous_type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 				if (v1->type == Type::MPZ) {
 					auto x = v1->compile(c);
+					v1->compile_end(c);
 					auto a = c.insn_address_of(x);
 					auto b = c.insn_address_of(y);
 					c.insn_call(Type::VOID, {a, b}, &mpz_set);
@@ -614,6 +622,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else if (equal_previous_type.nature == Nature::POINTER) {
 				auto x = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 				c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue::delete_ref(*x);
 					*x = y->move_inc();
@@ -648,6 +657,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 				auto x = c.insn_load(x_addr, 0, v1->type);
 				auto sum = c.insn_add(x, y);
 				jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
@@ -657,7 +667,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return sum;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				v1->compile_end(c);
 				auto y = c.insn_to_pointer(v2->compile(c));
+				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
 				});
@@ -668,6 +680,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				jit_value_t sum = jit_insn_sub(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -677,6 +691,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->sub_eq(y);
 				});
@@ -687,6 +702,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				jit_value_t sum = jit_insn_mul(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -696,6 +713,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				auto x = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->mul_eq(y);
 				});
@@ -706,6 +724,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				jit_value_t xf = jit_value_create(c.F, LS_REAL);
 				jit_insn_store(c.F, xf, x.v);
 				jit_value_t sum = jit_insn_div(c.F, xf, y.v);
@@ -717,6 +737,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->div_eq(y);
 				});
@@ -727,6 +748,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				jit_value_t sum = jit_insn_rem(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -742,6 +765,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				jit_value_t sum = jit_insn_pow(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -778,6 +803,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				auto r = jit_insn_convert(c.F, jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v)), VM::get_jit_type(type), 0);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 					return {VM::value_to_pointer(c.F, r, type), type};
@@ -793,6 +820,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 				auto x = c.insn_load(x_addr, 0, v1->type);
 				auto r = jit_insn_convert(c.F, jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v)), VM::get_jit_type(type), 0);
 				jit_insn_store_relative(c.F, x_addr.v, 0, r);
@@ -803,6 +831,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
+				v2->compile_end(c);
 				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue* res = (*x)->int_div_eq(y);
 					long v = ((LSNumber*) res)->value;
@@ -885,6 +914,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				auto a = jit_insn_shl(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, a);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -905,6 +936,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				auto a = jit_insn_shr(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, a);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -925,6 +958,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
 				auto a = jit_insn_ushr(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, a);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -944,6 +979,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			jit_type_t args_types[2] = {LS_POINTER};
 			auto x = v1->compile(c);
+			v1->compile_end(c);
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 1);
 			jit_value_t r = jit_insn_call_native(c.F, "is_null", (void*) jit_is_null, sig, &x.v, 1, JIT_CALL_NOTHROW);
 			jit_type_free(sig);
@@ -956,6 +992,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			jit_insn_label(c.F, &label_else);
 			// {
 			auto y = v2->compile(c);
+			v2->compile_end(c);
 			jit_insn_store(c.F, v, y.v);
 
 			jit_insn_label(c.F, &label_end);
@@ -973,6 +1010,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			jit_insn_label(c.F, &try_start);
 			auto r = jit_value_create(c.F, VM::get_jit_type(type));
 			jit_insn_store(c.F, r, v1->compile(c).v);
+			v1->compile_end(c);
 			jit_insn_label(c.F, &try_end);
 
 			jit_insn_branch(c.F, &no_exception);
@@ -981,6 +1019,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			c.add_catcher(try_start, try_end, exception_thrown);
 
 			auto y = v2->compile(c);
+			v2->compile_end(c);
 			if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 				y = {VM::value_to_pointer(c.F, y.v, v2->type), type};
 			}
@@ -1002,6 +1041,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 		auto x = v1->compile(c);
 		auto y = v2->compile(c);
+		v1->compile_end(c);
+		v2->compile_end(c);
 		auto r = jit_func(c.F, x.v, y.v);
 
 		if (type.nature == Nature::POINTER) {
@@ -1017,6 +1058,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 		if (args.size() == 0) {
 			args.push_back(v1->compile(c).v);
 			args.push_back(v2->compile(c).v);
+			v1->compile_end(c);
+			v2->compile_end(c);
 		}
 		jit_value_t v = jit_insn_call_native(c.F, "", ls_func, sig, args.data(), 2, 0);
 		jit_type_free(sig);

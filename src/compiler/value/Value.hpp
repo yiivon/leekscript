@@ -38,6 +38,7 @@ public:
 	virtual void analyse(SemanticAnalyser*, const Type&) = 0;
 
 	virtual Compiler::value compile(Compiler&) const = 0;
+	virtual void compile_end(Compiler&) const {}
 
 	static std::string tabs(int indent);
 };

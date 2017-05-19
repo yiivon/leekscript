@@ -145,6 +145,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	if (access_function != nullptr) {
 
 		auto obj = object->compile(c);
+		object->compile_end(c);
 		auto fun = (Compiler::value (*)(Compiler&, Compiler::value)) access_function;
 		return fun(c, obj);
 	}
@@ -154,6 +155,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		return c.new_pointer(new LSFunction<LSValue*>(attr_addr));
 	} else {
 		auto o = object->compile(c);
+		object->compile_end(c);
 		auto k = c.new_pointer(&field->content);
 		auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
@@ -165,6 +167,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	auto o = object->compile(c);
+	object->compile_end(c);
 	auto k = c.new_pointer(&field->content);
 	auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attrL(*key);

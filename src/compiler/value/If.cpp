@@ -105,6 +105,7 @@ Compiler::value If::compile(Compiler& c) const {
 	jit_label_t label_end = jit_label_undefined;
 
 	auto cond = condition->compile(c);
+	condition->compile_end(c);
 
 	if (condition->type.nature == Nature::POINTER) {
 		auto cond_bool = c.insn_to_bool(cond);
@@ -115,6 +116,7 @@ Compiler::value If::compile(Compiler& c) const {
 	}
 
 	auto then_v = then->compile(c);
+	then->compile_end(c);
 	if (then_v.v) {
 		jit_insn_store(c.F, res, then_v.v);
 	}
@@ -124,6 +126,7 @@ Compiler::value If::compile(Compiler& c) const {
 
 	if (elze != nullptr) {
 		auto else_v = elze->compile(c);
+		elze->compile_end(c);
 		if (else_v.v) {
 			jit_insn_store(c.F, res, else_v.v);
 		}

@@ -110,6 +110,7 @@ Compiler::value Set::compile(Compiler& c) const {
 	double i = 0;
 	for (Value* ex : expressions) {
 		auto v = ex->compile(c);
+		ex->compile_end(c);
 
 		jit_value_t args_v[] = {s, v.v};
 		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 2, JIT_CALL_NOTHROW);

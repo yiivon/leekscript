@@ -193,6 +193,7 @@ Compiler::value Array::compile(Compiler& c) const {
 
 	for (Value* val : expressions) {
 		auto v = val->compile(c);
+		val->compile_end(c);
 		v = c.insn_move(v);
 		c.insn_push_array(array, {v.v, type.getElementType()});
 	}

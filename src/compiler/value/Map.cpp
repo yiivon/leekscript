@@ -202,7 +202,9 @@ Compiler::value Map::compile(Compiler &c) const {
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		auto k = keys[i]->compile(c);
+		keys[i]->compile_end(c);
 		auto v = values[i]->compile(c);
+		values[i]->compile_end(c);
 
 		jit_value_t args_v[] = {map, k.v, v.v};
 		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 3, JIT_CALL_NOTHROW); ops += std::log2(i + 1);

@@ -187,7 +187,8 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 	jit_insn_mark_offset(c.F, open_bracket->location.start.line);
 
-	auto a = array->compile(c);
+	((ArrayAccess*) this)->compiled_array = array->compile(c);
+	array->compile_end(c);
 
 	c.inc_ops(2); // Array access : 2 operations
 
@@ -199,12 +200,11 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 2, 1);
 
 			auto k = key->compile(c);
+			key->compile_end(c);
 
-			jit_value_t args[] = {a.v, k.v};
+			jit_value_t args[] = {compiled_array.v, k.v};
 			jit_value_t res = jit_insn_call_native(c.F, "access", (void*) interval_access, sig, args, 2, 0);
 			jit_type_free(sig);
-
-			c.insn_delete_temporary(a);
 
 			if (type.nature == Nature::POINTER) {
 				return {VM::value_to_pointer(c.F, res, type), type};
@@ -216,6 +216,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			jit_type_t args_types[2] = {LS_POINTER, VM::get_jit_type(map_key_type)};
 
 			auto k = key->compile(c);
+			key->compile_end(c);
 
 			void* func = nullptr;
 			if (map_key_type == Type::INTEGER) {
@@ -245,14 +246,13 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			}
 
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(array_element_type), args_types, 2, 1);
-			jit_value_t args[] = {a.v, k.v};
+			jit_value_t args[] = {compiled_array.v, k.v};
 			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, 0);
 			jit_type_free(sig);
 
 			// if (key->type.must_manage_memory()) {
 				c.insn_delete_temporary(k);
 			// }
-			c.insn_delete_temporary(a);
 
 			c.inc_ops(2);
 
@@ -264,9 +264,10 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		} else if (array->type.raw_type == RawType::STRING or array->type.raw_type == RawType::ARRAY) {
 
 			auto k = key->compile(c);
+			key->compile_end(c);
 
 			if (k.t.nature == Nature::POINTER) {
-				k = c.insn_call(Type::INTEGER, {a, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
+				k = c.insn_call(Type::INTEGER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
 					auto n = dynamic_cast<LSNumber*>(key_pointer);
 					if (!n) {
 						LSValue::delete_temporary(array);
@@ -281,20 +282,18 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			k = c.to_int(k);
 
 			// Check index : k < 0 or k >= size
-			auto array_size = c.insn_array_size(a);
+			auto array_size = c.insn_array_size(compiled_array);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
-				c.insn_delete_temporary(a);
+				c.insn_delete_temporary(compiled_array);
 				c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 			});
 
 			if (array->type.raw_type == RawType::STRING) {
-				auto e = c.insn_call(Type::STRING, {a, k}, (void*) &LSString::codePointAt);
-				c.insn_delete_temporary(a);
+				auto e = c.insn_call(Type::STRING, {compiled_array, k}, (void*) &LSString::codePointAt);
 				return e;
 			} else {
-				auto e = c.insn_load(c.insn_add(c.insn_load(a, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k)), 0, array_element_type);
+				auto e = c.insn_load(c.insn_add(c.insn_load(compiled_array, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k)), 0, array_element_type);
 				e = c.clone(e);
-				c.insn_delete_temporary(a);
 
 				if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 					return {VM::value_to_pointer(c.F, e.v, type), type};
@@ -304,23 +303,20 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		} else {
 			// Unknown type, call generic at() operator
 			auto k = key->compile(c);
-			auto e = c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSValue* array, LSValue* key) {
+			key->compile_end(c);
+			auto e = c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->at(key);
 			});
-			c.insn_delete_temporary(a);
 			c.insn_delete_temporary(k);
 			return e;
 		}
-
 	} else {
-
 		auto start = key->compile(c);
 		auto end = key2->compile(c);
-
-		return c.insn_call(Type::POINTER, {a, start, end}, (void*) +[](LSValue* a, int start, int end) {
-			auto r = a->range(start, end);
-			LSValue::delete_temporary(a);
-			return r;
+		key->compile_end(c);
+		key2->compile_end(c);
+		return c.insn_call(Type::POINTER, {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
+			return a->range(start, end);
 		});
 	}
 }
@@ -328,63 +324,65 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 
 	// Compile the array
-	Compiler::value a = [&]() {
+	((ArrayAccess*) this)->compiled_array = [&]() {
 		if (auto la = dynamic_cast<LeftValue*>(array)) {
 			return c.insn_load(la->compile_l(c), 0, array->type);
 		} else {
 			return array->compile(c);
 		}
 	}();
+	array->compile_end(c);
 
 	if (key2 == nullptr) {
 		// Compile the key
 		auto k = key->compile(c);
+		key->compile_end(c);
 		// Access
 		jit_insn_mark_offset(c.F, location().start.line);
 		if (array->type.raw_type == RawType::ARRAY) {
-			auto array_size = c.insn_array_size(a);
+			auto array_size = c.insn_array_size(compiled_array);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
-				c.insn_delete_temporary(a);
+				c.insn_delete_temporary(compiled_array);
 				c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 			});
-			return c.insn_add(c.insn_load(a, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k));
+			return c.insn_add(c.insn_load(compiled_array, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k));
 
 		} else if (array->type.raw_type == RawType::MAP) {
 
 			if (array->type == Type::PTR_INT_MAP) {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, int>* map, LSValue* key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<LSValue*, int>* map, LSValue* key) {
 					return map->atL_base(key);
 				});
 			} else if (array->type == Type::PTR_REAL_MAP) {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, double>* map, LSValue* key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<LSValue*, double>* map, LSValue* key) {
 					return map->atL_base(key);
 				});
 			} else if (array->type == Type::REAL_PTR_MAP) {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<double, LSValue*>* map, double key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<double, LSValue*>* map, double key) {
 					return map->atL_base(key);
 				});
 			} else if (array->type == Type::REAL_INT_MAP) {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<double, int>* map, double key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<double, int>* map, double key) {
 					return map->atL_base(key);
 				});
 			} else if (array->type == Type::REAL_REAL_MAP) {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<double, double>* map, double key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<double, double>* map, double key) {
 					return map->atL_base(key);
 				});
 			} else if (array->type == Type::INT_PTR_MAP) {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<int, LSValue*>* map, int key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<int, LSValue*>* map, int key) {
 					return map->atL_base(key);
 				});
 			} else if (array->type == Type::INT_INT_MAP) {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<int, int>* map, int key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<int, int>* map, int key) {
 					return map->atL_base(key);
 				});
 			} else if (array->type == Type::INT_REAL_MAP) {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<int, double>* map, int key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<int, double>* map, int key) {
 					return map->atL_base(key);
 				});
 			} else {
-				return c.insn_call(Type::POINTER, {a, k}, (void*) +[](LSMap<LSValue*, LSValue*>* map, LSValue* key) {
+				return c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSMap<LSValue*, LSValue*>* map, LSValue* key) {
 					return map->atL_base(key);
 				});
 			}
@@ -392,19 +390,25 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			if (k.t == Type::INTEGER) {
 				k = {VM::value_to_pointer(c.F, k.v, Type::INTEGER), Type::POINTER};
 			}
-			return c.insn_call(type, {a, k}, (void*) +[](LSValue* array, LSValue* key) {
+			return c.insn_call(type, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->atL(key);
 			});
 		}
 	} else {
 		auto start = key->compile(c);
 		auto end = key2->compile(c);
+		key->compile_end(c);
+		key2->compile_end(c);
 		jit_insn_mark_offset(c.F, open_bracket->location.start.line);
-		return c.insn_call(Type::POINTER, {a, start, end}, (void*) +[](LSValue* a, int start, int end) {
+		return c.insn_call(Type::POINTER, {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
 			// TODO
 			a->rangeL(start, end);
 		});
 	}
+}
+
+void ArrayAccess::compile_end(Compiler& c) const {
+	c.insn_delete_temporary(compiled_array);
 }
 
 }

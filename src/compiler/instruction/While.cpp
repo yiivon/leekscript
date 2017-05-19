@@ -49,6 +49,7 @@ Compiler::value While::compile(Compiler& c) const {
 	jit_insn_label(c.F, &label_cond);
 	c.inc_ops(1);
 	auto cond = condition->compile(c);
+	condition->compile_end(c);
 	if (condition->type.nature == Nature::POINTER) {
 		auto cond_bool = c.insn_to_bool(cond);
 		c.insn_delete_temporary(cond);

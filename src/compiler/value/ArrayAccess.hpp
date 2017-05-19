@@ -18,6 +18,7 @@ public:
 	std::unique_ptr<Token> close_bracket;
 	Type array_element_type;
 	Type map_key_type;
+	Compiler::value compiled_array;
 
 	ArrayAccess();
 	virtual ~ArrayAccess();
@@ -32,6 +33,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_l(Compiler&) const override;
+	virtual void compile_end(Compiler&) const override;
 };
 
 }

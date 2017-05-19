@@ -33,6 +33,7 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 
 Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 	auto v = value->compile(c);
+	value->compile_end(c);
 	if (type.nature == Nature::VOID) {
 		c.insn_delete_temporary(v);
 		return {nullptr, Type::UNKNOWN};

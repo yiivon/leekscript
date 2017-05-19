@@ -117,6 +117,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				}
 
 				auto val = ex->compile(c);
+				ex->compile_end(c);
 				val = c.insn_move_inc(val);
 
 				c.set_var_type(name, ex->type);
