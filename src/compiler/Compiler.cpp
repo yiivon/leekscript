@@ -551,6 +551,18 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_insn_store_relative(F, addr, 16, new_long(0).v);
 		return it;
 	}
+	if (v.t == Type::MPZ) {
+		jit_type_t types[3] = {VM::mpz_type, VM::mpz_type, jit_type_int};
+		auto mpz_iterator = jit_type_create_struct(types, 3, 1);
+		Compiler::value it = {jit_value_create(F, mpz_iterator), Type::MPZ_ITERATOR};
+		jit_type_free(mpz_iterator);
+		auto addr = jit_insn_address_of(F, it.v);
+		jit_insn_store_relative(F, addr, 0, v.v);
+		auto l =
+		jit_insn_store_relative(F, addr, 16, to_long(insn_pow(new_integer(10), to_int(insn_log10(v)))).v);
+		jit_insn_store_relative(F, addr, 32, new_long(0).v);
+		return it;
+	}
 }
 
 Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
