@@ -26,8 +26,9 @@ OBJ_COVERAGE := $(patsubst %.cpp,build/coverage/%.o,$(SRC))
 OBJ_PROFILE := $(patsubst %.cpp,build/profile/%.o,$(SRC))
 OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
+COMPILER := g++
 OPTIM := -O2
-FLAGS := -std=c++17 -g3 -Wall -Wextra -Wno-pmf-conversions
+FLAGS := -std=c++1z -g3 -Wall -Wextra -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
 LIBS := -ljit -lgmp
 MAKEFLAGS += --jobs=$(shell nproc)
@@ -36,39 +37,42 @@ MAKEFLAGS += --jobs=$(shell nproc)
 
 all: build/leekscript
 
+clang: COMPILER=clang
+clang: all
+
 # Main build task, default build
 build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
-	g++ $(FLAGS) -o build/leekscript $(OBJ) $(OBJ_TOPLEVEL) $(LIBS)
+	$(COMPILER) $(FLAGS) -o build/leekscript $(OBJ) $(OBJ_TOPLEVEL) $(LIBS)
 	@echo "---------------"
 	@echo "Build finished!"
 	@echo "---------------"
 
 build/default/%.o: %.cpp
-	g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
-	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
+	$(COMPILER) -c $(OPTIM) $(FLAGS) -o "$@" "$<"
+	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/shared/%.o: %.cpp
-	g++ -c $(OPTIM) $(FLAGS) -fPIC -o "$@" "$<"
-	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
+	$(COMPILER) -c $(OPTIM) $(FLAGS) -fPIC -o "$@" "$<"
+	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/coverage/%.o: %.cpp
-	g++ -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o "$@" "$<"
-	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
+	$(COMPILER) -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o "$@" "$<"
+	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/profile/%.o: %.cpp
-	g++ -c $(OPTIM) $(FLAGS) -pg -o "$@" "$<"
-	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
+	$(COMPILER) -c $(OPTIM) $(FLAGS) -pg -o "$@" "$<"
+	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/sanitized/%.o: %.cpp
-	g++ -c $(OPTIM) $(FLAGS) $(SANITIZE_FLAGS) -o "$@" "$<"
-	@g++ $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
+	$(COMPILER) -c $(OPTIM) $(FLAGS) $(SANITIZE_FLAGS) -o "$@" "$<"
+	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 $(BUILD_DIR):
 	@mkdir -p $@
 
 # Build test target
 build/leekscript-test: $(BUILD_DIR) $(OBJ) $(OBJ_TEST)
-	g++ $(FLAGS) -o build/leekscript-test $(OBJ) $(OBJ_TEST) $(LIBS)
+	$(COMPILER) $(FLAGS) -o build/leekscript-test $(OBJ) $(OBJ_TEST) $(LIBS)
 	@echo "--------------------------"
 	@echo "Build (test) finished!"
 	@echo "--------------------------"
@@ -76,7 +80,7 @@ build/leekscript-test: $(BUILD_DIR) $(OBJ) $(OBJ_TEST)
 # Build the shared library version of the leekscript
 # (libleekscript.so in build/)
 build/libleekscript.so: $(BUILD_DIR) $(OBJ_LIB)
-	g++ $(FLAGS) -shared -o build/libleekscript.so $(OBJ_LIB) $(LIBS)
+	$(COMPILER) $(FLAGS) -shared -o build/libleekscript.so $(OBJ_LIB) $(LIBS)
 	@echo "-----------------------"
 	@echo "Library build finished!"
 	@echo "-----------------------"
@@ -93,7 +97,7 @@ install: lib
 
 # Build with coverage flags enabled
 build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE) $(OBJ_TEST)
-	g++ $(FLAGS) -fprofile-arcs -ftest-coverage -o build/leekscript-coverage $(OBJ_COVERAGE) $(OBJ_TEST) $(LIBS)
+	$(COMPILER) $(FLAGS) -fprofile-arcs -ftest-coverage -o build/leekscript-coverage $(OBJ_COVERAGE) $(OBJ_TEST) $(LIBS)
 	@echo "--------------------------"
 	@echo "Build (coverage) finished!"
 	@echo "--------------------------"
@@ -107,10 +111,10 @@ benchmark-dir:
 	@mkdir -p build/benchmark
 
 build/benchmark/Benchmark.o: benchmark/Benchmark.cpp
-	g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
+	$(COMPILER) -c $(OPTIM) $(FLAGS) -o "$@" "$<"
 
 build/leekscript-benchmark: benchmark-dir build/leekscript $(OBJ_BENCHMARK)
-	g++ $(FLAGS) -o build/leekscript-benchmark $(OBJ_BENCHMARK)
+	$(COMPILER) $(FLAGS) -o build/leekscript-benchmark $(OBJ_BENCHMARK)
 	@echo "-------------------------"
 	@echo "Benchmark build finished!"
 	@echo "-------------------------"
@@ -144,7 +148,7 @@ coverage: build/leekscript-coverage
 
 # Build with profile flags enabled
 build/leekscript-profile: $(BUILD_DIR) $(OBJ_PROFILE) $(OBJ_TEST)
-	g++ $(FLAGS) -pg -o build/leekscript-profile $(OBJ_PROFILE) $(OBJ_TEST) $(LIBS)
+	$(COMPILER) $(FLAGS) -pg -o build/leekscript-profile $(OBJ_PROFILE) $(OBJ_TEST) $(LIBS)
 	@echo "--------------------------"
 	@echo "Build (profile) finished!"
 	@echo "--------------------------"
@@ -156,7 +160,7 @@ profile: build/leekscript-profile
 
 # Build with sanitize flags enabled
 build/leekscript-sanitized: $(BUILD_DIR) $(OBJ_SANITIZED) $(OBJ_TEST)
-	g++ $(FLAGS) $(SANITIZE_FLAGS) -o build/leekscript-sanitized $(OBJ_SANITIZED) $(OBJ_TEST) $(LIBS)
+	$(COMPILER) $(FLAGS) $(SANITIZE_FLAGS) -o build/leekscript-sanitized $(OBJ_SANITIZED) $(OBJ_TEST) $(LIBS)
 	@echo "--------------------------"
 	@echo "Build (sanitized) finished!"
 	@echo "--------------------------"
