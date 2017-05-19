@@ -410,17 +410,20 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	size_t offset = 1;
 
 	size_t arg_count = function->type.getArgumentTypes().size() + offset;
-	vector<jit_value_t> args;
+	vector<Compiler::value> args;
 	vector<jit_type_t> args_types;
+	vector<LSValueType> lsvalue_types;
 
 	if (is_unknown_method) {
 		// add 'this' object as first argument
-		args.push_back(jit_object.v);
+		args.push_back(jit_object);
 		args_types.push_back(VM::get_jit_type(object->type));
+		lsvalue_types.push_back(object->type.id());
 	} else {
 		// Function pointer as first argument
-		args.push_back(ls_fun_addr.v);
+		args.push_back(ls_fun_addr);
 		args_types.push_back(LS_POINTER);
+		lsvalue_types.push_back(Type::FUNCTION_P.id());
 	}
 
 	auto function_object = dynamic_cast<Function*>(function);
@@ -433,28 +436,33 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
-			args.push_back(arguments[i]->compile(c).v);
+			args.push_back(arguments[i]->compile(c));
 			arguments[i]->compile_end(c);
 			if (function->type.getArgumentType(i) == Type::MPZ &&
 				arguments[i]->type != Type::MPZ_TMP) {
-				args[offset + i] = c.insn_clone_mpz({args[offset + i], Type::MPZ}).v;
+				args[offset + i] = c.insn_clone_mpz(args[offset + i]);
 			}
 		} else {
-			args.push_back(function_object->defaultValues[i]->compile(c).v);
+			args.push_back(function_object->defaultValues[i]->compile(c));
 		}
 		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
-
+		lsvalue_types.push_back(function->type.getArgumentType(i).id());
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			args[offset + i] = c.insn_move_inc({args[offset + i], function->type.getArgumentType(i)}).v;
+			args[offset + i] = c.insn_move_inc(args[offset + i]);
 		}
 	}
 
 	jit_insn_mark_offset(c.F, location().start.line);
 
+	// TODO : some tests are failing with this
+	// c.insn_check_args(args, lsvalue_types);
+
 	jit_type_t jit_return_type = VM::get_jit_type(type);
 
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), args_types.size(), 1);
-	jit_value_t ret = jit_insn_call_indirect(c.F, fun, sig, args.data(), arg_count, 0);
+	vector<jit_value_t> jit_args;
+	for (const auto& a : args) jit_args.push_back(a.v);
+	jit_value_t ret = jit_insn_call_indirect(c.F, fun, sig, jit_args.data(), arg_count, 0);
 	// FIXME Not a fail : need two free() here ^^
 	jit_type_free(sig);
 	jit_type_free(sig);
@@ -462,11 +470,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// Destroy temporary arguments
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			c.insn_delete({args[offset + i], Type::POINTER});
+			c.insn_delete(args[offset + i]);
 		}
 		if (function->type.getArgumentType(i) == Type::MPZ ||
 			function->type.getArgumentType(i) == Type::MPZ_TMP) {
-			c.insn_delete_mpz({args[offset + i], Type::MPZ});
+			c.insn_delete_mpz(args[offset + i]);
 		}
 	}
 	c.insn_delete_temporary(ls_fun_addr);
