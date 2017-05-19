@@ -300,8 +300,11 @@ LSArray<R>* LSArray<T>::ls_map(LSFunction<R>* function) {
 	auto result = new LSArray<R>();
 	result->reserve(this->size());
 	for (auto v : *this) {
-		R r = fun(function, ls::clone(v));
+		auto x = ls::clone(v);
+		ls::increfs(x);
+		auto r = fun(function, x);
 		result->push_move(r);
+		ls::unref(x);
 	}
 	LSValue::delete_temporary(this);
 	return result;
