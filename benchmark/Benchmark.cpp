@@ -44,17 +44,19 @@ long cpp(const std::string& code) {
 	std::ostringstream compile;
 	// .exe to clean binary files more easily
 	compile << "g++ -O2 -std=c++17 benchmark/code/" << code << "/" << code << ".cpp -o benchmark/code/" << code << "/" << code << ".exe";
-	system(compile.str().c_str());
+	int r = system(compile.str().c_str());
+	(void) r;
 
 	std::ostringstream execute;
 	execute << "benchmark/code/" << code << "/" << code << ".exe >> results";
 	long time = chronotime([&]() {
-		system(execute.str().c_str());
+		int r = system(execute.str().c_str());
+		(void) r;
 	});
 
 	std::ostringstream clean;
 	clean << "rm benchmark/code/" << code << "/" << code << ".exe";
-	system(clean.str().c_str());
+	r = system(clean.str().c_str());
 
 	return time;
 }
@@ -66,17 +68,19 @@ long java(const std::string& code) {
 	std::ostringstream compile;
 	// .exe to clean binary files more easily
 	compile << "javac benchmark/code/" << code << "/" << code << ".java";
-	system(compile.str().c_str());
+	int r = system(compile.str().c_str());
+	(void) r;
 
 	std::ostringstream execute;
 	execute << "cd benchmark/code/" << code << " && java " << code << " >> ../../../results";
 	long time = chronotime([&]() {
-		system(execute.str().c_str());
+		int r = system(execute.str().c_str());
+		(void) r;
 	});
 
 	std::ostringstream clean;
 	clean << "rm benchmark/code/" << code << "/" << code << ".class";
-	system(clean.str().c_str());
+	r = system(clean.str().c_str());
 
 	return time;
 }
@@ -86,9 +90,10 @@ long java(const std::string& code) {
  */
 long leekscript(const std::string& code) {
 	std::ostringstream execute;
-	execute << "build/leekscript benchmark/code/" << code << "/" << code << ".leek >> results";
+	execute << "build/leekscript -nop benchmark/code/" << code << "/" << code << ".leek >> results";
 	return chronotime([&]() {
-		system(execute.str().c_str());
+		int r = system(execute.str().c_str());
+		(void) r;
 	});
 }
 
@@ -99,12 +104,14 @@ long python(const std::string& code) {
 	std::ostringstream execute;
 	execute << "python benchmark/code/" << code << "/" << code << ".py >> results";
 	return chronotime([&]() {
-		system(execute.str().c_str());
+		int r = system(execute.str().c_str());
+		(void) r;
 	}) * 100; // Python scripts do 100x less work, to have a faster benchmark
 }
 
 void benchmark(const std::string& code) {
-	system((string("echo \"") + code + "\" >> results").c_str());
+	int r = system((string("echo \"") + code + "\" >> results").c_str());
+	(void) r;
 	std::cout << "│ " << pad(code, 22) << "│ " << std::flush;
 
 	long t = cpp(code);
@@ -121,7 +128,7 @@ void benchmark(const std::string& code) {
 	std::cout << "~" << pad(format_ns(t, ref), 14);
 
 	std::cout << "│" << std::endl;
-	system("echo \"\" >> results");
+	r = system("echo \"\" >> results");
 }
 
 int main(int, char**) {
