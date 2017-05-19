@@ -511,6 +511,16 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t.raw_type == RawType::MAP) {
 		return insn_load(v, 48, v.t);
 	}
+	if (v.t.raw_type == RawType::SET) {
+		jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
+		auto set_iterator = jit_type_create_struct(types, 2, 1);
+		Compiler::value it = {jit_value_create(F, set_iterator), Type::SET_ITERATOR};
+		jit_type_free(set_iterator);
+		auto addr = insn_address_of(it);
+		jit_insn_store_relative(F, addr.v, 0, insn_load(v, 48, v.t).v);
+		jit_insn_store_relative(F, addr.v, 8, new_integer(0).v);
+		return it;
+	}
 	if (v.t == Type::INTEGER) {
 		jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_int};
 		auto integer_iterator = jit_type_create_struct(types, 3, 1);
@@ -542,6 +552,12 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	if (v.t.raw_type == RawType::MAP) {
 		auto end = insn_add(v, new_integer(32)); // end_ptr = &map + 24
 		return insn_eq(it, end);
+	}
+	if (it.t == Type::SET_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto ptr = insn_load(addr, 0, Type::POINTER);
+		auto end = insn_add(v, new_integer(32)); // end_ptr = &set + 24
+		return insn_eq(ptr, end);
 	}
 	if (v.t == Type::INTEGER) {
 		auto addr = insn_address_of(it);
@@ -576,7 +592,11 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 		insn_inc_refs(key);
 		return key;
 	}
+	if (it.t == Type::SET_ITERATOR) {
 	if (it.t == Type::LONG) {
+		auto addr = insn_address_of(it);
+		return insn_load(addr, 8, Type::INTEGER);
+	}
 		auto addr = insn_address_of(it);
 		return insn_load(addr, 8, Type::INTEGER);
 	}
@@ -624,6 +644,19 @@ Compiler::value Compiler::iterator_get(Compiler::value it, Compiler::value previ
 		insn_inc_refs(e);
 		return e;
 	}
+	if (it.t == Type::SET_ITERATOR) {
+		if (previous.t.must_manage_memory()) {
+			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
+				if (previous != nullptr)
+					LSValue::delete_ref(previous);
+			});
+		}
+		auto addr = insn_address_of(it);
+		auto ptr = insn_load(addr, 0, Type::POINTER);
+		auto e = insn_load(ptr, 32, previous.t);
+		insn_inc_refs(e);
+		return e;
+	}
 	if (it.t == Type::LONG) {
 		auto addr = insn_address_of(it);
 		auto n = insn_load(addr, 0, Type::INTEGER);
@@ -651,6 +684,16 @@ void Compiler::iterator_increment(Compiler::value it) const {
 	}
 	if (it.t.raw_type == RawType::MAP) {
 		insn_store(it, insn_call(Type::POINTER, {it}, (void*) +[](LSMap<int, int>::iterator it) {
+			it++;
+			return it;
+		}));
+		return;
+	}
+	if (it.t == Type::SET_ITERATOR) {
+		auto addr = insn_address_of(it);
+		auto ptr = insn_load(addr, 0, Type::POINTER);
+		insn_store_relative(addr, 8, insn_add(insn_load(addr, 8, Type::INTEGER), new_integer(1)));
+		insn_store_relative(addr, 0, insn_call(Type::POINTER, {ptr}, (void*) +[](LSSet<int>::iterator it) {
 			it++;
 			return it;
 		}));

@@ -138,7 +138,7 @@ public:
 	virtual const std::string getName() const { return "set"; }
 	virtual const std::string getClass() const { return "Set"; }
 	virtual const std::string getJsonName() const { return "set"; }
-	virtual bool iterable() const { return false; } // TODO not iterable for now
+	virtual bool iterable() const { return true; }
 	virtual bool is_container() const { return true; }
 };
 
@@ -343,6 +343,7 @@ public:
 	static const Type INT_ARRAY_ARRAY;
 	static const Type STRING_ITERATOR;
 	static const Type INTERVAL_ITERATOR;
+	static const Type SET_ITERATOR;
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
