@@ -19,7 +19,6 @@ ObjectAccess::ObjectAccess(Token* token) {
 	field.reset(token);
 	object = nullptr;
 	type = Type::POINTER;
-	class_attr = false;
 	attr_addr = nullptr;
 }
 
@@ -84,6 +83,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			try {
 				auto f = value_class->fields.at(field->content);
 				type = f.type;
+				class_field = true;
 				if (f.fun != nullptr) {
 					access_function = f.fun;
 				}
@@ -93,13 +93,13 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					Method f = object_class->methods.at(field->content)[0];
 					type = f.type;
 					attr_addr = f.addr;
-					class_attr = true;
+					class_method = true;
 				} catch (...) {
 					try {
 						Method f = value_class->methods.at(field->content)[0];
 						type = f.type;
 						attr_addr = f.addr;
-						//class_attr = true;
+						class_field = true;
 					} catch (...) {
 						if (object_class->name != "Object") {
 							if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
@@ -115,7 +115,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	if (not access_function and not static_access_function and not class_attr) {
+	if (not access_function and not static_access_function and not class_method) {
 		object->analyse(analyser, Type::POINTER);
 	}
 
@@ -141,28 +141,28 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		return res;
 	}
 
-	// Attributes : 12.class
+	// Field with an access function : 12.class
 	if (access_function != nullptr) {
-
 		auto obj = object->compile(c);
 		object->compile_end(c);
 		auto fun = (Compiler::value (*)(Compiler&, Compiler::value)) access_function;
 		return fun(c, obj);
 	}
 
-	if (class_attr) {
-		// TODO : only functions!
+	// Class method : 12.abs
+	if (class_method) {
 		return c.new_pointer(new LSFunction<LSValue*>(attr_addr));
-	} else {
-		auto o = object->compile(c);
-		object->compile_end(c);
-		auto k = c.new_pointer(&field->content);
-		auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
-			return object->attr(*key);
-		});
-		c.insn_delete_temporary(o);
-		return r;
 	}
+
+	// Default : object.attr
+	auto o = object->compile(c);
+	object->compile_end(c);
+	auto k = c.new_pointer(&field->content);
+	auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
+		return object->attr(*key);
+	});
+	c.insn_delete_temporary(o);
+	return r;
 }
 
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {

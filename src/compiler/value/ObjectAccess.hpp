@@ -17,7 +17,8 @@ public:
 	std::unique_ptr<Token> field;
 	std::string object_class_name;
 	std::string class_name;
-	bool class_attr = false;
+	bool class_method = false;
+	bool class_field = false;
 	void* attr_addr;
 	void* static_access_function = nullptr;
 	void* access_function = nullptr;
@@ -28,7 +29,7 @@ public:
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual Location location() const override;
-	
+
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 	virtual void change_type(SemanticAnalyser*, const Type&) override;
 
