@@ -184,6 +184,8 @@ void Test::test_functions() {
 	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"(x) → {\n    x\n}", "1", "0"});
 	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
 	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
+	// TODO not the expected error
+	// code("Number.abs(12, 12)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "12", "12"});
 
 	section("Void functions");
 	code("(x -> System.print(x))(43)").equals("(void)");
