@@ -453,7 +453,10 @@ void Test::test_numbers() {
 	code("var s = 0 for d in 159753 { s += d } s").equals("30");
 	code("for d in 0 { System.print(d) }").output("");
 	code("var s = 0 for k : d in 987654 { s += k * d } s").equals("80");
-
+	code("var s = 0 for d in 123456789123456789 { s += d } s").equals("90");
+	code("var s = 0 for k, d in 123456789123456789 { s += k * d } s").equals("885");
+	code("var s = '' for d in 1234567891234567891 { s += d + ' ' } s").equals("'1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 '");
+	
 	/*
 	 * Methods
 	 */
