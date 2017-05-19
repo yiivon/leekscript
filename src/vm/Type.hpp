@@ -25,18 +25,21 @@ public:
 
 class UnknownRawType : public BaseRawType {
 public:
+	UnknownRawType() {}
 	virtual ~UnknownRawType() {}
 	virtual const std::string getName() const { return "?"; }
 };
 
 class VoidRawType : public BaseRawType {
 public:
+	VoidRawType() {}
 	virtual const std::string getName() const { return "void"; }
 	virtual const std::string getJsonName() const { return "void"; }
 };
 
 class NullRawType : public BaseRawType {
 public:
+	NullRawType() {}
 	virtual int id() const { return 1; }
 	virtual const std::string getName() const { return "null"; }
 	virtual const std::string getClass() const { return "Null"; }
@@ -45,6 +48,7 @@ public:
 
 class BooleanRawType : public BaseRawType {
 public:
+	BooleanRawType() {}
 	virtual int id() const { return 2; }
 	virtual const std::string getName() const { return "bool"; }
 	virtual const std::string getClass() const { return "Boolean"; }
@@ -53,6 +57,7 @@ public:
 
 class NumberRawType : public BaseRawType {
 public:
+	NumberRawType() {}
 	virtual int id() const { return 3; }
 	virtual const std::string getName() const { return "number"; }
 	virtual const std::string getClass() const { return "Number"; }
@@ -62,6 +67,7 @@ public:
 
 class IntegerRawType : public NumberRawType {
 public:
+	IntegerRawType() {}
 	virtual const std::string getName() const { return "int"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
@@ -70,6 +76,7 @@ public:
 
 class MpzRawType : public NumberRawType {
 public:
+	MpzRawType() {}
 	virtual const std::string getName() const { return "mpz"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
@@ -77,6 +84,7 @@ public:
 
 class LongRawType : public NumberRawType {
 public:
+	LongRawType() {}
 	virtual const std::string getName() const { return "long"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
@@ -84,6 +92,7 @@ public:
 
 class FloatRawType : public NumberRawType {
 public:
+	FloatRawType() {}
 	virtual const std::string getName() const { return "real"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
@@ -91,6 +100,7 @@ public:
 
 class StringRawType : public BaseRawType {
 public:
+	StringRawType() {}
 	virtual int id() const { return 4; }
 	virtual const std::string getName() const { return "string"; }
 	virtual const std::string getClass() const { return "String"; }
@@ -101,6 +111,7 @@ public:
 
 class ArrayRawType : public BaseRawType {
 public:
+	ArrayRawType() {}
 	virtual int id() const { return 5; }
 	virtual const std::string getName() const { return "array"; }
 	virtual const std::string getClass() const { return "Array"; }
@@ -111,6 +122,7 @@ public:
 
 class MapRawType : public BaseRawType {
 public:
+	MapRawType() {}
 	virtual int id() const { return 6; }
 	virtual const std::string getName() const { return "map"; }
 	virtual const std::string getClass() const { return "Map"; }
@@ -121,6 +133,7 @@ public:
 
 class SetRawType : public BaseRawType {
 public:
+	SetRawType() {}
 	virtual int id() const { return 7; }
 	virtual const std::string getName() const { return "set"; }
 	virtual const std::string getClass() const { return "Set"; }
@@ -131,6 +144,7 @@ public:
 
 class IntervalRawType : public BaseRawType {
 public:
+	IntervalRawType() {}
 	virtual int id() const { return 8; }
 	virtual const std::string getName() const { return "interval"; }
 	virtual const std::string getClass() const { return "Interval"; }
@@ -141,6 +155,7 @@ public:
 
 class ObjectRawType : public BaseRawType {
 public:
+	ObjectRawType() {}
 	virtual int id() const { return 10; }
 	virtual const std::string getName() const { return "object"; }
 	virtual const std::string getClass() const { return "Object"; }
@@ -151,6 +166,7 @@ public:
 
 class FunctionRawType : public BaseRawType {
 public:
+	FunctionRawType() {}
 	virtual int id() const { return 9; }
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getClass() const { return "Function"; }
@@ -159,6 +175,7 @@ public:
 
 class ClassRawType : public BaseRawType {
 public:
+	ClassRawType() {}
 	virtual int id() const { return 11; }
 	virtual const std::string getName() const { return "class"; }
 	virtual const std::string getClass() const { return "Class"; }
