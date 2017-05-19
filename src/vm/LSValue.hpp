@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <map>
 
-#include "../constants.h"
 #include "../../lib/json.hpp"
 #include "Type.hpp"
 

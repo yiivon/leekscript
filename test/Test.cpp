@@ -1,6 +1,7 @@
 #include "Test.hpp"
 #include <fstream>
 #include <string>
+#include "../src/constants.h"
 
 std::vector<std::string> Test::failed_tests;
 

@@ -1,5 +1,6 @@
 #include "Exception.hpp"
 #include "VM.hpp"
+#include "../constants.h"
 
 namespace ls {
 namespace vm {

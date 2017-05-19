@@ -11,6 +11,7 @@
 #include "../compiler/semantic/SemanticAnalyser.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
 #include "../util/Util.hpp"
+#include "../constants.h"
 
 using namespace std;
 

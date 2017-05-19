@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "../constants.h"
 #include "../compiler/lexical/LexicalError.hpp"
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
