@@ -92,7 +92,7 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 
 LSFunction<LSValue*>* LSClass::getDefaultMethod(const string& name) {
 	try {
-		ModuleStaticField f = static_fields.at(name);
+		auto f = static_fields.at(name);
 		f.value->refs++;
 		return (LSFunction<LSValue*>*) f.value;
 	} catch (...) {
