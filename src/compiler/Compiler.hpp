@@ -15,17 +15,6 @@ namespace ls {
 class Program;
 class VM;
 
-class CompilerVar {
-public:
-	// TODO replace by a compiler value
-	jit_value_t value;
-	Type type;
-	bool reference;
-	CompilerVar() : value(jit_value_t{}), type(Type::UNKNOWN), reference(false) {}
-	CompilerVar(jit_value_t value, const Type& type, bool reference) :
-		value(value), type(type), reference(reference) {}
-};
-
 class Compiler {
 public:
 
@@ -54,8 +43,8 @@ public:
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<jit_label_t*> loops_end_labels;
 	std::vector<jit_label_t*> loops_cond_labels;
-	std::vector<std::vector<CompilerVar>> function_variables;
-	std::vector<std::map<std::string, CompilerVar>> variables;
+	std::vector<std::vector<value>> function_variables;
+	std::vector<std::map<std::string, value>> variables;
 	std::vector<std::vector<catcher>> catchers;
 
 	Program* program;
@@ -157,9 +146,9 @@ public:
 	// Variables
 	void add_var(const std::string& name, jit_value_t value, const Type& type, bool ref);
 	void add_function_var(jit_value_t value, const Type& type);
-	CompilerVar& get_var(const std::string& name);
+	value& get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
-	std::map<std::string, CompilerVar> get_vars();
+	std::map<std::string, value> get_vars();
 	void update_var(std::string& name, jit_value_t value, const Type& type);
 
 	// Loops

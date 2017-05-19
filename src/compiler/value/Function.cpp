@@ -292,7 +292,7 @@ Compiler::value Function::compile(Compiler& c) const {
 		for (const auto& cap : captures) {
 			jit_value_t jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
-				jit_cap = c.get_var(cap->name).value;
+				jit_cap = c.get_var(cap->name).v;
 			} else if (cap->scope == VarScope::CAPTURE) {
 				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
 			} else {

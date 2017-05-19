@@ -93,7 +93,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				if (ref->name != "") {
 					jit_value_t val;
 					if (ref->scope == VarScope::LOCAL) {
-						val = c.get_var(ref->name).value;
+						val = c.get_var(ref->name).v;
 					} else if (ref->scope == VarScope::INTERNAL) {
 						val = c.vm->internals.at(ref->name);
 					} else {

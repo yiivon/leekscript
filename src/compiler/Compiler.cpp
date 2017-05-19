@@ -16,7 +16,7 @@ Compiler::Compiler(VM* vm) : vm(vm) {}
 Compiler::~Compiler() {}
 
 void Compiler::enter_block() {
-	variables.push_back(std::map<std::string, CompilerVar> {});
+	variables.push_back(std::map<std::string, value> {});
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()++;
 	}
@@ -35,20 +35,20 @@ void Compiler::leave_block() {
 void Compiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
-			insn_delete({it->second.value, it->second.type});
+			insn_delete(it->second);
 		}
 	}
 }
 
 void Compiler::delete_function_variables() {
 	for (const auto& v : function_variables.back()) {
-		insn_delete({v.value, v.type});
+		insn_delete(v);
 	}
 }
 
 void Compiler::enter_function(jit_function_t F) {
-	variables.push_back(std::map<std::string, CompilerVar> {});
-	function_variables.push_back(std::vector<CompilerVar> {});
+	variables.push_back(std::map<std::string, value> {});
+	function_variables.push_back(std::vector<value> {});
 	functions.push(F);
 	functions_blocks.push_back(0);
 	catchers.push_back({});
@@ -699,30 +699,32 @@ void Compiler::insn_throw_object(vm::Exception type) const {
  * Variables
  */
 void Compiler::add_var(const std::string& name, jit_value_t value, const Type& type, bool ref) {
-	variables.back()[name] = {value, type, ref};
+	Type t = type;
+	t.reference = ref;
+	variables.back()[name] = {value, t};
 }
 
 void Compiler::add_function_var(jit_value_t value, const Type& type) {
-	function_variables.back().push_back({value, type, false});
+	function_variables.back().push_back({value, type});
 }
 
-CompilerVar& Compiler::get_var(const std::string& name) {
+Compiler::value& Compiler::get_var(const std::string& name) {
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		auto it = variables[i].find(name);
 		if (it != variables[i].end()) {
 			return it->second;
 		}
 	}
-	return *((CompilerVar*) nullptr); // Should not reach this line
+	return *((Compiler::value*) nullptr); // Should not reach this line
 }
 
 void Compiler::set_var_type(std::string& name, const Type& type) {
-	variables.back()[name].type = type;
+	variables.back()[name].t = type;
 }
 
 void Compiler::update_var(std::string& name, jit_value_t value, const Type& type) {
-	variables.back()[name].value = value;
-	variables.back()[name].type = type;
+	variables.back()[name].v = value;
+	variables.back()[name].t = type;
 }
 
 void Compiler::enter_loop(jit_label_t* end_label, jit_label_t* cond_label) {

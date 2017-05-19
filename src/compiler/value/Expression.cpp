@@ -542,7 +542,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			// Reference, like : a = @b
 			auto varval = dynamic_cast<VariableValue*>(v1);
-			if (varval != nullptr and varval->scope == VarScope::LOCAL and c.get_var(varval->name).reference) {
+			if (varval != nullptr and varval->scope == VarScope::LOCAL and c.get_var(varval->name).t.reference) {
 
 				if (v1->type.must_manage_memory()) {
 					auto v1v = v1->compile(c);
@@ -576,7 +576,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				// Delete previous variable reference
 				if (equal_previous_type.must_manage_memory()) {
 					auto v = c.get_var(vv->name);
-					c.insn_delete({v.value, v.type});
+					c.insn_delete(v);
 				}
 
 				auto y = v2->compile(c);
