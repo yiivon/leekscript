@@ -153,6 +153,12 @@ void VM::add_module(Module* m) {
 	add_internal_var(m->name, const_class);
 }
 
+void VM::add_constant(std::string name, Type type, LSValue* value) {
+	system_vars.insert({name, value});
+	type.constant = true;
+	add_internal_var(name, type);
+}
+
 VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops) {
 
 	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};

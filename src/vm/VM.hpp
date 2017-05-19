@@ -110,6 +110,9 @@ public:
 	void add_internal_var(std::string name, Type type);
 	static jit_type_t get_jit_type(const Type& type);
 
+	/** Add a constant **/
+	void add_constant(std::string name, Type type, LSValue* value);
+
 	/** Value creation **/
 	static jit_value_t create_array(jit_function_t F, const Type& element_type,
 		int cap = 0);
