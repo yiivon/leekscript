@@ -27,6 +27,7 @@ LSValue* string_toLower(LSString* string);
 LSValue* string_toUpper(LSString* string);
 LSValue* string_toArray(const LSString* string);
 int string_begin_code(const LSString*);
+LSValue* string_begin_code_ptr(const LSString*);
 int string_code(const LSString*, int pos);
 long string_number(const LSString*);
 
@@ -190,6 +191,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map, Method::NATIVE}
 	});
 	static_method("code", {
+		{Type::POINTER, {Type::POINTER}, (void*) &string_begin_code_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::POINTER}, (void*) &string_begin_code, Method::NATIVE},
 		{Type::INTEGER, {Type::STRING, Type::INTEGER}, (void*) &string_code, Method::NATIVE},
 	});
@@ -407,13 +409,19 @@ LSValue* string_toUpper(LSString* s) {
 
 int string_begin_code(const LSString* v) {
 	int r = LSString::u8_char_at((char*) v->c_str(), 0);
-	if (v->refs == 0) delete v;
+	LSValue::delete_temporary(v);
+	return r;
+}
+
+LSValue* string_begin_code_ptr(const LSString* v) {
+	auto code = string_begin_code(v);
+	auto r = LSNumber::get(code);
 	return r;
 }
 
 int string_code(const LSString* v, int pos) {
 	int r = LSString::u8_char_at((char*) v->c_str(), pos);
-	if (v->refs == 0) delete v;
+	LSValue::delete_temporary(v);
 	return r;
 }
 
