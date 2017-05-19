@@ -297,7 +297,7 @@ template <class T>
 template <class R>
 LSArray<R>* LSArray<T>::ls_map(LSFunction<R>* function) {
 	auto fun = (R (*)(void*, T)) function->function;
-	LSArray<R>* result = new LSArray<R>();
+	auto result = new LSArray<R>();
 	result->reserve(this->size());
 	for (auto v : *this) {
 		R r = fun(function, ls::clone(v));
@@ -310,16 +310,12 @@ LSArray<R>* LSArray<T>::ls_map(LSFunction<R>* function) {
 template <typename T>
 inline LSArray<LSValue*>* LSArray<T>::ls_chunk(int size) {
 	if (size <= 0) size = 1;
-
-	LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
-
+	auto new_array = new LSArray<LSValue*>();
 	new_array->reserve(this->size() / size + 1);
-
 	size_t i = 0;
 	while (i < this->size()) {
-		LSArray<T>* sub_array = new LSArray<T>();
+		auto sub_array = new LSArray<T>();
 		sub_array->reserve(size);
-
 		size_t j = std::min(i + size, this->size());
 		if (refs == 0) {
 			for (; i < j; ++i) {
@@ -330,7 +326,6 @@ inline LSArray<LSValue*>* LSArray<T>::ls_chunk(int size) {
 				sub_array->push_clone((*this)[i]);
 			}
 		}
-
 		new_array->push_inc(sub_array);
 	}
 	if (refs == 0) {
@@ -342,10 +337,8 @@ inline LSArray<LSValue*>* LSArray<T>::ls_chunk(int size) {
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_unique() {
 	if (this->empty()) return this;
-
 	auto it = this->begin();
 	auto next = it;
-
 	while (true) {
 		++next;
 		while (next != this->end() && (**next) == (**it)) {
@@ -361,6 +354,7 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_unique() {
 	this->resize(std::distance(this->begin(), it));
 	return this;
 }
+
 template <class T>
 LSArray<T>* LSArray<T>::ls_unique() {
 	auto it = std::unique(this->begin(), this->end());
@@ -435,13 +429,13 @@ template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_push_all_ptr(LSArray<LSValue*>* array) {
 	this->reserve(this->size() + array->size());
 	if (array->refs == 0) {
-		for (LSValue* v : *array) {
+		for (auto v : *array) {
 			this->push_back(v);
 		}
 		array->clear();
 		delete array;
 	} else {
-		for (LSValue* v : *array) {
+		for (auto v : *array) {
 			this->push_clone(v);
 		}
 	}
@@ -530,7 +524,7 @@ inline LSArray<T>* LSArray<T>::ls_reverse() {
 		}
 		return this;
 	} else {
-		LSArray<T>* new_array = new LSArray<T>();
+		auto new_array = new LSArray<T>();
 		new_array->reserve(this->size());
 		for (auto it = this->rbegin(); it != this->rend(); it++) {
 			new_array->push_clone(*it);
@@ -542,10 +536,9 @@ inline LSArray<T>* LSArray<T>::ls_reverse() {
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(LSFunction<bool>* function) {
 	auto fun = (bool (*)(void*, void*)) function->function;
-
 	if (refs == 0) {
 		for (size_t i = 0; i < this->size(); ) {
-			LSValue* v = (*this)[i];
+			auto v = (*this)[i];
 			if (!fun(function, v)) {
 				LSValue::delete_ref(v);
 				(*this)[i] = this->back();
@@ -556,7 +549,7 @@ inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(LSFunction<bool>* functio
 		}
 		return this;
 	} else {
-		LSArray<LSValue*>* new_array = new LSArray<LSValue*>();
+		auto new_array = new LSArray<LSValue*>();
 		new_array->reserve(this->size());
 		for (auto v : *this) {
 			if (fun(function, v)) new_array->push_clone(v);
@@ -579,7 +572,7 @@ LSArray<T>* LSArray<T>::ls_filter(LSFunction<bool>* function) {
 		}
 		return this;
 	} else {
-		LSArray<T>* new_array = new LSArray<T>();
+		auto new_array = new LSArray<T>();
 		new_array->reserve(this->size());
 		for (auto v : *this) {
 			if (fun(function, v)) new_array->push_clone(v);
@@ -592,7 +585,7 @@ template <class T>
 template <class R>
 R LSArray<T>::ls_foldLeft(LSFunction<R>* function, R v0) {
 	auto fun = (R (*)(void*, R, T)) function->function;
-	R result = ls::move(v0);
+	auto result = ls::move(v0);
 	for (const auto& v : *this) {
 		result = fun(function, result, v);
 	}
@@ -604,7 +597,7 @@ template <class T>
 template <class R>
 R LSArray<T>::ls_foldRight(LSFunction<R>* function, R v0) {
 	auto fun = (R (*)(void*, T, R)) function->function;
-	R result = ls::move(v0);
+	auto result = ls::move(v0);
 	for (auto it = this->rbegin(); it != this->rend(); it++) {
 		result = fun(function, *it, result);
 	}
@@ -632,8 +625,8 @@ LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
 
 template <class T>
 LSArray<LSValue*>* LSArray<T>::ls_partition(LSFunction<bool>* function) {
-	LSArray<T>* array_true = new LSArray<T>();
-	LSArray<T>* array_false = new LSArray<T>();
+	auto array_true = new LSArray<T>();
+	auto array_false = new LSArray<T>();
 	auto fun = (bool (*)(void*, T)) function->function;
 	for (const auto& v : *this) {
 		if (fun(function, v)) {
@@ -651,7 +644,7 @@ LSArray<LSValue*>* LSArray<T>::ls_partition(LSFunction<bool>* function) {
 template <class T>
 template <class R, class T2>
 LSArray<R>* LSArray<T>::ls_map2(LSArray<T2>* array, LSFunction<R>* function) {
-	LSArray<R>* result = new LSArray<R>();
+	auto result = new LSArray<R>();
 	result->reserve(this->size());
 	auto fun = (R (*)(void*, T, T2)) function->function;
 	for (size_t i = 0; i < this->size(); ++i) {
@@ -845,7 +838,7 @@ int LSArray<T>::abso() const {
 
 template <class T>
 LSValue* LSArray<T>::ls_tilde() {
-	LSArray<T>* array = new LSArray<T>();
+	auto array = new LSArray<T>();
 	array->reserve(this->size());
 	if (refs == 0) {
 		for (auto i = this->rbegin(); i != this->rend(); ++i) {
@@ -913,19 +906,19 @@ inline LSValue* LSArray<LSValue*>::add(LSValue* v) {
 template <>
 inline LSValue* LSArray<double>::add(LSValue* v) {
 	if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
-		LSArray<LSValue*>* ret = new LSArray<LSValue*>();
+		auto ret = new LSArray<LSValue*>();
 		ret->reserve(this->size() + array->size());
 		for (auto v : *this) {
 			ret->push_inc(LSNumber::get(v));
 		}
 		if (array->refs == 0) {
-			for (LSValue* v : *array) {
+			for (auto v : *array) {
 				ret->push_back(v);
 			}
 			array->clear();
 			delete array;
 		} else {
-			for (LSValue* v : *array) {
+			for (auto v : *array) {
 				ret->push_clone(v);
 			}
 		}
@@ -1235,12 +1228,9 @@ bool LSArray<T>::in_i(const int v) const {
 
 template <typename T>
 inline LSValue* LSArray<T>::range(int start, int end) const {
-
-	LSArray<T>* range = new LSArray<T>();
-
+	auto range = new LSArray<T>();
 	size_t start_i = std::max<size_t>(0, start);
 	size_t end_i = std::min<size_t>(this->size() - 1, end);
-
 	for (size_t i = start_i; i <= end_i; ++i) {
 		range->push_clone(this->operator [] (i));
 	}
