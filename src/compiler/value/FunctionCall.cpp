@@ -197,9 +197,9 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (auto& argument_type : function->type.getArgumentTypes()) {
 		if (a < arguments.size()) {
 			// OK, the argument is present in the call
-			arguments[a]->analyse(analyser, argument_type);
+			arguments.at(a)->analyse(analyser, argument_type);
 			if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION) {
-				arguments[a]->will_take(analyser, function->type.getArgumentType(a).arguments_types, 1);
+				arguments.at(a)->will_take(analyser, function->type.getArgumentType(a).arguments_types, 1);
 			}
 		} else if (function->type.argumentHasDefault(a)) {
 			// OK, there's no argument in the call but a default value is set.
@@ -305,8 +305,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		this_ptr->compile_end(c);
 		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr->type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(arguments[i]->compile(c));
-			arguments[i]->compile_end(c);
+			args.push_back(arguments.at(i)->compile(c));
+			arguments.at(i)->compile_end(c);
 			lsvalue_types.push_back(function->type.getArgumentType(i).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
@@ -332,8 +332,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		vector<Compiler::value> args;
 		vector<LSValueType> lsvalue_types;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(arguments[i]->compile(c));
-			arguments[i]->compile_end(c);
+			args.push_back(arguments.at(i)->compile(c));
+			arguments.at(i)->compile_end(c);
 			lsvalue_types.push_back((LSValueType) function->type.getArgumentType(i).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
@@ -436,19 +436,19 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
-			args.push_back(arguments[i]->compile(c));
-			arguments[i]->compile_end(c);
+			args.push_back(arguments.at(i)->compile(c));
+			arguments.at(i)->compile_end(c);
 			if (function->type.getArgumentType(i) == Type::MPZ &&
-				arguments[i]->type != Type::MPZ_TMP) {
-				args[offset + i] = c.insn_clone_mpz(args[offset + i]);
+				arguments.at(i)->type != Type::MPZ_TMP) {
+				args.at(offset + i) = c.insn_clone_mpz(args.at(offset + i));
 			}
 		} else {
-			args.push_back(function_object->defaultValues[i]->compile(c));
+			args.push_back(function_object->defaultValues.at(i)->compile(c));
 		}
 		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
 		lsvalue_types.push_back(function->type.getArgumentType(i).id());
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			args[offset + i] = c.insn_move_inc(args[offset + i]);
+			args.at(offset + i) = c.insn_move_inc(args.at(offset + i));
 		}
 	}
 
@@ -470,11 +470,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// Destroy temporary arguments
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (function->type.getArgumentType(i).must_manage_memory()) {
-			c.insn_delete(args[offset + i]);
+			c.insn_delete(args.at(offset + i));
 		}
 		if (function->type.getArgumentType(i) == Type::MPZ ||
 			function->type.getArgumentType(i) == Type::MPZ_TMP) {
-			c.insn_delete_mpz(args[offset + i]);
+			c.insn_delete_mpz(args.at(offset + i));
 		}
 	}
 	c.insn_delete_temporary(ls_fun_addr);
