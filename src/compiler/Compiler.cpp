@@ -524,7 +524,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t == Type::INTEGER) {
 		jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_int};
 		auto integer_iterator = jit_type_create_struct(types, 3, 1);
-		Compiler::value it = {jit_value_create(F, integer_iterator), Type::LONG};
+		Compiler::value it = {jit_value_create(F, integer_iterator), Type::INTEGER_ITERATOR};
 		jit_type_free(integer_iterator);
 		auto addr = jit_insn_address_of(F, it.v);
 		jit_insn_store_relative(F, addr, 0, v.v);
@@ -559,7 +559,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 		auto end = insn_add(v, new_integer(32)); // end_ptr = &set + 24
 		return insn_eq(ptr, end);
 	}
-	if (v.t == Type::INTEGER) {
+	if (it.t == Type::INTEGER_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto p = insn_load(addr, 4, Type::INTEGER);
 		return insn_eq(p, new_integer(0));
@@ -593,10 +593,10 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 		return key;
 	}
 	if (it.t == Type::SET_ITERATOR) {
-	if (it.t == Type::LONG) {
 		auto addr = insn_address_of(it);
 		return insn_load(addr, 8, Type::INTEGER);
 	}
+	if (it.t == Type::INTEGER_ITERATOR) {
 		auto addr = insn_address_of(it);
 		return insn_load(addr, 8, Type::INTEGER);
 	}
@@ -657,7 +657,7 @@ Compiler::value Compiler::iterator_get(Compiler::value it, Compiler::value previ
 		insn_inc_refs(e);
 		return e;
 	}
-	if (it.t == Type::LONG) {
+	if (it.t == Type::INTEGER_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto n = insn_load(addr, 0, Type::INTEGER);
 		auto p = insn_load(addr, 4, Type::INTEGER);
@@ -699,7 +699,7 @@ void Compiler::iterator_increment(Compiler::value it) const {
 		}));
 		return;
 	}
-	if (it.t == Type::LONG) {
+	if (it.t == Type::INTEGER_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto n = insn_load(addr, 0, Type::INTEGER);
 		auto p = insn_load(addr, 4, Type::INTEGER);

@@ -105,6 +105,7 @@ const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
 const Type Type::STRING_ITERATOR(RawType::UNKNOWN, Nature::VALUE, Type::STRING);
 const Type Type::INTERVAL_ITERATOR(RawType::UNKNOWN, Nature::VALUE, Type::INTEGER);
 const Type Type::SET_ITERATOR(RawType::SET, Nature::VALUE, Type::UNKNOWN);
+const Type Type::INTEGER_ITERATOR(RawType::INTEGER, Nature::VALUE, Type::INTEGER);
 
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
