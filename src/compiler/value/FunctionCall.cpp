@@ -390,13 +390,21 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Default function : f(12) */
 	jit_value_t fun;
 	auto ls_fun_addr = c.new_pointer(nullptr);
+	auto jit_object = c.new_pointer(nullptr);
 
-	// if (function->type.nature == Nature::POINTER) {
+	if (is_unknown_method) {
+		auto oa = static_cast<ObjectAccess*>(function);
+		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
+		// jit_object = object->compile(c);
+		auto k = c.new_pointer(&oa->field->content);
+		ls_fun_addr = c.insn_call(type, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
+			return object->attr(*key);
+		});
+		fun = jit_insn_load_relative(c.F, ls_fun_addr.v, 24, LS_POINTER);
+	} else {
 		ls_fun_addr = function->compile(c);
 		fun = jit_insn_load_relative(c.F, ls_fun_addr.v, 24, LS_POINTER);
-	// } else {
-		// fun = function->compile(c).v;
-	// }
+	}
 
 	/** Arguments */
 	size_t offset = 1;
@@ -407,7 +415,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	if (is_unknown_method) {
 		// add 'this' object as first argument
-		args.push_back(c.insn_load(((LeftValue*) object)->compile_l(c)).v);
+		args.push_back(jit_object.v);
 		args_types.push_back(VM::get_jit_type(object->type));
 	} else {
 		// Function pointer as first argument
@@ -462,6 +470,12 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 	}
 	c.insn_delete_temporary(ls_fun_addr);
+
+	if (is_unknown_method) {
+		object->compile_end(c);
+	} else {
+		function->compile_end(c);
+	}
 
 	// Custom function call : 1 op
 	c.inc_ops(1);
