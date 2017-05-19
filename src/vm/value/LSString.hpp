@@ -65,8 +65,8 @@ public:
 
 	LSValue* clone() const override;
 
-	std::ostream& print(std::ostream& os) const;
-	std::ostream& dump(std::ostream& os) const;
+	std::ostream& print(std::ostream& os) const override;
+	std::ostream& dump(std::ostream& os) const override;
 	std::string json() const override;
 	std::string escaped(char quote) const;
 	std::string escape_control_characters() const;

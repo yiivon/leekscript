@@ -39,8 +39,8 @@ public:
 	bool lt(const LSValue*) const override;
 	LSValue* attr(const std::string& key) const override;
 	LSValue* clone() const override;
-	std::ostream& dump(std::ostream& os) const;
-	std::string json() const;
+	std::ostream& dump(std::ostream& os) const override;
+	std::string json() const override;
 	LSValue* getClass() const override;
 };
 

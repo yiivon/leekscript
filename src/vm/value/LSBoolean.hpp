@@ -47,9 +47,9 @@ public:
 
 	int abso() const override;
 
-	LSValue* clone() const;
+	LSValue* clone() const override;
 
-	std::ostream& dump(std::ostream& os) const;
+	std::ostream& dump(std::ostream& os) const override;
 	std::string json() const override;
 
 	LSValue* getClass() const override;
