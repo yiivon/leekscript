@@ -18,6 +18,7 @@ bool string_endsWith(LSString* string, LSString* ending);
 int string_indexOf(LSString* haystack, LSString* needle);
 int string_length(LSString* string);
 LSString* string_map(LSString* string, LSFunction<LSValue*>* fun);
+LSValue* string_size_ptr(LSString* string);
 int string_size(LSString* string);
 LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter);
 bool string_startsWith(const LSString* string, const LSString* starting);
@@ -158,6 +159,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::INTEGER, {Type::STRING}, (void*) &string_length, Method::NATIVE}
 	});
 	static_method("size", {
+		{Type::NUMBER, {Type::STRING}, (void*) &string_size_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::STRING}, (void*) &string_size, Method::NATIVE}
 	});
 	static_method("replace", {
@@ -315,10 +317,12 @@ LSString* StringSTD::replace(LSString* string, LSString* from, LSString* to) {
 
 int string_size(LSString* string) {
 	int r = string->unicode_length();
-	if (string->refs == 0) {
-		delete string;
-	}
+	LSValue::delete_temporary(string);
 	return r;
+}
+
+LSValue* string_size_ptr(LSString* string) {
+	return LSNumber::get(string_size(string));
 }
 
 LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter) {
