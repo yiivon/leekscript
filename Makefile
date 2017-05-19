@@ -33,6 +33,8 @@ SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefine
 LIBS := -ljit -lgmp
 MAKEFLAGS += --jobs=$(shell nproc)
 
+CLOC_EXCLUDED := .git,lib,build,doxygen
+
 .PHONY: test
 
 all: build/leekscript
@@ -191,7 +193,9 @@ cppclean:
 # Line couning with cloc.
 # `apt-get install cloc`
 cloc:
-	cloc . --exclude-dir=.git,lib,build,doxygen
+	cloc . --exclude-dir=$(CLOC_EXCLUDED)
+cloc-xml:
+	cloc --quiet --xml . --exclude-dir=$(CLOC_EXCLUDED)
 
 # Documentation with doxygen
 doc:
