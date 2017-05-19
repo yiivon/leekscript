@@ -315,7 +315,7 @@ namespace ls {
 		return v;
 	}
 
-	template <class T> void increfs(T v) {}
+	template <class T> void increfs(T) {}
 	template <> inline void increfs(LSValue* v) {
 		v->refs++;
 	}
