@@ -56,7 +56,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	bool found = false;
 	if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
 
-		auto std_class = (LSClass*) analyser->vm->system_vars[vv->name];
+		auto std_class = (LSClass*) analyser->vm->system_vars.at(vv->name);
 
 		if (std_class->static_fields.find(field->content) != std_class->static_fields.end()) {
 
@@ -71,7 +71,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
+	auto value_class = (LSClass*) analyser->vm->system_vars.at("Value");
 
 	// Attribute? Fields and methods ([1, 2, 3].length, 12.abs)
 	if (!found and object_class != nullptr) {
