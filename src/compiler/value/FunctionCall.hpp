@@ -11,10 +11,10 @@ namespace ls {
 class FunctionCall : public Value {
 public:
 
-	std::unique_ptr<Token> token;
+	std::shared_ptr<Token> token;
 	Value* function;
 	std::vector<Value*> arguments;
-	std::unique_ptr<Token> closing_parenthesis;
+	std::shared_ptr<Token> closing_parenthesis;
 
 	bool is_native = false;
 	std::string native_func;
@@ -25,7 +25,7 @@ public:
 	bool is_unknown_method = false;
 	Value* object = nullptr;
 
-	FunctionCall(Token* t);
+	FunctionCall(std::shared_ptr<Token> t);
 	virtual ~FunctionCall();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

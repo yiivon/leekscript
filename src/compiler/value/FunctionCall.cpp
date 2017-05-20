@@ -27,8 +27,7 @@ using namespace std;
 
 namespace ls {
 
-FunctionCall::FunctionCall(Token* t) {
-	token.reset(t);
+FunctionCall::FunctionCall(std::shared_ptr<Token> t) : token(t) {
 	function = nullptr;
 	type = Type::UNKNOWN;
 	std_func = nullptr;

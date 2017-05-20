@@ -486,7 +486,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 
 				auto par = eat_get(TokenType::OPEN_PARENTHESIS);
 
-				auto fc = new FunctionCall(par);
+				auto fc = new FunctionCall(std::shared_ptr<Token>(par));
 				fc->function = e;
 
 				if (t->type != TokenType::CLOSING_PARENTHESIS) {
