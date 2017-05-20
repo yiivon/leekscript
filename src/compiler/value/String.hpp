@@ -12,10 +12,10 @@ namespace ls {
 class String : public Value {
 public:
 
-	std::unique_ptr<Token> token;
+	std::shared_ptr<Token> token;
 	LSString* ls_string;
 
-	String(Token* token);
+	String(std::shared_ptr<Token> token);
 	virtual ~String();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

@@ -5,8 +5,7 @@ using namespace std;
 
 namespace ls {
 
-String::String(Token* token) {
-	this->token.reset(token);
+String::String(std::shared_ptr<Token> token) : token(token) {
 	type = Type::STRING;
 	types = Type::STRING;
 	type.temporary = true;
