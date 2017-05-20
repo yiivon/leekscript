@@ -53,6 +53,8 @@ void Test::test_functions() {
 	code("let f = x = 2 -> x + 1 f").equals("<function>");
 	code("let f = b -> if b { 2 } else { 3 } f(false)").equals("3");
 	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
+	// TODO leak
+	// code("(x -> y -> x + 1)(1)(2)").equals("2");
 
 	section("Function call without commas");
 	code("let f = x, y -> x + y f(12 7)").equals("19");
