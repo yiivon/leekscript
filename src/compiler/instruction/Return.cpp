@@ -59,4 +59,9 @@ Compiler::value Return::compile(Compiler& c) const {
 	return {nullptr, Type::UNKNOWN};
 }
 
+Instruction* Return::clone() const {
+	auto r = new Return(expression->clone());
+	return r;
+}
+
 }

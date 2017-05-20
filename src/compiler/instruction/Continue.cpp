@@ -42,4 +42,10 @@ Compiler::value Continue::compile(Compiler& c) const {
 	return {nullptr, Type::UNKNOWN};
 }
 
+Instruction* Continue::clone() const {
+	auto c = new Continue();
+	c->deepness = deepness;
+	return c;
+}
+
 }

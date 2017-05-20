@@ -159,4 +159,17 @@ Compiler::value For::compile(Compiler& c) const {
 	return return_v;
 }
 
+Instruction* For::clone() const {
+	auto f = new For();
+	for (const auto& i : inits) {
+		f->inits.push_back(i->clone());
+	}
+	f->condition = condition->clone();
+	for (const auto& i : increments) {
+		f->increments.push_back(i->clone());
+	}
+	f->body = (Block*) body->clone();
+	return f;
+}
+
 }

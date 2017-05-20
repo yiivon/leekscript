@@ -20,6 +20,8 @@ public:
 	virtual void analyse(SemanticAnalyser*, const Type& type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
+
+	virtual Instruction* clone() const override;
 };
 
 }

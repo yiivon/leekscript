@@ -174,4 +174,13 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	return return_v;
 }
 
+Instruction* Foreach::clone() const {
+	auto f = new Foreach();
+	f->key = key;
+	f->value = value;
+	f->container = container->clone();
+	f->body = (Block*) body->clone();
+	return f;
+}
+
 }

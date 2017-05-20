@@ -51,4 +51,13 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 	return clazz;
 }
 
+Instruction* ClassDeclaration::clone() const {
+	auto cd = new ClassDeclaration(token);
+	cd->name = name;
+	for (const auto& f : fields) {
+		cd->fields.push_back((VariableDeclaration*) f->clone());
+	}
+	return cd;
+}
+
 }

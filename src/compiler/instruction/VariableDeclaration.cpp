@@ -137,4 +137,18 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 	return {nullptr, Type::UNKNOWN};
 }
 
+Instruction* VariableDeclaration::clone() const {
+	auto vd = new VariableDeclaration();
+	vd->keyword = keyword;
+	vd->global = global;
+	vd->constant = constant;
+	for (const auto& v : variables) {
+		vd->variables.push_back(v);
+	}
+	for (const auto& v : expressions) {
+		vd->expressions.push_back(v);
+	}
+	return vd;
+}
+
 }

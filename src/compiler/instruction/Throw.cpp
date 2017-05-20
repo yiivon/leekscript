@@ -48,4 +48,9 @@ Compiler::value Throw::compile(Compiler& c) const {
 	return {nullptr, Type::UNKNOWN};
 }
 
+Instruction* Throw::clone() const {
+	auto t = new Throw(token, expression->clone());
+	return t;
+}
+
 }

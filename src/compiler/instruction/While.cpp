@@ -72,4 +72,12 @@ Compiler::value While::compile(Compiler& c) const {
 	return {nullptr, Type::UNKNOWN};
 }
 
+Instruction* While::clone() const {
+	auto w = new While();
+	w->token = token;
+	w->condition = condition->clone();
+	w->body = (Block*) body->clone();
+	return w;
+}
+
 }

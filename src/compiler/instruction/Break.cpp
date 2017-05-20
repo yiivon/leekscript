@@ -53,4 +53,11 @@ Compiler::value Break::compile(Compiler& c) const {
 	return {nullptr, Type::UNKNOWN};
 }
 
+Instruction* Break::clone() const {
+	auto b = new Break();
+	b->token = token;
+	b->deepness = deepness;
+	return b;
+}
+
 }

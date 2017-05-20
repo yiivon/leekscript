@@ -42,4 +42,8 @@ Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 	}
 }
 
+Instruction* ExpressionInstruction::clone() const {
+	return new ExpressionInstruction(value->clone());
+}
+
 }
