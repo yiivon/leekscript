@@ -10,9 +10,8 @@ using namespace std;
 
 namespace ls {
 
-VariableValue::VariableValue(Token* token) {
+VariableValue::VariableValue(std::shared_ptr<Token> token) : token(token) {
 	this->name = token->content;
-	this->token.reset(token);
 	this->var = nullptr;
 	constant = false;
 }

@@ -426,7 +426,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 						}
 					} else {
 						// No expression after the -, so it's the variable '-'
-						e = new VariableValue(minus);
+						e = new VariableValue(std::shared_ptr<Token>(minus));
 					}
 
 				} else if (t->type == TokenType::PLUS) {
@@ -438,7 +438,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 						e = eatExpression(pipe_opened);
 					} else {
 						// No expression after the +, so it's the variable '+'
-						e = new VariableValue(plus);
+						e = new VariableValue(std::shared_ptr<Token>(plus));
 					}
 
 				} else {
@@ -628,7 +628,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		case TokenType::TERNARY:
 		case TokenType::INT_DIV:
 		{
-			return new VariableValue(eat_get());
+			return new VariableValue(std::shared_ptr<Token>(eat_get()));
 		}
 
 		case TokenType::NUMBER:
@@ -755,9 +755,9 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 				Expression* e = new Expression();
 				e->parenthesis = true;
 				if (arobase) {
-					e->v1 = new Reference(new VariableValue(ident));
+					e->v1 = new Reference(new VariableValue(std::shared_ptr<Token>(ident)));
 				} else {
-					e->v1 = new VariableValue(ident);
+					e->v1 = new VariableValue(std::shared_ptr<Token>(ident));
 				}
 				e->op = new Operator(eq);
 				e->v2 = ex;
@@ -770,7 +770,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		} else {
 			// var = <ex> <?>
 			Expression* e = new Expression();
-			e->v1 = new VariableValue(ident);
+			e->v1 = new VariableValue(std::shared_ptr<Token>(ident));
 			e->op = new Operator(eq);
 			e->v2 = ex;
 			return eatExpression(pipe_opened, set_opened, e);
@@ -781,14 +781,14 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 	} else if (t->type == TokenType::COMMA) {
 		// var,  [lambda]
 		if (!parenthesis && comma_list) {
-			return new VariableValue(ident);
+			return new VariableValue(std::shared_ptr<Token>(ident));
 		}
 		int p = findNextClosingParenthesis();
 		int a = findNextArrow();
 		if (parenthesis or (a != -1 and (a < p or p == -1))) {
 			return eatLambdaContinue(parenthesis, arobase, ident, nullptr, comma_list);
 		} else {
-			return new VariableValue(ident);
+			return new VariableValue(std::shared_ptr<Token>(ident));
 		}
 	} else {
 		if (parenthesis) {
@@ -799,17 +799,17 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 					return eatLambdaContinue(false, arobase, ident, nullptr, comma_list);
 				}
 				if (arobase) {
-					return new Reference(new VariableValue(ident));
+					return new Reference(new VariableValue(std::shared_ptr<Token>(ident)));
 				} else {
-					return new VariableValue(ident);
+					return new VariableValue(std::shared_ptr<Token>(ident));
 				}
 			} else {
 				// ( var + ... )
 				auto v = [&]() -> Value* {
 					if (arobase)
-						return new Reference(new VariableValue(ident));
+						return new Reference(new VariableValue(std::shared_ptr<Token>(ident)));
 					else
-						return new VariableValue(ident);
+						return new VariableValue(std::shared_ptr<Token>(ident));
 				}();
 				auto exx = eatSimpleExpression(false, false, false, v);
 				auto ex = eatExpression(pipe_opened, set_opened, exx);
@@ -820,11 +820,11 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		}
 		// var <?>  [expression]
 		if (arobase) {
-			auto v = new VariableValue(ident);
+			auto v = new VariableValue(std::shared_ptr<Token>(ident));
 			auto ex = eatSimpleExpression(false, false, false, v);
 			return new Reference(ex);
 		} else {
-			return new VariableValue(ident);
+			return new VariableValue(std::shared_ptr<Token>(ident));
 		}
 	}
 }

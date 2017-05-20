@@ -16,12 +16,12 @@ class VariableValue : public LeftValue {
 public:
 
 	std::string name;
-	std::unique_ptr<Token> token;
+	std::shared_ptr<Token> token;
 	std::shared_ptr<SemanticVar> var;
 	int capture_index = 0;
 	VarScope scope;
 
-	VariableValue(Token* token);
+	VariableValue(std::shared_ptr<Token> token);
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual Location location() const override;
