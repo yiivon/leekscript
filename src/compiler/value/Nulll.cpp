@@ -5,10 +5,9 @@ using namespace std;
 
 namespace ls {
 
-Nulll::Nulll(Token* token) {
+Nulll::Nulll(std::shared_ptr<Token> token) : token(token) {
 	type = Type::NULLL;
 	constant = true;
-	this->token.reset(token);
 }
 
 void Nulll::print(ostream& os, int, bool debug) const {

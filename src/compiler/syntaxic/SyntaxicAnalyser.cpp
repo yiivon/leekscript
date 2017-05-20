@@ -660,7 +660,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		}
 
 		case TokenType::NULLL:
-			return new Nulll(eat_get());
+			return new Nulll(std::shared_ptr<Token>(eat_get()));
 
 		case TokenType::AROBASE:
 		case TokenType::IDENT:
