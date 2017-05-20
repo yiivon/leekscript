@@ -11,8 +11,8 @@ namespace ls {
 class Array : public Value {
 public:
 
-	std::unique_ptr<Token> opening_bracket;
-	std::unique_ptr<Token> closing_bracket;
+	std::shared_ptr<Token> opening_bracket;
+	std::shared_ptr<Token> closing_bracket;
 	std::vector<Value*> expressions;
 	bool interval = false;
 
