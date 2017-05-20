@@ -14,10 +14,11 @@ namespace ls {
 class Foreach : public Instruction {
 public:
 
-	std::unique_ptr<Token> key;
-	std::unique_ptr<Token> value;
+	std::shared_ptr<Token> key;
+	std::shared_ptr<Token> value;
 	Value* container;
 	Block* body;
+	
 	Type key_type;
 	Type value_type;
 	std::shared_ptr<SemanticVar> value_var;
