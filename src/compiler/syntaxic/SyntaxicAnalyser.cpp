@@ -509,11 +509,11 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 				eat(TokenType::DOT);
 
 				if (t->type == TokenType::NEW || t->type == TokenType::CLASS) {
-					oa = new ObjectAccess(eat_get());
+					oa = new ObjectAccess(std::shared_ptr<Token>(eat_get()));
 				} else if (t->type == TokenType::RETURN) {
-					oa = new ObjectAccess(eat_get());
+					oa = new ObjectAccess(std::shared_ptr<Token>(eat_get()));
 				} else {
-					oa = new ObjectAccess(eatIdent());
+					oa = new ObjectAccess(std::shared_ptr<Token>(eatIdent()));
 				}
 				oa->object = e;
 				e = oa;

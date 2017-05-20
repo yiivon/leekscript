@@ -15,8 +15,7 @@ using namespace std;
 
 namespace ls {
 
-ObjectAccess::ObjectAccess(Token* token) {
-	field.reset(token);
+ObjectAccess::ObjectAccess(std::shared_ptr<Token> token) : field(token) {
 	object = nullptr;
 	type = Type::POINTER;
 	attr_addr = nullptr;
