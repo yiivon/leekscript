@@ -6,9 +6,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
-
 #include "../../lib/json.hpp"
 #include "Type.hpp"
+#include "../constants.h"
 
 namespace ls {
 
