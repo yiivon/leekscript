@@ -321,8 +321,8 @@ bool Type::operator ==(const Type& type) const {
 }
 
 bool Type::operator < (const Type& type) const {
-	if (id() != type.id()) {
-		return id() < type.id();
+	if ((void*) raw_type != (void*) type.raw_type) {
+		return (void*) raw_type < (void*) type.raw_type;
 	}
 	if (nature != type.nature) {
 		return nature < type.nature;
