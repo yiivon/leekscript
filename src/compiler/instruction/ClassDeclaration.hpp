@@ -14,13 +14,13 @@ class LSClass;
 class ClassDeclaration : public Instruction {
 public:
 
-	std::unique_ptr<Token> token;
+	std::shared_ptr<Token> token;
 	std::string name;
 	std::vector<VariableDeclaration*> fields;
 	std::shared_ptr<SemanticVar> var;
 	LSClass* ls_class;
 
-	ClassDeclaration(Token* token);
+	ClassDeclaration(std::shared_ptr<Token> token);
 	virtual ~ClassDeclaration();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

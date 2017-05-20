@@ -1287,7 +1287,7 @@ ClassDeclaration* SyntaxicAnalyser::eatClassDeclaration() {
 
 	auto token = eatIdent();
 
-	auto cd = new ClassDeclaration(token);
+	auto cd = new ClassDeclaration(std::shared_ptr<Token>(token));
 	eat(TokenType::OPEN_BRACE);
 
 	while (t->type == TokenType::LET) {

@@ -7,9 +7,8 @@ using namespace std;
 
 namespace ls {
 
-ClassDeclaration::ClassDeclaration(Token* token) {
+ClassDeclaration::ClassDeclaration(std::shared_ptr<Token> token) : token(token) {
 	name = token->content;
-	this->token.reset(token);
 	var = nullptr;
 	ls_class = new LSClass(name);
 }
