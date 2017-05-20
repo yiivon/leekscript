@@ -289,6 +289,8 @@ public:
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }
 
+	bool operator < (const Type& type) const;
+
 	bool compatible(const Type& type) const;
 	bool may_be_compatible(const Type& type) const;
 
@@ -359,7 +361,6 @@ public:
 
 std::ostream& operator << (std::ostream&, const Type&);
 std::ostream& operator << (std::ostream&, const std::vector<Type>&);
-bool operator < (const Type&, const Type&);
 
 }
 

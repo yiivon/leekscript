@@ -320,6 +320,34 @@ bool Type::operator ==(const Type& type) const {
 				arguments_types == type.arguments_types));
 }
 
+bool Type::operator < (const Type& type) const {
+	if (id() != type.id()) {
+		return id() < type.id();
+	}
+	if (nature != type.nature) {
+		return nature < type.nature;
+	}
+	if (temporary != type.temporary) {
+		return temporary < type.temporary;
+	}
+	if (native != type.native) {
+		return native < type.native;
+	}
+	for (size_t i = 0; i < element_type.size(); ++i) {
+		if (i >= type.element_type.size()) return false;
+		if (element_type.at(i) != type.element_type.at(i)) {
+			return element_type.at(i) < type.element_type.at(i);
+		}
+	}
+	for (size_t i = 0; i < key_type.size(); ++i) {
+		if (i >= type.key_type.size()) return false;
+		if (key_type.at(i) != type.key_type.at(i)) {
+			return key_type.at(i) < type.key_type.at(i);
+		}
+	}
+	return false;
+}
+
 Type Type::not_temporary() const {
 	Type new_type = *this;
 	new_type.temporary = false;
