@@ -9,10 +9,10 @@ namespace ls {
 class Throw : public Instruction {
 public:
 
-	std::unique_ptr<Token> token;
+	std::shared_ptr<Token> token;
 	Value* expression;
 
-	Throw(Token* token, Value* = nullptr);
+	Throw(std::shared_ptr<Token> token, Value* = nullptr);
 	virtual ~Throw();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

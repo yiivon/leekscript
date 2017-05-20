@@ -222,9 +222,9 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 			auto throw_token = eat_get();
 			if (t->type == TokenType::FINISHED or t->type == TokenType::CLOSING_BRACE
 				or t->type == TokenType::ELSE or t->type == TokenType::END) {
-				return new Throw(throw_token);
+				return new Throw(std::shared_ptr<Token>(throw_token));
 			} else {
-				return new Throw(throw_token, eatExpression());
+				return new Throw(std::shared_ptr<Token>(throw_token), eatExpression());
 			}
 		}
 		case TokenType::BREAK:
