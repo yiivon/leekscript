@@ -17,7 +17,7 @@ public:
 
 	Value* condition;
 	Block* body;
-	std::unique_ptr<Token> token;
+	std::shared_ptr<Token> token;
 
 	While();
 	virtual ~While();
@@ -28,6 +28,8 @@ public:
 	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
+
+	virtual Instruction* clone() const override;
 };
 
 }
