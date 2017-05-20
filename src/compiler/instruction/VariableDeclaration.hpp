@@ -16,10 +16,10 @@ public:
 
 	bool global;
 	bool constant;
-	std::vector<std::unique_ptr<Token>> variables;
+	std::vector<std::shared_ptr<Token>> variables;
 	std::vector<Value*> expressions;
 	std::map<std::string, std::shared_ptr<SemanticVar>> vars;
-	std::unique_ptr<Token> keyword;
+	std::shared_ptr<Token> keyword;
 
 	VariableDeclaration();
 	virtual ~VariableDeclaration();
