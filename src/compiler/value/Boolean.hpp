@@ -10,10 +10,10 @@ namespace ls {
 class Boolean : public Value {
 public:
 
-	std::unique_ptr<Token> token;
+	std::shared_ptr<Token> token;
 	bool value;
 
-	Boolean(Token* token);
+	Boolean(std::shared_ptr<Token> token);
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual Location location() const override;

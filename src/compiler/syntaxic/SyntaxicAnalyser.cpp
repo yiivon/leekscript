@@ -656,7 +656,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		case TokenType::TRUE:
 		case TokenType::FALSE:
 		{
-			return new Boolean(eat_get());
+			return new Boolean(std::shared_ptr<Token>(eat_get()));
 		}
 
 		case TokenType::NULLL:

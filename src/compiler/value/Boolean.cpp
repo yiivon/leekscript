@@ -7,8 +7,8 @@ using namespace std;
 
 namespace ls {
 
-Boolean::Boolean(Token* token) {
-	this->token.reset(token);
+Boolean::Boolean(std::shared_ptr<Token> token) {
+	this->token = token;
 	this->value = token->type == TokenType::TRUE;
 	type = Type::BOOLEAN;
 	constant = true;
