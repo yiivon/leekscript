@@ -7,8 +7,7 @@ using namespace std;
 
 namespace ls {
 
-Throw::Throw(Token* token, Value* v) {
-	this->token.reset(token);
+Throw::Throw(std::shared_ptr<Token> token, Value* v) : token(token) {
 	expression = v;
 }
 
