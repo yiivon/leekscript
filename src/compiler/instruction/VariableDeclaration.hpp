@@ -2,10 +2,9 @@
 #define VARIABLEDECLARATION_HPP
 
 #include <vector>
-
-#include "../../compiler/instruction/Instruction.hpp"
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
-#include "../../compiler/value/Expression.hpp"
+#include "Instruction.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "../value/Expression.hpp"
 #include "../lexical/Ident.hpp"
 
 namespace ls {
