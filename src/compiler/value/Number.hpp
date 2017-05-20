@@ -11,7 +11,7 @@ namespace ls {
 class Number : public Value {
 public:
 
-	std::unique_ptr<Token> token;
+	std::shared_ptr<Token> token;
 	std::string value;
 	std::string clean_value;
 	int base = 10;
@@ -23,7 +23,7 @@ public:
 	bool mpz_value_initialized = false;
 	bool pointer = false;
 
-	Number(std::string value, Token* token);
+	Number(std::string value, std::shared_ptr<Token> token);
 	virtual ~Number();
 
 	virtual void print(std::ostream&, int indent, bool debug) const override;

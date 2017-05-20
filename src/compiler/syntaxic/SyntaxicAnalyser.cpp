@@ -634,7 +634,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		case TokenType::NUMBER:
 		{
 			auto n_token = eat_get();
-			auto n = new Number(n_token->content, n_token);
+			auto n = new Number(n_token->content, std::shared_ptr<Token>(n_token));
 
 			if (t->type == TokenType::STAR) {
 				n->pointer = true;
@@ -646,7 +646,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		case TokenType::PI: {
 			std::stringstream stream;
 			stream << std::fixed << std::setprecision(19) << M_PI;
-			return new Number(stream.str(), eat_get());
+			return new Number(stream.str(), std::shared_ptr<Token>(eat_get()));
 		}
 		case TokenType::STRING:
 		{
