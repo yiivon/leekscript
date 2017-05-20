@@ -29,4 +29,8 @@ Compiler::value Nulll::compile(Compiler& c) const {
 	return c.new_null();
 }
 
+Value* Nulll::clone() const {
+	return new Nulll(token);
+}
+
 }

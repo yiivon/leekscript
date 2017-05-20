@@ -219,4 +219,17 @@ Compiler::value Map::compile(Compiler &c) const {
 	return {map, type};
 }
 
+Value* Map::clone() const {
+	auto map = new Map();
+	map->opening_bracket = opening_bracket;
+	map->closing_bracket = closing_bracket;
+	for (const auto& k : keys) {
+		map->keys.push_back(k->clone());
+	}
+	for (const auto& v : values) {
+		map->values.push_back(v->clone());
+	}
+	return map;
+}
+
 }

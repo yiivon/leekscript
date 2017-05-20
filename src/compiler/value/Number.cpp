@@ -127,4 +127,9 @@ Compiler::value Number::compile(Compiler& c) const {
 	return {LS_CREATE_INTEGER(c.F, int_value), type};
 }
 
+Value* Number::clone() const {
+	auto n = new Number(value, token);
+	return n;
+}
+
 }

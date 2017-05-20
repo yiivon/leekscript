@@ -493,4 +493,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	return {ret, type};
 }
 
+Value* FunctionCall::clone() const {
+	auto fc = new FunctionCall(token);
+	fc->function = function->clone();
+	for (const auto& a : arguments) {
+		fc->arguments.push_back(a->clone());
+	}
+	fc->closing_parenthesis = closing_parenthesis;
+	return fc;
+}
+
 }

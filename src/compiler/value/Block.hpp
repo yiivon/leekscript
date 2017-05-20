@@ -23,6 +23,7 @@ public:
 
 	Compiler::value compile(Compiler&) const override;
 
+	virtual Value* clone() const override;
 };
 
 }

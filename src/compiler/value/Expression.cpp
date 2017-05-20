@@ -1075,4 +1075,12 @@ Compiler::value Expression::compile(Compiler& c) const {
 	}
 }
 
+Value* Expression::clone() const {
+	auto ex = new Expression();
+	ex->v1 = v1->clone();
+	ex->op = op;
+	ex->v2 = v2 ? v2->clone() : nullptr;
+	return ex;
+}
+
 }

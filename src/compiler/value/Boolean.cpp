@@ -40,4 +40,10 @@ Compiler::value Boolean::compile(Compiler& c) const {
 	}
 }
 
+Value* Boolean::clone() const {
+	auto b = new Boolean(token);
+	b->value = value;
+	return b;
+}
+
 }

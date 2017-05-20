@@ -116,4 +116,11 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 	return {nullptr, Type::UNKNOWN};
 }
 
+Value* PostfixExpression::clone() const {
+	auto pe = new PostfixExpression();
+	pe->expression = (LeftValue*) expression->clone();
+	pe->operatorr = operatorr;
+	return pe;
+}
+
 }

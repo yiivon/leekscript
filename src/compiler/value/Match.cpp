@@ -263,4 +263,16 @@ jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 	}
 }
 
+Value* Match::clone() const {
+	auto match = new Match();
+	match->value = value->clone();
+	for (const auto& pl : pattern_list) {
+		match->pattern_list.push_back({});
+		for (const auto& p : pl) {
+			match->pattern_list.back().push_back(p.clone());
+		}
+	}
+	return match;
+}
+
 }

@@ -51,6 +51,8 @@ public:
 	void update_function_args(SemanticAnalyser*);
 
 	virtual Compiler::value compile(Compiler&) const override;
+
+	virtual Value* clone() const override;
 };
 
 }

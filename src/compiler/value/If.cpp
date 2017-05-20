@@ -141,4 +141,13 @@ Compiler::value If::compile(Compiler& c) const {
 	return {res, type};
 }
 
+Value* If::clone() const {
+	auto iff = new If();
+	iff->condition = condition->clone();
+	iff->then = (Block*) then->clone();
+	iff->elze = (Block*) elze->clone();
+	iff->ternary = ternary;
+	return iff;
+}
+
 }

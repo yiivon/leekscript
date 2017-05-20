@@ -40,6 +40,8 @@ public:
 	virtual Compiler::value compile(Compiler&) const = 0;
 	virtual void compile_end(Compiler&) const {}
 
+	virtual Value* clone() const = 0;
+
 	static std::string tabs(int indent);
 };
 

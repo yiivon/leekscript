@@ -31,5 +31,10 @@ Compiler::value ArrayFor::compile(Compiler& c) const {
 	return forr->compile(c);
 }
 
+Value* ArrayFor::clone() const {
+	auto af = new ArrayFor();
+	af->forr = forr->clone();
+	return af;
+}
 
 }

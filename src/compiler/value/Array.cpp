@@ -204,4 +204,15 @@ Compiler::value Array::compile(Compiler& c) const {
 	return array;
 }
 
+Value* Array::clone() const {
+	auto array = new Array();
+	array->opening_bracket = opening_bracket;
+	array->closing_bracket = closing_bracket;
+	for (const auto& ex : expressions) {
+		array->expressions.push_back(ex->clone());
+	}
+	array->interval = interval;
+	return array;
+}
+
 }

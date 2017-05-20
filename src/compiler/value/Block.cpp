@@ -110,4 +110,12 @@ Compiler::value Block::compile(Compiler& c) const {
 	return {nullptr, Type::UNKNOWN};
 }
 
+Value* Block::clone() const {
+	auto b = new Block();
+	for (const auto& i : instructions) {
+		b->instructions.push_back(i->clone());
+	}
+	return b;
+}
+
 }

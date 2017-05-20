@@ -174,4 +174,10 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	return r;
 }
 
+Value* ObjectAccess::clone() const {
+	auto oa = new ObjectAccess(field);
+	oa->object = object->clone();
+	return oa;
+}
+
 }

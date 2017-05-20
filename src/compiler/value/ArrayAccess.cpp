@@ -411,4 +411,14 @@ void ArrayAccess::compile_end(Compiler& c) const {
 	c.insn_delete_temporary(compiled_array);
 }
 
+Value* ArrayAccess::clone() const {
+	auto aa = new ArrayAccess();
+	aa->array = array->clone();
+	aa->key = key->clone();
+	aa->key2 = key2 ? key2->clone() : nullptr;
+	aa->open_bracket = open_bracket;
+	aa->close_bracket = close_bracket;
+	return aa;
+}
+
 }

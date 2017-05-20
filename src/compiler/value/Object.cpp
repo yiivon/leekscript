@@ -58,4 +58,15 @@ Compiler::value Object::compile(Compiler& c) const {
 	return object;
 }
 
+Value* Object::clone() const {
+	auto o = new Object();
+	for (const auto& k : keys) {
+		o->keys.push_back(k);
+	}
+	for (const auto& v : values) {
+		o->values.push_back(v->clone());
+	}
+	return o;
+}
+
 }

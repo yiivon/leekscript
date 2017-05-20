@@ -48,4 +48,12 @@ Compiler::value AbsoluteValue::compile(Compiler& c) const {
 	return abso;
 }
 
+Value* AbsoluteValue::clone() const {
+	auto abs = new AbsoluteValue();
+	abs->expression = expression;
+	abs->open_pipe = open_pipe;
+	abs->close_pipe = close_pipe;
+	return abs;
+}
+
 }

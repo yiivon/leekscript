@@ -22,6 +22,8 @@ public:
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
+
+	virtual Value* clone() const override;
 };
 
 }

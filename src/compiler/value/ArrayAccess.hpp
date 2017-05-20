@@ -34,6 +34,8 @@ public:
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_l(Compiler&) const override;
 	virtual void compile_end(Compiler&) const override;
+
+	virtual Value* clone() const override;
 };
 
 }

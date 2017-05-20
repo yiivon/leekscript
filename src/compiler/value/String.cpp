@@ -39,4 +39,8 @@ Compiler::value String::compile(Compiler& c) const {
 	});
 }
 
+Value* String::clone() const {
+	return new String(token);
+}
+
 }

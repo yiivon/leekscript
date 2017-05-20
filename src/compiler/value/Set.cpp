@@ -123,5 +123,12 @@ Compiler::value Set::compile(Compiler& c) const {
 	return {s, type};
 }
 
+Value* Set::clone() const {
+	auto s = new Set();
+	for (const auto& v : expressions) {
+		s->expressions.push_back(v->clone());
+	}
+	return s;
+}
 
 }

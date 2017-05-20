@@ -106,4 +106,9 @@ Compiler::value Reference::compile(Compiler& c) const {
 	}
 }
 
+Value* Reference::clone() const {
+	auto r = new Reference(value->clone());
+	return r;
+}
+
 }

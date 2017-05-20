@@ -311,4 +311,11 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 	return {result, type};
 }
 
+Value* PrefixExpression::clone() const {
+	auto pe = new PrefixExpression();
+	pe->expression = (LeftValue*) expression->clone();
+	pe->operatorr = operatorr;
+	return pe;
+}
+
 }

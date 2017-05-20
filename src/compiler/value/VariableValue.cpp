@@ -131,4 +131,9 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	return c.insn_address_of({v, type});
 }
 
+Value* VariableValue::clone() const {
+	auto vv = new VariableValue(token);
+	return vv;
+}
+
 }

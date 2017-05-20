@@ -376,4 +376,8 @@ Compiler::value Function::compile(Compiler& c) const {
 	}
 }
 
+Value* Function::clone() const {
+	return (Value*) this;
+}
+
 }
