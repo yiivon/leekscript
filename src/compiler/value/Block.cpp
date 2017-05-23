@@ -39,6 +39,8 @@ Location Block::location() const {
 
 void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
+	// std::cout << "Block analyse " << req_type << std::endl;
+
 	analyser->enter_block();
 
 	type = Type::VOID;
@@ -79,6 +81,8 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 }
 
 Compiler::value Block::compile(Compiler& c) const {
+
+	// std::cout << "Compile block " << type << std::endl;
 
 	c.enter_block();
 
