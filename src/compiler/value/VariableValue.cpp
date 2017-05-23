@@ -61,12 +61,12 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 }
 
 bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& args, int level) {
-
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_take(analyser, args, level);
 		this->type = var->value->type;
 		var->type = this->type;
 	}
+	// set_version(args);
 	return false;
 }
 
@@ -87,6 +87,15 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	}
 }
 
+Type VariableValue::version_type(std::vector<Type> version) const {
+	if (var != nullptr) {
+		if (auto f = dynamic_cast<Function*>(var->value)) {
+			return f->versions.at(version)->type;
+		}
+	}
+	return type;
+}
+
 Compiler::value VariableValue::compile(Compiler& c) const {
 
 	// std::cout << "Compile var " << name << " " << version << std::endl;
@@ -101,6 +110,10 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	if (scope == VarScope::INTERNAL) {
 		v = c.vm->internals.at(name);
 	} else if (scope == VarScope::LOCAL) {
+		auto f = dynamic_cast<Function*>(var->value);
+		if (has_version && f) {
+			return f->compile_version(c, version);
+		}
 		v = c.get_var(name).v;
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr

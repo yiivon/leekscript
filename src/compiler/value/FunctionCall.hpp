@@ -25,6 +25,8 @@ public:
 	bool is_native_method = false;
 	bool is_unknown_method = false;
 	Value* object = nullptr;
+	Function* function_object;
+	Type function_type;
 
 	FunctionCall(std::shared_ptr<Token> t);
 	virtual ~FunctionCall();

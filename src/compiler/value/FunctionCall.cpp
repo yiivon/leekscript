@@ -64,7 +64,19 @@ Location FunctionCall::location() const {
 
 void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
+	// std::cout << "FunctionCall::analyse(" << req_type << ")" << std::endl;
+
+	// Analyse the function (can be anything here)
 	function->analyse(analyser, Type::UNKNOWN);
+
+	// Find the function object
+	function_object = dynamic_cast<Function*>(function);
+	if (!function_object) {
+		auto vv = dynamic_cast<VariableValue*>(function);
+		if (vv) {
+			function_object = static_cast<Function*>(vv->var->value);
+		}
+	}
 
 	// The function call be called?
 	if (function->type.raw_type != RawType::UNKNOWN and
@@ -78,7 +90,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		arg->analyse(analyser, Type::UNKNOWN);
 	}
 
-	// Standard library constructors
+	// Standard library constructors TODO better
 	auto vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		if (vv->name == "Number") type = Type::INTEGER;
@@ -137,6 +149,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			if (object_type.raw_type != RawType::UNKNOWN) {
 				LSClass* object_class = (LSClass*) analyser->vm->system_vars[object_type.clazz];
 				m = object_class->getMethod(oa->field->content, object_type, arg_types);
+				// std::cout << "Method " << oa->field->content << " found : " << arg_types << std::endl;
 			}
 			if (m == nullptr) {
 				LSClass* value_class = (LSClass*) analyser->vm->system_vars["Value"];
@@ -161,7 +174,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	// Operator function?
+	// Operator function? TODO better, no special behavior
 	vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		auto name = vv->name;
@@ -187,9 +200,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Analyse arguments a second time with their required types
 	vector<Type> arg_types;
 	for (auto& arg : arguments) {
-		arg_types.push_back(arg->type);
+
 	}
 
+	// Check arguments count
 	bool arguments_valid = arguments.size() <= function->type.getArgumentTypes().size();
 	auto total_arguments_passed = std::max(arguments.size(), function->type.getArgumentTypes().size());
 	size_t a = 0;
@@ -199,9 +213,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			arguments.at(a)->analyse(analyser, argument_type);
 			if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION) {
 				arguments.at(a)->will_take(analyser, function->type.getArgumentType(a).arguments_types, 1);
+				arguments.at(a)->set_version(function->type.getArgumentType(a).arguments_types);
 			}
+			arg_types.push_back(arguments.at(a)->type);
 		} else if (function->type.argumentHasDefault(a)) {
 			// OK, there's no argument in the call but a default value is set.
+			if (function_object) {
+				arg_types.push_back(function_object->defaultValues.at(a)->type);
+			}
 		} else {
 			// Missing argument
 			arguments_valid = false;
@@ -221,19 +240,30 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	function->will_take(analyser, arg_types, 1);
+	function->set_version(arg_types);
+
+	// Get the function type
+	function_type = function->type;
+	if (function_object) {
+		if (function_object->versions.size() && function_object->versions.find(arg_types) != function_object->versions.end()) {
+			function_type = function_object->versions.at(arg_types)->type;
+		} else {
+		}
+	}
 
 	// The function is a variable
 	if (vv and vv->var and vv->var->value) {
+		// Recursive function
 		if (vv->var->name == analyser->current_function()->name) {
 			type = analyser->current_function()->getReturnType();
 		} else {
-			auto ret_type = vv->var->value->type.getReturnType();
+			auto ret_type = function_type.getReturnType();
 			if (ret_type.raw_type != RawType::UNKNOWN) {
 				type = ret_type;
 			}
 		}
 	} else {
-		auto ret_type = function->type.getReturnType();
+		auto ret_type = function_type.getReturnType();
 		if (ret_type.nature != Nature::UNKNOWN) {
 			type = ret_type;
 		}
@@ -241,7 +271,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	a = 0;
 	for (auto& arg : arguments) {
-		auto t = function->type.getArgumentType(a);
+		auto t = function_type.getArgumentType(a);
 		if (t == Type::UNKNOWN) {
 			t = Type::POINTER;
 		}
@@ -249,7 +279,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		a++;
 	}
 
-	return_type = function->type.getReturnType();
+	return_type = function_type.getReturnType();
 
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
@@ -265,6 +295,8 @@ bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {
+
+	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
 
 	/** Standard library constructors : Array(), Number() */
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
@@ -408,7 +440,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Arguments */
 	size_t offset = 1;
 
-	size_t arg_count = function->type.getArgumentTypes().size() + offset;
+	size_t arg_count = function_type.getArgumentTypes().size() + offset;
 	vector<Compiler::value> args;
 	vector<jit_type_t> args_types;
 	vector<LSValueType> lsvalue_types;
@@ -425,28 +457,20 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		lsvalue_types.push_back(Type::FUNCTION_P.id());
 	}
 
-	auto function_object = dynamic_cast<Function*>(function);
-	if (!function_object) {
-		auto vv = dynamic_cast<VariableValue*>(function);
-		if (vv) {
-			function_object = static_cast<Function*>(vv->var->value);
-		}
-	}
-
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
 			args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
-			if (function->type.getArgumentType(i) == Type::MPZ &&
+			if (function_type.getArgumentType(i) == Type::MPZ &&
 				arguments.at(i)->type != Type::MPZ_TMP) {
 				args.at(offset + i) = c.insn_clone_mpz(args.at(offset + i));
 			}
 		} else {
 			args.push_back(function_object->defaultValues.at(i)->compile(c));
 		}
-		args_types.push_back(VM::get_jit_type(function->type.getArgumentType(i)));
-		lsvalue_types.push_back(function->type.getArgumentType(i).id());
-		if (function->type.getArgumentType(i).must_manage_memory()) {
+		args_types.push_back(VM::get_jit_type(function_type.getArgumentType(i)));
+		lsvalue_types.push_back(function_type.getArgumentType(i).id());
+		if (function_type.getArgumentType(i).must_manage_memory()) {
 			args.at(offset + i) = c.insn_move_inc(args.at(offset + i));
 		}
 	}
@@ -468,11 +492,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	// Destroy temporary arguments
 	for (size_t i = 0; i < arg_count - offset; ++i) {
-		if (function->type.getArgumentType(i).must_manage_memory()) {
+		if (function_type.getArgumentType(i).must_manage_memory()) {
 			c.insn_delete(args.at(offset + i));
 		}
-		if (function->type.getArgumentType(i) == Type::MPZ ||
-			function->type.getArgumentType(i) == Type::MPZ_TMP) {
+		if (function_type.getArgumentType(i) == Type::MPZ ||
+			function_type.getArgumentType(i) == Type::MPZ_TMP) {
 			c.insn_delete_mpz(args.at(offset + i));
 		}
 	}

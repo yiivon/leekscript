@@ -16,6 +16,8 @@ public:
 
 	Type type;
 	TypeList types;
+	std::vector<Type> version;
+	bool has_version = false;
 	std::map<std::string, Type> attr_types;
 	bool constant;
 	bool parenthesis = false;
@@ -35,9 +37,12 @@ public:
 	virtual bool must_be_pointer(SemanticAnalyser*);
 	virtual void must_return(SemanticAnalyser*, const Type&);
 	virtual void will_be_in_array(SemanticAnalyser*);
+	virtual void set_version(std::vector<Type>);
+	virtual Type version_type(std::vector<Type>) const;
 	virtual void analyse(SemanticAnalyser*, const Type&) = 0;
 
 	virtual Compiler::value compile(Compiler&) const = 0;
+	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const;
 	virtual void compile_end(Compiler&) const {}
 
 	virtual Value* clone() const = 0;
