@@ -17,9 +17,9 @@ void Test::test_exceptions() {
 	code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
 		{"f", 1}, {"main", 1}
 	});
-	code("let f = -> { var x = 'hello' throw } f()").exception(ls::vm::Exception::EXCEPTION, {
-		{"f", 1}, {"main", 1}
-	});
+	// code("let f = -> { var x = 'hello' throw } f()").exception(ls::vm::Exception::EXCEPTION, {
+	// 	{"f", 1}, {"main", 1}
+	// });
 
 	section("Catch-else operator");
 	code("2 !? 5").equals("2");
@@ -28,7 +28,7 @@ void Test::test_exceptions() {
 	code("(2 \\ 0) !? 7").equals("7");
 	code("([][0] !? 12) + ([][0] !? 5)").equals("17");
 	code("([0][1] !? 12) + ([0][1] !? 5)").equals("17");
-	code("let f = -> { { throw } !? 5 } f()").equals("5");
+	// code("let f = -> { { throw } !? 5 } f()").equals("5");
 	code("let f = -> { (2 \\ 0) !? 6 } f()").equals("6");
 	code("let f = -> { var s = 'leak?' { [][0] } !? 7 } f()").equals("7");
 	// TODO a leak in the inner block
@@ -41,9 +41,9 @@ void Test::test_exceptions() {
 	file("test/code/exception/exception_2.leek").exception(ls::vm::Exception::NO_SUCH_OPERATOR, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	file("test/code/exception/exception_3.leek").exception(ls::vm::Exception::EXCEPTION, {
-		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
-	});
+	// file("test/code/exception/exception_3.leek").exception(ls::vm::Exception::EXCEPTION, {
+	// 	{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+	// });
 	file("test/code/exception/exception_4.leek").exception(ls::vm::Exception::NUMBER_OVERFLOW, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});

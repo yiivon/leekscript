@@ -12,7 +12,7 @@ void Test::test_operations() {
 	code("[1, 2, 3, 4, 5, 6, 7, 8, 9]").operations(10);
 	code("[1][0]").operations(4);
 	code("x -> x").operations(1);
-	code("(x -> x + 1)(12)").operations(3);
+	code("(x -> x + 1)(12)").operations(4);
 
 	section("GMP operations");
 	code("12345m ** 12").operations(169);
