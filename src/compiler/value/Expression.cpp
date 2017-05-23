@@ -47,7 +47,7 @@ void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 		 * and try to add a operator with a higher priority,
 		 * such as : '× 7' => '5 + (2 × 7)'
 		 */
-		Expression* ex = new Expression();
+		auto ex = new Expression();
 		ex->v1 = v2;
 		ex->op = op;
 		ex->v2 = exp;
@@ -59,7 +59,7 @@ void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 		 * and try to add a operator with a lower priority,
 		 * such as : '< 7' => '(5 + 2) < 7'
 		 */
-		Expression* newV1 = new Expression();
+		auto newV1 = new Expression();
 		newV1->v1 = this->v1;
 		newV1->op = this->op;
 		newV1->v2 = this->v2;
