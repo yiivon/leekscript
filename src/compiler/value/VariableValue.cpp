@@ -53,10 +53,10 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	type.temporary = false;
 
-//	cout << "VV " << name << " : " << type << endl;
-//	cout << "var scope : " << (int)var->scope << endl;
-//	for (auto t : attr_types)
-//		cout << t.first << " : " << t.second << endl;
+	//	cout << "VV " << name << " : " << type << endl;
+	//	cout << "var scope : " << (int)var->scope << endl;
+	//	for (auto t : attr_types)
+	//	cout << t.first << " : " << t.second << endl;
 	types = type;
 }
 
@@ -89,8 +89,9 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 
 Compiler::value VariableValue::compile(Compiler& c) const {
 
+	// std::cout << "Compile var " << name << " " << version << std::endl;
 	// cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << endl;
-//	cout << "req type : " << req_type << endl;
+	// cout << "req type : " << req_type << endl;
 
 	if (scope == VarScope::CAPTURE) {
 		return c.insn_get_capture(capture_index, type);
