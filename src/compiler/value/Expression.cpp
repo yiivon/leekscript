@@ -24,15 +24,12 @@ Expression::~Expression() {
 	if (v1 != nullptr) {
 		delete v1;
 	}
-	if (op != nullptr) {
-		delete op;
-	}
 	if (v2 != nullptr) {
 		delete v2;
 	}
 }
 
-void Expression::append(Operator* op, Value* exp) {
+void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 
 	/*
 	 * Single expression (2, 'hello', ...), just add the operator

@@ -13,7 +13,7 @@ public:
 
 	Value* v1;
 	Value* v2;
-	Operator* op;
+	std::shared_ptr<Operator> op;
 
 	bool store_result_in_v1;
 	bool no_op;
@@ -29,7 +29,7 @@ public:
 	Expression(Value*);
 	virtual ~Expression();
 
-	void append(Operator*, Value*);
+	void append(std::shared_ptr<Operator>, Value*);
 
 	void print(std::ostream&, int indent, bool debug) const override;
 	virtual Location location() const override;
