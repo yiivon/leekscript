@@ -146,7 +146,7 @@ Instruction* VariableDeclaration::clone() const {
 		vd->variables.push_back(v);
 	}
 	for (const auto& v : expressions) {
-		vd->expressions.push_back(v);
+		vd->expressions.push_back(v->clone());
 	}
 	return vd;
 }
