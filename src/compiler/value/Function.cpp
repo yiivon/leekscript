@@ -452,7 +452,22 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type> args, Ver
 }
 
 Value* Function::clone() const {
-	return (Value*) this;
+	auto f = new Function();
+	f->lambda = lambda;
+	f->name = name;
+	f->body = (Block*) body->clone();
+	for (const auto& a : arguments) {
+		f->arguments.push_back(a);
+	}
+	f->references = references;
+	for (const auto& d : defaultValues) {
+		if (d != nullptr) {
+			f->defaultValues.push_back(d->clone());
+		} else {
+			f->defaultValues.push_back(nullptr);
+		}
+	}
+	return f;
 }
 
 }
