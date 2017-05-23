@@ -1,5 +1,4 @@
-#include "../../compiler/instruction/VariableDeclaration.hpp"
-
+#include "VariableDeclaration.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"

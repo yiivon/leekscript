@@ -1,5 +1,4 @@
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
-
+#include "SemanticAnalyser.hpp"
 #include "../../compiler/instruction/ExpressionInstruction.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Context.hpp"
