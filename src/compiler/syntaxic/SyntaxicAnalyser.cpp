@@ -414,13 +414,13 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 
 						if (expr and expr->op->priority >= op->priority) {
 							auto pexp = new PrefixExpression();
-							pexp->operatorr = op;
+							pexp->operatorr = std::shared_ptr<Operator>(op);
 							pexp->expression = expr->v1;
 							expr->v1 = pexp;
 							e = expr;
 						} else {
 							auto pe = new PrefixExpression();
-							pe->operatorr = op;
+							pe->operatorr = std::shared_ptr<Operator>(op);
 							pe->expression = ex;
 							e = pe;
 						}
@@ -443,7 +443,7 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 
 				} else {
 					auto ex = new PrefixExpression();
-					ex->operatorr = new Operator(eat_get());
+					ex->operatorr = std::make_shared<Operator>(eat_get());
 					ex->expression = eatSimpleExpression();
 					e = new Expression(ex);
 				}
@@ -531,9 +531,8 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 			auto op = eat_get();
 			auto ex = new PostfixExpression();
 
-			ex->operatorr = new Operator(op);
+			ex->operatorr = std::make_shared<Operator>(op);
 			ex->expression = (LeftValue*) e;
-
 			e = ex;
 		}
 	}
@@ -588,7 +587,7 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened, Value*
 				ex->v1 = e;
 			}
 		}
-		ex->append(op, eatSimpleExpression());
+		ex->append(std::shared_ptr<Operator>(op), eatSimpleExpression());
 	}
 	if (ex != nullptr) {
 		e = ex;
@@ -759,7 +758,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 				} else {
 					e->v1 = new VariableValue(std::shared_ptr<Token>(ident));
 				}
-				e->op = new Operator(eq);
+				e->op = std::make_shared<Operator>(eq);
 				e->v2 = ex;
 				return e;
 			}
@@ -771,7 +770,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 			// var = <ex> <?>
 			Expression* e = new Expression();
 			e->v1 = new VariableValue(std::shared_ptr<Token>(ident));
-			e->op = new Operator(eq);
+			e->op = std::make_shared<Operator>(eq);
 			e->v2 = ex;
 			return eatExpression(pipe_opened, set_opened, e);
 		}

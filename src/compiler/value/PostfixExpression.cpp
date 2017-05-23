@@ -17,7 +17,6 @@ PostfixExpression::PostfixExpression() {
 
 PostfixExpression::~PostfixExpression() {
 	delete expression;
-	delete operatorr;
 }
 
 void PostfixExpression::print(ostream& os, int indent, bool debug) const {

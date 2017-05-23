@@ -19,7 +19,6 @@ PrefixExpression::PrefixExpression() {
 
 PrefixExpression::~PrefixExpression() {
 	delete expression;
-	delete operatorr;
 }
 
 void PrefixExpression::print(ostream& os, int indent, bool debug) const {

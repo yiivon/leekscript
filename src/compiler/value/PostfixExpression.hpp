@@ -11,7 +11,7 @@ class PostfixExpression : public Value {
 public:
 
 	LeftValue* expression;
-	Operator* operatorr;
+	std::shared_ptr<Operator> operatorr;
 	bool return_value;
 
 	PostfixExpression();

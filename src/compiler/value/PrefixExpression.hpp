@@ -10,7 +10,7 @@ namespace ls {
 class PrefixExpression : public Value {
 public:
 
-	Operator* operatorr;
+	std::shared_ptr<Operator> operatorr;
 	Value* expression;
 
 	PrefixExpression();
