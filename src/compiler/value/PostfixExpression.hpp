@@ -1,9 +1,9 @@
 #ifndef POSTFIXEXPRESSION_HPP
 #define POSTFIXEXPRESSION_HPP
 
-#include "../../compiler/value/Expression.hpp"
-#include "../../compiler/value/LeftValue.hpp"
-#include "../../compiler/value/Value.hpp"
+#include "Expression.hpp"
+#include "LeftValue.hpp"
+#include "Value.hpp"
 
 namespace ls {
 

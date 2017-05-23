@@ -1,5 +1,4 @@
-#include "../../compiler/value/ArrayAccess.hpp"
-
+#include "ArrayAccess.hpp"
 #include "../../compiler/value/Array.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSArray.hpp"

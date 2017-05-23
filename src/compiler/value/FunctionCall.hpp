@@ -5,6 +5,7 @@
 #include <memory>
 #include "Value.hpp"
 #include "../lexical/Token.hpp"
+#include "Function.hpp"
 
 namespace ls {
 

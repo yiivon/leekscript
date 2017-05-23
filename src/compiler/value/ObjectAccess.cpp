@@ -1,8 +1,6 @@
 #include "ObjectAccess.hpp"
-
 #include <chrono>
-
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
 #include "VariableValue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSString.hpp"

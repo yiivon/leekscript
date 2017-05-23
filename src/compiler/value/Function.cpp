@@ -1,5 +1,4 @@
 #include "Function.hpp"
-
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../instruction/ExpressionInstruction.hpp"
 #include "../../vm/value/LSFunction.hpp"

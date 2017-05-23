@@ -1,4 +1,4 @@
-#include "../../compiler/instruction/ExpressionInstruction.hpp"
+#include "ExpressionInstruction.hpp"
 
 using namespace std;
 

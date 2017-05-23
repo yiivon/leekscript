@@ -1,5 +1,4 @@
-#include "../../compiler/value/Expression.hpp"
-
+#include "Expression.hpp"
 #include "../../compiler/value/ArrayAccess.hpp"
 #include "../../compiler/value/ObjectAccess.hpp"
 #include "../../compiler/value/Function.hpp"

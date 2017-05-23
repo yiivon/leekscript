@@ -3,10 +3,10 @@
 
 #include <vector>
 
-#include "../../compiler/lexical/Ident.hpp"
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
-#include "../../compiler/value/Value.hpp"
-#include "../value/Block.hpp"
+#include "../lexical/Ident.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
+#include "Value.hpp"
+#include "Block.hpp"
 
 namespace ls {
 

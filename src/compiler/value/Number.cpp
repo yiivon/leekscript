@@ -1,4 +1,4 @@
-#include "../../compiler/value/Number.hpp"
+#include "Number.hpp"
 
 #include "../../vm/VM.hpp"
 #include <limits.h>
