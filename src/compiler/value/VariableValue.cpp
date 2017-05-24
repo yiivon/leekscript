@@ -63,8 +63,20 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& args, int level) {
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_take(analyser, args, level);
-		this->type = var->value->type;
-		var->type = this->type;
+		if (auto f = dynamic_cast<Function*>(var->value)) {
+			if (f->versions.find(args) != f->versions.end()) {
+				// std::cout << "[vv] set type from version " << args << std::endl;
+				var->type = f->versions.at(args)->type;
+				var->version = args;
+				var->has_version = true;
+			} else {
+				var->type = this->type;
+			}
+		} else {
+			var->type = this->type;
+		}
+		type = var->type;
+		types = type;
 	}
 	// set_version(args);
 	return false;
