@@ -161,6 +161,8 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		current_version = default_version;
 		default_version->body = body;
 		default_version->function = new LSFunction<LSValue*>(nullptr);
+		default_version->function->refs = 1;
+		default_version->function->native = true;
 	}
 
 	auto return_type = is_main_function ? req_type.getReturnType() : Type::POINTER;
@@ -187,7 +189,9 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 		if (versions.find(args) == versions.end()) {
 			auto version = new Function::Version();
 			version->body = (Block*) body->clone();
-			version->function = nullptr;
+			version->function = new LSFunction<LSValue*>(nullptr);
+			version->function->refs = 1;
+			version->function->native = true;
 			versions.insert({args, version});
 
 			analyse_body(analyser, args, version, Type::UNKNOWN);
@@ -369,11 +373,6 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type> args, Ver
 	// std::cout << "Function::compile_version_internal(" << args << ")" << std::endl;
 
 	auto ls_fun = version->function;
-	if (!ls_fun) {
-		version->function = ls_fun = new LSFunction<LSValue*>(nullptr);
-	}
-	ls_fun->refs = 1;
-	ls_fun->native = true;
 
 	Compiler::value jit_fun;
 	if (!is_main_function) {
