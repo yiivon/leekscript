@@ -242,7 +242,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 		bool has_default = i < defaultValues.size() && defaultValues[i] != nullptr;
 		version->type.setArgumentType(i, version->type.getArgumentType(i), has_default);
 	}
-	version->type.setReturnType(Type::UNKNOWN);
+	version->type.setReturnType(type.getReturnType());
 	version->body->analyse(analyser, req_type);
 
 	TypeList return_types;
