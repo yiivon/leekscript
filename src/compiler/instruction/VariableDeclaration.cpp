@@ -112,7 +112,11 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				c.add_var(name, var, Type::POINTER, false);
 
 				if (Function* f = dynamic_cast<Function*>(ex)) {
-					jit_insn_store(c.F, var, c.new_pointer((void*) f->default_version->function).v);
+					if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
+						jit_insn_store(c.F, var, c.new_pointer((void*) f->versions.at(v->version)->function).v);
+					} else {
+						jit_insn_store(c.F, var, c.new_pointer((void*) f->default_version->function).v);
+					}
 				}
 
 				auto val = ex->compile(c);
