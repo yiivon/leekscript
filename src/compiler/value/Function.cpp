@@ -337,6 +337,8 @@ Compiler::value Function::compile(Compiler& c) const {
 
 	// std::cout << "Function::compile() " << version << " " << has_version << std::endl;
 
+	((Function*) this)->compiled = true;
+
 	// Compile default version
 	if (is_main_function || generate_default_version) {
 		compile_version_internal(c, type.getArgumentTypes(), default_version);
@@ -346,8 +348,6 @@ Compiler::value Function::compile(Compiler& c) const {
 	for (auto& version : ((Function*) this)->versions) {
 		compile_version_internal(c, version.first, version.second);
 	}
-
-	((Function*) this)->compiled = true;
 
 	if (has_version) {
 		return compile_version(c, version);
