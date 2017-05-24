@@ -380,7 +380,12 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type> args, Ver
 		for (const auto& cap : captures) {
 			jit_value_t jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
-				jit_cap = c.get_var(cap->name).v;
+				auto f = dynamic_cast<Function*>(cap->value);
+				if (cap->has_version && f) {
+					jit_cap = f->compile_version(c, cap->version).v;
+				} else {
+					jit_cap = c.get_var(cap->name).v;
+				}
 			} else if (cap->scope == VarScope::CAPTURE) {
 				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
 			} else {
