@@ -197,13 +197,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	// Analyse arguments a second time with their required types
-	vector<Type> arg_types;
-	for (auto& arg : arguments) {
-
-	}
-
 	// Check arguments count
+	std::vector<Type> arg_types;
 	bool arguments_valid = arguments.size() <= function->type.getArgumentTypes().size();
 	auto total_arguments_passed = std::max(arguments.size(), function->type.getArgumentTypes().size());
 	size_t a = 0;
