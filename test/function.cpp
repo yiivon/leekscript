@@ -5,10 +5,10 @@ void Test::test_functions() {
 	header("Functions");
 	code("x -> x").equals("<function>");
 	code("function foo(x, y) { x + y } foo(1, 2)").equals("3");
-	// TODO
-	// code("function f() { return 12 } [f(), 'str']").equals("[12, 'str']");
-	// TODO
-	// code("function bar(u, v) return u * v - u / v end bar(12, 5)").equals("57.6");
+	code("function f() { return 12 } [f(), 'str']").equals("[12, 'str']");
+	code("function f() { 12 } [f(), 'str']").equals("[12, 'str']");
+	code("function bar(u, v) return u * v - u / v end bar(12, 5)").equals("57.6");
+	code("function bar(u, v) u * v - u / v end bar(12, 5)").equals("57.6");
 
 	section("Can't call a value");
 	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"null"});
@@ -41,14 +41,13 @@ void Test::test_functions() {
 	code("[[x -> x ** 2]][0][0](12)").equals("144");
 	code("[[[x -> x ** 2]]][0][0][0](12)").equals("144");
 	code("[[[[[[[x -> x ** 2]]]]]]][0][0][0][0][0][0][0](12)").equals("144");
-	code("(-> -> 12)()()").equals("12");
-	code("let f = -> -> 12 f()()").equals("12");
-	code("let f = x -> -> 'salut' f(5)()").equals("'salut'");
+	// TODO
+	// code("(-> -> 12)()()").equals("12");
+	// code("let f = -> -> 12 f()()").equals("12");
+	// code("let f = x -> -> 'salut' f(5)()").equals("'salut'");
 	code("let f = x -> [x, x, x] f(44)").equals("[44, 44, 44]");
-	// TODO
-	// code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
-	// TODO
-	// code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
+	code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
+	code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
 	// code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
@@ -67,29 +66,31 @@ void Test::test_functions() {
 	section("Closures");
 	code("let a = 5 let f = -> a f()").equals("5");
 	code("let a = 5 let f = -> @a f()").equals("5");
-	code("let a = 12 let f = -> -> a f()()").equals("12");
-	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
-	code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
-	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
-	code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
-	code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
-	code("let f = x -> y -> x + y f(5)(12)").equals("17");
-	code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
+	// TODO
+	// code("let a = 12 let f = -> -> a f()()").equals("12");
+	// code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
+	// code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
+	// code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	// code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
+	// code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
+	// code("let f = x -> y -> x + y f(5)(12)").equals("17");
+	// code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
 	// code("let f = x -> x (-> f(12))()").equals("12");
 	// code("let f = x -> x let g = x -> f(x) g(12)").equals("12");
 	// code("let g = x -> x ** 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
 	code("let a = 5 let f = x -> x < a [1, 2, 3, 4, 5, 6].filter(f)").equals("[1, 2, 3, 4]");
-	// TODO
-	// code("var g = x => { var y = 2; return x + y } g(10)").equals("12");
+	code("var g = x => { var y = 2; return x + y } g(10)").equals("12");
 	code("let a = 12, b = 13, c = 14 let f = x -> x + a + b + c f(5)").equals("44");
 
 	section("Recursive");
-	// code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
-	// code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
-	// code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
+	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
+	code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
+	code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
+	// TODO
 	// code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
 
 	section("Functions in array");
+	// TODO
 	// code("var a = [12, x -> x + 7] a[1](12)").equals("19");
 	// code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
 
@@ -250,10 +251,11 @@ void Test::test_functions() {
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f([])").equals("[]");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f(2)").equals("2");
+	// TODO
 	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
-	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
+	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
 	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
-	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
+	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
 
 	section("Wrong syntaxes");
 	code("(@2) -> 2").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
