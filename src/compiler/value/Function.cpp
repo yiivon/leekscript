@@ -159,6 +159,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	if (!default_version) {
 		default_version = new Function::Version();
+		current_version = default_version;
 		default_version->body = body;
 		default_version->function = new LSFunction<LSValue*>(nullptr);
 	}
@@ -224,6 +225,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	captures.clear();
 
 	analyser->enter_function(this);
+	current_version = version;
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::UNKNOWN);

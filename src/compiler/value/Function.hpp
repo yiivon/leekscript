@@ -39,6 +39,7 @@ public:
 	Version* default_version = nullptr;
 	std::map<std::vector<Type>, Version*> versions;
 	bool compiled = false;
+	Version* current_version = nullptr;
 
 	Function();
 	virtual ~Function();
