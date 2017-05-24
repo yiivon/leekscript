@@ -29,11 +29,11 @@ void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	if (expression != nullptr) {
 		Type required_type = Type::UNKNOWN;
-		if (f->type.getReturnType() != Type::UNKNOWN) {
-			required_type = f->type.getReturnType();
+		if (f->current_version->type.getReturnType() != Type::UNKNOWN) {
+			required_type = f->current_version->type.getReturnType();
 		}
 		expression->analyse(analyser, required_type);
-		f->body->types.add(expression->type);
+		f->current_version->body->types.add(expression->type);
 	}
 	function = f;
 	in_function = true;
