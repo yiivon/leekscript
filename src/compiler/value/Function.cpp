@@ -165,7 +165,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		default_version->function->native = true;
 	}
 
-	auto return_type = is_main_function ? req_type.getReturnType() : Type::POINTER;
+	auto return_type = req_type.getReturnType();
 	analyse_body(analyser, type.getArgumentTypes(), default_version, return_type);
 
 	type = default_version->type;
