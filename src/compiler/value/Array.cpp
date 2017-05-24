@@ -113,6 +113,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 					if (types.size() > 0) {
 						ex->will_take(analyser, types, 1);
 					}
+					// e.g. Should compile a generic version
 					ex->must_return(analyser, Type::POINTER);
 				}
 				if (element_type == Type::UNKNOWN or !element_type.compatible(ex->type)) {

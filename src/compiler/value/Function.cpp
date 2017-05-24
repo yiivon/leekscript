@@ -324,12 +324,20 @@ Type Function::version_type(std::vector<Type> version) const {
 	return type;
 }
 
+void Function::must_return(SemanticAnalyser*, const Type& type) {
+	if (type == Type::POINTER) {
+		generate_default_version = true;
+	}
+}
+
 Compiler::value Function::compile(Compiler& c) const {
 
 	// std::cout << "Function::compile() " << version << " " << has_version << std::endl;
 
 	// Compile default version
-	compile_version_internal(c, type.getArgumentTypes(), default_version);
+	if (is_main_function || generate_default_version) {
+		compile_version_internal(c, type.getArgumentTypes(), default_version);
+	}
 
 	// Add captures (for sub functions only)
 	for (auto& version : ((Function*) this)->versions) {

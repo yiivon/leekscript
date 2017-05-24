@@ -39,6 +39,7 @@ public:
 	Version* default_version = nullptr;
 	std::map<std::vector<Type>, Version*> versions;
 	bool compiled = false;
+	bool generate_default_version = false;
 	Version* current_version = nullptr;
 
 	Function();
@@ -56,6 +57,7 @@ public:
 	void analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version, const Type& req_type);
 	void update_function_args(SemanticAnalyser*);
 	virtual Type version_type(std::vector<Type>) const override;
+	virtual void must_return(SemanticAnalyser*, const Type&) override;
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
