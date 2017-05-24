@@ -148,7 +148,6 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		auto argument_type = Type::UNKNOWN;
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyse(analyser, Type::UNKNOWN);
-			// argument_type = defaultValues[i]->type;
 		}
 		type.setArgumentType(i, argument_type, defaultValues[i] != nullptr);
 	}
