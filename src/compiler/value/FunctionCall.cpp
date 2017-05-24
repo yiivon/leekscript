@@ -242,7 +242,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (function_object) {
 		if (function_object->versions.size() && function_object->versions.find(arg_types) != function_object->versions.end()) {
 			function_type = function_object->versions.at(arg_types)->type;
-		} else {
 		}
 	}
 
