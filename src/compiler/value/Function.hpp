@@ -49,7 +49,7 @@ public:
 	int capture(std::shared_ptr<SemanticVar> var);
 	Type getReturnType();
 
-	void print_version(std::ostream& os, int indent, bool debug, Version* version) const;
+	void print_version(std::ostream& os, int indent, bool debug, const Version* version) const;
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual Location location() const override;
 
