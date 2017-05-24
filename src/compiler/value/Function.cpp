@@ -286,7 +286,7 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 		if (captures[i]->name == var->name)
 			return i;
 	}
-	var = std::make_shared<SemanticVar>(*var);
+	// var = std::make_shared<SemanticVar>(*var);
 	captures.push_back(var);
 
 	if (var->function != parent) {
