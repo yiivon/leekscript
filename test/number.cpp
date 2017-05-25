@@ -614,10 +614,10 @@ void Test::test_numbers() {
 	code("Number.isInteger(π)").equals("false");
 
 	section("Number.fold");
-	// code("1234567.fold((x, y) -> x + y, 0)").equals("28");
-	// code("1234567.fold((x, y) -> x + y, 1000)").equals("1028");
-	// code("1234567.fold((x, y) -> x * y, 1)").equals("5040");
-	// code("1234567.fold((x, y) -> x + y ** 2, 0)").equals("140");
+	code("1234567.fold((x, y) -> x + y, 0)").equals("28");
+	code("1234567.fold((x, y) -> x + y, 1000)").equals("1028");
+	code("1234567.fold((x, y) -> x * y, 1)").equals("5040");
+	code("1234567.fold((x, y) -> x + y ** 2, 0)").equals("140");
 
 	section("Number.hypot");
 	code("Number.hypot(3, 4)").equals("5");
