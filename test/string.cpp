@@ -181,6 +181,7 @@ void Test::test_strings() {
 	code("String.map('salut', x -> '(' + x + ')')").equals("'(s)(a)(l)(u)(t)'");
 	code("'salut'.map(char -> char + '.')").equals("'s.a.l.u.t.'");
 	code("'♫☯🐖👽韭'.map(u -> u + ' ')").equals("'♫ ☯ 🐖 👽 韭 '");
+	// TODO
 	// code("let f = n -> n.string().map(d -> (d.code() + 9263).char() + ' ') f(196457238)").equals("'① ⑨ ⑥ ④ ⑤ ⑦ ② ③ ⑧ '");
 
 	section("String.split()");
@@ -227,6 +228,7 @@ void Test::test_strings() {
 	code("String.code('ABC', 2)").equals("67");
 	code("(x -> x)(65).char()").equals("'A'");
 	code("[128040][0].char()").equals("'🐨'");
+	// TODO
 	// code("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 	// code("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 	code("[String.code('♫'), '']").equals("[9835, '']");
