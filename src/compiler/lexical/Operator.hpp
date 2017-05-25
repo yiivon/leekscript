@@ -2,7 +2,7 @@
 #define OPERATOR_HPP
 
 #include <memory>
-#include "../../compiler/lexical/Token.hpp"
+#include "Token.hpp"
 
 namespace ls {
 

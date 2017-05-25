@@ -1,5 +1,4 @@
-#include "../../compiler/lexical/LexicalAnalyser.hpp"
-
+#include "LexicalAnalyser.hpp"
 #include <iostream>
 #include "../../../lib/utf8.h"
 #include <string.h>
