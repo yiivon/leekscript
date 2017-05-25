@@ -80,16 +80,15 @@ void Test::test_classes() {
 
 	section("Methods access");
 	// code("['hello', 2][0].toto").exception(ls::vm::Exception::NO_SUCH_ATTRIBUTE);
-	// TODO
-	// code("[].map").equals("<function>");
+	code("[].map").equals("<function>");
 	code("[].azertyuiop").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"azertyuiop", "Array"});
 	code("[[], ''][0].azertyuiop").exception(ls::vm::Exception::NO_SUCH_ATTRIBUTE);
 	// TODO
 	// code("let my_map = [].map; my_map([1, 2, 3], x -> x ^ 2)").equals("[1, 4, 9]");
-	// code("[].map == [].map").equals("true");
-	// code("{}.map == {}.map").equals("true");
-	// code("[].map == {}.map").equals("false");
-	// code("let a = [].map; a == [].map").equals("true");
+	code("[].map == [].map").equals("true");
+	code("{}.map == {}.map").equals("true");
+	code("[].map == {}.map").equals("false");
+	code("let a = [].map; a == [].map").equals("true");
 
 	section("Class.operator ==");
 	code("Number == 12.class").equals("true");
