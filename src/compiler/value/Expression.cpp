@@ -1028,7 +1028,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		default: {
-			std::cout << "No such operator to compile : " << op->character << std::endl; // LCOV_EXCL_LINE
+			std::cout << "No such operator to compile : " << op->character << " (" << (int) op->type << ")" << std::endl; // LCOV_EXCL_LINE
 			assert(false); // LCOV_EXCL_LINE
 		}
 	}
