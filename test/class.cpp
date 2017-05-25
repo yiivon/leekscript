@@ -55,18 +55,18 @@ void Test::test_classes() {
 	code("12 < Number").equals("true");
 	code("[Number, 2][0] < 12").equals("false");
 
-	section("instanceof operator");
-	code("12 instanceof Number").equals("true");
-	code("'yo' instanceof Number").equals("false");
-	code("'yo' instanceof String").equals("true");
-	code("[1, 2, 3] instanceof Array").equals("true");
-	code("[1..12] instanceof Interval").equals("true");
-	code("{a: 12} instanceof Object").equals("true");
+	section("is operator");
+	code("12 is Number").equals("true");
+	code("'yo' is Number").equals("false");
+	code("'yo' is String").equals("true");
+	code("[1, 2, 3] is Array").equals("true");
+	code("[1..12] is Interval").equals("true");
+	code("{a: 12} is Object").equals("true");
 	// TODO ?
-	// code("(-> 12) instanceof Function").equals("true");
-	code("null instanceof Null").equals("true");
-	code("true instanceof Boolean").equals("true");
-	code("Number instanceof Class").equals("true");
+	// code("(-> 12) is Function").equals("true");
+	code("null is Null").equals("true");
+	code("true is Boolean").equals("true");
+	code("Number is Class").equals("true");
 
 	section("Class creation");
 	code("class A {} A").equals("<class A>");

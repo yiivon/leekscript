@@ -26,7 +26,7 @@ ValueSTD::ValueSTD() : Module("Value") {
  		{Type::BOOLEAN, Type::BOOLEAN, Type::BOOLEAN, (void*) &ValueSTD::op_store},
 		//{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::NUMBER_VALUE, (void*) &ValueSTD::op_store}
  	});
-	operator_("instanceof", {
+	operator_("is", {
 		{Type::UNKNOWN, Type::CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
 	});
 	operator_("==", {

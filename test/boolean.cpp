@@ -39,7 +39,7 @@ void Test::test_booleans() {
 
 	section("Boolean.operator ==");
 	code("true == false").equals("false");
-	code("false is false").equals("true");
+	code("false == false").equals("true");
 
 	section("Boolean.operator !=");
 	code("true != false").equals("true");

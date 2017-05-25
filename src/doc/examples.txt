@@ -12,7 +12,7 @@ let 🐨 = 'koala' 🐨.toUpper()
 ['a', 'b', 'c', 'd'].random(2)
 [1 2 3 4 5 6 7][2:4]
 true xor true
-12 instanceof Number
+12 is Number
 'hello'.class.name
 [1, 2, 3].class
 String.replace('banana' 'a' '_')

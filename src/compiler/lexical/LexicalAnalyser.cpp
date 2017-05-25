@@ -30,7 +30,7 @@ static vector<vector<string>> type_literals = {
 
 	{ "@" },
 
-	{ "===" }, { "==", "is" }, { "!==" },
+	{ "===" }, { "==" }, { "!==" },
 	{ "+" }, { "-" }, { "*", "×" }, { "/", "÷" },
 
 	{ "++" }, { "--" },
@@ -59,7 +59,7 @@ static vector<vector<string>> type_literals = {
 
 	{ ".." }, { "..." },
 
-	{ "instanceof" },
+	{ "is" },
 
 	{ "&" }, { "&=" },
 	{ "|=" },
