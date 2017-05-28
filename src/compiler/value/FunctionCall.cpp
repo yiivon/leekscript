@@ -504,7 +504,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// Custom function call : 1 op
 	c.inc_ops(1);
 
-	if (return_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+	if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 		return {VM::value_to_pointer(c.F, ret, type), type};
 	}
 	return {ret, type};
