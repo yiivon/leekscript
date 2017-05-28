@@ -369,7 +369,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	return c.new_pointer(versions.at(args)->function);
 }
 
-void Function::compile_version_internal(Compiler& c, std::vector<Type> args, Version* version) const {
+void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
 	// std::cout << "Function::compile_version_internal(" << args << ")" << std::endl;
 
 	auto ls_fun = version->function;
