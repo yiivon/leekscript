@@ -287,9 +287,7 @@ inline T LSArray<T>::ls_pop() {
 template <typename T>
 inline int LSArray<T>::ls_size() {
 	int s = this->size();
-	if (refs == 0) {
-		delete this;
-	}
+	LSValue::delete_temporary(this);
 	return s;
 }
 
