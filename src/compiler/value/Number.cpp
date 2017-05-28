@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ls {
 
-Number::Number(std::string value, std::shared_ptr<Token> token) : value(value), token(token) {
+Number::Number(std::string value, std::shared_ptr<Token> token) : token(token), value(value) {
 	constant = true;
 }
 
