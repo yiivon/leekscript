@@ -558,7 +558,6 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_type_free(mpz_iterator);
 		auto addr = jit_insn_address_of(F, it.v);
 		jit_insn_store_relative(F, addr, 0, v.v);
-		auto l =
 		jit_insn_store_relative(F, addr, 16, to_long(insn_pow(new_integer(10), to_int(insn_log10(v)))).v);
 		jit_insn_store_relative(F, addr, 32, new_long(0).v);
 		return it;
