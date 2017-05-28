@@ -27,6 +27,7 @@ public:
 	Value* object = nullptr;
 	Function* function_object;
 	Type function_type;
+	std::vector<Type> arg_types;
 
 	FunctionCall(std::shared_ptr<Token> t);
 	virtual ~FunctionCall();

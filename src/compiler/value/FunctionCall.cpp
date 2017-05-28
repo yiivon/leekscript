@@ -198,7 +198,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Check arguments count
-	std::vector<Type> arg_types;
+	arg_types.clear();
 	bool arguments_valid = arguments.size() <= function->type.getArgumentTypes().size();
 	auto total_arguments_passed = std::max(arguments.size(), function->type.getArgumentTypes().size());
 	size_t a = 0;
@@ -433,8 +433,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Arguments */
 	size_t offset = 1;
-
-	size_t arg_count = function_type.getArgumentTypes().size() + offset;
+	size_t arg_count = arg_types.size() + offset;
 	vector<Compiler::value> args;
 	vector<jit_type_t> args_types;
 	vector<LSValueType> lsvalue_types;
