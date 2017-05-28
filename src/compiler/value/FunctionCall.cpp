@@ -433,7 +433,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Arguments */
 	size_t offset = 1;
-	size_t arg_count = arg_types.size() + offset;
+	size_t arg_count = std::max(arg_types.size(), arguments.size()) + offset;
 	vector<Compiler::value> args;
 	vector<jit_type_t> args_types;
 	vector<LSValueType> lsvalue_types;
