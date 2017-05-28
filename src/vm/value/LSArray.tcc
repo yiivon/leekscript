@@ -527,8 +527,8 @@ inline LSArray<T>* LSArray<T>::ls_reverse() {
 	if (refs == 0) {
 		for (size_t i = 0, j = this->size(); i < j; ++i, --j) {
 			T tmp = (*this)[i];
-			(*this)[i] = (*this)[j-1];
-			(*this)[j-1] = tmp;
+			(*this)[i] = (*this)[j - 1];
+			(*this)[j - 1] = tmp;
 		}
 		return this;
 	} else {
