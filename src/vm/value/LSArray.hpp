@@ -37,6 +37,7 @@ public:
 	bool ls_empty();
 	T ls_pop();
 	int ls_size();
+	LSValue* ls_size_ptr();
 	T ls_sum();
 	T ls_product();
 	double ls_average();

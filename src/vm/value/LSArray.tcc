@@ -293,6 +293,13 @@ inline int LSArray<T>::ls_size() {
 	return s;
 }
 
+template <typename T>
+inline LSValue* LSArray<T>::ls_size_ptr() {
+	int s = this->size();
+	LSValue::delete_temporary(this);
+	return LSNumber::get(s);
+}
+
 template <class T>
 template <class R>
 LSArray<R>* LSArray<T>::ls_map(LSFunction<R>* function) {
