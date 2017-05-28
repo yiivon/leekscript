@@ -536,10 +536,10 @@ void Test::test_arrays() {
 	// TODO add more
 
 	section("Misc");
-	// code("let a = [1, []] a[1].push('str') a").equals("[1, ['str']]");
+	code("let a = [1, []] a[1].push('str') a").equals("[1, ['str']]");
 	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
 	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
-	// code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
+	code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
 	// code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])]").equals("[]");
 
 	/*
