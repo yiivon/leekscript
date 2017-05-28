@@ -137,7 +137,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 }
 
-bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
+bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int) {
 
 	// std::cout << "ArrayAccess::will_take(" << args << ", " << level << ")" << std::endl;
 
