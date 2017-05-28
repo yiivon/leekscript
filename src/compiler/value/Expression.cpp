@@ -298,6 +298,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type = Type::INTEGER;
 	}
 
+	if (op->type == TokenType::POWER) {
+		v1->analyse(analyser, Type::REAL);
+		type = Type::REAL;
+	}
+
 	// A = B, A += B, etc. A must be a l-value
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
