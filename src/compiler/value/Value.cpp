@@ -49,7 +49,7 @@ bool Value::isLeftValue() const {
 	return false;
 }
 
-Compiler::value Value::compile_version(Compiler& c, std::vector<Type> args) const {
+Compiler::value Value::compile_version(Compiler& c, std::vector<Type>) const {
 	return compile(c);
 }
 
