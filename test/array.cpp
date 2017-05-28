@@ -142,6 +142,10 @@ void Test::test_arrays() {
 	code("var a = ['a', 'b'] a[] = 'c' a").equals("['a', 'b', 'c']");
 	code("var a = [1, 'b', true] a[] = x -> x a").equals("[1, 'b', true, <function>]");
 
+	section("Methods calls on unknown array");
+	code("var a = [1, [1, 2]] a[1].size()").equals("2");
+	code("var a = [1, [1, 2]] a[1].push(3) a[1]").equals("[1, 2, 3]");
+
 	section("Array.operator +=");
 	code("var a = [1.55] a += 12.9 a").equals("[1.55, 12.9]");
 	code("var a = ['a'] a += 'b' a").equals("['a', 'b']");
