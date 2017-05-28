@@ -252,8 +252,7 @@ void Test::test_arrays() {
 	code("[1, -2, 3, -12, -6].size()").equals("5");
 	code("[1, 2, 3].size").equals("<function>");
 	code("Array.size([1, [1, 2, 3]][1])").equals("3");
-	// TODO
-	// code("[[1, 2, 3], 'foo'][0].size()").equals("3");
+	code("[[1, 2, 3], 'foo'][0].size()").equals("3");
 
 	section("Array.average()");
 	code("Array.average([1, 2, 3, 4, 5, 6])").equals("3.5");
