@@ -298,11 +298,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type = Type::INTEGER;
 	}
 
-	if (op->type == TokenType::POWER) {
-		v1->analyse(analyser, Type::REAL);
-		type = Type::REAL;
-	}
-
 	// A = B, A += B, etc. A must be a l-value
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
@@ -849,8 +844,22 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::POWER: {
-			jit_func = &jit_insn_pow;
-			ls_func = (void*) &jit_pow;
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				auto x = c.to_real(v1->compile(c));
+				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
+				auto r = jit_insn_pow(c.F, x.v, y.v);
+				if (type == Type::INTEGER) {
+					r = c.to_int({r, Type::REAL}).v;
+				}
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return {VM::value_to_pointer(c.F, r, type), type};
+				}
+				return {r, type};
+			} else {
+				ls_func = (void*) &jit_pow;
+			}
 			break;
 		}
 		case TokenType::DOUBLE_EQUAL: {
