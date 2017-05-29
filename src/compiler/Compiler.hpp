@@ -66,6 +66,7 @@ public:
 
 	// Conversions
 	value to_int(value) const;
+	value to_real(value) const;
 	value to_long(value) const;
 
 	// Operators wrapping

@@ -204,6 +204,14 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 	return {jit_insn_convert(F, v.v, LS_INTEGER, 0), Type::INTEGER};
 }
 
+Compiler::value Compiler::to_real(Compiler::value v) const {
+	if (v.t.not_temporary() == Type::MPZ) {
+		auto v_addr = insn_address_of(v);
+		return to_real(insn_call(Type::LONG, {v_addr}, &mpz_get_si));
+	}
+	return {jit_insn_convert(F, v.v, LS_REAL, 0), Type::REAL};
+}
+
 Compiler::value Compiler::to_long(Compiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);
