@@ -19,6 +19,7 @@ public:
 		Block* body;
 		LSFunction<LSValue*>* function = nullptr;
 		Type type;
+		jit_function_t jit_function = nullptr;
 	};
 
 	std::string name;

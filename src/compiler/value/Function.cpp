@@ -23,17 +23,27 @@ Function::~Function() {
 		delete value;
 	}
 	if (default_version != nullptr) {
+		if (default_version->jit_function != nullptr) {
+			delete jit_function_get_meta(default_version->jit_function, 12);
+			delete jit_function_get_meta(default_version->jit_function, 13);
+		}
 		if (default_version->function != nullptr) {
+
 			delete default_version->function;
 		}
 		delete default_version;
 		default_version = nullptr;
 	}
 	for (const auto& version : versions) {
+		if (version.second->jit_function != nullptr) {
+			delete jit_function_get_meta(version.second->jit_function, 12);
+			delete jit_function_get_meta(version.second->jit_function, 13);
+		}
 		delete version.second->function;
 		delete version.second->body;
 		delete version.second;
 	}
+
 }
 
 void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
@@ -462,6 +472,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	void* f = jit_function_to_closure(jit_function);
 	ls_fun->function = f;
 	version->function = ls_fun;
+	version->jit_function = jit_function;
 }
 
 Value* Function::clone() const {
