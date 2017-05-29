@@ -116,6 +116,16 @@ int LSString::int_size() const {
 	return size();
 }
 
+int LSString::word_count() const {
+	auto c = std::distance(std::istream_iterator<std::string>(std::istringstream(*this) >> std::ws), std::istream_iterator<std::string>());
+	LSValue::delete_temporary(this);
+	return c;
+}
+
+LSValue* LSString::word_count_ptr() const {
+	return LSNumber::get(word_count());
+}
+
 /*
  * LSValue methods
  */

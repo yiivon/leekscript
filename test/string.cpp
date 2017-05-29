@@ -248,6 +248,14 @@ void Test::test_strings() {
 	code("'abcde'.isPermutation('beaca')").equals("false");
 	code("'aaa'.isPermutation('aaaa')").equals("false");
 
+	section("String.wordCount()");
+	code("''.wordCount()").equals("0");
+	code("'hello'.wordCount()").equals("1");
+	code("'hello world how are you today'.wordCount()").equals("6");
+	code("'aujourd\\'hui j\\'ai'.wordCount()").equals("2");
+	code("String.wordCount('abc def ghi')").equals("3");
+	code("['a b c', 'd e', 'f', 'g h i j'].map(x -> x.wordCount())").equals("[3, 2, 1, 4]");
+
 	section("v1 string charAt");
 	code_v1("charAt('hello', 3)").equals("'l'");
 

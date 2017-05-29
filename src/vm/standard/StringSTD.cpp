@@ -140,6 +140,9 @@ StringSTD::StringSTD() : Module("String") {
 	method("sort", {
 		{Type::STRING, Type::STRING, {}, (void*) &LSString::sort, Method::NATIVE}
 	});
+	method("wordCount", {
+		{Type::STRING, Type::INTEGER, {}, (void*) &LSString::word_count, Method::NATIVE}
+	});
 
 	/*
 	 * Static methods
@@ -197,6 +200,10 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	static_method("number", {
 		{Type::LONG, {Type::POINTER}, (void*) &string_number, Method::NATIVE}
+	});
+	static_method("wordCount", {
+		{Type::POINTER, {Type::STRING}, (void*) &LSString::word_count_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::STRING}, (void*) &LSString::word_count, Method::NATIVE}
 	});
 }
 
