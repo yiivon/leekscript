@@ -73,6 +73,7 @@ Block* SyntaxicAnalyser::eatMain() {
 	while (true) {
 		if (t->type == TokenType::FINISHED) {
 			eat();
+			delete t;
 			break;
 		} else if (t->type == TokenType::SEMICOLON) {
 			eat();
