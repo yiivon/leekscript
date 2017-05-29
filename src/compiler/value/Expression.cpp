@@ -237,7 +237,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE
+		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE or op->type == TokenType::DOUBLE_MODULO
 		) {
 
 		auto vv = dynamic_cast<VariableValue*>(v1);
@@ -1039,6 +1039,22 @@ Compiler::value Expression::compile(Compiler& c) const {
 			jit_insn_label(c.F, &no_exception);
 			return {r, type};
 
+			break;
+		}
+		case TokenType::DOUBLE_MODULO: {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				auto x = v1->compile(c);
+				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
+				auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return {VM::value_to_pointer(c.F, r.v, type), type};
+				}
+				return r;
+			} else {
+				ls_func = (void*) &jit_mod;
+			}
 			break;
 		}
 		default: {

@@ -112,7 +112,8 @@ enum class TokenType {
 	VAR,
 	STAR,
 	INT_DIV_EQUAL,
-	CATCH_ELSE
+	CATCH_ELSE,
+	DOUBLE_MODULO
 };
 
 }
