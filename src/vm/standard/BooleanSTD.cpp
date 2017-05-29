@@ -1,6 +1,7 @@
 #include "BooleanSTD.hpp"
 #include "../value/LSBoolean.hpp"
 #include "../value/LSString.hpp"
+#include "../value/LSNumber.hpp"
 
 namespace ls {
 
@@ -26,6 +27,7 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 	});
 
 	static_method("compare", {
+		{Type::POINTER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val}
 	});
@@ -67,6 +69,10 @@ int BooleanSTD::compare_ptr_ptr(LSBoolean* a, LSBoolean* b) {
 	LSValue::delete_temporary(a);
 	LSValue::delete_temporary(b);
 	return res;
+}
+
+LSValue* BooleanSTD::compare_ptr_ptr_ptr(LSBoolean* a, LSBoolean* b) {
+	return LSNumber::get(compare_ptr_ptr(a, b));
 }
 
 Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args) {

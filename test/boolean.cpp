@@ -124,11 +124,10 @@ void Test::test_booleans() {
 	code("true.compare(true)").equals("0");
 	code("false.compare(false)").equals("0");
 	code("false.compare(true)").equals("-1");
-	// TODO
-	// code("[true, ''][0].compare([false, ''][0])").equals("1");
-	// code("[true, ''][0].compare([true, ''][0])").equals("0");
-	// code("[false, ''][0].compare([false, ''][0])").equals("0");
-	// code("[false, ''][0].compare([true, ''][0])").equals("-1");
+	code("[true, ''][0].compare([false, ''][0])").equals("1");
+	code("[true, ''][0].compare([true, ''][0])").equals("0");
+	code("[false, ''][0].compare([false, ''][0])").equals("0");
+	code("[false, ''][0].compare([true, ''][0])").equals("-1");
 
 	section("Conversions");
 	code("12 and 'aaa'").equals("true");

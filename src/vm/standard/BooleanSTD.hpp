@@ -18,6 +18,7 @@ public:
 	static Compiler::value mul_bool(Compiler& c, std::vector<Compiler::value> args);
 
 	static int compare_ptr_ptr(LSBoolean* a, LSBoolean* b);
+	static LSValue* compare_ptr_ptr_ptr(LSBoolean* a, LSBoolean* b);
 	static Compiler::value compare_val_val(Compiler&, std::vector<Compiler::value>);
 };
 
