@@ -18,8 +18,6 @@ bool string_endsWith(LSString* string, LSString* ending);
 int string_indexOf(LSString* haystack, LSString* needle);
 int string_length(LSString* string);
 LSString* string_map(LSString* string, LSFunction<LSValue*>* fun);
-LSValue* string_size_ptr(LSString* string);
-int string_size(LSString* string);
 LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter);
 bool string_startsWith(const LSString* string, const LSString* starting);
 LSValue* string_substring(LSString* string, int start, int length);
@@ -98,7 +96,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::STRING, Type::INTEGER, {}, (void*) &string_length, Method::NATIVE}
 	});
 	method("size", {
-		{Type::STRING, Type::INTEGER, {}, (void*) &string_size, Method::NATIVE}
+		{Type::STRING, Type::INTEGER, {}, (void*) &LSString::ls_size, Method::NATIVE}
 	});
 	method("replace", {
 		{Type::STRING, Type::STRING, {Type::STRING, Type::STRING}, (void*) &StringSTD::replace, Method::NATIVE}
@@ -163,8 +161,8 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::INTEGER, {Type::STRING}, (void*) &string_length, Method::NATIVE}
 	});
 	static_method("size", {
-		{Type::NUMBER, {Type::STRING}, (void*) &string_size_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::STRING}, (void*) &string_size, Method::NATIVE}
+		{Type::NUMBER, {Type::STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::STRING}, (void*) &LSString::ls_size, Method::NATIVE}
 	});
 	static_method("replace", {
 		{Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &StringSTD::replace, Method::NATIVE}
@@ -322,16 +320,6 @@ LSString* StringSTD::replace(LSString* string, LSString* from, LSString* to) {
 		delete to;
 	}
 	return new LSString(str);
-}
-
-int string_size(LSString* string) {
-	int r = string->unicode_length();
-	LSValue::delete_temporary(string);
-	return r;
-}
-
-LSValue* string_size_ptr(LSString* string) {
-	return LSNumber::get(string_size(string));
 }
 
 LSArray<LSValue*>* string_split(LSString* string, LSString* delimiter) {

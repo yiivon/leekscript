@@ -42,6 +42,8 @@ public:
 	bool is_palindrome() const;
 	LSValue* ls_foldLeft(LSFunction<LSValue*>*, LSValue* v0);
 	int int_size() const;
+	int ls_size() const;
+	LSValue* ls_size_ptr() const;
 	int word_count() const;
 	LSValue* word_count_ptr() const;
 
