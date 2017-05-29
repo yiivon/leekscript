@@ -305,6 +305,14 @@ void Test::test_numbers() {
 	code("var a = 721★ a %= true").equals("0");
 	code("var a = 721★ a %= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
+	section("Number.operator %%");
+	code("0 %% 1").equals("0");
+	code("2 %% 5").equals("2");
+	code("-2 %% 5").equals("3");
+	code("-12 %% 5").equals("3");
+	code("721 %% 57").equals("37");
+	code("-721 %% 57").equals("20");
+
 	section("Number.operator /");
 	code("12★ / false").equals("nan");
 	code("let a = 13★; a / false").equals("nan");
