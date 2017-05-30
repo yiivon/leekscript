@@ -81,6 +81,7 @@ public:
 	virtual LSValue* pow_eq(LSValue*);
 	virtual LSValue* mod(LSValue*);
 	virtual LSValue* mod_eq(LSValue*);
+	virtual LSValue* double_mod(LSValue*);
 
 	bool operator == (const LSValue& value) const {
 		return this->eq(&value);

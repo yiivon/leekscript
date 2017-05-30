@@ -56,6 +56,7 @@ public:
 	virtual LSValue* pow_eq(LSValue*) override;
 	virtual LSValue* mod(LSValue*) override;
 	virtual LSValue* mod_eq(LSValue*) override;
+	virtual LSValue* double_mod(LSValue*) override;
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 

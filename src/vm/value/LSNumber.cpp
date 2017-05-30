@@ -454,6 +454,32 @@ LSValue* LSNumber::mod_eq(LSValue* v) {
 	return this;
 }
 
+LSValue* LSNumber::double_mod(LSValue* v) {
+	if (v->type == NUMBER) {
+		auto number = static_cast<LSNumber*>(v);
+		if (refs == 0) {
+			value = fmod(fmod(value, number->value) + number->value, number->value);
+			LSValue::delete_temporary(number);
+			return this;
+		}
+		if (number->refs == 0) {
+			number->value = fmod(fmod(value, number->value) + number->value, number->value);
+			return number;
+		}
+		return LSNumber::get(fmod(fmod(value, number->value) + number->value, number->value));
+	}
+	if (v->type != BOOLEAN) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(v);
+		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+	}
+	if (refs == 0) {
+		value = 0;
+		return this;
+	}
+	return LSNumber::get(0);
+}
+
 bool LSNumber::operator == (int v) const {
 	return value == v;
 }

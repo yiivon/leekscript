@@ -313,6 +313,7 @@ void Test::test_numbers() {
 	code("-12 %% 5").equals("3");
 	code("721 %% 57").equals("37");
 	code("-721 %% 57").equals("20");
+	code("-721★ %% 57★").equals("20");
 
 	section("Number.operator /");
 	code("12★ / false").equals("nan");

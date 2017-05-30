@@ -391,6 +391,9 @@ LSValue* jit_pow(LSValue* x, LSValue* y) {
 LSValue* jit_mod(LSValue* x, LSValue* y) {
 	return x->mod(y);
 }
+LSValue* jit_double_mod(LSValue* x, LSValue* y) {
+	return x->double_mod(y);
+}
 bool jit_equals(LSValue* x, LSValue* y) {
 	bool r = *x == *y;
 	LSValue::delete_temporary(x);
@@ -1053,7 +1056,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 				return r;
 			} else {
-				ls_func = (void*) &jit_mod;
+				ls_func = (void*) &jit_double_mod;
 			}
 			break;
 		}
