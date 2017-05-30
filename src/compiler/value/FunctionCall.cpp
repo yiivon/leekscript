@@ -1,12 +1,10 @@
 #include "FunctionCall.hpp"
-
 #include <jit/jit-common.h>
 #include <jit/jit-insn.h>
 #include <jit/jit-type.h>
 #include <jit/jit-value.h>
 #include <sstream>
 #include <string>
-
 #include "../../vm/Module.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Type.hpp"

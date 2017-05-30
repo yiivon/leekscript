@@ -1,6 +1,5 @@
-#include "../../compiler/value/PostfixExpression.hpp"
-
-#include "../../compiler/value/LeftValue.hpp"
+#include "PostfixExpression.hpp"
+#include "LeftValue.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"

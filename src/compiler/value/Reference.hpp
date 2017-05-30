@@ -1,7 +1,7 @@
 #ifndef REFERENCE_HPP
 #define REFERENCE_HPP
 
-#include "../../compiler/value/Value.hpp"
+#include "Value.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../lexical/Ident.hpp"
 

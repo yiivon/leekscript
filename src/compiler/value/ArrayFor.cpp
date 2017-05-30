@@ -1,5 +1,4 @@
 #include "ArrayFor.hpp"
-
 using namespace std;
 
 namespace ls {

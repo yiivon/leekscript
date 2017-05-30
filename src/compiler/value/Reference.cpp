@@ -1,11 +1,10 @@
-#include "../../compiler/value/Reference.hpp"
-
+#include "Reference.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../compiler/semantic/SemanticAnalyser.hpp"
-#include "../value/Function.hpp"
-#include "../value/ArrayAccess.hpp"
-#include "../value/VariableValue.hpp"
+#include "Function.hpp"
+#include "ArrayAccess.hpp"
+#include "VariableValue.hpp"
 
 using namespace std;
 

@@ -2,7 +2,6 @@
 #define FUNCTION_HPP
 
 #include <vector>
-
 #include "../lexical/Ident.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "Value.hpp"

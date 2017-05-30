@@ -1,8 +1,8 @@
 #ifndef MATCH_HPP_
 #define MATCH_HPP_
 
-#include "../../compiler/value/Value.hpp"
-#include "../../compiler/value/Block.hpp"
+#include "Value.hpp"
+#include "Block.hpp"
 #include <vector>
 
 namespace ls {

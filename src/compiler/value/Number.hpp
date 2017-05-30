@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <gmp.h>
-#include "../../compiler/value/Value.hpp"
+#include "Value.hpp"
 #include "../lexical/Token.hpp"
 
 namespace ls {

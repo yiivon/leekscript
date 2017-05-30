@@ -2,7 +2,6 @@
 #define EXPRESSION_HPP
 
 #include <vector>
-
 #include "../../compiler/lexical/Operator.hpp"
 #include "../../compiler/value/Value.hpp"
 

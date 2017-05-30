@@ -1,4 +1,4 @@
-#include "../value/String.hpp"
+#include "String.hpp"
 #include "../../vm/value/LSString.hpp"
 
 using namespace std;

@@ -1,5 +1,4 @@
 #include "Boolean.hpp"
-
 #include "../../vm/VM.hpp"
 #include "../../vm/value/LSBoolean.hpp"
 

@@ -1,7 +1,7 @@
 #ifndef IF_HPP_
 #define IF_HPP_
 
-#include "../../compiler/value/Expression.hpp"
+#include "Expression.hpp"
 #include "../value/Block.hpp"
 
 namespace ls {

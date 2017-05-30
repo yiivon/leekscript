@@ -2,8 +2,7 @@
 #define OBJECT_HPP
 
 #include <vector>
-
-#include "../../compiler/value/Expression.hpp"
+#include "Expression.hpp"
 #include "../lexical/Ident.hpp"
 
 namespace ls {

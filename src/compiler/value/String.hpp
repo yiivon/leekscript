@@ -2,8 +2,7 @@
 #define STRING_HPP_
 
 #include <string>
-
-#include "../../compiler/value/Value.hpp"
+#include "Value.hpp"
 #include "../lexical/Token.hpp"
 #include "../../vm/value/LSString.hpp"
 

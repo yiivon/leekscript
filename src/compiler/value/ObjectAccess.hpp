@@ -2,9 +2,8 @@
 #define OBJECTACCESS_HPP
 
 #include <string>
-
-#include "../../compiler/value/LeftValue.hpp"
-#include "../../compiler/value/Value.hpp"
+#include "LeftValue.hpp"
+#include "Value.hpp"
 #include "../../vm/value/LSString.hpp"
 #include "../lexical/Token.hpp"
 
