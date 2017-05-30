@@ -480,6 +480,21 @@ LSValue* LSNumber::double_mod(LSValue* v) {
 	return LSNumber::get(0);
 }
 
+LSValue* LSNumber::double_mod_eq(LSValue* v) {
+	if (v->type == NUMBER) {
+		auto number = static_cast<LSNumber*>(v);
+		value = fmod(fmod(value, number->value) + number->value, number->value);
+		LSValue::delete_temporary(number);
+		return this;
+	}
+	if (v->type != BOOLEAN) {
+		LSValue::delete_temporary(v);
+		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+	}
+	value = 0;
+	return this;
+}
+
 bool LSNumber::operator == (int v) const {
 	return value == v;
 }

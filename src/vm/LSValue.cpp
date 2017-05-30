@@ -202,6 +202,12 @@ LSValue* LSValue::double_mod(LSValue* v) {
 	assert(false); // LCOV_EXCL_LINE
 }
 
+LSValue* LSValue::double_mod_eq(LSValue* v) {
+	delete_temporary(v);
+	jit_exception_throw(VM::get_exception_object<1>(vm::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
+}
+
 bool LSValue::lt(const LSValue* v) const {
 	return type < v->type;
 }

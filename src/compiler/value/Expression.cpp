@@ -237,7 +237,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE or op->type == TokenType::DOUBLE_MODULO
+		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE or op->type == TokenType::DOUBLE_MODULO or op->type == TokenType::DOUBLE_MODULO_EQUALS
 		) {
 
 		auto vv = dynamic_cast<VariableValue*>(v1);
@@ -416,6 +416,9 @@ LSValue* jit_swap(LSValue** x, LSValue** y) {
 
 LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 	return x->mod_eq(y);
+}
+LSValue* jit_double_mod_equal(LSValue* x, LSValue* y) {
+	return x->double_mod_eq(y);
 }
 LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
 	return x->pow_eq(y);
@@ -1058,6 +1061,30 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				ls_func = (void*) &jit_double_mod;
 			}
+			break;
+		}
+		case TokenType::DOUBLE_MODULO_EQUALS: {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				v2->compile_end(c);
+				auto x = c.insn_load(x_addr, 0, v1->type);
+				auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
+				jit_insn_store_relative(c.F, x_addr.v, 0, r.v);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return {VM::value_to_pointer(c.F, r.v, type), type};
+				}
+				return r;
+			} else {
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				v2->compile_end(c);
+				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+					LSValue* res = (*x)->double_mod_eq(y);
+					return ((LSNumber*) res)->value;
+				});
+			}
+			break;
 			break;
 		}
 		default: {
