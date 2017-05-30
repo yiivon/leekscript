@@ -145,8 +145,7 @@ void Test::test_functions() {
 	code("÷('banana', 'n')").equals("['ba', 'a', 'a']");
 	code("**(2, 11)").equals("2048");
 	code("%(48, 5)").equals("3");
-	// TODO lexical bug
-	// code("\\(72, 7)").equals("10");
+	code("\\(72, 7)").equals("10");
 	code("(\\)(72, 7)").equals("10");
 	code("['', **(2, 11)]").equals("['', 2048]");
 	// code("let p = +; p(1, 2)").equals("3");

@@ -197,6 +197,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::PLUS:
 		case TokenType::TIMES:
 		case TokenType::DIVIDE:
+		case TokenType::INT_DIV:
 		case TokenType::POWER:
 		case TokenType::MODULO:
 		case TokenType::PIPE:
