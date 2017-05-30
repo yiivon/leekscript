@@ -116,11 +116,11 @@ void Test::test_functions() {
 	section("Function.operator --x");
 	code("--(x -> x)").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
-	// section("Function.operator x++");
-	// code("(x -> x)++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	section("Function.operator x++");
+	code("(x -> x)++").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, { "(x) → {\n    x\n}" });
 
-	// section("Function.operator x--");
-	// code("(x -> x)--").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	section("Function.operator x--");
+	code("(x -> x)--").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, { "(x) → {\n    x\n}" });
 
 	section("Operator ~ ");
 	// code("let a = 10 a ~ x -> x ** 2").equals("100");
