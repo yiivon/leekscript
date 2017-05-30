@@ -95,6 +95,9 @@ StringSTD::StringSTD() : Module("String") {
 	method("length", {
 		{Type::STRING, Type::INTEGER, {}, (void*) &string_length, Method::NATIVE}
 	});
+	method("lines", {
+		{Type::STRING, Type::STRING_ARRAY, {}, (void*) &LSString::ls_lines, Method::NATIVE}
+	});
 	method("size", {
 		{Type::STRING, Type::INTEGER, {}, (void*) &LSString::ls_size, Method::NATIVE}
 	});
@@ -159,6 +162,9 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	static_method("length", {
 		{Type::INTEGER, {Type::STRING}, (void*) &string_length, Method::NATIVE}
+	});
+	static_method("lines", {
+		{Type::STRING_ARRAY, {Type::STRING}, (void*) &LSString::ls_lines, Method::NATIVE}
 	});
 	static_method("size", {
 		{Type::NUMBER, {Type::STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},

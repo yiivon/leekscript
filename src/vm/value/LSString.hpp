@@ -46,6 +46,7 @@ public:
 	LSValue* ls_size_ptr() const;
 	int word_count() const;
 	LSValue* word_count_ptr() const;
+	LSArray<LSValue*>* ls_lines() const;
 
 	/*
 	 * LSValue methods

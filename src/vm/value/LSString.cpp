@@ -135,6 +135,17 @@ LSValue* LSString::word_count_ptr() const {
 	return LSNumber::get(word_count());
 }
 
+LSArray<LSValue*>* LSString::ls_lines() const {
+	auto results = new LSArray<LSValue*>();
+	std::stringstream ss(*this);
+	std::string item;
+	while (std::getline(ss, item, '\n')) {
+		results->push_inc(new LSString(item));
+	}
+	LSValue::delete_temporary(this);
+	return results;
+}
+
 /*
  * LSValue methods
  */
