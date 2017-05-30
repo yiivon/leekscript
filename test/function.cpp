@@ -133,7 +133,7 @@ void Test::test_functions() {
 	code("(+)(1, 2)").equals("3");
 	code("(+)([1], 2)").equals("[1, 2]");
 	code("(+)('test', 2)").equals("'test2'");
-	// code("(-)(9, 2)").equals("7");
+	code("(-)(9, 2)").equals("7");
 	code("*(5, 8)").equals("40");
 	code("*('test', 2)").equals("'testtest'");
 	code("×(5, 8)").equals("40");
@@ -148,10 +148,10 @@ void Test::test_functions() {
 	code("\\(72, 7)").equals("10");
 	code("(\\)(72, 7)").equals("10");
 	code("['', **(2, 11)]").equals("['', 2048]");
-	// code("let p = +; p(1, 2)").equals("3");
-	// code("let p = +; p('test', 2)").equals("'test2'");
-	// code("let p = -; p(9, 2)").equals("7");
-	// code("let p = * p(5, 8)").equals("40");
+	code("let p = +; p(1, 2)").equals("3");
+	code("let p = +; p('test', 2)").equals("'test2'");
+	code("let p = -; p(9, 2)").equals("7");
+	code("let p = * p(5, 8)").equals("40");
 	// code("let p = × p(5, 8)").equals("40");
 	// code("let p = / p(48, 12)").equals("4");
 	// code("let p = ÷ p(48, 12)").equals("4");
