@@ -131,8 +131,10 @@ void Test::test_numbers() {
 	section("Constructor");
 	code("Number").equals("<class Number>");
 	code("Number()").equals("0");
-	// TODO
-	// code("Number(12)").equals("12");
+	code("Number(12)").equals("12");
+	code("Number(12.5)").equals("12.5");
+	code("Number(12l)").equals("12");
+	code("Number(12m)").equals("12");
 	code("[Number(), 'str']").equals("[0, 'str']");
 	code("new Number").equals("0");
 	code("new Number()").equals("0");
