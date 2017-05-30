@@ -1,6 +1,5 @@
-#include "../../compiler/syntaxic/SyntaxicalError.hpp"
+#include "SyntaxicalError.hpp"
 #include <iostream>
-using namespace std;
 
 namespace ls {
 
