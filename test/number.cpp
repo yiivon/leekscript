@@ -691,13 +691,12 @@ void Test::test_numbers() {
 	code("12.2.ceil()").equals("13");
 	code("12.8.round()").equals("13");
 	code("-12.8.round()").equals("-13");
-	// TODO
-	// code("2.pow(10)").equals("1024");
-	// code("0.isInteger()").equals("true");
-	// code("56.7.isInteger()").equals("false");
-	// code("(-56.7).isInteger()").equals("false");
-	// code("3.max(5)").equals("5");
-	// code("5.max(3)").equals("5");
+	code("2.pow(10)").equals("1024");
+	code("0.isInteger()").equals("true");
+	code("56.7.isInteger()").equals("false");
+	code("(-56.7).isInteger()").equals("false");
+	code("3.max(5)").equals("5");
+	code("5.max(3)").equals("5");
 
 	section("Combinated");
 	code("3.max(5).min(2)").equals("2");
