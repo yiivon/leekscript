@@ -91,7 +91,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Standard library constructors TODO better
 	auto vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
-		if (vv->name == "Number") type = Type::INTEGER;
+		if (vv->name == "Number") {
+			if (arguments.size()) {
+				function->type.setArgumentType(0, arguments.at(0)->type);
+				type = arguments.at(0)->type;
+			} else {
+				type = Type::INTEGER;
+			}
+		}
 		if (vv->name == "Boolean") type = Type::BOOLEAN;
 		if (vv->name == "String") type = Type::STRING;
 		if (vv->name == "Array") type = Type::PTR_ARRAY;
@@ -301,7 +308,12 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			return {n, type};
 		}
 		if (vv->name == "Number") {
-			jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
+			jit_value_t n;
+			if (arguments.size() > 0) {
+				n = arguments.at(0)->compile(c).v;
+			} else {
+				n = LS_CREATE_INTEGER(c.F, 0);
+			}
 			if (type.nature == Nature::POINTER) {
 				return {VM::value_to_pointer(c.F, n, Type::INTEGER), type};
 			}
