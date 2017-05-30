@@ -289,6 +289,7 @@ void Test::test_numbers() {
 	code("var a = 5; ['', a **= 4]").equals("['', 625]");
 
 	section("Number.operator %");
+	code("721 % 57").equals("37");
 	code("721★ % 57★").equals("37");
 	code("let a = 721★ a % 57").equals("37");
 	code("let a = 721★ a % []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
