@@ -171,6 +171,13 @@ void Test::test_strings() {
 	section("String.length()");
 	code("String.length('salut')").equals("5");
 
+	section("String.lines()");
+	code("''.lines()").equals("[]");
+	code("'\n'.lines()").equals("['']");
+	code("' '.lines()").equals("[' ']");
+	code("'hello'.lines()").equals("['hello']");
+	code("'hello\nworld\nhow\nare\nyou'.lines()").equals("['hello', 'world', 'how', 'are', 'you']");
+
 	section("String.reverse()");
 	code("String.reverse('salut')").equals("'tulas'");
 
