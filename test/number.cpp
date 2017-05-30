@@ -719,6 +719,8 @@ void Test::test_numbers() {
 	code("(4398042316799m).isPrime()").equals("1");
 	code("359334085968622831041960188598043661065388726959079837.isPrime()").equals("1");
 	code("(146m ** 45m).isPrime()").equals("0");
+	code("1993l.isPrime()").equals("true");
+	code("1993m.isPrime()").equals("2");
 
 	section("Number.rand()");
 	code("var a = Number.rand() a >= 0 and a <= 1").equals("true");
