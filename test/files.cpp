@@ -20,6 +20,7 @@ void Test::test_files() {
 	// file_v1("test/code/quine_zwik.leek").quine();
 	file("test/code/dynamic_operators").works();
 	file("test/code/euler1.leek").equals("2333316668");
+	file("test/code/text_analysis.leek").equals("[3, 47, 338]");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
