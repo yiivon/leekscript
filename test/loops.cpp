@@ -28,8 +28,7 @@ void Test::test_loops() {
 	code("if (true) 12 else 5").equals("12");
 	code("if (false) 12 else 5").equals("5");
 	code("if (true) 12").equals("12");
-	// TODO
-	// code("if (false) 12").equals("null");
+	code("if (false) 12").equals("null");
 	code("if true then 12 end").equals("12");
 	code("if true { 5 } else { return 2 }").equals("5");
 	code("if true { return 5 } else { 2 }").equals("5");
