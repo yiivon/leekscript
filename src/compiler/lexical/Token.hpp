@@ -2,7 +2,6 @@
 #define TOKEN_H_
 
 #include <string>
-
 #include "Location.hpp"
 #include "TokenType.hpp"
 

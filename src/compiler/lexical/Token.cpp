@@ -1,7 +1,5 @@
-#include "../../compiler/lexical/Token.hpp"
-
+#include "Token.hpp"
 #include <iostream>
-
 using namespace std;
 
 namespace ls {
