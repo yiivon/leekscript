@@ -177,6 +177,8 @@ void Test::test_strings() {
 	code("' '.lines()").equals("[' ']");
 	code("'hello'.lines()").equals("['hello']");
 	code("'hello\nworld\nhow\nare\nyou'.lines()").equals("['hello', 'world', 'how', 'are', 'you']");
+	code("'a\nb\nc\nd\ne\nf'.lines().join('_')").equals("'a_b_c_d_e_f'");
+	code("'bonjour'.split('').join('\n').lines()").equals("['b', 'o', 'n', 'j', 'o', 'u', 'r']");
 
 	section("String.reverse()");
 	code("String.reverse('salut')").equals("'tulas'");
