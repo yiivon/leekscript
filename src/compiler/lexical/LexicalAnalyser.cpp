@@ -229,12 +229,12 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 							word += buff;
 						} else if (c == 'l' or c == 'L') {
 							word += "l";
-							tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
+							tokens.push_back(new Token(TokenType::NUMBER, i + 1, line, character + 1, word));
 							number = bin = hex = false;
 							word = "";
 						} else if (c == 'm' or c == 'M') {
 							word += "m";
-							tokens.push_back(new Token(TokenType::NUMBER, i, line, character, word));
+							tokens.push_back(new Token(TokenType::NUMBER, i + 1, line, character + 1, word));
 							number = bin = hex = false;
 							word = "";
 						} else if (c == 0x00002605) { // '★'
