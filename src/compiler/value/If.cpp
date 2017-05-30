@@ -81,13 +81,13 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		//	elze->analyse(analyser, type);
 		//}
 	} else {
-
-		// if (req_type == Type::VOID) {
-			// type = Type::VOID;
-		// } else {
-			//type = Type::POINTER; // Pointer because the else will give null
-		// }
-		//then->analyse(analyser, type);
+		if (req_type == Type::VOID) {
+			type = Type::VOID;
+		} else {
+			type = Type::POINTER; // Pointer because the else will give null
+		}
+		then->analyse(analyser, type);
+		types = type;
 	}
 	if (req_type.nature == Nature::POINTER) {
 		type.nature = req_type.nature;
