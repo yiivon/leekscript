@@ -1081,10 +1081,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue* res = (*x)->double_mod_eq(y);
-					return ((LSNumber*) res)->value;
+					return res;
 				});
 			}
-			break;
 			break;
 		}
 		default: {
