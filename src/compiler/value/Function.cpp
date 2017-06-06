@@ -368,6 +368,11 @@ Compiler::value Function::compile(Compiler& c) const {
 
 	((Function*) this)->compiled = true;
 
+	if (!is_main_function && !has_version && !generate_default_version) {
+		std::cout << "/!\\ No version! (no custom version + no default version generated)" << std::endl;
+		std::cout << "versions = " << versions.size() << std::endl;
+	}
+
 	// Compile default version
 	if (is_main_function || generate_default_version) {
 		compile_version_internal(c, type.getArgumentTypes(), default_version);
