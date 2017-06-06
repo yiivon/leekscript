@@ -41,10 +41,9 @@ void Test::test_functions() {
 	code("[[x -> x ** 2]][0][0](12)").equals("144");
 	code("[[[x -> x ** 2]]][0][0][0](12)").equals("144");
 	code("[[[[[[[x -> x ** 2]]]]]]][0][0][0][0][0][0][0](12)").equals("144");
-	// TODO
-	// code("(-> -> 12)()()").equals("12");
-	// code("let f = -> -> 12 f()()").equals("12");
-	// code("let f = x -> -> 'salut' f(5)()").equals("'salut'");
+	code("(-> -> 12)()()").equals("12");
+	code("let f = -> -> 12 f()()").equals("12");
+	code("let f = x -> -> 'salut' f(5)()").equals("'salut'");
 	code("let f = x -> [x, x, x] f(44)").equals("[44, 44, 44]");
 	code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
 	code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
@@ -68,8 +67,8 @@ void Test::test_functions() {
 	code("let a = 5 let f = -> a f()").equals("5");
 	code("let a = 5 let f = -> @a f()").equals("5");
 	// TODO
-	// code("let a = 12 let f = -> -> a f()()").equals("12");
-	// code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
+	code("let a = 12 let f = -> -> a f()()").equals("12");
+	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
 	// code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
 	// code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
 	// code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
