@@ -515,6 +515,15 @@ Value* Function::clone() const {
 			f->defaultValues.push_back(nullptr);
 		}
 	}
+	for (const auto& v : versions) {
+		auto v2 = new Version();
+		v2->function = new LSFunction<LSValue*>(nullptr);
+		v2->function->refs = 1;
+		v2->function->native = true;
+		v2->body = (Block*) v.second->body->clone();
+		v2->type = v.second->type;
+		f->versions.insert({v.first, v2});
+	}
 	return f;
 }
 
