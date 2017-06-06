@@ -3,8 +3,7 @@
 
 #include <vector>
 #include <string>
-
-#include "../../compiler/lexical/Token.hpp"
+#include "Token.hpp"
 #include "LexicalError.hpp"
 
 namespace ls {
