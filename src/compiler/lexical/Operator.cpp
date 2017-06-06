@@ -1,6 +1,6 @@
-#include "../../compiler/lexical/Operator.hpp"
-
+#include "Operator.hpp"
 #include <iostream>
+
 using namespace std;
 
 namespace ls {
