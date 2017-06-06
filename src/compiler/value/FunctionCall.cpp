@@ -213,7 +213,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			arguments.at(a)->analyse(analyser, argument_type);
 			if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION) {
 				arguments.at(a)->will_take(analyser, function->type.getArgumentType(a).arguments_types, 1);
-				arguments.at(a)->set_version(function->type.getArgumentType(a).arguments_types);
+				arguments.at(a)->set_version(function->type.getArgumentType(a).arguments_types, 1);
 			}
 			arg_types.push_back(arguments.at(a)->type);
 		} else if (function->type.argumentHasDefault(a)) {
@@ -240,7 +240,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	function->will_take(analyser, arg_types, 1);
-	function->set_version(arg_types);
+	function->set_version(arg_types, 1);
 
 	// Get the function type
 	function_type = function->type;
@@ -290,10 +290,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 }
 
 bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
-	if (auto vv = dynamic_cast<VariableValue*>(function)) {
-		vv->will_take(analyser, args, level + 1);
-	}
+	// if (auto vv = dynamic_cast<VariableValue*>(function)) {
+		function->will_take(analyser, args, level + 1);
+	// }
 	return false;
+}
+
+void FunctionCall::set_version(const std::vector<Type>& args, int level) {
+	function->set_version(args, level + 1);
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {

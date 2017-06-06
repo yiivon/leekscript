@@ -82,6 +82,17 @@ bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& ar
 	return false;
 }
 
+void VariableValue::set_version(const vector<Type>& args, int level) {
+	if (level > 1) {
+		if (var != nullptr and var->value != nullptr) {
+			var->value->set_version(args, level);
+		}
+	} else {
+		version = args;
+		has_version = true;
+	}
+}
+
 bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_store(analyser, type);

@@ -37,7 +37,7 @@ public:
 	virtual bool must_be_pointer(SemanticAnalyser*);
 	virtual void must_return(SemanticAnalyser*, const Type&);
 	virtual void will_be_in_array(SemanticAnalyser*);
-	virtual void set_version(std::vector<Type>);
+	virtual void set_version(const std::vector<Type>&, int level);
 	virtual Type version_type(std::vector<Type>) const;
 	virtual void analyse(SemanticAnalyser*, const Type&) = 0;
 

@@ -177,6 +177,11 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	auto return_type = req_type.getReturnType();
 	analyse_body(analyser, type.getArgumentTypes(), default_version, return_type);
 
+	// Re-analyse each version
+	for (auto v : versions) {
+		analyse_body(analyser, v.first, v.second, Type::UNKNOWN);
+	}
+
 	type = default_version->type;
 
 	if (req_type.nature != Nature::UNKNOWN) {
@@ -211,7 +216,8 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 		}
 		return false;
 	} else {
-		if (auto ei = dynamic_cast<ExpressionInstruction*>(body->instructions[0])) {
+		auto v = current_version ? current_version : default_version;
+		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
 			if (auto f = dynamic_cast<Function*>(ei->value)) {
 
 				analyser->enter_function(this);
@@ -228,6 +234,20 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 		}
 	}
 	return false;
+}
+
+void Function::set_version(const std::vector<Type>& args, int level) {
+	if (level == 1) {
+		version = args;
+		has_version = true;
+	} else {
+		auto v = current_version ? current_version : default_version;
+		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
+			if (auto f = dynamic_cast<Function*>(ei->value)) {
+				f->set_version(args, level - 1);
+			}
+		}
+	}
 }
 
 void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version, const Type& req_type) {

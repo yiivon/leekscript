@@ -13,7 +13,7 @@ Value::~Value() {}
 
 bool Value::will_take(SemanticAnalyser*, const std::vector<Type>& args, int) {
 	auto r = type.will_take(args);
-	set_version(args);
+	set_version(args, 1);
 	return r;
 }
 
@@ -36,7 +36,7 @@ void Value::must_return(SemanticAnalyser*, const Type& ret_type) {
 
 void Value::will_be_in_array(SemanticAnalyser*) {}
 
-void Value::set_version(std::vector<Type> args) {
+void Value::set_version(const std::vector<Type>& args, int) {
 	version = args;
 	has_version = true;
 }

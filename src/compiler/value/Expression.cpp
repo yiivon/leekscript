@@ -326,7 +326,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (op->type == TokenType::TILDE_TILDE) {
 		auto version = { v1->type.getElementType() };
 		v2->will_take(analyser, version, 1);
-		v2->set_version(version);
+		v2->set_version(version, 1);
 		type = Type::PTR_ARRAY;
 		type.setElementType(v2->version_type(version).getReturnType());
 	}
