@@ -144,8 +144,7 @@ void Test::test_arrays() {
 
 	section("Methods calls on unknown array");
 	code("var a = [1, [1, 2]] a[1].size()").equals("2");
-	// TODO crashing
-	// code("var a = [1, [1, 2]] a[1].push(3)").equals("[1, 2, 3]");
+	code("var a = [1, [1, 2]] a[1].push(3)").equals("[1, 2, 3]");
 	code("var a = [1, [1, 2]] a[1].push(3) a[1]").equals("[1, 2, 3]");
 
 	section("Array.operator +=");
