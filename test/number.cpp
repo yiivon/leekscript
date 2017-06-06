@@ -311,11 +311,11 @@ void Test::test_numbers() {
 	section("Number.operator %%");
 	code("0 %% 1").equals("0");
 	code("2 %% 5").equals("2");
-	code("-2 %% 5").equals("3");
-	code("-12 %% 5").equals("3");
+	code("(-2) %% 5").equals("3");
+	code("(-12) %% 5").equals("3");
 	code("721 %% 57").equals("37");
-	code("-721 %% 57").equals("20");
-	code("-721★ %% 57★").equals("20");
+	code("(-721) %% 57").equals("20");
+	code("(-721★) %% 57★").equals("20");
 
 	section("Number.operator %%=");
 	code("var a = 0 a %%= 1").equals("0");
