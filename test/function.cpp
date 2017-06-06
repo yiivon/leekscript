@@ -70,12 +70,12 @@ void Test::test_functions() {
 	code("let a = 12 let f = -> -> a f()()").equals("12");
 	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
 	// code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
-	// code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
 	// code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
 	// code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
-	// code("let f = x -> y -> x + y f(5)(12)").equals("17");
+	code("let f = x -> y -> x + y f(5)(12)").equals("17");
 	// code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
-	// code("let f = x -> x (-> f(12))()").equals("12");
+	code("let f = x -> x (-> f(12))()").equals("12");
 	// code("let f = x -> x let g = x -> f(x) g(12)").equals("12");
 	// code("let g = x -> x ** 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
 	code("let a = 5 let f = x -> x < a [1, 2, 3, 4, 5, 6].filter(f)").equals("[1, 2, 3, 4]");
