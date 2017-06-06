@@ -49,7 +49,8 @@ Compiler::value Throw::compile(Compiler& c) const {
 }
 
 Instruction* Throw::clone() const {
-	auto t = new Throw(token, expression->clone());
+	auto ex = expression ? expression->clone() : nullptr;
+	auto t = new Throw(token, ex);
 	return t;
 }
 
