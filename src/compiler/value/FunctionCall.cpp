@@ -263,6 +263,9 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	} else {
 		auto ret_type = function_type.getReturnType();
+		if (is_unknown_method && ret_type == Type::UNKNOWN) {
+			type = Type::POINTER;
+		}
 		if (ret_type.nature != Nature::UNKNOWN) {
 			type = ret_type;
 		}
