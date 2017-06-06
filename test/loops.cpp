@@ -124,8 +124,7 @@ void Test::test_loops() {
 	// code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
 	code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
-	// TODO crash
-	// code("var y = '' for k, x in { let x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
+	code("var y = '' for k, x in { let x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
 	// TODO crash
 	// code("let fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3");
 	// TODO crash
