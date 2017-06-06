@@ -91,7 +91,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 	version->body->print(os, indent, debug);
 
 	if (debug) {
-		os << " [" << versions.size() << " versions]";
+		os << " [" << versions.size() << " versions, " << std::boolalpha << has_version << "]";
 		for (auto& v : versions) {
 			os << v.first << " ";
 		}
