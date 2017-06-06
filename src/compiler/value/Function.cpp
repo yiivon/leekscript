@@ -90,12 +90,11 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 	os << ") → ";
 	version->body->print(os, indent, debug);
 
-	if (versions.size()) {
+	if (debug) {
 		os << " [" << versions.size() << " versions]";
 		for (auto& v : versions) {
 			os << v.first << " ";
 		}
-		os << std::endl;
 	}
 
 	if (debug) {
