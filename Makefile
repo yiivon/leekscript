@@ -204,5 +204,9 @@ doc:
 	@echo "Documentation generated."
 	@echo "------------------------"
 
+# Get remaining to do work in project
+todo:
+	@grep "TODO" . -R
+
 # Objects dependencies
 -include $(DEPS)
