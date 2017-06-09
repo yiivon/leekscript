@@ -50,7 +50,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	array->analyse(analyser, Type::UNKNOWN);
 
-	if (array->type.raw_type != RawType::UNKNOWN and !array->type.is_container()) {
+	if (array->type.raw_type != RawType::UNKNOWN and !array->type.raw_type->is_placeholder() and !array->type.is_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
 		return;
 	}
