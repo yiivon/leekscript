@@ -234,7 +234,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("foldRight", {
 		{Type::PTR_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &fold_right_ptr, Method::NATIVE},
 		{Type::REAL_ARRAY, Type::POINTER, {fold_right_fun_type_float, Type::POINTER}, (void*) &fold_right_real, Method::NATIVE},
-		{Type::INT_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &fold_right_int, Method::NATIVE},
+		{Type::INT_ARRAY, Type::POINTER, {fold_right_fun_type_int, Type::POINTER}, (void*) &fold_right_int, Method::NATIVE},
 	});
 
 	method("pop", {
