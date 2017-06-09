@@ -53,7 +53,7 @@ void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
 
 Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args) {
 	try {
-		vector<Method>& impl = methods.at(name);
+		auto impl = methods.at(name);
 		Method* best = nullptr;
 
 		for (Method& m : impl) {
