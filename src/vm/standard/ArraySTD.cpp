@@ -205,8 +205,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_fun_type_int.setReturnType(Type::POINTER);
 
 	auto fold_left_ptr = &LSArray<LSValue*>::ls_foldLeft<LSValue*>;
-	auto fold_left_int = &LSArray<int>::ls_foldLeft<int>;
-	auto fold_left_real = &LSArray<double>::ls_foldLeft<double>;
+	auto fold_left_int = &LSArray<int>::ls_foldLeft<LSValue*>;
+	auto fold_left_real = &LSArray<double>::ls_foldLeft<LSValue*>;
 
 	method("foldLeft", {
 		{Type::PTR_ARRAY, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) fold_left_ptr, Method::NATIVE},
@@ -228,8 +228,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_right_fun_type_int.setReturnType(Type::POINTER);
 
 	auto fold_right_ptr = &LSArray<LSValue*>::ls_foldRight<LSValue*>;
-	auto fold_right_int = &LSArray<int>::ls_foldRight<int>;
-	auto fold_right_real = &LSArray<double>::ls_foldRight<double>;
+	auto fold_right_int = &LSArray<int>::ls_foldRight<LSValue*>;
+	auto fold_right_real = &LSArray<double>::ls_foldRight<LSValue*>;
 
 	method("foldRight", {
 		{Type::PTR_ARRAY, Type::POINTER, {fold_right_fun_type, Type::POINTER}, (void*) &fold_right_ptr, Method::NATIVE},
