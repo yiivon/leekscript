@@ -239,8 +239,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		return;
 	}
 
-	function->will_take(analyser, arg_types, 1);
-	function->set_version(arg_types, 1);
+	if (arguments_valid) {
+		function->will_take(analyser, arg_types, 1);
+		function->set_version(arg_types, 1);
+	}
 
 	// Get the function type
 	function_type = function->type;
