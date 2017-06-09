@@ -381,6 +381,16 @@ int SyntaxicAnalyser::findNextArrow() {
 	return p - 1;
 }
 
+int SyntaxicAnalyser::findNextColon() {
+	int p = i;
+	while (true) {
+		auto t = tokens.at(p++)->type;
+		if (t == TokenType::FINISHED) return -1;
+		if (t == TokenType::COLON) break;
+	}
+	return p - 1;
+}
+
 Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, bool comma_list, Value* initial) {
 
 	Value* e = nullptr;
@@ -787,7 +797,8 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		}
 		int p = findNextClosingParenthesis();
 		int a = findNextArrow();
-		if (parenthesis or (a != -1 and (a < p or p == -1))) {
+		int c = findNextColon();
+		if (parenthesis or (a != -1 and (a < p or p == -1) and (a < c or c == -1))) {
 			return eatLambdaContinue(parenthesis, arobase, ident, nullptr, comma_list);
 		} else {
 			return new VariableValue(std::shared_ptr<Token>(ident));

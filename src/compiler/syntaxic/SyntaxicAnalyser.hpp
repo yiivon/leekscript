@@ -77,6 +77,7 @@ public:
 	bool beginingOfExpression(TokenType type);
 	int findNextClosingParenthesis();
 	int findNextArrow();
+	int findNextColon();
 	bool isLambda();
 
 	Token* eat_get();
