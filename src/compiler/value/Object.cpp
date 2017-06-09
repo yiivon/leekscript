@@ -22,7 +22,7 @@ void Object::print(ostream& os, int indent, bool debug) const {
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		os << keys.at(i)->content;
 		os << ": ";
-		values.at(i)->print(os, indent);
+		values.at(i)->print(os, indent, debug);
 		if (i < keys.size() - 1) {
 			os << ", ";
 		}
