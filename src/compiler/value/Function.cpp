@@ -286,7 +286,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 		return_types.add(t);
 	}
 
-	if (version->body->types.size() >= 2) {
+	if (return_types.size() >= 2) {
 		// The body had multiple types, compute a compatible type and re-analyse it
 		Type return_type = return_types[0];
 		for (const auto& t : return_types) {
