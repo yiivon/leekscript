@@ -353,6 +353,11 @@ Type Type::not_temporary() const {
 	new_type.temporary = false;
 	return new_type;
 }
+Type Type::add_temporary() const {
+	Type new_type = *this;
+	new_type.temporary = true;
+	return new_type;
+}
 
 /*
  * Can we convert type into this ?
