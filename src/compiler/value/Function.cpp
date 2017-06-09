@@ -4,6 +4,7 @@
 #include "../../vm/value/LSFunction.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/Program.hpp"
+#include "../../vm/Exception.hpp"
 #include <jit/jit-dump.h>
 using namespace std;
 
@@ -472,7 +473,11 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		for (size_t i = 0; i < catchers.size() - 1; ++i) {
 			auto ca = catchers[i];
 			jit_insn_branch_if_pc_not_in_range(jit_function, ca.start, ca.end, &ca.next);
+			c.insn_call(Type::VOID, {{ex, Type::POINTER}}, (void*)+[](vm::ExceptionObj* ex) {
+				delete ex;
+			});
 			jit_insn_branch(jit_function, &ca.handler);
+
 			jit_insn_label(jit_function, &ca.next);
 		}
 		jit_insn_branch(jit_function, &catchers.back().handler);
