@@ -92,9 +92,12 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 
 	if (debug) {
 		os << " [" << versions.size() << " versions, " << std::boolalpha << has_version << "]";
+		os << "<";
 		for (auto& v : versions) {
-			os << v.first << " ";
+			if (v.second == version) os << "$";
+			os << v.first << ",";
 		}
+		os << ">";
 	}
 
 	if (debug) {
