@@ -125,6 +125,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			type.setElementType(element_type);
 		}
 	}
+	types = type;
 }
 
 void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types, int level) {
