@@ -332,6 +332,9 @@ void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exce
 		auto actual_message = result.exception == nullptr ? "(no exception)" : result.exception->to_string();
 		fail(expected_message, actual_message);
 	}
+	if (result.exception != nullptr) {
+		delete result.exception;
+	}
 }
 
 void Test::Input::operations(int expected) {
