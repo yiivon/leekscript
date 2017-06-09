@@ -21,6 +21,7 @@ public:
 	virtual bool iterable() const { return false; }
 	virtual bool is_container() const { return false; }
 	virtual int size() const { return 64; }
+	virtual bool is_placeholder() const { return false; }
 };
 
 class UnknownRawType : public BaseRawType {
@@ -189,6 +190,7 @@ public:
 	virtual ~PlaceholderRawType() {}
 	virtual int id() const { assert(false); } // LCOV_EXCL_LINE
 	virtual const std::string getName() const { return name; }
+	virtual bool is_placeholder() const { return true; }
 };
 
 class RawType {
