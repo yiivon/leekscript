@@ -264,7 +264,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::UNKNOWN);
-		analyser->add_parameter(arguments[i].get(), type);
+		analyser->add_parameter(arguments.at(i).get(), type);
 	}
 
 	version->type = Type::FUNCTION_P;
