@@ -280,7 +280,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	TypeList return_types;
 	// Ignore recursive types
 	for (const auto& t : version->body->types) {
-		if (placeholder_type != Type::UNKNOWN and t == placeholder_type) {
+		if (placeholder_type != Type::UNKNOWN and t.not_temporary() == placeholder_type) {
 			continue;
 		}
 		return_types.add(t);
