@@ -503,8 +503,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		if (function_type.getArgumentType(i).must_manage_memory()) {
 			c.insn_delete(args.at(offset + i));
 		}
-		if (function_type.getArgumentType(i) == Type::MPZ ||
-			function_type.getArgumentType(i) == Type::MPZ_TMP) {
+		if (function_type.getArgumentType(i).not_temporary() == Type::MPZ) {
 			c.insn_delete_mpz(args.at(offset + i));
 		}
 	}
