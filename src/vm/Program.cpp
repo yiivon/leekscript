@@ -107,21 +107,21 @@ std::string Program::execute(VM& vm) {
 		return "(void)";
 	}
 
-	if (output_type == Type::BOOLEAN) {
+	if (output_type.not_temporary() == Type::BOOLEAN) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
 		if (vm.last_exception) throw vm.last_exception;
 		return res ? "true" : "false";
 	}
 
-	if (output_type == Type::INTEGER) {
+	if (output_type.not_temporary() == Type::INTEGER) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
 		if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
 
-	if (output_type == Type::MPZ_TMP or output_type == Type::MPZ) {
+	if (output_type.not_temporary() == Type::MPZ) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
 		if (vm.last_exception) throw vm.last_exception;
@@ -132,14 +132,14 @@ std::string Program::execute(VM& vm) {
 		return std::string(buff);
 	}
 
-	if (output_type == Type::REAL) {
+	if (output_type.not_temporary() == Type::REAL) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
 		if (vm.last_exception) throw vm.last_exception;
 		return LSNumber::print(res);
 	}
 
-	if (output_type == Type::LONG) {
+	if (output_type.not_temporary() == Type::LONG) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
 		if (vm.last_exception) throw vm.last_exception;
