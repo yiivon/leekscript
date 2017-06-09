@@ -33,7 +33,7 @@ void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 			required_type = f->current_version->type.getReturnType();
 		}
 		expression->analyse(analyser, required_type);
-		f->current_version->body->types.add(expression->type);
+		f->current_version->body->types.add(expression->type.add_temporary());
 	}
 	function = f;
 	in_function = true;
