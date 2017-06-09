@@ -26,6 +26,9 @@ void Test::test_files() {
 	// file("test/code/references.leek").equals("");
 	file("test/code/divisors.leek").equals("[1, 3, 9, 13, 17, 39]");
 	file("test/code/two_functions.leek").equals("[{p: 2, v: 5}, [{p: 3, v: 6}]]");
+	file("test/code/product_n.leek").equals("5040");
+	// TODO leaks
+	// file("test/code/product_n_return.leek").equals("5040");
 	file("test/code/product_n_arrays.leek").equals("[5040]");
 
 	section("Project Euler");
