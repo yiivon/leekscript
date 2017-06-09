@@ -30,6 +30,7 @@ void Test::test_files() {
 	// TODO leaks
 	// file("test/code/product_n_return.leek").equals("5040");
 	file("test/code/product_n_arrays.leek").equals("[5040]");
+	file("test/code/fold_left.leek").equals("[{w: 1}, {w: 3}, {w: 4}, {w: 2}, {w: 7}, {w: 5}, {w: 8}, {w: 9}, {w: 6}]");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
