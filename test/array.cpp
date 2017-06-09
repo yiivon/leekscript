@@ -399,6 +399,7 @@ void Test::test_arrays() {
 	code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");
 	code("Array.foldRight(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'abcdX'");
 	code("Array.foldRight([1.5, 2.0, 2.5], (x, y -> x ** y), 1.5)").equals("533.166813742");
+	code("[1, 2, 3].foldRight((x, acc -> acc.push({w: x})), [])").equals("[{w: 3}, {w: 2}, {w: 1}]");
 
 	section("Array.shuffle()");
 	code("[].shuffle()");
