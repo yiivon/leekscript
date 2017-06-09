@@ -372,8 +372,8 @@ Compiler::value Function::compile(Compiler& c) const {
 	((Function*) this)->compiled = true;
 
 	if (!is_main_function && !has_version && !generate_default_version) {
-		std::cout << "/!\\ No version! (no custom version + no default version generated)" << std::endl;
-		std::cout << "versions = " << versions.size() << std::endl;
+		// std::cout << "/!\\ No version! (no custom version + no default version generated)" << std::endl;
+		// std::cout << "versions = " << versions.size() << std::endl;
 	}
 
 	// Compile default version
@@ -400,7 +400,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 		compile(c);
 	}
 	if (versions.find(args) == versions.end()) {
-		std::cout << "/!\\ Version " << args << " not found!" << std::endl;
+		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
 		return c.new_pointer(nullptr);
 	}
 	return c.new_pointer(versions.at(args)->function);
