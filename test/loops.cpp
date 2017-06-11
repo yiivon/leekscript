@@ -93,6 +93,9 @@ void Test::test_loops() {
 	// code("var s = 0 for let m = [1: 3, 2: 2, 3: 1]; m; var l = 0 for k, x in m { l = k } m.erase(l) { for x in m { s += x } } s").equals("14");
 	code("for var i = 0; ['', i < 10][1]; i++ {}").equals("(void)");
 	code("var i = ['', 1][1] for ; i < 10; i <<= 1 {}").equals("(void)");
+	code("for (var i = 0, j = 0; i < 5; i++, j++) { System.print(i + ', ' + j) }").output("0, 0\n1, 1\n2, 2\n3, 3\n4, 4\n");
+	code("for (var i = 0, j = 10; i < 5; i++, j += 2) { System.print(i + ', ' + j) }").output("0, 10\n1, 12\n2, 14\n3, 16\n4, 18\n");
+	code("for (var i = 0, j = 1, k = 2, l = 3; i < 5; i++, j++, k++, l++) { System.print([i j k l]) }").output("[0, 1, 2, 3]\n[1, 2, 3, 4]\n[2, 3, 4, 5]\n[3, 4, 5, 6]\n[4, 5, 6, 7]\n");
 
 	section("For whitout braces");
 	code("var s = 0 for (var i = 0; i < 10; i++) s += i s").equals("45");
