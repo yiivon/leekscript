@@ -1,5 +1,6 @@
 #include "TypeList.hpp"
 #include <sstream>
+#include "../constants.h"
 
 namespace ls {
 
@@ -24,16 +25,16 @@ void TypeList::add(const Type& type) {
 }
 
 std::ostream& operator << (std::ostream& os, const TypeList& type) {
-	//if (type.size() == 1) {
-		// os << *type.begin();
-	// } else {
-		os << "{";
+	if (type.size() == 1) {
+		os << *type.begin();
+	} else {
+		os << GREY << "{";
 		for (auto i = type.begin(); i != type.end(); ++i) {
 			if (i != type.begin()) os << ", ";
 			os << *i;
 		}
-		os << "}";
-	// }
+		os << GREY << "}" << END_COLOR;
+	}
 	return os;
 }
 
