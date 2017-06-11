@@ -38,7 +38,9 @@ void Test::test_files() {
 	file("test/code/recursive_2_vars.leek").equals("1021");
 	file("test/code/global_functions_1.leek").equals("false");
 	// TODO : better sort
-	// file("test/code/global_functions_2.leek").equals("false");
+	// file("test/code/global_functions_2.leek").equals("");
+	// TODO : mutually recursive functions
+	// file("test/code/recursive_2_functions.leek").equals("");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");

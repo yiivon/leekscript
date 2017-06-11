@@ -1,0 +1,6 @@
+// TODO Handle mutually recursive functions
+
+function fun_real(x) { fun_int((x - 0.5).floor()) }
+function fun_int(x) { x > 10 ? fun_real(x - 0.5) : x }
+
+fun_int(20)
