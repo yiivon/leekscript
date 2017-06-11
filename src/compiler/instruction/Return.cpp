@@ -60,7 +60,8 @@ Compiler::value Return::compile(Compiler& c) const {
 }
 
 Instruction* Return::clone() const {
-	auto r = new Return(expression->clone());
+	auto ex = expression ? expression->clone() : nullptr;
+	auto r = new Return(ex);
 	return r;
 }
 
