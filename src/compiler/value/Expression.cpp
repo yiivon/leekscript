@@ -200,6 +200,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (req_type.nature == Nature::POINTER) {
 			type.nature = req_type.nature;
 		}
+		types = type;
 		return;
 	} else {
 		//std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
@@ -361,6 +362,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.raw_type == RawType::REAL) {
 		type.raw_type = RawType::REAL;
 	}
+	types = type;
 }
 
 LSValue* jit_add(LSValue* x, LSValue* y) {
