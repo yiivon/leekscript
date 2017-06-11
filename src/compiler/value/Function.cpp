@@ -96,7 +96,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 		os << "<";
 		for (auto& v : versions) {
 			if (v.second == version) os << "$";
-			os << v.first << ",";
+			os << v.first << " → " << v.second->type.getReturnType() <<  ",";
 		}
 		os << ">";
 	}
