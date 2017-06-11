@@ -41,6 +41,8 @@ void Test::test_files() {
 	// file("test/code/global_functions_2.leek").equals("");
 	// TODO : mutually recursive functions
 	// file("test/code/recursive_2_functions.leek").equals("");
+	// TODO : recursive with 2 versions
+	// file("test/code/recursive_2_versions.leek").equals("");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
