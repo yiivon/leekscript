@@ -9,7 +9,9 @@ void Test::test_functions() {
 	code("function f() { 12 } [f(), 'str']").equals("[12, 'str']");
 	code("function bar(u, v) return u * v - u / v end bar(12, 5)").equals("57.6");
 	code("function bar(u, v) u * v - u / v end bar(12, 5)").equals("57.6");
+	code("function test() { return }").equals("(void)");
 	code("function test() { return ; }").equals("(void)");
+	code("function test() { return ; } test()").equals("(void)");
 
 	section("Can't call a value");
 	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"null"});
