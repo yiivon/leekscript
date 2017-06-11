@@ -13,6 +13,10 @@ void Test::test_functions() {
 	code("function test() { return ; }").equals("(void)");
 	code("function test() { return ; } test()").equals("(void)");
 
+	section("Global functions");
+	code("let v = global_fun() function global_fun() { return 1234567 } v").equals("1234567");
+	code("let v = global_fun() function global_fun() { return 'hello' } v").equals("'hello'");
+
 	section("Can't call a value");
 	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"null"});
 	code("12()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"12"});

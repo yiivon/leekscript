@@ -41,6 +41,7 @@ public:
 	bool compiled = false;
 	bool generate_default_version = false;
 	Version* current_version = nullptr;
+	bool analyzed = false;
 
 	Function();
 	virtual ~Function();

@@ -4,6 +4,7 @@
 #include "../../vm/value/LSNumber.hpp"
 #include "../instruction/Return.hpp"
 #include "../instruction/Throw.hpp"
+#include "../instruction/VariableDeclaration.hpp"
 
 using namespace std;
 
@@ -35,6 +36,14 @@ void Block::print(ostream& os, int indent, bool debug) const {
 
 Location Block::location() const {
 	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+}
+
+void Block::analyse_global_functions(SemanticAnalyser* analyser) {
+	for (const auto& instruction : instructions) {
+		if (auto vd = dynamic_cast<VariableDeclaration*>(instruction)) {
+			vd->analyse_global_functions(analyser);
+		}
+	}
 }
 
 void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {

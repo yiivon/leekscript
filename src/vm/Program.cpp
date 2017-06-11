@@ -90,6 +90,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 void Program::analyse(SemanticAnalyser* analyser) {
 	main->name = "main";
 	main->file = file_name;
+	main->body->analyse_global_functions(analyser);
 	main->analyse(analyser, Type::UNKNOWN);
 }
 

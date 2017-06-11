@@ -343,6 +343,7 @@ VariableDeclaration* SyntaxicAnalyser::eatFunctionDeclaration() {
 
 	auto vd = new VariableDeclaration();
 	vd->global = true;
+	vd->function = true;
 
 	vd->variables.push_back(std::unique_ptr<Token> { eatIdent() });
 	vd->expressions.push_back(eatFunction());

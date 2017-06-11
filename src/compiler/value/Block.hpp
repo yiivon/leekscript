@@ -19,6 +19,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug) const override;
 	virtual Location location() const override;
 
+	void analyse_global_functions(SemanticAnalyser* analyser);
 	virtual void analyse(SemanticAnalyser* analyser, const Type& req_type) override;
 
 	Compiler::value compile(Compiler&) const override;

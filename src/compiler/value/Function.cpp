@@ -177,6 +177,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		default_version->function->refs = 1;
 		default_version->function->native = true;
 	}
+	analyzed = true;
 
 	auto return_type = req_type.getReturnType();
 	analyse_body(analyser, type.getArgumentTypes(), default_version, return_type);
@@ -202,6 +203,9 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
 
 	// cout << "Function::will_take " << args << " level " << level << endl;
+	if (!analyzed) {
+		analyse(analyser, Type::UNKNOWN);
+	}
 
 	if (level == 1) {
 		if (versions.find(args) == versions.end()) {

@@ -46,6 +46,15 @@ Location VariableDeclaration::location() const {
 	return {keyword->location.start, end};
 }
 
+void VariableDeclaration::analyse_global_functions(SemanticAnalyser* analyser) {
+	if (global && function) {
+		auto var = variables.at(0);
+		auto expr = expressions.at(0);
+		auto v = analyser->add_var(var.get(), Type::FUNCTION_P, expr, this);
+		vars.insert({var->content, v});
+	}
+}
+
 void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	type = Type::VOID;
@@ -148,6 +157,7 @@ Instruction* VariableDeclaration::clone() const {
 	vd->keyword = keyword;
 	vd->global = global;
 	vd->constant = constant;
+	vd->function = function;
 	for (const auto& v : variables) {
 		vd->variables.push_back(v);
 	}
