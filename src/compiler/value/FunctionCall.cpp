@@ -71,7 +71,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	function_object = dynamic_cast<Function*>(function);
 	if (!function_object) {
 		auto vv = dynamic_cast<VariableValue*>(function);
-		if (vv) {
+		if (vv && vv->var) {
 			function_object = static_cast<Function*>(vv->var->value);
 		}
 	}
