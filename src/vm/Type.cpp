@@ -116,29 +116,32 @@ Type::Type() {
 	clazz = "?";
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool temporary) {
+Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool temporary, bool constant) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
 	this->temporary = temporary;
+	this->constant = constant;
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type, bool native) {
+Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type, bool native, bool constant) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
 	this->setElementType(element_type);
+	this->constant = constant;
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native) {
+Type::Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native, bool constant) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
 	this->setKeyType(key_type);
 	this->setElementType(element_type);
+	this->constant = constant;
 }
 
 int Type::id() const {

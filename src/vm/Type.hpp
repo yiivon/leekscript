@@ -252,9 +252,9 @@ public:
 	bool reference = false;
 
 	Type();
-	Type(const BaseRawType* raw_type, Nature nature, bool native = false, bool temporary = false);
-	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native = false);
-	Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native = false);
+	Type(const BaseRawType* raw_type, Nature nature, bool native = false, bool temporary = false, bool constant = false);
+	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native = false, bool constant = false);
+	Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native = false, bool constant = false);
 
 	int id() const;
 
