@@ -1,0 +1,11 @@
+// TODO sort function compilation by call hierarchy (make a tree)
+
+function is_good(x, y) {
+	return inc(x) == inc(y)
+}
+
+function inc(x) {
+	return x + 1
+}
+
+[is_good(5, 6), is_good(6, 6)]
