@@ -214,7 +214,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::RETURN: {
 			eat();
 			if (t->type == TokenType::FINISHED or t->type == TokenType::CLOSING_BRACE
-				or t->type == TokenType::ELSE or t->type == TokenType::END) {
+				or t->type == TokenType::ELSE or t->type == TokenType::END or t->type == TokenType::SEMICOLON) {
 				return new Return();
 			} else {
 				return new Return(eatExpression());
