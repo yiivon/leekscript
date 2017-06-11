@@ -209,6 +209,11 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 	if (level == 1) {
 		if (versions.find(args) == versions.end()) {
+
+			for (const auto& t : args) {
+				if (t.raw_type->is_placeholder()) return false;
+			}
+
 			auto version = new Function::Version();
 			version->body = (Block*) body->clone();
 			version->function = new LSFunction<LSValue*>(nullptr);
