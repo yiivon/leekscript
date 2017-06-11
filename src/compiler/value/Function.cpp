@@ -54,13 +54,13 @@ void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
 }
 
 Type Function::getReturnType() {
-	if (type.getReturnType() == Type::UNKNOWN) {
+	if (current_version->type.getReturnType() == Type::UNKNOWN) {
 		if (placeholder_type == Type::UNKNOWN) {
 			placeholder_type = Type::generate_new_placeholder_type();
 		}
 		return placeholder_type;
 	} else {
-		return type.getReturnType();
+		return current_version->type.getReturnType();
 	}
 }
 
