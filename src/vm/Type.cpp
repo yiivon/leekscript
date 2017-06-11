@@ -77,11 +77,13 @@ const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
 const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
+const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, true);
 const Type Type::REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
 const Type Type::MAP(RawType::MAP, Nature::POINTER);
 const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::POINTER);
 const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER);
+const Type Type::CONST_PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER, false, true);
 const Type Type::PTR_REAL_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::REAL);
 const Type Type::REAL_PTR_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::POINTER);
 const Type Type::REAL_INT_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::INTEGER);
@@ -101,6 +103,7 @@ const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INT_ARRA
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
 const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
+const Type Type::CONST_CLASS(RawType::CLASS, Nature::POINTER, true, false, true);
 
 const Type Type::STRING_ITERATOR(RawType::STRING, Nature::VALUE, Type::STRING);
 const Type Type::INTERVAL_ITERATOR(RawType::INTERVAL, Nature::VALUE, Type::INTEGER);

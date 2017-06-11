@@ -323,11 +323,13 @@ public:
 	static const Type ARRAY;
 	static const Type PTR_ARRAY;
 	static const Type INT_ARRAY;
+	static const Type CONST_INT_ARRAY;
 	static const Type REAL_ARRAY;
 	static const Type STRING_ARRAY;
 	static const Type MAP;
 	static const Type PTR_PTR_MAP;
 	static const Type PTR_INT_MAP;
+	static const Type CONST_PTR_INT_MAP;
 	static const Type PTR_REAL_MAP;
 	static const Type REAL_PTR_MAP;
 	static const Type REAL_INT_MAP;
@@ -343,6 +345,7 @@ public:
 	static const Type FUNCTION;
 	static const Type FUNCTION_P;
 	static const Type CLASS;
+	static const Type CONST_CLASS;
 	static const Type PTR_ARRAY_ARRAY;
 	static const Type REAL_ARRAY_ARRAY;
 	static const Type INT_ARRAY_ARRAY;
