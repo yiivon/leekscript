@@ -188,7 +188,7 @@ public:
 	std::string name;
 	PlaceholderRawType(std::string name) : name(name) {}
 	virtual ~PlaceholderRawType() {}
-	virtual int id() const { assert(false); } // LCOV_EXCL_LINE
+	virtual int id() const { assert(!"placeholder type mustn't be compiled"); } // LCOV_EXCL_LINE id() method is used at compilation and placeholder types mustn't be compiled.
 	virtual const std::string getName() const { return name; }
 	virtual bool is_placeholder() const { return true; }
 };
