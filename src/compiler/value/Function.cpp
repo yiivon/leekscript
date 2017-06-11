@@ -302,6 +302,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 		} else {
 			version->type.setReturnType(version->body->type);
 		}
+		version->body->type = version->type.getReturnType().add_temporary();
 	}
 
 	if (version->type.getReturnType() == Type::MPZ) {
