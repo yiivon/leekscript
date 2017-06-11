@@ -125,7 +125,7 @@ void Test::test_map() {
 	code("let x = [1: 1] x.look(1, 0)").equals("1");
 	code("let x = ['a': 'a'] x.look('a', 'b')").equals("'a'");
 	code("let x = ['a': 'a'] x.look('b', 'b')").equals("'b'");
-	code("let x = ['a': 1] x.look(3.14, 'a')").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::PTR_INT_MAP.to_string() + ".look(" + ls::Type::REAL.to_string() + ", " + ls::Type::STRING_TMP.to_string() + ")"});
+	code("let x = ['a': 1] x.look(3.14, 'a')").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::CONST_PTR_INT_MAP.to_string() + ".look(" + ls::Type::REAL.to_string() + ", " + ls::Type::STRING_TMP.to_string() + ")"});
 	code("[1 : 1].look(1, 0)").equals("1");
 
 	section("Map.values()");

@@ -136,7 +136,7 @@ void Test::test_loops() {
 
 	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::NULLL.to_string()});
 	code("for x in true {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::BOOLEAN.to_string()});
-	code("for x in Number {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::CLASS.to_string()});
+	code("for x in Number {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::CONST_CLASS.to_string()});
 
 	/*
 	 * Array For

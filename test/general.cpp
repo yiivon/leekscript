@@ -68,7 +68,7 @@ void Test::test_general() {
 	code("let a, b, c").equals("(void)");
 	code("let a").equals("(void)");
 	code("let a a").equals("null");
-	code("let a a = 12 a").equals("12");
+	code("var a a = 12 a").equals("12");
 	code("var a = 1 let b = (a = 12) b").equals("12");
 	code("let s = 'hello'").equals("(void)");
 	code("let s = 'hello' s").equals("'hello'");

@@ -522,7 +522,7 @@ void Test::test_arrays() {
 	section("Array.removeElement()");
 	code("[].removeElement(12)").equals("false");
 	code("let a = [1, 2, 3] a.removeElement(1) a").equals("[3, 2]");
-	code("let a = [1, 2, 3] a.removeElement('key') a").semantic_error(ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::INT_ARRAY.to_string() + ".removeElement(" + ls::Type::STRING_TMP.to_string() + ")"});
+	code("let a = [1, 2, 3] a.removeElement('key') a").semantic_error(ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::CONST_INT_ARRAY.to_string() + ".removeElement(" + ls::Type::STRING_TMP.to_string() + ")"});
 	code("[1, 2, 3].removeElement(3)").equals("true");
 	code("[1, 2, 3].removeElement(4)").equals("false");
 	code("let a = [true, 'hello', [1, 2, 3]] a.removeElement([1, 2, 3]) a").equals("[true, 'hello']");
