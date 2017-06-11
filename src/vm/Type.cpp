@@ -585,6 +585,10 @@ ostream& operator << (ostream& os, const Type& type) {
 	auto color = (type.nature == Nature::VALUE) ? GREEN : RED;
 	os << color;
 
+	if (type.constant) {
+		os << "const ";
+	}
+
 	if (type.raw_type == RawType::UNKNOWN) {
 		if (type.nature == Nature::POINTER) {
 			os << YELLOW << "*";
