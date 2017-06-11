@@ -55,6 +55,8 @@ void Test::test_objects() {
 	code("let o = {a: 'a'} o.b = 'b' o").equals("{a: 'a', b: 'b'}");
 	code("Object.readonly.v = 5").exception(ls::vm::Exception::CANT_MODIFY_READONLY_OBJECT);
 	code("let o = [{}, ''][0] o.values").equals("<function>");
+	code("let pq = [{p: 22, v: 55}] pq[0].p").equals("22");
+	code("let pq = [{p: 22, v: 55}] let o = pq[0] o.v").equals("55");
 
 	section("Object.operator ==");
 	code("class A {} {} == new A").equals("false");
