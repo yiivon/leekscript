@@ -39,9 +39,15 @@ Location Block::location() const {
 }
 
 void Block::analyse_global_functions(SemanticAnalyser* analyser) {
-	for (const auto& instruction : instructions) {
-		if (auto vd = dynamic_cast<VariableDeclaration*>(instruction)) {
-			vd->analyse_global_functions(analyser);
+	int global_count = 0;
+	for (size_t i = 0; i < instructions.size(); ++i) {
+		if (auto vd = dynamic_cast<VariableDeclaration*>(instructions.at(i))) {
+			if (vd->global && vd->function) {
+				instructions.erase(instructions.begin() + i);
+				instructions.insert(instructions.begin() + global_count, vd);
+				global_count++;
+				vd->analyse_global_functions(analyser);
+			}
 		}
 	}
 }
