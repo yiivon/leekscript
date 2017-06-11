@@ -66,6 +66,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 			}
 			expressions[i]->analyse(analyser, Type::UNKNOWN);
 			v->type = expressions[i]->type;
+			v->type.temporary = false;
 			v->type.constant = constant;
 			v->value = expressions[i];
 		} else {
