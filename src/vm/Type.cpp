@@ -591,20 +591,19 @@ ostream& operator << (ostream& os, const Type& type) {
 	auto color = (type.nature == Nature::VALUE) ? GREEN : RED;
 	os << color;
 
-	if (type.constant) {
-		os << "const ";
-	}
-
 	if (type.raw_type == RawType::UNKNOWN) {
+		os << YELLOW;
+		if (type.constant) os << "const:";
 		if (type.nature == Nature::POINTER) {
-			os << YELLOW << "*";
+			os << "*";
 		} else {
-			os << YELLOW << "?";
+			os << "?";
 		}
 	} else if (type.raw_type == RawType::FUNCTION) {
 		if (type.nature == Nature::POINTER) {
 			os << BLUE_BOLD;
 		}
+		if (type.constant) os << "const:";
 		os << "fun(";
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
@@ -620,15 +619,22 @@ ostream& operator << (ostream& os, const Type& type) {
 	} else if (type.raw_type == RawType::STRING || type.raw_type == RawType::CLASS
 		|| type.raw_type == RawType::OBJECT || type.raw_type == RawType::NULLL
 		|| type.raw_type == RawType::INTERVAL) {
-		os << BLUE_BOLD << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
+		os << BLUE_BOLD;
+		if (type.constant) os << "const:";
+		os << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
 	} else if (type.raw_type == RawType::ARRAY || type.raw_type == RawType::SET) {
-		os << BLUE_BOLD << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
+		os << BLUE_BOLD;
+		if (type.constant) os << "const:";
+		os << type.raw_type->getName(); // << Type::get_nature_symbol(type.nature);
 		os << "<" << type.getElementType() << BLUE_BOLD << ">";
 	} else if (type.raw_type == RawType::MAP) {
-		os << BLUE_BOLD << type.raw_type->getName();
+		os << BLUE_BOLD;
+		if (type.constant) os << "const:";
+		os << type.raw_type->getName();
 		os << "<" << type.getKeyType() << BLUE_BOLD
 			<< ", " << type.getElementType() << BLUE_BOLD << ">";
 	} else {
+		if (type.constant) os << "const:";
 		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 	}
 	if (type.temporary && type != Type::REAL) {
