@@ -34,6 +34,7 @@ void Test::test_files() {
 	file("test/code/fold_left_2.leek").equals("{p: 6, v: {p: 9, v: {p: 8, v: {p: 5, v: {p: 7, v: {p: 2, v: {p: 4, v: {p: 3, v: {p: 1, v: []}}}}}}}}}");
 	file("test/code/fold_right.leek").equals("[{w: 6}, {w: 9}, {w: 8}, {w: 5}, {w: 7}, {w: 2}, {w: 4}, {w: 3}, {w: 1}]");
 	file("test/code/fold_right_2.leek").equals("{p: {p: {p: {p: {p: {p: {p: {p: {p: [], v: 6}, v: 9}, v: 8}, v: 5}, v: 7}, v: 2}, v: 4}, v: 3}, v: 1}");
+	file("test/code/assignments.leek").equals("15");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");

@@ -1,0 +1,19 @@
+function f() {
+	var y
+	let x = 15
+	if (false) {
+		if (true) {
+			return
+		} else {
+			y = x
+		}
+	} else {
+		if (true) {
+			y = x
+		} else {
+			y = x
+		}
+	}
+	return y
+}
+f()
