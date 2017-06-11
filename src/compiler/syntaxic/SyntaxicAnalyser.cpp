@@ -1170,6 +1170,9 @@ Instruction* SyntaxicAnalyser::eatFor() {
 			}
 			Instruction* ins = eatInstruction();
 			if (ins) f->increments.push_back(ins);
+			if (t->type == TokenType::COMMA) {
+				eat(TokenType::COMMA);
+			}
 		}
 
 		if (parenthesis)
