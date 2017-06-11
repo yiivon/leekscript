@@ -16,6 +16,7 @@ void Test::test_functions() {
 	section("Global functions");
 	code("let v = global_fun() function global_fun() { return 1234567 } v").equals("1234567");
 	code("let v = global_fun() function global_fun() { return 'hello' } v").equals("'hello'");
+	code("let v = global_fun(5) function global_fun(x) { return x + 12 } v").equals("17");
 
 	section("Can't call a value");
 	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"null"});

@@ -31,6 +31,15 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	var = analyser->get_var(token.get());
 
 	if (var != nullptr) {
+		auto function_object = dynamic_cast<Function*>(var->value);
+		if (var->value && function_object) {
+			// Analyse the real function (if the function is defined below its call for example)
+			if (!function_object->analyzed) {
+				function_object->analyse(analyser, Type::UNKNOWN);
+				var->type = function_object->type;
+			}
+		}
+
 		type = var->type;
 		var->initial_type = type;
 		scope = var->scope;
