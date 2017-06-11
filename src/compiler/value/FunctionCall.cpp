@@ -480,7 +480,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 		args_types.push_back(VM::get_jit_type(function_type.getArgumentType(i)));
 		lsvalue_types.push_back(function_type.getArgumentType(i).id());
-		if (function_type.getArgumentType(i).must_manage_memory()) {
+		if (args.at(offset + i).t.must_manage_memory()) {
 			args.at(offset + i) = c.insn_move_inc(args.at(offset + i));
 		}
 	}
@@ -502,12 +502,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	// Destroy temporary arguments
 	for (size_t i = 0; i < arg_count - offset; ++i) {
-		if (function_type.getArgumentType(i).must_manage_memory()) {
-			c.insn_delete(args.at(offset + i));
-		}
-		if (function_type.getArgumentType(i).not_temporary() == Type::MPZ) {
-			c.insn_delete_mpz(args.at(offset + i));
-		}
+		c.insn_delete(args.at(offset + i));
 	}
 	c.insn_delete_temporary(ls_fun_addr);
 
