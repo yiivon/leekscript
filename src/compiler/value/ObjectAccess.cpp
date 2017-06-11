@@ -158,7 +158,6 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attr(*key);
 	});
-	c.insn_delete_temporary(o);
 	return r;
 }
 

@@ -137,7 +137,13 @@ bool LSObject::in(const LSValue* key) const {
 
 LSValue* LSObject::attr(const std::string& key) const {
 	try {
-		return values.at(key);
+		auto v = values.at(key);
+		if (refs == 0) {
+			v->refs++;
+			LSValue::delete_temporary(this);
+			v->refs--;
+		}
+		return v;
 	} catch (exception& e) {
 		return LSValue::attr(key);
 	}
