@@ -133,6 +133,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		return;
 	}
 
+	bool array_push = (v1->type.raw_type == RawType::ARRAY or v1->type.raw_type == RawType::SET) and op->type == TokenType::PLUS_EQUAL;
+
 	// A = B, A += B, etc. A must be a l-value
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
@@ -149,12 +151,16 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			return; // don't analyse more
 		}
 		// Change the type of x for operator =
-		equal_previous_type = v1->type;
-		auto vv = dynamic_cast<VariableValue*>(v1);
-		if (vv and op->type == TokenType::EQUAL) {
-			if (v1->type != v2->type.not_temporary()) {
-				auto left_v1 = static_cast<LeftValue*>(v1);
-				left_v1->change_type(analyser, v2->type.not_temporary());
+		equal_previous_type = v1->type; // todo inside
+		if (op->type == TokenType::EQUAL) {
+			if (v1->type.not_temporary() != v2->type.not_temporary()) {
+				auto new_type = v2->type.not_temporary();
+				new_type.constant = false;
+				((LeftValue*) v1)->change_type(analyser, new_type);
+			}
+		} else {
+			if (!array_push && Type::more_specific(v2->type, v1->type)) {
+				((LeftValue*) v1)->change_type(analyser, v2->type);
 			}
 		}
 	}
@@ -212,8 +218,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type.nature = Nature::POINTER;
 	}
 	constant = v1->constant and v2->constant;
-
-	bool array_push = (v1->type.raw_type == RawType::ARRAY or v1->type.raw_type == RawType::SET) and op->type == TokenType::PLUS_EQUAL;
 
 	// array += ?  ==>  will take the type of ?
 	if (array_push) {
@@ -305,15 +309,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::POWER_EQUAL) {
 		// TODO other operators like |= ^= &=
 
-		if (op->type == TokenType::EQUAL) {
-			if (v1->type.not_temporary() != v2->type.not_temporary()) {
-				((LeftValue*) v1)->change_type(analyser, v2->type);
-			}
-		} else {
-			if (!array_push && Type::more_specific(v2->type, v1->type)) {
-				((LeftValue*) v1)->change_type(analyser, v2->type);
-			}
-		}
+
 		store_result_in_v1 = true;
 	}
 
