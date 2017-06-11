@@ -93,6 +93,7 @@ void Test::test_functions() {
 	code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
 	// TODO
 	// code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
+	code("let fact = x -> if x > 1 x * fact(x - 1) else x fact(5)").equals("120");
 
 	section("Functions in array");
 	// TODO
