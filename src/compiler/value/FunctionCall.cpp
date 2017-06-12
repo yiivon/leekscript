@@ -479,9 +479,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 		args_types.push_back(VM::get_jit_type(function_type.getArgumentType(i)));
 		lsvalue_types.push_back(function_type.getArgumentType(i).id());
-		if (args.at(offset + i).t.must_manage_memory()) {
-			args.at(offset + i) = c.insn_move_inc(args.at(offset + i));
-		}
+
+		// Increment references of argument
+		args.at(offset + i) = c.insn_move_inc(args.at(offset + i));
 	}
 
 	jit_insn_mark_offset(c.F, location().start.line);
