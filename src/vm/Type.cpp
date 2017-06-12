@@ -584,7 +584,7 @@ Type Type::generate_new_placeholder_type() {
 ostream& operator << (ostream& os, const Type& type) {
 
 	if (type == Type::VOID) {
-		os << GREY << "{void}" << END_COLOR;
+		os << GREY << "void" << END_COLOR;
 		return os;
 	}
 
