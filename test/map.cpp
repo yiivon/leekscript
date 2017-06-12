@@ -138,4 +138,17 @@ void Test::test_map() {
 	code("['yolo': 3, false: 1, 12: 4].values()").equals("[1, 4, 3]");
 	code("[[]: 3.7, [1: 2]: 1.3, {x: 12}: 4.8].values()").equals("[3.7, 1.3, 4.8]");
 	code("[(x, y -> x + y): (x, y -> x - y), null: 'null', <'a', 'b'>: 0].values()").equals("['null', 0, <function>]");
+
+	section("Map.iter");
+	code("[1: 2, 3: 4].iter((k, v) -> System.print(k + ' ' + v))").output("1 2\n3 4\n");
+	code("[1: 2.5, 3: 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("1 2.5\n3 4.5\n");
+	code("[1: 'a', 3: 'b'].iter((k, v) -> System.print(k + ' ' + v))").output("1 a\n3 b\n");
+	code("['a': 2, 'b': 4].iter((k, v) -> System.print(k + ' ' + v))").output("a 2\nb 4\n");
+	code("['a': 2.5, 'b': 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("a 2.5\nb 4.5\n");
+	code("['a': 'b', 'c': 'd'].iter((k, v) -> System.print(k + ' ' + v))").output("a b\nc d\n");
+	// TODO doesn't work, missing capture by reference
+	// code("var s = 0 [1: 2, 3: 4, 5: 6].iter((k, v) -> s += k) s").equals("9");
+	// TODO crashing
+	// code("var s = 0 [:].iter((k, v) -> s += v) s").equals("0");
+
 }
