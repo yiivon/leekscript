@@ -91,6 +91,45 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::INT_REAL_MAP, Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &LSMap<int,double>::ls_look, Method::NATIVE},
 		{Type::INT_INT_MAP, Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_look, Method::NATIVE},
 	});
+
+	Type iter_ptr_ptr = Type::FUNCTION_P;
+	iter_ptr_ptr.setArgumentType(0, Type::POINTER);
+	iter_ptr_ptr.setArgumentType(1, Type::POINTER);
+	iter_ptr_ptr.setReturnType(Type::VOID);
+
+	Type iter_ptr_real = Type::FUNCTION_P;
+	iter_ptr_real.setArgumentType(0, Type::POINTER);
+	iter_ptr_real.setArgumentType(1, Type::REAL);
+	iter_ptr_real.setReturnType(Type::VOID);
+
+	Type iter_ptr_int = Type::FUNCTION_P;
+	iter_ptr_int.setArgumentType(0, Type::POINTER);
+	iter_ptr_int.setArgumentType(1, Type::INTEGER);
+	iter_ptr_int.setReturnType(Type::VOID);
+
+	Type iter_int_ptr = Type::FUNCTION_P;
+	iter_int_ptr.setArgumentType(0, Type::INTEGER);
+	iter_int_ptr.setArgumentType(1, Type::POINTER);
+	iter_int_ptr.setReturnType(Type::VOID);
+
+	Type iter_int_real = Type::FUNCTION_P;
+	iter_int_real.setArgumentType(0, Type::INTEGER);
+	iter_int_real.setArgumentType(1, Type::REAL);
+	iter_int_real.setReturnType(Type::VOID);
+
+	Type iter_int_int = Type::FUNCTION_P;
+	iter_int_int.setArgumentType(0, Type::INTEGER);
+	iter_int_int.setArgumentType(1, Type::INTEGER);
+	iter_int_int.setReturnType(Type::VOID);
+
+	method("iter", {
+		{Type::PTR_PTR_MAP, Type::VOID, {iter_ptr_ptr}, (void*) &LSMap<LSValue*, LSValue*>::ls_iter, Method::NATIVE},
+		{Type::PTR_REAL_MAP, Type::VOID, {iter_ptr_real}, (void*) &LSMap<LSValue*, double>::ls_iter, Method::NATIVE},
+		{Type::PTR_INT_MAP, Type::VOID, {iter_ptr_int}, (void*) &LSMap<LSValue*, int>::ls_iter, Method::NATIVE},
+		{Type::INT_PTR_MAP, Type::VOID, {iter_int_ptr}, (void*) &LSMap<int, LSValue*>::ls_iter, Method::NATIVE},
+		{Type::INT_REAL_MAP, Type::VOID, {iter_int_real}, (void*) &LSMap<int, double>::ls_iter, Method::NATIVE},
+		{Type::INT_INT_MAP, Type::VOID, {iter_int_int}, (void*) &LSMap<int, int>::ls_iter, Method::NATIVE},
+	});
 }
 
 }

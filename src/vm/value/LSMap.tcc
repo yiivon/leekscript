@@ -202,6 +202,15 @@ bool LSMap<K, T>::lt(const LSValue* v) const {
 }
 
 template <class K, class V>
+void LSMap<K, V>::ls_iter(LSFunction<LSValue*>* function) const {
+	auto fun = (void* (*)(void*, K, V)) function->function;
+	for (auto v : *this) {
+		fun(function, v.first, v.second);
+	}
+	LSValue::delete_temporary(this);
+}
+
+template <class K, class V>
 V LSMap<K, V>::at(const K key) const {
 	bool ex = false;
 	try {
