@@ -159,7 +159,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				((LeftValue*) v1)->change_type(analyser, new_type);
 			}
 		} else {
-			if (!array_push && Type::more_specific(v2->type, v1->type)) {
+			if (!array_push && v2->type != Type::UNKNOWN && Type::more_specific(v2->type, v1->type)) {
 				((LeftValue*) v1)->change_type(analyser, v2->type);
 			}
 		}
@@ -191,7 +191,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		this->v2_type = op->reversed ? m->object_type : m->operand_type;
 		return_type = m->return_type;
 		type = return_type;
-		if (v1->type.not_temporary() != this->v1_type.not_temporary()) {
+		if (v1->type.not_temporary() != this->v1_type.not_temporary() && v2->type != Type::UNKNOWN) {
 			v1->analyse(analyser, this->v1_type);
 		}
 		if (v2->type.not_temporary() != this->v2_type.not_temporary()) {
