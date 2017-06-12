@@ -471,8 +471,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		if (i < arguments.size()) {
 			args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
-			if (function_type.getArgumentType(i) == Type::MPZ &&
-				arguments.at(i)->type != Type::MPZ_TMP) {
+			if (function_type.getArgumentType(i) == Type::MPZ && arguments.at(i)->type != Type::MPZ_TMP) {
 				args.at(offset + i) = c.insn_clone_mpz(args.at(offset + i));
 			}
 		} else {
