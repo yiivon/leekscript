@@ -100,7 +100,7 @@ std::string Program::execute(VM& vm) {
 
 	Type output_type = main->type.getReturnType();
 
-	if (output_type == Type::VOID) {
+	if (output_type.not_temporary() == Type::VOID) {
 		auto fun = (void (*)()) closure;
 		fun();
 		if (vm.last_exception) throw vm.last_exception;
