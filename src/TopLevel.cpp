@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
 		else if (a == "-t" or a == "-T" or a == "--time") display_time = true;
 		else if (a == "-v" or a == "-V" or a == "--version") print_version = true;
 		else if (a == "-d" or a == "-D" or a == "--debug") debug_mode = true;
-		else if (a == "-v1" or a == "-V1") v1 = true;
-		else if (a == "-nop" or a == "--no-operations") ops = false;
+		else if (a == "-l" or a == "-L" or a == "--legacy") v1 = true;
+		else if (a == "-n" or a == "-N" or a == "--no-operations") ops = false;
 		else if (a == "-e" or a == "-E" or a == "--example") example = true;
 		else if (a == "-a" or a == "-A" or a == "--assembly") assembly = true;
 		else file_or_code = a;
