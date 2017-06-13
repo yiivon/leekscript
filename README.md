@@ -47,7 +47,9 @@ Option | Effect
 -j -J --json	| Get the result in JSON format
 -t -T --time	| Print execution time and operations
 -d -D --debug | Print debug information like types
--nop --no-operations | Disable operations counting
+-n -N --no-operations | Disable operations counting
+-a -A --assembly  | Print assembly of LeekScript code
+-l  -L --legacy | Use legacy mode  (LeekScript v1)
 
 Tests, coverage, Valgrind, benchmark, doc
 ------------------
