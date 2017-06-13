@@ -104,6 +104,12 @@ void Test::test_general() {
 	code("let toto = 2; toto\"salut\"").equals("'salut'"); // string just after a ident
 	code("12345'salut'").equals("'salut'"); // string just after a number
 	code("12345\"salut\"").equals("'salut'"); // string just after a number
+	code("|2 - 3|| 2").equals("3"); // <=> |2 - 3| | 2
+	code("|2 - 3| | 2").equals("3");
+	code("|5 - 3 or 2|").equals("1");
+	code("5 - 3 or 2").equals("true");
+	code("||2 - 5| - 10|").equals("7");
+	code("|||2 - 5| - 10| - 9|").equals("2");
 
 	section("?? operator");
 	code("'foo' ?? 'bar'").equals("'foo'");
