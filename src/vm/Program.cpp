@@ -30,7 +30,7 @@ Program::~Program() {
 	}
 }
 
-VM::Result Program::compile(VM& vm, const std::string& ctx) {
+VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly) {
 
 	VM::Result result;
 
@@ -77,6 +77,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 	jit_context_build_start(vm.jit_context);
 	vm.internals.clear();
 	vm.compiler.program = this;
+	vm.compiler.output_assembly = assembly;
 	main->compile(vm.compiler);
 	closure = main->default_version->function->function;
 	// vm.compiler.leave_function();
@@ -84,6 +85,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx) {
 
 	// Result
 	result.compilation_success = true;
+	result.assembly = vm.compiler.assembly.str();
 	return result;
 }
 

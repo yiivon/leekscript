@@ -159,7 +159,7 @@ void VM::add_constant(std::string name, Type type, LSValue* value) {
 	add_internal_var(name, type);
 }
 
-VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops) {
+VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops, bool assembly) {
 
 	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
 	VM::mpz_type = jit_type_create_struct(types, 3, 1);
@@ -186,11 +186,15 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 
 	// Compile
 	auto compilation_start = chrono::high_resolution_clock::now();
-	VM::Result result = program->compile(*this, ctx);
+	VM::Result result = program->compile(*this, ctx, assembly);
 	auto compilation_end = chrono::high_resolution_clock::now();
 
 	if (debug) {
 		std::cout << "main() " << result.program << std::endl; // LCOV_EXCL_LINE
+	}
+	if (assembly) {
+		if (debug) std::cout << std::endl;
+		std::cout << result.assembly;
 	}
 
 	// Execute

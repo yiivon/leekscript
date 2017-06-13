@@ -46,6 +46,8 @@ public:
 	std::vector<std::vector<value>> function_variables;
 	std::vector<std::map<std::string, value>> variables;
 	std::vector<std::vector<catcher>> catchers;
+	bool output_assembly = false;
+	std::ostringstream assembly;
 
 	Program* program;
 	VM* vm;

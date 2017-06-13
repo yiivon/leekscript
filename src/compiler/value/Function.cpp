@@ -502,6 +502,14 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	jit_function_compile(jit_function);
 
+	if (c.output_assembly) {
+		char buf[64 * 1024];
+	    auto fp = fmemopen(buf, sizeof(buf), "w");
+		jit_dump_function(fp, jit_function, name.c_str());
+		fclose(fp);
+		c.assembly << buf;
+	}
+
 	if (!is_main_function) {
 		c.leave_function();
 		// Create a function : 1 op
