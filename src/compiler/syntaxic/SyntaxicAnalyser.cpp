@@ -203,6 +203,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::PIPE:
 		case TokenType::TILDE:
 		case TokenType::LOWER:
+		case TokenType::OR:
 			return new ExpressionInstruction(eatExpression());
 
 		case TokenType::MATCH:
@@ -392,6 +393,14 @@ int SyntaxicAnalyser::findNextColon() {
 	return p - 1;
 }
 
+void SyntaxicAnalyser::splitCurrentOrInTwoPipes() {
+	tokens.erase(tokens.begin() + i);
+	tokens.insert(tokens.begin() + i, new Token(TokenType::PIPE, t->location.end.raw, t->location.start.line, t->location.end.column, "|"));
+	tokens.insert(tokens.begin() + i + 1, new Token(TokenType::PIPE, t->location.end.raw + 1, t->location.start.line, t->location.end.column + 1, "|"));
+	t = tokens.at(i);
+	nt = tokens.at(i + 1);
+}
+
 Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, bool comma_list, Value* initial) {
 
 	Value* e = nullptr;
@@ -401,12 +410,22 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 
 			e = eatLambdaOrParenthesisExpression(pipe_opened, set_opened, comma_list);
 
-		} else if (t->type == TokenType::PIPE) {
+		} else if (t->type == TokenType::PIPE or (t->type == TokenType::OR and t->content == "||")) {
+
+			// If we start a instruction with a ||, split it into two |, and it's an absolute value expression
+			if (t->type == TokenType::OR) {
+				splitCurrentOrInTwoPipes();
+			}
 
 			auto open_pipe = eat_get();
 			auto av = new AbsoluteValue();
 			av->open_pipe.reset(open_pipe);
 			av->expression = eatExpression(true);
+
+			// We want a closing pipe, if there's a || operator, we split it
+			if (t->type == TokenType::OR and t->content == "||") {
+				splitCurrentOrInTwoPipes();
+			}
 			av->close_pipe.reset(eat_get(TokenType::PIPE));
 			e = new Expression(av);
 
@@ -564,7 +583,8 @@ Value* SyntaxicAnalyser::eatExpression(bool pipe_opened, bool set_opened, Value*
 		   t->type == TokenType::TIMES || t->type == TokenType::DIVIDE ||
 		   t->type == TokenType::INT_DIV || t->type == TokenType::INT_DIV_EQUAL ||
 		   t->type == TokenType::MODULO || t->type == TokenType::AND ||
-		   t->type == TokenType::OR || t->type == TokenType::XOR ||
+		   (!pipe_opened and t->type == TokenType::OR and t->content == "||") || (t->type == TokenType::OR and t->content == "or")
+		   || t->type == TokenType::XOR ||
 		   t->type == TokenType::EQUAL || t->type == TokenType::POWER ||
 		   t->type == TokenType::DOUBLE_EQUAL || t->type == TokenType::DIFFERENT ||
 		   t->type == TokenType::TRIPLE_EQUAL || t->type == TokenType::TRIPLE_DIFFERENT ||
