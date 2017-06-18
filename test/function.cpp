@@ -222,7 +222,7 @@ void Test::test_functions() {
 	code("function inc(@x) { x++ }").equals("(void)"); // TODO returns 13
 	code("let inc = (@x) -> x++").equals("(void)"); // TODO
 	code("var x = 1 let f = (@x = 2) + 1 f").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"@x"});
-	code("var x = 12 (@x) null").equals("null"); // TODO no null at the end
+	code("var x = 12 (@x)").equals("12");
 	code("var x = 12 (x)").equals("12");
 	code("(@x, @y) -> x + y").equals("<function>");
 	code("@x, @y -> x + y").equals("<function>");
