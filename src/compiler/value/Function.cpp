@@ -165,6 +165,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyse(analyser, Type::UNKNOWN);
 		}
+		argument_type.reference = references.at(i);
 		type.setArgumentType(i, argument_type, defaultValues[i] != nullptr);
 	}
 
@@ -275,13 +276,16 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	analyser->enter_function(this);
 	current_version = version;
 
-	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::UNKNOWN);
-		analyser->add_parameter(arguments.at(i).get(), type);
-	}
-
 	version->type = Type::FUNCTION_P;
 	version->type.arguments_types = args;
+
+	for (unsigned i = 0; i < arguments.size(); ++i) {
+		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::UNKNOWN);
+		type.reference = references.at(i);
+		analyser->add_parameter(arguments.at(i).get(), type);
+		version->type.arguments_types.at(i) = type;
+	}
+
 	// Set default arguments information
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		bool has_default = i < defaultValues.size() && defaultValues[i] != nullptr;
