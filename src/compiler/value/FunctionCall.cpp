@@ -259,7 +259,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			type = analyser->current_function()->getReturnType();
 		} else {
 			auto ret_type = function_type.getReturnType();
-			if (ret_type.raw_type != RawType::UNKNOWN) {
+			if (ret_type != Type::UNKNOWN) {
 				type = ret_type;
 			}
 		}
