@@ -216,6 +216,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 			for (const auto& t : args) {
 				if (t.raw_type->is_placeholder()) return false;
+				if (t.nature == Nature::UNKNOWN) return false;
 			}
 
 			auto version = new Function::Version();
