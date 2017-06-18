@@ -219,8 +219,10 @@ void Test::test_functions() {
 
 	section("Reference arguments");
 	code("function inc(x) { x++ } var a = 12 inc(a) a").equals("12");
-	code("function inc(@x) { x++ }").equals("(void)"); // TODO returns 13
-	code("let inc = (@x) -> x++").equals("(void)"); // TODO
+	// TODO returns 13
+	// code("function inc(@x) { x++ } var a = 12 inc(a) a").equals("13");
+	// TODO
+	// code("let inc = (@x) -> x++").equals("(void)");
 	code("var x = 1 let f = (@x = 2) + 1 f").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"@x"});
 	code("var x = 12 (@x)").equals("12");
 	code("var x = 12 (x)").equals("12");
