@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include "../src/constants.h"
+#include "../src/colors.h"
 
 std::vector<std::string> Test::failed_tests;
 
