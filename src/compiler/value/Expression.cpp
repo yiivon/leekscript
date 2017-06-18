@@ -576,7 +576,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				// create a new variable a and replace the old one
 
 				// Delete previous variable reference
-				if (equal_previous_type.must_manage_memory()) {
+				if (equal_previous_type.must_manage_memory() && vv->scope != VarScope::PARAMETER) {
 					auto v = c.get_var(vv->name);
 					c.insn_delete(v);
 				}
