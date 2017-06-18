@@ -94,6 +94,8 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 	if (pointer) {
 		type.nature = Nature::POINTER;
 	}
+	// TODO ?
+	// type.constant = true;
 	types = type;
 }
 
