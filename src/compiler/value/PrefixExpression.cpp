@@ -101,9 +101,8 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 	}
 }
 
-LSValue* jit_not(LSValue* x) {
-	// TODO optimization, don't create a LSBoolean
-	auto r = LSBoolean::get(x->ls_not());
+bool jit_not(LSValue* x) {
+	auto r = x->ls_not();
 	LSValue::delete_temporary(x);
 	return r;
 }
@@ -298,13 +297,9 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		}
 		default: {}
 	}
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 1, 1);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(type), args_types, 1, 1);
 	jit_value_t result = jit_insn_call_native(c.F, "", func, sig, args.data(), 1, 0);
 	jit_type_free(sig);
-
-	if (operatorr->type == TokenType::NOT) {
-		result = VM::pointer_to_value(c.F, result, Type::BOOLEAN);
-	}
 
 	return {result, type};
 }
