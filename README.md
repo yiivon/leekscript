@@ -49,6 +49,7 @@ Option | Effect
 -d -D --debug | Print debug information like types
 -n -N --no-operations | Disable operations counting
 -a -A --assembly  | Print assembly of LeekScript code
+-p -P --pseudo-code  | Print JIT pseudo code
 -l  -L --legacy | Use legacy mode  (LeekScript v1)
 
 Tests, coverage, Valgrind, benchmark, doc
