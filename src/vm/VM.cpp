@@ -3,6 +3,7 @@
 
 #include "VM.hpp"
 #include "../constants.h"
+#include "../colors.h"
 #include "../compiler/lexical/LexicalAnalyser.hpp"
 #include "../compiler/syntaxic/SyntaxicAnalyser.hpp"
 #include "Context.hpp"

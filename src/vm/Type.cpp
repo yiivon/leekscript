@@ -1,5 +1,6 @@
 #include "Type.hpp"
 #include "../constants.h"
+#include "../colors.h"
 #include <sstream>
 #include "../../lib/utf8.h"
 

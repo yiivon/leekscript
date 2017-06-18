@@ -12,6 +12,7 @@
 #include "../compiler/semantic/SemanticError.hpp"
 #include "../util/Util.hpp"
 #include "../constants.h"
+#include "../colors.h"
 
 using namespace std;
 
