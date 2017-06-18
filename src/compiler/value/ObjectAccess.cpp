@@ -15,7 +15,6 @@ namespace ls {
 
 ObjectAccess::ObjectAccess(std::shared_ptr<Token> token) : field(token) {
 	object = nullptr;
-	type = Type::POINTER;
 	attr_addr = nullptr;
 }
 
@@ -38,6 +37,12 @@ Location ObjectAccess::location() const {
 void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	object->analyse(analyser, Type::UNKNOWN);
+
+	if (object->type.nature == Nature::UNKNOWN) {
+		type = Type::UNKNOWN;
+	} else {
+		type = Type::POINTER;
+	}
 
 	// Get the object class : 12 => Number
 	object_class_name = object->type.clazz;
@@ -112,7 +117,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	if (not access_function and not static_access_function and not class_method) {
+	if (!access_function and !static_access_function and !class_method and object->type.nature != Nature::UNKNOWN) {
 		object->analyse(analyser, Type::POINTER);
 	}
 
