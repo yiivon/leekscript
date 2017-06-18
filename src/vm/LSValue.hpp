@@ -66,6 +66,8 @@ public:
 	virtual LSValue* ls_inc(); // x++
 	virtual LSValue* ls_predec();
 	virtual LSValue* ls_dec();
+	virtual LSValue* ls_copy_assign(LSValue*);
+	virtual LSValue* ls_move_assign(LSValue*);
 
 	virtual LSValue* add(LSValue*);
 	virtual LSValue* add_eq(LSValue*);

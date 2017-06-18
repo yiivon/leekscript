@@ -103,6 +103,20 @@ LSValue* LSValue::ls_dec() {
 	assert(false); // LCOV_EXCL_LINE
 }
 
+LSValue* LSValue::ls_copy_assign(LSValue* v) {
+	delete_temporary(this);
+	delete_temporary(v);
+	jit_exception_throw(VM::get_exception_object<1>(vm::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
+}
+
+LSValue* LSValue::ls_move_assign(LSValue* v) {
+	delete_temporary(this);
+	delete_temporary(v);
+	jit_exception_throw(VM::get_exception_object<1>(vm::Exception::NO_SUCH_OPERATOR));
+	assert(false); // LCOV_EXCL_LINE
+}
+
 LSValue* LSValue::add(LSValue* v) {
 	delete_temporary(this);
 	delete_temporary(v);

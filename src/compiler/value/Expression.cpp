@@ -622,14 +622,31 @@ Compiler::value Expression::compile(Compiler& c) const {
 					return y;
 				}
 			} else if (equal_previous_type.nature == Nature::POINTER) {
-				auto x = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
-				v2->compile_end(c);
-				c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
-					LSValue::delete_ref(*x);
-					*x = y->move_inc();
-				});
-				return y;
+				if (v1->type.raw_type == v2->type.raw_type) {
+					auto x = v1->compile(c);
+					v1->compile_end(c);
+					auto y = v2->compile(c);
+					v2->compile_end(c);
+					if (v2->type.temporary) {
+						c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue* x, LSValue* y) {
+							x->ls_move_assign(y);
+						});
+					} else {
+						c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue* x, LSValue* y) {
+							x->ls_copy_assign(y);
+						});
+					}
+					return y;
+				} else {
+					auto x = ((LeftValue*) v1)->compile_l(c);
+					auto y = v2->compile(c);
+					v2->compile_end(c);
+					c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+						LSValue::delete_ref(*x);
+						*x = y->move_inc();
+					});
+					return y;
+				}
 			} else {
 				std::cout << "Invalid " << v1->to_string() << " (" << equal_previous_type << " => " << v1->type << ") = " << v2->to_string() << " (" << v2->type << ")" << std::endl; // LCOV_EXCL_LINE
 				assert(false); // LCOV_EXCL_LINE
