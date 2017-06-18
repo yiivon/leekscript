@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
 	bool ops = true;
 	bool example = false;
 	bool assembly = false;
+	bool pseudo_code = false;
 	std::string file_or_code;
 
 	for (int i = 1; i < argc; ++i) {
@@ -58,6 +59,7 @@ int main(int argc, char* argv[]) {
 		else if (a == "-n" or a == "-N" or a == "--no-operations") ops = false;
 		else if (a == "-e" or a == "-E" or a == "--example") example = true;
 		else if (a == "-a" or a == "-A" or a == "--assembly") assembly = true;
+		else if (a == "-p" or a == "-P" or a == "--pseudo-code") pseudo_code = true;
 		else file_or_code = a;
 	}
 
@@ -92,7 +94,7 @@ int main(int argc, char* argv[]) {
 		std::ostringstream oss;
 		if (output_json)
 			vm.output = &oss;
-		auto result = vm.execute(code, "{}", file_name, debug_mode, ops, assembly);
+		auto result = vm.execute(code, "{}", file_name, debug_mode, ops, assembly, pseudo_code);
 		vm.output = &std::cout;
 		print_result(result, oss.str(), output_json, display_time, ops);
 		return 0;

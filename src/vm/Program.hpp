@@ -25,7 +25,7 @@ public:
 	/*
 	 * Compile the program with a VM and a context (json)
 	 */
-	VM::Result compile(VM& vm, const std::string& context, bool assembly = false);
+	VM::Result compile(VM& vm, const std::string& context, bool assembly = false, bool pseudo_code = false);
 
 	/*
 	 * Execute the program and get a std::string result

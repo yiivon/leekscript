@@ -31,7 +31,7 @@ Program::~Program() {
 	}
 }
 
-VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly) {
+VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code) {
 
 	VM::Result result;
 
@@ -79,6 +79,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly) {
 	vm.internals.clear();
 	vm.compiler.program = this;
 	vm.compiler.output_assembly = assembly;
+	vm.compiler.output_pseudo_code = pseudo_code;
 	main->compile(vm.compiler);
 	closure = main->default_version->function->function;
 	// vm.compiler.leave_function();
@@ -87,6 +88,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly) {
 	// Result
 	result.compilation_success = true;
 	result.assembly = vm.compiler.assembly.str();
+	result.pseudo_code = vm.compiler.pseudo_code.str();
 	return result;
 }
 

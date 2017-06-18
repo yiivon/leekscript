@@ -48,6 +48,8 @@ public:
 	std::vector<std::vector<catcher>> catchers;
 	bool output_assembly = false;
 	std::ostringstream assembly;
+	bool output_pseudo_code = false;
+	std::ostringstream pseudo_code;
 
 	Program* program;
 	VM* vm;

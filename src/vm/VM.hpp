@@ -77,6 +77,7 @@ public:
 		int mpz_objects_created = 0;
 		int mpz_objects_deleted = 0;
 		std::string assembly;
+		std::string pseudo_code;
 	};
 
 	std::vector<Module*> modules;
@@ -104,7 +105,7 @@ public:
 	static VM* current();
 
 	/** Main execution function **/
-	Result execute(const std::string code, std::string ctx, std::string file_name, bool debug = false, bool ops = true, bool assembly = false);
+	Result execute(const std::string code, std::string ctx, std::string file_name, bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false);
 
 	/** Add a module **/
 	void add_module(Module* m);
