@@ -9,7 +9,7 @@ void Test::test_references() {
 	code("var a = 2; var b = @a; b = 6; a").equals("2");
 	code("var a = 2; let b = @a; let c = @b; a = 7; c").equals("7");
 	code("var a = 2; let b = @a; var c = @b; c = 8; a").equals("2");
-	code("var a = 2; var b = 3; b = @a; a = 9; b").equals("2");
+	code("var a = 2; var b = 3; b = @a; a = 9; b").equals("9");
 
 	// TODO should be forbidden
 	// section("Reference in expression");
@@ -21,8 +21,7 @@ void Test::test_references() {
 	code("var a = 2, b = @a; b = 56; a").equals("2");
 
 	section("Basic references with strings");
-	// TODO
-	// code("var a = 'hello'; var b = @a; a = 'world'; b").equals("'hello'");
+	code("var a = 'hello'; var b = @a; a = 'world'; b").equals("'world'");
 	code("var a = 'hello'; var b = @a; a += '!'; b").equals("'hello!'");
 	code("var a = 'hello'; var b = @a; b += '!'; a").equals("'hello!'");
 	code("var a = true; var b = @a; b = false; b").equals("false");
@@ -38,7 +37,7 @@ void Test::test_references() {
 	section("Type changes");
 	// TODO
 	// code("var a = 12; var b = @a; b = 'salut'; a").equals("12");
-	code("var a = [1, 2, 3]; var b = @a; b = 'salut'; a").equals("[1, 2, 3]");
+	code("var a = [1, 2, 3]; var b = @a; b = 'salut'; a").equals("'salut'");
 
 	section("Reference in array");
 	code("var v = 10; var a = [v]; a[0]++; v").equals("10");
