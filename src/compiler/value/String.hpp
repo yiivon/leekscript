@@ -21,6 +21,7 @@ public:
 	virtual Location location() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type&) override;
+	virtual bool will_store(SemanticAnalyser* analyser, const Type& type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 

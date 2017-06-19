@@ -172,8 +172,8 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::
 }
 
 void ArrayAccess::change_type(SemanticAnalyser* analyser, const Type& new_type) {
+	array->will_store(analyser, new_type);
 	if (Type::more_specific(new_type, type)) {
-		array->will_store(analyser, new_type);
 		this->type = array->type.getElementType();
 		this->types = this->type;
 		array_element_type = this->type;
