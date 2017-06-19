@@ -73,7 +73,8 @@ void Test::test_functions() {
 
 	section("Closures");
 	code("let a = 5 let f = -> a f()").equals("5");
-	code("let a = 5 let f = -> @a f()").equals("5");
+	// TODO should be forbidden
+	// code("let a = 5 let f = -> @a f()").equals("5");
 	code("let a = 12 let f = -> -> a f()()").equals("12");
 	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
 	// TODO
@@ -224,7 +225,8 @@ void Test::test_functions() {
 	// TODO
 	// code("let inc = (@x) -> x++").equals("(void)");
 	code("var x = 1 let f = (@x = 2) + 1 f").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"@x"});
-	code("var x = 12 (@x)").equals("12");
+	// TODO should be forbidden
+	// code("var x = 12 (@x)").equals("12");
 	code("var x = 12 (x)").equals("12");
 	code("(@x, @y) -> x + y").equals("<function>");
 	code("@x, @y -> x + y").equals("<function>");

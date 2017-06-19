@@ -11,8 +11,10 @@ void Test::test_references() {
 	code("var a = 2; let b = @a; var c = @b; c = 8; a").equals("2");
 	code("var a = 2; var b = 3; b = @a; a = 9; b").equals("2");
 
-	section("Reference in expression");
-	code("var a = 2; let b = (@a + 1); a = 5; b").equals("3");
+	// TODO should be forbidden
+	// section("Reference in expression");
+	// code("var a = 2; let b = (@a + 1); a = 5; b").equals("3");
+	// code("function f(a) { (@a + 2) } f(10)").equals("12");
 
 	section("Reference in declaration");
 	code("var a = 2, b = @a; a = 55; b").equals("55");
@@ -68,5 +70,4 @@ void Test::test_references() {
 	code("function f(a) { a++ a } f(10)").equals("11");
 	code("function f(a) { var b = a b++ a } f(10)").equals("10");
 	code("function f(a) { var b = @a b++ a } f(10)").equals("11");
-	code("function f(a) { (@a + 2) } f(10)").equals("12");
 }
