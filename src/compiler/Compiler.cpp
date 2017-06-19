@@ -153,6 +153,9 @@ Compiler::value Compiler::insn_log10(Compiler::value a) const {
  */
 Compiler::value Compiler::clone(Compiler::value v) const {
 	if (v.t.must_manage_memory()) {
+		if (v.t.reference) {
+			v = insn_load(v);
+		}
 		return insn_call(v.t, {v}, +[](LSValue* value) {
 			return value->clone();
 		});
@@ -431,6 +434,9 @@ void Compiler::insn_delete_mpz(Compiler::value mpz) const {
 
 Compiler::value Compiler::insn_inc_refs(value v) const {
 	if (v.t.must_manage_memory()) {
+		if (v.t.reference) {
+			v = insn_load(v);
+		}
 		auto new_refs = insn_add(insn_refs(v), new_integer(1));
 		insn_store_relative(v, 12, new_refs);
 		return new_refs;
