@@ -125,6 +125,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			type.setElementType(element_type);
 		}
 	}
+	type.temporary = true;
 	types = type;
 }
 
