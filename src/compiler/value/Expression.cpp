@@ -599,8 +599,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto vv = dynamic_cast<VariableValue*>(v1);
 			if (vv != nullptr and equal_previous_type != v1->type) {
 
-				// std::cout << v1->to_string() << " (" << v1->type << ") = " << v2->to_string() << " (" << v2->type << ")" << std::endl;
-
 				// we have a variable, like
 				// var a = 12 a = 'hello' or var a = 12 a = 200l
 				// create a new variable a and replace the old one
