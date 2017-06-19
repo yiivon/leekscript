@@ -258,6 +258,9 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 }
 
 jit_type_t VM::get_jit_type(const Type& type) {
+	if (type.reference) {
+		return LS_POINTER;
+	}
 	if (type.nature == Nature::VOID) {
 		return LS_VOID;
 	}
