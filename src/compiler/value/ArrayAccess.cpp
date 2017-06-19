@@ -72,7 +72,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		map_key_type = array->type.getKeyType();
 	}
 
-	if (array->type == Type::INTERVAL) {
+	if (array->type.raw_type == RawType::INTERVAL) {
 		key->analyse(analyser, Type::INTEGER);
 	}
 
@@ -195,7 +195,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 	if (key2 == nullptr) {
 
-		if (array->type == Type::INTERVAL) {
+		if (array->type.raw_type == RawType::INTERVAL) {
 
 			jit_type_t args_types[2] = {LS_POINTER, LS_INTEGER};
 			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 2, 1);

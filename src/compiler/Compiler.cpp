@@ -347,11 +347,11 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_array_size(Compiler::value v) const {
-	if (v.t.not_temporary() == Type::STRING) {
+	if (v.t.raw_type == RawType::STRING) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size);
-	} else if (v.t == Type::INT_ARRAY) {
+	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::INTEGER) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size);
-	} else if (v.t == Type::REAL_ARRAY) {
+	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::REAL) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size);
 	} else {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size);
