@@ -70,14 +70,17 @@ void Reference::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.raw_type == RawType::REAL) {
 		type.raw_type = RawType::REAL;
 	}
-	type.reference = true;
+	if (scope != VarScope::INTERNAL) {
+		type.reference = true;
+	}
 //	cout << "ref " << variable->content << " : " << type << endl;
 }
 
 Compiler::value Reference::compile(Compiler& c) const {
 
 	if (scope == VarScope::CAPTURE) {
-		return c.insn_get_capture(capture_index, type);
+		auto cap = c.insn_get_capture(capture_index, type);
+		return c.insn_address_of(cap);
 	}
 
 	if (name != "") {
@@ -95,10 +98,12 @@ Compiler::value Reference::compile(Compiler& c) const {
 		if (var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
 			return {VM::int_to_real(c.F, v), type};
 		}
-		return {v, type};
-
+		if (type.reference && !var->type.reference) {
+			return c.insn_address_of({v, type});
+		} else {
+			return {v, type};
+		}
 	} else {
-
 		auto v = ((LeftValue*) value)->compile_l(c);
 		auto vv = c.insn_load(v, 0, type);
 		return vv;

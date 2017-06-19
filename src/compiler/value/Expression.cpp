@@ -156,6 +156,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			if (v1->type.not_temporary() != v2->type.not_temporary()) {
 				auto new_type = v2->type.not_temporary();
 				new_type.constant = false;
+				if (v2->type.reference) new_type.reference = true;
+				if (v1->type.reference) new_type.reference = true;
 				((LeftValue*) v1)->change_type(analyser, new_type);
 			}
 		} else {
@@ -269,6 +271,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (type == Type::MPZ) {
 			type.temporary = true;
 		}
+		type.reference = false;
 
 		// String / String => Array<String>
 		if (op->type == TokenType::DIVIDE and (v1->type == Type::STRING or v1->type == Type::STRING_TMP) and (v2->type == Type::STRING or v2->type == Type::STRING_TMP)) {
@@ -566,6 +569,33 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return v2_value;
 			}
 
+			if (equal_previous_type.nature == Nature::POINTER && v2->type.nature == Nature::POINTER) {
+
+				auto vv = dynamic_cast<VariableValue*>(v1);
+				if (vv && vv->scope != VarScope::PARAMETER) {
+					c.set_var_type(vv->name, v1->type);
+				}
+
+				auto x = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				v2->compile_end(c);
+
+				if (v2->type.temporary) {
+					c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+						LSValue::delete_ref(*x);
+						*x = y->clone();
+						(*x)->refs++;
+						// TODO y is cloned to be returned, don't clone it everytime
+					});
+				} else {
+					c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+						LSValue::delete_ref(*x);
+						*x = y->clone();
+					});
+				}
+				return y;
+			}
+
 			auto vv = dynamic_cast<VariableValue*>(v1);
 			if (vv != nullptr and equal_previous_type != v1->type) {
 
@@ -619,32 +649,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 					if (type.nature == Nature::POINTER) {
 						return {VM::value_to_pointer(c.F, y.v, type), type};
 					}
-					return y;
-				}
-			} else if (equal_previous_type.nature == Nature::POINTER) {
-				if (v1->type.raw_type == v2->type.raw_type) {
-					auto x = v1->compile(c);
-					v1->compile_end(c);
-					auto y = v2->compile(c);
-					v2->compile_end(c);
-					if (v2->type.temporary) {
-						c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue* x, LSValue* y) {
-							x->ls_move_assign(y);
-						});
-					} else {
-						c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue* x, LSValue* y) {
-							x->ls_copy_assign(y);
-						});
-					}
-					return y;
-				} else {
-					auto x = ((LeftValue*) v1)->compile_l(c);
-					auto y = v2->compile(c);
-					v2->compile_end(c);
-					c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
-						LSValue::delete_ref(*x);
-						*x = y->move_inc();
-					});
 					return y;
 				}
 			} else {

@@ -69,6 +69,9 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			// Last instruction : must return the required type
 			instructions[i]->analyse(analyser, req_type);
 			type = instructions[i]->type;
+			was_reference = type.reference;
+			for (auto& t : instructions[i]->types) t.reference = false;
+			type.reference = false;
 			types.add(instructions[i]->types);
 		}
 		// A return instruction
@@ -93,6 +96,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	} else if (type == Type::MPZ_TMP) {
 		temporary_mpz = true;
 	}
+
 }
 
 Compiler::value Block::compile(Compiler& c) const {

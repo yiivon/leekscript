@@ -114,6 +114,7 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	if (var != nullptr) {
 		var->type = type;
 		this->type = type;
+		types = type;
 	}
 }
 
@@ -155,6 +156,10 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	if (type.nature == Nature::VALUE && var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
 		return {VM::int_to_real(c.F, v), type};
 	}
+
+	if (var->type.reference) {
+		return c.insn_load({v, type});
+	}
 	return {v, type};
 }
 
@@ -171,7 +176,11 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr
 	}
-	return c.insn_address_of({v, type});
+	if (type.reference) {
+		return {v, type};
+	} else {
+		return c.insn_address_of({v, type});
+	}
 }
 
 Value* VariableValue::clone() const {

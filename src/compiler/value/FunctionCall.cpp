@@ -482,11 +482,17 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		} else {
 			args.push_back(function_object->defaultValues.at(i)->compile(c));
 		}
-		args_types.push_back(VM::get_jit_type(function_type.getArgumentType(i)));
 		lsvalue_types.push_back(function_type.getArgumentType(i).id());
 
 		// Increment references of argument
-		args.at(offset + i) = c.insn_move_inc(args.at(offset + i));
+		if (!function_type.getArgumentType(i).reference) {
+			args.at(offset + i) = c.insn_move_inc(args.at(offset + i));
+		}
+		// Take address if reference
+		if (function_type.getArgumentType(i).reference) {
+			args.at(offset + i) = c.insn_address_of(args.at(offset + i));
+		}
+		args_types.push_back(VM::get_jit_type(args.at(offset + i).t));
 	}
 
 	jit_insn_mark_offset(c.F, location().start.line);

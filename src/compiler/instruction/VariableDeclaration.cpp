@@ -100,46 +100,27 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 
 			Value* ex = expressions[i];
 
-			if (Reference* ref = dynamic_cast<Reference*>(ex)) {
-				if (ref->name != "") {
-					jit_value_t val;
-					if (ref->scope == VarScope::LOCAL) {
-						val = c.get_var(ref->name).v;
-					} else if (ref->scope == VarScope::INTERNAL) {
-						val = c.vm->internals.at(ref->name);
-					} else {
-						val = jit_value_get_param(c.F, 1 + ref->var->index);
-					}
-					if (v->type.must_manage_memory() && ref->scope != VarScope::INTERNAL) {
-						c.insn_inc_refs({val, v->type});
-					}
-					c.add_var(name, val, v->type, true);
+			jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v->type));
+			c.add_var(name, var, Type::POINTER, false);
+
+			if (Function* f = dynamic_cast<Function*>(ex)) {
+				if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
+					jit_insn_store(c.F, var, c.new_pointer((void*) f->versions.at(v->version)->function).v);
 				} else {
-					auto val = ref->compile(c);
-					c.insn_inc_refs(val);
-					c.add_var(name, val.v, v->type, true);
+					jit_insn_store(c.F, var, c.new_pointer((void*) f->default_version->function).v);
 				}
-			} else {
-				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v->type));
-				c.add_var(name, var, Type::POINTER, false);
-
-				if (Function* f = dynamic_cast<Function*>(ex)) {
-					if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
-						jit_insn_store(c.F, var, c.new_pointer((void*) f->versions.at(v->version)->function).v);
-					} else {
-						jit_insn_store(c.F, var, c.new_pointer((void*) f->default_version->function).v);
-					}
-				}
-
-				auto val = ex->compile(c);
-				ex->compile_end(c);
-				val = c.insn_move_inc(val);
-
-				c.set_var_type(name, ex->type);
-				c.add_function_var(var, v->type);
-
-				jit_insn_store(c.F, var, val.v);
 			}
+
+			auto val = ex->compile(c);
+			ex->compile_end(c);
+
+			val = c.insn_move_inc(val);
+
+			c.set_var_type(name, ex->type);
+			c.add_function_var(var, v->type);
+
+			jit_insn_store(c.F, var, val.v);
+
 		} else {
 
 			jit_value_t var = jit_value_create(c.F, LS_POINTER);
