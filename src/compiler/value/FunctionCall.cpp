@@ -170,7 +170,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				function->type = m->type;
 				is_native_method = m->native;
 			} else {
-				if (object_type.raw_type != RawType::UNKNOWN) {
+				bool has_unknown_argument = false;
+				for (const auto& a : arguments)
+					if (a->type.nature == Nature::UNKNOWN) has_unknown_argument = true;
+				if (object_type.raw_type != RawType::UNKNOWN && !has_unknown_argument) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
 					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
