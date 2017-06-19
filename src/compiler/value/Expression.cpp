@@ -496,7 +496,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 	if (operator_fun != nullptr) {
 
 		vector<Compiler::value> args;
-		if (v1->type == Type::BOOLEAN and op->type == TokenType::EQUAL) {
+		if (v1->type.raw_type == RawType::BOOLEAN and op->type == TokenType::EQUAL) {
 			args.push_back(((LeftValue*) v1)->compile_l(c));
 			args.push_back(v2->compile(c));
 		} else {
