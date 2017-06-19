@@ -234,8 +234,10 @@ void Test::test_functions() {
 	code("let f = @x, @y -> x + y").equals("(void)");
 	code("let f = @x -> x += '!' var a = 'a' f(a) a").equals("'a!'");
 	code("let f = @x -> x += '!' var a = [] f(a) a").equals("['!']");
+	code("let f = @x -> x += 7 var a = 5 f(a) a").equals("12");
 	code("let f = @x -> x = 'new' var a = 'old' f(a) a").equals("'new'");
-	code("let f = @x -> x = 'new' var a = [] f(a) a").equals("[]");
+	code("let f = @x -> x = 'new' var a = [] f(a) a").equals("'new'");
+	code("let f = @x -> x = [2, 3] var a = [1] f(a) a").equals("[2, 3]");
 	code("let f = @x, y -> { x += '@' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A@', 'B']");
 
 	section("Default arguments");
