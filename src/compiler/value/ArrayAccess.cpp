@@ -126,7 +126,6 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
 			}
 		}
-
 	} else {
 		key->analyse(analyser, Type::POINTER);
 	}
@@ -134,6 +133,8 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}
+	// TODO should be temporary
+	// type.temporary = true;
 }
 
 bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int) {
