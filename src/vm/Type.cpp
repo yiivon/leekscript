@@ -314,7 +314,7 @@ int Type::size() const {
 	return raw_type->size();
 }
 
-bool Type::operator ==(const Type& type) const {
+bool Type::operator == (const Type& type) const {
 	return raw_type == type.raw_type &&
 			nature == type.nature &&
 			native == type.native &&
@@ -322,6 +322,7 @@ bool Type::operator ==(const Type& type) const {
 			element_type == type.element_type &&
 			key_type == type.key_type &&
 			temporary == type.temporary &&
+			reference == type.reference &&
 			(raw_type != RawType::FUNCTION ||
 				(return_types == type.return_types &&
 				arguments_types == type.arguments_types));
@@ -336,6 +337,9 @@ bool Type::operator < (const Type& type) const {
 	}
 	if (temporary != type.temporary) {
 		return temporary < type.temporary;
+	}
+	if (reference != type.reference) {
+		return reference < type.reference;
 	}
 	if (native != type.native) {
 		return native < type.native;
@@ -584,7 +588,7 @@ Type Type::generate_new_placeholder_type() {
 
 ostream& operator << (ostream& os, const Type& type) {
 
-	if (type == Type::VOID) {
+	if (type.nature == Nature::VOID) {
 		os << GREY << "void" << END_COLOR;
 		return os;
 	}
@@ -638,7 +642,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		if (type.constant) os << "const:";
 		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
 	}
-	if (type.temporary && type != Type::REAL) {
+	if (type.temporary && type.raw_type != RawType::REAL) {
 		os << "&&";
 	} else if (type.reference) {
 		os << "&";
