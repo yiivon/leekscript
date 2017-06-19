@@ -106,6 +106,8 @@ std::string Program::execute(VM& vm) {
 
 	Type output_type = main->type.getReturnType();
 
+	assert(!output_type.reference && "Program return type shouldn't be a reference!");
+
 	if (output_type.not_temporary() == Type::VOID) {
 		auto fun = (void (*)()) closure;
 		fun();
