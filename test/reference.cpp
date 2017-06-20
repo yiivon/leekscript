@@ -45,12 +45,13 @@ void Test::test_references() {
 	code("var v = 10; var a = [1, @v, 3] a[1] = 5 v").equals("10");
 
 	section("Reference of array element");
-	code("var a = ['a', 12]; var e = @a[1]; e += 5; a").equals("['a', 17]");
-	code("var a = ['a', 12]; var e = @a[0]; e += 5; a").equals("['a5', 12]");
-	code("var a = ['a', 12]; var e = @a[1]; a[1] -= 2; e").equals("10");
-	code("var a = ['a', 12]; var e = @a[1]; a[1] *= 4; e").equals("48");
-	code("var a = ['a', 12]; var e = @a[0]; a[0] += 'z'; e").equals("'az'");
-	code("var a = ['a', 12]; var e = @a[1]; a[1] = 5; e").equals("12");
+	// TODO not supported anymore
+	// code("var a = ['a', 12]; var e = @a[1]; e += 5; a").equals("['a', 17]");
+	// code("var a = ['a', 12]; var e = @a[0]; e += 5; a").equals("['a5', 12]");
+	// code("var a = ['a', 12]; var e = @a[1]; a[1] -= 2; e").equals("10");
+	// code("var a = ['a', 12]; var e = @a[1]; a[1] *= 4; e").equals("48");
+	// code("var a = ['a', 12]; var e = @a[0]; a[0] += 'z'; e").equals("'az'");
+	// code("var a = ['a', 12]; var e = @a[1]; a[1] = 5; e").equals("12");
 
 	section("Reference = reference");
 	code("var a = 'a', b = 'b'; var c = @a; c = @b; c += '!'; [a, b]").equals("['a', 'b!']");
