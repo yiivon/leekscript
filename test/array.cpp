@@ -27,6 +27,12 @@ void Test::test_arrays() {
 	code("[1, 2, 3, ]").equals("[1, 2, 3]");
 	code("[1,\n2,\n3,\n]").equals("[1, 2, 3]");
 
+	section("Array.operator =");
+	code("var x = [0] x = [3]").equals("[3]");
+	code("var x = [0] x = [3] x").equals("[3]");
+	code("var x = [] x = [3]").equals("[3]");
+	code("var x = [] x = [3] x").equals("[3]");
+
 	section("Array.operator +");
 	code("[1, 2, 3] + [4, 5, 6]").equals("[1, 2, 3, 4, 5, 6]");
 	code("[] + 1").equals("[1]");
