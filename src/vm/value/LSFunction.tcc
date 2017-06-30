@@ -88,7 +88,7 @@ LSValue* LSFunction<R>::clone() const {
 }
 
 template <class R>
-std::ostream& LSFunction<R>::dump(std::ostream& os) const {
+std::ostream& LSFunction<R>::dump(std::ostream& os, int) const {
 	os << "<function>";
 	return os;
 }

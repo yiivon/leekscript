@@ -41,7 +41,7 @@ public:
 	bool lt(const LSValue*) const override;
 	bool in(const T) const;
 	int abso() const override;
-	virtual std::ostream& dump(std::ostream&) const override;
+	virtual std::ostream& dump(std::ostream&, int level) const override;
 	virtual std::string json() const override;
 	virtual LSValue* clone() const override;
 	virtual LSValue* getClass() const override;

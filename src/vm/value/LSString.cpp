@@ -338,7 +338,7 @@ std::ostream& LSString::print(std::ostream& os) const {
 	return os;
 }
 
-std::ostream& LSString::dump(std::ostream& os) const {
+std::ostream& LSString::dump(std::ostream& os, int) const {
 	os << "'" << escape_control_characters() << "'";
 	return os;
 }

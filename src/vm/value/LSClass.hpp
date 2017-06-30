@@ -62,7 +62,7 @@ public:
 
 	LSValue* attr(const std::string& key) const override;
 
-	std::ostream& dump(std::ostream& os) const override;
+	std::ostream& dump(std::ostream& os, int level) const override;
 	std::string json() const override;
 
 	LSValue* getClass() const override;

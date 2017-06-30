@@ -277,13 +277,19 @@ inline T* LSMap<K, T>::atL_base(K key) const {
 }
 
 template <class K, class V>
-std::ostream& LSMap<K, V>::dump(std::ostream& os) const {
+std::ostream& LSMap<K, V>::dump(std::ostream& os, int level) const {
 	os << "[";
-	for (auto it = this->begin(); it != this->end(); ++it) {
-		if (it != this->begin()) os << ", ";
-		os << it->first << ": " << it->second;
-	}
 	if (this->empty()) os << ':';
+	else {
+		if (level > 0) {
+			for (auto it = this->begin(); it != this->end(); ++it) {
+				if (it != this->begin()) os << ", ";
+				os << it->first << ": " << it->second;
+			}
+		} else {
+			os << " ... ";
+		}
+	}
 	return os << "]";
 }
 

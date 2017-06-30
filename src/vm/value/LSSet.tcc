@@ -269,11 +269,15 @@ int LSSet<T>::abso() const {
 }
 
 template <typename T>
-inline std::ostream& LSSet<T>::dump(std::ostream& os) const {
+inline std::ostream& LSSet<T>::dump(std::ostream& os, int level) const {
 	os << "<";
-	for (auto i = this->begin(); i != this->end(); i++) {
-		if (i != this->begin()) os << ", ";
-		os << *i;
+	if (level > 0) {
+		for (auto i = this->begin(); i != this->end(); i++) {
+			if (i != this->begin()) os << ", ";
+			os << *i;
+		}
+	} else {
+		os << " ... ";
 	}
 	os << ">";
 	return os;

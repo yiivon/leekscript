@@ -28,7 +28,7 @@ public:
 	bool ls_not() const override;
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
-	std::ostream& dump(std::ostream& os) const override;
+	std::ostream& dump(std::ostream& os, int level) const override;
 	LSValue* getClass() const override;
 };
 

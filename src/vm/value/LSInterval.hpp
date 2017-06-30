@@ -40,7 +40,7 @@ public:
 	virtual int abso() const override;
 
 	virtual LSValue* clone() const override;
-	virtual std::ostream& dump(std::ostream& os) const override;
+	virtual std::ostream& dump(std::ostream& os, int level) const override;
 	LSValue* getClass() const override;
 };
 

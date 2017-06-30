@@ -157,7 +157,7 @@ LSValue* LSClass::attr(const std::string& key) const {
 	}
 }
 
-std::ostream& LSClass::dump(std::ostream& os) const {
+std::ostream& LSClass::dump(std::ostream& os, int) const {
 	os << "<class " << name << ">";
 	return os;
 }

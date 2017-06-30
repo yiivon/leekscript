@@ -129,7 +129,7 @@ public:
 
 	virtual std::string to_string() const;
 	virtual std::ostream& print(std::ostream&) const;
-	virtual std::ostream& dump(std::ostream&) const = 0;
+	virtual std::ostream& dump(std::ostream&, int level) const = 0;
 	virtual std::string json() const;
 
 	LSString* ls_json();

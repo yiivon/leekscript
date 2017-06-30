@@ -120,7 +120,7 @@ LSValue* LSBoolean::clone() const {
 	return (LSValue*) this;
 }
 
-std::ostream& LSBoolean::dump(std::ostream& os) const {
+std::ostream& LSBoolean::dump(std::ostream& os, int) const {
 	os << (value ? "true" : "false");
 	return os;
 }

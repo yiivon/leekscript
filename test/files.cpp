@@ -33,9 +33,9 @@ void Test::test_files() {
 	file("test/code/product_n_arrays.leek").equals("[5040]");
 	file("test/code/product_coproduct.leek").equals("171122452428141311372468338881272839092270544893520369393648040923257279754140647424000000000000000");
 	file("test/code/fold_left.leek").equals("[{w: 1}, {w: 3}, {w: 4}, {w: 2}, {w: 7}, {w: 5}, {w: 8}, {w: 9}, {w: 6}]");
-	file("test/code/fold_left_2.leek").equals("{p: 6, v: {p: 9, v: {p: 8, v: {p: 5, v: {p: 7, v: {p: 2, v: {p: 4, v: {p: 3, v: {p: 1, v: []}}}}}}}}}");
+	file("test/code/fold_left_2.leek").equals("{p: 6, v: {p: 9, v: {p: 8, v: {p: 5, v: {p: 7, v: { ... }}}}}}");
 	file("test/code/fold_right.leek").equals("[{w: 6}, {w: 9}, {w: 8}, {w: 5}, {w: 7}, {w: 2}, {w: 4}, {w: 3}, {w: 1}]");
-	file("test/code/fold_right_2.leek").equals("{p: {p: {p: {p: {p: {p: {p: {p: {p: [], v: 6}, v: 9}, v: 8}, v: 5}, v: 7}, v: 2}, v: 4}, v: 3}, v: 1}");
+	file("test/code/fold_right_2.leek").equals("{p: {p: {p: {p: {p: { ... }, v: 7}, v: 2}, v: 4}, v: 3}, v: 1}");
 	file("test/code/assignments.leek").equals("15");
 	file("test/code/recursive_2_vars.leek").equals("1021");
 	file("test/code/global_functions_1.leek").equals("false");

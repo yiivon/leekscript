@@ -39,7 +39,7 @@ bool LSNull::lt(const LSValue* v) const {
 	return LSValue::lt(v);
 }
 
-std::ostream& LSNull::dump(std::ostream& os) const {
+std::ostream& LSNull::dump(std::ostream& os, int) const {
 	os << "null";
 	return os;
 }

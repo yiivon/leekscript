@@ -549,7 +549,7 @@ string LSNumber::json() const {
 	return toString();
 }
 
-std::ostream& LSNumber::dump(std::ostream& os) const {
+std::ostream& LSNumber::dump(std::ostream& os, int) const {
 	os << toString();
 	return os;
 }

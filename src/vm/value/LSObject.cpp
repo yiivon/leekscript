@@ -175,14 +175,18 @@ LSValue* LSObject::clone() const {
 	return obj;
 }
 
-std::ostream& LSObject::dump(std::ostream& os) const {
+std::ostream& LSObject::dump(std::ostream& os, int level) const {
 	if (clazz != nullptr) os << clazz->name << " ";
 	os << "{";
-	for (auto i = values.begin(); i != values.end(); i++) {
-		if (i != values.begin()) os << ", ";
-		os << i->first;
-		os << ": ";
-		i->second->dump(os);
+	if (level > 0) {
+		for (auto i = values.begin(); i != values.end(); i++) {
+			if (i != values.begin()) os << ", ";
+			os << i->first;
+			os << ": ";
+			i->second->dump(os, level - 1);
+		}
+	} else {
+		os << " ... ";
 	}
 	os << "}";
 	return os;

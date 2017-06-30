@@ -158,7 +158,7 @@ std::string Program::execute(VM& vm) {
 	auto ptr = fun();
 	if (vm.last_exception) throw vm.last_exception;
 	std::ostringstream oss;
-	ptr->dump(oss);
+	ptr->dump(oss, 5);
 	LSValue::delete_ref(ptr);
 	return oss.str();
 }

@@ -336,7 +336,7 @@ LSString* LSValue::ls_json() {
 }
 
 std::ostream& LSValue::print(std::ostream& os) const {
-	dump(os);
+	dump(os, 1);
 	return os;
 }
 
@@ -350,7 +350,7 @@ std::string LSValue::json() const {
 
 namespace std {
 	std::ostream& operator << (std::ostream& os, const ls::LSValue* value) {
-		value->dump(os);
+		value->dump(os, 1);
 		return os;
 	}
 }
