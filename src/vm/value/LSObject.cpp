@@ -76,6 +76,8 @@ bool LSObject::ls_not() const {
 }
 
 bool LSObject::eq(const LSValue* v) const {
+	// Pointer equality, fast
+	if (this == v) return true;
 	if (auto obj = dynamic_cast<const LSObject*>(v)) {
 		if ((!clazz && obj->clazz) || (clazz && !obj->clazz))
 			return false;
