@@ -92,6 +92,147 @@ V LSMap<K, V>::ls_look(K key, V def) {
 }
 
 template <>
+inline LSValue* LSMap<LSValue*, LSValue*>::ls_max() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* max = it->second;
+	for (; it != this->end(); ++it)
+		if (*(it->second) > *max)
+			max = it->second;
+	if (refs == 0) {
+		max = max->clone();
+		delete this;
+	}
+	return max;
+}
+
+template <>
+inline LSValue* LSMap<int, LSValue*>::ls_max() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* max = it->second;
+	for (; it != this->end(); ++it)
+		if (*(it->second) > *max)
+			max = it->second;
+
+	if (refs == 0) {
+		max = max->clone();
+		delete this;
+	}
+	return max;
+}
+
+template <class K, class V>
+V LSMap<K, V>::ls_max() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	V max = it->second;
+	for (; it != this->end(); ++it)
+		if (it->second > max)
+			max = it->second;
+
+	LSValue::delete_temporary(this);
+	return max;
+}
+
+template <>
+inline LSValue* LSMap<LSValue*, LSValue*>::ls_maxKey() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* max = it->first;
+	for (; it != this->end(); ++it)
+		if (*(it->first) > *max)
+			max = it->first;
+
+	if (refs == 0) {
+		max = max->clone();
+		delete this;
+	}
+	return max;
+}
+
+template <>
+inline LSValue* LSMap<LSValue*, int>::ls_maxKey() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* max = it->first;
+	for (; it != this->end(); ++it)
+		if (*(it->first) > *max)
+			max = it->first;
+
+	
+	if (refs == 0) {
+		max = max->clone();
+		delete this;
+	}
+	return max;
+}
+
+template <>
+inline LSValue* LSMap<LSValue*, double>::ls_maxKey() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* max = it->first;
+	for (; it != this->end(); ++it)
+		if (*(it->first) > *max)
+			max = it->first;
+
+	if (refs == 0) {
+		max = max->clone();
+		delete this;
+	}
+	return max;
+}
+
+template <class K, class V>
+K LSMap<K, V>::ls_maxKey() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	K max = it->first;
+	for (; it != this->end(); ++it)
+		if (it->first > max)
+			max = it->first;
+
+	LSValue::delete_temporary(this);
+	return max;
+}
+
+template <>
 inline LSValue* LSMap<LSValue*, LSValue*>::ls_min() {
 	if (this->empty()) {
 		LSValue::delete_temporary(this);

@@ -26,6 +26,8 @@ public:
 	LSMap<K, V>* ls_clear();
 	bool ls_erase(K key);
 	V ls_look(K key, V def);
+	V ls_max();
+	K ls_maxKey();
 	V ls_min();
 	K ls_minKey();
 	LSArray<V>* values() const;

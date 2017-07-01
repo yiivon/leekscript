@@ -110,6 +110,24 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::INTEGER, {Type::INT_INT_MAP}, (void*) &LSMap<int,int>::ls_minKey, Method::NATIVE},
 	});
 
+	method("max", {
+		{Type::PTR_PTR_MAP, Type::POINTER, {}, (void*) &LSMap<LSValue*,LSValue*>::ls_max, Method::NATIVE},
+		{Type::PTR_REAL_MAP, Type::REAL, {}, (void*) &LSMap<LSValue*,double>::ls_max, Method::NATIVE},
+		{Type::PTR_INT_MAP, Type::INTEGER, {}, (void*) &LSMap<LSValue*,int>::ls_max, Method::NATIVE},
+		{Type::INT_PTR_MAP, Type::POINTER, {}, (void*) &LSMap<int,LSValue*>::ls_max, Method::NATIVE},
+		{Type::INT_REAL_MAP, Type::REAL, {}, (void*) &LSMap<int,double>::ls_max, Method::NATIVE},
+		{Type::INT_INT_MAP, Type::INTEGER, {}, (void*) &LSMap<int,int>::ls_max, Method::NATIVE},
+	});
+
+	method("maxKey", {
+		{Type::PTR_PTR_MAP, Type::POINTER, {}, (void*) &LSMap<LSValue*,LSValue*>::ls_maxKey, Method::NATIVE},
+		{Type::PTR_REAL_MAP, Type::POINTER, {}, (void*) &LSMap<LSValue*,double>::ls_maxKey, Method::NATIVE},
+		{Type::PTR_INT_MAP, Type::POINTER, {}, (void*) &LSMap<LSValue*,int>::ls_maxKey, Method::NATIVE},
+		{Type::INT_PTR_MAP, Type::INTEGER, {}, (void*) &LSMap<int,LSValue*>::ls_maxKey, Method::NATIVE},
+		{Type::INT_REAL_MAP, Type::INTEGER, {}, (void*) &LSMap<int,double>::ls_maxKey, Method::NATIVE},
+		{Type::INT_INT_MAP, Type::INTEGER, {}, (void*) &LSMap<int,int>::ls_maxKey, Method::NATIVE},
+	});
+
 	Type iter_ptr_ptr = Type::FUNCTION_P;
 	iter_ptr_ptr.setArgumentType(0, Type::POINTER);
 	iter_ptr_ptr.setArgumentType(1, Type::POINTER);
