@@ -11,8 +11,8 @@ struct lsmap_less {
 	bool operator() (K lhs, K rhs) const;
 };
 
-template <typename K, typename T>
-class LSMap : public LSValue, public std::map<K, T, lsmap_less<K>> {
+template <typename K, typename V>
+class LSMap : public LSValue, public std::map<K, V, lsmap_less<K>> {
 public:
 	static LSValue* clazz;
 
@@ -22,15 +22,17 @@ public:
 	/*
 	 * Map methods;
 	 */
-	bool ls_insert(K key, T value);
-	LSMap<K, T>* ls_clear();
+	bool ls_insert(K key, V value);
+	LSMap<K, V>* ls_clear();
 	bool ls_erase(K key);
-	T ls_look(K key, T def);
-	LSArray<T>* values() const;
-	template <class K2, class T2>
-	bool map_equals(const LSMap<K2, T2>* map) const;
-	template <class K2, class T2>
-	bool map_lt(const LSMap<K2, T2>* map) const;
+	V ls_look(K key, V def);
+	V ls_min();
+	K ls_minKey();
+	LSArray<V>* values() const;
+	template <class K2, class V2>
+	bool map_equals(const LSMap<K2, V2>* map) const;
+	template <class K2, class V2>
+	bool map_lt(const LSMap<K2, V2>* map) const;
 	void ls_iter(LSFunction<LSValue*>* function) const;
 
 	/*
@@ -42,10 +44,10 @@ public:
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 
-	T at(const K key) const;
+	V at(const K key) const;
 
 	virtual LSValue** atL(const LSValue* key) override;
-	T* atL_base(K key) const;
+	V* atL_base(K key) const;
 
 	bool in(K) const;
 
