@@ -1034,12 +1034,6 @@ If* SyntaxicAnalyser::eatIf() {
 		iff->then = block;
 	}
 
-	if (then) {
-		if (t->type != TokenType::ELSE) {
-			eat(TokenType::END);
-		}
-	}
-
 	if (t->type == TokenType::ELSE) {
 		eat();
 
@@ -1062,10 +1056,10 @@ If* SyntaxicAnalyser::eatIf() {
 			body->instructions.push_back(eatInstruction());
 			iff->elze = body;
 		}
+	}
 
-		if (then) {
-			eat(TokenType::END);
-		}
+	if (then) {
+		eat(TokenType::END);
 	}
 
 	return iff;
