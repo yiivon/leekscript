@@ -48,6 +48,7 @@ public:
 	virtual ~SemanticError();
 
 	std::string message() const;
+	Json json() const;
 };
 
 }

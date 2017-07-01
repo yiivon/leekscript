@@ -21,6 +21,10 @@ std::string SyntaxicalError::message() const {
 	return build_message(type, {});
 }
 
+Json SyntaxicalError::json() const {
+	return {token->location.start.line, token->location.start.column, token->location.end.line, token->location.end.column, build_message(type, parameters)};
+}
+
 std::string SyntaxicalError::build_message(Type type, std::vector<std::string>) {
 	return std::string("syntaxical_error<") + std::to_string((int) type) + std::string(">");
 }

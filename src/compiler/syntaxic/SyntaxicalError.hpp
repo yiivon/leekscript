@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../lexical/Token.hpp"
+#include "../../../lib/json.hpp"
 
 namespace ls {
 
@@ -28,6 +29,7 @@ public:
 	virtual ~SyntaxicalError();
 
 	std::string message() const;
+	Json json() const;
 };
 
 }

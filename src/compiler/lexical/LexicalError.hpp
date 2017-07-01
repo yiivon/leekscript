@@ -2,6 +2,7 @@
 #define LEXICAL_ERROR_HPP_
 
 #include <string>
+#include "../../../lib/json.hpp"
 
 namespace ls {
 
@@ -22,6 +23,7 @@ public:
 	virtual ~LexicalError();
 
 	std::string message() const;
+	Json json() const;
 
 	static std::string build_message(Type type);
 };

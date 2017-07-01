@@ -15,8 +15,11 @@ SemanticError::SemanticError(Type type, Location location, Location focus, std::
 SemanticError::~SemanticError() {}
 
 std::string SemanticError::message() const {
-
 	return build_message(type, parameters);
+}
+
+Json SemanticError::json() const {
+	return {focus.start.line, focus.start.column, focus.end.line, focus.end.column, build_message(type, parameters)};
 }
 
 std::string SemanticError::build_message(Type type, std::vector<std::string> parameters) {

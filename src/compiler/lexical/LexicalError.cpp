@@ -12,6 +12,10 @@ std::string LexicalError::message() const {
 	return build_message(type);
 }
 
+Json LexicalError::json() const {
+	return {line, character, line, character, build_message(type)};
+}
+
 std::string LexicalError::build_message(Type type) {
 	switch (type) {
 	case Type::UNTERMINATED_STRING: return "UNTERMINATED_STRING";
