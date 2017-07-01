@@ -246,7 +246,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 			return eatWhile();
 
 		default:
-			std::cout << "Unexpected token : " << (int)t->type << " (" << t->content << ")" << std::endl;
+			// std::cout << "Unexpected token : " << (int)t->type << " (" << t->content << ")" << std::endl;
 			errors.push_back(SyntaxicalError(t, SyntaxicalError::Type::UNEXPECTED_TOKEN, {to_string((int) t->type), t->content}));
 			eat();
 			return nullptr;
@@ -1372,7 +1372,7 @@ Token* SyntaxicAnalyser::eat_get(TokenType type) {
 
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
 		errors.push_back(SyntaxicalError(eaten, SyntaxicalError::Type::UNEXPECTED_TOKEN, {eaten->content}));
-		std::cout << "unexpected token : " << to_string((int) type) << " != " << to_string((int) eaten->type) << " (" << eaten->content << ") char " << eaten->location.start.column << std::endl;
+		// std::cout << "unexpected token : " << to_string((int) type) << " != " << to_string((int) eaten->type) << " (" << eaten->content << ") char " << eaten->location.start.column << std::endl;
 		return new Token(TokenType::FINISHED, 0, 0, 0, "");
 	}
 	return eaten;
