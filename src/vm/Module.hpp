@@ -66,14 +66,14 @@ class ModuleStaticField {
 public:
 	std::string name;
 	Type type;
-	void* fun = nullptr;
+	std::function<Compiler::value(Compiler&)> fun = nullptr;
 	LSValue* value = nullptr;
 
 	ModuleStaticField(const ModuleStaticField& f)
 	: name(f.name), type(f.type), fun(f.fun), value(f.value) {}
 	ModuleStaticField(std::string name, Type type, LSValue* value)
 	: name(name), type(type), value(value) {}
-	ModuleStaticField(std::string name, Type type, void* fun)
+	ModuleStaticField(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun)
 	: name(name), type(type), fun(fun) {}
 };
 
@@ -81,9 +81,9 @@ class ModuleField {
 public:
 	std::string name;
 	Type type;
-	void* fun;
+	std::function<Compiler::value(Compiler&, Compiler::value)> fun;
 	ModuleField(std::string name, Type type) : name(name), type(type), fun(nullptr) {}
-	ModuleField(std::string name, Type type, void* fun) : name(name), type(type), fun(fun) {}
+	ModuleField(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) : name(name), type(type), fun(fun) {}
 };
 
 
@@ -109,8 +109,8 @@ public:
 	void static_method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr, bool native = false);
 
 	void field(std::string name, Type type);
-	void field(std::string name, Type type, void* fun);
-	void static_field(std::string name, Type type, void* fun);
+	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
+	void static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun);
 
 	void generate_doc(std::ostream& os, std::string translation);
 };

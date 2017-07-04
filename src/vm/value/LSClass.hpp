@@ -5,6 +5,7 @@
 #include <map>
 #include "../LSValue.hpp"
 #include "../Type.hpp"
+#include "../../compiler/Compiler.hpp"
 
 namespace ls {
 
@@ -44,7 +45,7 @@ public:
 	virtual ~LSClass();
 
 	void addMethod(std::string&, std::vector<Method>);
-	void addField(std::string, Type, void* fun);
+	void addField(std::string, Type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
 	void addStaticField(ModuleStaticField f);
 	void addOperator(std::string name, std::vector<Operator>);
 
