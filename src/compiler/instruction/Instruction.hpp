@@ -27,6 +27,8 @@ public:
  	virtual Compiler::value compile(Compiler&) const = 0;
 
 	virtual Instruction* clone() const = 0;
+
+	std::string tabs(int indent) const;
 };
 
 }
