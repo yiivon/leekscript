@@ -134,8 +134,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	// Static attributes : Number.PI
 	if (static_access_function != nullptr) {
 
-		auto fun = (Compiler::value (*)(Compiler&)) static_access_function;
-		Compiler::value res = fun(c);
+		Compiler::value res = static_access_function(c);
 
 		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 			return {VM::value_to_pointer(c.F, res.v, field_type), type};
@@ -147,8 +146,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	if (access_function != nullptr) {
 		auto obj = object->compile(c);
 		object->compile_end(c);
-		auto fun = (Compiler::value (*)(Compiler&, Compiler::value)) access_function;
-		return fun(c, obj);
+		return access_function(c, obj);
 	}
 
 	// Class method : 12.abs
