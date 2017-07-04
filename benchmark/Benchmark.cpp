@@ -20,10 +20,10 @@ std::string pad(std::string s, int l) {
 }
 
 long chronotime(std::function<void()> f) {
-	auto start = chrono::high_resolution_clock::now();
+	auto start = std::chrono::high_resolution_clock::now();
 	f();
-	auto end = chrono::high_resolution_clock::now();
-	return chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+	auto end = std::chrono::high_resolution_clock::now();
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
 std::string format_ns(long ns, long reference = 0) {

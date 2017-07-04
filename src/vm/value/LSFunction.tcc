@@ -4,8 +4,6 @@
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
 
-using namespace std;
-
 namespace ls {
 
 template <class R>
@@ -94,7 +92,7 @@ std::ostream& LSFunction<R>::dump(std::ostream& os, int) const {
 }
 
 template <class R>
-string LSFunction<R>::json() const {
+std::string LSFunction<R>::json() const {
 	return ""; // don't output function in json
 }
 
