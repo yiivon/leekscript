@@ -74,9 +74,6 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 			else if (vv->name == "String") type = Type::STRING;
 			else if (vv->name == "Array") type = Type::PTR_ARRAY;
 			else if (vv->name == "Object") type = Type::OBJECT;
-			else {
-				type = Type::POINTER;
-			}
 		}
 		if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
@@ -94,6 +91,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 				if (vv->name == "Object") type = Type::OBJECT;
 			}
 		}
+		type = Type::POINTER;
 	}
 
 	if (req_type.nature != Nature::UNKNOWN) {
@@ -226,7 +224,6 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		case TokenType::NEW: {
 
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
-
 				if (vv->name == "Number") {
 					jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
 					if (type.nature == Nature::POINTER) {
@@ -250,12 +247,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				else if (vv->name == "Object") {
 					return {c.new_pointer(new LSObject()).v, type};
 				}
-				else {
-					auto clazz = expression->compile(c);
-					return c.new_object_class(clazz);
-				}
 			}
-
 			if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 				if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
 					if (vv->name == "Number") {
@@ -294,6 +286,9 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					}
 				}
 			}
+			// By default, compile the class expression and construct a LSObject.
+			auto clazz = expression->compile(c);
+			return c.new_object_class(clazz);
 		}
 		default: {}
 	}
