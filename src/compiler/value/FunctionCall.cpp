@@ -107,6 +107,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (vv->name == "Array") type = Type::PTR_ARRAY;
 		if (vv->name == "Object") type = Type::OBJECT;
 	}
+	// Class constructor
+	if (function->type == Type::CLASS) {
+		type = Type::POINTER;
+	}
 
 	// Detect standard library functions
 	auto oa = dynamic_cast<ObjectAccess*>(function);
@@ -346,6 +350,10 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		if (vv->name == "Object") {
 			return {c.new_pointer(new LSObject()).v, type};
 		}
+	}
+	if (function->type == Type::CLASS) {
+		auto clazz = function->compile(c);
+		return c.new_object_class(clazz);
 	}
 
 	/** Standard function call on object : "hello".size() */
