@@ -29,8 +29,7 @@ LSObject::~LSObject() {
 }
 
 void LSObject::addField(string name, LSValue* var) {
-	this->values.insert({name, var});
-	var->refs++;
+	this->values.insert({name, var->move_inc()});
 }
 
 LSValue* LSObject::getField(std::string name) {
