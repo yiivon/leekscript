@@ -22,6 +22,11 @@ LSClass::~LSClass() {
 			delete s.second.value;
 		}
 	}
+	for (auto f : fields) {
+		if (f.second.default_value != nullptr) {
+			delete f.second.default_value;
+		}
+	}
 }
 
 void LSClass::addMethod(string& name, vector<Method> method) {
@@ -40,7 +45,7 @@ void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
 }
 
 void LSClass::addField(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
-	fields.insert({name, field(name, type, fun)});
+	fields.insert({name, field(name, type, fun, nullptr)});
 }
 
 void LSClass::addStaticField(ModuleStaticField f) {

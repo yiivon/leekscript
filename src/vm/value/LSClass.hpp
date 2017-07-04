@@ -33,8 +33,9 @@ public:
 		std::string name;
 		Type type;
 		std::function<Compiler::value(Compiler&, Compiler::value)> fun;
-		field(std::string name, Type type) : name(name), type(type), fun(nullptr) {}
-		field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) : name(name), type(type), fun(fun) {}
+		LSValue* default_value;
+		field(std::string name, Type type) : name(name), type(type), fun(nullptr), default_value(nullptr) {}
+		field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun, LSValue* default_value) : name(name), type(type), fun(fun), default_value(default_value) {}
 	};
 
 	LSClass* parent;
