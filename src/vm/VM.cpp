@@ -34,7 +34,7 @@ using namespace std;
 
 namespace ls {
 
-const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 2000000000;
+const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
 jit_type_t VM::mpz_type;
 VM* VM::current_vm = nullptr;
 
