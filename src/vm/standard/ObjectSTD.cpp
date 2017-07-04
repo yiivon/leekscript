@@ -15,7 +15,7 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	readonly.readonly = true;
 	readonly.native = true;
 
-	static_field("readonly", Type::OBJECT, (void*)+[&](Compiler& c) {
+	static_field("readonly", Type::OBJECT, [&](Compiler& c) {
 		return c.new_pointer(&ObjectSTD::readonly);
 	});
 

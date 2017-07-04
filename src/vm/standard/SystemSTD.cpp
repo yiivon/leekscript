@@ -23,14 +23,12 @@ void System_print_float(double v);
 
 SystemSTD::SystemSTD() : Module("System") {
 
-	static_field("version", Type::INTEGER, (void*) &System_version);
-
-	static_field("operations", Type::INTEGER, (void*) &System_operations);
-
-	static_field("time", Type::LONG, (void*) &System_time);
-	static_field("milliTime", Type::LONG, (void*) &System_millitime);
-	static_field("microTime", Type::LONG, (void*) &System_microtime);
-	static_field("nanoTime", Type::LONG, (void*) &System_nanotime);
+	static_field("version", Type::INTEGER, System_version);
+	static_field("operations", Type::INTEGER, System_operations);
+	static_field("time", Type::LONG, System_time);
+	static_field("milliTime", Type::LONG, System_millitime);
+	static_field("microTime", Type::LONG, System_microtime);
+	static_field("nanoTime", Type::LONG, System_nanotime);
 
 	static_method("print", {
 		{Type::VOID, {Type::MPZ}, (void*) &System_print_mpz, Method::NATIVE},

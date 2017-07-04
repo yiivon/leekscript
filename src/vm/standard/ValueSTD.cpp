@@ -12,12 +12,12 @@ ValueSTD::ValueSTD() : Module("Value") {
 	/*
 	 * Static attributes
 	 */
-	static_field("unknown", Type::UNKNOWN, (void*) &ValueSTD::unknown);
+	static_field("unknown", Type::UNKNOWN, ValueSTD::unknown);
 
 	/*
 	 * Attributes
 	 */
-	field("class", Type::CLASS, (void*) &ValueSTD::attr_class);
+	field("class", Type::CLASS, ValueSTD::attr_class);
 
 	/*
 	 * Operators

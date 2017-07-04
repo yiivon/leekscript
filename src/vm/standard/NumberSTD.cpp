@@ -18,27 +18,14 @@ int mpz_log(__mpz_struct n) {
 	return 64 * l + r + 1;
 }
 
-Compiler::value Number_e(Compiler& c) {
-	return {jit_value_create_float64_constant(c.F, jit_type_float64, M_E), Type::REAL};
-}
-Compiler::value Number_phi(Compiler& c) {
-	return {jit_value_create_float64_constant(c.F, jit_type_float64, 1.61803398874989484820), Type::REAL};
-}
-Compiler::value Number_pi(Compiler& c) {
-	return {jit_value_create_float64_constant(c.F, jit_type_float64, 3.14159265358979323846), Type::REAL};
-}
-Compiler::value Number_epsilon(Compiler& c) {
-	return {jit_value_create_float64_constant(c.F, jit_type_float64, std::numeric_limits<double>::epsilon()), Type::REAL};
-}
-
 NumberSTD::NumberSTD() : Module("Number") {
 
 	LSNumber::clazz = clazz;
 
-	static_field("pi", Type::REAL, (void*) &Number_pi);
-	static_field("e", Type::REAL, (void*) &Number_e);
-	static_field("phi", Type::REAL, (void*) &Number_phi);
-	static_field("epsilon", Type::REAL, (void*) &Number_epsilon);
+	static_field("pi", Type::REAL, [](Compiler& c) { return c.new_real(3.14159265358979323846); });
+	static_field("e", Type::REAL, [](Compiler& c) { return c.new_real(M_E); });
+	static_field("phi", Type::REAL, [](Compiler& c) { return c.new_real(1.61803398874989484820); });
+	static_field("epsilon", Type::REAL, [](Compiler& c) { return c.new_real(std::numeric_limits<double>::epsilon()); });
 
 	/*
 	 * Operators
