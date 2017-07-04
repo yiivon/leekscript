@@ -285,8 +285,12 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						return {c.new_pointer(new LSObject()).v, type};
 					}
 				}
+				// new A(), convert to new A
+				auto clazz = fc->function->compile(c);
+				return c.new_object_class(clazz);
 			}
 			// By default, compile the class expression and construct a LSObject.
+			// new A
 			auto clazz = expression->compile(c);
 			return c.new_object_class(clazz);
 		}
