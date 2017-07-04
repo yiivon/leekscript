@@ -46,6 +46,7 @@ void Test::test_files() {
 	// TODO : recursive with 2 versions
 	// file("test/code/recursive_2_versions.leek").equals("");
 	file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
+	file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
