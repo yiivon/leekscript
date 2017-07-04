@@ -102,14 +102,15 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				type = Type::INTEGER;
 			}
 		}
-		if (vv->name == "Boolean") type = Type::BOOLEAN;
-		if (vv->name == "String") type = Type::STRING;
-		if (vv->name == "Array") type = Type::PTR_ARRAY;
-		if (vv->name == "Object") type = Type::OBJECT;
-	}
-	// Class constructor
-	if (function->type == Type::CLASS) {
-		type = Type::POINTER;
+		else if (vv->name == "Boolean") type = Type::BOOLEAN;
+		else if (vv->name == "String") type = Type::STRING;
+		else if (vv->name == "Array") type = Type::PTR_ARRAY;
+		else if (vv->name == "Object") type = Type::OBJECT;
+		else {
+			type = Type::POINTER; // Class constructor
+		}
+	} else if (function->type == Type::CLASS) {
+		type = Type::POINTER; // Class constructor
 	}
 
 	// Detect standard library functions
