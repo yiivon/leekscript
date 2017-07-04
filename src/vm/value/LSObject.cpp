@@ -17,6 +17,9 @@ LSObject::LSObject() : LSValue(OBJECT) {
 
 LSObject::LSObject(LSClass* clazz) : LSObject() {
 	this->clazz = clazz;
+	for (auto f : clazz->fields) {
+		this->addField(f.first, f.second.default_value->clone());
+	}
 }
 
 LSObject::~LSObject() {
