@@ -62,6 +62,7 @@ public:
 	value new_null() const;
 	value new_bool(bool b) const;
 	value new_integer(int i) const;
+	value new_real(double r) const;
 	value new_long(long l) const;
 	value new_pointer(const void* p) const;
 	value new_object() const;

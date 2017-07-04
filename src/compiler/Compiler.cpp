@@ -171,6 +171,9 @@ Compiler::value Compiler::new_bool(bool b) const {
 Compiler::value Compiler::new_integer(int i) const {
 	return {LS_CREATE_INTEGER(F, i), Type::INTEGER};
 }
+Compiler::value Compiler::new_real(double r) const {
+	return {jit_value_create_float64_constant(F, jit_type_float64, r), Type::REAL};
+}
 Compiler::value Compiler::new_long(long l) const {
 	return {LS_CREATE_LONG(F, l), Type::LONG};
 }
