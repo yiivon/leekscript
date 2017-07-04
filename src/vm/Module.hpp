@@ -77,22 +77,12 @@ public:
 	: name(name), type(type), fun(fun) {}
 };
 
-class ModuleField {
-public:
-	std::string name;
-	Type type;
-	std::function<Compiler::value(Compiler&, Compiler::value)> fun;
-	ModuleField(std::string name, Type type) : name(name), type(type), fun(nullptr) {}
-	ModuleField(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) : name(name), type(type), fun(fun) {}
-};
-
 
 class Module {
 public:
 
 	std::string name;
 	LSClass* clazz;
-	std::vector<ModuleField> fields;
 	std::vector<ModuleMethod> methods;
 	std::vector<ModuleStaticField> static_fields;
 	std::vector<ModuleStaticMethod> static_methods;

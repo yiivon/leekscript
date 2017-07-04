@@ -11,7 +11,6 @@ namespace ls {
 
 class Method;
 class StaticMethod;
-class ModuleField;
 class ModuleStaticField;
 
 class LSClass : public LSValue {
@@ -29,10 +28,19 @@ public:
 		static bool NATIVE;
 	};
 
+	class field {
+	public:
+		std::string name;
+		Type type;
+		std::function<Compiler::value(Compiler&, Compiler::value)> fun;
+		field(std::string name, Type type) : name(name), type(type), fun(nullptr) {}
+		field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) : name(name), type(type), fun(fun) {}
+	};
+
 	LSClass* parent;
 	std::string name;
 
-	std::map<std::string, ModuleField> fields;
+	std::map<std::string, field> fields;
 	std::map<std::string, std::vector<Method>> methods;
 	std::map<std::string, std::vector<StaticMethod>> static_methods;
 	std::map<std::string, ModuleStaticField> static_fields;
