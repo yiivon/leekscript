@@ -70,7 +70,9 @@ void Test::test_classes() {
 
 	section("Class creation");
 	code("class A {} A").equals("<class A>");
+	code("class A {} let a = A() a").equals("A {}");
 	code("class A {} let a = new A a").equals("A {}");
+	code("class A {} let a = new A() a").equals("A {}");
 	code("class A { let b = 2 } let a = new A a").equals("A {b: 2}");
 	code("class A { let b = 2 } let a = new A a.class").equals("<class A>");
 	code("class A { let b = 2 } let a = new A a.b").equals("2");
