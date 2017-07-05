@@ -183,6 +183,19 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		m = value_class->getOperator(op->character, this->v1_type, this->v2_type);
 	}
 
+	// Merge operations count
+	// (2 + 3) × 4    ->  2 ops for the × directly
+	if (op->type != TokenType::OR or op->type == TokenType::AND) {
+		if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
+			operations += ex1->operations;
+			ex1->operations = 0;
+		}
+		if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
+			operations += ex2->operations;
+			ex2->operations = 0;
+		}
+	}
+
 	if (m != nullptr) {
 
 		// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << (void*) m->addr << std::endl;
@@ -340,19 +353,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// int div => result is int
 	if (op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL) {
 		type = v1->type == Type::LONG ? Type::LONG : Type::INTEGER;
-	}
-
-	// Merge operations count
-	// (2 + 3) × 4    ->  2 ops for the × directly
-	if (op->type != TokenType::OR or op->type == TokenType::AND) {
-		if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
-			operations += ex1->operations;
-			ex1->operations = 0;
-		}
-		if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
-			operations += ex2->operations;
-			ex2->operations = 0;
-		}
 	}
 
 	// At the end the require nature is taken into account
