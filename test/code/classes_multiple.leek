@@ -1,0 +1,22 @@
+class Engine {
+	let power = 5000
+}
+class Wheel {
+	let diameter = 45.7
+}
+class Car {
+	let engine = new Engine()
+	let wheels = []
+}
+
+var ferrari = new Car()
+for i in [1..4] {
+	var w = new Wheel
+	w.diameter = i * 20
+	ferrari.wheels += w
+}
+
+// TODO not working
+// ferrari.wheels.foldLeft((x, s) -> s + x.diameter, 0)
+
+[ferrari.wheels.size(), ferrari.wheels[1].diameter, ferrari.wheels[3].diameter]
