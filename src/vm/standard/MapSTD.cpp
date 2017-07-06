@@ -93,21 +93,21 @@ MapSTD::MapSTD() : Module("Map") {
 	});
 
 	method("min", {
-		{Type::PTR_PTR_MAP, Type::POINTER, {}, (void*) &LSMap<LSValue*,LSValue*>::ls_min, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::REAL, {}, (void*) &LSMap<LSValue*,double>::ls_min, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::INTEGER, {}, (void*) &LSMap<LSValue*,int>::ls_min, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::POINTER, {}, (void*) &LSMap<int,LSValue*>::ls_min, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::REAL, {}, (void*) &LSMap<int,double>::ls_min, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::INTEGER, {}, (void*) &LSMap<int,int>::ls_min, Method::NATIVE},
+		{Type::POINTER, {Type::PTR_PTR_MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_min, Method::NATIVE},
+		{Type::REAL, {Type::PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_min, Method::NATIVE},
+		{Type::INTEGER, {Type::PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_min, Method::NATIVE},
+		{Type::POINTER, {Type::INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_min, Method::NATIVE},
+		{Type::REAL, {Type::INT_REAL_MAP}, (void*) &LSMap<int,double>::ls_min, Method::NATIVE},
+		{Type::INTEGER, {Type::INT_INT_MAP}, (void*) &LSMap<int,int>::ls_min, Method::NATIVE},
 	});
 
 	method("minKey", {
-		{Type::PTR_PTR_MAP, Type::POINTER, {}, (void*) &LSMap<LSValue*,LSValue*>::ls_minKey, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::POINTER, {}, (void*) &LSMap<LSValue*,double>::ls_minKey, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::POINTER, {}, (void*) &LSMap<LSValue*,int>::ls_minKey, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::INTEGER, {}, (void*) &LSMap<int,LSValue*>::ls_minKey, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::INTEGER, {}, (void*) &LSMap<int,double>::ls_minKey, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::INTEGER, {}, (void*) &LSMap<int,int>::ls_minKey, Method::NATIVE},
+		{Type::POINTER, {Type::PTR_PTR_MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_minKey, Method::NATIVE},
+		{Type::POINTER, {Type::PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_minKey, Method::NATIVE},
+		{Type::POINTER, {Type::PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_minKey, Method::NATIVE},
+		{Type::INTEGER, {Type::INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_minKey, Method::NATIVE},
+		{Type::INTEGER, {Type::INT_REAL_MAP}, (void*) &LSMap<int,double>::ls_minKey, Method::NATIVE},
+		{Type::INTEGER, {Type::INT_INT_MAP}, (void*) &LSMap<int,int>::ls_minKey, Method::NATIVE},
 	});
 
 	Type iter_ptr_ptr = Type::FUNCTION_P;
