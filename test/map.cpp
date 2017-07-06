@@ -151,4 +151,22 @@ void Test::test_map() {
 	// TODO crashing
 	// code("var s = 0 [:].iter((k, v) -> s += v) s").equals("0");
 
+	section("Map.min()");
+	code("[:].min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12 : 0].clear().min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1 : 4, 2 : 20, 12 : 1,  0 : 4].min()").equals("1");
+	code("let a = ['idx0' : 4, 'idx1' : 12, 'idx2' : 1, 'idx3' : 4] a.min()").equals("1");
+	code("['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'].min()").equals("'a'");
+	code("let a = ['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'] a.min()").equals("'a'");
+	code("[0 : 4.01, 42 : 20.5, 100 : 10, -1 : 4.99].min()").equals("4.01");
+
+	section("Map.minKey()");
+	code("[:].minKey()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12 : 0].clear().minKey()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1 : 4, 2 : 20, 12 : 1,  0 : 4].minKey()").equals("0");
+	code("let a = ['idx0' : 4, 'idx1' : 12, 'idx2' : 1, 'idx3' : 4] a.minKey()").equals("'idx0'");
+	code("['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'].minKey()").equals("'a'");
+	code("let a = ['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'] a.minKey()").equals("'a'");
+	code("[0 : 4.01, 42 : 20.5, 100 : 10, -1 : 4.99].minKey()").equals("-1");
+
 }

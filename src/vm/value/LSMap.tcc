@@ -91,6 +91,147 @@ V LSMap<K, V>::ls_look(K key, V def) {
 	return def;
 }
 
+template <>
+inline LSValue* LSMap<LSValue*, LSValue*>::ls_min() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* min = it->second;
+	for (; it != this->end(); ++it)
+		if (*(it->second) < *min)
+			min = it->second;
+	if (refs == 0) {
+		min = min->clone();
+		delete this;
+	}
+	return min;
+}
+
+template <>
+inline LSValue* LSMap<int, LSValue*>::ls_min() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* min = it->second;
+	for (; it != this->end(); ++it)
+		if (*(it->second) < *min)
+			min = it->second;
+
+	if (refs == 0) {
+		min = min->clone();
+		delete this;
+	}
+	return min;
+}
+
+template <class K, class V>
+V LSMap<K, V>::ls_min() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	V min = it->second;
+	for (; it != this->end(); ++it)
+		if (it->second < min)
+			min = it->second;
+
+	LSValue::delete_temporary(this);
+	return min;
+}
+
+template <>
+inline LSValue* LSMap<LSValue*, LSValue*>::ls_minKey() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* min = it->first;
+	for (; it != this->end(); ++it)
+		if (*(it->first) < *min)
+			min = it->first;
+
+	if (refs == 0) {
+		min = min->clone();
+		delete this;
+	}
+	return min;
+}
+
+template <>
+inline LSValue* LSMap<LSValue*, int>::ls_minKey() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* min = it->first;
+	for (; it != this->end(); ++it)
+		if (*(it->first) < *min)
+			min = it->first;
+
+	
+	if (refs == 0) {
+		min = min->clone();
+		delete this;
+	}
+	return min;
+}
+
+template <>
+inline LSValue* LSMap<LSValue*, double>::ls_minKey() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	LSValue* min = it->first;
+	for (; it != this->end(); ++it)
+		if (*(it->first) < *min)
+			min = it->first;
+
+	if (refs == 0) {
+		min = min->clone();
+		delete this;
+	}
+	return min;
+}
+
+template <class K, class V>
+K LSMap<K, V>::ls_minKey() {
+	if (this->empty()) {
+		LSValue::delete_temporary(this);
+		__builtin_frame_address(0);
+		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+	}
+
+	auto it = this->begin();
+	K min = it->first;
+	for (; it != this->end(); ++it)
+		if (it->first < min)
+			min = it->first;
+
+	LSValue::delete_temporary(this);
+	return min;
+}
+
 template <typename K, typename V>
 LSArray<V>* LSMap<K, V>::values() const {
 	LSArray<V>* array = new LSArray<V>();
