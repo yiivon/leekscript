@@ -90,7 +90,7 @@ long java(const std::string& code) {
  */
 long leekscript(const std::string& code) {
 	std::ostringstream execute;
-	execute << "build/leekscript -nop benchmark/code/" << code << "/" << code << ".leek >> results";
+	execute << "build/leekscript -n benchmark/code/" << code << "/" << code << ".leek >> results";
 	return chronotime([&]() {
 		int r = system(execute.str().c_str());
 		(void) r;
