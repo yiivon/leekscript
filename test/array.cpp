@@ -246,6 +246,7 @@ void Test::test_arrays() {
 	code("4★ in [1, 2, 3]").equals("false");
 	code("'salut' in [1, 2, 3]").equals("false");
 	code("let f = x -> x[0]; [f([1]), f([0..3])]").equals("[1, 0]");
+	code("let f = x -> x[0]; [f([1]), f([0..3]), f(['a'])]").equals("[1, 0, 'a']");
 
 	/*
 	 * Methods
