@@ -200,6 +200,8 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4, 5] ~~ x -> x.max(3)").equals("[3, 3, 3, 4, 5]");
 	code("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)").equals("[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
 	code("[1, 2, 3, 4] ~~ x -> x + 0.5").equals("[1.5, 2.5, 3.5, 4.5]");
+	code("[1, 2, 3] ~~ (x -> x * 5) ~~ (x -> x - 1)").equals("[4, 9, 14]");
+	code("let f = x -> x + 10 let g = x -> x ** 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
 
 	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
@@ -566,8 +568,6 @@ void Test::test_arrays() {
 	code("let s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
 	code("let s = 0 [1, 2, 3, 4, 5].each(x -> s += x)").equals("15");
 	code("[1, 2, 3, 4, 5].fold_left(+,0)").equals("15");
-	//code("let f = x -> x + 10 let g = x -> x ^ 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
-	//code("[1, 2, 3] ~~ (x -> x * 5) ~~ (x -> x - 1)").equals("[4, 9, 14]");
 	*/
 
 	/*
