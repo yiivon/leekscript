@@ -365,6 +365,8 @@ void Test::test_arrays() {
 	// code("let a = 0 Array.iter([1, 2, 3], x -> a += x) a").equals("6");
 	// TODO crash
 	// code("var a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
+	// TODO works but leaks
+	// var a = '' Array.iter([1, 2, 3], x -> a += x) a
 
 	section("Array.partition()");
 	code("Array.partition([1, 2, 3, 4, 5], (x -> x < 3))").equals("[[1, 2], [3, 4, 5]]");
