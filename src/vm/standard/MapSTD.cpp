@@ -36,60 +36,60 @@ MapSTD::MapSTD() : Module("Map") {
 	});
 
 	method("size", {
-		{Type::PTR_PTR_MAP, Type::INTEGER, {}, (void*) map_size, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::INTEGER, {}, (void*) map_size, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::INTEGER, {}, (void*) map_size, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::INTEGER, {}, (void*) map_size, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::INTEGER, {}, (void*) map_size, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::INTEGER, {}, (void*) map_size, Method::NATIVE},
+		{Type::INTEGER, {Type::PTR_PTR_MAP}, (void*) map_size, Method::NATIVE},
+		{Type::INTEGER, {Type::PTR_REAL_MAP}, (void*) map_size, Method::NATIVE},
+		{Type::INTEGER, {Type::PTR_INT_MAP}, (void*) map_size, Method::NATIVE},
+		{Type::INTEGER, {Type::INT_PTR_MAP}, (void*) map_size, Method::NATIVE},
+		{Type::INTEGER, {Type::INT_REAL_MAP}, (void*) map_size, Method::NATIVE},
+		{Type::INTEGER, {Type::INT_INT_MAP}, (void*) map_size, Method::NATIVE},
     });
 
 	method("values", {
-		{Type::PTR_PTR_MAP, Type::PTR_ARRAY, {}, (void*) &LSMap<LSValue*, LSValue*>::values, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::REAL_ARRAY, {}, (void*) &LSMap<LSValue*, double>::values, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::INT_ARRAY, {}, (void*) &LSMap<LSValue*, int>::values, Method::NATIVE},
-		{Type::REAL_PTR_MAP, Type::PTR_ARRAY, {}, (void*) &LSMap<double, LSValue*>::values, Method::NATIVE},
-		{Type::REAL_REAL_MAP, Type::REAL_ARRAY, {}, (void*) &LSMap<double, double>::values, Method::NATIVE},
-		{Type::REAL_INT_MAP, Type::INT_ARRAY, {}, (void*) &LSMap<double, int>::values, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::PTR_ARRAY, {}, (void*) &LSMap<int, LSValue*>::values, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::REAL_ARRAY, {}, (void*) &LSMap<int, double>::values, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::INT_ARRAY, {}, (void*) &LSMap<int, int>::values, Method::NATIVE}
+		{Type::PTR_ARRAY, {Type::PTR_PTR_MAP}, (void*) &LSMap<LSValue*, LSValue*>::values, Method::NATIVE},
+		{Type::REAL_ARRAY, {Type::PTR_REAL_MAP}, (void*) &LSMap<LSValue*, double>::values, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::PTR_INT_MAP}, (void*) &LSMap<LSValue*, int>::values, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::REAL_PTR_MAP}, (void*) &LSMap<double, LSValue*>::values, Method::NATIVE},
+		{Type::REAL_ARRAY, {Type::REAL_REAL_MAP}, (void*) &LSMap<double, double>::values, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::REAL_INT_MAP}, (void*) &LSMap<double, int>::values, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::INT_PTR_MAP}, (void*) &LSMap<int, LSValue*>::values, Method::NATIVE},
+		{Type::REAL_ARRAY, {Type::INT_REAL_MAP}, (void*) &LSMap<int, double>::values, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::INT_INT_MAP}, (void*) &LSMap<int, int>::values, Method::NATIVE}
 	});
 
 	method("insert", {
-		{Type::PTR_PTR_MAP, Type::BOOLEAN, {Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_insert, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::BOOLEAN, {Type::POINTER, Type::REAL}, (void*) &LSMap<LSValue*,double>::ls_insert, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::BOOLEAN, {Type::POINTER, Type::INTEGER}, (void*) &LSMap<LSValue*,int>::ls_insert, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::BOOLEAN, {Type::INTEGER, Type::POINTER}, (void*) &LSMap<int,LSValue*>::ls_insert, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::BOOLEAN, {Type::INTEGER, Type::REAL}, (void*) &LSMap<int,double>::ls_insert, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::BOOLEAN, {Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_PTR_MAP, Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_REAL_MAP, Type::POINTER, Type::REAL}, (void*) &LSMap<LSValue*,double>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_INT_MAP, Type::POINTER, Type::INTEGER}, (void*) &LSMap<LSValue*,int>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_PTR_MAP, Type::INTEGER, Type::POINTER}, (void*) &LSMap<int,LSValue*>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_REAL_MAP, Type::INTEGER, Type::REAL}, (void*) &LSMap<int,double>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_INT_MAP, Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_insert, Method::NATIVE},
     });
 
 	method("clear", {
-		{Type::PTR_PTR_MAP, Type::PTR_PTR_MAP, {}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::PTR_REAL_MAP, {}, (void*) &LSMap<LSValue*,double>::ls_clear, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::PTR_INT_MAP, {}, (void*) &LSMap<LSValue*,int>::ls_clear, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::INT_PTR_MAP, {}, (void*) &LSMap<int,LSValue*>::ls_clear, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::INT_REAL_MAP, {}, (void*) &LSMap<int,double>::ls_clear, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::INT_INT_MAP, {}, (void*) &LSMap<int,int>::ls_clear, Method::NATIVE},
+		{Type::PTR_PTR_MAP, {Type::PTR_PTR_MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear, Method::NATIVE},
+		{Type::PTR_REAL_MAP, {Type::PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_clear, Method::NATIVE},
+		{Type::PTR_INT_MAP, {Type::PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_clear, Method::NATIVE},
+		{Type::INT_PTR_MAP, {Type::INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_clear, Method::NATIVE},
+		{Type::INT_REAL_MAP, {Type::INT_REAL_MAP}, (void*) &LSMap<int,double>::ls_clear, Method::NATIVE},
+		{Type::INT_INT_MAP, {Type::INT_INT_MAP}, (void*) &LSMap<int,int>::ls_clear, Method::NATIVE},
 	});
 
 	method("erase", {
-		{Type::PTR_PTR_MAP, Type::BOOLEAN, {Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_erase, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::BOOLEAN, {Type::POINTER}, (void*) &LSMap<LSValue*,double>::ls_erase, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::BOOLEAN, {Type::POINTER}, (void*) &LSMap<LSValue*,int>::ls_erase, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSMap<int,LSValue*>::ls_erase, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSMap<int,double>::ls_erase, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::BOOLEAN, {Type::INTEGER}, (void*) &LSMap<int,int>::ls_erase, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_PTR_MAP, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_erase, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_REAL_MAP, Type::POINTER}, (void*) &LSMap<LSValue*,double>::ls_erase, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_INT_MAP, Type::POINTER}, (void*) &LSMap<LSValue*,int>::ls_erase, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_PTR_MAP, Type::INTEGER}, (void*) &LSMap<int,LSValue*>::ls_erase, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_REAL_MAP, Type::INTEGER}, (void*) &LSMap<int,double>::ls_erase, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_INT_MAP, Type::INTEGER}, (void*) &LSMap<int,int>::ls_erase, Method::NATIVE},
 	});
 
 	method("look", {
-		{Type::PTR_PTR_MAP, Type::POINTER, {Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_look, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::REAL, {Type::POINTER, Type::REAL}, (void*) &LSMap<LSValue*,double>::ls_look, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::INTEGER, {Type::POINTER, Type::INTEGER}, (void*) &LSMap<LSValue*,int>::ls_look, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::POINTER, {Type::INTEGER, Type::POINTER}, (void*) &LSMap<int,LSValue*>::ls_look, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &LSMap<int,double>::ls_look, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_look, Method::NATIVE},
+		{Type::POINTER, {Type::PTR_PTR_MAP, Type::POINTER, Type::POINTER}, (void*) &LSMap<LSValue*,LSValue*>::ls_look, Method::NATIVE},
+		{Type::REAL, {Type::PTR_REAL_MAP, Type::POINTER, Type::REAL}, (void*) &LSMap<LSValue*,double>::ls_look, Method::NATIVE},
+		{Type::INTEGER, {Type::PTR_INT_MAP, Type::POINTER, Type::INTEGER}, (void*) &LSMap<LSValue*,int>::ls_look, Method::NATIVE},
+		{Type::POINTER, {Type::INT_PTR_MAP, Type::INTEGER, Type::POINTER}, (void*) &LSMap<int,LSValue*>::ls_look, Method::NATIVE},
+		{Type::REAL, {Type::INT_REAL_MAP, Type::INTEGER, Type::REAL}, (void*) &LSMap<int,double>::ls_look, Method::NATIVE},
+		{Type::INTEGER, {Type::INT_INT_MAP, Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_look, Method::NATIVE},
 	});
 
 	Type iter_ptr_ptr = Type::FUNCTION_P;
@@ -123,12 +123,12 @@ MapSTD::MapSTD() : Module("Map") {
 	iter_int_int.setReturnType(Type::VOID);
 
 	method("iter", {
-		{Type::PTR_PTR_MAP, Type::VOID, {iter_ptr_ptr}, (void*) &LSMap<LSValue*, LSValue*>::ls_iter, Method::NATIVE},
-		{Type::PTR_REAL_MAP, Type::VOID, {iter_ptr_real}, (void*) &LSMap<LSValue*, double>::ls_iter, Method::NATIVE},
-		{Type::PTR_INT_MAP, Type::VOID, {iter_ptr_int}, (void*) &LSMap<LSValue*, int>::ls_iter, Method::NATIVE},
-		{Type::INT_PTR_MAP, Type::VOID, {iter_int_ptr}, (void*) &LSMap<int, LSValue*>::ls_iter, Method::NATIVE},
-		{Type::INT_REAL_MAP, Type::VOID, {iter_int_real}, (void*) &LSMap<int, double>::ls_iter, Method::NATIVE},
-		{Type::INT_INT_MAP, Type::VOID, {iter_int_int}, (void*) &LSMap<int, int>::ls_iter, Method::NATIVE},
+		{Type::VOID, {Type::PTR_PTR_MAP, iter_ptr_ptr}, (void*) &LSMap<LSValue*, LSValue*>::ls_iter, Method::NATIVE},
+		{Type::VOID, {Type::PTR_REAL_MAP, iter_ptr_real}, (void*) &LSMap<LSValue*, double>::ls_iter, Method::NATIVE},
+		{Type::VOID, {Type::PTR_INT_MAP, iter_ptr_int}, (void*) &LSMap<LSValue*, int>::ls_iter, Method::NATIVE},
+		{Type::VOID, {Type::INT_PTR_MAP, iter_int_ptr}, (void*) &LSMap<int, LSValue*>::ls_iter, Method::NATIVE},
+		{Type::VOID, {Type::INT_REAL_MAP, iter_int_real}, (void*) &LSMap<int, double>::ls_iter, Method::NATIVE},
+		{Type::VOID, {Type::INT_INT_MAP, iter_int_int}, (void*) &LSMap<int, int>::ls_iter, Method::NATIVE},
 	});
 }
 

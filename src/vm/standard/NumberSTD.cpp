@@ -121,255 +121,159 @@ NumberSTD::NumberSTD() : Module("Number") {
 	/*
 	 * Methods
 	 */
+	method("int", Method::Static, {
+		{Type::INTEGER, {Type::UNKNOWN}, (void*) &NumberSTD::_int},
+	});
 	method("abs", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::abs_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::abs_number},
-		{Type::INTEGER, Type::INTEGER, {}, (void*) &NumberSTD::abs_number}
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::abs_ptr},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_number},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_number},
 	});
 	method("acos", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::acos_real},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::acos_real},
 	});
 	method("asin", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::asin_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::asin_real},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::asin_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::asin_real},
 	});
 	method("atan", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::atan_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::atan_real},
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan_real},
 	});
 	method("atan2", {
-		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
-		{Type::POINTER, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_ptr_real, Method::NATIVE},
-		{Type::REAL, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan2_real_real}
+		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::atan2_ptr_real, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::atan2_real_real},
 	});
 	method("cbrt", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cbrt_real}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cbrt_real},
 	});
 	method("ceil", {
-		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE}
+		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
+		//{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::ceil_real},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int},
 	});
 	method("char", {
-		{Type::NUMBER, Type::POINTER, {}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
-		{Type::REAL, Type::STRING, {}, (void*) &NumberSTD::char_real},
-		{Type::INTEGER, Type::STRING, {}, (void*) &NumberSTD::char_int}
+		{Type::POINTER, {Type::NUMBER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
+		{Type::STRING, {Type::REAL}, (void*) &NumberSTD::char_real},
+		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int},
+		{Type::STRING, {Type::POINTER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
 	});
 	method("cos", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::cos_real}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cos_real},
 	});
 	method("exp", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::exp_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::exp_real}
+		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::exp_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::exp_real},
 	});
 	Type fold_fun_type = Type::FUNCTION_P;
 	fold_fun_type.setArgumentType(0, Type::POINTER);
 	fold_fun_type.setArgumentType(1, Type::INTEGER);
 	fold_fun_type.setReturnType(Type::POINTER);
 	method("fold", {
-		{Type::POINTER, Type::POINTER, {fold_fun_type, Type::POINTER}, (void*) &LSNumber::ls_fold, Method::NATIVE}
+		{Type::POINTER, {Type::POINTER, fold_fun_type, Type::POINTER}, (void*) &LSNumber::ls_fold, Method::NATIVE}
 	});
 	method("floor", {
-		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
-		{Type::REAL, Type::INTEGER, {}, (void*) &NumberSTD::floor_real}
-	});
-	method("hypot", {
-		{Type::REAL, Type::POINTER, {Type::POINTER}, (void*) &NumberSTD::hypot_ptr_ptr},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::hypot_real_real}
-	});
-	method("log", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log_real},
-	});
-	method("log10", {
-		{Type::POINTER, Type::REAL, {}, (void*) &NumberSTD::log10_ptr},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::log10_real},
-	});
-	method("max", {
-		{Type::POINTER, Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::max_float_float},
-		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::max_float_float},
-	});
-	method("min", {
-		{Type::POINTER, Type::REAL, {Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {Type::REAL}, (void*) &NumberSTD::min_float_float},
-		{Type::INTEGER, Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::min_float_float},
-	});
-	method("pow", {
-		{Type::POINTER, Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::pow_ptr},
-		{Type::LONG, Type::LONG, {Type::INTEGER}, (void*) &NumberSTD::pow_int}
-	});
-	method("round", {
-		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::round_ptr, Method::NATIVE}
-	});
-	method("signum", {
-		{Type::NUMBER, Type::INTEGER, {}, (void*) &NumberSTD::signum, Method::NATIVE}
-	});
-	method("sin", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sin_real}
-	});
-	method("sqrt", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::sqrt_real}
-	});
-	method("tan", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
-		{Type::REAL, Type::REAL, {}, (void*) &NumberSTD::tan_real}
-	});
-	method("toDegrees", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::toDegrees, Method::NATIVE}
-	});
-	method("toRadians", {
-		{Type::NUMBER, Type::REAL, {}, (void*) &NumberSTD::toRadians, Method::NATIVE}
-	});
-	method("isInteger", {
-		{Type::NUMBER, Type::BOOLEAN, {}, (void*) &NumberSTD::isInteger, Method::NATIVE}
-	});
-	method("isPrime", {
-		{Type::MPZ, Type::INTEGER, {}, (void*) &NumberSTD::is_prime},
-		{Type::LONG, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_long},
-		{Type::INTEGER, Type::BOOLEAN, {}, (void*) &NumberSTD::is_prime_int}
-	});
-
-	/*
-	 * Static methods
-	 */
-	static_method("int", {
-		{Type::INTEGER, {Type::UNKNOWN}, (void*) &NumberSTD::_int}
-	});
-	static_method("abs", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::abs_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_number},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_number}
-	});
-	static_method("acos", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::acos_real},
-	});
-	static_method("asin", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::asin_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::asin_real},
-	});
-	static_method("atan", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::atan_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan_real},
-	});
-	static_method("atan2", {
-		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
-		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::atan2_ptr_real, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::atan2_real_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::atan2_real_real}
-	});
-	static_method("cbrt", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cbrt_real}
-	});
-	static_method("ceil", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::ceil_real},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int}
-	});
-	static_method("char", {
-		{Type::STRING, {Type::POINTER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
-		{Type::STRING, {Type::REAL}, (void*) &NumberSTD::char_real},
-		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int}
-	});
-	static_method("cos", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cos_real},
-	});
-	static_method("exp", {
-		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::exp_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::exp_real},
-	});
-	static_method("floor", {
+		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::floor_real},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int},
 	});
-	static_method("hypot", {
+	method("hypot", {
+		{Type::POINTER, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::hypot_ptr_ptr},
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::hypot_ptr_ptr},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::hypot_real_real},
 	});
-	static_method("log", {
+	method("log", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::log_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log_real}
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log_real},
 	});
-	static_method("log10", {
+	method("log10", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::log10_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log10_real}
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log10_real},
 	});
-	static_method("max", {
+	method("max", {
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::max_float_ptr, Method::NATIVE},
+		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::max_int_ptr, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::NUMBER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::max_ptr_float, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::max_float_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::max_float_float},
 		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::max_float_float},
-		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::max_int_ptr, Method::NATIVE},
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::max_float_float},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float}
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float},
+
 	});
-	static_method("min", {
+	method("min", {
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::min_ptr_float, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::min_ptr_int, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::min_float_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float},
+		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::min_float_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
 		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::min_int_ptr, Method::NATIVE},
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float}
 	});
-	static_method("pow", {
+	method("pow", {
+		{Type::REAL, {Type::POINTER, Type::NUMBER}, (void*) &NumberSTD::pow_ptr},
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::pow_ptr},
-		{Type::REAL, {Type::LONG, Type::LONG}, (void*) &NumberSTD::pow_int}
+		{Type::LONG, {Type::LONG, Type::INTEGER}, (void*) &NumberSTD::pow_int},
+		{Type::REAL, {Type::LONG, Type::LONG}, (void*) &NumberSTD::pow_int},
 	});
-	static_method("rand", {
-		{Type::REAL, {}, (void*) &NumberSTD::rand01, Method::NATIVE}
-	});
-	static_method("randFloat", {
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::randFloat, Method::NATIVE}
-	});
-	static_method("randInt", {
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::randInt, Method::NATIVE}
-	});
-	static_method("round", {
+	method("round", {
+		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::round_real},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::round_int}
 	});
-	static_method("signum", {
-		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::signum, Method::NATIVE}
+	method("rand", Method::Static, {
+		{Type::REAL, {}, (void*) &NumberSTD::rand01, Method::NATIVE},
 	});
-	static_method("sin", {
+	method("randInt", Method::Static, {
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::randInt, Method::NATIVE},
+	});
+	method("randFloat", Method::Static, {
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::randFloat, Method::NATIVE},
+	});
+	method("signum", {
+		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::signum, Method::NATIVE},
+	});
+	method("sin", {
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sin_real},
 	});
-	static_method("sqrt", {
+	method("sqrt", {
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sqrt_real},
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::MPZ_TMP, {Type::MPZ}, (void*) NumberSTD::sqrt_mpz}
 	});
-	static_method("tan", {
+	method("tan", {
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::tan_real},
 	});
-	static_method("toDegrees", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::toDegrees, Method::NATIVE}
+	method("toDegrees", {
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::toDegrees, Method::NATIVE},
 	});
-	static_method("toRadians", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::toRadians, Method::NATIVE}
+	method("toRadians", {
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::toRadians, Method::NATIVE},
 	});
-	static_method("isInteger", {
-		{Type::BOOLEAN, {Type::NUMBER}, (void*) &NumberSTD::isInteger, Method::NATIVE}
+	method("isInteger", {
+		{Type::BOOLEAN, {Type::NUMBER}, (void*) &NumberSTD::isInteger, Method::NATIVE},
 	});
-	static_method("isPrime", {
+	method("isPrime", {
 		{Type::INTEGER, {Type::MPZ}, (void*) &NumberSTD::is_prime},
 		{Type::BOOLEAN, {Type::LONG}, (void*) &NumberSTD::is_prime_long},
-		{Type::BOOLEAN, {Type::INTEGER}, (void*) &NumberSTD::is_prime_int}
+		{Type::BOOLEAN, {Type::INTEGER}, (void*) &NumberSTD::is_prime_int},
 	});
 }
 

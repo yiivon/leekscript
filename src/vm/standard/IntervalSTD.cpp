@@ -23,14 +23,14 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
 
 	method("filter", {
-		{Type::INTERVAL, Type::INT_ARRAY, {pred_fun_type_int}, (void*) &LSInterval::ls_filter, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::INTERVAL, pred_fun_type_int}, (void*) &LSInterval::ls_filter, Method::NATIVE},
 	});
 
 	method("sum", {
-		{Type::INTERVAL, Type::LONG, {}, (void*) &LSInterval::ls_sum, Method::NATIVE},
+		{Type::LONG, {Type::INTERVAL}, (void*) &LSInterval::ls_sum, Method::NATIVE},
 	});
 	method("product", {
-		{Type::INTERVAL, Type::LONG, {}, (void*) &LSInterval::ls_product, Method::NATIVE},
+		{Type::LONG, {Type::INTERVAL}, (void*) &LSInterval::ls_product, Method::NATIVE},
 	});
 }
 

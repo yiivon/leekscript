@@ -5,6 +5,7 @@ build/
 *.d
 .metadata/
 .settings/
+.vscode/
 .cproject
 .project
 documentation.json

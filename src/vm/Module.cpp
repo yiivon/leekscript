@@ -40,25 +40,30 @@ void Module::static_field(std::string name, Type type, std::function<Compiler::v
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 
-void Module::method(std::string name, initializer_list<Method> impl) {
-	methods.push_back(ModuleMethod(name, impl));
-	vector<Method> methods = impl;
-	clazz->addMethod(name, methods);
-}
+void Module::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr) {
+	std::vector<Method> inst = {};
+	std::vector<StaticMethod> st = {};
 
-void Module::method(std::string name, Type obj_type, Type return_type, initializer_list<Type> args, void* addr, bool native) {
-	methods.push_back(ModuleMethod(name, {{obj_type, return_type, args, addr, native}}));
-	clazz->addMethod(name, {{obj_type, return_type, args, addr, native}});
-}
+	for (auto constr : methodsConstr) {
+		if (opt == Method::Static || opt == Method::Both)
+			st.emplace_back(StaticMethod(constr.return_type, constr.args, constr.addr, constr.native));
+			
+		if (opt == Method::Instantiate || opt == Method::Both) {
+			assert(constr.args.size() > 0); // must be at leats one argument to be the object used in instance
+			Type obj_type = constr.args[0];
+			constr.args.erase(constr.args.begin());
+			inst.emplace_back(Method(obj_type, constr.return_type, constr.args, constr.addr, constr.native));
+		}
+	}
 
-void Module::static_method(string name, initializer_list<StaticMethod> impl) {
-	static_methods.push_back(ModuleStaticMethod(name, impl));
-	clazz->addStaticMethod(name, impl);
-}
-
-void Module::static_method(string name, Type return_type, initializer_list<Type> args, void* addr, bool native) {
-	static_methods.push_back(ModuleStaticMethod(name, {{return_type, args, addr, native}}));
-	clazz->addStaticMethod(name, {{return_type, args, addr, native}});
+	if (!inst.empty()) {
+		methods.push_back(ModuleMethod(name, inst));
+		clazz->addMethod(name, inst);
+	}
+	if (!st.empty()) {
+		static_methods.push_back(ModuleStaticMethod(name, st));
+		clazz->addStaticMethod(name, st);
+	}
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {

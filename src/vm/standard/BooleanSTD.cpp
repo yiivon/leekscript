@@ -26,15 +26,10 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::BOOLEAN, Type::NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::mul_bool}
 	});
 
-	static_method("compare", {
+	method("compare", {
 		{Type::POINTER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val}
-	});
-
-	method("compare", {
-		{Type::POINTER, Type::INTEGER, {Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr, Method::NATIVE},
-		{Type::BOOLEAN, Type::INTEGER, {Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val}
+		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val},
 	});
 }
 

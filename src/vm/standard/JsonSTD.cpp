@@ -10,8 +10,12 @@ namespace ls {
 
 JsonSTD::JsonSTD() : Module("Json") {
 
-	static_method("encode", Type::STRING, {Type::UNKNOWN}, (void*) &JsonSTD::encode);
-	static_method("decode", Type::UNKNOWN, {Type::STRING}, (void*) &JsonSTD::decode);
+	method("encode", {
+		{Type::STRING, {Type::UNKNOWN}, (void*) &JsonSTD::encode}
+	});
+	method("decode", {
+		{Type::UNKNOWN, {Type::STRING}, (void*) &JsonSTD::decode},
+	});
 }
 
 Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) {
