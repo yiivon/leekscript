@@ -558,25 +558,8 @@ void Test::test_arrays() {
 	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
 	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
 	code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
+	// TODO not working
 	// code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])]").equals("[]");
-
-	/*
-	code("3 ~ x -> x ^ x").equals("27");
-	code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");
-	code("[1, 2, 3] ~~ print").equals("[null, null, null]");
-	code("[1, 2, 3] ~~ x -> [x, x]").equals("[[1, 1], [2, 2], [3, 3]]");
-	code("let s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
-	code("let s = 0 [1, 2, 3, 4, 5].each(x -> s += x)").equals("15");
-	code("[1, 2, 3, 4, 5].fold_left(+,0)").equals("15");
-	*/
-
-	/*
-	[1, 2, 3] ~~= (x -> x * 5 + 2)
-	[1, 2, 3] ~+= 1   =>   [2, 3, 4]
-	[1, 2, 3] ~*= 5
-	[1, 2, 3] ~= (x -> x * 5)
-	a[10:*]
-	*/
 
 	section("Array v1 pushAll");
 	// TODO pushAll function must take first array as reference
@@ -585,4 +568,19 @@ void Test::test_arrays() {
 	section("Array v1 count");
 	code_v1("var a = ['a', 'b', 'c'] count(a)").equals("3");
 
+	/*
+	TODO misc
+	code("3 ~ x -> x ^ x").equals("27");
+	code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");
+	code("[1, 2, 3] ~~ print").equals("[null, null, null]");
+	code("[1, 2, 3] ~~ x -> [x, x]").equals("[[1, 1], [2, 2], [3, 3]]");
+	code("let s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
+	code("let s = 0 [1, 2, 3, 4, 5].each(x -> s += x)").equals("15");
+	code("[1, 2, 3, 4, 5].fold_left(+,0)").equals("15");
+	[1, 2, 3] ~~= (x -> x * 5 + 2)
+	[1, 2, 3] ~+= 1   =>   [2, 3, 4]
+	[1, 2, 3] ~*= 5
+	[1, 2, 3] ~= (x -> x * 5)
+	a[10:*]
+	*/
 }
