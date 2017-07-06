@@ -16,7 +16,7 @@ public:
 	Type type;
 	void* addr;
 	bool native;
-	StaticMethod(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false) {
+	StaticMethod(Type return_type, std::vector<Type> args, void* addr, bool native = false) {
 		this->addr = addr;
 		type = {RawType::FUNCTION, Nature::POINTER};
 		type.setReturnType(return_type);
@@ -27,23 +27,30 @@ public:
 	}
 };
 
-class Method {
+class Method : public StaticMethod {
 public:
-	Type type;
-	void* addr;
 	Type obj_type;
-	bool native;
-	Method(Type obj_type, Type return_type, std::initializer_list<Type> args, void* addr, bool native = false) {
-		this->addr = addr;
-		this->obj_type = obj_type;
-		type = {RawType::FUNCTION, Nature::POINTER};
-		type.setReturnType(return_type);
-		for (Type arg : args) {
-			type.addArgumentType(arg);
-		}
-		this->native = native;
-	}
+
+	Method(Type obj_type, Type return_type, std::vector<Type> args, void* addr, bool native = false)
+		: StaticMethod(return_type, args, addr, native), obj_type(obj_type) {}
+
+	enum Option {
+		Static, Instantiate, Both
+	};
+
 	static bool NATIVE;
+};
+
+class MethodConstructor {
+public:
+	Type return_type;
+	void* addr;
+	bool native;
+	Type obj_type;
+	std::vector<Type> args;
+
+	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false) 
+		: return_type(return_type), addr(addr), native(native), args(args) {}
 };
 
 class ModuleMethod {
@@ -77,7 +84,6 @@ public:
 	: name(name), type(type), fun(fun) {}
 };
 
-
 class Module {
 public:
 
@@ -92,11 +98,8 @@ public:
 
 	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
 
-	void method(std::string name, std::initializer_list<Method>);
-	void method(std::string name, Type obj_type, Type return_type, std::initializer_list<Type> args, void* addr, bool native = false);
-
-	void static_method(std::string name, std::initializer_list<StaticMethod>);
-	void static_method(std::string name, Type return_type, std::initializer_list<Type> args, void* addr, bool native = false);
+	void method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methods);
+	void method(std::string name, std::initializer_list<MethodConstructor> methods) { method(name, Method::Both, methods); }
 
 	void field(std::string name, Type type);
 	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);

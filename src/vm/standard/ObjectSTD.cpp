@@ -33,20 +33,13 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	map_fun_type.setArgumentType(0, Type::POINTER);
 	map_fun_type.setReturnType(Type::POINTER);
 	method("map", {
-		{Type::OBJECT, Type::OBJECT, {map_fun_type}, (void*) &LSObject::ls_map, Method::NATIVE}
+		{Type::OBJECT, {Type::OBJECT, map_fun_type}, (void*) &LSObject::ls_map, Method::NATIVE}
 	});
 
 	method("keys", {
-		{Type::OBJECT, Type::STRING_ARRAY, {}, (void*) &LSObject::ls_get_keys, Method::NATIVE}
+		{Type::STRING_ARRAY, {Type::OBJECT}, (void*) &LSObject::ls_get_keys, Method::NATIVE}
 	});
 	method("values", {
-		{Type::OBJECT, Type::PTR_ARRAY, {}, (void*) &LSObject::ls_get_values, Method::NATIVE}
-	});
-
-	/*
-	 * Static methods
-	 */
-	static_method("values", {
 		{Type::PTR_ARRAY, {Type::OBJECT}, (void*) &LSObject::ls_get_values, Method::NATIVE}
 	});
 }
