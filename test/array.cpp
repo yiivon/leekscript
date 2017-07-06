@@ -575,11 +575,8 @@ void Test::test_arrays() {
 	[1, 2, 3] ~+= 1   =>   [2, 3, 4]
 	[1, 2, 3] ~*= 5
 	[1, 2, 3] ~= (x -> x * 5)
+	a[10:*]
 	*/
-
-	// let a = [for let i = 0; i < 100; i++ do i end]
-	// a[10:*]
-	// a[] = 12 (a += 12)
 
 	section("Array v1 pushAll");
 	// TODO pushAll function must take first array as reference
