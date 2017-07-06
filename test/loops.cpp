@@ -36,6 +36,9 @@ void Test::test_loops() {
 	code("if false { return 5 } else { 2 }").equals("2");
 	code("let a = 5m if true { a } else { 2m }").equals("5");
 	code("let a = 5m if true { a } else { a }").equals("5");
+	code("if true then 1 else 2 end").equals("1");
+	code("if true then if false then 1 else 2 end end").equals("2");
+	code("if true then if false then 1 end else 2 end").equals("null");
 
 	section("Conditions with other types");
 	code("if 1212 { 'ok' } else { 5 }").equals("'ok'");
