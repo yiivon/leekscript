@@ -151,6 +151,23 @@ void Test::test_map() {
 	// TODO crashing
 	// code("var s = 0 [:].iter((k, v) -> s += v) s").equals("0");
 
+	section("Map.max()");
+	code("[:].max()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12 : 0].clear().max()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1 : 4, 2 : 20, 12 : 1,  0 : 4].max()").equals("20");
+	code("let a = ['idx0' : 4, 'idx1' : 12, 'idx2' : 1, 'idx3' : 4] a.max()").equals("12");
+	code("['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'].max()").equals("'d'");
+	code("let a = ['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'] a.max()").equals("'d'");
+	code("[0 : 4, 42 : 20.5, 100 : 1, -1 : 4.99].max()").equals("20.5");
+
+	section("Map.maxKey()");
+	code("[:].maxKey()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12 : 0].clear().maxKey()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1 : 4, 2 : 20, 12 : 1,  0 : 4].maxKey()").equals("12");
+	code("let a = ['idx0' : 4, 'idx1' : 12, 'idx2' : 1, 'idx3' : 4] a.maxKey()").equals("'idx3'");
+	code("['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'].maxKey()").equals("'d'");
+	code("let a = ['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'] a.maxKey()").equals("'d'");
+	code("[0 : 4, 42 : 20.5, 100 : 1, -1 : 4.99].maxKey()").equals("100");
 	section("Map.min()");
 	code("[:].min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12 : 0].clear().min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
