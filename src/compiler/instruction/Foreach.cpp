@@ -115,7 +115,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	// Create variables
 	jit_type_t jit_value_type = VM::get_jit_type(value_type);
 	jit_value_t value_v = jit_value_create(c.F, jit_value_type);
-	jit_insn_store(c.F, value_v, c.new_integer(0).v);
+	jit_insn_store(c.F, value_v, c.new_pointer(LSNull::get()).v);
 	jit_type_t jit_key_type = VM::get_jit_type(key_type);
 	jit_value_t key_v = key ? jit_value_create(c.F, jit_key_type) : nullptr;
 	if (key)
@@ -131,6 +131,12 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	jit_label_t label_cond = jit_label_undefined;
 
 	auto it = c.iterator_begin(container_v);
+
+	// For arrays, if begin iterator is 0, jump to end directly
+	if (container->type.raw_type == RawType::ARRAY) {
+		auto empty_array = c.insn_eq(c.new_integer(0), it);
+		jit_insn_branch_if(c.F, empty_array.v, &label_end);
+	}
 
 	// cond label:
 	jit_insn_label(c.F, &label_cond);
