@@ -7,9 +7,6 @@
 
 LeekScript is a dynamically typed, compiled just-in-time programming language initially designed for [Leek Wars](https://leekwars.com) AIs, and for games in general. Design to be simple to use for beginners, but with rich syntax and functionnalities, and a good speed thanks to an optimized compiler.
 
-The project is still in development, and shouldn't be used for the moment.
-
-
 Demo
 ----
 
