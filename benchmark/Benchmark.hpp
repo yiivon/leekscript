@@ -8,6 +8,7 @@ public:
 
 	static void arrays();
 	static void primes();
+	static void operators();
 };
 
 #endif

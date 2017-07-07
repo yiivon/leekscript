@@ -11,6 +11,7 @@
 #include <sstream>
 #include <functional>
 #include <iomanip>
+#include "../lib/json.hpp"
 using namespace std;
 
 std::string pad(std::string s, int l) {
@@ -131,7 +132,13 @@ void benchmark(const std::string& code) {
 	r = system("echo \"\" >> results");
 }
 
-int main(int, char**) {
+int main(int argc, char** argv) {
+
+	if (argc > 1 && std::string(argv[1]) == "-o") {
+		Benchmark::operators();
+		return 0;
+	}
+
 	cout << "Starting benchmark..." << endl;
 	std::remove("results");
 
@@ -150,6 +157,46 @@ int main(int, char**) {
 
 	cout << " Total time: " << format_ns(t, 0) << endl;
 	cout << endl;
+}
+
+string read_file(string file) {
+	ifstream ifs(file.data());
+	string content = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
+	ifs.close();
+	return content;
+}
+
+long run_operator(const std::string& op, bool empty = false) {
+	std::ostringstream execute;
+	std::string code = std::string("var s = 0.5 for var i = 0; i < 200000; ++i {");
+	for (int i = 1; i < 1000; ++i) {
+		if (empty) {
+			code += std::string("s += ") + std::to_string(i) + std::string(" ");
+		} else {
+			code += std::string("s += i ") + op + std::string(" ") + std::to_string(i) + std::string(" ");
+		}
+	}
+	code += std::string("}");
+	// std::cout << "code: " << code << std::endl;
+	int r = system((std::string("build/leekscript -t -j -n \"") + code + std::string("\" > result")).c_str());
+	(void) r;
+	auto result = Json::parse(read_file("result"));
+	return result["time"];
+}
+
+void test_operator() {
+
+}
+
+void Benchmark::operators() {
+	std::cout << "Starting benchmark..." << std::endl;
+	auto b = run_operator("", true);
+	std::cout << "base time: " << (b / 1000000) << " ms" << std::endl;
+
+	for (auto& o : {"+", "-", "*", "/", "\\", "^", "&", "|", "%", "%%", "**", "&&"}) {
+		auto t = run_operator(o);
+		std::cout << "operator " << o << " : " << (t / 1000000) << " ms" << std::endl;
+	}
 }
 
 void Benchmark::arrays() {
