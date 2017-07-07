@@ -68,6 +68,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 
 	} else if (operatorr->type == TokenType::NEW) {
 
+		type = Type::POINTER;
 		if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
 			if (vv->name == "Number") type = Type::INTEGER;
 			else if (vv->name == "Boolean") type = Type::BOOLEAN;
@@ -75,7 +76,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 			else if (vv->name == "Array") type = Type::PTR_ARRAY;
 			else if (vv->name == "Object") type = Type::OBJECT;
 		}
-		if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
+		else if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
 				if (vv->name == "Number") {
 					if (fc->arguments.size() > 0) {
@@ -85,15 +86,13 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 						type = Type::INTEGER;
 					}
 				}
-				if (vv->name == "Boolean") type = Type::BOOLEAN;
-				if (vv->name == "String") type = Type::STRING;
-				if (vv->name == "Array") type = Type::PTR_ARRAY;
-				if (vv->name == "Object") type = Type::OBJECT;
+				else if (vv->name == "Boolean") type = Type::BOOLEAN;
+				else if (vv->name == "String") type = Type::STRING;
+				else if (vv->name == "Array") type = Type::PTR_ARRAY;
+				else if (vv->name == "Object") type = Type::OBJECT;
 			}
 		}
-		type = Type::POINTER;
 	}
-
 	if (req_type.nature != Nature::UNKNOWN) {
 		type.nature = req_type.nature;
 	}
