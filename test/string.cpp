@@ -264,6 +264,16 @@ void Test::test_strings() {
 	code("String.wordCount('abc def ghi')").equals("3");
 	code("['a b c', 'd e', 'f', 'g h i j'].map(x -> x.wordCount())").equals("[3, 2, 1, 4]");
 
+	section("String.sort()");
+	code("''.sort()").equals("''");
+	code("'A'.sort()").equals("'A'");
+	code("'salut'.sort()").equals("'alstu'");
+	code("'97615432304655212'.sort()").equals("'01122233445556679'");
+	code("let a = '' a.sort()").equals("''");
+	code("let a = 'salut' a.sort()").equals("'alstu'");
+	code("let a = 'A' a.sort()").equals("'A'");
+	code("let a = '97615432304655212' a.sort()").equals("'01122233445556679'");
+
 	section("v1 string charAt");
 	code_v1("charAt('hello', 3)").equals("'l'");
 
