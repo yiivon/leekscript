@@ -499,10 +499,17 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4, 5].isPermutation([4, 1, 3, 5, 2])").equals("true");
 	code("[1, 2, 3, 4, 5].isPermutation([4, 1, 3, 5, 3])").equals("false");
 	code("[1, 2, 3, 4, 5].isPermutation([1, 2, 3, 4, 5, 6])").equals("false");
+	code("[1, 2, 3.2, 4, 5.5].isPermutation([3.2, 4, 5.5, 2, 1])").equals("true");
 	code("['a'].isPermutation(['a'])").equals("true");
 	code("['a', 'b'].isPermutation(['b', 'a'])").equals("true");
 	code("['a', 'b', 'c', 'd', 'e'].isPermutation(['d', 'a', 'c', 'e', 'b'])").equals("true");
 	code("['a', 'b', 'c', 'd', 'e'].isPermutation(['d', 'a', 'c', 'd', 'c'])").equals("false");
+	code("var a = [1, 2, 3, 'a'] a.pop() a.isPermutation([3, 2, 1])").equals("true");
+	code("var a = [1, 2, 3.5, 'a'] a.pop() a.isPermutation([3.5, 2, 1])").equals("true");
+	code("var a = [1, 2, 3, 4.5] a.pop() a.isPermutation([3, 2, 1])").equals("true");
+	code("var a = [1, 2, 3, 'a'] a.pop() [2, 1, 3].isPermutation(a)").equals("true");
+	code("var a = [1, 2, 3.5, 'a'] a.pop() [2, 1, 3.5].isPermutation(a)").equals("true");
+	code("var a = [1, 2, 3, 4.5] a.pop() [3, 1, 2].isPermutation(a)").equals("true");
 
 	section("Array.random()");
 	code("[].random(1)").equals("[]");
