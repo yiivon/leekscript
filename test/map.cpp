@@ -168,6 +168,7 @@ void Test::test_map() {
 	code("['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'].maxKey()").equals("'d'");
 	code("let a = ['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'] a.maxKey()").equals("'d'");
 	code("[0 : 4, 42 : 20.5, 100 : 1, -1 : 4.99].maxKey()").equals("100");
+	
 	section("Map.min()");
 	code("[:].min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12 : 0].clear().min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
