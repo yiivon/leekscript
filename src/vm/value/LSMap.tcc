@@ -154,70 +154,6 @@ V LSMap<K, V>::ls_min() {
 	return min;
 }
 
-template <>
-inline LSValue* LSMap<LSValue*, LSValue*>::ls_minKey() {
-	if (this->empty()) {
-		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
-	}
-
-	auto it = this->begin();
-	LSValue* min = it->first;
-	for (; it != this->end(); ++it)
-		if (*(it->first) < *min)
-			min = it->first;
-
-	if (refs == 0) {
-		min = min->clone();
-		delete this;
-	}
-	return min;
-}
-
-template <>
-inline LSValue* LSMap<LSValue*, int>::ls_minKey() {
-	if (this->empty()) {
-		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
-	}
-
-	auto it = this->begin();
-	LSValue* min = it->first;
-	for (; it != this->end(); ++it)
-		if (*(it->first) < *min)
-			min = it->first;
-
-	
-	if (refs == 0) {
-		min = min->clone();
-		delete this;
-	}
-	return min;
-}
-
-template <>
-inline LSValue* LSMap<LSValue*, double>::ls_minKey() {
-	if (this->empty()) {
-		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
-	}
-
-	auto it = this->begin();
-	LSValue* min = it->first;
-	for (; it != this->end(); ++it)
-		if (*(it->first) < *min)
-			min = it->first;
-
-	if (refs == 0) {
-		min = min->clone();
-		delete this;
-	}
-	return min;
-}
-
 template <class K, class V>
 K LSMap<K, V>::ls_minKey() {
 	if (this->empty()) {
@@ -225,14 +161,17 @@ K LSMap<K, V>::ls_minKey() {
 		__builtin_frame_address(0);
 		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-
 	auto it = this->begin();
 	K min = it->first;
-	for (; it != this->end(); ++it)
-		if (it->first < min)
+	for (; it != this->end(); ++it) {
+		if (ls::lt(it->first, min)) {
 			min = it->first;
-
-	LSValue::delete_temporary(this);
+		}
+	}
+	if (refs == 0) {
+		min = ls::clone(min);
+		LSValue::delete_temporary(this);
+	}
 	return min;
 }
 
