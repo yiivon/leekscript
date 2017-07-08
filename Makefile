@@ -149,7 +149,7 @@ coverage: build/leekscript-coverage
 	cd build/html; genhtml --ignore-errors source --legend --precision 2 --branch-coverage app.info
 
 demangle-coverage:
-	find build/html -name "*.func-sort-c.html" -type f -exec bash -c 'echo "Demangle $1 ..."; node tool/demangle.js $1 > $1.tmp; mv $1.tmp $1' - {} \;
+	find build/html -name "*.func-sort-c.html" -type f -exec bash -c 'echo "Demangle $$1 ..."; node tool/demangle.js $$1 > $$1.tmp; mv $$1.tmp $$1' - {} \;
 
 # Build with profile flags enabled
 build/leekscript-profile: $(BUILD_DIR) $(OBJ_PROFILE) $(OBJ_TEST)
