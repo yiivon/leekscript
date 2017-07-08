@@ -177,7 +177,7 @@ K LSMap<K, V>::ls_minKey() {
 
 template <typename K, typename V>
 LSArray<V>* LSMap<K, V>::values() const {
-	LSArray<V>* array = new LSArray<V>();
+	auto array = new LSArray<V>();
 	for (auto i : *this) {
 		array->push_clone(i.second);
 	}
