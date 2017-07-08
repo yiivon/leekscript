@@ -176,27 +176,6 @@ LSValue* LSString::ls_tilde() {
 	return new LSString(reversed);
 }
 
-LSValue* LSString::ls_copy_assign(LSValue* v) {
-	if (v->type != STRING) {
-		LSValue::delete_temporary(this);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
-	}
-	auto string = static_cast<LSString*>(v);
-	this->assign(*string);
-	return this;
-}
-
-LSValue* LSString::ls_move_assign(LSValue* v) {
-	if (v->type != STRING) {
-		LSValue::delete_temporary(this);
-		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
-	}
-	auto string = static_cast<LSString*>(v);
-	this->assign(*string);
-	return this;
-}
-
 LSValue* LSString::add(LSValue* v) {
 	if (refs == 0) {
 		this->append(v->to_string());
