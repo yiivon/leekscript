@@ -67,19 +67,15 @@ StringSTD::StringSTD() : Module("String") {
 	/*
 	 * Methods
 	 */
-
 	method("charAt", {
 		{Type::STRING, {Type::STRING, Type::INTEGER}, (void*) &string_charAt, Method::NATIVE},
 	});
-		
 	method("contains", {
 		{Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_contains, Method::NATIVE},
 	});
-
 	method("endsWith", {
 		{Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_endsWith, Method::NATIVE},
 	});
-
 	Type fold_fun_type = Type::FUNCTION_P;
 	fold_fun_type.setArgumentType(0, Type::POINTER);
 	fold_fun_type.setArgumentType(1, Type::STRING);
@@ -140,7 +136,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("number", {
 		{Type::LONG, {Type::STRING}, (void*) &string_number, Method::NATIVE},
 		{Type::LONG, {Type::POINTER}, (void*) &string_number, Method::NATIVE},
-});
+	});
 	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
