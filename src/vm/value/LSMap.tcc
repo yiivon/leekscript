@@ -99,7 +99,7 @@ V LSMap<K, V>::ls_max() {
 		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	auto it = this->begin();
-	V max = it->second;
+	auto max = it->second;
 	for (; it != this->end(); ++it) {
 		if (ls::lt(max, it->second)) {
 			max = it->second;
@@ -120,7 +120,7 @@ K LSMap<K, V>::ls_maxKey() {
 		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	auto it = this->begin();
-	K max = it->first;
+	auto max = it->first;
 	for (; it != this->end(); ++it) {
 		if (ls::lt(max, it->first)) {
 			max = it->first;
@@ -141,7 +141,7 @@ V LSMap<K, V>::ls_min() {
 		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	auto it = this->begin();
-	V min = it->second;
+	auto min = it->second;
 	for (; it != this->end(); ++it) {
 		if (ls::lt(it->second, min)) {
 			min = it->second;
@@ -162,7 +162,7 @@ K LSMap<K, V>::ls_minKey() {
 		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
 	auto it = this->begin();
-	K min = it->first;
+	auto min = it->first;
 	for (; it != this->end(); ++it) {
 		if (ls::lt(it->first, min)) {
 			min = it->first;
