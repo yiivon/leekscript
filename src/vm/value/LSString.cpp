@@ -81,10 +81,14 @@ bool LSString::is_permutation(LSString* other) {
 }
 
 LSString* LSString::sort() {
-	std::string res = *this;
-	std::sort(res.begin(), res.end());
-	LSValue::delete_temporary(this); // TODO move if tmp
-	return new LSString(res);
+	if (refs == 0) {
+		std::sort(this->begin(), this->end());
+		return this;
+	} else {
+		std::string res = *this;
+		std::sort(res.begin(), res.end());
+		return new LSString(res);
+	}
 }
 
 bool LSString::is_palindrome() const {
