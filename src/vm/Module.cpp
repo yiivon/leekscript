@@ -41,27 +41,25 @@ void Module::static_field(std::string name, Type type, std::function<Compiler::v
 }
 
 void Module::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr) {
-	std::vector<Method> inst = {};
-	std::vector<StaticMethod> st = {};
-
+	std::vector<Method> inst;
+	std::vector<StaticMethod> st;
 	for (auto constr : methodsConstr) {
-		if (opt == Method::Static || opt == Method::Both)
-			st.emplace_back(StaticMethod(constr.return_type, constr.args, constr.addr, constr.native));
-			
+		if (opt == Method::Static || opt == Method::Both) {
+			st.emplace_back(constr.return_type, constr.args, constr.addr, constr.native);
+		}
 		if (opt == Method::Instantiate || opt == Method::Both) {
 			assert(constr.args.size() > 0); // must be at leats one argument to be the object used in instance
-			Type obj_type = constr.args[0];
+			auto obj_type = constr.args[0];
 			constr.args.erase(constr.args.begin());
-			inst.emplace_back(Method(obj_type, constr.return_type, constr.args, constr.addr, constr.native));
+			inst.emplace_back(obj_type, constr.return_type, constr.args, constr.addr, constr.native);
 		}
 	}
-
 	if (!inst.empty()) {
-		methods.push_back(ModuleMethod(name, inst));
+		methods.emplace_back(name, inst);
 		clazz->addMethod(name, inst);
 	}
 	if (!st.empty()) {
-		static_methods.push_back(ModuleStaticMethod(name, st));
+		static_methods.emplace_back(name, st);
 		clazz->addStaticMethod(name, st);
 	}
 }
