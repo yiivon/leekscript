@@ -181,15 +181,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto perm_ptr_real = &LSArray<LSValue*>::is_permutation<double>;
 	auto perm_ptr_ptr = &LSArray<LSValue*>::is_permutation<LSValue*>;
 	method("isPermutation", {
-		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INT_ARRAY}, (void*) perm_int_int, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_ARRAY, Type::REAL_ARRAY}, (void*) perm_int_real, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_ARRAY, Type::PTR_ARRAY}, (void*) perm_int_ptr, Method::NATIVE},
-		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::INT_ARRAY}, (void*) perm_real_int, Method::NATIVE},
-		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::REAL_ARRAY}, (void*) perm_real_real, Method::NATIVE},
-		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::PTR_ARRAY}, (void*) perm_real_ptr, Method::NATIVE},
-		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::INT_ARRAY}, (void*) perm_ptr_int, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::PTR_ARRAY}, (void*) perm_ptr_ptr, Method::NATIVE},
 		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::REAL_ARRAY}, (void*) perm_ptr_real, Method::NATIVE},
-		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::PTR_ARRAY}, (void*) perm_ptr_ptr, Method::NATIVE}
+		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::INT_ARRAY}, (void*) perm_ptr_int, Method::NATIVE},
+		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::PTR_ARRAY}, (void*) perm_real_ptr, Method::NATIVE},
+		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::REAL_ARRAY}, (void*) perm_real_real, Method::NATIVE},
+		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::INT_ARRAY}, (void*) perm_real_int, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_ARRAY, Type::PTR_ARRAY}, (void*) perm_int_ptr, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_ARRAY, Type::REAL_ARRAY}, (void*) perm_int_real, Method::NATIVE},
+		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INT_ARRAY}, (void*) perm_int_int, Method::NATIVE},
 	});
 
 	method("partition", {
