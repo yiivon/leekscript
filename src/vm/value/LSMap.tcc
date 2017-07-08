@@ -112,70 +112,6 @@ V LSMap<K, V>::ls_max() {
 	return max;
 }
 
-template <>
-inline LSValue* LSMap<LSValue*, LSValue*>::ls_maxKey() {
-	if (this->empty()) {
-		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
-	}
-
-	auto it = this->begin();
-	LSValue* max = it->first;
-	for (; it != this->end(); ++it)
-		if (*(it->first) > *max)
-			max = it->first;
-
-	if (refs == 0) {
-		max = max->clone();
-		delete this;
-	}
-	return max;
-}
-
-template <>
-inline LSValue* LSMap<LSValue*, int>::ls_maxKey() {
-	if (this->empty()) {
-		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
-	}
-
-	auto it = this->begin();
-	LSValue* max = it->first;
-	for (; it != this->end(); ++it)
-		if (*(it->first) > *max)
-			max = it->first;
-
-	
-	if (refs == 0) {
-		max = max->clone();
-		delete this;
-	}
-	return max;
-}
-
-template <>
-inline LSValue* LSMap<LSValue*, double>::ls_maxKey() {
-	if (this->empty()) {
-		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
-	}
-
-	auto it = this->begin();
-	LSValue* max = it->first;
-	for (; it != this->end(); ++it)
-		if (*(it->first) > *max)
-			max = it->first;
-
-	if (refs == 0) {
-		max = max->clone();
-		delete this;
-	}
-	return max;
-}
-
 template <class K, class V>
 K LSMap<K, V>::ls_maxKey() {
 	if (this->empty()) {
@@ -183,14 +119,17 @@ K LSMap<K, V>::ls_maxKey() {
 		__builtin_frame_address(0);
 		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
 	}
-
 	auto it = this->begin();
 	K max = it->first;
-	for (; it != this->end(); ++it)
-		if (it->first > max)
+	for (; it != this->end(); ++it) {
+		if (ls::lt(max, it->first)) {
 			max = it->first;
-
-	LSValue::delete_temporary(this);
+		}
+	}
+	if (refs == 0) {
+		max = ls::clone(max);
+		LSValue::delete_temporary(this);
+	}
 	return max;
 }
 
