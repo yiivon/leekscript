@@ -15,4 +15,6 @@ void Test::test_utils() {
 	std::string needle = "o";
 	std::string replacement = "_";
 	std::string res = Util::replace_all(haystack, needle, replacement);
+
+	Util::file_short_name("foo/bar/toto.txt"); // 'toto.txt'
 }
