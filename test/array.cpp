@@ -494,17 +494,15 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3] Array.insert(a, 12, 6)").equals("[1, 2, 3, 0, 0, 0, 12]");
 
 	section("Array.isPermutation()");
-	// TODO support isPermutation with pointer arrays
-	// code("[].isPermutation([])").equals("true");
+	code("[].isPermutation([])").equals("true");
 	code("[1].isPermutation([1])").equals("true");
 	code("[1, 2, 3, 4, 5].isPermutation([4, 1, 3, 5, 2])").equals("true");
 	code("[1, 2, 3, 4, 5].isPermutation([4, 1, 3, 5, 3])").equals("false");
 	code("[1, 2, 3, 4, 5].isPermutation([1, 2, 3, 4, 5, 6])").equals("false");
-	// TODO support isPermutation with pointer arrays
-	// code("['a'].isPermutation(['a'])").equals("true");
-	// code("['a', 'b'].isPermutation(['b', 'a'])").equals("true");
-	// code("['a', 'b', 'c', 'd', 'e'].isPermutation(['d', 'a', 'c', 'e', 'b'])").equals("true");
-	// code("['a', 'b', 'c', 'd', 'e'].isPermutation(['d', 'a', 'c', 'd', 'c'])").equals("false");
+	code("['a'].isPermutation(['a'])").equals("true");
+	code("['a', 'b'].isPermutation(['b', 'a'])").equals("true");
+	code("['a', 'b', 'c', 'd', 'e'].isPermutation(['d', 'a', 'c', 'e', 'b'])").equals("true");
+	code("['a', 'b', 'c', 'd', 'e'].isPermutation(['d', 'a', 'c', 'd', 'c'])").equals("false");
 
 	section("Array.random()");
 	code("[].random(1)").equals("[]");
