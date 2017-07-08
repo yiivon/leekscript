@@ -818,9 +818,50 @@ T LSArray<T>::ls_min() {
 	return min;
 }
 
-template <>
-inline bool LSArray<int>::is_permutation(LSArray<int>* other) {
-	bool result = this->size() == other->size() and std::is_permutation(this->begin(), this->end(), other->begin());
+template <class T1, class T2>
+std::pair<T1, T2> ls_mismatch(T1 first1, T1 last1, T2 first2) {
+	while (first1 != last1 && ls::equals(*first1, *first2)) {
+		++first1, ++first2;
+	}
+	return std::make_pair(first1, first2);
+}
+
+template <class T1, class T2>
+int ls_count(T1 first, T1 last, const T2& value) {
+	int ret = 0;
+	for (; first != last; ++first) {
+		if (ls::equals(*first, value)) ret++;
+	}
+	return ret;
+}
+
+/*
+ * Based on http://en.cppreference.com/w/cpp/algorithm/is_permutation implementation
+ */
+template <class T1, class T2>
+bool is_permutation_base(LSArray<T1>* a1, LSArray<T2>* a2) {
+	auto first = a1->begin();
+	auto last = a1->end();
+	auto d_first = a2->begin();
+	std::tie(first, d_first) = ls_mismatch(first, last, d_first);
+	if (first != last) {
+		auto d_last = d_first;
+		std::advance(d_last, std::distance(first, last));
+		for (auto i = first; i != last; ++i) {
+			if (i != std::find(first, i, *i)) continue;
+			auto m = ls_count(d_first, d_last, *i);
+			if (m == 0 || ls_count(i, last, *i) != m) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+template <class T>
+template <class T2>
+bool LSArray<T>::is_permutation(LSArray<T2>* other) {
+	bool result = this->size() == other->size() and is_permutation_base(this, other);
 	LSValue::delete_temporary(this);
 	LSValue::delete_temporary(other);
 	return result;

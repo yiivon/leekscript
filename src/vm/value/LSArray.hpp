@@ -71,7 +71,8 @@ public:
 	LSArray<T>* ls_fill(T element, int size);
 	T ls_max();
 	T ls_min();
-	bool is_permutation(LSArray<int>*);
+	template <class T2>
+	bool is_permutation(LSArray<T2>* other);
 	template <class T2>
 	LSValue* add_set(LSSet<T2>* set);
 	LSArray<T>* ls_random(int n);
