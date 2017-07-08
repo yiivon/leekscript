@@ -215,7 +215,6 @@ bool LSMap<K, T>::map_equals(const LSMap<K2, T2>* map) const {
 	auto i = this->begin();
 	auto j = map->begin();
 	while (i != this->end()) {
-		if (j == map->end()) return false; // TODO to remove
 		if (!ls::equals(i->first, j->first)) return false;
 		if (!ls::equals(i->second, j->second)) return false;
 		++j;
