@@ -92,9 +92,6 @@ public:
 
 	std::string name;
 	LSClass* clazz;
-	std::vector<ModuleMethod> methods;
-	std::vector<ModuleStaticField> static_fields;
-	std::vector<ModuleStaticMethod> static_methods;
 
 	Module(std::string name);
 	virtual ~Module();

@@ -39,11 +39,9 @@ void Module::field(std::string name, Type type, void* fun) {
 }
 
 void Module::static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun) {
-	static_fields.push_back(ModuleStaticField(name, type, fun));
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 void Module::static_field(std::string name, Type type, void* fun) {
-	static_fields.push_back(ModuleStaticField(name, type, fun));
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 
@@ -62,11 +60,9 @@ void Module::method(std::string name, Method::Option opt, initializer_list<Metho
 		}
 	}
 	if (!inst.empty()) {
-		methods.emplace_back(name, inst);
 		clazz->addMethod(name, inst);
 	}
 	if (!st.empty()) {
-		static_methods.emplace_back(name, st);
 		clazz->addStaticMethod(name, st);
 	}
 }
@@ -103,31 +99,32 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 	os << "\"" << name << "\":{";
 
 	os << "\"attributes\":{";
-	for (unsigned e = 0; e < static_fields.size(); ++e) {
-
-		ModuleStaticField& a = static_fields[e];
-
-		std::string desc = (translation_map.find(a.name) != translation_map.end()) ?
-				translation_map[a.name] : "";
+	int e = 0;
+	for (auto& f : clazz->static_fields) {
+		auto& a = f.second;
+		auto desc = (translation_map.find(f.first) != translation_map.end()) ?
+				translation_map[f.first] : "";
+		if (!desc.is_string()) continue;
 
 		if (e > 0) os << ",";
-		os << "\"" << a.name << "\":{\"type\":";
+		os << "\"" << f.first << "\":{\"type\":";
 		a.type.toJson(os);
 		//os << ",\"value\":\"" << a.value << "\"";
 		os << ",\"desc\":\"" << desc << "\"";
 		os << "}";
+		e++;
 	}
 
 	os << "},\"methods\":{";
-	for (unsigned e = 0; e < methods.size(); ++e) {
-		ModuleMethod& m = methods[e];
-
+	e = 0;
+	for (auto& m : clazz->methods) {
+		std::vector<Method>& impl = m.second;
 		if (e > 0) os << ",";
-		os << "\"" << m.name << "\":{\"type\":";
-		m.impl[0].type.toJson(os);
+		os << "\"" << m.first << "\":{\"type\":";
+		impl[0].type.toJson(os);
 
-		if (translation_map.find(m.name) != translation_map.end()) {
-			Json json = translation_map[m.name];
+		if (translation_map.find(m.first) != translation_map.end()) {
+			Json json = translation_map[m.first];
 			std::string desc = json["desc"];
 			std::string return_desc = json["return"];
 
@@ -135,25 +132,27 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 			os << ",\"return\":\"" << return_desc << "\"";
 		}
 		os << "}";
+		e++;
 	}
 
 	os << "},\"static_methods\":{";
-		for (unsigned e = 0; e < static_methods.size(); ++e) {
-			ModuleStaticMethod& m = static_methods[e];
+	e = 0;
+	for (auto& m : clazz->static_methods) {
+		auto& impl = m.second;
+		if (e > 0) os << ",";
+		os << "\"" << m.first << "\":{\"type\":";
+		impl[0].type.toJson(os);
 
-			if (e > 0) os << ",";
-			os << "\"" << m.name << "\":{\"type\":";
-			m.impl[0].type.toJson(os);
-
-			if (translation_map.find(m.name) != translation_map.end()) {
-				Json json = translation_map[m.name];
-				std::string desc = (json.find("desc") != json.end()) ? json["desc"] : "?";
-				std::string return_desc = (json.find("return") != json.end()) ? json["return"] : "?";
-				os << ",\"desc\":\"" << desc << "\"";
-				os << ",\"return\":\"" << return_desc << "\"";
-			}
-			os << "}";
+		if (translation_map.find(m.first) != translation_map.end()) {
+			Json json = translation_map[m.first];
+			std::string desc = (json.find("desc") != json.end()) ? json["desc"] : "?";
+			std::string return_desc = (json.find("return") != json.end()) ? json["return"] : "?";
+			os << ",\"desc\":\"" << desc << "\"";
+			os << ",\"return\":\"" << return_desc << "\"";
 		}
+		os << "}";
+		e++;
+	}
 	os << "}}";
 }
 
