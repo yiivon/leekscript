@@ -67,6 +67,9 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			if (mod_field.fun != nullptr) {
 				static_access_function = mod_field.fun;
 			}
+			if (mod_field.native_fun != nullptr) {
+				native_static_access_function = mod_field.native_fun;
+			}
 			field_type = mod_field.type;
 			found = true;
 		}
@@ -126,7 +129,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	if (!access_function and !native_access_function and !static_access_function and !class_method and object->type.nature != Nature::UNKNOWN) {
+	if (!access_function and !native_access_function and !static_access_function and !native_static_access_function and !class_method and object->type.nature != Nature::UNKNOWN) {
 		object->analyse(analyser, Type::POINTER);
 	}
 
@@ -142,9 +145,15 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	// Special case for custom attributes, accessible via a function
 	// Static attributes : Number.PI
 	if (static_access_function != nullptr) {
+		auto res = static_access_function(c);
+		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+			return {VM::value_to_pointer(c.F, res.v, field_type), type};
+		}
+		return res;
+	}
+	if (native_static_access_function != nullptr) {
 
-		Compiler::value res = static_access_function(c);
-
+		auto res = c.insn_call(field_type, {}, native_static_access_function);
 		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 			return {VM::value_to_pointer(c.F, res.v, field_type), type};
 		}

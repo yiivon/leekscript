@@ -74,14 +74,17 @@ public:
 	std::string name;
 	Type type;
 	std::function<Compiler::value(Compiler&)> fun = nullptr;
+	void* native_fun = nullptr;
 	LSValue* value = nullptr;
 
 	ModuleStaticField(const ModuleStaticField& f)
-	: name(f.name), type(f.type), fun(f.fun), value(f.value) {}
+	: name(f.name), type(f.type), fun(f.fun), native_fun(f.native_fun), value(f.value) {}
 	ModuleStaticField(std::string name, Type type, LSValue* value)
 	: name(name), type(type), value(value) {}
 	ModuleStaticField(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun)
 	: name(name), type(type), fun(fun) {}
+	ModuleStaticField(std::string name, Type type, void* fun)
+	: name(name), type(type), native_fun(fun) {}
 };
 
 class Module {
@@ -105,6 +108,7 @@ public:
 	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
 	void field(std::string name, Type type, void* fun);
 	void static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun);
+	void static_field(std::string name, Type type, void* fun);
 
 	void generate_doc(std::ostream& os, std::string translation);
 };

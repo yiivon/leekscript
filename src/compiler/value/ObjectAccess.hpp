@@ -22,6 +22,7 @@ public:
 	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;
 	std::function<Compiler::value(Compiler&, Compiler::value)> access_function = nullptr;
 	void* native_access_function = nullptr;
+	void* native_static_access_function = nullptr;
 	Type field_type;
 
 	ObjectAccess(std::shared_ptr<Token> token);

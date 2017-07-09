@@ -42,6 +42,10 @@ void Module::static_field(std::string name, Type type, std::function<Compiler::v
 	static_fields.push_back(ModuleStaticField(name, type, fun));
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
+void Module::static_field(std::string name, Type type, void* fun) {
+	static_fields.push_back(ModuleStaticField(name, type, fun));
+	clazz->addStaticField(ModuleStaticField(name, type, fun));
+}
 
 void Module::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr) {
 	std::vector<Method> inst;
