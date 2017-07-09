@@ -56,6 +56,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("or", {
 		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_or}
 	});
+	operator_("||", {
+		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_or}
+	});
 	operator_("xor", {
 		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_xor}
 	});
