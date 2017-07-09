@@ -80,6 +80,12 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		try {
 			auto f = object_class->fields.at(field->content);
 			type = f.type;
+			if (f.fun != nullptr) {
+				access_function = f.fun;
+			}
+			if (f.native_fun != nullptr) {
+				native_access_function = f.native_fun;
+			}
 		} catch (...) {
 			// Attribute in Value?
 			try {
@@ -88,6 +94,9 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				class_field = true;
 				if (f.fun != nullptr) {
 					access_function = f.fun;
+				}
+				if (f.native_fun != nullptr) {
+					native_access_function = f.native_fun;
 				}
 			} catch (...) {
 				// Method : 12.abs
@@ -117,7 +126,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	if (!access_function and !static_access_function and !class_method and object->type.nature != Nature::UNKNOWN) {
+	if (!access_function and !native_access_function and !static_access_function and !class_method and object->type.nature != Nature::UNKNOWN) {
 		object->analyse(analyser, Type::POINTER);
 	}
 
@@ -147,6 +156,11 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		auto obj = object->compile(c);
 		object->compile_end(c);
 		return access_function(c, obj);
+	}
+	if (native_access_function != nullptr) {
+		auto obj = object->compile(c);
+		object->compile_end(c);
+		return c.insn_call(type, {obj}, native_access_function);
 	}
 
 	// Class method : 12.abs

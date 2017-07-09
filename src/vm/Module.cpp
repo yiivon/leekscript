@@ -34,6 +34,9 @@ void Module::field(std::string name, Type type) {
 void Module::field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
 	clazz->addField(name, type, fun);
 }
+void Module::field(std::string name, Type type, void* fun) {
+	clazz->addField(name, type, fun);
+}
 
 void Module::static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun) {
 	static_fields.push_back(ModuleStaticField(name, type, fun));

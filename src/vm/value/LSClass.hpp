@@ -34,8 +34,10 @@ public:
 		Type type;
 		std::function<Compiler::value(Compiler&, Compiler::value)> fun;
 		LSValue* default_value;
+		void* native_fun;
 		field(std::string name, Type type) : name(name), type(type), fun(nullptr), default_value(nullptr) {}
 		field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun, LSValue* default_value) : name(name), type(type), fun(fun), default_value(default_value) {}
+		field(std::string name, Type type, void* fun, LSValue* default_value) : name(name), type(type), native_fun(fun), default_value(default_value) {}
 	};
 
 	LSClass* parent;
@@ -55,6 +57,7 @@ public:
 
 	void addMethod(std::string&, std::vector<Method>);
 	void addField(std::string, Type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
+	void addField(std::string, Type, void* fun);
 	void addStaticField(ModuleStaticField f);
 	void addOperator(std::string name, std::vector<Operator>);
 

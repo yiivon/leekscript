@@ -49,7 +49,7 @@ public:
 	Type obj_type;
 	std::vector<Type> args;
 
-	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false) 
+	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false)
 		: return_type(return_type), addr(addr), native(native), args(args) {}
 };
 
@@ -103,6 +103,7 @@ public:
 
 	void field(std::string name, Type type);
 	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
+	void field(std::string name, Type type, void* fun);
 	void static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun);
 
 	void generate_doc(std::ostream& os, std::string translation);
