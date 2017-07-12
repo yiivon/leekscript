@@ -17,9 +17,15 @@ void Test::test_general() {
 
 	header("General");
 	// Print a syntaxical error
-	auto a = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
-	std::cout << a->message() << std::endl;
-	delete a;
+	auto lexError = new ls::LexicalError(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, 0, 0);
+	auto synError = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"truc"});
+	auto semError = new ls::SemanticError(ls::SemanticError::Type::NO_SUCH_ATTRIBUTE, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}, {"key", "obj_fake"});
+	std::cout << lexError->message() << std::endl;
+	std::cout << synError->message() << std::endl;
+	std::cout << semError->message() << std::endl;
+	delete lexError;
+	delete synError;
+	delete semError;
 	// Print a program
 	auto program = new ls::Program("2 + 2", "test");
 	program->compile(vm, "{}");
