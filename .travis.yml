@@ -8,4 +8,5 @@ services:
 - docker
 
 script:
-- make travis
+    - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then make travis-pr; fi'
+    - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then make travis; fi'
