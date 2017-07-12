@@ -139,8 +139,11 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	execution_time = round((float) result.execution_time / 1000) / 1000;
 
 	if (display_errors) {
+		for (const auto& error : result.lexical_errors) {
+			std::cout << "Line " << error.line << ": " << error.message() << std::endl;
+		}
 		for (const auto& error : result.syntaxical_errors) {
-			std::cout << "Line " << error.type << std::endl;
+			std::cout << "Line " << error.token->location.start.line << ": " << error.message() << std::endl;
 		}
 		for (const auto& error : result.semantical_errors) {
 			std::cout << "Line " << error.location.start.line << ": " << error.message() << std::endl;
@@ -175,6 +178,8 @@ void Test::Input::fail(std::string expected, std::string actual) {
 	std::cout << oss.str();
 	std::cout << GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
+	if (result.objects_created != result.objects_deleted)
+		oss << RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
 	failed_tests.push_back(oss.str());
 }
 
@@ -194,6 +199,18 @@ void Test::Input::equals(std::string expected) {
 	auto result = run();
 
 	std::string errors;
+	if (result.lexical_errors.size()) {
+		for (const auto& error : result.lexical_errors) {
+			std::cout << "Lexical error: " << error.message() << std::endl;
+			errors += error.message();
+		}
+	}
+	if (result.syntaxical_errors.size()) {
+		for (const auto& error : result.syntaxical_errors) {
+			std::cout << "Syntaxical error: " << error.message() << std::endl;
+			errors += error.message();
+		}
+	}
 	if (result.semantical_errors.size()) {
 		for (const auto& error : result.semantical_errors) {
 			std::cout << "Semantic error: " << error.message() << std::endl;
