@@ -1,8 +1,6 @@
 #include "LexicalError.hpp"
 #include "../../util/Util.hpp"
 
-using namespace std;
-
 namespace ls {
 
 bool LexicalError::translation_loaded = false;
@@ -25,13 +23,13 @@ std::string LexicalError::build_message(Type type) {
 	if (!translation_loaded) {
 		try {
 			translation = Json::parse(Util::read_file("src/doc/lexical_exception_fr.json"));
-		} catch (exception&) {} // LCOV_EXCL_LINE
+		} catch (std::exception&) {} // LCOV_EXCL_LINE
 		translation_loaded = true;
 	}
 
 	try {
 		return translation[type_to_string(type)];
-	} catch (exception&) { // LCOV_EXCL_LINE
+	} catch (std::exception&) { // LCOV_EXCL_LINE
 		return type_to_string(type); // LCOV_EXCL_LINE
 	}
 }

@@ -1,8 +1,6 @@
 #include "SyntaxicalError.hpp"
 #include "../../util/Util.hpp"
 
-using namespace std;
-
 namespace ls {
 
 bool SyntaxicalError::translation_loaded = false;
@@ -34,7 +32,7 @@ std::string SyntaxicalError::build_message(Type type, std::vector<std::string> p
 	if (!translation_loaded) {
 		try {
 			translation = Json::parse(Util::read_file("src/doc/syntaxical_exception_fr.json"));
-		} catch (exception&) {} // LCOV_EXCL_LINE
+		} catch (std::exception&) {} // LCOV_EXCL_LINE
 		translation_loaded = true;
 	}
 
@@ -49,7 +47,7 @@ std::string SyntaxicalError::build_message(Type type, std::vector<std::string> p
 			i++;
 		}
 		return m;
-	} catch (exception&) { // LCOV_EXCL_LINE
+	} catch (std::exception&) { // LCOV_EXCL_LINE
 		return type_to_string(type); // LCOV_EXCL_LINE
 	}
 }
