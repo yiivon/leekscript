@@ -124,6 +124,12 @@ build/leekscript-benchmark: benchmark-dir build/leekscript $(OBJ_BENCHMARK)
 # Run a benchmark
 benchmark: build/leekscript-benchmark
 	@build/leekscript-benchmark
+	@rm results
+
+# Run a benchmark on operator
+benchmark-op: build/leekscript-benchmark
+	@build/leekscript-benchmark -o
+	@rm result
 
 # Valgrind
 # `apt install valgrind`

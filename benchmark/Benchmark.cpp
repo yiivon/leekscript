@@ -191,11 +191,11 @@ void test_operator() {
 void Benchmark::operators() {
 	std::cout << "Starting benchmark..." << std::endl;
 	auto b = run_operator("", true);
-	std::cout << "base time: " << (b / 1000000) << " ms" << std::endl;
+	std::cout << pad("base time: ", 15) <<  (b / 1000000) << " ms" << std::endl;
 
 	for (auto& o : {"+", "-", "*", "/", "\\", "^", "&", "|", "%", "%%", "**", "&&"}) {
 		auto t = run_operator(o);
-		std::cout << "operator " << o << " : " << (t / 1000000) << " ms" << std::endl;
+		std::cout << pad(string("operator ") + o + " : ", 15) << pad(format_ns(t, b), 15) << std::endl;
 	}
 }
 
