@@ -826,7 +826,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				auto r = jit_insn_convert(c.F, jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v)), VM::get_jit_type(type), 0);
+				auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), VM::get_jit_type(type), 0);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 					return {VM::value_to_pointer(c.F, r, type), type};
 				}
@@ -843,7 +843,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v2->compile_end(c);
 				auto x = c.insn_load(x_addr, 0, v1->type);
-				auto r = jit_insn_convert(c.F, jit_insn_floor(c.F, jit_insn_div(c.F, x.v, y.v)), VM::get_jit_type(type), 0);
+				auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), VM::get_jit_type(type), 0);
 				jit_insn_store_relative(c.F, x_addr.v, 0, r);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 					return {VM::value_to_pointer(c.F, r, type), type};
