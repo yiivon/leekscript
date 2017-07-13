@@ -386,7 +386,7 @@ void Function::must_return(SemanticAnalyser*, const Type& type) {
 
 Compiler::value Function::compile(Compiler& c) const {
 
-	// std::cout << "Function::compile() " << version << " " << has_version << std::endl;
+	// std::cout << "Function::compile() " << this << " version " << version << " " << has_version << std::endl;
 
 	((Function*) this)->compiled = true;
 
@@ -420,7 +420,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	}
 	if (versions.find(args) == versions.end()) {
 		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
-		return c.new_pointer(nullptr);
+		return c.new_pointer(LSNull::get());
 	}
 	return c.new_pointer(versions.at(args)->function);
 }

@@ -282,4 +282,9 @@ void Test::test_functions() {
 
 	section("Wrong syntaxes");
 	code("(@2) -> 2").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
+
+	section("Not compiled functions");
+	code("var dumb = function(x) { }").equals("(void)");
+	code("var dumb = function(x) { } var dumber = function(y) { dumb(y) }").equals("(void)");
+	code("var dumb = function(x) { } var dumber = function(y) { let z = y dumb(z) }").equals("(void)");
 }
