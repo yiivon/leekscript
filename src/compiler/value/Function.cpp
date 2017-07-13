@@ -110,7 +110,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 }
 
 void Function::print(std::ostream& os, int indent, bool debug) const {
-	if (has_version || versions.size() == 1) {
+	if (has_version && versions.size() == 1) {
 		print_version(os, indent, debug, versions.begin()->second);
 	} else {
 		print_version(os, indent, debug, default_version);
