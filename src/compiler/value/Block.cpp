@@ -96,7 +96,6 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	} else if (type == Type::MPZ_TMP) {
 		temporary_mpz = true;
 	}
-
 }
 
 Compiler::value Block::compile(Compiler& c) const {
