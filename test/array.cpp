@@ -459,6 +459,7 @@ void Test::test_arrays() {
 	// TODO
 	// code("let a = [1, 2] a.push(3.5) a").equals("[1, 2, 3]");
 	code("let a = [1.5, -2.9] a.push(3.5) a").equals("[1.5, -2.9, 3.5]");
+	code("var s = new Array() Array.push(s, 'a')").equals("['a']");
 
 	section("Array.pushAll()");
 	code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
