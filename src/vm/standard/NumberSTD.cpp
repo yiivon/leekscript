@@ -48,11 +48,15 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("*", {
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
+		{Type::CONST_REAL, Type::CONST_REAL, Type::REAL, (void*) &NumberSTD::mul_real_real},
 		{Type::INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_mpz_mpz}
 	});
 
 	operator_("**", {
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::pow_real_real},
+		{Type::CONST_REAL, Type::CONST_REAL, Type::REAL, (void*) &NumberSTD::pow_real_real},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::pow_mpz_mpz},
 		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::pow_mpz_int},
 	});
@@ -361,6 +365,10 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
+Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_mul(args[0], args[1]);
+}
+
 Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = c.new_mpz();
 	auto r_addr = c.insn_address_of(r);
@@ -390,6 +398,14 @@ Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 
 Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_div(args[0], args[1]);
+}
+
+Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto r = c.insn_pow(args[0], args[1]);
+	if (args[0].t.raw_type == RawType::INTEGER && args[1].t.raw_type == RawType::INTEGER) {
+		r = c.to_int(r);
+	}
+	return r;
 }
 
 Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {

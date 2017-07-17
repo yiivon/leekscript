@@ -33,11 +33,13 @@ public:
 	static Compiler::value sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value sub_mpz_int(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value mul_real_real(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mul_int_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value div_val_val(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value pow_real_real(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value pow_mpz_int(Compiler& c, std::vector<Compiler::value> args);
 
