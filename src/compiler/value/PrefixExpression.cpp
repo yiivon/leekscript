@@ -5,6 +5,7 @@
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSObject.hpp"
+#include "../../vm/value/LSSet.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
 
@@ -75,6 +76,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 			else if (vv->name == "String") type = Type::STRING;
 			else if (vv->name == "Array") type = Type::PTR_ARRAY;
 			else if (vv->name == "Object") type = Type::OBJECT;
+			else if (vv->name == "Set") type = Type::PTR_SET;
 		}
 		else if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
@@ -90,6 +92,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 				else if (vv->name == "String") type = Type::STRING;
 				else if (vv->name == "Array") type = Type::PTR_ARRAY;
 				else if (vv->name == "Object") type = Type::OBJECT;
+				else if (vv->name == "Set") type = Type::PTR_SET;
 			}
 		}
 	}
@@ -246,6 +249,9 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				else if (vv->name == "Object") {
 					return {c.new_pointer(new LSObject()).v, type};
 				}
+				else if (vv->name == "Set") {
+					return {c.new_pointer(new LSSet<LSValue*>()).v, type};
+				}
 			}
 			if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 				if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
@@ -282,6 +288,9 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					}
 					if (vv->name == "Object") {
 						return {c.new_pointer(new LSObject()).v, type};
+					}
+					if (vv->name == "Set") {
+						return {c.new_pointer(new LSSet<LSValue*>()).v, type};
 					}
 				}
 				// new A(), convert to new A
