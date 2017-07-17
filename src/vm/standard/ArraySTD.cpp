@@ -196,15 +196,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("first", {
-		{Type::POINTER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_first, Method::NATIVE},
-		{Type::REAL, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_first, Method::NATIVE},
-		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_first, Method::NATIVE},
+		{Type::POINTER, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_first, Method::NATIVE},
+		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_first, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_first, Method::NATIVE},
 	});
 
 	method("last", {
-		{Type::POINTER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_last, Method::NATIVE},
-		{Type::REAL, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_last, Method::NATIVE},
-		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_last, Method::NATIVE},
+		{Type::POINTER, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_last, Method::NATIVE},
+		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_last, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_last, Method::NATIVE},
 	});
 
 	Type fold_fun_type = Type::FUNCTION_P;
