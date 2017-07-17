@@ -55,6 +55,12 @@ void Test::test_references() {
 	// TODO
 	// code("var a = ['a', 12]; var e = @a[1]; a[1] = 5; e").equals("12");
 
+	section("Reference of object attribute");
+	code("var a = {k: 12} var e = @a.k e").equals("12");
+	code("var a = {k: 12} var e = @a.k e += 5 a").equals("{k: 17}");
+	code("var a = {k: 12} var e = @a.k e *= 5 a.k").equals("60");
+	code("var a = {k: 12}; var e = @a.k; a.k += 5; e").equals("17");
+
 	section("Reference = reference");
 	// TODO possibility to change the reference
 	// code("var a = 'a', b = 'b'; var c = @a; c = @b; c += '!'; [a, b]").equals("['a', 'b!']");
