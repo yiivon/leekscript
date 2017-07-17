@@ -136,6 +136,12 @@ void Test::test_set() {
 	code("let s = <'a', 'b'> s.insert('c') s").equals("<'a', 'b', 'c'>");
 	code("<'a'>.insert('b')").equals("true");
 	code("<'a'>.insert('a')").equals("false");
+	code("var s = Set() s.insert(12) s").equals("<12>");
+	code("var s = new Set s.insert(12) s").equals("<12>");
+	code("var s = new Set() s.insert(12) s").equals("<12>");
+	code("var s = Set() s.insert('a') s").equals("<'a'>");
+	code("var s = new Set s.insert('a') s").equals("<'a'>");
+	code("var s = new Set() s.insert('a') s").equals("<'a'>");
 
 	section("Set.size()");
 	code("<>.size()").equals("0");
