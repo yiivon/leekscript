@@ -393,8 +393,10 @@ void Test::test_numbers() {
 	code("5 & 12").equals("4");
 	code("87619 & 18431").equals("17987");
 	code("87619★ & [18431, ''][0]").equals("17987");
-	code("let a = 87619 a &= 18431").equals("17987");
-	code("let a = 87619 a &= 18431 a").equals("17987");
+	code("var a = 87619 a &= 18431").equals("17987");
+	// TODO
+	// code("let a = 87619 a &= 18431").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"&="});
+	code("var a = 87619 a &= 18431 a").equals("17987");
 	code("87619★ & 18431").equals("17987");
 	code("87619★ &= 18431").equals("17987");
 	code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -406,8 +408,8 @@ void Test::test_numbers() {
 	code("5 | 12").equals("13");
 	code("[5, ''][0] | [12, ''][0]").equals("13");
 	code("87619 | 18431").equals("88063");
-	code("let a = 87619 a |= 18431").equals("88063");
-	code("let a = 87619 a |= 18431 a").equals("88063");
+	code("var a = 87619 a |= 18431").equals("88063");
+	code("var a = 87619 a |= 18431 a").equals("88063");
 	code("[87619, ''][0] | 18431").equals("88063");
 	code("[87619, ''][0] |= 18431").equals("88063");
 	code("[12, 'hello'][1] | 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -419,8 +421,8 @@ void Test::test_numbers() {
 	code("5 ^ 12").equals("9");
 	code("87619 ^ 18431").equals("70076");
 	code("[87619, ''][0] ^ [18431, ''][0]").equals("70076");
-	code("let a = 87619 a ^= 18431").equals("70076");
-	code("let a = 87619 a ^= 18431 a").equals("70076");
+	code("var a = 87619 a ^= 18431").equals("70076");
+	code("var a = 87619 a ^= 18431 a").equals("70076");
 	code("[87619, ''][0] ^ 18431").equals("70076");
 	code("[87619, ''][0] ^= 18431").equals("70076");
 	code("[12, 'hello'][1] ^ 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -449,16 +451,16 @@ void Test::test_numbers() {
 	code("12345 >> 8").equals("48");
 	code("123123123 >> 5").equals("3847597");
 	code("[123123123, ''][0] >> 5").equals("3847597");
-	code("let a = 123123123 a >>= 6").equals("1923798");
-	code("let a = 123123123 a >>= 7 a").equals("961899");
+	code("var a = 123123123 a >>= 6").equals("1923798");
+	code("var a = 123123123 a >>= 7 a").equals("961899");
 	code("var a = [123123123, ''] a[0] >>= 7").equals("961899");
 	code("var a = 12345 ['', a >>= 8]").equals("['', 48]");
 
 	code("155 >>> 3").equals("19");
 	code("-155 >>> 3").equals("536870892");
 	code("[-155, ''][0] >>> 3").equals("536870892");
-	code("let a = -155 a >>>= 4").equals("268435446");
-	code("let a = -155 a >>>= 5 a").equals("134217723");
+	code("var a = -155 a >>>= 4").equals("268435446");
+	code("var a = -155 a >>>= 5 a").equals("134217723");
 	code("var a = [-155, ''] a[0] >>>= 5").equals("134217723");
 	code("var a = -155 ['', a >>>= 5]").equals("['', 134217723]");
 

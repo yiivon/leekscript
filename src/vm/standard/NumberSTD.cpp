@@ -104,22 +104,22 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("&", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and}
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and}
 	});
 	operator_("&=", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and_eq}
+		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and_eq}
 	});
 	operator_("|", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or}
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or}
 	});
 	operator_("|=", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or_eq}
+		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or_eq}
 	});
 	operator_("^", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor}
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor}
 	});
 	operator_("^=", {
-		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor_eq}
+		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor_eq}
 	});
 
 	/*
@@ -162,10 +162,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int},
 	});
 	method("char", {
-		{Type::POINTER, {Type::NUMBER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
-		{Type::STRING, {Type::REAL}, (void*) &NumberSTD::char_real},
-		{Type::STRING, {Type::INTEGER}, (void*) &NumberSTD::char_int},
-		{Type::STRING, {Type::POINTER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
+		{Type::POINTER, {Type::CONST_NUMBER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
+		{Type::STRING, {Type::CONST_REAL}, (void*) &NumberSTD::char_real},
+		{Type::STRING, {Type::CONST_INTEGER}, (void*) &NumberSTD::char_int},
+		{Type::STRING, {Type::CONST_POINTER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
 	});
 	method("cos", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
