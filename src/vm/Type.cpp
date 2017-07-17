@@ -57,34 +57,48 @@ void RawType::clear_placeholder_types() {
 unsigned int Type::placeholder_counter = 0;
 
 const Type Type::UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN);
+const Type Type::CONST_UNKNOWN(RawType::UNKNOWN, Nature::UNKNOWN, false, false, true);
 
 const Type Type::VOID(RawType::VOID, Nature::VOID);
 const Type Type::VALUE(RawType::UNKNOWN, Nature::VALUE);
+const Type Type::CONST_VALUE(RawType::UNKNOWN, Nature::VALUE, false, false, true);
 const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
+const Type Type::CONST_POINTER(RawType::UNKNOWN, Nature::POINTER, false, false, true);
 
 const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
 const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
+const Type Type::CONST_BOOLEAN(RawType::BOOLEAN, Nature::VALUE, false, false, true);
+const Type Type::CONST_BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER, false, false, true);
 const Type Type::NUMBER_VALUE(RawType::NUMBER, Nature::VALUE);
 const Type Type::NUMBER(RawType::NUMBER, Nature::POINTER);
+const Type Type::CONST_NUMBER_VALUE(RawType::NUMBER, Nature::VALUE, false, false, true);
+const Type Type::CONST_NUMBER(RawType::NUMBER, Nature::POINTER, false, false, true);
 const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
+const Type Type::CONST_INTEGER(RawType::INTEGER, Nature::VALUE, false, false, true);
 const Type Type::MPZ(RawType::MPZ, Nature::VALUE);
 const Type Type::MPZ_TMP(RawType::MPZ, Nature::VALUE, false, true);
 const Type Type::LONG(RawType::LONG, Nature::VALUE);
 const Type Type::REAL(RawType::REAL, Nature::VALUE);
+const Type Type::CONST_REAL(RawType::REAL, Nature::VALUE, false, false, true);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
+const Type Type::CONST_STRING(RawType::STRING, Nature::POINTER, false, false, true);
 const Type Type::STRING_TMP(RawType::STRING, Nature::POINTER, false, true);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
+
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
 const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
-const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, true);
 const Type Type::REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
+const Type Type::CONST_PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER, false, true);
+const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, true);
+const Type Type::CONST_REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL, false, true);
+const Type Type::CONST_STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING, false, true);
+
 const Type Type::MAP(RawType::MAP, Nature::POINTER);
 const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::POINTER);
 const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER);
-const Type Type::CONST_PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER, false, true);
 const Type Type::PTR_REAL_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::REAL);
 const Type Type::REAL_PTR_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::POINTER);
 const Type Type::REAL_INT_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::INTEGER);
@@ -92,17 +106,31 @@ const Type Type::REAL_REAL_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::
 const Type Type::INT_PTR_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::POINTER);
 const Type Type::INT_INT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::INTEGER);
 const Type Type::INT_REAL_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::REAL);
+const Type Type::CONST_PTR_PTR_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::POINTER, false, true);
+const Type Type::CONST_PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER, false, true);
+const Type Type::CONST_PTR_REAL_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::REAL, false, true);
+const Type Type::CONST_REAL_PTR_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::POINTER, false, true);
+const Type Type::CONST_REAL_INT_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::INTEGER, false, true);
+const Type Type::CONST_REAL_REAL_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::REAL, false, true);
+const Type Type::CONST_INT_PTR_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::POINTER, false, true);
+const Type Type::CONST_INT_INT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::INTEGER, false, true);
+const Type Type::CONST_INT_REAL_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::REAL, false, true);
+
 const Type Type::SET(RawType::SET, Nature::POINTER);
 const Type Type::PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER);
 const Type Type::INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER);
 const Type Type::REAL_SET(RawType::SET, Nature::POINTER, Type::REAL);
+const Type Type::CONST_PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER, false, true);
+const Type Type::CONST_INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER, false, true);
+const Type Type::CONST_REAL_SET(RawType::SET, Nature::POINTER, Type::REAL, false, true);
+
 const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
 const Type Type::PTR_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::PTR_ARRAY);
 const Type Type::REAL_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL_ARRAY);
 const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INT_ARRAY);
 
-const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE);
-const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER);
+const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE, false, false, true);
+const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER, false, false, true);
 const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
 const Type Type::CONST_CLASS(RawType::CLASS, Nature::POINTER, true, false, true);
 
