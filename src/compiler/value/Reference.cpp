@@ -58,11 +58,9 @@ void Reference::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				scope = VarScope::CAPTURE;
 	  		}
 		}
-	} else if (auto array_access = dynamic_cast<ArrayAccess*>(value)) {
-
-		array_access->analyse(analyser, Type::POINTER);
-		auto array = array_access->array;
-		type = array->type.getElementType();
+	} else {
+		value->analyse(analyser, Type::POINTER);
+		type = value->type;
 	}
 
 	if (req_type.nature != Nature::UNKNOWN) {
