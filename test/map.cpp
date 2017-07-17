@@ -28,7 +28,7 @@ void Test::test_map() {
 	code("['a': 'b'] == [1: 1]").equals("false");
 	code("['a': 'b'] == ['a': 'b']").equals("true");
 	code("['a': 'b'] == ['a': 'b', 'c': 'd']").equals("false");
-	code("let x = ['a' : 'b'] let y = [1 : 1] x.clear() == y.clear()").equals("true");
+	code("var x = ['a' : 'b'] var y = [1 : 1] x.clear() == y.clear()").equals("true");
 	for (auto& m1 : maps)
 		for (auto& m2 : maps)
 			code(m1 + " == " + m2).equals(m1 == m2 ? "true" : "false");
@@ -101,25 +101,25 @@ void Test::test_map() {
 	code("let x = [1 : 1 1 : 2 2 : '3'] x.size()").equals("2");
 
 	section("Map.insert()");
-	code("let x = [1 : 1] x.insert(2, 2)").equals("true");
-	code("let x = ['a' : 'a'] x.insert(2, 2) x").equals("[2: 2, 'a': 'a']");
-	code("let x = [1 : 'a'] x.insert(2, 3) x").equals("[1: 'a', 2: 3]");
-	code("let x = ['a' : 1] x.insert(2, 3) x").equals("[2: 3, 'a': 1]");
-	code("let x = ['a' : 1] x.insert('a', 3)").equals("false");
+	code("var x = [1 : 1] x.insert(2, 2)").equals("true");
+	code("var x = ['a' : 'a'] x.insert(2, 2) x").equals("[2: 2, 'a': 'a']");
+	code("var x = [1 : 'a'] x.insert(2, 3) x").equals("[1: 'a', 2: 3]");
+	code("var x = ['a' : 1] x.insert(2, 3) x").equals("[2: 3, 'a': 1]");
+	code("var x = ['a' : 1] x.insert('a', 3)").equals("false");
 
 	section("Map.clear()");
-	code("let x = [:] x.clear()").equals("[:]");
-	code("let x = [1: 1] x.clear()").equals("[:]");
-	code("let x = [1: 'a'] x.clear()").equals("[:]");
-	code("let x = ['a': 1] x.clear()").equals("[:]");
-	code("let x = ['a': 'a'] x.clear()").equals("[:]");
-	code("let x = ['a': 'a', 'b': 'b'] x.clear()").equals("[:]");
+	code("var x = [:] x.clear()").equals("[:]");
+	code("var x = [1: 1] x.clear()").equals("[:]");
+	code("var x = [1: 'a'] x.clear()").equals("[:]");
+	code("var x = ['a': 1] x.clear()").equals("[:]");
+	code("var x = ['a': 'a'] x.clear()").equals("[:]");
+	code("var x = ['a': 'a', 'b': 'b'] x.clear()").equals("[:]");
 
 	section("Map.erase()");
-	code("let x = [1 : 1] x.erase(1)").equals("true");
-	code("let x = ['a' : 'a'] x.erase('a') x").equals("[:]");
-	code("let x = ['a' : 'a'] x.erase('b') x").equals("['a': 'a']");
-	code("let x = ['a' : 1] x.erase(3.14) x").equals("['a': 1]");
+	code("var x = [1 : 1] x.erase(1)").equals("true");
+	code("var x = ['a' : 'a'] x.erase('a') x").equals("[:]");
+	code("var x = ['a' : 'a'] x.erase('b') x").equals("['a': 'a']");
+	code("var x = ['a' : 1] x.erase(3.14) x").equals("['a': 1]");
 
 	section("Map.look()");
 	code("let x = [1: 1] x.look(1, 0)").equals("1");
@@ -168,7 +168,7 @@ void Test::test_map() {
 	code("['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'].maxKey()").equals("'d'");
 	code("let a = ['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'] a.maxKey()").equals("'d'");
 	code("[0 : 4, 42 : 20.5, 100 : 1, -1 : 4.99].maxKey()").equals("100");
-	
+
 	section("Map.min()");
 	code("[:].min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12 : 0].clear().min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -186,5 +186,4 @@ void Test::test_map() {
 	code("['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'].minKey()").equals("'a'");
 	code("let a = ['c' : 'c', 'a' : 'a', 'd' : 'd', 'b' : 'b'] a.minKey()").equals("'a'");
 	code("[0 : 4.01, 42 : 20.5, 100 : 10, -1 : 4.99].minKey()").equals("-1");
-
 }
