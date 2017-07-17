@@ -68,87 +68,87 @@ StringSTD::StringSTD() : Module("String") {
 	 * Methods
 	 */
 	method("charAt", {
-		{Type::STRING, {Type::STRING, Type::INTEGER}, (void*) &string_charAt, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING, Type::CONST_INTEGER}, (void*) &string_charAt, Method::NATIVE},
 	});
 	method("contains", {
-		{Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_contains, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_contains, Method::NATIVE},
 	});
 	method("endsWith", {
-		{Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_endsWith, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_endsWith, Method::NATIVE},
 	});
 	Type fold_fun_type = Type::FUNCTION_P;
 	fold_fun_type.setArgumentType(0, Type::POINTER);
 	fold_fun_type.setArgumentType(1, Type::STRING);
 	fold_fun_type.setReturnType(Type::POINTER);
 	method("fold", {
-		{Type::POINTER, {Type::STRING, fold_fun_type, Type::POINTER}, (void*) &LSString::ls_foldLeft, Method::NATIVE},
+		{Type::POINTER, {Type::CONST_STRING, fold_fun_type, Type::POINTER}, (void*) &LSString::ls_foldLeft, Method::NATIVE},
 	});
 	method("indexOf", {
-		{Type::INTEGER, {Type::STRING, Type::STRING}, (void*) &string_indexOf, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_indexOf, Method::NATIVE},
 	});
 	method("isPermutation", {
-		{Type::BOOLEAN, {Type::STRING, Type::POINTER}, (void*) &LSString::is_permutation, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_POINTER}, (void*) &LSString::is_permutation, Method::NATIVE},
 	});
 	method("isPalindrome", {
-		{Type::BOOLEAN, {Type::STRING}, (void*) &LSString::is_palindrome, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_STRING}, (void*) &LSString::is_palindrome, Method::NATIVE},
 	});
 	method("length", {
-		{Type::INTEGER, {Type::STRING}, (void*) &string_length, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_STRING}, (void*) &string_length, Method::NATIVE},
 	});
 	method("lines", {
-		{Type::STRING_ARRAY, {Type::STRING}, (void*) &LSString::ls_lines, Method::NATIVE},
+		{Type::STRING_ARRAY, {Type::CONST_STRING}, (void*) &LSString::ls_lines, Method::NATIVE},
 	});
 	method("size", {
-		{Type::NUMBER, {Type::STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::STRING}, (void*) &LSString::ls_size, Method::NATIVE},
+		{Type::NUMBER, {Type::CONST_STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::ls_size, Method::NATIVE},
 	});
 	method("replace", {
-		{Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &StringSTD::replace, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING, Type::CONST_STRING, Type::CONST_STRING}, (void*) &StringSTD::replace, Method::NATIVE},
 	});
 	method("reverse", {
-		{Type::STRING, {Type::STRING}, (void*) &LSString::ls_tilde, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING}, (void*) &LSString::ls_tilde, Method::NATIVE},
 	});
 	method("substring", {
-		{Type::STRING, {Type::STRING, Type::INTEGER, Type::INTEGER}, (void*) &string_substring, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void*) &string_substring, Method::NATIVE},
 	});
 	method("toArray", {
-		{Type::PTR_ARRAY, {Type::STRING}, (void*) &string_toArray, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::CONST_STRING}, (void*) &string_toArray, Method::NATIVE},
 	});
 	method("toLower", {
-		{Type::STRING, {Type::STRING}, (void*) &string_toLower, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING}, (void*) &string_toLower, Method::NATIVE},
 	});
 	method("toUpper", {
-		{Type::STRING, {Type::STRING}, (void*) &string_toUpper, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING}, (void*) &string_toUpper, Method::NATIVE},
 	});
 	method("split", {
-		{Type::STRING_ARRAY, {Type::STRING, Type::STRING}, (void*) &string_split, Method::NATIVE},
-		{Type::STRING_ARRAY, {Type::POINTER, Type::POINTER}, (void*) &string_split, Method::NATIVE},
+		{Type::STRING_ARRAY, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_split, Method::NATIVE},
+		{Type::STRING_ARRAY, {Type::CONST_POINTER, Type::CONST_POINTER}, (void*) &string_split, Method::NATIVE},
 	});
 	method("startsWith", {
-		{Type::BOOLEAN, {Type::STRING, Type::STRING}, (void*) &string_startsWith, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_startsWith, Method::NATIVE},
 	});
 	method("code", {
-		{Type::POINTER, {Type::POINTER}, (void*) &string_begin_code_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::STRING}, (void*) &string_begin_code, Method::NATIVE},
-		{Type::INTEGER, {Type::POINTER}, (void*) &string_begin_code, Method::NATIVE},
-		{Type::INTEGER, {Type::STRING, Type::INTEGER}, (void*) &string_code, Method::NATIVE},
+		{Type::POINTER, {Type::CONST_POINTER}, (void*) &string_begin_code_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_STRING}, (void*) &string_begin_code, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_POINTER}, (void*) &string_begin_code, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_INTEGER}, (void*) &string_code, Method::NATIVE},
 	});
 	method("number", {
-		{Type::LONG, {Type::STRING}, (void*) &string_number, Method::NATIVE},
-		{Type::LONG, {Type::POINTER}, (void*) &string_number, Method::NATIVE},
+		{Type::LONG, {Type::CONST_STRING}, (void*) &string_number, Method::NATIVE},
+		{Type::LONG, {Type::CONST_POINTER}, (void*) &string_number, Method::NATIVE},
 	});
 	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
 	method("map", {
-		{Type::STRING, {Type::STRING, map_fun_type}, (void*) &string_map, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING, map_fun_type}, (void*) &string_map, Method::NATIVE},
 	});
 	method("sort", {
-		{Type::STRING, {Type::STRING}, (void*) &LSString::sort, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING}, (void*) &LSString::sort, Method::NATIVE},
 	});
 	method("wordCount", {
-		{Type::POINTER, {Type::STRING}, (void*) &LSString::word_count_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::STRING}, (void*) &LSString::word_count, Method::NATIVE},
+		{Type::POINTER, {Type::CONST_STRING}, (void*) &LSString::word_count_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::word_count, Method::NATIVE},
 	});
 }
 
