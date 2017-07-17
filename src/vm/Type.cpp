@@ -387,6 +387,10 @@ bool Type::compatible(const Type& type) const {
 		return false; // type not compatible with type&&
 	}
 
+	if (not this->constant and type.constant) {
+		return false; // 'const type' not compatible with 'type'
+	}
+
 	if (this->raw_type != type.raw_type) {
 
 		// Every type is compatible with 'Unknown' type
