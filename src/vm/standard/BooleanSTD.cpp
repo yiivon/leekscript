@@ -10,26 +10,26 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 	LSBoolean::clazz = clazz;
 
 	operator_("+", {
-		{Type::BOOLEAN, Type::STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, Method::NATIVE},
-		{Type::BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, Method::NATIVE},
-		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool},
-		{Type::BOOLEAN, Type::NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::add_bool}
+		{Type::CONST_BOOLEAN, Type::CONST_STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, Method::NATIVE},
+		{Type::CONST_BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, Method::NATIVE},
+		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool},
+		{Type::CONST_BOOLEAN, Type::CONST_NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::add_bool}
 	});
 
 	operator_("-", {
-		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::sub_bool},
-		{Type::BOOLEAN, Type::NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::sub_bool}
+		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::sub_bool},
+		{Type::CONST_BOOLEAN, Type::CONST_NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::sub_bool}
 	});
 
 	operator_("*", {
-		{Type::BOOLEAN, Type::BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::mul_bool},
-		{Type::BOOLEAN, Type::NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::mul_bool}
+		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::mul_bool},
+		{Type::CONST_BOOLEAN, Type::CONST_NUMBER_VALUE, Type::REAL, (void*) &BooleanSTD::mul_bool}
 	});
 
 	method("compare", {
-		{Type::POINTER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::POINTER, Type::POINTER}, (void*) &BooleanSTD::compare_ptr_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::BOOLEAN, Type::BOOLEAN}, (void*) &BooleanSTD::compare_val_val},
+		{Type::POINTER, {Type::CONST_POINTER, Type::CONST_POINTER}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_POINTER, Type::CONST_POINTER}, (void*) &BooleanSTD::compare_ptr_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_BOOLEAN, Type::CONST_BOOLEAN}, (void*) &BooleanSTD::compare_val_val},
 	});
 }
 
