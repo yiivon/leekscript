@@ -103,9 +103,7 @@ Compiler::value Reference::compile(Compiler& c) const {
 			return {v, type};
 		}
 	} else {
-		auto v = ((LeftValue*) value)->compile_l(c);
-		auto vv = c.insn_load(v, 0, type);
-		return vv;
+		return ((LeftValue*) value)->compile_l(c);
 	}
 }
 
