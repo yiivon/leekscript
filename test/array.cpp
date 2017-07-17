@@ -326,19 +326,19 @@ void Test::test_arrays() {
 	code("let x = ['hello', x -> x, true, Number] x.chunk()").equals("[['hello'], [<function>], [true], [<class Number>]]");
 
 	section("Array.unique()");
-	code("let x = [1, 1, 2, 2, 1] x.unique() x").equals("[1, 2, 1]");
-	code("let x = [1.5, 1.5, 2.5, 2.5, 1.5] x.unique() x").equals("[1.5, 2.5, 1.5]");
-	code("let x = [1, 1, 2, 2, 1] x.sort() x.unique() x").equals("[1, 2]");
-	code("let x = ['a', 'a', 'b'] x.unique() x").equals("['a', 'b']");
-	code("let x = ['a', 'b', 'c'] x.unique() x").equals("['a', 'b', 'c']");
-	code("let x = ['a', 'a', 'b', 'a', 'a'] x.unique() x").equals("['a', 'b', 'a']");
+	code("var x = [1, 1, 2, 2, 1] x.unique() x").equals("[1, 2, 1]");
+	code("var x = [1.5, 1.5, 2.5, 2.5, 1.5] x.unique() x").equals("[1.5, 2.5, 1.5]");
+	code("var x = [1, 1, 2, 2, 1] x.sort() x.unique() x").equals("[1, 2]");
+	code("var x = ['a', 'a', 'b'] x.unique() x").equals("['a', 'b']");
+	code("var x = ['a', 'b', 'c'] x.unique() x").equals("['a', 'b', 'c']");
+	code("var x = ['a', 'a', 'b', 'a', 'a'] x.unique() x").equals("['a', 'b', 'a']");
 
 	section("Array.sort()");
-	code("let x = [3, 1, 2] x.sort() x").equals("[1, 2, 3]");
-	code("let x = [3.1, 3.2, 2.7] x.sort() x").equals("[2.7, 3.1, 3.2]");
-	code("let x = ['foo', 'yop', 'abc'] x.sort() x").equals("['abc', 'foo', 'yop']");
-	code("let x = [[[]], [[], [], []], [[], []]]; x.sort() x").equals("[[[]], [[], []], [[], [], []]]");
-	code("let x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x").equals("[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
+	code("var x = [3, 1, 2] x.sort() x").equals("[1, 2, 3]");
+	code("var x = [3.1, 3.2, 2.7] x.sort() x").equals("[2.7, 3.1, 3.2]");
+	code("var x = ['foo', 'yop', 'abc'] x.sort() x").equals("['abc', 'foo', 'yop']");
+	code("var x = [[[]], [[], [], []], [[], []]]; x.sort() x").equals("[[[]], [[], []], [[], [], []]]");
+	code("var x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x").equals("[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
 	code("Array.sort([3, 2, 1])").equals("[1, 2, 3]");
 
 	section("Array.filter()");
@@ -415,7 +415,7 @@ void Test::test_arrays() {
 	code("[].shuffle()");
 	code("[1.5, 2.5].shuffle().size()").equals("2");
 	code("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()").equals("7");
-	code("let a = [1, 2, 3, 10, true, 'yo', null] a.shuffle().size()").equals("7");
+	code("var a = [1, 2, 3, 10, true, 'yo', null] a.shuffle().size()").equals("7");
 
 	section("Array.reverse()");
 	code("Array.reverse([1, 2, 3, 10, true, 'yo', null])").equals("[null, 'yo', true, 10, 3, 2, 1]");
@@ -444,21 +444,21 @@ void Test::test_arrays() {
 	code("[].pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("Array.pop(['1', '2'])").equals("'2'");
 	code("['1', '2'].pop()").equals("'2'");
-	code("let a = ['1', '2', '3'] a.pop() a").equals("['1', '2']");
+	code("var a = ['1', '2', '3'] a.pop() a").equals("['1', '2']");
 	code("[1, 2].pop()").equals("2");
 	code("[1.9, 2.78].pop()").equals("2.78");
-	code("let a = [1, 2] a.pop()").equals("2");
-	code("let a = [1.9, 2.78] a.pop()").equals("2.78");
+	code("var a = [1, 2] a.pop()").equals("2");
+	code("var a = [1.9, 2.78] a.pop()").equals("2.78");
 	code("[12].clear().pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12.5].clear().pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Array.push()");
-	code("let a = [1, 2, 3] Array.push(a, 4)").equals("[1, 2, 3, 4]");
+	code("var a = [1, 2, 3] Array.push(a, 4)").equals("[1, 2, 3, 4]");
 	code("[].push([])").equals("[[]]");
-	code("let a = [1, 2] a.push(3) a").equals("[1, 2, 3]");
+	code("var a = [1, 2] a.push(3) a").equals("[1, 2, 3]");
 	// TODO
 	// code("let a = [1, 2] a.push(3.5) a").equals("[1, 2, 3]");
-	code("let a = [1.5, -2.9] a.push(3.5) a").equals("[1.5, -2.9, 3.5]");
+	code("var a = [1.5, -2.9] a.push(3.5) a").equals("[1.5, -2.9, 3.5]");
 	code("var s = new Array() Array.push(s, 'a')").equals("['a']");
 
 	section("Array.pushAll()");
@@ -476,23 +476,23 @@ void Test::test_arrays() {
 	code("[12].clear().join('whatever')").equals("''");
 
 	section("Array.clear()");
-	code("let a = [1, 2, 3] a.clear() a").equals("[]");
-	code("let a = [1, 2, 3] Array.clear(a)").equals("[]");
-	code("let a = [1, 'yo', true] a.clear() a").equals("[]");
+	code("var a = [1, 2, 3] a.clear() a").equals("[]");
+	code("var a = [1, 2, 3] Array.clear(a)").equals("[]");
+	code("var a = [1, 'yo', true] a.clear() a").equals("[]");
 
 	section("Array.fill()");
-	code("let a = [1, 2, 3] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
+	code("var a = [1, 2, 3] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
 	// TODO should be possible
 	// code("let a = [1, 2, 3] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
-	code("let a = [] Array.fill(a, 'test', 2)").equals("['test', 'test']");
-	code("let a = [1.5] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
-	code("let a = [1.5] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
+	code("var a = [] Array.fill(a, 'test', 2)").equals("['test', 'test']");
+	code("var a = [1.5] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
+	code("var a = [1.5] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
 
 	section("Array.insert()");
-	code("let a = ['a', 'b', 'c'] Array.insert(a, 'hello', 1)").equals("['a', 'hello', 'b', 'c']");
-	code("let a = ['a', 'b', 'c'] Array.insert(a, 'hello', 6)").equals("['a', 'b', 'c', null, null, null, 'hello']");
-	code("let a = [1, 2, 3] Array.insert(a, 12, 1)").equals("[1, 12, 2, 3]");
-	code("let a = [1, 2, 3] Array.insert(a, 12, 6)").equals("[1, 2, 3, 0, 0, 0, 12]");
+	code("var a = ['a', 'b', 'c'] Array.insert(a, 'hello', 1)").equals("['a', 'hello', 'b', 'c']");
+	code("var a = ['a', 'b', 'c'] Array.insert(a, 'hello', 6)").equals("['a', 'b', 'c', null, null, null, 'hello']");
+	code("var a = [1, 2, 3] Array.insert(a, 12, 1)").equals("[1, 12, 2, 3]");
+	code("var a = [1, 2, 3] Array.insert(a, 12, 6)").equals("[1, 2, 3, 0, 0, 0, 12]");
 
 	section("Array.isPermutation()");
 	code("[].isPermutation([])").equals("true");
@@ -526,10 +526,10 @@ void Test::test_arrays() {
 	code("let a = ['a', 'b', 'c'] a.random(3).size()").equals("3");
 
 	section("Array.remove()");
-	code("let a = [1, 2, 3] Array.remove(a, 1)").equals("2");
-	code("let a = [1, 2, 3] Array.remove(a, 1) a").equals("[1, 3]");
-	code("let a = [1, 2, 3] Array.remove(a, 1)").equals("2");
-	code("let a = [1, 'yo', true] Array.remove(a, 1)").equals("'yo'");
+	code("var a = [1, 2, 3] Array.remove(a, 1)").equals("2");
+	code("var a = [1, 2, 3] Array.remove(a, 1) a").equals("[1, 3]");
+	code("var a = [1, 2, 3] Array.remove(a, 1)").equals("2");
+	code("var a = [1, 'yo', true] Array.remove(a, 1)").equals("'yo'");
 	// TODO
 	// code("let a = [] Array.removeKey(a, 'key')").equals("null");
 	// code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key')").equals("'test'");
@@ -537,11 +537,11 @@ void Test::test_arrays() {
 
 	section("Array.removeElement()");
 	code("[].removeElement(12)").equals("false");
-	code("let a = [1, 2, 3] a.removeElement(1) a").equals("[3, 2]");
-	code("let a = [1, 2, 3] a.removeElement('key') a").semantic_error(ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::CONST_INT_ARRAY.to_string() + ".removeElement(" + ls::Type::STRING_TMP.to_string() + ")"});
+	code("var a = [1, 2, 3] a.removeElement(1) a").equals("[3, 2]");
+	code("var a = [1, 2, 3] a.removeElement('key') a").semantic_error(ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::INT_ARRAY.to_string() + ".removeElement(" + ls::Type::STRING_TMP.to_string() + ")"});
 	code("[1, 2, 3].removeElement(3)").equals("true");
 	code("[1, 2, 3].removeElement(4)").equals("false");
-	code("let a = [true, 'hello', [1, 2, 3]] a.removeElement([1, 2, 3]) a").equals("[true, 'hello']");
+	code("var a = [true, 'hello', [1, 2, 3]] a.removeElement([1, 2, 3]) a").equals("[true, 'hello']");
 	code("[true, 'hello', [1, 2, 3]].removeElement('hello')").equals("true");
 	code("[true, 'hello', [1, 2, 3]].removeElement('yolo')").equals("false");
 
