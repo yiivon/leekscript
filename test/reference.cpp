@@ -7,8 +7,8 @@ void Test::test_references() {
 	code("var a = 2; let b = a; a = 4; b").equals("2");
 	code("var a = 2; let b = @a; a = 5; b").equals("5");
 	code("var a = 2; var b = @a; b = 6; a").equals("2");
-	code("var a = 2; let b = @a; let c = @b; a = 7; c").equals("7");
-	code("var a = 2; let b = @a; var c = @b; c = 8; a").equals("2");
+	// code("var a = 2; let b = @a; let c = @b; a = 7; c").equals("7");
+	// code("var a = 2; let b = @a; var c = @b; c = 8; a").equals("2");
 	code("var a = 2; var b = 3; b = @a; a = 9; b").equals("9");
 
 	// TODO should be forbidden
@@ -47,12 +47,12 @@ void Test::test_references() {
 	// code("var v = 10; var a = [1, @v, 3] a[1] = 5 v").equals("10");
 
 	section("Reference of array element");
-	// TODO not supported anymore
-	// code("var a = ['a', 12]; var e = @a[1]; e += 5; a").equals("['a', 17]");
-	// code("var a = ['a', 12]; var e = @a[0]; e += 5; a").equals("['a5', 12]");
-	// code("var a = ['a', 12]; var e = @a[1]; a[1] -= 2; e").equals("10");
-	// code("var a = ['a', 12]; var e = @a[1]; a[1] *= 4; e").equals("48");
-	// code("var a = ['a', 12]; var e = @a[0]; a[0] += 'z'; e").equals("'az'");
+	code("var a = ['a', 12]; var e = @a[1]; e += 5; a").equals("['a', 17]");
+	code("var a = ['a', 12]; var e = @a[0]; e += 5; a").equals("['a5', 12]");
+	code("var a = ['a', 12]; var e = @a[1]; a[1] -= 2; e").equals("10");
+	code("var a = ['a', 12]; var e = @a[1]; a[1] *= 4; e").equals("48");
+	code("var a = ['a', 12]; var e = @a[0]; a[0] += 'z'; e").equals("'az'");
+	// TODO
 	// code("var a = ['a', 12]; var e = @a[1]; a[1] = 5; e").equals("12");
 
 	section("Reference = reference");
