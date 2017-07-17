@@ -236,10 +236,10 @@ Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
-	if (v.t == Type::BOOLEAN) {
+	if (v.t.raw_type == RawType::BOOLEAN) {
 		return v;
 	}
-	if (v.t == Type::INTEGER) {
+	if (v.t.raw_type == RawType::INTEGER) {
 		return {jit_insn_to_bool(F, v.v), Type::BOOLEAN};
 	}
 	if (v.t.raw_type == RawType::STRING) {
@@ -270,30 +270,30 @@ Compiler::value Compiler::insn_load(Compiler::value v, int pos, Type t) const {
 }
 
 Compiler::value Compiler::insn_typeof(Compiler::value v) const {
-	if (v.t == Type::NULLL) return new_integer(LSValue::NULLL);
-	if (v.t == Type::BOOLEAN) return new_integer(LSValue::BOOLEAN);
+	if (v.t.raw_type == RawType::NULLL) return new_integer(LSValue::NULLL);
+	if (v.t.raw_type == RawType::BOOLEAN) return new_integer(LSValue::BOOLEAN);
 	if (v.t.isNumber()) return new_integer(LSValue::NUMBER);
-	if (v.t == Type::STRING) return new_integer(LSValue::STRING);
-	if (v.t == Type::ARRAY) return new_integer(LSValue::ARRAY);
-	if (v.t == Type::MAP) return new_integer(LSValue::MAP);
-	if (v.t == Type::SET) return new_integer(LSValue::SET);
-	if (v.t == Type::INTERVAL) return new_integer(LSValue::INTERVAL);
-	if (v.t == Type::FUNCTION) return new_integer(LSValue::FUNCTION);
-	if (v.t == Type::OBJECT) return new_integer(LSValue::OBJECT);
-	if (v.t == Type::CLASS) return new_integer(LSValue::CLASS);
+	if (v.t.raw_type == RawType::STRING) return new_integer(LSValue::STRING);
+	if (v.t.raw_type == RawType::ARRAY) return new_integer(LSValue::ARRAY);
+	if (v.t.raw_type == RawType::MAP) return new_integer(LSValue::MAP);
+	if (v.t.raw_type == RawType::SET) return new_integer(LSValue::SET);
+	if (v.t.raw_type == RawType::INTERVAL) return new_integer(LSValue::INTERVAL);
+	if (v.t.raw_type == RawType::FUNCTION) return new_integer(LSValue::FUNCTION);
+	if (v.t.raw_type == RawType::OBJECT) return new_integer(LSValue::OBJECT);
+	if (v.t.raw_type == RawType::CLASS) return new_integer(LSValue::CLASS);
 	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
 		return v->type;
 	});
 }
 
 Compiler::value Compiler::insn_class_of(Compiler::value v) const {
-	if (v.t == Type::NULLL)
+	if (v.t.raw_type == RawType::NULLL)
 		return new_pointer(vm->system_vars["Null"]);
-	if (v.t == Type::BOOLEAN)
+	if (v.t.raw_type == RawType::BOOLEAN)
 		return new_pointer(vm->system_vars["Boolean"]);
 	if (v.t.isNumber())
 		return new_pointer(vm->system_vars["Number"]);
-	if (v.t == Type::STRING)
+	if (v.t.raw_type == RawType::STRING)
 		return new_pointer(vm->system_vars["String"]);
 	if (v.t.raw_type == RawType::ARRAY)
 		return new_pointer(vm->system_vars["Array"]);
@@ -305,9 +305,9 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 		return new_pointer(vm->system_vars["Interval"]);
 	if (v.t.raw_type == RawType::FUNCTION)
 		return new_pointer(vm->system_vars["Function"]);
-	if (v.t == Type::OBJECT)
+	if (v.t.raw_type == RawType::OBJECT)
 		return new_pointer(vm->system_vars["Object"]);
-	if (v.t == Type::CLASS)
+	if (v.t.raw_type == RawType::CLASS)
 		return new_pointer(vm->system_vars["Class"]);
 
 	return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
@@ -546,7 +546,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_insn_store_relative(F, addr.v, 8, new_integer(0).v);
 		return it;
 	}
-	if (v.t == Type::INTEGER) {
+	if (v.t.raw_type == RawType::INTEGER) {
 		jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_int};
 		auto integer_iterator = jit_type_create_struct(types, 3, 1);
 		Compiler::value it = {jit_value_create(F, integer_iterator), Type::INTEGER_ITERATOR};
@@ -557,7 +557,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_insn_store_relative(F, addr, 8, new_integer(0).v);
 		return it;
 	}
-	if (v.t == Type::LONG) {
+	if (v.t.raw_type == RawType::LONG) {
 		jit_type_t types[3] = {jit_type_long, jit_type_long, jit_type_int};
 		auto long_iterator = jit_type_create_struct(types, 3, 1);
 		Compiler::value it = {jit_value_create(F, long_iterator), Type::LONG_ITERATOR};
@@ -568,7 +568,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		jit_insn_store_relative(F, addr, 16, new_long(0).v);
 		return it;
 	}
-	if (v.t == Type::MPZ) {
+	if (v.t.raw_type == RawType::MPZ) {
 		jit_type_t types[3] = {VM::mpz_type, VM::mpz_type, jit_type_int};
 		auto mpz_iterator = jit_type_create_struct(types, 3, 1);
 		Compiler::value it = {jit_value_create(F, mpz_iterator), Type::MPZ_ITERATOR};
