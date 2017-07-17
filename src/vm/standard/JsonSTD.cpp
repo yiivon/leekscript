@@ -11,10 +11,10 @@ namespace ls {
 JsonSTD::JsonSTD() : Module("Json") {
 
 	method("encode", {
-		{Type::STRING, {Type::UNKNOWN}, (void*) &JsonSTD::encode}
+		{Type::STRING, {Type::CONST_UNKNOWN}, (void*) &JsonSTD::encode}
 	});
 	method("decode", {
-		{Type::UNKNOWN, {Type::STRING}, (void*) &JsonSTD::decode},
+		{Type::UNKNOWN, {Type::CONST_STRING}, (void*) &JsonSTD::decode},
 	});
 }
 
