@@ -60,6 +60,10 @@ void Test::test_references() {
 	code("var a = {k: 12} var e = @a.k e += 5 a").equals("{k: 17}");
 	code("var a = {k: 12} var e = @a.k e *= 5 a.k").equals("60");
 	code("var a = {k: 12}; var e = @a.k; a.k += 5; e").equals("17");
+	code("var a = {b: []}; var e = @a.b").equals("(void)");
+	code("var a = {b: []}; var e = @a.b e").equals("[]");
+	code("var a = {b: []}; var e = @a.b e.push(5) a").equals("{b: [5]}");
+	code("var a = {b: []}; var e = @a.b e.push(5) e").equals("[5]");
 
 	section("Reference = reference");
 	// TODO possibility to change the reference
