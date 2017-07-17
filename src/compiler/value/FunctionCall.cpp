@@ -106,6 +106,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		else if (vv->name == "String") type = Type::STRING;
 		else if (vv->name == "Array") type = Type::PTR_ARRAY;
 		else if (vv->name == "Object") type = Type::OBJECT;
+		else if (vv->name == "Set") type = Type::PTR_SET;
 		else {
 			type = Type::POINTER; // Class constructor
 		}
@@ -350,6 +351,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}
 		if (vv->name == "Object") {
 			return {c.new_pointer(new LSObject()).v, type};
+		}
+		if (vv->name == "Set") {
+			return {c.new_pointer(new LSSet<LSValue*>()).v, type};
 		}
 	}
 	if (function->type == Type::CLASS) {
