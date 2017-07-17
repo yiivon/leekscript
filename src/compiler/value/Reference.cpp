@@ -21,8 +21,9 @@ Reference::~Reference() {
 	delete value;
 }
 
-void Reference::print(ostream& os, int, bool debug) const {
-	os << "@" << value->to_string();
+void Reference::print(ostream& os, int level, bool debug) const {
+	os << "@";
+	value->print(os, level, debug);
 	if (debug) {
 		os << " " << type;
 	}
