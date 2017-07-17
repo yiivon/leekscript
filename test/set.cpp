@@ -119,21 +119,21 @@ void Test::test_set() {
 	code("let s = <'a', 'b'> s.contains('c')").equals("false");
 
 	section("Set.clear()");
-	code("let s = <1, 2> s.clear() s").equals("<>");
-	code("let s = <'a', 'b'> s.clear() s").equals("<>");
-	code("let s = <1.5, 2.5> s.clear() s").equals("<>");
+	code("var s = <1, 2> s.clear() s").equals("<>");
+	code("var s = <'a', 'b'> s.clear() s").equals("<>");
+	code("var s = <1.5, 2.5> s.clear() s").equals("<>");
 
 	section("Set.erase()");
-	code("let s = <1, 2> s.erase(3)").equals("false");
-	code("let s = <1, 2> s.erase(1)").equals("true");
-	code("let s = <1, 2, 3.3> s.erase(3.3)").equals("true");
-	code("let s = <'a', 'b'> s.erase('a')").equals("true");
-	code("let s = <'a', 'b'> s.erase('c')").equals("false");
+	code("var s = <1, 2> s.erase(3)").equals("false");
+	code("var s = <1, 2> s.erase(1)").equals("true");
+	code("var s = <1, 2, 3.3> s.erase(3.3)").equals("true");
+	code("var s = <'a', 'b'> s.erase('a')").equals("true");
+	code("var s = <'a', 'b'> s.erase('c')").equals("false");
 
 	section("Set.insert()");
-	code("let s = <1, 2> s.insert(3) s").equals("<1, 2, 3>");
-	code("let s = <1, 2.5> s.insert(3.5) s").equals("<1, 2.5, 3.5>");
-	code("let s = <'a', 'b'> s.insert('c') s").equals("<'a', 'b', 'c'>");
+	code("var s = <1, 2> s.insert(3) s").equals("<1, 2, 3>");
+	code("var s = <1, 2.5> s.insert(3.5) s").equals("<1, 2.5, 3.5>");
+	code("var s = <'a', 'b'> s.insert('c') s").equals("<'a', 'b', 'c'>");
 	code("<'a'>.insert('b')").equals("true");
 	code("<'a'>.insert('a')").equals("false");
 	code("var s = Set() s.insert(12) s").equals("<12>");

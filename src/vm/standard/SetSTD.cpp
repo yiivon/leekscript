@@ -15,18 +15,18 @@ SetSTD::SetSTD() : Module("Set") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::PTR_SET, Type::POINTER, Type::BOOLEAN, (void*) &LSSet<LSValue*>::in, Method::NATIVE},
-		{Type::REAL_SET, Type::REAL, Type::BOOLEAN, (void*) &LSSet<double>::in, Method::NATIVE},
-		{Type::INT_SET, Type::INTEGER, Type::BOOLEAN, (void*) &LSSet<int>::in, Method::NATIVE}
+		{Type::CONST_PTR_SET, Type::POINTER, Type::BOOLEAN, (void*) &LSSet<LSValue*>::in, Method::NATIVE},
+		{Type::CONST_REAL_SET, Type::REAL, Type::BOOLEAN, (void*) &LSSet<double>::in, Method::NATIVE},
+		{Type::CONST_INT_SET, Type::INTEGER, Type::BOOLEAN, (void*) &LSSet<int>::in, Method::NATIVE}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("size", {
-		{Type::INTEGER, {Type::PTR_SET}, (void*) &LSSet<LSValue*>::ls_size, Method::NATIVE},
-		{Type::INTEGER, {Type::REAL_SET}, (void*) &LSSet<double>::ls_size, Method::NATIVE},
-		{Type::INTEGER, {Type::INT_SET}, (void*) &LSSet<int>::ls_size, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_PTR_SET}, (void*) &LSSet<LSValue*>::ls_size, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_REAL_SET}, (void*) &LSSet<double>::ls_size, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_INT_SET}, (void*) &LSSet<int>::ls_size, Method::NATIVE},
 	});
 	method("insert", {
 		{Type::BOOLEAN, {Type::PTR_SET, Type::POINTER}, (void*) &LSSet<LSValue*>::ls_insert, Method::NATIVE},
@@ -44,11 +44,10 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::BOOLEAN, {Type::INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_erase, Method::NATIVE},
 	});
 	method("contains", {
-		{Type::BOOLEAN, {Type::PTR_SET, Type::POINTER}, (void*) &LSSet<LSValue*>::ls_contains, Method::NATIVE},
-		{Type::BOOLEAN, {Type::REAL_SET, Type::REAL}, (void*) &LSSet<double>::ls_contains, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_contains, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_PTR_SET, Type::POINTER}, (void*) &LSSet<LSValue*>::ls_contains, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_REAL_SET, Type::REAL}, (void*) &LSSet<double>::ls_contains, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_contains, Method::NATIVE},
 	});
-
 }
 
 }
