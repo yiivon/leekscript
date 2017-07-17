@@ -27,65 +27,65 @@ ValueSTD::ValueSTD() : Module("Value") {
 		//{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::NUMBER_VALUE, (void*) &ValueSTD::op_store}
  	});
 	operator_("is", {
-		{Type::UNKNOWN, Type::CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
+		{Type::CONST_UNKNOWN, Type::CONST_CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
 	});
 	operator_("==", {
-		{Type::VALUE, Type::VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_equals}
+		{Type::CONST_VALUE, Type::CONST_VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_equals}
  	});
 	operator_("!=", {
-		{Type::VALUE, Type::VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_not_equals}
+		{Type::CONST_VALUE, Type::CONST_VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_not_equals}
  	});
 	operator_("<", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_lt}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_lt}
 	});
 	operator_("<=", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_le}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_le}
 	});
 	operator_(">", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_gt}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_gt}
 	});
 	operator_(">=", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_ge}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_ge}
 	});
 	operator_("and", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and}
 	});
 	operator_("&&", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_and}
 	});
 	operator_("or", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_or}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_or}
 	});
 	operator_("||", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_or}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_or}
 	});
 	operator_("xor", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_xor}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_xor}
 	});
 	operator_("&", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_and}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_and}
 	});
 	operator_("|", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_or}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_or}
 	});
 	operator_("^", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_xor}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::INTEGER, (void*) &ValueSTD::op_bit_xor}
 	});
 	operator_("in", {
-		{Type::UNKNOWN, Type::UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_in}
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_in}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("string", {
-		{Type::STRING, {Type::UNKNOWN}, (void*) &ValueSTD::to_string}
+		{Type::STRING, {Type::CONST_UNKNOWN}, (void*) &ValueSTD::to_string}
 	});
 	method("json", {
-		{Type::STRING, {Type::UNKNOWN}, (void*) &JsonSTD::encode}
+		{Type::STRING, {Type::CONST_UNKNOWN}, (void*) &JsonSTD::encode}
 	});
 	method("typeID", {
-		{Type::INTEGER, {Type::UNKNOWN}, (void*) &ValueSTD::typeID}
+		{Type::INTEGER, {Type::CONST_UNKNOWN}, (void*) &ValueSTD::typeID}
 	});
 }
 
