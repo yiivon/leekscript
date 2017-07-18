@@ -5,6 +5,10 @@
 #include "LSNull.hpp"
 #include "LSFunction.hpp"
 #include "LSBoolean.hpp"
+#include "../VM.hpp"
+#include "LSString.hpp"
+#include "LSClass.hpp"
+#include "LSClosure.hpp"
 
 using namespace std;
 
@@ -42,17 +46,28 @@ LSNumber::~LSNumber() {}
 /*
  * LSNumber methods
  */
-LSValue* LSNumber::ls_fold(LSFunction<LSValue*>* function, LSValue* v0) {
-	auto fun = (LSValue* (*)(void*, LSValue*, int)) function->function;
-	LSValue* result = ls::move(v0);
-	int number = this->value;
-	while (number) {
-        int digit = number % 10;
-		result = fun(function, result, digit);
-        number /= 10;
+template <class F>
+LSValue* base_fold(LSNumber* number, F function, LSValue* v0) {
+	auto result = ls::move(v0);
+	int remain = number->value;
+	while (remain) {
+        int digit = remain % 10;
+		std::cout << "digit = " << digit << std::endl;
+		result = ls::call<LSValue*>(function, result, digit);
+		std::cout << "result = " << result << std::endl;
+        remain /= 10;
     }
-	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(number);
 	return result;
+}
+
+template <>
+LSValue* LSNumber::ls_fold(LSFunction* function, LSValue* v0) {
+	return base_fold(this, function, v0);
+}
+template <>
+LSValue* LSNumber::ls_fold(LSClosure* closure, LSValue* v0) {
+	return base_fold(this, closure, v0);
 }
 
 /*

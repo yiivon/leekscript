@@ -179,8 +179,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	fold_fun_type.setArgumentType(0, Type::POINTER);
 	fold_fun_type.setArgumentType(1, Type::INTEGER);
 	fold_fun_type.setReturnType(Type::POINTER);
+	auto fold_fun = &LSNumber::ls_fold<LSFunction*>;
 	method("fold", {
-		{Type::POINTER, {Type::POINTER, fold_fun_type, Type::POINTER}, (void*) &LSNumber::ls_fold, Method::NATIVE}
+		{Type::POINTER, {Type::POINTER, fold_fun_type, Type::POINTER}, (void*) fold_fun, Method::NATIVE}
 	});
 	method("floor", {
 		{Type::INTEGER, {Type::NUMBER_P}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},

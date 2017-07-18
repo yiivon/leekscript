@@ -7,6 +7,7 @@
 #include <gmp.h>
 #include <gmpxx.h>
 #include "../LSValue.hpp"
+#include "LSClosure.hpp"
 
 namespace ls {
 
@@ -28,7 +29,8 @@ public:
 	/*
 	 * LSNumber
 	 */
-	LSValue* ls_fold(LSFunction<LSValue*>* function, LSValue* v0);
+	template <class F>
+	LSValue* ls_fold(F function, LSValue* v0);
 
 	/*
 	 * LSValue
