@@ -27,7 +27,6 @@ public:
 };
 
 template <class R, class ...A> R call(LSFunction* function, A... args) {
-	std::cout << __PRETTY_FUNCTION__ << std::endl;
 	auto fun = (R (*)(A...)) function->function;
 	return fun(args...);
 }
