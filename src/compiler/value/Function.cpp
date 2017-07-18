@@ -342,6 +342,26 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 }
 
 int Function::capture(std::shared_ptr<SemanticVar> var) {
+
+	// Function become a closure
+	if (!default_version->function->closure()) {
+		delete default_version->function;
+		default_version->function = new LSClosure(nullptr);
+		default_version->function->refs = 1;
+		default_version->function->native = true;
+	}
+	default_version->type.raw_type = RawType::CLOSURE;
+	type.raw_type = RawType::CLOSURE;
+	for (auto& version : versions) {
+		if (!version.second->function->closure()) {
+			delete version.second->function;
+			version.second->function = new LSClosure(nullptr);
+			version.second->function->refs = 1;
+			version.second->function->native = true;
+		}
+		version.second->type.raw_type = RawType::CLOSURE;
+	}
+
 	for (size_t i = 0; i < captures.size(); ++i) {
 		if (captures[i]->name == var->name)
 			return i;
