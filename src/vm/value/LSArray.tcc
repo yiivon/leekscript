@@ -541,38 +541,14 @@ inline LSArray<T>* LSArray<T>::ls_reverse() {
 	}
 }
 
-template <>
-inline LSArray<LSValue*>* LSArray<LSValue*>::ls_filter(LSFunction<bool>* function) {
-	auto fun = (bool (*)(void*, void*)) function->function;
-	if (refs == 0) {
-		for (size_t i = 0; i < this->size(); ) {
-			auto v = (*this)[i];
-			if (!fun(function, v)) {
-				LSValue::delete_ref(v);
-				(*this)[i] = this->back();
-				this->pop_back();
-			} else {
-				++i;
-			}
-		}
-		return this;
-	} else {
-		auto new_array = new LSArray<LSValue*>();
-		new_array->reserve(this->size());
-		for (auto v : *this) {
-			if (fun(function, v)) new_array->push_clone(v);
-		}
-		return new_array;
-	}
-}
-
 template <class T>
-LSArray<T>* LSArray<T>::ls_filter(LSFunction<bool>* function) {
-	auto fun = (bool (*)(void*, T)) function->function;
+template <class F>
+LSArray<T>* LSArray<T>::ls_filter(F function) {
 	if (refs == 0) {
 		for (size_t i = 0; i < this->size(); ) {
 			T v = (*this)[i];
-			if (!fun(function, v)) {
+			if (!ls::call<bool>(function, v)) {
+				ls::unref(v);
 				this->erase(this->begin() + i);
 			} else {
 				++i;
@@ -583,7 +559,7 @@ LSArray<T>* LSArray<T>::ls_filter(LSFunction<bool>* function) {
 		auto new_array = new LSArray<T>();
 		new_array->reserve(this->size());
 		for (auto v : *this) {
-			if (fun(function, v)) new_array->push_clone(v);
+			if (ls::call<bool>(function, v)) new_array->push_clone(v);
 		}
 		return new_array;
 	}

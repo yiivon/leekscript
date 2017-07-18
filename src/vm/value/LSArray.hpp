@@ -57,7 +57,8 @@ public:
 	LSArray<T>* ls_push_all_flo(LSArray<double>* array);
 	LSArray<T>* ls_shuffle();
 	LSArray<T>* ls_reverse();
-	LSArray<T>* ls_filter(LSFunction<bool>* fun);
+	template <class F>
+	LSArray<T>* ls_filter(F fun);
 	template <class F, class R>
 	R ls_foldLeft(F function, R initial);
 	template <class F, class R>

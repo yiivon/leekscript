@@ -157,11 +157,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
 
+	auto filter_ptr = &LSArray<LSValue*>::ls_filter<LSFunction*>;
+	auto filter_real = &LSArray<double>::ls_filter<LSFunction*>;
+	auto filter_int = &LSArray<int>::ls_filter<LSFunction*>;
 	method("filter", {
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, pred_fun_type}, (void*) &LSArray<LSValue*>::ls_filter, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, pred_fun_type_float}, (void*) &LSArray<double>::ls_filter, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, pred_fun_type_int}, (void*) &LSArray<int>::ls_filter, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, pred_fun_type_int}, (void*) &LSArray<int>::ls_filter, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, pred_fun_type}, (void*) filter_ptr, Method::NATIVE},
+		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, pred_fun_type_float}, (void*) filter_real, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, pred_fun_type_int}, (void*) filter_int, Method::NATIVE}
 	});
 
 	method("isEmpty", {
