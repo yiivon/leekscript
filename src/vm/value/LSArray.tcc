@@ -590,24 +590,22 @@ LSArray<T>* LSArray<T>::ls_filter(LSFunction<bool>* function) {
 }
 
 template <class T>
-template <class R>
-R LSArray<T>::ls_foldLeft(LSFunction<R>* function, R v0) {
-	auto fun = (R (*)(void*, R, T)) function->function;
+template <class F, class R>
+R LSArray<T>::ls_foldLeft(F function, R v0) {
 	auto result = ls::move(v0);
 	for (const auto& v : *this) {
-		result = fun(function, result, v);
+		result = ls::call<R>(function, result, v);
 	}
 	if (refs == 0) delete this;
 	return result;
 }
 
 template <class T>
-template <class R>
-R LSArray<T>::ls_foldRight(LSFunction<R>* function, R v0) {
-	auto fun = (R (*)(void*, T, R)) function->function;
+template <class F, class R>
+R LSArray<T>::ls_foldRight(F function, R v0) {
 	auto result = ls::move(v0);
 	for (auto it = this->rbegin(); it != this->rend(); it++) {
-		result = fun(function, *it, result);
+		result = ls::call<R>(function, *it, result);
 	}
 	if (refs == 0) delete this;
 	return result;

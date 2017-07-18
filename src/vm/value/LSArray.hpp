@@ -58,10 +58,10 @@ public:
 	LSArray<T>* ls_shuffle();
 	LSArray<T>* ls_reverse();
 	LSArray<T>* ls_filter(LSFunction<bool>* fun);
-	template <class R>
-	R ls_foldLeft(LSFunction<R>* function, R initial);
-	template <class R>
-	R ls_foldRight(LSFunction<R>* function, R initial);
+	template <class F, class R>
+	R ls_foldLeft(F function, R initial);
+	template <class F, class R>
+	R ls_foldRight(F function, R initial);
 	LSArray<T>* ls_insert(T value, int pos);
 	LSArray<LSValue*>* ls_partition(LSFunction<bool>* function);
 	template <class R, class T2>
