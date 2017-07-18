@@ -24,8 +24,6 @@ public:
 
 	void add_capture(LSValue* value);
 	LSValue* get_capture(int index);
-
-	std::ostream& dump(std::ostream& os, int level) const override;
 };
 
 template <class R, class ...A> R call(LSFunction* function, A... args) {

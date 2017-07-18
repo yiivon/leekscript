@@ -34,9 +34,4 @@ LSValue* LSClosure::get_capture(int index) {
 	return captures[index];
 }
 
-std::ostream& LSClosure::dump(std::ostream& os, int) const {
-	os << "<closure>";
-	return os;
-}
-
 }
