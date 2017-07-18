@@ -2,6 +2,7 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../instruction/ExpressionInstruction.hpp"
 #include "../../vm/value/LSFunction.hpp"
+#include "../../vm/value/LSClosure.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Exception.hpp"
@@ -177,7 +178,11 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		default_version = new Function::Version();
 		current_version = default_version;
 		default_version->body = body;
-		default_version->function = new LSFunction<LSValue*>(nullptr);
+		if (captures.size()) {
+			default_version->function = new LSClosure(nullptr);
+		} else {
+			default_version->function = new LSFunction(nullptr);
+		}
 		default_version->function->refs = 1;
 		default_version->function->native = true;
 	}
@@ -221,7 +226,11 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 			auto version = new Function::Version();
 			version->body = (Block*) body->clone();
-			version->function = new LSFunction<LSValue*>(nullptr);
+			if (captures.size()) {
+				version->function = new LSFunction(nullptr);
+			} else {
+				version->function = new LSClosure(nullptr);
+			}
 			version->function->refs = 1;
 			version->function->native = true;
 			versions.insert({args, version});
@@ -559,7 +568,11 @@ Value* Function::clone() const {
 	}
 	for (const auto& v : versions) {
 		auto v2 = new Version();
-		v2->function = new LSFunction<LSValue*>(nullptr);
+		if (captures.size()) {
+			v2->function = new LSClosure(nullptr);
+		} else {
+			v2->function = new LSFunction(nullptr);
+		}
 		v2->function->refs = 1;
 		v2->function->native = true;
 		v2->body = (Block*) v.second->body->clone();
