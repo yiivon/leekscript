@@ -32,8 +32,9 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::POINTER);
 	map_fun_type.setReturnType(Type::POINTER);
+	auto map_fun = &LSObject::ls_map<LSFunction*>;
 	method("map", {
-		{Type::OBJECT, {Type::OBJECT, map_fun_type}, (void*) &LSObject::ls_map, Method::NATIVE}
+		{Type::OBJECT, {Type::OBJECT, map_fun_type}, (void*) map_fun, Method::NATIVE}
 	});
 
 	method("keys", {

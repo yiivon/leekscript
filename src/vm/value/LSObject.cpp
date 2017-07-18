@@ -54,15 +54,23 @@ LSArray<LSValue*>* LSObject::ls_get_values() const {
 	return v;
 }
 
-LSObject* LSObject::ls_map(LSFunction<LSValue*>* function) const {
-	auto fun = (LSValue* (*)(void*, LSValue*)) function->function;
+template <class F>
+LSObject* base_map(const LSObject* object, F function) {
 	auto result = new LSObject();
-	for (auto v : this->values) {
-		auto r = fun(function, ls::clone(v.second));
+	for (auto v : object->values) {
+		auto r = ls::call<LSValue*>(function, ls::clone(v.second));
 		result->values.insert({v.first, r->move_inc()});
 	}
-	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(object);
 	return result;
+}
+template <>
+LSObject* LSObject::ls_map(LSFunction* function) const {
+	return base_map(this, function);
+}
+template <>
+LSObject* LSObject::ls_map(LSClosure* function) const {
+	return base_map(this, function);
 }
 
 /*

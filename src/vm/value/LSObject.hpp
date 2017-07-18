@@ -8,11 +8,10 @@ namespace ls {
 class LSClass;
 
 class LSObject : public LSValue {
-protected:
-	std::map<std::string, LSValue*> values;
 public:
 	static LSValue* object_class;
 
+	std::map<std::string, LSValue*> values;
 	LSClass* clazz;
 	bool readonly;
 
@@ -25,7 +24,8 @@ public:
 	LSValue* getField(std::string name);
 	LSArray<LSValue*>* ls_get_keys() const;
 	LSArray<LSValue*>* ls_get_values() const;
-	LSObject* ls_map(LSFunction<LSValue*>* fun) const;
+	template <class F>
+	LSObject* ls_map(F fun) const;
 
 	/** LSValue methods **/
 	bool to_bool() const override;
