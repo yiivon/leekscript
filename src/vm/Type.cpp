@@ -644,7 +644,7 @@ ostream& operator << (ostream& os, const Type& type) {
 			os << BLUE_BOLD;
 		}
 		if (type.constant) os << "const:";
-		os << "fun(";
+		os << (type.raw_type == RawType::FUNCTION ? "fun(" : "closure(");
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
 			os << type.arguments_types[t];
