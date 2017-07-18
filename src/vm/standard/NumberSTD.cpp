@@ -258,6 +258,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("sqrt", {
 		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sqrt_real},
+		{Type::REAL, {Type::INTEGER}, (void*) &NumberSTD::sqrt_int, Method::NATIVE},
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::MPZ_TMP, {Type::MPZ}, (void*) NumberSTD::sqrt_mpz}
 	});
@@ -825,6 +826,9 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 	double s = sqrt(x->value);
 	LSValue::delete_temporary(x);
 	return s;
+}
+double NumberSTD::sqrt_int(int x) {
+	return sqrt(x);
 }
 
 Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args) {
