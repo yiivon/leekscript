@@ -202,6 +202,7 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4] ~~ x -> x + 0.5").equals("[1.5, 2.5, 3.5, 4.5]");
 	code("[1, 2, 3] ~~ (x -> x * 5) ~~ (x -> x - 1)").equals("[4, 9, 14]");
 	code("let f = x -> x + 10 let g = x -> x ** 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
+	code("[1, 2, 3] ~~ Number.sqrt").equals("[1, 1.41421, 1.73205]");
 
 	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
