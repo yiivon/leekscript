@@ -68,11 +68,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type iter_fun_type_float = Type::FUNCTION_P;
 	iter_fun_type_float.setArgumentType(0, Type::REAL);
 	iter_fun_type_float.setReturnType(Type::VOID);
-
+	auto iter_ptr = &LSArray<LSValue*>::ls_iter<LSFunction*>;
+	auto iter_real = &LSArray<double>::ls_iter<LSFunction*>;
+	auto iter_int = &LSArray<int>::ls_iter<LSFunction*>;
 	method("iter", {
-		{Type::VOID, {Type::PTR_ARRAY, iter_fun_type}, (void*) &LSArray<LSValue*>::ls_iter, Method::NATIVE},
-		{Type::VOID, {Type::REAL_ARRAY, iter_fun_type_float}, (void*) &LSArray<double>::ls_iter, Method::NATIVE},
-		{Type::VOID, {Type::INT_ARRAY, iter_fun_type_int}, (void*) &LSArray<int>::ls_iter, Method::NATIVE},
+		{Type::VOID, {Type::PTR_ARRAY, iter_fun_type}, (void*) iter_ptr, Method::NATIVE},
+		{Type::VOID, {Type::REAL_ARRAY, iter_fun_type_float}, (void*) iter_real, Method::NATIVE},
+		{Type::VOID, {Type::INT_ARRAY, iter_fun_type_int}, (void*) iter_int, Method::NATIVE},
 	});
 
 	method("max", {

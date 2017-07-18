@@ -385,10 +385,10 @@ LSArray<T>* LSArray<T>::ls_sort() {
 }
 
 template <class T>
-void LSArray<T>::ls_iter(LSFunction<LSValue*>* function) {
-	auto fun = (void* (*)(void*, T)) function->function;
+template <class F>
+void LSArray<T>::ls_iter(F function) {
 	for (auto v : *this) {
-		fun(function, v);
+		ls::call<void>(function, v);
 	}
 	if (refs == 0) {
 		delete this;

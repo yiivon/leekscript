@@ -48,7 +48,8 @@ public:
 	LSArray<LSValue*>* ls_chunk(int size = 1);
 	LSArray<T>* ls_unique();
 	LSArray<T>* ls_sort();
-	void ls_iter(LSFunction<LSValue*>* fun);
+	template <class F>
+	void ls_iter(F fun);
 	bool ls_contains(T val);
 	LSArray<T>* ls_push(T val);
 	LSArray<T>* ls_push_all_ptr(LSArray<LSValue*>* array);
