@@ -255,15 +255,33 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_fun_type_int.setArgumentType(0, Type::POINTER);
 	fold_fun_type_int.setArgumentType(1, Type::INTEGER);
 	fold_fun_type_int.setReturnType(Type::POINTER);
+	Type fold_clo_type = Type::CLOSURE;
+	fold_clo_type.setArgumentType(0, Type::POINTER);
+	fold_clo_type.setArgumentType(1, Type::POINTER);
+	fold_clo_type.setReturnType(Type::POINTER);
+	Type fold_clo_type_float = Type::CLOSURE;
+	fold_clo_type_float.setArgumentType(0, Type::POINTER);
+	fold_clo_type_float.setArgumentType(1, Type::REAL);
+	fold_clo_type_float.setReturnType(Type::POINTER);
+	Type fold_clo_type_int = Type::CLOSURE;
+	fold_clo_type_int.setArgumentType(0, Type::POINTER);
+	fold_clo_type_int.setArgumentType(1, Type::INTEGER);
+	fold_clo_type_int.setReturnType(Type::POINTER);
 
 	auto fold_left_ptr = &LSArray<LSValue*>::ls_foldLeft<LSFunction*, LSValue*>;
 	auto fold_left_int = &LSArray<int>::ls_foldLeft<LSFunction*, LSValue*>;
 	auto fold_left_real = &LSArray<double>::ls_foldLeft<LSFunction*, LSValue*>;
+	auto fold_left_clo_ptr = &LSArray<LSValue*>::ls_foldLeft<LSClosure*, LSValue*>;
+	auto fold_left_clo_int = &LSArray<int>::ls_foldLeft<LSClosure*, LSValue*>;
+	auto fold_left_clo_real = &LSArray<double>::ls_foldLeft<LSClosure*, LSValue*>;
 
 	method("foldLeft", {
 		{Type::POINTER, {Type::PTR_ARRAY, fold_fun_type, Type::POINTER}, (void*) fold_left_ptr, Method::NATIVE},
 		{Type::POINTER, {Type::REAL_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) fold_left_real, Method::NATIVE},
 		{Type::POINTER, {Type::INT_ARRAY, fold_fun_type_int, Type::POINTER}, (void*) fold_left_int, Method::NATIVE},
+		{Type::POINTER, {Type::PTR_ARRAY, fold_clo_type, Type::POINTER}, (void*) fold_left_clo_ptr, Method::NATIVE},
+		{Type::POINTER, {Type::REAL_ARRAY, fold_clo_type_float, Type::POINTER}, (void*) fold_left_clo_real, Method::NATIVE},
+		{Type::POINTER, {Type::INT_ARRAY, fold_clo_type_int, Type::POINTER}, (void*) fold_left_clo_int, Method::NATIVE}
 	});
 
 	Type fold_right_fun_type = Type::FUNCTION_P;
@@ -278,15 +296,33 @@ ArraySTD::ArraySTD() : Module("Array") {
 	fold_right_fun_type_int.setArgumentType(0, Type::INTEGER);
 	fold_right_fun_type_int.setArgumentType(1, Type::POINTER);
 	fold_right_fun_type_int.setReturnType(Type::POINTER);
+	Type fold_right_clo_type = Type::CLOSURE;
+	fold_right_clo_type.setArgumentType(0, Type::POINTER);
+	fold_right_clo_type.setArgumentType(1, Type::POINTER);
+	fold_right_clo_type.setReturnType(Type::POINTER);
+	Type fold_right_clo_type_float = Type::CLOSURE;
+	fold_right_clo_type_float.setArgumentType(0, Type::REAL);
+	fold_right_clo_type_float.setArgumentType(1, Type::POINTER);
+	fold_right_clo_type_float.setReturnType(Type::POINTER);
+	Type fold_right_clo_type_int = Type::CLOSURE;
+	fold_right_clo_type_int.setArgumentType(0, Type::INTEGER);
+	fold_right_clo_type_int.setArgumentType(1, Type::POINTER);
+	fold_right_clo_type_int.setReturnType(Type::POINTER);
 
 	auto fold_right_ptr = &LSArray<LSValue*>::ls_foldRight<LSFunction*, LSValue*>;
 	auto fold_right_int = &LSArray<int>::ls_foldRight<LSFunction*, LSValue*>;
 	auto fold_right_real = &LSArray<double>::ls_foldRight<LSFunction*, LSValue*>;
+	auto fold_right_clo_ptr = &LSArray<LSValue*>::ls_foldRight<LSClosure*, LSValue*>;
+	auto fold_right_clo_int = &LSArray<int>::ls_foldRight<LSClosure*, LSValue*>;
+	auto fold_right_clo_real = &LSArray<double>::ls_foldRight<LSClosure*, LSValue*>;
 
 	method("foldRight", {
 		{Type::POINTER, {Type::PTR_ARRAY, fold_right_fun_type, Type::POINTER}, (void*) fold_right_ptr, Method::NATIVE},
 		{Type::POINTER, {Type::REAL_ARRAY, fold_right_fun_type_float, Type::POINTER}, (void*) fold_right_real, Method::NATIVE},
 		{Type::POINTER, {Type::INT_ARRAY, fold_right_fun_type_int, Type::POINTER}, (void*) fold_right_int, Method::NATIVE},
+		{Type::POINTER, {Type::PTR_ARRAY, fold_right_clo_type, Type::POINTER}, (void*) fold_right_clo_ptr, Method::NATIVE},
+		{Type::POINTER, {Type::REAL_ARRAY, fold_right_clo_type_float, Type::POINTER}, (void*) fold_right_clo_real, Method::NATIVE},
+		{Type::POINTER, {Type::INT_ARRAY, fold_right_clo_type_int, Type::POINTER}, (void*) fold_right_clo_int, Method::NATIVE},
 	});
 
 	method("pop", {
