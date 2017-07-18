@@ -167,6 +167,19 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
+	// Merge operations count
+	// (2 + 3) × 4    ->  2 ops for the × directly
+	if (op->type != TokenType::OR or op->type == TokenType::AND) {
+		if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
+			operations += ex1->operations;
+			ex1->operations = 0;
+		}
+		if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
+			operations += ex2->operations;
+			ex2->operations = 0;
+		}
+	}
+
 	this->v1_type = op->reversed ? v2->type : v1->type;
 	this->v2_type = op->reversed ? v1->type : v2->type;
 
@@ -181,19 +194,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		// Search in the Value class if not found
 		auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
 		m = value_class->getOperator(op->character, this->v1_type, this->v2_type);
-	}
-
-	// Merge operations count
-	// (2 + 3) × 4    ->  2 ops for the × directly
-	if (op->type != TokenType::OR or op->type == TokenType::AND) {
-		if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
-			operations += ex1->operations;
-			ex1->operations = 0;
-		}
-		if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
-			operations += ex2->operations;
-			ex2->operations = 0;
-		}
 	}
 
 	if (m != nullptr) {
