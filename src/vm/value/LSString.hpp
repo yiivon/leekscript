@@ -40,13 +40,15 @@ public:
 	bool is_permutation(LSString* other);
 	LSString* sort();
 	bool is_palindrome() const;
-	LSValue* ls_foldLeft(LSFunction<LSValue*>*, LSValue* v0);
+	LSValue* ls_foldLeft(LSFunction*, LSValue* v0);
 	int int_size() const;
 	int ls_size() const;
 	LSValue* ls_size_ptr() const;
 	int word_count() const;
 	LSValue* word_count_ptr() const;
 	LSArray<LSValue*>* ls_lines() const;
+	template <class F>
+	LSString* ls_map(F function);
 
 	/*
 	 * LSValue methods

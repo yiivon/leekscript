@@ -97,7 +97,7 @@ bool LSString::is_palindrome() const {
 	return r;
 }
 
-LSValue* LSString::ls_foldLeft(LSFunction<LSValue*>* function, LSValue* v0) {
+LSValue* LSString::ls_foldLeft(LSFunction* function, LSValue* v0) {
 	char buff[5];
 	auto fun = (LSValue* (*)(void*, LSValue*, LSValue*)) function->function;
 	const char* string_chars = this->c_str();
@@ -148,6 +148,35 @@ LSArray<LSValue*>* LSString::ls_lines() const {
 	}
 	LSValue::delete_temporary(this);
 	return results;
+}
+
+template <class F>
+LSString* base_map(LSString* s, F function) {
+	char buff[5];
+	LSValue* r = new LSString();
+	const char* string_chars = s->c_str();
+	int i = 0;
+	int l = strlen(string_chars);
+	while (i < l) {
+		u_int32_t c = u8_nextchar(string_chars, &i);
+		u8_toutf8(buff, 5, &c, 1);
+		LSString* ch = new LSString(buff);
+		ch->refs = 1;
+		r->add_eq(ls::call<LSString*>(function, ch));
+		LSValue::delete_ref(ch);
+	}
+	LSValue::delete_temporary(s);
+	return (LSString*) r;
+}
+
+template <>
+LSString* LSString::ls_map(LSFunction* function) {
+	std::cout << "ls_map function" << std::endl;
+	return base_map(this, function);
+}
+template <>
+LSString* LSString::ls_map(LSClosure* closure) {
+	return base_map(this, closure);
 }
 
 /*
