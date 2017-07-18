@@ -374,7 +374,7 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	Compiler::value fun = {jit_value_get_param(F, 0), Type::POINTER}; // function pointer
 	auto jit_index = new_integer(index);
-	auto v = insn_call(Type::POINTER, {fun, jit_index}, +[](LSFunction<LSValue*>* fun, int index) {
+	auto v = insn_call(Type::POINTER, {fun, jit_index}, +[](LSClosure* fun, int index) {
 		LSValue* v = fun->get_capture(index);
 //		v->refs++;
 		return v;
@@ -489,7 +489,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 }
 
 void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) {
-	insn_call(Type::VOID, {fun, capture}, +[](LSFunction<LSValue*>* fun, LSValue* cap) {
+	insn_call(Type::VOID, {fun, capture}, +[](LSClosure* fun, LSValue* cap) {
 		fun->add_capture(cap);
 	});
 }
