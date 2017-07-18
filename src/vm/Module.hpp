@@ -20,7 +20,7 @@ public:
 		this->addr = addr;
 		type = {RawType::FUNCTION, Nature::POINTER};
 		type.setReturnType(return_type);
-		for (Type arg : args) {
+		for (auto& arg : args) {
 			type.addArgumentType(arg);
 		}
 		this->native = native;
