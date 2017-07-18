@@ -8,6 +8,7 @@
 #include "LSNumber.hpp"
 #include "LSBoolean.hpp"
 #include "LSFunction.hpp"
+#include "LSClosure.hpp"
 #include "LSString.hpp"
 #include "LSObject.hpp"
 #include "LSSet.hpp"
@@ -299,15 +300,14 @@ inline LSValue* LSArray<T>::ls_size_ptr() {
 }
 
 template <class T>
-template <class R>
-LSArray<R>* LSArray<T>::ls_map(LSFunction<R>* function) {
-	auto fun = (R (*)(void*, T)) function->function;
+template <class F, class R>
+LSArray<R>* LSArray<T>::ls_map(F function) {
 	auto result = new LSArray<R>();
 	result->reserve(this->size());
 	for (auto v : *this) {
 		auto x = ls::clone(v);
 		ls::increfs(x);
-		auto r = fun(function, x);
+		auto r = ls::call<R>(function, x);
 		result->push_move(r);
 		ls::unref(x);
 	}

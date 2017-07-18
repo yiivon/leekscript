@@ -43,9 +43,8 @@ public:
 	double ls_average();
 	T ls_first();
 	T ls_last();
-	template <class R>
-	LSArray<R>* ls_map(LSFunction<R>* function);
-	//LSArray<T>* ls_map(LSFunction<T>* function);
+	template <class F, class R>
+	LSArray<R>* ls_map(F function);
 	LSArray<LSValue*>* ls_chunk(int size = 1);
 	LSArray<T>* ls_unique();
 	LSArray<T>* ls_sort();

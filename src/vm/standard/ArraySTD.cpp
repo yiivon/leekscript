@@ -103,10 +103,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 	map_fun_type.setArgumentType(0, Type::POINTER);
 	map_fun_type.setReturnType(Type::POINTER);
 
-	auto map_ptr = &LSArray<LSValue*>::ls_map<LSValue*>;
-	auto map_real = &LSArray<double>::ls_map<double>;
-	auto map_int = &LSArray<int>::ls_map<int>;
-	auto map_int_ptr = &LSArray<int>::ls_map<LSValue*>;
+	auto map_ptr = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
+	auto map_real = &LSArray<double>::ls_map<LSFunction*, double>;
+	auto map_int = &LSArray<int>::ls_map<LSFunction*, int>;
+	auto map_int_ptr = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
 
 	method("map", {
 		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, map_int_fun_type}, (void*) map_int, Method::NATIVE},

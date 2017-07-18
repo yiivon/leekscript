@@ -902,28 +902,28 @@ Compiler::value Expression::compile(Compiler& c) const {
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.getElementType() == Type::INTEGER) {
 				if (type.getElementType() == Type::INTEGER) {
-					auto m = &LSArray<int>::ls_map<int>;
+					auto m = &LSArray<int>::ls_map<LSFunction*, int>;
 					ls_func = (void*) m;
 				} else if (type.getElementType() == Type::REAL) {
-					auto m = &LSArray<int>::ls_map<double>;
+					auto m = &LSArray<int>::ls_map<LSFunction*, double>;
 					ls_func = (void*) m;
 				} else {
-					auto m = &LSArray<int>::ls_map<LSValue*>;
+					auto m = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
 					ls_func = (void*) m;
 				}
 			} else if (v1->type.getElementType() == Type::REAL) {
 				if (type.getElementType() == Type::REAL) {
-					auto m = &LSArray<double>::ls_map<double>;
+					auto m = &LSArray<double>::ls_map<LSFunction*, double>;
 					ls_func = (void*) m;
 				} else if (type.getElementType() == Type::INTEGER) {
-					auto m = &LSArray<double>::ls_map<int>;
+					auto m = &LSArray<double>::ls_map<LSFunction*, int>;
 					ls_func = (void*) m;
 				} else {
 					// FIXME Ugly style to fix uncovered line
-					auto m = &LSArray<double>::ls_map<LSValue*>; ls_func = (void*) m;
+					auto m = &LSArray<double>::ls_map<LSFunction*, LSValue*>; ls_func = (void*) m;
 				}
 			} else {
-				auto m = &LSArray<LSValue*>::ls_map<LSValue*>;
+				auto m = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
 				ls_func = (void*) m;
 			}
 			break;
