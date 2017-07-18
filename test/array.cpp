@@ -342,7 +342,7 @@ void Test::test_arrays() {
 	code("Array.sort([3, 2, 1])").equals("[1, 2, 3]");
 
 	section("Array.filter()");
-	code("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("['yo', 10, 3]");
+	code("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("[3, 10, 'yo']");
 	code("[3, 4, 5].filter(x -> x > 6)").equals("[]");
 	code("[1, 2, 3, 4, 5, 6, 7].filter(x -> x % 2 == 0)").equals("[2, 4, 6]");
 	code("let a = [3, 4, 5] a.filter(x -> x < 5)").equals("[3, 4]");
