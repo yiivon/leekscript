@@ -139,8 +139,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	map2_fun_type_int.setArgumentType(1, Type::INTEGER);
 	map2_fun_type_int.setReturnType(Type::POINTER);
 
-	auto map2_ptr_ptr = &LSArray<LSValue*>::ls_map2<LSValue*, LSValue*>;
-	auto map2_ptr_int = &LSArray<LSValue*>::ls_map2<LSValue*, int>;
+	auto map2_ptr_ptr = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, LSValue*>;
+	auto map2_ptr_int = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, int>;
 
 	method("map2", {
 		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, Type::CONST_PTR_ARRAY, map2_fun_type}, (void*) map2_ptr_ptr, Method::NATIVE},

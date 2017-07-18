@@ -624,15 +624,14 @@ LSArray<LSValue*>* LSArray<T>::ls_partition(F function) {
 }
 
 template <class T>
-template <class R, class T2>
-LSArray<R>* LSArray<T>::ls_map2(LSArray<T2>* array, LSFunction<R>* function) {
+template <class F, class R, class T2>
+LSArray<R>* LSArray<T>::ls_map2(LSArray<T2>* array, F function) {
 	auto result = new LSArray<R>();
 	result->reserve(this->size());
-	auto fun = (R (*)(void*, T, T2)) function->function;
 	for (size_t i = 0; i < this->size(); ++i) {
 		T v1 = this->operator [] (i);
 		T2 v2 = array->operator [] (i);
-		R res = fun(function, v1, v2);
+		R res = ls::call<R>(function, v1, v2);
 		result->push_move(res);
 	}
 	LSValue::delete_temporary(this);
