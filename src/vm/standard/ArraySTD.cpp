@@ -68,13 +68,28 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type iter_fun_type_float = Type::FUNCTION_P;
 	iter_fun_type_float.setArgumentType(0, Type::REAL);
 	iter_fun_type_float.setReturnType(Type::VOID);
+	Type iter_clo_type = Type::CLOSURE;
+	iter_clo_type.setArgumentType(0, Type::POINTER);
+	iter_clo_type.setReturnType(Type::VOID);
+	Type iter_clo_type_int = Type::CLOSURE;
+	iter_clo_type_int.setArgumentType(0, Type::INTEGER);
+	iter_clo_type_int.setReturnType(Type::VOID);
+	Type iter_clo_type_float = Type::CLOSURE;
+	iter_clo_type_float.setArgumentType(0, Type::REAL);
+	iter_clo_type_float.setReturnType(Type::VOID);
 	auto iter_ptr = &LSArray<LSValue*>::ls_iter<LSFunction*>;
 	auto iter_real = &LSArray<double>::ls_iter<LSFunction*>;
 	auto iter_int = &LSArray<int>::ls_iter<LSFunction*>;
+	auto iter_clo_ptr = &LSArray<LSValue*>::ls_iter<LSClosure*>;
+	auto iter_clo_real = &LSArray<double>::ls_iter<LSClosure*>;
+	auto iter_clo_int = &LSArray<int>::ls_iter<LSClosure*>;
 	method("iter", {
 		{Type::VOID, {Type::PTR_ARRAY, iter_fun_type}, (void*) iter_ptr, Method::NATIVE},
+		{Type::VOID, {Type::PTR_ARRAY, iter_clo_type}, (void*) iter_clo_ptr, Method::NATIVE},
 		{Type::VOID, {Type::REAL_ARRAY, iter_fun_type_float}, (void*) iter_real, Method::NATIVE},
+		{Type::VOID, {Type::REAL_ARRAY, iter_clo_type_float}, (void*) iter_clo_real, Method::NATIVE},
 		{Type::VOID, {Type::INT_ARRAY, iter_fun_type_int}, (void*) iter_int, Method::NATIVE},
+		{Type::VOID, {Type::INT_ARRAY, iter_clo_type_int}, (void*) iter_clo_int, Method::NATIVE},
 	});
 
 	method("max", {
@@ -156,14 +171,28 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type pred_fun_type_int = Type::FUNCTION_P;
 	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
-
+	Type pred_clo_type = Type::CLOSURE;
+	pred_clo_type.setArgumentType(0, Type::POINTER);
+	pred_clo_type.setReturnType(Type::BOOLEAN);
+	Type pred_clo_type_float = Type::CLOSURE;
+	pred_clo_type_float.setArgumentType(0, Type::REAL);
+	pred_clo_type_float.setReturnType(Type::BOOLEAN);
+	Type pred_clo_type_int = Type::CLOSURE;
+	pred_clo_type_int.setArgumentType(0, Type::INTEGER);
+	pred_clo_type_int.setReturnType(Type::BOOLEAN);
 	auto filter_ptr = &LSArray<LSValue*>::ls_filter<LSFunction*>;
 	auto filter_real = &LSArray<double>::ls_filter<LSFunction*>;
 	auto filter_int = &LSArray<int>::ls_filter<LSFunction*>;
+	auto filter_clo_ptr = &LSArray<LSValue*>::ls_filter<LSClosure*>;
+	auto filter_clo_real = &LSArray<double>::ls_filter<LSClosure*>;
+	auto filter_clo_int = &LSArray<int>::ls_filter<LSClosure*>;
 	method("filter", {
 		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, pred_fun_type}, (void*) filter_ptr, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, pred_clo_type}, (void*) filter_clo_ptr, Method::NATIVE},
 		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, pred_fun_type_float}, (void*) filter_real, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, pred_fun_type_int}, (void*) filter_int, Method::NATIVE}
+		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, pred_clo_type_float}, (void*) filter_clo_real, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, pred_fun_type_int}, (void*) filter_int, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, pred_clo_type_int}, (void*) filter_clo_int, Method::NATIVE}
 	});
 
 	method("isEmpty", {
