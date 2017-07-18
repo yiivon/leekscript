@@ -114,9 +114,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			auto val = ex->compile(c);
 			ex->compile_end(c);
 
-			if (val.t.reference) {
-				c.insn_inc_refs(val);
-			} else {
+			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
 

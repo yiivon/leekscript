@@ -99,7 +99,7 @@ Compiler::value Reference::compile(Compiler& c) const {
 			return {VM::int_to_real(c.F, v), type};
 		}
 		if (type.reference && !var->type.reference) {
-			return c.insn_address_of({v, type});
+			return {c.insn_address_of({v, type}).v, type};
 		} else {
 			return {v, type};
 		}

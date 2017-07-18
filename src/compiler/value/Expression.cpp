@@ -4,6 +4,7 @@
 #include "Function.hpp"
 #include "LeftValue.hpp"
 #include "Number.hpp"
+#include "Reference.hpp"
 #include "VariableValue.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSBoolean.hpp"
@@ -547,7 +548,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			// Reference, like : a = @b
 			auto varval = dynamic_cast<VariableValue*>(v1);
-			if (varval != nullptr and varval->scope == VarScope::LOCAL and c.get_var(varval->name).t.reference) {
+			if (varval != nullptr and varval->scope == VarScope::LOCAL and dynamic_cast<Reference*>(v2)) {
 
 				if (v1->type.must_manage_memory()) {
 					auto v1v = v1->compile(c);

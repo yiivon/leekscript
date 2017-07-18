@@ -368,7 +368,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Standard function call on object : "hello".size() */
 	if (this_ptr != nullptr) {
 
-		vector<Compiler::value> args = { this_ptr->compile(c) };
+		auto obj = this_ptr->compile(c);
+		if (obj.t.reference) {
+			obj = c.insn_load(obj, 0, obj.t);
+		}
+		vector<Compiler::value> args = { obj };
 		this_ptr->compile_end(c);
 		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr->type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
