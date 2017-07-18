@@ -463,21 +463,23 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		}
 	}
 
-	unsigned arg_count = arguments.size() + 1;
-	vector<jit_type_t> params = {LS_POINTER}; // first arg is the function pointer
-	for (unsigned i = 0; i < arg_count - 1; ++i) {
+	vector<jit_type_t> params;
+	if (captures.size()) {
+		 params.push_back(LS_POINTER); // first arg is the function pointer
+	}
+	for (unsigned i = 0; i < arguments.size(); ++i) {
 		Type t = version->type.getArgumentType(i);
 		params.push_back(VM::get_jit_type(t));
 	}
 	jit_type_t return_type = VM::get_jit_type(version->type.getReturnType());
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), arg_count, 1);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), params.size(), 1);
 	auto jit_function = jit_function_create(c.vm->jit_context, signature);
 	jit_function_set_meta(jit_function, 12, new std::string(name), nullptr, 0);
 	jit_function_set_meta(jit_function, 13, new std::string(file), nullptr, 0);
 	jit_type_free(signature);
 	jit_insn_uses_catcher(jit_function);
 
-	c.enter_function(jit_function);
+	c.enter_function(jit_function, captures.size() > 0);
 
 	// System internal variables (for main function only)
 	if (is_main_function) {

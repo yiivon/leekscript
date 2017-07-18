@@ -456,6 +456,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	jit_value_t fun;
 	auto ls_fun_addr = c.new_pointer(nullptr);
 	auto jit_object = c.new_pointer(nullptr);
+	auto is_closure = function->type.raw_type == RawType::CLOSURE;
 
 	if (is_unknown_method) {
 		auto oa = static_cast<ObjectAccess*>(function);
@@ -472,7 +473,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 
 	/** Arguments */
-	size_t offset = 1;
+	size_t offset = is_closure or is_unknown_method ? 1 : 0;
 	size_t arg_count = std::max(arg_types.size(), arguments.size()) + offset;
 	vector<Compiler::value> args;
 	vector<jit_type_t> args_types;
@@ -483,11 +484,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		args.push_back(jit_object);
 		args_types.push_back(VM::get_jit_type(object->type));
 		lsvalue_types.push_back(object->type.id());
-	} else {
+	} else if (is_closure) {
 		// Function pointer as first argument
 		args.push_back(ls_fun_addr);
 		args_types.push_back(LS_POINTER);
-		lsvalue_types.push_back(Type::FUNCTION_P.id());
+		lsvalue_types.push_back(Type::CLOSURE.id());
 	}
 
 	for (size_t i = 0; i < arg_count - offset; ++i) {
