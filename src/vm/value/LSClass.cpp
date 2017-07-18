@@ -37,7 +37,7 @@ void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
 	static_methods.insert({name, method});
 
 	// Add first implementation as default method
-	auto fun = new LSFunction<LSValue*>(method[0].addr);
+	auto fun = new LSFunction(method[0].addr);
 	fun->refs = 1;
 	fun->native = true;
 	Type type = method[0].type;
@@ -99,11 +99,11 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 	}
 }
 
-LSFunction<LSValue*>* LSClass::getDefaultMethod(const string& name) {
+LSFunction* LSClass::getDefaultMethod(const string& name) {
 	try {
 		auto f = static_fields.at(name);
 		f.value->refs++;
-		return (LSFunction<LSValue*>*) f.value;
+		return (LSFunction*) f.value;
 	} catch (...) {
 		return nullptr;
 	}

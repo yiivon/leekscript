@@ -16,7 +16,7 @@ public:
 
 	struct Version {
 		Block* body;
-		LSFunction<LSValue*>* function = nullptr;
+		LSFunction* function = nullptr;
 		Type type;
 		jit_function_t jit_function = nullptr;
 	};

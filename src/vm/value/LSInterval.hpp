@@ -5,7 +5,7 @@
 
 namespace ls {
 
-template <class R> class LSFunction;
+class LSFunction;
 
 class LSInterval : public LSValue {
 public:

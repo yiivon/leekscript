@@ -19,7 +19,7 @@ class LSString;
 template <typename T> class LSArray;
 template <typename K, typename T> class LSMap;
 template <typename T> class LSSet;
-template <class T> class LSFunction;
+class LSFunction;
 class LSObject;
 class LSClass;
 class Context;

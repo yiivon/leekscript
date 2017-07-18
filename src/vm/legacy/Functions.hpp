@@ -5,7 +5,7 @@ namespace ls {
 
 class VM;
 class LSValue;
-template <class T> class LSFunction;
+class LSFunction;
 template <class T> class LSArray;
 class LSString;
 class Type;

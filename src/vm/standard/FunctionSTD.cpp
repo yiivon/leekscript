@@ -5,7 +5,7 @@ namespace ls {
 
 FunctionSTD::FunctionSTD() : Module("Function") {
 
-	LSFunction<LSValue*>::clazz = clazz;
+	LSFunction::clazz = clazz;
 
 	field("return", Type::CLASS);
 	field("args", Type::PTR_ARRAY);

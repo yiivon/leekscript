@@ -48,7 +48,7 @@ class LSValue;
 class SemanticVar;
 class LSNull;
 class LSBoolean;
-template <class R> class LSFunction;
+class LSFunction;
 
 class VM {
 public:

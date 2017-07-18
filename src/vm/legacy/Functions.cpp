@@ -6,7 +6,7 @@ namespace ls {
 namespace legacy {
 
 void Functions::add(VM* vm, std::string name, Type return_type, std::vector<Type> args, void* fun) {
-	auto f = new LSFunction<LSValue*>(fun);
+	auto f = new LSFunction(fun);
 	f->native = true;
 	auto type = Type::FUNCTION_P;
 	type.native = true;

@@ -101,7 +101,7 @@ VM::VM(bool v1) : compiler(this) {
 	auto value_class = system_vars["Value"];
 
 	for (unsigned o = 0; o < ops.size(); ++o) {
-		auto fun = new LSFunction<LSValue*>(ops_funs[o]);
+		auto fun = new LSFunction(ops_funs[o]);
 		fun->refs = 1;
 		fun->native = true;
 		fun->args = {value_class, value_class};
@@ -113,7 +113,7 @@ VM::VM(bool v1) : compiler(this) {
 	Type ptr_type = Type(RawType::FUNCTION, Nature::POINTER);
 	ptr_type.setArgumentType(0, Type::POINTER);
 	ptr_type.setReturnType(Type::POINTER);
-	auto fun = new LSFunction<LSValue*>((void*) ptr_fun);
+	auto fun = new LSFunction((void*) ptr_fun);
 	fun->refs = 1;
 	fun->native = true;
 	fun->args = {value_class};
