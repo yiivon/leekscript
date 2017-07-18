@@ -89,7 +89,8 @@ Compiler::value Reference::compile(Compiler& c) const {
 		} else if (scope == VarScope::LOCAL) {
 			v = c.get_var(name).v;
 		} else { /* if (scope == VarScope::PARAMETER) */
-			v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr
+			int offset = c.is_current_function_closure() ? 1 : 0;
+			v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
 		}
 		if (var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 			return {VM::value_to_pointer(c.F, v, var->type), type};

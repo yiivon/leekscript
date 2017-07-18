@@ -147,7 +147,8 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		}
 		v = c.get_var(name).v;
 	} else { /* if (scope == VarScope::PARAMETER) */
-		v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr
+		int offset = c.is_current_function_closure() ? 1 : 0;
+		v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
 	}
 
 	if (var->type.nature != Nature::UNKNOWN and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -174,7 +175,8 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	if (scope == VarScope::LOCAL) {
 		v = c.get_var(name).v;
 	} else { /* if (scope == VarScope::PARAMETER) */
-		v = jit_value_get_param(c.F, 1 + var->index); // 1 offset for function ptr
+		int offset = c.is_current_function_closure() ? 1 : 0;
+		v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
 	}
 	if (type.reference) {
 		return {v, type};

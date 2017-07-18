@@ -454,7 +454,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 			} else if (cap->scope == VarScope::CAPTURE) {
 				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
 			} else {
-				jit_cap = jit_value_get_param(c.F, 1 + cap->index);
+				int offset = c.is_current_function_closure() ? 1 : 0;
+				jit_cap = jit_value_get_param(c.F, offset + cap->index);
 			}
 			if (cap->initial_type.nature != Nature::POINTER) {
 				jit_cap = VM::value_to_pointer(c.F, jit_cap, cap->initial_type);
