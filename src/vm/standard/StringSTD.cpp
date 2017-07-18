@@ -99,7 +99,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::STRING_ARRAY, {Type::CONST_STRING}, (void*) &LSString::ls_lines, Method::NATIVE},
 	});
 	method("size", {
-		{Type::NUMBER, {Type::CONST_STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
+		{Type::NUMBER_P, {Type::CONST_STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::ls_size, Method::NATIVE},
 	});
 	method("replace", {

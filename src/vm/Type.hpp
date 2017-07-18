@@ -315,10 +315,10 @@ public:
 	static const Type BOOLEAN_P;
 	static const Type CONST_BOOLEAN;
 	static const Type CONST_BOOLEAN_P;
-	static const Type NUMBER_VALUE;
 	static const Type NUMBER;
-	static const Type CONST_NUMBER_VALUE;
+	static const Type NUMBER_P;
 	static const Type CONST_NUMBER;
+	static const Type CONST_NUMBER_P;
 	static const Type INTEGER;
 	static const Type CONST_INTEGER;
 	static const Type MPZ;

@@ -62,25 +62,25 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("/", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::REAL, (void*) &NumberSTD::div_val_val}
+		{Type::NUMBER, Type::NUMBER, Type::REAL, (void*) &NumberSTD::div_val_val}
 	});
 
 	operator_("<", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::lt},
+		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::lt},
 		{Type::MPZ, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::lt_mpz_mpz}
 	});
 
 	operator_("<=", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::le}
+		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::le}
 	});
 
 	operator_(">", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::gt},
+		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::gt},
 		{Type::INTEGER, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::gt_int_mpz}
 	});
 
 	operator_(">=", {
-		{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::BOOLEAN, (void*) &NumberSTD::ge}
+		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::ge}
 	});
 
 	operator_("%", {
@@ -129,7 +129,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::UNKNOWN}, (void*) &NumberSTD::_int},
 	});
 	method("abs", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::abs_ptr},
+		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::abs_ptr},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_number},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_number},
 	});
@@ -156,13 +156,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::cbrt_real},
 	});
 	method("ceil", {
-		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
-		//{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::NUMBER_P}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
+		//{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::ceil_real},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int},
 	});
 	method("char", {
-		{Type::POINTER, {Type::CONST_NUMBER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
+		{Type::POINTER, {Type::CONST_NUMBER_P}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
 		{Type::STRING, {Type::CONST_REAL}, (void*) &NumberSTD::char_real},
 		{Type::STRING, {Type::CONST_INTEGER}, (void*) &NumberSTD::char_int},
 		{Type::STRING, {Type::CONST_POINTER}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
@@ -183,7 +183,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::POINTER, {Type::POINTER, fold_fun_type, Type::POINTER}, (void*) &LSNumber::ls_fold, Method::NATIVE}
 	});
 	method("floor", {
-		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::NUMBER_P}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::floor_real},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int},
@@ -204,7 +204,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("max", {
 		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::max_float_ptr, Method::NATIVE},
 		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::max_int_ptr, Method::NATIVE},
-		{Type::REAL, {Type::POINTER, Type::NUMBER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
+		{Type::REAL, {Type::POINTER, Type::NUMBER_P}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::max_ptr_float, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int, Method::NATIVE},
@@ -226,13 +226,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float},
 	});
 	method("pow", {
-		{Type::REAL, {Type::POINTER, Type::NUMBER}, (void*) &NumberSTD::pow_ptr},
+		{Type::REAL, {Type::POINTER, Type::NUMBER_P}, (void*) &NumberSTD::pow_ptr},
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::pow_ptr},
 		{Type::LONG, {Type::LONG, Type::INTEGER}, (void*) &NumberSTD::pow_int},
 		{Type::REAL, {Type::LONG, Type::LONG}, (void*) &NumberSTD::pow_int},
 	});
 	method("round", {
-		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::NUMBER_P}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::REAL}, (void*) &NumberSTD::round_real},
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::round_int}
@@ -247,32 +247,32 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::randFloat, Method::NATIVE},
 	});
 	method("signum", {
-		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::signum, Method::NATIVE},
+		{Type::INTEGER, {Type::NUMBER_P}, (void*) &NumberSTD::signum, Method::NATIVE},
 	});
 	method("sin", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
+		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sin_real},
 	});
 	method("sqrt", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
+		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sqrt_real},
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::MPZ_TMP, {Type::MPZ}, (void*) NumberSTD::sqrt_mpz}
 	});
 	method("tan", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
+		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::tan_real},
 	});
 	method("toDegrees", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::toDegrees, Method::NATIVE},
+		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::toDegrees, Method::NATIVE},
 	});
 	method("toRadians", {
-		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::toRadians, Method::NATIVE},
+		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::toRadians, Method::NATIVE},
 	});
 	method("isInteger", {
-		{Type::BOOLEAN, {Type::NUMBER}, (void*) &NumberSTD::isInteger, Method::NATIVE},
+		{Type::BOOLEAN, {Type::NUMBER_P}, (void*) &NumberSTD::isInteger, Method::NATIVE},
 	});
 	method("isPrime", {
 		{Type::INTEGER, {Type::MPZ}, (void*) &NumberSTD::is_prime},
