@@ -26,19 +26,19 @@ void Functions::create(VM* vm) {
 	add(vm, "replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &Functions::v1_replace);
 }
 
-void Functions::v1_debug(LSFunction<LSValue*>*, LSValue* v) {
+void Functions::v1_debug(LSValue* v) {
 	v->print(*VM::current()->output);
 	LSValue::delete_temporary(v);
 	*VM::current()->output << std::endl;
 }
 
-LSValue* Functions::v1_charAt(LSFunction<LSValue*>*, LSString* v, int p) {
+LSValue* Functions::v1_charAt(LSString* v, int p) {
 	auto s = v->charAt(p);
 	LSValue::delete_temporary(v);
 	return s;
 }
 
-LSValue* Functions::v1_replace(LSFunction<LSValue*>*, LSString* string, LSString* from, LSString* to) {
+LSValue* Functions::v1_replace(LSString* string, LSString* from, LSString* to) {
 	std::string str(*string);
 	size_t start_pos = 0;
 	// Replace \\ by \ (like Java does)
@@ -64,13 +64,13 @@ LSValue* Functions::v1_replace(LSFunction<LSValue*>*, LSString* string, LSString
 	return new LSString(str);
 }
 
-int Functions::v1_count(LSFunction<LSValue*>*, LSArray<LSValue*>* a) {
+int Functions::v1_count(LSArray<LSValue*>* a) {
 	int s = a->size();
 	LSValue::delete_temporary(a);
 	return s;
 }
 
-LSValue* Functions::v1_pushAll(LSFunction<LSValue*>*, LSArray<LSValue*>* a, LSArray<LSValue*>* b) {
+LSValue* Functions::v1_pushAll(LSArray<LSValue*>* a, LSArray<LSValue*>* b) {
 	return a->ls_push_all_ptr(b);
 }
 

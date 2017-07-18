@@ -23,13 +23,13 @@ public:
 	 * V1 functions
 	 */
 	// Strings
-	static LSValue* v1_charAt(LSFunction<LSValue*>*, LSString* v, int p);
-	static LSValue* v1_replace(LSFunction<LSValue*>*, LSString* string, LSString* from, LSString* to);
+	static LSValue* v1_charAt(LSString* v, int p);
+	static LSValue* v1_replace(LSString* string, LSString* from, LSString* to);
 	// Arrays
-	static int v1_count(LSFunction<LSValue*>*, LSArray<LSValue*>* v);
-	static LSValue* v1_pushAll(LSFunction<LSValue*>*, LSArray<LSValue*>* a, LSArray<LSValue*>* b);
+	static int v1_count(LSArray<LSValue*>* v);
+	static LSValue* v1_pushAll(LSArray<LSValue*>* a, LSArray<LSValue*>* b);
 	// Utils
-	static void v1_debug(LSFunction<LSValue*>*, LSValue* v);
+	static void v1_debug(LSValue* v);
 };
 
 }
