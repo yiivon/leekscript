@@ -38,6 +38,7 @@ public:
 	static LSValueType SET;
 	static LSValueType INTERVAL;
 	static LSValueType FUNCTION;
+	static LSValueType CLOSURE;
 	static LSValueType OBJECT;
 	static LSValueType CLASS;
 

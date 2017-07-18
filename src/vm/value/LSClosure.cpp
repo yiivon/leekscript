@@ -7,7 +7,9 @@
 
 namespace ls {
 
-LSClosure::LSClosure(void* function) : LSFunction(function) {}
+LSClosure::LSClosure(void* function) : LSFunction(function) {
+	type = CLOSURE;
+}
 
 LSClosure::~LSClosure() {
 	for (size_t i = 0; i < captures.size(); ++i) {

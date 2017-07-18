@@ -24,6 +24,7 @@ LSValueType LSValue::INTERVAL = 8;
 LSValueType LSValue::FUNCTION = 9;
 LSValueType LSValue::OBJECT = 10;
 LSValueType LSValue::CLASS = 11;
+LSValueType LSValue::CLOSURE = 12;
 
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;

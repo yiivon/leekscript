@@ -286,6 +286,7 @@ Compiler::value Compiler::insn_typeof(Compiler::value v) const {
 	if (v.t.raw_type == RawType::SET) return new_integer(LSValue::SET);
 	if (v.t.raw_type == RawType::INTERVAL) return new_integer(LSValue::INTERVAL);
 	if (v.t.raw_type == RawType::FUNCTION) return new_integer(LSValue::FUNCTION);
+	if (v.t.raw_type == RawType::CLOSURE) return new_integer(LSValue::CLOSURE);
 	if (v.t.raw_type == RawType::OBJECT) return new_integer(LSValue::OBJECT);
 	if (v.t.raw_type == RawType::CLASS) return new_integer(LSValue::CLASS);
 	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
