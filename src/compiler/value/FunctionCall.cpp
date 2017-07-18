@@ -77,8 +77,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// The function call be called?
+	// TODO add a is_callable() on Type
 	if (function->type.raw_type != RawType::UNKNOWN and
 		function->type.raw_type != RawType::FUNCTION and
+		function->type.raw_type != RawType::CLOSURE and
 		function->type.raw_type != RawType::CLASS) {
 		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
@@ -224,7 +226,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			// OK, the argument is present in the call
 			arguments.at(a)->analyse(analyser, argument_type);
 			arguments.at(a)->type.reference = function->type.getArgumentType(a).reference;
-			if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION) {
+			if (function->type.getArgumentType(a).raw_type == RawType::FUNCTION or function->type.getArgumentType(a).raw_type == RawType::CLOSURE) {
 				arguments.at(a)->will_take(analyser, function->type.getArgumentType(a).arguments_types, 1);
 				arguments.at(a)->set_version(function->type.getArgumentType(a).arguments_types, 1);
 			}
@@ -242,7 +244,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		a++;
 	}
 
-	if (function->type.raw_type == RawType::FUNCTION and !arguments_valid) {
+	if ((function->type.raw_type == RawType::FUNCTION or function->type.raw_type == RawType::CLOSURE) and !arguments_valid) {
 		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
 			function->to_string(),
 			std::to_string(function->type.getArgumentTypes().size()),

@@ -256,7 +256,7 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		// Always take LSArray<int>, but the array is not necessarily of this type
 		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool);
 	}
-	if (v.t.raw_type == RawType::FUNCTION) {
+	if (v.t.raw_type == RawType::FUNCTION or v.t.raw_type == RawType::CLOSURE) {
 		return new_bool(true);
 	}
 	if (v.t.raw_type == RawType::MPZ) {

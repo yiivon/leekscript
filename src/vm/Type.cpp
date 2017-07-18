@@ -354,7 +354,7 @@ bool Type::operator == (const Type& type) const {
 			key_type == type.key_type &&
 			temporary == type.temporary &&
 			reference == type.reference &&
-			(raw_type != RawType::FUNCTION ||
+			((raw_type != RawType::FUNCTION and raw_type != RawType::CLOSURE) ||
 				(return_types == type.return_types &&
 				arguments_types == type.arguments_types));
 }
@@ -556,7 +556,7 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 		}
 	}
 
-	if (neww.raw_type == RawType::FUNCTION and old.raw_type == RawType::FUNCTION) {
+	if ((neww.raw_type == RawType::FUNCTION or neww.raw_type == RawType::CLOSURE) and (old.raw_type == RawType::FUNCTION or old.raw_type == RawType::CLOSURE)) {
 		if (Type::more_specific(old.getArgumentType(0), neww.getArgumentType(0))) { //! TODO only the first arg
 			return true;
 		}
@@ -639,7 +639,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		} else {
 			os << "?";
 		}
-	} else if (type.raw_type == RawType::FUNCTION) {
+	} else if (type.raw_type == RawType::FUNCTION || type.raw_type == RawType::CLOSURE) {
 		if (type.nature == Nature::POINTER) {
 			os << BLUE_BOLD;
 		}
