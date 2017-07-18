@@ -38,6 +38,7 @@ public:
 
 	jit_function_t F = nullptr;
 	std::stack<jit_function_t> functions;
+	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks; // how many blocks are open in the current loop
 
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
@@ -145,10 +146,11 @@ public:
 	void enter_block();
 	void leave_block();
 	void delete_variables_block(int deepness); // delete all variables in the #deepness current blocks
-	void enter_function(jit_function_t F);
+	void enter_function(jit_function_t F, bool is_closure);
 	void leave_function();
 	int get_current_function_blocks() const;
 	void delete_function_variables();
+	bool is_current_function_closure() const;
 
 	// Variables
 	void add_var(const std::string& name, jit_value_t value, const Type& type, bool ref);

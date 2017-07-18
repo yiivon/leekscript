@@ -3,6 +3,7 @@
 #include "../vm/value/LSNull.hpp"
 #include "../vm/value/LSArray.hpp"
 #include "../vm/value/LSMap.hpp"
+#include "../vm/value/LSClosure.hpp"
 #include "../vm/Program.hpp"
 #include "../../lib/utf8.h"
 #include "../vm/LSValue.hpp"
@@ -46,12 +47,13 @@ void Compiler::delete_function_variables() {
 	}
 }
 
-void Compiler::enter_function(jit_function_t F) {
+void Compiler::enter_function(jit_function_t F, bool is_closure) {
 	variables.push_back(std::map<std::string, value> {});
 	function_variables.push_back(std::vector<value> {});
 	functions.push(F);
 	functions_blocks.push_back(0);
 	catchers.push_back({});
+	function_is_closure.push(is_closure);
 	this->F = F;
 }
 
@@ -61,11 +63,16 @@ void Compiler::leave_function() {
 	functions.pop();
 	functions_blocks.pop_back();
 	catchers.pop_back();
+	function_is_closure.pop();
 	this->F = functions.top();
 }
 
 int Compiler::get_current_function_blocks() const {
 	return functions_blocks.back();
+}
+
+bool Compiler::is_current_function_closure() const {
+	return function_is_closure.size() ? function_is_closure.top() : false;
 }
 
 /*
