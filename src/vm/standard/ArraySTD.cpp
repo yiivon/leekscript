@@ -193,10 +193,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INT_ARRAY}, (void*) perm_int_int, Method::NATIVE},
 	});
 
+	auto partition_ptr = &LSArray<LSValue*>::ls_partition<LSFunction*>;
+	auto partition_real = &LSArray<double>::ls_partition<LSFunction*>;
+	auto partition_int = &LSArray<int>::ls_partition<LSFunction*>;
 	method("partition", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, pred_fun_type}, (void*) &LSArray<LSValue*>::ls_partition, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::REAL_ARRAY, pred_fun_type_float}, (void*) &LSArray<double>::ls_partition, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::INT_ARRAY, pred_fun_type_int}, (void*) &LSArray<int>::ls_partition, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, pred_fun_type}, (void*) partition_ptr, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::REAL_ARRAY, pred_fun_type_float}, (void*) partition_real, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::INT_ARRAY, pred_fun_type_int}, (void*) partition_int, Method::NATIVE},
 	});
 
 	method("first", {

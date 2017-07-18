@@ -606,18 +606,18 @@ LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
 }
 
 template <class T>
-LSArray<LSValue*>* LSArray<T>::ls_partition(LSFunction<bool>* function) {
+template <class F>
+LSArray<LSValue*>* LSArray<T>::ls_partition(F function) {
 	auto array_true = new LSArray<T>();
 	auto array_false = new LSArray<T>();
-	auto fun = (bool (*)(void*, T)) function->function;
 	for (const auto& v : *this) {
-		if (fun(function, v)) {
+		if (ls::call<bool>(function, v)) {
 			array_true->push_clone(v);
 		} else {
 			array_false->push_clone(v);
 		}
 	}
-	if (refs == 0) delete this;
+	LSValue::delete_temporary(this);
 	array_true->refs = 1;
 	array_false->refs = 1;
 	return new LSArray<LSValue*> {array_true, array_false};
