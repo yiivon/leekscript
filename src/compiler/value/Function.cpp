@@ -227,9 +227,9 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 			auto version = new Function::Version();
 			version->body = (Block*) body->clone();
 			if (captures.size()) {
-				version->function = new LSFunction(nullptr);
-			} else {
 				version->function = new LSClosure(nullptr);
+			} else {
+				version->function = new LSFunction(nullptr);
 			}
 			version->function->refs = 1;
 			version->function->native = true;
