@@ -174,6 +174,12 @@ public:
 	virtual const std::string getJsonName() const { return "function"; }
 };
 
+class ClosureRawType : public FunctionRawType {
+public:
+	ClosureRawType() {}
+	virtual int id() const { return 12; }
+};
+
 class ClassRawType : public BaseRawType {
 public:
 	ClassRawType() {}
@@ -211,6 +217,7 @@ public:
 	static const IntervalRawType _INTERVAL;
 	static const ObjectRawType _OBJECT;
 	static const FunctionRawType _FUNCTION;
+	static const ClosureRawType _CLOSURE;
 	static const ClassRawType _CLASS;
 
 	static const UnknownRawType* const UNKNOWN;
@@ -229,6 +236,7 @@ public:
 	static const IntervalRawType* const INTERVAL;
 	static const ObjectRawType* const OBJECT;
 	static const FunctionRawType* const FUNCTION;
+	static const ClosureRawType* const CLOSURE;
 	static const ClassRawType* const CLASS;
 
 	static std::vector<const BaseRawType*> placeholder_types;
@@ -368,6 +376,7 @@ public:
 	static const Type INTERVAL;
 	static const Type FUNCTION;
 	static const Type FUNCTION_P;
+	static const Type CLOSURE;
 	static const Type CLASS;
 	static const Type CONST_CLASS;
 	static const Type PTR_ARRAY_ARRAY;

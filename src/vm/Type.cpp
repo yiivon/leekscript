@@ -26,6 +26,7 @@ const SetRawType RawType::_SET;
 const IntervalRawType RawType::_INTERVAL;
 const ObjectRawType RawType::_OBJECT;
 const FunctionRawType RawType::_FUNCTION;
+const ClosureRawType RawType::_CLOSURE;
 const ClassRawType RawType::_CLASS;
 
 const UnknownRawType* const RawType::UNKNOWN = &_UNKNOWN;
@@ -44,6 +45,7 @@ const SetRawType* const RawType::SET = &_SET;
 const IntervalRawType* const RawType::INTERVAL = &_INTERVAL;
 const ObjectRawType* const RawType::OBJECT = &_OBJECT;
 const FunctionRawType* const RawType::FUNCTION = &_FUNCTION;
+const ClosureRawType* const RawType::CLOSURE = &_CLOSURE;
 const ClassRawType* const RawType::CLASS = &_CLASS;
 
 std::vector<const BaseRawType*> RawType::placeholder_types;
@@ -131,6 +133,7 @@ const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INT_ARRA
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE, false, false, true);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER, false, false, true);
+const Type Type::CLOSURE(RawType::CLOSURE, Nature::POINTER, false, false, true);
 const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
 const Type Type::CONST_CLASS(RawType::CLASS, Nature::POINTER, true, false, true);
 
