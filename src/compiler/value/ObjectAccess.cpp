@@ -20,6 +20,9 @@ ObjectAccess::ObjectAccess(std::shared_ptr<Token> token) : field(token) {
 
 ObjectAccess::~ObjectAccess() {
 	delete object;
+	if (ls_function != nullptr) {
+		delete ls_function;
+	}
 }
 
 void ObjectAccess::print(ostream& os, int indent, bool debug) const {
@@ -28,6 +31,7 @@ void ObjectAccess::print(ostream& os, int indent, bool debug) const {
 	if (debug) {
 		os << " " << type;
 	}
+	os << " " << version;
 }
 
 Location ObjectAccess::location() const {
@@ -56,6 +60,25 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	bool found = false;
 	if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
+
+		auto std_class = (LSClass*) analyser->vm->system_vars.at(vv->name);
+
+		if (std_class->methods.find(field->content) != std_class->methods.end()) {
+
+			auto method = std_class->methods.at(field->content);
+			for (const auto& m : method) {
+				if (!m.native) continue;
+				auto args = m.type.getArgumentTypes();
+				args.insert(args.begin(), m.obj_type);
+				versions.insert({args, m.addr});
+			}
+			type = method[0].type;
+			default_version_fun = method[0].addr;
+			class_method = true;
+			found = true;
+		}
+	}
+	if (!found and object->type.raw_type == RawType::CLASS and vv != nullptr) {
 
 		auto std_class = (LSClass*) analyser->vm->system_vars.at(vv->name);
 
@@ -104,15 +127,21 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			} catch (...) {
 				// Method : 12.abs
 				try {
-					Method f = object_class->methods.at(field->content)[0];
-					type = f.type;
-					attr_addr = f.addr;
+					for (const auto& m : object_class->methods.at(field->content)) {
+						if (!m.native) continue;
+						versions.insert({m.type.getArgumentTypes(), m.addr});
+					}
+					type = object_class->methods.at(field->content)[0].type;
+					default_version_fun = object_class->methods.at(field->content)[0].addr;
 					class_method = true;
 				} catch (...) {
 					try {
-						Method f = value_class->methods.at(field->content)[0];
-						type = f.type;
-						attr_addr = f.addr;
+						for (const auto& m : value_class->methods.at(field->content)) {
+							if (!m.native) continue;
+							versions.insert({m.type.getArgumentTypes(), m.addr});
+						}
+						type = value_class->methods.at(field->content)[0].type;
+						default_version_fun = value_class->methods.at(field->content)[0].addr;
 						class_field = true;
 					} catch (...) {
 						if (object_class->name != "Object") {
@@ -173,8 +202,13 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	}
 
 	// Class method : 12.abs
-	if (class_method) {
-		return c.new_pointer(new LSFunction<LSValue*>(attr_addr));
+	if (class_method || class_field) {
+		void* fun = has_version ? versions.at(version) : default_version_fun;
+		auto function = new LSFunction(fun);
+		function->native = true;
+		function->refs = 1;
+		((ObjectAccess*) this)->ls_function = function;
+		return c.new_pointer(ls_function);
 	}
 
 	// Default : object.attr
@@ -185,6 +219,13 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		return object->attr(*key);
 	});
 	return r;
+}
+
+Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> version) const {
+	if (class_method) {
+		return c.new_pointer(new LSFunction(versions.at(version)));
+	}
+	assert(false && "ObjectAccess::compile_version must be on a class method.");
 }
 
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {

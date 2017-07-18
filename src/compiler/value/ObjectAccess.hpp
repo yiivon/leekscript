@@ -24,6 +24,7 @@ public:
 	void* native_access_function = nullptr;
 	void* native_static_access_function = nullptr;
 	Type field_type;
+	LSFunction* ls_function = nullptr;
 
 	ObjectAccess(std::shared_ptr<Token> token);
 	virtual ~ObjectAccess();
@@ -35,7 +36,7 @@ public:
 	virtual void change_type(SemanticAnalyser*, const Type&) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
-
+	virtual Compiler::value compile_version(Compiler& c, std::vector<Type> version) const;
 	virtual Compiler::value compile_l(Compiler&) const override;
 
 	virtual Value* clone() const override;
