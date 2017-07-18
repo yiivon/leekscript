@@ -38,29 +38,29 @@ const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
 jit_type_t VM::mpz_type;
 VM* VM::current_vm = nullptr;
 
-LSValue* op_add(void*, LSValue* x, LSValue* y) {
+LSValue* op_add(LSValue* x, LSValue* y) {
 	return x->add(y);
 }
-LSValue* op_sub(void*, LSValue* x, LSValue* y) {
+LSValue* op_sub(LSValue* x, LSValue* y) {
 	return x->sub(y);
 }
-LSValue* op_mul(void*, LSValue* x, LSValue* y) {
+LSValue* op_mul(LSValue* x, LSValue* y) {
 	return x->mul(y);
 }
-LSValue* op_div(void*, LSValue* x, LSValue* y) {
+LSValue* op_div(LSValue* x, LSValue* y) {
 	return x->div(y);
 }
-LSValue* op_int_div(void*, LSValue* x, LSValue* y) {
+LSValue* op_int_div(LSValue* x, LSValue* y) {
 	return x->int_div(y);
 }
-LSValue* op_pow(void*, LSValue* x, LSValue* y) {
+LSValue* op_pow(LSValue* x, LSValue* y) {
 	return x->pow(y);
 }
-LSValue* op_mod(void*, LSValue* x, LSValue* y) {
+LSValue* op_mod(LSValue* x, LSValue* y) {
 	return x->mod(y);
 }
 
-LSValue* ptr_fun(void*, LSValue* v) {
+LSValue* ptr_fun(LSValue* v) {
 	return v->move();
 }
 
