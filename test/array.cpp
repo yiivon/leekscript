@@ -15,7 +15,7 @@ void Test::test_arrays() {
 	code("[1.21, -5, 4.55, 12, -6.7]").equals("[1.21, -5, 4.55, 12, -6.7]");
 	code("[true, false, true]").equals("[true, false, true]");
 	code("[23, true, '', {}, 123]").equals("[23, true, '', {}, 123]");
-	code("let a = x -> x [1, 2, a]").equals("[1, 2, <function>]");
+	code("let a = x -> x [1, 2, a]").equals("[1, 2, <closure>]");
 
 	section("No commas");
 	code("[1 2 3]").equals("[1, 2, 3]");
