@@ -21,7 +21,8 @@ public:
 	/*
 	 * Array methods
 	 */
-	LSArray<int>* ls_filter(LSFunction<bool>* function);
+	template <class F>
+	LSArray<int>* ls_filter(F function);
 	long ls_sum();
 	long ls_product();
 

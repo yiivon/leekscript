@@ -4,6 +4,7 @@
 #include "LSNumber.hpp"
 #include "LSFunction.hpp"
 #include "LSNull.hpp"
+#include "LSArray.hpp"
 
 using namespace std;
 
@@ -15,18 +16,24 @@ LSInterval::LSInterval() : LSValue(INTERVAL) {}
 
 LSInterval::~LSInterval() {}
 
-LSArray<int>* LSInterval::ls_filter(LSFunction<bool>* function) {
-	auto fun = (bool (*)(void*, int)) function->function;
-
+template <class F>
+LSArray<int>* base_filter(LSInterval* interval, F function) {
 	auto new_array = new LSArray<int>();
-
-	int i = this->a;
-	while (i <= b) {
-		if (fun(function, i)) new_array->push_clone(i);
+	int i = interval->a;
+	while (i <= interval->b) {
+		if (ls::call<bool>(function, i)) new_array->push_clone(i);
 		i++;
 	}
-	if (this->refs == 0) delete this;
+	LSValue::delete_temporary(interval);
 	return new_array;
+}
+template <>
+LSArray<int>* LSInterval::ls_filter(LSFunction* function) {
+	return base_filter(this, function);
+}
+template <>
+LSArray<int>* LSInterval::ls_filter(LSClosure* function) {
+	return base_filter(this, function);
 }
 
 long LSInterval::ls_sum() {

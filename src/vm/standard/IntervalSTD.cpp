@@ -1,6 +1,6 @@
 #include "IntervalSTD.hpp"
-
 #include "../value/LSInterval.hpp"
+#include "../value/LSClosure.hpp"
 
 namespace ls {
 
@@ -21,9 +21,14 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	Type pred_fun_type_int = Type::FUNCTION_P;
 	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
-
+	Type pred_clo_type_int = Type::CLOSURE;
+	pred_clo_type_int.setArgumentType(0, Type::INTEGER);
+	pred_clo_type_int.setReturnType(Type::BOOLEAN);
+	auto filter_fun = &LSInterval::ls_filter<LSFunction*>;
+	auto filter_clo = &LSInterval::ls_filter<LSClosure*>;
 	method("filter", {
-		{Type::INT_ARRAY, {Type::INTERVAL, pred_fun_type_int}, (void*) &LSInterval::ls_filter, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::INTERVAL, pred_fun_type_int}, (void*) filter_fun, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::INTERVAL, pred_clo_type_int}, (void*) filter_clo, Method::NATIVE}
 	});
 
 	method("sum", {
