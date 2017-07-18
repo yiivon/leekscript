@@ -158,13 +158,20 @@ MapSTD::MapSTD() : Module("Map") {
 	iter_int_int.setArgumentType(1, Type::INTEGER);
 	iter_int_int.setReturnType(Type::VOID);
 
+	auto iter_ptr_ptr_fun = &LSMap<LSValue*, LSValue*>::ls_iter<LSFunction*>;
+	auto iter_ptr_real_fun = &LSMap<LSValue*, double>::ls_iter<LSFunction*>;
+	auto iter_ptr_int_fun = &LSMap<LSValue*, int>::ls_iter<LSFunction*>;
+	auto iter_int_ptr_fun = &LSMap<int, LSValue*>::ls_iter<LSFunction*>;
+	auto iter_int_real_fun = &LSMap<int, double>::ls_iter<LSFunction*>;
+	auto iter_int_int_fun = &LSMap<int, int>::ls_iter<LSFunction*>;
+
 	method("iter", {
-		{Type::VOID, {Type::CONST_PTR_PTR_MAP, iter_ptr_ptr}, (void*) &LSMap<LSValue*, LSValue*>::ls_iter, Method::NATIVE},
-		{Type::VOID, {Type::CONST_PTR_REAL_MAP, iter_ptr_real}, (void*) &LSMap<LSValue*, double>::ls_iter, Method::NATIVE},
-		{Type::VOID, {Type::CONST_PTR_INT_MAP, iter_ptr_int}, (void*) &LSMap<LSValue*, int>::ls_iter, Method::NATIVE},
-		{Type::VOID, {Type::CONST_INT_PTR_MAP, iter_int_ptr}, (void*) &LSMap<int, LSValue*>::ls_iter, Method::NATIVE},
-		{Type::VOID, {Type::CONST_INT_REAL_MAP, iter_int_real}, (void*) &LSMap<int, double>::ls_iter, Method::NATIVE},
-		{Type::VOID, {Type::CONST_INT_INT_MAP, iter_int_int}, (void*) &LSMap<int, int>::ls_iter, Method::NATIVE},
+		{Type::VOID, {Type::CONST_PTR_PTR_MAP, iter_ptr_ptr}, (void*) iter_ptr_ptr_fun, Method::NATIVE},
+		{Type::VOID, {Type::CONST_PTR_REAL_MAP, iter_ptr_real}, (void*) &iter_ptr_real_fun, Method::NATIVE},
+		{Type::VOID, {Type::CONST_PTR_INT_MAP, iter_ptr_int}, (void*) &iter_ptr_int_fun, Method::NATIVE},
+		{Type::VOID, {Type::CONST_INT_PTR_MAP, iter_int_ptr}, (void*) &iter_int_ptr_fun, Method::NATIVE},
+		{Type::VOID, {Type::CONST_INT_REAL_MAP, iter_int_real}, (void*) &iter_int_real_fun, Method::NATIVE},
+		{Type::VOID, {Type::CONST_INT_INT_MAP, iter_int_int}, (void*) &iter_int_int_fun, Method::NATIVE},
 	});
 }
 

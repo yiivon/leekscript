@@ -35,7 +35,8 @@ public:
 	bool map_equals(const LSMap<K2, V2>* map) const;
 	template <class K2, class V2>
 	bool map_lt(const LSMap<K2, V2>* map) const;
-	void ls_iter(LSFunction<LSValue*>* function) const;
+	template <class F>
+	void ls_iter(F function) const;
 
 	/*
 	 * LSValue methods;

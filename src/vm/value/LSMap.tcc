@@ -185,6 +185,16 @@ LSArray<V>* LSMap<K, V>::values() const {
 	return array;
 }
 
+template <class K, class V>
+template <class F>
+void LSMap<K, V>::ls_iter(F function) const {
+	std::cout << "Map::ls_iter " << std::endl;
+	for (auto v : *this) {
+		ls::call<void>(function, v.first, v.second);
+	}
+	LSValue::delete_temporary(this);
+}
+
 /*
  * LSValue methods
  */
@@ -282,15 +292,6 @@ bool LSMap<K, T>::lt(const LSValue* v) const {
 	if (auto map = dynamic_cast<const LSMap<double, int>*>(v))
 		return map_lt(map);
 	return LSValue::lt(v);
-}
-
-template <class K, class V>
-void LSMap<K, V>::ls_iter(LSFunction<LSValue*>* function) const {
-	auto fun = (void* (*)(void*, K, V)) function->function;
-	for (auto v : *this) {
-		fun(function, v.first, v.second);
-	}
-	LSValue::delete_temporary(this);
 }
 
 template <class K, class V>
