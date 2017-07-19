@@ -93,7 +93,7 @@ Compiler::value Reference::compile(Compiler& c) const {
 			v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
 		}
 		if (var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, v, var->type), type};
+			return c.insn_to_pointer({v, var->type});
 		}
 		if (var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
 			return {VM::int_to_real(c.F, v), type};

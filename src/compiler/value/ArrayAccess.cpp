@@ -208,7 +208,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			jit_type_free(sig);
 
 			if (type.nature == Nature::POINTER) {
-				return {VM::value_to_pointer(c.F, res, type), type};
+				return c.insn_to_pointer({res, Type::INTEGER});
 			}
 			return {res, type};
 
@@ -258,7 +258,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			c.inc_ops(2);
 
 			if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-				return {VM::value_to_pointer(c.F, res, type), type};
+				return c.insn_to_pointer({res, array_element_type});
 			}
 			return {res, type};
 
@@ -297,7 +297,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				e = c.clone(e);
 
 				if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, e.v, type), type};
+					return c.insn_to_pointer(e);
 				}
 				return e;
 			}
@@ -393,7 +393,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			}
 		} else {
 			if (k.t == Type::INTEGER) {
-				k = {VM::value_to_pointer(c.F, k.v, Type::INTEGER), Type::POINTER};
+				k = c.insn_to_pointer(k);
 			}
 			return c.insn_call(type, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->atL(key);

@@ -143,7 +143,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				jit_value_t sum = jit_insn_add(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum, type), type};
+					return c.insn_to_pointer({sum, expression->type});
 				}
 				return {sum, type};
 			} else {
@@ -159,7 +159,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				jit_value_t sum = jit_insn_sub(c.F, x.v, y);
 				jit_insn_store(c.F, x.v, sum);
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum, type), type};
+					return c.insn_to_pointer({sum, expression->type});
 				}
 				return {sum, type};
 			} else {
@@ -173,7 +173,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto x = expression->compile(c);
 				jit_value_t r = jit_insn_to_not_bool(c.F, x.v);
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r, Type::BOOLEAN), type};
+					return c.insn_to_pointer({r, expression->type});
 				}
 				return {r, type};
 			} else {
@@ -200,7 +200,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto x = expression->compile(c);
 				jit_value_t r = jit_insn_neg(c.F, x.v);
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r, type), type};
+					return c.insn_to_pointer({r, expression->type});
 				}
 				return {r, type};
 			} else {
@@ -214,7 +214,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto x = expression->compile(c);
 				jit_value_t r = jit_insn_not(c.F, x.v);
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r, type), type};
+					return c.insn_to_pointer({r, expression->type});
 				}
 				return {r, type};
 			} else {
@@ -229,14 +229,14 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				if (vv->name == "Number") {
 					jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
 					if (type.nature == Nature::POINTER) {
-						return {VM::value_to_pointer(c.F, n, Type::INTEGER), type};
+						return c.insn_to_pointer({n, Type::INTEGER});
 					}
 					return {n, type};
 				}
 				else if (vv->name == "Boolean") {
 					jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
 					if (type.nature == Nature::POINTER) {
-						return {VM::value_to_pointer(c.F, n, Type::BOOLEAN), type};
+						return c.insn_to_pointer({n, Type::BOOLEAN});
 					}
 					return {n, type};
 				}
@@ -259,23 +259,23 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						if (fc->arguments.size() > 0) {
 							auto n = fc->arguments[0]->compile(c);
 							if (type.nature == Nature::POINTER) {
-								return {VM::value_to_pointer(c.F, n.v, Type::INTEGER), type};
+								return c.insn_to_pointer(n);
 							}
 							return n;
 						} else {
-							jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
+							auto n = c.new_integer(0);
 							if (type.nature == Nature::POINTER) {
-								return {VM::value_to_pointer(c.F, n, Type::INTEGER), type};
+								return c.insn_to_pointer(n);
 							}
-							return {n, type};
+							return n;
 						}
 					}
 					if (vv->name == "Boolean") {
-						jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
+						auto n = c.new_bool(false);
 						if (type.nature == Nature::POINTER) {
-							return {VM::value_to_pointer(c.F, n, Type::BOOLEAN), type};
+							return c.insn_to_pointer(n);
 						}
-						return {n, type};
+						return n;
 					}
 					if (vv->name == "String") {
 						if (fc->arguments.size() > 0) {

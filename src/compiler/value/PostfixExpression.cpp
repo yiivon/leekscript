@@ -79,7 +79,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
 
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, x, type), type};
+					return c.insn_to_pointer({x, expression->type});
 				}
 				return {x, type};
 			} else {
@@ -98,7 +98,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				jit_value_t sum = jit_insn_sub(c.F, x.v, y);
 				jit_insn_store(c.F, x.v, sum);
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, ox, type), type};
+					return c.insn_to_pointer({ox, expression->type});
 				}
 				return {ox, type};
 			} else {

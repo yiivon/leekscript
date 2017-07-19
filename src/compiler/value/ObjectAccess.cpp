@@ -176,7 +176,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	if (static_access_function != nullptr) {
 		auto res = static_access_function(c);
 		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, res.v, field_type), type};
+			return c.insn_to_pointer(res);
 		}
 		return res;
 	}
@@ -184,7 +184,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 		auto res = c.insn_call(field_type, {}, native_static_access_function);
 		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, res.v, field_type), type};
+			return c.insn_to_pointer(res);
 		}
 		return res;
 	}

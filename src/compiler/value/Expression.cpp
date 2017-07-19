@@ -519,7 +519,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			res = fun(c, args);
 		}
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, res.v, type), type};
+			return c.insn_to_pointer(res);
 		}
 		return res;
 	}
@@ -565,7 +565,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_insn_store(c.F, var, v2_value.v);
 
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, v2_value.v, type), type};
+					return c.insn_to_pointer(v2_value);
 				}
 				return v2_value;
 			}
@@ -646,7 +646,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 					auto v1_addr = ((LeftValue*) v1)->compile_l(c);
 					jit_insn_store_relative(c.F, v1_addr.v, 0, y.v);
 					if (type.nature == Nature::POINTER) {
-						return {VM::value_to_pointer(c.F, y.v, type), type};
+						return c.insn_to_pointer(y);
 					}
 					return y;
 				}
@@ -665,7 +665,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_insn_store_relative(c.F, x_addr.v, 0, y.v);
 				jit_insn_store_relative(c.F, y_addr.v, 0, t);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, y.v, type), type};
+					return c.insn_to_pointer(y);
 				}
 				return y;
 			} else {
@@ -684,7 +684,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto sum = c.insn_add(x, y);
 				jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum.v, type), type};
+					return c.insn_to_pointer(sum);
 				}
 				return sum;
 			} else {
@@ -707,7 +707,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_value_t sum = jit_insn_sub(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum, type), type};
+					return c.insn_to_pointer({sum, v2->type});
 				}
 				return {sum, type};
 			} else {
@@ -729,7 +729,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_value_t sum = jit_insn_mul(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum, type), type};
+					return c.insn_to_pointer({sum, v2->type});
 				}
 				return {sum, type};
 			} else {
@@ -753,7 +753,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_value_t sum = jit_insn_div(c.F, xf, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum, type), type};
+					return c.insn_to_pointer({sum, Type::REAL});
 				}
 				return {sum, type};
 			} else {
@@ -775,7 +775,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_value_t sum = jit_insn_rem(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum, type), type};
+					return c.insn_to_pointer({sum, v2->type});
 				}
 				return {sum, type};
 			} else {
@@ -792,7 +792,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				jit_value_t sum = jit_insn_pow(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, sum, type), type};
+					return c.insn_to_pointer({sum, v2->type});
 				}
 				return {sum, type};
 			} else {
@@ -829,7 +829,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), VM::get_jit_type(type), 0);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r, type), type};
+					return c.insn_to_pointer({r, v2->type});
 				}
 				return {r, type};
 			} else {
@@ -847,7 +847,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), VM::get_jit_type(type), 0);
 				jit_insn_store_relative(c.F, x_addr.v, 0, r);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r, type), type};
+					return c.insn_to_pointer({r, v2->type});
 				}
 				return {r, type};
 			} else {
@@ -878,7 +878,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 					r = c.to_int({r, Type::REAL}).v;
 				}
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r, type), type};
+					return c.insn_to_pointer({r, type});
 				}
 				return {r, type};
 			} else {
@@ -955,7 +955,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto a = jit_insn_shl(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, a);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, a, type), type};
+					return c.insn_to_pointer({a, v2->type});
 				}
 				return {a, type};
 			} else {
@@ -977,7 +977,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto a = jit_insn_shr(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, a);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, a, type), type};
+					return c.insn_to_pointer({a, v2->type});
 				}
 				return {a, type};
 			} else {
@@ -999,7 +999,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto a = jit_insn_ushr(c.F, x.v, y.v);
 				jit_insn_store(c.F, x.v, a);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, a, type), type};
+					return c.insn_to_pointer({a, v2->type});
 				}
 				return {a, type};
 			} else {
@@ -1057,7 +1057,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto y = v2->compile(c);
 			v2->compile_end(c);
 			if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				y = {VM::value_to_pointer(c.F, y.v, v2->type), type};
+				y = c.insn_to_pointer(y);
 			}
 			jit_insn_store(c.F, r, y.v);
 			jit_insn_label(c.F, &no_exception);
@@ -1073,7 +1073,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r.v, type), type};
+					return c.insn_to_pointer(r);
 				}
 				return r;
 			} else {
@@ -1090,7 +1090,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
 				jit_insn_store_relative(c.F, x_addr.v, 0, r.v);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, r.v, type), type};
+					return c.insn_to_pointer(r);
 				}
 				return r;
 			} else {
@@ -1121,7 +1121,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		auto r = jit_func(c.F, x.v, y.v);
 
 		if (type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, r, jit_returned_type), type};
+			return c.insn_to_pointer({r, jit_returned_type});
 		}
 		return {r, type};
 
@@ -1144,7 +1144,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 
 		if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, v, ls_returned_type), type};
+			return c.insn_to_pointer({v, ls_returned_type});
 		}
 		return {v, type};
 	}

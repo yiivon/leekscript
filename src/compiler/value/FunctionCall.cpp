@@ -326,11 +326,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		if (vv->name == "Boolean") {
-			jit_value_t n = jit_value_create_nint_constant(c.F, LS_INTEGER, 0);
+			auto b = c.new_bool(false);
 			if (type.nature == Nature::POINTER) {
-				return {VM::value_to_pointer(c.F, n, Type::BOOLEAN), type};
+				return c.insn_to_pointer(b);
 			}
-			return {n, type};
+			return b;
 		}
 		if (vv->name == "Number") {
 			jit_value_t n;
@@ -340,7 +340,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 				n = LS_CREATE_INTEGER(c.F, 0);
 			}
 			if (type.nature == Nature::POINTER) {
-				return {VM::value_to_pointer(c.F, n, Type::INTEGER), type};
+				return c.insn_to_pointer({n, Type::INTEGER});
 			}
 			return {n, type};
 		}
@@ -385,14 +385,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		Compiler::value res;
 		if (is_native_method) {
 			auto fun = (void*) std_func;
-			res = c.insn_call(type, args, fun);
+			res = c.insn_call(return_type, args, fun);
 		} else {
 			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);
 		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, res.v, type), type};
+			return c.insn_to_pointer(res);
 		}
 		return res;
 	}
@@ -412,14 +412,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		Compiler::value res;
 		if (is_native_method) {
 			auto fun = (void*) std_func;
-			res = c.insn_call(type, args, fun);
+			res = c.insn_call(return_type, args, fun);
 		} else {
 			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);
 		}
 
 		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-			return {VM::value_to_pointer(c.F, res.v, type), type};
+			return c.insn_to_pointer(res);
 		}
 		return res;
 	}
@@ -451,7 +451,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 				jit_value_t ret = jit_func(c.F, v0.v, v1.v);
 
 				if (type.nature == Nature::POINTER) {
-					return {VM::value_to_pointer(c.F, ret, type), type};
+					return c.insn_to_pointer({ret, Type::INTEGER});
 				}
 				return {ret, type};
 			}
@@ -549,7 +549,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	c.inc_ops(1);
 
 	if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-		return {VM::value_to_pointer(c.F, ret, type), type};
+		return c.insn_to_pointer({ret, return_type});
 	}
 	return {ret, type};
 }

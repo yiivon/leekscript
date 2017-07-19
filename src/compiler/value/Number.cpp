@@ -102,8 +102,7 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 Compiler::value Number::compile(Compiler& c) const {
 
 	if (type.nature == Nature::POINTER) {
-		jit_value_t val = LS_CREATE_REAL(c.F, double_value);
-		return {VM::value_to_pointer(c.F, val, Type::REAL), type};
+		return c.insn_to_pointer(c.new_real(double_value));
 	}
 	if (type == Type::LONG) {
 		return {LS_CREATE_LONG(c.F, long_value), type};
