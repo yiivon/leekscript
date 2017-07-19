@@ -859,7 +859,7 @@ Compiler::value NumberSTD::cbrt_real(Compiler& c, std::vector<Compiler::value> a
 }
 
 Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_pow(c.F, args[0].v, args[1].v), Type::INTEGER};
+	return {jit_insn_pow(c.F, args[0].v, args[1].v), Type::LONG};
 }
 
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
