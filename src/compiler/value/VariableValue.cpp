@@ -152,7 +152,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	}
 
 	if (var->type.nature != Nature::UNKNOWN and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-		return {VM::value_to_pointer(c.F, v, var->type), type};
+		return c.insn_to_pointer({v, var->type});
 	}
 	if (type.nature == Nature::VALUE && var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
 		return {VM::int_to_real(c.F, v), type};
