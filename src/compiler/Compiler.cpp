@@ -239,7 +239,23 @@ Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
 	}
 	Type new_type = v.t;
 	new_type.nature = Nature::POINTER;
-	return {VM::value_to_pointer(F, v.v, v.t), new_type};
+	if (v.t.raw_type == RawType::LONG) {
+		return insn_call(new_type, {v}, +[](long n) {
+			return LSNumber::get(n);
+		});
+	} else if (v.t.raw_type == RawType::REAL) {
+		return insn_call(new_type, {v}, +[](double n) {
+			return LSNumber::get(n);
+		});
+	} else if (v.t.raw_type == RawType::BOOLEAN) {
+		return insn_call(new_type, {v}, +[](bool n) {
+			return LSBoolean::get(n);
+		});
+	} else {
+		return insn_call(new_type, {v}, +[](int n) {
+			return LSNumber::get(n);
+		});
+	}
 }
 
 Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
