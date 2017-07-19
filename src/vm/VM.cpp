@@ -288,52 +288,6 @@ void VM::add_internal_var(std::string name, Type type) {
 	});
 }
 
-LSValue* create_number_object_int(int n) {
-	return LSNumber::get(n);
-}
-LSValue* create_number_object_long(long n) {
-	return LSNumber::get(n);
-}
-LSValue* create_bool_object(bool n) {
-	return LSBoolean::get(n);
-}
-LSValue* create_float_object(double n) {
-	return LSNumber::get(n);
-}
-
-void* get_conv_fun(Type type) {
-	if (type.raw_type == RawType::INTEGER) {
-		return (void*) &create_number_object_int;
-	}
-	if (type.raw_type == RawType::LONG) {
-		return (void*) &create_number_object_long;
-	}
-	if (type.raw_type == RawType::REAL) {
-		return (void*) &create_float_object;
-	}
-	if (type.raw_type == RawType::BOOLEAN) {
-		return (void*) &create_bool_object;
-	}
-	return (void*) &create_number_object_int;
-}
-
-jit_value_t VM::value_to_pointer(jit_function_t F, jit_value_t v, Type type) {
-
-	void* fun = get_conv_fun(type);
-
-	bool floatt = jit_type_get_kind(jit_value_get_type(v)) == JIT_TYPE_FLOAT64;
-	if (floatt) {
-		fun = (void*) &create_float_object;
-	}
-
-	jit_type_t args_types[1] = { get_jit_type(type) };
-
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 1, 1);
-	auto r = jit_insn_call_native(F, "convert", (void*) fun, sig, &v, 1, JIT_CALL_NOTHROW);
-	jit_type_free(sig);
-	return r;
-}
-
 int VM_boolean_to_value(LSBoolean* b) {
 	return b->value;
 }
