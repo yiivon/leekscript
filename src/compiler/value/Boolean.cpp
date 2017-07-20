@@ -35,7 +35,7 @@ Compiler::value Boolean::compile(Compiler& c) const {
 		auto b = LSBoolean::get(value);
 		return {c.new_pointer(b).v, Type::BOOLEAN_P};
 	} else {
-		return {LS_CREATE_BOOLEAN(c.F, value), Type::BOOLEAN};
+		return c.new_bool(value);
 	}
 }
 
