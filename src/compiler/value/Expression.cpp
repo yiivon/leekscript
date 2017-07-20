@@ -546,30 +546,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 				});
 			}
 
-			// Reference, like : a = @b
-			auto varval = dynamic_cast<VariableValue*>(v1);
-			if (varval != nullptr and varval->scope == VarScope::LOCAL and dynamic_cast<Reference*>(v2)) {
-
-				if (v1->type.must_manage_memory()) {
-					auto v1v = v1->compile(c);
-					v1->compile_end(c);
-					c.insn_delete(v1v);
-				}
-				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v2->type));
-				c.add_var(varval->name, var, v2->type, false);
-				auto v2_value = v2->compile(c);
-				v2->compile_end(c);
-				if (v2->type.must_manage_memory()) {
-					v2_value = c.insn_move_inc(v2_value);
-				}
-				jit_insn_store(c.F, var, v2_value.v);
-
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(v2_value);
-				}
-				return v2_value;
-			}
-
 			if (equal_previous_type.nature == Nature::POINTER && v2->type.nature == Nature::POINTER) {
 
 				auto vv = dynamic_cast<VariableValue*>(v1);
@@ -581,19 +557,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v2->compile_end(c);
 
-				if (v2->type.temporary) {
-					c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
-						LSValue::delete_ref(*x);
-						*x = y->clone();
-						(*x)->refs++;
-						// TODO y is cloned to be returned, don't clone it everytime
-					});
-				} else {
-					c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
-						LSValue::delete_ref(*x);
-						*x = y->clone();
-					});
-				}
+				c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+					LSValue::delete_ref(*x);
+					*x = y;
+					(*x)->refs++;
+				});
 				return y;
 			}
 

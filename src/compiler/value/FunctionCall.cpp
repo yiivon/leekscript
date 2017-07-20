@@ -510,13 +510,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		lsvalue_types.push_back(function_type.getArgumentType(i).id());
 
 		// Increment references of argument
-		if (!function_type.getArgumentType(i).reference) {
-			args.at(offset + i) = c.insn_move_inc(args.at(offset + i));
-		}
-		// Take address if reference
-		if (function_type.getArgumentType(i).reference) {
-			args.at(offset + i) = c.insn_address_of(args.at(offset + i));
-		}
+		c.insn_inc_refs(args.at(offset + i));
+
 		args_types.push_back(VM::get_jit_type(args.at(offset + i).t));
 	}
 

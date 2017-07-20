@@ -42,7 +42,6 @@ int Test::all() {
 	test_classes();
 	test_loops();
 	test_operators();
-	test_references();
 	test_exceptions();
 	test_operations();
 	test_system();
