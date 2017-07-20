@@ -15,6 +15,11 @@ public:
 		NUMBER_INVALID_REPRESENTATION
 	};
 
+	static bool translation_loaded;
+	static Json translation;
+	static std::string type_to_string(Type);
+	static std::string build_message(Type);
+
 	Type type;
 	unsigned int line;
 	unsigned int character;
@@ -24,8 +29,6 @@ public:
 
 	std::string message() const;
 	Json json() const;
-
-	static std::string build_message(Type type);
 };
 
 }

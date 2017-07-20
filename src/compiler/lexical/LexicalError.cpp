@@ -1,7 +1,10 @@
 #include "LexicalError.hpp"
-#include <string>
+#include "../../util/Util.hpp"
 
 namespace ls {
+
+bool LexicalError::translation_loaded = false;
+Json LexicalError::translation;
 
 LexicalError::LexicalError(Type type, int line, int character)
 	: type(type), line(line), character(character) {}
@@ -17,12 +20,28 @@ Json LexicalError::json() const {
 }
 
 std::string LexicalError::build_message(Type type) {
-	switch (type) {
-	case Type::UNTERMINATED_STRING: return "UNTERMINATED_STRING";
-	case Type::UNKNOWN_ESCAPE_SEQUENCE: return "UNKNOWN_ESCAPE_SEQUENCE";
-	case Type::NUMBER_INVALID_REPRESENTATION: return "NUMBER_INVALID_REPRESENTATION";
+	if (!translation_loaded) {
+		try {
+			translation = Json::parse(Util::read_file("src/doc/lexical_exception_fr.json"));
+		} catch (std::exception&) {} // LCOV_EXCL_LINE
+		translation_loaded = true;
 	}
-	return "??";
+
+	try {
+		return translation[type_to_string(type)];
+	} catch (std::exception&) { // LCOV_EXCL_LINE
+		return type_to_string(type); // LCOV_EXCL_LINE
+	}
+}
+
+std::string LexicalError::type_to_string(Type type) {
+	switch (type) {
+		case Type::UNTERMINATED_STRING: return "UNTERMINATED_STRING";
+		case Type::UNKNOWN_ESCAPE_SEQUENCE: return "UNKNOWN_ESCAPE_SEQUENCE";
+		case Type::NUMBER_INVALID_REPRESENTATION: return "NUMBER_INVALID_REPRESENTATION";
+		default:
+			return "UNKNOWN_ERROR";
+	}
 }
 
 }
