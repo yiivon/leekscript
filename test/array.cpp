@@ -569,8 +569,7 @@ void Test::test_arrays() {
 	// code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])]").equals("[]");
 
 	section("Array v1 pushAll");
-	// TODO pushAll function must take first array as reference
-	code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("[]");
+	code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("['a', 'b', 'c']");
 
 	section("Array v1 count");
 	code_v1("var a = ['a', 'b', 'c'] count(a)").equals("3");

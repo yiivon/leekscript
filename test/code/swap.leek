@@ -1,4 +1,4 @@
-let siftUp = (c, @pq) -> {
+let siftUp = (c, pq) -> {
 	if (c > 0) {
 		let p = (c - 1) >> 1
 		if (pq[c].p < pq[p].p) {
@@ -12,7 +12,7 @@ let siftUp = (c, @pq) -> {
 	}
 }
 
-let pqInsert = (p, @pq) -> {
+let pqInsert = (p, pq) -> {
 	siftUp(pq.size(), pq.push({p: p}))
 }
 
