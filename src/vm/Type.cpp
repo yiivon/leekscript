@@ -81,6 +81,7 @@ const Type Type::CONST_INTEGER(RawType::INTEGER, Nature::VALUE, false, false, tr
 const Type Type::MPZ(RawType::MPZ, Nature::VALUE);
 const Type Type::MPZ_TMP(RawType::MPZ, Nature::VALUE, false, true);
 const Type Type::LONG(RawType::LONG, Nature::VALUE);
+const Type Type::CONST_LONG(RawType::LONG, Nature::VALUE, false, true);
 const Type Type::REAL(RawType::REAL, Nature::VALUE);
 const Type Type::CONST_REAL(RawType::REAL, Nature::VALUE, false, false, true);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);

@@ -332,6 +332,7 @@ public:
 	static const Type MPZ;
 	static const Type MPZ_TMP;
 	static const Type LONG;
+	static const Type CONST_LONG;
 	static const Type REAL;
 	static const Type CONST_REAL;
 	static const Type STRING;
