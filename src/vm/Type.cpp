@@ -136,6 +136,8 @@ const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INT_ARRA
 
 const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE, false, false, true);
 const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER, false, false, true);
+const Type Type::CONST_FUNCTION(RawType::FUNCTION, Nature::VALUE, false, true, true);
+const Type Type::CONST_FUNCTION_P(RawType::FUNCTION, Nature::POINTER, false, true, true);
 const Type Type::CLOSURE(RawType::CLOSURE, Nature::POINTER, false, false, true);
 const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
 const Type Type::CONST_CLASS(RawType::CLASS, Nature::POINTER, true, false, true);

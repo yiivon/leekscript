@@ -378,7 +378,9 @@ public:
 	static const Type INTERVAL;
 	static const Type INTERVAL_TMP;
 	static const Type FUNCTION;
+	static const Type CONST_FUNCTION;
 	static const Type FUNCTION_P;
+	static const Type CONST_FUNCTION_P;
 	static const Type CLOSURE;
 	static const Type CLASS;
 	static const Type CONST_CLASS;
