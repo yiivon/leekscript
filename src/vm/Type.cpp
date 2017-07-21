@@ -94,10 +94,10 @@ const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
-const Type Type::CONST_PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER, false, true);
-const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, true);
-const Type Type::CONST_REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL, false, true);
-const Type Type::CONST_STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING, false, true);
+const Type Type::CONST_PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER, false, false, true);
+const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, false, true);
+const Type Type::CONST_REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL, false, false, true);
+const Type Type::CONST_STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING, false, false, true);
 
 const Type Type::MAP(RawType::MAP, Nature::POINTER);
 const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::POINTER);
@@ -123,9 +123,9 @@ const Type Type::SET(RawType::SET, Nature::POINTER);
 const Type Type::PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER);
 const Type Type::INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER);
 const Type Type::REAL_SET(RawType::SET, Nature::POINTER, Type::REAL);
-const Type Type::CONST_PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER, false, true);
-const Type Type::CONST_INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER, false, true);
-const Type Type::CONST_REAL_SET(RawType::SET, Nature::POINTER, Type::REAL, false, true);
+const Type Type::CONST_PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER, false, false, true);
+const Type Type::CONST_INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER, false, false, true);
+const Type Type::CONST_REAL_SET(RawType::SET, Nature::POINTER, Type::REAL, false, false, true);
 
 const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
 const Type Type::PTR_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::PTR_ARRAY);
@@ -161,13 +161,14 @@ Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool tempora
 	this->constant = constant;
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type, bool native, bool constant) {
+Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type, bool native, bool temporary, bool constant) {
 	this->raw_type = raw_type;
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
 	this->setElementType(element_type);
 	this->constant = constant;
+	this->temporary = temporary;
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native, bool constant) {
