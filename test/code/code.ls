@@ -1,7 +1,7 @@
 /*
  * Commentaire large
  */
- 
+
 /* Commentaire /* Imbriqué */ */
 
 /* Commentaire commenté
@@ -24,7 +24,7 @@ var aa = 2;
 // Nombres à virgule
 
 __debug(12.56 - 2)
-12.4 
+12.4
 100.0001
 
 
@@ -111,7 +111,7 @@ if (a != 2) {
 
 let f1 = function(x, y = 2, z = false) return 0 end
 
-let f2 = function(@x = "salut", y, @z) {
+let f2 = function(x = "salut", y, z) {
 	return x * x
 }
 
@@ -197,15 +197,6 @@ not false
 !"salut"
 new a
 
-
-// Références
-
-let référence = @variable
-@array
-print(@toto)
-@f(é)
-
-
 // Parenthèses
 
 (5) * (4 + 2) - 7 / (4 - (((5))))
@@ -220,9 +211,9 @@ class Combo {
 	let new = function(score = 0) {
 		this.score = score
 	}
-	
+
 	let b = x -> x + 1
-	
+
 	let update = function() {
 		score = score + 1
 		return score
@@ -242,7 +233,7 @@ combo3.update()
 
 var ext = 55
 var fun = function(a) { // [ext]
-	
+
 	let b = 12
 	let c = function(d) { // [b, ext]
 		return function(e) { [a, b, ext]
@@ -337,5 +328,3 @@ for leek in getLeeks() do
 	}
 	leek.cells.each(x -> print(x))
 end
-
-

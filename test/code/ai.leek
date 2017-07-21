@@ -16,7 +16,7 @@ function inArray(array, element) {
 	return Array.contains(array, element)
 }
 
-function _partition(n, si, @items, added) {
+function _partition(n, si, items, added) {
 
 	var combos = [];
 	for (var i = si; i < count(items); i++) {

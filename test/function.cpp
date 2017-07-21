@@ -66,6 +66,7 @@ void Test::test_functions() {
 	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
 	// TODO leak
 	// code("(x -> y -> x + 1)(1)(2)").equals("2");
+	code("let f = x, y -> { x += '+' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A+', 'B.']");
 
 	section("Function call without commas");
 	code("let f = x, y -> x + y f(12 7)").equals("19");
@@ -73,8 +74,6 @@ void Test::test_functions() {
 
 	section("Closures");
 	code("let a = 5 let f = -> a f()").equals("5");
-	// TODO should be forbidden
-	// code("let a = 5 let f = -> @a f()").equals("5");
 	code("let a = 12 let f = -> -> a f()()").equals("12");
 	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
 	// TODO
@@ -219,20 +218,6 @@ void Test::test_functions() {
 	section("Void functions");
 	code("(x -> System.print(x))(43)").equals("(void)");
 
-	section("Reference arguments");
-	code("function inc(x) { x++ } var a = 12 inc(a) a").equals("12");
-	// TODO
-	// code("let inc = (@x) -> x++").equals("(void)");
-	code("var x = 1 let f = (@x = 2) + 1 f").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"@x"});
-	// TODO should be forbidden
-	// code("var x = 12 (@x)").equals("12");
-	code("var x = 12 (x)").equals("12");
-	code("(@x, @y) -> x + y").equals("<function>");
-	code("@x, @y -> x + y").equals("<function>");
-	code("let f = (@x, @y) -> x + y").equals("(void)");
-	code("let f = @x, @y -> x + y").equals("(void)");
-	code("let f = x, y -> { x += '@' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A@', 'B.']");
-
 	section("Default arguments");
 	code("(x = 10) -> x").equals("<function>");
 	code("x = 10 -> x").equals("<function>");
@@ -271,9 +256,6 @@ void Test::test_functions() {
 	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
 	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
 	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
-
-	section("Wrong syntaxes");
-	code("(@2) -> 2").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
 
 	section("Not compiled functions");
 	code("var dumb = function(x) { }").equals("(void)");

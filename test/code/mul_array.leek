@@ -1,6 +1,6 @@
 // TODO allow 'new' token in v1
 
-function _mulArrays(@arrays) {
+function _mulArrays(arrays) {
 
 	if (count(arrays) == 0) return []
 
