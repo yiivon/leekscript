@@ -338,6 +338,7 @@ public:
 	static const Type CONST_STRING;
 	static const Type STRING_TMP;
 	static const Type OBJECT;
+	static const Type OBJECT_TMP;
 	static const Type ARRAY;
 	static const Type PTR_ARRAY;
 	static const Type INT_ARRAY;

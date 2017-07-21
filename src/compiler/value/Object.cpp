@@ -9,6 +9,7 @@ namespace ls {
 
 Object::Object() {
 	type = Type::OBJECT;
+	type.temporary = true;
 }
 
 Object::~Object() {

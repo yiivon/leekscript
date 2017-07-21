@@ -197,7 +197,7 @@ Compiler::value Compiler::new_mpz(long value) const {
 	return {mpz_struct, Type::MPZ_TMP};
 }
 Compiler::value Compiler::new_object() const {
-	return insn_call(Type::OBJECT, {}, +[]() {
+	return insn_call(Type::OBJECT_TMP, {}, +[]() {
 		// FIXME coverage doesn't work for the one line version
 		auto o = new LSObject();
 		return o;

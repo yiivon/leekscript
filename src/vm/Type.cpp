@@ -87,6 +87,7 @@ const Type Type::STRING(RawType::STRING, Nature::POINTER);
 const Type Type::CONST_STRING(RawType::STRING, Nature::POINTER, false, false, true);
 const Type Type::STRING_TMP(RawType::STRING, Nature::POINTER, false, true);
 const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
+const Type Type::OBJECT_TMP(RawType::OBJECT, Nature::POINTER, false, true);
 
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
 const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);

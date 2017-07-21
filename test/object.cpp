@@ -86,7 +86,7 @@ void Test::test_objects() {
 	/*
 	 * Iteration
 	 */
-	code("var s = '' for v in {a: 5, b: 'hello'} { s += v } s").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"{a: 5, b: 'hello'}", ls::Type::OBJECT.to_string()}); // TODO .equals("'5hello'");
+	code("var s = '' for v in {a: 5, b: 'hello'} { s += v } s").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"{a: 5, b: 'hello'}", ls::Type::OBJECT_TMP.to_string()}); // TODO .equals("'5hello'");
 
 	/*
 	 * Methods
