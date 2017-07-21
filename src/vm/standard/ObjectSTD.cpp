@@ -1,4 +1,5 @@
 #include "ObjectSTD.hpp"
+#include "ValueSTD.hpp"
 #include "../value/LSObject.hpp"
 #include "../value/LSNumber.hpp"
 
@@ -29,6 +30,9 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	/*
 	 * Methods
 	 */
+	method("copy", {
+		{Type::OBJECT, {Type::OBJECT}, (void*) &ValueSTD::copy}
+	});
 	Type map_fun_type = Type::FUNCTION_P;
 	map_fun_type.setArgumentType(0, Type::POINTER);
 	map_fun_type.setReturnType(Type::POINTER);

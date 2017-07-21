@@ -2,6 +2,7 @@
 #include "ArraySTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
+#include "ValueSTD.hpp"
 
 namespace ls {
 
@@ -31,6 +32,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 	/*
 	 * Methods
 	 */
+	method("copy", {
+		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY}, (void*) &ValueSTD::copy},
+		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY}, (void*) &ValueSTD::copy},
+		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY}, (void*) &ValueSTD::copy},
+	});
 	method("average", {
 		{Type::REAL, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_average, Method::NATIVE},
 		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_average, Method::NATIVE},

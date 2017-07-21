@@ -41,6 +41,7 @@ public:
 	/*
 	 * Methods
 	 */
+	static Compiler::value copy(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value to_string(Compiler& c, std::vector<Compiler::value> args);
 
 	// Hidden functions

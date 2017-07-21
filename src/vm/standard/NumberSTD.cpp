@@ -1,5 +1,5 @@
 #include "NumberSTD.hpp"
-
+#include "ValueSTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSString.hpp"
 #include "../../../lib/utf8.h"
@@ -125,6 +125,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 	/*
 	 * Methods
 	 */
+	method("copy", {
+		{Type::REAL, {Type::CONST_REAL}, (void*) &ValueSTD::copy},
+		{Type::LONG, {Type::CONST_LONG}, (void*) &ValueSTD::copy},
+		{Type::INTEGER, {Type::CONST_INTEGER}, (void*) &ValueSTD::copy},
+		{Type::MPZ, {Type::MPZ}, (void*) &ValueSTD::copy},
+	});
 	method("int", Method::Static, {
 		{Type::INTEGER, {Type::UNKNOWN}, (void*) &NumberSTD::_int},
 	});

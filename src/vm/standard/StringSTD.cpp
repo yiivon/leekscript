@@ -3,8 +3,8 @@
 #include <math.h>
 #include <string.h>
 #include "../../../lib/utf8.h"
-
 #include "StringSTD.hpp"
+#include "ValueSTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
 
@@ -66,6 +66,9 @@ StringSTD::StringSTD() : Module("String") {
 	/*
 	 * Methods
 	 */
+	method("copy", {
+		{Type::STRING, {Type::CONST_STRING}, (void*) &ValueSTD::copy}
+	});
 	method("charAt", {
 		{Type::STRING, {Type::CONST_STRING, Type::CONST_INTEGER}, (void*) &string_charAt, Method::NATIVE},
 	});

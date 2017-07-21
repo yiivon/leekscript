@@ -1,4 +1,5 @@
 #include "IntervalSTD.hpp"
+#include "ValueSTD.hpp"
 #include "../value/LSInterval.hpp"
 #include "../value/LSClosure.hpp"
 
@@ -18,6 +19,10 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	/*
 	 * Methods
 	 */
+	method("copy", {
+		{Type::INTERVAL, {Type::INTERVAL}, (void*) &ValueSTD::copy}
+	});
+
 	Type pred_fun_type_int = Type::FUNCTION_P;
 	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);

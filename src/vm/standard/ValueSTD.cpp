@@ -78,6 +78,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	/*
 	 * Methods
 	 */
+	method("copy", {
+		{Type::POINTER, {Type::CONST_POINTER}, (void*) &ValueSTD::copy}
+	});
 	method("string", {
 		{Type::STRING, {Type::CONST_UNKNOWN}, (void*) &ValueSTD::to_string}
 	});
@@ -299,6 +302,13 @@ Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) 
 			return a->in(b);
 		});
 	}
+}
+
+Compiler::value ValueSTD::copy(Compiler& c, std::vector<Compiler::value> args) {
+	if (args[0].t.temporary) {
+		return args[0];
+	}
+	return c.clone(args[0]);
 }
 
 Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> args) {
