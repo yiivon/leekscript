@@ -45,12 +45,10 @@ Function::~Function() {
 		delete version.second->body;
 		delete version.second;
 	}
-
 }
 
-void Function::addArgument(Token* name, bool reference, Value* defaultValue) {
+void Function::addArgument(Token* name, Value* defaultValue) {
 	arguments.push_back(std::unique_ptr<Token> { name });
-	references.push_back(reference);
 	defaultValues.push_back(defaultValue);
 }
 
@@ -77,9 +75,6 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 	os << "(";
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		if (i > 0) os << ", ";
-		if (references.at(i)) {
-			os << "@";
-		}
 		os << arguments.at(i)->content;
 		if (debug)
 			os << " " << version->type.getArgumentType(i);
@@ -166,7 +161,6 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyse(analyser, Type::UNKNOWN);
 		}
-		argument_type.reference = references.at(i);
 		type.setArgumentType(i, argument_type, defaultValues[i] != nullptr);
 	}
 
@@ -291,7 +285,6 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::UNKNOWN);
-		type.reference = references.at(i);
 		analyser->add_parameter(arguments.at(i).get(), type);
 		version->type.arguments_types.at(i) = type;
 	}
@@ -581,7 +574,6 @@ Value* Function::clone() const {
 	for (const auto& a : arguments) {
 		f->arguments.push_back(a);
 	}
-	f->references = references;
 	for (const auto& d : defaultValues) {
 		if (d != nullptr) {
 			f->defaultValues.push_back(d->clone());

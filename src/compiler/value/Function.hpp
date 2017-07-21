@@ -24,7 +24,6 @@ public:
 	std::string name;
 	bool lambda = false;
 	std::vector<std::shared_ptr<Token>> arguments;
-	std::vector<bool> references;
 	std::vector<Value*> defaultValues;
 	Block* body;
 
@@ -46,7 +45,7 @@ public:
 	Function();
 	virtual ~Function();
 
-	void addArgument(Token* token, bool reference, Value* defaultValue);
+	void addArgument(Token* token, Value* defaultValue);
 	int capture(std::shared_ptr<SemanticVar> var);
 	Type getReturnType();
 
