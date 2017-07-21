@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <string>
 #include <chrono>
-
 #include "leekscript.h"
 #include "constants.h"
 #include "colors.h"
