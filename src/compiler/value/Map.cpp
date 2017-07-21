@@ -90,6 +90,7 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 	type = Type::PTR_PTR_MAP;
 	type.setKeyType(key_type);
 	type.setElementType(value_type);
+	type.temporary = true;
 }
 
 LSMap<LSValue*, LSValue*>* LSMap_create_ptr_ptr() {
