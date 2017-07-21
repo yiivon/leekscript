@@ -45,8 +45,6 @@ Number.randInt(2067, 2070)
 {a: 5, b: 'toto', c: true, d: -> 5}.values()
 'x' in {x: 5, y: 'yo'}.keys()
 let a = 2 let b = 5 a <=> b [a, b]
-var a = 2; let b = @a; a = 5; b
-var a = ['a', 12]; var e = @a[1]; e += 5; a
 System.nanoTime
 System.print('salut !')
 (2m ** 1000).string().fold((x, y) -> x + y.number(), 0)
