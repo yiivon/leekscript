@@ -181,4 +181,20 @@ void Test::test_general() {
 	// code("var a = 2m a = 5").equals("5");
 	// code("var a = 5.5 System.print(a) a = 2 System.print(a) a = 200l System.print(a) a = 1000m System.print(a) a = 'hello' System.print(a)").equals("5.5\n2\n200\n1000\nhello\n");
 	// var a = [] a = 5m
+
+	section("Value.copy()");
+	code("2.copy()").equals("2");
+	code("2.5.copy()").equals("2.5");
+	// TODO method not found
+	// code("12l.copy()").equals("12");
+	code("100m.copy()").equals("100");
+	code("'abc'.copy()").equals("'abc'");
+	code("[].copy()").equals("[]");
+	code("[1, 2, 3].copy()").equals("[1, 2, 3]");
+	code("[1.5, 2.5, 3.5].copy()").equals("[1.5, 2.5, 3.5]");
+	code("[1..1000].copy()").equals("[1..1000]");
+	code("[:].copy()").equals("[:]");
+	code("{}.copy()").equals("{}");
+	code("(x -> x).copy()").equals("<function>");
+	code("Number.copy()").equals("<class Number>");
 }
