@@ -128,6 +128,7 @@ const Type Type::CONST_INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER, fal
 const Type Type::CONST_REAL_SET(RawType::SET, Nature::POINTER, Type::REAL, false, false, true);
 
 const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
+const Type Type::INTERVAL_TMP(RawType::INTERVAL, Nature::POINTER, Type::INTEGER, false, true);
 const Type Type::PTR_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::PTR_ARRAY);
 const Type Type::REAL_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL_ARRAY);
 const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INT_ARRAY);

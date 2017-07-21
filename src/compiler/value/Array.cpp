@@ -52,6 +52,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 	if (interval) {
 
 		type = Type::INTERVAL;
+		type.temporary = true;
 		expressions[0]->analyse(analyser, Type::INTEGER);
 		expressions[1]->analyse(analyser, Type::INTEGER);
 
@@ -183,7 +184,7 @@ Compiler::value Array::compile(Compiler& c) const {
 	if (interval) {
 		Compiler::value a = {expressions[0]->compile(c).v, Type::INTEGER};
 		Compiler::value b = {expressions[1]->compile(c).v, Type::INTEGER};
-		return c.insn_call(Type::INTERVAL, {a, b}, +[](int a, int b) {
+		return c.insn_call(Type::INTERVAL_TMP, {a, b}, +[](int a, int b) {
 			// TODO a better constructor?
 			LSInterval* interval = new LSInterval();
 			interval->a = a;

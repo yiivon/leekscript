@@ -375,6 +375,7 @@ public:
 	static const Type CONST_INT_SET;
 	static const Type CONST_REAL_SET;
 	static const Type INTERVAL;
+	static const Type INTERVAL_TMP;
 	static const Type FUNCTION;
 	static const Type FUNCTION_P;
 	static const Type CLOSURE;
