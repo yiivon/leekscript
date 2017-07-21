@@ -31,7 +31,6 @@
 #include "../value/ObjectAccess.hpp"
 #include "../value/PostfixExpression.hpp"
 #include "../value/PrefixExpression.hpp"
-#include "../value/Reference.hpp"
 #include "../value/String.hpp"
 #include "../value/VariableValue.hpp"
 #include "../value/ArrayFor.hpp"
@@ -302,12 +301,6 @@ Function* SyntaxicAnalyser::eatFunction() {
 
 	while (t->type != TokenType::FINISHED && t->type != TokenType::CLOSING_PARENTHESIS) {
 
-		bool reference = false;
-		if (t->type == TokenType::AROBASE) {
-			eat();
-			reference = true;
-		}
-
 		auto ident = eatIdent();
 
 		Value* defaultValue = nullptr;
@@ -316,7 +309,7 @@ Function* SyntaxicAnalyser::eatFunction() {
 			defaultValue = eatExpression();
 		}
 
-		f->addArgument(ident, reference, defaultValue);
+		f->addArgument(ident, defaultValue);
 
 		if (t->type == TokenType::COMMA) {
 			eat();
@@ -750,15 +743,6 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		eat();
 		parenthesis = true;
 	}
-	bool arobase = false;
-	if (t->type == TokenType::AROBASE) {
-		eat();
-		arobase = true;
-	}
-	if (arobase and t->type != TokenType::IDENT) {
-		eat(TokenType::IDENT); // will fail, we need an ident after an arobase
-		return new Nulll(nullptr);
-	}
 	if (parenthesis and t->type != TokenType::IDENT) {
 		if (t->type == TokenType::CLOSING_PARENTHESIS) {
 			return eatValue(); // error, expected a value got ')', it's wrong
@@ -782,16 +766,12 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 			if (t->type == TokenType::ARROW) {
 				// (var = <ex>) ->  [lambda]
 				delete eq;
-				return eatLambdaContinue(false, arobase, ident, ex, comma_list);
+				return eatLambdaContinue(false, ident, ex, comma_list);
 			} else {
 				// (var = <ex>) <token ?>	[expression]
 				Expression* e = new Expression();
 				e->parenthesis = true;
-				if (arobase) {
-					e->v1 = new Reference(new VariableValue(std::shared_ptr<Token>(ident)));
-				} else {
-					e->v1 = new VariableValue(std::shared_ptr<Token>(ident));
-				}
+				e->v1 = new VariableValue(std::shared_ptr<Token>(ident));
 				e->op = std::make_shared<Operator>(eq);
 				e->v2 = ex;
 				return e;
@@ -799,7 +779,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		} else if (t->type == TokenType::COMMA or t->type == TokenType::ARROW) {
 			// var = <ex> ,|->  [lambda]
 			delete eq;
-			return eatLambdaContinue(parenthesis, arobase, ident, ex, comma_list);
+			return eatLambdaContinue(parenthesis, ident, ex, comma_list);
 		} else {
 			// var = <ex> <?>
 			Expression* e = new Expression();
@@ -810,7 +790,7 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		}
 	} else if (t->type == TokenType::ARROW) {
 		// var ->
-		return eatLambdaContinue(parenthesis, arobase, ident, nullptr, comma_list);
+		return eatLambdaContinue(parenthesis, ident, nullptr, comma_list);
 	} else if (t->type == TokenType::COMMA) {
 		// var,  [lambda]
 		if (!parenthesis && comma_list) {
@@ -820,31 +800,22 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 		int a = findNextArrow();
 		int c = findNextColon();
 		if (parenthesis or (a != -1 and (a < p or p == -1) and (a < c or c == -1))) {
-			return eatLambdaContinue(parenthesis, arobase, ident, nullptr, comma_list);
+			return eatLambdaContinue(parenthesis, ident, nullptr, comma_list);
 		} else {
 			return new VariableValue(std::shared_ptr<Token>(ident));
 		}
 	} else {
 		if (parenthesis) {
 			if (t->type == TokenType::CLOSING_PARENTHESIS) {
-				// (var)  or  (@var)
+				// (var)
 				eat();
 				if (t->type == TokenType::ARROW) {
-					return eatLambdaContinue(false, arobase, ident, nullptr, comma_list);
+					return eatLambdaContinue(false, ident, nullptr, comma_list);
 				}
-				if (arobase) {
-					return new Reference(new VariableValue(std::shared_ptr<Token>(ident)));
-				} else {
-					return new VariableValue(std::shared_ptr<Token>(ident));
-				}
+				return new VariableValue(std::shared_ptr<Token>(ident));
 			} else {
 				// ( var + ... )
-				auto v = [&]() -> Value* {
-					if (arobase)
-						return new Reference(new VariableValue(std::shared_ptr<Token>(ident)));
-					else
-						return new VariableValue(std::shared_ptr<Token>(ident));
-				}();
+				auto v = new VariableValue(std::shared_ptr<Token>(ident));
 				auto exx = eatSimpleExpression(false, false, false, v);
 				auto ex = eatExpression(pipe_opened, set_opened, exx);
 				ex->parenthesis = true;
@@ -853,39 +824,28 @@ Value* SyntaxicAnalyser::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 			}
 		}
 		// var <?>  [expression]
-		if (arobase) {
-			auto v = new VariableValue(std::shared_ptr<Token>(ident));
-			auto ex = eatSimpleExpression(false, false, false, v);
-			return new Reference(ex);
-		} else {
-			return new VariableValue(std::shared_ptr<Token>(ident));
-		}
+		return new VariableValue(std::shared_ptr<Token>(ident));
 	}
 }
 
 /*
  * Continue to eat a lambda starting from a comma or the arrow
  */
-Value* SyntaxicAnalyser::eatLambdaContinue(bool parenthesis, bool arobase, Ident ident, Value* expression, bool comma_list) {
+Value* SyntaxicAnalyser::eatLambdaContinue(bool parenthesis, Ident ident, Value* expression, bool comma_list) {
 	auto l = new Function();
 	l->lambda = true;
 	// Add first argument
-	l->addArgument(ident.token, arobase, expression);
+	l->addArgument(ident.token, expression);
 	// Add other arguments
 	while (t->type == TokenType::COMMA) {
 		eat();
-		bool reference = false;
-		if (t->type == TokenType::AROBASE) {
-			eat();
-			reference = true;
-		}
 		auto ident = eatIdent();
 		Value* defaultValue = nullptr;
 		if (t->type == TokenType::EQUAL) {
 			eat();
 			defaultValue = eatExpression();
 		}
-		l->addArgument(ident, reference, defaultValue);
+		l->addArgument(ident, defaultValue);
 	}
 	if (t->type == TokenType::CLOSING_PARENTHESIS) {
 		eat();

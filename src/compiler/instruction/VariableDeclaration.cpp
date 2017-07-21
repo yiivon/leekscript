@@ -3,7 +3,6 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
-#include "../value/Reference.hpp"
 #include "../value/Function.hpp"
 
 using namespace std;

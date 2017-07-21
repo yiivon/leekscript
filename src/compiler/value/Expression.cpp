@@ -4,7 +4,6 @@
 #include "Function.hpp"
 #include "LeftValue.hpp"
 #include "Number.hpp"
-#include "Reference.hpp"
 #include "VariableValue.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSBoolean.hpp"

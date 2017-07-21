@@ -71,7 +71,7 @@ public:
 	Function* eatFunction();
 	VariableDeclaration* eatFunctionDeclaration();
 	Instruction* eatInstruction();
-	Value* eatLambdaContinue(bool parenthesis, bool arobase, Ident ident, Value* expression, bool comma_list = false);
+	Value* eatLambdaContinue(bool parenthesis, Ident ident, Value* expression, bool comma_list = false);
 	Value* eatLambdaOrParenthesisExpression(bool pipe_opened = false, bool set_opened = false, bool comma_list = false);
 	void splitCurrentOrInTwoPipes();
 
