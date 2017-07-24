@@ -135,7 +135,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 	vector<Token*> tokens;
 
 	int line = 1;
-	int character = 1;
+	int character = 0;
 	string word = "";
 	bool ident = false;
 	bool number = false;
