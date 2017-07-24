@@ -28,7 +28,7 @@ OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 COMPILER := g++
 OPTIM := -O2
-FLAGS := -std=c++1z -g3 -Wall -Wextra -Wno-pmf-conversions
+FLAGS := -std=c++14 -g3 -Wall -Wextra -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
 LIBS := -ljit -lgmp
 MAKEFLAGS += --jobs=$(shell nproc)
