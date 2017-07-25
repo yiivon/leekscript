@@ -40,22 +40,22 @@ void While::analyse(SemanticAnalyser* analyser, const Type&) {
 
 Compiler::value While::compile(Compiler& c) const {
 
-	jit_label_t label_cond = jit_label_undefined;
-	jit_label_t label_end = jit_label_undefined;
+	Compiler::label label_cond;
+	Compiler::label label_end;
 
 	jit_insn_mark_offset(c.F, location().start.line);
 
 	// condition
-	jit_insn_label(c.F, &label_cond);
+	c.insn_label(&label_cond);
 	c.inc_ops(1);
 	auto cond = condition->compile(c);
 	condition->compile_end(c);
 	if (condition->type.nature == Nature::POINTER) {
 		auto cond_bool = c.insn_to_bool(cond);
 		c.insn_delete_temporary(cond);
-		jit_insn_branch_if_not(c.F, cond_bool.v, &label_end);
+		c.insn_branch_if_not(cond_bool, &label_end);
 	} else {
-		jit_insn_branch_if_not(c.F, cond.v, &label_end);
+		c.insn_branch_if_not(cond, &label_end);
 	}
 
 	// body
@@ -64,10 +64,10 @@ Compiler::value While::compile(Compiler& c) const {
 	c.leave_loop();
 
 	// jump to cond
-	jit_insn_branch(c.F, &label_cond);
+	c.insn_branch(&label_cond);
 
 	// end label:
-	jit_insn_label(c.F, &label_end);
+	c.insn_label(&label_end);
 
 	return {nullptr, Type::UNKNOWN};
 }

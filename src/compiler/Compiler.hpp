@@ -28,12 +28,14 @@ public:
 			return v != o.v or t != o.t;
 		}
 	};
-
+	struct label {
+		jit_label_t l = jit_label_undefined;
+	};
 	struct catcher {
-		jit_label_t start;
-		jit_label_t end;
-		jit_label_t handler;
-		jit_label_t next;
+		label start;
+		label end;
+		label handler;
+		label next;
 	};
 
 	jit_function_t F = nullptr;
@@ -42,8 +44,8 @@ public:
 	std::vector<int> functions_blocks; // how many blocks are open in the current loop
 
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
-	std::vector<jit_label_t*> loops_end_labels;
-	std::vector<jit_label_t*> loops_cond_labels;
+	std::vector<label*> loops_end_labels;
+	std::vector<label*> loops_cond_labels;
 	std::vector<std::vector<value>> function_variables;
 	std::vector<std::map<std::string, value>> variables;
 	std::vector<std::vector<catcher>> catchers;
@@ -132,6 +134,11 @@ public:
 	void insn_if_not(value v, std::function<void()> then) const;
 	void insn_throw(value v) const;
 	void insn_throw_object(vm::Exception type) const;
+	void insn_label(label*) const;
+	void insn_branch(label* l) const;
+	void insn_branch_if(value v, label* l) const;
+	void insn_branch_if_not(value v, label* l) const;
+	void insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const;
 
 	// Call functions
 	template <typename R, typename... A>
@@ -161,10 +168,10 @@ public:
 	void update_var(std::string& name, jit_value_t value, const Type& type);
 
 	// Loops
-	void enter_loop(jit_label_t*, jit_label_t*);
+	void enter_loop(label*, label*);
 	void leave_loop();
-	jit_label_t* get_current_loop_end_label(int deepness) const;
-	jit_label_t* get_current_loop_cond_label(int deepness) const;
+	label* get_current_loop_end_label(int deepness) const;
+	label* get_current_loop_cond_label(int deepness) const;
 	int get_current_loop_blocks(int deepness) const;
 
 	/** Operations **/
@@ -173,7 +180,7 @@ public:
 	void get_operations();
 
 	/** Exceptions **/
-	void add_catcher(jit_label_t start, jit_label_t end, jit_label_t handler);
+	void add_catcher(label start, label end, label handler);
 	void insn_check_args(std::vector<value> args, std::vector<LSValueType> types) const;
 };
 

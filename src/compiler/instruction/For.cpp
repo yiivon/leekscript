@@ -102,9 +102,9 @@ Compiler::value For::compile(Compiler& c) const {
 		c.add_var("{output}", output_v, type, false); // Why create variable ? in case of `break 2` the output must be deleted
 	}
 
-	jit_label_t label_cond = jit_label_undefined;
-	jit_label_t label_inc = jit_label_undefined;
-	jit_label_t label_end = jit_label_undefined;
+	Compiler::label label_cond;
+	Compiler::label label_inc;
+	Compiler::label label_end;
 
 	// Init
 	for (Instruction* ins : inits) {
@@ -117,7 +117,7 @@ Compiler::value For::compile(Compiler& c) const {
 	}
 
 	// Cond
-	jit_insn_label(c.F, &label_cond);
+	c.insn_label(&label_cond);
 	c.inc_ops(1);
 	if (condition != nullptr) {
 		auto condition_v = condition->compile(c);
@@ -125,9 +125,9 @@ Compiler::value For::compile(Compiler& c) const {
 		if (condition->type.nature == Nature::POINTER) {
 			auto bool_v = c.insn_to_bool(condition_v);
 			c.insn_delete_temporary(condition_v);
-			jit_insn_branch_if_not(c.F, bool_v.v, &label_end);
+			c.insn_branch_if_not(bool_v, &label_end);
 		} else {
-			jit_insn_branch_if_not(c.F, condition_v.v, &label_end);
+			c.insn_branch_if_not(condition_v, &label_end);
 		}
 	}
 
@@ -139,7 +139,7 @@ Compiler::value For::compile(Compiler& c) const {
 		c.insn_push_array({output_v, type}, body_v);
 	}
 	c.leave_loop();
-	jit_insn_label(c.F, &label_inc);
+	c.insn_label(&label_inc);
 
 	// Inc
 	c.enter_block();
@@ -150,10 +150,10 @@ Compiler::value For::compile(Compiler& c) const {
 		}
 	}
 	c.leave_block();
-	jit_insn_branch(c.F, &label_cond);
+	c.insn_branch(&label_cond);
 
 	// End
-	jit_insn_label(c.F, &label_end);
+	c.insn_label(&label_end);
 	auto return_v = c.clone({output_v, type});
 	c.leave_block();
 	return return_v;

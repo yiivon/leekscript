@@ -124,26 +124,26 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	c.add_var(value->content, value_v, value_type, true);
 	if (key) c.add_var(key->content, key_v, key_type, true);
 
-	jit_label_t label_end = jit_label_undefined;
-	jit_label_t label_it = jit_label_undefined;
+	Compiler::label label_end;
+	Compiler::label label_it;
 	c.enter_loop(&label_end, &label_it);
 
-	jit_label_t label_cond = jit_label_undefined;
+	Compiler::label label_cond;
 
 	auto it = c.iterator_begin(container_v);
 
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container->type.raw_type == RawType::ARRAY) {
 		auto empty_array = c.insn_eq(c.new_integer(0), it);
-		jit_insn_branch_if(c.F, empty_array.v, &label_end);
+		c.insn_branch_if(empty_array, &label_end);
 	}
 
 	// cond label:
-	jit_insn_label(c.F, &label_cond);
+	c.insn_label(&label_cond);
 
 	// Condition to continue
 	auto finished = c.iterator_end(container_v, it);
-	jit_insn_branch_if(c.F, finished.v, &label_end);
+	c.insn_branch_if(finished, &label_end);
 
 	// Get Value
 	jit_insn_store(c.F, value_v, c.iterator_get(it, {value_v, value_type}).v);
@@ -164,16 +164,16 @@ Compiler::value Foreach::compile(Compiler& c) const {
 		c.insn_push_array({output_v, type}, body_v);
 	}
 	// it++
-	jit_insn_label(c.F, &label_it);
+	c.insn_label(&label_it);
 	c.iterator_increment(it);
 
 	// jump to cond
-	jit_insn_branch(c.F, &label_cond);
+	c.insn_branch(&label_cond);
 
 	c.leave_loop();
 
 	// end label:
-	jit_insn_label(c.F, &label_end);
+	c.insn_label(&label_end);
 
 	auto return_v = c.clone({output_v, type}); // otherwise it is delete by the c.leave_block
 	c.leave_block(); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block

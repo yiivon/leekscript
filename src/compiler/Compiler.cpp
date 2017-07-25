@@ -811,17 +811,17 @@ void Compiler::iterator_increment(Compiler::value it) const {
  * Controls
  */
 void Compiler::insn_if(Compiler::value condition, std::function<void()> then) const {
-	jit_label_t label_end = jit_label_undefined;
-	jit_insn_branch_if_not(F, condition.v, &label_end);
+	label label_end;
+	jit_insn_branch_if_not(F, condition.v, &label_end.l);
 	then();
-	jit_insn_label(F, &label_end);
+	jit_insn_label(F, &label_end.l);
 }
 
 void Compiler::insn_if_not(Compiler::value condition, std::function<void()> then) const {
-	jit_label_t label_end = jit_label_undefined;
-	jit_insn_branch_if(F, condition.v, &label_end);
+	label label_end;
+	jit_insn_branch_if(F, condition.v, &label_end.l);
 	then();
-	jit_insn_label(F, &label_end);
+	jit_insn_label(F, &label_end.l);
 }
 
 void Compiler::insn_throw(Compiler::value v) const {
@@ -832,6 +832,23 @@ void Compiler::insn_throw_object(vm::Exception type) const {
 	auto t = new_integer(type);
 	auto ex = insn_call(Type::POINTER, {t}, &VM::get_exception_object<0>);
 	insn_throw(ex);
+}
+
+void Compiler::insn_label(label* l) const {
+	jit_insn_label(F, &l->l);
+}
+
+void Compiler::insn_branch(label* l) const {
+	jit_insn_branch(F, &l->l);
+}
+void Compiler::insn_branch_if(Compiler::value v, Compiler::label* l) const {
+	jit_insn_branch_if(F, v.v, &l->l);
+}
+void Compiler::insn_branch_if_not(Compiler::value v, Compiler::label* l) const {
+	jit_insn_branch_if_not(F, v.v, &l->l);
+}
+void Compiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const {
+	jit_insn_branch_if_pc_not_in_range(F, a->l, b->l, &n->l);
 }
 
 /*
@@ -866,7 +883,7 @@ void Compiler::update_var(std::string& name, jit_value_t value, const Type& type
 	variables.back()[name].t = type;
 }
 
-void Compiler::enter_loop(jit_label_t* end_label, jit_label_t* cond_label) {
+void Compiler::enter_loop(Compiler::label* end_label, Compiler::label* cond_label) {
 	loops_end_labels.push_back(end_label);
 	loops_cond_labels.push_back(cond_label);
 	loops_blocks.push_back(0);
@@ -878,11 +895,11 @@ void Compiler::leave_loop() {
 	loops_blocks.pop_back();
 }
 
-jit_label_t* Compiler::get_current_loop_end_label(int deepness) const {
+Compiler::label* Compiler::get_current_loop_end_label(int deepness) const {
 	return loops_end_labels[loops_end_labels.size() - deepness];
 }
 
-jit_label_t* Compiler::get_current_loop_cond_label(int deepness) const {
+Compiler::label* Compiler::get_current_loop_cond_label(int deepness) const {
 	return loops_cond_labels[loops_cond_labels.size() - deepness];
 }
 
@@ -911,17 +928,17 @@ void Compiler::inc_ops_jit(Compiler::value amount) {
 
 	// Compare to the limit
 	jit_value_t compare = jit_insn_gt(F, jit_ops, jit_value_create_nint_constant(F, jit_type_uint, vm->operation_limit));
-	jit_label_t label_end = jit_label_undefined;
-	jit_insn_branch_if_not(F, compare, &label_end);
+	label label_end;
+	insn_branch_if_not({compare, Type::BOOLEAN}, &label_end);
 
 	// If greater than the limit, throw exception
 	insn_throw_object(vm::Exception::OPERATION_LIMIT_EXCEEDED);
 
 	// End
-	jit_insn_label(F, &label_end);
+	insn_label(&label_end);
 }
 
-void Compiler::add_catcher(jit_label_t start, jit_label_t end, jit_label_t handler) {
+void Compiler::add_catcher(label start, label end, label handler) {
 	catchers.back().push_back({start, end, handler, jit_label_undefined});
 }
 

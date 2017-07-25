@@ -515,15 +515,14 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	if (catchers.size() > 0) {
 		for (size_t i = 0; i < catchers.size() - 1; ++i) {
 			auto ca = catchers[i];
-			jit_insn_branch_if_pc_not_in_range(jit_function, ca.start, ca.end, &ca.next);
+			c.insn_branch_if_pc_not_in_range(&ca.start, &ca.end, &ca.next);
 			c.insn_call(Type::VOID, {{ex, Type::POINTER}}, (void*)+[](vm::ExceptionObj* ex) {
 				delete ex;
 			});
-			jit_insn_branch(jit_function, &ca.handler);
-
-			jit_insn_label(jit_function, &ca.next);
+			c.insn_branch(&ca.handler);
+			c.insn_label(&ca.next);
 		}
-		jit_insn_branch(jit_function, &catchers.back().handler);
+		c.insn_branch(&catchers.back().handler);
 	} else {
 		c.delete_function_variables();
 		if (is_main_function) {
