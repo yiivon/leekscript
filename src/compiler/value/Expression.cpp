@@ -526,14 +526,12 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return res;
 	}
 
-//	cout << "v1 : " << v1->type << ", v2 : " << v2->type << endl;
-
 	jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
 	void* ls_func;
 	bool use_jit_func = v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE;
-	vector<jit_value_t> args;
+	vector<Compiler::value> args;
 	Type jit_returned_type = Type::UNKNOWN;
-	Type ls_returned_type = Type::POINTER; // By default ls_ function returns pointers
+	Type ls_returned_type = type;
 
 	switch (op->type) {
 		case TokenType::EQUAL: {
@@ -639,8 +637,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 				return y;
 			} else {
-				args.push_back(((LeftValue*) v1)->compile_l(c).v);
-				args.push_back(((LeftValue*) v2)->compile_l(c).v);
+				args.push_back(((LeftValue*) v1)->compile_l(c));
+				args.push_back(((LeftValue*) v2)->compile_l(c));
 				ls_func = (void*) &jit_swap;
 			}
 			break;
@@ -1097,26 +1095,22 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	} else {
 
-		jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args_types, 2, 1);
-
 		if (args.size() == 0) {
-			args.push_back(v1->compile(c).v);
-			args.push_back(v2->compile(c).v);
+			args.push_back(v1->compile(c));
+			args.push_back(v2->compile(c));
 			v1->compile_end(c);
 			v2->compile_end(c);
 		}
-		jit_value_t v = jit_insn_call_native(c.F, "", ls_func, sig, args.data(), 2, 0);
-		jit_type_free(sig);
+		auto v = c.insn_call(ls_returned_type, args, ls_func);
 
 		if (store_result_in_v1) {
-			jit_insn_store(c.F, args[0], v);
+			jit_insn_store(c.F, args[0].v, v.v);
 		}
 
 		if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
-			return c.insn_to_pointer({v, ls_returned_type});
+			return c.insn_to_pointer(v);
 		}
-		return {v, type};
+		return v;
 	}
 }
 
