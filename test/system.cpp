@@ -49,6 +49,7 @@ void Test::test_system() {
 	code("System.nanoTime").almost(nano_time, 100000000L);
 
 	code("let a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, {"a"});
+	code("var a = 2 a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, {"a"});
 
 	section("print()");
 	code("System.print(true)").output("true\n");
