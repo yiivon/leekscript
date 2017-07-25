@@ -1,0 +1,5 @@
+var pq = []
+for x in [1, 2, 3] {
+	pq = pq + x
+}
+pq
