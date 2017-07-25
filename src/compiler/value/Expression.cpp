@@ -153,6 +153,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		// Change the type of x for operator =
 		equal_previous_type = v1->type; // todo inside
 		if (op->type == TokenType::EQUAL) {
+			if (v2->type == Type::VOID) {
+				analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
+			}
 			if (v1->type.not_temporary() != v2->type.not_temporary()) {
 				auto new_type = v2->type.not_temporary();
 				new_type.constant = false;
