@@ -957,16 +957,16 @@ void Compiler::iterator_increment(Compiler::value it) const {
  */
 void Compiler::insn_if(Compiler::value condition, std::function<void()> then) const {
 	label label_end;
-	jit_insn_branch_if_not(F, condition.v, &label_end.l);
+	insn_branch_if_not(condition, &label_end);
 	then();
-	jit_insn_label(F, &label_end.l);
+	insn_label(&label_end);
 }
 
 void Compiler::insn_if_not(Compiler::value condition, std::function<void()> then) const {
 	label label_end;
-	jit_insn_branch_if(F, condition.v, &label_end.l);
+	insn_branch_if(condition, &label_end);
 	then();
-	jit_insn_label(F, &label_end.l);
+	insn_label(&label_end);
 }
 
 void Compiler::insn_throw(Compiler::value v) const {
