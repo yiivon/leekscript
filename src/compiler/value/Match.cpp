@@ -134,7 +134,7 @@ Compiler::value Match::compile(Compiler& c) const {
 	auto v = value->compile(c);
 
 	auto res = c.insn_create_value(type);
-	jit_label_t label_end = jit_label_undefined;
+	Compiler::label label_end;
 
 	for (size_t i = 0; i < pattern_list.size(); ++i) {
 
@@ -146,37 +146,37 @@ Compiler::value Match::compile(Compiler& c) const {
 		if (is_default) {
 			auto ret = returns[i]->compile(c);
 			c.insn_store(res, ret);
-			jit_insn_label(c.F, &label_end);
+			c.insn_label(&label_end);
 			c.insn_delete_temporary(v);
 			return res;
 		}
 
-		jit_label_t label_next = jit_label_undefined;
+		Compiler::label label_next;
 
 		if (pattern_list[i].size() == 1) {
 			jit_value_t cond = pattern_list[i][0].match(c, v.v);
-			jit_insn_branch_if_not(c.F, cond, &label_next);
+			c.insn_branch_if_not({cond, Type::BOOLEAN}, &label_next);
 		} else {
-			jit_label_t label_match = jit_label_undefined;
+			Compiler::label label_match;
 
 			for (const Pattern& pattern : pattern_list[i]) {
 				jit_value_t cond = pattern.match(c, v.v);
-				jit_insn_branch_if(c.F, cond, &label_match);
+				c.insn_branch_if({cond, Type::BOOLEAN}, &label_match);
 			}
-			jit_insn_branch(c.F, &label_next);
-			jit_insn_label(c.F, &label_match);
+			c.insn_branch(&label_next);
+			c.insn_label(&label_match);
 		}
 
 		auto ret = returns[i]->compile(c);
 		c.insn_store(res, ret);
-		jit_insn_branch(c.F, &label_end);
-		jit_insn_label(c.F, &label_next);
+		c.insn_branch(&label_end);
+		c.insn_label(&label_next);
 	}
 	// In the case of no default pattern
 
 	c.insn_store(res, c.new_null());
 
-	jit_insn_label(c.F, &label_end);
+	c.insn_label(&label_end);
 	c.insn_delete_temporary(v);
 	return res;
 }
