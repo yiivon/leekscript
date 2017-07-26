@@ -616,7 +616,11 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		log_insn(0) << dump_val(args.at(i));
 		if (i < args.size() - 1) log_insn(0) << ", ";
 	}
-	log_insn(0) << ") " << dump_val(v) << std::endl;
+	log_insn(0) << ")";
+	if (return_type.nature != Nature::VOID) {
+		log_insn(0) << " → " << dump_val(v);
+	}
+	log_insn(0) << std::endl;
 	return v;
 }
 
@@ -636,7 +640,11 @@ Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value f
 		log_insn(0) << dump_val(args.at(i));
 		if (i < args.size() - 1) log_insn(0) << ", ";
 	}
-	log_insn(0) << ") " << dump_val(v) << std::endl;
+	log_insn(0) << ")";
+	if (return_type.nature != Nature::VOID) {
+		log_insn(0) << " → " << dump_val(v);
+	}
+	log_insn(0) << std::endl;
 	return v;
 }
 
