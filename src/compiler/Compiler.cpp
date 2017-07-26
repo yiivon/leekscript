@@ -1016,11 +1016,11 @@ int Compiler::get_current_loop_blocks(int deepness) const {
 	return sum;
 }
 
-void Compiler::inc_ops(int amount) {
+void Compiler::inc_ops(int amount) const {
 	inc_ops_jit(new_integer(amount));
 }
 
-void Compiler::inc_ops_jit(Compiler::value amount) {
+void Compiler::inc_ops_jit(Compiler::value amount) const {
 	// Operations enabled?
 	if (not vm->enable_operations) return;
 

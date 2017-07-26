@@ -189,9 +189,9 @@ public:
 	int get_current_loop_blocks(int deepness) const;
 
 	/** Operations **/
-	void inc_ops(int add);
-	void inc_ops_jit(value add);
-	void get_operations();
+	void inc_ops(int add) const;
+	void inc_ops_jit(value add) const;
+	void get_operations() const;
 
 	/** Exceptions **/
 	void add_catcher(label start, label end, label handler);
