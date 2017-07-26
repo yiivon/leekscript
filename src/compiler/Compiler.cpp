@@ -181,19 +181,29 @@ Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	return r;
 }
 Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_div(F, jit_insn_convert(F, a.v, LS_REAL, 0), b.v), Type::REAL};
+	Compiler::value r {jit_insn_div(F, jit_insn_convert(F, a.v, LS_REAL, 0), b.v), Type::REAL};
+	log_insn(4) << "div " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_int_div(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_div(F, a.v, b.v), Type::INTEGER};
+	Compiler::value r {jit_insn_div(F, a.v, b.v), Type::INTEGER};
+	log_insn(4) << "idiv " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_bit_and(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_and(F, a.v, b.v), Type::INTEGER};
+	Compiler::value r {jit_insn_and(F, a.v, b.v), Type::INTEGER};
+	log_insn(4) << "bit_and " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_bit_or(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_or(F, a.v, b.v), Type::INTEGER};
+	Compiler::value r {jit_insn_or(F, a.v, b.v), Type::INTEGER};
+	log_insn(4) << "bit_or " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_bit_xor(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_xor(F, a.v, b.v), Type::INTEGER};
+	Compiler::value r {jit_insn_xor(F, a.v, b.v), Type::INTEGER};
+	log_insn(4) << "bit_xor " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 	Compiler::value r {jit_insn_rem(F, a.v, b.v), Type::INTEGER};
@@ -201,10 +211,14 @@ Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 	return r;
 }
 Compiler::value Compiler::insn_pow(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_pow(F, a.v, b.v), Type::INTEGER};
+	Compiler::value r {jit_insn_pow(F, a.v, b.v), Type::INTEGER};
+	log_insn(4) << "pow " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_log10(Compiler::value a) const {
-	return {jit_insn_log10(F, a.v), Type::INTEGER};
+	Compiler::value r {jit_insn_log10(F, a.v), Type::INTEGER};
+	log_insn(4) << "log10 " << dump_val(a) << " " << dump_val(r) << std::endl;
+	return r;
 }
 
 /*
