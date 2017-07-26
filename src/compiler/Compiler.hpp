@@ -89,6 +89,7 @@ public:
 	// Operators wrapping
 	value insn_not(value) const;
 	value insn_not_bool(value) const;
+	value insn_neg(value) const;
 	value insn_and(value, value) const;
 	value insn_or(value, value) const;
 	value insn_add(value, value) const;

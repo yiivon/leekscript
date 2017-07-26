@@ -110,6 +110,11 @@ Compiler::value Compiler::insn_not_bool(Compiler::value v) const {
 	log_insn(4) << "not_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
+Compiler::value Compiler::insn_neg(Compiler::value v) const {
+	Compiler::value r {jit_insn_neg(F, v.v), v.t};
+	log_insn(4) << "neg " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
+}
 Compiler::value Compiler::insn_and(Compiler::value a, Compiler::value b) const {
 	Compiler::value r {jit_insn_and(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
 	log_insn(4) << "and " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
