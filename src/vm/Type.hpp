@@ -346,6 +346,9 @@ public:
 	static const Type PTR_ARRAY;
 	static const Type INT_ARRAY;
 	static const Type REAL_ARRAY;
+	static const Type PTR_ARRAY_TMP;
+	static const Type INT_ARRAY_TMP;
+	static const Type REAL_ARRAY_TMP;
 	static const Type STRING_ARRAY;
 	static const Type CONST_PTR_ARRAY;
 	static const Type CONST_INT_ARRAY;
