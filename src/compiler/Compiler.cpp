@@ -229,9 +229,11 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 		if (v.t.reference) {
 			v = insn_load(v);
 		}
-		return insn_call(v.t, {v}, +[](LSValue* value) {
+		auto r = insn_call(v.t, {v}, +[](LSValue* value) {
 			return value->clone();
 		});
+		log_insn(4) << "clone " << dump_val(v) << " " << dump_val(r) << std::endl;
+		return r;
 	}
 	return v;
 }
