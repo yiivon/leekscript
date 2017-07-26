@@ -971,6 +971,7 @@ void Compiler::insn_if_not(Compiler::value condition, std::function<void()> then
 
 void Compiler::insn_throw(Compiler::value v) const {
 	jit_insn_throw(F, v.v);
+	log_insn(4) << "throw " << dump_val(v) << std::endl;
 }
 
 void Compiler::insn_throw_object(vm::Exception type) const {
