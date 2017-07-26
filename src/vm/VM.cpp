@@ -298,41 +298,6 @@ jit_value_t VM::int_to_real(jit_function_t F, jit_value_t v) {
 	return real;
 }
 
-LSArray<LSValue*>* VM_create_array_ptr(int cap) {
-	LSArray<LSValue*>* array = new LSArray<LSValue*>();
-	array->reserve(cap);
-	return array;
-}
-
-LSArray<int>* VM_create_array_int(int cap) {
-	LSArray<int>* array = new LSArray<int>();
-	array->reserve(cap);
-	return array;
-}
-
-LSArray<double>* VM_create_array_float(int cap) {
-	LSArray<double>* array = new LSArray<double>();
-	array->reserve(cap);
-	return array;
-}
-
-jit_value_t VM::create_array(jit_function_t F, const Type& element_type, int cap) {
-	jit_type_t args[1] = {LS_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, args, 1, 1);
-	jit_value_t s = LS_CREATE_INTEGER(F, cap);
-	auto v = [&]() {
-		if (element_type == Type::INTEGER) {
-			return jit_insn_call_native(F, "create_array", (void*) VM_create_array_int, sig, &s, 1, JIT_CALL_NOTHROW);
-		}
-		if (element_type == Type::REAL) {
-			return jit_insn_call_native(F, "create_array", (void*) VM_create_array_float, sig, &s, 1, JIT_CALL_NOTHROW);
-		}
-		return jit_insn_call_native(F, "create_array", (void*) VM_create_array_ptr, sig, &s, 1, JIT_CALL_NOTHROW);
-	}();
-	jit_type_free(sig);
-	return v;
-}
-
 void VM::inc_mpz_counter(jit_function_t F) {
 	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::current()->mpz_created);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);

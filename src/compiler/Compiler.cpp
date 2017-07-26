@@ -260,6 +260,33 @@ Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
 		return new LSObject(clazz);
 	});
 }
+Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {
+	auto array = [&]() { if (element_type == Type::INTEGER) {
+		return insn_call(Type::INT_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
+			auto array = new LSArray<int>();
+			array->reserve(capacity);
+			return array;
+		}, "new_int_array");
+	} else if (element_type == Type::REAL) {
+		return insn_call(Type::REAL_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
+			auto array = new LSArray<double>();
+			array->reserve(capacity);
+			return array;
+		}, "new_real_array");
+	} else {
+		return insn_call(Type::PTR_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
+			auto array = new LSArray<LSValue*>();
+			array->reserve(capacity);
+			return array;
+		}, "new_ptr_array");
+	}}();
+	for (const auto& element : elements) {
+		insn_push_array(array, element);
+	}
+	// size of the array + 1 operations
+	inc_ops(elements.size() + 1);
+	return array;
+}
 
 Compiler::value Compiler::to_int(Compiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {

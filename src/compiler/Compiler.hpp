@@ -80,6 +80,7 @@ public:
 	value new_object() const;
 	value new_object_class(value clazz) const;
 	value new_mpz(long value = 0) const;
+	value new_array(Type element_type, std::vector<Compiler::value> elements) const;
 
 	// Conversions
 	value to_int(value) const;
