@@ -180,7 +180,6 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 }
 
 Compiler::value Array::compile(Compiler& c) const {
-
 	if (interval) {
 		Compiler::value a = {expressions[0]->compile(c).v, Type::INTEGER};
 		Compiler::value b = {expressions[1]->compile(c).v, Type::INTEGER};
@@ -192,20 +191,14 @@ Compiler::value Array::compile(Compiler& c) const {
 			return interval;
 		});
 	}
-
-	Compiler::value array = {VM::create_array(c.F, type.getElementType(), expressions.size()), type};
-
+	std::vector<Compiler::value> elements;
 	for (Value* val : expressions) {
 		auto v = val->compile(c);
 		val->compile_end(c);
 		v = c.insn_move(v);
-		c.insn_push_array(array, {v.v, type.getElementType()});
+		elements.push_back(v);
 	}
-
-	// size of the array + 1 operations
-	c.inc_ops(expressions.size() + 1);
-
-	return array;
+	return c.new_array(type.getElementType(), elements);
 }
 
 Value* Array::clone() const {

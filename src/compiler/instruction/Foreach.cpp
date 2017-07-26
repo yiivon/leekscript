@@ -100,7 +100,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	// Potential output [for ...]
 	Compiler::value output_v;
 	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
-		output_v = {VM::create_array(c.F, type.getElementType()), type};
+		output_v = c.new_array(type.getElementType(), {});
 		c.insn_inc_refs(output_v);
 		c.add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
 	}
