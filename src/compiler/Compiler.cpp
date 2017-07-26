@@ -511,15 +511,15 @@ void Compiler::insn_push_array(Compiler::value array, Compiler::value value) con
 	if (array.t.getElementType() == Type::INTEGER) {
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<int>* array, int value) {
 			array->push_back(value);
-		});
+		}, "array_push_int");
 	} else if (array.t.getElementType() == Type::REAL) {
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<double>* array, double value) {
 			array->push_back(value);
-		});
+		}, "array_push_real");
 	} else {
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
 			array->push_inc(value);
-		});
+		}, "array_push_ptr");
 	}
 }
 
