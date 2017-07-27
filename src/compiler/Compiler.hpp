@@ -86,6 +86,7 @@ public:
 	value to_int(value) const;
 	value to_real(value) const;
 	value to_long(value) const;
+	value insn_convert(value, Type) const;
 
 	// Operators wrapping
 	value insn_not(value) const;

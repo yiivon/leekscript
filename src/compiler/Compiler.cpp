@@ -328,6 +328,18 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 	return {jit_insn_convert(F, v.v, LS_LONG, 0), Type::LONG};
 }
 
+Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
+	if (v.t.not_temporary() == t.not_temporary()) return v;
+	if (t == Type::REAL) {
+		return to_real(v);
+	} else if (t == Type::INTEGER) {
+		return to_int(v);
+	} else if (t == Type::LONG) {
+		return to_long(v);
+	}
+	return v;
+}
+
 Compiler::value Compiler::insn_create_value(Type t) const {
 	return {jit_value_create(F, t.jit_type()), t};
 }
