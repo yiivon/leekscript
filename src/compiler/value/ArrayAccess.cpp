@@ -211,6 +211,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
+			k = c.insn_convert(k, map_key_type);
 
 			void* func = nullptr;
 			if (map_key_type == Type::INTEGER) {
@@ -239,10 +240,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				}
 			}
 
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, array_element_type.jit_type(), args_types, 2, 1);
-			jit_value_t args[] = {compiled_array.v, k.v};
-			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, 0);
-			jit_type_free(sig);
+			auto res = c.insn_call(array_element_type, {compiled_array, k}, func, "map_access");
 
 			// if (key->type.must_manage_memory()) {
 				c.insn_delete_temporary(k);
@@ -251,9 +249,9 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			c.inc_ops(2);
 
 			if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-				return c.insn_to_pointer({res, array_element_type});
+				return c.insn_to_pointer(res);
 			}
-			return {res, type};
+			return res;
 
 		} else if (array->type.raw_type == RawType::STRING or array->type.raw_type == RawType::ARRAY) {
 
