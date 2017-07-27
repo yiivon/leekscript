@@ -180,10 +180,6 @@ void ArrayAccess::change_type(SemanticAnalyser* analyser, const Type& new_type) 
 	}
 }
 
-int interval_access(const LSInterval* interval, int pos) {
-	return interval->atv(pos);
-}
-
 Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 	jit_insn_mark_offset(c.F, open_bracket->location.start.line);
@@ -197,20 +193,17 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 		if (array->type.raw_type == RawType::INTERVAL) {
 
-			jit_type_t args_types[2] = {LS_POINTER, LS_INTEGER};
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 2, 1);
-
 			auto k = key->compile(c);
 			key->compile_end(c);
 
-			jit_value_t args[] = {compiled_array.v, k.v};
-			jit_value_t res = jit_insn_call_native(c.F, "access", (void*) interval_access, sig, args, 2, 0);
-			jit_type_free(sig);
+			auto res = c.insn_call(Type::INTEGER, {compiled_array, k}, +[](LSInterval* interval, int k) {
+				return interval->atv(k);
+			}, "interval_access");
 
 			if (type.nature == Nature::POINTER) {
-				return c.insn_to_pointer({res, Type::INTEGER});
+				return c.insn_to_pointer(res);
 			}
-			return {res, type};
+			return res;
 
 		} else if (array->type.raw_type == RawType::MAP) {
 
