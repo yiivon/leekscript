@@ -309,7 +309,9 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 		auto v_addr = insn_address_of(v);
 		return to_int(insn_call(Type::LONG, {v_addr}, &mpz_get_si));
 	}
-	return {jit_insn_convert(F, v.v, LS_INTEGER, 0), Type::INTEGER};
+	Compiler::value r {jit_insn_convert(F, v.v, LS_INTEGER, 0), Type::INTEGER};
+	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
 }
 
 Compiler::value Compiler::to_real(Compiler::value v) const {
@@ -317,7 +319,9 @@ Compiler::value Compiler::to_real(Compiler::value v) const {
 		auto v_addr = insn_address_of(v);
 		return to_real(insn_call(Type::LONG, {v_addr}, &mpz_get_si));
 	}
-	return {jit_insn_convert(F, v.v, LS_REAL, 0), Type::REAL};
+	Compiler::value r {jit_insn_convert(F, v.v, LS_REAL, 0), Type::REAL};
+	log_insn(4) << "to_real " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
 }
 
 Compiler::value Compiler::to_long(Compiler::value v) const {
@@ -325,7 +329,9 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 		auto v_addr = insn_address_of(v);
 		return insn_call(Type::LONG, {v_addr}, &mpz_get_si);
 	}
-	return {jit_insn_convert(F, v.v, LS_LONG, 0), Type::LONG};
+	Compiler::value r {jit_insn_convert(F, v.v, LS_LONG, 0), Type::LONG};
+	log_insn(4) << "to_long " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
 }
 
 Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
