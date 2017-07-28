@@ -142,6 +142,7 @@ public:
 	void insn_branch_if(value v, label* l) const;
 	void insn_branch_if_not(value v, label* l) const;
 	void insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const;
+	void insn_return(value v) const;
 
 	// Call functions
 	template <typename R, typename... A>

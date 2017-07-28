@@ -52,10 +52,10 @@ Compiler::value Return::compile(Compiler& c) const {
 
 		auto r = c.insn_move(v);
 		c.delete_variables_block(c.get_current_function_blocks());
-		jit_insn_return(c.F, r.v);
+		c.insn_return(r);
 	}
 
-	jit_insn_return(c.F, c.new_integer(0).v);
+	c.insn_return(c.new_integer(0));
 	return {nullptr, Type::UNKNOWN};
 }
 

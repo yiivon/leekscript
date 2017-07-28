@@ -855,6 +855,10 @@ void Compiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) cons
 	jit_insn_branch_if_pc_not_in_range(F, a->l, b->l, &n->l);
 }
 
+void Compiler::insn_return(Compiler::value v) const {
+	jit_insn_return(F, v.v);
+}
+
 /*
  * Variables
  */
