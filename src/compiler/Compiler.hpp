@@ -102,6 +102,7 @@ public:
 	value insn_log10(value) const;
 
 	// Value management
+	value insn_create_value(Type t) const;
 	value insn_to_pointer(value v) const;
 	value insn_to_bool(value v) const;
 	value insn_address_of(value v) const;

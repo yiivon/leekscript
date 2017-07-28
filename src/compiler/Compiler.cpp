@@ -233,6 +233,10 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 	return {jit_insn_convert(F, v.v, LS_LONG, 0), Type::LONG};
 }
 
+Compiler::value Compiler::insn_create_value(Type t) const {
+	return {jit_value_create(F, VM::get_jit_type(t)), t};
+}
+
 Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
 		return v; // already a pointer
