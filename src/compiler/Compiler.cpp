@@ -860,8 +860,8 @@ void Compiler::add_var(const std::string& name, jit_value_t value, const Type& t
 	variables.back()[name] = {value, t};
 }
 
-void Compiler::add_function_var(jit_value_t value, const Type& type) {
-	function_variables.back().push_back({value, type});
+void Compiler::add_function_var(Compiler::value value) {
+	function_variables.back().push_back(value);
 }
 
 Compiler::value& Compiler::get_var(const std::string& name) {

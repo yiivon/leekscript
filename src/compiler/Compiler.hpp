@@ -163,7 +163,7 @@ public:
 
 	// Variables
 	void add_var(const std::string& name, jit_value_t value, const Type& type, bool ref);
-	void add_function_var(jit_value_t value, const Type& type);
+	void add_function_var(Compiler::value value);
 	value& get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
 	std::map<std::string, value> get_vars();

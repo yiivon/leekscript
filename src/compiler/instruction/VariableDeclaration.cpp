@@ -118,7 +118,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			}
 
 			c.set_var_type(name, ex->type);
-			c.add_function_var(var, v->type);
+			c.add_function_var({var, v->type});
 
 			jit_insn_store(c.F, var, val.v);
 
