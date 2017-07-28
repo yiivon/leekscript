@@ -612,7 +612,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 					}
 				} else {
 					auto v1_addr = ((LeftValue*) v1)->compile_l(c);
-					jit_insn_store_relative(c.F, v1_addr.v, 0, y.v);
+					c.insn_store_relative(v1_addr, 0, y);
 					if (type.nature == Nature::POINTER) {
 						return c.insn_to_pointer(y);
 					}
