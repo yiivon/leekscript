@@ -27,6 +27,8 @@ public:
 		bool operator != (const value& o) const {
 			return v != o.v or t != o.t;
 		}
+		value() : v(nullptr), t(Type::UNKNOWN) {}
+		value(jit_value_t v, Type t) : v(v), t(t) {}
 	};
 	struct label {
 		jit_label_t l = jit_label_undefined;
