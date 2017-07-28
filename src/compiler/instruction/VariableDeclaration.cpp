@@ -98,15 +98,14 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 		if (expressions[i] != nullptr) {
 
 			Value* ex = expressions[i];
-
-			jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v->type));
-			c.add_var(name, {var, v->type});
+			Compiler::value var = c.insn_create_value(v->type);
+			c.add_var(name, var);
 
 			if (Function* f = dynamic_cast<Function*>(ex)) {
 				if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
-					jit_insn_store(c.F, var, c.new_pointer((void*) f->versions.at(v->version)->function).v);
+					c.insn_store(var, c.new_pointer((void*) f->versions.at(v->version)->function));
 				} else {
-					jit_insn_store(c.F, var, c.new_pointer((void*) f->default_version->function).v);
+					c.insn_store(var, c.new_pointer((void*) f->default_version->function));
 				}
 			}
 
@@ -116,11 +115,9 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
-
 			c.set_var_type(name, ex->type);
-			c.add_function_var({var, v->type});
-
-			jit_insn_store(c.F, var, val.v);
+			c.add_function_var(var);
+			c.insn_store(var, val);
 
 		} else {
 
@@ -129,7 +126,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			c.add_var(name, var);
 
 			auto val = c.new_null();
-			jit_insn_store(c.F, var.v, val.v);
+			c.insn_store(var, val);
 		}
 	}
 	return {nullptr, Type::UNKNOWN};
