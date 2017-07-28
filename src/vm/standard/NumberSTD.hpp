@@ -32,6 +32,7 @@ public:
 
 	static Compiler::value sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value sub_mpz_int(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value sub_real_real(Compiler& c, std::vector<Compiler::value>);
 
 	static Compiler::value mul_real_real(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mul_int_mpz(Compiler& c, std::vector<Compiler::value> args);

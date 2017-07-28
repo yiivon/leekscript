@@ -44,7 +44,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("-", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::sub_mpz_mpz},
-		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::sub_mpz_int}
+		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::sub_mpz_int},
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::sub_real_real},
 	});
 
 	operator_("*", {
@@ -330,6 +331,10 @@ Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 	auto b_addr = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
 	return c.insn_clone_mpz(args[0]);
+}
+
+Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_sub(args[0], args[1]);
 }
 
 Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
