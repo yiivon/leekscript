@@ -168,7 +168,7 @@ public:
 	value& get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
 	std::map<std::string, value> get_vars();
-	void update_var(std::string& name, jit_value_t value, const Type& type);
+	void update_var(std::string& name, Compiler::value value);
 
 	// Loops
 	void enter_loop(label*, label*);

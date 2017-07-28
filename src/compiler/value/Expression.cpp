@@ -585,11 +585,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				y = c.insn_move_inc(y);
 
 				// Create a new variable
-				jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v1->type));
-				c.update_var(vv->name, var, v1->type);
+				auto var = c.insn_create_value(v1->type);
+				c.update_var(vv->name, var);
 
 				// Store
-				jit_insn_store(c.F, var, y.v);
+				c.insn_store(var, y);
 
 				return y;
 
