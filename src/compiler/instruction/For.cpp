@@ -95,11 +95,11 @@ Compiler::value For::compile(Compiler& c) const {
 
 	c.enter_block(); // { for init ; cond ; inc { body } }<-- this block
 
-	jit_value_t output_v = nullptr;
+	Compiler::value output_v;
 	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
-		output_v = VM::create_array(c.F, type.getElementType());
-		c.insn_inc_refs({output_v, type});
-		c.add_var("{output}", {output_v, type}); // Why create variable ? in case of `break 2` the output must be deleted
+		output_v = {VM::create_array(c.F, type.getElementType()), type};
+		c.insn_inc_refs(output_v);
+		c.add_var("{output}", output_v); // Why create variable ? in case of `break 2` the output must be deleted
 	}
 
 	Compiler::label label_cond;
@@ -110,7 +110,7 @@ Compiler::value For::compile(Compiler& c) const {
 	for (Instruction* ins : inits) {
 		ins->compile(c);
 		if (dynamic_cast<Return*>(ins)) {
-			auto return_v = c.clone({output_v, type});
+			auto return_v = c.clone(output_v);
 			c.leave_block();
 			return return_v;
 		}
@@ -134,9 +134,9 @@ Compiler::value For::compile(Compiler& c) const {
 	// Body
 	c.enter_loop(&label_end, &label_inc);
 	auto body_v = body->compile(c);
-	if (output_v && body_v.v) {
+	if (output_v.v && body_v.v) {
 		// transfer the ownership of the temporary variable `body_v`
-		c.insn_push_array({output_v, type}, body_v);
+		c.insn_push_array(output_v, body_v);
 	}
 	c.leave_loop();
 	c.insn_label(&label_inc);
@@ -154,7 +154,7 @@ Compiler::value For::compile(Compiler& c) const {
 
 	// End
 	c.insn_label(&label_end);
-	auto return_v = c.clone({output_v, type});
+	auto return_v = c.clone(output_v);
 	c.leave_block();
 	return return_v;
 }

@@ -98,11 +98,11 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	c.enter_block(); // { for x in [1, 2] {} }<-- this block
 
 	// Potential output [for ...]
-	jit_value_t output_v = nullptr;
+	Compiler::value output_v;
 	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
-		output_v = VM::create_array(c.F, type.getElementType());
-		c.insn_inc_refs({output_v, type});
-		c.add_var("{output}", {output_v, type}); // Why create variable? in case of `break 2` the output must be deleted
+		output_v = {VM::create_array(c.F, type.getElementType()), type};
+		c.insn_inc_refs(output_v);
+		c.add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
 	}
 
 	auto container_v = container->compile(c);
@@ -113,17 +113,15 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	c.add_var("{array}", container_v);
 
 	// Create variables
-	jit_type_t jit_value_type = VM::get_jit_type(value_type);
-	jit_value_t value_v = jit_value_create(c.F, jit_value_type);
-	jit_insn_store(c.F, value_v, c.new_pointer(LSNull::get()).v);
-	jit_type_t jit_key_type = VM::get_jit_type(key_type);
-	jit_value_t key_v = key ? jit_value_create(c.F, jit_key_type) : nullptr;
-	if (key)
-		jit_insn_store(c.F, key_v, c.new_integer(0).v);
-
-	c.add_var(value->content, {value_v, value_type});
+	Compiler::value value_v = c.insn_create_value(value_type);
+	c.insn_store(value_v, c.new_pointer(LSNull::get()));
+	Compiler::value key_v = key ? c.insn_create_value(key_type) : Compiler::value();
 	if (key) {
-		c.add_var(key->content, {key_v, key_type});
+		c.insn_store(key_v, c.new_integer(0));
+	}
+	c.add_var(value->content, value_v);
+	if (key) {
+		c.add_var(key->content, key_v);
 	}
 
 	Compiler::label label_end;
@@ -148,11 +146,11 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	c.insn_branch_if(finished, &label_end);
 
 	// Get Value
-	jit_insn_store(c.F, value_v, c.iterator_get(it, {value_v, value_type}).v);
+	c.insn_store(value_v, c.iterator_get(it, value_v));
 
 	// Get Key
 	if (key != nullptr) {
-		jit_insn_store(c.F, key_v, c.iterator_key(container_v, it, {key_v, key_type}).v);
+		c.insn_store(key_v, c.iterator_key(container_v, it, key_v));
 	}
 	// Body
 	auto body_v = body->compile(c);
@@ -162,8 +160,8 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	}
 	*/
 
-	if (output_v && body_v.v) {
-		c.insn_push_array({output_v, type}, body_v);
+	if (output_v.v && body_v.v) {
+		c.insn_push_array(output_v, body_v);
 	}
 	// it++
 	c.insn_label(&label_it);
@@ -177,7 +175,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	// end label:
 	c.insn_label(&label_end);
 
-	auto return_v = c.clone({output_v, type}); // otherwise it is delete by the c.leave_block
+	auto return_v = c.clone(output_v); // otherwise it is delete by the c.leave_block
 	c.leave_block(); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block
 	return return_v;
 }
