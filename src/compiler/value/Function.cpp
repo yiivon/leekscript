@@ -506,8 +506,12 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	}
 
 	auto res = version->body->compile(c);
-
-	jit_insn_return(jit_function, res.v);
+	if (res.v) {
+		c.insn_return(res);
+	} else {
+		// TODO should be removed, no return if there's no value
+		jit_insn_return(c.F, nullptr);
+	}
 
 	// catch (ex)
 	auto ex = jit_insn_start_catcher(jit_function);
