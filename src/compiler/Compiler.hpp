@@ -163,7 +163,7 @@ public:
 	bool is_current_function_closure() const;
 
 	// Variables
-	void add_var(const std::string& name, jit_value_t value, const Type& type, bool ref);
+	void add_var(const std::string& name, Compiler::value value);
 	void add_function_var(Compiler::value value);
 	value& get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);

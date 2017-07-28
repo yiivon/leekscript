@@ -102,7 +102,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
 		output_v = VM::create_array(c.F, type.getElementType());
 		c.insn_inc_refs({output_v, type});
-		c.add_var("{output}", output_v, type, false); // Why create variable? in case of `break 2` the output must be deleted
+		c.add_var("{output}", {output_v, type}); // Why create variable? in case of `break 2` the output must be deleted
 	}
 
 	auto container_v = container->compile(c);
@@ -110,7 +110,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (container->type.must_manage_memory()) {
 		c.insn_inc_refs(container_v);
 	}
-	c.add_var("{array}", container_v.v, container->type, false);
+	c.add_var("{array}", container_v);
 
 	// Create variables
 	jit_type_t jit_value_type = VM::get_jit_type(value_type);
@@ -121,8 +121,10 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (key)
 		jit_insn_store(c.F, key_v, c.new_integer(0).v);
 
-	c.add_var(value->content, value_v, value_type, true);
-	if (key) c.add_var(key->content, key_v, key_type, true);
+	c.add_var(value->content, {value_v, value_type});
+	if (key) {
+		c.add_var(key->content, {key_v, key_type});
+	}
 
 	Compiler::label label_end;
 	Compiler::label label_it;

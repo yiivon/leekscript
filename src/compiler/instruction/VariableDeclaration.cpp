@@ -100,7 +100,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			Value* ex = expressions[i];
 
 			jit_value_t var = jit_value_create(c.F, VM::get_jit_type(v->type));
-			c.add_var(name, var, Type::POINTER, false);
+			c.add_var(name, {var, v->type});
 
 			if (Function* f = dynamic_cast<Function*>(ex)) {
 				if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
@@ -124,11 +124,12 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 
 		} else {
 
-			jit_value_t var = jit_value_create(c.F, LS_POINTER);
-			c.add_var(name, var, Type::NULLL, false);
+			Compiler::value var = c.insn_create_value(Type::POINTER);
+			var.t = Type::NULLL;
+			c.add_var(name, var);
 
 			auto val = c.new_null();
-			jit_insn_store(c.F, var, val.v);
+			jit_insn_store(c.F, var.v, val.v);
 		}
 	}
 	return {nullptr, Type::UNKNOWN};

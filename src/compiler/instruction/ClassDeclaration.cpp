@@ -64,7 +64,7 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 		}
 	}
 
-	c.add_var(name, clazz.v, Type::CLASS, true);
+	c.add_var(name, clazz);
 
 	return clazz;
 }

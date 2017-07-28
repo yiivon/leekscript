@@ -858,10 +858,8 @@ void Compiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) cons
 /*
  * Variables
  */
-void Compiler::add_var(const std::string& name, jit_value_t value, const Type& type, bool ref) {
-	Type t = type;
-	t.reference = ref;
-	variables.back()[name] = {value, t};
+void Compiler::add_var(const std::string& name, Compiler::value value) {
+	variables.back()[name] = value;
 }
 
 void Compiler::add_function_var(Compiler::value value) {
