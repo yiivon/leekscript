@@ -95,9 +95,9 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 Compiler::value If::compile(Compiler& c) const {
 
-	jit_value_t res = nullptr;
+	Compiler::value res;
 	if (type != Type::VOID) {
-		res = jit_value_create(c.F, VM::get_jit_type(type));
+		res = c.insn_create_value(type);
 	}
 
 	jit_label_t label_else = jit_label_undefined;
@@ -117,7 +117,7 @@ Compiler::value If::compile(Compiler& c) const {
 	auto then_v = then->compile(c);
 	then->compile_end(c);
 	if (then_v.v) {
-		jit_insn_store(c.F, res, then_v.v);
+		c.insn_store(res, then_v);
 	}
 	jit_insn_branch(c.F, &label_end);
 
@@ -127,17 +127,15 @@ Compiler::value If::compile(Compiler& c) const {
 		auto else_v = elze->compile(c);
 		elze->compile_end(c);
 		if (else_v.v) {
-			jit_insn_store(c.F, res, else_v.v);
+			c.insn_store(res, else_v);
 		}
 	} else {
 		if (type != Type::VOID) {
-			jit_insn_store(c.F, res, c.new_null().v);
+			c.insn_store(res, c.new_null());
 		}
 	}
-
 	jit_insn_label(c.F, &label_end);
-
-	return {res, type};
+	return res;
 }
 
 Value* If::clone() const {

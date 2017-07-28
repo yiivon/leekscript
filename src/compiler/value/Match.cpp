@@ -133,7 +133,7 @@ Compiler::value Match::compile(Compiler& c) const {
 
 	auto v = value->compile(c);
 
-	jit_value_t res = jit_value_create(c.F, VM::get_jit_type(type));
+	auto res = c.insn_create_value(type);
 	jit_label_t label_end = jit_label_undefined;
 
 	for (size_t i = 0; i < pattern_list.size(); ++i) {
@@ -145,10 +145,10 @@ Compiler::value Match::compile(Compiler& c) const {
 
 		if (is_default) {
 			auto ret = returns[i]->compile(c);
-			jit_insn_store(c.F, res, ret.v);
+			c.insn_store(res, ret);
 			jit_insn_label(c.F, &label_end);
 			c.insn_delete_temporary(v);
-			return {res, type};
+			return res;
 		}
 
 		jit_label_t label_next = jit_label_undefined;
@@ -168,17 +168,17 @@ Compiler::value Match::compile(Compiler& c) const {
 		}
 
 		auto ret = returns[i]->compile(c);
-		jit_insn_store(c.F, res, ret.v);
+		c.insn_store(res, ret);
 		jit_insn_branch(c.F, &label_end);
 		jit_insn_label(c.F, &label_next);
 	}
 	// In the case of no default pattern
 
-	jit_insn_store(c.F, res, c.new_null().v);
+	c.insn_store(res, c.new_null());
 
 	jit_insn_label(c.F, &label_end);
 	c.insn_delete_temporary(v);
-	return {res, type};
+	return res;
 }
 
 Match::Pattern::Pattern(Value* value)

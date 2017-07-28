@@ -140,12 +140,12 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			} else if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
 				auto y = c.new_integer(1);
-				jit_value_t sum = jit_insn_add(c.F, x.v, y.v);
-				jit_insn_store(c.F, x.v, sum);
+				auto sum = c.insn_add(x, y);
+				c.insn_store(x, sum);
 				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({sum, expression->type});
+					return c.insn_to_pointer(sum);
 				}
-				return {sum, type};
+				return sum;
 			} else {
 				args.push_back(expression->compile(c).v);
 				func = (void*) jit_pre_inc;
@@ -155,13 +155,13 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		case TokenType::MINUS_MINUS: {
 			if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
-				jit_value_t y = LS_CREATE_INTEGER(c.F, 1);
-				jit_value_t sum = jit_insn_sub(c.F, x.v, y);
-				jit_insn_store(c.F, x.v, sum);
+				auto y = c.new_integer(1);
+				auto sum = c.insn_sub(x, y);
+				c.insn_store(x, sum);
 				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({sum, expression->type});
+					return c.insn_to_pointer(sum);
 				}
-				return {sum, type};
+				return sum;
 			} else {
 				args.push_back(expression->compile(c).v);
 				func = (void*) jit_pre_dec;
