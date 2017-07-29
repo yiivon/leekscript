@@ -1043,6 +1043,7 @@ void Compiler::add_catcher(label start, label end, label handler) {
 }
 
 void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LSValueType> types) const {
+	// TODO too much cheks sometimes
 	for (size_t i = 0; i < args.size(); ++i) {
 		auto arg = args[i];
 		auto type = types[i];
