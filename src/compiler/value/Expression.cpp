@@ -611,8 +611,13 @@ Compiler::value Expression::compile(Compiler& c) const {
 						return r;
 					}
 				} else {
-					auto v1_addr = ((LeftValue*) v1)->compile_l(c);
-					c.insn_store_relative(v1_addr, 0, y);
+					if (dynamic_cast<VariableValue*>(v1)) {
+						auto x = v1->compile(c);
+						c.insn_store(x, y);
+					} else {
+						auto v1_addr = ((LeftValue*) v1)->compile_l(c);
+						c.insn_store_relative(v1_addr, 0, y);
+					}
 					if (type.nature == Nature::POINTER) {
 						return c.insn_to_pointer(y);
 					}
