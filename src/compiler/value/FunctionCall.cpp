@@ -459,7 +459,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 
 	/** Default function : f(12) */
-	jit_value_t fun;
+	Compiler::value fun;
 	auto ls_fun_addr = c.new_pointer(nullptr);
 	auto jit_object = c.new_pointer(nullptr);
 	auto is_closure = function->type.raw_type == RawType::CLOSURE;
@@ -472,28 +472,25 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		ls_fun_addr = c.insn_call(type, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
 		});
-		fun = jit_insn_load_relative(c.F, ls_fun_addr.v, 24, LS_POINTER);
+		fun = c.insn_load(ls_fun_addr, 24, Type::POINTER);
 	} else {
 		ls_fun_addr = function->compile(c);
-		fun = jit_insn_load_relative(c.F, ls_fun_addr.v, 24, LS_POINTER);
+		fun = c.insn_load(ls_fun_addr, 24, Type::POINTER);
 	}
 
 	/** Arguments */
 	size_t offset = is_closure or is_unknown_method ? 1 : 0;
 	size_t arg_count = std::max(arg_types.size(), arguments.size()) + offset;
 	vector<Compiler::value> args;
-	vector<jit_type_t> args_types;
 	vector<LSValueType> lsvalue_types;
 
 	if (is_unknown_method) {
 		// add 'this' object as first argument
 		args.push_back(jit_object);
-		args_types.push_back(VM::get_jit_type(object->type));
 		lsvalue_types.push_back(object->type.id());
 	} else if (is_closure) {
 		// Function pointer as first argument
 		args.push_back(ls_fun_addr);
-		args_types.push_back(LS_POINTER);
 		lsvalue_types.push_back(Type::CLOSURE.id());
 	}
 
@@ -511,8 +508,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 		// Increment references of argument
 		c.insn_inc_refs(args.at(offset + i));
-
-		args_types.push_back(VM::get_jit_type(args.at(offset + i).t));
 	}
 
 	jit_insn_mark_offset(c.F, location().start.line);
@@ -520,19 +515,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// TODO : some tests are failing with this
 	// c.insn_check_args(args, lsvalue_types);
 
-	jit_type_t jit_return_type = VM::get_jit_type(type);
-
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, args_types.data(), args_types.size(), 1);
-	vector<jit_value_t> jit_args;
-	for (const auto& a : args) jit_args.push_back(a.v);
-	jit_value_t ret = jit_insn_call_indirect(c.F, fun, sig, jit_args.data(), jit_args.size(), 0);
-	jit_type_free(sig);
-	c.log_insn(4) << "call " << c.dump_val(ls_fun_addr) << " (";
-	for (int i = 0; i < args.size(); ++i) {
-		c.log_insn(0) << c.dump_val(args.at(i));
-		if (i < args.size() - 1) c.log_insn(0) << ", ";
-	}
-	c.log_insn(0) << ") " << c.dump_val({ret, type}) << std::endl;
+	// Call
+	auto result = c.insn_call_indirect(return_type, fun, args);
 
 	// Destroy temporary arguments
 	for (size_t i = 0; i < arg_count - offset; ++i) {
@@ -550,9 +534,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	c.inc_ops(1);
 
 	if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-		return c.insn_to_pointer({ret, return_type});
+		return c.insn_to_pointer(result);
 	}
-	return {ret, type};
+	return result;
 }
 
 Value* FunctionCall::clone() const {
