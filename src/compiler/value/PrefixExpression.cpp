@@ -123,9 +123,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 
 	jit_insn_mark_offset(c.F, location().start.line);
 
-	jit_type_t args_types[1] = {LS_POINTER};
-	vector<jit_value_t> args;
-
+	vector<Compiler::value> args;
 	void* func = nullptr;
 
 	switch (operatorr->type) {
@@ -147,7 +145,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return sum;
 			} else {
-				args.push_back(expression->compile(c).v);
+				args.push_back(expression->compile(c));
 				func = (void*) jit_pre_inc;
 			}
 			break;
@@ -163,7 +161,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return sum;
 			} else {
-				args.push_back(expression->compile(c).v);
+				args.push_back(expression->compile(c));
 				func = (void*) jit_pre_dec;
 			}
 			break;
@@ -177,7 +175,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return {r, type};
 			} else {
-				args.push_back(expression->compile(c).v);
+				args.push_back(expression->compile(c));
 				func = (void*) jit_not;
 			}
 			break;
@@ -204,7 +202,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return {r, type};
 			} else {
-				args.push_back(expression->compile(c).v);
+				args.push_back(expression->compile(c));
 				func = (void*) jit_minus;
 			}
 			break;
@@ -218,7 +216,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return {r, type};
 			} else {
-				args.push_back(expression->compile(c).v);
+				args.push_back(expression->compile(c));
 				func = (void*) jit_pre_tilde;
 			}
 			break;
@@ -304,11 +302,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		}
 		default: {}
 	}
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(type), args_types, 1, 1);
-	jit_value_t result = jit_insn_call_native(c.F, "", func, sig, args.data(), 1, 0);
-	jit_type_free(sig);
-
-	return {result, type};
+	return c.insn_call(type, args, func);
 }
 
 Value* PrefixExpression::clone() const {
