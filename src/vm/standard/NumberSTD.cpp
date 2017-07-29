@@ -451,12 +451,12 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	auto a_size = c.insn_call(Type::INTEGER, {args[0]}, (void*) &mpz_log, "mpz_log");
 	auto r_size = c.insn_mul(a_size, args[1]);
 	auto cond = c.insn_lt(r_size, c.new_integer(10000));
-	jit_label_t label_end = jit_label_undefined;
-	jit_insn_branch_if(c.F, cond.v, &label_end);
+	Compiler::label label_end;
+	c.insn_branch_if(cond, &label_end);
 
 	c.insn_throw_object(vm::Exception::NUMBER_OVERFLOW);
 
-	jit_insn_label(c.F, &label_end);
+	c.insn_label(&label_end);
 
 	// Ops: size of the theorical result
 	c.inc_ops_jit(r_size);
