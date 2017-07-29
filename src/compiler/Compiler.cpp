@@ -270,7 +270,7 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_create_value(Type t) const {
-	return {jit_value_create(F, VM::get_jit_type(t)), t};
+	return {jit_value_create(F, t.jit_type()), t};
 }
 
 Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
@@ -331,7 +331,7 @@ Compiler::value Compiler::insn_address_of(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_load(Compiler::value v, int pos, Type t) const {
-	Compiler::value r {jit_insn_load_relative(F, v.v, pos, VM::get_jit_type(t)), t};
+	Compiler::value r {jit_insn_load_relative(F, v.v, pos, t.jit_type()), t};
 	log_insn(4) << "load " << dump_val(v) << " " << pos << " " << dump_val(r) << std::endl;
 	return r;
 }
@@ -541,9 +541,9 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	std::vector<jit_type_t> arg_types;
 	for (const auto& arg : args) {
 		jit_args.push_back(arg.v);
-		arg_types.push_back(VM::get_jit_type(arg.t));
+		arg_types.push_back(arg.t.jit_type());
 	}
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(return_type), arg_types.data(), arg_types.size(), 1);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type.jit_type(), arg_types.data(), arg_types.size(), 1);
 	Compiler::value v = {jit_insn_call_native(F, "call", func, sig, jit_args.data(), arg_types.size(), 0), return_type};
 	jit_type_free(sig);
 	return v;
@@ -554,10 +554,9 @@ Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value f
 	std::vector<jit_value_t> jit_args;
 	for (const auto& arg : args) {
 		jit_args.push_back(arg.v);
-		arg_types.push_back(VM::get_jit_type(arg.t));
+		arg_types.push_back(arg.t.jit_type());
 	}
-	jit_type_t jit_return_type = VM::get_jit_type(return_type);
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, arg_types.data(), arg_types.size(), 1);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type.jit_type(), arg_types.data(), arg_types.size(), 1);
 	Compiler::value v = {jit_insn_call_indirect(F, fun.v, sig, jit_args.data(), jit_args.size(), 0), return_type};
 	jit_type_free(sig);
 	// Log
@@ -592,7 +591,7 @@ void Compiler::log(const std::string&& str) const {
  */
 Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t.raw_type == RawType::ARRAY) {
-		Compiler::value it = {jit_value_create(F, VM::get_jit_type(v.t)), v.t};
+		Compiler::value it = {jit_value_create(F, v.t.jit_type()), v.t};
 		insn_store(it, insn_load(v, 24));
 		return it;
 	}

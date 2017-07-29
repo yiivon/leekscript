@@ -104,7 +104,7 @@ Compiler::value Set::compile(Compiler& c) const {
 	jit_value_t s = jit_insn_call_native(c.F, "create_set", (void*) create, sig, {}, 0, JIT_CALL_NOTHROW);
 	jit_type_free(sig);
 
-	jit_type_t args[2] = {LS_POINTER, VM::get_jit_type(type.getElementType())};
+	jit_type_t args[2] = {LS_POINTER, type.getElementType().jit_type()};
 	sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 2, 1);
 
 	double i = 0;

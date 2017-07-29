@@ -214,7 +214,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 		} else if (array->type.raw_type == RawType::MAP) {
 
-			jit_type_t args_types[2] = {LS_POINTER, VM::get_jit_type(map_key_type)};
+			jit_type_t args_types[2] = {LS_POINTER, map_key_type.jit_type()};
 
 			auto k = key->compile(c);
 			key->compile_end(c);
@@ -246,7 +246,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				}
 			}
 
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, VM::get_jit_type(array_element_type), args_types, 2, 1);
+			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, array_element_type.jit_type(), args_types, 2, 1);
 			jit_value_t args[] = {compiled_array.v, k.v};
 			jit_value_t res = jit_insn_call_native(c.F, "access", func, sig, args, 2, 0);
 			jit_type_free(sig);

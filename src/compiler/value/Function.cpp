@@ -483,9 +483,9 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	}
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		Type t = version->type.getArgumentType(i);
-		params.push_back(VM::get_jit_type(t));
+		params.push_back(t.jit_type());
 	}
-	jit_type_t return_type = VM::get_jit_type(version->type.getReturnType());
+	jit_type_t return_type = version->type.getReturnType().jit_type();
 	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), params.size(), 1);
 	auto jit_function = jit_function_create(c.vm->jit_context, signature);
 	jit_function_set_meta(jit_function, 12, new std::string(name), nullptr, 0);

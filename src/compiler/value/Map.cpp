@@ -198,7 +198,7 @@ Compiler::value Map::compile(Compiler &c) const {
 	jit_value_t map = jit_insn_call_native(c.F, "new_map", (void*) create, sig, {}, 0, JIT_CALL_NOTHROW); ops += 1;
 	jit_type_free(sig);
 
-	jit_type_t args[3] = {LS_POINTER, VM::get_jit_type(type.getKeyType()), VM::get_jit_type(type.getElementType())};
+	jit_type_t args[3] = {LS_POINTER, type.getKeyType().jit_type(), type.getElementType().jit_type()};
 	sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 1);
 
 	for (size_t i = 0; i < keys.size(); ++i) {
