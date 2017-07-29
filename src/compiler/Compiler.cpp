@@ -878,6 +878,7 @@ void Compiler::insn_return(Compiler::value v) const {
  */
 void Compiler::add_var(const std::string& name, Compiler::value value) {
 	variables.back()[name] = value;
+	var_map.insert({value.v, name});
 }
 
 void Compiler::add_function_var(Compiler::value value) {
@@ -987,6 +988,9 @@ std::ostringstream& Compiler::log_insn(int indent) const {
 std::string Compiler::dump_val(Compiler::value v) const {
 	if (v.v == nullptr) {
 		return "0x0";
+	}
+	if (var_map.find(v.v) != var_map.end()) {
+		return var_map.at(v.v);
 	}
 	char buf[256];
 	auto fp = fmemopen(buf, sizeof(buf), "w");

@@ -59,6 +59,8 @@ public:
 	std::ostringstream pseudo_code;
 
 	std::ostringstream instructions_debug;
+	std::map<jit_value_t, std::string> var_map;
+
 	Program* program;
 	VM* vm;
 
