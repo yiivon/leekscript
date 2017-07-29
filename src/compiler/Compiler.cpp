@@ -549,6 +549,27 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	return v;
 }
 
+Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value fun, std::vector<Compiler::value> args) const {
+	std::vector<jit_type_t> arg_types;
+	std::vector<jit_value_t> jit_args;
+	for (const auto& arg : args) {
+		jit_args.push_back(arg.v);
+		arg_types.push_back(VM::get_jit_type(arg.t));
+	}
+	jit_type_t jit_return_type = VM::get_jit_type(return_type);
+	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_return_type, arg_types.data(), arg_types.size(), 1);
+	Compiler::value v = {jit_insn_call_indirect(F, fun.v, sig, jit_args.data(), jit_args.size(), 0), return_type};
+	jit_type_free(sig);
+	// Log
+	log_insn(4) << "call " << dump_val(fun) << " (";
+	for (int i = 0; i < args.size(); ++i) {
+		log_insn(0) << dump_val(args.at(i));
+		if (i < args.size() - 1) log_insn(0) << ", ";
+	}
+	log_insn(0) << ") " << dump_val(v) << std::endl;
+	return v;
+}
+
 void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) {
 	insn_call(Type::VOID, {fun, capture}, +[](LSClosure* fun, LSValue* cap) {
 		fun->add_capture(cap);

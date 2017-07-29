@@ -156,6 +156,7 @@ public:
 		return insn_call(return_type, args, (void*) func);
 	}
 	value insn_call(Type return_type, std::vector<value> args, void* func) const;
+	value insn_call_indirect(Type return_type, value fun, std::vector<value> args) const;
 	void function_add_capture(Compiler::value fun, Compiler::value capture);
 	void log(const std::string&& str) const;
 
