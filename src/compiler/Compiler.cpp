@@ -549,7 +549,7 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 	return v;
 }
 
-Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func, std::string&& function_name) const {
 	std::vector<jit_value_t> jit_args;
 	std::vector<jit_type_t> arg_types;
 	for (const auto& arg : args) {
@@ -560,7 +560,12 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	Compiler::value v = {jit_insn_call_native(F, "call", func, sig, jit_args.data(), arg_types.size(), 0), return_type};
 	jit_type_free(sig);
 	// Log
-	log_insn(4) << "call " << std::hex << func << std::dec << " (";
+	log_insn(4) << "call ";
+	if (function_name.size()) {
+		log_insn(0) << function_name << " (";
+	} else {
+		log_insn(0) << std::hex << func << std::dec << " (";
+	}
 	for (int i = 0; i < args.size(); ++i) {
 		log_insn(0) << dump_val(args.at(i));
 		if (i < args.size() - 1) log_insn(0) << ", ";
