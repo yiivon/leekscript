@@ -22,7 +22,6 @@ void Test::test_files() {
 	file("test/code/text_analysis.leek").equals("[3, 47, 338]");
 	// TODO crashing
 	// file("test/code/recursive.leek").equals("");
-	// file("test/code/references.leek").equals("");
 	file("test/code/divisors.leek").equals("[1, 3, 9, 13, 17, 39]");
 	// TODO
 	// file("test/code/two_functions.leek").equals("[{p: 2, v: 5}, [{p: 3, v: 6}]]");
