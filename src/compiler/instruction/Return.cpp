@@ -45,17 +45,14 @@ Location Return::location() const {
 }
 
 Compiler::value Return::compile(Compiler& c) const {
-
 	if (expression != nullptr) {
-
 		auto v = expression->compile(c);
-
 		auto r = c.insn_move(v);
 		c.delete_variables_block(c.get_current_function_blocks());
 		c.insn_return(r);
+	} else {
+		c.insn_return(c.new_integer(0));
 	}
-
-	c.insn_return(c.new_integer(0));
 	return {nullptr, Type::UNKNOWN};
 }
 
