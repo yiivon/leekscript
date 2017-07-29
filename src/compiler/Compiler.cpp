@@ -1055,4 +1055,8 @@ void Compiler::register_label(label* l) const {
 	}
 }
 
+void Compiler::log_insn_code(std::string instruction) const {
+	log_insn(0) << BLUE << instruction << END_COLOR << std::endl;
+}
+
 }

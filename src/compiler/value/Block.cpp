@@ -106,6 +106,13 @@ Compiler::value Block::compile(Compiler& c) const {
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 
+		std::ostringstream oss;
+		instructions[i]->print(oss, 0, false);
+		auto str = oss.str();
+		auto pos = str.find('\n');
+		if (pos != std::string::npos) str = str.substr(0, pos);
+		c.log_insn_code(str);
+
 		auto val = instructions[i]->compile(c);
 
 		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {

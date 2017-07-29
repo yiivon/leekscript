@@ -197,6 +197,7 @@ public:
 	std::ostringstream& log_insn(int indent) const;
 	std::string dump_val(value v) const;
 	void register_label(label* v) const;
+	void log_insn_code(std::string instruction) const;
 };
 
 }
