@@ -261,31 +261,6 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	return result;
 }
 
-jit_type_t VM::get_jit_type(const Type& type) {
-	if (type.reference) {
-		return LS_POINTER;
-	}
-	if (type.nature == Nature::VOID) {
-		return LS_VOID;
-	}
-	if (type.nature == Nature::POINTER or type.nature == Nature::UNKNOWN) {
-		return LS_POINTER;
-	}
-	if (type.raw_type == RawType::MPZ) {
-		return VM::mpz_type;
-	}
-	if (type.raw_type == RawType::BOOLEAN) {
-		return LS_BOOLEAN;
-	}
-	if (type.raw_type == RawType::LONG or type.raw_type == RawType::FUNCTION) {
-		return LS_LONG;
-	}
-	if (type.raw_type == RawType::REAL) {
-		return LS_REAL;
-	}
-	return LS_INTEGER;
-}
-
 void VM::add_internal_var(std::string name, Type type) {
 	internal_vars.insert({name,
 		std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr)

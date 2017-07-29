@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <cassert>
+#include <jit/jit.h>
 
 namespace ls {
 
@@ -296,6 +297,7 @@ public:
 	int size() const;
 	Type not_temporary() const;
 	Type add_temporary() const;
+	jit_type_t jit_type() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }
