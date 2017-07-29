@@ -360,19 +360,19 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	auto r = c.new_mpz();
 	auto r_addr = c.insn_address_of(r);
 
-	jit_label_t label_end = jit_label_undefined;
-	jit_label_t label_else = jit_label_undefined;
+	Compiler::label label_end;
+	Compiler::label label_else;
 
 	auto cond = c.insn_lt(b, c.new_integer(0));
-	jit_insn_branch_if_not(c.F, cond.v, &label_else);
+	c.insn_branch_if_not(cond, &label_else);
 
 	Compiler::value neg_b = {jit_insn_neg(c.F, b.v), Type::INTEGER};
 	c.insn_call(Type::VOID, {r_addr, a, neg_b}, &mpz_add_ui);
-	jit_insn_branch(c.F, &label_end);
+	c.insn_branch(&label_end);
 
-	jit_insn_label(c.F, &label_else);
+	c.insn_label(&label_else);
 	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub_ui);
-	jit_insn_label(c.F, &label_end);
+	c.insn_label(&label_end);
 	if (args[0].t.temporary) {
 		c.insn_delete_mpz(args[0]);
 	}
