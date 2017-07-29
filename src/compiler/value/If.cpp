@@ -100,8 +100,8 @@ Compiler::value If::compile(Compiler& c) const {
 		res = c.insn_create_value(type);
 	}
 
-	jit_label_t label_else = jit_label_undefined;
-	jit_label_t label_end = jit_label_undefined;
+	Compiler::label label_else;
+	Compiler::label label_end;
 
 	auto cond = condition->compile(c);
 	condition->compile_end(c);
@@ -109,9 +109,9 @@ Compiler::value If::compile(Compiler& c) const {
 	if (condition->type.nature == Nature::POINTER) {
 		auto cond_bool = c.insn_to_bool(cond);
 		c.insn_delete_temporary(cond);
-		jit_insn_branch_if_not(c.F, cond_bool.v, &label_else);
+		c.insn_branch_if_not(cond_bool, &label_else);
 	} else {
-		jit_insn_branch_if_not(c.F, cond.v, &label_else);
+		c.insn_branch_if_not(cond, &label_else);
 	}
 
 	auto then_v = then->compile(c);
@@ -119,9 +119,9 @@ Compiler::value If::compile(Compiler& c) const {
 	if (then_v.v) {
 		c.insn_store(res, then_v);
 	}
-	jit_insn_branch(c.F, &label_end);
+	c.insn_branch(&label_end);
 
-	jit_insn_label(c.F, &label_else);
+	c.insn_label(&label_else);
 
 	if (elze != nullptr) {
 		auto else_v = elze->compile(c);
@@ -134,7 +134,7 @@ Compiler::value If::compile(Compiler& c) const {
 			c.insn_store(res, c.new_null());
 		}
 	}
-	jit_insn_label(c.F, &label_end);
+	c.insn_label(&label_end);
 	return res;
 }
 
