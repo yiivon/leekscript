@@ -57,6 +57,7 @@ public:
 	bool output_pseudo_code = false;
 	std::ostringstream pseudo_code;
 
+	std::ostringstream instructions_debug;
 	Program* program;
 	VM* vm;
 
@@ -187,6 +188,10 @@ public:
 	/** Exceptions **/
 	void add_catcher(label start, label end, label handler);
 	void insn_check_args(std::vector<value> args, std::vector<LSValueType> types) const;
+
+	// Utils
+	std::ostringstream& log_insn(int indent) const;
+	std::string dump_val(value v) const;
 };
 
 }

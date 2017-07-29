@@ -80,6 +80,8 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	vm.compiler.program = this;
 	vm.compiler.output_assembly = assembly;
 	vm.compiler.output_pseudo_code = pseudo_code;
+	vm.compiler.instructions_debug.str("");
+	vm.compiler.label_map.clear();
 	main->compile(vm.compiler);
 	closure = main->default_version->function->function;
 	// vm.compiler.leave_function();

@@ -963,4 +963,30 @@ void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LS
 	}
 }
 
+std::ostringstream& Compiler::log_insn(int indent) const {
+	for (int i = 0; i < indent; ++i) {
+		((Compiler*) this)->instructions_debug << " ";
+	}
+	return ((Compiler*) this)->instructions_debug;
+}
+
+std::string Compiler::dump_val(Compiler::value v) const {
+	if (v.v == nullptr) {
+		return "0x0";
+	}
+	char buf[256];
+	auto fp = fmemopen(buf, sizeof(buf), "w");
+	jit_dump_value(fp, F, v.v, nullptr);
+	fclose(fp);
+	auto r = std::string(buf);
+	// r += std::string(" ") + v.t.to_string();
+	if (jit_value_is_constant(v.v) && v.t.nature == Nature::POINTER) {
+		long x = std::stol(r);
+		std::stringstream ss;
+		ss << "0x" << std::hex << x;
+		r = ss.str();
+	}
+	return r;
+}
+
 }
