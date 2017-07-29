@@ -18,7 +18,6 @@ public:
 	std::shared_ptr<Token> closing_parenthesis;
 
 	bool is_native = false;
-	std::string native_func;
 	Type return_type;
 	void* std_func;
 	Value* this_ptr;
@@ -28,6 +27,7 @@ public:
 	Function* function_object;
 	Type function_type;
 	std::vector<Type> arg_types;
+	std::string function_name;
 
 	FunctionCall(std::shared_ptr<Token> t);
 	virtual ~FunctionCall();

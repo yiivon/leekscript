@@ -140,16 +140,17 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (object_type.raw_type == RawType::CLASS) { // String.size("salut")
 
 			string clazz = ((VariableValue*) oa->object)->name;
-			LSClass* object_class = (LSClass*) analyser->vm->system_vars[clazz];
-			StaticMethod* sm = object_class->getStaticMethod(oa->field->content, arg_types);
+			auto object_class = (LSClass*) analyser->vm->system_vars[clazz];
+			auto sm = object_class->getStaticMethod(oa->field->content, arg_types);
 
 			if (sm != nullptr) {
 				std_func = sm->addr;
 				function->type = sm->type;
 				is_native_method = sm->native;
+				function_name = object_class->name + std::string("::") + oa->field->content;
 			} else {
-				LSClass* value_class = (LSClass*) analyser->vm->system_vars["Value"];
-				Method* m = value_class->getMethod(oa->field->content, object_type, arg_types);
+				auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
+				auto m = value_class->getMethod(oa->field->content, object_type, arg_types);
 
 				if (m != nullptr) {
 					this_ptr = oa->object;
@@ -157,6 +158,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					std_func = m->addr;
 					function->type = m->type;
 					is_native_method = m->native;
+					function_name = std::string("Value::") + oa->field->content;
 				} else {
 					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
 				}
@@ -164,14 +166,15 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		} else {  // "salut".size()
 
 			Method* m = nullptr;
+			LSClass* clazz;
 			if (object_type.raw_type != RawType::UNKNOWN) {
-				LSClass* object_class = (LSClass*) analyser->vm->system_vars[object_type.clazz];
-				m = object_class->getMethod(oa->field->content, object_type, arg_types);
+				clazz = (LSClass*) analyser->vm->system_vars[object_type.clazz];
+				m = clazz->getMethod(oa->field->content, object_type, arg_types);
 				// std::cout << "Method " << oa->field->content << " found : " << m->type << std::endl;
 			}
 			if (m == nullptr) {
-				LSClass* value_class = (LSClass*) analyser->vm->system_vars["Value"];
-				m = value_class->getMethod(oa->field->content, object_type, arg_types);
+				clazz = (LSClass*) analyser->vm->system_vars["Value"];
+				m = clazz->getMethod(oa->field->content, object_type, arg_types);
 			}
 			if (m != nullptr) {
 				this_ptr = oa->object;
@@ -179,6 +182,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				std_func = m->addr;
 				function->type = m->type;
 				is_native_method = m->native;
+				function_name = clazz->name + std::string("::") + oa->field->content;
 			} else {
 				bool has_unknown_argument = false;
 				for (const auto& a : arguments)
@@ -385,7 +389,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		Compiler::value res;
 		if (is_native_method) {
 			auto fun = (void*) std_func;
-			res = c.insn_call(return_type, args, fun);
+			res = c.insn_call(return_type, args, fun, function_name);
 		} else {
 			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);
@@ -412,7 +416,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		Compiler::value res;
 		if (is_native_method) {
 			auto fun = (void*) std_func;
-			res = c.insn_call(return_type, args, fun);
+			res = c.insn_call(return_type, args, fun, function_name);
 		} else {
 			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);

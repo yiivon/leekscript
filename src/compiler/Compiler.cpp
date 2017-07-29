@@ -549,7 +549,7 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 	return v;
 }
 
-Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func, std::string&& function_name) const {
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func, std::string function_name) const {
 	std::vector<jit_value_t> jit_args;
 	std::vector<jit_type_t> arg_types;
 	for (const auto& arg : args) {
