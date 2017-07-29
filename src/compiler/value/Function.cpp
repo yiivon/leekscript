@@ -558,6 +558,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.leave_function();
 		// Create a function : 1 op
 		c.inc_ops(1);
+	} else {
+		c.instructions_debug << "}" << std::endl;
 	}
 
 	// Function are always pointers for now

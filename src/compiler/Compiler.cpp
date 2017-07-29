@@ -7,6 +7,8 @@
 #include "../vm/Program.hpp"
 #include "../../lib/utf8.h"
 #include "../vm/LSValue.hpp"
+#include <jit/jit-dump.h>
+#include "../colors.h"
 
 using namespace std;
 
@@ -55,6 +57,16 @@ void Compiler::enter_function(jit_function_t F, bool is_closure, Function* fun) 
 	catchers.push_back({});
 	function_is_closure.push(is_closure);
 	this->F = F;
+
+	std::vector<std::string> args;
+	log_insn(0) << "function " << fun->name << "(";
+	for (int i = 0; i < fun->arguments.size(); ++i) {
+		log_insn(0) << fun->arguments.at(i)->content;
+		if (i < fun->arguments.size() - 1) log_insn(0) << ", ";
+		args.push_back(fun->arguments.at(i)->content);
+	}
+	arg_names.push(args);
+	log_insn(0) << ") {" << std::endl;
 }
 
 void Compiler::leave_function() {
@@ -64,7 +76,9 @@ void Compiler::leave_function() {
 	functions_blocks.pop_back();
 	catchers.pop_back();
 	function_is_closure.pop();
+	arg_names.pop();
 	this->F = functions.top();
+	log_insn(0) << "}" << std::endl;
 }
 
 int Compiler::get_current_function_blocks() const {
@@ -980,6 +994,13 @@ std::string Compiler::dump_val(Compiler::value v) const {
 	fclose(fp);
 	auto r = std::string(buf);
 	// r += std::string(" ") + v.t.to_string();
+	if (jit_value_is_parameter(v.v)) {
+		for (int i = 0; i < arg_names.top().size(); ++i) {
+			if (v.v == jit_value_get_param(F, i)) {
+				return arg_names.top().at(i);
+			}
+		}
+	}
 	if (jit_value_is_constant(v.v) && v.t.nature == Nature::POINTER) {
 		long x = std::stol(r);
 		std::stringstream ss;

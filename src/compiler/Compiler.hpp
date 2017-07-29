@@ -45,6 +45,7 @@ public:
 	std::stack<jit_function_t> functions;
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks; // how many blocks are open in the current loop
+	std::stack<std::vector<std::string>> arg_names;
 
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<label*> loops_end_labels;
