@@ -101,7 +101,9 @@ void Compiler::insn_store_relative(Compiler::value a, int pos, Compiler::value b
 	log_insn(4) << "store_rel " << dump_val(a) << " " << dump_val(b) << std::endl;
 }
 Compiler::value Compiler::insn_not(Compiler::value v) const {
-	return {jit_insn_not(F, v.v), v.t};
+	Compiler::value r {jit_insn_not(F, v.v), v.t};
+	log_insn(4) << "not " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_not_bool(Compiler::value v) const {
 	Compiler::value r {jit_insn_to_not_bool(F, v.v), Type::BOOLEAN};
@@ -109,10 +111,14 @@ Compiler::value Compiler::insn_not_bool(Compiler::value v) const {
 	return r;
 }
 Compiler::value Compiler::insn_and(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_and(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
+	Compiler::value r {jit_insn_and(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
+	log_insn(4) << "and " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_or(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
+	Compiler::value r {jit_insn_or(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
+	log_insn(4) << "or " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	auto result_type = [&]() {
@@ -308,7 +314,9 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		return v;
 	}
 	if (v.t.raw_type == RawType::INTEGER) {
-		return {jit_insn_to_bool(F, v.v), Type::BOOLEAN};
+		Compiler::value r {jit_insn_to_bool(F, v.v), Type::BOOLEAN};
+		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
+		return r;
 	}
 	if (v.t.raw_type == RawType::STRING) {
 		return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool);
