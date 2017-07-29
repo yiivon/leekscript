@@ -559,6 +559,13 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type.jit_type(), arg_types.data(), arg_types.size(), 1);
 	Compiler::value v = {jit_insn_call_native(F, "call", func, sig, jit_args.data(), arg_types.size(), 0), return_type};
 	jit_type_free(sig);
+	// Log
+	log_insn(4) << "call " << std::hex << func << std::dec << " (";
+	for (int i = 0; i < args.size(); ++i) {
+		log_insn(0) << dump_val(args.at(i));
+		if (i < args.size() - 1) log_insn(0) << ", ";
+	}
+	log_insn(0) << ") " << dump_val(v) << std::endl;
 	return v;
 }
 
