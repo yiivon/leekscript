@@ -123,7 +123,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 
 	jit_insn_mark_offset(c.F, location().start.line);
 
-	vector<Compiler::value> args;
+	Compiler::value arg;
 	void* func = nullptr;
 
 	switch (operatorr->type) {
@@ -145,7 +145,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return sum;
 			} else {
-				args.push_back(expression->compile(c));
+				arg = expression->compile(c);
 				func = (void*) jit_pre_inc;
 			}
 			break;
@@ -161,7 +161,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return sum;
 			} else {
-				args.push_back(expression->compile(c));
+				arg = expression->compile(c);
 				func = (void*) jit_pre_dec;
 			}
 			break;
@@ -175,7 +175,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return {r, type};
 			} else {
-				args.push_back(expression->compile(c));
+				arg = expression->compile(c);
 				func = (void*) jit_not;
 			}
 			break;
@@ -202,7 +202,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return {r, type};
 			} else {
-				args.push_back(expression->compile(c));
+				arg = expression->compile(c);
 				func = (void*) jit_minus;
 			}
 			break;
@@ -216,7 +216,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				}
 				return {r, type};
 			} else {
-				args.push_back(expression->compile(c));
+				arg = expression->compile(c);
 				func = (void*) jit_pre_tilde;
 			}
 			break;
@@ -302,7 +302,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		}
 		default: {}
 	}
-	return c.insn_call(type, args, func);
+	return c.insn_call(type, {arg}, func);
 }
 
 Value* PrefixExpression::clone() const {
