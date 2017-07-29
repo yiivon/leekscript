@@ -982,8 +982,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::DOUBLE_QUESTION_MARK: {
 			// x ?? y ==> if (x != null) { x } else { y }
-			jit_label_t label_end = jit_label_undefined;
-			jit_label_t label_else = jit_label_undefined;
+			Compiler::label label_end;
+			Compiler::label label_else;
 			auto v = c.insn_create_value(Type::POINTER);
 
 			jit_type_t args_types[2] = {LS_POINTER};
@@ -993,18 +993,18 @@ Compiler::value Expression::compile(Compiler& c) const {
 			jit_value_t r = jit_insn_call_native(c.F, "is_null", (void*) jit_is_null, sig, &x.v, 1, JIT_CALL_NOTHROW);
 			jit_type_free(sig);
 
-			jit_insn_branch_if(c.F, r, &label_else);
+			c.insn_branch_if({r, Type::BOOLEAN}, &label_else);
 			// then {
 			c.insn_store(v, x);
 			// else
-			jit_insn_branch(c.F, &label_end);
-			jit_insn_label(c.F, &label_else);
+			c.insn_branch(&label_end);
+			c.insn_label(&label_else);
 			// {
 			auto y = v2->compile(c);
 			v2->compile_end(c);
 			c.insn_store(v, y);
 
-			jit_insn_label(c.F, &label_end);
+			c.insn_label(&label_end);
 
 			return v;
 			break;
