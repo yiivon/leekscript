@@ -103,6 +103,11 @@ void Compiler::insn_store_relative(Compiler::value a, int pos, Compiler::value b
 Compiler::value Compiler::insn_not(Compiler::value v) const {
 	return {jit_insn_not(F, v.v), v.t};
 }
+Compiler::value Compiler::insn_not_bool(Compiler::value v) const {
+	Compiler::value r {jit_insn_to_not_bool(F, v.v), Type::BOOLEAN};
+	log_insn(4) << "not_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
+}
 Compiler::value Compiler::insn_and(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_and(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
 }
