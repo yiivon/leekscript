@@ -854,16 +854,24 @@ void Compiler::insn_throw_object(vm::Exception type) const {
 
 void Compiler::insn_label(label* l) const {
 	jit_insn_label(F, &l->l);
+	register_label(l);
+	log_insn(1) << GREY << "label " << label_map.at(l) << ":" << END_COLOR << std::endl;
 }
 
 void Compiler::insn_branch(label* l) const {
 	jit_insn_branch(F, &l->l);
+	register_label(l);
+	log_insn(4) << "goto " << label_map.at(l) << std::endl;
 }
 void Compiler::insn_branch_if(Compiler::value v, Compiler::label* l) const {
 	jit_insn_branch_if(F, v.v, &l->l);
+	register_label(l);
+	log_insn(4) << "goto " << label_map.at(l) << " if " << dump_val(v) << std::endl;
 }
 void Compiler::insn_branch_if_not(Compiler::value v, Compiler::label* l) const {
 	jit_insn_branch_if_not(F, v.v, &l->l);
+	register_label(l);
+	log_insn(4) << "goto " << label_map.at(l) << " if not " << dump_val(v) << std::endl;
 }
 void Compiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const {
 	jit_insn_branch_if_pc_not_in_range(F, a->l, b->l, &n->l);
@@ -1012,6 +1020,12 @@ std::string Compiler::dump_val(Compiler::value v) const {
 		r = ss.str();
 	}
 	return r;
+}
+
+void Compiler::register_label(label* l) const {
+	if (label_map.find(l) == label_map.end()) {
+		((Compiler*) this)->label_map.insert({l, std::string(1, 'A' + (char) label_map.size())});
+	}
 }
 
 }
