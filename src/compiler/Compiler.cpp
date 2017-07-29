@@ -94,9 +94,11 @@ bool Compiler::is_current_function_closure() const {
  */
 void Compiler::insn_store(Compiler::value a, Compiler::value b) const {
 	jit_insn_store(F, a.v, b.v);
+	log_insn(4) << "store " << dump_val(a) << " " << dump_val(b) << std::endl;
 }
 void Compiler::insn_store_relative(Compiler::value a, int pos, Compiler::value b) const {
 	jit_insn_store_relative(F, a.v, pos, b.v);
+	log_insn(4) << "store_rel " << dump_val(a) << " " << dump_val(b) << std::endl;
 }
 Compiler::value Compiler::insn_not(Compiler::value v) const {
 	return {jit_insn_not(F, v.v), v.t};
@@ -113,7 +115,9 @@ Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
 		return Type::INTEGER;
 	}();
-	return {jit_insn_add(F, a.v, b.v), result_type};
+	Compiler::value r {jit_insn_add(F, a.v, b.v), result_type};
+	log_insn(4) << "add " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 	auto result_type = [&]() {
@@ -121,28 +125,44 @@ Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
 		return Type::INTEGER;
 	}();
-	return {jit_insn_sub(F, a.v, b.v), result_type};
+	Compiler::value r {jit_insn_sub(F, a.v, b.v), result_type};
+	log_insn(4) << "sub " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_eq(F, a.v, b.v), Type::BOOLEAN};
+	Compiler::value r {jit_insn_eq(F, a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "eq " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_ne(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_ne(F, a.v, b.v), Type::BOOLEAN};
+	Compiler::value r {jit_insn_ne(F, a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "ne " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_lt(F, a.v, b.v), Type::BOOLEAN};
+	Compiler::value r {jit_insn_lt(F, a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_le(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_le(F, a.v, b.v), Type::BOOLEAN};
+	Compiler::value r {jit_insn_le(F, a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "le " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_gt(F, a.v, b.v), Type::BOOLEAN};
+	Compiler::value r {jit_insn_gt(F, a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "gt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_ge(F, a.v, b.v), Type::BOOLEAN};
+	Compiler::value r {jit_insn_ge(F, a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "ge " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_mul(F, a.v, b.v), Type::INTEGER};
+	Compiler::value r {jit_insn_mul(F, a.v, b.v), Type::INTEGER};
+	log_insn(4) << "mul " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_div(F, jit_insn_convert(F, a.v, LS_REAL, 0), b.v), Type::REAL};
@@ -160,7 +180,9 @@ Compiler::value Compiler::insn_bit_xor(Compiler::value a, Compiler::value b) con
 	return {jit_insn_xor(F, a.v, b.v), Type::INTEGER};
 }
 Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
-	return {jit_insn_rem(F, a.v, b.v), Type::INTEGER};
+	Compiler::value r {jit_insn_rem(F, a.v, b.v), Type::INTEGER};
+	log_insn(4) << "mod " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 Compiler::value Compiler::insn_pow(Compiler::value a, Compiler::value b) const {
 	return {jit_insn_pow(F, a.v, b.v), Type::INTEGER};
@@ -303,11 +325,15 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_address_of(Compiler::value v) const {
-	return {jit_insn_address_of(F, v.v), Type::POINTER};
+	Compiler::value r {jit_insn_address_of(F, v.v), Type::POINTER};
+	log_insn(4) << "addr " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
 }
 
 Compiler::value Compiler::insn_load(Compiler::value v, int pos, Type t) const {
-	return {jit_insn_load_relative(F, v.v, pos, VM::get_jit_type(t)), t};
+	Compiler::value r {jit_insn_load_relative(F, v.v, pos, VM::get_jit_type(t)), t};
+	log_insn(4) << "load " << dump_val(v) << " " << pos << " " << dump_val(r) << std::endl;
+	return r;
 }
 
 Compiler::value Compiler::insn_typeof(Compiler::value v) const {
@@ -878,6 +904,7 @@ void Compiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) cons
 }
 
 void Compiler::insn_return(Compiler::value v) const {
+	log_insn(4) << "return " << dump_val(v) << std::endl;
 	jit_insn_return(F, v.v);
 }
 
