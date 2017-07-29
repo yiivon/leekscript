@@ -493,7 +493,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	jit_type_free(signature);
 	jit_insn_uses_catcher(jit_function);
 
-	c.enter_function(jit_function, captures.size() > 0);
+	c.enter_function(jit_function, captures.size() > 0, (Function*) this);
 
 	// System internal variables (for main function only)
 	if (is_main_function) {

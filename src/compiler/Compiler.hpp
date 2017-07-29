@@ -14,6 +14,7 @@ namespace ls {
 
 class Program;
 class VM;
+class Function;
 
 class Compiler {
 public:
@@ -157,7 +158,7 @@ public:
 	void enter_block();
 	void leave_block();
 	void delete_variables_block(int deepness); // delete all variables in the #deepness current blocks
-	void enter_function(jit_function_t F, bool is_closure);
+	void enter_function(jit_function_t F, bool is_closure, Function* fun);
 	void leave_function();
 	int get_current_function_blocks() const;
 	void delete_function_variables();

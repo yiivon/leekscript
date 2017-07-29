@@ -47,7 +47,7 @@ void Compiler::delete_function_variables() {
 	}
 }
 
-void Compiler::enter_function(jit_function_t F, bool is_closure) {
+void Compiler::enter_function(jit_function_t F, bool is_closure, Function* fun) {
 	variables.push_back(std::map<std::string, value> {});
 	function_variables.push_back(std::vector<value> {});
 	functions.push(F);
