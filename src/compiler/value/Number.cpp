@@ -121,8 +121,7 @@ Compiler::value Number::compile(Compiler& c) const {
 
 		return {mpz_struct, Type::MPZ};
 	}
-
-	return {LS_CREATE_INTEGER(c.F, int_value), type};
+	return c.new_integer(int_value);
 }
 
 Value* Number::clone() const {
