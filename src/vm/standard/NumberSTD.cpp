@@ -85,7 +85,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("%", {
-		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_mpz_mpz}
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_mpz_mpz},
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mod_real_real},
 	});
 
 	operator_("==", {
@@ -497,6 +498,10 @@ Compiler::value NumberSTD::gt_int_mpz(Compiler& c, std::vector<Compiler::value> 
 
 Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_ge(args[0], args[1]);
+}
+
+Compiler::value NumberSTD::mod_real_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_mod(args[0], args[1]);
 }
 
 Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
