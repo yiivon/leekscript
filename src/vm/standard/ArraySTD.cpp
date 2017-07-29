@@ -372,9 +372,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("fill", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_fill, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::REAL, Type::INTEGER}, (void*) &LSArray<double>::ls_fill, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::ls_fill, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::POINTER, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_fill, Method::NATIVE},
+		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::REAL, Type::CONST_INTEGER}, (void*) &LSArray<double>::ls_fill, Method::NATIVE},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_fill, Method::NATIVE},
 	});
 
 	method("insert", {
