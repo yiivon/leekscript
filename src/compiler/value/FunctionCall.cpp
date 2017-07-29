@@ -527,6 +527,12 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	for (const auto& a : args) jit_args.push_back(a.v);
 	jit_value_t ret = jit_insn_call_indirect(c.F, fun, sig, jit_args.data(), jit_args.size(), 0);
 	jit_type_free(sig);
+	c.log_insn(4) << "call " << c.dump_val(ls_fun_addr) << " (";
+	for (int i = 0; i < args.size(); ++i) {
+		c.log_insn(0) << c.dump_val(args.at(i));
+		if (i < args.size() - 1) c.log_insn(0) << ", ";
+	}
+	c.log_insn(0) << ") " << c.dump_val({ret, type}) << std::endl;
 
 	// Destroy temporary arguments
 	for (size_t i = 0; i < arg_count - offset; ++i) {
