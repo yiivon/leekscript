@@ -119,8 +119,10 @@ Compiler::value If::compile(Compiler& c) const {
 	if (then_v.v) {
 		c.insn_store(res, then_v);
 	}
-	c.insn_branch(&label_end);
 
+	if (elze != nullptr or type != Type::VOID) {
+		c.insn_branch(&label_end);
+	}
 	c.insn_label(&label_else);
 
 	if (elze != nullptr) {
@@ -129,12 +131,12 @@ Compiler::value If::compile(Compiler& c) const {
 		if (else_v.v) {
 			c.insn_store(res, else_v);
 		}
-	} else {
-		if (type != Type::VOID) {
-			c.insn_store(res, c.new_null());
-		}
+	} else if (type != Type::VOID) {
+		c.insn_store(res, c.new_null());
 	}
-	c.insn_label(&label_end);
+	if (elze != nullptr or type != Type::VOID) {
+		c.insn_label(&label_end);
+	}
 	return res;
 }
 
