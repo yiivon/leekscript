@@ -58,6 +58,7 @@ public:
 	bool output_pseudo_code = false;
 	std::ostringstream pseudo_code;
 
+	bool log_instructions = false;
 	std::ostringstream instructions_debug;
 	std::map<label*, std::string> label_map;
 	std::map<jit_value_t, std::string> var_map;
@@ -195,7 +196,7 @@ public:
 	void insn_check_args(std::vector<value> args, std::vector<LSValueType> types) const;
 
 	// Utils
-	std::ostringstream& log_insn(int indent) const;
+	std::ostringstream& _log_insn(int indent) const;
 	std::string dump_val(value v) const;
 	void register_label(label* v) const;
 	void log_insn_code(std::string instruction) const;

@@ -10,7 +10,7 @@
 #include <jit/jit-dump.h>
 #include "../colors.h"
 
-using namespace std;
+#define log_insn(i) log_instructions && _log_insn((i))
 
 namespace ls {
 
@@ -1034,7 +1034,7 @@ void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LS
 	}
 }
 
-std::ostringstream& Compiler::log_insn(int indent) const {
+std::ostringstream& Compiler::_log_insn(int indent) const {
 	for (int i = 0; i < indent; ++i) {
 		((Compiler*) this)->instructions_debug << " ";
 	}

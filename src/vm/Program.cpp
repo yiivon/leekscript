@@ -31,7 +31,7 @@ Program::~Program() {
 	}
 }
 
-VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code) {
+VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions) {
 
 	VM::Result result;
 
@@ -80,6 +80,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	vm.compiler.program = this;
 	vm.compiler.output_assembly = assembly;
 	vm.compiler.output_pseudo_code = pseudo_code;
+	vm.compiler.log_instructions = log_instructions;
 	vm.compiler.instructions_debug.str("");
 	vm.compiler.label_map.clear();
 	main->compile(vm.compiler);
@@ -91,6 +92,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	result.compilation_success = true;
 	result.assembly = vm.compiler.assembly.str();
 	result.pseudo_code = vm.compiler.pseudo_code.str();
+	result.instructions_log = vm.compiler.instructions_debug.str();
 	return result;
 }
 
