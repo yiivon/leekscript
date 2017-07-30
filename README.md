@@ -47,14 +47,15 @@ Option | Effect
 -n -N --no-operations | Disable operations counting
 -a -A --assembly  | Print assembly of LeekScript code
 -p -P --pseudo-code  | Print JIT pseudo code
--l  -L --legacy | Use legacy mode  (LeekScript v1)
+-l -L --legacy | Use legacy mode  (LeekScript v1)
+-i -I --log-instructions | Display clear low-level instructions
 
 Tests, coverage, Valgrind, benchmark, doc
 ------------------
 ```shell
 make test
 make coverage # test coverage by gcov + lcov
-make valgrind # valgrind default tool 
+make valgrind # valgrind default tool
 make callgrind # valgrind callgrind tool
 make benchmark
 make doc
