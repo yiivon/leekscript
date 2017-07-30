@@ -122,7 +122,7 @@ Compiler::value Block::compile(Compiler& c) const {
 			if (type.must_manage_memory()) {
 				auto ret = c.insn_call(type, {val}, +[](LSValue* value) {
 					return value->move();
-				});
+				}, "move");
 				c.leave_block();
 				return ret;
 			} else if (type == Type::MPZ_TMP && !temporary_mpz) {
