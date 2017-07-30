@@ -45,8 +45,7 @@ void Test::test_files() {
 	file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
 	file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
 	file("test/code/classes_multiple.leek").equals("[4, 40, 80]");
-	// TODO
-	// file("test/code/issue_207.leek").equals("[1, 2, 3]");
+	file("test/code/issue_207.leek").equals("[1, 2, 3]");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
