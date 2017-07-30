@@ -1178,6 +1178,10 @@ std::string Compiler::dump_val(Compiler::value v) const {
 	}
 	if (jit_value_is_constant(v.v) && v.t.nature == Nature::POINTER) {
 		long x = std::stol(r);
+		// known literal?
+		if (literals.find((void*) x) != literals.end()) {
+			return std::string(BOLD) + literals.at((void*) x) + std::string(END_STYLE);
+		}
 		std::stringstream ss;
 		ss << "0x" << std::hex << x;
 		r = ss.str();
@@ -1193,6 +1197,10 @@ void Compiler::register_label(label* l) const {
 
 void Compiler::log_insn_code(std::string instruction) const {
 	log_insn(0) << BLUE << instruction << END_COLOR << std::endl;
+}
+
+void Compiler::add_literal(void* ptr, std::string value) const {
+	((Compiler*) this)->literals.insert({ptr, value});
 }
 
 }

@@ -62,6 +62,7 @@ public:
 	std::ostringstream instructions_debug;
 	std::map<label*, std::string> label_map;
 	std::map<jit_value_t, std::string> var_map;
+	std::map<void*, std::string> literals;
 
 	Program* program;
 	VM* vm;
@@ -204,6 +205,7 @@ public:
 	std::string dump_val(value v) const;
 	void register_label(label* v) const;
 	void log_insn_code(std::string instruction) const;
+	void add_literal(void* ptr, std::string value) const;
 };
 
 }
