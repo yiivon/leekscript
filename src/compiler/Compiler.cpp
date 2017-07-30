@@ -231,7 +231,7 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 		}
 		auto r = insn_call(v.t, {v}, +[](LSValue* value) {
 			return value->clone();
-		});
+		}, "clone");
 		log_insn(4) << "clone " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
 	}
@@ -260,7 +260,7 @@ Compiler::value Compiler::new_mpz(long value) const {
 	jit_value_set_addressable(mpz_struct);
 	auto mpz_addr = insn_address_of({mpz_struct, Type::MPZ});
 	auto jit_value = new_long(value);
-	insn_call(Type::VOID, {mpz_addr, jit_value}, &mpz_init_set_ui);
+	insn_call(Type::VOID, {mpz_addr, jit_value}, &mpz_init_set_ui, "mpz_init_set_ui");
 	VM::inc_mpz_counter(F);
 	return {mpz_struct, Type::MPZ_TMP};
 }
@@ -269,7 +269,7 @@ Compiler::value Compiler::new_object() const {
 		// FIXME coverage doesn't work for the one line version
 		auto o = new LSObject();
 		return o;
-	});
+	}, "new_object");
 }
 Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
 	return insn_call(Type::POINTER, {clazz}, +[](LSClass* clazz) {
@@ -307,7 +307,7 @@ Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::val
 Compiler::value Compiler::to_int(Compiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);
-		return to_int(insn_call(Type::LONG, {v_addr}, &mpz_get_si));
+		return to_int(insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si"));
 	}
 	Compiler::value r {jit_insn_convert(F, v.v, LS_INTEGER, 0), Type::INTEGER};
 	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
@@ -317,7 +317,7 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 Compiler::value Compiler::to_real(Compiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);
-		return to_real(insn_call(Type::LONG, {v_addr}, &mpz_get_si));
+		return to_real(insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si"));
 	}
 	Compiler::value r {jit_insn_convert(F, v.v, LS_REAL, 0), Type::REAL};
 	log_insn(4) << "to_real " << dump_val(v) << " " << dump_val(r) << std::endl;
@@ -327,7 +327,7 @@ Compiler::value Compiler::to_real(Compiler::value v) const {
 Compiler::value Compiler::to_long(Compiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);
-		return insn_call(Type::LONG, {v_addr}, &mpz_get_si);
+		return insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si");
 	}
 	Compiler::value r {jit_insn_convert(F, v.v, LS_LONG, 0), Type::LONG};
 	log_insn(4) << "to_long " << dump_val(v) << " " << dump_val(r) << std::endl;
@@ -359,19 +359,19 @@ Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
 	if (v.t.raw_type == RawType::LONG) {
 		return insn_call(new_type, {v}, +[](long n) {
 			return LSNumber::get(n);
-		});
+		}, "new_number");
 	} else if (v.t.raw_type == RawType::REAL) {
 		return insn_call(new_type, {v}, +[](double n) {
 			return LSNumber::get(n);
-		});
+		}, "new_number");
 	} else if (v.t.raw_type == RawType::BOOLEAN) {
 		return insn_call(new_type, {v}, +[](bool n) {
 			return LSBoolean::get(n);
-		});
+		}, "new_bool");
 	} else {
 		return insn_call(new_type, {v}, +[](int n) {
 			return LSNumber::get(n);
-		});
+		}, "new_number");
 	}
 }
 
@@ -385,11 +385,11 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		return r;
 	}
 	if (v.t.raw_type == RawType::STRING) {
-		return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool);
+		return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool, "String::to_bool");
 	}
 	if (v.t.raw_type == RawType::ARRAY) {
 		// Always take LSArray<int>, but the array is not necessarily of this type
-		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool);
+		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool, "Array::to_bool");
 	}
 	if (v.t.raw_type == RawType::FUNCTION or v.t.raw_type == RawType::CLOSURE) {
 		return new_bool(true);
@@ -400,7 +400,7 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 	}
 	return insn_call(Type::BOOLEAN, {v}, +[](LSValue* v) {
 		return v->to_bool();
-	});
+	}, "Value::to_bool");
 }
 
 Compiler::value Compiler::insn_address_of(Compiler::value v) const {
@@ -430,7 +430,7 @@ Compiler::value Compiler::insn_typeof(Compiler::value v) const {
 	if (v.t.raw_type == RawType::CLASS) return new_integer(LSValue::CLASS);
 	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
 		return v->type;
-	});
+	}, "typeof");
 }
 
 Compiler::value Compiler::insn_class_of(Compiler::value v) const {
@@ -456,10 +456,9 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 		return new_pointer(vm->system_vars["Object"]);
 	if (v.t.raw_type == RawType::CLASS)
 		return new_pointer(vm->system_vars["Class"]);
-
 	return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
 		return v->getClass();
-	});
+	}, "get_class");
 }
 
 void Compiler::insn_delete(Compiler::value v) const {
@@ -469,7 +468,7 @@ void Compiler::insn_delete(Compiler::value v) const {
 			auto refs = insn_refs(v);
 			insn_if(refs, [&]() {
 				insn_if_not(insn_dec_refs(v, refs), [&]() {
-					insn_call(Type::VOID, {v}, (void*) &LSValue::free);
+					insn_call(Type::VOID, {v}, (void*) &LSValue::free, "Value::free");
 				});
 			});
 		});
@@ -492,7 +491,7 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
 		insn_if_not(insn_refs(v), [&]() {
-			insn_call(Type::VOID, {v}, (void*) &LSValue::free);
+			insn_call(Type::VOID, {v}, (void*) &LSValue::free, "Value::free");
 		});
 	} else if (v.t == Type::MPZ_TMP) {
 		insn_delete_mpz(v);
@@ -501,13 +500,13 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 
 Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 	if (v.t.raw_type == RawType::STRING) {
-		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size);
+		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size, "string_size");
 	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::INTEGER) {
-		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size);
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size, "int_array_size");
 	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::REAL) {
-		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size);
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size, "real_array_size");
 	} else {
-		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size);
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size, "ptr_array_size");
 	}
 }
 
@@ -550,7 +549,7 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 		} else {
 			return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
 				return v->move_inc();
-			});
+			}, "move_inc");
 		}
 	}
 	if (value.t.temporary) {
@@ -569,14 +568,14 @@ Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 	Compiler::value r = {new_mpz, Type::MPZ_TMP};
 	auto r_addr = insn_address_of(r);
 	auto mpz_addr = insn_address_of(mpz);
-	insn_call(Type::VOID, {r_addr, mpz_addr}, &mpz_init_set);
+	insn_call(Type::VOID, {r_addr, mpz_addr}, &mpz_init_set, "mpz_init_set");
 	VM::inc_mpz_counter(F);
 	return r;
 }
 
 void Compiler::insn_delete_mpz(Compiler::value mpz) const {
 	auto mpz_addr = insn_address_of(mpz);
-	insn_call(Type::VOID, {mpz_addr}, &mpz_clear);
+	insn_call(Type::VOID, {mpz_addr}, &mpz_clear, "mpz_clear");
 	// Increment mpz values counter
 	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &vm->mpz_deleted);
 	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
@@ -611,7 +610,7 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 	if (v.t.must_manage_memory() and !v.t.temporary and !v.t.reference) {
 		return insn_call(v.t, {v}, (void*) +[](LSValue* v) {
 			return v->move();
-		});
+		}, "move");
 	}
 	return v;
 }
