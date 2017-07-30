@@ -1143,7 +1143,7 @@ std::ostringstream& Compiler::_log_insn(int indent) const {
 
 std::string Compiler::dump_val(Compiler::value v) const {
 	if (v.v == nullptr) {
-		return "0x0";
+		return "<null>";
 	}
 	if (var_map.find(v.v) != var_map.end()) {
 		return var_map.at(v.v);
