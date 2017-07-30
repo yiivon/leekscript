@@ -78,8 +78,7 @@ void Test::test_intervals() {
 	code("for k, i in [5..7] { System.print(k + ' => ' + i) }").output("0 => 5\n1 => 6\n2 => 7\n");
 	code("var s = 0 for i in [100..110] { s += i } s").equals("1155");
 	code("var s = 0 for k, i in [100..110] { s += k * i } s").equals("5885");
-	// TODO
-	// code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("0");
+	code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
 
 	/*
 	 * Methods
