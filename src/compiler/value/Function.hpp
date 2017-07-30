@@ -41,6 +41,7 @@ public:
 	bool generate_default_version = false;
 	Version* current_version = nullptr;
 	bool analyzed = false;
+	Type return_type = Type::UNKNOWN;
 
 	Function();
 	virtual ~Function();

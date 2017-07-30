@@ -404,6 +404,7 @@ void Function::must_return(SemanticAnalyser*, const Type& type) {
 	if (type == Type::POINTER) {
 		generate_default_version = true;
 	}
+	return_type = type;
 }
 
 Compiler::value Function::compile(Compiler& c) const {
@@ -485,8 +486,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		Type t = version->type.getArgumentType(i);
 		params.push_back(t.jit_type());
 	}
-	jit_type_t return_type = version->type.getReturnType().jit_type();
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, return_type, params.data(), params.size(), 1);
+	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, version->type.getReturnType().jit_type(), params.data(), params.size(), 1);
 	auto jit_function = jit_function_create(c.vm->jit_context, signature);
 	jit_function_set_meta(jit_function, 12, new std::string(name), nullptr, 0);
 	jit_function_set_meta(jit_function, 13, new std::string(file), nullptr, 0);
@@ -506,6 +506,12 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	}
 
 	auto res = version->body->compile(c);
+	// Must return a boolean
+	if (return_type == Type::BOOLEAN) {
+		auto old_res = res;
+		res = c.insn_to_bool(res);
+		c.insn_delete_temporary(old_res);
+	}
 	if (res.v) {
 		c.insn_return(res);
 	} else {
