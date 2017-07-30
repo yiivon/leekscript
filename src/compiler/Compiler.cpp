@@ -1058,7 +1058,13 @@ Compiler::value& Compiler::get_var(const std::string& name) {
 }
 
 void Compiler::set_var_type(std::string& name, const Type& type) {
-	variables.back()[name].t = type;
+	for (int i = variables.size() - 1; i >= 0; --i) {
+		auto it = variables[i].find(name);
+		if (it != variables[i].end()) {
+			variables[i][name].t = type;
+			return;
+		}
+	}
 }
 
 void Compiler::update_var(std::string& name, Compiler::value value) {
