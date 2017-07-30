@@ -41,6 +41,7 @@ bool String::will_store(SemanticAnalyser* analyser, const Type& type) {
 }
 
 Compiler::value String::compile(Compiler& c) const {
+	c.add_literal(ls_string, std::string("'") + *ls_string + std::string("'"));
 	auto base = c.new_pointer(ls_string);
 	return c.insn_call(Type::STRING_TMP, {base}, (void*) +[](LSString* s) {
 		return s->clone();
