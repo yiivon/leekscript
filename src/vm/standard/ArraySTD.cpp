@@ -33,9 +33,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Methods
 	 */
 	method("copy", {
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY}, (void*) &ValueSTD::copy},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY}, (void*) &ValueSTD::copy},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY}, (void*) &ValueSTD::copy},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY}, (void*) &ValueSTD::copy},
+		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY}, (void*) &ValueSTD::copy},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY}, (void*) &ValueSTD::copy},
 	});
 	method("average", {
 		{Type::REAL, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_average, Method::NATIVE},
@@ -132,22 +132,22 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto map_int_ptr = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
 
 	method("map", {
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, map_int_fun_type}, (void*) map_int, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::CONST_INT_ARRAY, map_int_ptr_fun_type}, (void*) map_int_ptr, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, map_real_fun_type}, (void*) map_real, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, map_fun_type}, (void*) map_ptr, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_fun_type}, (void*) map_int, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_ptr_fun_type}, (void*) map_int_ptr, Method::NATIVE},
+		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, map_real_fun_type}, (void*) map_real, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, map_fun_type}, (void*) map_ptr, Method::NATIVE},
 	});
 
 	method("unique", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_unique, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_unique, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_unique, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_unique, Method::NATIVE},
+		{Type::REAL_ARRAY_TMP, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_unique, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_unique, Method::NATIVE},
 	});
 
 	method("sort", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_sort, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_sort, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_sort, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_sort, Method::NATIVE},
+		{Type::REAL_ARRAY_TMP, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_sort, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_sort, Method::NATIVE},
 	});
 
 	Type map2_fun_type = Type::FUNCTION_P;
@@ -164,8 +164,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto map2_ptr_int = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, int>;
 
 	method("map2", {
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, Type::CONST_PTR_ARRAY, map2_fun_type}, (void*) map2_ptr_ptr, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, Type::CONST_INT_ARRAY, map2_fun_type_int}, (void*) map2_ptr_int, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, Type::CONST_PTR_ARRAY, map2_fun_type}, (void*) map2_ptr_ptr, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, Type::CONST_INT_ARRAY, map2_fun_type_int}, (void*) map2_ptr_int, Method::NATIVE},
 	});
 
 	Type pred_fun_type = Type::FUNCTION_P;
@@ -193,12 +193,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto filter_clo_real = &LSArray<double>::ls_filter<LSClosure*>;
 	auto filter_clo_int = &LSArray<int>::ls_filter<LSClosure*>;
 	method("filter", {
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, pred_fun_type}, (void*) filter_ptr, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, pred_clo_type}, (void*) filter_clo_ptr, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, pred_fun_type_float}, (void*) filter_real, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, pred_clo_type_float}, (void*) filter_clo_real, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, pred_fun_type_int}, (void*) filter_int, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, pred_clo_type_int}, (void*) filter_clo_int, Method::NATIVE}
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, pred_fun_type}, (void*) filter_ptr, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, pred_clo_type}, (void*) filter_clo_ptr, Method::NATIVE},
+		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, pred_fun_type_float}, (void*) filter_real, Method::NATIVE},
+		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, pred_clo_type_float}, (void*) filter_clo_real, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, pred_fun_type_int}, (void*) filter_int, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, pred_clo_type_int}, (void*) filter_clo_int, Method::NATIVE}
 	});
 
 	method("isEmpty", {
@@ -232,9 +232,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto partition_real = &LSArray<double>::ls_partition<LSFunction*>;
 	auto partition_int = &LSArray<int>::ls_partition<LSFunction*>;
 	method("partition", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, pred_fun_type}, (void*) partition_ptr, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::REAL_ARRAY, pred_fun_type_float}, (void*) partition_real, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::INT_ARRAY, pred_fun_type_int}, (void*) partition_int, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::PTR_ARRAY, pred_fun_type}, (void*) partition_ptr, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::REAL_ARRAY, pred_fun_type_float}, (void*) partition_real, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::INT_ARRAY, pred_fun_type_int}, (void*) partition_int, Method::NATIVE},
 	});
 
 	method("first", {
@@ -384,9 +384,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("random", {
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_random, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<double>::ls_random, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_random, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_random, Method::NATIVE},
+		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<double>::ls_random, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_random, Method::NATIVE},
 	});
 
 	method("remove", {
@@ -402,9 +402,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("reverse", {
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_reverse, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_reverse, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_reverse, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_reverse, Method::NATIVE},
+		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_reverse, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_reverse, Method::NATIVE},
 	});
 
 	method("shuffle", {
@@ -433,9 +433,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("subArray", {
-		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
+		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
 	});
 }
 
