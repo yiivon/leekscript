@@ -689,6 +689,7 @@ void Compiler::log(const std::string&& str) const {
  * Iterators
  */
 Compiler::value Compiler::iterator_begin(Compiler::value v) const {
+	log_insn_code("iterator.begin()");
 	if (v.t.raw_type == RawType::ARRAY) {
 		Compiler::value it = {jit_value_create(F, v.t.jit_type()), v.t};
 		insn_store(it, insn_load(v, 24));
@@ -769,6 +770,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 }
 
 Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
+	log_insn_code("iterator.end()");
 	if (v.t.raw_type == RawType::ARRAY) {
 		return insn_eq(it, insn_load(v, 32));
 	}
@@ -806,6 +808,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 }
 
 Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Compiler::value previous) const {
+	log_insn_code("iterator.key()");
 	if (it.t.raw_type == RawType::ARRAY) {
 		return insn_int_div(insn_sub(it, insn_load(v, 24)), new_integer(it.t.element().size() / 8));
 	}
@@ -846,6 +849,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 }
 
 Compiler::value Compiler::iterator_get(Compiler::value it, Compiler::value previous) const {
+	log_insn_code("iterator.get()");
 	if (it.t.raw_type == RawType::ARRAY) {
 		if (previous.t.must_manage_memory()) {
 			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
@@ -915,6 +919,7 @@ Compiler::value Compiler::iterator_get(Compiler::value it, Compiler::value previ
 }
 
 void Compiler::iterator_increment(Compiler::value it) const {
+	log_insn_code("iterator.increment()");
 	if (it.t.raw_type == RawType::ARRAY) {
 		insn_store(it, insn_add(it, new_integer(it.t.element().size() / 8)));
 		//insn_store(it, insn_add(it, insn_mul(new_integer(16), new_integer(it.t.element().size() / 8)) ));
