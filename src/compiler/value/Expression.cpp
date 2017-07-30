@@ -561,7 +561,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 					LSValue::delete_ref(*x);
 					*x = y;
 					(*x)->refs++;
-				});
+				}, "assign");
 				return y;
 			}
 
