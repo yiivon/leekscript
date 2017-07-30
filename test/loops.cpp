@@ -125,7 +125,7 @@ void Test::test_loops() {
 	code("(a -> { var s = 0; for x in a { s += x } s })([1, 2, 3, 4.25])").equals("10.25");
 	code("var y = '' for k, x in { var x = [] x.push(4) x } { y += k + ':' + x + ' ' } y").equals("'0:4 '");
 	// TODO wrong result
-	// code("var y = '' for k, x in { let x = [1: 2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
+	// code("var y = '' for k, x in { var x = [1: 2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	code("var y = '' for k, x in { var x = [1: 2.5] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2.5 3:4 '");
 	code("var y = '' for k, x in { var x = [1: '2'] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	// TODO crash
@@ -134,9 +134,9 @@ void Test::test_loops() {
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
 	code("var y = '' for k, x in { var x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
 	// TODO crash
-	// code("let fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3");
+	// code("var fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3");
 	// TODO crash
-	// code("let fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
+	// code("var fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
 	code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
 
 	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::NULLL.to_string()});
