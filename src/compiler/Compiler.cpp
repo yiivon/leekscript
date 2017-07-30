@@ -1064,6 +1064,7 @@ void Compiler::set_var_type(std::string& name, const Type& type) {
 void Compiler::update_var(std::string& name, Compiler::value value) {
 	assert((value.v != nullptr) && "new value must not be null");
 	variables.back()[name] = value;
+	var_map.insert({value.v, name});
 }
 
 void Compiler::enter_loop(Compiler::label* end_label, Compiler::label* cond_label) {
