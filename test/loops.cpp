@@ -130,8 +130,7 @@ void Test::test_loops() {
 	code("var y = '' for k, x in { var x = [1: '2'] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	// TODO crash
 	// code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
-	// TODO strange behavior
-	// code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
+	code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
 	code("var y = '' for k, x in { var x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
 	// TODO crash
