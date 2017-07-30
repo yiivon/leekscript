@@ -1037,6 +1037,7 @@ void Compiler::insn_return(Compiler::value v) const {
  * Variables
  */
 void Compiler::add_var(const std::string& name, Compiler::value value) {
+	assert((value.v != nullptr) && "value must not be null");
 	variables.back()[name] = value;
 	var_map.insert({value.v, name});
 }
@@ -1052,6 +1053,7 @@ Compiler::value& Compiler::get_var(const std::string& name) {
 			return it->second;
 		}
 	}
+	assert(false && "var not found !");
 	return *((Compiler::value*) nullptr); // Should not reach this line
 }
 
@@ -1060,6 +1062,7 @@ void Compiler::set_var_type(std::string& name, const Type& type) {
 }
 
 void Compiler::update_var(std::string& name, Compiler::value value) {
+	assert((value.v != nullptr) && "new value must not be null");
 	variables.back()[name] = value;
 }
 
