@@ -50,7 +50,7 @@ Compiler::value Break::compile(Compiler& c) const {
 
 	c.insn_branch(c.get_current_loop_end_label(deepness));
 
-	return {nullptr, Type::UNKNOWN};
+	return {};
 }
 
 Instruction* Break::clone() const {
