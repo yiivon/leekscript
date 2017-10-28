@@ -60,12 +60,12 @@ void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
 }
 
 Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args) {
+	// std::cout << "getMethod " << name << " in class " << this->name <<  " obj type " << obj_type << " with args " << args << std::endl;
 	try {
 		auto& impl = methods.at(name);
 		Method* best = nullptr;
-
 		for (Method& m : impl) {
-
+			// std::cout << "Impl obj type " << m.obj_type << " arg types " << m.type.arguments_types << std::endl;
 			if (m.obj_type.may_be_compatible(obj_type) and Type::list_may_be_compatible(m.type.arguments_types, args)) {
 				if (best == nullptr or
 					Type::more_specific(best->type.getReturnType(), m.type.getReturnType()) or
