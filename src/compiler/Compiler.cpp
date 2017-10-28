@@ -1129,7 +1129,7 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 }
 
 void Compiler::add_catcher(label start, label end, label handler) {
-	catchers.back().push_back({start, end, handler, jit_label_undefined});
+	catchers.back().push_back({start, end, handler, {}});
 }
 
 void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LSValueType> types) const {
