@@ -119,7 +119,7 @@ Compiler::value Block::compile(Compiler& c) const {
 			break; // no need to compile after a return
 		}
 		if (i == instructions.size() - 1) {
-			if (type.must_manage_memory()) {
+			if (type.must_manage_memory() and val.v != nullptr) {
 				auto ret = c.insn_call(type, {val}, +[](LSValue* value) {
 					return value->move();
 				}, "move");
