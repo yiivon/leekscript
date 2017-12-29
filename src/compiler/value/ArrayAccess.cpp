@@ -207,8 +207,6 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 		} else if (array->type.raw_type == RawType::MAP) {
 
-			jit_type_t args_types[2] = {LS_POINTER, map_key_type.jit_type()};
-
 			auto k = key->compile(c);
 			key->compile_end(c);
 			k = c.insn_convert(k, map_key_type);
