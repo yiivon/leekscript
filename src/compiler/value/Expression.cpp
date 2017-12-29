@@ -1018,7 +1018,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			c.insn_label(&try_start);
 			auto r = c.insn_create_value(type);
-			c.insn_store(r, v1->compile(c));
+			auto v1_value = v1->compile(c);
+			if (v1_value.v) {
+				c.insn_store(r, v1_value);
+			}
 			v1->compile_end(c);
 			c.insn_label(&try_end);
 
