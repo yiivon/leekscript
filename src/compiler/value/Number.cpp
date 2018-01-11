@@ -99,6 +99,18 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 	types = type;
 }
 
+bool Number::is_zero() const {
+	if (type.nature == Nature::POINTER or type == Type::REAL) {
+		return double_value == 0;
+	} else if (type == Type::LONG) {
+		return long_value == 0;
+	} else if (type.raw_type == RawType::MPZ) {
+		return mpz_cmp_ui(mpz_value, 0) == 0;
+	} else {
+		return int_value == 0;
+	}
+}
+
 Compiler::value Number::compile(Compiler& c) const {
 
 	if (type.nature == Nature::POINTER) {
