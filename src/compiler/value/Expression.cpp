@@ -10,6 +10,8 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/standard/BooleanSTD.hpp"
+#include "../../vm/Exception.hpp"
+
 using namespace std;
 
 namespace ls {
@@ -497,6 +499,14 @@ Compiler::value Expression::compile(Compiler& c) const {
 	// Increment operations
 	if (operations > 0) {
 		c.inc_ops(operations);
+	}
+
+	// Special case x / 0 : compile a throw exception instead
+	if ((op->type == TokenType::DIVIDE or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL) and v2->is_zero()) {
+		std::cout << "Compile x/0 in throw exception" << std::endl;
+		jit_insn_mark_offset(c.F, op->token->location.start.line);
+		c.insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
+		return {nullptr, Type::UNKNOWN};
 	}
 
 	if (operator_fun != nullptr) {
