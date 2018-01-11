@@ -63,7 +63,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("/", {
-		{Type::NUMBER, Type::NUMBER, Type::REAL, (void*) &NumberSTD::div_val_val}
+		{Type::CONST_NUMBER, Type::CONST_NUMBER, Type::REAL, (void*) &NumberSTD::div_val_val}
 	});
 
 	operator_("<", {
