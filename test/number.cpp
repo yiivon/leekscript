@@ -333,6 +333,7 @@ void Test::test_numbers() {
 	code("14★ / 2").equals("7");
 	code("let a = 18★; a / 3").equals("6");
 	code("14★ / []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("let a = 17, b = 5 a / b").equals("3.4");
 
 	section("Number.operator /=");
 	code("var a = 12★ a /= true a").equals("12");
