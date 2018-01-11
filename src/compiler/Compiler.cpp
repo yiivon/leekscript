@@ -127,6 +127,7 @@ Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
 }
 Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	auto result_type = [&]() {
+		if (a.t == Type::POINTER or b.t == Type::POINTER) return Type::POINTER;
 		if (a.t == Type::REAL or b.t == Type::REAL) return Type::REAL;
 		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
 		return Type::INTEGER;
@@ -137,6 +138,7 @@ Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 }
 Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 	auto result_type = [&]() {
+		if (a.t == Type::POINTER or b.t == Type::POINTER) return Type::POINTER;
 		if (a.t == Type::REAL or b.t == Type::REAL) return Type::REAL;
 		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
 		return Type::INTEGER;
