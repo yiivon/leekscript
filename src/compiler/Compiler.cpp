@@ -60,7 +60,7 @@ void Compiler::enter_function(jit_function_t F, bool is_closure, Function* fun) 
 
 	std::vector<std::string> args;
 	log_insn(0) << "function " << fun->name << "(";
-	for (int i = 0; i < fun->arguments.size(); ++i) {
+	for (unsigned i = 0; i < fun->arguments.size(); ++i) {
 		log_insn(0) << fun->arguments.at(i)->content;
 		if (i < fun->arguments.size() - 1) log_insn(0) << ", ";
 		args.push_back(fun->arguments.at(i)->content);
@@ -634,7 +634,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	} else {
 		log_insn(0) << std::hex << func << std::dec << " (";
 	}
-	for (int i = 0; i < args.size(); ++i) {
+	for (unsigned i = 0; i < args.size(); ++i) {
 		log_insn(0) << dump_val(args.at(i));
 		if (i < args.size() - 1) log_insn(0) << ", ";
 	}
@@ -658,7 +658,7 @@ Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value f
 	jit_type_free(sig);
 	// Log
 	log_insn(4) << "call " << dump_val(fun) << " (";
-	for (int i = 0; i < args.size(); ++i) {
+	for (unsigned i = 0; i < args.size(); ++i) {
 		log_insn(0) << dump_val(args.at(i));
 		if (i < args.size() - 1) log_insn(0) << ", ";
 	}
@@ -1172,7 +1172,7 @@ std::string Compiler::dump_val(Compiler::value v) const {
 	auto r = std::string(buf);
 	// r += std::string(" ") + v.t.to_string();
 	if (jit_value_is_parameter(v.v)) {
-		for (int i = 0; i < arg_names.top().size(); ++i) {
+		for (unsigned i = 0; i < arg_names.top().size(); ++i) {
 			if (v.v == jit_value_get_param(F, i)) {
 				return arg_names.top().at(i);
 			}
