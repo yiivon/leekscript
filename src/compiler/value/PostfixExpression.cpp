@@ -72,16 +72,15 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 			} else if (expression->type.nature == Nature::VALUE) {
 
 				auto x_addr = expression->compile_l(c);
+				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
 
-				jit_value_t x = jit_insn_load_relative(c.F, x_addr.v, 0, jit_type_int);
-
-				auto sum = c.insn_add({x, Type::INTEGER}, c.new_integer(1));
+				auto sum = c.insn_add(x, c.new_integer(1));
 				jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
 
 				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({x, expression->type});
+					return c.insn_to_pointer(x);
 				}
-				return {x, type};
+				return x;
 			} else {
 				auto e = expression->compile_l(c);
 				return c.insn_call(Type::POINTER, {e}, (void*) +[](LSValue** x) {
