@@ -48,6 +48,8 @@ Location ArrayAccess::location() const {
 
 void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
+	// std::cout << "Analyse AA " << this << " : " << req_type << std::endl;
+
 	array->analyse(analyser, Type::UNKNOWN);
 
 	if (array->type.raw_type != RawType::UNKNOWN and !array->type.raw_type->is_placeholder() and !array->type.is_container()) {
