@@ -3,6 +3,7 @@
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
 #include "ValueSTD.hpp"
+#include "../TypeMutator.hpp"
 
 namespace ls {
 
@@ -32,6 +33,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	operator_("~~", {
 		{Type::T_ARRAY, tilde_tilde_fun_type, Type::PTR_ARRAY, (void*) &LSArray<LSValue*>::ls_map}
 	});*/
+
 	/*
 	 * Methods
 	 */
@@ -346,20 +348,20 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("push", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::CONST_REAL}, (void*) &LSArray<double>::ls_push, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_push, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::POINTER, Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
+		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::CONST_REAL}, (void*) &LSArray<double>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
+		{Type::PTR_ARRAY, {Type::POINTER, Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
 	});
 
 	method("pushAll", {
 		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, Method::NATIVE},
 		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::REAL_ARRAY}, (void*) &LSArray<LSValue*>::ls_push_all_flo, Method::NATIVE},
 		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::INT_ARRAY}, (void*) &LSArray<LSValue*>::ls_push_all_int, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::PTR_ARRAY}, (void*) &LSArray<double>::ls_push_all_ptr, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::REAL_ARRAY, Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, Method::NATIVE, {new WillStoreMutator()}},
 		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_push_all_flo, Method::NATIVE},
 		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::INT_ARRAY}, (void*) &LSArray<double>::ls_push_all_int, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::PTR_ARRAY}, (void*) &LSArray<int>::ls_push_all_ptr, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::INT_ARRAY, Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, Method::NATIVE, {new WillStoreMutator()}},
 		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::REAL_ARRAY}, (void*) &LSArray<int>::ls_push_all_flo, Method::NATIVE},
 		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INT_ARRAY}, (void*) &LSArray<int>::ls_push_all_int, Method::NATIVE},
 	});
