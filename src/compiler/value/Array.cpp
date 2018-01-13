@@ -8,7 +8,7 @@ using namespace std;
 namespace ls {
 
 Array::Array() {
-	type = Type::PTR_ARRAY;
+	type = Type::ARRAY;
 }
 
 Array::~Array() {
