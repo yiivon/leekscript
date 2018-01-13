@@ -111,8 +111,10 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 
 void Function::print(std::ostream& os, int indent, bool debug) const {
 	if (has_version && versions.size() == 1) {
+		// std::cout << "print version " << versions.begin()->second->type << std::endl;
 		print_version(os, indent, debug, versions.begin()->second);
 	} else {
+		// std::cout << "print default version" << std::endl;
 		print_version(os, indent, debug, default_version);
 	}
 }
@@ -209,7 +211,7 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
 
-	// cout << "Function::will_take " << args << " level " << level << endl;
+	// cout << "Function " << this << " ::will_take " << args << " level " << level << endl;
 	if (!analyzed) {
 		analyse(analyser, Type::UNKNOWN);
 	}
@@ -235,7 +237,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 			analyse_body(analyser, args, version, Type::UNKNOWN);
 
-			// std::cout << "version type : " << version->type << std::endl;
+			// std::cout << "created version type : " << version->type << std::endl;
 			update_function_args(analyser);
 			return true;
 		}
@@ -249,12 +251,15 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 				for (unsigned i = 0; i < arguments.size(); ++i) {
 					analyser->add_parameter(arguments[i].get(), v->type.getArgumentType(i));
 				}
-
 				f->will_take(analyser, args, level - 1);
 
 				analyser->leave_function();
 
 				v->type.setReturnType(f->versions[args]->type);
+
+				// std::cout << "Sub function type: " << f->versions.begin()->second->type << std::endl;
+				// std::cout << "Main function type: " << v->type << std::endl;
+
 				// analyse_body(analyser, args, v, Type::UNKNOWN);
 			}
 		}
