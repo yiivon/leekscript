@@ -88,6 +88,8 @@ public:
 
 	LSValue* add(LSValue* v) override;
 	LSValue* add_eq(LSValue* v) override;
+	LSValue* add_eq_double(double v);
+	LSValue* add_eq_int(int v);
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 

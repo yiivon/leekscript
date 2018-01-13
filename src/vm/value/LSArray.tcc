@@ -1104,6 +1104,28 @@ inline LSValue* LSArray<int>::add_eq(LSValue* v) {
 	return add_set(set);
 }
 
+template <class T>
+LSValue* LSArray<T>::add_eq_double(double v) {
+	return this;
+}
+
+template <>
+inline LSValue* LSArray<double>::add_eq_double(double v) {
+	push_move(v);
+	return this;
+}
+
+template <class T>
+LSValue* LSArray<T>::add_eq_int(int v) {
+	return this;
+}
+
+template <>
+inline LSValue* LSArray<int>::add_eq_int(int v) {
+	push_move(v);
+	return this;
+}
+
 template <class T, class T2>
 bool array_equals(const LSArray<T>* self, const LSArray<T2>* array) {
 	if (self->size() != array->size()) {
