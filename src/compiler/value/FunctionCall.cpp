@@ -148,6 +148,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				function->type = sm->type;
 				is_native_method = sm->native;
 				function_name = object_class->name + std::string("::") + oa->field->content;
+				// Apply mutators
+				for (const auto& mutator : sm->mutators) {
+					mutator->apply(analyser, arguments);
+				}
 			} else {
 				auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
 				auto m = value_class->getMethod(oa->field->content, object_type, arg_types);
@@ -159,6 +163,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					function->type = m->type;
 					is_native_method = m->native;
 					function_name = std::string("Value::") + oa->field->content;
+					// Apply mutators
+					for (const auto& mutator : m->mutators) {
+						mutator->apply(analyser, arguments);
+					}
 				} else {
 					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
 				}
@@ -183,6 +191,12 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				function->type = m->type;
 				is_native_method = m->native;
 				function_name = clazz->name + std::string("::") + oa->field->content;
+				// Apply mutators
+				std::vector<Value*> values = {oa->object};
+				values.insert(values.end(), arguments.begin(), arguments.end());
+				for (const auto& mutator : m->mutators) {
+					mutator->apply(analyser, values);
+				}
 			} else {
 				bool has_unknown_argument = false;
 				for (const auto& a : arguments)
