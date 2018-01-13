@@ -31,7 +31,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Operators
 	 */
 	operator_("+", {
-		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr, Method::NATIVE},
+		{Type::INTEGER, Type::POINTER, Type::POINTER, (void*) &NumberSTD::add_int_ptr, {}, Method::NATIVE},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::add_mpz_mpz},
 		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::add_mpz_int},
 		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_real_real},
