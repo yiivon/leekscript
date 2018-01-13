@@ -305,7 +305,12 @@ bool Type::will_take(const std::vector<Type>& args_type) {
 
 Type Type::mix(const Type& x) const {
 	if (*this == x) return *this;
-	if (*this == Type::UNKNOWN or x == Type::UNKNOWN) return Type::UNKNOWN;
+	if (*this == Type::UNKNOWN) {
+		return x;
+	}
+	if (x == Type::UNKNOWN) {
+		return *this;
+	}
 	if (nature == Nature::POINTER || x.nature == Nature::POINTER) return Type::POINTER;
 	if (nature == Nature::VOID || x.nature == Nature::VOID) return Type::POINTER;
 	if (raw_type == RawType::REAL || x.raw_type == RawType::REAL) return Type::REAL;
@@ -487,7 +492,7 @@ bool Type::compatible(const Type& type) const {
 	if (this->raw_type == RawType::ARRAY || this->raw_type == RawType::SET) {
 		const Type& e1 = this->getElementType();
 		const Type& e2 = type.getElementType();
-		if (e1 == Type::UNKNOWN) {
+		if (e1 == Type::UNKNOWN or e2 == Type::UNKNOWN) {
 			return true;
 		}
 		if (e1.nature == Nature::POINTER && e2.nature == Nature::POINTER) return true;
