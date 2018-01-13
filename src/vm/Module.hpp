@@ -6,6 +6,7 @@
 #include "Type.hpp"
 #include "value/LSClass.hpp"
 #include "../compiler/Compiler.hpp"
+#include "TypeMutator.hpp"
 
 namespace ls {
 
@@ -16,7 +17,8 @@ public:
 	Type type;
 	void* addr;
 	bool native;
-	StaticMethod(Type return_type, std::vector<Type> args, void* addr, bool native = false) {
+	std::vector<TypeMutator*> mutators;
+	StaticMethod(Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {}) {
 		this->addr = addr;
 		type = {RawType::FUNCTION, Nature::POINTER};
 		type.setReturnType(return_type);
@@ -24,6 +26,7 @@ public:
 			type.addArgumentType(arg);
 		}
 		this->native = native;
+		this->mutators = mutators;
 	}
 };
 
@@ -31,8 +34,8 @@ class Method : public StaticMethod {
 public:
 	Type obj_type;
 
-	Method(Type obj_type, Type return_type, std::vector<Type> args, void* addr, bool native = false)
-		: StaticMethod(return_type, args, addr, native), obj_type(obj_type) {}
+	Method(Type obj_type, Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {})
+		: StaticMethod(return_type, args, addr, native, mutators), obj_type(obj_type) {}
 
 	enum Option {
 		Static, Instantiate, Both
@@ -48,9 +51,10 @@ public:
 	bool native;
 	Type obj_type;
 	std::vector<Type> args;
+	std::vector<TypeMutator*> mutators;
 
-	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false)
-		: return_type(return_type), addr(addr), native(native), args(args) {}
+	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false, std::initializer_list<TypeMutator*> mutators = {})
+		: return_type(return_type), addr(addr), native(native), args(args), mutators(mutators) {}
 };
 
 class ModuleMethod {

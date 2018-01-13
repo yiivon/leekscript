@@ -50,13 +50,13 @@ void Module::method(std::string name, Method::Option opt, initializer_list<Metho
 	std::vector<StaticMethod> st;
 	for (auto constr : methodsConstr) {
 		if (opt == Method::Static || opt == Method::Both) {
-			st.emplace_back(constr.return_type, constr.args, constr.addr, constr.native);
+			st.emplace_back(constr.return_type, constr.args, constr.addr, constr.native, constr.mutators);
 		}
 		if (opt == Method::Instantiate || opt == Method::Both) {
 			assert(constr.args.size() > 0); // must be at least one argument to be the object used in instance
 			auto obj_type = constr.args[0];
 			constr.args.erase(constr.args.begin());
-			inst.emplace_back(obj_type, constr.return_type, constr.args, constr.addr, constr.native);
+			inst.emplace_back(obj_type, constr.return_type, constr.args, constr.addr, constr.native, constr.mutators);
 		}
 	}
 	if (!inst.empty()) {
