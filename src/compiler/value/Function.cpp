@@ -64,6 +64,10 @@ Type Function::getReturnType() {
 }
 
 void Function::print_version(std::ostream& os, int indent, bool debug, const Version* version) const {
+	if (version == nullptr) {
+		os << "nullptr!!";
+		return;
+	}
 	if (captures.size() > 0) {
 		os << "[";
 		for (unsigned c = 0; c < captures.size(); ++c) {
