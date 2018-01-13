@@ -18,7 +18,11 @@ VariableValue::VariableValue(std::shared_ptr<Token> token) : token(token) {
 void VariableValue::print(ostream& os, int, bool debug) const {
 	os << token->content;
 	if (debug) {
-		os << " " << types;
+		os << " ";
+		if (has_version && var != nullptr && var->value != nullptr)
+			os << var->value->version_type(version);
+		else
+			os << types;
 	}
 }
 
