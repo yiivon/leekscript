@@ -21,8 +21,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in_i, Method::NATIVE}
 	});
 	operator_("+=", {
-		{Type::REAL_ARRAY, Type::CONST_REAL, Type::REAL, (void*) &LSArray<double>::push_move, Method::NATIVE}
+		{Type::ARRAY, Type::CONST_POINTER, Type::POINTER, (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
+		{Type::REAL_ARRAY, Type::CONST_REAL, Type::REAL_ARRAY, (void*) &LSArray<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
+		{Type::INT_ARRAY, Type::CONST_INTEGER, Type::INT_ARRAY, (void*) &LSArray<int>::add_eq_int, {new WillStoreMutator()}, Method::NATIVE}
 	});
+
 	/* Type tilde_tilde_fun_type = Type::FUNCTION_P;
 	tilde_tilde_fun_type.setArgumentType(0, Type::T);
 	tilde_tilde_fun_type.setReturnType(Type::POINTER);
@@ -436,6 +439,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
 		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
 		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
+	});
+}
+
+Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::POINTER, args, (void*) +[](LSValue** x, LSValue* y) {
+		return (*x)->add_eq(y);
 	});
 }
 

@@ -10,6 +10,7 @@ class ArraySTD : public Module {
 public:
 	ArraySTD();
 
+	static Compiler::value array_add_eq(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value lt(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value size(Compiler&, std::vector<Compiler::value>);
