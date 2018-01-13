@@ -87,6 +87,8 @@ void Test::test_functions() {
 	code("let a = 5 let f = x -> x < a [1, 2, 3, 4, 5, 6].filter(f)").equals("[1, 2, 3, 4]");
 	code("var g = x => { var y = 2; return x + y } g(10)").equals("12");
 	code("let a = 12, b = 13, c = 14 let f = x -> x + a + b + c f(5)").equals("44");
+	// TODO
+	// code("let f = x -> y -> x + y let g1 = f(5) let g2 = f('a') [g1(12) g1('b') g2(12) g2('b')]").equals("[]");
 
 	section("Recursive");
 	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
