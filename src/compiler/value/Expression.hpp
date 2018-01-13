@@ -19,6 +19,7 @@ public:
 	int operations;
 	void* operator_fun = nullptr;
 	bool is_native_method = false;
+	bool native_method_v1_addr = false;
 	Type v1_type;
 	Type v2_type;
 	Type return_type;

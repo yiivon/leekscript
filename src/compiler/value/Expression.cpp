@@ -135,8 +135,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		return;
 	}
 
-	bool array_push = (v1->type.raw_type == RawType::ARRAY or v1->type.raw_type == RawType::SET) and op->type == TokenType::PLUS_EQUAL;
-
 	// A = B, A += B, etc. A must be a l-value
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
@@ -164,10 +162,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				if (v2->type.reference) new_type.reference = true;
 				if (v1->type.reference) new_type.reference = true;
 				((LeftValue*) v1)->change_type(analyser, new_type);
-			}
-		} else {
-			if (!array_push && v2->type != Type::UNKNOWN && Type::more_specific(v2->type, v1->type)) {
-				((LeftValue*) v1)->change_type(analyser, v2->type);
 			}
 		}
 	}
@@ -207,23 +201,35 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		operator_fun = m->addr;
 		is_native_method = m->native;
+		native_method_v1_addr = m->v1_addr;
 		this->v1_type = op->reversed ? m->operand_type : m->object_type;
 		this->v2_type = op->reversed ? m->object_type : m->operand_type;
 		return_type = m->return_type;
 		type = return_type;
+
 		if (v1->type.not_temporary() != this->v1_type.not_temporary() && v2->type != Type::UNKNOWN) {
-			v1->analyse(analyser, this->v1_type);
+			if (native_method_v1_addr) {
+				((LeftValue*) v1)->change_type(analyser, this->v1_type);
+			} else {
+				v1->analyse(analyser, this->v1_type);
+			}
 		}
 		if (v2->type.not_temporary() != this->v2_type.not_temporary()) {
 			v2->analyse(analyser, this->v2_type);
 		}
+
+		// Apply mutators
+		for (const auto& mutator : m->mutators) {
+			mutator->apply(analyser, {v1, v2});
+		}
+
 		if (req_type.nature == Nature::POINTER) {
 			type.nature = req_type.nature;
 		}
 		types = type;
 		return;
 	} else {
-		//std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
+		// std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
 	}
 
 	// Don't use old stuff for boolean
@@ -239,12 +245,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type.nature = Nature::POINTER;
 	}
 	constant = v1->constant and v2->constant;
-
-	// array += ?  ==>  will take the type of ?
-	if (array_push) {
-		v1->will_store(analyser, v2->type);
-		type = v2->type;
-	}
 
 	// A = B, A += B, A * B, etc. mix types
 	if (op->type == TokenType::EQUAL or op->type == TokenType::XOR
@@ -268,17 +268,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		auto vv = dynamic_cast<VariableValue*>(v1);
 
 		// Set the correct type nature for the two members
-		if (array_push) {
-			if (v1->type.getElementType().nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
-				v2->analyse(analyser, Type::POINTER);
-			}
-		} else {
-			if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
-				v1->analyse(analyser, Type::POINTER);
-			}
-			if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
-				v2->analyse(analyser, Type::POINTER);
-			}
+		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
+			v1->analyse(analyser, Type::POINTER);
+		}
+		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
+			v2->analyse(analyser, Type::POINTER);
 		}
 
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
@@ -330,7 +324,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::MODULO_EQUAL
 		or op->type == TokenType::POWER_EQUAL) {
 		// TODO other operators like |= ^= &=
-
 
 		store_result_in_v1 = true;
 	}
@@ -512,7 +505,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 	if (operator_fun != nullptr) {
 
 		vector<Compiler::value> args;
-		if (v1->type.raw_type == RawType::BOOLEAN and op->type == TokenType::EQUAL) {
+		// TODO simplify condition
+		if ((v1->type.raw_type == RawType::BOOLEAN and op->type == TokenType::EQUAL) or native_method_v1_addr) {
 			args.push_back(((LeftValue*) v1)->compile_l(c));
 			args.push_back(v2->compile(c));
 		} else {
