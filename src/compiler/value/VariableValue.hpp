@@ -30,6 +30,7 @@ public:
 	virtual bool will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level) override;
 	void set_version(const std::vector<Type>& args, int level) override;
 	virtual bool will_store(SemanticAnalyser* analyser, const Type& type) override;
+	virtual bool elements_will_store(SemanticAnalyser* analyser, const Type& type, int level) override;
 	virtual void change_type(SemanticAnalyser*, const Type&) override;
 	virtual Type version_type(std::vector<Type>) const override;
 

@@ -110,6 +110,16 @@ bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
 	return false;
 }
 
+bool VariableValue::elements_will_store(SemanticAnalyser* analyser, const Type& type, int level) {
+	if (var != nullptr and var->value != nullptr) {
+		var->value->elements_will_store(analyser, type, level);
+		this->type = var->value->type.not_temporary();
+		var->type = this->type;
+		types = this->type;
+	}
+	return false;
+}
+
 void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	if (var != nullptr) {
 		var->type = type;
