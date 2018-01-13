@@ -39,7 +39,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("+=", {
-		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::add_eq_mpz_mpz}
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::add_eq_mpz_mpz},
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_eq_real, {}, false, true}
 	});
 
 	operator_("-", {
@@ -332,6 +333,13 @@ Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 	auto b_addr = c.insn_address_of(args[1]);
 	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
 	return c.insn_clone_mpz(args[0]);
+}
+
+Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto x = c.insn_load(args[0], 0, Type::REAL);
+	auto sum = c.insn_add(x, args[1]);
+	jit_insn_store_relative(c.F, args[0].v, 0, sum.v);
+	return sum;
 }
 
 Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::value> args) {
