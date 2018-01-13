@@ -247,14 +247,15 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 				analyser->enter_function(this);
 				for (unsigned i = 0; i < arguments.size(); ++i) {
-					analyser->add_parameter(arguments[i].get(), type.getArgumentType(i));
+					analyser->add_parameter(arguments[i].get(), v->type.getArgumentType(i));
 				}
 
 				f->will_take(analyser, args, level - 1);
 
 				analyser->leave_function();
 
-				// analyse_body(analyser, args, Type::UNKNOWN);
+				v->type.setReturnType(f->versions[args]->type);
+				// analyse_body(analyser, args, v, Type::UNKNOWN);
 			}
 		}
 	}

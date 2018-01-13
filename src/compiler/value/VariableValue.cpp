@@ -129,10 +129,8 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 }
 
 Type VariableValue::version_type(std::vector<Type> version) const {
-	if (var != nullptr) {
-		if (auto f = dynamic_cast<Function*>(var->value)) {
-			return f->versions.at(version)->type;
-		}
+	if (var != nullptr && var->value != nullptr) {
+		return var->value->version_type(version);
 	}
 	return type;
 }

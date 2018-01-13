@@ -282,12 +282,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// Get the function type
-	function_type = function->type;
-	if (function_object) {
-		if (function_object->versions.size() && function_object->versions.find(arg_types) != function_object->versions.end()) {
-			function_type = function_object->versions.at(arg_types)->type;
-		}
-	}
+	function_type = function->version_type(arg_types);
 
 	// The function is a variable
 	if (vv and vv->var and vv->var->value) {
@@ -336,6 +331,10 @@ bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>
 
 void FunctionCall::set_version(const std::vector<Type>& args, int level) {
 	function->set_version(args, level + 1);
+}
+
+Type FunctionCall::version_type(std::vector<Type> version) const {
+	return function->version_type(version).getReturnType();
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {
