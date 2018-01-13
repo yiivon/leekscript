@@ -63,8 +63,7 @@ void Test::test_functions() {
 	code("let f = x = 2 -> x + 1 f").equals("<function>");
 	code("let f = b -> if b { 2 } else { 3 } f(false)").equals("3");
 	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
-	// TODO leak
-	// code("(x -> y -> x + 1)(1)(2)").equals("2");
+	code("(x -> y -> x + 1)(1)(2)").equals("2");
 	code("let f = x, y -> { x += '+' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A+', 'B.']");
 
 	section("Function call without commas");
@@ -77,15 +76,11 @@ void Test::test_functions() {
 	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
 	// TODO
 	// code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
-	// TODO
-	// code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
-	// TODO
-	// code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
-	// code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
-	// TODO
-	// code("let f = x -> y -> x + y f(5)(12)").equals("17");
-	// TODO
-	// code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
+	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
+	code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
+	code("let f = x -> y -> x + y f(5)(12)").equals("17");
+	code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
 	code("let f = x -> x (-> f(12))()").equals("12");
 	code("let f = x -> x let g = x -> f(x) g(12)").equals("12");
 	code("let g = x -> x ** 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
