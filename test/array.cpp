@@ -465,7 +465,7 @@ void Test::test_arrays() {
 	code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
 	code("[0].pushAll([1, 2, 3])").equals("[0, 1, 2, 3]");
 	code("[0].pushAll([3.5])").equals("[0, 3]");
-	code("[0.5].pushAll(['a'])").equals("[0.5]");
+	code("[0.5].pushAll(['a'])").equals("[0.5, 'a']");
 
 	section("Array.join()");
 	code("[].join('a')").equals("''");
