@@ -62,7 +62,7 @@ Location FunctionCall::location() const {
 
 void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	// std::cout << "FunctionCall::analyse(" << req_type << ")" << std::endl;
+	// std::cout << "FC " << this << " : " << req_type << std::endl;
 
 	// Analyse the function (can be anything here)
 	function->analyse(analyser, Type::UNKNOWN);
@@ -284,6 +284,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Get the function type
 	function_type = function->version_type(arg_types);
 
+	// std::cout << "FC function type: " << function_type << std::endl;
+
 	// The function is a variable
 	if (vv and vv->var and vv->var->value) {
 		// Recursive function
@@ -322,9 +324,12 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type.nature = req_type.nature;
 	}
 	types = type;
+
+	// std::cout << "FC " << this << " type " << type << std::endl;
 }
 
 bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
+	// std::cout << "FC " << this << " will_take " << args << std::endl;
 	function->will_take(analyser, args, level + 1);
 	return false;
 }
