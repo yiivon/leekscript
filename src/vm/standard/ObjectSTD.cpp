@@ -24,7 +24,7 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::OBJECT, Type::POINTER, Type::BOOLEAN, (void*) &LSObject::in, Method::NATIVE}
+		{Type::OBJECT, Type::POINTER, Type::BOOLEAN, (void*) &LSObject::in, {}, Method::NATIVE}
 	});
 
 	/*

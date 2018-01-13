@@ -16,9 +16,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::CONST_PTR_ARRAY, Type::CONST_POINTER, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in, Method::NATIVE},
-		{Type::CONST_REAL_ARRAY, Type::CONST_REAL, Type::BOOLEAN, (void*) &LSArray<double>::in, Method::NATIVE},
-		{Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in_i, Method::NATIVE}
+		{Type::CONST_PTR_ARRAY, Type::CONST_POINTER, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in, {}, Method::NATIVE},
+		{Type::CONST_REAL_ARRAY, Type::CONST_REAL, Type::BOOLEAN, (void*) &LSArray<double>::in, {}, Method::NATIVE},
+		{Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in_i, {}, Method::NATIVE}
 	});
 	operator_("+=", {
 		{Type::ARRAY, Type::CONST_POINTER, Type::POINTER, (void*) &array_add_eq, {new WillStoreMutator()}, false, true},

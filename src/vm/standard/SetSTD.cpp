@@ -15,9 +15,9 @@ SetSTD::SetSTD() : Module("Set") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::CONST_PTR_SET, Type::POINTER, Type::BOOLEAN, (void*) &LSSet<LSValue*>::in, Method::NATIVE},
-		{Type::CONST_REAL_SET, Type::REAL, Type::BOOLEAN, (void*) &LSSet<double>::in, Method::NATIVE},
-		{Type::CONST_INT_SET, Type::INTEGER, Type::BOOLEAN, (void*) &LSSet<int>::in, Method::NATIVE}
+		{Type::CONST_PTR_SET, Type::POINTER, Type::BOOLEAN, (void*) &LSSet<LSValue*>::in, {}, Method::NATIVE},
+		{Type::CONST_REAL_SET, Type::REAL, Type::BOOLEAN, (void*) &LSSet<double>::in, {}, Method::NATIVE},
+		{Type::CONST_INT_SET, Type::INTEGER, Type::BOOLEAN, (void*) &LSSet<int>::in, {}, Method::NATIVE}
 	});
 	operator_("+=", {
 		{Type::SET, Type::CONST_POINTER, Type::POINTER, (void*) &set_add_eq, {new WillStoreMutator()}},

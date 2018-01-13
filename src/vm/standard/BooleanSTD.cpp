@@ -10,8 +10,8 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 	LSBoolean::clazz = clazz;
 
 	operator_("+", {
-		{Type::CONST_BOOLEAN, Type::CONST_STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, Method::NATIVE},
-		{Type::CONST_BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, Method::NATIVE},
+		{Type::CONST_BOOLEAN, Type::CONST_STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, {}, Method::NATIVE},
+		{Type::CONST_BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, {}, Method::NATIVE},
 		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool},
 		{Type::CONST_BOOLEAN, Type::CONST_NUMBER, Type::REAL, (void*) &BooleanSTD::add_bool}
 	});

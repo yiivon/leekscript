@@ -24,15 +24,15 @@ MapSTD::MapSTD() : Module("Map") {
 	LSMap<double, double>::clazz = clazz;
 
 	operator_("in", {
-		{Type::CONST_PTR_PTR_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, LSValue*>::in, Method::NATIVE},
-		{Type::CONST_PTR_REAL_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, double>::in, Method::NATIVE},
-		{Type::CONST_PTR_INT_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, int>::in, Method::NATIVE},
-		{Type::CONST_REAL_PTR_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, LSValue*>::in, Method::NATIVE},
-		{Type::CONST_REAL_REAL_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, double>::in, Method::NATIVE},
-		{Type::CONST_REAL_INT_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, int>::in, Method::NATIVE},
-		{Type::CONST_INT_PTR_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, LSValue*>::in, Method::NATIVE},
-		{Type::CONST_INT_REAL_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, double>::in, Method::NATIVE},
-		{Type::CONST_INT_INT_MAP, Type::LONG, Type::BOOLEAN, (void*) &LSMap<int, int>::in, Method::NATIVE},
+		{Type::CONST_PTR_PTR_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, LSValue*>::in, {}, Method::NATIVE},
+		{Type::CONST_PTR_REAL_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, double>::in, {}, Method::NATIVE},
+		{Type::CONST_PTR_INT_MAP, Type::POINTER, Type::BOOLEAN, (void*) &LSMap<LSValue*, int>::in, {}, Method::NATIVE},
+		{Type::CONST_REAL_PTR_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, LSValue*>::in, {}, Method::NATIVE},
+		{Type::CONST_REAL_REAL_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, double>::in, {}, Method::NATIVE},
+		{Type::CONST_REAL_INT_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, int>::in, {}, Method::NATIVE},
+		{Type::CONST_INT_PTR_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, LSValue*>::in, {}, Method::NATIVE},
+		{Type::CONST_INT_REAL_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, double>::in, {}, Method::NATIVE},
+		{Type::CONST_INT_INT_MAP, Type::LONG, Type::BOOLEAN, (void*) &LSMap<int, int>::in, {}, Method::NATIVE},
 	});
 
 	method("size", {
