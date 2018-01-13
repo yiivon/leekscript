@@ -134,6 +134,7 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 
 Type VariableValue::version_type(std::vector<Type> version) const {
 	if (var != nullptr && var->value != nullptr) {
+		// std::cout << "VariableValue " << this << " version_type() " << version << std::endl;
 		return var->value->version_type(version);
 	}
 	return type;
