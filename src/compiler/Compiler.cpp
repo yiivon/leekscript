@@ -127,12 +127,12 @@ Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
 }
 Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	auto result_type = [&]() {
-		if (a.t == Type::POINTER or b.t == Type::POINTER) return Type::POINTER;
+		if (a.t.nature == Nature::POINTER or b.t.nature == Nature::POINTER) return Type::POINTER;
 		if (a.t == Type::REAL or b.t == Type::REAL) return Type::REAL;
 		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
 		return Type::INTEGER;
 	}();
-	Compiler::value r {jit_insn_add(F, a.v, b.v), result_type};
+	Compiler::value r {jit_insn_convert(F, jit_insn_add(F, a.v, b.v), result_type.jit_type(), 0), result_type};
 	log_insn(4) << "add " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
