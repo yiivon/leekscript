@@ -180,6 +180,30 @@ inline LSValue* LSSet<LSValue*>::add_eq(LSValue* v) {
 	return this;
 }
 
+template <class T>
+LSValue* LSSet<T>::add_eq_int(int v) {
+	// TODO
+	return this;
+}
+
+template <>
+inline LSValue* LSSet<int>::add_eq_int(int v) {
+	insert(v);
+	return this;
+}
+
+template <class T>
+LSValue* LSSet<T>::add_eq_double(double v) {
+	// TODO
+	return this;
+}
+
+template <>
+inline LSValue* LSSet<double>::add_eq_double(double v) {
+	insert(v);
+	return this;
+}
+
 template <class T1, class T2>
 bool set_equals(const LSSet<T1>* s1, const LSSet<T2>* s2) {
 	if (s1->size() != s2->size()) return false;

@@ -37,6 +37,8 @@ public:
  	virtual bool to_bool() const override;
 	virtual bool ls_not() const override;
 	virtual LSValue* add_eq(LSValue* v) override;
+	LSValue* add_eq_int(int v);
+	LSValue* add_eq_double(double v);
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
 	bool in(const T) const;
