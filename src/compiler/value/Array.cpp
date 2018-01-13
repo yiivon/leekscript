@@ -128,6 +128,8 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 	type.temporary = true;
 	types = type;
+
+	// std::cout << "Array type : " << type << std::endl;
 }
 
 void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types, int level) {
@@ -161,6 +163,8 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 
 bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 
+	// std::cout << "Array::will_store " << this->type << " " << type << std::endl;
+
 	Type added_type = type;
 	if (added_type.raw_type == RawType::ARRAY or added_type.raw_type == RawType::SET) {
 		added_type = added_type.getElementType();
@@ -170,6 +174,7 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 		this->type.setElementType(added_type);
 	} else {
 		this->type.setElementType(Type::get_compatible_type(current_type, added_type));
+		std::cout << "new array type : " << this->type << std::endl;
 	}
 	// Re-analyze expressions with the new type
 	for (size_t i = 0; i < expressions.size(); ++i) {
@@ -177,6 +182,23 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	}
 	this->types = type;
 	return false;
+}
+
+bool Array::elements_will_store(SemanticAnalyser* analyser, const Type& type, int level) {
+	for (auto& element : expressions) {
+		element->will_store(analyser, type);
+	}
+	// Computation of the new array type
+	Type element_type;
+	for (unsigned i = 0; i < expressions.size(); ++i) {
+		Value* ex = expressions[i];
+		if (i == 0) {
+			element_type = ex->type;
+		} else {
+			element_type = Type::get_compatible_type(element_type, ex->type);
+		}
+	}
+	this->type.setElementType(element_type);
 }
 
 Compiler::value Array::compile(Compiler& c) const {

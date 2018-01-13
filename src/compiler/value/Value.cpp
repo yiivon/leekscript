@@ -21,6 +21,10 @@ bool Value::will_store(SemanticAnalyser*, const Type&) {
 	return false;
 }
 
+bool Value::elements_will_store(SemanticAnalyser*, const Type&, int level) {
+	return false;
+}
+
 bool Value::must_be_pointer(SemanticAnalyser*) {
 	if (type.nature == Nature::POINTER) {
 		return false;
