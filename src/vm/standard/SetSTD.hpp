@@ -8,6 +8,8 @@ namespace ls {
 class SetSTD : public Module {
 public:
 	SetSTD();
+
+	static Compiler::value set_add_eq(Compiler& c, std::vector<Compiler::value> args);
 };
 
 }

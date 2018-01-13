@@ -19,6 +19,11 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::CONST_REAL_SET, Type::REAL, Type::BOOLEAN, (void*) &LSSet<double>::in, Method::NATIVE},
 		{Type::CONST_INT_SET, Type::INTEGER, Type::BOOLEAN, (void*) &LSSet<int>::in, Method::NATIVE}
 	});
+	operator_("+=", {
+		{Type::SET, Type::CONST_POINTER, Type::POINTER, (void*) &set_add_eq, {new WillStoreMutator()}},
+		{Type::REAL_SET, Type::CONST_REAL, Type::REAL_ARRAY, (void*) &LSSet<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
+		{Type::INT_SET, Type::CONST_INTEGER, Type::INT_ARRAY, (void*) &LSSet<int>::add_eq_int, {new WillStoreMutator()}, Method::NATIVE}
+	});
 
 	/*
 	 * Methods
@@ -47,6 +52,12 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::BOOLEAN, {Type::CONST_PTR_SET, Type::POINTER}, (void*) &LSSet<LSValue*>::ls_contains, Method::NATIVE},
 		{Type::BOOLEAN, {Type::CONST_REAL_SET, Type::REAL}, (void*) &LSSet<double>::ls_contains, Method::NATIVE},
 		{Type::BOOLEAN, {Type::CONST_INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_contains, Method::NATIVE},
+	});
+}
+
+Compiler::value SetSTD::set_add_eq(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::POINTER, args, (void*) +[](LSValue* x, LSValue* y) {
+		return x->add_eq(y);
 	});
 }
 
