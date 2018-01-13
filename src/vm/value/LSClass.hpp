@@ -6,6 +6,7 @@
 #include "../LSValue.hpp"
 #include "../Type.hpp"
 #include "../../compiler/Compiler.hpp"
+#include "../TypeMutator.hpp"
 
 namespace ls {
 
@@ -22,9 +23,12 @@ public:
 		Type operand_type;
 		Type return_type;
 		void* addr;
+		std::vector<TypeMutator*> mutators;
 		bool native;
-		Operator(Type object_type, Type operand, Type return_type, void* addr, bool native = false)
-		: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), native(native)	{}
+		bool v1_addr;
+
+		Operator(Type object_type, Type operand, Type return_type, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool native = false, bool v1_addr = false)
+		: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), mutators(mutators), native(native), v1_addr(v1_addr) {}
 		static bool NATIVE;
 	};
 
