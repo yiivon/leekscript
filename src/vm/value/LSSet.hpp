@@ -41,7 +41,8 @@ public:
 	LSValue* add_eq_double(double v);
 	bool eq(const LSValue*) const override;
 	bool lt(const LSValue*) const override;
-	bool in(const T) const;
+	virtual bool in(const LSValue* const) const override;
+	bool in_v(const T) const;
 	int abso() const override;
 	virtual std::ostream& dump(std::ostream&, int level) const override;
 	virtual std::string json() const override;

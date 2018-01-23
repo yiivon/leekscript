@@ -280,7 +280,15 @@ inline bool LSSet<T>::lt(const LSValue* v) const {
 }
 
 template <class T>
-bool LSSet<T>::in(T value) const {
+bool LSSet<T>::in(const LSValue* const value) const {
+	bool r = false;
+	LSValue::delete_temporary(this);
+	ls::release(value);
+	return r;
+}
+
+template <class T>
+bool LSSet<T>::in_v(const T value) const {
 	bool r = this->count(value);
 	LSValue::delete_temporary(this);
 	ls::release(value);
