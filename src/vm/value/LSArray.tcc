@@ -1108,7 +1108,8 @@ inline LSValue* LSArray<int>::add_eq(LSValue* v) {
 }
 
 template <class T>
-LSValue* LSArray<T>::add_eq_double(double v) {
+LSValue* LSArray<T>::add_eq_double(double) {
+	// TODO
 	return this;
 }
 
@@ -1119,7 +1120,8 @@ inline LSValue* LSArray<double>::add_eq_double(double v) {
 }
 
 template <class T>
-LSValue* LSArray<T>::add_eq_int(int v) {
+LSValue* LSArray<T>::add_eq_int(int) {
+	// TODO
 	return this;
 }
 
