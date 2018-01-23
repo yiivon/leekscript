@@ -245,7 +245,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		// LCOV_EXCL_START
-		cout << RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
+		cout << C_RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
 		#if DEBUG_LEAKS
 
 			for (auto o : LSValue::objs()) {
@@ -255,7 +255,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 		// LCOV_EXCL_STOP
 	}
 	if (VM::mpz_deleted != VM::mpz_created) {
-		cout << RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << endl; // LCOV_EXCL_LINE
+		cout << C_RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << endl; // LCOV_EXCL_LINE
 	}
 
 	return result;

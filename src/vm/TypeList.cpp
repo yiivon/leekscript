@@ -28,12 +28,12 @@ std::ostream& operator << (std::ostream& os, const TypeList& type) {
 	if (type.size() == 1) {
 		os << *type.begin();
 	} else {
-		os << GREY << "{";
+		os << C_GREY << "{";
 		for (auto i = type.begin(); i != type.end(); ++i) {
 			if (i != type.begin()) os << ", ";
 			os << *i;
 		}
-		os << GREY << "}" << END_COLOR;
+		os << C_GREY << "}" << END_COLOR;
 	}
 	return os;
 }

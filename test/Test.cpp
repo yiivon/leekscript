@@ -156,29 +156,29 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 
 void Test::Input::pass(std::string expected) {
 	std::ostringstream oss;
-	oss << GREEN << "OK   " << END_COLOR << ": " << name;
-	if (v1) oss << BLUE << " [V1]" << END_COLOR;
+	oss << C_GREEN << "OK   " << END_COLOR << ": " << name;
+	if (v1) oss << C_BLUE << " [V1]" << END_COLOR;
 	oss <<  "  ===>  " << expected;
 	std::cout << oss.str();
-	std::cout <<  GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
+	std::cout <<  C_GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	test->success_count++;
 	if (result.objects_created != result.objects_deleted) {
-		oss << RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
+		oss << C_RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
 		failed_tests.push_back(oss.str());
 	}
 }
 
 void Test::Input::fail(std::string expected, std::string actual) {
 	std::ostringstream oss;
-	oss << RED << "FAIL " << END_COLOR << ": " << name;
-	if (v1) std::cout << BLUE << " [V1]" << END_COLOR;
+	oss << C_RED << "FAIL " << END_COLOR << ": " << name;
+	if (v1) std::cout << C_BLUE << " [V1]" << END_COLOR;
 	oss << "  =/=>  " << expected << "  got  " << actual;
 	std::cout << oss.str();
-	std::cout << GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
+	std::cout << C_GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	if (result.objects_created != result.objects_deleted)
-		oss << RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
+		oss << C_RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
 	failed_tests.push_back(oss.str());
 }
 

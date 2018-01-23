@@ -664,15 +664,15 @@ Type Type::generate_new_placeholder_type() {
 ostream& operator << (ostream& os, const Type& type) {
 
 	if (type.nature == Nature::VOID) {
-		os << GREY << "void" << END_COLOR;
+		os << C_GREY << "void" << END_COLOR;
 		return os;
 	}
 
-	auto color = (type.nature == Nature::VALUE) ? GREEN : RED;
+	auto color = (type.nature == Nature::VALUE) ? C_GREEN : C_RED;
 	os << color;
 
 	if (type.raw_type == RawType::UNKNOWN) {
-		os << YELLOW;
+		os << C_YELLOW;
 		if (type.constant) os << "const:";
 		if (type.nature == Nature::POINTER) {
 			os << "*";

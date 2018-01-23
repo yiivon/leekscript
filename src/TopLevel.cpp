@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 		if (Util::is_file_name(file_or_code)) {
 			ifstream ifs(file_or_code.data());
 			if (!ifs.good()) {
-				std::cout << "[" << YELLOW << "warning" << END_COLOR << "] File '" << BOLD << file_or_code << END_STYLE << "' does not exist." << std::endl;
+				std::cout << "[" << C_YELLOW << "warning" << END_COLOR << "] File '" << BOLD << file_or_code << END_STYLE << "' does not exist." << std::endl;
 				return 0;
 			}
 			code = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
@@ -144,7 +144,7 @@ void print_result(ls::VM::Result& result, const std::string& output, bool json, 
 		if (display_time) {
 			double compilation_time = round((float) result.compilation_time / 1000) / 1000;
 			double execution_time = round((float) result.execution_time / 1000) / 1000;
-			cout << GREY "(";
+			cout << C_GREY << "(";
 			if (ops) {
 				cout << result.operations << " ops, ";
 			}
