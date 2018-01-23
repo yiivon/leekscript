@@ -181,7 +181,7 @@ inline LSValue* LSSet<LSValue*>::add_eq(LSValue* v) {
 }
 
 template <class T>
-LSValue* LSSet<T>::add_eq_int(int v) {
+LSValue* LSSet<T>::add_eq_int(int) {
 	// TODO
 	return this;
 }
@@ -193,7 +193,7 @@ inline LSValue* LSSet<int>::add_eq_int(int v) {
 }
 
 template <class T>
-LSValue* LSSet<T>::add_eq_double(double v) {
+LSValue* LSSet<T>::add_eq_double(double) {
 	// TODO
 	return this;
 }
