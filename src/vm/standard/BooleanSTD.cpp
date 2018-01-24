@@ -71,7 +71,7 @@ LSValue* BooleanSTD::compare_ptr_ptr_ptr(LSBoolean* a, LSBoolean* b) {
 }
 
 Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_cmpl(c.F, args[0].v, args[1].v), Type::INTEGER};
+	return c.insn_cmpl(args[0], args[1]);
 }
 
 }
