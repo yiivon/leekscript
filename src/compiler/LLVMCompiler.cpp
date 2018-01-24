@@ -15,6 +15,8 @@
 #include "../vm/value/LSMap.hpp"
 #include "../vm/value/LSClosure.hpp"
 
+#define log_insn(i) log_instructions && _log_insn((i))
+
 namespace ls {
 
 llvm::LLVMContext LLVMCompiler::context;
@@ -199,16 +201,56 @@ LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value) const { assert(f
 
 // LLVMCompiler::value management
 LLVMCompiler::value LLVMCompiler::insn_create_value(Type t) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_to_pointer(LLVMCompiler::value v) const { assert(false); }
+
+LLVMCompiler::value LLVMCompiler::insn_to_pointer(LLVMCompiler::value v) const {
+	if (v.t.nature == Nature::POINTER) {
+		return v; // already a pointer
+	}
+	Type new_type = v.t;
+	new_type.nature = Nature::POINTER;
+	if (v.t.raw_type == RawType::LONG) {
+		return insn_call(new_type, {v}, +[](long n) {
+			return LSNumber::get(n);
+		}, "new_number");
+	} else if (v.t.raw_type == RawType::REAL) {
+		return insn_call(new_type, {v}, +[](double n) {
+			return LSNumber::get(n);
+		}, "new_number");
+	} else if (v.t.raw_type == RawType::BOOLEAN) {
+		return insn_call(new_type, {v}, +[](bool n) {
+			return LSBoolean::get(n);
+		}, "new_bool");
+	} else {
+		return insn_call(new_type, {v}, +[](int n) {
+			return LSNumber::get(n);
+		}, "new_number");
+	}
+}
+
 LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_address_of(LLVMCompiler::value v) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v, int pos, Type t) const { assert(false); }
+
+LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v, int pos, Type t) const {
+	LLVMCompiler::value r {Builder.CreateAlignedLoad(v.v, pos), t};
+	log_insn(4) << "load " << dump_val(v) << " " << pos << " " << dump_val(r) << std::endl;
+	return r;
+}
+
 void  LLVMCompiler::insn_store(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 void  LLVMCompiler::insn_store_relative(LLVMCompiler::value, int, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const { assert(false); }
 void  LLVMCompiler::insn_delete(LLVMCompiler::value v) const { assert(false); }
-void  LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const { assert(false); }
+void  LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
+	if (v.t.must_manage_memory()) {
+		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
+		insn_if_not(insn_refs(v), [&]() {
+			insn_call(Type::VOID, {v}, (void*) &LSValue::free, "Value::free");
+		});
+	} else if (v.t == Type::MPZ_TMP) {
+		insn_delete_mpz(v);
+	}
+}
 LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const { assert(false); }
 void  LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::value element) const { assert(false); }
@@ -217,8 +259,30 @@ LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const 
 void  LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_inc_refs(LLVMCompiler::value v) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompiler::value previous) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value v) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_refs(LLVMCompiler::value v) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value value) const {
+	if (value.t.must_manage_memory()) {
+		if (value.t.reference) {
+			insn_inc_refs(value);
+			return value;
+		} else {
+			return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
+				return v->move_inc();
+			}, "move_inc");
+		}
+	}
+	if (value.t.temporary) {
+		return value;
+	}
+	if (value.t == Type::MPZ) {
+		return insn_clone_mpz(value);
+	} else {
+		return value;
+	}
+}
+LLVMCompiler::value LLVMCompiler::insn_refs(LLVMCompiler::value v) const {
+	assert(v.t.must_manage_memory());
+	return insn_load(v, 12, Type::INTEGER);
+}
 LLVMCompiler::value LLVMCompiler::insn_native(LLVMCompiler::value v) const { assert(false); }
 
 // Iterators
@@ -235,7 +299,11 @@ void LLVMCompiler::insn_throw(LLVMCompiler::value v) const { assert(false); }
 void LLVMCompiler::insn_throw_object(vm::Exception type) const { assert(false); }
 void LLVMCompiler::insn_label(label*) const { assert(false); }
 void LLVMCompiler::insn_branch(label* l) const { assert(false); }
-void LLVMCompiler::insn_branch_if(LLVMCompiler::value v, label* l) const { assert(false); }
+
+void LLVMCompiler::insn_branch_if(LLVMCompiler::value v, label* l) const {
+	
+}
+
 void LLVMCompiler::insn_branch_if_not(LLVMCompiler::value v, label* l) const { assert(false); }
 void LLVMCompiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const { assert(false); }
 void LLVMCompiler::insn_return(LLVMCompiler::value v) const {
@@ -250,6 +318,7 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type());
 	}
+	if (!function_name.size()) function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
 	((LLVMCompiler*) this)->mappings.insert({function_name, (llvm::JITTargetAddress) func});
 	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
 	auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, LLVMCompiler::TheModule.get());
@@ -270,15 +339,21 @@ void LLVMCompiler::enter_block() {
 void LLVMCompiler::leave_block() {
 	// TODO
 }
-void LLVMCompiler::delete_variables_block(int deepness) { assert(false); } // delete all variables in the #deepness current blocks
+void LLVMCompiler::delete_variables_block(int deepness) {
+	// TODO
+}
 void LLVMCompiler::enter_function(jit_function_t F, bool is_closure, Function* fun) {
 	// TODO
 }
 void LLVMCompiler::leave_function() {
 	// TODO
 }
-int LLVMCompiler::get_current_function_blocks() const { assert(false); }
-void LLVMCompiler::delete_function_variables() { assert(false); }
+int LLVMCompiler::get_current_function_blocks() const {
+	return 0; // TODO
+}
+void LLVMCompiler::delete_function_variables() {
+	// TODO
+}
 bool LLVMCompiler::is_current_function_closure() const { assert(false); }
 
 // Variables
