@@ -121,6 +121,10 @@ LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMC
 	return array;
 }
 
+LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
+	return new_mpz(0);
+}
+
 LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value) const {
 	assert(false);
 }

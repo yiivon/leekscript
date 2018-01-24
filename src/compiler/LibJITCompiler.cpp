@@ -306,6 +306,15 @@ LibJITCompiler::value LibJITCompiler::new_array(Type element_type, std::vector<L
 	return array;
 }
 
+LibJITCompiler::value LibJITCompiler::new_mpz_init(const mpz_t mpz_value) const {
+	jit_value_t mpz_struct = jit_value_create(F, VM::mpz_type);
+	jit_value_set_addressable(mpz_struct);
+	jit_insn_store_relative(F, jit_insn_address_of(F, mpz_struct), 0, LS_CREATE_INTEGER(F, mpz_value->_mp_alloc));
+	jit_insn_store_relative(F, jit_insn_address_of(F, mpz_struct), 4, LS_CREATE_INTEGER(F, mpz_value->_mp_size));
+	jit_insn_store_relative(F, jit_insn_address_of(F, mpz_struct), 8, new_pointer(mpz_value->_mp_d).v);
+	return {mpz_struct, Type::MPZ};
+}
+
 LibJITCompiler::value LibJITCompiler::to_int(LibJITCompiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);

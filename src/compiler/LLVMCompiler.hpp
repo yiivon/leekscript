@@ -36,6 +36,7 @@
 #include "../vm/Type.hpp"
 #include "../vm/Exception.hpp"
 #include "../vm/LSValue.hpp"
+#include <gmp.h>
 
 namespace ls {
 
@@ -164,6 +165,7 @@ public:
 	value new_object_class(value clazz) const;
 	value new_mpz(long value = 0) const;
 	value new_array(Type element_type, std::vector<value> elements) const;
+	value new_mpz_init(const mpz_t mpz) const;
 
 	// Conversions
 	value to_int(value) const;
