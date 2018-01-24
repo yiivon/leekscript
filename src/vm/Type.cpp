@@ -446,7 +446,7 @@ llvm::Type* Type::llvm_type() const {
 		return llvm::Type::getVoidTy(LLVMCompiler::context);
 	}
 	if (reference or nature == Nature::POINTER or nature == Nature::UNKNOWN or raw_type == RawType::FUNCTION) {
-		return llvm::Type::getInt64Ty(LLVMCompiler::context);
+		return llvm::Type::getInt8PtrTy(LLVMCompiler::context);
 	}
 	if (raw_type == RawType::MPZ) {
 		// return VM::mpz_type;
