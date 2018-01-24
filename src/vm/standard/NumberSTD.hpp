@@ -3,11 +3,11 @@
 
 #include <math.h>
 #include "../Module.hpp"
+#include "../../compiler/Compiler.hpp"
 
 namespace ls {
 
 class LSNumber;
-class Compiler;
 
 class NumberSTD : public Module {
 public:

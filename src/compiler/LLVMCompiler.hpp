@@ -192,8 +192,27 @@ public:
 	value insn_bit_or(value, value) const;
 	value insn_bit_xor(value, value) const;
 	value insn_mod(value, value) const;
-	value insn_pow(value, value) const;
+	value insn_cmpl(value, value) const;
+
+	// Math Functions
+	value insn_log(value) const;
 	value insn_log10(value) const;
+	value insn_ceil(value) const;
+	value insn_round(value) const;
+	value insn_floor(value) const;
+	value insn_cos(value) const;
+	value insn_sin(value) const;
+	value insn_tan(value) const;
+	value insn_acos(value) const;
+	value insn_asin(value) const;
+	value insn_atan(value) const;
+	value insn_sqrt(value) const;
+	value insn_pow(value, value) const;
+	value insn_min(value, value) const;
+	value insn_max(value, value) const;
+	value insn_exp(value) const;
+	value insn_atan2(value, value) const;
+	value insn_abs(value) const;
 
 	// Value management
 	value insn_create_value(Type t) const;

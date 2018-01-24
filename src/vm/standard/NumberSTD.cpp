@@ -338,7 +338,7 @@ Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args) {
 	auto x = c.insn_load(args[0], 0, Type::REAL);
 	auto sum = c.insn_add(x, args[1]);
-	jit_insn_store_relative(c.F, args[0].v, 0, sum.v);
+	c.insn_store_relative(args[0], 0, sum);
 	return sum;
 }
 
@@ -374,7 +374,7 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	auto cond = c.insn_lt(b, c.new_integer(0));
 	c.insn_branch_if_not(cond, &label_else);
 
-	Compiler::value neg_b = {jit_insn_neg(c.F, b.v), Type::INTEGER};
+	Compiler::value neg_b = c.insn_neg(b);
 	c.insn_call(Type::VOID, {r_addr, a, neg_b}, &mpz_add_ui, "mpz_add_ui");
 	c.insn_branch(&label_end);
 
@@ -469,7 +469,7 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	// Ops: size of the theorical result
 	c.inc_ops_jit(r_size);
 
-	VM::inc_mpz_counter(c.F);
+	// VM::inc_mpz_counter(c.F);
 	return c.insn_call(Type::MPZ_TMP, args, &pow_mpz_int_lambda, "pow_mpz_int");
 }
 
@@ -551,31 +551,31 @@ Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> 
 }
 
 Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> args) {
-	jit_type_t arg_types[] = {LS_POINTER, LS_INTEGER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 1);
-	auto i = args[0].v;
-	auto f = args[1].v;
-	auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
-	jit_value_t jit_args[] = {f, i};
-	Compiler::value r = {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
-	// Double-free required here
-	jit_type_free(sig);
-	jit_type_free(sig);
-	return r;
+	// jit_type_t arg_types[] = {LS_POINTER, LS_INTEGER};
+	// jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 1);
+	// auto i = args[0].v;
+	// auto f = args[1].v;
+	// auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
+	// jit_value_t jit_args[] = {f, i};
+	// Compiler::value r = {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
+	// // Double-free required here
+	// jit_type_free(sig);
+	// jit_type_free(sig);
+	// return r;
 }
 
 Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> args) {
-	jit_type_t arg_types[] = {LS_POINTER, LS_REAL};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 1);
-	auto r = args[0].v;
-	auto f = args[1].v;
-	auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
-	jit_value_t jit_args[] = {f, r};
-	Compiler::value res = {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
-	// Double-free required here
-	jit_type_free(sig);
-	jit_type_free(sig);
-	return res;
+	// jit_type_t arg_types[] = {LS_POINTER, LS_REAL};
+	// jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 1);
+	// auto r = args[0].v;
+	// auto f = args[1].v;
+	// auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
+	// jit_value_t jit_args[] = {f, r};
+	// Compiler::value res = {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::POINTER};
+	// // Double-free required here
+	// jit_type_free(sig);
+	// jit_type_free(sig);
+	// return res;
 }
 
 Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args) {
@@ -625,7 +625,7 @@ Compiler::value NumberSTD::abs_ptr(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value NumberSTD::abs_number(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_abs(c.F, args[0].v), args[0].t};
+	return c.insn_abs(args[0]);
 }
 
 double NumberSTD::acos_ptr(LSNumber* x) {
@@ -635,7 +635,7 @@ double NumberSTD::acos_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::acos_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_acos(c.F, args[0].v), Type::REAL};
+	return c.insn_acos(args[0]);
 }
 
 double NumberSTD::asin_ptr(LSNumber* x) {
@@ -645,7 +645,7 @@ double NumberSTD::asin_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::asin_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_asin(c.F, args[0].v), Type::REAL};
+	return c.insn_asin(args[0]);
 }
 
 double NumberSTD::atan_ptr(LSNumber* x) {
@@ -655,7 +655,7 @@ double NumberSTD::atan_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::atan_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_atan(c.F, args[0].v), Type::REAL};
+	return c.insn_atan(args[0]);
 }
 
 double NumberSTD::atan2_ptr_ptr(LSNumber* y, LSNumber* x) {
@@ -678,7 +678,7 @@ double NumberSTD::atan2_real_ptr(double y, LSNumber* x) {
 }
 
 Compiler::value NumberSTD::atan2_real_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_atan2(c.F, args[0].v, args[1].v), Type::REAL};
+	return c.insn_atan2(args[0], args[1]);
 }
 
 LSString* NumberSTD::char_ptr(LSNumber* x) {
@@ -714,7 +714,7 @@ double NumberSTD::exp_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::exp_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_exp(c.F, args[0].v), Type::REAL};
+	return c.insn_exp(args[0]);
 }
 
 int NumberSTD::floor_ptr(LSNumber* x) {
@@ -724,7 +724,7 @@ int NumberSTD::floor_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::floor_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_floor(c.F, args[0].v), Type::REAL};
+	return c.insn_floor(args[0]);
 }
 
 Compiler::value NumberSTD::floor_int(Compiler&, std::vector<Compiler::value> args) {
@@ -738,7 +738,7 @@ int NumberSTD::round_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::round_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_round(c.F, args[0].v), Type::REAL};
+	return c.insn_round(args[0]);
 }
 
 Compiler::value NumberSTD::round_int(Compiler&, std::vector<Compiler::value> args) {
@@ -752,7 +752,7 @@ int NumberSTD::ceil_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::ceil_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_ceil(c.F, args[0].v), Type::REAL};
+	return c.insn_ceil(args[0]);
 }
 
 Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args) {
@@ -786,7 +786,7 @@ double NumberSTD::max_int_ptr(int x, LSNumber* y) {
 	return max;
 }
 Compiler::value NumberSTD::max_float_float(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_max(c.F, args[0].v, args[1].v), Type::REAL};
+	return c.insn_max(args[0], args[1]);
 }
 
 double NumberSTD::min_ptr_ptr(LSNumber* x, LSNumber* y) {
@@ -816,7 +816,7 @@ double NumberSTD::min_int_ptr(int x, LSNumber* y) {
 	return min;
 }
 Compiler::value NumberSTD::min_float_float(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_min(c.F, args[0].v, args[1].v), Type::REAL};
+	return c.insn_min(args[0], args[1]);
 }
 
 double NumberSTD::cos_ptr(LSNumber* x) {
@@ -825,7 +825,7 @@ double NumberSTD::cos_ptr(LSNumber* x) {
 	return c;
 }
 Compiler::value NumberSTD::cos_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_cos(c.F, args[0].v), Type::REAL};
+	return c.insn_cos(args[0]);
 }
 
 double NumberSTD::sin_ptr(LSNumber* x) {
@@ -834,7 +834,7 @@ double NumberSTD::sin_ptr(LSNumber* x) {
 	return s;
 }
 Compiler::value NumberSTD::sin_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_sin(c.F, args[0].v), Type::REAL};
+	return c.insn_sin(args[0]);
 }
 
 double NumberSTD::tan_ptr(LSNumber* x) {
@@ -843,7 +843,7 @@ double NumberSTD::tan_ptr(LSNumber* x) {
 	return c;
 }
 Compiler::value NumberSTD::tan_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_tan(c.F, args[0].v), Type::REAL};
+	return c.insn_tan(args[0]);
 }
 
 double NumberSTD::sqrt_ptr(LSNumber* x) {
@@ -867,7 +867,7 @@ Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> ar
 }
 
 Compiler::value NumberSTD::sqrt_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_sqrt(c.F, args[0].v), Type::REAL};
+	return c.insn_sqrt(args[0]);
 }
 
 double NumberSTD::cbrt_ptr(LSNumber* x) {
@@ -883,7 +883,7 @@ Compiler::value NumberSTD::cbrt_real(Compiler& c, std::vector<Compiler::value> a
 }
 
 Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_pow(c.F, args[0].v, args[1].v), Type::LONG};
+	return c.insn_pow(args[0], args[1]);
 }
 
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
@@ -937,7 +937,7 @@ Compiler::value NumberSTD::log_ptr(Compiler& c, std::vector<Compiler::value> arg
 	});
 }
 Compiler::value NumberSTD::log_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_log(c.F, args[0].v), Type::REAL};
+	return c.insn_log(args[0]);
 }
 
 Compiler::value NumberSTD::log10_ptr(Compiler& c, std::vector<Compiler::value> args) {
@@ -948,7 +948,7 @@ Compiler::value NumberSTD::log10_ptr(Compiler& c, std::vector<Compiler::value> a
 	});
 }
 Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> args) {
-	return {jit_insn_log10(c.F, args[0].v), Type::REAL};
+	return c.insn_log10(args[0]);
 }
 
 Compiler::value NumberSTD::pow_ptr(Compiler& c, std::vector<Compiler::value> args) {

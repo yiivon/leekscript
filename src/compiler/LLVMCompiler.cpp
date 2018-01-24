@@ -167,8 +167,31 @@ LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value, LLVMCompiler
 LLVMCompiler::value LLVMCompiler::insn_bit_or(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_bit_xor(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_cmpl(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_log(LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_log10(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_ceil(LLVMCompiler::value) const {
+	assert(false);
+}
+LLVMCompiler::value LLVMCompiler::insn_round(LLVMCompiler::value) const {
+	assert(false);
+}
+LLVMCompiler::value LLVMCompiler::insn_floor(LLVMCompiler::value) const {
+	assert(false);
+}
+LLVMCompiler::value LLVMCompiler::insn_cos(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_sin(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_tan(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_acos(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_asin(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_atan(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_sqrt(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_min(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_max(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_exp(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_atan2(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value) const { assert(false); }
 
 // LLVMCompiler::value management
 LLVMCompiler::value LLVMCompiler::insn_create_value(Type t) const { assert(false); }
