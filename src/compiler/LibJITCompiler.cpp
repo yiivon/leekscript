@@ -1133,6 +1133,10 @@ void LibJITCompiler::inc_ops_jit(LibJITCompiler::value amount) const {
 	insn_label(&label_end);
 }
 
+void LibJITCompiler::mark_offset(int line) {
+	jit_insn_mark_offset(F, line);
+}
+
 void LibJITCompiler::add_catcher(label start, label end, label handler) {
 	catchers.back().push_back({start, end, handler, {}});
 }

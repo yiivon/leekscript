@@ -40,7 +40,7 @@ Compiler::value Throw::compile(Compiler& c) const {
 		exception = expression->compile(c);
 	}
 
-	jit_insn_mark_offset(c.F, token->location.start.line);
+	c.mark_offset(token->location.start.line);
 
 	auto ex = c.insn_call(Type::POINTER, {exception}, &VM::get_exception_object<0>);
 	c.insn_throw(ex);

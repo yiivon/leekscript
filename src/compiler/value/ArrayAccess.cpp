@@ -191,7 +191,7 @@ void ArrayAccess::change_type(SemanticAnalyser* analyser, const Type& new_type) 
 
 Compiler::value ArrayAccess::compile(Compiler& c) const {
 
-	jit_insn_mark_offset(c.F, open_bracket->location.start.line);
+	c.mark_offset(open_bracket->location.start.line);
 
 	((ArrayAccess*) this)->compiled_array = array->compile(c);
 	array->compile_end(c);
@@ -337,7 +337,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		auto k = key->compile(c);
 		key->compile_end(c);
 		// Access
-		jit_insn_mark_offset(c.F, location().start.line);
+		c.mark_offset(location().start.line);
 		if (array->type.raw_type == RawType::ARRAY) {
 			// return c.insn_call(Type::POINTER, {compiled_array, k}, +[](LSArray<LSValue*>* array, int key) {
 			// 	return array->atL(LSNumber::get(key));
@@ -402,7 +402,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		auto end = key2->compile(c);
 		key->compile_end(c);
 		key2->compile_end(c);
-		jit_insn_mark_offset(c.F, open_bracket->location.start.line);
+		c.mark_offset(open_bracket->location.start.line);
 		return c.insn_call(Type::POINTER, {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
 			// TODO
 			a->rangeL(start, end);

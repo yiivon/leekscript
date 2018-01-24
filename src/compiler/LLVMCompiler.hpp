@@ -279,6 +279,7 @@ public:
 	void get_operations() const;
 
 	/** Exceptions **/
+	void mark_offset(int line);
 	void add_catcher(label start, label end, label handler);
 	void insn_check_args(std::vector<value> args, std::vector<LSValueType> types) const;
 

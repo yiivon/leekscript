@@ -534,7 +534,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		c.insn_inc_refs(args.at(offset + i));
 	}
 
-	jit_insn_mark_offset(c.F, location().start.line);
+	c.mark_offset(location().start.line);
 
 	// TODO : some tests are failing with this
 	// c.insn_check_args(args, lsvalue_types);

@@ -37,7 +37,7 @@ void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 Compiler::value AbsoluteValue::compile(Compiler& c) const {
 	auto ex = expression->compile(c);
-	jit_insn_mark_offset(c.F, location().start.line);
+	c.mark_offset(location().start.line);
 	auto abso = c.insn_call(Type::INTEGER, {ex}, (void*) +[](LSValue* v) {
 		return v->abso();
 	});

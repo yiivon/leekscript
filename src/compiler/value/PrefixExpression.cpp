@@ -121,7 +121,7 @@ LSValue* jit_pre_tilde(LSValue* v) {
 
 Compiler::value PrefixExpression::compile(Compiler& c) const {
 
-	jit_insn_mark_offset(c.F, location().start.line);
+	c.mark_offset(location().start.line);
 
 	Compiler::value arg;
 	void* func = nullptr;

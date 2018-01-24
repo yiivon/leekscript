@@ -277,6 +277,9 @@ void LLVMCompiler::inc_ops_jit(LLVMCompiler::value add) const { assert(false); }
 void LLVMCompiler::get_operations() const { assert(false); }
 
 /** Exceptions **/
+void LLVMCompiler::mark_offset(int line) {
+	// TODO
+}
 void LLVMCompiler::add_catcher(label start, label end, label handler) { assert(false); }
 void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::vector<LSValueType> types) const { assert(false); }
 

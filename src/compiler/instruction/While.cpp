@@ -43,7 +43,7 @@ Compiler::value While::compile(Compiler& c) const {
 	Compiler::label label_cond;
 	Compiler::label label_end;
 
-	jit_insn_mark_offset(c.F, location().start.line);
+	c.mark_offset(location().start.line);
 
 	// condition
 	c.insn_label(&label_cond);
