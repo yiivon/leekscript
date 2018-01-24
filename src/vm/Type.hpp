@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cassert>
 #include <jit/jit.h>
+#include "llvm/IR/Type.h"
 
 namespace ls {
 
@@ -298,6 +299,7 @@ public:
 	Type not_temporary() const;
 	Type add_temporary() const;
 	jit_type_t jit_type() const;
+	llvm::Type* llvm_type() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }

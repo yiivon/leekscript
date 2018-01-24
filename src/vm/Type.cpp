@@ -441,6 +441,28 @@ jit_type_t Type::jit_type() const {
 	return LS_INTEGER;
 }
 
+llvm::Type* Type::llvm_type() const {
+	if (nature == Nature::VOID) {
+		return llvm::Type::getVoidTy(LLVMCompiler::context);
+	}
+	if (reference or nature == Nature::POINTER or nature == Nature::UNKNOWN or raw_type == RawType::FUNCTION) {
+		return llvm::Type::getInt64Ty(LLVMCompiler::context);
+	}
+	if (raw_type == RawType::MPZ) {
+		// return VM::mpz_type;
+	}
+	if (raw_type == RawType::BOOLEAN) {
+		return llvm::Type::getInt1Ty(LLVMCompiler::context);
+	}
+	if (raw_type == RawType::LONG) {
+		return llvm::Type::getInt64Ty(LLVMCompiler::context);
+	}
+	if (raw_type == RawType::REAL) {
+		return llvm::Type::getDoubleTy(LLVMCompiler::context);
+	}
+	return llvm::Type::getInt32Ty(LLVMCompiler::context);
+}
+
 /*
  * Can we convert type into this ?
  * {float}.compatible({int}) == true
