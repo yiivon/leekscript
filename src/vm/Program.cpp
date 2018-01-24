@@ -28,11 +28,13 @@ Program::Program(const std::string& code, const std::string& file_name) {
 Program::~Program() {
 	if (main != nullptr) {
 		delete main;
+		vm->compiler.removeModule(main->function_handle);
 	}
 }
 
 VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions) {
 
+	this->vm = &vm;
 	VM::Result result;
 
 	// Lexical analysis
@@ -74,10 +76,9 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	}
 
 	// Compilation
-	jit_init();
-	jit_context_build_start(vm.jit_context);
 	vm.internals.clear();
 	vm.compiler.program = this;
+	vm.compiler.init();
 	vm.compiler.output_assembly = assembly;
 	vm.compiler.output_pseudo_code = pseudo_code;
 	vm.compiler.log_instructions = log_instructions;
@@ -85,8 +86,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	vm.compiler.label_map.clear();
 	main->compile(vm.compiler);
 	closure = main->default_version->function->function;
-	// vm.compiler.leave_function();
-	jit_context_build_end(vm.jit_context);
+	vm.compiler.leave_function();
 
 	// Result
 	result.compilation_success = true;
@@ -105,8 +105,8 @@ void Program::analyse(SemanticAnalyser* analyser) {
 
 std::string Program::execute(VM& vm) {
 
-	auto handler = &VM::get_exception_object<1>;
-	jit_exception_set_handler(handler);
+	// auto handler = &VM::get_exception_object<1>;
+	// jit_exception_set_handler(handler);
 
 	Type output_type = main->type.getReturnType();
 

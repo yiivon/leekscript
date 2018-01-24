@@ -16,6 +16,7 @@ public:
 	Function* main;
 	std::vector<Function*> functions;
 	std::string file_name;
+	VM* vm;
 
 	Program(const std::string& code, const std::string& file_name);
 	virtual ~Program();

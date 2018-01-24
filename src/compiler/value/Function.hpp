@@ -6,6 +6,7 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "Value.hpp"
 #include "Block.hpp"
+#include "llvm/ExecutionEngine/Orc/IRCompileLayer.h"
 
 namespace ls {
 
@@ -42,6 +43,7 @@ public:
 	Version* current_version = nullptr;
 	bool analyzed = false;
 	Type return_type = Type::UNKNOWN;
+	llvm::orc::IRCompileLayer<llvm::orc::RTDyldObjectLinkingLayer, llvm::orc::SimpleCompiler>::ModuleHandleT function_handle;
 
 	Function();
 	virtual ~Function();

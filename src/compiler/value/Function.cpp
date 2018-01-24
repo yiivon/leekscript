@@ -466,44 +466,29 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	Compiler::value jit_fun;
 	if (!is_main_function) {
 		jit_fun = c.new_pointer(ls_fun);
-		for (const auto& cap : captures) {
-			jit_value_t jit_cap;
-			if (cap->scope == VarScope::LOCAL) {
-				auto f = dynamic_cast<Function*>(cap->value);
-				if (cap->has_version && f) {
-					jit_cap = f->compile_version(c, cap->version).v;
-				} else {
-					jit_cap = c.get_var(cap->name).v;
-				}
-			} else if (cap->scope == VarScope::CAPTURE) {
-				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
-			} else {
-				int offset = c.is_current_function_closure() ? 1 : 0;
-				jit_cap = jit_value_get_param(c.F, offset + cap->index);
-			}
-			if (cap->initial_type.nature != Nature::POINTER) {
-				jit_cap = c.insn_to_pointer({jit_cap, cap->initial_type}).v;
-			}
-			c.function_add_capture(jit_fun, {jit_cap, Type::POINTER});
-		}
+		// for (const auto& cap : captures) {
+		// 	jit_value_t jit_cap;
+		// 	if (cap->scope == VarScope::LOCAL) {
+		// 		auto f = dynamic_cast<Function*>(cap->value);
+		// 		if (cap->has_version && f) {
+		// 			jit_cap = f->compile_version(c, cap->version).v;
+		// 		} else {
+		// 			jit_cap = c.get_var(cap->name).v;
+		// 		}
+		// 	} else if (cap->scope == VarScope::CAPTURE) {
+		// 		jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
+		// 	} else {
+		// 		int offset = c.is_current_function_closure() ? 1 : 0;
+		// 		jit_cap = jit_value_get_param(c.F, offset + cap->index);
+		// 	}
+		// 	if (cap->initial_type.nature != Nature::POINTER) {
+		// 		jit_cap = c.insn_to_pointer({jit_cap, cap->initial_type}).v;
+		// 	}
+		// 	c.function_add_capture(jit_fun, {jit_cap, Type::POINTER});
+		// }
 	}
 
-	vector<jit_type_t> params;
-	if (captures.size()) {
-		 params.push_back(LS_POINTER); // first arg is the function pointer
-	}
-	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type t = version->type.getArgumentType(i);
-		params.push_back(t.jit_type());
-	}
-	jit_type_t signature = jit_type_create_signature(jit_abi_cdecl, version->type.getReturnType().jit_type(), params.data(), params.size(), 1);
-	auto jit_function = jit_function_create(c.vm->jit_context, signature);
-	jit_function_set_meta(jit_function, 12, new std::string(name), nullptr, 0);
-	jit_function_set_meta(jit_function, 13, new std::string(file), nullptr, 0);
-	jit_type_free(signature);
-	jit_insn_uses_catcher(jit_function);
-
-	c.enter_function(jit_function, captures.size() > 0, (Function*) this);
+	c.enter_function(nullptr, captures.size() > 0, (Function*) this);
 
 	// System internal variables (for main function only)
 	if (is_main_function) {
@@ -511,10 +496,18 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 			auto name = var.first;
 			auto value = var.second;
 			auto val = c.new_pointer(value);
-			c.vm->internals.insert(pair<string, jit_value_t>(name, val.v));
+			// c.vm->internals.insert(pair<string, jit_value_t>(name, val.v));
 		}
 	}
 
+	std::vector<llvm::Type*> args = {};
+	auto llvm_return_type = version->type.getReturnType().llvm_type();
+ 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
+ 	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun", LLVMCompiler::TheModule.get());
+	auto block = llvm::BasicBlock::Create(LLVMCompiler::context, "entry", llvm_function);
+	LLVMCompiler::Builder.SetInsertPoint(block);
+
+	// Compile body
 	auto res = version->body->compile(c);
 	// Must return a boolean
 	if (return_type == Type::BOOLEAN) {
@@ -526,48 +519,51 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.insn_return(res);
 	} else {
 		// TODO should be removed, no return if there's no value
-		jit_insn_return(c.F, nullptr);
+		c.insn_return(c.new_integer(0));
 	}
+
+	// Validate the generated code, checking for consistency.
+	verifyFunction(*llvm_function);
+	// Run the optimizer on the function.
+	LLVMCompiler::TheFPM->run(*llvm_function);
 
 	// catch (ex)
-	auto ex = jit_insn_start_catcher(jit_function);
-	auto catchers = c.catchers.back();
-	if (catchers.size() > 0) {
-		for (size_t i = 0; i < catchers.size() - 1; ++i) {
-			auto ca = catchers[i];
-			c.insn_branch_if_pc_not_in_range(&ca.start, &ca.end, &ca.next);
-			c.insn_call(Type::VOID, {{ex, Type::POINTER}}, (void*)+[](vm::ExceptionObj* ex) {
-				delete ex;
-			});
-			c.insn_branch(&ca.handler);
-			c.insn_label(&ca.next);
-		}
-		c.insn_branch(&catchers.back().handler);
-	} else {
-		c.delete_function_variables();
-		if (is_main_function) {
-			c.vm->store_exception(jit_function, ex);
-		} else {
-			jit_insn_rethrow_unhandled(jit_function);
-		}
-	}
+	// auto ex = jit_insn_start_catcher(jit_function);
+	// auto catchers = c.catchers.back();
+	// if (catchers.size() > 0) {
+	// 	for (size_t i = 0; i < catchers.size() - 1; ++i) {
+	// 		auto ca = catchers[i];
+	// 		c.insn_branch_if_pc_not_in_range(&ca.start, &ca.end, &ca.next);
+	// 		// c.insn_call(Type::VOID, {{ex, Type::POINTER}}, (void*)+[](vm::ExceptionObj* ex) {
+	// 		// 	delete ex;
+	// 		// });
+	// 		c.insn_branch(&ca.handler);
+	// 		c.insn_label(&ca.next);
+	// 	}
+	// 	c.insn_branch(&catchers.back().handler);
+	// } else {
+	// 	c.delete_function_variables();
+	// 	if (is_main_function) {
+	// 		c.vm->store_exception(jit_function, ex);
+	// 	} else {
+	// 		jit_insn_rethrow_unhandled(jit_function);
+	// 	}
+	// }
 
 	if (c.output_pseudo_code) {
-		char buf[64 * 1024];
-	    auto fp = fmemopen(buf, sizeof(buf), "w");
-		jit_dump_function(fp, jit_function, name.c_str());
-		fclose(fp);
-		c.pseudo_code << buf;
+		// char buf[64 * 1024];
+	    // auto fp = fmemopen(buf, sizeof(buf), "w");
+		// jit_dump_function(fp, jit_function, name.c_str());
+		// fclose(fp);
+		// c.pseudo_code << buf;
 	}
 
-	jit_function_compile(jit_function);
-
 	if (c.output_assembly) {
-		char buf[64 * 1024];
-	    auto fp = fmemopen(buf, sizeof(buf), "w");
-		jit_dump_function(fp, jit_function, name.c_str());
-		fclose(fp);
-		c.assembly << buf;
+	// 	char buf[64 * 1024];
+	//     auto fp = fmemopen(buf, sizeof(buf), "w");
+	// 	jit_dump_function(fp, jit_function, name.c_str());
+	// 	fclose(fp);
+	// 	c.assembly << buf;
 	}
 
 	if (!is_main_function) {
@@ -581,10 +577,17 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	// Function are always pointers for now
 	// functions as a simple pointer value can be like :
 	// {c.new_pointer(f).v, type};
-	void* f = jit_function_to_closure(jit_function);
-	ls_fun->function = f;
+
+	// JIT the module containing the anonymous expression, keeping a handle so we can free it later.
+	((Function*) this)->function_handle = c.addModule(std::move(LLVMCompiler::TheModule));
+	// Search the JIT for the "fun" symbol.
+	auto ExprSymbol = c.findSymbol("fun");
+	assert(ExprSymbol && "Function not found");
+	// Get the symbol's address and cast it to the right type (takes no
+	// arguments, returns a double) so we can call it as a native function.
+	int (*FP)() = (int (*)())(intptr_t) cantFail(ExprSymbol.getAddress());
+	ls_fun->function = (void*) FP;
 	version->function = ls_fun;
-	version->jit_function = jit_function;
 }
 
 Value* Function::clone() const {
