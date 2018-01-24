@@ -19,6 +19,11 @@ Test::Test() : vmv1(true) {
 Test::~Test() {}
 
 int main(int, char**) {
+
+	llvm::InitializeNativeTarget();
+	llvm::InitializeNativeTargetAsmPrinter();
+	llvm::InitializeNativeTargetAsmParser();
+
 	srand(time(0));
 	return Test().all();
 }
