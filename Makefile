@@ -28,9 +28,9 @@ OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 COMPILER := g++
 OPTIM := -O2
-FLAGS := -std=c++14 -g3 -Wall -Wextra -Wno-pmf-conversions
+FLAGS := -std=c++14 -isystem/usr/lib/llvm-5.0/include -Wno-overloaded-virtual -Wno-unused-parameter
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
-LIBS := -ljit -lgmp
+LIBS := -lm -ljit -lgmp `llvm-config --ldflags --libs core orcjit`
 MAKEFLAGS += --jobs=$(shell nproc)
 
 CLOC_EXCLUDED := .git,lib,build,doxygen
