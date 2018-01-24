@@ -459,7 +459,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 }
 
 void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
-	// std::cout << "Function::compile_version_internal(" << args << ")" << std::endl;
+	// std::cout << "Function::compile_version_internal(" << version->type << ")" << std::endl;
 
 	auto ls_fun = version->function;
 
