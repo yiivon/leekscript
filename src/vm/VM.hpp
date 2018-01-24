@@ -11,7 +11,6 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 #include "../compiler/lexical/LexicalError.hpp"
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
