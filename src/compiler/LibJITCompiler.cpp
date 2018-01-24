@@ -1,4 +1,4 @@
-#include "Compiler.hpp"
+#include "LibJITCompiler.hpp"
 #include "../vm/VM.hpp"
 #include "../vm/value/LSNull.hpp"
 #include "../vm/value/LSArray.hpp"
@@ -14,11 +14,11 @@
 
 namespace ls {
 
-Compiler::Compiler(VM* vm) : vm(vm) {}
+LibJITCompiler::LibJITCompiler(VM* vm) : vm(vm) {}
 
-Compiler::~Compiler() {}
+LibJITCompiler::~LibJITCompiler() {}
 
-void Compiler::enter_block() {
+void LibJITCompiler::enter_block() {
 	variables.push_back(std::map<std::string, value> {});
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()++;
@@ -26,7 +26,7 @@ void Compiler::enter_block() {
 	functions_blocks.back()++;
 }
 
-void Compiler::leave_block() {
+void LibJITCompiler::leave_block() {
 	delete_variables_block(1);
 	variables.pop_back();
 	if (!loops_blocks.empty()) {
@@ -35,7 +35,7 @@ void Compiler::leave_block() {
 	functions_blocks.back()--;
 }
 
-void Compiler::delete_variables_block(int deepness) {
+void LibJITCompiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			insn_delete(it->second);
@@ -43,13 +43,13 @@ void Compiler::delete_variables_block(int deepness) {
 	}
 }
 
-void Compiler::delete_function_variables() {
+void LibJITCompiler::delete_function_variables() {
 	for (const auto& v : function_variables.back()) {
 		insn_delete(v);
 	}
 }
 
-void Compiler::enter_function(jit_function_t F, bool is_closure, Function* fun) {
+void LibJITCompiler::enter_function(jit_function_t F, bool is_closure, Function* fun) {
 	variables.push_back(std::map<std::string, value> {});
 	function_variables.push_back(std::vector<value> {});
 	functions.push(F);
@@ -69,7 +69,7 @@ void Compiler::enter_function(jit_function_t F, bool is_closure, Function* fun) 
 	log_insn(0) << ") {" << std::endl;
 }
 
-void Compiler::leave_function() {
+void LibJITCompiler::leave_function() {
 	variables.pop_back();
 	function_variables.pop_back();
 	functions.pop();
@@ -81,144 +81,144 @@ void Compiler::leave_function() {
 	log_insn(0) << "}" << std::endl;
 }
 
-int Compiler::get_current_function_blocks() const {
+int LibJITCompiler::get_current_function_blocks() const {
 	return functions_blocks.back();
 }
 
-bool Compiler::is_current_function_closure() const {
+bool LibJITCompiler::is_current_function_closure() const {
 	return function_is_closure.size() ? function_is_closure.top() : false;
 }
 
 /*
  * Operators
  */
-void Compiler::insn_store(Compiler::value a, Compiler::value b) const {
+void LibJITCompiler::insn_store(LibJITCompiler::value a, LibJITCompiler::value b) const {
 	jit_insn_store(F, a.v, b.v);
 	log_insn(4) << "store " << dump_val(a) << " " << dump_val(b) << std::endl;
 }
-void Compiler::insn_store_relative(Compiler::value a, int pos, Compiler::value b) const {
+void LibJITCompiler::insn_store_relative(LibJITCompiler::value a, int pos, LibJITCompiler::value b) const {
 	jit_insn_store_relative(F, a.v, pos, b.v);
 	log_insn(4) << "store_rel " << dump_val(a) << " " << dump_val(b) << std::endl;
 }
-Compiler::value Compiler::insn_not(Compiler::value v) const {
-	Compiler::value r {jit_insn_not(F, v.v), v.t};
+LibJITCompiler::value LibJITCompiler::insn_not(LibJITCompiler::value v) const {
+	LibJITCompiler::value r {jit_insn_not(F, v.v), v.t};
 	log_insn(4) << "not " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_not_bool(Compiler::value v) const {
-	Compiler::value r {jit_insn_to_not_bool(F, v.v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_not_bool(LibJITCompiler::value v) const {
+	LibJITCompiler::value r {jit_insn_to_not_bool(F, v.v), Type::BOOLEAN};
 	log_insn(4) << "not_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_neg(Compiler::value v) const {
-	Compiler::value r {jit_insn_neg(F, v.v), v.t};
+LibJITCompiler::value LibJITCompiler::insn_neg(LibJITCompiler::value v) const {
+	LibJITCompiler::value r {jit_insn_neg(F, v.v), v.t};
 	log_insn(4) << "neg " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_and(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_and(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_and(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_and(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
 	log_insn(4) << "and " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_or(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_or(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_or(F, insn_to_bool(a).v, insn_to_bool(b).v), Type::BOOLEAN};
 	log_insn(4) << "or " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
+LibJITCompiler::value LibJITCompiler::insn_add(LibJITCompiler::value a, LibJITCompiler::value b) const {
 	auto result_type = [&]() {
 		if (a.t.nature == Nature::POINTER or b.t.nature == Nature::POINTER) return Type::POINTER;
 		if (a.t == Type::REAL or b.t == Type::REAL) return Type::REAL;
 		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
 		return Type::INTEGER;
 	}();
-	Compiler::value r {jit_insn_convert(F, jit_insn_add(F, a.v, b.v), result_type.jit_type(), 0), result_type};
+	LibJITCompiler::value r {jit_insn_convert(F, jit_insn_add(F, a.v, b.v), result_type.jit_type(), 0), result_type};
 	log_insn(4) << "add " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
+LibJITCompiler::value LibJITCompiler::insn_sub(LibJITCompiler::value a, LibJITCompiler::value b) const {
 	auto result_type = [&]() {
 		if (a.t == Type::POINTER or b.t == Type::POINTER) return Type::POINTER;
 		if (a.t == Type::REAL or b.t == Type::REAL) return Type::REAL;
 		if (a.t == Type::LONG or b.t == Type::LONG) return Type::LONG;
 		return Type::INTEGER;
 	}();
-	Compiler::value r {jit_insn_sub(F, a.v, b.v), result_type};
+	LibJITCompiler::value r {jit_insn_sub(F, a.v, b.v), result_type};
 	log_insn(4) << "sub " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_eq(F, a.v, b.v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_eq(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_eq(F, a.v, b.v), Type::BOOLEAN};
 	log_insn(4) << "eq " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_ne(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_ne(F, a.v, b.v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_ne(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_ne(F, a.v, b.v), Type::BOOLEAN};
 	log_insn(4) << "ne " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_lt(F, a.v, b.v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_lt(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_lt(F, a.v, b.v), Type::BOOLEAN};
 	log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_le(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_le(F, a.v, b.v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_le(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_le(F, a.v, b.v), Type::BOOLEAN};
 	log_insn(4) << "le " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_gt(F, a.v, b.v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_gt(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_gt(F, a.v, b.v), Type::BOOLEAN};
 	log_insn(4) << "gt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_ge(F, a.v, b.v), Type::BOOLEAN};
+LibJITCompiler::value LibJITCompiler::insn_ge(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_ge(F, a.v, b.v), Type::BOOLEAN};
 	log_insn(4) << "ge " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_mul(F, a.v, b.v), Type::INTEGER};
+LibJITCompiler::value LibJITCompiler::insn_mul(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_mul(F, a.v, b.v), Type::INTEGER};
 	log_insn(4) << "mul " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_div(F, jit_insn_convert(F, a.v, LS_REAL, 0), b.v), Type::REAL};
+LibJITCompiler::value LibJITCompiler::insn_div(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_div(F, jit_insn_convert(F, a.v, LS_REAL, 0), b.v), Type::REAL};
 	log_insn(4) << "div " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_int_div(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_div(F, a.v, b.v), Type::INTEGER};
+LibJITCompiler::value LibJITCompiler::insn_int_div(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_div(F, a.v, b.v), Type::INTEGER};
 	log_insn(4) << "idiv " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_bit_and(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_and(F, a.v, b.v), Type::INTEGER};
+LibJITCompiler::value LibJITCompiler::insn_bit_and(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_and(F, a.v, b.v), Type::INTEGER};
 	log_insn(4) << "bit_and " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_bit_or(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_or(F, a.v, b.v), Type::INTEGER};
+LibJITCompiler::value LibJITCompiler::insn_bit_or(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_or(F, a.v, b.v), Type::INTEGER};
 	log_insn(4) << "bit_or " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_bit_xor(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_xor(F, a.v, b.v), Type::INTEGER};
+LibJITCompiler::value LibJITCompiler::insn_bit_xor(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_xor(F, a.v, b.v), Type::INTEGER};
 	log_insn(4) << "bit_xor " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_rem(F, a.v, b.v), Type::INTEGER};
+LibJITCompiler::value LibJITCompiler::insn_mod(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_rem(F, a.v, b.v), Type::INTEGER};
 	log_insn(4) << "mod " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_pow(Compiler::value a, Compiler::value b) const {
-	Compiler::value r {jit_insn_pow(F, a.v, b.v), Type::INTEGER};
+LibJITCompiler::value LibJITCompiler::insn_pow(LibJITCompiler::value a, LibJITCompiler::value b) const {
+	LibJITCompiler::value r {jit_insn_pow(F, a.v, b.v), Type::INTEGER};
 	log_insn(4) << "pow " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
-Compiler::value Compiler::insn_log10(Compiler::value a) const {
-	Compiler::value r {jit_insn_log10(F, a.v), Type::INTEGER};
+LibJITCompiler::value LibJITCompiler::insn_log10(LibJITCompiler::value a) const {
+	LibJITCompiler::value r {jit_insn_log10(F, a.v), Type::INTEGER};
 	log_insn(4) << "log10 " << dump_val(a) << " " << dump_val(r) << std::endl;
 	return r;
 }
@@ -226,7 +226,7 @@ Compiler::value Compiler::insn_log10(Compiler::value a) const {
 /*
  * Values
  */
-Compiler::value Compiler::clone(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::clone(LibJITCompiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		if (v.t.reference) {
 			v = insn_load(v);
@@ -239,25 +239,25 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 	}
 	return v;
 }
-Compiler::value Compiler::new_null() const {
+LibJITCompiler::value LibJITCompiler::new_null() const {
 	return {jit_value_create_long_constant(F, LS_POINTER, (long) LSNull::get()), Type::NULLL};
 }
-Compiler::value Compiler::new_bool(bool b) const {
+LibJITCompiler::value LibJITCompiler::new_bool(bool b) const {
 	return {LS_CREATE_BOOLEAN(F, b), Type::BOOLEAN};
 }
-Compiler::value Compiler::new_integer(int i) const {
+LibJITCompiler::value LibJITCompiler::new_integer(int i) const {
 	return {LS_CREATE_INTEGER(F, i), Type::INTEGER};
 }
-Compiler::value Compiler::new_real(double r) const {
+LibJITCompiler::value LibJITCompiler::new_real(double r) const {
 	return {jit_value_create_float64_constant(F, jit_type_float64, r), Type::REAL};
 }
-Compiler::value Compiler::new_long(long l) const {
+LibJITCompiler::value LibJITCompiler::new_long(long l) const {
 	return {LS_CREATE_LONG(F, l), Type::LONG};
 }
-Compiler::value Compiler::new_pointer(const void* p) const {
+LibJITCompiler::value LibJITCompiler::new_pointer(const void* p) const {
 	return {jit_value_create_long_constant(F, LS_POINTER, (long)(void*)(p)), Type::POINTER};
 }
-Compiler::value Compiler::new_mpz(long value) const {
+LibJITCompiler::value LibJITCompiler::new_mpz(long value) const {
 	jit_value_t mpz_struct = jit_value_create(F, VM::mpz_type);
 	jit_value_set_addressable(mpz_struct);
 	auto mpz_addr = insn_address_of({mpz_struct, Type::MPZ});
@@ -266,19 +266,19 @@ Compiler::value Compiler::new_mpz(long value) const {
 	VM::inc_mpz_counter(F);
 	return {mpz_struct, Type::MPZ_TMP};
 }
-Compiler::value Compiler::new_object() const {
+LibJITCompiler::value LibJITCompiler::new_object() const {
 	return insn_call(Type::OBJECT_TMP, {}, +[]() {
 		// FIXME coverage doesn't work for the one line version
 		auto o = new LSObject();
 		return o;
 	}, "new_object");
 }
-Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
+LibJITCompiler::value LibJITCompiler::new_object_class(LibJITCompiler::value clazz) const {
 	return insn_call(Type::POINTER, {clazz}, +[](LSClass* clazz) {
 		return new LSObject(clazz);
 	});
 }
-Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {
+LibJITCompiler::value LibJITCompiler::new_array(Type element_type, std::vector<LibJITCompiler::value> elements) const {
 	auto array = [&]() { if (element_type == Type::INTEGER) {
 		return insn_call(Type::INT_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<int>();
@@ -306,37 +306,37 @@ Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::val
 	return array;
 }
 
-Compiler::value Compiler::to_int(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::to_int(LibJITCompiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);
 		return to_int(insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si"));
 	}
-	Compiler::value r {jit_insn_convert(F, v.v, LS_INTEGER, 0), Type::INTEGER};
+	LibJITCompiler::value r {jit_insn_convert(F, v.v, LS_INTEGER, 0), Type::INTEGER};
 	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
-Compiler::value Compiler::to_real(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::to_real(LibJITCompiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);
 		return to_real(insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si"));
 	}
-	Compiler::value r {jit_insn_convert(F, v.v, LS_REAL, 0), Type::REAL};
+	LibJITCompiler::value r {jit_insn_convert(F, v.v, LS_REAL, 0), Type::REAL};
 	log_insn(4) << "to_real " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
-Compiler::value Compiler::to_long(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::to_long(LibJITCompiler::value v) const {
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);
 		return insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si");
 	}
-	Compiler::value r {jit_insn_convert(F, v.v, LS_LONG, 0), Type::LONG};
+	LibJITCompiler::value r {jit_insn_convert(F, v.v, LS_LONG, 0), Type::LONG};
 	log_insn(4) << "to_long " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
-Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
+LibJITCompiler::value LibJITCompiler::insn_convert(LibJITCompiler::value v, Type t) const {
 	if (v.t.not_temporary() == t.not_temporary()) return v;
 	if (t == Type::REAL) {
 		return to_real(v);
@@ -348,11 +348,11 @@ Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
 	return v;
 }
 
-Compiler::value Compiler::insn_create_value(Type t) const {
+LibJITCompiler::value LibJITCompiler::insn_create_value(Type t) const {
 	return {jit_value_create(F, t.jit_type()), t};
 }
 
-Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::insn_to_pointer(LibJITCompiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
 		return v; // already a pointer
 	}
@@ -377,21 +377,21 @@ Compiler::value Compiler::insn_to_pointer(Compiler::value v) const {
 	}
 }
 
-Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::insn_to_bool(LibJITCompiler::value v) const {
 	if (v.t.raw_type == RawType::BOOLEAN) {
 		return v;
 	}
 	if (v.t.raw_type == RawType::INTEGER) {
-		Compiler::value r {jit_insn_to_bool(F, v.v), Type::BOOLEAN};
+		LibJITCompiler::value r {jit_insn_to_bool(F, v.v), Type::BOOLEAN};
 		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
 	}
 	if (v.t.raw_type == RawType::STRING) {
-		return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool, "String::to_bool");
+		//return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool, "String::to_bool");
 	}
 	if (v.t.raw_type == RawType::ARRAY) {
 		// Always take LSArray<int>, but the array is not necessarily of this type
-		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool, "Array::to_bool");
+		//return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool, "Array::to_bool");
 	}
 	if (v.t.raw_type == RawType::FUNCTION or v.t.raw_type == RawType::CLOSURE) {
 		return new_bool(true);
@@ -405,19 +405,19 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 	}, "Value::to_bool");
 }
 
-Compiler::value Compiler::insn_address_of(Compiler::value v) const {
-	Compiler::value r {jit_insn_address_of(F, v.v), Type::POINTER};
+LibJITCompiler::value LibJITCompiler::insn_address_of(LibJITCompiler::value v) const {
+	LibJITCompiler::value r {jit_insn_address_of(F, v.v), Type::POINTER};
 	log_insn(4) << "addr " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
-Compiler::value Compiler::insn_load(Compiler::value v, int pos, Type t) const {
-	Compiler::value r {jit_insn_load_relative(F, v.v, pos, t.jit_type()), t};
+LibJITCompiler::value LibJITCompiler::insn_load(LibJITCompiler::value v, int pos, Type t) const {
+	LibJITCompiler::value r {jit_insn_load_relative(F, v.v, pos, t.jit_type()), t};
 	log_insn(4) << "load " << dump_val(v) << " " << pos << " " << dump_val(r) << std::endl;
 	return r;
 }
 
-Compiler::value Compiler::insn_typeof(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::insn_typeof(LibJITCompiler::value v) const {
 	if (v.t.raw_type == RawType::NULLL) return new_integer(LSValue::NULLL);
 	if (v.t.raw_type == RawType::BOOLEAN) return new_integer(LSValue::BOOLEAN);
 	if (v.t.isNumber()) return new_integer(LSValue::NUMBER);
@@ -435,7 +435,7 @@ Compiler::value Compiler::insn_typeof(Compiler::value v) const {
 	}, "typeof");
 }
 
-Compiler::value Compiler::insn_class_of(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::insn_class_of(LibJITCompiler::value v) const {
 	if (v.t.raw_type == RawType::NULLL)
 		return new_pointer(vm->system_vars["Null"]);
 	if (v.t.raw_type == RawType::BOOLEAN)
@@ -463,7 +463,7 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 	}, "get_class");
 }
 
-void Compiler::insn_delete(Compiler::value v) const {
+void LibJITCompiler::insn_delete(LibJITCompiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_ref);
 		insn_if_not(insn_native(v), [&]() {
@@ -479,17 +479,17 @@ void Compiler::insn_delete(Compiler::value v) const {
 	}
 }
 
-Compiler::value Compiler::insn_refs(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::insn_refs(LibJITCompiler::value v) const {
 	assert(v.t.must_manage_memory());
 	return insn_load(v, 12, Type::INTEGER);
 }
 
-Compiler::value Compiler::insn_native(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::insn_native(LibJITCompiler::value v) const {
 	assert(v.t.must_manage_memory());
 	return insn_load(v, 16, Type::BOOLEAN);
 }
 
-void Compiler::insn_delete_temporary(Compiler::value v) const {
+void LibJITCompiler::insn_delete_temporary(LibJITCompiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
 		insn_if_not(insn_refs(v), [&]() {
@@ -500,7 +500,8 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 	}
 }
 
-Compiler::value Compiler::insn_array_size(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::insn_array_size(LibJITCompiler::value v) const {
+	/*
 	if (v.t.raw_type == RawType::STRING) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size, "string_size");
 	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::INTEGER) {
@@ -510,10 +511,12 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 	} else {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size, "ptr_array_size");
 	}
+	*/
+	return {};
 }
 
-Compiler::value Compiler::insn_get_capture(int index, Type type) const {
-	Compiler::value fun = {jit_value_get_param(F, 0), Type::POINTER}; // function pointer
+LibJITCompiler::value LibJITCompiler::insn_get_capture(int index, Type type) const {
+	LibJITCompiler::value fun = {jit_value_get_param(F, 0), Type::POINTER}; // function pointer
 	auto jit_index = new_integer(index);
 	auto v = insn_call(Type::POINTER, {fun, jit_index}, +[](LSClosure* fun, int index) {
 		LSValue* v = fun->get_capture(index);
@@ -526,7 +529,7 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	return {v.v, type};
 }
 
-void Compiler::insn_push_array(Compiler::value array, Compiler::value value) const {
+void LibJITCompiler::insn_push_array(LibJITCompiler::value array, LibJITCompiler::value value) const {
 	if (array.t.getElementType() == Type::INTEGER) {
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<int>* array, int value) {
 			array->push_back(value);
@@ -543,7 +546,7 @@ void Compiler::insn_push_array(Compiler::value array, Compiler::value value) con
 	}
 }
 
-Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
+LibJITCompiler::value LibJITCompiler::insn_move_inc(LibJITCompiler::value value) const {
 	if (value.t.must_manage_memory()) {
 		if (value.t.reference) {
 			insn_inc_refs(value);
@@ -564,10 +567,10 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 	}
 }
 
-Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
+LibJITCompiler::value LibJITCompiler::insn_clone_mpz(LibJITCompiler::value mpz) const {
 	jit_value_t new_mpz = jit_value_create(F, VM::mpz_type);
 	jit_value_set_addressable(new_mpz);
-	Compiler::value r = {new_mpz, Type::MPZ_TMP};
+	LibJITCompiler::value r = {new_mpz, Type::MPZ_TMP};
 	auto r_addr = insn_address_of(r);
 	auto mpz_addr = insn_address_of(mpz);
 	insn_call(Type::VOID, {r_addr, mpz_addr}, &mpz_init_set, "mpz_init_set");
@@ -575,7 +578,7 @@ Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 	return r;
 }
 
-void Compiler::insn_delete_mpz(Compiler::value mpz) const {
+void LibJITCompiler::insn_delete_mpz(LibJITCompiler::value mpz) const {
 	auto mpz_addr = insn_address_of(mpz);
 	insn_call(Type::VOID, {mpz_addr}, &mpz_clear, "mpz_clear");
 	// Increment mpz values counter
@@ -584,7 +587,7 @@ void Compiler::insn_delete_mpz(Compiler::value mpz) const {
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
 
-Compiler::value Compiler::insn_inc_refs(value v) const {
+LibJITCompiler::value LibJITCompiler::insn_inc_refs(value v) const {
 	if (v.t.must_manage_memory()) {
 		if (v.t.reference) {
 			v = insn_load(v);
@@ -596,7 +599,7 @@ Compiler::value Compiler::insn_inc_refs(value v) const {
 	return new_integer(0);
 }
 
-Compiler::value Compiler::insn_dec_refs(value v, value previous) const {
+LibJITCompiler::value LibJITCompiler::insn_dec_refs(value v, value previous) const {
 	if (v.t.must_manage_memory()) {
 		if (previous.v == nullptr) {
 			previous = insn_refs(v);
@@ -608,7 +611,7 @@ Compiler::value Compiler::insn_dec_refs(value v, value previous) const {
 	return new_integer(0);
 }
 
-Compiler::value Compiler::insn_move(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::insn_move(LibJITCompiler::value v) const {
 	if (v.t.must_manage_memory() and !v.t.temporary and !v.t.reference) {
 		return insn_call(v.t, {v}, (void*) +[](LSValue* v) {
 			return v->move();
@@ -617,7 +620,7 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 	return v;
 }
 
-Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func, std::string function_name) const {
+LibJITCompiler::value LibJITCompiler::insn_call(Type return_type, std::vector<LibJITCompiler::value> args, void* func, std::string function_name) const {
 	std::vector<jit_value_t> jit_args;
 	std::vector<jit_type_t> arg_types;
 	for (const auto& arg : args) {
@@ -625,7 +628,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		arg_types.push_back(arg.t.jit_type());
 	}
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type.jit_type(), arg_types.data(), arg_types.size(), 1);
-	Compiler::value v = {jit_insn_call_native(F, "call", func, sig, jit_args.data(), arg_types.size(), 0), return_type};
+	LibJITCompiler::value v = {jit_insn_call_native(F, "call", func, sig, jit_args.data(), arg_types.size(), 0), return_type};
 	jit_type_free(sig);
 	// Log
 	log_insn(4) << "call ";
@@ -646,7 +649,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	return v;
 }
 
-Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value fun, std::vector<Compiler::value> args) const {
+LibJITCompiler::value LibJITCompiler::insn_call_indirect(Type return_type, LibJITCompiler::value fun, std::vector<LibJITCompiler::value> args) const {
 	std::vector<jit_type_t> arg_types;
 	std::vector<jit_value_t> jit_args;
 	for (const auto& arg : args) {
@@ -654,7 +657,7 @@ Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value f
 		arg_types.push_back(arg.t.jit_type());
 	}
 	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, return_type.jit_type(), arg_types.data(), arg_types.size(), 1);
-	Compiler::value v = {jit_insn_call_indirect(F, fun.v, sig, jit_args.data(), jit_args.size(), 0), return_type};
+	LibJITCompiler::value v = {jit_insn_call_indirect(F, fun.v, sig, jit_args.data(), jit_args.size(), 0), return_type};
 	jit_type_free(sig);
 	// Log
 	log_insn(4) << "call " << dump_val(fun) << " (";
@@ -670,7 +673,7 @@ Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value f
 	return v;
 }
 
-void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) {
+void LibJITCompiler::function_add_capture(LibJITCompiler::value fun, LibJITCompiler::value capture) {
 	insn_call(Type::VOID, {fun, capture}, +[](LSClosure* fun, LSValue* cap) {
 		fun->add_capture(cap);
 	});
@@ -678,7 +681,7 @@ void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture
 
 // Debug-only function
 // LCOV_EXCL_START
-void Compiler::log(const std::string&& str) const {
+void LibJITCompiler::log(const std::string&& str) const {
 	auto s = new_pointer(new std::string(str));
 	insn_call(Type::VOID, {s}, +[](std::string* s) {
 		std::cout << *s << std::endl;
@@ -690,17 +693,17 @@ void Compiler::log(const std::string&& str) const {
 /*
  * Iterators
  */
-Compiler::value Compiler::iterator_begin(Compiler::value v) const {
+LibJITCompiler::value LibJITCompiler::iterator_begin(LibJITCompiler::value v) const {
 	log_insn_code("iterator.begin()");
 	if (v.t.raw_type == RawType::ARRAY) {
-		Compiler::value it = {jit_value_create(F, v.t.jit_type()), v.t};
+		LibJITCompiler::value it = {jit_value_create(F, v.t.jit_type()), v.t};
 		insn_store(it, insn_load(v, 24));
 		return it;
 	}
 	if (v.t.raw_type == RawType::INTERVAL) {
 		jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
 		auto interval_iterator = jit_type_create_struct(types, 2, 1);
-		Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
+		LibJITCompiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
 		jit_type_free(interval_iterator);
 		auto addr = insn_address_of(it);
 		jit_insn_store_relative(F, addr.v, 0, v.v);
@@ -710,7 +713,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t.raw_type == RawType::STRING) {
 		jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
 		auto string_iterator = jit_type_create_struct(types, 5, 1);
-		Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
+		LibJITCompiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
 		jit_type_free(string_iterator);
 		auto addr = insn_address_of(it);
 		insn_call(Type::VOID, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
@@ -729,7 +732,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t.raw_type == RawType::SET) {
 		jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
 		auto set_iterator = jit_type_create_struct(types, 2, 1);
-		Compiler::value it = {jit_value_create(F, set_iterator), Type::SET_ITERATOR};
+		LibJITCompiler::value it = {jit_value_create(F, set_iterator), Type::SET_ITERATOR};
 		jit_type_free(set_iterator);
 		auto addr = insn_address_of(it);
 		jit_insn_store_relative(F, addr.v, 0, insn_load(v, 48, v.t).v);
@@ -739,7 +742,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t.raw_type == RawType::INTEGER) {
 		jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_int};
 		auto integer_iterator = jit_type_create_struct(types, 3, 1);
-		Compiler::value it = {jit_value_create(F, integer_iterator), Type::INTEGER_ITERATOR};
+		LibJITCompiler::value it = {jit_value_create(F, integer_iterator), Type::INTEGER_ITERATOR};
 		jit_type_free(integer_iterator);
 		auto addr = jit_insn_address_of(F, it.v);
 		jit_insn_store_relative(F, addr, 0, v.v);
@@ -750,7 +753,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t.raw_type == RawType::LONG) {
 		jit_type_t types[3] = {jit_type_long, jit_type_long, jit_type_int};
 		auto long_iterator = jit_type_create_struct(types, 3, 1);
-		Compiler::value it = {jit_value_create(F, long_iterator), Type::LONG_ITERATOR};
+		LibJITCompiler::value it = {jit_value_create(F, long_iterator), Type::LONG_ITERATOR};
 		jit_type_free(long_iterator);
 		auto addr = jit_insn_address_of(F, it.v);
 		jit_insn_store_relative(F, addr, 0, v.v);
@@ -761,7 +764,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	if (v.t.raw_type == RawType::MPZ) {
 		jit_type_t types[3] = {VM::mpz_type, VM::mpz_type, jit_type_int};
 		auto mpz_iterator = jit_type_create_struct(types, 3, 1);
-		Compiler::value it = {jit_value_create(F, mpz_iterator), Type::MPZ_ITERATOR};
+		LibJITCompiler::value it = {jit_value_create(F, mpz_iterator), Type::MPZ_ITERATOR};
 		jit_type_free(mpz_iterator);
 		auto addr = jit_insn_address_of(F, it.v);
 		jit_insn_store_relative(F, addr, 0, v.v);
@@ -771,7 +774,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	}
 }
 
-Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
+LibJITCompiler::value LibJITCompiler::iterator_end(LibJITCompiler::value v, LibJITCompiler::value it) const {
 	log_insn_code("iterator.end()");
 	if (v.t.raw_type == RawType::ARRAY) {
 		return insn_eq(it, insn_load(v, 32));
@@ -809,7 +812,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	}
 }
 
-Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Compiler::value previous) const {
+LibJITCompiler::value LibJITCompiler::iterator_key(LibJITCompiler::value v, LibJITCompiler::value it, LibJITCompiler::value previous) const {
 	log_insn_code("iterator.key()");
 	if (it.t.raw_type == RawType::ARRAY) {
 		return insn_int_div(insn_sub(it, insn_load(v, 24)), new_integer(it.t.element().size() / 8));
@@ -850,7 +853,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 	}
 }
 
-Compiler::value Compiler::iterator_get(Compiler::value it, Compiler::value previous) const {
+LibJITCompiler::value LibJITCompiler::iterator_get(LibJITCompiler::value it, LibJITCompiler::value previous) const {
 	log_insn_code("iterator.get()");
 	if (it.t.raw_type == RawType::ARRAY) {
 		if (previous.t.must_manage_memory()) {
@@ -920,7 +923,7 @@ Compiler::value Compiler::iterator_get(Compiler::value it, Compiler::value previ
 	}
 }
 
-void Compiler::iterator_increment(Compiler::value it) const {
+void LibJITCompiler::iterator_increment(LibJITCompiler::value it) const {
 	log_insn_code("iterator.increment()");
 	if (it.t.raw_type == RawType::ARRAY) {
 		insn_store(it, insn_add(it, new_integer(it.t.element().size() / 8)));
@@ -980,57 +983,57 @@ void Compiler::iterator_increment(Compiler::value it) const {
 /*
  * Controls
  */
-void Compiler::insn_if(Compiler::value condition, std::function<void()> then) const {
+void LibJITCompiler::insn_if(LibJITCompiler::value condition, std::function<void()> then) const {
 	label label_end;
 	insn_branch_if_not(condition, &label_end);
 	then();
 	insn_label(&label_end);
 }
 
-void Compiler::insn_if_not(Compiler::value condition, std::function<void()> then) const {
+void LibJITCompiler::insn_if_not(LibJITCompiler::value condition, std::function<void()> then) const {
 	label label_end;
 	insn_branch_if(condition, &label_end);
 	then();
 	insn_label(&label_end);
 }
 
-void Compiler::insn_throw(Compiler::value v) const {
+void LibJITCompiler::insn_throw(LibJITCompiler::value v) const {
 	jit_insn_throw(F, v.v);
 	log_insn(4) << "throw " << dump_val(v) << std::endl;
 }
 
-void Compiler::insn_throw_object(vm::Exception type) const {
+void LibJITCompiler::insn_throw_object(vm::Exception type) const {
 	auto t = new_integer(type);
 	auto ex = insn_call(Type::POINTER, {t}, &VM::get_exception_object<0>);
 	insn_throw(ex);
 }
 
-void Compiler::insn_label(label* l) const {
+void LibJITCompiler::insn_label(label* l) const {
 	jit_insn_label(F, &l->l);
 	register_label(l);
-	log_insn(1) << GREY << "label " << label_map.at(l) << ":" << END_COLOR << std::endl;
+	log_insn(1) << C_GREY << "label " << label_map.at(l) << ":" << END_COLOR << std::endl;
 }
 
-void Compiler::insn_branch(label* l) const {
+void LibJITCompiler::insn_branch(label* l) const {
 	jit_insn_branch(F, &l->l);
 	register_label(l);
 	log_insn(4) << "goto " << label_map.at(l) << std::endl;
 }
-void Compiler::insn_branch_if(Compiler::value v, Compiler::label* l) const {
+void LibJITCompiler::insn_branch_if(LibJITCompiler::value v, LibJITCompiler::label* l) const {
 	jit_insn_branch_if(F, v.v, &l->l);
 	register_label(l);
 	log_insn(4) << "goto " << label_map.at(l) << " if " << dump_val(v) << std::endl;
 }
-void Compiler::insn_branch_if_not(Compiler::value v, Compiler::label* l) const {
+void LibJITCompiler::insn_branch_if_not(LibJITCompiler::value v, LibJITCompiler::label* l) const {
 	jit_insn_branch_if_not(F, v.v, &l->l);
 	register_label(l);
 	log_insn(4) << "goto " << label_map.at(l) << " if not " << dump_val(v) << std::endl;
 }
-void Compiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const {
+void LibJITCompiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const {
 	jit_insn_branch_if_pc_not_in_range(F, a->l, b->l, &n->l);
 }
 
-void Compiler::insn_return(Compiler::value v) const {
+void LibJITCompiler::insn_return(LibJITCompiler::value v) const {
 	log_insn(4) << "return " << dump_val(v) << std::endl;
 	jit_insn_return(F, v.v);
 }
@@ -1038,17 +1041,17 @@ void Compiler::insn_return(Compiler::value v) const {
 /*
  * Variables
  */
-void Compiler::add_var(const std::string& name, Compiler::value value) {
+void LibJITCompiler::add_var(const std::string& name, LibJITCompiler::value value) {
 	assert((value.v != nullptr) && "value must not be null");
 	variables.back()[name] = value;
 	var_map.insert({value.v, name});
 }
 
-void Compiler::add_function_var(Compiler::value value) {
+void LibJITCompiler::add_function_var(LibJITCompiler::value value) {
 	function_variables.back().push_back(value);
 }
 
-Compiler::value& Compiler::get_var(const std::string& name) {
+LibJITCompiler::value& LibJITCompiler::get_var(const std::string& name) {
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		auto it = variables[i].find(name);
 		if (it != variables[i].end()) {
@@ -1056,10 +1059,10 @@ Compiler::value& Compiler::get_var(const std::string& name) {
 		}
 	}
 	assert(false && "var not found !");
-	return *((Compiler::value*) nullptr); // Should not reach this line
+	return *((LibJITCompiler::value*) nullptr); // Should not reach this line
 }
 
-void Compiler::set_var_type(std::string& name, const Type& type) {
+void LibJITCompiler::set_var_type(std::string& name, const Type& type) {
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		auto it = variables[i].find(name);
 		if (it != variables[i].end()) {
@@ -1069,33 +1072,33 @@ void Compiler::set_var_type(std::string& name, const Type& type) {
 	}
 }
 
-void Compiler::update_var(std::string& name, Compiler::value value) {
+void LibJITCompiler::update_var(std::string& name, LibJITCompiler::value value) {
 	assert((value.v != nullptr) && "new value must not be null");
 	variables.back()[name] = value;
 	var_map.insert({value.v, name});
 }
 
-void Compiler::enter_loop(Compiler::label* end_label, Compiler::label* cond_label) {
+void LibJITCompiler::enter_loop(LibJITCompiler::label* end_label, LibJITCompiler::label* cond_label) {
 	loops_end_labels.push_back(end_label);
 	loops_cond_labels.push_back(cond_label);
 	loops_blocks.push_back(0);
 }
 
-void Compiler::leave_loop() {
+void LibJITCompiler::leave_loop() {
 	loops_end_labels.pop_back();
 	loops_cond_labels.pop_back();
 	loops_blocks.pop_back();
 }
 
-Compiler::label* Compiler::get_current_loop_end_label(int deepness) const {
+LibJITCompiler::label* LibJITCompiler::get_current_loop_end_label(int deepness) const {
 	return loops_end_labels[loops_end_labels.size() - deepness];
 }
 
-Compiler::label* Compiler::get_current_loop_cond_label(int deepness) const {
+LibJITCompiler::label* LibJITCompiler::get_current_loop_cond_label(int deepness) const {
 	return loops_cond_labels[loops_cond_labels.size() - deepness];
 }
 
-int Compiler::get_current_loop_blocks(int deepness) const {
+int LibJITCompiler::get_current_loop_blocks(int deepness) const {
 	int sum = 0;
 	for (size_t i = loops_blocks.size() - deepness; i < loops_blocks.size(); ++i) {
 		sum += loops_blocks[i];
@@ -1103,11 +1106,11 @@ int Compiler::get_current_loop_blocks(int deepness) const {
 	return sum;
 }
 
-void Compiler::inc_ops(int amount) const {
+void LibJITCompiler::inc_ops(int amount) const {
 	inc_ops_jit(new_integer(amount));
 }
 
-void Compiler::inc_ops_jit(Compiler::value amount) const {
+void LibJITCompiler::inc_ops_jit(LibJITCompiler::value amount) const {
 	// Operations enabled?
 	if (not vm->enable_operations) return;
 
@@ -1130,11 +1133,11 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 	insn_label(&label_end);
 }
 
-void Compiler::add_catcher(label start, label end, label handler) {
+void LibJITCompiler::add_catcher(label start, label end, label handler) {
 	catchers.back().push_back({start, end, handler, {}});
 }
 
-void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LSValueType> types) const {
+void LibJITCompiler::insn_check_args(std::vector<LibJITCompiler::value> args, std::vector<LSValueType> types) const {
 	// TODO too much cheks sometimes
 	for (size_t i = 0; i < args.size(); ++i) {
 		auto arg = args[i];
@@ -1151,14 +1154,14 @@ void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LS
 	}
 }
 
-std::ostringstream& Compiler::_log_insn(int indent) const {
+std::ostringstream& LibJITCompiler::_log_insn(int indent) const {
 	for (int i = 0; i < indent; ++i) {
-		((Compiler*) this)->instructions_debug << " ";
+		((LibJITCompiler*) this)->instructions_debug << " ";
 	}
-	return ((Compiler*) this)->instructions_debug;
+	return ((LibJITCompiler*) this)->instructions_debug;
 }
 
-std::string Compiler::dump_val(Compiler::value v) const {
+std::string LibJITCompiler::dump_val(LibJITCompiler::value v) const {
 	if (v.v == nullptr) {
 		return "<null>";
 	}
@@ -1191,18 +1194,18 @@ std::string Compiler::dump_val(Compiler::value v) const {
 	return r;
 }
 
-void Compiler::register_label(label* l) const {
+void LibJITCompiler::register_label(label* l) const {
 	if (label_map.find(l) == label_map.end()) {
-		((Compiler*) this)->label_map.insert({l, std::string(1, 'A' + (char) label_map.size())});
+		((LibJITCompiler*) this)->label_map.insert({l, std::string(1, 'A' + (char) label_map.size())});
 	}
 }
 
-void Compiler::log_insn_code(std::string instruction) const {
-	log_insn(0) << BLUE << instruction << END_COLOR << std::endl;
+void LibJITCompiler::log_insn_code(std::string instruction) const {
+	log_insn(0) << C_BLUE << instruction << END_COLOR << std::endl;
 }
 
-void Compiler::add_literal(void* ptr, std::string value) const {
-	((Compiler*) this)->literals.insert({ptr, value});
+void LibJITCompiler::add_literal(void* ptr, std::string value) const {
+	((LibJITCompiler*) this)->literals.insert({ptr, value});
 }
 
 }

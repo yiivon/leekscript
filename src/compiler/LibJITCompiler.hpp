@@ -1,5 +1,5 @@
-#ifndef COMPILER_HPP_
-#define COMPILER_HPP_
+#ifndef LIBJIT_COMPILER_HPP
+#define LIBJIT_COMPILER_HPP
 
 #include <jit/jit.h>
 #include <vector>
@@ -16,7 +16,7 @@ class Program;
 class VM;
 class Function;
 
-class Compiler {
+class LibJITCompiler {
 public:
 
 	struct value {
@@ -67,8 +67,8 @@ public:
 	Program* program;
 	VM* vm;
 
-	Compiler(VM* vm);
-	virtual ~Compiler();
+	LibJITCompiler(VM* vm);
+	virtual ~LibJITCompiler();
 
 	// Value creation
 	value clone(value) const;
@@ -81,7 +81,7 @@ public:
 	value new_object() const;
 	value new_object_class(value clazz) const;
 	value new_mpz(long value = 0) const;
-	value new_array(Type element_type, std::vector<Compiler::value> elements) const;
+	value new_array(Type element_type, std::vector<value> elements) const;
 
 	// Conversions
 	value to_int(value) const;
@@ -163,7 +163,7 @@ public:
 	}
 	value insn_call(Type return_type, std::vector<value> args, void* func, std::string name = "") const;
 	value insn_call_indirect(Type return_type, value fun, std::vector<value> args) const;
-	void function_add_capture(Compiler::value fun, Compiler::value capture);
+	void function_add_capture(value fun, value capture);
 	void log(const std::string&& str) const;
 
 	// Blocks
@@ -177,12 +177,12 @@ public:
 	bool is_current_function_closure() const;
 
 	// Variables
-	void add_var(const std::string& name, Compiler::value value);
-	void add_function_var(Compiler::value value);
+	void add_var(const std::string& name, value value);
+	void add_function_var(value value);
 	value& get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
 	std::map<std::string, value> get_vars();
-	void update_var(std::string& name, Compiler::value value);
+	void update_var(std::string& name, value value);
 
 	// Loops
 	void enter_loop(label*, label*);
