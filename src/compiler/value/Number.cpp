@@ -112,26 +112,17 @@ bool Number::is_zero() const {
 }
 
 Compiler::value Number::compile(Compiler& c) const {
-
 	if (type.nature == Nature::POINTER) {
 		return c.insn_to_pointer(c.new_real(double_value));
 	}
 	if (type == Type::LONG) {
-		return {LS_CREATE_LONG(c.F, long_value), type};
+		return c.new_long(long_value);
 	}
 	if (type == Type::REAL) {
-		return {LS_CREATE_REAL(c.F, double_value), type};
+		return c.new_real(double_value);
 	}
-
 	if (type.raw_type == RawType::MPZ) {
-
-		jit_value_t mpz_struct = jit_value_create(c.F, VM::mpz_type);
-		jit_value_set_addressable(mpz_struct);
-		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, mpz_struct), 0, LS_CREATE_INTEGER(c.F, mpz_value->_mp_alloc));
-		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, mpz_struct), 4, LS_CREATE_INTEGER(c.F, mpz_value->_mp_size));
-		jit_insn_store_relative(c.F, jit_insn_address_of(c.F, mpz_struct), 8, c.new_pointer(mpz_value->_mp_d).v);
-
-		return {mpz_struct, Type::MPZ};
+		return c.new_mpz_init(mpz_value);
 	}
 	return c.new_integer(int_value);
 }
