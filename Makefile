@@ -50,23 +50,23 @@ build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
 	@echo "---------------"
 
 build/default/%.o: %.cpp
-	$(COMPILER) -c $(OPTIM) $(FLAGS) -o "$@" "$<"
+	$(COMPILER) -c $(OPTIM) $(FLAGS) -o $@ $<
 	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/shared/%.o: %.cpp
-	$(COMPILER) -c $(OPTIM) $(FLAGS) -fPIC -o "$@" "$<"
+	$(COMPILER) -c $(OPTIM) $(FLAGS) -fPIC -o $@ $<
 	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/coverage/%.o: %.cpp
-	$(COMPILER) -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o "$@" "$<"
+	$(COMPILER) -c $(FLAGS) -O0 -fprofile-arcs -ftest-coverage -o $@ $<
 	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/profile/%.o: %.cpp
-	$(COMPILER) -c $(OPTIM) $(FLAGS) -pg -o "$@" "$<"
+	$(COMPILER) -c $(OPTIM) $(FLAGS) -pg -o $@ $<
 	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/sanitized/%.o: %.cpp
-	$(COMPILER) -c $(OPTIM) $(FLAGS) $(SANITIZE_FLAGS) -o "$@" "$<"
+	$(COMPILER) -c $(OPTIM) $(FLAGS) $(SANITIZE_FLAGS) -o $@ $<
 	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 $(BUILD_DIR):
