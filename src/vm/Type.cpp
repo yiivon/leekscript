@@ -759,4 +759,12 @@ ostream& operator << (ostream& os, const std::vector<Type>& types) {
 	return os;
 }
 
+std::ostream& operator << (std::ostream& os, const llvm::Type* type) {
+	std::string str;
+	llvm::raw_string_ostream rso(str);
+	type->print(rso);
+	os << rso.str();
+	return os;
+}
+
 }
