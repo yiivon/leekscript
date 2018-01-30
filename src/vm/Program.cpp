@@ -86,7 +86,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	vm.compiler.label_map.clear();
 	main->compile(vm.compiler);
 	closure = main->default_version->function->function;
-	vm.compiler.leave_function();
+	// vm.compiler.leave_function();
 
 	// Result
 	result.compilation_success = true;
