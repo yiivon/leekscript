@@ -73,10 +73,8 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 
 				auto x_addr = expression->compile_l(c);
 				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
-
 				auto sum = c.insn_add(x, c.new_integer(1));
-				jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
-
+				c.insn_store_relative(x_addr, 0, sum);
 				if (type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(x);
 				}
@@ -91,15 +89,14 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 		}
 		case TokenType::MINUS_MINUS: {
 			if (expression->type.nature == Nature::VALUE) {
-				auto x = expression->compile(c);
-				jit_value_t ox = jit_insn_load(c.F, x.v);
-				auto y = c.new_integer(1);
-				auto sum = c.insn_sub(x, y);
-				c.insn_store(x, sum);
+				auto x_addr = expression->compile_l(c);
+				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
+				auto sum = c.insn_sub(x, c.new_integer(1));
+				c.insn_store_relative(x_addr, 0, sum);
 				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({ox, expression->type});
+					return c.insn_to_pointer(x);
 				}
-				return {ox, type};
+				return x;
 			} else {
 				auto e = expression->compile_l(c);
 				return c.insn_call(Type::POINTER, {e}, (void*) +[](LSValue** x) {
