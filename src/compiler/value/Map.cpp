@@ -193,13 +193,7 @@ Compiler::value Map::compile(Compiler &c) const {
 	}
 
 	unsigned ops = 0;
-
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, {}, 0, 1);
-	jit_value_t map = jit_insn_call_native(c.F, "new_map", (void*) create, sig, {}, 0, JIT_CALL_NOTHROW); ops += 1;
-	jit_type_free(sig);
-
-	jit_type_t args[3] = {LS_POINTER, type.getKeyType().jit_type(), type.getElementType().jit_type()};
-	sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args, 3, 1);
+	auto map = c.insn_call(type, {}, (void*) create);
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		auto k = keys[i]->compile(c);
@@ -207,17 +201,14 @@ Compiler::value Map::compile(Compiler &c) const {
 		auto v = values[i]->compile(c);
 		values[i]->compile_end(c);
 
-		jit_value_t args_v[] = {map, k.v, v.v};
-		jit_insn_call_native(c.F, "insert", (void*) insert, sig, args_v, 3, JIT_CALL_NOTHROW); ops += std::log2(i + 1);
+		c.insn_call(Type::VOID, {map, k, v}, (void*) insert);
+		ops += std::log2(i + 1);
 
 		c.insn_delete_temporary(k);
 		c.insn_delete_temporary(v);
 	}
-	jit_type_free(sig);
-
 	c.inc_ops(ops);
-
-	return {map, type};
+	return map;
 }
 
 Value* Map::clone() const {
