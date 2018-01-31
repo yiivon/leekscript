@@ -210,11 +210,11 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		case TokenType::TILDE: {
 			if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
-				jit_value_t r = jit_insn_not(c.F, x.v);
+				auto r = c.insn_not(x);
 				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({r, expression->type});
+					return c.insn_to_pointer(r);
 				}
-				return {r, type};
+				return r;
 			} else {
 				arg = expression->compile(c);
 				func = (void*) jit_pre_tilde;
