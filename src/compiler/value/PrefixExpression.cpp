@@ -232,11 +232,11 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return {n, type};
 				}
 				else if (vv->name == "Boolean") {
-					jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
+					auto n = c.new_bool(0);
 					if (type.nature == Nature::POINTER) {
-						return c.insn_to_pointer({n, Type::BOOLEAN});
+						return c.insn_to_pointer(n);
 					}
-					return {n, type};
+					return n;
 				}
 				else if (vv->name == "String") {
 					return {c.new_pointer(new LSString("")).v, type};
