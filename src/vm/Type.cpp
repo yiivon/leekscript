@@ -49,6 +49,11 @@ const FunctionRawType* const RawType::FUNCTION = &_FUNCTION;
 const ClosureRawType* const RawType::CLOSURE = &_CLOSURE;
 const ClassRawType* const RawType::CLASS = &_CLASS;
 
+llvm::Type* Type::LLVM_LSVALUE_TYPE;
+llvm::Type* Type::LLVM_LSVALUE_TYPE_PTR;
+llvm::Type* Type::LLVM_MPZ_TYPE;
+llvm::Type* Type::LLVM_MPZ_TYPE_PTR;
+
 std::vector<const BaseRawType*> RawType::placeholder_types;
 
 void RawType::clear_placeholder_types() {
@@ -446,10 +451,10 @@ llvm::Type* Type::llvm_type() const {
 		return llvm::Type::getVoidTy(LLVMCompiler::context);
 	}
 	if (reference or nature == Nature::POINTER or nature == Nature::UNKNOWN or raw_type == RawType::FUNCTION) {
-		return llvm::Type::getInt8PtrTy(LLVMCompiler::context);
+		return LLVM_LSVALUE_TYPE_PTR;
 	}
 	if (raw_type == RawType::MPZ) {
-		// return VM::mpz_type;
+		return LLVM_MPZ_TYPE;
 	}
 	if (raw_type == RawType::BOOLEAN) {
 		return llvm::Type::getInt1Ty(LLVMCompiler::context);

@@ -401,6 +401,11 @@ public:
 	static const Type LONG_ITERATOR;
 	static const Type MPZ_ITERATOR;
 
+	static llvm::Type* LLVM_LSVALUE_TYPE;
+	static llvm::Type* LLVM_LSVALUE_TYPE_PTR;
+	static llvm::Type* LLVM_MPZ_TYPE;
+	static llvm::Type* LLVM_MPZ_TYPE_PTR;
+
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww);
