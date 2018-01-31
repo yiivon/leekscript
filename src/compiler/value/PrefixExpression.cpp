@@ -225,11 +225,11 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
 				if (vv->name == "Number") {
-					jit_value_t n = LS_CREATE_INTEGER(c.F, 0);
+					auto n = c.new_integer(0);
 					if (type.nature == Nature::POINTER) {
-						return c.insn_to_pointer({n, Type::INTEGER});
+						return c.insn_to_pointer(n);
 					}
-					return {n, type};
+					return n;
 				}
 				else if (vv->name == "Boolean") {
 					auto n = c.new_bool(0);
