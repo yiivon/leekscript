@@ -156,12 +156,42 @@ LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::
 	return {Builder.CreateSub(a.v, b.v, "addtmp"), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_ne(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_gt(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	LLVMCompiler::value r {Builder.CreateICmpEQ(a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "eq " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
+}
+
+LLVMCompiler::value LLVMCompiler::insn_ne(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	LLVMCompiler::value r {Builder.CreateICmpNE(a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "ne " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
+}
+
+LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	LLVMCompiler::value r {Builder.CreateICmpSLT(a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
+}
+
+LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	LLVMCompiler::value r {Builder.CreateICmpSLE(a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "le " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
+}
+
+LLVMCompiler::value LLVMCompiler::insn_gt(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	LLVMCompiler::value r {Builder.CreateICmpSGT(a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "gt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
+}
+
+LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	LLVMCompiler::value r {Builder.CreateICmpSGE(a.v, b.v), Type::BOOLEAN};
+	log_insn(4) << "ge " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
+}
+
 LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	return {Builder.CreateFMul(a.v, b.v, "multmp"), Type::REAL};
 }
