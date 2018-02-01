@@ -594,7 +594,23 @@ void LLVMCompiler::mark_offset(int line) {
 	// TODO
 }
 void LLVMCompiler::add_catcher(label start, label end, label handler) { assert(false); }
-void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::vector<LSValueType> types) const { assert(false); }
+
+void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::vector<LSValueType> types) const {
+	// TODO too much cheks sometimes
+	for (size_t i = 0; i < args.size(); ++i) {
+		auto arg = args[i];
+		auto type = types[i];
+		if (arg.t.nature != Nature::VALUE and type != arg.t.id() and type != 0) {
+			auto type = types[i];
+			insn_if(insn_ne(insn_typeof(arg), new_integer(type)), [&]() {
+				for (auto& a : args) {
+					insn_delete_temporary(a);
+				}
+				insn_throw_object(vm::Exception::WRONG_ARGUMENT_TYPE);
+			});
+		}
+	}
+}
 
 // Utils
 std::ostringstream& LLVMCompiler::_log_insn(int indent) const { assert(false); }
