@@ -100,8 +100,11 @@ LLVMCompiler::value LLVMCompiler::new_object() const {
 		return o;
 	}, "new_object");
 }
+
 LLVMCompiler::value LLVMCompiler::new_object_class(LLVMCompiler::value clazz) const {
-	assert(false);
+	return insn_call(Type::POINTER, {clazz}, +[](LSClass* clazz) {
+		return new LSObject(clazz);
+	});
 }
 LLVMCompiler::value LLVMCompiler::new_mpz(long value) const {
 	assert(false);
