@@ -297,9 +297,34 @@ LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v, int pos, Type
 	return r;
 }
 
-void  LLVMCompiler::insn_store(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-void  LLVMCompiler::insn_store_relative(LLVMCompiler::value, int, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const { assert(false); }
+void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) const {
+	Builder.CreateStore(y.v, x.v);
+	log_insn(4) << "store " << dump_val(x) << " " << dump_val(y) << std::endl;
+}
+
+void  LLVMCompiler::insn_store_relative(LLVMCompiler::value x, int pos, LLVMCompiler::value y) const {
+	Builder.CreateAlignedStore(y.v, x.v, pos);
+	log_insn(4) << "store_rel " << dump_val(x) << " " << dump_val(y) << std::endl;
+}
+
+LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
+	if (v.t.raw_type == RawType::NULLL) return new_integer(LSValue::NULLL);
+	if (v.t.raw_type == RawType::BOOLEAN) return new_integer(LSValue::BOOLEAN);
+	if (v.t.isNumber()) return new_integer(LSValue::NUMBER);
+	if (v.t.raw_type == RawType::STRING) return new_integer(LSValue::STRING);
+	if (v.t.raw_type == RawType::ARRAY) return new_integer(LSValue::ARRAY);
+	if (v.t.raw_type == RawType::MAP) return new_integer(LSValue::MAP);
+	if (v.t.raw_type == RawType::SET) return new_integer(LSValue::SET);
+	if (v.t.raw_type == RawType::INTERVAL) return new_integer(LSValue::INTERVAL);
+	if (v.t.raw_type == RawType::FUNCTION) return new_integer(LSValue::FUNCTION);
+	if (v.t.raw_type == RawType::CLOSURE) return new_integer(LSValue::CLOSURE);
+	if (v.t.raw_type == RawType::OBJECT) return new_integer(LSValue::OBJECT);
+	if (v.t.raw_type == RawType::CLASS) return new_integer(LSValue::CLASS);
+	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
+		return v->type;
+	}, "typeof");
+}
+
 LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const { assert(false); }
 
 void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
