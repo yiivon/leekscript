@@ -224,10 +224,10 @@ LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::v
 }
 
 LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateFMul(a.v, b.v, "multmp"), Type::REAL};
+	return {Builder.CreateMul(a.v, b.v, "multmp"), Type::INTEGER};
 }
 LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateFDiv(a.v, b.v, "divtmp"), Type::REAL};
+	return {Builder.CreateFDiv(Builder.CreateFPCast(a.v, llvm::Type::getDoubleTy(context)), Builder.CreateFPCast(b.v, llvm::Type::getDoubleTy(context)), "divtmp"), Type::REAL};
 }
 LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
