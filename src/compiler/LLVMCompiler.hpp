@@ -152,6 +152,13 @@ public:
 		return cantFail(findSymbol(Name).getAddress());
 	}
 
+	/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of the function.  This is used for mutable variables etc.
+	static llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, Type type) {
+		auto function = LLVMCompiler::Builder.GetInsertBlock()->getParent();
+		llvm::IRBuilder<> TmpB(&function->getEntryBlock(), function->getEntryBlock().begin());
+		return TmpB.CreateAlloca(type.llvm_type(), nullptr, VarName);
+	}
+
 	void removeModule(ModuleHandle H) {
 		cantFail(CompileLayer.removeModule(H));
 	}
@@ -287,11 +294,13 @@ public:
 
 	// Variables
 	void add_var(const std::string& name, value value);
+	value create_and_add_var(const std::string& name, Type type);
 	void add_function_var(value value);
-	value& get_var(const std::string& name);
+	value get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
 	std::map<std::string, value> get_vars();
 	void update_var(std::string& name, value value);
+	value update_var_create(std::string& name, Type type);
 
 	// Loops
 	void enter_loop(label*, label*);

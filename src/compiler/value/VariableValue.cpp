@@ -150,31 +150,32 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		return c.insn_get_capture(capture_index, type);
 	}
 
-	jit_value_t v;
+	Compiler::value v;
 	if (scope == VarScope::INTERNAL) {
-		v = c.vm->internals.at(name);
+		// v = c.vm->internals.at(name);
 	} else if (scope == VarScope::LOCAL) {
 		auto f = dynamic_cast<Function*>(var->value);
 		if (has_version && f) {
 			return f->compile_version(c, version);
 		}
-		v = c.get_var(name).v;
+		v = c.get_var(name);
+		v = {LLVMCompiler::Builder.CreateLoad(v.v, name.c_str()), v.t};
 	} else { /* if (scope == VarScope::PARAMETER) */
 		int offset = c.is_current_function_closure() ? 1 : 0;
-		v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
+		// v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
 	}
 
 	if (var->type.nature != Nature::UNKNOWN and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-		return c.insn_to_pointer({v, var->type});
+		return c.insn_to_pointer(v);
 	}
 	if (type.nature == Nature::VALUE && var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
-		return {VM::int_to_real(c.F, v), type};
+		// return {VM::int_to_real(c.F, v), type};
 	}
 
 	if (var->type.reference) {
-		return c.insn_load({v, type});
+		return c.insn_load(v);
 	}
-	return {v, type};
+	return v;
 }
 
 Compiler::value VariableValue::compile_l(Compiler& c) const {
@@ -183,18 +184,19 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 		return c.insn_address_of(c.insn_get_capture(capture_index, type));
 	}
 
-	jit_value_t v;
+	Compiler::value v;
 	// No internal values here
 	if (scope == VarScope::LOCAL) {
-		v = c.get_var(name).v;
+		v = c.get_var(name);
 	} else { /* if (scope == VarScope::PARAMETER) */
 		int offset = c.is_current_function_closure() ? 1 : 0;
-		v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
+		// v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
 	}
+	return v;
 	if (type.reference) {
-		return {v, type};
+		return v;
 	} else {
-		return c.insn_address_of({v, type});
+		return c.insn_address_of(v);
 	}
 }
 

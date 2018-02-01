@@ -434,16 +434,58 @@ void LLVMCompiler::delete_function_variables() {
 bool LLVMCompiler::is_current_function_closure() const { assert(false); }
 
 // Variables
-void LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value) { assert(false); }
-void LLVMCompiler::add_function_var(LLVMCompiler::value) { assert(false); }
-LLVMCompiler::value& LLVMCompiler::get_var(const std::string& name) { assert(false); }
-void LLVMCompiler::set_var_type(std::string& name, const Type& type) { assert(false); }
+void LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value value) {
+	assert((value.v != nullptr) && "value must not be null");
+	variables.back()[name] = value;
+	var_map.insert({value.v, name});
+}
+
+LLVMCompiler::value LLVMCompiler::create_and_add_var(const std::string& name, Type type) {
+	// std::cout << "create var " << name << " type " << type << " / " << type.llvm_type() << std::endl;
+	auto value = CreateEntryBlockAlloca(name, type);
+	LLVMCompiler::value v { value, type };
+	// std::cout << "Var " << name << " created with type " << v.v->getType() << std::endl;
+	variables.back()[name] = v;
+	var_map.insert({value, name});
+	return v;
+}
 
 void LLVMCompiler::add_function_var(LLVMCompiler::value value) {
 	function_variables.back().push_back(value);
 }
+
+LLVMCompiler::value LLVMCompiler::get_var(const std::string& name) {
+	for (int i = variables.size() - 1; i >= 0; --i) {
+		auto it = variables[i].find(name);
+		if (it != variables[i].end()) {
+			return it->second;
+		}
+	}
+	assert(false && "var not found !");
+	return *((LLVMCompiler::value*) nullptr); // Should not reach this line
+}
+
+void LLVMCompiler::set_var_type(std::string& name, const Type& type) {
+	for (int i = variables.size() - 1; i >= 0; --i) {
+		auto it = variables[i].find(name);
+		if (it != variables[i].end()) {
+			variables[i][name].t = type;
+			return;
+		}
+	}
+}
+
 std::map<std::string, LLVMCompiler::value> LLVMCompiler::get_vars() { assert(false); }
 void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value) { assert(false); }
+
+
+LLVMCompiler::value LLVMCompiler::update_var_create(std::string& name, Type type) {
+	auto value = CreateEntryBlockAlloca(name, type);
+	LLVMCompiler::value v { value, type };
+	variables.back()[name] = v;
+	var_map.insert({value, name});
+	return v;
+}
 
 // Loops
 void LLVMCompiler::enter_loop(LLVMCompiler::label*, LLVMCompiler::label*) { assert(false); }

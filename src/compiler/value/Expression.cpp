@@ -588,8 +588,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				y = c.insn_move_inc(y);
 
 				// Create a new variable
-				auto var = c.insn_create_value(v1->type);
-				c.update_var(vv->name, var);
+				auto var = c.update_var_create(vv->name, v1->type);
 
 				// Store
 				c.insn_store(var, y);

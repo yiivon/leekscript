@@ -98,8 +98,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 		if (expressions[i] != nullptr) {
 
 			Value* ex = expressions[i];
-			Compiler::value var = c.insn_create_value(v->type);
-			c.add_var(name, var);
+			auto var = c.create_and_add_var(name, v->type);
 
 			if (Function* f = dynamic_cast<Function*>(ex)) {
 				if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
@@ -108,23 +107,17 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 					c.insn_store(var, c.new_pointer((void*) f->default_version->function));
 				}
 			}
-
 			auto val = ex->compile(c);
 			ex->compile_end(c);
-
+			
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
 			c.set_var_type(name, ex->type);
 			c.add_function_var(var);
 			c.insn_store(var, val);
-
 		} else {
-
-			Compiler::value var = c.insn_create_value(Type::POINTER);
-			var.t = Type::NULLL;
-			c.add_var(name, var);
-
+			auto var = c.create_and_add_var(name, Type::NULLL);
 			auto val = c.new_null();
 			c.insn_store(var, val);
 		}
