@@ -357,16 +357,17 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			return b;
 		}
 		if (vv->name == "Number") {
-			jit_value_t n;
-			if (arguments.size() > 0) {
-				n = arguments.at(0)->compile(c).v;
-			} else {
-				n = LS_CREATE_INTEGER(c.F, 0);
-			}
+			auto n = [&]() {
+				if (arguments.size() > 0) {
+					return arguments.at(0)->compile(c);
+				} else {
+					return c.new_integer(0);
+				}
+			}();
 			if (type.nature == Nature::POINTER) {
-				return c.insn_to_pointer({n, Type::INTEGER});
+				return c.insn_to_pointer(n);
 			}
-			return {n, type};
+			return n;
 		}
 		if (vv->name == "String") {
 			if (arguments.size() > 0) {
