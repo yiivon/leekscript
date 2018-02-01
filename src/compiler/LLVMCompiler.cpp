@@ -312,9 +312,39 @@ void  LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
 		insn_delete_mpz(v);
 	}
 }
-LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const { assert(false); }
+
+LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const {
+	if (v.t.raw_type == RawType::STRING) {
+		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size, "string_size");
+	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size, "int_array_size");
+	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::REAL) {
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size, "real_array_size");
+	} else {
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size, "ptr_array_size");
+	}
+	return {};
+}
+
 LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const { assert(false); }
-void  LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::value element) const { assert(false); }
+
+void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::value value) const {
+	if (array.t.getElementType() == Type::INTEGER) {
+		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<int>* array, int value) {
+			array->push_back(value);
+		}, "array_push_int");
+	} else if (array.t.getElementType() == Type::REAL) {
+		value.t = Type::REAL;
+		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<double>* array, double value) {
+			array->push_back(value);
+		}, "array_push_real");
+	} else {
+		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
+			array->push_inc(value);
+		}, "array_push_ptr");
+	}
+}
+
 LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const { assert(false); }
 void  LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const { assert(false); }
