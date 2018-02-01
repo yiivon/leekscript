@@ -301,8 +301,24 @@ void  LLVMCompiler::insn_store(LLVMCompiler::value, LLVMCompiler::value) const {
 void  LLVMCompiler::insn_store_relative(LLVMCompiler::value, int, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const { assert(false); }
-void  LLVMCompiler::insn_delete(LLVMCompiler::value v) const { assert(false); }
-void  LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
+
+void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
+	if (v.t.must_manage_memory()) {
+		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_ref);
+		insn_if_not(insn_native(v), [&]() {
+			auto refs = insn_refs(v);
+			insn_if(insn_refs(v), [&]() {
+				insn_if_not(insn_dec_refs(v, refs), [&]() {
+					insn_call(Type::VOID, {v}, (void*) &LSValue::free, "Value::free");
+				});
+			});
+		});
+	} else if (v.t.not_temporary() == Type::MPZ) {
+		insn_delete_mpz(v);
+	}
+}
+
+void LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
 		insn_if_not(insn_refs(v), [&]() {
