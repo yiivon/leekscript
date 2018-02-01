@@ -122,7 +122,7 @@ public:
 		// Lambda 2: Search for external symbols in the host process.
 		auto Resolver = llvm::orc::createLambdaResolver(
 			[&](const std::string &Name) {
-				std::cout << "resolve name 1: " << Name << std::endl;
+				// std::cout << "resolve symbol 1 " << Name << std::endl;
 				if (auto Sym = CompileLayer.findSymbol(Name, false))
 					return Sym;
 				auto i = mappings.find(Name);
@@ -132,7 +132,7 @@ public:
 				return llvm::JITSymbol(nullptr);
 			},
 			[](const std::string &Name) {
-				std::cout << "resolve name 2: " << Name << std::endl;
+				// std::cout << "resolve symbol 2 " << Name << std::endl;
 				if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name))
 					return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
 				return llvm::JITSymbol(nullptr);
