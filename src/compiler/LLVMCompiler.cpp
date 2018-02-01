@@ -384,8 +384,6 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 void LLVMCompiler::iterator_increment(LLVMCompiler::value it) const { assert(false); }
 
 // Controls
-void LLVMCompiler::insn_throw(LLVMCompiler::value v) const { assert(false); }
-void LLVMCompiler::insn_throw_object(vm::Exception type) const { assert(false); }
 LLVMCompiler::label LLVMCompiler::insn_init_label(std::string name, llvm::Function* fun) const {
 	return {llvm::BasicBlock::Create(LLVMCompiler::context, name, fun)};
 }
@@ -410,6 +408,13 @@ void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void
 	then();
 	insn_branch(&label_end);
 	insn_label(&label_end);
+}
+
+void LLVMCompiler::insn_throw(LLVMCompiler::value v) const {
+	std::cout << "TODO" << std::endl;
+}
+void LLVMCompiler::insn_throw_object(vm::Exception type) const {
+	std::cout << "TODO" << std::endl;
 }
 
 void LLVMCompiler::insn_label(label* l) const {
