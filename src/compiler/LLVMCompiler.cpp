@@ -444,7 +444,12 @@ void LLVMCompiler::leave_block() {
 	functions_blocks.back()--;
 }
 void LLVMCompiler::delete_variables_block(int deepness) {
-	// TODO
+	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
+		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
+			LLVMCompiler::value v = {LLVMCompiler::Builder.CreateLoad(it->second.v, it->first.c_str()), it->second.t};
+			insn_delete(v);
+		}
+	}
 }
 
 void LLVMCompiler::enter_function(llvm::Function* F, bool is_closure, Function* fun) {
