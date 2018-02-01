@@ -83,14 +83,16 @@ LLVMCompiler::value LLVMCompiler::new_integer(int x) const {
 LLVMCompiler::value LLVMCompiler::new_real(double r) const {
 	return {llvm::ConstantFP::get(context, llvm::APFloat(r)), Type::REAL};
 }
+
 LLVMCompiler::value LLVMCompiler::new_long(long l) const {
 	return {llvm::ConstantInt::get(context, llvm::APInt(64, l, true)), Type::LONG};
 }
+
 LLVMCompiler::value LLVMCompiler::new_pointer(const void* p) const {
-	// llvm::Constant* address = llvm::ConstantInt::get(llvm::Type::getInt64Ty(LLVMCompiler::context), (int64_t) p);
-	// return {llvm::ConstantExpr::getIntToPtr(address, llvm::PointerType::getUnqual(llvm::Type::getInt64Ty(LLVMCompiler::context))), Type::POINTER};
-	return {new_long((long) p).v, Type::POINTER};
+	auto longp = llvm::ConstantInt::get(context, llvm::APInt(64, (long) p, false));
+	return {Builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, Type::LLVM_LSVALUE_TYPE_PTR), Type::POINTER};
 }
+
 LLVMCompiler::value LLVMCompiler::new_object() const {
 	return insn_call(Type::OBJECT_TMP, {}, +[]() {
 		// FIXME coverage doesn't work for the one line version
