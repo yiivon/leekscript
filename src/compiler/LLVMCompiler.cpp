@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "LLVMCompiler.hpp"
+#include "value/Function.hpp"
 #include "../vm/VM.hpp"
 #include "../vm/value/LSNull.hpp"
 #include "../vm/value/LSArray.hpp"
@@ -370,20 +371,55 @@ void LLVMCompiler::log(const std::string&& str) const { assert(false); }
 
 // Blocks
 void LLVMCompiler::enter_block() {
-	// TODO
+	variables.push_back(std::map<std::string, value> {});
+	if (!loops_blocks.empty()) {
+		loops_blocks.back()++;
+	}
+	functions_blocks.back()++;
 }
 void LLVMCompiler::leave_block() {
-	// TODO
+	delete_variables_block(1);
+	variables.pop_back();
+	if (!loops_blocks.empty()) {
+		loops_blocks.back()--;
+	}
+	functions_blocks.back()--;
 }
 void LLVMCompiler::delete_variables_block(int deepness) {
 	// TODO
 }
-void LLVMCompiler::enter_function(jit_function_t F, bool is_closure, Function* fun) {
-	// TODO
+
+void LLVMCompiler::enter_function(llvm::Function* F, bool is_closure, Function* fun) {
+	variables.push_back(std::map<std::string, value> {});
+	function_variables.push_back(std::vector<value> {});
+	functions.push(F);
+	functions_blocks.push_back(0);
+	catchers.push_back({});
+	function_is_closure.push(is_closure);
+
+	std::vector<std::string> args;
+	log_insn(0) << "function " << fun->name << "(";
+	for (unsigned i = 0; i < fun->arguments.size(); ++i) {
+		log_insn(0) << fun->arguments.at(i)->content;
+		if (i < fun->arguments.size() - 1) log_insn(0) << ", ";
+		args.push_back(fun->arguments.at(i)->content);
+	}
+	arg_names.push(args);
+	log_insn(0) << ") {" << std::endl;
 }
+
 void LLVMCompiler::leave_function() {
-	// TODO
+	variables.pop_back();
+	function_variables.pop_back();
+	functions.pop();
+	functions_blocks.pop_back();
+	catchers.pop_back();
+	function_is_closure.pop();
+	arg_names.pop();
+	this->F = functions.top();
+	log_insn(0) << "}" << std::endl;
 }
+
 int LLVMCompiler::get_current_function_blocks() const {
 	return 0; // TODO
 }
@@ -397,6 +433,10 @@ void LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value) { asser
 void LLVMCompiler::add_function_var(LLVMCompiler::value) { assert(false); }
 LLVMCompiler::value& LLVMCompiler::get_var(const std::string& name) { assert(false); }
 void LLVMCompiler::set_var_type(std::string& name, const Type& type) { assert(false); }
+
+void LLVMCompiler::add_function_var(LLVMCompiler::value value) {
+	function_variables.back().push_back(value);
+}
 std::map<std::string, LLVMCompiler::value> LLVMCompiler::get_vars() { assert(false); }
 void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value) { assert(false); }
 

@@ -74,6 +74,8 @@ public:
 		label next;
 	};
 
+	llvm::Function* F;
+	std::stack<llvm::Function*> functions;
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks;
 	std::stack<std::vector<std::string>> arg_names;
@@ -273,7 +275,7 @@ public:
 	void enter_block();
 	void leave_block();
 	void delete_variables_block(int deepness); // delete all variables in the #deepness current blocks
-	void enter_function(jit_function_t F, bool is_closure, Function* fun);
+	void enter_function(llvm::Function* F, bool is_closure, Function* fun);
 	void leave_function();
 	int get_current_function_blocks() const;
 	void delete_function_variables();

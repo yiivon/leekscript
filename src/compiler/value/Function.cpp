@@ -488,8 +488,6 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		// }
 	}
 
-	c.enter_function(nullptr, captures.size() > 0, (Function*) this);
-
 	// System internal variables (for main function only)
 	if (is_main_function) {
 		for (auto var : c.vm->system_vars) {
@@ -506,6 +504,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
  	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun", LLVMCompiler::TheModule.get());
 	auto block = llvm::BasicBlock::Create(LLVMCompiler::context, "entry", llvm_function);
 	LLVMCompiler::Builder.SetInsertPoint(block);
+
+	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
 
 	// Compile body
 	auto res = version->body->compile(c);
