@@ -155,13 +155,30 @@ LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value, Type) const 
 }
 
 // Operators wrapping
-LLVMCompiler::value LLVMCompiler::insn_not(LLVMCompiler::value) const {
-	assert(false);
+LLVMCompiler::value LLVMCompiler::insn_not(LLVMCompiler::value v) const {
+	return {Builder.CreateNot(v.v), v.t};
 }
-LLVMCompiler::value LLVMCompiler::insn_not_bool(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_neg(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_and(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_or(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+
+LLVMCompiler::value LLVMCompiler::insn_not_bool(LLVMCompiler::value v) const {
+	LLVMCompiler::value r {Builder.CreateNot(v.v), Type::BOOLEAN};
+	log_insn(4) << "not_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
+}
+
+LLVMCompiler::value LLVMCompiler::insn_neg(LLVMCompiler::value v) const {
+	if (v.t == Type::REAL) {
+		return {Builder.CreateFNeg(v.v), v.t};
+	} else {
+		return {Builder.CreateNeg(v.v), v.t};
+	}
+}
+
+LLVMCompiler::value LLVMCompiler::insn_and(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateAnd(a.v, b.v), Type::INTEGER};
+}
+LLVMCompiler::value LLVMCompiler::insn_or(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateOr(a.v, b.v), Type::INTEGER};
+}
 
 LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	return {Builder.CreateAdd(a.v, b.v, "addtmp"), Type::INTEGER};
