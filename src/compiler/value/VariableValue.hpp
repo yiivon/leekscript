@@ -4,13 +4,13 @@
 #include <memory>
 #include "LeftValue.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
+#include "../Compiler.hpp"
 
 namespace ls {
 
 class Value;
 class SemanticVar;
 enum class VarScope;
-class Compiler;
 
 class VariableValue : public LeftValue {
 public:
