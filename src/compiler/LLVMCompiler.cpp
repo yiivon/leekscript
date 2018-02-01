@@ -354,15 +354,46 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 void LLVMCompiler::iterator_increment(LLVMCompiler::value it) const { assert(false); }
 
 // Controls
-void LLVMCompiler::insn_if(LLVMCompiler::value v, std::function<void()> then) const { assert(false); }
-void LLVMCompiler::insn_if_not(LLVMCompiler::value v, std::function<void()> then) const { assert(false); }
 void LLVMCompiler::insn_throw(LLVMCompiler::value v) const { assert(false); }
 void LLVMCompiler::insn_throw_object(vm::Exception type) const { assert(false); }
-void LLVMCompiler::insn_label(label*) const { assert(false); }
-void LLVMCompiler::insn_branch(label* l) const { assert(false); }
+LLVMCompiler::label LLVMCompiler::insn_init_label(std::string name, llvm::Function* fun) const {
+	return {llvm::BasicBlock::Create(LLVMCompiler::context, name, fun)};
+}
+void LLVMCompiler::insn_if(LLVMCompiler::value condition, std::function<void()> then) const {
+	auto label_then = insn_init_label("then");
+	auto label_end = insn_init_label("ifcont");
+	insn_if_new(insn_to_bool(condition), &label_then, &label_end);
+	insn_label(&label_then);
+	then();
+	insn_branch(&label_end);
+	insn_label(&label_end);
+}
+void LLVMCompiler::insn_if_new(LLVMCompiler::value cond, label* then, label* elze) const {
+	Builder.CreateCondBr(cond.v, then->block, elze->block);
+}
+
+void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void()> then) const {
+	auto label_then = insn_init_label("then");
+	auto label_end = insn_init_label("ifcont");
+	insn_if_new(insn_to_bool(condition), &label_end, &label_then);
+	insn_label(&label_then);
+	then();
+	insn_branch(&label_end);
+	insn_label(&label_end);
+}
+
+void LLVMCompiler::insn_label(label* l) const {
+	auto function = LLVMCompiler::Builder.GetInsertBlock()->getParent();
+	function->getBasicBlockList().push_back(l->block);
+	Builder.SetInsertPoint(l->block);
+}
+
+void LLVMCompiler::insn_branch(label* l) const {
+	Builder.CreateBr(l->block);
+}
 
 void LLVMCompiler::insn_branch_if(LLVMCompiler::value v, label* l) const {
-	
+	assert(false);
 }
 
 void LLVMCompiler::insn_branch_if_not(LLVMCompiler::value v, label* l) const { assert(false); }

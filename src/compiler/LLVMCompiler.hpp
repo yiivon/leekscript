@@ -65,7 +65,7 @@ public:
 		value(llvm::Value* v, Type t) : v(v), t(t) {}
 	};
 	struct label {
-		jit_label_t l = jit_label_undefined;
+		llvm::BasicBlock* block;
 	};
 	struct catcher {
 		label start;
@@ -261,7 +261,9 @@ public:
 	void iterator_increment(value it) const;
 
 	// Controls
+	label insn_init_label(std::string name, llvm::Function* fun = nullptr) const;
 	void insn_if(value v, std::function<void()> then) const;
+	void insn_if_new(value cond, label* then, label* elze) const;
 	void insn_if_not(value v, std::function<void()> then) const;
 	void insn_throw(value v) const;
 	void insn_throw_object(vm::Exception type) const;
