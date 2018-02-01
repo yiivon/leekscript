@@ -42,6 +42,12 @@ void LLVMCompiler::init() {
 	// Simplify the control flow graph (deleting unreachable blocks, etc).
 	TheFPM->add(llvm::createCFGSimplificationPass());
 	TheFPM->doInitialization();
+
+	Type::LLVM_LSVALUE_TYPE = llvm::StructType::create("lsvalue", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context));
+	Type::LLVM_LSVALUE_TYPE_PTR = Type::LLVM_LSVALUE_TYPE->getPointerTo();
+
+	Type::LLVM_MPZ_TYPE = llvm::StructType::create("mpz", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context));
+	Type::LLVM_MPZ_TYPE_PTR = Type::LLVM_MPZ_TYPE->getPointerTo();
 }
 
 void LLVMCompiler::end() {
