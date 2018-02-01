@@ -73,6 +73,10 @@ public:
 		label handler;
 		label next;
 	};
+	struct function_entry {
+		llvm::JITTargetAddress addr;
+		llvm::Value* function;
+	};
 
 	llvm::Function* F;
 	std::stack<llvm::Function*> functions;
@@ -92,9 +96,9 @@ public:
 	bool log_instructions = false;
 	std::ostringstream instructions_debug;
 	std::map<label*, std::string> label_map;
-	std::map<jit_value_t, std::string> var_map;
+	std::map<llvm::Value*, std::string> var_map;
 	std::map<void*, std::string> literals;
-	std::map<std::string, llvm::JITTargetAddress> mappings;
+	std::map<std::string, function_entry> mappings;
 
 	VM* vm;
 	Program* program;
@@ -123,7 +127,7 @@ public:
 					return Sym;
 				auto i = mappings.find(Name);
 				if (i != mappings.end()) {
-					return llvm::JITSymbol(i->second, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+					return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
 				return llvm::JITSymbol(nullptr);
 			},

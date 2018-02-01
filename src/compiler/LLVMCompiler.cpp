@@ -44,6 +44,8 @@ void LLVMCompiler::init() {
 	TheFPM->add(llvm::createCFGSimplificationPass());
 	TheFPM->doInitialization();
 
+	mappings.clear();
+
 	Type::LLVM_LSVALUE_TYPE = llvm::StructType::create("lsvalue", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context));
 	Type::LLVM_LSVALUE_TYPE_PTR = Type::LLVM_LSVALUE_TYPE->getPointerTo();
 
@@ -356,10 +358,13 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 		llvm_types.push_back(args[i].t.llvm_type());
 	}
 	if (!function_name.size()) function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
-	((LLVMCompiler*) this)->mappings.insert({function_name, (llvm::JITTargetAddress) func});
-	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
-	auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, LLVMCompiler::TheModule.get());
-	return {Builder.CreateCall(lambdaFN, llvm_args, function_name), return_type};
+	auto i = mappings.find(function_name);
+	if (i == mappings.end()) {
+		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
+		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, LLVMCompiler::TheModule.get());
+		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
+	}
+	return {Builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_call_indirect(Type return_type, LLVMCompiler::value fun, std::vector<LLVMCompiler::value> args) const {
