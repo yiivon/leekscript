@@ -202,17 +202,18 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		operator_fun = m->addr;
 		is_native_method = m->native;
 		native_method_v1_addr = m->v1_addr;
+		native_method_v2_addr = m->v2_addr;
 		this->v1_type = op->reversed ? m->operand_type : m->object_type;
 		this->v2_type = op->reversed ? m->object_type : m->operand_type;
 		return_type = m->return_type;
 		type = return_type;
 
 		if (v1->type.not_temporary() != this->v1_type.not_temporary() && v2->type != Type::UNKNOWN) {
-			if (native_method_v1_addr) {
-				((LeftValue*) v1)->change_type(analyser, this->v1_type);
-			} else {
+			// if (native_method_v1_addr) {
+				// ((LeftValue*) v1)->change_type(analyser, this->v1_type);
+			// } else {
 				v1->analyse(analyser, this->v1_type);
-			}
+			// }
 		}
 		if (v2->type.not_temporary() != this->v2_type.not_temporary()) {
 			v2->analyse(analyser, this->v2_type);
@@ -507,7 +508,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 		// TODO simplify condition
 		if ((v1->type.raw_type == RawType::BOOLEAN and op->type == TokenType::EQUAL) or native_method_v1_addr) {
 			args.push_back(((LeftValue*) v1)->compile_l(c));
-			args.push_back(v2->compile(c));
+			if (native_method_v2_addr) {
+				args.push_back(((LeftValue*) v2)->compile_l(c));
+			} else {
+				args.push_back(v2->compile(c));
+			}
 		} else {
 			args.push_back(op->reversed ? v2->compile(c) : v1->compile(c));
 			args.push_back(op->reversed ? v1->compile(c) : v2->compile(c));

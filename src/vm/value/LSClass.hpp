@@ -26,9 +26,10 @@ public:
 		std::vector<TypeMutator*> mutators;
 		bool native;
 		bool v1_addr;
+		bool v2_addr;
 
-		Operator(Type object_type, Type operand, Type return_type, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool native = false, bool v1_addr = false)
-		: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), mutators(mutators), native(native), v1_addr(v1_addr) {}
+		Operator(Type object_type, Type operand, Type return_type, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool native = false, bool v1_addr = false, bool v2_addr = false)
+		: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), mutators(mutators), native(native), v1_addr(v1_addr), v2_addr(v2_addr) {}
 		static bool NATIVE;
 	};
 
