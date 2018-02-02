@@ -74,6 +74,10 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("in", {
 		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_in}
 	});
+	operator_("<=>", {
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &ValueSTD::op_swap_val, {}, false, true, true},
+		{Type::POINTER, Type::POINTER, Type::POINTER, (void*) &ValueSTD::op_swap_ptr, {}, false, true, true}
+	});
 
 	/*
 	 * Methods
@@ -303,6 +307,26 @@ Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) 
 		});
 	}
 }
+
+Compiler::value ValueSTD::op_swap_val(Compiler& c, std::vector<Compiler::value> args) {
+	auto x_addr = args[0];
+	auto y_addr = args[1];
+	auto x = c.insn_load(x_addr, 0, x_addr.t);
+	auto y = c.insn_load(y_addr, 0, y_addr.t);
+	c.insn_store_relative(x_addr, 0, y);
+	c.insn_store_relative(y_addr, 0, x);
+	return y;
+}
+
+Compiler::value ValueSTD::op_swap_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::POINTER, args, +[](LSValue** x, LSValue** y) {
+		auto tmp = *x;
+		*x = *y;
+		*y = tmp;
+		return *x;
+	});
+}
+
 
 Compiler::value ValueSTD::copy(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[0].t.temporary) {

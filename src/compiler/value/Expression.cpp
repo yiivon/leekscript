@@ -407,13 +407,6 @@ bool jit_not_equals(LSValue* x, LSValue* y) {
 	return r;
 }
 
-LSValue* jit_swap(LSValue** x, LSValue** y) {
-	LSValue* tmp = *x;
-	*x = *y;
-	*y = tmp;
-	return *x;
-}
-
 LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
 	return x->mod_eq(y);
 }
@@ -634,26 +627,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 				std::cout << "Invalid " << v1->to_string() << " (" << equal_previous_type << " => " << v1->type << ") = " << v2->to_string() << " (" << v2->type << ")" << std::endl; // LCOV_EXCL_LINE
 				assert(false); // LCOV_EXCL_LINE
 			}
-		}
-		case TokenType::SWAP: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y_addr = ((LeftValue*) v2)->compile_l(c);
-				auto x = c.insn_load(x_addr, 0, v1->type);
-				auto y = c.insn_load(y_addr, 0, v2->type);
-				jit_value_t t = jit_insn_load(c.F, x.v);
-				jit_insn_store_relative(c.F, x_addr.v, 0, y.v);
-				jit_insn_store_relative(c.F, y_addr.v, 0, t);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(y);
-				}
-				return y;
-			} else {
-				args.push_back(((LeftValue*) v1)->compile_l(c));
-				args.push_back(((LeftValue*) v2)->compile_l(c));
-				ls_func = (void*) &jit_swap;
-			}
-			break;
 		}
 		case TokenType::PLUS_EQUAL: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
