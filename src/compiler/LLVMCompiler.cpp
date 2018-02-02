@@ -141,8 +141,14 @@ LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
 	return new_mpz(0);
 }
 
-LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value) const {
-	assert(false);
+LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
+	if (v.t.not_temporary() == Type::MPZ) {
+		auto v_addr = insn_address_of(v);
+		return to_int(insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si"));
+	}
+	LLVMCompiler::value r {Builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), true), Type::INTEGER};
+	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
+	return r;
 }
 LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value) const {
 	assert(false);
