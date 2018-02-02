@@ -386,11 +386,44 @@ void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::valu
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const {
+	if (value.t.must_manage_memory()) {
+		if (value.t.reference) {
+			insn_inc_refs(value);
+			return value;
+		} else {
+			return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
+				return v->move_inc();
+			}, "move_inc");
+		}
+	}
+	if (value.t.temporary) {
+		return value;
+	}
+	if (value.t == Type::MPZ) {
+		return insn_clone_mpz(value);
+	} else {
+		return value;
+	}
+}
+
 LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const { assert(false); }
 void  LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_inc_refs(LLVMCompiler::value v) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompiler::value previous) const { assert(false); }
+
+LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompiler::value previous) const {
+	if (v.t.must_manage_memory()) {
+		if (previous.v == nullptr) {
+			previous = insn_refs(v);
+		}
+		auto new_refs = insn_sub(previous, new_integer(1));
+		auto r = Builder.CreateStructGEP(Type::LLVM_LSVALUE_TYPE, v.v, 3);
+		insn_store({r, Type::UNKNOWN}, new_refs);
+		return new_refs;
+	}
+	return new_integer(0);
+}
+
 LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value value) const {
 	if (value.t.must_manage_memory()) {
 		if (value.t.reference) {
@@ -413,9 +446,14 @@ LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value value) const {
 }
 LLVMCompiler::value LLVMCompiler::insn_refs(LLVMCompiler::value v) const {
 	assert(v.t.must_manage_memory());
-	return insn_load(v, 12, Type::INTEGER);
+	auto r = Builder.CreateStructGEP(Type::LLVM_LSVALUE_TYPE, v.v, 3);
+	return {Builder.CreateLoad(r), Type::INTEGER};
 }
-LLVMCompiler::value LLVMCompiler::insn_native(LLVMCompiler::value v) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_native(LLVMCompiler::value v) const {
+	assert(v.t.must_manage_memory());
+	auto r = Builder.CreateStructGEP(Type::LLVM_LSVALUE_TYPE, v.v, 4);
+	return {Builder.CreateLoad(r), Type::BOOLEAN};
+}
 
 // Iterators
 LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const { assert(false); }
