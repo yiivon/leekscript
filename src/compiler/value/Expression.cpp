@@ -527,11 +527,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return res;
 	}
 
-	jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
+	// jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
 	void* ls_func;
-	bool use_jit_func = v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE;
+	// bool use_jit_func = v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE;
 	vector<Compiler::value> args;
-	Type jit_returned_type = Type::UNKNOWN;
+	// Type jit_returned_type = Type::UNKNOWN;
 	Type ls_returned_type = type;
 
 	switch (op->type) {
@@ -754,24 +754,24 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::PLUS: {
-			jit_func = &jit_insn_add;
+			// jit_func = &jit_insn_add;
 			ls_func = (void*) &jit_add;
 			break;
 		}
 		case TokenType::MINUS: {
-			jit_func = &jit_insn_sub;
+			// jit_func = &jit_insn_sub;
 			ls_func = (void*) &jit_sub;
 			break;
 		}
 		case TokenType::TIMES: {
-			jit_func = &jit_insn_mul;
+			// jit_func = &jit_insn_mul;
 			ls_func = (void*) &jit_mul;
 			break;
 		}
 		case TokenType::DIVIDE: {
-			jit_func = &jit_insn_div;
+			// jit_func = &jit_insn_div;
 			ls_func = (void*) &jit_div;
-			jit_returned_type = Type::REAL;
+			// jit_returned_type = Type::REAL;
 			break;
 		}
 		case TokenType::INT_DIV: {
@@ -816,7 +816,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MODULO: {
-			jit_func = &jit_insn_rem;
+			// jit_func = &jit_insn_rem;
 			ls_func = (void*) &jit_mod;
 			break;
 		}
@@ -840,16 +840,16 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::DOUBLE_EQUAL: {
-			jit_func = &jit_insn_eq;
+			// jit_func = &jit_insn_eq;
 			ls_func = (void*) &jit_equals;
-			jit_returned_type = Type::BOOLEAN;
+			// jit_returned_type = Type::BOOLEAN;
 			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
 		case TokenType::DIFFERENT: {
-			jit_func = &jit_insn_ne;
+			// jit_func = &jit_insn_ne;
 			ls_func = (void*) &jit_not_equals;
-			jit_returned_type = Type::BOOLEAN;
+			// jit_returned_type = Type::BOOLEAN;
 			ls_returned_type = Type::BOOLEAN;
 			break;
 		}
@@ -895,7 +895,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_LEFT : {
-			jit_func = &jit_insn_shl;
+			// jit_func = &jit_insn_shl;
 			ls_func = (void*) &jit_bit_shl;
 			break;
 		}
@@ -917,7 +917,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT : {
-			jit_func = &jit_insn_shr;
+			// jit_func = &jit_insn_shr;
 			ls_func = (void*) &jit_bit_shr;
 			break;
 		}
@@ -939,7 +939,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED : {
-			jit_func = &jit_insn_ushr;
+			// jit_func = &jit_insn_ushr;
 			ls_func = (void*) &jit_bit_shr_unsigned;
 			break;
 		}
@@ -1066,40 +1066,40 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 	}
 
-	if (use_jit_func) {
+	// if (use_jit_func) {
 
-		c.mark_offset(location().start.line);
+		// c.mark_offset(location().start.line);
+        //
+		// auto x = v1->compile(c);
+		// auto y = v2->compile(c);
+		// v1->compile_end(c);
+		// v2->compile_end(c);
+		// auto r = jit_func(c.F, x.v, y.v);
+        //
+		// if (type.nature == Nature::POINTER) {
+		// 	return c.insn_to_pointer({r, jit_returned_type});
+		// }
+		// return {r, type};
 
-		auto x = v1->compile(c);
-		auto y = v2->compile(c);
+	// } else {
+
+	if (args.size() == 0) {
+		args.push_back(v1->compile(c));
+		args.push_back(v2->compile(c));
 		v1->compile_end(c);
 		v2->compile_end(c);
-		auto r = jit_func(c.F, x.v, y.v);
-
-		if (type.nature == Nature::POINTER) {
-			return c.insn_to_pointer({r, jit_returned_type});
-		}
-		return {r, type};
-
-	} else {
-
-		if (args.size() == 0) {
-			args.push_back(v1->compile(c));
-			args.push_back(v2->compile(c));
-			v1->compile_end(c);
-			v2->compile_end(c);
-		}
-		auto v = c.insn_call(ls_returned_type, args, ls_func);
-
-		if (store_result_in_v1) {
-			c.insn_store(args[0], v);
-		}
-
-		if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
-			return c.insn_to_pointer(v);
-		}
-		return v;
 	}
+	auto v = c.insn_call(ls_returned_type, args, ls_func);
+
+	if (store_result_in_v1) {
+		c.insn_store(args[0], v);
+	}
+
+	if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
+		return c.insn_to_pointer(v);
+	}
+	return v;
+	// }
 }
 
 Value* Expression::clone() const {
