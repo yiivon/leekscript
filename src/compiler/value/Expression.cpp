@@ -984,32 +984,32 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::DOUBLE_QUESTION_MARK: {
 			// x ?? y ==> if (x != null) { x } else { y }
-			Compiler::label label_end;
-			Compiler::label label_else;
-			auto v = c.insn_create_value(Type::POINTER);
+			Compiler::label label_then = c.insn_init_label("then");
+			Compiler::label label_else = c.insn_init_label("else");
+			Compiler::label label_end = c.insn_init_label("end");
 
-			jit_type_t args_types[2] = {LS_POINTER};
 			auto x = v1->compile(c);
 			v1->compile_end(c);
-			jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 1);
-			jit_value_t r = jit_insn_call_native(c.F, "is_null", (void*) jit_is_null, sig, &x.v, 1, JIT_CALL_NOTHROW);
-			jit_type_free(sig);
+			auto condition = c.insn_call(Type::BOOLEAN, {x}, +[](LSValue* v) {
+				return v->type == LSValue::NULLL;
+			});
+			c.insn_if_new(condition, &label_then, &label_else);
 
-			c.insn_branch_if({r, Type::BOOLEAN}, &label_else);
-			// then {
-			c.insn_store(v, x);
-			// else
-			c.insn_branch(&label_end);
-			c.insn_label(&label_else);
-			// {
+			c.insn_label(&label_then);
 			auto y = v2->compile(c);
 			v2->compile_end(c);
-			c.insn_store(v, y);
+			c.insn_branch(&label_end);
+			label_then.block = LLVMCompiler::Builder.GetInsertBlock();
+
+			c.insn_label(&label_else);
+			c.insn_branch(&label_end);
+			label_else.block = LLVMCompiler::Builder.GetInsertBlock();
 
 			c.insn_label(&label_end);
-
-			return v;
-			break;
+			auto PN = LLVMCompiler::Builder.CreatePHI(type.llvm_type(), 2, "iftmp");
+			PN->addIncoming(y.v, label_then.block);
+			PN->addIncoming(x.v, label_else.block);
+			return {PN, type};
 		}
 		case TokenType::CATCH_ELSE: {
 
