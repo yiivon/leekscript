@@ -48,9 +48,13 @@ void LLVMCompiler::init() {
 
 	Type::LLVM_LSVALUE_TYPE = llvm::StructType::create("lsvalue", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context));
 	Type::LLVM_LSVALUE_TYPE_PTR = Type::LLVM_LSVALUE_TYPE->getPointerTo();
+	Type::LLVM_LSVALUE_TYPE_PTR_PTR = Type::LLVM_LSVALUE_TYPE_PTR->getPointerTo();
 
 	Type::LLVM_MPZ_TYPE = llvm::StructType::create("mpz", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context));
 	Type::LLVM_MPZ_TYPE_PTR = Type::LLVM_MPZ_TYPE->getPointerTo();
+
+	Type::LLVM_VECTOR_TYPE = llvm::StructType::create("mpz", llvm::Type::getInt32PtrTy(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context), Type::LLVM_LSVALUE_TYPE_PTR_PTR);
+	Type::LLVM_VECTOR_TYPE_PTR = Type::LLVM_VECTOR_TYPE->getPointerTo();
 }
 
 void LLVMCompiler::end() {
@@ -436,6 +440,14 @@ void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::valu
 			array->push_inc(value);
 		}, "array_push_ptr");
 	}
+}
+
+LLVMCompiler::value LLVMCompiler::insn_array_at(LLVMCompiler::value array, LLVMCompiler::value index) const {
+	auto converted_array = Builder.CreatePointerCast(array.v, Type::LLVM_VECTOR_TYPE_PTR);
+	auto raw_data = Builder.CreateStructGEP(Type::LLVM_VECTOR_TYPE, converted_array, 3);
+	auto data_base = Builder.CreateLoad(raw_data);
+	auto data = Builder.CreatePointerCast(data_base, array.t.getElementType().llvm_type()->getPointerTo());
+	return {Builder.CreateGEP(data, index.v), Type::POINTER};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const {

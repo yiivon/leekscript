@@ -51,8 +51,11 @@ const ClassRawType* const RawType::CLASS = &_CLASS;
 
 llvm::Type* Type::LLVM_LSVALUE_TYPE;
 llvm::Type* Type::LLVM_LSVALUE_TYPE_PTR;
+llvm::Type* Type::LLVM_LSVALUE_TYPE_PTR_PTR;
 llvm::Type* Type::LLVM_MPZ_TYPE;
 llvm::Type* Type::LLVM_MPZ_TYPE_PTR;
+llvm::Type* Type::LLVM_VECTOR_TYPE;
+llvm::Type* Type::LLVM_VECTOR_TYPE_PTR;
 
 std::vector<const BaseRawType*> RawType::placeholder_types;
 

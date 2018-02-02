@@ -403,8 +403,11 @@ public:
 
 	static llvm::Type* LLVM_LSVALUE_TYPE;
 	static llvm::Type* LLVM_LSVALUE_TYPE_PTR;
+	static llvm::Type* LLVM_LSVALUE_TYPE_PTR_PTR;
 	static llvm::Type* LLVM_MPZ_TYPE;
 	static llvm::Type* LLVM_MPZ_TYPE_PTR;
+	static llvm::Type* LLVM_VECTOR_TYPE;
+	static llvm::Type* LLVM_VECTOR_TYPE_PTR;
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);

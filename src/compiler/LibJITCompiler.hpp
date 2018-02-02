@@ -82,7 +82,6 @@ public:
 	value new_object() const;
 	value new_object_class(value clazz) const;
 	value new_mpz(long value = 0) const;
-	value new_array(Type element_type, std::vector<value> elements) const;
 	value new_mpz_init(const mpz_t mpz_value) const;
 
 	// Conversions
@@ -127,9 +126,7 @@ public:
 	value insn_class_of(value v) const;
 	void  insn_delete(value v) const;
 	void  insn_delete_temporary(value v) const;
-	value insn_array_size(value v) const;
 	value insn_get_capture(int index, Type type) const;
-	void  insn_push_array(value array, value element) const;
 	value insn_move_inc(value) const;
 	value insn_clone_mpz(value mpz) const;
 	void  insn_delete_mpz(value mpz) const;
@@ -138,6 +135,12 @@ public:
 	value insn_move(value v) const;
 	value insn_refs(value v) const;
 	value insn_native(value v) const;
+
+	// Arrays
+	value new_array(Type element_type, std::vector<value> elements) const;
+	value insn_array_size(value v) const;
+	void  insn_push_array(value array, value element) const;
+	value insn_array_at(value array, value index) const;
 
 	// Iterators
 	value iterator_begin(value v) const;

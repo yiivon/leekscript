@@ -555,6 +555,10 @@ void LibJITCompiler::insn_push_array(LibJITCompiler::value array, LibJITCompiler
 	}
 }
 
+LibJITCompiler::value LibJITCompiler::insn_array_at(LibJITCompiler::value array, LibJITCompiler::value index) const {
+	return insn_add(insn_load(array, 24, Type::POINTER), insn_mul(new_integer(array.t.getElementType().size() / 8), index));
+}
+
 LibJITCompiler::value LibJITCompiler::insn_move_inc(LibJITCompiler::value value) const {
 	if (value.t.must_manage_memory()) {
 		if (value.t.reference) {

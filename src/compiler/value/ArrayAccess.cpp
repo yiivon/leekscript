@@ -291,9 +291,9 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				auto e = c.insn_call(Type::STRING, {compiled_array, k}, (void*) &LSString::codePointAt);
 				return e;
 			} else {
-				auto e = c.insn_load(c.insn_add(c.insn_load(compiled_array, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k)), 0, array_element_type);
+				auto element_addr = c.insn_array_at(compiled_array, k);
+				auto e = c.insn_load(element_addr);
 				e = c.clone(e);
-
 				if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(e);
 				}
