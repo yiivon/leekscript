@@ -551,10 +551,10 @@ void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void
 }
 
 void LLVMCompiler::insn_throw(LLVMCompiler::value v) const {
-	std::cout << "TODO" << std::endl;
+	std::cout << "TODO exception" << std::endl;
 }
 void LLVMCompiler::insn_throw_object(vm::Exception type) const {
-	std::cout << "TODO" << std::endl;
+	std::cout << "TODO exception" << std::endl;
 }
 
 void LLVMCompiler::insn_label(label* l) const {
