@@ -300,7 +300,34 @@ LLVMCompiler::value LLVMCompiler::insn_to_pointer(LLVMCompiler::value v) const {
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
+	if (v.t.raw_type == RawType::BOOLEAN) {
+		return v;
+	}
+	if (v.t.raw_type == RawType::INTEGER) {
+		LLVMCompiler::value r {Builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType()), "ifcond"), Type::BOOLEAN};
+		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
+		return r;
+	}
+	if (v.t.raw_type == RawType::STRING) {
+		//return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool, "String::to_bool");
+	}
+	if (v.t.raw_type == RawType::ARRAY) {
+		// Always take LSArray<int>, but the array is not necessarily of this type
+		//return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool, "Array::to_bool");
+	}
+	if (v.t.raw_type == RawType::FUNCTION or v.t.raw_type == RawType::CLOSURE) {
+		return new_bool(true);
+	}
+	if (v.t.raw_type == RawType::MPZ) {
+		// TODO
+		return v;
+	}
+	return insn_call(Type::BOOLEAN, {v}, +[](LSValue* v) {
+		return v->to_bool();
+	}, "Value::to_bool");
+}
+
 LLVMCompiler::value LLVMCompiler::insn_address_of(LLVMCompiler::value v) const { assert(false); }
 
 LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v, int pos, Type t) const {
