@@ -231,7 +231,11 @@ LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::
 }
 LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_bit_or(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+
+LLVMCompiler::value LLVMCompiler::insn_bit_or(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateOr(a.v, b.v), Type::INTEGER};
+}
+
 LLVMCompiler::value LLVMCompiler::insn_bit_xor(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_cmpl(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
