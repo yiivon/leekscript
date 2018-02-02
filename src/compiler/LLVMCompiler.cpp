@@ -106,9 +106,20 @@ LLVMCompiler::value LLVMCompiler::new_object_class(LLVMCompiler::value clazz) co
 		return new LSObject(clazz);
 	});
 }
+
 LLVMCompiler::value LLVMCompiler::new_mpz(long value) const {
-	assert(false);
+	auto mpz_struct = CreateEntryBlockAlloca("mpz", Type::MPZ);
+	LLVMCompiler::value mpz_addr {Builder.CreateStructGEP(Type::LLVM_MPZ_TYPE, mpz_struct, 0), Type::POINTER};
+	auto long_value = new_long(value);
+	insn_call(Type::VOID, {mpz_addr, long_value}, &mpz_init_set_ui, "mpz_init_set_ui");
+	// VM::inc_mpz_counter(F);
+	return {mpz_struct, Type::MPZ_TMP};
 }
+
+LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
+	return new_mpz(0);
+}
+
 LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMCompiler::value> elements) const {
 	auto array = [&]() { if (element_type == Type::INTEGER) {
 		return insn_call(Type::INT_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
@@ -135,10 +146,6 @@ LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMC
 	// size of the array + 1 operations
 	inc_ops(elements.size() + 1);
 	return array;
-}
-
-LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
-	return new_mpz(0);
 }
 
 LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
@@ -452,7 +459,16 @@ LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const {
+	auto new_mpz = CreateEntryBlockAlloca("mpz", Type::MPZ);
+	LLVMCompiler::value r = {new_mpz, Type::MPZ_TMP};
+	LLVMCompiler::value r_addr {Builder.CreateStructGEP(Type::LLVM_MPZ_TYPE, new_mpz, 0), Type::POINTER};
+	LLVMCompiler::value mpz_addr {Builder.CreateStructGEP(Type::LLVM_MPZ_TYPE, mpz.v, 0), Type::POINTER};
+	insn_call(Type::VOID, {r_addr, mpz_addr}, &mpz_init_set, "mpz_init_set");
+	// VM::inc_mpz_counter(F);
+	return r;
+}
+
 void  LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_inc_refs(LLVMCompiler::value v) const { assert(false); }
 
