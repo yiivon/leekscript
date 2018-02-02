@@ -28,7 +28,9 @@ Program::Program(const std::string& code, const std::string& file_name) {
 Program::~Program() {
 	if (main != nullptr) {
 		delete main;
-		vm->compiler.removeModule(main->function_handle);
+		if (closure != nullptr) {
+			vm->compiler.removeModule(main->function_handle);
+		}
 	}
 }
 
