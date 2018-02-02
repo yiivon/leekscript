@@ -95,13 +95,18 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 Compiler::value If::compile(Compiler& c) const {
 
-	Compiler::value res;
-	if (type != Type::VOID) {
-		res = c.insn_create_value(type);
-	}
+	// Create blocks for the then and else cases. Insert the 'then' block at the end of the function.
+	auto label_then = c.insn_init_label("then");
+	auto label_else = c.insn_init_label("else");
+	auto label_end = c.insn_init_label("ifcont");
 
-	Compiler::label label_else;
-	Compiler::label label_end;
+	Compiler::value then_v;
+	Compiler::value else_v;
+
+	// Compiler::value res;
+	// if (type != Type::VOID) {
+	// 	res = c.insn_create_value(type);
+	// }
 
 	auto cond = condition->compile(c);
 	condition->compile_end(c);
@@ -109,35 +114,54 @@ Compiler::value If::compile(Compiler& c) const {
 	if (condition->type.nature == Nature::POINTER) {
 		auto cond_bool = c.insn_to_bool(cond);
 		c.insn_delete_temporary(cond);
-		c.insn_branch_if_not(cond_bool, &label_else);
+		c.insn_if_new(cond_bool, &label_then, &label_else);
 	} else {
-		c.insn_branch_if_not(cond, &label_else);
+		c.insn_if_new(cond, &label_then, &label_else);
 	}
 
-	auto then_v = then->compile(c);
+	c.insn_label(&label_then);
+
+	then_v = then->compile(c);
 	then->compile_end(c);
-	if (then_v.v) {
-		c.insn_store(res, then_v);
-	}
+	// if (then_v.v) {
+		// c.insn_store(res, then_v);
+	// }
 
-	if (elze != nullptr or type != Type::VOID) {
-		c.insn_branch(&label_end);
-	}
+	c.insn_branch(&label_end);
+	// Codegen of 'Then' can change the current block, update ThenBB for the PHI.
+	label_then.block = LLVMCompiler::Builder.GetInsertBlock();
+
+	// if (elze != nullptr or type != Type::VOID) {
+	// 	c.insn_branch(&label_end);
+	// }
+
+	// Emit else block.
 	c.insn_label(&label_else);
 
 	if (elze != nullptr) {
-		auto else_v = elze->compile(c);
+		else_v = elze->compile(c);
 		elze->compile_end(c);
-		if (else_v.v) {
-			c.insn_store(res, else_v);
-		}
+		// if (else_v.v) {
+			// c.insn_store(res, else_v);
+		// }
 	} else if (type != Type::VOID) {
-		c.insn_store(res, c.new_null());
+		else_v = c.new_null();
+		// c.insn_store(res, c.new_null());
 	}
 	if (elze != nullptr or type != Type::VOID) {
-		c.insn_label(&label_end);
+		// c.insn_label(&label_end);
 	}
-	return res;
+
+	c.insn_branch(&label_end);
+	// Codegen of 'Else' can change the current block, update ElseBB for the PHI.
+	label_else.block = LLVMCompiler::Builder.GetInsertBlock();
+
+	// Emit merge block.
+	c.insn_label(&label_end);
+	auto PN = LLVMCompiler::Builder.CreatePHI(type.llvm_type(), 2, "iftmp");
+	PN->addIncoming(then_v.v, label_then.block);
+	PN->addIncoming(else_v.v, label_else.block);
+	return {PN, type};
 }
 
 Value* If::clone() const {
