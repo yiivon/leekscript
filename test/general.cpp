@@ -66,15 +66,17 @@ void Test::test_general() {
 	code("5 \n - 5").equals("-5");
 
 	header("Variables");
+	code("let a").equals("(void)");
+	code("let a = 2").equals("(void)");
 	code("let a = 2 a").equals("2");
 	code("let a = 1, b = 2, c = 3").equals("(void)");
 	code("let a = 1, b = 2, c").equals("(void)");
 	code("let a = 1, b, c = 3").equals("(void)");
 	code("let a, b, c = 3").equals("(void)");
 	code("let a, b, c").equals("(void)");
-	code("let a").equals("(void)");
 	code("let a a").equals("null");
 	code("var a a = 12 a").equals("12");
+	code("var a = 5 a = 13 a").equals("13");
 	code("var a = 1 let b = (a = 12) b").equals("12");
 	code("let s = 'hello'").equals("(void)");
 	code("let s = 'hello' s").equals("'hello'");
