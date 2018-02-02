@@ -485,25 +485,13 @@ LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompi
 	return new_integer(0);
 }
 
-LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value value) const {
-	if (value.t.must_manage_memory()) {
-		if (value.t.reference) {
-			insn_inc_refs(value);
-			return value;
-		} else {
-			return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
-				return v->move_inc();
-			}, "move_inc");
-		}
+LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value v) const {
+	if (v.t.must_manage_memory() and !v.t.temporary and !v.t.reference) {
+		return insn_call(v.t, {v}, (void*) +[](LSValue* v) {
+			return v->move();
+		}, "move");
 	}
-	if (value.t.temporary) {
-		return value;
-	}
-	if (value.t == Type::MPZ) {
-		return insn_clone_mpz(value);
-	} else {
-		return value;
-	}
+	return v;
 }
 LLVMCompiler::value LLVMCompiler::insn_refs(LLVMCompiler::value v) const {
 	assert(v.t.must_manage_memory());
