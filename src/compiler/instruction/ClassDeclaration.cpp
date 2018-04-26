@@ -42,7 +42,7 @@ void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		vd->analyse(analyser, Type::UNKNOWN);
 		for (size_t i = 0; i < vd->variables.size(); ++i) {
 			// std::cout << "Add class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
-			auto t = i < vd->expressions.size() ? vd->expressions.at(i)->type : Type::NULLL;
+			auto t = i < vd->expressions.size() ? vd->expressions.at(i)->type : Type::UNKNOWN;
 			ls_class->addField(vd->variables.at(i)->content, t, nullptr);
 		}
 	}
