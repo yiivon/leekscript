@@ -40,7 +40,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("+=", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::add_eq_mpz_mpz},
-		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_eq_real, {}, false, true}
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_eq_real, {}, false, true},
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_eq_real, {}, false, true}
 	});
 
 	operator_("-", {
@@ -49,9 +50,21 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::sub_real_real},
 	});
 
+	operator_("-=", {
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::sub_eq_mpz_mpz},
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::sub_eq_real, {}, false, true},
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::sub_eq_real, {}, false, true}
+	});
+
 	operator_("*", {
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
-		{Type::CONST_REAL, Type::CONST_REAL, Type::REAL, (void*) &NumberSTD::mul_real_real},
+		{Type::CONST_REAL, Type::CONST_REAL, Type::CONST_REAL, (void*) &NumberSTD::mul_real_real},
+		{Type::INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_mpz_mpz}
+	});
+	operator_("×", {
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
+		{Type::CONST_REAL, Type::CONST_REAL, Type::CONST_REAL, (void*) &NumberSTD::mul_real_real},
 		{Type::INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_mpz_mpz}
 	});
@@ -63,8 +76,25 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::pow_mpz_int},
 	});
 
+	operator_("**=", {
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::pow_eq_mpz_mpz},
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::pow_eq_real, {}, false, true},
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::pow_eq_real, {}, false, true}
+	});
+
+	operator_("*=", {
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_eq_mpz_mpz},
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::mul_eq_real, {}, false, true},
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_eq_real, {}, false, true}
+	});
+
 	operator_("/", {
 		{Type::CONST_NUMBER, Type::CONST_NUMBER, Type::REAL, (void*) &NumberSTD::div_val_val}
+	});
+
+	operator_("/=", {
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::div_eq_mpz_mpz},
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::div_eq_real, {}, false, true}
 	});
 
 	operator_("<", {
@@ -88,6 +118,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("%", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_mpz_mpz},
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mod_real_real},
+	});
+
+	operator_("%=", {
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_eq_mpz_mpz},
+		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::mod_eq_real, {}, false, true},
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::mod_eq_real, {}, false, true}
 	});
 
 	operator_("==", {
@@ -336,7 +372,7 @@ Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args) {
-	auto x = c.insn_load(args[0], 0, Type::REAL);
+	auto x = c.insn_load(args[0], 0, args[0].t);
 	auto sum = c.insn_add(x, args[1]);
 	c.insn_store_relative(args[0], 0, sum);
 	return sum;
@@ -387,6 +423,20 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
+Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_sub);
+	return c.insn_clone_mpz(args[0]);
+}
+
+Compiler::value NumberSTD::sub_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto x = c.insn_load(args[0], 0, args[0].t);
+	auto sum = c.insn_sub(x, args[1]);
+	c.insn_store_relative(args[0], 0, sum);
+	return sum;
+}
+
 Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_mul(args[0], args[1]);
 }
@@ -418,6 +468,20 @@ Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
+Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_mul);
+	return c.insn_clone_mpz(args[0]);
+}
+
+Compiler::value NumberSTD::mul_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto x = c.insn_load(args[0], 0, args[0].t);
+	auto sum = c.insn_mul(x, args[1]);
+	c.insn_store_relative(args[0], 0, sum);
+	return sum;
+}
+
 Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_div(args[0], args[1]);
 }
@@ -428,6 +492,20 @@ Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::valu
 		r = c.to_int(r);
 	}
 	return r;
+}
+
+Compiler::value NumberSTD::div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_div);
+	return c.insn_clone_mpz(args[0]);
+}
+
+Compiler::value NumberSTD::div_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto x = c.insn_load(args[0], 0, args[0].t);
+	auto sum = c.insn_div(x, args[1]);
+	c.insn_store_relative(args[0], 0, sum);
+	return sum;
 }
 
 Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -526,6 +604,20 @@ Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 		c.insn_delete_mpz(args[1]);
 	}
 	return r;
+}
+
+Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_mod);
+	return c.insn_clone_mpz(args[0]);
+}
+
+Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto x = c.insn_load(args[0], 0, args[0].t);
+	auto sum = c.insn_mod(x, args[1]);
+	c.insn_store_relative(args[0], 0, sum);
+	return sum;
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -884,6 +976,20 @@ Compiler::value NumberSTD::cbrt_real(Compiler& c, std::vector<Compiler::value> a
 
 Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_pow(args[0], args[1]);
+}
+
+Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+	auto a_addr = c.insn_address_of(args[0]);
+	auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_pow_ui);
+	return c.insn_clone_mpz(args[0]);
+}
+
+Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto x = c.insn_load(args[0], 0, args[0].t);
+	auto sum = c.insn_pow(x, args[1]);
+	c.insn_store_relative(args[0], 0, sum);
+	return sum;
 }
 
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {

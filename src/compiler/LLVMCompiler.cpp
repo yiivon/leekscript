@@ -212,16 +212,25 @@ LLVMCompiler::value LLVMCompiler::insn_or(LLVMCompiler::value a, LLVMCompiler::v
 }
 
 LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateAdd(a.v, b.v, "addtmp"), Type::INTEGER};
+	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
+		return {Builder.CreateFAdd(to_real(a).v, to_real(b).v, "add"), Type::REAL};
+	} else {
+		return {Builder.CreateAdd(a.v, b.v, "add"), Type::INTEGER};
+	}
 }
+
 LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateSub(a.v, b.v, "addtmp"), Type::INTEGER};
+	return {Builder.CreateSub(a.v, b.v, "subtmp"), Type::INTEGER};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	LLVMCompiler::value r {Builder.CreateICmpEQ(a.v, b.v), Type::BOOLEAN};
-	log_insn(4) << "eq " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
-	return r;
+	if (a.t.raw_type == RawType::INTEGER and b.t.raw_type == RawType::INTEGER) {
+		LLVMCompiler::value r {Builder.CreateICmpEQ(a.v, b.v), Type::BOOLEAN};
+		log_insn(4) << "eq " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+		return r;
+	} else {
+		return {Builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	}
 }
 
 LLVMCompiler::value LLVMCompiler::insn_ne(LLVMCompiler::value a, LLVMCompiler::value b) const {
@@ -231,9 +240,13 @@ LLVMCompiler::value LLVMCompiler::insn_ne(LLVMCompiler::value a, LLVMCompiler::v
 }
 
 LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	LLVMCompiler::value r {Builder.CreateICmpSLT(a.v, b.v), Type::BOOLEAN};
-	log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
-	return r;
+	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
+		return {Builder.CreateFCmpOLT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	} else {
+		LLVMCompiler::value r {Builder.CreateICmpSLT(a.v, b.v), Type::BOOLEAN};
+		log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+		return r;
+	}
 }
 
 LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::value b) const {
@@ -255,10 +268,13 @@ LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::v
 }
 
 LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
+		return {Builder.CreateFMul(to_real(a).v, to_real(b).v, "multmp"), Type::REAL};
+	}
 	return {Builder.CreateMul(a.v, b.v, "multmp"), Type::INTEGER};
 }
 LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateFDiv(Builder.CreateFPCast(a.v, llvm::Type::getDoubleTy(context)), Builder.CreateFPCast(b.v, llvm::Type::getDoubleTy(context)), "divtmp"), Type::REAL};
+	return {Builder.CreateFDiv(Builder.CreateSIToFP(a.v, llvm::Type::getDoubleTy(context)), Builder.CreateSIToFP(b.v, llvm::Type::getDoubleTy(context)), "divtmp"), Type::REAL};
 }
 LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
@@ -268,7 +284,10 @@ LLVMCompiler::value LLVMCompiler::insn_bit_or(LLVMCompiler::value a, LLVMCompile
 }
 
 LLVMCompiler::value LLVMCompiler::insn_bit_xor(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+
+LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateURem(a.v, b.v), Type::INTEGER};
+}
 
 LLVMCompiler::value LLVMCompiler::insn_cmpl(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	return {Builder.CreateICmpUGT(a.v, b.v), Type::INTEGER};

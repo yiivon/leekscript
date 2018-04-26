@@ -23,7 +23,8 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 
 	operator_("*", {
 		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::mul_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_NUMBER, Type::REAL, (void*) &BooleanSTD::mul_bool}
+		{Type::CONST_BOOLEAN, Type::CONST_REAL, Type::REAL, (void*) &BooleanSTD::mul_bool},
+		{Type::CONST_BOOLEAN, Type::CONST_INTEGER, Type::INTEGER, (void*) &BooleanSTD::mul_bool}
 	});
 
 	method("compare", {
