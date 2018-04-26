@@ -170,9 +170,14 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
-LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value) const {
-	assert(false);
+
+LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
+	if (x.t.raw_type == RawType::REAL) {
+		return x;
+	}
+	return {Builder.CreateUIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
 }
+
 LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value) const {
 	assert(false);
 }
