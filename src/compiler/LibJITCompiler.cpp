@@ -240,7 +240,7 @@ LibJITCompiler::value LibJITCompiler::clone(LibJITCompiler::value v) const {
 	return v;
 }
 LibJITCompiler::value LibJITCompiler::new_null() const {
-	return {jit_value_create_long_constant(F, LS_POINTER, (long) LSNull::get()), Type::NULLL};
+	return {jit_value_create_long_constant(F, LS_POINTER, (long) LSNull::get()), Type::ANY};
 }
 LibJITCompiler::value LibJITCompiler::new_bool(bool b) const {
 	return {LS_CREATE_BOOLEAN(F, b), Type::BOOLEAN};
@@ -427,7 +427,7 @@ LibJITCompiler::value LibJITCompiler::insn_load(LibJITCompiler::value v, int pos
 }
 
 LibJITCompiler::value LibJITCompiler::insn_typeof(LibJITCompiler::value v) const {
-	if (v.t.raw_type == RawType::NULLL) return new_integer(LSValue::NULLL);
+	if (v.t.raw_type == RawType::ANY) return new_integer(LSValue::NULLL);
 	if (v.t.raw_type == RawType::BOOLEAN) return new_integer(LSValue::BOOLEAN);
 	if (v.t.isNumber()) return new_integer(LSValue::NUMBER);
 	if (v.t.raw_type == RawType::STRING) return new_integer(LSValue::STRING);
@@ -445,8 +445,8 @@ LibJITCompiler::value LibJITCompiler::insn_typeof(LibJITCompiler::value v) const
 }
 
 LibJITCompiler::value LibJITCompiler::insn_class_of(LibJITCompiler::value v) const {
-	if (v.t.raw_type == RawType::NULLL)
-		return new_pointer(vm->system_vars["Null"]);
+	// if (v.t.raw_type == RawType::ANY)
+		// return new_pointer(vm->system_vars["Any"]);
 	if (v.t.raw_type == RawType::BOOLEAN)
 		return new_pointer(vm->system_vars["Boolean"]);
 	if (v.t.isNumber())

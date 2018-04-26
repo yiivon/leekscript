@@ -40,13 +40,13 @@ public:
 	virtual const std::string getJsonName() const { return "void"; }
 };
 
-class NullRawType : public BaseRawType {
+class AnyRawType : public BaseRawType {
 public:
-	NullRawType() {}
+	AnyRawType() {}
 	virtual int id() const { return 1; }
-	virtual const std::string getName() const { return "null"; }
-	virtual const std::string getClass() const { return "Null"; }
-	virtual const std::string getJsonName() const { return "null"; }
+	virtual const std::string getName() const { return "any"; }
+	virtual const std::string getClass() const { return "Any"; }
+	virtual const std::string getJsonName() const { return "any"; }
 };
 
 class BooleanRawType : public BaseRawType {
@@ -205,7 +205,7 @@ class RawType {
 public:
 	static const UnknownRawType _UNKNOWN;
 	static const VoidRawType _VOID;
-	static const NullRawType _NULLL;
+	static const AnyRawType _ANY;
 	static const BooleanRawType _BOOLEAN;
 	static const NumberRawType _NUMBER;
 	static const MpzRawType _MPZ;
@@ -224,7 +224,7 @@ public:
 
 	static const UnknownRawType* const UNKNOWN;
 	static const VoidRawType* const VOID;
-	static const NullRawType* const NULLL;
+	static const AnyRawType* const ANY;
 	static const BooleanRawType* const BOOLEAN;
 	static const NumberRawType* const NUMBER;
 	static const MpzRawType* const MPZ;
@@ -322,7 +322,7 @@ public:
 
 	static const Type UNKNOWN;
 	static const Type CONST_UNKNOWN;
-	static const Type NULLL;
+	static const Type ANY;
 	static const Type BOOLEAN;
 	static const Type BOOLEAN_P;
 	static const Type CONST_BOOLEAN;

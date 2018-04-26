@@ -78,7 +78,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 			v->type.constant = constant;
 			v->value = expressions[i];
 		} else {
-			v->type = Type::NULLL;
+			v->type = Type::ANY;
 			v->type.constant = constant;
 		}
 		if (v->type == Type::VOID) {
@@ -89,7 +89,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 }
 
 Compiler::value VariableDeclaration::compile(Compiler& c) const {
-
+	
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
 		std::string name = variables[i]->content;
@@ -109,7 +109,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			}
 			auto val = ex->compile(c);
 			ex->compile_end(c);
-			
+
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
@@ -117,7 +117,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			c.add_function_var(var);
 			c.insn_store(var, val);
 		} else {
-			auto var = c.create_and_add_var(name, Type::NULLL);
+			auto var = c.create_and_add_var(name, Type::ANY);
 			auto val = c.new_null();
 			c.insn_store(var, val);
 		}

@@ -13,7 +13,7 @@ BaseRawType::~BaseRawType() {}
 
 const UnknownRawType RawType::_UNKNOWN;
 const VoidRawType RawType::_VOID;
-const NullRawType RawType::_NULLL;
+const AnyRawType RawType::_ANY;
 const BooleanRawType RawType::_BOOLEAN;
 const NumberRawType RawType::_NUMBER;
 const MpzRawType RawType::_MPZ;
@@ -32,7 +32,7 @@ const ClassRawType RawType::_CLASS;
 
 const UnknownRawType* const RawType::UNKNOWN = &_UNKNOWN;
 const VoidRawType* const RawType::VOID = &_VOID;
-const NullRawType* const RawType::NULLL = &_NULLL;
+const AnyRawType* const RawType::ANY = &_ANY;
 const BooleanRawType* const RawType::BOOLEAN = &_BOOLEAN;
 const NumberRawType* const RawType::NUMBER = &_NUMBER;
 const IntegerRawType* const RawType::INTEGER = &_INTEGER;
@@ -76,7 +76,7 @@ const Type Type::CONST_VALUE(RawType::UNKNOWN, Nature::VALUE, false, false, true
 const Type Type::POINTER(RawType::UNKNOWN, Nature::POINTER);
 const Type Type::CONST_POINTER(RawType::UNKNOWN, Nature::POINTER, false, false, true);
 
-const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
+const Type Type::ANY(RawType::ANY, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
 const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
 const Type Type::CONST_BOOLEAN(RawType::BOOLEAN, Nature::VALUE, false, false, true);
@@ -643,6 +643,9 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	if (t1 == t2) {
 		return t1;
 	}
+	if (t1.raw_type == RawType::ANY or t2.raw_type == RawType::ANY) {
+		return Type::ANY;
+	}
 	if (t1.nature == Nature::POINTER and t2.nature == Nature::VALUE) {
 		return Type::POINTER;
 	}
@@ -727,7 +730,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		}
 		os << ") → " << type.getReturnType();
 	} else if (type.raw_type == RawType::STRING || type.raw_type == RawType::CLASS
-		|| type.raw_type == RawType::OBJECT || type.raw_type == RawType::NULLL
+		|| type.raw_type == RawType::OBJECT || type.raw_type == RawType::ANY
 		|| type.raw_type == RawType::INTERVAL) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
