@@ -136,12 +136,12 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				c.insn_call(Type::VOID, {x_addr, x_addr, one}, &mpz_add_ui);
 				return x;
 			} else if (expression->type.nature == Nature::VALUE) {
-				auto x = expression->compile(c);
-				auto y = c.new_integer(1);
-				auto sum = c.insn_add(x, y);
-				c.insn_store(x, sum);
+				auto x_addr = ((LeftValue*) expression)->compile_l(c);
+				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
+				auto sum = c.insn_add(x, c.new_integer(1));
+				c.insn_store_relative(x_addr, 0, sum);
 				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(sum);
+					return c.insn_to_pointer(x);
 				}
 				return sum;
 			} else {
@@ -152,12 +152,12 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		}
 		case TokenType::MINUS_MINUS: {
 			if (expression->type.nature == Nature::VALUE) {
-				auto x = expression->compile(c);
-				auto y = c.new_integer(1);
-				auto sum = c.insn_sub(x, y);
-				c.insn_store(x, sum);
+				auto x_addr = ((LeftValue*) expression)->compile_l(c);
+				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
+				auto sum = c.insn_sub(x, c.new_integer(1));
+				c.insn_store_relative(x_addr, 0, sum);
 				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(sum);
+					return c.insn_to_pointer(x);
 				}
 				return sum;
 			} else {
