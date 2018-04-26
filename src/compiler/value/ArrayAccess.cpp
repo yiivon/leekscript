@@ -178,6 +178,7 @@ bool ArrayAccess::will_store(SemanticAnalyser* analyser, const Type& type) {
 	this->type = array->type.getElementType();
 	this->types = this->type;
 	array_element_type = this->type;
+	return false;
 }
 
 void ArrayAccess::change_type(SemanticAnalyser* analyser, const Type& new_type) {
