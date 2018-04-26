@@ -293,7 +293,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				return e;
 			} else {
 				auto element_addr = c.insn_array_at(compiled_array, k);
-				auto e = c.insn_load(element_addr);
+				auto e = c.insn_load(element_addr, 0, type);
 				e = c.clone(e);
 				if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(e);
@@ -340,6 +340,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		// Access
 		c.mark_offset(location().start.line);
 		if (array->type.raw_type == RawType::ARRAY) {
+
 			// return c.insn_call(Type::POINTER, {compiled_array, k}, +[](LSArray<LSValue*>* array, int key) {
 			// 	return array->atL(LSNumber::get(key));
 			// });
@@ -349,7 +350,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 				c.insn_delete_temporary(compiled_array);
 				c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 			});
-			return c.insn_add(c.insn_load(compiled_array, 24, Type::POINTER), c.insn_mul(c.new_integer(array_element_type.size() / 8), k));
+		 	return c.insn_array_at(compiled_array, k);
 
 		} else if (array->type.raw_type == RawType::MAP) {
 

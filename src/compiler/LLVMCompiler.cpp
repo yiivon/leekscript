@@ -456,11 +456,12 @@ void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::valu
 }
 
 LLVMCompiler::value LLVMCompiler::insn_array_at(LLVMCompiler::value array, LLVMCompiler::value index) const {
-	auto converted_array = Builder.CreatePointerCast(array.v, Type::LLVM_VECTOR_TYPE_PTR);
-	auto raw_data = Builder.CreateStructGEP(Type::LLVM_VECTOR_TYPE, converted_array, 3);
+	auto array_type = array.v->getType()->getPointerElementType();
+	auto raw_data = Builder.CreateStructGEP(array_type, array.v, 5);
 	auto data_base = Builder.CreateLoad(raw_data);
-	auto data = Builder.CreatePointerCast(data_base, array.t.getElementType().llvm_type()->getPointerTo());
-	return {Builder.CreateGEP(data, index.v), Type::POINTER};
+	auto data_type = array.t.getElementType().llvm_type()->getPointerTo();
+	auto data = Builder.CreatePointerCast(data_base, data_type);
+	return {Builder.CreateGEP(data, index.v), array.t.getElementType()};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const {
