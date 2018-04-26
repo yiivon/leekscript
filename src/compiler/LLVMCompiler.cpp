@@ -53,8 +53,17 @@ void LLVMCompiler::init() {
 	Type::LLVM_MPZ_TYPE = llvm::StructType::create("mpz", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context));
 	Type::LLVM_MPZ_TYPE_PTR = Type::LLVM_MPZ_TYPE->getPointerTo();
 
-	Type::LLVM_VECTOR_TYPE = llvm::StructType::create("mpz", llvm::Type::getInt32PtrTy(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context), Type::LLVM_LSVALUE_TYPE_PTR_PTR);
+	Type::LLVM_VECTOR_TYPE = llvm::StructType::create("lsarray_ptr",
+	llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context), Type::LLVM_LSVALUE_TYPE_PTR_PTR, llvm::Type::getInt32PtrTy(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context));
 	Type::LLVM_VECTOR_TYPE_PTR = Type::LLVM_VECTOR_TYPE->getPointerTo();
+
+	Type::LLVM_VECTOR_INT_TYPE = llvm::StructType::create("lsarray_int",
+	llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context)->getPointerTo(), llvm::Type::getInt32PtrTy(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context));
+	Type::LLVM_VECTOR_INT_TYPE_PTR = Type::LLVM_VECTOR_INT_TYPE->getPointerTo();
+
+	Type::LLVM_FUNCTION_TYPE = llvm::StructType::create("lsfunction", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context),
+	llvm::Type::getInt64Ty(LLVMCompiler::context));
+	Type::LLVM_FUNCTION_TYPE_PTR = Type::LLVM_FUNCTION_TYPE->getPointerTo();
 }
 
 void LLVMCompiler::end() {
