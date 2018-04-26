@@ -509,7 +509,8 @@ LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompi
 			previous = insn_refs(v);
 		}
 		auto new_refs = insn_sub(previous, new_integer(1));
-		auto r = Builder.CreateStructGEP(Type::LLVM_LSVALUE_TYPE, v.v, 3);
+		auto llvm_type = v.v->getType()->getPointerElementType();
+		auto r = Builder.CreateStructGEP(llvm_type, v.v, 3);
 		insn_store({r, Type::UNKNOWN}, new_refs);
 		return new_refs;
 	}
@@ -526,12 +527,14 @@ LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value v) const {
 }
 LLVMCompiler::value LLVMCompiler::insn_refs(LLVMCompiler::value v) const {
 	assert(v.t.must_manage_memory());
-	auto r = Builder.CreateStructGEP(Type::LLVM_LSVALUE_TYPE, v.v, 3);
+	auto llvm_type = v.v->getType()->getPointerElementType();
+	auto r = Builder.CreateStructGEP(llvm_type, v.v, 3);
 	return {Builder.CreateLoad(r), Type::INTEGER};
 }
 LLVMCompiler::value LLVMCompiler::insn_native(LLVMCompiler::value v) const {
 	assert(v.t.must_manage_memory());
-	auto r = Builder.CreateStructGEP(Type::LLVM_LSVALUE_TYPE, v.v, 4);
+	auto llvm_type = v.v->getType()->getPointerElementType();
+	auto r = Builder.CreateStructGEP(llvm_type, v.v, 4);
 	return {Builder.CreateLoad(r), Type::BOOLEAN};
 }
 
