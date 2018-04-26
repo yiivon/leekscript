@@ -6,17 +6,13 @@
 
 namespace ls {
 
-
 LSClass* LSFunction::clazz;
-
 
 LSFunction::LSFunction(void* function) : LSValue(FUNCTION) {
 	this->function = function;
 }
 
-
 LSFunction::~LSFunction() {}
-
 
 bool LSFunction::closure() const {
 	return false;
@@ -25,16 +21,13 @@ bool LSFunction::closure() const {
 /*
  * LSValue methods
  */
-
 bool LSFunction::to_bool() const {
 	return true;
 }
 
-
 bool LSFunction::ls_not() const {
 	return false;
 }
-
 
 bool LSFunction::eq(const LSValue* v) const {
 	if (auto f = dynamic_cast<const LSFunction*>(v)) {
@@ -43,14 +36,12 @@ bool LSFunction::eq(const LSValue* v) const {
 	return false;
 }
 
-
 bool LSFunction::lt(const LSValue* v) const {
 	if (auto f = dynamic_cast<const LSFunction*>(v)) {
 		return function < f->function;
 	}
 	return LSValue::lt(v);
 }
-
 
 LSValue* LSFunction::attr(const std::string& key) const {
 	if (key == "args") {
@@ -66,22 +57,18 @@ LSValue* LSFunction::attr(const std::string& key) const {
 	return LSValue::attr(key);
 }
 
-
 LSValue* LSFunction::clone() const {
 	return (LSValue*) this;
 }
-
 
 std::ostream& LSFunction::dump(std::ostream& os, int) const {
 	os << "<function>";
 	return os;
 }
 
-
 std::string LSFunction::json() const {
 	return ""; // don't output function in json
 }
-
 
 LSValue* LSFunction::getClass() const {
 	return LSFunction::clazz;
