@@ -175,7 +175,7 @@ LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 	if (x.t.raw_type == RawType::REAL) {
 		return x;
 	}
-	return {Builder.CreateUIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
+	return {Builder.CreateSIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
 }
 
 LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value) const {
@@ -220,7 +220,11 @@ LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::
 }
 
 LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateSub(a.v, b.v, "subtmp"), Type::INTEGER};
+	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
+		return {Builder.CreateFSub(to_real(a).v, to_real(b).v, "sub"), Type::REAL};
+	} else {
+		return {Builder.CreateSub(a.v, b.v, "sub"), Type::INTEGER};
+	}
 }
 
 LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
@@ -273,9 +277,11 @@ LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::
 	}
 	return {Builder.CreateMul(a.v, b.v, "multmp"), Type::INTEGER};
 }
+
 LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateFDiv(Builder.CreateSIToFP(a.v, llvm::Type::getDoubleTy(context)), Builder.CreateSIToFP(b.v, llvm::Type::getDoubleTy(context)), "divtmp"), Type::REAL};
+	return {Builder.CreateFDiv(to_real(a).v, to_real(b).v), Type::REAL};
 }
+
 LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
 

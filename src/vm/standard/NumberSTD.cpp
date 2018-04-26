@@ -47,6 +47,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("-", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::sub_mpz_mpz},
 		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::sub_mpz_int},
+		{Type::CONST_REAL, Type::CONST_REAL, Type::CONST_REAL, (void*) &NumberSTD::sub_real_real},
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::sub_real_real},
 	});
 
