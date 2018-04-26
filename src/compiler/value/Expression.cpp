@@ -345,8 +345,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
-		type = Type::POINTER;
-		if (v1->type == v2->type) type = v1->type;
+		type = Type::get_compatible_type(v1->type, v2->type);
+		v1->analyse(analyser, type);
+		v2->analyse(analyser, type);
 	}
 
 	// int div => result is int
@@ -364,7 +365,9 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.raw_type == RawType::REAL) {
 		type.raw_type = RawType::REAL;
 	}
-	types = type;
+	if (types.size() == 0) {
+		types = type;
+	}
 }
 
 LSValue* jit_add(LSValue* x, LSValue* y) {
@@ -984,7 +987,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			label_else.block = LLVMCompiler::Builder.GetInsertBlock();
 
 			c.insn_label(&label_end);
-			auto PN = LLVMCompiler::Builder.CreatePHI(type.llvm_type(), 2, "iftmp");
+			auto PN = LLVMCompiler::Builder.CreatePHI(x.v->getType(), 2, "iftmp");
 			PN->addIncoming(y.v, label_then.block);
 			PN->addIncoming(x.v, label_else.block);
 			return {PN, type};
