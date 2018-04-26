@@ -17,7 +17,7 @@ void Test::test_types() {
 	assert(ls::Type::OBJECT.raw_type->getJsonName() == "object");
 	assert(ls::Type::CLASS.raw_type->getJsonName() == "class");
 	assert(ls::Type::SET.raw_type->getJsonName() == "set");
-	assert(ls::Type::NULLL.raw_type->getJsonName() == "null");
+	assert(ls::Type::ANY.raw_type->getJsonName() == "any");
 	assert(ls::Type::VOID.raw_type->getName() == "void");
 	assert(ls::Type::UNKNOWN.raw_type->getName() == "?");
 	assert(ls::Type::FUNCTION.raw_type->getName() == "function");
