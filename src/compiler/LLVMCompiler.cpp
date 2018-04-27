@@ -162,9 +162,15 @@ LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMC
 }
 
 LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
+	if (v.t.raw_type == RawType::INTEGER) {
+		return v;
+	}
 	if (v.t.not_temporary() == Type::MPZ) {
 		auto v_addr = insn_address_of(v);
 		return to_int(insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si"));
+	}
+	if (v.t.not_temporary() == Type::BOOLEAN) {
+		return {Builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), false), Type::INTEGER};
 	}
 	LLVMCompiler::value r {Builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), true), Type::INTEGER};
 	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
@@ -174,6 +180,9 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 	if (x.t.raw_type == RawType::REAL) {
 		return x;
+	}
+	if (x.t.raw_type == RawType::BOOLEAN) {
+		return {Builder.CreateUIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
 	}
 	return {Builder.CreateSIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
 }
@@ -215,7 +224,7 @@ LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::
 	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {Builder.CreateFAdd(to_real(a).v, to_real(b).v, "add"), Type::REAL};
 	} else {
-		return {Builder.CreateAdd(a.v, b.v, "add"), Type::INTEGER};
+		return {Builder.CreateAdd(to_int(a).v, to_int(b).v, "add"), Type::INTEGER};
 	}
 }
 
@@ -223,17 +232,15 @@ LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::
 	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {Builder.CreateFSub(to_real(a).v, to_real(b).v, "sub"), Type::REAL};
 	} else {
-		return {Builder.CreateSub(a.v, b.v, "sub"), Type::INTEGER};
+		return {Builder.CreateSub(to_int(a).v, to_int(b).v, "sub"), Type::INTEGER};
 	}
 }
 
 LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	if (a.t.raw_type == RawType::INTEGER and b.t.raw_type == RawType::INTEGER) {
-		LLVMCompiler::value r {Builder.CreateICmpEQ(a.v, b.v), Type::BOOLEAN};
-		log_insn(4) << "eq " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
-		return r;
-	} else {
+	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {Builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	} else {
+		return {Builder.CreateICmpEQ(to_int(a).v, to_int(b).v), Type::BOOLEAN};
 	}
 }
 
@@ -275,7 +282,7 @@ LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::
 	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {Builder.CreateFMul(to_real(a).v, to_real(b).v, "multmp"), Type::REAL};
 	}
-	return {Builder.CreateMul(a.v, b.v, "multmp"), Type::INTEGER};
+	return {Builder.CreateMul(to_int(a).v, to_int(b).v, "multmp"), Type::INTEGER};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::value b) const {

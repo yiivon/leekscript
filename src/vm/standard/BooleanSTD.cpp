@@ -13,12 +13,14 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::CONST_BOOLEAN, Type::CONST_STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, {}, Method::NATIVE},
 		{Type::CONST_BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, {}, Method::NATIVE},
 		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_NUMBER, Type::REAL, (void*) &BooleanSTD::add_bool}
+		{Type::CONST_BOOLEAN, Type::CONST_REAL, Type::REAL, (void*) &BooleanSTD::add_bool},
+		{Type::CONST_BOOLEAN, Type::CONST_INTEGER, Type::INTEGER, (void*) &BooleanSTD::add_bool}
 	});
 
 	operator_("-", {
 		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::sub_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_NUMBER, Type::REAL, (void*) &BooleanSTD::sub_bool}
+		{Type::CONST_BOOLEAN, Type::CONST_REAL, Type::REAL, (void*) &BooleanSTD::sub_bool},
+		{Type::CONST_BOOLEAN, Type::CONST_INTEGER, Type::INTEGER, (void*) &BooleanSTD::sub_bool}
 	});
 
 	operator_("*", {
