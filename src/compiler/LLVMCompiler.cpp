@@ -602,7 +602,31 @@ LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 	}, "typeof");
 }
 
-LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
+	if (v.t.raw_type == RawType::BOOLEAN)
+		return new_pointer(vm->system_vars["Boolean"]);
+	if (v.t.isNumber())
+		return new_pointer(vm->system_vars["Number"]);
+	if (v.t.raw_type == RawType::STRING)
+		return new_pointer(vm->system_vars["String"]);
+	if (v.t.raw_type == RawType::ARRAY)
+		return new_pointer(vm->system_vars["Array"]);
+	if (v.t.raw_type == RawType::MAP)
+		return new_pointer(vm->system_vars["Map"]);
+	if (v.t.raw_type == RawType::SET)
+		return new_pointer(vm->system_vars["Set"]);
+	if (v.t.raw_type == RawType::INTERVAL)
+		return new_pointer(vm->system_vars["Interval"]);
+	if (v.t.raw_type == RawType::FUNCTION)
+		return new_pointer(vm->system_vars["Function"]);
+	if (v.t.raw_type == RawType::OBJECT)
+		return new_pointer(vm->system_vars["Object"]);
+	if (v.t.raw_type == RawType::CLASS)
+		return new_pointer(vm->system_vars["Class"]);
+	return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
+		return v->getClass();
+	}, "get_class");
+}
 
 void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
 	// std::cout << "insn_delete " << v.t << " " << v.v->getType() << std::endl;
