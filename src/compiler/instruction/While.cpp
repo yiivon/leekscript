@@ -40,36 +40,29 @@ void While::analyse(SemanticAnalyser* analyser, const Type&) {
 
 Compiler::value While::compile(Compiler& c) const {
 
-	Compiler::label label_cond;
-	Compiler::label label_end;
+	auto cond_label = c.insn_init_label("cond");
+	auto end_label = c.insn_init_label("afterloop");
+	auto loop_label = c.insn_init_label("loop");
 
-	c.mark_offset(location().start.line);
-
-	// condition
-	c.insn_label(&label_cond);
-	c.inc_ops(1);
+	c.insn_branch(&cond_label);
+	c.insn_label(&cond_label);
 	auto cond = condition->compile(c);
 	condition->compile_end(c);
 	if (condition->type.nature == Nature::POINTER) {
 		auto cond_bool = c.insn_to_bool(cond);
 		c.insn_delete_temporary(cond);
-		c.insn_branch_if_not(cond_bool, &label_end);
-	} else {
-		c.insn_branch_if_not(cond, &label_end);
+		cond = cond_bool;
 	}
+	c.insn_if_new(cond, &loop_label, &end_label);
 
-	// body
-	c.enter_loop(&label_end, &label_cond);
+	c.insn_label(&loop_label);
+	c.enter_loop(&end_label, &loop_label);
 	body->compile(c);
 	c.leave_loop();
+	c.insn_branch(&cond_label);
 
-	// jump to cond
-	c.insn_branch(&label_cond);
-
-	// end label:
-	c.insn_label(&label_end);
-
-	return {nullptr, Type::UNKNOWN};
+	c.insn_label(&end_label);
+	return {nullptr, Type::VOID};
 }
 
 Instruction* While::clone() const {

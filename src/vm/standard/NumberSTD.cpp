@@ -426,28 +426,28 @@ Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	auto a = c.insn_address_of(args[0]);
-	auto b = args[1];
-	auto r = c.new_mpz();
-	auto r_addr = c.insn_address_of(r);
+	// auto a = c.insn_address_of(args[0]);
+	// auto b = args[1];
+	// auto r = c.new_mpz();
+	// auto r_addr = c.insn_address_of(r);
 
-	Compiler::label label_end;
-	Compiler::label label_else;
+	// Compiler::label label_end;
+	// Compiler::label label_else;
 
-	auto cond = c.insn_lt(b, c.new_integer(0));
-	c.insn_branch_if_not(cond, &label_else);
+	// auto cond = c.insn_lt(b, c.new_integer(0));
+	// c.insn_branch_if_not(cond, &label_else);
 
-	Compiler::value neg_b = c.insn_neg(b);
-	c.insn_call(Type::VOID, {r_addr, a, neg_b}, &mpz_add_ui, "mpz_add_ui");
-	c.insn_branch(&label_end);
+	// Compiler::value neg_b = c.insn_neg(b);
+	// c.insn_call(Type::VOID, {r_addr, a, neg_b}, &mpz_add_ui, "mpz_add_ui");
+	// c.insn_branch(&label_end);
 
-	c.insn_label(&label_else);
-	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub_ui, "mpz_sub_ui");
-	c.insn_label(&label_end);
-	if (args[0].t.temporary) {
-		c.insn_delete_mpz(args[0]);
-	}
-	return r;
+	// c.insn_label(&label_else);
+	// c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub_ui, "mpz_sub_ui");
+	// c.insn_label(&label_end);
+	// if (args[0].t.temporary) {
+	// 	c.insn_delete_mpz(args[0]);
+	// }
+	// return r;
 }
 
 Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {

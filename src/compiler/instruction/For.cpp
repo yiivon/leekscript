@@ -125,9 +125,9 @@ Compiler::value For::compile(Compiler& c) const {
 		if (condition->type.nature == Nature::POINTER) {
 			auto bool_v = c.insn_to_bool(condition_v);
 			c.insn_delete_temporary(condition_v);
-			c.insn_branch_if_not(bool_v, &label_end);
+			// c.insn_branch_if_not(bool_v, &label_end);
 		} else {
-			c.insn_branch_if_not(condition_v, &label_end);
+			// c.insn_branch_if_not(condition_v, &label_end);
 		}
 	}
 

@@ -935,12 +935,6 @@ void LLVMCompiler::insn_branch(label* l) const {
 	Builder.CreateBr(l->block);
 }
 
-void LLVMCompiler::insn_branch_if(LLVMCompiler::value v, label* l) const {
-	auto elze = insn_init_label("else");
-	Builder.CreateCondBr(v.v, l->block, elze.block);
-}
-
-void LLVMCompiler::insn_branch_if_not(LLVMCompiler::value v, label* l) const { assert(false); }
 void LLVMCompiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const { assert(false); }
 void LLVMCompiler::insn_return(LLVMCompiler::value v) const {
 	LLVMCompiler::Builder.CreateRet(v.v);
@@ -1120,9 +1114,19 @@ void LLVMCompiler::leave_loop() {
 	loops_cond_labels.pop_back();
 	loops_blocks.pop_back();
 }
-LLVMCompiler::label* LLVMCompiler::get_current_loop_end_label(int deepness) const { assert(false); }
-LLVMCompiler::label* LLVMCompiler::get_current_loop_cond_label(int deepness) const { assert(false); }
-int LLVMCompiler::get_current_loop_blocks(int deepness) const { assert(false); }
+LLVMCompiler::label* LLVMCompiler::get_current_loop_end_label(int deepness) const {
+	return loops_end_labels[loops_end_labels.size() - deepness];
+}
+LLVMCompiler::label* LLVMCompiler::get_current_loop_cond_label(int deepness) const {
+	return loops_end_labels[loops_end_labels.size() - deepness];
+}
+int LLVMCompiler::get_current_loop_blocks(int deepness) const {
+	int sum = 0;
+	for (size_t i = loops_blocks.size() - deepness; i < loops_blocks.size(); ++i) {
+		sum += loops_blocks[i];
+	}
+	return sum;
+}
 
 /** Operations **/
 void LLVMCompiler::inc_ops(int add) const {

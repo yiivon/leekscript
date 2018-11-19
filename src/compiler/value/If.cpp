@@ -98,7 +98,7 @@ Compiler::value If::compile(Compiler& c) const {
 	// Create blocks for the then and else cases. Insert the 'then' block at the end of the function.
 	auto label_then = c.insn_init_label("then");
 	auto label_else = c.insn_init_label("else");
-	auto label_end = c.insn_init_label("ifcont");
+	auto label_end = c.insn_init_label("end");
 
 	Compiler::value then_v;
 	Compiler::value else_v;
@@ -159,8 +159,12 @@ Compiler::value If::compile(Compiler& c) const {
 	// Emit merge block.
 	c.insn_label(&label_end);
 	auto PN = LLVMCompiler::Builder.CreatePHI(type.llvm_type(), 2, "iftmp");
-	PN->addIncoming(then_v.v, label_then.block);
-	PN->addIncoming(else_v.v, label_else.block);
+	if (then_v.v) {
+		PN->addIncoming(then_v.v, label_then.block);
+	}
+	if (else_v.v) {
+		PN->addIncoming(else_v.v, label_else.block);
+	}
 	return {PN, type};
 }
 

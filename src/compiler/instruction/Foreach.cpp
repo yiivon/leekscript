@@ -135,7 +135,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container->type.raw_type == RawType::ARRAY) {
 		auto empty_array = c.insn_eq(c.new_integer(0), it);
-		c.insn_branch_if(empty_array, &label_end);
+		// c.insn_branch_if(empty_array, &label_end);
 	}
 
 	// cond label:
@@ -143,7 +143,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	// Condition to continue
 	auto finished = c.iterator_end(container_v, it);
-	c.insn_branch_if(finished, &label_end);
+	// c.insn_branch_if(finished, &label_end);
 
 	// Get Value
 	c.insn_store(value_v, c.iterator_get(it, value_v));

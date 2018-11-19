@@ -72,11 +72,12 @@ void Test::test_loops() {
 	header("While loops");
 	code("var i = 0 while (i < 10) { i++ } i").equals("10");
 	code("var i = 0 var s = 0 while (i < 10) { s += i i++ } s").equals("45");
-	code("var i = 0 while (i < 100) { i++ if (i == 50) break } i").equals("50");
-	code("var i = 0 var a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a").equals("3");
-	code("while (true) { break }").equals("(void)");
+	DISABLED_code("var i = 0 while (i < 100) { i++ if (i == 50) break } i").equals("50");
+	DISABLED_code("var i = 0 var a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a").equals("3");
+	DISABLED_code("while (true) { break }").equals("(void)");
 	code("var i = 10 while (['hello', i][1]) { i-- } i").equals("0");
 	code("var i = 0 while i < 10 do i++ end i").equals("10");
+	code("var i = 5 while (i-- > 0) { System.print(i) }").output("4\n3\n2\n1\n0\n");
 
 	/*
 	 * For loops
