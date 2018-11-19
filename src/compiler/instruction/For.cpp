@@ -102,9 +102,10 @@ Compiler::value For::compile(Compiler& c) const {
 		c.add_var("{output}", output_v); // Why create variable ? in case of `break 2` the output must be deleted
 	}
 
-	Compiler::label label_cond;
-	Compiler::label label_inc;
-	Compiler::label label_end;
+	auto cond_label = c.insn_init_label("cond");
+	auto end_label = c.insn_init_label("afterloop");
+	auto loop_label = c.insn_init_label("loop");
+	auto inc_label = c.insn_init_label("inc");
 
 	// Init
 	for (Instruction* ins : inits) {
@@ -115,9 +116,10 @@ Compiler::value For::compile(Compiler& c) const {
 			return return_v;
 		}
 	}
+	c.insn_branch(&cond_label);
 
 	// Cond
-	c.insn_label(&label_cond);
+	c.insn_label(&cond_label);
 	c.inc_ops(1);
 	if (condition != nullptr) {
 		auto condition_v = condition->compile(c);
@@ -125,23 +127,25 @@ Compiler::value For::compile(Compiler& c) const {
 		if (condition->type.nature == Nature::POINTER) {
 			auto bool_v = c.insn_to_bool(condition_v);
 			c.insn_delete_temporary(condition_v);
-			// c.insn_branch_if_not(bool_v, &label_end);
+			c.insn_if_new(bool_v, &loop_label, &end_label);
 		} else {
-			// c.insn_branch_if_not(condition_v, &label_end);
+			c.insn_if_new(condition_v, &loop_label, &end_label);
 		}
 	}
 
 	// Body
-	c.enter_loop(&label_end, &label_inc);
+	c.insn_label(&loop_label);
+	c.enter_loop(&end_label, &inc_label);
 	auto body_v = body->compile(c);
 	if (output_v.v && body_v.v) {
 		// transfer the ownership of the temporary variable `body_v`
 		c.insn_push_array(output_v, body_v);
 	}
 	c.leave_loop();
-	c.insn_label(&label_inc);
+	c.insn_branch(&inc_label);
 
 	// Inc
+	c.insn_label(&inc_label);
 	c.enter_block();
 	for (auto& ins : increments) {
 		ins->compile(c);
@@ -150,10 +154,10 @@ Compiler::value For::compile(Compiler& c) const {
 		}
 	}
 	c.leave_block();
-	c.insn_branch(&label_cond);
+	c.insn_branch(&cond_label);
 
 	// End
-	c.insn_label(&label_end);
+	c.insn_label(&end_label);
 	auto return_v = c.clone(output_v);
 	c.leave_block();
 	return return_v;
