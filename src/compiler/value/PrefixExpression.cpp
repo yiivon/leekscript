@@ -130,11 +130,10 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 
 		case TokenType::PLUS_PLUS: {
 			if (expression->type == Type::MPZ) {
-				auto x = expression->compile(c);
-				auto x_addr = c.insn_address_of(x);
+				auto x = ((LeftValue*) expression)->compile_l(c);
 				auto one = c.new_integer(1);
-				c.insn_call(Type::VOID, {x_addr, x_addr, one}, &mpz_add_ui);
-				return x;
+				c.insn_call(Type::VOID, {x, x, one}, &mpz_add_ui);
+				return c.insn_load(x, 0, Type::MPZ);
 			} else if (expression->type.nature == Nature::VALUE) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);
 				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
@@ -183,17 +182,12 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		case TokenType::MINUS: {
 			if (expression->type.not_temporary() == Type::MPZ) {
 				auto x = expression->compile(c);
-				auto r = [&]() {
-					if (x.t.temporary) {
-						return x;
-					} else {
-						return c.new_mpz();
-					}
-				}();
-				auto x_addr = c.insn_address_of(x);
-				auto r_addr = c.insn_address_of(r);
-				c.insn_call(Type::VOID, {r_addr, x_addr}, &mpz_neg);
-				return r;
+				return c.insn_call(Type::MPZ, {x}, +[](__mpz_struct x) {
+					mpz_t neg;
+					mpz_init(neg);
+					mpz_neg(neg, &x);
+					return *neg;
+				});
 			} else if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
 				auto r = c.insn_neg(x);

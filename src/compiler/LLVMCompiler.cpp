@@ -15,6 +15,7 @@
 #include "../vm/value/LSArray.hpp"
 #include "../vm/value/LSMap.hpp"
 #include "../vm/value/LSClosure.hpp"
+#include <bitset>
 
 #define log_insn(i) log_instructions && _log_insn((i))
 
@@ -22,27 +23,9 @@ namespace ls {
 
 llvm::LLVMContext LLVMCompiler::context;
 llvm::IRBuilder<> LLVMCompiler::Builder(context);
-std::unique_ptr<llvm::Module> LLVMCompiler::TheModule;
 std::map<std::string, llvm::Value*> LLVMCompiler::NamedValues;
-std::unique_ptr<llvm::legacy::FunctionPassManager> LLVMCompiler::TheFPM;
 
 void LLVMCompiler::init() {
-
-	// Open a new module.
-	TheModule = llvm::make_unique<llvm::Module>("my_jit", context);
-	TheModule->setDataLayout(getTargetMachine().createDataLayout());
-
-	// Create a new pass manager attached to it.
-	TheFPM = llvm::make_unique<llvm::legacy::FunctionPassManager>(TheModule.get());
-	// Do simple "peephole" optimizations and bit-twiddling optzns.
-	TheFPM->add(llvm::createInstructionCombiningPass());
-	// Reassociate expressions.
-	TheFPM->add(llvm::createReassociatePass());
-	// Eliminate Common SubExpressions.
-	TheFPM->add(llvm::createGVNPass());
-	// Simplify the control flow graph (deleting unreachable blocks, etc).
-	TheFPM->add(llvm::createCFGSimplificationPass());
-	TheFPM->doInitialization();
 
 	mappings.clear();
 
@@ -50,7 +33,8 @@ void LLVMCompiler::init() {
 	Type::LLVM_LSVALUE_TYPE_PTR = Type::LLVM_LSVALUE_TYPE->getPointerTo();
 	Type::LLVM_LSVALUE_TYPE_PTR_PTR = Type::LLVM_LSVALUE_TYPE_PTR->getPointerTo();
 
-	Type::LLVM_MPZ_TYPE = llvm::StructType::create("mpz", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context));
+	// Type::LLVM_MPZ_TYPE = llvm::StructType::create({llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context)}, "mpz", true);
+	Type::LLVM_MPZ_TYPE = llvm::Type::getInt128Ty(LLVMCompiler::context);
 	Type::LLVM_MPZ_TYPE_PTR = Type::LLVM_MPZ_TYPE->getPointerTo();
 
 	Type::LLVM_VECTOR_TYPE = llvm::StructType::create("lsarray_ptr",
@@ -62,8 +46,10 @@ void LLVMCompiler::init() {
 	Type::LLVM_VECTOR_INT_TYPE_PTR = Type::LLVM_VECTOR_INT_TYPE->getPointerTo();
 
 	Type::LLVM_FUNCTION_TYPE = llvm::StructType::create("lsfunction", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context),
-	llvm::Type::getInt64Ty(LLVMCompiler::context));
+	llvm::Type::getInt64Ty(LLVMCompiler::context)->getPointerTo());
 	Type::LLVM_FUNCTION_TYPE_PTR = Type::LLVM_FUNCTION_TYPE->getPointerTo();
+
+	Type::LLVM_INTEGER_ITERATOR_TYPE = llvm::StructType::create("integeriterator", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context));
 }
 
 void LLVMCompiler::end() {
@@ -121,16 +107,28 @@ LLVMCompiler::value LLVMCompiler::new_object_class(LLVMCompiler::value clazz) co
 }
 
 LLVMCompiler::value LLVMCompiler::new_mpz(long value) const {
-	auto mpz_struct = CreateEntryBlockAlloca("mpz", Type::MPZ);
-	LLVMCompiler::value mpz_addr {Builder.CreateStructGEP(Type::LLVM_MPZ_TYPE, mpz_struct, 0), Type::POINTER};
-	auto long_value = new_long(value);
-	insn_call(Type::VOID, {mpz_addr, long_value}, &mpz_init_set_ui, "mpz_init_set_ui");
-	// VM::inc_mpz_counter(F);
-	return {mpz_struct, Type::MPZ_TMP};
+	mpz_t mpz;
+	mpz_init_set_ui(mpz, value);
+	return new_mpz_init(mpz);
 }
 
 LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
-	return new_mpz(0);
+	// std::cout << "mpz alloc = " << mpz->_mp_alloc << std::endl;
+	// std::cout << "mpz size = " << mpz->_mp_size << std::endl;
+	// std::cout << "mpz d = " << mpz->_mp_d << std::endl;
+	unsigned long p1 = (((unsigned long) mpz->_mp_d >> 32) << 32) + (((unsigned long) mpz->_mp_d << 32) >> 32);
+	unsigned long p2 = (((unsigned long) mpz->_mp_size) << 32) + (unsigned long) mpz->_mp_alloc;
+	//std::cout << "p1 = " << std::bitset<64>(p1) << std::endl;
+	//std::cout << "p2 = " << std::bitset<64>(p2) << std::endl;
+	auto v = llvm::ConstantInt::get(context, llvm::APInt(128, {p2, p1}));
+	Compiler::value vv {v, Type::MPZ};
+	// insn_call(Type::VOID, {vv}, +[](__mpz_struct mpz) {
+	// 	std::cout << "mpz alloc = " << mpz._mp_alloc << std::endl;
+	// 	std::cout << "mpz size = " << mpz._mp_size << std::endl;
+	// 	std::cout << "mpz d = " << mpz._mp_d << std::endl;
+	// });
+	return vv;
+	// return {Builder.CreateIntCast(v, Type::LLVM_MPZ_TYPE, false), Type::MPZ};
 }
 
 LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMCompiler::value> elements) const {
@@ -190,8 +188,17 @@ LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value) const {
 	assert(false);
 }
-LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value, Type) const {
-	assert(false);
+
+LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) const {
+	if (v.t.not_temporary() == t.not_temporary()) return v;
+	if (t == Type::REAL) {
+		return to_real(v);
+	} else if (t == Type::INTEGER) {
+		return to_int(v);
+	} else if (t == Type::LONG) {
+		return to_long(v);
+	}
+	return v;
 }
 
 // Operators wrapping
@@ -306,24 +313,125 @@ LLVMCompiler::value LLVMCompiler::insn_cmpl(LLVMCompiler::value a, LLVMCompiler:
 	return {Builder.CreateICmpUGT(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_log(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_log10(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_ceil(LLVMCompiler::value) const {
-	assert(false);
+LLVMCompiler::value LLVMCompiler::insn_log(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::REAL, {x}, +[](int x) {
+			return std::log(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::log(x);
+	});
 }
-LLVMCompiler::value LLVMCompiler::insn_round(LLVMCompiler::value) const {
-	assert(false);
+
+LLVMCompiler::value LLVMCompiler::insn_log10(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::REAL, {x}, +[](int x) {
+			return std::log10(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::log10(x);
+	});
 }
-LLVMCompiler::value LLVMCompiler::insn_floor(LLVMCompiler::value) const {
-	assert(false);
+
+LLVMCompiler::value LLVMCompiler::insn_ceil(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) return x;
+	return insn_call(Type::INTEGER, {x}, +[](double x) {
+		return (int) std::ceil(x);
+	});
 }
-LLVMCompiler::value LLVMCompiler::insn_cos(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_sin(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_tan(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_acos(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_asin(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_atan(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_sqrt(LLVMCompiler::value) const { assert(false); }
+
+LLVMCompiler::value LLVMCompiler::insn_round(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) return x;
+	return insn_call(Type::INTEGER, {x}, +[](double x) {
+		return (int) std::round(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_floor(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) return x;
+	return insn_call(Type::INTEGER, {x}, +[](double x) {
+		return (int) std::floor(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_cos(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x}, +[](int x) {
+			return std::cos(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::cos(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_sin(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x}, +[](int x) {
+			return std::sin(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::sin(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_tan(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x}, +[](int x) {
+			return std::tan(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::tan(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_acos(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x}, +[](int x) {
+			return std::acos(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::acos(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_asin(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x}, +[](int x) {
+			return std::asin(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::asin(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_atan(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x}, +[](int x) {
+			return std::atan(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::atan(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_sqrt(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::REAL, {x}, +[](int x) {
+			return std::sqrt(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::sqrt(x);
+	});
+}
 
 LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	LLVMCompiler::value r = insn_call(Type::INTEGER, {a, b}, +[](int a, int b) {
@@ -333,14 +441,64 @@ LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value a, LLVMCompiler::
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_min(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_max(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_exp(LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_atan2(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_min(LLVMCompiler::value x, LLVMCompiler::value y) const {
+	if (x.t == Type::INTEGER and y.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x, y}, +[](int x, int y) {
+			return std::min(x, y);
+		});
+	}
+	return insn_call(Type::REAL, {x, y}, +[](double x, double y) {
+		return std::min(x, y);
+	});
+}
 
-// LLVMCompiler::value management
-LLVMCompiler::value LLVMCompiler::insn_create_value(Type t) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_max(LLVMCompiler::value x, LLVMCompiler::value y) const {
+	if (x.t == Type::INTEGER and y.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x, y}, +[](int x, int y) {
+			return std::max(x, y);
+		});
+	}
+	return insn_call(Type::REAL, {x, y}, +[](double x, double y) {
+		return std::max(x, y);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_exp(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x}, +[](int x) {
+			return std::exp(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::exp(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_atan2(LLVMCompiler::value x, LLVMCompiler::value y) const {
+	if (x.t == Type::INTEGER && y.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x, y}, +[](int x, int y) {
+			return std::atan2(x, y);
+		});
+	}
+	return insn_call(Type::REAL, {x, y}, +[](double x, double y) {
+		return std::atan2(x, y);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value x) const {
+	if (x.t == Type::INTEGER) {
+		return insn_call(Type::INTEGER, {x}, +[](int x) {
+			return std::abs(x);
+		});
+	}
+	return insn_call(Type::REAL, {x}, +[](double x) {
+		return std::fabs(x);
+	});
+}
+
+LLVMCompiler::value LLVMCompiler::insn_create_value(Type t) const {
+	return {CreateEntryBlockAlloca("v", t.llvm_type()), t};
+}
 
 LLVMCompiler::value LLVMCompiler::insn_to_pointer(LLVMCompiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
@@ -395,7 +553,20 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 	}, "Value::to_bool");
 }
 
-LLVMCompiler::value LLVMCompiler::insn_address_of(LLVMCompiler::value v) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_address_of(LLVMCompiler::value v) const {
+	// std::cout << "addr " << v.t << std::endl;
+	// if (v.t.raw_type == RawType::MPZ) {
+	// 	std::cout << " v t " << v.v->getType() << std::endl;
+	// 	Compiler::value v2 {Builder.CreateStructGEP(Type::LLVM_MPZ_TYPE, v.v, 0), Type::POINTER};
+	// 	std::cout << "v2 " << v2.v->getType() << std::endl;
+	// 	insn_call(Type::VOID, {v2}, +[](void* v) {
+	// 		std::cout << "v2 = " << v << std::endl;
+	// 	});
+	// 	return v2;
+	// } else {
+		assert(false && "SHOULDN'T USE address_of with LLVM!");
+	// }
+}
 
 LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v, int pos, Type t) const {
 	LLVMCompiler::value r {Builder.CreateAlignedLoad(v.v, pos), t};
@@ -434,6 +605,7 @@ LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const { assert(false); }
 
 void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
+	// std::cout << "insn_delete " << v.t << " " << v.v->getType() << std::endl;
 	if (v.t.must_manage_memory()) {
 		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_ref);
 		insn_if_not(insn_native(v), [&]() {
@@ -473,7 +645,26 @@ LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const {
 	return {};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const {
+	// std::cout << "get_capture " << fun << " " << F->arg_size() << " " << type << " " << F->arg_begin()->getType() << " " << index << std::endl;
+
+	LLVMCompiler::value arg0 = {F->arg_begin(), Type::INTEGER};
+
+	auto jit_index = new_integer(index);
+	auto v = insn_call(Type::POINTER, {arg0, jit_index}, +[](LSClosure* fun, int index) {
+		// std::cout << "fun->get_capture(" << fun << ", " << index << ")" << std::endl;
+		LSValue* v = fun->get_capture(index);
+		// std::cout << "capture : " << ((LSNumber*) v)->value << std::endl;
+		// v->refs++;
+		return v;
+	});
+	if (type.nature == Nature::VALUE) {
+		v = insn_call(Type::INTEGER, {v}, +[](LSNumber* n) {
+			return (int) n->value;
+		});
+	}
+	return v;
+}
 
 void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::value value) const {
 	if (array.t.getElementType() == Type::INTEGER) {
@@ -523,17 +714,39 @@ LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const
 }
 
 LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const {
-	auto new_mpz = CreateEntryBlockAlloca("mpz", Type::MPZ);
-	LLVMCompiler::value r = {new_mpz, Type::MPZ_TMP};
-	LLVMCompiler::value r_addr {Builder.CreateStructGEP(Type::LLVM_MPZ_TYPE, new_mpz, 0), Type::POINTER};
-	LLVMCompiler::value mpz_addr {Builder.CreateStructGEP(Type::LLVM_MPZ_TYPE, mpz.v, 0), Type::POINTER};
-	insn_call(Type::VOID, {r_addr, mpz_addr}, &mpz_init_set, "mpz_init_set");
-	// VM::inc_mpz_counter(F);
-	return r;
+	return insn_call(Type::MPZ, {mpz}, +[](__mpz_struct x) {
+		mpz_t new_mpz;
+		mpz_init_set(new_mpz, &x);
+		return *new_mpz;
+	});
+	// insn_call(Type::VOID, {v}, +[](__mpz_struct mpz) {
+	// 	std::cout << "mpz cloned alloc = " << mpz._mp_alloc << std::endl;
+	// 	std::cout << "mpz cloned size = " << mpz._mp_size << std::endl;
+	// 	std::cout << "mpz cloned d = " << mpz._mp_d << std::endl;
+	// });
+	// return v;
 }
 
-void  LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const { assert(false); }
-LLVMCompiler::value LLVMCompiler::insn_inc_refs(LLVMCompiler::value v) const { assert(false); }
+void LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const {
+	// std::cout << "delete mpz " << mpz.v->getType() << std::endl;
+	// insn_call(Type::VOID, {mpz}, &mpz_clear, "mpz_clear");
+	// Increment mpz values counter
+	// jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &vm->mpz_deleted);
+	// jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
+	// jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
+}
+
+LLVMCompiler::value LLVMCompiler::insn_inc_refs(LLVMCompiler::value v) const {
+	if (v.t.must_manage_memory()) {
+		auto previous = insn_refs(v);
+		auto new_refs = insn_add(previous, new_integer(1));
+		auto llvm_type = v.v->getType()->getPointerElementType();
+		auto r = Builder.CreateStructGEP(llvm_type, v.v, 3);
+		insn_store({r, Type::UNKNOWN}, new_refs);
+		return new_refs;
+	}
+	return new_integer(0);
+}
 
 LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompiler::value previous) const {
 	if (v.t.must_manage_memory()) {
@@ -571,7 +784,84 @@ LLVMCompiler::value LLVMCompiler::insn_native(LLVMCompiler::value v) const {
 }
 
 // Iterators
-LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
+	log_insn_code("iterator.begin()");
+	if (v.t.raw_type == RawType::ARRAY) {
+		// Compiler::value it = {jit_value_create(F, v.t.jit_type()), v.t};
+		// insn_store(it, insn_load(v, 24));
+		// return it;
+	}
+	if (v.t.raw_type == RawType::INTERVAL) {
+		// jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
+		// auto interval_iterator = jit_type_create_struct(types, 2, 1);
+		// Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
+		// jit_type_free(interval_iterator);
+		// auto addr = insn_address_of(it);
+		// jit_insn_store_relative(F, addr.v, 0, v.v);
+		// jit_insn_store_relative(F, addr.v, 8, insn_load(v, 20, Type::INTEGER).v);
+		// return it;
+	}
+	if (v.t.raw_type == RawType::STRING) {
+		// jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
+		// auto string_iterator = jit_type_create_struct(types, 5, 1);
+		// Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
+		// jit_type_free(string_iterator);
+		// auto addr = insn_address_of(it);
+		// insn_call(Type::VOID, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
+		// 	auto i = LSString::iterator_begin(str);
+		// 	it->buffer = i.buffer;
+		// 	it->index = 0;
+		// 	it->pos = 0;
+		// 	it->next_pos = 0;
+		// 	it->character = 0;
+		// });
+		// return it;
+	}
+	if (v.t.raw_type == RawType::MAP) {
+		// return insn_load(v, 48, v.t);
+	}
+	if (v.t.raw_type == RawType::SET) {
+		// jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
+		// auto set_iterator = jit_type_create_struct(types, 2, 1);
+		// Compiler::value it = {jit_value_create(F, set_iterator), Type::SET_ITERATOR};
+		// jit_type_free(set_iterator);
+		// auto addr = insn_address_of(it);
+		// jit_insn_store_relative(F, addr.v, 0, insn_load(v, 48, v.t).v);
+		// jit_insn_store_relative(F, addr.v, 8, new_integer(0).v);
+		// return it;
+	}
+	if (v.t.raw_type == RawType::INTEGER) {
+		Compiler::value it = insn_create_value(Type::INTEGER_ITERATOR);
+		Builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 0);
+		Builder.CreateAlignedStore(it.v, v.v, 0);
+		Builder.CreateAlignedStore(it.v, to_int(insn_pow(new_integer(10), to_int(insn_log10(v)))).v, 4);
+		Builder.CreateAlignedStore(it.v, new_integer(0).v, 8);
+		return it;
+	}
+	if (v.t.raw_type == RawType::LONG) {
+		// jit_type_t types[3] = {jit_type_long, jit_type_long, jit_type_int};
+		// auto long_iterator = jit_type_create_struct(types, 3, 1);
+		// Compiler::value it = {jit_value_create(F, long_iterator), Type::LONG_ITERATOR};
+		// jit_type_free(long_iterator);
+		// auto addr = jit_insn_address_of(F, it.v);
+		// jit_insn_store_relative(F, addr, 0, v.v);
+		// jit_insn_store_relative(F, addr, 8, to_long(insn_pow(new_integer(10), to_int(insn_log10(v)))).v);
+		// jit_insn_store_relative(F, addr, 16, new_long(0).v);
+		// return it;
+	}
+	if (v.t.raw_type == RawType::MPZ) {
+		// jit_type_t types[3] = {VM::mpz_type, VM::mpz_type, jit_type_int};
+		// auto mpz_iterator = jit_type_create_struct(types, 3, 1);
+		// Compiler::value it = {jit_value_create(F, mpz_iterator), Type::MPZ_ITERATOR};
+		// jit_type_free(mpz_iterator);
+		// auto addr = jit_insn_address_of(F, it.v);
+		// jit_insn_store_relative(F, addr, 0, v.v);
+		// jit_insn_store_relative(F, addr, 16, to_long(insn_pow(new_integer(10), to_int(insn_log10(v)))).v);
+		// jit_insn_store_relative(F, addr, 32, new_long(0).v);
+		// return it;
+	}
+}
+
 LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompiler::value it) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::iterator_get(LLVMCompiler::value it, LLVMCompiler::value previous) const { assert(false); }
 LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompiler::value it, LLVMCompiler::value previous) const { assert(false); }
@@ -605,10 +895,10 @@ void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void
 }
 
 void LLVMCompiler::insn_throw(LLVMCompiler::value v) const {
-	std::cout << "TODO exception" << std::endl;
+	// std::cout << "TODO exception" << std::endl;
 }
 void LLVMCompiler::insn_throw_object(vm::Exception type) const {
-	std::cout << "TODO exception" << std::endl;
+	// std::cout << "TODO exception" << std::endl;
 }
 
 void LLVMCompiler::insn_label(label* l) const {
@@ -622,7 +912,8 @@ void LLVMCompiler::insn_branch(label* l) const {
 }
 
 void LLVMCompiler::insn_branch_if(LLVMCompiler::value v, label* l) const {
-	assert(false);
+	auto elze = insn_init_label("else");
+	Builder.CreateCondBr(v.v, l->block, elze.block);
 }
 
 void LLVMCompiler::insn_branch_if_not(LLVMCompiler::value v, label* l) const { assert(false); }
@@ -643,17 +934,32 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 	auto i = mappings.find(function_name);
 	if (i == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
-		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, LLVMCompiler::TheModule.get());
+		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
 		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
 	return {Builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_call_indirect(Type return_type, LLVMCompiler::value fun, std::vector<LLVMCompiler::value> args) const {
-	return new_integer(0);
+	std::vector<llvm::Value*> llvm_args;
+	std::vector<llvm::Type*> llvm_types;
+	for (unsigned i = 0, e = args.size(); i != e; ++i) {
+		llvm_args.push_back(args[i].v);
+		llvm_types.push_back(args[i].t.llvm_type());
+	}
+	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
+	auto fun_conv = Builder.CreatePointerCast(fun.v, fun_type->getPointerTo());
+	return {Builder.CreateCall(fun_type, fun_conv, llvm_args, "call"), return_type};
 }
 
-void LLVMCompiler::function_add_capture(LLVMCompiler::value fun, LLVMCompiler::value capture) { assert(false); }
+void LLVMCompiler::function_add_capture(LLVMCompiler::value fun, LLVMCompiler::value capture) {
+	// std::cout << "add capture " << capture.t << std::endl;
+	insn_call(Type::VOID, {fun, capture}, +[](LSClosure* fun, LSValue* cap) {
+		// std::cout << "add capture value " << cap << std::endl;
+		fun->add_capture(cap); 
+	});
+}
+
 void LLVMCompiler::log(const std::string&& str) const { assert(false); }
 
 // Blocks
@@ -685,10 +991,12 @@ void LLVMCompiler::enter_function(llvm::Function* F, bool is_closure, Function* 
 	variables.push_back(std::map<std::string, value> {});
 	function_variables.push_back(std::vector<value> {});
 	functions.push(F);
+	functions2.push(fun);
 	functions_blocks.push_back(0);
 	catchers.push_back({});
 	function_is_closure.push(is_closure);
-
+	this->F = F;
+	this->fun = fun;
 	std::vector<std::string> args;
 	log_insn(0) << "function " << fun->name << "(";
 	for (unsigned i = 0; i < fun->arguments.size(); ++i) {
@@ -704,11 +1012,14 @@ void LLVMCompiler::leave_function() {
 	variables.pop_back();
 	function_variables.pop_back();
 	functions.pop();
+	functions2.pop();
 	functions_blocks.pop_back();
 	catchers.pop_back();
 	function_is_closure.pop();
 	arg_names.pop();
 	this->F = functions.top();
+	this->fun = functions2.top();
+	Builder.SetInsertPoint(this->fun->block);
 	log_insn(0) << "}" << std::endl;
 }
 
@@ -718,7 +1029,9 @@ int LLVMCompiler::get_current_function_blocks() const {
 void LLVMCompiler::delete_function_variables() {
 	// TODO
 }
-bool LLVMCompiler::is_current_function_closure() const { assert(false); }
+bool LLVMCompiler::is_current_function_closure() const {
+	return function_is_closure.size() ? function_is_closure.top() : false;
+}
 
 // Variables
 void LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value value) {
@@ -728,10 +1041,8 @@ void LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value value) {
 }
 
 LLVMCompiler::value LLVMCompiler::create_and_add_var(const std::string& name, Type type) {
-	// std::cout << "create var " << name << " type " << type << " / " << type.llvm_type() << std::endl;
-	auto value = CreateEntryBlockAlloca(name, type);
+	auto value = CreateEntryBlockAlloca(name, type.llvm_type());
 	LLVMCompiler::value v { value, type };
-	// std::cout << "Var " << name << " created with type " << v.v->getType() << std::endl;
 	variables.back()[name] = v;
 	var_map.insert({value, name});
 	return v;
@@ -767,7 +1078,7 @@ void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value) { assert(f
 
 
 LLVMCompiler::value LLVMCompiler::update_var_create(std::string& name, Type type) {
-	auto value = CreateEntryBlockAlloca(name, type);
+	auto value = CreateEntryBlockAlloca(name, type.llvm_type());
 	LLVMCompiler::value v { value, type };
 	variables.back()[name] = v;
 	var_map.insert({value, name});
@@ -775,8 +1086,16 @@ LLVMCompiler::value LLVMCompiler::update_var_create(std::string& name, Type type
 }
 
 // Loops
-void LLVMCompiler::enter_loop(LLVMCompiler::label*, LLVMCompiler::label*) { assert(false); }
-void LLVMCompiler::leave_loop() { assert(false); }
+void LLVMCompiler::enter_loop(LLVMCompiler::label* end_label, LLVMCompiler::label* cond_label) {
+	loops_end_labels.push_back(end_label);
+	loops_cond_labels.push_back(cond_label);
+	loops_blocks.push_back(0);
+}
+void LLVMCompiler::leave_loop() {
+	loops_end_labels.pop_back();
+	loops_cond_labels.pop_back();
+	loops_blocks.pop_back();
+}
 LLVMCompiler::label* LLVMCompiler::get_current_loop_end_label(int deepness) const { assert(false); }
 LLVMCompiler::label* LLVMCompiler::get_current_loop_cond_label(int deepness) const { assert(false); }
 int LLVMCompiler::get_current_loop_blocks(int deepness) const { assert(false); }
@@ -785,7 +1104,9 @@ int LLVMCompiler::get_current_loop_blocks(int deepness) const { assert(false); }
 void LLVMCompiler::inc_ops(int add) const {
 	// TODO
 }
-void LLVMCompiler::inc_ops_jit(LLVMCompiler::value add) const { assert(false); }
+void LLVMCompiler::inc_ops_jit(LLVMCompiler::value add) const {
+	// TODO
+}
 void LLVMCompiler::get_operations() const { assert(false); }
 
 /** Exceptions **/
@@ -822,4 +1143,19 @@ void LLVMCompiler::add_literal(void* ptr, std::string value) const {
 	((LLVMCompiler*) this)->literals.insert({ptr, value});
 }
 
+void LLVMCompiler::print_mpz(__mpz_struct value) {
+	char buff[10000];
+	mpz_get_str(buff, 10, &value);
+	std::cout << buff;
+}
+
+}
+
+namespace std {
+	std::ostream& operator << (std::ostream& os, const __mpz_struct v) {
+		char buff[10000];
+		mpz_get_str(buff, 10, &v);
+		os << buff;
+		return os;
+	}
 }

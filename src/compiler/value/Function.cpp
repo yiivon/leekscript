@@ -7,9 +7,12 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/Exception.hpp"
 #include <jit/jit-dump.h>
+#include "llvm/IR/Verifier.h"
 using namespace std;
 
 namespace ls {
+
+int Function::id_counter = 0;
 
 Function::Function() {
 	body = nullptr;
@@ -44,6 +47,9 @@ Function::~Function() {
 		delete version.second->function;
 		delete version.second->body;
 		delete version.second;
+	}
+	if (compiler != nullptr && handle_created) {
+		compiler->removeModule(function_handle);
 	}
 }
 
@@ -345,6 +351,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 }
 
 int Function::capture(std::shared_ptr<SemanticVar> var) {
+	// std::cout << "Function::capture " << var->name << std::endl;
 
 	// Function become a closure
 	if (!default_version->function->closure()) {
@@ -420,8 +427,9 @@ void Function::must_return(SemanticAnalyser*, const Type& type) {
 Compiler::value Function::compile(Compiler& c) const {
 
 	// std::cout << "Function::compile() " << this << " version " << version << " " << has_version << std::endl;
-
+	
 	((Function*) this)->compiled = true;
+	((Function*) this)->compiler = &c;
 
 	if (!is_main_function && !has_version && !generate_default_version) {
 		// std::cout << "/!\\ No version! (no custom version + no default version generated)" << std::endl;
@@ -461,31 +469,34 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
 	// std::cout << "Function::compile_version_internal(" << version->type << ")" << std::endl;
 
+	const int id = id_counter++;
+
 	auto ls_fun = version->function;
 
 	Compiler::value jit_fun;
 	if (!is_main_function) {
 		jit_fun = c.new_pointer(ls_fun);
-		// for (const auto& cap : captures) {
-		// 	jit_value_t jit_cap;
-		// 	if (cap->scope == VarScope::LOCAL) {
-		// 		auto f = dynamic_cast<Function*>(cap->value);
-		// 		if (cap->has_version && f) {
-		// 			jit_cap = f->compile_version(c, cap->version).v;
-		// 		} else {
-		// 			jit_cap = c.get_var(cap->name).v;
-		// 		}
-		// 	} else if (cap->scope == VarScope::CAPTURE) {
-		// 		jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type).v;
-		// 	} else {
-		// 		int offset = c.is_current_function_closure() ? 1 : 0;
-		// 		jit_cap = jit_value_get_param(c.F, offset + cap->index);
-		// 	}
-		// 	if (cap->initial_type.nature != Nature::POINTER) {
-		// 		jit_cap = c.insn_to_pointer({jit_cap, cap->initial_type}).v;
-		// 	}
-		// 	c.function_add_capture(jit_fun, {jit_cap, Type::POINTER});
-		// }
+		for (const auto& cap : captures) {
+			Compiler::value jit_cap;
+			if (cap->scope == VarScope::LOCAL) {
+				auto f = dynamic_cast<Function*>(cap->value);
+				if (cap->has_version && f) {
+					jit_cap = f->compile_version(c, cap->version);
+				} else {
+					jit_cap = c.get_var(cap->name);
+					jit_cap = {LLVMCompiler::Builder.CreateLoad(jit_cap.v, cap->name.c_str()), jit_cap.t};
+				}
+			} else if (cap->scope == VarScope::CAPTURE) {
+				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);
+			} else {
+				int offset = c.is_current_function_closure() ? 1 : 0;
+				jit_cap = {c.F->arg_begin() + offset + cap->index, cap->initial_type};
+			}
+			if (cap->initial_type.nature != Nature::POINTER) {
+				jit_cap = c.insn_to_pointer({jit_cap.v, cap->initial_type});
+			}
+			c.function_add_capture(jit_fun, jit_cap);
+		}
 	}
 
 	// System internal variables (for main function only)
@@ -494,15 +505,41 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 			auto name = var.first;
 			auto value = var.second;
 			auto val = c.new_pointer(value);
-			// c.vm->internals.insert(pair<string, jit_value_t>(name, val.v));
+			c.vm->internals.insert({name, val.v});
 		}
 	}
 
+	((Function*) this)->module = std::make_shared<llvm::Module>("jit_" + name, LLVMCompiler::context);
+	module->setDataLayout(((LLVMCompiler&) c).getTargetMachine().createDataLayout());
+	auto fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+	fpm->add(llvm::createInstructionCombiningPass());
+	fpm->add(llvm::createReassociatePass());
+	fpm->add(llvm::createGVNPass());
+	fpm->add(llvm::createCFGSimplificationPass());
+	fpm->doInitialization();
+
 	std::vector<llvm::Type*> args = {};
+	if (captures.size()) {
+		args.push_back(Type::POINTER.llvm_type()); // first arg is the function pointer
+	}
+	for (auto& t : version->type.getArgumentTypes()) {
+		args.push_back(t.llvm_type());
+	}
+
 	auto llvm_return_type = version->type.getReturnType().llvm_type();
- 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
- 	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun", LLVMCompiler::TheModule.get());
-	auto block = llvm::BasicBlock::Create(LLVMCompiler::context, "entry", llvm_function);
+	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
+	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun_" + name + std::to_string(id), module.get());
+	unsigned Idx = 0;
+	int offset = captures.size() ? -1 : 0;
+	for (auto &arg : llvm_function->args()) {
+		if (captures.size() && Idx == 0) {
+			arg.setName("__fun_ptr");
+		} else {
+			arg.setName(arguments.at(offset + Idx)->content);
+		}
+		Idx++;
+	}
+	((Function*) this)->block = llvm::BasicBlock::Create(LLVMCompiler::context, "entry_" + name, llvm_function);
 	LLVMCompiler::Builder.SetInsertPoint(block);
 
 	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
@@ -525,7 +562,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	// Validate the generated code, checking for consistency.
 	verifyFunction(*llvm_function);
 	// Run the optimizer on the function.
-	LLVMCompiler::TheFPM->run(*llvm_function);
+	fpm->run(*llvm_function);
 
 	// catch (ex)
 	// auto ex = jit_insn_start_catcher(jit_function);
@@ -569,7 +606,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	if (!is_main_function) {
 		c.leave_function();
 		// Create a function : 1 op
-		c.inc_ops(1);
+		// c.inc_ops(1);
 	} else {
 		c.instructions_debug << "}" << std::endl;
 	}
@@ -579,15 +616,20 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	// {c.new_pointer(f).v, type};
 
 	// JIT the module containing the anonymous expression, keeping a handle so we can free it later.
-	((Function*) this)->function_handle = c.addModule(std::move(LLVMCompiler::TheModule));
+	// if (is_main_function) {
+	((Function*) this)->function_handle = c.addModule(module);
+	((Function*) this)->handle_created = true;
+
+	// }
 	// Search the JIT for the "fun" symbol.
-	auto ExprSymbol = c.findSymbol("fun");
+	auto ExprSymbol = c.findSymbol("fun_" + name + std::to_string(id));
 	assert(ExprSymbol && "Function not found");
 	// Get the symbol's address and cast it to the right type (takes no
 	// arguments, returns a double) so we can call it as a native function.
-	int (*FP)() = (int (*)())(intptr_t) cantFail(ExprSymbol.getAddress());
-	ls_fun->function = (void*) FP;
+	ls_fun->function = (void*) cantFail(ExprSymbol.getAddress());
 	version->function = ls_fun;
+
+	// std::cout << "Function compiled: " << ls_fun->function << std::endl;
 }
 
 Value* Function::clone() const {

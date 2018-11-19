@@ -149,7 +149,7 @@ LSValue* LSNumber::add(LSValue* v) {
 	if (v->type != STRING) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto string = static_cast<LSString*>(v);
 	LSValue* r = new LSString(toString() + *string);
@@ -167,7 +167,7 @@ LSValue* LSNumber::add_eq(LSValue* v) {
 	}
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	value += boolean->value;
@@ -191,7 +191,7 @@ LSValue* LSNumber::sub(LSValue* v) {
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (boolean->value) {
@@ -213,7 +213,7 @@ LSValue* LSNumber::sub_eq(LSValue* v) {
 	}
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	value -= boolean->value;
@@ -248,7 +248,7 @@ LSValue* LSNumber::mul(LSValue* v) {
 	if (v->type != STRING) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto string = static_cast<LSString*>(v);
 	std::string r;
@@ -272,7 +272,7 @@ LSValue* LSNumber::mul_eq(LSValue* v) {
 	}
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	value *= boolean->value;
@@ -296,7 +296,7 @@ LSValue* LSNumber::div(LSValue* v) {
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (boolean->value) {
@@ -318,7 +318,7 @@ LSValue* LSNumber::div_eq(LSValue* v) {
 	}
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (!boolean->value) {
@@ -345,13 +345,13 @@ LSValue* LSNumber::int_div(LSValue* v) {
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (!boolean->value) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::DIVISION_BY_ZERO));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	if (refs == 0) {
 		value = floor(value);
@@ -371,12 +371,12 @@ LSValue* LSNumber::int_div_eq(LSValue* v) {
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (!boolean->value) {
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::DIVISION_BY_ZERO));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	value = floor(value);
 	return this;
@@ -399,7 +399,7 @@ LSValue* LSNumber::pow(LSValue* v) {
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (boolean->value) {
@@ -421,7 +421,7 @@ LSValue* LSNumber::pow_eq(LSValue* v) {
 	}
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (!boolean->value) value = 1;
@@ -445,7 +445,7 @@ LSValue* LSNumber::mod(LSValue* v) {
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	if (refs == 0) {
 		value = 0;
@@ -463,7 +463,7 @@ LSValue* LSNumber::mod_eq(LSValue* v) {
 	}
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	value = 0;
 	return this;
@@ -486,7 +486,7 @@ LSValue* LSNumber::double_mod(LSValue* v) {
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	if (refs == 0) {
 		value = 0;
@@ -504,7 +504,7 @@ LSValue* LSNumber::double_mod_eq(LSValue* v) {
 	}
 	if (v->type != BOOLEAN) {
 		LSValue::delete_temporary(v);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+		VM::throw_exception(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	value = 0;
 	return this;

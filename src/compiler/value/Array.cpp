@@ -9,6 +9,7 @@ namespace ls {
 
 Array::Array() {
 	type = Type::ARRAY;
+	conversion_type = Type::VOID;
 }
 
 Array::~Array() {
@@ -45,7 +46,9 @@ Location Array::location() const {
 	return {opening_bracket->location.start, closing_bracket->location.end};
 }
 
-void Array::analyse(SemanticAnalyser* analyser, const Type&) {
+void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+
+	// std::cout << "Array::analyse " << req_type << std::endl;
 
 	constant = true;
 
@@ -80,6 +83,10 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 				element_type = Type::get_compatible_type(element_type, ex->type);
 			}
 
+			if (req_type.raw_type == RawType::ARRAY) {
+				element_type = req_type.getElementType();
+			}
+
 			// Native elements types supported : integer, double
 			if (element_type == Type::INTEGER || element_type == Type::REAL) {
 				supported_type = element_type;
@@ -97,6 +104,10 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 			// Re-analyze expressions with the supported type
 			// and second computation of the array type
 			element_type = Type::UNKNOWN;
+			if (req_type == Type::ANY) {
+				element_type = Type::POINTER;
+				supported_type = Type::POINTER;
+			}
 			for (size_t i = 0; i < expressions.size(); ++i) {
 				auto ex = expressions[i];
 				ex->analyse(analyser, supported_type);
@@ -121,10 +132,16 @@ void Array::analyse(SemanticAnalyser* analyser, const Type&) {
 					element_type = Type::get_compatible_type(element_type, ex->type);
 				}
 			}
-
 			element_type.temporary = false;
 			type.setElementType(element_type);
+		} else {
+			if (req_type != Type::UNKNOWN) {
+				type = req_type;
+			}
 		}
+	}
+	if (req_type == Type::ANY) {
+		conversion_type = Type::ANY;
 	}
 	type.temporary = true;
 	types = type;
@@ -174,7 +191,6 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 		this->type.setElementType(added_type);
 	} else {
 		this->type.setElementType(Type::get_compatible_type(current_type, added_type));
-		std::cout << "new array type : " << this->type << std::endl;
 	}
 	// Re-analyze expressions with the new type
 	for (size_t i = 0; i < expressions.size(); ++i) {
@@ -220,7 +236,14 @@ Compiler::value Array::compile(Compiler& c) const {
 		v = c.insn_move(v);
 		elements.push_back(v);
 	}
-	return c.new_array(type.getElementType(), elements);
+	auto array = c.new_array(type.getElementType(), elements);
+	if (conversion_type == Type::ANY) {
+		return { c.Builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
+	}
+	if (type.not_temporary() == Type::POINTER) {
+		return { c.Builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
+	}
+	return array;
 }
 
 Value* Array::clone() const {

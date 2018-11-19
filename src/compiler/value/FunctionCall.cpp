@@ -473,12 +473,12 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			if (jit_func != nullptr) {
 				auto v0 = arguments[0]->compile(c);
 				auto v1 = arguments[1]->compile(c);
-				jit_value_t ret = jit_func(c.F, v0.v, v1.v);
-
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({ret, Type::INTEGER});
-				}
-				return {ret, type};
+				// jit_value_t ret = jit_func(c.F, v0.v, v1.v);
+                //
+				// if (type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer({ret, Type::INTEGER});
+				// }
+				// return {ret, type};
 			}
 		}
 	}
@@ -488,19 +488,29 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	auto ls_fun_addr = c.new_pointer(nullptr);
 	auto jit_object = c.new_pointer(nullptr);
 	auto is_closure = function->type.raw_type == RawType::CLOSURE;
+	// std::cout << "function call " << function << " " << function->type << " closure " << is_closure << std::endl;
 
 	if (is_unknown_method) {
 		auto oa = static_cast<ObjectAccess*>(function);
-		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
-		// jit_object = object->compile(c);
+		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c), 0, Type::POINTER);
 		auto k = c.new_pointer(&oa->field->content);
-		ls_fun_addr = c.insn_call(type, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
+		ls_fun_addr = c.insn_call(Type::FUNCTION, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
 		});
-		fun = c.insn_load(ls_fun_addr, 24, Type::POINTER);
 	} else {
 		ls_fun_addr = function->compile(c);
-		fun = c.insn_load(ls_fun_addr, 24, Type::POINTER);
+		// c.insn_call(Type::VOID, {ls_fun_addr}, +[](LSFunction* fun) {
+		// 	std::cout << "call fun: " << fun->function << std::endl;
+		// });
+		// std::cout << "ls_fun_addr " << this << " " << ls_fun_addr.t << " " << ls_fun_addr.v->getType() << std::endl;
+		auto fun_to_ptr = LLVMCompiler::Builder.CreatePointerCast(ls_fun_addr.v, Type::LLVM_FUNCTION_TYPE_PTR);
+		fun = {LLVMCompiler::Builder.CreateStructGEP(Type::LLVM_FUNCTION_TYPE, fun_to_ptr, 5), Type::POINTER};
+		// std::cout << "load fun " << fun.t << std::endl;
+		fun = c.insn_load(fun);
+		// fun = c.insn_load(ls_fun_addr, 24, Type::POINTER);
+		// c.insn_call(Type::VOID, {fun}, +[](void* fun) {
+		// 	std::cout << "call fun loaded: " << fun << std::endl;
+		// });
 	}
 
 	/** Arguments */
@@ -510,7 +520,10 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	vector<LSValueType> lsvalue_types;
 
 	if (is_unknown_method) {
-		// add 'this' object as first argument
+		// add 'function' object as first argument
+		args.push_back(ls_fun_addr);
+		lsvalue_types.push_back(Type::FUNCTION.id());
+		// add 'this' object as second argument
 		args.push_back(jit_object);
 		lsvalue_types.push_back(object->type.id());
 	} else if (is_closure) {
@@ -519,6 +532,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		lsvalue_types.push_back(Type::CLOSURE.id());
 	}
 
+	// Compile arguments
+	// std::cout << this << " args " << args.size() << " " << arg_count << " " << offset << std::endl;
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
 			args.push_back(arguments.at(i)->compile(c));
@@ -541,7 +556,18 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// c.insn_check_args(args, lsvalue_types);
 
 	// Call
-	auto result = c.insn_call_indirect(return_type, fun, args);
+	// std::cout << "Function call args: " << function << " | ";
+	// for (auto& a : args) { std::cout << a.t << " " << a.v->getType() << ", "; }
+	// std::cout << std::endl;
+
+	Compiler::value result;
+	if (is_unknown_method) {
+		// std::cout << "is unknown method" << std::endl;
+		result = c.insn_call(Type::POINTER, args, (void*) &LSFunction::call);
+	} else {
+		// std::cout << "known method" << std::endl;
+		result = c.insn_call_indirect(return_type, fun, args);
+	}
 
 	// Destroy temporary arguments
 	for (size_t i = 0; i < arg_count - offset; ++i) {

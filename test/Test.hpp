@@ -31,6 +31,7 @@ public:
 	void section(std::string);
 
 	Input code(const std::string& _code);
+	Input DISABLED_code(const std::string& _code);
 	Input code_v1(const std::string& _code);
 	Input file(const std::string& file_name);
 	Input file_v1(const std::string& file_name);
@@ -65,13 +66,14 @@ public:
 		std::string code;
 		bool file;
 		bool v1;
+		bool disabled;
 		float compilation_time = 0;
 		float execution_time = 0;
 		long int operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 		ls::VM::Result result;
 
 		Input(Test* test, const std::string& name, const std::string& code,
-			bool file = false, bool v1 = false) : test(test), name(name), code(code), file(file), v1(v1) {};
+			bool file = false, bool v1 = false, bool disabled = false) : test(test), name(name), code(code), file(file), v1(v1), disabled(disabled) {};
 		void works();
 		void equals(std::string expected);
 		template <typename T>
@@ -91,6 +93,7 @@ public:
 		ls::VM::Result run(bool display_errors = true);
 		void pass(std::string expected);
 		void fail(std::string expected, std::string actuel);
+		void disable();
 	};
 };
 

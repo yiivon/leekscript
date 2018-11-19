@@ -61,16 +61,12 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 		case TokenType::PLUS_PLUS: {
 
 			if (expression->type == Type::MPZ) {
-
-				auto x = expression->compile(c);
-				auto r = c.insn_clone_mpz(x);
-				auto x_addr = c.insn_address_of(x);
+				auto x = expression->compile_l(c);
+				auto r = c.insn_clone_mpz(c.insn_load(x));
 				auto one = c.new_integer(1);
-				c.insn_call(Type::VOID, {x_addr, x_addr, one}, &mpz_add_ui);
+				c.insn_call(Type::VOID, {x, x, one}, &mpz_add_ui);
 				return r;
-
 			} else if (expression->type.nature == Nature::VALUE) {
-
 				auto x_addr = expression->compile_l(c);
 				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
 				auto sum = c.insn_add(x, c.new_integer(1));

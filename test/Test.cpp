@@ -106,6 +106,9 @@ int Test::all() {
 Test::Input Test::code(const std::string& code) {
 	return Test::Input(this, code, code);
 }
+Test::Input Test::DISABLED_code(const std::string& code) {
+	return Test::Input(this, code, code, false, false, true);
+}
 
 Test::Input Test::code_v1(const std::string& code) {
 	return Test::Input(this, code, code, false, true);
@@ -127,6 +130,8 @@ Test::Input Test::file_v1(const std::string& file_name) {
 
 ls::VM::Result Test::Input::run(bool display_errors) {
 	test->total++;
+
+	// std::cout << C_BLUE << "RUN " << END_COLOR << code << C_GREY << "..." << END_COLOR << std::endl;
 
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->operation_limit = this->operation_limit;
@@ -187,6 +192,10 @@ void Test::Input::fail(std::string expected, std::string actual) {
 	failed_tests.push_back(oss.str());
 }
 
+void Test::Input::disable() {
+	std::cout << C_PURPLE << "DISA" << END_COLOR << " : " << code << std::endl;
+}
+
 void Test::Input::works() {
 	std::cout << "Try " << code << " ..." << std::endl;
 	try {
@@ -199,7 +208,8 @@ void Test::Input::works() {
 }
 
 void Test::Input::equals(std::string expected) {
-
+	if (disabled) return disable();
+	
 	auto result = run();
 
 	std::string errors;
@@ -225,8 +235,8 @@ void Test::Input::equals(std::string expected) {
 		pass(expected);
 	} else {
 		auto actual = result.value;
-		if (result.exception != nullptr && result.exception->type != ls::vm::Exception::NO_EXCEPTION) {
-			actual = "Unexpected exception: " + ls::vm::ExceptionObj::exception_message(result.exception->type);
+		if (result.exception.type != ls::vm::Exception::NO_EXCEPTION && result.exception.type != ls::vm::Exception::NO_EXCEPTION) {
+			actual = "Unexpected exception: " + ls::vm::ExceptionObj::exception_message(result.exception.type);
 		}
 		fail(expected, actual + errors);
 	}
@@ -266,6 +276,8 @@ void Test::Input::quine() {
 }
 
 void Test::Input::output(std::string expected) {
+	if (disabled) return disable();
+
 	std::ostringstream oss;
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->output = &oss;
@@ -285,7 +297,8 @@ void Test::Input::between(T a, T b) {
 }
 
 void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::vector<std::string> parameters) {
-
+	if (disabled) return disable();
+	
 	auto result = run(false);
 
 	std::string expected_message = ls::SemanticError::build_message(expected_type, parameters);
@@ -339,24 +352,26 @@ void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 }
 
 void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exception_frame> frames) {
-
+	if (disabled) {
+		return disable();
+	}
 	auto result = run(false);
 
-	auto actual_type = result.exception != nullptr ? result.exception->type : ls::vm::Exception::NO_EXCEPTION;
-	auto actual_frames = result.exception != nullptr ? result.exception->frames : std::vector<ls::vm::exception_frame>();
+	auto actual_type = result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.type : ls::vm::Exception::NO_EXCEPTION;
+	auto actual_frames = result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.frames : std::vector<ls::vm::exception_frame>();
 
 	if (actual_type == expected /*&& (actual_frames == frames || expected == ls::vm::Exception::NO_EXCEPTION) || actual_frames.size() == 0*/) {
-		pass(result.exception != nullptr ? result.exception->to_string() : "(no exception)");
+		pass(result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.to_string() : "(no exception)");
 	} else {
 		ls::vm::ExceptionObj expected_exception(expected);
 		expected_exception.frames = frames;
 		auto expected_message = expected_exception.to_string();
-		auto actual_message = result.exception == nullptr ? "(no exception)" : result.exception->to_string();
+		auto actual_message = result.exception.type == ls::vm::Exception::NO_EXCEPTION ? "(no exception)" : result.exception.to_string();
 		fail(expected_message, actual_message);
 	}
-	if (result.exception != nullptr) {
-		delete result.exception;
-	}
+	// if (result.exception != nullptr) {
+		// delete result.exception;
+	// }
 }
 
 void Test::Input::operations(int expected) {

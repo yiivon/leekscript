@@ -15,6 +15,7 @@ public:
 	std::shared_ptr<Token> closing_bracket;
 	std::vector<Value*> expressions;
 	bool interval = false;
+	Type conversion_type;
 
 	Array();
 	virtual ~Array();

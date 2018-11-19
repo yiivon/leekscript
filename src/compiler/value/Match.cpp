@@ -154,14 +154,14 @@ Compiler::value Match::compile(Compiler& c) const {
 		Compiler::label label_next;
 
 		if (pattern_list[i].size() == 1) {
-			jit_value_t cond = pattern_list[i][0].match(c, v.v);
-			c.insn_branch_if_not({cond, Type::BOOLEAN}, &label_next);
+			// jit_value_t cond = pattern_list[i][0].match(c, v.v);
+			// c.insn_branch_if_not({cond, Type::BOOLEAN}, &label_next);
 		} else {
 			Compiler::label label_match;
 
 			for (const Pattern& pattern : pattern_list[i]) {
-				jit_value_t cond = pattern.match(c, v.v);
-				c.insn_branch_if({cond, Type::BOOLEAN}, &label_match);
+				// jit_value_t cond = pattern.match(c, v.v);
+				// c.insn_branch_if({cond, Type::BOOLEAN}, &label_match);
 			}
 			c.insn_branch(&label_next);
 			c.insn_label(&label_match);
@@ -211,56 +211,56 @@ bool jit_greater_equal_(LSValue* x, LSValue* y) {
 
 jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 
-	jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 1);
-
-	if (interval) {
-		jit_value_t ge = nullptr;
-		if (begin) {
-			auto b = begin->compile(c);
-			if (begin->type.nature == Nature::VALUE) {
-				ge = jit_insn_ge(c.F, v, b.v);
-			} else {
-				jit_value_t args[2] = { v, b.v };
-				ge = jit_insn_call_native(c.F, "", (void*) jit_greater_equal_, sig, args, 2, JIT_CALL_NOTHROW);
-				c.insn_delete_temporary(b);
-			}
-		}
-		jit_value_t lt = nullptr;
-		if (end) {
-			auto e = end->compile(c);
-			if (end->type.nature == Nature::VALUE) {
-				lt = jit_insn_lt(c.F, v, e.v);
-			} else {
-				jit_value_t args[2] = { v, e.v };
-				lt = jit_insn_call_native(c.F, "", (void*) jit_less_, sig, args, 2, JIT_CALL_NOTHROW);
-				c.insn_delete_temporary(e);
-			}
-		}
-		jit_type_free(sig);
-		if (ge) {
-			if (lt) {
-				return jit_insn_and(c.F, ge, lt);
-			} else {
-				return ge;
-			}
-		} else {
-			return lt;
-		}
-	} else {
-		jit_value_t cond;
-		auto p = begin->compile(c);
-
-		if (begin->type.nature == Nature::VALUE) {
-			cond = jit_insn_eq(c.F, v, p.v);
-		} else {
-			jit_value_t args[2] = { v, p.v };
-			cond = jit_insn_call_native(c.F, "", (void*) jit_equals_, sig, args, 2, JIT_CALL_NOTHROW);
-			c.insn_delete_temporary(p);
-		}
-		jit_type_free(sig);
-		return cond;
-	}
+	// jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
+	// jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 1);
+    //
+	// if (interval) {
+	// 	jit_value_t ge = nullptr;
+	// 	if (begin) {
+	// 		auto b = begin->compile(c);
+	// 		if (begin->type.nature == Nature::VALUE) {
+	// 			ge = jit_insn_ge(c.F, v, b.v);
+	// 		} else {
+	// 			jit_value_t args[2] = { v, b.v };
+	// 			ge = jit_insn_call_native(c.F, "", (void*) jit_greater_equal_, sig, args, 2, JIT_CALL_NOTHROW);
+	// 			c.insn_delete_temporary(b);
+	// 		}
+	// 	}
+	// 	jit_value_t lt = nullptr;
+	// 	if (end) {
+	// 		auto e = end->compile(c);
+	// 		if (end->type.nature == Nature::VALUE) {
+	// 			lt = jit_insn_lt(c.F, v, e.v);
+	// 		} else {
+	// 			jit_value_t args[2] = { v, e.v };
+	// 			lt = jit_insn_call_native(c.F, "", (void*) jit_less_, sig, args, 2, JIT_CALL_NOTHROW);
+	// 			c.insn_delete_temporary(e);
+	// 		}
+	// 	}
+	// 	jit_type_free(sig);
+	// 	if (ge) {
+	// 		if (lt) {
+	// 			return jit_insn_and(c.F, ge, lt);
+	// 		} else {
+	// 			return ge;
+	// 		}
+	// 	} else {
+	// 		return lt;
+	// 	}
+	// } else {
+	// 	jit_value_t cond;
+	// 	auto p = begin->compile(c);
+    //
+	// 	if (begin->type.nature == Nature::VALUE) {
+	// 		cond = jit_insn_eq(c.F, v, p.v);
+	// 	} else {
+	// 		jit_value_t args[2] = { v, p.v };
+	// 		cond = jit_insn_call_native(c.F, "", (void*) jit_equals_, sig, args, 2, JIT_CALL_NOTHROW);
+	// 		c.insn_delete_temporary(p);
+	// 	}
+	// 	jit_type_free(sig);
+	// 	return cond;
+	// }
 }
 
 Value* Match::clone() const {

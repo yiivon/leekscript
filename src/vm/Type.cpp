@@ -52,7 +52,7 @@ const ClassRawType* const RawType::CLASS = &_CLASS;
 llvm::StructType* Type::LLVM_LSVALUE_TYPE;
 llvm::Type* Type::LLVM_LSVALUE_TYPE_PTR;
 llvm::Type* Type::LLVM_LSVALUE_TYPE_PTR_PTR;
-llvm::StructType* Type::LLVM_MPZ_TYPE;
+llvm::Type* Type::LLVM_MPZ_TYPE;
 llvm::Type* Type::LLVM_MPZ_TYPE_PTR;
 llvm::StructType* Type::LLVM_VECTOR_TYPE;
 llvm::Type* Type::LLVM_VECTOR_TYPE_PTR;
@@ -60,6 +60,7 @@ llvm::StructType* Type::LLVM_VECTOR_INT_TYPE;
 llvm::Type* Type::LLVM_VECTOR_INT_TYPE_PTR;
 llvm::StructType* Type::LLVM_FUNCTION_TYPE;
 llvm::Type* Type::LLVM_FUNCTION_TYPE_PTR;
+llvm::StructType* Type::LLVM_INTEGER_ITERATOR_TYPE;
 
 std::vector<const BaseRawType*> RawType::placeholder_types;
 
@@ -457,6 +458,16 @@ llvm::Type* Type::llvm_type() const {
 	if (nature == Nature::VOID) {
 		return llvm::Type::getVoidTy(LLVMCompiler::context);
 	}
+	if (raw_type == RawType::ARRAY) {
+		if (getElementType() == Type::INTEGER) {
+			return LLVM_VECTOR_INT_TYPE_PTR;
+		} else {
+			return LLVM_VECTOR_TYPE_PTR;
+		}
+	}
+	if (raw_type == RawType::FUNCTION) {
+		return LLVM_FUNCTION_TYPE_PTR;
+	}
 	if (reference or nature == Nature::POINTER or nature == Nature::UNKNOWN or raw_type == RawType::FUNCTION) {
 		return LLVM_LSVALUE_TYPE_PTR;
 	}
@@ -507,7 +518,10 @@ bool Type::compatible(const Type& type) const {
 		if (this->raw_type == RawType::REAL and type.raw_type == RawType::INTEGER) {
 			return true;
 		}
-
+		// 'Boolean' is compatible with 'Integer'
+		if (this->raw_type == RawType::INTEGER and type.raw_type == RawType::BOOLEAN) {
+			return true;
+		}
 		// 'Integer' is compatible with 'Long'
 		if (this->raw_type == RawType::LONG and type.raw_type == RawType::INTEGER) {
 			return true;
@@ -667,6 +681,9 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	}
 	if (t1.compatible(t2)) {
 		return t1;
+	}
+	if (t1.raw_type == RawType::ARRAY and t2.raw_type == RawType::ARRAY) {
+		return {RawType::ARRAY, Nature::POINTER, Type::get_compatible_type(t1.getElementType(), t2.getElementType())};
 	}
 	return Type::POINTER;
 }

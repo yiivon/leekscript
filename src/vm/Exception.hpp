@@ -42,6 +42,7 @@ struct exception_frame {
 struct ExceptionObj {
 	Exception type;
 	std::vector<exception_frame> frames;
+	ExceptionObj() : type(NO_EXCEPTION) {}
 	ExceptionObj(Exception type) : type(type) {}
 	std::string to_string(bool colors = true) const;
 

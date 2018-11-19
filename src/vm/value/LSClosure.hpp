@@ -16,7 +16,7 @@ class LSClosure : public LSFunction {
 public:
 
 	std::vector<LSValue*> captures;
-	std::vector<bool> captures_native;
+	std::vector<bool> captures_native; // TODO check if necessary
 
 	LSClosure(void* function);
 	virtual ~LSClosure();
@@ -26,10 +26,6 @@ public:
 	LSValue* get_capture(int index);
 };
 
-template <class R, class ...A> R call(LSFunction* function, A... args) {
-	auto fun = (R (*)(A...)) function->function;
-	return fun(args...);
-}
 template <class R, class ...A> R call(LSClosure* function, A... args) {
 	auto fun = (R (*)(void*, A...)) function->function;
 	return fun(function, args...);

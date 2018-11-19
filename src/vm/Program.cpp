@@ -1,6 +1,5 @@
 #include <chrono>
 #include <jit/jit-dump.h>
-
 #include "Program.hpp"
 #include "Context.hpp"
 #include "value/LSNull.hpp"
@@ -29,7 +28,7 @@ Program::~Program() {
 	if (main != nullptr) {
 		delete main;
 		if (closure != nullptr) {
-			vm->compiler.removeModule(main->function_handle);
+			// vm->compiler.removeModule(main->function_handle);
 		}
 	}
 }
@@ -117,52 +116,52 @@ std::string Program::execute(VM& vm) {
 	if (output_type.not_temporary() == Type::VOID) {
 		auto fun = (void (*)()) closure;
 		fun();
-		if (vm.last_exception) throw vm.last_exception;
+		// if (vm.last_exception) throw vm.last_exception;
 		return "(void)";
 	}
 
 	if (output_type.not_temporary() == Type::BOOLEAN) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
-		if (vm.last_exception) throw vm.last_exception;
+		// if (vm.last_exception) throw vm.last_exception;
 		return res ? "true" : "false";
 	}
 
 	if (output_type.not_temporary() == Type::INTEGER) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
-		if (vm.last_exception) throw vm.last_exception;
+		// if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
 
 	if (output_type.not_temporary() == Type::MPZ) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
-		if (vm.last_exception) throw vm.last_exception;
+		// if (vm.last_exception) throw vm.last_exception;
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
-		mpz_clear(&ret);
-		vm.mpz_deleted++;
+		// mpz_clear(&ret);
+		// vm.mpz_deleted++;
 		return std::string(buff);
 	}
 
 	if (output_type.not_temporary() == Type::REAL) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
-		if (vm.last_exception) throw vm.last_exception;
+		// if (vm.last_exception) throw vm.last_exception;
 		return LSNumber::print(res);
 	}
 
 	if (output_type.not_temporary() == Type::LONG) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
-		if (vm.last_exception) throw vm.last_exception;
+		// if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
 
 	auto fun = (LSValue* (*)()) closure;
 	auto ptr = fun();
-	if (vm.last_exception) throw vm.last_exception;
+	// if (vm.last_exception) throw vm.last_exception;
 	std::ostringstream oss;
 	ptr->dump(oss, 5);
 	LSValue::delete_ref(ptr);

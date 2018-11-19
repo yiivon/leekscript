@@ -600,22 +600,19 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v2->compile_end(c);
 				if (v1->type == Type::MPZ) {
-					auto x = v1->compile(c);
+					auto x = ((LeftValue*) v1)->compile_l(c);
 					v1->compile_end(c);
-					auto a = c.insn_address_of(x);
-					auto b = c.insn_address_of(y);
-					c.insn_call(Type::VOID, {a, b}, &mpz_set);
+					c.insn_call(Type::VOID, {x, y}, +[](mpz_t x, __mpz_struct y) {
+						mpz_set(x, &y);
+					});
 					if (y.t.temporary) {
 						return y;
 					} else {
-						auto r = c.new_mpz();
-						auto r_addr = c.insn_address_of(r);
-						c.insn_call(Type::VOID, {r_addr, b}, &mpz_set);
-						return r;
+						return c.insn_clone_mpz(y);
 					}
 				} else {
 					if (dynamic_cast<VariableValue*>(v1)) {
-						auto x = v1->compile(c);
+						auto x = ((LeftValue*) v1)->compile_l(c);
 						c.insn_store(x, y);
 					} else {
 						auto v1_addr = ((LeftValue*) v1)->compile_l(c);
@@ -638,11 +635,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				auto x = c.insn_load(x_addr, 0, v1->type);
 				auto sum = c.insn_add(x, y);
-				jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(sum);
-				}
-				return sum;
+				// jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
+				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer(sum);
+				// }
+				// return sum;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				v1->compile_end(c);
@@ -783,11 +780,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), type.jit_type(), 0);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({r, v2->type});
-				}
-				return {r, type};
+				// auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), type.jit_type(), 0);
+				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer({r, v2->type});
+				// }
+				// return {r, type};
 			} else {
 				ls_func = (void*) &jit_int_div;
 				ls_returned_type = Type::LONG;
@@ -800,12 +797,12 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v2->compile_end(c);
 				auto x = c.insn_load(x_addr, 0, v1->type);
-				auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), type.jit_type(), 0);
-				jit_insn_store_relative(c.F, x_addr.v, 0, r);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({r, v2->type});
-				}
-				return {r, type};
+				// auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), type.jit_type(), 0);
+				// jit_insn_store_relative(c.F, x_addr.v, 0, r);
+				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer({r, v2->type});
+				// }
+				// return {r, type};
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
@@ -829,14 +826,14 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				auto r = jit_insn_pow(c.F, x.v, y.v);
-				if (type == Type::INTEGER) {
-					r = c.to_int({r, Type::REAL}).v;
-				}
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer({r, type});
-				}
-				return {r, type};
+				// auto r = jit_insn_pow(c.F, x.v, y.v);
+				// if (type == Type::INTEGER) {
+				// 	r = c.to_int({r, Type::REAL}).v;
+				// }
+				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer({r, type});
+				// }
+				// return {r, type};
 			} else {
 				ls_func = (void*) &jit_pow;
 			}
@@ -908,12 +905,12 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				Compiler::value a = {jit_insn_shl(c.F, x.v, y.v), Type::INTEGER};
-				c.insn_store(x, a);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(a);
-				}
-				return a;
+				// Compiler::value a = {jit_insn_shl(c.F, x.v, y.v), Type::INTEGER};
+				// c.insn_store(x, a);
+				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer(a);
+				// }
+				// return a;
 			} else {
 				ls_func = (void*) &jit_bit_shl_equal;
 			}
@@ -930,12 +927,12 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				Compiler::value a = {jit_insn_shr(c.F, x.v, y.v), Type::INTEGER};
-				c.insn_store(x, a);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(a);
-				}
-				return a;
+				// Compiler::value a = {jit_insn_shr(c.F, x.v, y.v), Type::INTEGER};
+				// c.insn_store(x, a);
+				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer(a);
+				// }
+				// return a;
 			} else {
 				ls_func = (void*) &jit_bit_shr_equal;
 			}
@@ -952,12 +949,12 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				Compiler::value a = {jit_insn_ushr(c.F, x.v, y.v), Type::INTEGER};
-				c.insn_store(x, a);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(a);
-				}
-				return a;
+				// Compiler::value a = {jit_insn_ushr(c.F, x.v, y.v), Type::INTEGER};
+				// c.insn_store(x, a);
+				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer(a);
+				// }
+				// return a;
 			} else {
 				ls_func = (void*) &jit_bit_shr_unsigned_equal;
 			}
@@ -1047,11 +1044,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				auto x = c.insn_load(x_addr, 0, v1->type);
 				auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
-				jit_insn_store_relative(c.F, x_addr.v, 0, r.v);
-				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(r);
-				}
-				return r;
+				// jit_insn_store_relative(c.F, x_addr.v, 0, r.v);
+				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+				// 	return c.insn_to_pointer(r);
+				// }
+				// return r;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);

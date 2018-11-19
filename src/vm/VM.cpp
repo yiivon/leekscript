@@ -176,7 +176,6 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	VM::mpz_created = 0;
 	VM::mpz_deleted = 0;
 	VM::operations = 0;
-	VM::last_exception = nullptr;
 	VM::enable_operations = ops;
 	Type::placeholder_counter = 0;
 	#if DEBUG_LEAKS
@@ -214,7 +213,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 		try {
 			value = program->execute(*this);
 			result.execution_success = true;
-		} catch (vm::ExceptionObj* ex) {
+		} catch (vm::ExceptionObj& ex) {
 			result.exception = ex;
 		}
 		auto exe_end = chrono::high_resolution_clock::now();
@@ -303,9 +302,11 @@ void VM::inc_mpz_counter(jit_function_t F) {
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
 
-void VM::store_exception(jit_function_t F, jit_value_t ex) {
-	jit_value_t vm_ex_ptr = jit_value_create_long_constant(F, LS_POINTER, (long int) &VM::current()->last_exception);
-	jit_insn_store_relative(F, vm_ex_ptr, 0, ex);
+void fake_destru(void*) {}
+void VM::throw_exception(vm::Exception type) {
+	auto ex = (vm::ExceptionObj*) __cxa_allocate_exception(sizeof(vm::ExceptionObj));
+	new (ex) vm::ExceptionObj(type);
+	__cxa_throw(ex, (void*) &typeid(vm::ExceptionObj), &fake_destru);
 }
 
 }

@@ -48,9 +48,9 @@ class LLVMCompiler {
 public:
 	static llvm::LLVMContext context;
 	static llvm::IRBuilder<> Builder;
-	static std::unique_ptr<llvm::Module> TheModule;
+	// static std::unique_ptr<llvm::Module> TheModule;
 	static std::map<std::string, llvm::Value*> NamedValues;
-	static std::unique_ptr<llvm::legacy::FunctionPassManager> TheFPM;
+	// static std::unique_ptr<llvm::legacy::FunctionPassManager> TheFPM;
 
 	struct value {
 		llvm::Value* v;
@@ -79,7 +79,9 @@ public:
 	};
 
 	llvm::Function* F;
+	Function* fun;
 	std::stack<llvm::Function*> functions;
+	std::stack<Function*> functions2;
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks;
 	std::stack<std::vector<std::string>> arg_names;
@@ -116,7 +118,7 @@ public:
 		return *TM;
 	}
 
-	ModuleHandle addModule(std::unique_ptr<llvm::Module> M) {
+	ModuleHandle addModule(std::shared_ptr<llvm::Module> M) {
 		// Build our symbol resolver:
 		// Lambda 1: Look back into the JIT itself to find symbols that are part of the same "logical dylib".
 		// Lambda 2: Search for external symbols in the host process.
@@ -142,9 +144,9 @@ public:
 	}
 
 	llvm::JITSymbol findSymbol(const std::string Name) {
-	std::string MangledName;
-	llvm::raw_string_ostream MangledNameStream(MangledName);
-	llvm::Mangler::getNameWithPrefix(MangledNameStream, Name, DL);
+		std::string MangledName;
+		llvm::raw_string_ostream MangledNameStream(MangledName);
+		llvm::Mangler::getNameWithPrefix(MangledNameStream, Name, DL);
 		return CompileLayer.findSymbol(MangledNameStream.str(), true);
 	}
 
@@ -153,10 +155,10 @@ public:
 	}
 
 	/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of the function.  This is used for mutable variables etc.
-	static llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, Type type) {
+	static llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, llvm::Type* type) {
 		auto function = LLVMCompiler::Builder.GetInsertBlock()->getParent();
-		llvm::IRBuilder<> TmpB(&function->getEntryBlock(), function->getEntryBlock().begin());
-		return TmpB.CreateAlloca(type.llvm_type(), nullptr, VarName);
+		llvm::IRBuilder<> builder(&function->getEntryBlock(), function->getEntryBlock().begin());
+		return builder.CreateAlloca(type, nullptr, VarName);
 	}
 
 	void removeModule(ModuleHandle H) {
@@ -330,8 +332,13 @@ public:
 	void register_label(label* v) const;
 	void log_insn_code(std::string instruction) const;
 	void add_literal(void* ptr, std::string value) const;
+	static void print_mpz(__mpz_struct value);
 };
 
+}
+
+namespace std {
+	std::ostream& operator << (std::ostream&, const __mpz_struct);
 }
 
 #endif

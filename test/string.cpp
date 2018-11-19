@@ -67,7 +67,7 @@ void Test::test_strings() {
 	code("'salut' * 3").equals("'salutsalutsalut'");
 	code("'salut' * (1 + 2)").equals("'salutsalutsalut'");
 	code("('salut' * 1) + 2").equals("'salut2'");
-	code("'hello' * 'abc'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("'hello' * 'abc'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator |x|");
 	code("|'salut'|").equals("5");
@@ -80,7 +80,7 @@ void Test::test_strings() {
 	code("'abc.' / '.'").equals("['abc', '']");
 	code("'.aaaaa.bbbb.ccc.dd.e.' / '.'").equals("['', 'aaaaa', 'bbbb', 'ccc', 'dd', 'e', '']");
 	code("('hello.world.how.are.you' / '.').size()").equals("5");
-	code("'hello' / 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("'hello' / 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\");
 	code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -100,9 +100,9 @@ void Test::test_strings() {
 	code("'bonjour'[2:'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 2>"});
 	code("'bonjour'['a':'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
 	code("let a = ['bonjour', 2][0] a[3]").equals("'j'");
-	code("'hello'[-1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("''[0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("'yoyo'[1000]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	DISABLED_code("'hello'[-1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	DISABLED_code("''[0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	DISABLED_code("'yoyo'[1000]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("String.operator ==");
 	code("'test' == 'etst'").equals("false");
@@ -133,12 +133,12 @@ void Test::test_strings() {
 	 * Iteration
 	 */
 	section("String iteration");
-	code("for c in 'bonjour' { System.print(c) }").output("b\no\nn\nj\no\nu\nr\n");
-	code("for (c in '汉堡 漢堡') { System.print(c) }").output("汉\n堡\n \n漢\n堡\n");
-	code("[for c in 'salut' { c }]").equals("['s', 'a', 'l', 'u', 't']");
-	code("[for c in 'salut' { (c.code() + 2).char() }]").equals("['u', 'c', 'n', 'w', 'v']");
-	code("let a = [for c in 'salut' { (c.code() + 2).char() }] a.join('')").equals("'ucnwv'");
-	code("var r = '' for k : c in 'azerty' { r += k + '_' + c + '_' } r").equals("'0_a_1_z_2_e_3_r_4_t_5_y_'");
+	DISABLED_code("for c in 'bonjour' { System.print(c) }").output("b\no\nn\nj\no\nu\nr\n");
+	DISABLED_code("for (c in '汉堡 漢堡') { System.print(c) }").output("汉\n堡\n \n漢\n堡\n");
+	DISABLED_code("[for c in 'salut' { c }]").equals("['s', 'a', 'l', 'u', 't']");
+	DISABLED_code("[for c in 'salut' { (c.code() + 2).char() }]").equals("['u', 'c', 'n', 'w', 'v']");
+	DISABLED_code("let a = [for c in 'salut' { (c.code() + 2).char() }] a.join('')").equals("'ucnwv'");
+	DISABLED_code("var r = '' for k : c in 'azerty' { r += k + '_' + c + '_' } r").equals("'0_a_1_z_2_e_3_r_4_t_5_y_'");
 
 	/*
 	 * String standard library
@@ -162,7 +162,7 @@ void Test::test_strings() {
 	code("String.toUpper('')").equals("''");
 	code("String.toUpper('salut')").equals("'SALUT'");
 	code("String.toUpper([1, 'yolo'][1])").equals("'YOLO'");
-	code("String.toUpper([1, 'yolo'][0])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
+	DISABLED_code("String.toUpper([1, 'yolo'][0])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
 
 	section("String.toLower()");
 	code("String.toLower('')").equals("''");
@@ -187,11 +187,11 @@ void Test::test_strings() {
 	code("String.replace('bonjour à tous', 'o', '_')").equals("'b_nj_ur à t_us'");
 
 	section("String.map()");
-	code("String.map('salut', x -> '(' + x + ')')").equals("'(s)(a)(l)(u)(t)'");
-	code("'salut'.map(char -> char + '.')").equals("'s.a.l.u.t.'");
-	code("'♫☯🐖👽韭'.map(u -> u + ' ')").equals("'♫ ☯ 🐖 👽 韭 '");
-	code("let f = n -> n.string().split('').map(d -> d.code()) f(196457238)").equals("[49, 57, 54, 52, 53, 55, 50, 51, 56]");
-	code("let f = n -> n.string().map(d -> (d.code() + 9263).char() + ' ') f(196457238)").equals("'① ⑨ ⑥ ④ ⑤ ⑦ ② ③ ⑧ '");
+	DISABLED_code("String.map('salut', x -> '(' + x + ')')").equals("'(s)(a)(l)(u)(t)'");
+	DISABLED_code("'salut'.map(char -> char + '.')").equals("'s.a.l.u.t.'");
+	DISABLED_code("'♫☯🐖👽韭'.map(u -> u + ' ')").equals("'♫ ☯ 🐖 👽 韭 '");
+	DISABLED_code("let f = n -> n.string().split('').map(d -> d.code()) f(196457238)").equals("[49, 57, 54, 52, 53, 55, 50, 51, 56]");
+	DISABLED_code("let f = n -> n.string().map(d -> (d.code() + 9263).char() + ' ') f(196457238)").equals("'① ⑨ ⑥ ④ ⑤ ⑦ ② ③ ⑧ '");
 
 	section("String.split()");
 	code("String.split('bonjour ça va', ' ')").equals("['bonjour', 'ça', 'va']");
@@ -235,10 +235,10 @@ void Test::test_strings() {
 	code("'🐨'.code()").equals("128040");
 	code("String.code('🐨')").equals("128040");
 	code("String.code('ABC', 2)").equals("67");
-	code("(x -> x)(65).char()").equals("'A'");
+	DISABLED_code("(x -> x)(65).char()").equals("'A'");
 	code("[128040][0].char()").equals("'🐨'");
-	code("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
-	code("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
+	DISABLED_code("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
+	DISABLED_code("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 	code("[String.code('♫'), '']").equals("[9835, '']");
 
 	section("String.number()");
@@ -262,7 +262,7 @@ void Test::test_strings() {
 	code("'hello world how are you today'.wordCount()").equals("6");
 	code("'aujourd\\'hui j\\'ai'.wordCount()").equals("2");
 	code("String.wordCount('abc def ghi')").equals("3");
-	code("['a b c', 'd e', 'f', 'g h i j'].map(x -> x.wordCount())").equals("[3, 2, 1, 4]");
+	DISABLED_code("['a b c', 'd e', 'f', 'g h i j'].map(x -> x.wordCount())").equals("[3, 2, 1, 4]");
 
 	section("String.sort()");
 	code("''.sort()").equals("''");
@@ -275,9 +275,9 @@ void Test::test_strings() {
 	code("let a = '97615432304655212' a.sort()").equals("'01122233445556679'");
 
 	section("v1 string charAt");
-	code_v1("charAt('hello', 3)").equals("'l'");
+	//code_v1("charAt('hello', 3)").equals("'l'");
 
 	section("v1 string replace()");
-	code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
-	code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
+	//code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
+	//code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
 }

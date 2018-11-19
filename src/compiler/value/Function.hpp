@@ -6,7 +6,6 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "Value.hpp"
 #include "Block.hpp"
-#include "llvm/ExecutionEngine/Orc/IRCompileLayer.h"
 
 namespace ls {
 
@@ -14,6 +13,8 @@ class SemanticVar;
 
 class Function : public Value {
 public:
+
+	static int id_counter;
 
 	struct Version {
 		Block* body;
@@ -23,6 +24,7 @@ public:
 	};
 
 	std::string name;
+	std::string internal_name;
 	bool lambda = false;
 	std::vector<std::shared_ptr<Token>> arguments;
 	std::vector<Value*> defaultValues;
@@ -44,6 +46,10 @@ public:
 	bool analyzed = false;
 	Type return_type = Type::UNKNOWN;
 	llvm::orc::IRCompileLayer<llvm::orc::RTDyldObjectLinkingLayer, llvm::orc::SimpleCompiler>::ModuleHandleT function_handle;
+	bool handle_created = false;
+	llvm::BasicBlock* block;
+	std::shared_ptr<llvm::Module> module;
+	LLVMCompiler* compiler = nullptr;
 
 	Function();
 	virtual ~Function();

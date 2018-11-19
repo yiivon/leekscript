@@ -9,6 +9,8 @@
 
 namespace ls {
 
+template <class R, class ...A> R call(LSFunction* function, A... args);
+
 class LSFunction : public LSValue {
 public:
 
@@ -23,6 +25,11 @@ public:
 	virtual ~LSFunction();
 	virtual bool closure() const;
 
+	LSValue* call(LSValue* object, LSValue* arg1) const {
+		auto fun = (LSValue* (*)(LSValue*, LSValue*)) function;
+		return fun(object, arg1);
+	}
+
 	/*
 	 * LSValue methods
 	 */
@@ -36,6 +43,11 @@ public:
 	std::string json() const override;
 	LSValue* getClass() const override;
 };
+
+template <class R, class ...A> R call(LSFunction* function, A... args) {
+	auto fun = (R (*)(A...)) function->function;
+	return fun(args...);
+}
 
 }
 

@@ -89,7 +89,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 }
 
 Compiler::value VariableDeclaration::compile(Compiler& c) const {
-	
+
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
 		std::string name = variables[i]->content;
@@ -110,12 +110,19 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			auto val = ex->compile(c);
 			ex->compile_end(c);
 
+			// c.insn_call(Type::VOID, {val}, +[](__mpz_struct mpz) {
+			// 	std::cout << "mpz store alloc = " << mpz._mp_alloc << std::endl;
+			// 	std::cout << "mpz store size = " << mpz._mp_size << std::endl;
+			// 	std::cout << "mpz store d = " << mpz._mp_d << std::endl;
+			// });
+
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
 			c.set_var_type(name, ex->type);
 			c.add_function_var(var);
 			c.insn_store(var, val);
+
 		} else {
 			auto var = c.create_and_add_var(name, Type::ANY);
 			auto val = c.new_null();

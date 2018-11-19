@@ -11,6 +11,9 @@ using namespace std;
 namespace ls {
 
 int mpz_log(__mpz_struct n) {
+	std::cout << "mpz_log size " << n._mp_size << std::endl;
+	std::cout << "mpz_log alloc " << n._mp_alloc << std::endl;
+	std::cout << "mpz_log d " << n._mp_d << std::endl;
 	int l = abs(n._mp_size) - 1;
 	unsigned long s = n._mp_d[l];
 	unsigned char r = 0;
@@ -39,7 +42,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("+=", {
-		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::add_eq_mpz_mpz},
+		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::add_eq_mpz_mpz, {}, false, true},
 		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::add_eq_real, {}, false, true},
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::add_eq_real, {}, false, true}
 	});
@@ -338,38 +341,55 @@ LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
 }
 
 Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
-		return c.new_mpz();
-	}();
-	auto r_addr = c.insn_address_of(r);
-	auto a = c.insn_address_of(args[0]);
-	auto b = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_add, "mpz_add");
-	if (args[1].t.temporary && args[1] != r) {
-		c.insn_delete_mpz(args[1]);
-	}
-	return r;
+	// auto r = [&]() {
+	// 	if (args[0].t.temporary) return args[0];
+	// 	if (args[1].t.temporary) return args[1];
+	// 	return c.new_mpz();
+	// }();
+	// auto a = args[0];
+	// auto b = args[1];
+	// c.insn_call(Type::VOID, {a, b}, +[](mpz_t a, mpz_t b) {
+	// 	std::cout << "a = " << (void*) &a << std::endl;
+	// 	LLVMCompiler::print_mpz(*a);
+	// });
+	// c.insn_call(Type::VOID, {r, a, b}, &mpz_add, "mpz_add");
+	// if (args[1].t.temporary && args[1] != r) {
+	// 	c.insn_delete_mpz(args[1]);
+	// }
+	// return r;
+	return c.insn_call(Type::MPZ, {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_add(r, &a, &b);
+		return *r;
+	});
 }
 
 Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		return c.new_mpz();
-	}();
-	auto r_addr = c.insn_address_of(r);
-	auto a = c.insn_address_of(args[0]);
-	auto b = args[1];
-	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_add_ui, "mpz_add_ui");
-	return r;
+	// auto r = [&]() {
+	// 	if (args[0].t.temporary) return args[0];
+	// 	return c.new_mpz();
+	// }();
+	// auto r_addr = c.insn_address_of(r);
+	// auto a = c.insn_address_of(args[0]);
+	// auto b = args[1];
+	// c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_add_ui, "mpz_add_ui");
+	// return r;
+	return c.insn_call(Type::MPZ, {args[0], args[1]}, +[](__mpz_struct a, int b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_add_ui(r, &a, b);
+		return *r;
+	});
 }
 
 Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_add);
-	return c.insn_clone_mpz(args[0]);
+	// auto a_addr = c.insn_address_of(args[0]);
+	// auto b_addr = c.insn_address_of(args[1]);
+	c.insn_call(Type::VOID, args, +[](mpz_t a, __mpz_struct b) {
+		mpz_add(a, a, &b);
+	});
+	return c.insn_clone_mpz(c.insn_load(args[0]));
 }
 
 Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args) {
@@ -384,19 +404,25 @@ Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
-		return c.new_mpz();
-	}();
-	auto r_addr = c.insn_address_of(r);
-	auto a = c.insn_address_of(args[0]);
-	auto b = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub, "mpz_sub");
-	if (args[1].t.temporary && args[1] != r) {
-		c.insn_delete_mpz(args[1]);
-	}
-	return r;
+	// auto r = [&]() {
+	// 	if (args[0].t.temporary) return args[0];
+	// 	if (args[1].t.temporary) return args[1];
+	// 	return c.new_mpz();
+	// }();
+	// auto r_addr = c.insn_address_of(r);
+	// auto a = c.insn_address_of(args[0]);
+	// auto b = c.insn_address_of(args[1]);
+	// c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_sub, "mpz_sub");
+	// if (args[1].t.temporary && args[1] != r) {
+	// 	c.insn_delete_mpz(args[1]);
+	// }
+	// return r;
+	return c.insn_call(Type::MPZ, {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_sub(r, &a, &b);
+		return *r;
+	});
 }
 
 Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
@@ -443,30 +469,41 @@ Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.new_mpz();
-	auto r_addr = c.insn_address_of(r);
-	auto b = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {r_addr, b, args[0]}, &mpz_mul_si, "mpz_mul_si");
-	if (args[1].t.temporary) {
-		c.insn_delete_mpz(args[1]);
-	}
-	return r;
+	// auto r = c.new_mpz();
+	// auto r_addr = c.insn_address_of(r);
+	// auto b = c.insn_address_of(args[1]);
+	return c.insn_call(Type::MPZ, {args[0], args[1]}, +[](int a, __mpz_struct b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_mul_si(r, &b, a);
+		return *r;
+	});
+	// if (args[1].t.temporary) {
+	// 	c.insn_delete_mpz(args[1]);
+	// }
+	// return r;
 }
 
 Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
-		return c.new_mpz();
-	}();
-	auto r_addr = c.insn_address_of(r);
-	auto a = c.insn_address_of(args[0]);
-	auto b = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_mul, "mpz_mul");
-	if (args[1].t.temporary && args[1] != r) {
-		c.insn_delete_mpz(args[1]);
-	}
-	return r;
+	// auto r = [&]() {
+	// 	if (args[0].t.temporary) return args[0];
+	// 	if (args[1].t.temporary) return args[1];
+	// 	return c.new_mpz();
+	// }();
+	// auto r_addr = c.insn_address_of(r);
+	// auto a = c.insn_address_of(args[0]);
+	// auto b = c.insn_address_of(args[1]);
+	// c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_mul, "mpz_mul");
+	// if (args[1].t.temporary && args[1] != r) {
+	// 	c.insn_delete_mpz(args[1]);
+	// }
+	// return r;
+	return c.insn_call(Type::MPZ, {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_mul(r, &a, &b);
+		return *r;
+	});
 }
 
 Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -510,20 +547,24 @@ Compiler::value NumberSTD::div_eq_real(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
-		return c.new_mpz();
-	}();
-	auto r_addr = c.insn_address_of(r);
-	auto a = c.insn_address_of(args[0]);
-	auto b = c.insn_address_of(args[1]);
-	auto p = c.insn_call(Type::LONG, {b}, &mpz_get_ui, "mpz_get_ui");
-	c.insn_call(Type::VOID, {r_addr, a, p}, &mpz_pow_ui, "mpz_pow_ui");
-	if (args[1].t.temporary && args[1] != r) {
-		c.insn_delete_mpz(args[1]);
-	}
-	return r;
+	// auto r = [&]() {
+	// 	if (args[0].t.temporary) return args[0];
+	// 	if (args[1].t.temporary) return args[1];
+	// 	return c.new_mpz();
+	// }();
+	// auto r_addr = c.insn_address_of(r);
+	// auto a = c.insn_address_of(args[0]);
+	// auto b = c.insn_address_of(args[1]);
+	return c.insn_call(Type::MPZ, {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_pow_ui(r, &a, mpz_get_ui(&b));
+		return *r;
+	});
+	// if (args[1].t.temporary && args[1] != r) {
+	// 	c.insn_delete_mpz(args[1]);
+	// }
+	// return r;
 }
 
 __mpz_struct pow_mpz_int_lambda(__mpz_struct a, int b) throw() {
@@ -535,13 +576,21 @@ __mpz_struct pow_mpz_int_lambda(__mpz_struct a, int b) throw() {
 
 Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
 	// Check: mpz_log(a) * b <= 10000
+	std::cout << "mpz_pow " << args[0].v->getType() << std::endl;
 	auto a_size = c.insn_call(Type::INTEGER, {args[0]}, (void*) &mpz_log, "mpz_log");
 	auto r_size = c.insn_mul(a_size, args[1]);
 	auto cond = c.insn_lt(r_size, c.new_integer(10000));
-	Compiler::label label_end;
-	c.insn_branch_if(cond, &label_end);
+	auto label_then = c.insn_init_label("then");
+	auto label_else = c.insn_init_label("else");
+	auto label_end = c.insn_init_label("end");
+	c.insn_if_new(cond, &label_then, &label_else);
 
+	c.insn_label(&label_then);
 	c.insn_throw_object(vm::Exception::NUMBER_OVERFLOW);
+	c.insn_branch(&label_end);
+
+	c.insn_label(&label_else);
+	c.insn_branch(&label_end);
 
 	c.insn_label(&label_end);
 
@@ -592,19 +641,25 @@ Compiler::value NumberSTD::mod_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
-		return c.new_mpz();
-	}();
-	auto r_addr = c.insn_address_of(r);
-	auto a = c.insn_address_of(args[0]);
-	auto b = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_mod, "mpz_mod");
-	if (args[1].t.temporary && args[1] != r) {
-		c.insn_delete_mpz(args[1]);
-	}
-	return r;
+	// auto r = [&]() {
+	// 	if (args[0].t.temporary) return args[0];
+	// 	if (args[1].t.temporary) return args[1];
+	// 	return c.new_mpz();
+	// }();
+	// auto r_addr = c.insn_address_of(r);
+	// auto a = c.insn_address_of(args[0]);
+	// auto b = c.insn_address_of(args[1]);
+	// c.insn_call(Type::VOID, {r_addr, a, b}, &mpz_mod, "mpz_mod");
+	// if (args[1].t.temporary && args[1] != r) {
+	// 	c.insn_delete_mpz(args[1]);
+	// }
+	// return r;
+	return c.insn_call(Type::MPZ, args, +[](__mpz_struct a, __mpz_struct b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_mod(r, &a, &b);
+		return *r;
+	});
 }
 
 Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -622,25 +677,29 @@ Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp, "mpz_cmp");
-	if (args[0].t.temporary) {
-		c.insn_delete_mpz(args[0]);
-	}
-	if (args[1].t.temporary) {
-		c.insn_delete_mpz(args[1]);
-	}
-	return c.insn_eq(res, c.new_integer(0));
+	// auto a_addr = c.insn_address_of(args[0]);
+	// auto b_addr = c.insn_address_of(args[1]);
+	return c.insn_call(Type::BOOLEAN, {args[0], args[1]}, +[](__mpz_struct x, __mpz_struct y) {
+		return mpz_cmp(&x, &y) == 0;
+	});
+	// if (args[0].t.temporary) {
+	// 	c.insn_delete_mpz(args[0]);
+	// }
+	// if (args[1].t.temporary) {
+	// 	c.insn_delete_mpz(args[1]);
+	// }
+	// return c.insn_eq(res, c.new_integer(0));
 }
 
 Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto res = c.insn_call(Type::INTEGER, {a_addr, args[1]}, &_mpz_cmp_si, "_mpz_cmp_si");
-	if (args[0].t.temporary) {
-		c.insn_delete_mpz(args[0]);
-	}
-	return c.insn_eq(res, c.new_integer(0));
+	// auto a_addr = c.insn_address_of(args[0]);
+	return c.insn_call(Type::BOOLEAN, {args[0], args[1]}, +[](__mpz_struct x, int i) {
+		return _mpz_cmp_si(&x, i) == 0;
+	});
+	// if (args[0].t.temporary) {
+	// 	c.insn_delete_mpz(args[0]);
+	// }
+	// return c.insn_eq(res, c.new_integer(0));
 }
 
 Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> args) {
@@ -949,14 +1008,19 @@ double NumberSTD::sqrt_int(int x) {
 }
 
 Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.new_mpz();
-	auto r_addr = c.insn_address_of(r);
-	auto a_addr = c.insn_address_of(args[0]);
-	c.insn_call(Type::VOID, {r_addr, a_addr}, &mpz_sqrt, "mpz_sqrt");
-	if (args[0].t.temporary) {
-		c.insn_delete_mpz(args[0]);
-	}
-	return r;
+	// auto r = c.new_mpz();
+	// auto r_addr = c.insn_address_of(r);
+	// auto a_addr = c.insn_address_of(args[0]);
+	return c.insn_call(Type::MPZ, args, +[](__mpz_struct x) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_sqrt(r, &x);
+		return *r;
+	});
+	// if (args[0].t.temporary) {
+	// 	c.insn_delete_mpz(args[0]);
+	// }
+	// return r;
 }
 
 Compiler::value NumberSTD::sqrt_real(Compiler& c, std::vector<Compiler::value> args) {

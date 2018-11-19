@@ -52,7 +52,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			capture_index = analyser->current_function()->capture(var);
 			var->index = capture_index;
 			scope = VarScope::CAPTURE;
-  		}
+		}
 	} else {
 		type = Type::POINTER;
 	}
@@ -152,17 +152,22 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 
 	Compiler::value v;
 	if (scope == VarScope::INTERNAL) {
-		// v = c.vm->internals.at(name);
+		v = {c.vm->internals.at(name), type};
 	} else if (scope == VarScope::LOCAL) {
 		auto f = dynamic_cast<Function*>(var->value);
 		if (has_version && f) {
 			return f->compile_version(c, version);
 		}
 		v = c.get_var(name);
-		v = {LLVMCompiler::Builder.CreateLoad(v.v, name.c_str()), v.t};
+		if (type.raw_type != RawType::MPZ) {
+			v = {LLVMCompiler::Builder.CreateLoad(v.v, name.c_str()), v.t};
+		} else {
+			v = {LLVMCompiler::Builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v, name.c_str()), v.t};
+		}
 	} else { /* if (scope == VarScope::PARAMETER) */
 		int offset = c.is_current_function_closure() ? 1 : 0;
-		// v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
+		v = {c.F->arg_begin() + offset + var->index, type};
+		// v = {LLVMCompiler::Builder.CreateLoad(v.v, name.c_str()), v.t};
 	}
 
 	if (var->type.nature != Nature::UNKNOWN and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -175,6 +180,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	if (var->type.reference) {
 		return c.insn_load(v);
 	}
+	// std::cout << "return var" << v.v->getType() << std::endl;
 	return v;
 }
 
@@ -183,21 +189,21 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	if (scope == VarScope::CAPTURE) {
 		return c.insn_address_of(c.insn_get_capture(capture_index, type));
 	}
-
+	
 	Compiler::value v;
 	// No internal values here
 	if (scope == VarScope::LOCAL) {
 		v = c.get_var(name);
 	} else { /* if (scope == VarScope::PARAMETER) */
 		int offset = c.is_current_function_closure() ? 1 : 0;
-		// v = jit_value_get_param(c.F, offset + var->index); // 1 offset for function ptr
+		v = {c.F->arg_begin() + offset + var->index, type};
 	}
 	return v;
-	if (type.reference) {
-		return v;
-	} else {
-		return c.insn_address_of(v);
-	}
+	// if (type.reference) {
+	// 	return v;
+	// } else {
+	// 	return c.insn_address_of(v);
+	// }
 }
 
 Value* VariableValue::clone() const {

@@ -170,8 +170,7 @@ void print_errors(ls::VM::Result& result, std::ostream& os, bool json) {
 		os << BOLD << e.file << ":" << e.location.start.line << END_COLOR << ": " << e.underline_code << std::endl << "   ▶ " << e.message() << std::endl;
 		first = false;
 	}
-	if (result.exception != nullptr) {
-		os << result.exception->to_string(json ? false : true);
-		delete result.exception;
+	if (result.exception.type != ls::vm::Exception::NO_EXCEPTION) {
+		os << result.exception.to_string(json ? false : true);
 	}
 }
