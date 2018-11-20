@@ -341,7 +341,7 @@ LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::
 }
 
 LLVMCompiler::value LLVMCompiler::insn_cmpl(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateICmpUGT(a.v, b.v), Type::INTEGER};
+	return {Builder.CreateSub(to_int(insn_to_bool(a)).v, to_int(insn_to_bool(b)).v), Type::INTEGER};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_log(LLVMCompiler::value x) const {
