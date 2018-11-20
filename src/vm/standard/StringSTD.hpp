@@ -16,6 +16,7 @@ public:
 	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args);
 
 	static LSString* add_int(LSString* s, int i);
+	static LSString* add_bool(LSString* s, bool i);
 	static LSString* add_real(LSString* s, double i);
 
 	static LSString* replace(LSString*, LSString*, LSString*);

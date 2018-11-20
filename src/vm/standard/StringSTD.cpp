@@ -54,6 +54,7 @@ StringSTD::StringSTD() : Module("String") {
 	 * Operators
 	 */
 	operator_("+", {
+		{Type::STRING, Type::BOOLEAN, Type::STRING, (void*) &StringSTD::add_bool, {}, Method::NATIVE},
 		{Type::STRING, Type::INTEGER, Type::STRING, (void*) &StringSTD::add_int, {}, Method::NATIVE},
 		{Type::STRING, Type::REAL, Type::STRING, (void*) &StringSTD::add_real, {}, Method::NATIVE},
 		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_mpz, {}, Method::NATIVE},
@@ -166,6 +167,15 @@ LSString* StringSTD::add_int(LSString* s, int i) {
 		return s;
 	} else {
 		return new LSString(*s + std::to_string(i));
+	}
+}
+
+LSString* StringSTD::add_bool(LSString* s, bool b) {
+	if (s->refs == 0) {
+		s->append(b ? "true" : "false");
+		return s;
+	} else {
+		return new LSString(*s + (b ? "true" : "false"));
 	}
 }
 
