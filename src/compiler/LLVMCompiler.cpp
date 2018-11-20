@@ -198,6 +198,9 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 	if (v.t.not_temporary() == Type::BOOLEAN) {
 		return {Builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), false), Type::INTEGER};
 	}
+	if (v.t.not_temporary() == Type::REAL) {
+		return {Builder.CreateFPToSI(v.v, Type::INTEGER.llvm_type()), Type::INTEGER};
+	}
 	LLVMCompiler::value r {Builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), true), Type::INTEGER};
 	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;

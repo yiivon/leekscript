@@ -764,8 +764,8 @@ Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> 
  * Methods
  */
 
-Compiler::value NumberSTD::_int(Compiler&, std::vector<Compiler::value> args) {
-	return {args[0].v, Type::INTEGER};
+Compiler::value NumberSTD::_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.to_int(args[0]);
 }
 
 Compiler::value NumberSTD::abs_ptr(Compiler& c, std::vector<Compiler::value> args) {

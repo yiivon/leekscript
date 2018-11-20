@@ -634,7 +634,9 @@ void Test::test_numbers() {
 	DISABLED_code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
 
 	section("Number.int()");
+	code("Number.int(15.1)").equals("15");
 	code("Number.int(15.5)").equals("15");
+	code("Number.int(15.9)").equals("15");
 
 	section("Number.isInteger()");
 	code("Number.isInteger(12)").equals("true");
