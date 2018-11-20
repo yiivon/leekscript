@@ -185,7 +185,7 @@ void Test::test_arrays() {
 	code("var a = [[1.5], ''][0] var b = ['a'] a + b").equals("[1.5, 'a']");
 	code("var a = [['a'], ''][0] var b = [12] a + b").equals("['a', 12]");
 	code("var a = [['a'], ''][0] var b = [12.9] a + b").equals("['a', 12.9]");
-	code("var a = [1, 2, 3] a[1] += 0.5 a").equals("[1, 2.5, 3]");
+	DISABLED_code("var a = [1, 2, 3] a[1] += 0.5 a").equals("[1, 2.5, 3]");
 	code("var a = [1, 2, 3] a += [4] a").equals("[1, 2, 3, 4]");
 
 	section("Array.operator ~~");
@@ -459,7 +459,7 @@ void Test::test_arrays() {
 	code("var s = new Array() Array.push(s, 'a')").equals("['a']");
 
 	section("Array.pushAll()");
-	code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
+	DISABLED_code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
 	code("[0].pushAll([1, 2, 3])").equals("[0, 1, 2, 3]");
 	code("[0].pushAll([3.5])").equals("[0, 3]");
 	code("[0.5].pushAll(['a'])").equals("[0.5, 'a']");
@@ -556,7 +556,7 @@ void Test::test_arrays() {
 	// TODO add more
 
 	section("Misc");
-	code("let a = [1, []] a[1].push('str') a").equals("[1, ['str']]");
+	DISABLED_code("let a = [1, []] a[1].push('str') a").equals("[1, ['str']]");
 	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
 	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
 	code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
