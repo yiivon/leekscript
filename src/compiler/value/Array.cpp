@@ -219,8 +219,8 @@ bool Array::elements_will_store(SemanticAnalyser* analyser, const Type& type, in
 
 Compiler::value Array::compile(Compiler& c) const {
 	if (interval) {
-		Compiler::value a = {expressions[0]->compile(c).v, Type::INTEGER};
-		Compiler::value b = {expressions[1]->compile(c).v, Type::INTEGER};
+		auto a = c.to_int(expressions[0]->compile(c));
+		auto b = c.to_int(expressions[1]->compile(c));
 		return c.insn_call(Type::INTERVAL_TMP, {a, b}, +[](int a, int b) {
 			// TODO a better constructor?
 			LSInterval* interval = new LSInterval();
