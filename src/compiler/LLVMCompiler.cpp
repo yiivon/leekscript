@@ -465,9 +465,16 @@ LLVMCompiler::value LLVMCompiler::insn_sqrt(LLVMCompiler::value x) const {
 }
 
 LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	LLVMCompiler::value r = insn_call(Type::INTEGER, {a, b}, +[](int a, int b) {
-		return (int) std::pow(a, b);
-	});
+	LLVMCompiler::value r;
+	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
+		r = insn_call(Type::INTEGER, {a, b}, +[](int a, int b) {
+			return (int) std::pow(a, b);
+		});
+	} else {
+		r = insn_call(Type::REAL, {a, b}, +[](double a, double b) {
+			return std::pow(a, b);
+		});
+	}
 	log_insn(4) << "pow " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
