@@ -56,6 +56,7 @@ Compiler::value While::compile(Compiler& c) const {
 	c.insn_if_new(cond, &loop_label, &end_label);
 
 	c.insn_label(&loop_label);
+	c.inc_ops(1);
 	c.enter_loop(&end_label, &loop_label);
 	body->compile(c);
 	c.leave_loop();
