@@ -780,11 +780,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				// auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), type.jit_type(), 0);
-				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				// 	return c.insn_to_pointer({r, v2->type});
-				// }
-				// return {r, type};
+				auto r = c.insn_int_div(x, y);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(r);
+				}
+				return r;
 			} else {
 				ls_func = (void*) &jit_int_div;
 				ls_returned_type = Type::LONG;
@@ -797,12 +797,12 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v2->compile_end(c);
 				auto x = c.insn_load(x_addr, 0, v1->type);
-				// auto r = jit_insn_convert(c.F, jit_insn_div(c.F, x.v, y.v), type.jit_type(), 0);
-				// jit_insn_store_relative(c.F, x_addr.v, 0, r);
-				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				// 	return c.insn_to_pointer({r, v2->type});
-				// }
-				// return {r, type};
+				auto r = c.insn_int_div(x, y);
+				c.insn_store(x_addr, r);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(r);
+				}
+				return r;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);

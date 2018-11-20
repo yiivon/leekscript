@@ -328,7 +328,7 @@ LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::
 }
 
 LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateSDiv(to_int(a).v, to_int(b).v), Type::INTEGER};
+	return {Builder.CreateSDiv(a.v, b.v), Type::INTEGER};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
