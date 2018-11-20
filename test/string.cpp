@@ -51,10 +51,10 @@ void Test::test_strings() {
 
 	section("String.operator x++");
 	code("'hello'++").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
-	code("var a = 'hello' a++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("var a = 'hello' a++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator x--");
-	code("var a = 'hello' a--").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("var a = 'hello' a--").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator +");
 	code("'salut ' + 'ça va ?'").equals("'salut ça va ?'");
@@ -83,10 +83,10 @@ void Test::test_strings() {
 	DISABLED_code("'hello' / 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\");
-	code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\=");
-	code("var a = 'azerty' a \\= ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("var a = 'azerty' a \\= ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator~");
 	code("~'bonjour'").equals("'ruojnob'");

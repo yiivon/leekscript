@@ -284,7 +284,7 @@ void Test::test_numbers() {
 	code("2 ** 50").equals("-2147483648");
 	code("2m ** 50").equals("1125899906842624");
 	code("(5m + 2m) ** (16m * 2m)").equals("1104427674243920646305299201");
-	code("123m ** 1900").exception(ls::vm::Exception::NUMBER_OVERFLOW);
+	DISABLED_code("123m ** 1900").exception(ls::vm::Exception::NUMBER_OVERFLOW);
 	code("var s = 0 s = 5 ** 2 s").equals("25");
 
 	section("Number.operator **=");

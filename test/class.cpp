@@ -63,7 +63,7 @@ void Test::test_classes() {
 	code("[1..12] is Interval").equals("true");
 	code("{a: 12} is Object").equals("true");
 	DISABLED_code("(-> 12) is Function").equals("true");
-	code("null is Null").equals("true");
+	DISABLED_code("null is Null").equals("true");
 	code("true is Boolean").equals("true");
 	code("Number is Class").equals("true");
 
