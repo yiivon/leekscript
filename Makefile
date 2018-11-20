@@ -27,7 +27,7 @@ OBJ_PROFILE := $(patsubst %.cpp,build/profile/%.o,$(SRC))
 OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 COMPILER := g++
-OPTIM := -O0
+OPTIM := -O2
 FLAGS := -std=c++14 -isystem/usr/lib/llvm-6.0/include -g3 -Wall -Wno-overloaded-virtual -Wno-unused-parameter -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
 LIBS := -lm -ljit -lgmp `/usr/lib/llvm-6.0/bin/llvm-config --ldflags --libs core orcjit`

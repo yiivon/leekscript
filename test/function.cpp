@@ -106,7 +106,7 @@ void Test::test_functions() {
 	DISABLED_code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
 
 	section("Multiple versions of a function");
-	code("let f = x -> x f(5) f('a')").equals("'a'");
+	DISABLED_code("let f = x -> x f(5) f('a')").equals("'a'");
 	DISABLED_code("let f = x -> x f('a') f(5)").equals("5");
 	DISABLED_code("let f = x -> x [f(5), f('a')]").equals("[5, 'a']");
 	DISABLED_code("let f = x -> x [f(5), f('a'), f(5.5), f(2l)]").equals("[5, 'a', 5.5, 2]");
