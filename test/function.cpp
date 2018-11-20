@@ -133,8 +133,8 @@ void Test::test_functions() {
 	code("(x -> x)--").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "(x) → {\n    x\n}" });
 
 	section("Operator ~ ");
-	// code("let a = 10 a ~ x -> x ** 2").equals("100");
-	// code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
+	DISABLED_code("let a = 10 a ~ x -> x ** 2").equals("100");
+	DISABLED_code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
 
 	section("Operator []");
 	code("let f = x -> x f[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
@@ -159,16 +159,16 @@ void Test::test_functions() {
 	DISABLED_code("(\\)(72, 7)").equals("10");
 	DISABLED_code("['', **(2, 11)]").equals("['', 2048]");
 	// TODO flaky
-	// code("let p = +; p(1, 2)").equals("3");
-	// code("let p = +; p('test', 2)").equals("'test2'");
-	// code("let p = -; p(9, 2)").equals("7");
-	// code("let p = * p(5, 8)").equals("40");
-	// code("let p = × p(5, 8)").equals("40");
-	// code("let p = / p(48, 12)").equals("4");
-	// code("let p = ÷ p(48, 12)").equals("4");
-	// code("let p = % p(48, 5)").equals("3");
-	// code("let p = ** p(2, 11)").equals("2048");
-	// code("let p = \\ p(72, 7)").equals("10");
+	DISABLED_code("let p = +; p(1, 2)").equals("3");
+	DISABLED_code("let p = +; p('test', 2)").equals("'test2'");
+	DISABLED_code("let p = -; p(9, 2)").equals("7");
+	DISABLED_code("let p = * p(5, 8)").equals("40");
+	DISABLED_code("let p = × p(5, 8)").equals("40");
+	DISABLED_code("let p = / p(48, 12)").equals("4");
+	DISABLED_code("let p = ÷ p(48, 12)").equals("4");
+	DISABLED_code("let p = % p(48, 5)").equals("3");
+	DISABLED_code("let p = ** p(2, 11)").equals("2048");
+	DISABLED_code("let p = \\ p(72, 7)").equals("10");
 	code("+").equals("<function>");
 	DISABLED_code("+.class").equals("<class Function>");
 	DISABLED_code("let p = +; p.class").equals("<class Function>");
@@ -192,8 +192,7 @@ void Test::test_functions() {
 	code("(x -> 12).return").equals("<class Number>");
 	code("(x -> x).args").equals("[<class Value>]");
 	code("Array.size((x, y, z -> x + y * z).args)").equals("3");
-	// TODO
-	// code("let f = x, y -> x f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
+	DISABLED_code("let f = x, y -> x f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
 	code("+.args").equals("[<class Value>, <class Value>]");
 	code("+.return").equals("<class Value>");
 	code("-.args").equals("[<class Value>, <class Value>]");
@@ -204,14 +203,14 @@ void Test::test_functions() {
 	code("%.args").equals("[<class Value>, <class Value>]");
 	code("**.args").equals("[<class Value>, <class Value>]");
 	// TODO manage multiple versions of functions
-	//code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
+	DISABLED_code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
 
 	section("Check argument count");
 	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"(x) → {\n    x\n}", "1", "0"});
 	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
 	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
 	// TODO not the expected error
-	// code("Number.abs(12, 12)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "12", "12"});
+	DISABLED_code("Number.abs(12, 12)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "12", "12"});
 	code("let siftUp = (c, pq) -> pq; let pqInsert = (p, v, pq) -> siftUp(0, pq); pqInsert(1, 2)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"pqInsert", "3", "2"});
 
 	section("Void functions");
@@ -250,11 +249,10 @@ void Test::test_functions() {
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f([])").equals("[]");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f(2)").equals("2");
-	// TODO
-	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
-	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
-	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
-	// code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
+	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
+	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
+	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
+	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
 
 	section("Not compiled functions");
 	code("var dumb = function(x) { }").equals("(void)");

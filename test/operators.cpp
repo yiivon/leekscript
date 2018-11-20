@@ -11,7 +11,7 @@ void Test::test_operators() {
 	code("[] = 2").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"[]"});
 	code("true = []").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"true"});
 	// TODO crash in underline_code
-	// code("null = x -> x").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"null"});
+	DISABLED_code("null = x -> x").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"null"});
 	code("{} = 2.class").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"{}"});
 
 	header("Operator xor");

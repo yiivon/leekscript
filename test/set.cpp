@@ -14,9 +14,9 @@ void Test::test_set() {
 	 * Operators
 	 */
 	section("Set.to_bool()");
- 	code("if <1, 2> then 5 else 12 end").equals("5");
+	code("if <1, 2> then 5 else 12 end").equals("5");
 	code("if <1.5> then 5 else 12 end").equals("5");
- 	code("if <> then 5 else 12 end").equals("12");
+	code("if <> then 5 else 12 end").equals("12");
 
 	section("Set.operator ! ()");
 	code("!<1, 2>").equals("false");

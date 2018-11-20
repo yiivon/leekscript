@@ -11,7 +11,7 @@ void Test::test_intervals() {
 	code("[0l..544l]").equals("[0..544]");
 	code("[45.73..248l]").equals("[45..248]");
 	// TODO intervals with mpz
-	// code("[15m..50m]").equals("[15..50]");
+	DISABLED_code("[15m..50m]").equals("[15..50]");
 
 	section("Interval.operator !");
 	code("![1..1000]").equals("false");
@@ -37,7 +37,7 @@ void Test::test_intervals() {
 	code("[1..1000] == [1..500]").equals("false");
 	code("[1..1000] == 12").equals("false");
 	// TODO
-	// code("[1..10] == [1 2 3 4 5 6 7 8 9 10]").equals("true");
+	DISABLED_code("[1..10] == [1 2 3 4 5 6 7 8 9 10]").equals("true");
 
 	section("Interval.operator []");
 	code("[0..1000][500]").equals("500");
@@ -68,9 +68,9 @@ void Test::test_intervals() {
 
 	section("Interval.operator ~~");
 	// TODO crash
-	// code("[1..10] ~~ x -> x.isPrime()").equals("[]");
+	DISABLED_code("[1..10] ~~ x -> x.isPrime()").equals("[]");
 	// TODO
-	// code("[1..10] ~~ isPrime").equals("");
+	DISABLED_code("[1..10] ~~ isPrime").equals("");
 
 	section("Iteration");
 	DISABLED_code("for k, i in [1..0] { System.print(k + ' => ' + i) }").output("");
@@ -93,8 +93,7 @@ void Test::test_intervals() {
 	DISABLED_code("[0..10].filter(-> true)").equals("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 	DISABLED_code("[-5..5].filter(-> true)").equals("[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]");
 	DISABLED_code("[1..10000].filter(x -> x.isPrime() && (x + 256).isPrime()).size()").equals("197");
-	// TODO
-	// code("[1..10000].filter(isPrime)").equals("");
+	DISABLED_code("[1..10000].filter(isPrime)").equals("");
 
 	section("Interval.sum");
 	code("[1..0].sum()").equals("0");

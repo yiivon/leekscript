@@ -12,17 +12,15 @@ void Test::test_loops() {
 	code("if (false) { 12 } else { 5 }").equals("5");
 	code("let a = if (false) { 12 } else { 5 } a").equals("5");
 	code("let a = if (true) { 'yo' } else { 'hello' } a").equals("'yo'");
-	// TODO
-	// code("let a = if (true) { 12 } else { 'hello' } a").equals("12");
+	DISABLED_code("let a = if (true) { 12 } else { 'hello' } a").equals("12");
 	DISABLED_code("let a = if (true) { 'hello' } else { 12 } a").equals("'hello'");
 	code("if (true) {} else {}").equals("{}");
-	// TODO
-	// code("if (true) {;} else {}").equals("null");
+	DISABLED_code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
-	// TODO
-	// code("if true").equals("null");
-	// code("if true else").equals("null"); crash
+	DISABLED_code("if true").equals("null");
+	// TODO crash
+	DISABLED_code("if true else").equals("null");
 	code("if (true) {a: 12} else {b: 5}").equals("{a: 12}");
 	code("if (true) { {a: 12} } else { {b: 5} }").equals("{a: 12}");
 	code("if (true) 12 else 5").equals("12");
@@ -94,7 +92,7 @@ void Test::test_loops() {
 	DISABLED_code("var a = 0 for var i = 0; i < 10; i++ { if i < 5 { continue } a++ } a").equals("5");
 	code("var c = 0 for var t = []; t.size() < 10; t.push('x') { c++ } c").equals("10");
 	// TODO wrong result
-	// code("var s = 0 for let m = [1: 3, 2: 2, 3: 1]; m; var l = 0 for k, x in m { l = k } m.erase(l) { for x in m { s += x } } s").equals("14");
+	DISABLED_code("var s = 0 for let m = [1: 3, 2: 2, 3: 1]; m; var l = 0 for k, x in m { l = k } m.erase(l) { for x in m { s += x } } s").equals("14");
 	code("for var i = 0; ['', i < 10][1]; i++ {}").equals("(void)");
 	code("var i = ['', 1][1] for ; i < 10; i <<= 1 {}").equals("(void)");
 	code("for (var i = 0, j = 0; i < 5; i++, j++) { System.print(i + ', ' + j) }").output("0, 0\n1, 1\n2, 2\n3, 3\n4, 4\n");
@@ -127,18 +125,18 @@ void Test::test_loops() {
 	code("(a -> { var s = 0.0; for x in a { s += x } s })([1, 2, 3, 4.25])").equals("10.25");
 	code("var y = '' for k, x in { var x = [] x.push(4) x } { y += k + ':' + x + ' ' } y").equals("'0:4 '");
 	// TODO wrong result
-	// code("var y = '' for k, x in { var x = [1: 2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
+	DISABLED_code("var y = '' for k, x in { var x = [1: 2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	DISABLED_code("var y = '' for k, x in { var x = [1: 2.5] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2.5 3:4 '");
 	DISABLED_code("var y = '' for k, x in { var x = [1: '2'] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	// TODO crash
-	// code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
+	DISABLED_code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
 	DISABLED_code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
 	DISABLED_code("var y = '' for k, x in { var x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
 	// TODO crash
-	// code("var fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3");
+	DISABLED_code("var fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3");
 	// TODO crash
-	// code("var fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
+	DISABLED_code("var fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
 	DISABLED_code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
 
 	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::ANY.to_string()});

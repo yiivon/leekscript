@@ -116,9 +116,9 @@ void Test::test_numbers() {
 	code("0m").equals("0");
 	code("0xf45eab5c9d13aab44376beff").equals("75628790656539575381594128127");
 	// TODO floating-point multiple precision numbers
-	// code("123456.78910m").equals("123456.7891");
-	// code("123456789123456789123456789.5").equals("");
-	// code("1234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567883459720303390827584524332795121111123456788999999999999999999999999999999999.5").equals("");
+	DISABLED_code("123456.78910m").equals("123456.7891");
+	DISABLED_code("123456789123456789123456789.5").equals("");
+	DISABLED_code("1234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567883459720303390827584524332795121111123456788999999999999999999999999999999999.5").equals("");
 
 	section("Integer division by zero");
 	code("1 \\ 0").exception(ls::vm::Exception::DIVISION_BY_ZERO);
@@ -144,7 +144,7 @@ void Test::test_numbers() {
 	code("['', Number()]").equals("['', 0]");
 	code("['', new Number(12)]").equals("['', 12]");
 	// TODO
-	// code("['', Number(12)]").equals("['', 12]");
+	DISABLED_code("['', Number(12)]").equals("['', 12]");
 
 	section("Constants");
 	code("Number.pi").almost(3.141592653589793116);
@@ -158,15 +158,15 @@ void Test::test_numbers() {
 	 * Operators
 	 */
 	section("Number.operator unary -");
- 	code("var a = [12, ''] var b = a[0]; -b").equals("-12");
+	code("var a = [12, ''] var b = a[0]; -b").equals("-12");
 	code("-(12m ** 2)").equals("-144");
 	code("-100m").equals("-100");
 
- 	section("Number.operator unary !");
- 	code("var a = [12, ''] var b = a[0]; !b").equals("false");
+	section("Number.operator unary !");
+	code("var a = [12, ''] var b = a[0]; !b").equals("false");
 
- 	section("Number.operator unary ~");
- 	code("var a = [12, ''] var b = a[0]; ~b").equals("-13");
+	section("Number.operator unary ~");
+	code("var a = [12, ''] var b = a[0]; ~b").equals("-13");
 	code("var a = 12 ['', ~a]").equals("['', -13]");
 
 	section("Number.operator ++x");
@@ -176,14 +176,14 @@ void Test::test_numbers() {
 	code("var a = 20m; ++a a").equals("21");
 	code("var a = 20m; let b = ++a b").equals("21");
 	// TODO should be forbidden
-	// code("++5").equals("6");
+	DISABLED_code("++5").equals("6");
 	code("var a = 5 ['', ++a]").equals("['', 6]");
 
 	section("Number.operator --x");
 	code("var a = 20★; --a").equals("19");
 	code("var a = 30★; --a a").equals("29");
 	// TODO should be forbidden
-	// code("--5").equals("4");
+	DISABLED_code("--5").equals("4");
 	code("var a = 5 ['', --a]").equals("['', 4]");
 
 	section("Number.operator x++");
@@ -191,13 +191,13 @@ void Test::test_numbers() {
 	code("var a = 20m; a++ a").equals("21");
 	code("var a = 20m; let b = a++ b").equals("20");
 	// FIXME Crashing
-	// code("5++").equals("5");
+	DISABLED_code("5++").equals("5");
 
 	section("Number.operator x--");
 	// TODO not implemented
-	// code("var a = 20m; a--").equals("20");
-	// code("var a = 20m; a-- a").equals("19");
-	// code("var a = 20m; let b = a-- b").equals("20");
+	DISABLED_code("var a = 20m; a--").equals("20");
+	DISABLED_code("var a = 20m; a-- a").equals("19");
+	DISABLED_code("var a = 20m; let b = a-- b").equals("20");
 	code("5--").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 
 	section("Number.operator in");
@@ -238,11 +238,11 @@ void Test::test_numbers() {
 	code("(1m - 2m) - 3m").equals("-4");
 	code("(1m - 2m) - (3m - 4m)").equals("0");
 	// TODO
-	// code("(10m + 10m) - 1").equals("19");
+	DISABLED_code("(10m + 10m) - 1").equals("19");
 	code("15★ - 3★").equals("12");
 	// TODO
-	// code("1000m - 12").equals("988");
-	// code("1000m - (-12)").equals("1012");
+	DISABLED_code("1000m - 12").equals("988");
+	DISABLED_code("1000m - (-12)").equals("1012");
 	code("15★ - false").equals("15");
 	code("15★ - true").equals("14");
 	code("let a = 15★ a - true").equals("14");
@@ -361,7 +361,7 @@ void Test::test_numbers() {
 	DISABLED_code("12 > 5m").equals("true");
 	code("[] > true").equals("true");
 	// TODO
-	// code("-100m > 0").equals("false");
+	DISABLED_code("-100m > 0").equals("false");
 
 	section("Number.operator \\");
 	DISABLED_code("10 \\ 2").equals("5");
@@ -382,29 +382,29 @@ void Test::test_numbers() {
 	DISABLED_code("['', 10★ \\ 2]").equals("['', 5]");
 
 	section("Number.operator \\=");
-	// code("var a = 12 a \\= 5").equals("2");
-	// code("var a = 12★ a \\= 5").equals("2");
-	// code("var a = 30★ a \\= 4 a").equals("7");
-	// code("var a = 12★ a \\= true a").equals("12");
-	// code("var a = 12★ a \\= false a").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	// code("var a = 12★ a \\= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	// code("var a = 12★ a \\= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	// code("var a = 12 ['', a \\= 5]").equals("['', 2]");
+	DISABLED_code("var a = 12 a \\= 5").equals("2");
+	DISABLED_code("var a = 12★ a \\= 5").equals("2");
+	DISABLED_code("var a = 30★ a \\= 4 a").equals("7");
+	DISABLED_code("var a = 12★ a \\= true a").equals("12");
+	DISABLED_code("var a = 12★ a \\= false a").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	DISABLED_code("var a = 12★ a \\= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("var a = 12★ a \\= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("var a = 12 ['', a \\= 5]").equals("['', 2]");
 
 	section("Number.operator &");
-	// code("0 & 0").equals("0");
-	// code("1 & 0").equals("0");
-	// code("1 & 1").equals("1");
-	// code("5 & 12").equals("4");
-	// code("87619 & 18431").equals("17987");
-	// code("87619★ & [18431, ''][0]").equals("17987");
-	// code("var a = 87619 a &= 18431").equals("17987");
+	DISABLED_code("0 & 0").equals("0");
+	DISABLED_code("1 & 0").equals("0");
+	DISABLED_code("1 & 1").equals("1");
+	DISABLED_code("5 & 12").equals("4");
+	DISABLED_code("87619 & 18431").equals("17987");
+	DISABLED_code("87619★ & [18431, ''][0]").equals("17987");
+	DISABLED_code("var a = 87619 a &= 18431").equals("17987");
 	// TODO
-	// code("let a = 87619 a &= 18431").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"&="});
-	// code("var a = 87619 a &= 18431 a").equals("17987");
-	// code("87619★ & 18431").equals("17987");
-	// code("87619★ &= 18431").equals("17987");
-	// code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("let a = 87619 a &= 18431").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"&="});
+	DISABLED_code("var a = 87619 a &= 18431 a").equals("17987");
+	DISABLED_code("87619★ & 18431").equals("17987");
+	DISABLED_code("87619★ &= 18431").equals("17987");
+	DISABLED_code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator |");
 	code("0 | 0").equals("0");
@@ -569,7 +569,7 @@ void Test::test_numbers() {
 	code("Number.cos(π / 2)").almost(0.0);
 	code("π.cos()").equals("-1");
 	// TODO
-	// code("['', π][1].cos()").equals("-1");
+	DISABLED_code("['', π][1].cos()").equals("-1");
 	code("Number.cos(['', π][1])").equals("-1");
 
 	section("Number.acos()");
@@ -617,10 +617,10 @@ void Test::test_numbers() {
 	code("Number.atan2(12.12, 42.42)").almost(0.278299659005111333);
 	code("1.atan2(1)").almost(M_PI / 4);
 	// TODO
-	// code("['', -1][1].atan2(1)").almost(-M_PI / 4);
+	DISABLED_code("['', -1][1].atan2(1)").almost(-M_PI / 4);
 	code("1.atan2(['', -1][1])").almost(3 * M_PI / 4);
 	// TODO
-	// code("['', -1][1].atan2(['', -1][1])").almost(-3 * M_PI / 4);
+	DISABLED_code("['', -1][1].atan2(['', -1][1])").almost(-3 * M_PI / 4);
 	code("Number.atan2(1, 1)").almost(M_PI / 4);
 	code("Number.atan2(['', -1][1], 1)").almost(-M_PI / 4);
 	code("Number.atan2(1, ['', -1][1])").almost(3 * M_PI / 4);
@@ -631,7 +631,7 @@ void Test::test_numbers() {
 	code("1728.cbrt()").almost(12.0, 0.00000000000001);
 	code("Number.cbrt(['', 1728][1])").almost(12.0, 0.00000000000001);
 	// TODO
-	// code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
+	DISABLED_code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
 
 	section("Number.int()");
 	code("Number.int(15.5)").equals("15");

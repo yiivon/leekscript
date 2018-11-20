@@ -22,8 +22,7 @@ void Test::test_booleans() {
 	section("Boolean.operator !");
 	code("!true").equals("false");
 	code("!false").equals("true");
-	// TODO
-	// code("!!!!!false").equals("true");
+	DISABLED_code("!!!!!false").equals("true");
 	code("var a = [true, ''] var b = a[0]; !b").equals("false");
 	code("var a = true ['', !a]").equals("['', false]");
 

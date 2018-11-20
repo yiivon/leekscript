@@ -43,7 +43,7 @@ void Test::test_general() {
 	code("	").equals("(void)"); // tab
 	code("null").equals("null");
 	// TODO syntaxical error
-	//code("()").syntaxical_error();
+	// DISABLED_code("()").syntaxic_error();
 	code("12").equals("12");
 	code("1212m").equals("1212");
 	code("true").equals("true");
@@ -189,7 +189,7 @@ void Test::test_general() {
 	code("2.copy()").equals("2");
 	code("2.5.copy()").equals("2.5");
 	// TODO method not found
-	// code("12l.copy()").equals("12");
+	DISABLED_code("12l.copy()").equals("12");
 	code("100m").equals("100");
 	code("'abc'.copy()").equals("'abc'");
 	code("[].copy()").equals("[]");

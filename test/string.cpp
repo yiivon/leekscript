@@ -275,9 +275,9 @@ void Test::test_strings() {
 	code("let a = '97615432304655212' a.sort()").equals("'01122233445556679'");
 
 	section("v1 string charAt");
-	//code_v1("charAt('hello', 3)").equals("'l'");
+	DISABLED_code_v1("charAt('hello', 3)").equals("'l'");
 
 	section("v1 string replace()");
-	//code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
-	//code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
+	DISABLED_code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
+	DISABLED_code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
 }
