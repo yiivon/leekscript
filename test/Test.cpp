@@ -327,6 +327,7 @@ void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::vec
 }
 
 void Test::Input::syntaxic_error(ls::SyntaxicalError::Type expected_type, std::vector<std::string> parameters) {
+	if (disabled) return disable();
 
 	auto result = run(false);
 
@@ -345,6 +346,7 @@ void Test::Input::syntaxic_error(ls::SyntaxicalError::Type expected_type, std::v
 }
 
 void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
+	if (disabled) return disable();
 
 	auto result = run(false);
 
@@ -363,9 +365,8 @@ void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
 }
 
 void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exception_frame> frames) {
-	if (disabled) {
-		return disable();
-	}
+	if (disabled) return disable();
+	
 	auto result = run(false);
 
 	auto actual_type = result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.type : ls::vm::Exception::NO_EXCEPTION;
@@ -386,7 +387,8 @@ void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exce
 }
 
 void Test::Input::operations(int expected) {
-
+	if (disabled) return disable();
+	
 	auto result = run();
 
 	if (result.operations != expected) {
