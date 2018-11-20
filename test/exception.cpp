@@ -3,13 +3,13 @@
 void Test::test_exceptions() {
 
 	header("Exceptions");
-	code("throw 2").ops_limit(1000).exception(ls::vm::Exception::OPERATION_LIMIT_EXCEEDED);
+	DISABLED_code("throw 2").ops_limit(1000).exception(ls::vm::Exception::OPERATION_LIMIT_EXCEEDED);
 
-	code("throw").exception(ls::vm::Exception::EXCEPTION);
+	DISABLED_code("throw").exception(ls::vm::Exception::EXCEPTION);
 	code("12").exception(ls::vm::Exception::NO_EXCEPTION);
 
-	code("var a = 12m; throw").exception(ls::vm::Exception::EXCEPTION);
-	code("var a = 12m + 5m; throw").exception(ls::vm::Exception::EXCEPTION);
+	DISABLED_code("var a = 12m; throw").exception(ls::vm::Exception::EXCEPTION);
+	DISABLED_code("var a = 12m + 5m; throw").exception(ls::vm::Exception::EXCEPTION);
 
 	section("Exceptions - Avoid leaks");
 	DISABLED_code("var x = 'hello' [][0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
