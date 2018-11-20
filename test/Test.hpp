@@ -12,6 +12,7 @@ private:
 	ls::VM vmv1;
 	int total;
 	int success_count;
+	int disabled;
 	double exeTime;
 	int obj_created;
 	int obj_deleted;
@@ -33,7 +34,9 @@ public:
 	Input code(const std::string& _code);
 	Input DISABLED_code(const std::string& _code);
 	Input code_v1(const std::string& _code);
+	Input DISABLED_code_v1(const std::string& _code);
 	Input file(const std::string& file_name);
+	Input DISABLED_file(const std::string& _code);
 	Input file_v1(const std::string& file_name);
 
 	void test_general();

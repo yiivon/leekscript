@@ -40,14 +40,14 @@ void Test::test_operators() {
 	 * Swap
 	 */
 	header("Swap");
-	code("let a = 2 let b = 5 a <=> b [a, b]").equals("[5, 2]");
-	code("let a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
-	code("let a = 12 let b = 5 let s = a <=> b s").equals("5");
-	code("let a = [12] let b = [5] a[0] <=> b[0] [a, b]").equals("[[5], [12]]");
-	code("let a = ['a'] let b = ['b'] a[0] <=> b[0] [a, b]").equals("[['b'], ['a']]");
-	code("let a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
-	code("let a = ['a', 'b', 'c', 'd'] a[0] <=> a[3] a").equals("['d', 'b', 'c', 'a']");
-	code("let a = 2 let b = 5 ['', a <=> b]").equals("['', 5]");
+	DISABLED_code("let a = 2 let b = 5 a <=> b [a, b]").equals("[5, 2]");
+	DISABLED_code("let a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
+	DISABLED_code("let a = 12 let b = 5 let s = a <=> b s").equals("5");
+	DISABLED_code("let a = [12] let b = [5] a[0] <=> b[0] [a, b]").equals("[[5], [12]]");
+	DISABLED_code("let a = ['a'] let b = ['b'] a[0] <=> b[0] [a, b]").equals("[['b'], ['a']]");
+	DISABLED_code("let a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
+	DISABLED_code("let a = ['a', 'b', 'c', 'd'] a[0] <=> a[3] a").equals("['d', 'b', 'c', 'a']");
+	DISABLED_code("let a = 2 let b = 5 ['', a <=> b]").equals("['', 5]");
 
 	header("Invalid operators");
 	code("'hello' ** 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);

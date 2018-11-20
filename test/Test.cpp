@@ -10,6 +10,7 @@ Test::Test() : vmv1(true) {
 	total = 0;
 	success_count = 0;
 	exeTime = 0;
+	disabled = 0;
 	obj_deleted = 0;
 	obj_created = 0;
 	mpz_obj_deleted = 0;
@@ -56,15 +57,15 @@ int Test::all() {
 	test_utils();
 
 	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
-	int errors = (total - success_count);
+	int errors = (total - success_count - disabled);
 	int leaks = (obj_created - obj_deleted);
 	int mpz_leaks = (mpz_obj_created - mpz_obj_deleted);
 
 	std::ostringstream line1, line2, line3, line4;
-	line1 << "Total : " << total << ", success : " << success_count << ", errors : " << errors;
-	line2 << "Total time : " << elapsed_secs * 1000 << " ms";
-	line3 << "Objects destroyed : " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
-	line4 << "MPZ objects destroyed : " << mpz_obj_deleted << " / " << mpz_obj_created << " (" << mpz_leaks << " leaked)";
+	line1 << "Total: " << total << ", success: " << success_count << ", errors: " << errors << ", disabled: " << disabled;
+	line2 << "Total time: " << elapsed_secs * 1000 << " ms";
+	line3 << "Objects destroyed: " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
+	line4 << "MPZ objects destroyed: " << mpz_obj_deleted << " / " << mpz_obj_created << " (" << mpz_leaks << " leaked)";
 	unsigned w = std::max(line1.str().size(), std::max(line2.str().size(), std::max(line3.str().size(), line4.str().size())));
 
 	auto pad = [](std::string s, int l) {
@@ -109,16 +110,23 @@ Test::Input Test::code(const std::string& code) {
 Test::Input Test::DISABLED_code(const std::string& code) {
 	return Test::Input(this, code, code, false, false, true);
 }
-
 Test::Input Test::code_v1(const std::string& code) {
 	return Test::Input(this, code, code, false, true);
 }
-
+Test::Input Test::DISABLED_code_v1(const std::string& code) {
+	return Test::Input(this, code, code, false, true, true);
+}
 Test::Input Test::file(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
 	return Test::Input(this, file_name, code, true);
+}
+Test::Input Test::DISABLED_file(const std::string& file_name) {
+	std::ifstream ifs(file_name);
+	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+	ifs.close();
+	return Test::Input(this, file_name, code, true, false, true);
 }
 
 Test::Input Test::file_v1(const std::string& file_name) {
@@ -193,7 +201,9 @@ void Test::Input::fail(std::string expected, std::string actual) {
 }
 
 void Test::Input::disable() {
-	std::cout << C_PURPLE << "DISA" << END_COLOR << " : " << code << std::endl;
+	test->total++;
+	test->disabled++;
+	std::cout << C_PURPLE << "DISA" << END_COLOR << " : " << name << std::endl;
 }
 
 void Test::Input::works() {
