@@ -485,7 +485,7 @@ LLVMCompiler::value LLVMCompiler::insn_min(LLVMCompiler::value x, LLVMCompiler::
 			return std::min(x, y);
 		});
 	}
-	return insn_call(Type::REAL, {x, y}, +[](double x, double y) {
+	return insn_call(Type::REAL, {to_real(x), to_real(y)}, +[](double x, double y) {
 		return std::min(x, y);
 	});
 }
@@ -496,7 +496,7 @@ LLVMCompiler::value LLVMCompiler::insn_max(LLVMCompiler::value x, LLVMCompiler::
 			return std::max(x, y);
 		});
 	}
-	return insn_call(Type::REAL, {x, y}, +[](double x, double y) {
+	return insn_call(Type::REAL, {to_real(x), to_real(y)}, +[](double x, double y) {
 		return std::max(x, y);
 	});
 }
@@ -518,7 +518,7 @@ LLVMCompiler::value LLVMCompiler::insn_atan2(LLVMCompiler::value x, LLVMCompiler
 			return std::atan2(x, y);
 		});
 	}
-	return insn_call(Type::REAL, {x, y}, +[](double x, double y) {
+	return insn_call(Type::REAL, {to_real(x), to_real(y)}, +[](double x, double y) {
 		return std::atan2(x, y);
 	});
 }
