@@ -237,8 +237,8 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 	auto a = c.insn_to_bool(args[0]);
 	auto b = c.insn_to_bool(args[1]);
 	auto r = c.insn_or(
-		c.insn_and(a, c.insn_not(b)),
-		c.insn_and(b, c.insn_not(a))
+		c.insn_and(a, c.insn_not_bool(b)),
+		c.insn_and(b, c.insn_not_bool(a))
 	);
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);

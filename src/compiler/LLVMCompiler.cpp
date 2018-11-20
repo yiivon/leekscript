@@ -231,7 +231,7 @@ LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) co
 
 // Operators wrapping
 LLVMCompiler::value LLVMCompiler::insn_not(LLVMCompiler::value v) const {
-	return {Builder.CreateNot(v.v), v.t};
+	return {Builder.CreateNot(to_int(v).v), v.t};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_not_bool(LLVMCompiler::value v) const {
