@@ -392,18 +392,17 @@ void Test::test_numbers() {
 	code("var a = 12 ['', a \\= 5]").equals("['', 2]");
 
 	section("Number.operator &");
-	DISABLED_code("0 & 0").equals("0");
-	DISABLED_code("1 & 0").equals("0");
-	DISABLED_code("1 & 1").equals("1");
-	DISABLED_code("5 & 12").equals("4");
-	DISABLED_code("87619 & 18431").equals("17987");
-	DISABLED_code("87619★ & [18431, ''][0]").equals("17987");
-	DISABLED_code("var a = 87619 a &= 18431").equals("17987");
-	// TODO
+	code("0 & 0").equals("0");
+	code("1 & 0").equals("0");
+	code("1 & 1").equals("1");
+	code("5 & 12").equals("4");
+	code("87619 & 18431").equals("17987");
+	code("87619★ & [18431, ''][0]").equals("17987");
+	code("var a = 87619 a &= 18431").equals("17987");
 	DISABLED_code("let a = 87619 a &= 18431").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"&="});
-	DISABLED_code("var a = 87619 a &= 18431 a").equals("17987");
+	code("var a = 87619 a &= 18431 a").equals("17987");
 	DISABLED_code("87619★ & 18431").equals("17987");
-	DISABLED_code("87619★ &= 18431").equals("17987");
+	code("87619★ &= 18431").equals("17987");
 	DISABLED_code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator |");
@@ -413,23 +412,23 @@ void Test::test_numbers() {
 	code("5 | 12").equals("13");
 	code("[5, ''][0] | [12, ''][0]").equals("13");
 	code("87619 | 18431").equals("88063");
-	DISABLED_code("var a = 87619 a |= 18431").equals("88063");
-	DISABLED_code("var a = 87619 a |= 18431 a").equals("88063");
+	code("var a = 87619 a |= 18431").equals("88063");
+	code("var a = 87619 a |= 18431 a").equals("88063");
 	DISABLED_code("[87619, ''][0] | 18431").equals("88063");
-	DISABLED_code("[87619, ''][0] |= 18431").equals("88063");
+	code("[87619, ''][0] |= 18431").equals("88063");
 	DISABLED_code("[12, 'hello'][1] | 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator ^");
-	DISABLED_code("0 ^ 0").equals("0");
-	DISABLED_code("1 ^ 0").equals("1");
-	DISABLED_code("1 ^ 1").equals("0");
-	DISABLED_code("5 ^ 12").equals("9");
-	DISABLED_code("87619 ^ 18431").equals("70076");
-	DISABLED_code("[87619, ''][0] ^ [18431, ''][0]").equals("70076");
-	DISABLED_code("var a = 87619 a ^= 18431").equals("70076");
-	DISABLED_code("var a = 87619 a ^= 18431 a").equals("70076");
+	code("0 ^ 0").equals("0");
+	code("1 ^ 0").equals("1");
+	code("1 ^ 1").equals("0");
+	code("5 ^ 12").equals("9");
+	code("87619 ^ 18431").equals("70076");
+	code("[87619, ''][0] ^ [18431, ''][0]").equals("70076");
+	code("var a = 87619 a ^= 18431").equals("70076");
+	code("var a = 87619 a ^= 18431 a").equals("70076");
 	DISABLED_code("[87619, ''][0] ^ 18431").equals("70076");
-	DISABLED_code("[87619, ''][0] ^= 18431").equals("70076");
+	code("[87619, ''][0] ^= 18431").equals("70076");
 	DISABLED_code("[12, 'hello'][1] ^ 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator <<");

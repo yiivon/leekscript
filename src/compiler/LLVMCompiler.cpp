@@ -331,13 +331,17 @@ LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value a, LLVMCompil
 	return {Builder.CreateSDiv(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateAnd(a.v, b.v), Type::INTEGER};
+}
 
 LLVMCompiler::value LLVMCompiler::insn_bit_or(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	return {Builder.CreateOr(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_bit_xor(LLVMCompiler::value, LLVMCompiler::value) const { assert(false); }
+LLVMCompiler::value LLVMCompiler::insn_bit_xor(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateXor(a.v, b.v), Type::INTEGER};
+}
 
 LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	return {Builder.CreateSRem(a.v, b.v), Type::INTEGER};

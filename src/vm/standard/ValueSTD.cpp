@@ -25,16 +25,16 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("=", {
  		{Type::BOOLEAN, Type::BOOLEAN, Type::BOOLEAN, (void*) &ValueSTD::op_store},
 		//{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::NUMBER_VALUE, (void*) &ValueSTD::op_store}
- 	});
+	});
 	operator_("is", {
 		{Type::CONST_UNKNOWN, Type::CONST_CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
 	});
 	operator_("==", {
 		{Type::CONST_VALUE, Type::CONST_VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_equals}
- 	});
+	});
 	operator_("!=", {
 		{Type::CONST_VALUE, Type::CONST_VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_not_equals}
- 	});
+	});
 	operator_("<", {
 		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::BOOLEAN, (void*) &ValueSTD::op_lt}
 	});
@@ -246,8 +246,7 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 }
 
 Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])},
-	+[](LSValue* x, LSValue* y) {
+	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])}, +[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
 		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
 			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
@@ -263,8 +262,7 @@ Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> a
 }
 
 Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])},
-	+[](LSValue* x, LSValue* y) {
+	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])}, +[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
 		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
 			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {

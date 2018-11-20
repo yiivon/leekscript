@@ -150,19 +150,19 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and}
 	});
 	operator_("&=", {
-		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and_eq}
+		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and_eq, {}, false, true}
 	});
 	operator_("|", {
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or}
 	});
 	operator_("|=", {
-		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or_eq}
+		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_or_eq, {}, false, true}
 	});
 	operator_("^", {
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor}
 	});
 	operator_("^=", {
-		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor_eq}
+		{Type::INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_xor_eq, {}, false, true}
 	});
 
 	/*
@@ -735,7 +735,7 @@ Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value NumberSTD::bit_and_eq(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_bit_and(args[0], args[1]);
+	auto res = c.insn_bit_and(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
@@ -745,7 +745,7 @@ Compiler::value NumberSTD::bit_or(Compiler& c, std::vector<Compiler::value> args
 }
 
 Compiler::value NumberSTD::bit_or_eq(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_bit_or(args[0], args[1]);
+	auto res = c.insn_bit_or(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
@@ -755,7 +755,7 @@ Compiler::value NumberSTD::bit_xor(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_bit_xor(args[0], args[1]);
+	auto res = c.insn_bit_xor(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
