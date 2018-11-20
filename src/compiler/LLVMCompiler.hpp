@@ -207,6 +207,9 @@ public:
 	value insn_bit_and(value, value) const;
 	value insn_bit_or(value, value) const;
 	value insn_bit_xor(value, value) const;
+	value insn_shl(value, value) const;
+	value insn_lshr(value, value) const;
+	value insn_ashr(value, value) const;
 	value insn_mod(value, value) const;
 	value insn_cmpl(value, value) const;
 

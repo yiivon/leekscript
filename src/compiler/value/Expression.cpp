@@ -530,11 +530,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return res;
 	}
 
-	// jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
 	void* ls_func;
-	// bool use_jit_func = v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE;
 	vector<Compiler::value> args;
-	// Type jit_returned_type = Type::UNKNOWN;
 	Type ls_returned_type = type;
 
 	switch (op->type) {
@@ -895,66 +892,96 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_LEFT : {
-			// jit_func = &jit_insn_shl;
-			ls_func = (void*) &jit_bit_shl;
-			break;
-		}
-		case TokenType::BIT_SHIFT_LEFT_EQUALS : {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				// Compiler::value a = {jit_insn_shl(c.F, x.v, y.v), Type::INTEGER};
-				// c.insn_store(x, a);
-				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				// 	return c.insn_to_pointer(a);
-				// }
-				// return a;
+				auto r = c.insn_shl(x, y);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(r);
+				}
+				return r;
+			}
+			ls_func = (void*) &jit_bit_shl;
+			break;
+		}
+		case TokenType::BIT_SHIFT_LEFT_EQUALS : {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
+				auto a = c.insn_shl(c.insn_load(x_addr), y);
+				c.insn_store(x_addr, a);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(a);
+				}
+				return a;
 			} else {
 				ls_func = (void*) &jit_bit_shl_equal;
 			}
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT : {
-			// jit_func = &jit_insn_shr;
-			ls_func = (void*) &jit_bit_shr;
-			break;
-		}
-		case TokenType::BIT_SHIFT_RIGHT_EQUALS : {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				// Compiler::value a = {jit_insn_shr(c.F, x.v, y.v), Type::INTEGER};
-				// c.insn_store(x, a);
-				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				// 	return c.insn_to_pointer(a);
-				// }
-				// return a;
+				auto r = c.insn_ashr(x, y);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(r);
+				}
+				return r;
+			}
+			ls_func = (void*) &jit_bit_shr;
+			break;
+		}
+		case TokenType::BIT_SHIFT_RIGHT_EQUALS : {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
+				auto a = c.insn_lshr(c.insn_load(x_addr), y);
+				c.insn_store(x_addr, a);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(a);
+				}
+				return a;
 			} else {
 				ls_func = (void*) &jit_bit_shr_equal;
 			}
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED : {
-			// jit_func = &jit_insn_ushr;
-			ls_func = (void*) &jit_bit_shr_unsigned;
-			break;
-		}
-		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS : {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				// Compiler::value a = {jit_insn_ushr(c.F, x.v, y.v), Type::INTEGER};
-				// c.insn_store(x, a);
-				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				// 	return c.insn_to_pointer(a);
-				// }
-				// return a;
+				auto r = c.insn_lshr(x, y);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(r);
+				}
+				return r;
+			}
+			ls_func = (void*) &jit_bit_shr_unsigned;
+			break;
+		}
+		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS : {
+			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				v1->compile_end(c);
+				v2->compile_end(c);
+				auto a = c.insn_lshr(c.insn_load(x_addr), y);
+				c.insn_store(x_addr, a);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(a);
+				}
+				return a;
 			} else {
 				ls_func = (void*) &jit_bit_shr_unsigned_equal;
 			}
@@ -1066,23 +1093,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 	}
 
-	// if (use_jit_func) {
-
-		// c.mark_offset(location().start.line);
-        //
-		// auto x = v1->compile(c);
-		// auto y = v2->compile(c);
-		// v1->compile_end(c);
-		// v2->compile_end(c);
-		// auto r = jit_func(c.F, x.v, y.v);
-        //
-		// if (type.nature == Nature::POINTER) {
-		// 	return c.insn_to_pointer({r, jit_returned_type});
-		// }
-		// return {r, type};
-
-	// } else {
-
 	if (args.size() == 0) {
 		args.push_back(v1->compile(c));
 		args.push_back(v2->compile(c));
@@ -1094,12 +1104,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 	if (store_result_in_v1) {
 		c.insn_store(args[0], v);
 	}
-
 	if (type.nature == Nature::POINTER && ls_returned_type.nature != Nature::POINTER) {
 		return c.insn_to_pointer(v);
 	}
 	return v;
-	// }
 }
 
 Value* Expression::clone() const {

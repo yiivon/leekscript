@@ -343,6 +343,18 @@ LLVMCompiler::value LLVMCompiler::insn_bit_xor(LLVMCompiler::value a, LLVMCompil
 	return {Builder.CreateXor(a.v, b.v), Type::INTEGER};
 }
 
+LLVMCompiler::value LLVMCompiler::insn_shl(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateShl(a.v, b.v), Type::INTEGER};
+}
+
+LLVMCompiler::value LLVMCompiler::insn_ashr(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateAShr(a.v, b.v), Type::INTEGER};
+}
+
+LLVMCompiler::value LLVMCompiler::insn_lshr(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	return {Builder.CreateLShr(a.v, b.v), Type::INTEGER};
+}
+
 LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	return {Builder.CreateSRem(a.v, b.v), Type::INTEGER};
 }
