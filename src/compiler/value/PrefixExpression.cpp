@@ -56,7 +56,9 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 		if (type == Type::MPZ and operatorr->type == TokenType::MINUS) {
 			type = Type::MPZ_TMP;
 		}
-
+		if (operatorr->type == TokenType::MINUS && req_type == Type::REAL) {
+			type = Type::REAL;
+		}
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
 				analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
@@ -193,6 +195,8 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto r = c.insn_neg(x);
 				if (type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(r);
+				} else if (type == Type::REAL && expression->type == Type::INTEGER) {
+					return c.to_real(r);
 				}
 				return r;
 			} else {
