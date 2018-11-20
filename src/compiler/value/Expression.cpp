@@ -1044,11 +1044,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				auto x = c.insn_load(x_addr, 0, v1->type);
 				auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
-				// jit_insn_store_relative(c.F, x_addr.v, 0, r.v);
-				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				// 	return c.insn_to_pointer(r);
-				// }
-				// return r;
+				c.insn_store(x_addr, r);
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(r);
+				}
+				return r;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);

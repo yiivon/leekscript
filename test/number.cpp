@@ -322,13 +322,13 @@ void Test::test_numbers() {
 	code("(-721★) %% 57★").equals("20");
 
 	section("Number.operator %%=");
-	DISABLED_code("var a = 0 a %%= 1").equals("0");
-	DISABLED_code("var a = 2 a %%= 5").equals("2");
-	DISABLED_code("var a = -2 a %%= 5").equals("3");
-	DISABLED_code("var a = -12 a %%= 5").equals("3");
-	DISABLED_code("var a = 721 a %%= 57").equals("37");
-	DISABLED_code("var a = -721 a %%= 57").equals("20");
-	DISABLED_code("var a = -721★ a %%= 57★").equals("20");
+	code("var a = 0 a %%= 1").equals("0");
+	code("var a = 2 a %%= 5").equals("2");
+	code("var a = -2 a %%= 5").equals("3");
+	code("var a = -12 a %%= 5").equals("3");
+	code("var a = 721 a %%= 57").equals("37");
+	code("var a = -721 a %%= 57").equals("20");
+	code("var a = -721★ a %%= 57★").equals("20");
 
 	section("Number.operator /");
 	code("12★ / false").equals("nan");
