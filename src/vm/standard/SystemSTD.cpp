@@ -95,8 +95,8 @@ void System_print_mpz_tmp(__mpz_struct v) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &v);
 	*VM::current()->output << buff << std::endl;
-	mpz_clear(&v);
-	VM::current()->mpz_deleted++;
+	// mpz_clear(&v);
+	// VM::current()->mpz_deleted++;
 }
 
 void System_print_long(long v) {
