@@ -65,8 +65,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	} else if (container->type.raw_type == RawType::ARRAY or container->type.raw_type == RawType::INTERVAL or container->type.raw_type == RawType::SET) {
 		key_type = Type::INTEGER;
 		value_type = container->type.getElementType();
-	} else if (container->type.raw_type == RawType::INTEGER ||
-			   container->type.raw_type == RawType::LONG) {
+	} else if (container->type.raw_type == RawType::INTEGER || container->type.raw_type == RawType::LONG) {
 		key_type = Type::INTEGER;
 		value_type = Type::INTEGER;
 	} else if (container->type.raw_type == RawType::STRING) {
@@ -102,20 +101,24 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
 		output_v = c.new_array(type.getElementType(), {});
 		c.insn_inc_refs(output_v);
-		c.add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
+		auto output_var = c.insn_create_value(type);
+		c.insn_store(output_var, output_v);
+		c.add_var("{output}", output_var); // Why create variable? in case of `break 2` the output must be deleted
 	}
 
 	auto container_v = container->compile(c);
+	auto container_var = c.insn_create_value(container->type);
+	c.insn_store(container_var, container_v);
 
 	if (container->type.must_manage_memory()) {
 		c.insn_inc_refs(container_v);
 	}
-	c.add_var("{array}", container_v);
+	c.add_var("{array}", container_var);
 
 	// Create variables
-	Compiler::value value_v = c.insn_create_value(value_type);
+	auto value_v = c.insn_create_value(value_type);
 	c.insn_store(value_v, c.new_pointer(LSNull::get()));
-	Compiler::value key_v = key ? c.insn_create_value(key_type) : Compiler::value();
+	auto key_v = key ? c.insn_create_value(key_type) : Compiler::value();
 	if (key) {
 		c.insn_store(key_v, c.new_integer(0));
 	}
@@ -124,56 +127,54 @@ Compiler::value Foreach::compile(Compiler& c) const {
 		c.add_var(key->content, key_v);
 	}
 
-	Compiler::label label_end;
-	Compiler::label label_it;
-	c.enter_loop(&label_end, &label_it);
+	auto it_label = c.insn_init_label("it");
+	auto cond_label = c.insn_init_label("cond");
+	auto end_label = c.insn_init_label("end");
+	auto loop_label = c.insn_init_label("loop");
 
-	Compiler::label label_cond;
+	c.enter_loop(&end_label, &it_label);
 
 	auto it = c.iterator_begin(container_v);
 
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container->type.raw_type == RawType::ARRAY) {
 		auto empty_array = c.insn_eq(c.new_integer(0), it);
-		// c.insn_branch_if(empty_array, &label_end);
+		c.insn_if_new(empty_array, &end_label, &cond_label);
+	} else {
+		c.insn_branch(&cond_label);
 	}
 
 	// cond label:
-	c.insn_label(&label_cond);
-
+	c.insn_label(&cond_label);
 	// Condition to continue
 	auto finished = c.iterator_end(container_v, it);
-	// c.insn_branch_if(finished, &label_end);
+	c.insn_if_new(finished, &end_label, &loop_label);
 
+	// loop label:
+	c.insn_label(&loop_label);
 	// Get Value
-	c.insn_store(value_v, c.iterator_get(it, value_v));
-
+	c.insn_store(value_v, c.iterator_get(container->type, it, value_v));
 	// Get Key
 	if (key != nullptr) {
 		c.insn_store(key_v, c.iterator_key(container_v, it, key_v));
 	}
 	// Body
 	auto body_v = body->compile(c);
-	/*
-	for (int i = 0; i < 15; ++i) {
-		body->compile(c);
-	}
-	*/
-
 	if (output_v.v && body_v.v) {
 		c.insn_push_array(output_v, body_v);
 	}
-	// it++
-	c.insn_label(&label_it);
-	c.iterator_increment(it);
+	c.insn_branch(&it_label);
 
+	// it++
+	c.insn_label(&it_label);
+	c.iterator_increment(container->type, it);
 	// jump to cond
-	c.insn_branch(&label_cond);
+	c.insn_branch(&cond_label);
 
 	c.leave_loop();
 
 	// end label:
-	c.insn_label(&label_end);
+	c.insn_label(&end_label);
 
 	auto return_v = c.clone(output_v); // otherwise it is delete by the c.leave_block
 	c.leave_block(); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block

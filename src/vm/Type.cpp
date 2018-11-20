@@ -58,6 +58,8 @@ llvm::StructType* Type::LLVM_VECTOR_TYPE;
 llvm::Type* Type::LLVM_VECTOR_TYPE_PTR;
 llvm::StructType* Type::LLVM_VECTOR_INT_TYPE;
 llvm::Type* Type::LLVM_VECTOR_INT_TYPE_PTR;
+llvm::StructType* Type::LLVM_VECTOR_REAL_TYPE;
+llvm::Type* Type::LLVM_VECTOR_REAL_TYPE_PTR;
 llvm::StructType* Type::LLVM_FUNCTION_TYPE;
 llvm::Type* Type::LLVM_FUNCTION_TYPE_PTR;
 llvm::StructType* Type::LLVM_INTEGER_ITERATOR_TYPE;
@@ -461,6 +463,8 @@ llvm::Type* Type::llvm_type() const {
 	if (raw_type == RawType::ARRAY) {
 		if (getElementType() == Type::INTEGER) {
 			return LLVM_VECTOR_INT_TYPE_PTR;
+		} else if (getElementType() == Type::REAL) {
+			return LLVM_VECTOR_REAL_TYPE_PTR;
 		} else {
 			return LLVM_VECTOR_TYPE_PTR;
 		}

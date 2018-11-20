@@ -247,7 +247,8 @@ template void Test::Input::almost(double expected, double delta);
 
 template <typename T>
 void Test::Input::almost(T expected, T delta) {
-
+	if (disabled) return disable();
+	
 	auto result = run();
 
 	T res_num;

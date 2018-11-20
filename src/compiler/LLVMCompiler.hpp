@@ -257,13 +257,14 @@ public:
 	value insn_array_size(value v) const;
 	void  insn_push_array(value array, value element) const;
 	value insn_array_at(value array, value index) const;
+	value insn_array_end(value array) const;
 
 	// Iterators
 	value iterator_begin(value v) const;
 	value iterator_end(value v, value it) const;
-	value iterator_get(value it, value previous) const;
+	value iterator_get(Type collectionType, value it, value previous) const;
 	value iterator_key(value v, value it, value previous) const;
-	void iterator_increment(value it) const;
+	void iterator_increment(Type collectionType, value it) const;
 
 	// Controls
 	label insn_init_label(std::string name, llvm::Function* fun = nullptr) const;

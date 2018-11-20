@@ -99,7 +99,9 @@ Compiler::value For::compile(Compiler& c) const {
 	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
 		output_v = c.new_array(type.getElementType(), {});
 		c.insn_inc_refs(output_v);
-		c.add_var("{output}", output_v); // Why create variable ? in case of `break 2` the output must be deleted
+		auto output_var = c.insn_create_value(type);
+		c.insn_store(output_var, output_v);
+		c.add_var("{output}", output_var); // Why create variable ? in case of `break 2` the output must be deleted
 	}
 
 	auto cond_label = c.insn_init_label("cond");

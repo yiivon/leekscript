@@ -350,7 +350,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 				c.insn_delete_temporary(compiled_array);
 				c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 			});
-		 	return c.insn_array_at(compiled_array, k);
+			return c.insn_array_at(compiled_array, k);
 
 		} else if (array->type.raw_type == RawType::MAP) {
 
