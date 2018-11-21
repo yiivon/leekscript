@@ -106,9 +106,6 @@ void Program::analyse(SemanticAnalyser* analyser) {
 
 std::string Program::execute(VM& vm) {
 
-	// auto handler = &VM::get_exception_object<1>;
-	// jit_exception_set_handler(handler);
-
 	Type output_type = main->type.getReturnType();
 
 	assert(!output_type.reference && "Program return type shouldn't be a reference!");
