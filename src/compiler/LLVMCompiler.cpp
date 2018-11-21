@@ -1210,18 +1210,16 @@ void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void
 	insn_label(&label_end);
 }
 
-void fake_ex_destru(void*) {}
 void LLVMCompiler::insn_throw(LLVMCompiler::value v) const {
 	insn_call(Type::VOID, {v}, +[](int type) {
-		auto ex = (vm::ExceptionObj*) __cxa_allocate_exception(sizeof(vm::ExceptionObj));
-		new (ex) vm::ExceptionObj((vm::Exception) type);
-		// std::cout << "insn_throw " << type << " " << (void*) ex << std::endl;
-		__cxa_throw(ex, (void*) &typeid(vm::ExceptionObj), &fake_ex_destru);
+		throw vm::ExceptionObj((vm::Exception) type);
 	});
 }
 
 void LLVMCompiler::insn_throw_object(vm::Exception type) const {
-	// std::cout << "TODO exception" << std::endl;
+	insn_call(Type::VOID, {new_integer(type)}, +[](int type) {
+		throw vm::ExceptionObj((vm::Exception) type);
+	});
 }
 
 void LLVMCompiler::insn_label(label* l) const {

@@ -302,11 +302,4 @@ void VM::inc_mpz_counter(jit_function_t F) {
 	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
 
-void fake_destru(void*) {}
-void VM::throw_exception(vm::Exception type) {
-	auto ex = (vm::ExceptionObj*) __cxa_allocate_exception(sizeof(vm::ExceptionObj));
-	new (ex) vm::ExceptionObj(type);
-	__cxa_throw(ex, (void*) &typeid(vm::ExceptionObj), &fake_destru);
-}
-
 }
