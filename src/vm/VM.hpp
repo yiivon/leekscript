@@ -114,8 +114,7 @@ public:
 	void add_constant(std::string name, Type type, LSValue* value);
 
 	/** Value creation **/
-	static jit_value_t create_array(jit_function_t F, const Type& element_type,
-		int cap = 0);
+	static jit_value_t create_array(jit_function_t F, const Type& element_type, int cap = 0);
 
 	/** Conversions **/
 	static jit_value_t value_to_pointer(jit_function_t, jit_value_t, Type);
