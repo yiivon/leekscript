@@ -101,30 +101,23 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
 		output_v = c.new_array(type.getElementType(), {});
 		c.insn_inc_refs(output_v);
-		auto output_var = c.insn_create_value(type);
-		c.insn_store(output_var, output_v);
-		c.add_var("{output}", output_var); // Why create variable? in case of `break 2` the output must be deleted
+		c.add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
 	}
 
 	auto container_v = container->compile(c);
-	auto container_var = c.insn_create_value(container->type);
-	c.insn_store(container_var, container_v);
-
 	if (container->type.must_manage_memory()) {
 		c.insn_inc_refs(container_v);
 	}
-	c.add_var("{array}", container_var);
+	c.add_var("{array}", container_v);
 
 	// Create variables
-	auto value_v = c.insn_create_value(value_type);
-	c.insn_store(value_v, c.new_pointer(LSNull::get()));
-	auto key_v = key ? c.insn_create_value(key_type) : Compiler::value();
+	auto value_var = c.create_and_add_var(value->content, container->type.getElementType());
+
+	LLVMCompiler::value key_var;
+	LLVMCompiler::value key_v;
 	if (key) {
-		c.insn_store(key_v, c.new_integer(0));
-	}
-	c.add_var(value->content, value_v);
-	if (key) {
-		c.add_var(key->content, key_v);
+		key_v = c.new_integer(0);
+		key_var = c.add_var(key->content, key_v);
 	}
 
 	auto it_label = c.insn_init_label("it");
@@ -153,10 +146,10 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	// loop label:
 	c.insn_label(&loop_label);
 	// Get Value
-	c.insn_store(value_v, c.iterator_get(container->type, it, value_v));
+	c.insn_store(value_var, c.iterator_get(container->type, it, value_var));
 	// Get Key
 	if (key != nullptr) {
-		c.insn_store(key_v, c.iterator_key(container_v, it, key_v));
+		c.insn_store(key_var, c.iterator_key(container_v, it, key_var));
 	}
 	// Body
 	auto body_v = body->compile(c);

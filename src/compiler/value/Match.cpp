@@ -133,7 +133,7 @@ Compiler::value Match::compile(Compiler& c) const {
 
 	auto v = value->compile(c);
 
-	auto res = c.insn_create_value(type);
+	// auto res = c.insn_create_value(type);
 	Compiler::label label_end;
 
 	for (size_t i = 0; i < pattern_list.size(); ++i) {
@@ -145,10 +145,10 @@ Compiler::value Match::compile(Compiler& c) const {
 
 		if (is_default) {
 			auto ret = returns[i]->compile(c);
-			c.insn_store(res, ret);
+			// c.insn_store(res, ret);
 			c.insn_label(&label_end);
 			c.insn_delete_temporary(v);
-			return res;
+			// return res;
 		}
 
 		Compiler::label label_next;
@@ -168,17 +168,17 @@ Compiler::value Match::compile(Compiler& c) const {
 		}
 
 		auto ret = returns[i]->compile(c);
-		c.insn_store(res, ret);
+		// c.insn_store(res, ret);
 		c.insn_branch(&label_end);
 		c.insn_label(&label_next);
 	}
 	// In the case of no default pattern
 
-	c.insn_store(res, c.new_null());
+	// c.insn_store(res, c.new_null());
 
 	c.insn_label(&label_end);
 	c.insn_delete_temporary(v);
-	return res;
+	// return res;
 }
 
 Match::Pattern::Pattern(Value* value)

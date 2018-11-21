@@ -698,9 +698,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				auto xf = c.insn_create_value(Type::REAL);
-				c.insn_store(xf, x);
-				auto sum = c.insn_div(xf, y);
+				auto sum = c.insn_div(x, y);
 				c.insn_store(x, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(sum);
@@ -1033,10 +1031,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 			Compiler::label no_exception;
 
 			c.insn_label(&try_start);
-			auto r = c.insn_create_value(type);
+			// auto r = c.insn_create_value(type);
 			auto v1_value = v1->compile(c);
 			if (v1_value.v) {
-				c.insn_store(r, v1_value);
+				// c.insn_store(r, v1_value);
 			}
 			v1->compile_end(c);
 			c.insn_label(&try_end);
@@ -1051,9 +1049,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 				y = c.insn_to_pointer(y);
 			}
-			c.insn_store(r, y);
+			// c.insn_store(r, y);
 			c.insn_label(&no_exception);
-			return r;
+			// return r;
 
 			break;
 		}

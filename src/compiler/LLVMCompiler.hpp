@@ -98,7 +98,6 @@ public:
 	bool log_instructions = false;
 	std::ostringstream instructions_debug;
 	std::map<label*, std::string> label_map;
-	std::map<llvm::Value*, std::string> var_map;
 	std::map<void*, std::string> literals;
 	std::map<std::string, function_entry> mappings;
 
@@ -234,7 +233,6 @@ public:
 	value insn_abs(value) const;
 
 	// Value management
-	value insn_create_value(Type t) const;
 	value insn_to_pointer(value v) const;
 	value insn_to_bool(value v) const;
 	value insn_address_of(value v) const;
@@ -302,7 +300,7 @@ public:
 	bool is_current_function_closure() const;
 
 	// Variables
-	void add_var(const std::string& name, value value);
+	value add_var(const std::string& name, value value);
 	value create_and_add_var(const std::string& name, Type type);
 	void add_function_var(value value);
 	value get_var(const std::string& name);

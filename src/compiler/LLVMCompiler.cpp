@@ -571,10 +571,6 @@ LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_create_value(Type t) const {
-	return {CreateEntryBlockAlloca("v", t.llvm_type()), t};
-}
-
 LLVMCompiler::value LLVMCompiler::insn_to_pointer(LLVMCompiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
 		return v; // already a pointer
@@ -1386,18 +1382,18 @@ bool LLVMCompiler::is_current_function_closure() const {
 }
 
 // Variables
-void LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value value) {
+LLVMCompiler::value LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value value) {
 	assert((value.v != nullptr) && "value must not be null");
-	variables.back()[name] = value;
-	var_map.insert({value.v, name});
+	LLVMCompiler::value var = { CreateEntryBlockAlloca(name, value.t.llvm_type()), value.t };
+	insn_store(var, value);
+	variables.back()[name] = var;
+	return var;
 }
 
 LLVMCompiler::value LLVMCompiler::create_and_add_var(const std::string& name, Type type) {
-	auto value = CreateEntryBlockAlloca(name, type.llvm_type());
-	LLVMCompiler::value v { value, type };
-	variables.back()[name] = v;
-	var_map.insert({value, name});
-	return v;
+	LLVMCompiler::value var = { CreateEntryBlockAlloca(name, type.llvm_type()), type };
+	variables.back()[name] = var;
+	return var;
 }
 
 void LLVMCompiler::add_function_var(LLVMCompiler::value value) {
@@ -1433,7 +1429,6 @@ LLVMCompiler::value LLVMCompiler::update_var_create(std::string& name, Type type
 	auto value = CreateEntryBlockAlloca(name, type.llvm_type());
 	LLVMCompiler::value v { value, type };
 	variables.back()[name] = v;
-	var_map.insert({value, name});
 	return v;
 }
 
