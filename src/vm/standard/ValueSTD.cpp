@@ -248,8 +248,7 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])}, +[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
-			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
+		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
 			LSValue::delete_temporary(y);
 			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
