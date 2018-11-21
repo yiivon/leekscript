@@ -51,10 +51,10 @@ void Test::test_strings() {
 
 	section("String.operator x++");
 	code("'hello'++").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
-	DISABLED_code("var a = 'hello' a++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 'hello' a++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator x--");
-	DISABLED_code("var a = 'hello' a--").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 'hello' a--").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator +");
 	code("'salut ' + 'ça va ?'").equals("'salut ça va ?'");
@@ -66,8 +66,8 @@ void Test::test_strings() {
 	section("String.operator *");
 	code("'salut' * 3").equals("'salutsalutsalut'");
 	code("'salut' * (1 + 2)").equals("'salutsalutsalut'");
-	code("('salut' * 1) + 2").equals("'salut2'");
-	DISABLED_code("'hello' * 'abc'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("('salut' * 1) + 2").equals("'salut2'");
+	code("'hello' * 'abc'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator |x|");
 	code("|'salut'|").equals("5");
@@ -80,13 +80,13 @@ void Test::test_strings() {
 	code("'abc.' / '.'").equals("['abc', '']");
 	code("'.aaaaa.bbbb.ccc.dd.e.' / '.'").equals("['', 'aaaaa', 'bbbb', 'ccc', 'dd', 'e', '']");
 	code("('hello.world.how.are.you' / '.').size()").equals("5");
-	DISABLED_code("'hello' / 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("'hello' / 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\");
-	DISABLED_code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\=");
-	DISABLED_code("var a = 'azerty' a \\= ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 'azerty' a \\= ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator~");
 	code("~'bonjour'").equals("'ruojnob'");
