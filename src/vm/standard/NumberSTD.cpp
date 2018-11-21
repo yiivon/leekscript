@@ -61,21 +61,23 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("*", {
-		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
 		{Type::CONST_REAL, Type::CONST_REAL, Type::CONST_REAL, (void*) &NumberSTD::mul_real_real},
+		{Type::CONST_LONG, Type::CONST_LONG, Type::LONG, (void*) &NumberSTD::mul_real_real},
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
 		{Type::INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_mpz_mpz}
 	});
 	operator_("×", {
-		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
 		{Type::CONST_REAL, Type::CONST_REAL, Type::CONST_REAL, (void*) &NumberSTD::mul_real_real},
+		{Type::CONST_LONG, Type::CONST_LONG, Type::LONG, (void*) &NumberSTD::mul_real_real},
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
 		{Type::INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_mpz_mpz}
 	});
 
 	operator_("**", {
-		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::pow_real_real},
 		{Type::CONST_REAL, Type::CONST_REAL, Type::REAL, (void*) &NumberSTD::pow_real_real},
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::pow_real_real},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::pow_mpz_mpz},
 		{Type::MPZ, Type::INTEGER, Type::MPZ_TMP, (void*) &NumberSTD::pow_mpz_int},
 	});
@@ -121,6 +123,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("%", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_mpz_mpz},
+		{Type::CONST_LONG, Type::CONST_LONG, Type::LONG, (void*) &NumberSTD::mod_real_real},
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mod_real_real},
 	});
 
