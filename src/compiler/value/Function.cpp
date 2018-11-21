@@ -525,20 +525,29 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
 	llvm_function->setPersonalityFn(personality);
 
+	((Function*) this)->block = llvm::BasicBlock::Create(LLVMCompiler::context, "entry_" + name, llvm_function);
+	LLVMCompiler::Builder.SetInsertPoint(block);
+
+	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
+
+	// Create arguments
 	unsigned Idx = 0;
 	int offset = captures.size() ? -1 : 0;
 	for (auto &arg : llvm_function->args()) {
 		if (captures.size() && Idx == 0) {
 			arg.setName("__fun_ptr");
 		} else {
-			arg.setName(arguments.at(offset + Idx)->content);
+			if (offset + Idx < arguments.size()) {
+				const auto name = arguments.at(offset + Idx)->content;
+				const auto type = version->type.getArgumentType(offset + Idx);
+				arg.setName(name);
+				LLVMCompiler::value var = { c.CreateEntryBlockAlloca(name, type.llvm_type()), type };
+				c.insn_store(var, {&arg, type});
+				c.arguments.top()[name] = var;
+			}
 		}
 		Idx++;
 	}
-	((Function*) this)->block = llvm::BasicBlock::Create(LLVMCompiler::context, "entry_" + name, llvm_function);
-	LLVMCompiler::Builder.SetInsertPoint(block);
-
-	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
 
 	// Compile body
 	auto res = version->body->compile(c);

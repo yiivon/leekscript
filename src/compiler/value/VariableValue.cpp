@@ -165,9 +165,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 			v = {LLVMCompiler::Builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v, name.c_str()), v.t};
 		}
 	} else { /* if (scope == VarScope::PARAMETER) */
-		int offset = c.is_current_function_closure() ? 1 : 0;
-		v = {c.F->arg_begin() + offset + var->index, type};
-		// v = {LLVMCompiler::Builder.CreateLoad(v.v, name.c_str()), v.t};
+		v = c.insn_load(c.insn_get_argument(name));
 	}
 
 	if (var->type.nature != Nature::UNKNOWN and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -187,7 +185,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 Compiler::value VariableValue::compile_l(Compiler& c) const {
 
 	if (scope == VarScope::CAPTURE) {
-		return c.insn_address_of(c.insn_get_capture(capture_index, type));
+		return c.insn_get_capture(capture_index, type);
 	}
 	
 	Compiler::value v;
@@ -195,8 +193,7 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	if (scope == VarScope::LOCAL) {
 		v = c.get_var(name);
 	} else { /* if (scope == VarScope::PARAMETER) */
-		int offset = c.is_current_function_closure() ? 1 : 0;
-		v = {c.F->arg_begin() + offset + var->index, type};
+		v = c.insn_get_argument(name);
 	}
 	return v;
 	// if (type.reference) {

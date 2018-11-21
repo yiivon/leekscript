@@ -84,7 +84,7 @@ public:
 	std::stack<Function*> functions2;
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks;
-	std::stack<std::vector<std::string>> arg_names;
+	std::stack<std::map<std::string, value>> arguments;
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<label*> loops_end_labels;
 	std::vector<label*> loops_cond_labels;
@@ -251,6 +251,7 @@ public:
 	value insn_move(value v) const;
 	value insn_refs(value v) const;
 	value insn_native(value v) const;
+	value insn_get_argument(const std::string& name) const;
 
 	// Arrays
 	value new_array(Type element_type, std::vector<value> elements) const;

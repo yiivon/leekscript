@@ -879,6 +879,10 @@ LLVMCompiler::value LLVMCompiler::insn_native(LLVMCompiler::value v) const {
 	return {Builder.CreateLoad(r), Type::BOOLEAN};
 }
 
+LLVMCompiler::value LLVMCompiler::insn_get_argument(const std::string& name) const {
+	return arguments.top().at(name);
+}
+
 // Iterators
 LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	log_insn_code("iterator.begin()");
@@ -1349,7 +1353,7 @@ void LLVMCompiler::enter_function(llvm::Function* F, bool is_closure, Function* 
 		if (i < fun->arguments.size() - 1) log_insn(0) << ", ";
 		args.push_back(fun->arguments.at(i)->content);
 	}
-	arg_names.push(args);
+	arguments.push({});
 	log_insn(0) << ") {" << std::endl;
 }
 
@@ -1361,7 +1365,7 @@ void LLVMCompiler::leave_function() {
 	functions_blocks.pop_back();
 	catchers.pop_back();
 	function_is_closure.pop();
-	arg_names.pop();
+	arguments.pop();
 	this->F = functions.top();
 	this->fun = functions2.top();
 	Builder.SetInsertPoint(this->fun->block);
