@@ -1081,6 +1081,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 	log_insn_code("iterator.key()");
 	if (v.t.raw_type == RawType::ARRAY) {
 		auto array_begin = insn_array_at(v, new_integer(0));
+		// TODO use CreatePtrDiff
 		LLVMCompiler::value distance = {Builder.CreateSub(insn_load(it).v, array_begin.v, "sub"), Type::INTEGER};
 		return insn_int_div(distance, new_integer(v.t.element().size() / 8));
 	}
