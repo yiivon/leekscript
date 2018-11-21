@@ -289,29 +289,45 @@ LLVMCompiler::value LLVMCompiler::insn_ne(LLVMCompiler::value a, LLVMCompiler::v
 }
 
 LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
-		return {Builder.CreateFCmpOLT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	LLVMCompiler::value r;
+	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
+		r = {Builder.CreateICmpSLT(a.v, b.v), Type::BOOLEAN};
 	} else {
-		LLVMCompiler::value r {Builder.CreateICmpSLT(a.v, b.v), Type::BOOLEAN};
-		log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
-		return r;
+		r = {Builder.CreateFCmpOLT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
 	}
+	log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
+	return r;
 }
 
 LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	LLVMCompiler::value r {Builder.CreateICmpSLE(a.v, b.v), Type::BOOLEAN};
+	LLVMCompiler::value r;
+	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
+		r = {Builder.CreateICmpSLE(a.v, b.v), Type::BOOLEAN};
+	} else {
+		r = {Builder.CreateFCmpOLE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	}
 	log_insn(4) << "le " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
 LLVMCompiler::value LLVMCompiler::insn_gt(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	LLVMCompiler::value r {Builder.CreateICmpSGT(a.v, b.v), Type::BOOLEAN};
+	LLVMCompiler::value r;
+	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
+		r = {Builder.CreateICmpSGT(a.v, b.v), Type::BOOLEAN};
+	} else {
+		r = {Builder.CreateFCmpOGT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	}
 	log_insn(4) << "gt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
 LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	LLVMCompiler::value r {Builder.CreateICmpSGE(a.v, b.v), Type::BOOLEAN};
+	LLVMCompiler::value r;
+	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
+		return {Builder.CreateICmpSGE(a.v, b.v), Type::BOOLEAN};
+	} else {
+		return {Builder.CreateFCmpOGE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	}
 	log_insn(4) << "ge " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }

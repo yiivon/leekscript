@@ -347,21 +347,39 @@ void Test::test_numbers() {
 	code("var a = 15; ['', a /= 2]").equals("['', 7.5]");
 
 	section("Number.operator <");
+	code("5 < 2").equals("false");
+	code("2 < 5").equals("true");
+	code("5.1 < 2.1").equals("false");
+	code("2.1 < 5.1").equals("true");
 	DISABLED_code("3m < 4m").equals("true");
 	DISABLED_code("10m < (3m * 4m)").equals("true");
 	DISABLED_code("(5m + 5m) < (3m * 4m)").equals("true");
 	DISABLED_code("(5m + 5m) < 12m").equals("true");
 
 	section("Number.operator <=");
+	code("5 <= 2").equals("false");
+	code("2 <= 5").equals("true");
+	code("5.1 <= 2.1").equals("false");
+	code("2.1 <= 5.1").equals("true");
 	code("3 <= 4").equals("true");
 	code("3 <= []").equals("true");
 	code("3 <= 4★").equals("true");
 
 	section("Number.operator >");
+	code("5 > 2").equals("true");
+	code("2 > 5").equals("false");
+	code("5.1 > 2.1").equals("true");
+	code("2.1 > 5.1").equals("false");
 	DISABLED_code("12 > 5m").equals("true");
 	code("[] > true").equals("true");
 	// TODO
 	DISABLED_code("-100m > 0").equals("false");
+
+	section("Number.operator >=");
+	code("5 >= 2").equals("true");
+	code("2 >= 5").equals("false");
+	code("5.1 >= 2.1").equals("true");
+	code("2.1 >= 5.1").equals("false");
 
 	section("Number.operator \\");
 	code("10 \\ 2").equals("5");
