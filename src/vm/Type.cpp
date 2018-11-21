@@ -357,7 +357,7 @@ std::string Type::to_string() const {
 }
 
 bool Type::isNumber() const {
-	return dynamic_cast<const NumberRawType*>(raw_type) != nullptr;
+	return dynamic_cast<const NumberRawType*>(raw_type) != nullptr || raw_type == RawType::BOOLEAN;
 }
 
 bool Type::iterable() const {
