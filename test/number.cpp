@@ -762,8 +762,8 @@ void Test::test_numbers() {
 	DISABLED_code("1993m.isPrime()").equals("2");
 
 	section("Number.rand()");
-	DISABLED_code("var a = Number.rand() a >= 0 and a <= 1").equals("true");
-	DISABLED_code("var a = Number.rand() a > 1").equals("false");
-	DISABLED_code("var a = Number.randInt(2067, 2070) a >= 2067 and a < 2070").equals("true");
-	DISABLED_code("var a = Number.randFloat(500, 510) a >= 500 and a < 510 and !a.isInteger()").equals("true");
+	code("var a = Number.rand() a >= 0 and a <= 1").equals("true");
+	code("var a = Number.rand() a > 1").equals("false");
+	code("var a = Number.randInt(2067, 2070) a >= 2067 and a < 2070").equals("true");
+	code("var a = Number.randFloat(500, 510) a >= 500 and a < 510 and !a.isInteger()").equals("true");
 }
