@@ -91,7 +91,7 @@ LLVMCompiler::value LLVMCompiler::clone(LLVMCompiler::value v) const {
 		}
 		auto r = insn_call(v.t, {v}, +[](LSValue* value) {
 			return value->clone();
-		}, "clone");
+		});
 		// log_insn(4) << "clone " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
 	}
@@ -126,7 +126,7 @@ LLVMCompiler::value LLVMCompiler::new_object() const {
 		// FIXME coverage doesn't work for the one line version
 		auto o = new LSObject();
 		return o;
-	}, "new_object");
+	});
 }
 
 LLVMCompiler::value LLVMCompiler::new_object_class(LLVMCompiler::value clazz) const {
@@ -166,19 +166,19 @@ LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMC
 			auto array = new LSArray<int>();
 			array->reserve(capacity);
 			return array;
-		}, "new_int_array");
+		});
 	} else if (element_type == Type::REAL) {
 		return insn_call(Type::REAL_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<double>();
 			array->reserve(capacity);
 			return array;
-		}, "new_real_array");
+		});
 	} else {
 		return insn_call(Type::PTR_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<LSValue*>();
 			array->reserve(capacity);
 			return array;
-		}, "new_ptr_array");
+		});
 	}}();
 	for (const auto& element : elements) {
 		insn_push_array(array, element);
@@ -193,8 +193,9 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 		return v;
 	}
 	if (v.t.not_temporary() == Type::MPZ) {
-		auto v_addr = insn_address_of(v);
-		return to_int(insn_call(Type::LONG, {v_addr}, &mpz_get_si, "mpz_get_si"));
+		return to_int(insn_call(Type::LONG, {v}, +[](__mpz_struct a) {
+			return mpz_get_si(&a);
+		}));
 	}
 	if (v.t.not_temporary() == Type::BOOLEAN) {
 		return {Builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), false), Type::INTEGER};
@@ -583,19 +584,19 @@ LLVMCompiler::value LLVMCompiler::insn_to_pointer(LLVMCompiler::value v) const {
 	if (v.t.raw_type == RawType::LONG) {
 		return insn_call(new_type, {v}, +[](long n) {
 			return LSNumber::get(n);
-		}, "new_number");
+		});
 	} else if (v.t.raw_type == RawType::REAL) {
 		return insn_call(new_type, {v}, +[](double n) {
 			return LSNumber::get(n);
-		}, "new_number");
+		});
 	} else if (v.t.raw_type == RawType::BOOLEAN) {
 		return insn_call(new_type, {v}, +[](bool n) {
 			return LSBoolean::get(n);
-		}, "new_bool");
+		});
 	} else {
-		return insn_call(new_type, {v}, +[](int n) {
+		return insn_call(new_type, {v}, (void*)+[](int n) {
 			return LSNumber::get(n);
-		}, "new_number");
+		});
 	}
 }
 
@@ -624,7 +625,7 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 	}
 	return insn_call(Type::BOOLEAN, {v}, +[](LSValue* v) {
 		return v->to_bool();
-	}, "Value::to_bool");
+	});
 }
 
 LLVMCompiler::value LLVMCompiler::insn_address_of(LLVMCompiler::value v) const {
@@ -668,7 +669,7 @@ LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 	if (v.t.raw_type == RawType::CLASS) return new_integer(LSValue::CLASS);
 	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
 		return v->type;
-	}, "typeof");
+	});
 }
 
 LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
@@ -694,7 +695,7 @@ LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
 		return new_pointer(vm->system_vars["Class"]);
 	return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
 		return v->getClass();
-	}, "get_class");
+	});
 }
 
 void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
@@ -705,7 +706,7 @@ void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
 			auto refs = insn_refs(v);
 			insn_if(insn_refs(v), [&]() {
 				insn_if_not(insn_dec_refs(v, refs), [&]() {
-					insn_call(Type::VOID, {v}, (void*) &LSValue::free, "Value::free");
+					insn_call(Type::VOID, {v}, (void*) &LSValue::free);
 				});
 			});
 		});
@@ -718,7 +719,7 @@ void LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
 		insn_if_not(insn_refs(v), [&]() {
-			insn_call(Type::VOID, {v}, (void*) &LSValue::free, "Value::free");
+			insn_call(Type::VOID, {v}, (void*) &LSValue::free);
 		});
 	} else if (v.t == Type::MPZ_TMP) {
 		insn_delete_mpz(v);
@@ -727,13 +728,13 @@ void LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const {
 	if (v.t.raw_type == RawType::STRING) {
-		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size, "string_size");
+		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size);
 	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::INTEGER) {
-		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size, "int_array_size");
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size);
 	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::REAL) {
-		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size, "real_array_size");
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size);
 	} else {
-		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size, "ptr_array_size");
+		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size);
 	}
 	return {};
 }
@@ -763,16 +764,16 @@ void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::valu
 	if (array.t.getElementType() == Type::INTEGER) {
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<int>* array, int value) {
 			array->push_back(value);
-		}, "array_push_int");
+		});
 	} else if (array.t.getElementType() == Type::REAL) {
 		value.t = Type::REAL;
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<double>* array, double value) {
 			array->push_back(value);
-		}, "array_push_real");
+		});
 	} else {
 		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
 			array->push_inc(value);
-		}, "array_push_ptr");
+		});
 	}
 }
 
@@ -799,7 +800,7 @@ LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const
 		} else {
 			return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
 				return v->move_inc();
-			}, "move_inc");
+			});
 		}
 	}
 	if (value.t.temporary) {
@@ -865,7 +866,7 @@ LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value v) const {
 	if (v.t.must_manage_memory() and !v.t.temporary and !v.t.reference) {
 		return insn_call(v.t, {v}, (void*) +[](LSValue* v) {
 			return v->move();
-		}, "move");
+		});
 	}
 	return v;
 }
@@ -1239,14 +1240,14 @@ void LLVMCompiler::insn_return_void() const {
 
 // Call functions
 void fake_ex_destru(void*) {}
-LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCompiler::value> args, void* func, std::string function_name, bool exception) const {
+LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCompiler::value> args, void* func, bool exception) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type());
 	}
-	if (!function_name.size()) function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
+	auto function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
 	auto i = mappings.find(function_name);
 	if (i == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);

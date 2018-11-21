@@ -258,7 +258,7 @@ Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> a
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	}, "bit_and", true);
+	}, true);
 }
 
 Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> args) {
@@ -274,7 +274,7 @@ Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> ar
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	}, "bit_or", true);
+	}, true);
 }
 
 Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> args) {
@@ -291,7 +291,7 @@ Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> a
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	}, "bit_xor", true);
+	}, true);
 }
 
 Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) {

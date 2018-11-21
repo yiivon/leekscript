@@ -544,7 +544,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
-				}, "add_eq_arr", true);
+				}, true);
 			}
 
 			if (equal_previous_type.nature == Nature::POINTER && v2->type.nature == Nature::POINTER) {
@@ -644,7 +644,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
-				}, "add_eq", true);
+				}, true);
 			}
 			break;
 		}
@@ -666,7 +666,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->sub_eq(y);
-				}, "sub_eq", true);
+				}, true);
 			}
 			break;
 		}
@@ -688,7 +688,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->mul_eq(y);
-				}, "mul_eq", true);
+				}, true);
 			}
 			break;
 		}
@@ -712,7 +712,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->div_eq(y);
-				}, "div_eq", true);
+				}, true);
 			}
 			break;
 		}
@@ -734,7 +734,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->mod_eq(y);
-				}, "mod_eq", true);
+				}, true);
 			}
 			break;
 		}
@@ -755,7 +755,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->pow_eq(y);
-				}, "pow_eq", true);
+				}, true);
 			}
 			break;
 		}
@@ -817,7 +817,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 					LSValue* res = (*x)->int_div_eq(y);
 					long v = ((LSNumber*) res)->value;
 					return v;
-				}, "int_div_eq", true);
+				}, true);
 			}
 			break;
 		}
@@ -1092,7 +1092,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue* res = (*x)->double_mod_eq(y);
 					return res;
-				}, "mod_eq", true);
+				}, true);
 			}
 			break;
 		}
@@ -1108,7 +1108,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		v1->compile_end(c);
 		v2->compile_end(c);
 	}
-	auto v = c.insn_call(ls_returned_type, args, ls_func, "ls_func", true);
+	auto v = c.insn_call(ls_returned_type, args, ls_func, true);
 
 	if (store_result_in_v1) {
 		c.insn_store(args[0], v);

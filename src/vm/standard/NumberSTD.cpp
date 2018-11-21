@@ -597,7 +597,7 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	c.inc_ops_jit(r_size);
 
 	// VM::inc_mpz_counter(c.F);
-	return c.insn_call(Type::MPZ_TMP, args, &pow_mpz_int_lambda, "pow_mpz_int");
+	return c.insn_call(Type::MPZ_TMP, args, &pow_mpz_int_lambda);
 }
 
 Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args) {

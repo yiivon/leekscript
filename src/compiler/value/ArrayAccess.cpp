@@ -277,7 +277,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 					int key_int = n->value;
 					LSValue::delete_temporary(key_pointer);
 					return key_int;
-				}, "at", true);
+				}, true);
 			}
 			k = c.to_int(k);
 
@@ -306,7 +306,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			key->compile_end(c);
 			auto e = c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->at(key);
-			}, "at", true);
+			}, true);
 			c.insn_delete_temporary(k);
 			return e;
 		}
