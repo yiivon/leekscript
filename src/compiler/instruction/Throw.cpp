@@ -39,11 +39,9 @@ Compiler::value Throw::compile(Compiler& c) const {
 	if (expression != nullptr) {
 		exception = expression->compile(c);
 	}
-
 	c.mark_offset(token->location.start.line);
 
-	auto ex = c.insn_call(Type::POINTER, {exception}, &VM::get_exception_object<0>);
-	c.insn_throw(ex);
+	c.insn_throw(exception);
 
 	return {nullptr, Type::UNKNOWN};
 }
