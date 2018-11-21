@@ -172,7 +172,7 @@ void Test::test_general() {
 	code("var a = 2 a = 'hello' a").equals("'hello'");
 	code("var a = 2 a = [1, 2] a").equals("[1, 2]");
 	code("var a = 5.5 a = {} a").equals("{}");
-	DISABLED_code("var a = 7 System.print(a) a = <5, 12> System.print(a)").output("7\n<5, 12>\n");
+	code("var a = 7 System.print(a) a = <5, 12> System.print(a)").output("7\n<5, 12>\n");
 	code("var a = 5 a = 200l").equals("200");
 	code("var a = 5 a = 200l a").equals("200");
 	code("var a = 200l a = 5").equals("5");

@@ -6,8 +6,8 @@ void Test::test_files() {
 	header("Files");
 	section("General");
 	file("test/code/primes.leek").ops_limit(2000000000).equals("78498");
-	DISABLED_file("test/code/primes_gmp.leek").equals("9591");
-	DISABLED_file("test/code/gcd.leek").equals("151");
+	file("test/code/primes_gmp.leek").equals("9591");
+	file("test/code/gcd.leek").equals("151");
 	file("test/code/strings.leek").almost(52.0, 8.0);
 	DISABLED_file("test/code/reachable_cells.leek").equals("383");
 	DISABLED_file("test/code/break_and_continue.leek").equals("2504");
@@ -21,17 +21,17 @@ void Test::test_files() {
 	// TODO crashing
 	DISABLED_file("test/code/recursive.leek").equals("");
 	DISABLED_file("test/code/divisors.leek").equals("[1, 3, 9, 13, 17, 39]");
-	DISABLED_file("test/code/two_functions.leek").equals("[{p: 2, v: 5}, [{p: 3, v: 6}]]");
+	file("test/code/two_functions.leek").equals("[{p: 2, v: 5}, [{p: 3, v: 6}]]");
 	DISABLED_file("test/code/product_n.leek").equals("5040");
 	// TODO leaks
 	DISABLED_file("test/code/product_n_return.leek").equals("265252859812191058636308480000000");
-	DISABLED_file("test/code/product_n_arrays.leek").equals("[5040]");
+	file("test/code/product_n_arrays.leek").equals("[5040]");
 	// TODO
 	DISABLED_file("test/code/product_coproduct.leek").equals("171122452428141311372468338881272839092270544893520369393648040923257279754140647424000000000000000");
 	DISABLED_file("test/code/fold_left.leek").equals("[{w: 1}, {w: 3}, {w: 4}, {w: 2}, {w: 7}, {w: 5}, {w: 8}, {w: 9}, {w: 6}]");
-	DISABLED_file("test/code/fold_left_2.leek").equals("{p: 6, v: {p: 9, v: {p: 8, v: {p: 5, v: {p: 7, v: { ... }}}}}}");
+	file("test/code/fold_left_2.leek").equals("{p: 6, v: {p: 9, v: {p: 8, v: {p: 5, v: {p: 7, v: { ... }}}}}}");
 	DISABLED_file("test/code/fold_right.leek").equals("[{w: 6}, {w: 9}, {w: 8}, {w: 5}, {w: 7}, {w: 2}, {w: 4}, {w: 3}, {w: 1}]");
-	DISABLED_file("test/code/fold_right_2.leek").equals("{p: {p: {p: {p: {p: { ... }, v: 7}, v: 2}, v: 4}, v: 3}, v: 1}");
+	file("test/code/fold_right_2.leek").equals("{p: {p: {p: {p: {p: { ... }, v: 7}, v: 2}, v: 4}, v: 3}, v: 1}");
 	file("test/code/assignments.leek").equals("15");
 	file("test/code/recursive_2_vars.leek").equals("1021");
 	file("test/code/global_functions_1.leek").equals("false");
@@ -42,7 +42,7 @@ void Test::test_files() {
 	// TODO : recursive with 2 versions
 	DISABLED_file("test/code/recursive_2_versions.leek").equals("");
 	DISABLED_file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
-	DISABLED_file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
+	file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
 	DISABLED_file("test/code/classes_multiple.leek").equals("[4, 40, 80]");
 
 	section("Issues (fixed)");
@@ -52,7 +52,7 @@ void Test::test_files() {
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
 	file("test/code/euler/pe002.leek").equals("4613732");
-	DISABLED_file("test/code/euler/pe003.leek").equals("6857");
+	file("test/code/euler/pe003.leek").equals("6857");
 	file("test/code/euler/pe004.leek").equals("906609");
 	file("test/code/euler/pe005.leek").equals("232792560");
 	file("test/code/euler/pe006.leek").equals("25164150");
@@ -67,6 +67,6 @@ void Test::test_files() {
 	DISABLED_file("test/code/euler/pe015.leek").equals("137846528820");
 	DISABLED_file("test/code/euler/pe016.leek").equals("1366");
 	DISABLED_file("test/code/euler/pe062.leek").equals("127035954683");
-	DISABLED_file("test/code/euler/pe063.leek").equals("49");
+	file("test/code/euler/pe063.leek").equals("49");
 	DISABLED_file("test/code/euler/pe206.leek").equals("1389019170");
 }

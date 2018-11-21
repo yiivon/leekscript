@@ -351,10 +351,11 @@ void Test::test_numbers() {
 	code("2 < 5").equals("true");
 	code("5.1 < 2.1").equals("false");
 	code("2.1 < 5.1").equals("true");
-	DISABLED_code("3m < 4m").equals("true");
-	DISABLED_code("10m < (3m * 4m)").equals("true");
-	DISABLED_code("(5m + 5m) < (3m * 4m)").equals("true");
-	DISABLED_code("(5m + 5m) < 12m").equals("true");
+	code("3m < 4m").equals("true");
+	code("10m < (3m * 4m)").equals("true");
+	code("(5m + 5m) < (3m * 4m)").equals("true");
+	code("(5m + 5m) < 12m").equals("true");
+	code("3m < 4").equals("true");
 
 	section("Number.operator <=");
 	code("5 <= 2").equals("false");
@@ -370,7 +371,7 @@ void Test::test_numbers() {
 	code("2 > 5").equals("false");
 	code("5.1 > 2.1").equals("true");
 	code("2.1 > 5.1").equals("false");
-	DISABLED_code("12 > 5m").equals("true");
+	code("12 > 5m").equals("true");
 	code("[] > true").equals("true");
 	// TODO
 	DISABLED_code("-100m > 0").equals("false");
@@ -418,7 +419,7 @@ void Test::test_numbers() {
 	code("87619★ & [18431, ''][0]").equals("17987");
 	code("var a = 87619 a &= 18431").equals("17987");
 	code("var a = 87619 a &= 18431 a").equals("17987");
-	DISABLED_code("87619★ & 18431").equals("17987");
+	code("87619★ & 18431").equals("17987");
 	code("87619★ &= 18431").equals("17987");
 	code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
@@ -431,7 +432,7 @@ void Test::test_numbers() {
 	code("87619 | 18431").equals("88063");
 	code("var a = 87619 a |= 18431").equals("88063");
 	code("var a = 87619 a |= 18431 a").equals("88063");
-	DISABLED_code("[87619, ''][0] | 18431").equals("88063");
+	code("[87619, ''][0] | 18431").equals("88063");
 	code("[87619, ''][0] |= 18431").equals("88063");
 	code("[12, 'hello'][1] | 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
@@ -444,7 +445,7 @@ void Test::test_numbers() {
 	code("[87619, ''][0] ^ [18431, ''][0]").equals("70076");
 	code("var a = 87619 a ^= 18431").equals("70076");
 	code("var a = 87619 a ^= 18431 a").equals("70076");
-	DISABLED_code("[87619, ''][0] ^ 18431").equals("70076");
+	code("[87619, ''][0] ^ 18431").equals("70076");
 	code("[87619, ''][0] ^= 18431").equals("70076");
 	code("[12, 'hello'][1] ^ 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
@@ -481,10 +482,10 @@ void Test::test_numbers() {
 	section("Number.operator >>>");
 	code("155 >>> 3").equals("19");
 	code("-155 >>> 3").equals("536870892");
-	DISABLED_code("[-155, ''][0] >>> 3").equals("536870892");
+	code("[-155, ''][0] >>> 3").equals("536870892");
 	code("var a = -155 a >>>= 4").equals("268435446");
 	code("var a = -155 a >>>= 5 a").equals("134217723");
-	DISABLED_code("var a = [-155, ''] a[0] >>>= 5").equals("134217723");
+	code("var a = [-155, ''] a[0] >>>= 5").equals("134217723");
 	code("var a = -155 ['', a >>>= 5]").equals("['', 134217723]");
 
 	section("Number.operator |x|");
@@ -516,7 +517,7 @@ void Test::test_numbers() {
 	code("(-19.5).abs()").equals("19.5");
 	code("12.abs").equals("<function>");
 	code("12.abs").equals("<function>");
-	DISABLED_code("Number.abs([1, 'salut'][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
+	code("Number.abs([1, 'salut'][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
 
 	section("Number.exp()");
 	code("Number.exp(0)").equals("1");
@@ -563,7 +564,7 @@ void Test::test_numbers() {
 	code("Number.max([15.7, ''][0], 12.8)").equals("15.7");
 	code("Number.max(5.5, [12.8, ''][0])").equals("12.8");
 	code("2.max([7.5, ''][0])").equals("7.5");
-	DISABLED_code("2.max([7.5, ''][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
+	code("2.max([7.5, ''][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
 
 	section("Number.min()");
 	code("Number.min(5, 12)").equals("5");
@@ -754,11 +755,11 @@ void Test::test_numbers() {
 	code("3972049.isPrime()").equals("false");
 	code("(1993l).isPrime()").equals("true");
 	code("4398042316799.isPrime()").equals("true");
-	DISABLED_code("(4398042316799m).isPrime()").equals("1");
-	DISABLED_code("359334085968622831041960188598043661065388726959079837.isPrime()").equals("1");
-	DISABLED_code("(146m ** 45m).isPrime()").equals("0");
+	code("(4398042316799m).isPrime()").equals("1");
+	code("359334085968622831041960188598043661065388726959079837.isPrime()").equals("1");
+	code("(146m ** 45m).isPrime()").equals("0");
 	code("1993l.isPrime()").equals("true");
-	DISABLED_code("1993m.isPrime()").equals("2");
+	code("1993m.isPrime()").equals("2");
 
 	section("Number.rand()");
 	code("var a = Number.rand() a >= 0 and a <= 1").equals("true");

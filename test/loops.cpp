@@ -15,6 +15,7 @@ void Test::test_loops() {
 	code("let a = if (true) { 12 } else { 'hello' } a").equals("12");
 	code("let a = if (true) { 'hello' } else { 12 } a").equals("'hello'");
 	code("if (true) {} else {}").equals("{}");
+	// TODO
 	DISABLED_code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
@@ -71,7 +72,7 @@ void Test::test_loops() {
 	header("While loops");
 	code("var i = 0 while (i < 10) { i++ } i").equals("10");
 	code("var i = 0 var s = 0 while (i < 10) { s += i i++ } s").equals("45");
-	DISABLED_code("var i = 0 while (i < 100) { i++ if (i == 50) break } i").equals("50");
+	code("var i = 0 while (i < 100) { i++ if (i == 50) break } i").equals("50");
 	DISABLED_code("var i = 0 var a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a").equals("3");
 	DISABLED_code("while (true) { break }").equals("(void)");
 	code("var i = 10 while (['hello', i][1]) { i-- } i").equals("0");
@@ -88,7 +89,7 @@ void Test::test_loops() {
 	code("var s = 0 for var i = 0; i < 5; i++ do s += i end s").equals("10");
 	code("var s = 0 for var i = 0; i < 10; i += 2 do s += i end s").equals("20");
 	code("var i = 0 for i = 0; i < 10; i++ { } i").equals("10");
-	DISABLED_code("var i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i").equals("5");
+	code("var i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i").equals("5");
 	code("var a = 0 for var i = 0; i < 10; i++ { a++ } a").equals("10");
 	DISABLED_code("var a = 0 for var i = 0; i < 10; i++ { if i < 5 { continue } a++ } a").equals("5");
 	code("var c = 0 for var t = []; t.size() < 10; t.push('x') { c++ } c").equals("10");
@@ -149,7 +150,7 @@ void Test::test_loops() {
 	 */
 	header("Array For");
 	code("[for var i = 0; i < 5; ++i { i }]").equals("[0, 1, 2, 3, 4]");
-	DISABLED_code("[for var i = 1; i <= 10; ++i { [for var j = 1; j <= 3; ++j { if i == 3 break 2 i * j}] }]").equals("[[1, 2, 3], [2, 4, 6]]");
+	code("[for var i = 1; i <= 10; ++i { [for var j = 1; j <= 3; ++j { if i == 3 break 2 i * j}] }]").equals("[[1, 2, 3], [2, 4, 6]]");
 	code("[for x in [1, 2, 3] { x }]").equals("[1, 2, 3]");
 	DISABLED_code("let a = ['a': 'b', 'c': 'd'] [for k, x in a { k + x }]").equals("['ab', 'cd']");
 	DISABLED_code("[for x in [1, 2, 3] {[ for y in [1, 2, 3] { if y == 2 continue x * y }] }]").equals("[[1, 3], [2, 6], [3, 9]]");
@@ -169,14 +170,14 @@ void Test::test_loops() {
 	code("while (true) { x -> {x continue} }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
 	code("while (true) { break 2 }").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, {});
 	code("while (true) { continue 2 }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
-	DISABLED_code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r").equals("14");
+	code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r").equals("14");
 	DISABLED_code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y continue 2 } r = 0 } r").equals("23");
-	DISABLED_code("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
-	DISABLED_code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
-	DISABLED_code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
-	DISABLED_code("for var x = 0; x < 2; ++x { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
-	DISABLED_code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
-	DISABLED_code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
+	code("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
+	code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
+	code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
+	code("for var x = 0; x < 2; ++x { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
+	code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
+	code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
 	code("while (true) { break 0 }").syntaxic_error(ls::SyntaxicalError::Type::BREAK_LEVEL_ZERO, {});
 	code("while (true) { continue 0 }").syntaxic_error(ls::SyntaxicalError::Type::CONTINUE_LEVEL_ZERO, {});
 

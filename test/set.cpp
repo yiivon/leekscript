@@ -65,14 +65,14 @@ void Test::test_set() {
 	code("<1, 2.5, 3.5> < <1, 2.5, []>").equals("true");
 	code("<1, 2, []> < <1, 2, 3>").equals("false");
 	code("<1, 2, []> < <1, 2, 3.5>").equals("false");
-	DISABLED_code("ptr(<1, 2>) < 6").equals("false");
-	DISABLED_code("ptr(<1, 2>) < [1, 2]").equals("false");
-	DISABLED_code("ptr(<1, 2>) < (x -> x)").equals("true");
+	code("ptr(<1, 2>) < 6").equals("false");
+	code("ptr(<1, 2>) < [1, 2]").equals("false");
+	code("ptr(<1, 2>) < (x -> x)").equals("true");
 	code("<1, 2> < <1, 2, 3>").equals("true");
 	code("<1, 2, 3> < <1, 2>").equals("false");
-	DISABLED_code("ptr(<1, 2, 3>) < ptr(<>)").equals("false");
+	code("ptr(<1, 2, 3>) < ptr(<>)").equals("false");
 	code("<1, 2, 3, 4> < <1, 2, 3, []>").equals("true");
-	DISABLED_code("ptr(<'a', 'b'>) < ptr('a')").equals("false");
+	code("ptr(<'a', 'b'>) < ptr('a')").equals("false");
 	for (size_t i = 0; i < sets.size(); ++i)
 		for (size_t j = 0; j < sets.size(); ++j)
 			code(sets.at(i) + " < " + sets.at(j)).equals(i < j ? "true" : "false");

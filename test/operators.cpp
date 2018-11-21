@@ -40,14 +40,14 @@ void Test::test_operators() {
 	 * Swap
 	 */
 	header("Swap");
-	DISABLED_code("let a = 2 let b = 5 a <=> b [a, b]").equals("[5, 2]");
-	DISABLED_code("let a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
-	DISABLED_code("let a = 12 let b = 5 let s = a <=> b s").equals("5");
-	DISABLED_code("let a = [12] let b = [5] a[0] <=> b[0] [a, b]").equals("[[5], [12]]");
-	DISABLED_code("let a = ['a'] let b = ['b'] a[0] <=> b[0] [a, b]").equals("[['b'], ['a']]");
-	DISABLED_code("let a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
-	DISABLED_code("let a = ['a', 'b', 'c', 'd'] a[0] <=> a[3] a").equals("['d', 'b', 'c', 'a']");
-	DISABLED_code("let a = 2 let b = 5 ['', a <=> b]").equals("['', 5]");
+	code("var a = 2 var b = 5 a <=> b [a, b]").equals("[5, 2]");
+	code("var a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
+	code("var a = 12 var b = 5 let s = a <=> b s").equals("5");
+	code("var a = [12] var b = [5] a[0] <=> b[0] [a, b]").equals("[[5], [12]]");
+	code("var a = ['a'] var b = ['b'] a[0] <=> b[0] [a, b]").equals("[['b'], ['a']]");
+	code("var a = [1, 2, 3, 4] a[0] <=> a[3] a").equals("[4, 2, 3, 1]");
+	code("var a = ['a', 'b', 'c', 'd'] a[0] <=> a[3] a").equals("['d', 'b', 'c', 'a']");
+	code("var a = 2 var b = 5 ['', a <=> b]").equals("['', 5]");
 
 	header("Invalid operators");
 	code("'hello' ** 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -65,7 +65,7 @@ void Test::test_operators() {
 	code("|null|").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("null[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
 	DISABLED_code("let a = [null, ''][0] a[2]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	DISABLED_code("let a = [null, ''][0] a[2] = 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {});
+	code("let a = [null, ''][0] a[2] = 5").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_CONTAINER, {"a"});
 	code("null[2:5]").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
 	code("null[2:5] = 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
 	code("(5 + 2) += 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5 + 2"});
@@ -73,8 +73,8 @@ void Test::test_operators() {
 	code("'hello'[2] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {});
 	code("'hello'[2:5] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {});
 	DISABLED_code("let a = [null, ''][0] a[2:5]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	DISABLED_code("var a = [null, ''][0] a[2:5] = 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {});
-	DISABLED_code("var a = [null, ''][0] a.toto = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = [null, ''][0] a[2:5] = 5").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_CONTAINER, {"a"});
+	code("var a = [null, ''][0] a.toto = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("12 in [12, ''][0]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("'hello' in [12, ''][0]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 

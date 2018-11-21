@@ -17,9 +17,9 @@ void Test::test_objects() {
 	code("let a = {b: 12, c: 5} a").equals("{b: 12, c: 5}");
 
 	section("Objects with functions");
-	DISABLED_code("var f = obj -> obj.a f({a: 'foo'})").equals("'foo'");
-	DISABLED_code("var f = obj -> obj.a [f({a: 'foo'}), f({a: 'bar'})]").equals("['foo', 'bar']");
-	DISABLED_code("var f = obj -> obj.a [f(12), f({a: 'bar'})]").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"a", "Number"});
+	code("var f = obj -> obj.a f({a: 'foo'})").equals("'foo'");
+	code("var f = obj -> obj.a [f({a: 'foo'}), f({a: 'bar'})]").equals("['foo', 'bar']");
+	code("var f = obj -> obj.a [f(12), f({a: 'bar'})]").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"a", "Number"});
 
 	section("No commas");
 	code("{a: 12 b: 5}").equals("{a: 12, b: 5}");
@@ -50,22 +50,22 @@ void Test::test_objects() {
 	code("let a = {b: 12} a.b -= 10").equals("2");
 	code("let a = {b: 12} a.b *= 10").equals("120");
 	code("let a = {b: 12} a.b /= 10").almost(1.2);
-	DISABLED_code("let a = {b: 12} a.b %= 10").equals("2");
+	code("let a = {b: 12} a.b %= 10").equals("2");
 	code("let o = {} o.new_val = 12 o").equals("{new_val: 12}");
 	code("let o = {a: 'a'} o.b = 'b' o").equals("{a: 'a', b: 'b'}");
-	DISABLED_code("Object.readonly.v = 5").exception(ls::vm::Exception::CANT_MODIFY_READONLY_OBJECT);
+	code("Object.readonly.v = 5").exception(ls::vm::Exception::CANT_MODIFY_READONLY_OBJECT);
 	code("let o = [{}, ''][0] o.values").equals("<function>");
 	code("let pq = [{p: 22, v: 55}] pq[0].p").equals("22");
 	code("let pq = [{p: 22, v: 55}] let o = pq[0] o.v").equals("55");
 
 	section("Object.operator ==");
-	DISABLED_code("class A {} {} == new A").equals("false");
-	DISABLED_code("class A {} class B {} new A == new B").equals("false");
-	DISABLED_code("class A {} new A == new A").equals("true");
-	DISABLED_code("{a: 2} == {}").equals("false");
-	DISABLED_code("{a: 2} == {a: 1}").equals("false");
-	DISABLED_code("{a: 2} == {b: 2}").equals("false");
-	DISABLED_code("{a: 2} == {a: 2}").equals("true");
+	code("class A {} {} == new A").equals("false");
+	code("class A {} class B {} new A == new B").equals("false");
+	code("class A {} new A == new A").equals("true");
+	code("{a: 2} == {}").equals("false");
+	code("{a: 2} == {a: 1}").equals("false");
+	code("{a: 2} == {b: 2}").equals("false");
+	code("{a: 2} == {a: 2}").equals("true");
 
 	section("Object.operator <");
 	code("{} < {}").equals("false");
@@ -78,10 +78,10 @@ void Test::test_objects() {
 	code("{a: 1} < {a: 1, b: 2}").equals("true");
 	code("{a: 1, b: 2} < {a: 1}").equals("false");
 	code("{a: 0, b: 2} < {a: 1}").equals("true");
-	DISABLED_code("class A {} class B {} new A < new B").equals("true");
-	DISABLED_code("class A {} class B {} new B < new A").equals("false");
-	DISABLED_code("class A {} {} < new A").equals("true");
-	DISABLED_code("class A {} new A < {}").equals("false");
+	code("class A {} class B {} new A < new B").equals("true");
+	code("class A {} class B {} new B < new A").equals("false");
+	code("class A {} {} < new A").equals("true");
+	code("class A {} new A < {}").equals("false");
 
 	/*
 	 * Iteration

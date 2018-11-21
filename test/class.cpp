@@ -65,7 +65,7 @@ void Test::test_classes() {
 	code("Number is Class").equals("true");
 
 	section("Class creation");
-	DISABLED_code("class A {} A").equals("<class A>");
+	code("class A {} A").equals("<class A>");
 	DISABLED_code("class A {} let a = A() a").equals("A {}");
 	DISABLED_code("class A {} let a = new A a").equals("A {}");
 	DISABLED_code("class A {} let a = new A() a").equals("A {}");

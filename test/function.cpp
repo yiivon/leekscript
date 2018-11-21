@@ -42,7 +42,7 @@ void Test::test_functions() {
 	code("( -> 12)()").equals("12");
 	code("let f = x -> x f(5) + f(7)").equals("12");
 	code("[-> 12][0]()").equals("12");
-	DISABLED_code("[-> 12, 'toto'][0]()").equals("12");
+	code("[-> 12, 'toto'][0]()").equals("12");
 	code("(x -> x + 12.12)(1.01)").almost(13.13);
 	code("(x -> x + 12)(1.01)").almost(13.01);
 	DISABLED_code("[x -> x ** 2][0](12)").equals("144");
@@ -63,12 +63,12 @@ void Test::test_functions() {
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
 	code("let f = a, i -> a[i] f([1 2 3], 1)").equals("2");
-	DISABLED_code("[x -> x][0]").equals("<function>");
+	code("[x -> x][0]").equals("<function>");
 	code("let f = x = 2 -> x + 1 f").equals("<function>");
 	code("let f = b -> if b { 2 } else { 3 } f(false)").equals("3");
-	DISABLED_code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
+	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
 	code("(x -> y -> x + 1)(1)(2)").equals("2");
-	DISABLED_code("let f = x, y -> { x += '+' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A+', 'B.']");
+	code("let f = x, y -> { x += '+' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A+', 'B.']");
 
 	section("Function call without commas");
 	code("let f = x, y -> x + y f(12 7)").equals("19");
@@ -107,10 +107,10 @@ void Test::test_functions() {
 	DISABLED_code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
 
 	section("Multiple versions of a function");
-	DISABLED_code("let f = x -> x f(5) f('a')").equals("'a'");
-	DISABLED_code("let f = x -> x f('a') f(5)").equals("5");
-	DISABLED_code("let f = x -> x [f(5), f('a')]").equals("[5, 'a']");
-	DISABLED_code("let f = x -> x [f(5), f('a'), f(5.5), f(2l)]").equals("[5, 'a', 5.5, 2]");
+	code("let f = x -> x f(5) f('a')").equals("'a'");
+	code("let f = x -> x f('a') f(5)").equals("5");
+	code("let f = x -> x [f(5), f('a')]").equals("[5, 'a']");
+	code("let f = x -> x [f(5), f('a'), f(5.5), f(2l)]").equals("[5, 'a', 5.5, 2]");
 
 	/*
 	 * Operators
@@ -175,7 +175,7 @@ void Test::test_functions() {
 	DISABLED_code("let p = +; p.class").equals("<class Function>");
 
 	section("Function.isTrue()");
-	DISABLED_code("if [x -> x, 12][0] { 'ok' } else { null }").equals("'ok'");
+	code("if [x -> x, 12][0] { 'ok' } else { null }").equals("'ok'");
 
 	section("Function.operator ==");
 	code("let a = x -> x; a == a").equals("true");
@@ -183,7 +183,7 @@ void Test::test_functions() {
 
 	section("Function.operator <");
 	code("let a = x -> x; a < a").equals("false");
-	DISABLED_code("[x -> x, ''][0] < 5").equals("false");
+	code("[x -> x, ''][0] < 5").equals("false");
 
 	section("STD method");
 	code("String.size").equals("<function>");

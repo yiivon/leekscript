@@ -187,9 +187,9 @@ void Test::test_strings() {
 	code("String.replace('bonjour à tous', 'o', '_')").equals("'b_nj_ur à t_us'");
 
 	section("String.map()");
-	DISABLED_code("String.map('salut', x -> '(' + x + ')')").equals("'(s)(a)(l)(u)(t)'");
-	DISABLED_code("'salut'.map(char -> char + '.')").equals("'s.a.l.u.t.'");
-	DISABLED_code("'♫☯🐖👽韭'.map(u -> u + ' ')").equals("'♫ ☯ 🐖 👽 韭 '");
+	code("String.map('salut', x -> '(' + x + ')')").equals("'(s)(a)(l)(u)(t)'");
+	code("'salut'.map(char -> char + '.')").equals("'s.a.l.u.t.'");
+	code("'♫☯🐖👽韭'.map(u -> u + ' ')").equals("'♫ ☯ 🐖 👽 韭 '");
 	DISABLED_code("let f = n -> n.string().split('').map(d -> d.code()) f(196457238)").equals("[49, 57, 54, 52, 53, 55, 50, 51, 56]");
 	DISABLED_code("let f = n -> n.string().map(d -> (d.code() + 9263).char() + ' ') f(196457238)").equals("'① ⑨ ⑥ ④ ⑤ ⑦ ② ③ ⑧ '");
 
