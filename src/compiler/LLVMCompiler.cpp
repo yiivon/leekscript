@@ -218,8 +218,15 @@ LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 	return {Builder.CreateSIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
 }
 
-LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value) const {
-	assert(false);
+LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value v) const {
+	if (v.t.not_temporary() == Type::LONG) {
+		return v;
+	}
+	if (v.t.not_temporary() == Type::INTEGER) {
+		return {Builder.CreateIntCast(v.v, Type::LONG.llvm_type(), true), Type::LONG};
+	}
+	assert(false && "not converted...");
+	return v;
 }
 
 LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) const {
@@ -263,6 +270,8 @@ LLVMCompiler::value LLVMCompiler::insn_or(LLVMCompiler::value a, LLVMCompiler::v
 LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {Builder.CreateFAdd(to_real(a).v, to_real(b).v, "add"), Type::REAL};
+	} else if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
+		return {Builder.CreateAdd(to_long(a).v, to_long(b).v, "add"), Type::LONG};
 	} else {
 		return {Builder.CreateAdd(to_int(a).v, to_int(b).v, "add"), Type::INTEGER};
 	}
@@ -279,6 +288,8 @@ LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::
 LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {Builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	} else if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
+		return {Builder.CreateICmpEQ(to_long(a).v, to_long(b).v), Type::BOOLEAN};
 	} else {
 		return {Builder.CreateICmpEQ(to_int(a).v, to_int(b).v), Type::BOOLEAN};
 	}
@@ -292,10 +303,12 @@ LLVMCompiler::value LLVMCompiler::insn_ne(LLVMCompiler::value a, LLVMCompiler::v
 
 LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
-		r = {Builder.CreateICmpSLT(a.v, b.v), Type::BOOLEAN};
-	} else {
+	if (a.t.raw_type == RawType::REAL || b.t.raw_type == RawType::REAL) {
 		r = {Builder.CreateFCmpOLT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	} else if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+		r = {Builder.CreateICmpSLT(to_long(a).v, to_long(b).v), Type::BOOLEAN};
+	} else {
+		r = {Builder.CreateICmpSLT(a.v, b.v), Type::BOOLEAN};
 	}
 	log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
@@ -303,10 +316,12 @@ LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::v
 
 LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
-		r = {Builder.CreateICmpSLE(a.v, b.v), Type::BOOLEAN};
-	} else {
+	if (a.t.raw_type == RawType::REAL || b.t.raw_type == RawType::REAL) {
 		r = {Builder.CreateFCmpOLE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	} else if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+		r = {Builder.CreateICmpSLE(to_long(a).v, to_long(b).v), Type::BOOLEAN};
+	} else {
+		r = {Builder.CreateICmpSLE(a.v, b.v), Type::BOOLEAN};
 	}
 	log_insn(4) << "le " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
@@ -314,10 +329,12 @@ LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::v
 
 LLVMCompiler::value LLVMCompiler::insn_gt(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
-		r = {Builder.CreateICmpSGT(a.v, b.v), Type::BOOLEAN};
-	} else {
+	if (a.t.raw_type == RawType::REAL || b.t.raw_type == RawType::REAL) {
 		r = {Builder.CreateFCmpOGT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	} else if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+		r = {Builder.CreateICmpSGT(to_long(a).v, to_long(b).v), Type::BOOLEAN};
+	} else {
+		r = {Builder.CreateICmpSGT(a.v, b.v), Type::BOOLEAN};
 	}
 	log_insn(4) << "gt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
@@ -325,10 +342,12 @@ LLVMCompiler::value LLVMCompiler::insn_gt(LLVMCompiler::value a, LLVMCompiler::v
 
 LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
-		return {Builder.CreateICmpSGE(a.v, b.v), Type::BOOLEAN};
+	if (a.t.raw_type == RawType::REAL || b.t.raw_type == RawType::REAL) {
+		r = {Builder.CreateFCmpOGE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	} else if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+		r = {Builder.CreateICmpSGE(to_long(a).v, to_long(b).v), Type::BOOLEAN};
 	} else {
-		return {Builder.CreateFCmpOGE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+		r = {Builder.CreateICmpSGE(a.v, b.v), Type::BOOLEAN};
 	}
 	log_insn(4) << "ge " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
@@ -337,6 +356,8 @@ LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::v
 LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {Builder.CreateFMul(to_real(a).v, to_real(b).v, "multmp"), Type::REAL};
+	} else if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
+		return {Builder.CreateMul(to_long(a).v, to_long(b).v), Type::LONG};
 	}
 	return {Builder.CreateMul(to_int(a).v, to_int(b).v, "multmp"), Type::INTEGER};
 }
@@ -346,6 +367,9 @@ LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::
 }
 
 LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
+	if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
+		return {Builder.CreateSDiv(a.v, b.v), Type::LONG};
+	}
 	return {Builder.CreateSDiv(a.v, b.v), Type::INTEGER};
 }
 
@@ -374,7 +398,12 @@ LLVMCompiler::value LLVMCompiler::insn_lshr(LLVMCompiler::value a, LLVMCompiler:
 }
 
 LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateSRem(a.v, b.v), Type::INTEGER};
+	assert(a.t.isNumber() && b.t.isNumber());
+	if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+		return {Builder.CreateSRem(a.v, b.v), Type::LONG};
+	} else {
+		return {Builder.CreateSRem(a.v, b.v), Type::INTEGER};
+	}
 }
 
 LLVMCompiler::value LLVMCompiler::insn_cmpl(LLVMCompiler::value a, LLVMCompiler::value b) const {
