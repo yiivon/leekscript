@@ -288,11 +288,11 @@ void Test::test_numbers() {
 	code("var s = 0 s = 5 ** 2 s").equals("25");
 
 	section("Number.operator **=");
-	DISABLED_code("var a = 5★; a **= 4").equals("625");
-	DISABLED_code("var a = 5★; a **= true").equals("5");
-	DISABLED_code("var a = 5★; a **= false").equals("1");
+	code("var a = 5★; a **= 4").equals("625");
+	code("var a = 5★; a **= true").equals("5");
+	code("var a = 5★; a **= false").equals("1");
 	DISABLED_code("var a = 5★; a **= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	DISABLED_code("var a = 5; ['', a **= 4]").equals("['', 625]");
+	code("var a = 5; ['', a **= 4]").equals("['', 625]");
 
 	section("Number.operator %");
 	code("721 % 57").equals("37");

@@ -735,18 +735,22 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::POWER_EQUAL: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
-				v1->compile_end(c);
 				v2->compile_end(c);
-				auto sum = c.insn_pow(x, y);
-				c.insn_store(x, sum);
+				auto sum = c.insn_pow(c.insn_load(x_addr), y);
+				c.insn_store(x_addr, sum);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(sum);
 				}
 				return sum;
 			} else {
-				ls_func = (void*) &jit_pow_equal;
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				v2->compile_end(c);
+				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+					return (*x)->pow_eq(y);
+				});
 			}
 			break;
 		}
@@ -819,18 +823,18 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::POWER: {
 			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = c.to_real(v1->compile(c));
+				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
 				v2->compile_end(c);
-				// auto r = jit_insn_pow(c.F, x.v, y.v);
-				// if (type == Type::INTEGER) {
-				// 	r = c.to_int({r, Type::REAL}).v;
-				// }
-				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				// 	return c.insn_to_pointer({r, type});
-				// }
-				// return {r, type};
+				auto r = c.insn_pow(x, y);
+				if (type == Type::INTEGER) {
+					r = c.to_int(r);
+				}
+				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+					return c.insn_to_pointer(r);
+				}
+				return r;
 			} else {
 				ls_func = (void*) &jit_pow;
 			}
