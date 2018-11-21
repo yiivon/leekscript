@@ -118,17 +118,17 @@ void Test::test_arrays() {
 	code("let v = [['a', 'b'], 12] v[0][0]").equals("'a'");
 	code("let v = [['a', 'b'], 12] v[0][1]").equals("'b'");
 	code("let v = [['a', 'b'], 12] v[0][true]").equals("'b'");
-	DISABLED_code("[['a', 'b'], 12][0][['yolo', 1][0]]").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	code("[['a', 'b'], 12][0][['yolo', 1][0]]").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	DISABLED_code("[['a', 'b'], 12][0][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
 	DISABLED_code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Out of bounds exception");
-	DISABLED_code("[][1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[][1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	DISABLED_code("[1, 2, 3][100]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	DISABLED_code("let a = [1, 2, 3] a[10]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[5.6, 7.2][-5]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("['hello', true][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[5.6, 7.2][-5]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("['hello', true][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	DISABLED_code("let a = [1, 2, 3] a[100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	DISABLED_code("let a = [1, 2, 3] a[-100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	DISABLED_code("let a = [[12], ''][0] a[100]++ a").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -299,8 +299,8 @@ void Test::test_arrays() {
 	DISABLED_code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
 
 	section("Array.max()");
-	DISABLED_code("[].max()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[12].clear().max()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[].max()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12].clear().max()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[4, 20, 1, 4].max()").equals("20");
 	code("let a = [4, 12, 1, 4] a.max()").equals("12");
 	code("['c', 'a', 'd', 'b'].max()").equals("'d'");
@@ -308,8 +308,8 @@ void Test::test_arrays() {
 	code("[4, 20.5, 1, 4].max()").equals("20.5");
 
 	section("Array.min()");
-	DISABLED_code("[].min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[12].clear().min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[].min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12].clear().min()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[4, 20, 1, 4].min()").equals("1");
 	code("let a = [4, 12, 1, 4] a.min()").equals("1");
 	code("['c', 'a', 'd', 'b'].min()").equals("'a'");
@@ -382,18 +382,18 @@ void Test::test_arrays() {
 	code("['yo', 3, 4, 5].first()").equals("'yo'");
 	code("[12, 2].first()").equals("12");
 	code("[12.891, 2].first()").equals("12.891");
-	DISABLED_code("[].first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[12].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[12.5].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[].first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12.5].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Array.last()");
 	code("Array.last([1, 2, 3, 10, true, 'yo', null])").equals("null");
 	code("['yo', 3, 4, 5].last()").equals("5");
 	code("[12, 2].last()").equals("2");
 	code("[12.891, 2].last()").equals("2");
-	DISABLED_code("[].last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[12].clear().last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[12.5].clear().last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[].last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12].clear().last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12.5].clear().last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	// TODO : the return type of first() must be the element type of the array if it's homogeneous
 	DISABLED_code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");
 
@@ -439,7 +439,7 @@ void Test::test_arrays() {
 	code("Array.subArray([1, 2, 3, 10, true, 'yo', null], 1, 1)").equals("[2]");
 
 	section("Array.pop()");
-	DISABLED_code("[].pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[].pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("Array.pop(['1', '2'])").equals("'2'");
 	code("['1', '2'].pop()").equals("'2'");
 	code("var a = ['1', '2', '3'] a.pop() a").equals("['1', '2']");
@@ -447,8 +447,8 @@ void Test::test_arrays() {
 	code("[1.9, 2.78].pop()").equals("2.78");
 	code("var a = [1, 2] a.pop()").equals("2");
 	code("var a = [1.9, 2.78] a.pop()").equals("2.78");
-	DISABLED_code("[12].clear().pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[12.5].clear().pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12].clear().pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[12.5].clear().pop()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Array.push()");
 	code("var a = [1, 2, 3] Array.push(a, 4)").equals("[1, 2, 3, 4]");
