@@ -966,6 +966,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// jit_insn_store_relative(F, addr, 32, new_long(0).v);
 		// return it;
 	}
+	return {nullptr, Type::VOID};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompiler::value it) const {
@@ -1004,6 +1005,7 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 		auto p = insn_load(addr, 8, Type::LONG);
 		return insn_eq(p, new_integer(0));
 	}
+	return {nullptr, Type::VOID};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler::value it, LLVMCompiler::value previous) const {
@@ -1075,6 +1077,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		auto p = insn_load(addr, 8, Type::LONG);
 		return insn_int_div(n, p);
 	}
+	return {nullptr, Type::VOID};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompiler::value it, LLVMCompiler::value previous) const {
@@ -1119,6 +1122,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		auto addr = insn_address_of(it);
 		return insn_load(addr, 16, Type::INTEGER);
 	}
+	return {nullptr, Type::VOID};
 }
 
 void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value it) const {

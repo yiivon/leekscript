@@ -785,6 +785,7 @@ LibJITCompiler::value LibJITCompiler::iterator_begin(LibJITCompiler::value v) co
 		jit_insn_store_relative(F, addr, 32, new_long(0).v);
 		return it;
 	}
+	return {nullptr, Type::VOID};
 }
 
 LibJITCompiler::value LibJITCompiler::iterator_end(LibJITCompiler::value v, LibJITCompiler::value it) const {
@@ -823,6 +824,7 @@ LibJITCompiler::value LibJITCompiler::iterator_end(LibJITCompiler::value v, LibJ
 		auto p = insn_load(addr, 8, Type::LONG);
 		return insn_eq(p, new_integer(0));
 	}
+	return {nullptr, Type::VOID};
 }
 
 LibJITCompiler::value LibJITCompiler::iterator_key(LibJITCompiler::value v, LibJITCompiler::value it, LibJITCompiler::value previous) const {
@@ -864,6 +866,7 @@ LibJITCompiler::value LibJITCompiler::iterator_key(LibJITCompiler::value v, LibJ
 		auto addr = insn_address_of(it);
 		return insn_load(addr, 16, Type::INTEGER);
 	}
+	return {nullptr, Type::VOID};
 }
 
 LibJITCompiler::value LibJITCompiler::iterator_get(LibJITCompiler::value it, LibJITCompiler::value previous) const {
@@ -934,6 +937,7 @@ LibJITCompiler::value LibJITCompiler::iterator_get(LibJITCompiler::value it, Lib
 		auto p = insn_load(addr, 8, Type::LONG);
 		return insn_int_div(n, p);
 	}
+	return {nullptr, Type::VOID};
 }
 
 void LibJITCompiler::iterator_increment(LibJITCompiler::value it) const {
