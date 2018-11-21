@@ -1375,8 +1375,11 @@ void LLVMCompiler::leave_function() {
 int LLVMCompiler::get_current_function_blocks() const {
 	return 0; // TODO
 }
-void LLVMCompiler::delete_function_variables() {
-	// TODO
+void LLVMCompiler::delete_function_variables() const {
+	for (const auto& v : function_variables.back()) {
+		auto var = Builder.CreateLoad(v.v);
+		insn_delete({var, v.t});
+	}
 }
 bool LLVMCompiler::is_current_function_closure() const {
 	return function_is_closure.size() ? function_is_closure.top() : false;

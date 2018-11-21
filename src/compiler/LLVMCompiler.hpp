@@ -298,7 +298,7 @@ public:
 	void enter_function(llvm::Function* F, bool is_closure, Function* fun);
 	void leave_function();
 	int get_current_function_blocks() const;
-	void delete_function_variables();
+	void delete_function_variables() const;
 	bool is_current_function_closure() const;
 
 	// Variables
