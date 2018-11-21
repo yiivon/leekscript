@@ -758,24 +758,19 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::PLUS: {
-			// jit_func = &jit_insn_add;
 			ls_func = (void*) &jit_add;
 			break;
 		}
 		case TokenType::MINUS: {
-			// jit_func = &jit_insn_sub;
 			ls_func = (void*) &jit_sub;
 			break;
 		}
 		case TokenType::TIMES: {
-			// jit_func = &jit_insn_mul;
 			ls_func = (void*) &jit_mul;
 			break;
 		}
 		case TokenType::DIVIDE: {
-			// jit_func = &jit_insn_div;
 			ls_func = (void*) &jit_div;
-			// jit_returned_type = Type::REAL;
 			break;
 		}
 		case TokenType::INT_DIV: {
