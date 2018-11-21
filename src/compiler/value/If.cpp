@@ -2,6 +2,8 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "Number.hpp"
 #include "../instruction/Return.hpp"
+#include "../instruction/Break.hpp"
+#include "../instruction/Continue.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
 
@@ -113,7 +115,7 @@ Compiler::value If::compile(Compiler& c) const {
 	then_v = then->compile(c);
 	then->compile_end(c);
 
-	if (dynamic_cast<Return*>(then->instructions[0]) == nullptr) {
+	if (dynamic_cast<Return*>(then->instructions[0]) == nullptr && dynamic_cast<Break*>(then->instructions[0]) == nullptr && dynamic_cast<Continue*>(then->instructions[0]) == nullptr) {
 		c.insn_branch(&label_end);
 	}
 	label_then.block = LLVMCompiler::Builder.GetInsertBlock();
