@@ -1233,6 +1233,7 @@ void LLVMCompiler::insn_branch(label* l) const {
 }
 
 void LLVMCompiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const { assert(false); }
+
 void LLVMCompiler::insn_return(LLVMCompiler::value v) const {
 	LLVMCompiler::Builder.CreateRet(v.v);
 }
@@ -1329,7 +1330,7 @@ void LLVMCompiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			// std::cout << "delete variable block " << it->first << " " << it->second.t << " " << it->second.v->getType() << std::endl;
-			auto var = LLVMCompiler::Builder.CreateLoad(it->second.v, it->first.c_str());
+			auto var = Builder.CreateLoad(it->second.v, it->first.c_str());
 			insn_delete({var, it->second.t});
 		}
 	}
