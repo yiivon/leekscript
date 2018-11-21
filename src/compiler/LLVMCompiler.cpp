@@ -624,21 +624,6 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_address_of(LLVMCompiler::value v) const {
-	// std::cout << "addr " << v.t << std::endl;
-	// if (v.t.raw_type == RawType::MPZ) {
-	// 	std::cout << " v t " << v.v->getType() << std::endl;
-	// 	Compiler::value v2 {Builder.CreateStructGEP(Type::LLVM_MPZ_TYPE, v.v, 0), Type::POINTER};
-	// 	std::cout << "v2 " << v2.v->getType() << std::endl;
-	// 	insn_call(Type::VOID, {v2}, +[](void* v) {
-	// 		std::cout << "v2 = " << v << std::endl;
-	// 	});
-	// 	return v2;
-	// } else {
-		assert(false && "SHOULDN'T USE address_of with LLVM!");
-	// }
-}
-
 LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v) const {
 	LLVMCompiler::value r {Builder.CreateLoad(v.v), v.t};
 	log_insn(4) << "load " << dump_val(v) << " " << dump_val(r) << std::endl;
@@ -934,12 +919,12 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// return it;
 	}
 	if (v.t.raw_type == RawType::INTEGER) {
-		Compiler::value it = insn_create_value(Type::INTEGER_ITERATOR);
-		Builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 0);
-		Builder.CreateAlignedStore(it.v, v.v, 0);
-		Builder.CreateAlignedStore(it.v, to_int(insn_pow(new_integer(10), to_int(insn_log10(v)))).v, 4);
-		Builder.CreateAlignedStore(it.v, new_integer(0).v, 8);
-		return it;
+		// Compiler::value it = insn_create_value(Type::INTEGER_ITERATOR);
+		// Builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 0);
+		// Builder.CreateAlignedStore(it.v, v.v, 0);
+		// Builder.CreateAlignedStore(it.v, to_int(insn_pow(new_integer(10), to_int(insn_log10(v)))).v, 4);
+		// Builder.CreateAlignedStore(it.v, new_integer(0).v, 8);
+		// return it;
 	}
 	if (v.t.raw_type == RawType::LONG) {
 		// jit_type_t types[3] = {jit_type_long, jit_type_long, jit_type_int};
@@ -979,15 +964,15 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 		// return insn_gt(pos, end);
 	}
 	if (it.t == Type::STRING_ITERATOR) {
-		auto addr = insn_address_of(it);
-		return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
+		// auto addr = insn_address_of(it);
+		// return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
 	}
 	if (v.t.raw_type == RawType::MAP) {
 		auto end = insn_add(v, new_integer(32)); // end_ptr = &map + 24
 		return insn_eq(it, end);
 	}
 	if (it.t == Type::SET_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto ptr = insn_load(addr, 0, Type::POINTER);
 		// auto end = insn_add(v, new_integer(32)); // end_ptr = &set + 24
 		// return insn_eq(ptr, end);
@@ -1025,18 +1010,18 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		// return e;
 	}
 	if (it.t == Type::STRING_ITERATOR) {
-		auto addr = insn_address_of(it);
-		auto int_char = insn_call(Type::INTEGER, {addr}, &LSString::iterator_get);
-		return insn_call(Type::STRING, {int_char, previous}, (void*) +[](unsigned int c, LSString* previous) {
-			if (previous != nullptr) {
-				LSValue::delete_ref(previous);
-			}
-			char dest[5];
-			// u8_toutf8(dest, 5, &c, 1);
-			auto s = new LSString(dest);
-			s->refs = 1;
-			return s;
-		});
+		// auto addr = insn_address_of(it);
+		// auto int_char = insn_call(Type::INTEGER, {addr}, &LSString::iterator_get);
+		// return insn_call(Type::STRING, {int_char, previous}, (void*) +[](unsigned int c, LSString* previous) {
+		// 	if (previous != nullptr) {
+		// 		LSValue::delete_ref(previous);
+		// 	}
+		// 	char dest[5];
+		// 	// u8_toutf8(dest, 5, &c, 1);
+		// 	auto s = new LSString(dest);
+		// 	s->refs = 1;
+		// 	return s;
+		// });
 	}
 	if (it.t.raw_type == RawType::MAP) {
 		if (previous.t.must_manage_memory()) {
@@ -1056,20 +1041,20 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 					LSValue::delete_ref(previous);
 			});
 		}
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto ptr = insn_load(addr, 0, Type::POINTER);
 		// auto e = insn_load(ptr, 32, previous.t);
 		// insn_inc_refs(e);
 		// return e;
 	}
 	if (it.t == Type::INTEGER_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto n = insn_load(addr, 0, Type::INTEGER);
 		// auto p = insn_load(addr, 4, Type::INTEGER);
 		// return insn_int_div(n, p);
 	}
 	if (it.t == Type::LONG_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto n = insn_load(addr, 0, Type::LONG);
 		// auto p = insn_load(addr, 8, Type::LONG);
 		// return insn_int_div(n, p);
@@ -1086,15 +1071,15 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		return insn_int_div(distance, new_integer(v.t.element().size() / 8));
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto interval = insn_load(addr, 0);
 		// auto start = insn_load(interval, 20);
 		// auto e = insn_load(addr, 8, Type::INTEGER);
 		// return insn_sub(e, start);
 	}
 	if (it.t == Type::STRING_ITERATOR) {
-		auto addr = insn_address_of(it);
-		return insn_call(Type::INTEGER, {addr}, &LSString::iterator_key);
+		// auto addr = insn_address_of(it);
+		// return insn_call(Type::INTEGER, {addr}, &LSString::iterator_key);
 	}
 	if (it.t.raw_type == RawType::MAP) {
 		if (previous.t.must_manage_memory()) {
@@ -1108,15 +1093,15 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		// return key;
 	}
 	if (it.t == Type::SET_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// return insn_load(addr, 8, Type::INTEGER);
 	}
 	if (it.t == Type::INTEGER_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// return insn_load(addr, 8, Type::INTEGER);
 	}
 	if (it.t == Type::LONG_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// return insn_load(addr, 16, Type::INTEGER);
 	}
 	return {nullptr, Type::VOID};
@@ -1131,15 +1116,15 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		return;
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto pos = insn_load(addr, 8, Type::INTEGER);
 		// insn_store_relative(addr, 8, insn_add(pos, new_integer(1)));
 		return;
 	}
 	if (it.t == Type::STRING_ITERATOR) {
-		auto addr = insn_address_of(it);
-		insn_call(Type::VOID, {addr}, &LSString::iterator_next);
-		return;
+		// auto addr = insn_address_of(it);
+		// insn_call(Type::VOID, {addr}, &LSString::iterator_next);
+		// return;
 	}
 	if (it.t.raw_type == RawType::MAP) {
 		insn_store(it, insn_call(Type::POINTER, {it}, (void*) +[](LSMap<int, int>::iterator it) {
@@ -1149,7 +1134,7 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		return;
 	}
 	if (it.t == Type::SET_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto ptr = insn_load(addr, 0, Type::POINTER);
 		// insn_store_relative(addr, 8, insn_add(insn_load(addr, 8, Type::INTEGER), new_integer(1)));
 		// insn_store_relative(addr, 0, insn_call(Type::POINTER, {ptr}, (void*) +[](LSSet<int>::iterator it) {
@@ -1159,7 +1144,7 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		return;
 	}
 	if (it.t == Type::INTEGER_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto n = insn_load(addr, 0, Type::INTEGER);
 		// auto p = insn_load(addr, 4, Type::INTEGER);
 		// auto i = insn_load(addr, 8, Type::INTEGER);
@@ -1169,7 +1154,7 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		return;
 	}
 	if (it.t == Type::LONG_ITERATOR) {
-		auto addr = insn_address_of(it);
+		// auto addr = insn_address_of(it);
 		// auto n = insn_load(addr, 0, Type::LONG);
 		// auto p = insn_load(addr, 8, Type::LONG);
 		// auto i = insn_load(addr, 16, Type::INTEGER);

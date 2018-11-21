@@ -451,9 +451,9 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_sub);
+	// auto a_addr = c.insn_address_of(args[0]);
+	// auto b_addr = c.insn_address_of(args[1]);
+	// c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_sub);
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -507,9 +507,9 @@ Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_mul);
+	// auto a_addr = c.insn_address_of(args[0]);
+	// auto b_addr = c.insn_address_of(args[1]);
+	// c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_mul);
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -533,9 +533,9 @@ Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_div);
+	// auto a_addr = c.insn_address_of(args[0]);
+	// auto b_addr = c.insn_address_of(args[1]);
+	// c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_div);
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -605,9 +605,9 @@ Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 }
 
 Compiler::value NumberSTD::lt_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	auto res = c.insn_call(Type::INTEGER, {a_addr, b_addr}, &mpz_cmp, "mpz_cmp");
+	auto res = c.insn_call(Type::INTEGER, {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+		return mpz_cmp(&a, &b);
+	});
 	if (args[0].t.temporary) {
 		c.insn_delete_mpz(args[0]);
 	}
@@ -626,8 +626,9 @@ Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args) {
 }
 
 Compiler::value NumberSTD::gt_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto b_addr = c.insn_address_of(args[1]);
-	auto res = c.insn_call(Type::INTEGER, {b_addr, args[0]}, &_mpz_cmp_si, "_mpz_cmp_si");
+	auto res = c.insn_call(Type::INTEGER, {args[1], args[0]}, +[](__mpz_struct a, int b) {
+		return _mpz_cmp_si(&a, b);
+	});
 	return c.insn_lt(res, c.new_integer(0));
 }
 
@@ -662,13 +663,14 @@ Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_mod);
+	// auto a_addr = c.insn_address_of(args[0]);
+	// auto b_addr = c.insn_address_of(args[1]);
+	// c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_mod);
 	return c.insn_clone_mpz(args[0]);
 }
 
 Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+	std::cout << "mod " << args[0].t << " " << args[1].t << std::endl;
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_mod(x, args[1]);
 	c.insn_store(args[0], sum);
@@ -1043,9 +1045,9 @@ Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto a_addr = c.insn_address_of(args[0]);
-	auto b_addr = c.insn_address_of(args[1]);
-	c.insn_call(Type::VOID, {a_addr, a_addr, b_addr}, &mpz_pow_ui);
+	c.insn_call(Type::VOID, {args[0], args[1]}, +[](__mpz_struct a, int b) {
+		return mpz_pow_ui(&a, &a, b);
+	});
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -1057,9 +1059,10 @@ Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
-	auto v_addr = c.insn_address_of(args[0]);
 	auto reps = c.new_integer(15);
-	auto res = c.insn_call(Type::INTEGER, {v_addr, reps}, &mpz_probab_prime_p, "mpz_probab_prime_p");
+	auto res = c.insn_call(Type::INTEGER, {args[0], reps}, +[](__mpz_struct a, int reps) {
+		return mpz_probab_prime_p(&a, reps);
+	});
 	if (args[0].t.temporary) {
 		c.insn_delete_mpz(args[0]);
 	}
