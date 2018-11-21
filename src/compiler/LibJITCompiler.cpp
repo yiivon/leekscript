@@ -1020,9 +1020,9 @@ void LibJITCompiler::insn_throw(LibJITCompiler::value v) const {
 }
 
 void LibJITCompiler::insn_throw_object(vm::Exception type) const {
-	auto t = new_integer(type);
-	auto ex = insn_call(Type::POINTER, {t}, &VM::get_exception_object<0>);
-	insn_throw(ex);
+	// auto t = new_integer(type);
+	// auto ex = insn_call(Type::POINTER, {t}, &VM::get_exception_object<0>);
+	// insn_throw(ex);
 }
 
 void LibJITCompiler::insn_label(label* l) const {
