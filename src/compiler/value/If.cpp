@@ -74,11 +74,11 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 		types.add(elze->types);
 
-		//then->analyse(analyser, type);
+		then->analyse(analyser, type);
 
-		//if (elze->type != type) {
-		//	elze->analyse(analyser, type);
-		//}
+		if (elze->type != type) {
+			elze->analyse(analyser, type);
+		}
 	} else {
 		if (req_type == Type::VOID) {
 			type = Type::VOID;
