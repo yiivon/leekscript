@@ -9,7 +9,6 @@ void Test::test_classes() {
 	code("Number = 12").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"Number"});
 
 	section(".class attribute");
-	code("null.class").equals("<class Null>");
 	code("true.class").equals("<class Boolean>");
 	code("false.class").equals("<class Boolean>");
 	code("0.class").equals("<class Number>");
@@ -28,10 +27,9 @@ void Test::test_classes() {
 	code("(-> 12).class").equals("<class Function>");
 	code("(x, y -> x + y).class").equals("<class Function>");
 	code("12.class.class").equals("<class Class>");
-	code("[null, true, 12, 'foo', [], [1, 2], [1.5, 2.5], [1..12], [1:12], <>, <1.5>, <'a'>, {}, x -> x, Number] ~~ x -> x.class").equals("[<class Null>, <class Boolean>, <class Number>, <class String>, <class Array>, <class Array>, <class Array>, <class Interval>, <class Map>, <class Set>, <class Set>, <class Set>, <class Object>, <class Function>, <class Class>]");
+	code("[true, 12, 'foo', [], [1, 2], [1.5, 2.5], [1..12], [1:12], <>, <1.5>, <'a'>, {}, x -> x, Number] ~~ x -> x.class").equals("[<class Boolean>, <class Number>, <class String>, <class Array>, <class Array>, <class Array>, <class Interval>, <class Map>, <class Set>, <class Set>, <class Set>, <class Object>, <class Function>, <class Class>]");
 
 	section("Class.name");
-	code("Null.name").equals("'Null'");
 	code("Boolean.name").equals("'Boolean'");
 	code("Number.name").equals("'Number'");
 	code("String.name").equals("'String'");
@@ -63,7 +61,6 @@ void Test::test_classes() {
 	code("[1..12] is Interval").equals("true");
 	code("{a: 12} is Object").equals("true");
 	DISABLED_code("(-> 12) is Function").equals("true");
-	DISABLED_code("null is Null").equals("true");
 	code("true is Boolean").equals("true");
 	code("Number is Class").equals("true");
 
