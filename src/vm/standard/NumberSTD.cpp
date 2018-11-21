@@ -11,9 +11,9 @@ using namespace std;
 namespace ls {
 
 int mpz_log(__mpz_struct n) {
-	std::cout << "mpz_log size " << n._mp_size << std::endl;
-	std::cout << "mpz_log alloc " << n._mp_alloc << std::endl;
-	std::cout << "mpz_log d " << n._mp_d << std::endl;
+	// std::cout << "mpz_log size " << n._mp_size << std::endl;
+	// std::cout << "mpz_log alloc " << n._mp_alloc << std::endl;
+	// std::cout << "mpz_log d " << n._mp_d << std::endl;
 	int l = abs(n._mp_size) - 1;
 	unsigned long s = n._mp_d[l];
 	unsigned char r = 0;
