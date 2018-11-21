@@ -97,7 +97,7 @@ const Type Type::CONST_INTEGER(RawType::INTEGER, Nature::VALUE, false, false, tr
 const Type Type::MPZ(RawType::MPZ, Nature::VALUE);
 const Type Type::MPZ_TMP(RawType::MPZ, Nature::VALUE, false, true);
 const Type Type::LONG(RawType::LONG, Nature::VALUE);
-const Type Type::CONST_LONG(RawType::LONG, Nature::VALUE, false, true);
+const Type Type::CONST_LONG(RawType::LONG, Nature::VALUE, false, false, true);
 const Type Type::REAL(RawType::REAL, Nature::VALUE);
 const Type Type::CONST_REAL(RawType::REAL, Nature::VALUE, false, false, true);
 const Type Type::STRING(RawType::STRING, Nature::POINTER);
@@ -487,12 +487,10 @@ bool Type::compatible(const Type& type) const {
 	}
 
 	if (this->raw_type != type.raw_type) {
-
 		// Every type is compatible with 'Unknown' type
 		if (this->raw_type == RawType::UNKNOWN) {
 			return true;
 		}
-
 		// 'Integer' is compatible with 'Float'
 		if (this->raw_type == RawType::REAL and type.raw_type == RawType::INTEGER) {
 			return true;
