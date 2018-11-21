@@ -121,8 +121,8 @@ void Test::test_numbers() {
 	DISABLED_code("1234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567883459720303390827584524332795121111123456788999999999999999999999999999999999.5").equals("");
 
 	section("Integer division by zero");
-	DISABLED_code("1 \\ 0").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	DISABLED_code("1 % 0").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("1 \\ 0").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("1 % 0").exception(ls::vm::Exception::DIVISION_BY_ZERO);
 
 	/*
 	 * Number standard library
@@ -284,7 +284,7 @@ void Test::test_numbers() {
 	code("2 ** 50").equals("-2147483648");
 	code("2m ** 50").equals("1125899906842624");
 	code("(5m + 2m) ** (16m * 2m)").equals("1104427674243920646305299201");
-	DISABLED_code("123m ** 1900").exception(ls::vm::Exception::NUMBER_OVERFLOW);
+	code("123m ** 1900").exception(ls::vm::Exception::NUMBER_OVERFLOW);
 	code("var s = 0 s = 5 ** 2 s").equals("25");
 
 	section("Number.operator **=");
@@ -416,11 +416,10 @@ void Test::test_numbers() {
 	code("5 & 12").equals("4"); 
 	code("87619 & 18431").equals("17987");
 	code("87619★ & [18431, ''][0]").equals("17987");
-	DISABLED_code("var a = 87619 a &= 18431").equals("17987");
-	DISABLED_code("let a = 87619 a &= 18431").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {"&="});
+	code("var a = 87619 a &= 18431").equals("17987");
 	code("var a = 87619 a &= 18431 a").equals("17987");
 	DISABLED_code("87619★ & 18431").equals("17987");
-	DISABLED_code("87619★ &= 18431").equals("17987");
+	code("87619★ &= 18431").equals("17987");
 	code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator |");
