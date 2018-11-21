@@ -529,6 +529,12 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	auto llvm_return_type = version->type.getReturnType().llvm_type();
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
 	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun_" + name + std::to_string(id), module.get());
+
+	auto f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.context), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", module.get());
+	auto Int8PtrTy = llvm::PointerType::get(llvm::Type::getInt8Ty(c.context), c.DL.getAllocaAddrSpace());
+	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
+	llvm_function->setPersonalityFn(personality);
+
 	unsigned Idx = 0;
 	int offset = captures.size() ? -1 : 0;
 	for (auto &arg : llvm_function->args()) {

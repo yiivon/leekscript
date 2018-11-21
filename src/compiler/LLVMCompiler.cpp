@@ -1238,7 +1238,8 @@ void LLVMCompiler::insn_return(LLVMCompiler::value v) const {
 }
 
 // Call functions
-LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCompiler::value> args, void* func, std::string function_name) const {
+void fake_ex_destru(void*) {}
+LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCompiler::value> args, void* func, std::string function_name, bool exception) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1252,7 +1253,38 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
 		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
-	return {Builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type};
+	const auto lambda = mappings.at(function_name).function;
+
+	if (exception) {
+		auto continueBlock = llvm::BasicBlock::Create(context, "cont", F);
+		auto catchBlock = llvm::BasicBlock::Create(context, "catch", F);
+
+		auto savedIP = Builder.saveAndClearIP();
+		auto lpad = llvm::BasicBlock::Create(context, "lpad", F);
+		Builder.SetInsertPoint(lpad);
+		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(context));
+		auto LPadInst = Builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(context), llvm::Type::getInt32Ty(context)), 1);
+		auto LPadExn = Builder.CreateExtractValue(LPadInst, 0);
+		auto ExceptionSlot = CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt8PtrTy(context));
+		Builder.CreateStore(LPadExn, ExceptionSlot);
+		LPadInst->addClause(catchAllSelector);
+		Builder.CreateBr(catchBlock);
+		Builder.restoreIP(savedIP);
+
+		value r = {Builder.CreateInvoke(lambda, continueBlock, lpad, llvm_args, function_name), return_type};
+
+		Builder.SetInsertPoint(catchBlock);
+		delete_function_variables();
+		insn_call(Type::VOID, {insn_load({ExceptionSlot, Type::POINTER})}, +[](void* ex) {
+			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru);
+		});
+		Builder.CreateBr(continueBlock);
+
+		Builder.SetInsertPoint(continueBlock);
+		return r;
+	} else {
+		return {Builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type};
+	}
 }
 
 LLVMCompiler::value LLVMCompiler::insn_call_indirect(Type return_type, LLVMCompiler::value fun, std::vector<LLVMCompiler::value> args) const {
