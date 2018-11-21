@@ -163,7 +163,7 @@ LSValue* LSObject::attr(const std::string& key) const {
 
 LSValue** LSObject::attrL(const std::string& key) {
 	if (readonly) {
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::CANT_MODIFY_READONLY_OBJECT));
+		throw vm::ExceptionObj(vm::Exception::CANT_MODIFY_READONLY_OBJECT);
 	}
 	try {
 		return &values.at(key);

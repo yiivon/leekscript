@@ -252,13 +252,13 @@ Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> a
 			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
 			LSValue::delete_temporary(y);
-			jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 		}
 		auto res = (int) a->value & (int) b->value;
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	});
+	}, "bit_and", true);
 }
 
 Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> args) {
@@ -268,13 +268,13 @@ Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> ar
 			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
 			LSValue::delete_temporary(y);
-			jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 		}
 		auto res = (int) a->value | (int) b->value;
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	});
+	}, "bit_or", true);
 }
 
 Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> args) {
@@ -285,13 +285,13 @@ Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> a
 			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
 			LSValue::delete_temporary(y);
-			jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 		}
 		auto res = (int) a->value ^ (int) b->value;
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	});
+	}, "bit_xor", true);
 }
 
 Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) {

@@ -79,7 +79,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto e = expression->compile_l(c);
 				return c.insn_call(Type::POINTER, {e}, (void*) +[](LSValue** x) {
 					return (*x)->ls_inc();
-				});
+				}, "inc", true);
 			}
 			break;
 		}
@@ -97,7 +97,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto e = expression->compile_l(c);
 				return c.insn_call(Type::POINTER, {e}, (void*) +[](LSValue** x) {
 					return (*x)->ls_dec();
-				});
+				}, "inc", true);
 			}
 			break;
 		}

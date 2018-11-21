@@ -94,7 +94,7 @@ int LSInterval::atv(const int key) const {
 	int size = b - a + 1;
 	if (key < 0 or key >= size) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	return a + key;
 }
@@ -103,7 +103,7 @@ LSValue* LSInterval::at(const LSValue* key) const {
 	if (key->type != NUMBER) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	}
 	auto n = static_cast<const LSNumber*>(key);
 	int size = b - a + 1;
@@ -111,7 +111,7 @@ LSValue* LSInterval::at(const LSValue* key) const {
 	if (index < 0 or index >= size) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	return LSNumber::get(a + index);
 }
@@ -120,7 +120,7 @@ LSValue* LSInterval::range(int start, int end) const {
 	int size = b - a + 1;
 	if (start < 0 or start >= size or end >= b) {
 		LSValue::delete_temporary(this);
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	auto new_interval = new LSInterval();
 	new_interval->a = a + start;

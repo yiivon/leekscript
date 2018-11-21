@@ -95,8 +95,7 @@ template <class K, class V>
 V LSMap<K, V>::ls_max() {
 	if (this->empty()) {
 		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	auto it = this->begin();
 	auto max = it->second;
@@ -116,8 +115,7 @@ template <class K, class V>
 K LSMap<K, V>::ls_maxKey() {
 	if (this->empty()) {
 		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	auto it = this->begin();
 	auto max = it->first;
@@ -137,8 +135,7 @@ template <class K, class V>
 V LSMap<K, V>::ls_min() {
 	if (this->empty()) {
 		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	auto it = this->begin();
 	auto min = it->second;
@@ -158,8 +155,7 @@ template <class K, class V>
 K LSMap<K, V>::ls_minKey() {
 	if (this->empty()) {
 		LSValue::delete_temporary(this);
-		__builtin_frame_address(0);
-		jit_exception_throw(VM::get_exception_object<1>(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	auto it = this->begin();
 	auto min = it->first;
@@ -304,7 +300,7 @@ V LSMap<K, V>::at(const K key) const {
 		ex = true;
 	}
 	if (ex)
-		jit_exception_throw(new vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS));
+		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	assert(false); // LCOV_EXCL_LINE
 }
 
@@ -313,7 +309,7 @@ inline LSValue** LSMap<K, T>::atL(const LSValue* key) {
 	// Can't apply default atL operator on maps with non-pointer values,
 	// like map<K, int> and map<K, double>
 	LSValue::delete_temporary(key);
-	jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+	throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 	assert(false); // LCOV_EXCL_LINE
 }
 
@@ -330,7 +326,7 @@ inline LSValue** LSMap<int, LSValue*>::atL(const LSValue* key) {
 		return r;
 	}
 	LSValue::delete_temporary(key);
-	jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+	throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 	assert(false); // LCOV_EXCL_LINE
 }
 
@@ -342,7 +338,7 @@ inline LSValue** LSMap<double, LSValue*>::atL(const LSValue* key) {
 		return r;
 	}
 	LSValue::delete_temporary(key);
-	jit_exception_throw(new vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR));
+	throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 	assert(false); // LCOV_EXCL_LINE
 }
 
