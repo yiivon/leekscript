@@ -729,7 +729,12 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}
 				return sum;
 			} else {
-				ls_func = (void*) &jit_mod_equal;
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
+				auto y = v2->compile(c);
+				v2->compile_end(c);
+				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+					return (*x)->mod_eq(y);
+				}, "mod_eq", true);
 			}
 			break;
 		}

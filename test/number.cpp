@@ -309,8 +309,8 @@ void Test::test_numbers() {
 	code("(100000m * 10m) % (12m ** 3m)").equals("1216");
 
 	section("Number.operator %=");
-	DISABLED_code("var a = 721★ a %= true").equals("0");
-	DISABLED_code("var a = 721★ a %= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 721★ a %= true").equals("0");
+	code("var a = 721★ a %= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator %%");
 	code("0 %% 1").equals("0");
