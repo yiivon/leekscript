@@ -1373,7 +1373,7 @@ void LLVMCompiler::leave_function() {
 }
 
 int LLVMCompiler::get_current_function_blocks() const {
-	return 0; // TODO
+	return functions_blocks.back();
 }
 void LLVMCompiler::delete_function_variables() const {
 	for (const auto& v : function_variables.back()) {
