@@ -393,7 +393,7 @@ Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args) {
-	auto x = c.insn_load(args[0], 0, args[0].t);
+	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_add(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
@@ -458,7 +458,7 @@ Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::sub_eq_real(Compiler& c, std::vector<Compiler::value> args) {
-	auto x = c.insn_load(args[0], 0, args[0].t);
+	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_sub(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
@@ -669,7 +669,7 @@ Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value> args) {
-	auto x = c.insn_load(args[0], 0, args[0].t);
+	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_mod(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;

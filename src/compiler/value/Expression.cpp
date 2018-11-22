@@ -630,7 +630,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v2->compile_end(c);
-				auto x = c.insn_load(x_addr, 0, v1->type);
+				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_add(x, y);
 				// jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
 				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -802,7 +802,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v2->compile_end(c);
-				auto x = c.insn_load(x_addr, 0, v1->type);
+				auto x = c.insn_load(x_addr);
 				auto r = c.insn_int_div(x, y);
 				c.insn_store(x_addr, r);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
@@ -1078,7 +1078,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v2->compile_end(c);
-				auto x = c.insn_load(x_addr, 0, v1->type);
+				auto x = c.insn_load(x_addr);
 				auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
 				c.insn_store(x_addr, r);
 				if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {

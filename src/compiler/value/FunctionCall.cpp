@@ -395,7 +395,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 		auto obj = this_ptr->compile(c);
 		if (obj.t.reference) {
-			obj = c.insn_load(obj, 0, obj.t);
+			obj = c.insn_load(obj);
 		}
 		vector<Compiler::value> args = { obj };
 		this_ptr->compile_end(c);
@@ -492,7 +492,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	if (is_unknown_method) {
 		auto oa = static_cast<ObjectAccess*>(function);
-		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c), 0, Type::POINTER);
+		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
 		auto k = c.new_pointer(&oa->field->content);
 		ls_fun_addr = c.insn_call(Type::FUNCTION, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);

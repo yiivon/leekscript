@@ -293,7 +293,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				return e;
 			} else {
 				auto element_addr = c.insn_array_at(compiled_array, k);
-				auto e = c.insn_load(element_addr, 0, type);
+				auto e = c.insn_load(element_addr);
 				e = c.clone(e);
 				if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(e);
@@ -326,7 +326,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 	// Compile the array
 	((ArrayAccess*) this)->compiled_array = [&]() {
 		if (auto la = dynamic_cast<LeftValue*>(array)) {
-			return c.insn_load(la->compile_l(c), 0, array->type);
+			return c.insn_load(la->compile_l(c));
 		} else {
 			return array->compile(c);
 		}

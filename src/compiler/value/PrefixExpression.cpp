@@ -135,10 +135,10 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto x = ((LeftValue*) expression)->compile_l(c);
 				auto one = c.new_integer(1);
 				c.insn_call(Type::VOID, {x, x, one}, &mpz_add_ui);
-				return c.insn_load(x, 0, Type::MPZ);
+				return c.insn_load(x);
 			} else if (expression->type.nature == Nature::VALUE) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);
-				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
+				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_add(x, c.new_integer(1));
 				c.insn_store(x_addr, sum);
 				if (type.nature == Nature::POINTER) {
@@ -154,7 +154,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		case TokenType::MINUS_MINUS: {
 			if (expression->type.nature == Nature::VALUE) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);
-				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
+				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_sub(x, c.new_integer(1));
 				c.insn_store(x_addr, sum);
 				if (type.nature == Nature::POINTER) {

@@ -68,7 +68,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				return r;
 			} else if (expression->type.nature == Nature::VALUE) {
 				auto x_addr = expression->compile_l(c);
-				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
+				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_add(x, c.new_integer(1));
 				c.insn_store(x_addr, sum);
 				if (type.nature == Nature::POINTER) {
@@ -86,7 +86,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 		case TokenType::MINUS_MINUS: {
 			if (expression->type.nature == Nature::VALUE) {
 				auto x_addr = expression->compile_l(c);
-				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
+				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_sub(x, c.new_integer(1));
 				c.insn_store(x_addr, sum);
 				if (type.nature == Nature::POINTER) {
