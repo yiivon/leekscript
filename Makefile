@@ -28,9 +28,9 @@ OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 COMPILER := g++
 OPTIM := -O2
-FLAGS := -std=c++14 -isystem/usr/lib/llvm-6.0/include -g3 -Wall -Wno-overloaded-virtual -Wno-unused-parameter -Wno-pmf-conversions
+FLAGS := -std=c++14 -g3 -Wall -Wno-overloaded-virtual -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
-LIBS := -lm -ljit -lgmp `/usr/lib/llvm-6.0/bin/llvm-config --ldflags --libs core orcjit`
+LIBS := -lm -lgmp `llvm-config --ldflags --libs core orcjit`
 MAKEFLAGS += --jobs=$(shell nproc)
 
 CLOC_EXCLUDED := .git,lib,build,doxygen
@@ -142,12 +142,12 @@ valgrind: build/leekscript-test
 travis:
 	docker build -t leekscript .
 	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
-	       leekscript /bin/bash -c "cd leekscript; make build/leekscript-coverage && build/leekscript-coverage \
-	       && cpp-coveralls -i src/ --gcov-options='-rp'"
+	    leekscript /bin/bash -c "cd leekscript; make build/leekscript-coverage && build/leekscript-coverage \
+	    && cpp-coveralls -i src/ --gcov-options='-rp'"
 travis-pr:
 	docker build -t leekscript .
 	docker run -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
-	       leekscript /bin/bash -c "cd leekscript; make test"
+	    leekscript /bin/bash -c "cd leekscript; make test"
 
 # Coverage results with lcov.
 # `apt install lcov`

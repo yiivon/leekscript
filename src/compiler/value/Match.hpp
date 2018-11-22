@@ -22,7 +22,7 @@ public:
 		inline bool is_default() const { return !begin && !end; }
 
 		void print(std::ostream&, int indent, bool debug) const;
-		jit_value_t match(Compiler &c, jit_value_t v) const;
+		// jit_value_t match(Compiler &c, jit_value_t v) const;
 
 		Pattern clone() const {
 			Pattern p { begin->clone(), end->clone() };

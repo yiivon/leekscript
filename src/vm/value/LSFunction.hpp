@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-#include <jit/jit.h>
 #include "../LSValue.hpp"
 
 namespace ls {

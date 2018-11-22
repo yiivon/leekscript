@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <jit/jit.h>
 #include <gmp.h>
 #include <gmpxx.h>
 #include <stdio.h>
@@ -18,25 +17,6 @@
 #include "Exception.hpp"
 
 #define OPERATION_LIMIT 10000000
-
-#define LS_VOID jit_type_void
-#define LS_INTEGER jit_type_int
-#define LS_LONG jit_type_long
-#define LS_REAL jit_type_float64
-#define LS_BOOLEAN jit_type_sys_bool
-#define LS_POINTER jit_type_void_ptr
-#define LS_STRING LS_POINTER
-#define LS_NUMBER LS_POINTER
-
-#define LS_CREATE_INTEGER(F, X) jit_value_create_nint_constant((F), LS_INTEGER, (X))
-#define LS_CREATE_BOOLEAN(F, X) jit_value_create_nint_constant((F), LS_INTEGER, (X))
-#define LS_CREATE_LONG(F, X) jit_value_create_long_constant((F), LS_LONG, (X))
-#define LS_CREATE_REAL(F, X) jit_value_create_float64_constant((F), LS_REAL, (X))
-
-struct jit_stack_trace {
-	unsigned int size;
-	void* items[1];
-};
 
 namespace ls {
 
@@ -53,7 +33,6 @@ class VM {
 public:
 
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;
-	static jit_type_t mpz_type;
 	static VM* current_vm;
 
 	struct Result {
@@ -94,8 +73,6 @@ public:
 	std::ostream* output = &std::cout;
 	long mpz_created = 0;
 	long mpz_deleted = 0;
-	jit_stack_trace_t stack_trace;
-	jit_context_t jit_context;
 	std::string file_name;
 
 	VM(bool v1 = false);
@@ -112,23 +89,6 @@ public:
 
 	/** Add a constant **/
 	void add_constant(std::string name, Type type, LSValue* value);
-
-	/** Value creation **/
-	static jit_value_t create_array(jit_function_t F, const Type& element_type, int cap = 0);
-
-	/** Conversions **/
-	static jit_value_t value_to_pointer(jit_function_t, jit_value_t, Type);
-	static jit_value_t pointer_to_value(jit_function_t, jit_value_t, Type);
-	static jit_value_t int_to_real(jit_function_t F, jit_value_t v);
-
-	/** Ref counting and memory management **/
-	static jit_value_t get_refs(jit_function_t F, jit_value_t obj);
-	static void inc_refs_if_not_temp(jit_function_t F, jit_value_t obj);
-	static void dec_refs(jit_function_t F, jit_value_t obj);
-	static void inc_mpz_counter(jit_function_t F);
-
-	/** Utilities **/
-	static void print_mpz_int(jit_function_t F, jit_value_t val);
 };
 
 }

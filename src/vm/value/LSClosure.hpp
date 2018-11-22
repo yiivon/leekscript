@@ -6,7 +6,6 @@
 #include <vector>
 #include <memory>
 #include <map>
-#include <jit/jit.h>
 #include "../LSValue.hpp"
 #include "LSFunction.hpp"
 

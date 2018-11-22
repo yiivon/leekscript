@@ -1,8 +1,4 @@
 #include "FunctionCall.hpp"
-#include <jit/jit-common.h>
-#include <jit/jit-insn.h>
-#include <jit/jit-type.h>
-#include <jit/jit-value.h>
 #include <sstream>
 #include <string>
 #include "../../vm/Module.hpp"
@@ -456,30 +452,30 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		if (function->type.getArgumentType(0).nature == Nature::VALUE
 			and function->type.getArgumentType(1).nature == Nature::VALUE) {
 
-			jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
-			if (f->name == "+") {
-				jit_func = &jit_insn_add;
-			} else if (f->name == "-") {
-				jit_func = &jit_insn_sub;
-			} else if (f->name == "*" or f->name == "×") {
-				jit_func = &jit_insn_mul;
-			} else if (f->name == "/" or f->name == "÷") {
-				jit_func = &jit_insn_div;
-			} else if (f->name == "**") {
-				jit_func = &jit_insn_pow;
-			} else if (f->name == "%") {
-				jit_func = &jit_insn_rem;
-			}
-			if (jit_func != nullptr) {
-				auto v0 = arguments[0]->compile(c);
-				auto v1 = arguments[1]->compile(c);
+			// jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
+			// if (f->name == "+") {
+			// 	jit_func = &jit_insn_add;
+			// } else if (f->name == "-") {
+			// 	jit_func = &jit_insn_sub;
+			// } else if (f->name == "*" or f->name == "×") {
+			// 	jit_func = &jit_insn_mul;
+			// } else if (f->name == "/" or f->name == "÷") {
+			// 	jit_func = &jit_insn_div;
+			// } else if (f->name == "**") {
+			// 	jit_func = &jit_insn_pow;
+			// } else if (f->name == "%") {
+			// 	jit_func = &jit_insn_rem;
+			// }
+			// if (jit_func != nullptr) {
+			// 	auto v0 = arguments[0]->compile(c);
+			// 	auto v1 = arguments[1]->compile(c);
 				// jit_value_t ret = jit_func(c.F, v0.v, v1.v);
                 //
 				// if (type.nature == Nature::POINTER) {
 				// 	return c.insn_to_pointer({ret, Type::INTEGER});
 				// }
 				// return {ret, type};
-			}
+			// }
 		}
 	}
 

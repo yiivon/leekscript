@@ -209,7 +209,7 @@ bool jit_greater_equal_(LSValue* x, LSValue* y) {
 	return *x >= *y;
 }
 
-jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
+// jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 
 	// jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
 	// jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 1);
@@ -261,7 +261,7 @@ jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
 	// 	jit_type_free(sig);
 	// 	return cond;
 	// }
-}
+// }
 
 Value* Match::clone() const {
 	auto match = new Match();

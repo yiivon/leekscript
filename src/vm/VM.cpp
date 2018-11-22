@@ -35,7 +35,6 @@ using namespace std;
 namespace ls {
 
 const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
-jit_type_t VM::mpz_type;
 VM* VM::current_vm = nullptr;
 
 LSValue* op_add(LSValue* x, LSValue* y) {
@@ -65,8 +64,6 @@ LSValue* ptr_fun(LSValue* v) {
 }
 
 VM::VM(bool v1) : compiler(this) {
-
-	jit_context = jit_context_create();
 
 	operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
@@ -137,7 +134,6 @@ VM::~VM() {
 	delete null_value;
 	delete true_value;
 	delete false_value;
-	jit_context_destroy(jit_context);
 }
 
 VM* VM::current() {
@@ -161,9 +157,6 @@ void VM::add_constant(std::string name, Type type, LSValue* value) {
 }
 
 VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool log_instructions) {
-
-	jit_type_t types[3] = {jit_type_int, jit_type_int, jit_type_void_ptr};
-	VM::mpz_type = jit_type_create_struct(types, 3, 1);
 
 	// Reset
 	this->file_name = file_name;
@@ -233,7 +226,6 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	// Cleaning
 	delete program;
 	VM::enable_operations = true;
-	jit_type_free(VM::mpz_type);
 	RawType::clear_placeholder_types();
 
 	// Results
@@ -255,7 +247,6 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	if (VM::mpz_deleted != VM::mpz_created) {
 		cout << C_RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << endl; // LCOV_EXCL_LINE
 	}
-
 	return result;
 }
 
@@ -270,36 +261,6 @@ int VM_boolean_to_value(LSBoolean* b) {
 }
 int VM_integer_to_value(LSNumber* n) {
 	return n->value;
-}
-
-jit_value_t VM::pointer_to_value(jit_function_t F, jit_value_t v, Type type) {
-
-	if (type == Type::BOOLEAN) {
-		jit_type_t args_types[1] = {LS_POINTER};
-		jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 1);
-		auto r = jit_insn_call_native(F, "convert", (void*) VM_boolean_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
-		jit_type_free(sig);
-		return r;
-	}
-
-	// Integer
-	jit_type_t args_types[1] = {LS_POINTER};
-	jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_INTEGER, args_types, 1, 1);
-	auto r = jit_insn_call_native(F, "convert", (void*) VM_integer_to_value, sig, &v, 1, JIT_CALL_NOTHROW);
-	jit_type_free(sig);
-	return r;
-}
-
-jit_value_t VM::int_to_real(jit_function_t F, jit_value_t v) {
-	jit_value_t real = jit_value_create(F, LS_REAL);
-	jit_insn_store(F, real, v);
-	return real;
-}
-
-void VM::inc_mpz_counter(jit_function_t F) {
-	jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &VM::current()->mpz_created);
-	jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
-	jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
 
 }

@@ -63,7 +63,7 @@ make doc
 
 Libraries used
 --------------
-* [GNU LibJIT](https://www.gnu.org/software/libjit/), by Rhys Weatherley, under GPL license
+* [LLVM](https://llvm.org/)
 * [GNU MP](https://gmplib.org/), by Torbjörn Granlund, under GPL license
 * [JSON for modern C++](https://github.com/nlohmann/json), by Niels Lohmann, under MIT license
 

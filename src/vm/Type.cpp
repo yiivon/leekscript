@@ -431,31 +431,6 @@ Type Type::add_temporary() const {
 	return new_type;
 }
 
-jit_type_t Type::jit_type() const {
-	if (reference) {
-		return LS_POINTER;
-	}
-	if (nature == Nature::VOID) {
-		return LS_VOID;
-	}
-	if (nature == Nature::POINTER or nature == Nature::UNKNOWN) {
-		return LS_POINTER;
-	}
-	if (raw_type == RawType::MPZ) {
-		return VM::mpz_type;
-	}
-	if (raw_type == RawType::BOOLEAN) {
-		return LS_BOOLEAN;
-	}
-	if (raw_type == RawType::LONG or raw_type == RawType::FUNCTION) {
-		return LS_LONG;
-	}
-	if (raw_type == RawType::REAL) {
-		return LS_REAL;
-	}
-	return LS_INTEGER;
-}
-
 llvm::Type* Type::llvm_type() const {
 	if (nature == Nature::VOID) {
 		return llvm::Type::getVoidTy(LLVMCompiler::context);

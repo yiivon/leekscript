@@ -6,7 +6,6 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Exception.hpp"
-#include <jit/jit-dump.h>
 #include "llvm/IR/Verifier.h"
 using namespace std;
 
@@ -28,22 +27,13 @@ Function::~Function() {
 		delete value;
 	}
 	if (default_version != nullptr) {
-		if (default_version->jit_function != nullptr) {
-			delete (std::string*) jit_function_get_meta(default_version->jit_function, 12);
-			delete (std::string*) jit_function_get_meta(default_version->jit_function, 13);
-		}
 		if (default_version->function != nullptr) {
-
 			delete default_version->function;
 		}
 		delete default_version;
 		default_version = nullptr;
 	}
 	for (const auto& version : versions) {
-		if (version.second->jit_function != nullptr) {
-			delete (std::string*) jit_function_get_meta(version.second->jit_function, 12);
-			delete (std::string*) jit_function_get_meta(version.second->jit_function, 13);
-		}
 		delete version.second->function;
 		delete version.second->body;
 		delete version.second;
