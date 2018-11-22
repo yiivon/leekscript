@@ -18,7 +18,7 @@ void Test::test_loops() {
 	DISABLED_code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
-	// TODO
+	// TODO syntaxic error
 	DISABLED_code("if true").equals("null");
 	// TODO crash
 	DISABLED_code("if true else").equals("null");
