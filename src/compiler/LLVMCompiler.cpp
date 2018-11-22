@@ -1235,7 +1235,10 @@ void LLVMCompiler::insn_branch(label* l) const {
 void LLVMCompiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const { assert(false); }
 
 void LLVMCompiler::insn_return(LLVMCompiler::value v) const {
-	LLVMCompiler::Builder.CreateRet(v.v);
+	Builder.CreateRet(v.v);
+}
+void LLVMCompiler::insn_return_void() const {
+	Builder.CreateRetVoid();
 }
 
 // Call functions

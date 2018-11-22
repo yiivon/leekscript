@@ -561,8 +561,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	if (res.v) {
 		c.insn_return(res);
 	} else {
-		// TODO should be removed, no return if there's no value
-		c.insn_return(c.new_integer(0));
+		c.insn_return_void();
 	}
 
 	// Validate the generated code, checking for consistency.
