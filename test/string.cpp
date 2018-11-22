@@ -100,9 +100,9 @@ void Test::test_strings() {
 	code("'bonjour'[2:'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 2>"});
 	code("'bonjour'['a':'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
 	code("let a = ['bonjour', 2][0] a[3]").equals("'j'");
-	DISABLED_code("'hello'[-1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("''[0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("'yoyo'[1000]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("'hello'[-1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("''[0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("'yoyo'[1000]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("String.operator ==");
 	code("'test' == 'etst'").equals("false");
