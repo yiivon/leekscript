@@ -15,7 +15,7 @@ void Test::test_functions() {
 
 	section("Global functions");
 	code("let v = global_fun() function global_fun() { return 1234567 } v").equals("1234567");
-	DISABLED_code("let v = global_fun() function global_fun() { return 'hello' } v").equals("'hello'");
+	code("let v = global_fun() function global_fun() { return 'hello' } v").equals("'hello'");
 	code("let v = global_fun(5) function global_fun(x) { return x + 12 } v").equals("17");
 
 	section("Can't call a value");
@@ -27,9 +27,9 @@ void Test::test_functions() {
 	section("Simple returns");
 	code("1; 2").equals("2");
 	code("return 1").equals("1");
-	DISABLED_code("return 'a'").equals("'a'");
-	DISABLED_code("let x = 'yolo' return '1'; 2").equals("'1'");
-	DISABLED_code("let x = '1' return x; 2").equals("'1'");
+	code("return 'a'").equals("'a'");
+	code("let x = 'yolo' return '1'; 2").equals("'1'");
+	code("let x = '1' return x; 2").equals("'1'");
 
 	section("Functions / Lambdas");
 	code("let f = x -> x f(12)").equals("12");
@@ -56,9 +56,9 @@ void Test::test_functions() {
 	code("let f = -> -> 12 f()()").equals("12");
 	code("let f = x -> -> 'salut' f(5)()").equals("'salut'");
 	code("let f = x -> [x, x, x] f(44)").equals("[44, 44, 44]");
-	DISABLED_code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
-	DISABLED_code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
-	DISABLED_code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
+	code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
+	code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
+	code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
 	code("let f = a, i -> a[i] f([1 2 3], 1)").equals("2");

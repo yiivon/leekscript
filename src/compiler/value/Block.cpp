@@ -116,7 +116,8 @@ Compiler::value Block::compile(Compiler& c) const {
 		auto val = instructions[i]->compile(c);
 
 		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
-			break; // no need to compile after a return
+			// no need to compile after a return
+			return {nullptr, Type::UNKNOWN};
 		}
 		if (i == instructions.size() - 1) {
 			if (type.must_manage_memory() and val.v != nullptr) {

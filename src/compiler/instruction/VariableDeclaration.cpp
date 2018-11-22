@@ -119,7 +119,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
-			c.set_var_type(name, ex->type);
+			c.set_var_type(name, ex->type.not_temporary());
 			c.add_function_var(var);
 			c.insn_store(var, val);
 

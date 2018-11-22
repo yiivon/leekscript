@@ -51,7 +51,7 @@ Compiler::value Return::compile(Compiler& c) const {
 		c.delete_variables_block(c.get_current_function_blocks());
 		c.insn_return(r);
 	} else {
-		c.insn_return(c.new_integer(0));
+		c.insn_return_void();
 	}
 	return {nullptr, Type::UNKNOWN};
 }
