@@ -564,9 +564,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.insn_return_void();
 	}
 
-	// Validate the generated code, checking for consistency.
 	verifyFunction(*llvm_function);
-	// Run the optimizer on the function.
 	fpm->run(*llvm_function);
 
 	// catch (ex)
