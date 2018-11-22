@@ -15,6 +15,7 @@
 #include "../vm/value/LSArray.hpp"
 #include "../vm/value/LSMap.hpp"
 #include "../vm/value/LSClosure.hpp"
+#include "../colors.h"
 #include <bitset>
 
 #define log_insn(i) log_instructions && _log_insn((i))
@@ -1494,10 +1495,13 @@ void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::v
 
 // Utils
 std::ostringstream& LLVMCompiler::_log_insn(int indent) const { assert(false); }
+
 std::string LLVMCompiler::dump_val(LLVMCompiler::value v) const { assert(false); }
+
 void LLVMCompiler::register_label(label* v) const { assert(false); }
+
 void LLVMCompiler::log_insn_code(std::string instruction) const {
-	// TODO
+	log_insn(0) << C_BLUE << instruction << END_COLOR << std::endl;
 }
 void LLVMCompiler::add_literal(void* ptr, std::string value) const {
 	((LLVMCompiler*) this)->literals.insert({ptr, value});
