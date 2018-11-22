@@ -119,7 +119,7 @@ void Test::test_arrays() {
 	code("let v = [['a', 'b'], 12] v[0][1]").equals("'b'");
 	code("let v = [['a', 'b'], 12] v[0][true]").equals("'b'");
 	code("[['a', 'b'], 12][0][['yolo', 1][0]]").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
-	DISABLED_code("[['a', 'b'], 12][0][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[['a', 'b'], 12][0][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
 	DISABLED_code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
@@ -189,20 +189,20 @@ void Test::test_arrays() {
 	code("var a = [1, 2, 3] a += [4] a").equals("[1, 2, 3, 4]");
 
 	section("Array.operator ~~");
-	DISABLED_code("[1, 2, 3, 4, 5] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25]");
-	DISABLED_code("[1.5, 2.5, 3.5] ~~ x -> x.floor()").equals("[1, 2, 3]");
-	DISABLED_code("[1, 2, 3, 4, 5] ~~ (x -> x ** 2)").equals("[1, 4, 9, 16, 25]");
+	code("[1, 2, 3, 4, 5] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25]");
+	code("[1.5, 2.5, 3.5] ~~ x -> x.floor()").equals("[1, 2, 3]");
+	code("[1, 2, 3, 4, 5] ~~ (x -> x ** 2)").equals("[1, 4, 9, 16, 25]");
 	DISABLED_code("['yo', 'toto', 'salut'] ~~ x -> x + ' !'").equals("['yo !', 'toto !', 'salut !']");
-	DISABLED_code("[1, 2, 3] ~~ x -> [x]").equals("[[1], [2], [3]]");
-	DISABLED_code("[1, 2, 3] ~~ x -> 'yo'").equals("['yo', 'yo', 'yo']");
-	DISABLED_code("let f = x -> x * 10 [1, 2, 3] ~~ f").equals("[10, 20, 30]");
-	DISABLED_code("[1.2, 321.42] ~~ x -> x * 1.7").equals("[2.04, 546.414]");
-	DISABLED_code("[1, 2, 3, 4, 5] ~~ x -> x.max(3)").equals("[3, 3, 3, 4, 5]");
-	DISABLED_code("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)").equals("[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
+	code("[1, 2, 3] ~~ x -> [x]").equals("[[1], [2], [3]]");
+	code("[1, 2, 3] ~~ x -> 'yo'").equals("['yo', 'yo', 'yo']");
+	code("let f = x -> x * 10 [1, 2, 3] ~~ f").equals("[10, 20, 30]");
+	code("[1.2, 321.42] ~~ x -> x * 1.7").equals("[2.04, 546.414]");
+	code("[1, 2, 3, 4, 5] ~~ x -> x.max(3)").equals("[3, 3, 3, 4, 5]");
+	code("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)").equals("[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
 	DISABLED_code("[1, 2, 3, 4] ~~ x -> x + 0.5").equals("[1.5, 2.5, 3.5, 4.5]");
 	DISABLED_code("[1, 2, 3] ~~ (x -> x * 5) ~~ (x -> x - 1)").equals("[4, 9, 14]");
-	DISABLED_code("let f = x -> x + 10 let g = x -> x ** 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
-	DISABLED_code("[1, 2, 3] ~~ Number.sqrt").equals("[1, 1.41421, 1.73205]");
+	code("let f = x -> x + 10 let g = x -> x ** 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
+	code("[1, 2, 3] ~~ Number.sqrt").equals("[1, 1.41421, 1.73205]");
 
 	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
