@@ -240,7 +240,6 @@ public:
 	value insn_address_of(value v) const;
 	value insn_load(value v, int pos = 0, Type t = Type::POINTER) const;
 	void  insn_store(value, value) const;
-	void  insn_store_relative(value, int, value) const;
 	value insn_typeof(value v) const;
 	value insn_class_of(value v) const;
 	void  insn_delete(value v) const;

@@ -116,7 +116,7 @@ Compiler::value ValueSTD::attr_class(Compiler& c, Compiler::value a) {
  * Operators
  */
 Compiler::value ValueSTD::op_store(Compiler& c, std::vector<Compiler::value> args) {
-	c.insn_store_relative(args[0], 0, args[1]);
+	c.insn_store(args[0], args[1]);
 	return args[1];
 }
 
@@ -311,8 +311,8 @@ Compiler::value ValueSTD::op_swap_val(Compiler& c, std::vector<Compiler::value> 
 	auto y_addr = args[1];
 	auto x = c.insn_load(x_addr, 0, x_addr.t);
 	auto y = c.insn_load(y_addr, 0, y_addr.t);
-	c.insn_store_relative(x_addr, 0, y);
-	c.insn_store_relative(y_addr, 0, x);
+	c.insn_store(x_addr, y);
+	c.insn_store(y_addr, x);
 	return y;
 }
 

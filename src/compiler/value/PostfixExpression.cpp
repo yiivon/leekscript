@@ -70,7 +70,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto x_addr = expression->compile_l(c);
 				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
 				auto sum = c.insn_add(x, c.new_integer(1));
-				c.insn_store_relative(x_addr, 0, sum);
+				c.insn_store(x_addr, sum);
 				if (type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(x);
 				}
@@ -88,7 +88,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto x_addr = expression->compile_l(c);
 				auto x = c.insn_load(x_addr, 0, Type::INTEGER);
 				auto sum = c.insn_sub(x, c.new_integer(1));
-				c.insn_store_relative(x_addr, 0, sum);
+				c.insn_store(x_addr, sum);
 				if (type.nature == Nature::POINTER) {
 					return c.insn_to_pointer(x);
 				}

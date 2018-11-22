@@ -652,11 +652,6 @@ void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) cons
 	log_insn(4) << "store " << dump_val(x) << " " << dump_val(y) << std::endl;
 }
 
-void  LLVMCompiler::insn_store_relative(LLVMCompiler::value x, int pos, LLVMCompiler::value y) const {
-	Builder.CreateAlignedStore(y.v, x.v, pos);
-	log_insn(4) << "store_rel " << dump_val(x) << " " << dump_val(y) << std::endl;
-}
-
 LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 	if (v.t.raw_type == RawType::ANY) return new_integer(LSValue::NULLL);
 	if (v.t.raw_type == RawType::BOOLEAN) return new_integer(LSValue::BOOLEAN);
@@ -893,7 +888,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		auto array_type = v.v->getType()->getPointerElementType();
 		auto raw_data = Builder.CreateStructGEP(array_type, v.v, 5);
 		auto it_type = v.t.getElementType().llvm_type()->getPointerTo();
-		LLVMCompiler::value it = {CreateEntryBlockAlloca("it", it_type), Type::POINTER};
+		value it = {CreateEntryBlockAlloca("it", it_type), Type::POINTER};
 		insn_store(it, {Builder.CreateLoad(raw_data), Type::POINTER});
 		return it;
 	}
@@ -1136,7 +1131,7 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 	if (it.t == Type::INTERVAL_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto pos = insn_load(addr, 8, Type::INTEGER);
-		insn_store_relative(addr, 8, insn_add(pos, new_integer(1)));
+		// insn_store_relative(addr, 8, insn_add(pos, new_integer(1)));
 		return;
 	}
 	if (it.t == Type::STRING_ITERATOR) {
@@ -1154,11 +1149,11 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 	if (it.t == Type::SET_ITERATOR) {
 		auto addr = insn_address_of(it);
 		auto ptr = insn_load(addr, 0, Type::POINTER);
-		insn_store_relative(addr, 8, insn_add(insn_load(addr, 8, Type::INTEGER), new_integer(1)));
-		insn_store_relative(addr, 0, insn_call(Type::POINTER, {ptr}, (void*) +[](LSSet<int>::iterator it) {
-			it++;
-			return it;
-		}));
+		// insn_store_relative(addr, 8, insn_add(insn_load(addr, 8, Type::INTEGER), new_integer(1)));
+		// insn_store_relative(addr, 0, insn_call(Type::POINTER, {ptr}, (void*) +[](LSSet<int>::iterator it) {
+		// 	it++;
+		// 	return it;
+		// }));
 		return;
 	}
 	if (it.t == Type::INTEGER_ITERATOR) {
