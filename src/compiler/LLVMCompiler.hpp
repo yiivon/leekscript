@@ -46,12 +46,9 @@ class Function;
 
 class LLVMCompiler {
 public:
-	static llvm::LLVMContext context;
+	// TODO private builder and context
 	static llvm::IRBuilder<> Builder;
-	// static std::unique_ptr<llvm::Module> TheModule;
-	static std::map<std::string, llvm::Value*> NamedValues;
-	// static std::unique_ptr<llvm::legacy::FunctionPassManager> TheFPM;
-
+	static llvm::LLVMContext context;
 	struct value {
 		llvm::Value* v;
 		Type t;

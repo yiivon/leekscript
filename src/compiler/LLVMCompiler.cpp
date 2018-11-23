@@ -24,7 +24,6 @@ namespace ls {
 
 llvm::LLVMContext LLVMCompiler::context;
 llvm::IRBuilder<> LLVMCompiler::Builder(context);
-std::map<std::string, llvm::Value*> LLVMCompiler::NamedValues;
 
 void LLVMCompiler::init() {
 
