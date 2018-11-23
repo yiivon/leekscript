@@ -62,7 +62,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
 		auto& var = variables.at(i);
-		auto v = analyser->add_var(var.get(), Type::UNKNOWN, expressions.at(i), this);
+		auto v = analyser->add_var(var.get(), Type::ANY, expressions.at(i), this);
 		if (v == nullptr) {
 			continue;
 		}
@@ -72,13 +72,13 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 				f->name = var->content;
 				f->file = VM::current()->file_name;
 			}
-			expressions[i]->analyse(analyser, Type::UNKNOWN);
+			expressions[i]->analyse(analyser, Type::ANY);
 			v->type = expressions[i]->type;
 			v->type.temporary = false;
 			v->type.constant = constant;
 			v->value = expressions[i];
 		} else {
-			v->type = Type::ANY;
+			v->type = Type::ANY_OLD;
 			v->type.constant = constant;
 		}
 		if (v->type == Type::VOID) {
@@ -124,12 +124,12 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			c.insn_store(var, val);
 
 		} else {
-			auto var = c.create_and_add_var(name, Type::ANY);
+			auto var = c.create_and_add_var(name, Type::ANY_OLD);
 			auto val = c.new_null();
 			c.insn_store(var, val);
 		}
 	}
-	return {nullptr, Type::UNKNOWN};
+	return {nullptr, Type::ANY};
 }
 
 Instruction* VariableDeclaration::clone() const {

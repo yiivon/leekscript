@@ -178,7 +178,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::MPZ, {Type::MPZ}, (void*) &ValueSTD::copy},
 	});
 	method("int", Method::Static, {
-		{Type::INTEGER, {Type::UNKNOWN}, (void*) &NumberSTD::_int},
+		{Type::INTEGER, {Type::ANY}, (void*) &NumberSTD::_int},
 	});
 	method("abs", {
 		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::abs_ptr},

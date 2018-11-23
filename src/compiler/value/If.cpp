@@ -15,7 +15,7 @@ If::If(bool ternary) {
 	elze = nullptr;
 	condition = nullptr;
 	then = nullptr;
-	type = Type::UNKNOWN;
+	type = Type::ANY;
 	this->ternary = ternary;
 }
 
@@ -59,7 +59,7 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	types.clear();
 
-	condition->analyse(analyser, Type::UNKNOWN);
+	condition->analyse(analyser, Type::ANY);
 	then->analyse(analyser, req_type);
 
 	types.add(then->types);

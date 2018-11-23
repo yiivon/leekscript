@@ -10,7 +10,7 @@
 namespace ls {
 
 enum class Nature {
-	UNKNOWN, VALUE, POINTER, VOID
+	ANY, VALUE, POINTER, VOID
 };
 
 class BaseRawType {
@@ -26,11 +26,11 @@ public:
 	virtual bool is_placeholder() const { return false; }
 };
 
-class UnknownRawType : public BaseRawType {
+class AnyRawType : public BaseRawType {
 public:
-	UnknownRawType() {}
-	virtual ~UnknownRawType() {}
-	virtual const std::string getName() const { return "?"; }
+	AnyRawType() {}
+	virtual ~AnyRawType() {}
+	virtual const std::string getName() const { return "any"; }
 };
 
 class VoidRawType : public BaseRawType {
@@ -40,13 +40,13 @@ public:
 	virtual const std::string getJsonName() const { return "void"; }
 };
 
-class AnyRawType : public BaseRawType {
+class AnyOldRawType : public BaseRawType {
 public:
-	AnyRawType() {}
+	AnyOldRawType() {}
 	virtual int id() const { return 1; }
-	virtual const std::string getName() const { return "any"; }
-	virtual const std::string getClass() const { return "Any"; }
-	virtual const std::string getJsonName() const { return "any"; }
+	virtual const std::string getName() const { return "any_old"; }
+	virtual const std::string getClass() const { return "Any_old"; }
+	virtual const std::string getJsonName() const { return "any_old"; }
 };
 
 class BooleanRawType : public BaseRawType {
@@ -203,9 +203,9 @@ public:
 
 class RawType {
 public:
-	static const UnknownRawType _UNKNOWN;
-	static const VoidRawType _VOID;
 	static const AnyRawType _ANY;
+	static const VoidRawType _VOID;
+	static const AnyOldRawType _ANY_OLD;
 	static const BooleanRawType _BOOLEAN;
 	static const NumberRawType _NUMBER;
 	static const MpzRawType _MPZ;
@@ -222,9 +222,9 @@ public:
 	static const ClosureRawType _CLOSURE;
 	static const ClassRawType _CLASS;
 
-	static const UnknownRawType* const UNKNOWN;
-	static const VoidRawType* const VOID;
 	static const AnyRawType* const ANY;
+	static const VoidRawType* const VOID;
+	static const AnyOldRawType* const ANY_OLD;
 	static const BooleanRawType* const BOOLEAN;
 	static const NumberRawType* const NUMBER;
 	static const MpzRawType* const MPZ;
@@ -322,9 +322,10 @@ public:
 	static const Type POINTER;
 	static const Type CONST_POINTER;
 
-	static const Type UNKNOWN;
-	static const Type CONST_UNKNOWN;
 	static const Type ANY;
+	static const Type CONST_UNKNOWN;
+	static const Type ANY_OLD;
+	static const Type CONST_ANY;
 	static const Type BOOLEAN;
 	static const Type BOOLEAN_P;
 	static const Type CONST_BOOLEAN;

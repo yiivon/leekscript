@@ -38,7 +38,7 @@ Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 		if (v.v != nullptr) {
 			c.insn_delete_temporary(v);
 		}
-		return {nullptr, Type::UNKNOWN};
+		return {nullptr, Type::ANY};
 	} else {
 		return v;
 	}

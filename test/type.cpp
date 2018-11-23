@@ -3,8 +3,8 @@
 void Test::test_types() {
 
 	header("Types");
-	// Print unknown type nature (should not be printed elsewhere)
-	std::cout << ls::Type::get_nature_symbol(ls::Nature::UNKNOWN) << std::endl;
+	// Print any type nature (should not be printed elsewhere)
+	std::cout << ls::Type::get_nature_symbol(ls::Nature::ANY) << std::endl;
 
 	// Print a list of types
 	std::vector<ls::Type> types { ls::Type::INTEGER, ls::Type::STRING, ls::Type::REAL_ARRAY };
@@ -17,9 +17,9 @@ void Test::test_types() {
 	assert(ls::Type::OBJECT.raw_type->getJsonName() == "object");
 	assert(ls::Type::CLASS.raw_type->getJsonName() == "class");
 	assert(ls::Type::SET.raw_type->getJsonName() == "set");
-	assert(ls::Type::ANY.raw_type->getJsonName() == "any");
+	assert(ls::Type::ANY_OLD.raw_type->getJsonName() == "any_old");
 	assert(ls::Type::VOID.raw_type->getName() == "void");
-	assert(ls::Type::UNKNOWN.raw_type->getName() == "?");
+	assert(ls::Type::ANY.raw_type->getName() == "any");
 	assert(ls::Type::FUNCTION.raw_type->getName() == "function");
 
 	// Type::more_specific

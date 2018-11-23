@@ -30,7 +30,7 @@ Location AbsoluteValue::location() const {
 void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	expression->analyse(analyser, Type::POINTER);
 	constant = expression->constant;
-	if (req_type.nature != Nature::UNKNOWN) {
+	if (req_type.nature != Nature::ANY) {
 		type.nature = req_type.nature;
 	}
 }

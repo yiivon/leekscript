@@ -32,7 +32,7 @@ Location PostfixExpression::location() const {
 
 void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	expression->analyse(analyser, Type::UNKNOWN);
+	expression->analyse(analyser, Type::ANY);
 
 	if (expression->type.constant) {
 		analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
@@ -103,7 +103,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 		}
 		default: {}
 	}
-	return {nullptr, Type::UNKNOWN};
+	return {nullptr, Type::ANY};
 }
 
 Value* PostfixExpression::clone() const {

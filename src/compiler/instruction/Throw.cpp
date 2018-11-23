@@ -29,7 +29,7 @@ Location Throw::location() const {
 
 void Throw::analyse(SemanticAnalyser* analyser, const Type&) {
 	if (expression != nullptr) {
-		expression->analyse(analyser, Type::UNKNOWN);
+		expression->analyse(analyser, Type::ANY);
 	}
 }
 
@@ -43,7 +43,7 @@ Compiler::value Throw::compile(Compiler& c) const {
 
 	c.insn_throw(exception);
 
-	return {nullptr, Type::UNKNOWN};
+	return {nullptr, Type::ANY};
 }
 
 Instruction* Throw::clone() const {

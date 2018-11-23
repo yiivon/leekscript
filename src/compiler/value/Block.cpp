@@ -87,7 +87,7 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->leave_block();
 
 	if (type.nature == Nature::VOID) { // empty block or last instruction type is VOID
-		if (req_type.nature != Nature::UNKNOWN) {
+		if (req_type.nature != Nature::ANY) {
 			type.nature = req_type.nature;
 		} else {
 			type = Type::VOID;
@@ -119,7 +119,7 @@ Compiler::value Block::compile(Compiler& c) const {
 
 		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
 			// no need to compile after a return
-			return {nullptr, Type::UNKNOWN};
+			return {nullptr, Type::ANY};
 		}
 		if (i == instructions.size() - 1) {
 			if (type.must_manage_memory() and val.v != nullptr) {
@@ -147,7 +147,7 @@ Compiler::value Block::compile(Compiler& c) const {
 		}
 	}
 	c.leave_block();
-	return {nullptr, Type::UNKNOWN};
+	return {nullptr, Type::ANY};
 }
 
 Value* Block::clone() const {

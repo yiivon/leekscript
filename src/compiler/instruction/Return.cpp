@@ -28,8 +28,8 @@ void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 	auto f = analyser->current_function();
 
 	if (expression != nullptr) {
-		Type required_type = Type::UNKNOWN;
-		if (f->current_version->type.getReturnType() != Type::UNKNOWN) {
+		Type required_type = Type::ANY;
+		if (f->current_version->type.getReturnType() != Type::ANY) {
 			required_type = f->current_version->type.getReturnType();
 		}
 		expression->analyse(analyser, required_type);
@@ -53,7 +53,7 @@ Compiler::value Return::compile(Compiler& c) const {
 	} else {
 		c.insn_return_void();
 	}
-	return {nullptr, Type::UNKNOWN};
+	return {nullptr, Type::ANY};
 }
 
 Instruction* Return::clone() const {

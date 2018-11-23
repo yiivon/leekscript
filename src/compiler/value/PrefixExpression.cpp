@@ -39,7 +39,7 @@ Location PrefixExpression::location() const {
 
 void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	expression->analyse(analyser, Type::UNKNOWN);
+	expression->analyse(analyser, Type::ANY);
 
 	if (operatorr->type == TokenType::TILDE) {
 		type = expression->type;
@@ -84,7 +84,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
 				if (vv->name == "Number") {
 					if (fc->arguments.size() > 0) {
-						fc->arguments[0]->analyse(analyser, Type::UNKNOWN);
+						fc->arguments[0]->analyse(analyser, Type::ANY);
 						type = fc->arguments[0]->type;
 					} else {
 						type = Type::INTEGER;
@@ -98,7 +98,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 			}
 		}
 	}
-	if (req_type.nature != Nature::UNKNOWN) {
+	if (req_type.nature != Nature::ANY) {
 		type.nature = req_type.nature;
 	}
 }

@@ -39,7 +39,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (var->value && function_object) {
 			// Analyse the real function (if the function is defined below its call for example)
 			if (!function_object->analyzed) {
-				function_object->analyse(analyser, Type::UNKNOWN);
+				function_object->analyse(analyser, Type::ANY);
 				var->type = function_object->type;
 			}
 		}
@@ -168,7 +168,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		v = c.insn_load(c.insn_get_argument(name));
 	}
 
-	if (var->type.nature != Nature::UNKNOWN and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
+	if (var->type.nature != Nature::ANY and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
 		return c.insn_to_pointer(v);
 	}
 	if (type.nature == Nature::VALUE && var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {

@@ -55,7 +55,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Init
 	for (Instruction* ins : inits) {
-		ins->analyse(analyser, Type::UNKNOWN);
+		ins->analyse(analyser, Type::ANY);
 		if (dynamic_cast<Return*>(ins)) {
 			type = ins->type;
 			analyser->leave_block();
@@ -65,7 +65,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Condition
 	if (condition != nullptr) {
-		condition->analyse(analyser, Type::UNKNOWN);
+		condition->analyse(analyser, Type::ANY);
 	}
 
 	// Body

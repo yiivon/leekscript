@@ -115,8 +115,8 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		return;
 	}
 
-	v1->analyse(analyser, Type::UNKNOWN);
-	v2->analyse(analyser, Type::UNKNOWN);
+	v1->analyse(analyser, Type::ANY);
+	v2->analyse(analyser, Type::ANY);
 
 	if (dynamic_cast<const PlaceholderRawType*>(v1->type.raw_type)) {
 		type = v1->type;
@@ -130,7 +130,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// in operator : v1 must be a container
-	if (op->type == TokenType::IN and v2->type.raw_type != RawType::UNKNOWN and !v2->type.is_container()) {
+	if (op->type == TokenType::IN and v2->type.raw_type != RawType::ANY and !v2->type.is_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
 		return;
 	}
@@ -208,7 +208,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		return_type = m->return_type;
 		type = return_type;
 
-		if (v1->type.not_temporary() != this->v1_type.not_temporary() && v2->type != Type::UNKNOWN) {
+		if (v1->type.not_temporary() != this->v1_type.not_temporary() && v2->type != Type::ANY) {
 			// if (native_method_v1_addr) {
 				// ((LeftValue*) v1)->change_type(analyser, this->v1_type);
 			// } else {
@@ -492,7 +492,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 	if ((op->type == TokenType::DIVIDE or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL) and v2->is_zero()) {
 		c.mark_offset(op->token->location.start.line);
 		c.insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
-		return {nullptr, Type::UNKNOWN};
+		return {nullptr, Type::ANY};
 	}
 
 	if (operator_fun != nullptr) {

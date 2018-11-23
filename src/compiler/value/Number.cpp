@@ -88,7 +88,7 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 			type = Type::MPZ;
 		}
 	}
-	if (req_type.nature != Nature::UNKNOWN) {
+	if (req_type.nature != Nature::ANY) {
 		type.nature = req_type.nature;
 	}
 	if (pointer) {

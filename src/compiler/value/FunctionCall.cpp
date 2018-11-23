@@ -23,7 +23,7 @@ namespace ls {
 
 FunctionCall::FunctionCall(std::shared_ptr<Token> t) : token(t) {
 	function = nullptr;
-	type = Type::UNKNOWN;
+	type = Type::ANY;
 	std_func = nullptr;
 	this_ptr = nullptr;
 	constant = false;
@@ -61,7 +61,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// std::cout << "FC " << this << " : " << req_type << std::endl;
 
 	// Analyse the function (can be anything here)
-	function->analyse(analyser, Type::UNKNOWN);
+	function->analyse(analyser, Type::ANY);
 
 	// Find the function object
 	function_object = dynamic_cast<Function*>(function);
@@ -76,7 +76,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// The function call be called?
 	// TODO add a is_callable() on Type
-	if (function->type.raw_type != RawType::UNKNOWN and
+	if (function->type.raw_type != RawType::ANY and
 		function->type.raw_type != RawType::FUNCTION and
 		function->type.raw_type != RawType::CLOSURE and
 		function->type.raw_type != RawType::CLASS) {
@@ -86,7 +86,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Analyse all arguments a first time
 	for (size_t a = 0; a < arguments.size(); ++a) {
 		auto arg = arguments.at(a);
-		arg->analyse(analyser, Type::UNKNOWN);
+		arg->analyse(analyser, Type::ANY);
 		arguments.at(a)->type = arg->type;
 		arguments.at(a)->type.reference = function->type.getArgumentType(a).reference;
 	}
@@ -171,7 +171,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 			Method* m = nullptr;
 			LSClass* clazz;
-			if (object_type.raw_type != RawType::UNKNOWN) {
+			if (object_type.raw_type != RawType::ANY) {
 				clazz = (LSClass*) analyser->vm->system_vars[object_type.clazz];
 				m = clazz->getMethod(oa->field->content, object_type, arg_types);
 				// std::cout << "Method " << oa->field->content << " found : " << m->type << std::endl;
@@ -196,8 +196,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			} else {
 				bool has_unknown_argument = false;
 				for (const auto& a : arguments)
-					if (a->type.nature == Nature::UNKNOWN) has_unknown_argument = true;
-				if (object_type.raw_type != RawType::UNKNOWN && !has_unknown_argument) {
+					if (a->type.nature == Nature::ANY) has_unknown_argument = true;
+				if (object_type.raw_type != RawType::ANY && !has_unknown_argument) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
 					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
@@ -217,7 +217,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			bool isByValue = true;
 			Type effectiveType;
 			for (auto& arg : arguments) {
-				arg->analyse(analyser, Type::UNKNOWN);
+				arg->analyse(analyser, Type::ANY);
 				effectiveType = arg->type;
 				if (arg->type.nature != Nature::VALUE) {
 					isByValue = false;
@@ -268,7 +268,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			std::to_string(function->type.getArgumentTypes().size()),
 			std::to_string(total_arguments_passed)
 		}});
-		type = Type::UNKNOWN;
+		type = Type::ANY;
 		return;
 	}
 
@@ -289,16 +289,16 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			type = analyser->current_function()->getReturnType();
 		} else {
 			auto ret_type = function_type.getReturnType();
-			if (ret_type != Type::UNKNOWN) {
+			if (ret_type != Type::ANY) {
 				type = ret_type;
 			}
 		}
 	} else {
 		auto ret_type = function_type.getReturnType();
-		if (is_unknown_method && ret_type == Type::UNKNOWN && function_type != Type::UNKNOWN) {
+		if (is_unknown_method && ret_type == Type::ANY && function_type != Type::ANY) {
 			type = Type::POINTER;
 		}
-		if (ret_type.nature != Nature::UNKNOWN) {
+		if (ret_type.nature != Nature::ANY) {
 			type = ret_type;
 		}
 	}
@@ -306,7 +306,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	a = 0;
 	for (auto& arg : arguments) {
 		auto t = function_type.getArgumentType(a);
-		if (t == Type::UNKNOWN) {
+		if (t == Type::ANY) {
 			t = Type::POINTER;
 		}
 		arg->analyse(analyser, t);

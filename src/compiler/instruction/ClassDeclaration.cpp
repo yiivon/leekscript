@@ -39,10 +39,10 @@ void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	var = analyser->add_var(token.get(), Type::CLASS, nullptr, nullptr);
 
 	for (auto vd : fields) {
-		vd->analyse(analyser, Type::UNKNOWN);
+		vd->analyse(analyser, Type::ANY);
 		for (size_t i = 0; i < vd->variables.size(); ++i) {
 			// std::cout << "Add class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
-			auto t = i < vd->expressions.size() ? vd->expressions.at(i)->type : Type::UNKNOWN;
+			auto t = i < vd->expressions.size() ? vd->expressions.at(i)->type : Type::ANY;
 			ls_class->addField(vd->variables.at(i)->content, t, nullptr);
 		}
 	}

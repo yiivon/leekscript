@@ -40,10 +40,10 @@ Location ObjectAccess::location() const {
 
 void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	object->analyse(analyser, Type::UNKNOWN);
+	object->analyse(analyser, Type::ANY);
 
-	if (object->type.nature == Nature::UNKNOWN) {
-		type = Type::UNKNOWN;
+	if (object->type.nature == Nature::ANY) {
+		type = Type::ANY;
 	} else {
 		type = Type::POINTER;
 	}
@@ -158,11 +158,11 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 	}
 
-	if (!access_function and !native_access_function and !static_access_function and !native_static_access_function and !class_method and object->type.nature != Nature::UNKNOWN) {
+	if (!access_function and !native_access_function and !static_access_function and !native_static_access_function and !class_method and object->type.nature != Nature::ANY) {
 		object->analyse(analyser, Type::POINTER);
 	}
 
-	if (req_type.nature != Nature::UNKNOWN) {
+	if (req_type.nature != Nature::ANY) {
 		type.nature = req_type.nature;
 	}
 }

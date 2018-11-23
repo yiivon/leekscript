@@ -49,8 +49,8 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 }
 
 Type Function::getReturnType() {
-	if (current_version->type.getReturnType() == Type::UNKNOWN) {
-		if (placeholder_type == Type::UNKNOWN) {
+	if (current_version->type.getReturnType() == Type::ANY) {
+		if (placeholder_type == Type::ANY) {
 			placeholder_type = Type::generate_new_placeholder_type();
 		}
 		return placeholder_type;
@@ -163,9 +163,9 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	type = Type::FUNCTION_P;
 
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		auto argument_type = Type::UNKNOWN;
+		auto argument_type = Type::ANY;
 		if (defaultValues[i] != nullptr) {
-			defaultValues[i]->analyse(analyser, Type::UNKNOWN);
+			defaultValues[i]->analyse(analyser, Type::ANY);
 		}
 		type.setArgumentType(i, argument_type, defaultValues[i] != nullptr);
 	}
@@ -193,12 +193,12 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Re-analyse each version
 	for (auto v : versions) {
-		analyse_body(analyser, v.first, v.second, Type::UNKNOWN);
+		analyse_body(analyser, v.first, v.second, Type::ANY);
 	}
 
 	type = default_version->type;
 
-	if (req_type.nature != Nature::UNKNOWN) {
+	if (req_type.nature != Nature::ANY) {
 		type.nature = req_type.nature;
 	}
 	update_function_args(analyser);
@@ -213,7 +213,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 	// cout << "Function " << this << " ::will_take " << args << " level " << level << endl;
 	if (!analyzed) {
-		analyse(analyser, Type::UNKNOWN);
+		analyse(analyser, Type::ANY);
 	}
 
 	if (level == 1) {
@@ -221,7 +221,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 			for (const auto& t : args) {
 				if (t.raw_type->is_placeholder()) return false;
-				if (t.nature == Nature::UNKNOWN) return false;
+				if (t.nature == Nature::ANY) return false;
 			}
 
 			auto version = new Function::Version();
@@ -235,7 +235,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 			version->function->native = true;
 			versions.insert({args, version});
 
-			analyse_body(analyser, args, version, Type::UNKNOWN);
+			analyse_body(analyser, args, version, Type::ANY);
 
 			// std::cout << "created version type : " << version->type << std::endl;
 			update_function_args(analyser);
@@ -294,7 +294,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	version->type.arguments_types = args;
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::UNKNOWN);
+		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::ANY);
 		analyser->add_parameter(arguments.at(i).get(), type);
 		version->type.arguments_types.at(i) = type;
 	}
@@ -310,7 +310,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	TypeList return_types;
 	// Ignore recursive types
 	for (const auto& t : version->body->types) {
-		if (placeholder_type != Type::UNKNOWN and t.not_temporary() == placeholder_type) {
+		if (placeholder_type != Type::ANY and t.not_temporary() == placeholder_type) {
 			continue;
 		}
 		return_types.add(t);

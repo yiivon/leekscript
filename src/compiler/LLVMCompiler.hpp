@@ -58,7 +58,7 @@ public:
 		bool operator != (const value& o) const {
 			return v != o.v or t != o.t;
 		}
-		value() : v(nullptr), t(Type::UNKNOWN) {}
+		value() : v(nullptr), t(Type::ANY) {}
 		value(llvm::Value* v, Type t) : v(v), t(t) {}
 	};
 	struct label {
@@ -243,7 +243,7 @@ public:
 	value insn_clone_mpz(value mpz) const;
 	void  insn_delete_mpz(value mpz) const;
 	value insn_inc_refs(value v) const;
-	value insn_dec_refs(value v, value previous = {nullptr, Type::ANY}) const;
+	value insn_dec_refs(value v, value previous = {nullptr, Type::ANY_OLD}) const;
 	value insn_move(value v) const;
 	value insn_refs(value v) const;
 	value insn_native(value v) const;

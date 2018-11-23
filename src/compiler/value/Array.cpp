@@ -63,8 +63,8 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		if (expressions.size() > 0) {
 
-			Type element_type = Type::UNKNOWN;
-			Type supported_type = Type::UNKNOWN;
+			Type element_type = Type::ANY;
+			Type supported_type = Type::ANY;
 			auto homogeneous = true;
 
 			// First analyse pass
@@ -72,12 +72,12 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 				Value* ex = expressions[i];
 				ex->will_be_in_array(analyser);
-				ex->analyse(analyser, Type::UNKNOWN);
+				ex->analyse(analyser, Type::ANY);
 
 				if (ex->constant == false) {
 					constant = false;
 				}
-				if (element_type != Type::UNKNOWN and element_type != ex->type) {
+				if (element_type != Type::ANY and element_type != ex->type) {
 					homogeneous = false;
 				}
 				element_type = Type::get_compatible_type(element_type, ex->type);
@@ -103,8 +103,8 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 			// Re-analyze expressions with the supported type
 			// and second computation of the array type
-			element_type = Type::UNKNOWN;
-			if (req_type == Type::ANY) {
+			element_type = Type::ANY;
+			if (req_type == Type::ANY_OLD) {
 				element_type = Type::POINTER;
 				supported_type = Type::POINTER;
 			}
@@ -128,20 +128,20 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					// e.g. Should compile a generic version
 					ex->must_return(analyser, Type::POINTER);
 				}
-				if (element_type == Type::UNKNOWN or !element_type.compatible(ex->type)) {
+				if (element_type == Type::ANY or !element_type.compatible(ex->type)) {
 					element_type = Type::get_compatible_type(element_type, ex->type);
 				}
 			}
 			element_type.temporary = false;
 			type.setElementType(element_type);
 		} else {
-			if (req_type != Type::UNKNOWN) {
+			if (req_type != Type::ANY) {
 				type = req_type;
 			}
 		}
 	}
-	if (req_type == Type::ANY) {
-		conversion_type = Type::ANY;
+	if (req_type == Type::ANY_OLD) {
+		conversion_type = Type::ANY_OLD;
 	}
 	type.temporary = true;
 	types = type;
@@ -237,7 +237,7 @@ Compiler::value Array::compile(Compiler& c) const {
 		elements.push_back(v);
 	}
 	auto array = c.new_array(type.getElementType(), elements);
-	if (conversion_type == Type::ANY) {
+	if (conversion_type == Type::ANY_OLD) {
 		return { c.builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
 	}
 	if (type.not_temporary() == Type::POINTER) {

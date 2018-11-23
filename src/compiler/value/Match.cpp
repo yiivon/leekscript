@@ -56,17 +56,17 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 	bool any_pointer = false;
 	bool has_default = false;
 
-	value->analyse(analyser, Type::UNKNOWN);
+	value->analyse(analyser, Type::ANY);
 	if (value->type.nature == Nature::POINTER) any_pointer = true;
 
 	for (auto& ps : pattern_list) {
 		for (Pattern& p : ps) {
 			if (p.begin) {
-				p.begin->analyse(analyser, Type::UNKNOWN);
+				p.begin->analyse(analyser, Type::ANY);
 				if (p.begin->type.nature == Nature::POINTER) any_pointer = true;
 			}
 			if (p.end) {
-				p.end->analyse(analyser, Type::UNKNOWN);
+				p.end->analyse(analyser, Type::ANY);
 				if (p.end->type.nature == Nature::POINTER) any_pointer = true;
 			}
 			has_default = has_default || p.is_default();
@@ -94,9 +94,9 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 			r->analyse(analyser, Type::POINTER);
 		}
 	} else {
-		type = Type::UNKNOWN;
+		type = Type::ANY;
 		for (Value* ret : returns) {
-			ret->analyse(analyser, Type::UNKNOWN);
+			ret->analyse(analyser, Type::ANY);
 			type = Type::get_compatible_type(type, ret->type);
 		}
 		for (Value* ret : returns) {

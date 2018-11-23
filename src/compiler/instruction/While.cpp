@@ -32,7 +32,7 @@ Location While::location() const {
 
 void While::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	condition->analyse(analyser, Type::UNKNOWN);
+	condition->analyse(analyser, Type::ANY);
 	analyser->enter_loop();
 	body->analyse(analyser, Type::VOID);
 	analyser->leave_loop();

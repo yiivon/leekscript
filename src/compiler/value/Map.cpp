@@ -44,19 +44,19 @@ Location Map::location() const {
 
 void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	Type key_type = Type::UNKNOWN;
-	Type value_type = Type::UNKNOWN;
+	Type key_type = Type::ANY;
+	Type value_type = Type::ANY;
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		Value* ex = keys[i];
-		ex->analyse(analyser, Type::UNKNOWN);
+		ex->analyse(analyser, Type::ANY);
 		key_type = Type::get_compatible_type(key_type, ex->type);
 	}
 	key_type.temporary = false;
 
 	for (size_t i = 0; i < values.size(); ++i) {
 		Value* ex = values[i];
-		ex->analyse(analyser, Type::UNKNOWN);
+		ex->analyse(analyser, Type::ANY);
 		value_type = Type::get_compatible_type(value_type, ex->type);
 	}
 	value_type.temporary = false;

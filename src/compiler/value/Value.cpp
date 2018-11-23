@@ -5,7 +5,7 @@
 namespace ls {
 
 Value::Value() {
-	type = Type::UNKNOWN;
+	type = Type::ANY;
 	constant = false;
 }
 

@@ -28,10 +28,10 @@ Location Set::location() const {
 
 void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	Type element_type = Type::UNKNOWN;
+	Type element_type = Type::ANY;
 
 	for (auto& ex : expressions) {
-		ex->analyse(analyser, Type::UNKNOWN);
+		ex->analyse(analyser, Type::ANY);
 		element_type = Type::get_compatible_type(element_type, ex->type);
 	}
 
@@ -39,7 +39,7 @@ void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (element_type != Type::INTEGER && element_type != Type::REAL) {
 			element_type = Type::POINTER;
 		}
-	} else if (element_type.nature == Nature::UNKNOWN) {
+	} else if (element_type.nature == Nature::ANY) {
 		element_type.nature = Nature::POINTER;
 	}
 

@@ -39,7 +39,7 @@ Compiler::value Continue::compile(Compiler& c) const {
 
 	c.insn_branch(c.get_current_loop_cond_label(deepness));
 
-	return {nullptr, Type::UNKNOWN};
+	return {nullptr, Type::ANY};
 }
 
 Instruction* Continue::clone() const {
