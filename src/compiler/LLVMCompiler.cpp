@@ -270,14 +270,14 @@ LLVMCompiler::value LLVMCompiler::insn_neg(LLVMCompiler::value v) const {
 }
 
 LLVMCompiler::value LLVMCompiler::insn_and(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateAnd(a.v, b.v), Type::INTEGER};
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
+	return {Builder.CreateAnd(a.v, b.v), Type::BOOLEAN};
 }
 LLVMCompiler::value LLVMCompiler::insn_or(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	return {Builder.CreateOr(a.v, b.v), Type::INTEGER};
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
+	return {Builder.CreateOr(a.v, b.v), Type::BOOLEAN};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::value b) const {
