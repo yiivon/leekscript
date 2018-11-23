@@ -238,10 +238,10 @@ Compiler::value Array::compile(Compiler& c) const {
 	}
 	auto array = c.new_array(type.getElementType(), elements);
 	if (conversion_type == Type::ANY) {
-		return { c.Builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
+		return { c.builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
 	}
 	if (type.not_temporary() == Type::POINTER) {
-		return { c.Builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
+		return { c.builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
 	}
 	return array;
 }

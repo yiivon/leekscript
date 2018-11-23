@@ -996,14 +996,14 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto y = v2->compile(c);
 			v2->compile_end(c);
 			c.insn_branch(&label_end);
-			label_then.block = LLVMCompiler::Builder.GetInsertBlock();
+			label_then.block = LLVMCompiler::builder.GetInsertBlock();
 
 			c.insn_label(&label_else);
 			c.insn_branch(&label_end);
-			label_else.block = LLVMCompiler::Builder.GetInsertBlock();
+			label_else.block = LLVMCompiler::builder.GetInsertBlock();
 
 			c.insn_label(&label_end);
-			auto PN = LLVMCompiler::Builder.CreatePHI(x.v->getType(), 2, "iftmp");
+			auto PN = LLVMCompiler::builder.CreatePHI(x.v->getType(), 2, "iftmp");
 			PN->addIncoming(y.v, label_then.block);
 			PN->addIncoming(x.v, label_else.block);
 			return {PN, type};

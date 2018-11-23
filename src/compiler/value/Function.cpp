@@ -478,7 +478,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 					jit_cap = f->compile_version(c, cap->version);
 				} else {
 					jit_cap = c.get_var(cap->name);
-					jit_cap = {LLVMCompiler::Builder.CreateLoad(jit_cap.v, cap->name.c_str()), jit_cap.t};
+					jit_cap = {LLVMCompiler::builder.CreateLoad(jit_cap.v, cap->name.c_str()), jit_cap.t};
 				}
 			} else if (cap->scope == VarScope::CAPTURE) {
 				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);
@@ -530,7 +530,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	llvm_function->setPersonalityFn(personality);
 
 	((Function*) this)->block = llvm::BasicBlock::Create(LLVMCompiler::context, "entry_" + name, llvm_function);
-	LLVMCompiler::Builder.SetInsertPoint(block);
+	LLVMCompiler::builder.SetInsertPoint(block);
 
 	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
 

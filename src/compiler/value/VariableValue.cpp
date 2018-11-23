@@ -160,9 +160,9 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		}
 		v = c.get_var(name);
 		if (type.raw_type != RawType::MPZ) {
-			v = {LLVMCompiler::Builder.CreateLoad(v.v, name.c_str()), v.t};
+			v = {LLVMCompiler::builder.CreateLoad(v.v, name.c_str()), v.t};
 		} else {
-			v = {LLVMCompiler::Builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v, name.c_str()), v.t};
+			v = {LLVMCompiler::builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v, name.c_str()), v.t};
 		}
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_load(c.insn_get_argument(name));

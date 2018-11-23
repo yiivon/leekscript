@@ -118,7 +118,7 @@ Compiler::value If::compile(Compiler& c) const {
 	if (dynamic_cast<Return*>(then->instructions[0]) == nullptr && dynamic_cast<Break*>(then->instructions[0]) == nullptr && dynamic_cast<Continue*>(then->instructions[0]) == nullptr) {
 		c.insn_branch(&label_end);
 	}
-	label_then.block = LLVMCompiler::Builder.GetInsertBlock();
+	label_then.block = LLVMCompiler::builder.GetInsertBlock();
 
 	c.insn_label(&label_else);
 
@@ -130,11 +130,11 @@ Compiler::value If::compile(Compiler& c) const {
 	}
 
 	c.insn_branch(&label_end);
-	label_else.block = LLVMCompiler::Builder.GetInsertBlock();
+	label_else.block = LLVMCompiler::builder.GetInsertBlock();
 
 	c.insn_label(&label_end);
 	if (type != Type::VOID) {
-		auto phi = LLVMCompiler::Builder.CreatePHI(type.llvm_type(), 2, "iftmp");
+		auto phi = LLVMCompiler::builder.CreatePHI(type.llvm_type(), 2, "iftmp");
 		if (then_v.v) phi->addIncoming(then_v.v, label_then.block);
 		if (else_v.v) phi->addIncoming(else_v.v, label_else.block);
 		return {phi, type};

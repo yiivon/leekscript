@@ -47,7 +47,7 @@ class Function;
 class LLVMCompiler {
 public:
 	// TODO private builder and context
-	static llvm::IRBuilder<> Builder;
+	static llvm::IRBuilder<> builder;
 	static llvm::LLVMContext context;
 	struct value {
 		llvm::Value* v;
@@ -152,7 +152,7 @@ public:
 
 	/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of the function.  This is used for mutable variables etc.
 	static llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, llvm::Type* type) {
-		auto function = LLVMCompiler::Builder.GetInsertBlock()->getParent();
+		auto function = builder.GetInsertBlock()->getParent();
 		llvm::IRBuilder<> builder(&function->getEntryBlock(), function->getEntryBlock().begin());
 		return builder.CreateAlloca(type, nullptr, VarName);
 	}
