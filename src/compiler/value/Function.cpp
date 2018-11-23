@@ -623,7 +623,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	((Function*) this)->handle_created = true;
 
 	// }
-	// Search the JIT for the "fun" symbol.
+	// Search the JIT for the "fun" symbol.	
 	auto ExprSymbol = c.findSymbol("fun_" + name + std::to_string(id));
 	assert(ExprSymbol && "Function not found");
 	// Get the symbol's address and cast it to the right type (takes no

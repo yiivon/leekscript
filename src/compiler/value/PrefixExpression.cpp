@@ -240,7 +240,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return {c.new_pointer(new LSString("")).v, type};
 				}
 				else if (vv->name == "Array") {
-					return {c.new_pointer(new LSArray<LSValue*>()).v, type};
+					return c.new_array(Type::POINTER, {});
 				}
 				else if (vv->name == "Object") {
 					return {c.new_pointer(new LSObject()).v, type};
@@ -280,7 +280,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						return {c.new_pointer(new LSString("")).v, type};
 					}
 					if (vv->name == "Array") {
-						return {c.new_pointer(new LSArray<LSValue*>()).v, type};
+						return c.new_array(Type::POINTER, {});
 					}
 					if (vv->name == "Object") {
 						return {c.new_pointer(new LSObject()).v, type};

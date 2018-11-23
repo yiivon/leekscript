@@ -167,6 +167,9 @@ const Type Type::SET_ITERATOR(RawType::SET, Nature::VALUE, Type::UNKNOWN);
 const Type Type::INTEGER_ITERATOR(RawType::INTEGER, Nature::VALUE, Type::INTEGER);
 const Type Type::LONG_ITERATOR(RawType::LONG, Nature::VALUE, Type::INTEGER);
 const Type Type::MPZ_ITERATOR(RawType::MPZ, Nature::VALUE, Type::INTEGER);
+const Type Type::INT_ARRAY_ITERATOR(RawType::INTEGER, Nature::POINTER, Type::INTEGER);
+const Type Type::REAL_ARRAY_ITERATOR(RawType::REAL, Nature::POINTER, Type::REAL);
+const Type Type::PTR_ARRAY_ITERATOR(RawType::UNKNOWN, Nature::POINTER, Type::POINTER);
 
 Type::Type() {
 	raw_type = RawType::UNKNOWN;
@@ -435,6 +438,12 @@ llvm::Type* Type::llvm_type() const {
 	if (nature == Nature::VOID) {
 		return llvm::Type::getVoidTy(LLVMCompiler::context);
 	}
+	if (*this == Type::INT_ARRAY_ITERATOR) {
+		return llvm::Type::getInt32PtrTy(LLVMCompiler::context);
+	}
+	if (*this == Type::PTR_ARRAY_ITERATOR) {
+		return LLVM_LSVALUE_TYPE_PTR->getPointerTo();
+	}
 	if (raw_type == RawType::ARRAY) {
 		if (getElementType() == Type::INTEGER) {
 			return LLVM_VECTOR_INT_TYPE_PTR;
@@ -443,9 +452,6 @@ llvm::Type* Type::llvm_type() const {
 		} else {
 			return LLVM_VECTOR_TYPE_PTR;
 		}
-	}
-	if (raw_type == RawType::FUNCTION) {
-		return LLVM_FUNCTION_TYPE_PTR;
 	}
 	if (reference or nature == Nature::POINTER or nature == Nature::UNKNOWN or raw_type == RawType::FUNCTION) {
 		return LLVM_LSVALUE_TYPE_PTR;
@@ -463,6 +469,21 @@ llvm::Type* Type::llvm_type() const {
 		return llvm::Type::getDoubleTy(LLVMCompiler::context);
 	}
 	return llvm::Type::getInt32Ty(LLVMCompiler::context);
+}
+
+Type Type::add_pointer() const {
+	Type new_type = *this;
+	new_type.pointer = true;
+	return new_type;
+}
+
+Type Type::iteratorType() const {
+	if (raw_type == RawType::ARRAY) {
+		if (getElementType() == Type::INTEGER) return Type::INT_ARRAY_ITERATOR;
+		if (getElementType() == Type::REAL) return Type::REAL_ARRAY_ITERATOR;
+		else if (getElementType() == Type::POINTER) return Type::PTR_ARRAY_ITERATOR;
+	}
+	assert(false && "No iterator type available");
 }
 
 /*
@@ -705,7 +726,13 @@ ostream& operator << (ostream& os, const Type& type) {
 	if (type.raw_type == RawType::UNKNOWN) {
 		os << C_YELLOW;
 		if (type.constant) os << "const:";
-		if (type.nature == Nature::POINTER) {
+		if (type == Type::INT_ARRAY_ITERATOR) {
+			os << "iterator<array<int>>";
+		} else if (type == Type::REAL_ARRAY_ITERATOR) {
+			os << "iterator<array<real>>";
+		} else if (type == Type::PTR_ARRAY_ITERATOR) {
+			os << "iterator<array<*>>";
+		} else if (type.nature == Nature::POINTER) {
 			os << "*";
 		} else {
 			os << "?";

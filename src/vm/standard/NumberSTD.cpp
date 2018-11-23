@@ -579,7 +579,7 @@ __mpz_struct pow_mpz_int_lambda(__mpz_struct a, int b) throw() {
 
 Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
 	// Check: mpz_log(a) * b <= 10000
-	auto a_size = c.insn_call(Type::INTEGER, {args[0]}, (void*) &mpz_log, "mpz_log");
+	auto a_size = c.insn_call(Type::INTEGER, {args[0]}, (void*) &mpz_log);
 	auto r_size = c.insn_mul(a_size, args[1]);
 	auto cond = c.insn_gt(r_size, c.new_integer(10000));
 	auto label_then = c.insn_init_label("then");

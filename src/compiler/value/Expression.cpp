@@ -548,21 +548,16 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 
 			if (equal_previous_type.nature == Nature::POINTER && v2->type.nature == Nature::POINTER) {
-
 				auto vv = dynamic_cast<VariableValue*>(v1);
 				if (vv && vv->scope != VarScope::PARAMETER) {
 					c.set_var_type(vv->name, v1->type);
 				}
-
-				auto x = ((LeftValue*) v1)->compile_l(c);
+				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v2->compile_end(c);
-
-				c.insn_call(Type::VOID, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
-					LSValue::delete_ref(*x);
-					*x = y;
-					(*x)->refs++;
-				}, "assign");
+				c.insn_call(Type::VOID, {c.insn_load(x_addr)}, &LSValue::delete_ref);
+				c.insn_store(x_addr, y);
+				c.insn_inc_refs(c.insn_load(x_addr));
 				return y;
 			}
 

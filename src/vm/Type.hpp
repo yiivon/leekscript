@@ -257,6 +257,7 @@ public:
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
 	std::vector<bool> arguments_has_default;
+	bool pointer = false;
 	bool temporary = false;
 	bool constant = false;
 	bool reference = false;
@@ -299,6 +300,8 @@ public:
 	Type not_temporary() const;
 	Type add_temporary() const;
 	llvm::Type* llvm_type() const;
+	Type add_pointer() const;
+	Type iteratorType() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }
@@ -393,6 +396,9 @@ public:
 	static const Type PTR_ARRAY_ARRAY;
 	static const Type REAL_ARRAY_ARRAY;
 	static const Type INT_ARRAY_ARRAY;
+	static const Type INT_ARRAY_ITERATOR;
+	static const Type REAL_ARRAY_ITERATOR;
+	static const Type PTR_ARRAY_ITERATOR;
 	static const Type STRING_ITERATOR;
 	static const Type INTERVAL_ITERATOR;
 	static const Type SET_ITERATOR;

@@ -489,14 +489,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		auto oa = static_cast<ObjectAccess*>(function);
 		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
 		auto k = c.new_pointer(&oa->field->content);
-		ls_fun_addr = c.insn_call(Type::FUNCTION, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
+		ls_fun_addr = c.insn_call(Type::POINTER, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
 		});
 	} else {
 		ls_fun_addr = function->compile(c);
 		auto fun_to_ptr = LLVMCompiler::Builder.CreatePointerCast(ls_fun_addr.v, Type::LLVM_FUNCTION_TYPE_PTR);
-		fun = {LLVMCompiler::Builder.CreateStructGEP(Type::LLVM_FUNCTION_TYPE, fun_to_ptr, 5), Type::POINTER};
-		fun = c.insn_load(fun);
+		auto f = LLVMCompiler::Builder.CreateStructGEP(Type::LLVM_FUNCTION_TYPE, fun_to_ptr, 5);
+		fun = { LLVMCompiler::Builder.CreateLoad(f), Type::FUNCTION };
 	}
 
 	/** Arguments */

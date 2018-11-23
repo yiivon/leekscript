@@ -188,8 +188,8 @@ LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMC
 }
 
 LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
-	assert(v.t.llvm_type() == v.v->getType());
-	assert(v.t.isNumber());
+	// assert(v.t.llvm_type() == v.v->getType());
+	// assert(v.t.isNumber());
 	if (v.t.raw_type == RawType::INTEGER) {
 		return v;
 	}
@@ -250,7 +250,7 @@ LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) co
 // Operators wrapping
 LLVMCompiler::value LLVMCompiler::insn_not(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	return {Builder.CreateNot(to_int(v).v), v.t};
+	return {Builder.CreateNot(to_int(v).v), Type::INTEGER};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_not_bool(LLVMCompiler::value v) const {
@@ -304,8 +304,8 @@ LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::
 }
 
 LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	assert(a.t.llvm_type() == a.v->getType());
-	assert(b.t.llvm_type() == b.v->getType());
+	// assert(a.t.llvm_type() == a.v->getType());
+	// assert(b.t.llvm_type() == b.v->getType());
 	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {Builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::BOOLEAN};
 	} else if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
@@ -756,7 +756,7 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 }
 
 LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v) const {
-	assert(v.t.llvm_type() == v.v->getType());
+	// assert(v.t.llvm_type() == v.v->getType());
 	LLVMCompiler::value r {Builder.CreateLoad(v.v), v.t};
 	log_insn(4) << "load " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
@@ -764,8 +764,8 @@ LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v) const {
 
 void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) const {
 	assert(x.v->getType()->isPointerTy());
-	assert(x.t.llvm_type() == x.v->getType()->getPointerElementType());
-	assert(y.t.llvm_type() == y.v->getType());
+	// assert(x.t.llvm_type() == x.v->getType()->getPointerElementType());
+	// assert(y.t.llvm_type() == y.v->getType());
 	Builder.CreateStore(y.v, x.v);
 	log_insn(4) << "store " << dump_val(x) << " " << dump_val(y) << std::endl;
 }
@@ -973,7 +973,7 @@ LLVMCompiler::value LLVMCompiler::insn_inc_refs(LLVMCompiler::value v) const {
 		auto new_refs = insn_add(previous, new_integer(1));
 		auto llvm_type = v.v->getType()->getPointerElementType();
 		auto r = Builder.CreateStructGEP(llvm_type, v.v, 3);
-		insn_store({r, Type::UNKNOWN}, new_refs);
+		insn_store({r, Type::INTEGER}, new_refs);
 		return new_refs;
 	}
 	return new_integer(0);
@@ -1109,7 +1109,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompiler::value it) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	assert(it.t.llvm_type() == it.v->getType());
+	// assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.end()");
 	if (v.t.raw_type == RawType::ARRAY) {
 		return insn_eq(insn_load(it), insn_array_end(v));
@@ -1149,8 +1149,8 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler::value it, LLVMCompiler::value previous) const {
-	assert(it.t.llvm_type() == it.v->getType());
-	assert(previous.t.llvm_type() == previous.v->getType());
+	// assert(it.t.llvm_type() == it.v->getType());
+	// assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.get()");
 	if (collectionType.raw_type == RawType::ARRAY) {
 		if (previous.t.must_manage_memory()) {
@@ -1224,8 +1224,8 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 
 LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompiler::value it, LLVMCompiler::value previous) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	assert(it.t.llvm_type() == it.v->getType());
-	assert(previous.t.llvm_type() == previous.v->getType());
+	// assert(it.t.llvm_type() == it.v->getType());
+	// assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.key()");
 	if (v.t.raw_type == RawType::ARRAY) {
 		auto array_begin = insn_array_at(v, new_integer(0));
@@ -1269,7 +1269,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 }
 
 void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value it) const {
-	assert(it.t.llvm_type() == it.v->getType());
+	// assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.increment()");
 	if (collectionType.raw_type == RawType::ARRAY) {
 		auto it2 = insn_load(it);
@@ -1396,14 +1396,16 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		assert(args[i].t.llvm_type() == args[i].v->getType());
+		// assert(args[i].t.llvm_type() == args[i].v->getType());
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type());
 	}
 	auto function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
 	auto i = mappings.find(function_name);
 	if (i == mappings.end()) {
-		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
+		auto ret_type = return_type.llvm_type();
+		if (return_type.pointer) ret_type = ret_type->getPointerTo();
+		auto fun_type = llvm::FunctionType::get(ret_type, llvm_types, false);
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
 		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
@@ -1419,7 +1421,7 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(context));
 		auto LPadInst = Builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(context), llvm::Type::getInt32Ty(context)), 1);
 		auto LPadExn = Builder.CreateExtractValue(LPadInst, 0);
-		auto ExceptionSlot = CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt8PtrTy(context));
+		auto ExceptionSlot = CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(context));
 		Builder.CreateStore(LPadExn, ExceptionSlot);
 		LPadInst->addClause(catchAllSelector);
 		Builder.CreateBr(catchBlock);
@@ -1429,7 +1431,7 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 
 		Builder.SetInsertPoint(catchBlock);
 		delete_function_variables();
-		insn_call(Type::VOID, {insn_load({ExceptionSlot, Type::POINTER})}, +[](void* ex) {
+		insn_call(Type::VOID, {insn_load({ExceptionSlot, Type::LONG})}, +[](void* ex) {
 			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru);
 		});
 		Builder.CreateBr(continueBlock);
@@ -1644,7 +1646,7 @@ void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::v
 	// TODO too much cheks sometimes
 	for (size_t i = 0; i < args.size(); ++i) {
 		auto arg = args[i];
-		assert(arg.t.llvm_type() == arg.v->getType());
+		// assert(arg.t.llvm_type() == arg.v->getType());
 		auto type = types[i];
 		if (arg.t.nature != Nature::VALUE and type != arg.t.id() and type != 0) {
 			auto type = types[i];
