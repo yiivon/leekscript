@@ -1583,9 +1583,14 @@ void LLVMCompiler::set_var_type(std::string& name, const Type& type) {
 	}
 }
 
-std::map<std::string, LLVMCompiler::value> LLVMCompiler::get_vars() { assert(false); }
-void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value) { assert(false); }
+std::map<std::string, LLVMCompiler::value> LLVMCompiler::get_vars() {
+	assert(false);
+}
 
+void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value v) {
+	assert(v.t.llvm_type() == v.v->getType());
+	insn_store(variables.back()[name], v);
+}
 
 LLVMCompiler::value LLVMCompiler::update_var_create(std::string& name, Type type) {
 	auto value = CreateEntryBlockAlloca(name, type.llvm_type());
