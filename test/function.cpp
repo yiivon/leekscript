@@ -45,7 +45,7 @@ void Test::test_functions() {
 	code("[-> 12, 'toto'][0]()").equals("12");
 	code("(x -> x + 12.12)(1.01)").almost(13.13);
 	code("(x -> x + 12)(1.01)").almost(13.01);
-	DISABLED_code("[x -> x ** 2][0](12)").equals("144");
+	code("[x -> x ** 2][0](12)").equals("144");
 	DISABLED_code("[[x -> x ** 2]][0][0](12)").equals("144");
 	DISABLED_code("[[[x -> x ** 2]]][0][0][0](12)").equals("144");
 	DISABLED_code("[[[[[[[x -> x ** 2]]]]]]][0][0][0][0][0][0][0](12)").equals("144");

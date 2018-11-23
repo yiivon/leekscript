@@ -78,6 +78,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &ValueSTD::op_swap_val, {}, false, true, true},
 		{Type::POINTER, Type::POINTER, Type::POINTER, (void*) &ValueSTD::op_swap_ptr, {}, false, true, true}
 	});
+	operator_("**", {
+		{Type::CONST_UNKNOWN, Type::CONST_UNKNOWN, Type::UNKNOWN, (void*) &ValueSTD::op_pow}
+	});
 
 	/*
 	 * Methods
@@ -370,6 +373,12 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 
 Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_typeof(args[0]);
+}
+
+Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::POINTER, {c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])}, +[](LSValue* x, LSValue* y) {
+		return x->pow(y);
+	});
 }
 
 }

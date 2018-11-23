@@ -253,7 +253,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		or op->type == TokenType::TIMES or op->type == TokenType::TIMES_EQUAL
 		or op->type == TokenType::DIVIDE or op->type == TokenType::DIVIDE_EQUAL
 		or op->type == TokenType::MINUS or op->type == TokenType::MINUS_EQUAL
-		or op->type == TokenType::POWER or op->type == TokenType::POWER_EQUAL
+		or op->type == TokenType::POWER_EQUAL
 		or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
 		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
@@ -387,9 +387,6 @@ long jit_int_div(LSValue* x, LSValue* y) {
 	long v = ((LSNumber*) res)->value;
 	LSValue::delete_temporary(res);
 	return v;
-}
-LSValue* jit_pow(LSValue* x, LSValue* y) {
-	return x->pow(y);
 }
 LSValue* jit_mod(LSValue* x, LSValue* y) {
 	return x->mod(y);
@@ -828,8 +825,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 					return c.insn_to_pointer(r);
 				}
 				return r;
-			} else {
-				ls_func = (void*) &jit_pow;
 			}
 			break;
 		}
