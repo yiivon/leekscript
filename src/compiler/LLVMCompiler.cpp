@@ -738,11 +738,11 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 		return r;
 	}
 	if (v.t.raw_type == RawType::STRING) {
-		//return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool, "String::to_bool");
+		return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool);
 	}
 	if (v.t.raw_type == RawType::ARRAY) {
 		// Always take LSArray<int>, but the array is not necessarily of this type
-		//return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool, "Array::to_bool");
+		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool);
 	}
 	if (v.t.raw_type == RawType::FUNCTION or v.t.raw_type == RawType::CLOSURE) {
 		return new_bool(true);
@@ -990,7 +990,7 @@ LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompi
 		auto new_refs = insn_sub(previous, new_integer(1));
 		auto llvm_type = v.v->getType()->getPointerElementType();
 		auto r = Builder.CreateStructGEP(llvm_type, v.v, 3);
-		insn_store({r, Type::UNKNOWN}, new_refs);
+		insn_store({r, Type::INTEGER}, new_refs);
 		return new_refs;
 	}
 	return new_integer(0);
