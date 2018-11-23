@@ -27,7 +27,7 @@ If::~If() {
 	}
 }
 
-void If::print(ostream& os, int indent, bool debug) const {
+void If::print(ostream& os, int indent, bool debug, bool condensed) const {
 	if (ternary) {
 		os << "(";
 		condition->print(os, indent, debug);

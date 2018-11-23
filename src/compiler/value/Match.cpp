@@ -23,7 +23,7 @@ Match::~Match() {
 	}
 }
 
-void Match::print(std::ostream& os, int indent, bool debug) const {
+void Match::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "match ";
 	value->print(os, indent, debug);
 	os << " {";

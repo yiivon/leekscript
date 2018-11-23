@@ -72,7 +72,9 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 		}
 		os << "] ";
 	}
-	os << "(";
+	if (arguments.size() != 1) {
+		os << "(";
+	}
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		if (i > 0) os << ", ";
 		os << arguments.at(i)->content;
@@ -84,8 +86,11 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 			defaultValues.at(i)->print(os);
 		}
 	}
-	os << ") → ";
-	version->body->print(os, indent, debug);
+	if (arguments.size() != 1) {
+		os << ")";
+	}
+	os << " → ";
+	version->body->print(os, indent, debug, true);
 
 	if (debug) {
 		os << " [" << versions.size() << " versions, " << std::boolalpha << has_version << "]";
@@ -99,13 +104,12 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 		}
 		os << ">";
 	}
-
 	if (debug) {
 		//os << " " << type;
 	}
 }
 
-void Function::print(std::ostream& os, int indent, bool debug) const {
+void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (has_version && versions.size() == 1) {
 		// std::cout << "print version " << versions.begin()->second->type << std::endl;
 		print_version(os, indent, debug, versions.begin()->second);

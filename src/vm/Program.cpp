@@ -165,7 +165,7 @@ std::string Program::execute(VM& vm) {
 }
 
 void Program::print(ostream& os, bool debug) const {
-	main->body->print(os, 0, debug);
+	main->body->print(os, 0, debug, false);
 }
 
 std::ostream& operator << (std::ostream& os, const Program* program) {

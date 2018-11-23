@@ -122,16 +122,16 @@ void Test::test_functions() {
 	code("~(x -> x)").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Function.operator ++x");
-	code("++(x -> x)").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "(x) → {\n    x\n}" });
+	code("++(x -> x)").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x → x" });
 
 	section("Function.operator --x");
-	code("--(x -> x)").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "(x) → {\n    x\n}" });
+	code("--(x -> x)").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x → x" });
 
 	section("Function.operator x++");
-	code("(x -> x)++").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "(x) → {\n    x\n}" });
+	code("(x -> x)++").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x → x" });
 
 	section("Function.operator x--");
-	code("(x -> x)--").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "(x) → {\n    x\n}" });
+	code("(x -> x)--").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x → x" });
 
 	section("Operator ~ ");
 	DISABLED_code("let a = 10 a ~ x -> x ** 2").equals("100");
@@ -207,7 +207,7 @@ void Test::test_functions() {
 	DISABLED_code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
 
 	section("Check argument count");
-	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"(x) → {\n    x\n}", "1", "0"});
+	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"x → x", "1", "0"});
 	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
 	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
 	// TODO not the expected error

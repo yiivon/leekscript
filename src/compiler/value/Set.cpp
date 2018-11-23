@@ -12,7 +12,7 @@ Set::~Set() {
 	for (auto ex : expressions) delete ex;
 }
 
-void Set::print(ostream& os, int indent, bool debug) const {
+void Set::print(ostream& os, int indent, bool debug, bool condensed) const {
 	os << "<";
 	for (size_t i = 0; i < expressions.size(); ++i) {
 		if (i > 0) os << ", ";

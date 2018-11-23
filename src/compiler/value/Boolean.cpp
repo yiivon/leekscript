@@ -13,7 +13,7 @@ Boolean::Boolean(std::shared_ptr<Token> token) {
 	constant = true;
 }
 
-void Boolean::print(std::ostream& os, int, bool debug) const {
+void Boolean::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << (value ? "true" : "false");
 	if (debug) {
 		os << " " << type;

@@ -18,7 +18,7 @@ String::~String() {
 	delete ls_string;
 }
 
-void String::print(ostream& os, int, bool debug) const {
+void String::print(ostream& os, int, bool debug, bool condensed) const {
 	os << "'" << token->content << "'";
 	if (debug) {
 		os << " " << type;

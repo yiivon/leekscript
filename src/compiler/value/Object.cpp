@@ -18,7 +18,7 @@ Object::~Object() {
 	}
 }
 
-void Object::print(ostream& os, int indent, bool debug) const {
+void Object::print(ostream& os, int indent, bool debug, bool condensed) const {
 	os << "{";
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		os << keys.at(i)->content;

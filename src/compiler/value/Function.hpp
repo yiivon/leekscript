@@ -58,7 +58,7 @@ public:
 	Type getReturnType();
 
 	void print_version(std::ostream& os, int indent, bool debug, const Version* version) const;
-	virtual void print(std::ostream&, int indent, bool debug) const override;
+	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
 	bool will_take(SemanticAnalyser*, const std::vector<Type>&, int level) override;

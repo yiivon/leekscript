@@ -20,7 +20,7 @@ Map::~Map() {
 	}
 }
 
-void Map::print(std::ostream& os, int indent, bool debug) const {
+void Map::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (values.empty()) {
 		os << "[:]";
 	} else {

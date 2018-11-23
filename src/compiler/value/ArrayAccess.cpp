@@ -26,7 +26,7 @@ ArrayAccess::~ArrayAccess() {
 	}
 }
 
-void ArrayAccess::print(std::ostream& os, int indent, bool debug) const {
+void ArrayAccess::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	array->print(os, indent, debug);
 	os << "[";
 	if (key != nullptr) {

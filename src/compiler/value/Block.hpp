@@ -17,7 +17,7 @@ public:
 	Block();
 	virtual ~Block();
 
-	virtual void print(std::ostream&, int indent, bool debug) const override;
+	virtual void print(std::ostream&, int indent = 0, bool debug = false, bool condensed = false) const override;
 	virtual Location location() const override;
 
 	void analyse_global_functions(SemanticAnalyser* analyser);

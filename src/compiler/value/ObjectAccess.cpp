@@ -25,7 +25,7 @@ ObjectAccess::~ObjectAccess() {
 	}
 }
 
-void ObjectAccess::print(ostream& os, int indent, bool debug) const {
+void ObjectAccess::print(ostream& os, int indent, bool debug, bool condensed) const {
 	object->print(os, indent, debug);
 	os << "." << field->content;
 	if (debug) {

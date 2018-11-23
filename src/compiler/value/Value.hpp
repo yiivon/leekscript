@@ -30,7 +30,8 @@ public:
 	virtual bool isLeftValue() const;
 	virtual bool is_zero() const;
 
-	virtual void print(std::ostream&, int indent = 0, bool debug = false) const = 0;
+	// TODO PrintOptions to merge parameters
+	virtual void print(std::ostream&, int indent = 0, bool debug = false, bool condensed = false) const = 0;
 	std::string to_string() const;
 
 	virtual Location location() const = 0;

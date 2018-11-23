@@ -22,7 +22,7 @@ PrefixExpression::~PrefixExpression() {
 	delete expression;
 }
 
-void PrefixExpression::print(ostream& os, int indent, bool debug) const {
+void PrefixExpression::print(ostream& os, int indent, bool debug, bool condensed) const {
 	operatorr->print(os);
 	if (operatorr->type == TokenType::NEW) {
 		os << " ";

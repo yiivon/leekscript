@@ -7,7 +7,7 @@ ArrayFor::~ArrayFor() {
 	delete forr;
 }
 
-void ArrayFor::print(ostream& os, int indent, bool debug) const {
+void ArrayFor::print(ostream& os, int indent, bool debug, bool condensed) const {
 	os << "[";
 	forr->print(os, indent, debug);
 	os << "]";

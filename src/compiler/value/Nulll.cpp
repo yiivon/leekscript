@@ -10,7 +10,7 @@ Nulll::Nulll(std::shared_ptr<Token> token) : token(token) {
 	constant = true;
 }
 
-void Nulll::print(ostream& os, int, bool debug) const {
+void Nulll::print(ostream& os, int, bool debug, bool condensed) const {
 	os << "null";
 	if (debug) {
 		os << " " << type;

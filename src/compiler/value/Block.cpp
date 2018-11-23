@@ -20,15 +20,17 @@ Block::~Block() {
 	}
 }
 
-void Block::print(ostream& os, int indent, bool debug) const {
-	os << "{";
-	os << endl;
-	for (auto& instruction : instructions) {
-		os << tabs(indent + 1);
-		instruction->print(os, indent + 1, debug);
+void Block::print(ostream& os, int indent, bool debug, bool condensed) const {
+	if (!condensed) {
+		os << "{";
 		os << endl;
 	}
-	os << tabs(indent) << "}";
+	for (auto& instruction : instructions) {
+		if (!condensed) os << tabs(indent + 1);
+		instruction->print(os, indent + 1, debug);
+		if (!condensed) os << endl;
+	}
+	if (!condensed) os << tabs(indent) << "}";
 	if (debug) {
 		os << " " << types;
 	}

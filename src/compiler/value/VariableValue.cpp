@@ -15,7 +15,7 @@ VariableValue::VariableValue(std::shared_ptr<Token> token) : token(token) {
 	constant = false;
 }
 
-void VariableValue::print(ostream& os, int, bool debug) const {
+void VariableValue::print(ostream& os, int, bool debug, bool condensed) const {
 	os << token->content;
 	if (debug) {
 		os << " ";

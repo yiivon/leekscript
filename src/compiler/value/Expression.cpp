@@ -71,7 +71,7 @@ void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 	}
 }
 
-void Expression::print(std::ostream& os, int indent, bool debug) const {
+void Expression::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 
 	if (parenthesis or debug) {
 		os << "(";
