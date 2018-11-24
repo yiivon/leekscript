@@ -257,15 +257,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("max", {
 		{Type::REAL, {Type::REAL, Type::POINTER}, (void*) &NumberSTD::max_float_ptr, Method::NATIVE},
 		{Type::REAL, {Type::INTEGER, Type::POINTER}, (void*) &NumberSTD::max_int_ptr, Method::NATIVE},
-		{Type::REAL, {Type::POINTER, Type::NUMBER_P}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::REAL}, (void*) &NumberSTD::max_ptr_float, Method::NATIVE},
 		{Type::REAL, {Type::POINTER, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::max_float_float},
 		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::max_float_float},
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::max_float_float},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float},
-
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::max_float_float}
 	});
 	method("min", {
 		{Type::REAL, {Type::POINTER, Type::POINTER}, (void*) &NumberSTD::min_ptr_ptr, Method::NATIVE},
@@ -300,7 +298,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::randFloat, Method::NATIVE},
 	});
 	method("signum", {
-		{Type::INTEGER, {Type::NUMBER_P}, (void*) &NumberSTD::signum, Method::NATIVE},
+		{Type::INTEGER, {Type::POINTER}, (void*) &NumberSTD::signum, Method::NATIVE},
 	});
 	method("sin", {
 		{Type::REAL, {Type::NUMBER_P}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},

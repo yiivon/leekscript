@@ -28,7 +28,7 @@ Location Number::location() const {
 	return token->location;
 }
 
-void Number::analyse(SemanticAnalyser*, const Type& req_type) {
+void Number::analyse(SemanticAnalyser*, const Type&) {
 
 	// Get the base
 	base = 10;
@@ -49,7 +49,7 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 		clean_value = clean_value.substr(0, clean_value.size() - 1);
 	}
 	// Floating-point?
-	bool floating = std::find(clean_value.begin(), clean_value.end(), '.') != clean_value.end() or req_type.raw_type == RawType::REAL;
+	bool floating = std::find(clean_value.begin(), clean_value.end(), '.') != clean_value.end();
 
 	// Determine the possible container for the number
 	if (floating) {
@@ -87,9 +87,6 @@ void Number::analyse(SemanticAnalyser*, const Type& req_type) {
 		} else {
 			type = Type::MPZ;
 		}
-	}
-	if (req_type.nature != Nature::ANY) {
-		type.nature = req_type.nature;
 	}
 	if (pointer) {
 		type.nature = Nature::POINTER;
