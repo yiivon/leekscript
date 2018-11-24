@@ -369,28 +369,6 @@ LSValue* jit_mod(LSValue* x, LSValue* y) {
 LSValue* jit_double_mod(LSValue* x, LSValue* y) {
 	return x->double_mod(y);
 }
-bool jit_equals(LSValue* x, LSValue* y) {
-	bool r = *x == *y;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-bool jit_not_equals(LSValue* x, LSValue* y) {
-	bool r = *x != *y;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-
-LSValue* jit_mod_equal(LSValue* x, LSValue* y) {
-	return x->mod_eq(y);
-}
-LSValue* jit_double_mod_equal(LSValue* x, LSValue* y) {
-	return x->double_mod_eq(y);
-}
-LSValue* jit_pow_equal(LSValue* x, LSValue* y) {
-	return x->pow_eq(y);
-}
 int jit_bit_and_equal(LSValue* x, LSValue* y) {
 	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value & (int) ((LSNumber*) y)->value;
 	LSValue::delete_temporary(x);
@@ -444,9 +422,6 @@ int jit_bit_shr_unsigned_equal(LSValue* x, LSValue* y) {
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return r;
-}
-bool jit_is_null(LSValue* v) {
-	return v->type == LSValue::NULLL;
 }
 
 Compiler::value Expression::compile(Compiler& c) const {
@@ -683,11 +658,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			ls_func = (void*) &jit_mod;
 			break;
 		}
-		case TokenType::DOUBLE_EQUAL: {
-			ls_func = (void*) &jit_equals;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.getElementType() == Type::INTEGER) {
 				if (type.getElementType() == Type::INTEGER) {
@@ -904,11 +874,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		v1->compile_end(c);
 		v2->compile_end(c);
 	}
-	auto v = c.insn_call(ls_returned_type, args, ls_func, true);
-	if (store_result_in_v1) {
-		c.insn_store(args[0], v);
-	}
-	return v;
+	return c.insn_call(ls_returned_type, args, ls_func, true);
 }
 
 Value* Expression::clone() const {
