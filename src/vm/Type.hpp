@@ -323,7 +323,6 @@ public:
 	static const Type CONST_POINTER;
 
 	static const Type ANY;
-	static const Type CONST_UNKNOWN;
 	static const Type ANY_OLD;
 	static const Type CONST_ANY;
 	static const Type BOOLEAN;
