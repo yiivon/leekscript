@@ -11,7 +11,7 @@ void Test::test_functions() {
 	code("function bar(u, v) u * v - u / v end bar(12, 5)").equals("57.6");
 	code("function test() { return }").equals("(void)");
 	code("function test() { return ; }").equals("(void)");
-	DISABLED_code("function test() { return ; } test()").equals("(void)");
+	code("function test() { return ; } test()").equals("(void)");
 
 	section("Global functions");
 	code("let v = global_fun() function global_fun() { return 1234567 } v").equals("1234567");

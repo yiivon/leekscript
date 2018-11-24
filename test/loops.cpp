@@ -115,7 +115,7 @@ void Test::test_loops() {
 	 */
 	header("Foreach loops");
 	code("for v in [] {}").equals("(void)");
-	DISABLED_code("for v in new Array {}").equals("(void)");
+	code("for v in new Array {}").equals("(void)");
 	code("for v in [1, 2, 3, 4] {}").equals("(void)");
 	code("for (v in [1, 2, 3, 4]) {}").equals("(void)");
 	code("for (v in [1, 2, 3, 4]) do end").equals("(void)");
