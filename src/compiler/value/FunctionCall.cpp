@@ -544,10 +544,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	Compiler::value result;
 	if (is_unknown_method) {
-		// std::cout << "is unknown method" << std::endl;
 		result = c.insn_call(Type::POINTER, args, (void*) &LSFunction::call);
 	} else {
-		// std::cout << "known method" << std::endl;
 		result = c.insn_call_indirect(return_type, fun, args);
 	}
 
@@ -565,11 +563,12 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	// Custom function call : 1 op
 	c.inc_ops(1);
-
-	if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-		return c.insn_to_pointer(result);
+	
+	if (type == Type::VOID) {
+		return {nullptr, Type::VOID};
+	} else {
+		return result;
 	}
-	return result;
 }
 
 Value* FunctionCall::clone() const {

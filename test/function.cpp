@@ -215,7 +215,7 @@ void Test::test_functions() {
 	code("let siftUp = (c, pq) -> pq; let pqInsert = (p, v, pq) -> siftUp(0, pq); pqInsert(1, 2)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"pqInsert", "3", "2"});
 
 	section("Void functions");
-	DISABLED_code("(x -> System.print(x))(43)").equals("(void)");
+	code("(x -> System.print(x))(43)").equals("(void)");
 
 	section("Default arguments");
 	code("(x = 10) -> x").equals("<function>");

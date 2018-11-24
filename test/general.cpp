@@ -127,6 +127,7 @@ void Test::test_general() {
 	code("null ?? 'bar'").equals("'bar'");
 	code("let a = 'foo' a ?? 'bar'").equals("'foo'");
 	code("let a = null a ?? 'bar'").equals("'bar'");
+	// TODO different types
 	DISABLED_code("[] ?? [12]").equals("[]");
 	DISABLED_code("null ?? [12]").equals("[12]");
 	DISABLED_code("{} ?? 'default'").equals("{}");
