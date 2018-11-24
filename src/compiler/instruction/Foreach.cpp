@@ -131,7 +131,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container->type.raw_type == RawType::ARRAY) {
-		auto empty_array = c.insn_eq(c.new_integer(0), it);
+		LLVMCompiler::value empty_array = {LLVMCompiler::builder.CreateICmpEQ(c.new_integer(0).v, c.to_int(it).v), Type::BOOLEAN};
 		c.insn_if_new(empty_array, &end_label, &cond_label);
 	} else {
 		c.insn_branch(&cond_label);

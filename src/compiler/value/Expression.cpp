@@ -290,24 +290,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		}
 	}
 
-	// Boolean operators : result is a boolean
-	if (op->type == TokenType::GREATER or op->type == TokenType::DOUBLE_EQUAL
-		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
-		or op->type == TokenType::GREATER_EQUALS or op->type == TokenType::TRIPLE_EQUAL
-		or op->type == TokenType::DIFFERENT or op->type == TokenType::TRIPLE_DIFFERENT) {
-
-		// Set the correct type nature for the two members
-		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
-			v1->analyse(analyser);
-			v1_type = Type::POINTER;
-		}
-		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
-			v2->analyse(analyser);
-			v2_type = Type::POINTER;
-		}
-		type = Type::BOOLEAN;
-	}
-
 	// Bitwise operators : result is a integer
 	if (op->type == TokenType::BIT_AND or op->type == TokenType::PIPE
 		or op->type == TokenType::BIT_XOR or op->type == TokenType::BIT_AND_EQUALS
@@ -599,121 +581,53 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 		}
 		case TokenType::PLUS_EQUAL: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
-				v2->compile_end(c);
-				auto x = c.insn_load(x_addr);
-				auto sum = c.insn_add(x, y);
-				// jit_insn_store_relative(c.F, x_addr.v, 0, sum.v);
-				// if (v2->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-				// 	return c.insn_to_pointer(sum);
-				// }
-				// return sum;
-			} else {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				v1->compile_end(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
-				v2->compile_end(c);
-				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->add_eq(y);
-				}, true);
-			}
-			break;
+			auto x_addr = ((LeftValue*) v1)->compile_l(c);
+			v1->compile_end(c);
+			auto y = c.insn_to_pointer(v2->compile(c));
+			v2->compile_end(c);
+			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return (*x)->add_eq(y);
+			}, true);
 		}
 		case TokenType::MINUS_EQUAL: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				auto sum = c.insn_sub(x, y);
-				c.insn_store(x, sum);
-				return sum;
-			} else {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
-				v2->compile_end(c);
-				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->sub_eq(y);
-				}, true);
-			}
-			break;
+			auto x_addr = ((LeftValue*) v1)->compile_l(c);
+			auto y = c.insn_to_pointer(v2->compile(c));
+			v2->compile_end(c);
+			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return (*x)->sub_eq(y);
+			}, true);
 		}
 		case TokenType::TIMES_EQUAL: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				auto sum = c.insn_mul(x, y);
-				c.insn_store(x, sum);
-				return sum;
-			} else {
-				auto x = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
-				v2->compile_end(c);
-				return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->mul_eq(y);
-				}, true);
-			}
-			break;
+			auto x = ((LeftValue*) v1)->compile_l(c);
+			auto y = c.insn_to_pointer(v2->compile(c));
+			v2->compile_end(c);
+			return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return (*x)->mul_eq(y);
+			}, true);
 		}
 		case TokenType::DIVIDE_EQUAL: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				auto sum = c.insn_div(x, y);
-				c.insn_store(x, sum);
-				return sum;
-			} else {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
-				v2->compile_end(c);
-				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->div_eq(y);
-				}, true);
-			}
-			break;
+			auto x_addr = ((LeftValue*) v1)->compile_l(c);
+			auto y = c.insn_to_pointer(v2->compile(c));
+			v2->compile_end(c);
+			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return (*x)->div_eq(y);
+			}, true);
 		}
 		case TokenType::MODULO_EQUAL: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				auto sum = c.insn_mod(x, y);
-				c.insn_store(x, sum);
-				return sum;
-			} else {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
-				v2->compile_end(c);
-				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->mod_eq(y);
-				}, true);
-			}
-			break;
+			auto x_addr = ((LeftValue*) v1)->compile_l(c);
+			auto y = c.insn_to_pointer(v2->compile(c));
+			v2->compile_end(c);
+			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return (*x)->mod_eq(y);
+			}, true);
 		}
 		case TokenType::POWER_EQUAL: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
-				v2->compile_end(c);
-				auto sum = c.insn_pow(c.insn_load(x_addr), y);
-				c.insn_store(x_addr, sum);
-				return sum;
-			} else {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
-				v2->compile_end(c);
-				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->pow_eq(y);
-				}, true);
-			}
-			break;
+			auto x_addr = ((LeftValue*) v1)->compile_l(c);
+			auto y = c.insn_to_pointer(v2->compile(c));
+			v2->compile_end(c);
+			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return (*x)->pow_eq(y);
+			}, true);
 		}
 		case TokenType::PLUS: {
 			ls_func = (void*) &jit_add;
@@ -766,27 +680,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MODULO: {
-			// jit_func = &jit_insn_rem;
 			ls_func = (void*) &jit_mod;
-			break;
-		}
-		case TokenType::POWER: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				return c.insn_pow(x, y);
-			}
 			break;
 		}
 		case TokenType::DOUBLE_EQUAL: {
 			ls_func = (void*) &jit_equals;
-			ls_returned_type = Type::BOOLEAN;
-			break;
-		}
-		case TokenType::DIFFERENT: {
-			ls_func = (void*) &jit_not_equals;
 			ls_returned_type = Type::BOOLEAN;
 			break;
 		}

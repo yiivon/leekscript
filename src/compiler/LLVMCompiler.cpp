@@ -313,6 +313,14 @@ LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::
 LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	// assert(a.t.llvm_type() == a.v->getType());
 	// assert(b.t.llvm_type() == b.v->getType());
+	if (a.t.nature == Nature::POINTER or b.t.nature == Nature::POINTER) {
+		return insn_call(Type::BOOLEAN, {insn_to_pointer(a), insn_to_pointer(b)}, +[](LSValue* x, LSValue* y) {
+			bool r = *x == *y;
+			LSValue::delete_temporary(x);
+			LSValue::delete_temporary(y);
+			return r;
+		});
+	}
 	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
 		return {builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::BOOLEAN};
 	} else if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
@@ -1119,7 +1127,7 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 	// assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.end()");
 	if (v.t.raw_type == RawType::ARRAY) {
-		return insn_eq(insn_load(it), insn_array_end(v));
+		return {builder.CreateICmpEQ(insn_load(it).v, insn_array_end(v).v), Type::BOOLEAN};
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
 		// auto addr = insn_address_of(it);

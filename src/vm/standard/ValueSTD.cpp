@@ -30,10 +30,10 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::CONST_ANY, Type::CONST_CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
 	});
 	operator_("==", {
-		{Type::CONST_VALUE, Type::CONST_VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_equals}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_equals}
 	});
 	operator_("!=", {
-		{Type::CONST_VALUE, Type::CONST_VALUE, Type::BOOLEAN, (void*) &ValueSTD::op_not_equals}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_not_equals}
 	});
 	operator_("<", {
 		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_lt}
