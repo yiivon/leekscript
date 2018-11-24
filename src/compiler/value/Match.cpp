@@ -51,22 +51,22 @@ Location Match::location() const {
 	return {{0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
+void Match::analyse(ls::SemanticAnalyser* analyser) {
 
 	bool any_pointer = false;
 	bool has_default = false;
 
-	value->analyse(analyser, Type::ANY);
+	value->analyse(analyser);
 	if (value->type.nature == Nature::POINTER) any_pointer = true;
 
 	for (auto& ps : pattern_list) {
 		for (Pattern& p : ps) {
 			if (p.begin) {
-				p.begin->analyse(analyser, Type::ANY);
+				p.begin->analyse(analyser);
 				if (p.begin->type.nature == Nature::POINTER) any_pointer = true;
 			}
 			if (p.end) {
-				p.end->analyse(analyser, Type::ANY);
+				p.end->analyse(analyser);
 				if (p.end->type.nature == Nature::POINTER) any_pointer = true;
 			}
 			has_default = has_default || p.is_default();
@@ -74,14 +74,14 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 	}
 
 	if (any_pointer) {
-		value->analyse(analyser, Type::POINTER);
+		value->analyse(analyser);
 		for (auto& ps : pattern_list) {
 			for (Pattern& p : ps) {
 				if (p.begin) {
-					p.begin->analyse(analyser, Type::POINTER);
+					p.begin->analyse(analyser);
 				}
 				if (p.end) {
-					p.end->analyse(analyser, Type::POINTER);
+					p.end->analyse(analyser);
 				}
 			}
 		}
@@ -91,16 +91,16 @@ void Match::analyse(ls::SemanticAnalyser* analyser, const Type&) {
 		// Return type is always pointer because in the default case, null is return
 		type = Type::POINTER;
 		for (Value* r : returns) {
-			r->analyse(analyser, Type::POINTER);
+			r->analyse(analyser);
 		}
 	} else {
 		type = Type::ANY;
 		for (Value* ret : returns) {
-			ret->analyse(analyser, Type::ANY);
+			ret->analyse(analyser);
 			type = Type::get_compatible_type(type, ret->type);
 		}
 		for (Value* ret : returns) {
-			ret->analyse(analyser, type);
+			ret->analyse(analyser);
 		}
 	}
 }

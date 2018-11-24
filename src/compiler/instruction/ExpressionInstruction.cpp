@@ -22,10 +22,10 @@ Location ExpressionInstruction::location() const {
 
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type == Type::VOID) {
-		value->analyse(analyser, Type::VOID);
+		value->analyse(analyser);
 		type = Type::VOID;
 	} else {
-		value->analyse(analyser, req_type);
+		value->analyse(analyser);
 		type = value->type;
 		types = value->types;
 	}
@@ -34,14 +34,7 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 	auto v = value->compile(c);
 	value->compile_end(c);
-	if (type.nature == Nature::VOID) {
-		if (v.v != nullptr) {
-			c.insn_delete_temporary(v);
-		}
-		return {nullptr, Type::ANY};
-	} else {
-		return v;
-	}
+	return v;
 }
 
 Instruction* ExpressionInstruction::clone() const {

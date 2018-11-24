@@ -32,7 +32,7 @@ void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 		if (f->current_version->type.getReturnType() != Type::ANY) {
 			required_type = f->current_version->type.getReturnType();
 		}
-		expression->analyse(analyser, required_type);
+		expression->analyse(analyser);
 		f->current_version->body->types.add(expression->type.add_temporary());
 	}
 	function = f;

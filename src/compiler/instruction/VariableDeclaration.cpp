@@ -72,7 +72,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 				f->name = var->content;
 				f->file = VM::current()->file_name;
 			}
-			expressions[i]->analyse(analyser, Type::ANY);
+			expressions[i]->analyse(analyser);
 			v->type = expressions[i]->type;
 			v->type.temporary = false;
 			v->type.constant = constant;

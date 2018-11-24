@@ -37,7 +37,7 @@ Location PrefixExpression::location() const {
 	return {operatorr->token->location.start, expression->location().end};
 }
 
-void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type&) {
+void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 
 	expression->analyse(analyser);
 
@@ -81,7 +81,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type&) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
 				if (vv->name == "Number") {
 					if (fc->arguments.size() > 0) {
-						fc->arguments[0]->analyse(analyser, Type::ANY);
+						fc->arguments[0]->analyse(analyser);
 						type = fc->arguments[0]->type;
 					} else {
 						type = Type::INTEGER;

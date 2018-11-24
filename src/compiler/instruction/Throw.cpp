@@ -29,7 +29,7 @@ Location Throw::location() const {
 
 void Throw::analyse(SemanticAnalyser* analyser, const Type&) {
 	if (expression != nullptr) {
-		expression->analyse(analyser, Type::ANY);
+		expression->analyse(analyser);
 	}
 }
 

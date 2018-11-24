@@ -11,7 +11,7 @@ Value::Value() {
 
 Value::~Value() {}
 
-void Value::analyse(SemanticAnalyser*, const Type&) {}
+void Value::analyse(SemanticAnalyser*) {}
 
 bool Value::will_take(SemanticAnalyser*, const std::vector<Type>& args, int) {
 	auto r = type.will_take(args);

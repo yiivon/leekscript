@@ -30,7 +30,7 @@ Location VariableValue::location() const {
 	return token->location;
 }
 
-void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void VariableValue::analyse(SemanticAnalyser* analyser) {
 
 	var = analyser->get_var(token.get());
 
@@ -39,7 +39,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (var->value && function_object) {
 			// Analyse the real function (if the function is defined below its call for example)
 			if (!function_object->analyzed) {
-				function_object->analyse(analyser, Type::ANY);
+				function_object->analyse(analyser);
 				var->type = function_object->type;
 			}
 		}
@@ -56,14 +56,6 @@ void VariableValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	} else {
 		type = Type::POINTER;
 	}
-
-	if (req_type.nature == Nature::POINTER) {
-		type.nature = req_type.nature;
-	}
-	if (req_type.raw_type == RawType::REAL) {
-		type.raw_type = RawType::REAL;
-	}
-
 	type.temporary = false;
 
 	//	cout << "VV " << name << " : " << type << endl;

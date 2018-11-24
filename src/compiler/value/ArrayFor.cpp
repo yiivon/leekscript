@@ -21,7 +21,7 @@ Location ArrayFor::location() const {
 	return {{0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void ArrayFor::analyse(SemanticAnalyser* analyser, const Type&) {
+void ArrayFor::analyse(SemanticAnalyser* analyser) {
 	forr->analyse(analyser, Type::PTR_ARRAY);
 	type = forr->type;
 }

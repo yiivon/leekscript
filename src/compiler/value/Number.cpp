@@ -28,7 +28,7 @@ Location Number::location() const {
 	return token->location;
 }
 
-void Number::analyse(SemanticAnalyser*, const Type&) {
+void Number::analyse(SemanticAnalyser*) {
 
 	// Get the base
 	base = 10;

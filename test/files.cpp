@@ -13,7 +13,7 @@ void Test::test_files() {
 	DISABLED_file("test/code/break_and_continue.leek").equals("2504");
 	DISABLED_file("test/code/french.leek").equals("'cent-soixante-huit millions quatre-cent-quatre-vingt-neuf-mille-neuf-cent-quatre-vingt-dix-neuf'");
 	DISABLED_file("test/code/french.min.leek").equals("'neuf-cent-quatre-vingt-sept milliards six-cent-cinquante-quatre millions trois-cent-vingt-et-un-mille-douze'");
-	file("test/code/quine.leek").quine();
+	DISABLED_file("test/code/quine.leek").quine();
 	file_v1("test/code/quine_zwik.leek").quine();
 	file("test/code/dynamic_operators").works();
 	file("test/code/euler1.leek").equals("2333316668");

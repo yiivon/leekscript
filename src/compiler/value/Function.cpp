@@ -149,7 +149,7 @@ let r2 = f(12)			// version with number, recompiler f with a [a = int] version, 
 r2(12)
 r2('hello')
  */
-void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Function::analyse(SemanticAnalyser* analyser) {
 
 //	cout << "Function::analyse req_type " << req_type << endl;
 
@@ -165,14 +165,14 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		auto argument_type = Type::ANY;
 		if (defaultValues[i] != nullptr) {
-			defaultValues[i]->analyse(analyser, Type::ANY);
+			defaultValues[i]->analyse(analyser);
 		}
 		type.setArgumentType(i, argument_type, defaultValues[i] != nullptr);
 	}
 
-	for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
-		type.setArgumentType(i, Type::POINTER);
-	}
+	// for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
+	// 	type.setArgumentType(i, Type::POINTER);
+	// }
 
 	if (!default_version) {
 		default_version = new Function::Version();
@@ -188,19 +188,19 @@ void Function::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 	analyzed = true;
 
-	auto return_type = req_type.getReturnType();
-	analyse_body(analyser, type.getArgumentTypes(), default_version, return_type);
+	// auto return_type = req_type.getReturnType();
+	analyse_body(analyser, type.getArgumentTypes(), default_version);
 
 	// Re-analyse each version
 	for (auto v : versions) {
-		analyse_body(analyser, v.first, v.second, Type::ANY);
+		analyse_body(analyser, v.first, v.second);
 	}
 
 	type = default_version->type;
 
-	if (req_type.nature != Nature::ANY) {
-		type.nature = req_type.nature;
-	}
+	// if (req_type.nature != Nature::ANY) {
+	// 	type.nature = req_type.nature;
+	// }
 	update_function_args(analyser);
 	type.nature = Nature::POINTER;
 
@@ -213,7 +213,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 	// cout << "Function " << this << " ::will_take " << args << " level " << level << endl;
 	if (!analyzed) {
-		analyse(analyser, Type::ANY);
+		analyse(analyser);
 	}
 
 	if (level == 1) {
@@ -235,7 +235,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 			version->function->native = true;
 			versions.insert({args, version});
 
-			analyse_body(analyser, args, version, Type::ANY);
+			analyse_body(analyser, args, version);
 
 			// std::cout << "created version type : " << version->type << std::endl;
 			update_function_args(analyser);
@@ -281,7 +281,7 @@ void Function::set_version(const std::vector<Type>& args, int level) {
 	}
 }
 
-void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version, const Type& req_type) {
+void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version) {
 
 	// std::cout << "Function::analyse_body(" << args << ", " << req_type << ")" << std::endl;
 
@@ -305,7 +305,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 		version->type.setArgumentType(i, version->type.getArgumentType(i), has_default);
 	}
 	version->type.setReturnType(type.getReturnType());
-	version->body->analyse(analyser, req_type);
+	version->body->analyse(analyser);
 
 	TypeList return_types;
 	// Ignore recursive types
@@ -324,7 +324,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 		}
 		version->type.return_types.clear();
 		version->type.setReturnType(return_type);
-		version->body->analyse(analyser, return_type); // second pass
+		version->body->analyse(analyser); // second pass
 	} else {
 		if (return_types.size() > 0) {
 			version->type.setReturnType(return_types[0]);

@@ -42,21 +42,21 @@ Location Map::location() const {
 	return {opening_bracket->location.start, closing_bracket->location.end};
 }
 
-void Map::analyse(SemanticAnalyser* analyser, const Type&) {
+void Map::analyse(SemanticAnalyser* analyser) {
 
 	Type key_type = Type::ANY;
 	Type value_type = Type::ANY;
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		Value* ex = keys[i];
-		ex->analyse(analyser, Type::ANY);
+		ex->analyse(analyser);
 		key_type = Type::get_compatible_type(key_type, ex->type);
 	}
 	key_type.temporary = false;
 
 	for (size_t i = 0; i < values.size(); ++i) {
 		Value* ex = values[i];
-		ex->analyse(analyser, Type::ANY);
+		ex->analyse(analyser);
 		value_type = Type::get_compatible_type(value_type, ex->type);
 	}
 	value_type.temporary = false;
@@ -75,13 +75,13 @@ void Map::analyse(SemanticAnalyser* analyser, const Type&) {
 	// Re-analyze expressions with the supported type
 	constant = true;
 	for (size_t i = 0; i < keys.size(); ++i) {
-		keys[i]->analyse(analyser, key_type);
+		keys[i]->analyse(analyser);
 		if (keys[i]->constant == false) {
 			constant = false;
 		}
 	}
 	for (size_t i = 0; i < values.size(); ++i) {
-		values[i]->analyse(analyser, value_type);
+		values[i]->analyse(analyser);
 		if (values[i]->constant == false) {
 			constant = false;
 		}

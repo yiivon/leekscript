@@ -55,7 +55,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Init
 	for (Instruction* ins : inits) {
-		ins->analyse(analyser, Type::ANY);
+		ins->analyse(analyser);
 		if (dynamic_cast<Return*>(ins)) {
 			type = ins->type;
 			analyser->leave_block();
@@ -65,15 +65,15 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Condition
 	if (condition != nullptr) {
-		condition->analyse(analyser, Type::ANY);
+		condition->analyse(analyser);
 	}
 
 	// Body
 	analyser->enter_loop();
 	if (type == Type::VOID) {
-		body->analyse(analyser, Type::VOID);
+		body->analyse(analyser);
 	} else {
-		body->analyse(analyser, type.getElementType());
+		body->analyse(analyser);
 		type.setElementType(body->type);
 	}
 	analyser->leave_loop();
@@ -140,6 +140,9 @@ Compiler::value For::compile(Compiler& c) const {
 	if (output_v.v && body_v.v) {
 		// transfer the ownership of the temporary variable `body_v`
 		c.insn_push_array(output_v, body_v);
+	}
+	if (body_v.v) {
+		c.insn_delete_temporary(body_v);
 	}
 	c.leave_loop();
 	c.insn_branch(&inc_label);

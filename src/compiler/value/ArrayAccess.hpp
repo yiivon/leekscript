@@ -26,7 +26,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type&) override;
+	virtual void analyse(SemanticAnalyser*) override;
 	virtual bool will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level);
 	bool array_access_will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level);
 	virtual bool will_store(SemanticAnalyser* analyser, const Type& type) override;

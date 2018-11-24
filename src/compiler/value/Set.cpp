@@ -26,12 +26,12 @@ Location Set::location() const {
 	return {{0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void Set::analyse(SemanticAnalyser* analyser, const Type&) {
+void Set::analyse(SemanticAnalyser* analyser) {
 
 	Type element_type = Type::ANY;
 
 	for (auto& ex : expressions) {
-		ex->analyse(analyser, Type::ANY);
+		ex->analyse(analyser);
 		element_type = Type::get_compatible_type(element_type, ex->type);
 	}
 
@@ -45,7 +45,7 @@ void Set::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	constant = true;
 	for (auto& ex : expressions) {
-		ex->analyse(analyser, element_type);
+		ex->analyse(analyser);
 		constant = constant && ex->constant;
 	}
 
@@ -66,7 +66,7 @@ bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 	}
 	// Re-analyze expressions with the new type
 	for (size_t i = 0; i < expressions.size(); ++i) {
-		expressions[i]->analyse(analyser, this->type.getElementType());
+		expressions[i]->analyse(analyser);
 	}
 	this->types = type;
 	return false;

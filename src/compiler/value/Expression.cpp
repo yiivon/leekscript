@@ -102,7 +102,7 @@ Location Expression::location() const {
 	return {start, end};
 }
 
-void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Expression::analyse(SemanticAnalyser* analyser) {
 
 	operator_fun = nullptr;
 	operations = 1;
@@ -110,13 +110,13 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// No operator : just analyse v1 and return
 	if (op == nullptr) {
-		v1->analyse(analyser, req_type);
+		v1->analyse(analyser);
 		type = v1->type;
 		return;
 	}
 
-	v1->analyse(analyser, Type::ANY);
-	v2->analyse(analyser, Type::ANY);
+	v1->analyse(analyser);
+	v2->analyse(analyser);
 
 	if (dynamic_cast<const PlaceholderRawType*>(v1->type.raw_type)) {
 		type = v1->type;
@@ -212,20 +212,16 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			// if (native_method_v1_addr) {
 				// ((LeftValue*) v1)->change_type(analyser, this->v1_type);
 			// } else {
-				v1->analyse(analyser, this->v1_type);
+				v1->analyse(analyser);
 			// }
 		}
 		if (v2->type.not_temporary() != this->v2_type.not_temporary()) {
-			v2->analyse(analyser, this->v2_type);
+			v2->analyse(analyser);
 		}
 
 		// Apply mutators
 		for (const auto& mutator : m->mutators) {
 			mutator->apply(analyser, {v1, v2});
-		}
-
-		if (req_type.nature == Nature::POINTER) {
-			type.nature = req_type.nature;
 		}
 		types = type;
 		return;
@@ -270,10 +266,11 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		// Set the correct type nature for the two members
 		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
-			v1->analyse(analyser, Type::POINTER);
+			v1->analyse(analyser);
+			v1_type = Type::POINTER;
 		}
 		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
-			v2->analyse(analyser, Type::POINTER);
+			v2->analyse(analyser);
 			v2_type = Type::POINTER;
 		}
 
@@ -301,10 +298,12 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 		// Set the correct type nature for the two members
 		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER) {
-			v1->analyse(analyser, Type::POINTER);
+			v1->analyse(analyser);
+			v1_type = Type::POINTER;
 		}
 		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER) {
-			v2->analyse(analyser, Type::POINTER);
+			v2->analyse(analyser);
+			v2_type = Type::POINTER;
 		}
 		type = Type::BOOLEAN;
 	}
@@ -347,8 +346,10 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
 		type = Type::get_compatible_type(v1->type, v2->type);
-		v1->analyse(analyser, type);
-		v2->analyse(analyser, type);
+		v1->analyse(analyser);
+		v2->analyse(analyser);
+		v1_type = type;
+		v2_type = type;
 	}
 
 	// int div => result is int
@@ -357,15 +358,6 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	// At the end the require nature is taken into account
-	if (req_type.nature == Nature::POINTER) {
-		type.nature = req_type.nature;
-	}
-	if (req_type.nature == Nature::VOID) {
-		type = Type::VOID;
-	}
-	if (req_type.raw_type == RawType::REAL) {
-		type.raw_type = RawType::REAL;
-	}
 	if (types.size() == 0) {
 		types = type;
 	}

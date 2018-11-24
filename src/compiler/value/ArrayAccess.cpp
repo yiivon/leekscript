@@ -46,11 +46,11 @@ Location ArrayAccess::location() const {
 	return {array->location().start, close_bracket->location.end};
 }
 
-void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 
 	// std::cout << "Analyse AA " << this << " : " << req_type << std::endl;
 
-	array->analyse(analyser, Type::ANY);
+	array->analyse(analyser);
 
 	if (array->type.raw_type != RawType::ANY and !array->type.raw_type->is_placeholder() and !array->type.is_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
@@ -61,7 +61,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		return;
 	}
 
-	key->analyse(analyser, Type::ANY);
+	key->analyse(analyser);
 	constant = array->constant && key->constant;
 
 	array_element_type = Type::ANY;
@@ -75,14 +75,14 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	if (array->type.raw_type == RawType::INTERVAL) {
-		key->analyse(analyser, Type::INTEGER);
+		key->analyse(analyser);
 	}
 
 	// Range array access : array[4:12], check if the values are numbers
 	if (key != nullptr and key2 != nullptr) {
 
-		key->analyse(analyser, Type::INTEGER);
-		key2->analyse(analyser, Type::INTEGER);
+		key->analyse(analyser);
+		key2->analyse(analyser);
 
 		if (key->type != Type::ANY and not key->type.isNumber()) {
 			std::string k = "<key 1>";
@@ -102,7 +102,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			std::string kt = key->type.to_string();
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
 		}
-		key->analyse(analyser, Type::INTEGER);
+		key->analyse(analyser);
 
 		if (array->type.raw_type == RawType::STRING) {
 			type = Type::STRING;
@@ -110,14 +110,14 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	} else if (array->type.raw_type == RawType::MAP) {
 
-		key->analyse(analyser, Type::ANY);
+		key->analyse(analyser);
 
 		if (map_key_type == Type::INTEGER) {
-			key->analyse(analyser, Type::INTEGER);
+			key->analyse(analyser);
 		} else if (map_key_type == Type::REAL) {
-			key->analyse(analyser, Type::REAL);
+			key->analyse(analyser);
 		} else {
-			key->analyse(analyser, Type::POINTER);
+			key->analyse(analyser);
 		}
 
 		if (map_key_type != Type::POINTER) {
@@ -129,11 +129,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			}
 		}
 	} else {
-		key->analyse(analyser, Type::POINTER);
-	}
-
-	if (req_type.nature != Nature::ANY) {
-		type.nature = req_type.nature;
+		key->analyse(analyser);
 	}
 	// TODO should be temporary
 	// type.temporary = true;

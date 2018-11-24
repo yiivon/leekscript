@@ -63,11 +63,11 @@ public:
 
 	bool will_take(SemanticAnalyser*, const std::vector<Type>&, int level) override;
 	void set_version(const std::vector<Type>& args, int level) override;
-	void analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version, const Type& req_type);
+	void analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version);
 	void update_function_args(SemanticAnalyser*);
 	virtual Type version_type(std::vector<Type>) const override;
 	virtual void must_return(SemanticAnalyser*, const Type&) override;
-	virtual void analyse(SemanticAnalyser*, const Type&) override;
+	virtual void analyse(SemanticAnalyser*) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const override;

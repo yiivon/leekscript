@@ -30,9 +30,9 @@ Location PostfixExpression::location() const {
 	return expression->location(); // TODO add the op
 }
 
-void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void PostfixExpression::analyse(SemanticAnalyser* analyser) {
 
-	expression->analyse(analyser, Type::ANY);
+	expression->analyse(analyser);
 
 	if (expression->type.constant) {
 		analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
@@ -40,16 +40,11 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type
 	if (!expression->isLeftValue()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
 	}
-
 	type = expression->type;
 	if (type == Type::MPZ) {
 		type.temporary = true;
 	}
 	this->return_value = return_value;
-
-	if (req_type.nature == Nature::POINTER) {
-		type.nature = req_type.nature;
-	}
 }
 
 Compiler::value PostfixExpression::compile(Compiler& c) const {
@@ -71,9 +66,6 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_add(x, c.new_integer(1));
 				c.insn_store(x_addr, sum);
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(x);
-				}
 				return x;
 			} else {
 				auto e = expression->compile_l(c);
@@ -89,9 +81,6 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_sub(x, c.new_integer(1));
 				c.insn_store(x_addr, sum);
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(x);
-				}
 				return x;
 			} else {
 				auto e = expression->compile_l(c);

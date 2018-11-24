@@ -273,6 +273,7 @@ void Test::Input::almost(T expected, T delta) {
 }
 
 void Test::Input::quine() {
+	if (disabled) return disable();
 	std::ostringstream oss;
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->output = &oss;

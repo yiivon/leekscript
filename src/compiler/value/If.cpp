@@ -15,7 +15,7 @@ If::If(bool ternary) {
 	elze = nullptr;
 	condition = nullptr;
 	then = nullptr;
-	type = Type::ANY;
+	type = Type::VOID;
 	this->ternary = ternary;
 }
 
@@ -55,19 +55,18 @@ Location If::location() const {
 	return condition->location(); // TODO better
 }
 
-void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void If::analyse(SemanticAnalyser* analyser) {
 
 	types.clear();
 
-	condition->analyse(analyser, Type::ANY);
-	then->analyse(analyser, req_type);
+	condition->analyse(analyser);
+	then->analyse(analyser);
 
 	types.add(then->types);
+	type = then->type;
 
 	if (elze != nullptr) {
-
-		elze->analyse(analyser, req_type);
-
+		elze->analyse(analyser);
 		if (then->type == Type::VOID) { // then contains return instruction
 			type = elze->type;
 		} else if (elze->type == Type::VOID) { // elze contains return instruction
@@ -76,23 +75,10 @@ void If::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			type = Type::get_compatible_type(then->type, elze->type);
 		}
 		types.add(elze->types);
-
-		then->analyse(analyser, type);
-
+		then->analyse(analyser);
 		if (elze->type != type) {
-			elze->analyse(analyser, type);
+			elze->analyse(analyser);
 		}
-	} else {
-		if (req_type == Type::VOID) {
-			type = Type::VOID;
-		} else {
-			type = Type::POINTER; // Pointer because the else will give null
-		}
-		then->analyse(analyser, type);
-		types = type;
-	}
-	if (req_type.nature == Nature::POINTER) {
-		type.nature = req_type.nature;
 	}
 }
 
@@ -125,21 +111,17 @@ Compiler::value If::compile(Compiler& c) const {
 	if (elze != nullptr) {
 		else_v = c.insn_convert(elze->compile(c), type);
 		elze->compile_end(c);
-	} else if (type != Type::VOID) {
-		else_v = c.new_null();
 	}
 
 	c.insn_branch(&label_end);
 	label_else.block = LLVMCompiler::builder.GetInsertBlock();
 
 	c.insn_label(&label_end);
-	if (type != Type::VOID) {
-		auto phi = LLVMCompiler::builder.CreatePHI(type.llvm_type(), 2, "iftmp");
-		if (then_v.v) phi->addIncoming(then_v.v, label_then.block);
-		if (else_v.v) phi->addIncoming(else_v.v, label_else.block);
-		return {phi, type};
-	}
-	return {nullptr, Type::VOID};
+
+	auto phi = LLVMCompiler::builder.CreatePHI(type.llvm_type(), 2, "iftmp");
+	if (then_v.v) phi->addIncoming(then_v.v, label_then.block);
+	if (else_v.v) phi->addIncoming(else_v.v, label_else.block);
+	return {phi, type};
 }
 
 Value* If::clone() const {

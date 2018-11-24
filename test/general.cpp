@@ -127,11 +127,11 @@ void Test::test_general() {
 	code("null ?? 'bar'").equals("'bar'");
 	code("let a = 'foo' a ?? 'bar'").equals("'foo'");
 	code("let a = null a ?? 'bar'").equals("'bar'");
-	code("[] ?? [12]").equals("[]");
-	code("null ?? [12]").equals("[12]");
-	code("{} ?? 'default'").equals("{}");
-	code("null ?? 'default'").equals("'default'");
-	code("let a = null let b = null a ?? b ?? ':)'").equals("':)'");
+	DISABLED_code("[] ?? [12]").equals("[]");
+	DISABLED_code("null ?? [12]").equals("[12]");
+	DISABLED_code("{} ?? 'default'").equals("{}");
+	DISABLED_code("null ?? 'default'").equals("'default'");
+	DISABLED_code("let a = null let b = null a ?? b ?? ':)'").equals("':)'");
 
 	section("Value.string()");
 	code("Value.unknown.string().size() <= 3").equals("true");
@@ -172,7 +172,7 @@ void Test::test_general() {
 	code("var a = 2 a = 'hello' a").equals("'hello'");
 	code("var a = 2 a = [1, 2] a").equals("[1, 2]");
 	code("var a = 5.5 a = {} a").equals("{}");
-	code("var a = 7 System.print(a) a = <5, 12> System.print(a)").output("7\n<5, 12>\n");
+	DISABLED_code("var a = 7 System.print(a) a = <5, 12> System.print(a)").output("7\n<5, 12>\n");
 	code("var a = 5 a = 200l").equals("200");
 	code("var a = 5 a = 200l a").equals("200");
 	code("var a = 200l a = 5").equals("5");

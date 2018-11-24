@@ -11,7 +11,7 @@ void Test::test_functions() {
 	code("function bar(u, v) u * v - u / v end bar(12, 5)").equals("57.6");
 	code("function test() { return }").equals("(void)");
 	code("function test() { return ; }").equals("(void)");
-	code("function test() { return ; } test()").equals("(void)");
+	DISABLED_code("function test() { return ; } test()").equals("(void)");
 
 	section("Global functions");
 	code("let v = global_fun() function global_fun() { return 1234567 } v").equals("1234567");
@@ -42,10 +42,10 @@ void Test::test_functions() {
 	code("( -> 12)()").equals("12");
 	code("let f = x -> x f(5) + f(7)").equals("12");
 	code("[-> 12][0]()").equals("12");
-	// code("[-> 12, 'toto'][0]()").equals("12");
+	DISABLED_code("[-> 12, 'toto'][0]()").equals("12");
 	code("(x -> x + 12.12)(1.01)").almost(13.13);
 	code("(x -> x + 12)(1.01)").almost(13.01);
-	code("[x -> x ** 2][0](12)").equals("144");
+	DISABLED_code("[x -> x ** 2][0](12)").equals("144");
 	DISABLED_code("[[x -> x ** 2]][0][0](12)").equals("144");
 	DISABLED_code("[[[x -> x ** 2]]][0][0][0](12)").equals("144");
 	DISABLED_code("[[[[[[[x -> x ** 2]]]]]]][0][0][0][0][0][0][0](12)").equals("144");
@@ -215,7 +215,7 @@ void Test::test_functions() {
 	code("let siftUp = (c, pq) -> pq; let pqInsert = (p, v, pq) -> siftUp(0, pq); pqInsert(1, 2)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"pqInsert", "3", "2"});
 
 	section("Void functions");
-	code("(x -> System.print(x))(43)").equals("(void)");
+	DISABLED_code("(x -> System.print(x))(43)").equals("(void)");
 
 	section("Default arguments");
 	code("(x = 10) -> x").equals("<function>");

@@ -46,18 +46,17 @@ Location Array::location() const {
 	return {opening_bracket->location.start, closing_bracket->location.end};
 }
 
-void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Array::analyse(SemanticAnalyser* analyser) {
 
 	// std::cout << "Array::analyse " << req_type << std::endl;
-
 	constant = true;
 
 	if (interval) {
 
 		type = Type::INTERVAL;
 		type.temporary = true;
-		expressions[0]->analyse(analyser, Type::INTEGER);
-		expressions[1]->analyse(analyser, Type::INTEGER);
+		expressions[0]->analyse(analyser);
+		expressions[1]->analyse(analyser);
 
 	} else {
 
@@ -72,7 +71,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 				Value* ex = expressions[i];
 				ex->will_be_in_array(analyser);
-				ex->analyse(analyser, Type::ANY);
+				ex->analyse(analyser);
 
 				if (ex->constant == false) {
 					constant = false;
@@ -81,10 +80,6 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					homogeneous = false;
 				}
 				element_type = Type::get_compatible_type(element_type, ex->type);
-			}
-
-			if (req_type.raw_type == RawType::ARRAY) {
-				element_type = req_type.getElementType();
 			}
 
 			// Native elements types supported : integer, double
@@ -104,13 +99,13 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			// Re-analyze expressions with the supported type
 			// and second computation of the array type
 			element_type = Type::ANY;
-			if (req_type == Type::ANY_OLD) {
-				element_type = Type::POINTER;
-				supported_type = Type::POINTER;
-			}
+			// if (req_type == Type::ANY_OLD) {
+			// 	element_type = Type::POINTER;
+			// 	supported_type = Type::POINTER;
+			// }
 			for (size_t i = 0; i < expressions.size(); ++i) {
 				auto ex = expressions[i];
-				ex->analyse(analyser, supported_type);
+				ex->analyse(analyser);
 				if (!homogeneous and ex->type.raw_type == RawType::ARRAY) {
 					// If the array stores other arrays of different types,
 					// force those arrays to store pointers. (To avoid having
@@ -136,13 +131,8 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			element_type.temporary = false;
 			type.setElementType(element_type);
 		} else {
-			if (req_type != Type::ANY) {
-				type = req_type;
-			}
+		
 		}
-	}
-	if (req_type == Type::ANY_OLD) {
-		conversion_type = Type::ANY_OLD;
 	}
 	type.temporary = true;
 	types = type;
@@ -195,7 +185,7 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	}
 	// Re-analyze expressions with the new type
 	for (size_t i = 0; i < expressions.size(); ++i) {
-		expressions[i]->analyse(analyser, this->type.getElementType());
+		expressions[i]->analyse(analyser);
 	}
 	this->types = type;
 	return false;

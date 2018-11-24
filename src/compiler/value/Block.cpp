@@ -54,10 +54,9 @@ void Block::analyse_global_functions(SemanticAnalyser* analyser) {
 	}
 }
 
-void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Block::analyse(SemanticAnalyser* analyser) {
 
 	// std::cout << "Block analyse " << req_type << std::endl;
-
 	analyser->enter_block();
 
 	type = Type::VOID;
@@ -66,10 +65,10 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		if (i < instructions.size() - 1) {
 			// Not the last instruction, it must return void
-			instructions[i]->analyse(analyser, Type::VOID);
+			instructions[i]->analyse(analyser);
 		} else {
 			// Last instruction : must return the required type
-			instructions[i]->analyse(analyser, req_type);
+			instructions[i]->analyse(analyser);
 			type = instructions[i]->type;
 			was_reference = type.reference;
 			for (auto& t : instructions[i]->types) t.reference = false;
@@ -87,11 +86,11 @@ void Block::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->leave_block();
 
 	if (type.nature == Nature::VOID) { // empty block or last instruction type is VOID
-		if (req_type.nature != Nature::ANY) {
-			type.nature = req_type.nature;
-		} else {
-			type = Type::VOID;
-		}
+		// if (req_type.nature != Nature::ANY) {
+		// 	type.nature = req_type.nature;
+		// } else {
+		// 	type = Type::VOID;
+		// }
 	}
 	if (type == Type::MPZ) {
 		type = Type::MPZ_TMP;
@@ -121,7 +120,11 @@ Compiler::value Block::compile(Compiler& c) const {
 			// no need to compile after a return
 			return {nullptr, Type::ANY};
 		}
-		if (i == instructions.size() - 1) {
+		if (i < instructions.size() - 1) {
+			if (val.v != nullptr && instructions[i]->type != Type::VOID) {
+				c.insn_delete_temporary(val);
+			}
+		} else {
 			if (type.must_manage_memory() and val.v != nullptr) {
 				auto ret = c.insn_call(type, {val}, +[](LSValue* value) {
 					return value->move();

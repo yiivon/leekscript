@@ -56,12 +56,12 @@ Location FunctionCall::location() const {
 	return {function->location().start, closing_parenthesis->location.end};
 }
 
-void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 	// std::cout << "FC " << this << " : " << req_type << std::endl;
 
 	// Analyse the function (can be anything here)
-	function->analyse(analyser, Type::ANY);
+	function->analyse(analyser);
 
 	// Find the function object
 	function_object = dynamic_cast<Function*>(function);
@@ -86,7 +86,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Analyse all arguments a first time
 	for (size_t a = 0; a < arguments.size(); ++a) {
 		auto arg = arguments.at(a);
-		arg->analyse(analyser, Type::ANY);
+		arg->analyse(analyser);
 		arguments.at(a)->type = arg->type;
 		arguments.at(a)->type.reference = function->type.getArgumentType(a).reference;
 	}
@@ -154,7 +154,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 				if (m != nullptr) {
 					this_ptr = oa->object;
-					this_ptr->analyse(analyser, m->obj_type);
+					this_ptr->analyse(analyser);
 					this_ptr_type = m->obj_type;
 					std_func = m->addr;
 					function->type = m->type;
@@ -183,7 +183,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			}
 			if (m != nullptr) {
 				this_ptr = oa->object;
-				this_ptr->analyse(analyser, m->obj_type);
+				this_ptr->analyse(analyser);
 				this_ptr_type = m->obj_type;
 				std_func = m->addr;
 				function->type = m->type;
@@ -219,7 +219,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			bool isByValue = true;
 			Type effectiveType;
 			for (auto& arg : arguments) {
-				arg->analyse(analyser, Type::ANY);
+				arg->analyse(analyser);
 				effectiveType = arg->type;
 				if (arg->type.nature != Nature::VALUE) {
 					isByValue = false;
@@ -243,7 +243,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		if (a < arguments.size()) {
 			auto arg_type = function->type.getArgumentType(a);
 			// OK, the argument is present in the call
-			arguments.at(a)->analyse(analyser, argument_type);
+			arguments.at(a)->analyse(analyser);
 			arguments.at(a)->type.reference = arg_type.reference;
 			if (arg_type.raw_type == RawType::FUNCTION or arg_type.raw_type == RawType::CLOSURE) {
 				arguments.at(a)->will_take(analyser, arg_type.arguments_types, 1);
@@ -308,21 +308,13 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	a = 0;
 	for (auto& arg : arguments) {
 		auto t = function_type.getArgumentType(a);
-		if (t == Type::ANY) {
-			t = Type::POINTER;
-		}
-		arg->analyse(analyser, t);
+		arg->analyse(analyser);
 		arg->type.reference = function->type.getArgumentType(a).reference;
 		a++;
 	}
 
 	return_type = function_type.getReturnType();
-
-	if (req_type.nature == Nature::POINTER) {
-		type.nature = req_type.nature;
-	}
 	types = type;
-
 	// std::cout << "FC " << this << " type " << type << std::endl;
 }
 

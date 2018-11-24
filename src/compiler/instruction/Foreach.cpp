@@ -52,7 +52,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	analyser->enter_block();
 
-	container->analyse(analyser, Type::ANY);
+	container->analyse(analyser);
 
 	if (container->type != Type::ANY and not container->type.iterable()) {
 		analyser->add_error({SemanticError::Type::VALUE_NOT_ITERABLE, container->location(), container->location(), {container->to_string(), container->type.to_string()}});
@@ -83,9 +83,9 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	analyser->enter_loop();
 	if (type == Type::VOID) {
-		body->analyse(analyser, Type::VOID);
+		body->analyse(analyser);
 	} else {
-		body->analyse(analyser, type.getElementType());
+		body->analyse(analyser);
 		type.setElementType(body->type);
 	}
 	analyser->leave_loop();
@@ -155,6 +155,9 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	auto body_v = body->compile(c);
 	if (output_v.v && body_v.v) {
 		c.insn_push_array(output_v, body_v);
+	}
+	if (body_v.v) {
+		c.insn_delete_temporary(body_v);
 	}
 	c.insn_branch(&it_label);
 
