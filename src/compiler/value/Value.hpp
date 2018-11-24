@@ -5,6 +5,7 @@
 #include <vector>
 #include "../Compiler.hpp"
 #include "../../vm/TypeList.hpp"
+#include "../../type/types.hpp"
 #include "../lexical/Location.hpp"
 
 namespace ls {
@@ -16,6 +17,8 @@ public:
 
 	Type type;
 	TypeList types;
+	std::shared_ptr<LType> ty;
+
 	std::vector<Type> version;
 	bool has_version = false;
 	std::map<std::string, Type> attr_types;

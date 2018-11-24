@@ -1,18 +1,36 @@
-any
-	---> null
-	---> boolean
-	---> number
-				---> real
-					---> long
-						---> integer
-	---> map<K, V>
-			---> object = map<string, ?>
+*any*
+	.class, print, string(), json()
 
-			---> array<V> = map<int, V>
-						---> string = array<int> (= map<int, int>)
-						---> interval = array<int> (= map<int, int>)
+*number<FP>*
+	all math
+   *casts* : *bool*, *integer*
 
-		    ---> set<V> = map<V, null>
+*integer* = *number<false>*
+*bool* = *integer*
+	print as true/false
 
-	---> function
-	---> class
+*list<V>*
+	size(), map(), iter()
+   *list<number>*
+		sum(), average(), min(), max()
+
+*map<K,V>* = *list<V>*
+
+*array<V>* = *map<integer,V>*
+	push(V), remove(i)
+
+*string<S>* = *list<char>*
+	uppercase(), lowercase()
+*char* = *string<1>* + *integer*
+
+*interval* = *list<integer>*
+
+*set<V>* = *list<V>*
+	add(V)
+
+*object* = *list<any>*
+
+*function* = {
+   args = *list<string>*
+}
+*class*

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Type.hpp"
+#include "../type/types.hpp"
 #include "value/LSClass.hpp"
 #include "../compiler/Compiler.hpp"
 #include "TypeMutator.hpp"
