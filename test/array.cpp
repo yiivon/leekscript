@@ -88,6 +88,8 @@ void Test::test_arrays() {
 	code("|[1, 2, 3]|").equals("3");
 	code("|[1.5, 2.5, 3.5]|").equals("3");
 	code("|['a', 'b', 'c']|").equals("3");
+	code("[1, 2, |[1, 2, 3]|, 4]").equals("[1, 2, 3, 4]");
+	code("['1', 2, |[1, 2, 3]|, 4]").equals("['1', 2, 3, 4]");
 
 	section("Array.operator []");
 	code("[1, 2, 3][1]").equals("2");

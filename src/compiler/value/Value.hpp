@@ -47,7 +47,7 @@ public:
 	virtual void will_be_in_array(SemanticAnalyser*);
 	virtual void set_version(const std::vector<Type>&, int level);
 	virtual Type version_type(std::vector<Type>) const;
-	virtual void analyse(SemanticAnalyser*, const Type&);
+	virtual void analyse(SemanticAnalyser*, const Type& = Type::ANY);
 
 	virtual Compiler::value compile(Compiler&) const = 0;
 	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const;

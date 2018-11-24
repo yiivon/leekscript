@@ -21,10 +21,6 @@ Location Nulll::location() const {
 	return token->location;
 }
 
-void Nulll::analyse(SemanticAnalyser*, const Type&) {
-	// nothing to do, always a pointer
-}
-
 Compiler::value Nulll::compile(Compiler& c) const {
 	return c.new_null();
 }

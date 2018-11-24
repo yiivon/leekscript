@@ -28,11 +28,8 @@ Location AbsoluteValue::location() const {
 }
 
 void AbsoluteValue::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-	expression->analyse(analyser, Type::POINTER);
+	expression->analyse(analyser);
 	constant = expression->constant;
-	if (req_type.nature != Nature::ANY) {
-		type.nature = req_type.nature;
-	}
 }
 
 Compiler::value AbsoluteValue::compile(Compiler& c) const {
@@ -42,9 +39,6 @@ Compiler::value AbsoluteValue::compile(Compiler& c) const {
 		return v->abso();
 	});
 	c.insn_delete_temporary(ex);
-	if (type.nature == Nature::POINTER) {
-		abso = c.insn_to_pointer(abso);
-	}
 	return abso;
 }
 
