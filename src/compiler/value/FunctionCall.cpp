@@ -155,6 +155,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 				if (m != nullptr) {
 					this_ptr = oa->object;
 					this_ptr->analyse(analyser, m->obj_type);
+					this_ptr_type = m->obj_type;
 					std_func = m->addr;
 					function->type = m->type;
 					is_native_method = m->native;
@@ -183,6 +184,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			if (m != nullptr) {
 				this_ptr = oa->object;
 				this_ptr->analyse(analyser, m->obj_type);
+				this_ptr_type = m->obj_type;
 				std_func = m->addr;
 				function->type = m->type;
 				is_native_method = m->native;
@@ -389,13 +391,13 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Standard function call on object : "hello".size() */
 	if (this_ptr != nullptr) {
 
-		auto obj = this_ptr->compile(c);
+		auto obj = c.insn_convert(this_ptr->compile(c), this_ptr_type);
 		if (obj.t.reference) {
 			obj = c.insn_load(obj);
 		}
 		vector<Compiler::value> args = { obj };
 		this_ptr->compile_end(c);
-		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr->type.id() };
+		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr_type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function->type.getArgumentType(i)));
 			arguments.at(i)->compile_end(c);
@@ -522,7 +524,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// std::cout << this << " args " << args.size() << " " << arg_count << " " << offset << std::endl;
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
-			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function_type.getArgumentType(i)));
+			auto convert_type = function_type.getArgumentType(i);
+			if (convert_type == Type::ANY) convert_type = Type::POINTER;
+			args.push_back(c.insn_convert(arguments.at(i)->compile(c), convert_type));
 			arguments.at(i)->compile_end(c);
 			if (function_type.getArgumentType(i) == Type::MPZ && arguments.at(i)->type != Type::MPZ_TMP) {
 				args.at(offset + i) = c.insn_clone_mpz(args.at(offset + i));

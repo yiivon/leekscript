@@ -37,9 +37,9 @@ Location PrefixExpression::location() const {
 	return {operatorr->token->location.start, expression->location().end};
 }
 
-void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	expression->analyse(analyser, Type::ANY);
+	expression->analyse(analyser);
 
 	if (operatorr->type == TokenType::TILDE) {
 		type = expression->type;
@@ -55,9 +55,6 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 		type = expression->type;
 		if (type == Type::MPZ and operatorr->type == TokenType::MINUS) {
 			type = Type::MPZ_TMP;
-		}
-		if (operatorr->type == TokenType::MINUS && req_type == Type::REAL) {
-			type = Type::REAL;
 		}
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
@@ -97,9 +94,6 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser, const Type& req_type)
 				else if (vv->name == "Set") type = Type::PTR_SET;
 			}
 		}
-	}
-	if (req_type.nature != Nature::ANY) {
-		type.nature = req_type.nature;
 	}
 }
 
@@ -192,13 +186,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				});
 			} else if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
-				auto r = c.insn_neg(x);
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(r);
-				} else if (type == Type::REAL && expression->type == Type::INTEGER) {
-					return c.to_real(r);
-				}
-				return r;
+				return c.insn_neg(x);
 			} else {
 				arg = expression->compile(c);
 				func = (void*) jit_minus;

@@ -112,7 +112,7 @@ Compiler::value If::compile(Compiler& c) const {
 
 	c.insn_label(&label_then);
 
-	then_v = then->compile(c);
+	then_v = c.insn_convert(then->compile(c), type);
 	then->compile_end(c);
 
 	if (dynamic_cast<Return*>(then->instructions[0]) == nullptr && dynamic_cast<Break*>(then->instructions[0]) == nullptr && dynamic_cast<Continue*>(then->instructions[0]) == nullptr) {
@@ -123,7 +123,7 @@ Compiler::value If::compile(Compiler& c) const {
 	c.insn_label(&label_else);
 
 	if (elze != nullptr) {
-		else_v = elze->compile(c);
+		else_v = c.insn_convert(elze->compile(c), type);
 		elze->compile_end(c);
 	} else if (type != Type::VOID) {
 		else_v = c.new_null();

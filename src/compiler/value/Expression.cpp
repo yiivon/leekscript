@@ -274,6 +274,7 @@ void Expression::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		}
 		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
 			v2->analyse(analyser, Type::POINTER);
+			v2_type = Type::POINTER;
 		}
 
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
@@ -507,8 +508,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 				args.push_back(v2->compile(c));
 			}
 		} else {
-			args.push_back(op->reversed ? v2->compile(c) : v1->compile(c));
-			args.push_back(op->reversed ? v1->compile(c) : v2->compile(c));
+			args.push_back(op->reversed ? c.insn_convert(v2->compile(c), v2_type) : c.insn_convert(v1->compile(c), v1_type));
+			args.push_back(op->reversed ? c.insn_convert(v1->compile(c), v1_type) : c.insn_convert(v2->compile(c), v2_type));
 		}
 		v1->compile_end(c);
 		v2->compile_end(c);
@@ -544,13 +545,13 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}, true);
 			}
 
-			if (equal_previous_type.nature == Nature::POINTER && v2->type.nature == Nature::POINTER) {
+			if (equal_previous_type.nature == Nature::POINTER && v2_type.nature == Nature::POINTER) {
 				auto vv = dynamic_cast<VariableValue*>(v1);
 				if (vv && vv->scope != VarScope::PARAMETER) {
 					c.set_var_type(vv->name, v1->type);
 				}
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
 				c.insn_call(Type::VOID, {c.insn_load(x_addr)}, &LSValue::delete_ref);
 				c.insn_store(x_addr, y);
@@ -1070,7 +1071,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return r;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue* res = (*x)->double_mod_eq(y);

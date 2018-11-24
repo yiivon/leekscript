@@ -236,6 +236,7 @@ LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) const {
 	// assert(v.t.llvm_type() == v.v->getType());
+	if (!v.v) { return v; }
 	if (v.t.nature == Nature::POINTER && t.nature == Nature::POINTER) {
 		return v;
 	}
