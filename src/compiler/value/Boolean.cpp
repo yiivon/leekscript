@@ -25,8 +25,6 @@ Location Boolean::location() const {
 	return token->location;
 }
 
-void Boolean::analyse(SemanticAnalyser*, const Type& req_type) {}
-
 Compiler::value Boolean::compile(Compiler& c) const {
 	return c.new_bool(value);
 }
