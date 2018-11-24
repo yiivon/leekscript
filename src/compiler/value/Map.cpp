@@ -196,9 +196,9 @@ Compiler::value Map::compile(Compiler &c) const {
 	auto map = c.insn_call(type, {}, (void*) create);
 
 	for (size_t i = 0; i < keys.size(); ++i) {
-		auto k = keys[i]->compile(c);
+		auto k = c.insn_convert(keys[i]->compile(c), type.getKeyType());
 		keys[i]->compile_end(c);
-		auto v = values[i]->compile(c);
+		auto v = c.insn_convert(values[i]->compile(c), type.getElementType());
 		values[i]->compile_end(c);
 
 		c.insn_call(Type::VOID, {map, k, v}, (void*) insert);

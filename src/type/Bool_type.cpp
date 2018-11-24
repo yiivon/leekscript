@@ -12,7 +12,7 @@ bool Bool_type::compatible(std::shared_ptr<Base_type>) const {
 }
 
 std::ostream& Bool_type::print(std::ostream& os) const {
-	os << BLUE_BOLD << "number" << END_COLOR;
+	os << BLUE_BOLD << "bool" << END_COLOR;
 	return os;
 }
 

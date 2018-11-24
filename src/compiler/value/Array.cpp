@@ -132,6 +132,7 @@ void Array::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 					element_type = Type::get_compatible_type(element_type, ex->type);
 				}
 			}
+			if (element_type == Type::BOOLEAN) element_type = Type::POINTER;
 			element_type.temporary = false;
 			type.setElementType(element_type);
 		} else {
@@ -231,7 +232,7 @@ Compiler::value Array::compile(Compiler& c) const {
 	}
 	std::vector<Compiler::value> elements;
 	for (Value* val : expressions) {
-		auto v = val->compile(c);
+		auto v = c.insn_convert(val->compile(c), type.getElementType());
 		val->compile_end(c);
 		v = c.insn_move(v);
 		elements.push_back(v);

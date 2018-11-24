@@ -6,6 +6,10 @@ namespace ls {
 
 LType::LType() {}
 
+LType::LType(Base_type* type) {
+	_types.push_back(std::shared_ptr<Base_type>(type));
+}
+
 std::vector<std::shared_ptr<Base_type>> LType::types() const {
 	return _types;
 }

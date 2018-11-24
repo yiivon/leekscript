@@ -397,7 +397,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		this_ptr->compile_end(c);
 		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr->type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(arguments.at(i)->compile(c));
+			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function->type.getArgumentType(i)));
 			arguments.at(i)->compile_end(c);
 			lsvalue_types.push_back(function->type.getArgumentType(i).id());
 		}
@@ -424,7 +424,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		vector<Compiler::value> args;
 		vector<LSValueType> lsvalue_types;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(arguments.at(i)->compile(c));
+			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function->type.getArgumentType(i)));
 			arguments.at(i)->compile_end(c);
 			lsvalue_types.push_back((LSValueType) function->type.getArgumentType(i).id());
 		}
@@ -522,7 +522,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// std::cout << this << " args " << args.size() << " " << arg_count << " " << offset << std::endl;
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
-			args.push_back(arguments.at(i)->compile(c));
+			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function_type.getArgumentType(i)));
 			arguments.at(i)->compile_end(c);
 			if (function_type.getArgumentType(i) == Type::MPZ && arguments.at(i)->type != Type::MPZ_TMP) {
 				args.at(offset + i) = c.insn_clone_mpz(args.at(offset + i));

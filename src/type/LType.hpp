@@ -13,6 +13,7 @@ private:
 	std::vector<std::shared_ptr<Base_type>> _types; 
 public:
 	LType();
+	LType(Base_type* type);
 	std::vector<std::shared_ptr<Base_type>> types() const;
 	void add(const std::shared_ptr<Base_type> type);
 

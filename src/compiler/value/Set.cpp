@@ -103,7 +103,7 @@ Compiler::value Set::compile(Compiler& c) const {
 
 	double i = 0;
 	for (Value* ex : expressions) {
-		auto v = ex->compile(c);
+		auto v = c.insn_convert(ex->compile(c), type.getElementType());
 		ex->compile_end(c);
 		c.insn_call(Type::VOID, {s, v}, (void*) insert);
 		ops += std::log2(++i);

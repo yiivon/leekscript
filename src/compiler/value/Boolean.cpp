@@ -10,13 +10,14 @@ Boolean::Boolean(std::shared_ptr<Token> token) {
 	this->token = token;
 	this->value = token->type == TokenType::TRUE;
 	type = Type::BOOLEAN;
+	ty = std::make_shared<LType>(new Bool_type());
 	constant = true;
 }
 
 void Boolean::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << (value ? "true" : "false");
 	if (debug) {
-		os << " " << type;
+		os << " " << ty;
 	}
 }
 
@@ -24,19 +25,10 @@ Location Boolean::location() const {
 	return token->location;
 }
 
-void Boolean::analyse(SemanticAnalyser*, const Type& req_type) {
-	if (req_type.nature == Nature::POINTER) {
-		type.nature = Nature::POINTER;
-	}
-}
+void Boolean::analyse(SemanticAnalyser*, const Type& req_type) {}
 
 Compiler::value Boolean::compile(Compiler& c) const {
-	if (type.nature == Nature::POINTER) {
-		auto b = LSBoolean::get(value);
-		return {c.new_pointer(b).v, Type::BOOLEAN_P};
-	} else {
-		return c.new_bool(value);
-	}
+	return c.new_bool(value);
 }
 
 Value* Boolean::clone() const {

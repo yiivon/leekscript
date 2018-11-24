@@ -654,7 +654,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return sum;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->sub_eq(y);
@@ -676,7 +676,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return sum;
 			} else {
 				auto x = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->mul_eq(y);
@@ -698,7 +698,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return sum;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->div_eq(y);
@@ -720,7 +720,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return sum;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->mod_eq(y);
@@ -741,7 +741,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return sum;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->pow_eq(y);
@@ -796,7 +796,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return r;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
+				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue* res = (*x)->int_div_eq(y);
@@ -1086,8 +1086,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 	}
 
 	if (args.size() == 0) {
-		args.push_back(v1->compile(c));
-		args.push_back(v2->compile(c));
+		args.push_back(c.insn_to_pointer(v1->compile(c)));
+		args.push_back(c.insn_to_pointer(v2->compile(c)));
 		v1->compile_end(c);
 		v2->compile_end(c);
 	}
