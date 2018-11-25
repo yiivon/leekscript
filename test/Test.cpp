@@ -3,6 +3,7 @@
 #include <string>
 #include "../src/constants.h"
 #include "../src/colors.h"
+#include "../src/vm/Program.hpp"
 
 std::vector<std::string> Test::failed_tests;
 
@@ -284,6 +285,25 @@ void Test::Input::quine() {
 		pass(code);
 	} else {
 		fail(code, oss.str());
+	}
+}
+
+void Test::Input::type(ls::Ty type) {
+	if (disabled) return disable();
+	auto vm = v1 ? &test->vmv1 : &test->vm;
+	
+	test->total++;
+	auto result = vm->execute(code, "{}", name);
+
+	std::ostringstream oss;
+	type->print(oss);
+	std::ostringstream oss_actual;
+	result.type->print(oss_actual);
+
+	if (result.type == type) {
+		pass(oss.str());
+	} else {
+		fail(oss.str(), oss_actual.str());
 	}
 }
 

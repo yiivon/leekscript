@@ -16,7 +16,7 @@ public:
 
 	Type type = Type::VOID;
 	TypeList types;
-	// Ty ty;
+	Ty ty;
 
 	virtual ~Instruction() = 0;
 

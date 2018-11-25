@@ -17,7 +17,7 @@ public:
 
 	Type type;
 	TypeList types;
-	std::shared_ptr<LType> ty;
+	Ty ty;
 
 	std::vector<Type> version;
 	bool has_version = false;

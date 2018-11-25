@@ -1,4 +1,5 @@
 #include "Test.hpp"
+#include "../src/type/Ty.hpp"
 
 void Test::test_types() {
 
@@ -26,6 +27,11 @@ void Test::test_types() {
 	assert(ls::Type::more_specific(ls::Type::PTR_ARRAY, ls::Type::INT_ARRAY));
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::INT_INT_MAP));
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::REAL_REAL_MAP));
+
+	// New type
+	code("12").type(ls::Ty::get_int());
+	code("12.5").type(ls::Ty::get_double());
+	code("'salut'").type(ls::Ty::get_string());
 
 	// New types
 	auto null = std::make_shared<ls::Null_type>();

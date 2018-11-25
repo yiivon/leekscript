@@ -213,8 +213,8 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 
 		result.execution_time = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
 		result.execution_time_ms = (((double) result.execution_time / 1000) / 1000);
-
 		result.value = value;
+		result.type = program->main->ty;
 	}
 
 	// Set results

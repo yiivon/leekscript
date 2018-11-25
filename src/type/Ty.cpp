@@ -9,6 +9,7 @@
 #include "Double_type.hpp"
 #include "Mpz_type.hpp"
 #include "Array_type.hpp"
+#include "String_type.hpp"
 
 namespace ls {
 
@@ -18,8 +19,7 @@ Ty::Ty(Base_type* type) : ptr(std::make_shared<LType>(type)) {}
 Ty::~Ty() {}
 
 bool Ty::operator == (const Ty& ty) const {
-	// return *ptr == *ty.ptr;
-	return false;
+	return *ptr == *ty.ptr;
 }
 
 Ty Ty::get_void() {
@@ -54,6 +54,9 @@ Ty Ty::get_mpz() {
 }
 Ty Ty::get_array() {
 	return { new Array_type() };
+}
+Ty Ty::get_string() {
+	return { new String_type() };
 }
 
 std::ostream& operator << (std::ostream& os, const Ty& ty) {

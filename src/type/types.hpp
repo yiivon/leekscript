@@ -4,3 +4,6 @@
 #include "Null_type.hpp"
 #include "List_type.hpp"
 #include "Any_type.hpp"
+#include "Array_type.hpp"
+#include "String_type.hpp"
+#include "Ty.hpp"

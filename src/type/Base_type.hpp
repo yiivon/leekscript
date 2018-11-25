@@ -13,6 +13,7 @@ class Type;
 class Base_type {
 public:
 	virtual ~Base_type();
+	bool operator == (const Base_type&) const;
 	virtual bool all(std::function<bool(const Base_type* const)>) const;
 	virtual const std::string clazz() const { return "?"; }
 	virtual const std::string json_name() const { return "?"; }

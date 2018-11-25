@@ -27,6 +27,7 @@ public:
 	static Ty get_double();
 	static Ty get_mpz();
 	static Ty get_array();
+	static Ty get_string();
 
 	friend std::ostream& operator << (std::ostream&, const Ty&);
 };

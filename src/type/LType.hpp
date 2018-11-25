@@ -17,6 +17,8 @@ public:
 	std::vector<std::shared_ptr<Base_type>> types() const;
 	void add(const std::shared_ptr<Base_type> type);
 
+	bool operator == (const LType&) const;
+
 	virtual bool compatible(std::shared_ptr<Base_type>) const override;
 	virtual bool all(std::function<bool(const Base_type* const)>) const override;
 	virtual const std::string clazz() const { return "?"; }

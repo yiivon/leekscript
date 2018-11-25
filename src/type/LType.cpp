@@ -1,6 +1,7 @@
 #include "LType.hpp"
 #include <algorithm>
 #include "../colors.h"
+#include <iostream>
 
 namespace ls {
 
@@ -16,6 +17,12 @@ std::vector<std::shared_ptr<Base_type>> LType::types() const {
 
 void LType::add(const std::shared_ptr<Base_type> type) {
 	_types.push_back(type);
+}
+
+bool LType::operator == (const LType& type) const {
+	return _types.size() == type._types.size() && std::equal(_types.begin(), _types.end(), type._types.begin(), [](std::shared_ptr<Base_type> a, std::shared_ptr<Base_type> b) {
+		return *a == *b;
+	});
 }
 
 bool LType::compatible(std::shared_ptr<Base_type>) const {

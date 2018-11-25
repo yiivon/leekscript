@@ -32,7 +32,7 @@ void Block::print(ostream& os, int indent, bool debug, bool condensed) const {
 	}
 	if (!condensed) os << tabs(indent) << "}";
 	if (debug) {
-		// os << " " << ty;
+		os << " " << ty;
 	}
 }
 
@@ -61,7 +61,7 @@ void Block::analyse(SemanticAnalyser* analyser) {
 
 	type = Type::VOID;
 	types.clear();
-	// ty = Ty::get_void();
+	ty = Ty::get_void();
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		if (i < instructions.size() - 1) {
@@ -75,12 +75,12 @@ void Block::analyse(SemanticAnalyser* analyser) {
 			for (auto& t : instructions[i]->types) t.reference = false;
 			type.reference = false;
 			types.add(instructions[i]->types);
-			// ty = instructions[i]->ty;
+			ty = instructions[i]->ty;
 		}
 		// A return instruction
 		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
 			type = Type::VOID; // This block has really no type
-			// ty = Ty::get_void();
+			ty = Ty::get_void();
 			analyser->leave_block();
 			return; // no need to compile after a return
 		}

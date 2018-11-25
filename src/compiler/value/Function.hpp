@@ -20,7 +20,7 @@ public:
 		Block* body;
 		LSFunction* function = nullptr;
 		Type type;
-		// Ty ty;
+		Ty ty;
 	};
 
 	std::string name;
