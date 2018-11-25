@@ -10,6 +10,7 @@ namespace ls {
 Array::Array() {
 	type = Type::ARRAY;
 	conversion_type = Type::VOID;
+	// ty = Ty::get_array();
 }
 
 Array::~Array() {
@@ -19,7 +20,6 @@ Array::~Array() {
 }
 
 void Array::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-
 	if (interval) {
 		os << "[";
 		expressions[0]->print(os, indent, debug);
@@ -36,9 +36,8 @@ void Array::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 		}
 		os << "]";
 	}
-
 	if (debug) {
-		os << " " << type;
+		// os << " " << ty;
 	}
 }
 
@@ -63,7 +62,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 		if (expressions.size() > 0) {
 
 			Type element_type = Type::ANY;
-			Type supported_type = Type::ANY;
+			// auto element_ty = Ty::get_any();
 			auto homogeneous = true;
 
 			// First analyse pass
@@ -80,8 +79,10 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					homogeneous = false;
 				}
 				element_type = Type::get_compatible_type(element_type, ex->type);
+				// element_ty = element_ty->get_compatible(ex->ty);
 			}
 
+			Type supported_type = Type::ANY;
 			// Native elements types supported : integer, double
 			if (element_type == Type::INTEGER || element_type == Type::REAL) {
 				supported_type = element_type;
@@ -130,13 +131,10 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			if (element_type == Type::BOOLEAN) element_type = Type::POINTER;
 			element_type.temporary = false;
 			type.setElementType(element_type);
-		} else {
-		
 		}
 	}
 	type.temporary = true;
 	types = type;
-
 	// std::cout << "Array type : " << type << std::endl;
 }
 
@@ -145,7 +143,6 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 //	cout << "Array::elements_will_take " << type << " at " << pos << endl;
 
 	for (size_t i = 0; i < expressions.size(); ++i) {
-
 		Array* arr = dynamic_cast<Array*>(expressions[i]);
 		if (arr != nullptr && level > 0) {
 			arr->elements_will_take(analyser, arg_types, level - 1);
@@ -165,8 +162,7 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 		}
 	}
 	this->type.setElementType(element_type);
-
-//	cout << "Array::elements_will_take type after " << this->type << endl;
+	// cout << "Array::elements_will_take type after " << this->type << endl;
 }
 
 bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {

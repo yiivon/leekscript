@@ -24,10 +24,12 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 	if (req_type == Type::VOID) {
 		value->analyse(analyser);
 		type = Type::VOID;
+		// ty = Ty::get_void();
 	} else {
 		value->analyse(analyser);
 		type = value->type;
 		types = value->types;
+		// ty = value->ty;
 	}
 }
 

@@ -16,7 +16,7 @@
 
 *map<K,V>* = *list<V>*
 
-*array<V>* = *map<integer,V>*
+*array<V>* = *list<V>*
 	push(V), remove(i)
 
 *string<S>* = *list<char>*

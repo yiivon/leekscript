@@ -197,6 +197,7 @@ void Function::analyse(SemanticAnalyser* analyser) {
 	}
 
 	type = default_version->type;
+	// ty = default_version->ty;
 
 	// if (req_type.nature != Nature::ANY) {
 	// 	type.nature = req_type.nature;
@@ -340,6 +341,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 
 	vars = analyser->get_local_vars();
 	analyser->leave_function();
+	// version->ty = version->body->ty;
 
 	// cout << "function analysed body : " << version->type << endl;
 }
