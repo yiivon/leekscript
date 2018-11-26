@@ -1,15 +1,13 @@
 #include "Number_type.hpp"
+#include "Ty.hpp"
 #include "../colors.h"
 
 namespace ls {
 
-Number_type::Number_type() {}
+int Number_type::_id = Ty::get_next_id();
 
+Number_type::Number_type(int id, const std::string name) : Base_type(_id * id, name) {}
 Number_type::~Number_type() {}
-
-bool Number_type::compatible(std::shared_ptr<Base_type>) const {
-	return false;
-}
 
 std::ostream& Number_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "number" << END_COLOR;

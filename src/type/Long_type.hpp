@@ -1,15 +1,15 @@
 #ifndef LONG_TYPE_HPP
 #define LONG_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "Integer_type.hpp"
 
 namespace ls {
 
-class Long_type : public Base_type {
+class Long_type : public Integer_type {
+	static int _id;
 public:
-	Long_type();
+	Long_type(int id = 1, const std::string name = "long");
 	virtual ~Long_type();
-	virtual bool compatible(std::shared_ptr<Base_type>) const override;
 	virtual std::ostream& print(std::ostream&) const override;
 };
 

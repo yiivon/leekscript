@@ -32,28 +32,12 @@ void Test::test_types() {
 	code("12").type(ls::Ty::get_int());
 	code("12.5").type(ls::Ty::get_double());
 	code("'salut'").type(ls::Ty::get_string());
+	code("[]").type(ls::Ty::get_array());
+	code("[1]").type(ls::Ty::get_array(ls::Ty::get_int()));
+	code("[1, 2.5]").type(ls::Ty::get_array(ls::Ty::get_int()));
+	code("[[1]]").type(ls::Ty::get_array(ls::Ty::get_array(ls::Ty::get_int())));
 
-	// New types
-	auto null = std::make_shared<ls::Null_type>();
-	auto number = std::make_shared<ls::Number_type>();
-	auto any = std::make_shared<ls::Any_type>();
-	auto list_number = std::make_shared<ls::List_type>(number);
-	auto list_any = std::make_shared<ls::List_type>(any);
-	auto list_list_any = std::make_shared<ls::List_type>(list_any);
-
-	auto list_any_or_number = std::make_shared<ls::LType>();
-	list_any_or_number->add(any);
-	list_any_or_number->add(number);
-	auto list_list_any_or_number = std::make_shared<ls::List_type>(list_any_or_number);
-
-	auto list_number_or_list_any = std::make_shared<ls::LType>();
-	list_number_or_list_any->add(list_number);
-	list_number_or_list_any->add(list_list_any);
-
-	assert(any->compatible(number) == true);
-	assert(list_any->compatible(list_any) == true);
-	assert(list_number->compatible(list_any) == false);
-	assert(list_any->compatible(list_number) == true);
-	assert(list_any->compatible(list_number_or_list_any) == true);
-	assert(list_number->compatible(list_list_any_or_number) == false);
+	std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_long()) << std::endl;
+	std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_integer()) << std::endl;
+	std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_array()) << std::endl;
 }

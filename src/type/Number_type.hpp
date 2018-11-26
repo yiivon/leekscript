@@ -6,10 +6,10 @@
 namespace ls {
 
 class Number_type : public Base_type {
+	static int _id;
 public:
-	Number_type();
+	Number_type(int id = 1, const std::string name = "number");
 	virtual ~Number_type();
-	virtual bool compatible(std::shared_ptr<Base_type>) const override;
 	virtual std::ostream& print(std::ostream&) const override;
 };
 

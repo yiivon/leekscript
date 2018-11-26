@@ -1,20 +1,18 @@
 #ifndef ARRAY_TYPE_HPP
 #define ARRAY_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "List_type.hpp"
 
 namespace ls {
 
-class Array_type : public Base_type {
-private:
-	std::shared_ptr<Base_type> element_type;
+class Array_type : public List_type {
+	static int _id;
 public:
-	Array_type();
-	Array_type(std::shared_ptr<Base_type> element);
+	Array_type(int id = 1);
+	Array_type(std::shared_ptr<Ty> element, int id = 1);
 	virtual ~Array_type();
 
 	virtual bool compatible(std::shared_ptr<Base_type>) const override;
-	std::shared_ptr<Base_type> element() const;
 	virtual std::ostream& print(std::ostream&) const override;
 };
 

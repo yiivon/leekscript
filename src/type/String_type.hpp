@@ -1,17 +1,15 @@
 #ifndef STRING_TYPE_HPP
 #define STRING_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "List_type.hpp"
 
 namespace ls {
 
-class String_type : public Base_type {
+class String_type : public List_type {
+	static int _id;
 public:
-	String_type();
+	String_type(int id = 1, const std::string name = "string");
 	virtual ~String_type();
-
-	virtual bool compatible(std::shared_ptr<Base_type>) const override;
-	std::shared_ptr<Base_type> element() const;
 	virtual std::ostream& print(std::ostream&) const override;
 };
 

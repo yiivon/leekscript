@@ -1,15 +1,15 @@
 #ifndef INTEGER_TYPE_HPP
 #define INTEGER_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "Number_type.hpp"
 
 namespace ls {
 
-class Integer_type : public Base_type {
+class Integer_type : public Number_type {
+	static int _id;
 public:
-	Integer_type();
+	Integer_type(int id = 1, const std::string name = "integer");
 	virtual ~Integer_type();
-	virtual bool compatible(std::shared_ptr<Base_type>) const override;
 	virtual std::ostream& print(std::ostream&) const override;
 };
 

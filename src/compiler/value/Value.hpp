@@ -5,7 +5,7 @@
 #include <vector>
 #include "../Compiler.hpp"
 #include "../../vm/TypeList.hpp"
-#include "../../type/types.hpp"
+#include "../../type/Ty.hpp"
 #include "../lexical/Location.hpp"
 
 namespace ls {

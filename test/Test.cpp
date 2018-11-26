@@ -4,6 +4,7 @@
 #include "../src/constants.h"
 #include "../src/colors.h"
 #include "../src/vm/Program.hpp"
+#include "../src/type/Ty.hpp"
 
 std::vector<std::string> Test::failed_tests;
 
@@ -25,6 +26,7 @@ int main(int, char**) {
 	llvm::InitializeNativeTarget();
 	llvm::InitializeNativeTargetAsmPrinter();
 	llvm::InitializeNativeTargetAsmParser();
+	ls::Ty::init_types();
 
 	srand(time(0));
 	return Test().all();
@@ -296,9 +298,9 @@ void Test::Input::type(ls::Ty type) {
 	auto result = vm->execute(code, "{}", name);
 
 	std::ostringstream oss;
-	type->print(oss);
+	oss << type;
 	std::ostringstream oss_actual;
-	result.type->print(oss_actual);
+	oss_actual << result.type;
 
 	if (result.type == type) {
 		pass(oss.str());

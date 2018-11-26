@@ -7,6 +7,7 @@ namespace ls {
 
 class Any_type : public Base_type {
 public:
+	Any_type();
 	virtual ~Any_type();
 	virtual bool compatible(std::shared_ptr<Base_type>) const override;
 	virtual std::ostream& print(std::ostream&) const override;

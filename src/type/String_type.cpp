@@ -1,15 +1,15 @@
 #include "String_type.hpp"
+#include "Char_type.hpp"
+#include "Ty.hpp"
 #include "../colors.h"
 #include <iostream>
 
 namespace ls {
 
-String_type::String_type() {}
-String_type::~String_type() {}
+int String_type::_id = Ty::get_next_id();
 
-bool String_type::compatible(std::shared_ptr<Base_type> type) const {
-	return false;
-}
+String_type::String_type(int id, const std::string name) : List_type(std::make_shared<Ty>(std::make_shared<Char_type>()), _id * id, name) {}
+String_type::~String_type() {}
 
 std::ostream& String_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "string" << END_COLOR;

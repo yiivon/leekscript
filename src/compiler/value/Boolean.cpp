@@ -10,14 +10,14 @@ Boolean::Boolean(std::shared_ptr<Token> token) {
 	this->token = token;
 	this->value = token->type == TokenType::TRUE;
 	type = Type::BOOLEAN;
-	// ty = Ty::get_bool();
+	ty = Ty::get_bool();
 	constant = true;
 }
 
 void Boolean::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << (value ? "true" : "false");
 	if (debug) {
-		// os << " " << ty;
+		os << " " << ty;
 	}
 }
 

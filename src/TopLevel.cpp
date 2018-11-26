@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
 	llvm::InitializeNativeTarget();
 	llvm::InitializeNativeTargetAsmPrinter();
 	llvm::InitializeNativeTargetAsmParser();
+	ls::Ty::init_types();
 
 	/** Seed random one for all */
 	long ns = std::chrono::duration_cast<std::chrono::nanoseconds>(

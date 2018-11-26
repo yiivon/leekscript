@@ -3,6 +3,7 @@
 
 namespace ls {
 
+Any_type::Any_type() : Base_type(1, "any") {}
 Any_type::~Any_type() {}
 
 bool Any_type::compatible(std::shared_ptr<Base_type>) const {

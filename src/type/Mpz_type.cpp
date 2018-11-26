@@ -1,17 +1,16 @@
 #include "Mpz_type.hpp"
+#include "Ty.hpp"
 #include "../colors.h"
 
 namespace ls {
 
-Mpz_type::Mpz_type() {}
+int Mpz_type::_id = Ty::get_next_id();
+
+Mpz_type::Mpz_type() : Integer_type(_id, "mpz") {}
 Mpz_type::~Mpz_type() {}
 
-bool Mpz_type::compatible(std::shared_ptr<Base_type>) const {
-	return false;
-}
-
 std::ostream& Mpz_type::print(std::ostream& os) const {
-	os << BLUE_BOLD << "integer" << END_COLOR;
+	os << BLUE_BOLD << "mpz" << END_COLOR;
 	return os;
 }
 

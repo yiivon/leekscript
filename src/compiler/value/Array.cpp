@@ -10,7 +10,7 @@ namespace ls {
 Array::Array() {
 	type = Type::ARRAY;
 	conversion_type = Type::VOID;
-	// ty = Ty::get_array();
+	ty = Ty::get_array();
 }
 
 Array::~Array() {
@@ -37,7 +37,7 @@ void Array::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 		os << "]";
 	}
 	if (debug) {
-		// os << " " << ty;
+		os << " " << ty;
 	}
 }
 
@@ -62,7 +62,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 		if (expressions.size() > 0) {
 
 			Type element_type = Type::ANY;
-			// auto element_ty = Ty::get_any();
+			Ty element_ty;
 			auto homogeneous = true;
 
 			// First analyse pass
@@ -79,8 +79,10 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					homogeneous = false;
 				}
 				element_type = Type::get_compatible_type(element_type, ex->type);
-				// element_ty = element_ty->get_compatible(ex->ty);
+				element_ty = element_ty.merge(ex->ty);
 			}
+
+			ty = Ty::get_array(element_ty);
 
 			Type supported_type = Type::ANY;
 			// Native elements types supported : integer, double
