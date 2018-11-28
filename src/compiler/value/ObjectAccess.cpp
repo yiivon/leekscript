@@ -161,8 +161,6 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 	}
 }
 
-void ObjectAccess::change_type(SemanticAnalyser*, const Type&) {}
-
 Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 	// Special case for custom attributes, accessible via a function

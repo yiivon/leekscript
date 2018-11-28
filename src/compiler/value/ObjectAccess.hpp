@@ -33,7 +33,6 @@ public:
 	virtual Location location() const override;
 
 	virtual void analyse(SemanticAnalyser*) override;
-	virtual void change_type(SemanticAnalyser*, const Type&) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler& c, std::vector<Type> version) const;
