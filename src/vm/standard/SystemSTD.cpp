@@ -31,13 +31,13 @@ SystemSTD::SystemSTD() : Module("System") {
 	static_field("nanoTime", Type::LONG, (void*) &System_nanotime);
 
 	method("print", Method::Static, {
-		{Type::VOID, {Type::POINTER}, (void*) &System_print, Method::NATIVE},
-		{Type::VOID, {Type::MPZ}, (void*) &System_print_mpz, Method::NATIVE},
-		{Type::VOID, {Type::MPZ_TMP}, (void*) &System_print_mpz_tmp, Method::NATIVE},
-		{Type::VOID, {Type::BOOLEAN}, (void*) &System_print_bool, Method::NATIVE},
-		{Type::VOID, {Type::INTEGER}, (void*) &System_print_int, Method::NATIVE},
-		{Type::VOID, {Type::LONG}, (void*) &System_print_long, Method::NATIVE},
-		{Type::VOID, {Type::REAL}, (void*) &System_print_float, Method::NATIVE}
+		{{}, {Type::POINTER}, (void*) &System_print, Method::NATIVE},
+		{{}, {Type::MPZ}, (void*) &System_print_mpz, Method::NATIVE},
+		{{}, {Type::MPZ_TMP}, (void*) &System_print_mpz_tmp, Method::NATIVE},
+		{{}, {Type::BOOLEAN}, (void*) &System_print_bool, Method::NATIVE},
+		{{}, {Type::INTEGER}, (void*) &System_print_int, Method::NATIVE},
+		{{}, {Type::LONG}, (void*) &System_print_long, Method::NATIVE},
+		{{}, {Type::REAL}, (void*) &System_print_float, Method::NATIVE}
 	});
 }
 

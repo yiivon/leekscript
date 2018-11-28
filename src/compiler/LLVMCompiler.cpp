@@ -150,7 +150,7 @@ LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
 	//std::cout << "p2 = " << std::bitset<64>(p2) << std::endl;
 	auto v = llvm::ConstantInt::get(context, llvm::APInt(128, {p2, p1}));
 	Compiler::value vv {v, Type::MPZ};
-	// insn_call(Type::VOID, {vv}, +[](__mpz_struct mpz) {
+	// insn_call({}, {vv}, +[](__mpz_struct mpz) {
 	// 	std::cout << "mpz alloc = " << mpz._mp_alloc << std::endl;
 	// 	std::cout << "mpz size = " << mpz._mp_size << std::endl;
 	// 	std::cout << "mpz d = " << mpz._mp_d << std::endl;
@@ -835,12 +835,12 @@ void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	// std::cout << "insn_delete " << v.t << " " << v.v->getType() << std::endl;
 	if (v.t.must_manage_memory()) {
-		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_ref);
+		// insn_call({}, {v}, (void*) &LSValue::delete_ref);
 		insn_if_not(insn_native(v), [&]() {
 			auto refs = insn_refs(v);
 			insn_if(insn_refs(v), [&]() {
 				insn_if_not(insn_dec_refs(v, refs), [&]() {
-					insn_call(Type::VOID, {v}, (void*) &LSValue::free);
+					insn_call({}, {v}, (void*) &LSValue::free);
 				});
 			});
 		});
@@ -852,9 +852,9 @@ void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
 void LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.must_manage_memory()) {
-		// insn_call(Type::VOID, {v}, (void*) &LSValue::delete_temporary);
+		// insn_call({}, {v}, (void*) &LSValue::delete_temporary);
 		insn_if_not(insn_refs(v), [&]() {
-			insn_call(Type::VOID, {v}, (void*) &LSValue::free);
+			insn_call({}, {v}, (void*) &LSValue::free);
 		});
 	} else if (v.t == Type::MPZ_TMP) {
 		insn_delete_mpz(v);
@@ -900,16 +900,16 @@ void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::valu
 	assert(array.t.llvm_type() == array.v->getType());
 	assert(value.t.llvm_type() == value.v->getType());
 	if (array.t.getElementType() == Type::INTEGER) {
-		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<int>* array, int value) {
+		insn_call({}, {array, value}, (void*) +[](LSArray<int>* array, int value) {
 			array->push_back(value);
 		});
 	} else if (array.t.getElementType() == Type::REAL) {
 		value.t = Type::REAL;
-		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<double>* array, double value) {
+		insn_call({}, {array, value}, (void*) +[](LSArray<double>* array, double value) {
 			array->push_back(value);
 		});
 	} else {
-		insn_call(Type::VOID, {array, value}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
+		insn_call({}, {array, value}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
 			array->push_inc(value);
 		});
 	}
@@ -963,7 +963,7 @@ LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const 
 		mpz_init_set(new_mpz, &x);
 		return *new_mpz;
 	});
-	// insn_call(Type::VOID, {v}, +[](__mpz_struct mpz) {
+	// insn_call({}, {v}, +[](__mpz_struct mpz) {
 	// 	std::cout << "mpz cloned alloc = " << mpz._mp_alloc << std::endl;
 	// 	std::cout << "mpz cloned size = " << mpz._mp_size << std::endl;
 	// 	std::cout << "mpz cloned d = " << mpz._mp_d << std::endl;
@@ -974,7 +974,7 @@ LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const 
 void LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const {
 	assert(mpz.t.llvm_type() == mpz.v->getType());
 	// std::cout << "delete mpz " << mpz.v->getType() << std::endl;
-	// insn_call(Type::VOID, {mpz}, &mpz_clear, "mpz_clear");
+	// insn_call({}, {mpz}, &mpz_clear, "mpz_clear");
 	// Increment mpz values counter
 	// jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &vm->mpz_deleted);
 	// jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
@@ -1066,7 +1066,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
 		// jit_type_free(string_iterator);
 		// auto addr = insn_address_of(it);
-		// insn_call(Type::VOID, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
+		// insn_call({}, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
 		// 	auto i = LSString::iterator_begin(str);
 		// 	it->buffer = i.buffer;
 		// 	it->index = 0;
@@ -1119,7 +1119,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// jit_insn_store_relative(F, addr, 32, new_long(0).v);
 		// return it;
 	}
-	return {nullptr, Type::VOID};
+	return {nullptr, {}};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompiler::value it) const {
@@ -1160,7 +1160,7 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 		// auto p = insn_load(addr, 8, Type::LONG);
 		// return insn_eq(p, new_integer(0));
 	}
-	return {nullptr, Type::VOID};
+	return {nullptr, {}};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler::value it, LLVMCompiler::value previous) const {
@@ -1169,7 +1169,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 	log_insn_code("iterator.get()");
 	if (collectionType.raw_type == RawType::ARRAY) {
 		if (previous.t.must_manage_memory()) {
-			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
+			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
 					LSValue::delete_ref(previous);
 			});
@@ -1200,7 +1200,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 	}
 	if (it.t.raw_type == RawType::MAP) {
 		if (previous.t.must_manage_memory()) {
-			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
+			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
 					LSValue::delete_ref(previous);
 			});
@@ -1211,7 +1211,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 	}
 	if (it.t == Type::SET_ITERATOR) {
 		if (previous.t.must_manage_memory()) {
-			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
+			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
 					LSValue::delete_ref(previous);
 			});
@@ -1234,7 +1234,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		// auto p = insn_load(addr, 8, Type::LONG);
 		// return insn_int_div(n, p);
 	}
-	return {nullptr, Type::VOID};
+	return {nullptr, {}};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompiler::value it, LLVMCompiler::value previous) const {
@@ -1259,7 +1259,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 	}
 	if (it.t.raw_type == RawType::MAP) {
 		if (previous.t.must_manage_memory()) {
-			insn_call(Type::VOID, {previous}, +[](LSValue* previous) {
+			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
 					LSValue::delete_ref(previous);
 			});
@@ -1280,7 +1280,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		// auto addr = insn_address_of(it);
 		// return insn_load(addr, 16, Type::INTEGER);
 	}
-	return {nullptr, Type::VOID};
+	return {nullptr, {}};
 }
 
 void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value it) const {
@@ -1300,7 +1300,7 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 	}
 	if (it.t == Type::STRING_ITERATOR) {
 		// auto addr = insn_address_of(it);
-		// insn_call(Type::VOID, {addr}, &LSString::iterator_next);
+		// insn_call({}, {addr}, &LSString::iterator_next);
 		// return;
 	}
 	if (it.t.raw_type == RawType::MAP) {
@@ -1374,13 +1374,13 @@ void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void
 
 void LLVMCompiler::insn_throw(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	insn_call(Type::VOID, {v}, +[](int type) {
+	insn_call({}, {v}, +[](int type) {
 		throw vm::ExceptionObj((vm::Exception) type);
 	});
 }
 
 void LLVMCompiler::insn_throw_object(vm::Exception type) const {
-	insn_call(Type::VOID, {new_integer(type)}, +[](int type) {
+	insn_call({}, {new_integer(type)}, +[](int type) {
 		throw vm::ExceptionObj((vm::Exception) type);
 	});
 }
@@ -1446,7 +1446,7 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 
 		builder.SetInsertPoint(catchBlock);
 		delete_function_variables();
-		insn_call(Type::VOID, {insn_load({ExceptionSlot, Type::LONG})}, +[](void* ex) {
+		insn_call({}, {insn_load({ExceptionSlot, Type::LONG})}, +[](void* ex) {
 			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru);
 		});
 		builder.CreateBr(continueBlock);
@@ -1475,7 +1475,7 @@ void LLVMCompiler::function_add_capture(LLVMCompiler::value fun, LLVMCompiler::v
 	assert(fun.t.llvm_type() == fun.v->getType());
 	assert(capture.t.llvm_type() == capture.v->getType());
 	// std::cout << "add capture " << capture.t << std::endl;
-	insn_call(Type::VOID, {fun, capture}, +[](LSClosure* fun, LSValue* cap) {
+	insn_call({}, {fun, capture}, +[](LSClosure* fun, LSValue* cap) {
 		// std::cout << "add capture value " << cap << std::endl;
 		fun->add_capture(cap); 
 	});

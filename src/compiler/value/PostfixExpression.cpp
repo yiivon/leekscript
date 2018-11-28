@@ -59,7 +59,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto x = expression->compile_l(c);
 				auto r = c.insn_clone_mpz(c.insn_load(x));
 				auto one = c.new_integer(1);
-				c.insn_call(Type::VOID, {x, x, one}, &mpz_add_ui);
+				c.insn_call({}, {x, x, one}, &mpz_add_ui);
 				return r;
 			} else if (expression->type.nature == Nature::VALUE) {
 				auto x_addr = expression->compile_l(c);

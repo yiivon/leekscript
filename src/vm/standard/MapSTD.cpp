@@ -131,32 +131,32 @@ MapSTD::MapSTD() : Module("Map") {
 	Type iter_ptr_ptr = Type::FUNCTION_P;
 	iter_ptr_ptr.setArgumentType(0, Type::POINTER);
 	iter_ptr_ptr.setArgumentType(1, Type::POINTER);
-	iter_ptr_ptr.setReturnType(Type::VOID);
+	iter_ptr_ptr.setReturnType({});
 
 	Type iter_ptr_real = Type::FUNCTION_P;
 	iter_ptr_real.setArgumentType(0, Type::POINTER);
 	iter_ptr_real.setArgumentType(1, Type::REAL);
-	iter_ptr_real.setReturnType(Type::VOID);
+	iter_ptr_real.setReturnType({});
 
 	Type iter_ptr_int = Type::FUNCTION_P;
 	iter_ptr_int.setArgumentType(0, Type::POINTER);
 	iter_ptr_int.setArgumentType(1, Type::INTEGER);
-	iter_ptr_int.setReturnType(Type::VOID);
+	iter_ptr_int.setReturnType({});
 
 	Type iter_int_ptr = Type::FUNCTION_P;
 	iter_int_ptr.setArgumentType(0, Type::INTEGER);
 	iter_int_ptr.setArgumentType(1, Type::POINTER);
-	iter_int_ptr.setReturnType(Type::VOID);
+	iter_int_ptr.setReturnType({});
 
 	Type iter_int_real = Type::FUNCTION_P;
 	iter_int_real.setArgumentType(0, Type::INTEGER);
 	iter_int_real.setArgumentType(1, Type::REAL);
-	iter_int_real.setReturnType(Type::VOID);
+	iter_int_real.setReturnType({});
 
 	Type iter_int_int = Type::FUNCTION_P;
 	iter_int_int.setArgumentType(0, Type::INTEGER);
 	iter_int_int.setArgumentType(1, Type::INTEGER);
-	iter_int_int.setReturnType(Type::VOID);
+	iter_int_int.setReturnType({});
 
 	auto iter_ptr_ptr_fun = &LSMap<LSValue*, LSValue*>::ls_iter<LSFunction*>;
 	auto iter_ptr_real_fun = &LSMap<LSValue*, double>::ls_iter<LSFunction*>;
@@ -166,12 +166,12 @@ MapSTD::MapSTD() : Module("Map") {
 	auto iter_int_int_fun = &LSMap<int, int>::ls_iter<LSFunction*>;
 
 	method("iter", {
-		{Type::VOID, {Type::CONST_PTR_PTR_MAP, iter_ptr_ptr}, (void*) iter_ptr_ptr_fun, Method::NATIVE},
-		{Type::VOID, {Type::CONST_PTR_REAL_MAP, iter_ptr_real}, (void*) &iter_ptr_real_fun, Method::NATIVE},
-		{Type::VOID, {Type::CONST_PTR_INT_MAP, iter_ptr_int}, (void*) &iter_ptr_int_fun, Method::NATIVE},
-		{Type::VOID, {Type::CONST_INT_PTR_MAP, iter_int_ptr}, (void*) &iter_int_ptr_fun, Method::NATIVE},
-		{Type::VOID, {Type::CONST_INT_REAL_MAP, iter_int_real}, (void*) &iter_int_real_fun, Method::NATIVE},
-		{Type::VOID, {Type::CONST_INT_INT_MAP, iter_int_int}, (void*) &iter_int_int_fun, Method::NATIVE},
+		{{}, {Type::CONST_PTR_PTR_MAP, iter_ptr_ptr}, (void*) iter_ptr_ptr_fun, Method::NATIVE},
+		{{}, {Type::CONST_PTR_REAL_MAP, iter_ptr_real}, (void*) &iter_ptr_real_fun, Method::NATIVE},
+		{{}, {Type::CONST_PTR_INT_MAP, iter_ptr_int}, (void*) &iter_ptr_int_fun, Method::NATIVE},
+		{{}, {Type::CONST_INT_PTR_MAP, iter_int_ptr}, (void*) &iter_int_ptr_fun, Method::NATIVE},
+		{{}, {Type::CONST_INT_REAL_MAP, iter_int_real}, (void*) &iter_int_real_fun, Method::NATIVE},
+		{{}, {Type::CONST_INT_INT_MAP, iter_int_int}, (void*) &iter_int_int_fun, Method::NATIVE},
 	});
 }
 

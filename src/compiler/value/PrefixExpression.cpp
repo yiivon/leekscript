@@ -128,7 +128,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			if (expression->type == Type::MPZ) {
 				auto x = ((LeftValue*) expression)->compile_l(c);
 				auto one = c.new_integer(1);
-				c.insn_call(Type::VOID, {x, x, one}, &mpz_add_ui);
+				c.insn_call({}, {x, x, one}, &mpz_add_ui);
 				return c.insn_load(x);
 			} else if (expression->type.nature == Nature::VALUE) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);

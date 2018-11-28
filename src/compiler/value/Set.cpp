@@ -105,7 +105,7 @@ Compiler::value Set::compile(Compiler& c) const {
 	for (Value* ex : expressions) {
 		auto v = c.insn_convert(ex->compile(c), type.getElementType());
 		ex->compile_end(c);
-		c.insn_call(Type::VOID, {s, v}, (void*) insert);
+		c.insn_call({}, {s, v}, (void*) insert);
 		ops += std::log2(++i);
 	}
 	c.inc_ops(ops);

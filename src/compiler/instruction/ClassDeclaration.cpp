@@ -58,7 +58,7 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 			auto default_value = vd->expressions.at(i)->compile(c);
 			default_value = c.insn_to_pointer(default_value);
 			auto field_name = c.new_pointer(&vd->variables.at(i)->content);
-			c.insn_call(Type::VOID, {clazz, field_name, default_value}, +[](LSClass* clazz, std::string* field_name, LSValue* default_value) {
+			c.insn_call({}, {clazz, field_name, default_value}, +[](LSClass* clazz, std::string* field_name, LSValue* default_value) {
 				clazz->fields.at(*field_name).default_value = default_value;
 			});
 		}

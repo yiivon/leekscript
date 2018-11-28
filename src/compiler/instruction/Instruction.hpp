@@ -15,7 +15,7 @@ class SemanticAnalyser;
 class Instruction {
 public:
 
-	Type type = Type::VOID;
+	Type type;
 	TypeList types;
 	Ty ty;
 

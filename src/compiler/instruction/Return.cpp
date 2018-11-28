@@ -37,7 +37,7 @@ void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 	}
 	function = f;
 	in_function = true;
-	type = Type::VOID;
+	type = {};
 }
 
 Location Return::location() const {

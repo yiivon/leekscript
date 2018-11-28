@@ -63,7 +63,7 @@ Compiler::value While::compile(Compiler& c) const {
 	c.insn_branch(&cond_label);
 
 	c.insn_label(&end_label);
-	return {nullptr, Type::VOID};
+	return {nullptr, {}};
 }
 
 Instruction* While::clone() const {

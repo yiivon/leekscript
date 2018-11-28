@@ -21,9 +21,9 @@ Location ExpressionInstruction::location() const {
 }
 
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-	if (req_type == Type::VOID) {
+	if (req_type._types.size() == 0) {
 		value->analyse(analyser);
-		type = Type::VOID;
+		type = {};
 		ty = Ty::get_void();
 	} else {
 		value->analyse(analyser);

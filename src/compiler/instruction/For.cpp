@@ -48,7 +48,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.raw_type == RawType::ARRAY && req_type.nature == Nature::POINTER) {
 		type = req_type;
 	} else {
-		type = Type::VOID;
+		type = {};
 	}
 
 	analyser->enter_block();
@@ -70,7 +70,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Body
 	analyser->enter_loop();
-	if (type == Type::VOID) {
+	if (type._types.size() == 0) {
 		body->analyse(analyser);
 	} else {
 		body->analyse(analyser);
@@ -81,7 +81,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Increment
 	analyser->enter_block();
 	for (Instruction* ins : increments) {
-		ins->analyse(analyser, Type::VOID);
+		ins->analyse(analyser, {});
 		if (dynamic_cast<Return*>(ins)) {
 			break;
 		}

@@ -56,7 +56,7 @@ void VariableDeclaration::analyse_global_functions(SemanticAnalyser* analyser) {
 
 void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	type = Type::VOID;
+	type = {};
 
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
@@ -81,7 +81,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 			v->type = Type::ANY_OLD;
 			v->type.constant = constant;
 		}
-		if (v->type == Type::VOID) {
+		if (v->type ._types.size() == 0) {
 			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
 		}
 		vars.insert({var->content, v});
@@ -110,7 +110,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			auto val = ex->compile(c);
 			ex->compile_end(c);
 
-			// c.insn_call(Type::VOID, {val}, +[](__mpz_struct mpz) {
+			// c.insn_call({}, {val}, +[](__mpz_struct mpz) {
 			// 	std::cout << "mpz store alloc = " << mpz._mp_alloc << std::endl;
 			// 	std::cout << "mpz store size = " << mpz._mp_size << std::endl;
 			// 	std::cout << "mpz store d = " << mpz._mp_d << std::endl;

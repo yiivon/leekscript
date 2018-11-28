@@ -109,7 +109,7 @@ std::string Program::execute(VM& vm) {
 
 	assert(!output_type.reference && "Program return type shouldn't be a reference!");
 
-	if (output_type.not_temporary() == Type::VOID) {
+	if (output_type._types.size() == 0) {
 		auto fun = (void (*)()) closure;
 		fun();
 		// if (vm.last_exception) throw vm.last_exception;

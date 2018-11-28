@@ -10,7 +10,7 @@
 namespace ls {
 
 enum class Nature {
-	ANY, VALUE, POINTER, VOID
+	ANY, VALUE, POINTER
 };
 
 class BaseRawType {
@@ -31,13 +31,6 @@ public:
 	AnyRawType() {}
 	virtual ~AnyRawType() {}
 	virtual const std::string getName() const { return "any"; }
-};
-
-class VoidRawType : public BaseRawType {
-public:
-	VoidRawType() {}
-	virtual const std::string getName() const { return "void"; }
-	virtual const std::string getJsonName() const { return "void"; }
 };
 
 class AnyOldRawType : public BaseRawType {
@@ -204,7 +197,6 @@ public:
 class RawType {
 public:
 	static const AnyRawType _ANY;
-	static const VoidRawType _VOID;
 	static const AnyOldRawType _ANY_OLD;
 	static const BooleanRawType _BOOLEAN;
 	static const NumberRawType _NUMBER;
@@ -223,7 +215,6 @@ public:
 	static const ClassRawType _CLASS;
 
 	static const AnyRawType* const ANY;
-	static const VoidRawType* const VOID;
 	static const AnyOldRawType* const ANY_OLD;
 	static const BooleanRawType* const BOOLEAN;
 	static const NumberRawType* const NUMBER;
@@ -247,7 +238,7 @@ public:
 
 class Type {
 public:
-
+	std::vector<const BaseRawType*> _types;
 	const BaseRawType* raw_type;
 	Nature nature;
 	bool native; // A C++ object, memory management is done outside the language
@@ -316,7 +307,6 @@ public:
 	 */
 	static unsigned int placeholder_counter;
 
-	static const Type VOID;
 	static const Type VALUE;
 	static const Type CONST_VALUE;
 	static const Type POINTER;

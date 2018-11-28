@@ -15,7 +15,7 @@ If::If(bool ternary) {
 	elze = nullptr;
 	condition = nullptr;
 	then = nullptr;
-	type = Type::VOID;
+	type = {};
 	this->ternary = ternary;
 }
 
@@ -67,9 +67,9 @@ void If::analyse(SemanticAnalyser* analyser) {
 
 	if (elze != nullptr) {
 		elze->analyse(analyser);
-		if (then->type == Type::VOID) { // then contains return instruction
+		if (then->type._types.size() == 0) { // then contains return instruction
 			type = elze->type;
-		} else if (elze->type == Type::VOID) { // elze contains return instruction
+		} else if (elze->type._types.size() == 0) { // elze contains return instruction
 			type = then->type;
 		} else {
 			type = Type::get_compatible_type(then->type, elze->type);

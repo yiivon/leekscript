@@ -51,7 +51,7 @@ Compiler::value Object::compile(Compiler& c) const {
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		auto k = c.new_pointer((void*) &keys.at(i)->content);
 		auto v = c.insn_to_pointer(values[i]->compile(c));
-		c.insn_call(Type::VOID, {object, k, v}, +[](LSObject* o, std::string* k, LSValue* v) {
+		c.insn_call({}, {object, k, v}, +[](LSObject* o, std::string* k, LSValue* v) {
 			o->addField(*k, v);
 		});
 	}

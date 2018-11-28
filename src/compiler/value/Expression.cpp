@@ -153,7 +153,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		// Change the type of x for operator =
 		equal_previous_type = v1->type; // todo inside
 		if (op->type == TokenType::EQUAL) {
-			if (v2->type == Type::VOID) {
+			if (v2->type._types.size() == 0) {
 				analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
 			if (v1->type.not_temporary() != v2->type.not_temporary()) {
@@ -499,7 +499,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = c.insn_to_pointer(v2->compile(c));
 				v2->compile_end(c);
-				c.insn_call(Type::VOID, {c.insn_load(x_addr)}, &LSValue::delete_ref);
+				c.insn_call({}, {c.insn_load(x_addr)}, &LSValue::delete_ref);
 				c.insn_store(x_addr, y);
 				c.insn_inc_refs(c.insn_load(x_addr));
 				return y;
@@ -532,7 +532,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				if (v1->type == Type::MPZ) {
 					auto x = ((LeftValue*) v1)->compile_l(c);
 					v1->compile_end(c);
-					c.insn_call(Type::VOID, {x, y}, +[](mpz_t x, __mpz_struct y) {
+					c.insn_call({}, {x, y}, +[](mpz_t x, __mpz_struct y) {
 						mpz_set(x, &y);
 					});
 					if (y.t.temporary) {

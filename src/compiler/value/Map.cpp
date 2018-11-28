@@ -201,7 +201,7 @@ Compiler::value Map::compile(Compiler &c) const {
 		auto v = c.insn_convert(values[i]->compile(c), type.getElementType());
 		values[i]->compile_end(c);
 
-		c.insn_call(Type::VOID, {map, k, v}, (void*) insert);
+		c.insn_call({}, {map, k, v}, (void*) insert);
 		ops += std::log2(i + 1);
 
 		c.insn_delete_temporary(k);

@@ -579,7 +579,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	// 	for (size_t i = 0; i < catchers.size() - 1; ++i) {
 	// 		auto ca = catchers[i];
 	// 		c.insn_branch_if_pc_not_in_range(&ca.start, &ca.end, &ca.next);
-	// 		// c.insn_call(Type::VOID, {{ex, Type::POINTER}}, (void*)+[](vm::ExceptionObj* ex) {
+	// 		// c.insn_call({}, {{ex, Type::POINTER}}, (void*)+[](vm::ExceptionObj* ex) {
 	// 		// 	delete ex;
 	// 		// });
 	// 		c.insn_branch(&ca.handler);

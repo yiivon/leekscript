@@ -47,7 +47,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.raw_type == RawType::ARRAY && req_type.nature == Nature::POINTER) {
 		type = req_type;
 	} else {
-		type = Type::VOID;
+		type = {};
 	}
 
 	analyser->enter_block();
@@ -82,7 +82,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	value_var = analyser->add_var(value.get(), value_type, nullptr, nullptr);
 
 	analyser->enter_loop();
-	if (type == Type::VOID) {
+	if (type._types.size() == 0) {
 		body->analyse(analyser);
 	} else {
 		body->analyse(analyser);

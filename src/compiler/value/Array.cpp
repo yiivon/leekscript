@@ -9,7 +9,7 @@ namespace ls {
 
 Array::Array() {
 	type = Type::ARRAY;
-	conversion_type = Type::VOID;
+	conversion_type = {};
 	ty = Ty::array();
 }
 

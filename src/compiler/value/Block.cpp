@@ -11,7 +11,7 @@ using namespace std;
 namespace ls {
 
 Block::Block() {
-	type = Type::VOID;
+	type = {};
 }
 
 Block::~Block() {
@@ -59,7 +59,7 @@ void Block::analyse(SemanticAnalyser* analyser) {
 	// std::cout << "Block analyse " << req_type << std::endl;
 	analyser->enter_block();
 
-	type = Type::VOID;
+	type = {};
 	types.clear();
 	ty = Ty::get_void();
 
@@ -79,7 +79,7 @@ void Block::analyse(SemanticAnalyser* analyser) {
 		}
 		// A return instruction
 		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
-			type = Type::VOID; // This block has really no type
+			type = {}; // This block has really no type
 			ty = Ty::get_void();
 			analyser->leave_block();
 			return; // no need to compile after a return
@@ -88,13 +88,13 @@ void Block::analyse(SemanticAnalyser* analyser) {
 
 	analyser->leave_block();
 
-	if (type.nature == Nature::VOID) { // empty block or last instruction type is VOID
+	// if (type.nature == Nature::VOID) { // empty block or last instruction type is VOID
 		// if (req_type.nature != Nature::ANY) {
 		// 	type.nature = req_type.nature;
 		// } else {
-		// 	type = Type::VOID;
+		// 	type = {};
 		// }
-	}
+	// }
 	if (type == Type::MPZ) {
 		type = Type::MPZ_TMP;
 	} else if (type == Type::MPZ_TMP) {
@@ -124,7 +124,7 @@ Compiler::value Block::compile(Compiler& c) const {
 			return {nullptr, Type::ANY};
 		}
 		if (i < instructions.size() - 1) {
-			if (val.v != nullptr && instructions[i]->type != Type::VOID) {
+			if (val.v != nullptr && instructions[i]->type._types.size() != 0) {
 				c.insn_delete_temporary(val);
 			}
 		} else {
@@ -136,7 +136,7 @@ Compiler::value Block::compile(Compiler& c) const {
 				return ret;
 			} else if (type == Type::MPZ_TMP && !temporary_mpz) {
 				auto v = c.insn_clone_mpz(val);
-				// c.insn_call(Type::VOID, {v}, +[](__mpz_struct v) {
+				// c.insn_call({}, {v}, +[](__mpz_struct v) {
 				// 	std::cout << "ret alloc = " << v._mp_alloc << std::endl;
 				// 	std::cout << "ret size = " << v._mp_size << std::endl;
 				// 	std::cout << "ret d = " << v._mp_d << std::endl;

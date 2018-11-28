@@ -12,7 +12,6 @@ namespace ls {
 BaseRawType::~BaseRawType() {}
 
 const AnyRawType RawType::_ANY;
-const VoidRawType RawType::_VOID;
 const AnyOldRawType RawType::_ANY_OLD;
 const BooleanRawType RawType::_BOOLEAN;
 const NumberRawType RawType::_NUMBER;
@@ -32,7 +31,6 @@ const ClassRawType RawType::_CLASS;
 
 const AnyRawType* const RawType::ANY = &_ANY;
 const AnyOldRawType* const RawType::ANY_OLD = &_ANY_OLD;
-const VoidRawType* const RawType::VOID = &_VOID;
 const BooleanRawType* const RawType::BOOLEAN = &_BOOLEAN;
 const NumberRawType* const RawType::NUMBER = &_NUMBER;
 const IntegerRawType* const RawType::INTEGER = &_INTEGER;
@@ -77,7 +75,6 @@ unsigned int Type::placeholder_counter = 0;
 const Type Type::ANY(RawType::ANY, Nature::ANY);
 const Type Type::CONST_ANY(RawType::ANY, Nature::ANY, false, false, true);
 
-const Type Type::VOID(RawType::VOID, Nature::VOID);
 const Type Type::VALUE(RawType::ANY, Nature::VALUE);
 const Type Type::CONST_VALUE(RawType::ANY, Nature::VALUE, false, false, true);
 const Type Type::POINTER(RawType::ANY, Nature::POINTER);
@@ -173,13 +170,14 @@ const Type Type::PTR_ARRAY_ITERATOR(RawType::ANY, Nature::POINTER, Type::POINTER
 
 Type::Type() {
 	raw_type = RawType::ANY;
-	nature = Nature::ANY;
+	nature = (Nature) 3;
 	native = false;
 	clazz = "?";
 }
 
 Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool temporary, bool constant) {
 	this->raw_type = raw_type;
+	_types.push_back(raw_type);
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
@@ -189,6 +187,7 @@ Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool tempora
 
 Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type, bool native, bool temporary, bool constant) {
 	this->raw_type = raw_type;
+	_types.push_back(raw_type);
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
@@ -199,6 +198,7 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type,
 
 Type::Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native, bool constant) {
 	this->raw_type = raw_type;
+	_types.push_back(raw_type);
 	this->nature = nature;
 	this->native = native;
 	this->clazz = raw_type->getClass();
@@ -330,7 +330,6 @@ Type Type::mix(const Type& x) const {
 		return *this;
 	}
 	if (nature == Nature::POINTER || x.nature == Nature::POINTER) return Type::POINTER;
-	if (nature == Nature::VOID || x.nature == Nature::VOID) return Type::POINTER;
 	if (raw_type == RawType::REAL || x.raw_type == RawType::REAL) return Type::REAL;
 	if (raw_type == RawType::LONG || x.raw_type == RawType::LONG) return Type::LONG;
 	if (raw_type == RawType::INTEGER || x.raw_type == RawType::INTEGER) return Type::INTEGER;
@@ -435,7 +434,7 @@ Type Type::add_temporary() const {
 }
 
 llvm::Type* Type::llvm_type() const {
-	if (nature == Nature::VOID) {
+	if (_types.size() == 0) {
 		return llvm::Type::getVoidTy(LLVMCompiler::context);
 	}
 	if (*this == Type::INT_ARRAY_ITERATOR) {
@@ -694,8 +693,6 @@ string Type::get_nature_symbol(const Nature& nature) {
 		return "any";
 	case Nature::VALUE:
 		return "";
-	case Nature::VOID:
-		return "void";
 	default:
 		return "???";
 	}
@@ -715,7 +712,7 @@ Type Type::generate_new_placeholder_type() {
 
 ostream& operator << (ostream& os, const Type& type) {
 
-	if (type.nature == Nature::VOID) {
+	if (type._types.size() == 0) {
 		os << C_GREY << "void" << END_COLOR;
 		return os;
 	}
