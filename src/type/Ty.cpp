@@ -66,6 +66,9 @@ Ty Ty::get_compatible(const Ty& type) const {
 }
 
 void Ty::add(const std::shared_ptr<const Base_type> type) {
+	for (const auto& t : _types) {
+		if (*t == *type) return;
+	}
 	_types.push_back(type);
 }
 
