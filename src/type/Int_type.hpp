@@ -6,7 +6,7 @@
 namespace ls {
 
 class Int_type : public Long_type {
-	static int _id;
+	static int ID;
 public:
 	Int_type();
 	virtual ~Int_type();

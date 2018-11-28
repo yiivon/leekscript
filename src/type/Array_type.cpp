@@ -8,9 +8,9 @@ namespace ls {
 
 int Array_type::_id = Ty::get_next_id();
 
-Array_type::Array_type(int id) : List_type(std::make_shared<Ty>(std::make_shared<Any_type>()), _id * id, "array") {}
+Array_type::Array_type(int id) : List_type(Ty::any(), _id * id, "array") {}
 
-Array_type::Array_type(std::shared_ptr<Ty> element, int id) : List_type(element, _id * id, "array") {}
+Array_type::Array_type(Ty element, int id) : List_type(element, _id * id, "array") {}
 
 Array_type::~Array_type() {}
 
@@ -25,7 +25,7 @@ bool Array_type::compatible(std::shared_ptr<Base_type> type) const {
 }
 
 std::ostream& Array_type::print(std::ostream& os) const {
-	os << BLUE_BOLD << "array" << END_COLOR << "<" << *element_type << ">";
+	os << BLUE_BOLD << "array" << END_COLOR << "<" << element_type << ">";
 	return os;
 }
 

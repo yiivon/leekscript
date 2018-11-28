@@ -8,7 +8,7 @@
 
 namespace ls {
 
-class Type;
+class Ty;
 
 class Base_type {
 private:
@@ -24,6 +24,7 @@ public:
 	virtual bool compatible(std::shared_ptr<Base_type>) const;
 	virtual bool iterable() const { return false; }
 	virtual bool container() const { return false; }
+	virtual Ty element() const;
 	virtual int size() const { return 64; }
 	virtual bool is_placeholder() const { return false; }
 	virtual int id() const;

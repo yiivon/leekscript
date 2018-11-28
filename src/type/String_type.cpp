@@ -8,7 +8,7 @@ namespace ls {
 
 int String_type::_id = Ty::get_next_id();
 
-String_type::String_type(int id, const std::string name) : List_type(std::make_shared<Ty>(std::make_shared<Char_type>()), _id * id, name) {}
+String_type::String_type(int id, const std::string name) : List_type(Ty::get_char(), _id * id, name) {}
 String_type::~String_type() {}
 
 std::ostream& String_type::print(std::ostream& os) const {

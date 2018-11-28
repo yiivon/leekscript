@@ -26,6 +26,10 @@ int Base_type::id() const {
 	return _id;
 }
 
+Ty Base_type::element() const {
+	return {};
+}
+
 std::ostream& Base_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << name << END_COLOR;
 	return os;

@@ -6,7 +6,7 @@
 namespace ls {
 
 class Long_type : public Integer_type {
-	static int _id;
+	static int ID;
 public:
 	Long_type(int id = 1, const std::string name = "long");
 	virtual ~Long_type();

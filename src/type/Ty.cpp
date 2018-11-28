@@ -12,6 +12,10 @@
 #include "List_type.hpp"
 #include "Array_type.hpp"
 #include "String_type.hpp"
+#include "Function_type.hpp"
+#include "Interval_type.hpp"
+#include "Class_type.hpp"
+#include "Object_type.hpp"
 #include <iostream>
 #include <algorithm>
 #include <numeric>
@@ -22,29 +26,66 @@ int Ty::id_generator = 0;
 int Ty::primes[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151 };
 std::map<int, std::shared_ptr<Base_type>> Ty::type_map;
 
+std::shared_ptr<Base_type> Ty::any_type;
+std::shared_ptr<Base_type> Ty::int_type;
+std::shared_ptr<Base_type> Ty::bool_type;
+std::shared_ptr<Base_type> Ty::integer_type;
+std::shared_ptr<Base_type> Ty::real_type;
+std::shared_ptr<Base_type> Ty::double_type;
+std::shared_ptr<Base_type> Ty::long_type;
+std::shared_ptr<Base_type> Ty::number_type;
+std::shared_ptr<Base_type> Ty::mpz_type;
+std::shared_ptr<Base_type> Ty::string_type;
+std::shared_ptr<Base_type> Ty::class_type;
+std::shared_ptr<Base_type> Ty::object_type;
+std::shared_ptr<Base_type> Ty::interval_type;
+std::shared_ptr<Base_type> Ty::fun_type;
+std::shared_ptr<Base_type> Ty::char_type;
+
 void Ty::init_types() {
-	auto add = [](Base_type type) {
-		type_map.emplace(type.id(), std::make_shared<Base_type>(type));
+	Ty::any_type = std::make_shared<Base_type>(Any_type());
+	Ty::int_type = std::make_shared<Base_type>(Int_type());
+	Ty::bool_type = std::make_shared<Base_type>(Bool_type());
+	Ty::integer_type = std::make_shared<Base_type>(Integer_type());
+	Ty::real_type = std::make_shared<Base_type>(Real_type());
+	Ty::double_type = std::make_shared<Base_type>(Double_type());
+	Ty::long_type = std::make_shared<Base_type>(Long_type());
+	Ty::number_type = std::make_shared<Base_type>(Number_type());
+	Ty::mpz_type = std::make_shared<Base_type>(Mpz_type());
+	Ty::string_type = std::make_shared<Base_type>(String_type());
+	Ty::class_type = std::make_shared<Base_type>(Class_type());
+	Ty::object_type = std::make_shared<Base_type>(Object_type());
+	Ty::interval_type = std::make_shared<Base_type>(Interval_type());
+	Ty::fun_type = std::make_shared<Base_type>(Function_type());
+	Ty::char_type = std::make_shared<Base_type>(Char_type());
+
+	auto add = [](std::shared_ptr<Base_type> type) {
+		type_map.emplace(type->id(), type);
 	};
-	add(Any_type());
-	add(Number_type());
-	add(Integer_type());
-	add(Int_type());
-	add(Long_type());
-	add(Real_type());
-	add(Double_type());
-	add(String_type());
-	add(Char_type());
-	add(List_type());
-	add(Array_type());
+	// add(Any_type());
+	// add(Number_type());
+	// add(Integer_type());
+	// add(Int_type());
+	// add(Long_type());
+	// add(Real_type());
+	// add(Double_type());
+	// add(String_type());
+	// add(Char_type());
+	// add(List_type());
+	// add(Array_type());
+	add(any_type);
+	add(int_type);
+	add(bool_type);
 }
 
 Ty::Ty() {}
-Ty::Ty(std::shared_ptr<Base_type> type) {
+Ty::Ty(std::shared_ptr<const Base_type> type, bool constant) : constant(constant) {
 	add(type);
 }
 
-Ty::~Ty() {}
+Ty::~Ty() {
+	// std::cout << "destroy type " << *this << std::endl;
+}
 
 bool Ty::operator == (const Ty& type) const {
 	return _types.size() == type._types.size() && std::equal(_types.begin(), _types.end(), type._types.begin(), [](std::shared_ptr<const Base_type> a, std::shared_ptr<const Base_type> b) {
@@ -58,11 +99,17 @@ Ty Ty::get_compatible(const Ty& type) const {
 
 	const List_type* list1, *list2;
 	if ((list1 = dynamic_cast<const List_type*>(_types[0].get())) && (list2 = dynamic_cast<const List_type*>(type._types[0].get()))) {
-		return { std::make_shared<List_type>(std::make_shared<Ty>(list1->element()->get_compatible(*list2->element()))) };
+		return { std::make_shared<List_type>(list1->element().get_compatible(list2->element())) };
 	}
 	auto id1 = _types[0]->id();
 	auto id2 = type._types[0]->id();
 	return { type_map.at(std::gcd(id1, id2)) };
+}
+
+void Ty::add(const Ty type) {
+	for (const auto& t : type._types) {
+		add(t);
+	}
 }
 
 void Ty::add(const std::shared_ptr<const Base_type> type) {
@@ -101,47 +148,82 @@ bool Ty::container() const {
 	});
 }
 
+Ty Ty::element() const {
+	if (_types.size() == 0) return {};
+	return { _types[0]->element() };
+}
+Ty Ty::key() const {
+	return {}; // TODO
+}
+std::vector<Ty> Ty::arguments() const {
+	return {}; // TODO
+}
+Ty Ty::argument(int) const {
+	return {}; // TODO
+}
+Ty Ty::get_return() const {
+	return Ty::any();
+}
+
 int Ty::get_next_id() {
 	return primes[id_generator++];
 }
 Ty Ty::get_void() {
 	return { };
 }
-Ty Ty::get_any() {
-	return { std::make_shared<Any_type>() };
+Ty Ty::any() {
+	return { any_type };
 }
 Ty Ty::get_bool() {
-	return { std::make_shared<Bool_type>() };
+	return { bool_type };
+}
+Ty Ty::const_bool() {
+	return { bool_type, true };
 }
 Ty Ty::get_number() {
-	return { std::make_shared<Number_type>() };
+	return { number_type };
 }
 Ty Ty::get_integer() {
-	return { std::make_shared<Integer_type>() };
+	return { integer_type };
 }
-Ty Ty::get_real() {
-	return { std::make_shared<Real_type>() };
+Ty Ty::real() {
+	return { real_type };
 }
 Ty Ty::get_int() {
-	return { std::make_shared<Int_type>() };
+	return { int_type };
 }
 Ty Ty::get_long() {
-	return { std::make_shared<Long_type>() };
+	return { long_type };
 }
 Ty Ty::get_double() {
-	return { std::make_shared<Double_type>() };
+	return { double_type };
 }
-Ty Ty::get_mpz() {
-	return { std::make_shared<Mpz_type>() };
+Ty Ty::mpz() {
+	return { mpz_type };
 }
-Ty Ty::get_array() {
+Ty Ty::array() {
 	return { std::make_shared<Array_type>() };
 }
-Ty Ty::get_array(const Ty& type) {
-	return { std::make_shared<Array_type>(std::make_shared<Ty>(type)) };
+Ty Ty::array(const Ty& type) {
+	return { std::make_shared<Array_type>(type) };
 }
 Ty Ty::get_string() {
-	return { std::make_shared<String_type>() };
+	return { string_type };
+}
+Ty Ty::get_class() {
+	return { class_type };
+}
+Ty Ty::object() {
+	return { object_type };
+}
+Ty Ty::interval() {
+	return { interval_type };
+}
+Ty Ty::fun() {
+	return { fun_type };
+}
+Ty Ty::get_char() {
+	return { char_type };
 }
 
 std::ostream& operator << (std::ostream& os, const Ty& ty) {
