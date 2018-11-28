@@ -32,12 +32,12 @@ void Test::test_types() {
 	code("12").type(ls::Ty::get_int());
 	code("12.5").type(ls::Ty::get_double());
 	code("'salut'").type(ls::Ty::get_string());
-	code("[]").type(ls::Ty::get_array());
-	code("[1]").type(ls::Ty::get_array(ls::Ty::get_int()));
-	code("[1, 2.5]").type(ls::Ty::get_array(ls::Ty::get_int()));
-	code("[[1]]").type(ls::Ty::get_array(ls::Ty::get_array(ls::Ty::get_int())));
+	code("[]").type(ls::Ty::array());
+	code("[1]").type(ls::Ty::array(ls::Ty::get_int()));
+	code("[1, 2.5]").type(ls::Ty::array(ls::Ty::get_int()));
+	code("[[1]]").type(ls::Ty::array(ls::Ty::array(ls::Ty::get_int())));
 
-	std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_long()) << std::endl;
-	std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_integer()) << std::endl;
-	std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_array()) << std::endl;
+	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_long()) << std::endl;
+	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_integer()) << std::endl;
+	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::array()) << std::endl;
 }

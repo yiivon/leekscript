@@ -13,7 +13,7 @@ public:
 	virtual ~LeftValue() = default;
 
 	virtual bool isLeftValue() const override;
-	virtual void change_type(SemanticAnalyser*, const Type&, const Ty&);
+	virtual void change_type(SemanticAnalyser*, const Type&);
 
 	virtual Compiler::value compile_l(Compiler&) const = 0;
 };

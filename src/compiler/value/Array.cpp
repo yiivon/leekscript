@@ -10,7 +10,7 @@ namespace ls {
 Array::Array() {
 	type = Type::ARRAY;
 	conversion_type = Type::VOID;
-	ty = Ty::get_array();
+	ty = Ty::array();
 }
 
 Array::~Array() {
@@ -82,7 +82,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 				element_ty = element_ty.merge(ex->ty);
 			}
 
-			ty = Ty::get_array(element_ty);
+			ty = Ty::array(element_ty);
 
 			Type supported_type = Type::ANY;
 			// Native elements types supported : integer, double
