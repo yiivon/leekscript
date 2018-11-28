@@ -50,8 +50,8 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 
 Type Function::getReturnType() {
 	if (current_version->type.getReturnType() == Type::ANY) {
-		if (placeholder_type == Type::ANY) {
-			placeholder_type = Type::generate_new_placeholder_type();
+		if (placeholder_type == RawType::ANY) {
+			placeholder_type = (BaseRawType*) Type::generate_new_placeholder_type()._types[0];
 		}
 		return placeholder_type;
 	} else {
@@ -197,15 +197,12 @@ void Function::analyse(SemanticAnalyser* analyser) {
 	}
 
 	type = default_version->type;
-	ty = default_version->ty;
 
 	// if (req_type.nature != Nature::ANY) {
 	// 	type.nature = req_type.nature;
 	// }
 	update_function_args(analyser);
 	type.nature = Nature::POINTER;
-
-	types = type;
 
 //	cout << "Function type: " << type << endl;
 }
@@ -308,32 +305,34 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	version->type.setReturnType(type.getReturnType());
 	version->body->analyse(analyser);
 
-	TypeList return_types;
-	// Ignore recursive types
-	for (const auto& t : version->body->types) {
-		if (placeholder_type != Type::ANY and t.not_temporary() == placeholder_type) {
-			continue;
-		}
-		return_types.add(t);
-	}
+	Type return_type = version->body->type;
+	// // Ignore recursive types
+	// for (const auto& t : version->body->type._types) {
+	// 	if (placeholder_type != RawType::ANY and t == placeholder_type) {
+	// 		continue;
+	// 	}
+	// 	return_type.add(t);
+	// }
 
-	if (return_types.size() >= 2) {
+	if (return_type._types.size() >= 2) {
 		// The body had multiple types, compute a compatible type and re-analyse it
-		Type return_type = return_types[0];
-		for (const auto& t : return_types) {
-			return_type = Type::get_compatible_type(return_type, t);
+		auto ret = return_type._types[0];
+		for (const auto& t : return_type._types) {
+			ret = Type::get_compatible_type({ret}, {t})._types[0];
 		}
 		version->type.return_types.clear();
 		version->type.setReturnType(return_type);
 		version->body->analyse(analyser); // second pass
 	} else {
-		if (return_types.size() > 0) {
-			version->type.setReturnType(return_types[0]);
-		} else {
+		// if (return_type._types.size() > 0) {
+		// 	version->type.setReturnType({return_type._types[0]});
+		// } else {
 			version->type.setReturnType(version->body->type);
-		}
+		// }
 		version->body->type = version->type.getReturnType().add_temporary();
 	}
+
+	// std::cout << "version body type " << version->body->type << std::endl;
 
 	if (version->type.getReturnType() == Type::MPZ) {
 		version->type.setReturnType(Type::MPZ_TMP);
@@ -341,7 +340,6 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 
 	vars = analyser->get_local_vars();
 	analyser->leave_function();
-	version->ty = version->body->ty;
 
 	// cout << "function analysed body : " << version->type << endl;
 }

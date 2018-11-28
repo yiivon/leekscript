@@ -8,9 +8,7 @@ namespace ls {
 
 String::String(std::shared_ptr<Token> token) : token(token) {
 	type = Type::STRING;
-	types = Type::STRING;
 	type.temporary = true;
-	ty = Ty::get_string();
 	constant = true;
 	ls_string = new LSString(token->content);
 }
@@ -22,7 +20,7 @@ String::~String() {
 void String::print(ostream& os, int, bool debug, bool condensed) const {
 	os << "'" << token->content << "'";
 	if (debug) {
-		os << " " << ty;
+		os << " " << type;
 	}
 }
 

@@ -48,7 +48,7 @@ void FunctionCall::print(std::ostream& os, int indent, bool debug, bool condense
 	}
 	os << ")";
 	if (debug) {
-		os << " " << types;
+		os << " " << type;
 	}
 }
 
@@ -312,9 +312,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		arg->type.reference = function->type.getArgumentType(a).reference;
 		a++;
 	}
-
 	return_type = function_type.getReturnType();
-	types = type;
 	// std::cout << "FC " << this << " type " << type << std::endl;
 }
 

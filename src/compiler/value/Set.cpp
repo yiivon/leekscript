@@ -68,7 +68,6 @@ bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 	for (size_t i = 0; i < expressions.size(); ++i) {
 		expressions[i]->analyse(analyser);
 	}
-	this->types = type;
 	return false;
 }
 

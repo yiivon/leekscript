@@ -32,7 +32,7 @@ void Block::print(ostream& os, int indent, bool debug, bool condensed) const {
 	}
 	if (!condensed) os << tabs(indent) << "}";
 	if (debug) {
-		os << " " << ty;
+		os << " " << type;
 	}
 }
 
@@ -60,41 +60,27 @@ void Block::analyse(SemanticAnalyser* analyser) {
 	analyser->enter_block();
 
 	type = {};
-	types.clear();
-	ty = Ty::get_void();
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
-		if (i < instructions.size() - 1) {
-			// Not the last instruction, it must return void
-			instructions[i]->analyse(analyser);
-		} else {
+		instructions[i]->analyse(analyser);
+		if (i == instructions.size() - 1 or instructions[i]->can_return()) {
 			// Last instruction : must return the required type
-			instructions[i]->analyse(analyser);
-			type = instructions[i]->type;
+			type.add(instructions[i]->type);
 			was_reference = type.reference;
-			for (auto& t : instructions[i]->types) t.reference = false;
+			// for (auto& t : instructions[i]->types) t.reference = false;
 			type.reference = false;
-			types.add(instructions[i]->types);
-			ty = instructions[i]->ty;
 		}
 		// A return instruction
 		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
-			type = {}; // This block has really no type
-			ty = Ty::get_void();
+			// type = {}; // This block has really no type
 			analyser->leave_block();
 			return; // no need to compile after a return
 		}
 	}
+	// std::cout << "bloc type " << type << std::endl;
 
 	analyser->leave_block();
 
-	// if (type.nature == Nature::VOID) { // empty block or last instruction type is VOID
-		// if (req_type.nature != Nature::ANY) {
-		// 	type.nature = req_type.nature;
-		// } else {
-		// 	type = {};
-		// }
-	// }
 	if (type == Type::MPZ) {
 		type = Type::MPZ_TMP;
 	} else if (type == Type::MPZ_TMP) {

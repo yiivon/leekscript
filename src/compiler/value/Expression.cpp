@@ -120,12 +120,10 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	if (dynamic_cast<const PlaceholderRawType*>(v1->type.raw_type)) {
 		type = v1->type;
-		types = type;
 		return;
 	}
 	if (dynamic_cast<const PlaceholderRawType*>(v2->type.raw_type)) {
 		type = v2->type;
-		types = type;
 		return;
 	}
 
@@ -223,7 +221,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		for (const auto& mutator : m->mutators) {
 			mutator->apply(analyser, {v1, v2});
 		}
-		types = type;
 		return;
 	} else {
 		// std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
@@ -337,11 +334,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	// int div => result is int
 	if (op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL) {
 		type = v1->type == Type::LONG ? Type::LONG : Type::INTEGER;
-	}
-
-	// At the end the require nature is taken into account
-	if (types.size() == 0) {
-		types = type;
 	}
 }
 

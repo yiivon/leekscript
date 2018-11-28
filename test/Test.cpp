@@ -300,13 +300,13 @@ void Test::Input::type(ls::Ty type) {
 	std::ostringstream oss;
 	oss << type;
 	std::ostringstream oss_actual;
-	oss_actual << result.type;
+	// oss_actual << result.type;
 
-	if (result.type == type) {
-		pass(oss.str());
-	} else {
-		fail(oss.str(), oss_actual.str());
-	}
+	// if (result.type == type) {
+	// 	pass(oss.str());
+	// } else {
+	// 	fail(oss.str(), oss_actual.str());
+	// }
 }
 
 void Test::Input::output(std::string expected) {

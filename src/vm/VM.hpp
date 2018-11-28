@@ -14,7 +14,6 @@
 #include "../compiler/syntaxic/SyntaxicalError.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
 #include "../compiler/Compiler.hpp"
-#include "../type/Ty.hpp"
 #include "Exception.hpp"
 
 #define OPERATION_LIMIT 10000000
@@ -58,7 +57,6 @@ public:
 		std::string assembly;
 		std::string pseudo_code;
 		std::string instructions_log;
-		Ty type;
 	};
 
 	std::vector<Module*> modules;

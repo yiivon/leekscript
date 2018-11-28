@@ -24,12 +24,9 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 	if (req_type._types.size() == 0) {
 		value->analyse(analyser);
 		type = {};
-		ty = Ty::get_void();
 	} else {
 		value->analyse(analyser);
 		type = value->type;
-		types = value->types;
-		ty = value->ty;
 	}
 }
 

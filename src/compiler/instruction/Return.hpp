@@ -10,8 +10,6 @@ class Return : public Instruction {
 public:
 
 	Value* expression;
-	Function* function;
-	bool in_function;
 
 	Return(Value* = nullptr);
 	virtual ~Return();
@@ -20,7 +18,8 @@ public:
 	virtual Location location() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
-
+	virtual bool can_return() const override;
+	
 	virtual Compiler::value compile(Compiler&) const override;
 
 	virtual Instruction* clone() const override;

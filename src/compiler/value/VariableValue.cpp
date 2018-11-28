@@ -22,7 +22,7 @@ void VariableValue::print(ostream& os, int, bool debug, bool condensed) const {
 		if (has_version && var != nullptr && var->value != nullptr)
 			os << var->value->version_type(version);
 		else
-			os << types;
+			os << type;
 	}
 }
 
@@ -62,7 +62,6 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 	//	cout << "var scope : " << (int)var->scope << endl;
 	//	for (auto t : attr_types)
 	//	cout << t.first << " : " << t.second << endl;
-	types = type;
 }
 
 bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& args, int level) {
@@ -80,7 +79,6 @@ bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& ar
 			var->type = this->type;
 		}
 		type = var->type;
-		types = type;
 	}
 	set_version(args, level);
 	return false;
@@ -101,7 +99,6 @@ bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
 		var->value->will_store(analyser, type);
 		this->type = var->value->type;
 		var->type = this->type;
-		types = this->type;
 	}
 	return false;
 }
@@ -111,7 +108,6 @@ bool VariableValue::elements_will_store(SemanticAnalyser* analyser, const Type& 
 		var->value->elements_will_store(analyser, type, level);
 		this->type = var->value->type.not_temporary();
 		var->type = this->type;
-		types = this->type;
 	}
 	return false;
 }
@@ -120,7 +116,6 @@ void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
 	if (var != nullptr) {
 		var->type = type;
 		this->type = type;
-		types = type;
 	}
 }
 

@@ -4,7 +4,6 @@
 #include <map>
 #include <vector>
 #include "../Compiler.hpp"
-#include "../../vm/TypeList.hpp"
 #include "../../type/Ty.hpp"
 #include "../lexical/Location.hpp"
 
@@ -16,8 +15,6 @@ class Value {
 public:
 
 	Type type;
-	TypeList types;
-	Ty ty;
 
 	std::vector<Type> version;
 	bool has_version = false;

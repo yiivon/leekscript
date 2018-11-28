@@ -32,7 +32,6 @@ bool Value::must_be_pointer(SemanticAnalyser*) {
 		return false;
 	}
 	type.nature = Nature::POINTER;
-	types = type;
 	return true;
 }
 

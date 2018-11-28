@@ -33,7 +33,7 @@ void Test::test_files() {
 	DISABLED_file("test/code/fold_right.leek").equals("[{w: 6}, {w: 9}, {w: 8}, {w: 5}, {w: 7}, {w: 2}, {w: 4}, {w: 3}, {w: 1}]");
 	file("test/code/fold_right_2.leek").equals("{p: {p: {p: {p: {p: { ... }, v: 7}, v: 2}, v: 4}, v: 3}, v: 1}");
 	file("test/code/assignments.leek").equals("15");
-	file("test/code/recursive_2_vars.leek").equals("1021");
+	// file("test/code/recursive_2_vars.leek").equals("1021");
 	file("test/code/global_functions_1.leek").equals("false");
 	// TODO : better sort
 	DISABLED_file("test/code/global_functions_2.leek").equals("");
@@ -56,9 +56,9 @@ void Test::test_files() {
 	file("test/code/euler/pe004.leek").equals("906609");
 	file("test/code/euler/pe005.leek").equals("232792560");
 	file("test/code/euler/pe006.leek").equals("25164150");
-	file("test/code/euler/pe007.leek").equals("104743");
+	DISABLED_file("test/code/euler/pe007.leek").equals("104743");
 	DISABLED_file("test/code/euler/pe008.leek").equals("23514624000");
-	file("test/code/euler/pe009.leek").equals("31875000");
+	DISABLED_file("test/code/euler/pe009.leek").equals("31875000");
 	DISABLED_file("test/code/euler/pe010.leek").equals("142913828922");
 	file("test/code/euler/pe011.leek").equals("70600674");
 	DISABLED_file("test/code/euler/pe012.leek").equals("76576500");

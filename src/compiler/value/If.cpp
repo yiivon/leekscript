@@ -47,7 +47,7 @@ void If::print(ostream& os, int indent, bool debug, bool condensed) const {
 		}
 	}
 	if (debug) {
-		os << " " << types;
+		os << " " << type;
 	}
 }
 
@@ -57,28 +57,14 @@ Location If::location() const {
 
 void If::analyse(SemanticAnalyser* analyser) {
 
-	types.clear();
-
 	condition->analyse(analyser);
 	then->analyse(analyser);
 
-	types.add(then->types);
 	type = then->type;
 
 	if (elze != nullptr) {
 		elze->analyse(analyser);
-		if (then->type._types.size() == 0) { // then contains return instruction
-			type = elze->type;
-		} else if (elze->type._types.size() == 0) { // elze contains return instruction
-			type = then->type;
-		} else {
-			type = Type::get_compatible_type(then->type, elze->type);
-		}
-		types.add(elze->types);
-		then->analyse(analyser);
-		if (elze->type != type) {
-			elze->analyse(analyser);
-		}
+		type = Type::get_compatible_type(then->type, elze->type);
 	}
 }
 

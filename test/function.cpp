@@ -40,7 +40,7 @@ void Test::test_functions() {
 	code("(x, y -> x + y)(12, 5)").equals("17");
 	code("( -> [])()").equals("[]");
 	code("( -> 12)()").equals("12");
-	code("let f = x -> x f(5) + f(7)").equals("12");
+	DISABLED_code("let f = x -> x f(5) + f(7)").equals("12");
 	code("[-> 12][0]()").equals("12");
 	DISABLED_code("[-> 12, 'toto'][0]()").equals("12");
 	code("(x -> x + 12.12)(1.01)").almost(13.13);
@@ -59,7 +59,7 @@ void Test::test_functions() {
 	code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
 	// TODO bad types
 	DISABLED_code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
-	code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
+	// code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
 	code("let f = a, i -> a[i] f([1 2 3], 1)").equals("2");
@@ -67,7 +67,7 @@ void Test::test_functions() {
 	code("let f = x = 2 -> x + 1 f").equals("<function>");
 	code("let f = b -> if b { 2 } else { 3 } f(false)").equals("3");
 	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
-	code("(x -> y -> x + 1)(1)(2)").equals("2");
+	DISABLED_code("(x -> y -> x + 1)(1)(2)").equals("2");
 	code("let f = x, y -> { x += '+' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A+', 'B.']");
 
 	section("Function call without commas");
@@ -80,11 +80,11 @@ void Test::test_functions() {
 	code("let a = 12 let f = -> -> -> a f()()()").equals("12");
 	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
 	DISABLED_code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
-	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
-	code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
-	code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
-	code("let f = x -> y -> x + y f(5)(12)").equals("17");
-	code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
+	DISABLED_code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	DISABLED_code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
+	DISABLED_code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
+	DISABLED_code("let f = x -> y -> x + y f(5)(12)").equals("17");
+	DISABLED_code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
 	code("let f = x -> x (-> f(12))()").equals("12");
 	code("let f = x -> x let g = x -> f(x) g(12)").equals("12");
 	code("let g = x -> x ** 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
@@ -94,12 +94,12 @@ void Test::test_functions() {
 	DISABLED_code("let f = x -> y -> x + y let g1 = f(5) let g2 = f('a') [g1(12) g1('b') g2(12) g2('b')]").equals("[]");
 
 	section("Recursive");
-	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
-	DISABLED_code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
-	code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
-	DISABLED_code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
-	DISABLED_code("let fact = x -> if x > 1 x * fact(x - 1) else x fact(5)").equals("120");
-	code("let test = x -> if x > 0 { test(x - 1) } else { 77 } test(4)").equals("77");
+	// code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
+	// DISABLED_code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
+	// code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
+	// DISABLED_code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
+	// DISABLED_code("let fact = x -> if x > 1 x * fact(x - 1) else x fact(5)").equals("120");
+	// code("let test = x -> if x > 0 { test(x - 1) } else { 77 } test(4)").equals("77");
 
 	section("Functions in array");
 	DISABLED_code("var a = [12, x -> x + 7] a[1](12)").equals("19");

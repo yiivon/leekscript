@@ -175,6 +175,11 @@ Type::Type() {
 	clazz = "?";
 }
 
+Type::Type(const BaseRawType* raw_type) {
+	this->raw_type = raw_type;
+	_types.push_back(raw_type);
+}
+
 Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool temporary, bool constant) {
 	this->raw_type = raw_type;
 	_types.push_back(raw_type);
@@ -336,6 +341,28 @@ Type Type::mix(const Type& x) const {
 	assert(false); // LCOV_EXCL_LINE
 }
 
+void Type::add(const Type type) {
+	for (const auto& t : type._types) {
+		add(t);
+	}
+	key_type = type.key_type;
+	element_type = type.element_type;
+	// arguments_types = type.arguments_types;
+	// return_types = type.return_types;
+	// arguments_has_default = type.arguments_has_default;
+	// native = type.native;
+	nature = type.nature;
+}
+
+void Type::add(const BaseRawType* type) {
+	for (const auto& t : _types) {
+		if (type == t)
+			return;
+	}
+	raw_type = type;
+	_types.push_back(type);
+}
+
 void Type::toJson(ostream& os) const {
 	os << "{\"type\":\"" << raw_type->getJsonName() << "\"";
 
@@ -380,12 +407,12 @@ int Type::size() const {
 bool Type::operator == (const Type& type) const {
 	return raw_type == type.raw_type &&
 			nature == type.nature &&
-			native == type.native &&
-			clazz == type.clazz &&
+			// native == type.native &&
+			// clazz == type.clazz &&
 			element_type == type.element_type &&
 			key_type == type.key_type &&
-			temporary == type.temporary &&
-			reference == type.reference &&
+			// temporary == type.temporary &&
+			// reference == type.reference &&
 			((raw_type != RawType::FUNCTION and raw_type != RawType::CLOSURE) ||
 				(return_types == type.return_types &&
 				arguments_types == type.arguments_types));

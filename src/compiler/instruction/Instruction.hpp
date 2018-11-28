@@ -3,7 +3,6 @@
 
 #include <ostream>
 #include "../Compiler.hpp"
-#include "../../vm/TypeList.hpp"
 #include "../../type/Ty.hpp"
 #include "../lexical/Token.hpp"
 
@@ -16,8 +15,6 @@ class Instruction {
 public:
 
 	Type type;
-	TypeList types;
-	Ty ty;
 
 	virtual ~Instruction() = 0;
 
@@ -25,6 +22,7 @@ public:
 	virtual Location location() const = 0;
 
 	virtual void analyse(SemanticAnalyser* analyser, const Type& type = Type::ANY) = 0;
+	virtual bool can_return() const;
 
 	virtual Compiler::value compile(Compiler&) const;
 

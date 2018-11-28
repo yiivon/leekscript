@@ -8,8 +8,6 @@ namespace ls {
 
 Return::Return(Value* v) {
 	expression = v;
-	function = nullptr;
-	in_function = false;
 }
 
 Return::~Return() {
@@ -24,24 +22,19 @@ void Return::print(ostream& os, int indent, bool debug) const {
 }
 
 void Return::analyse(SemanticAnalyser* analyser, const Type&) {
-
 	auto f = analyser->current_function();
-
 	if (expression != nullptr) {
-		Type required_type = Type::ANY;
-		if (f->current_version->type.getReturnType() != Type::ANY) {
-			required_type = f->current_version->type.getReturnType();
-		}
 		expression->analyse(analyser);
-		f->current_version->body->types.add(expression->type.add_temporary());
+		type = expression->type;
 	}
-	function = f;
-	in_function = true;
-	type = {};
 }
 
 Location Return::location() const {
 	return expression->location();
+}
+
+bool Return::can_return() const {
+	return true;
 }
 
 Compiler::value Return::compile(Compiler& c) const {

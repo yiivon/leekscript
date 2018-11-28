@@ -20,7 +20,7 @@ Number::~Number() {
 void Number::print(ostream& os, int, bool debug, bool condensed) const {
 	os << value;
 	if (debug) {
-		os << " " << ty;
+		os << " " << type;
 	}
 }
 
@@ -70,7 +70,6 @@ void Number::analyse(SemanticAnalyser*) {
 			// LCOV_EXCL_STOP
 		} else {
 			type = Type::REAL;
-			ty = Ty::get_double();
 		}
 	} else {
 		if (!mpz_value_initialized) {
@@ -79,17 +78,14 @@ void Number::analyse(SemanticAnalyser*) {
 		}
 		if (!mp_number and !long_number and mpz_fits_sint_p(mpz_value)) {
 			type = Type::INTEGER;
-			ty = Ty::get_int();
 			int_value = mpz_get_si(mpz_value);
 			double_value = int_value;
 		} else if (!mp_number and mpz_fits_slong_p(mpz_value)) {
 			type = Type::LONG;
-			ty = Ty::get_long();
 			long_value = mpz_get_si(mpz_value);
 			double_value = long_value;
 		} else {
 			type = Type::MPZ;
-			ty = Ty::mpz();
 		}
 	}
 	if (pointer) {
@@ -97,7 +93,6 @@ void Number::analyse(SemanticAnalyser*) {
 	}
 	// TODO ?
 	// type.constant = true;
-	types = type;
 }
 
 bool Number::is_zero() const {
