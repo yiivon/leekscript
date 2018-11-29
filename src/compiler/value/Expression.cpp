@@ -118,17 +118,17 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	v1->analyse(analyser);
 	v2->analyse(analyser);
 
-	if (dynamic_cast<const PlaceholderRawType*>(v1->type.raw_type)) {
+	if (dynamic_cast<const PlaceholderRawType*>(v1->type.raw())) {
 		type = v1->type;
 		return;
 	}
-	if (dynamic_cast<const PlaceholderRawType*>(v2->type.raw_type)) {
+	if (dynamic_cast<const PlaceholderRawType*>(v2->type.raw())) {
 		type = v2->type;
 		return;
 	}
 
 	// in operator : v1 must be a container
-	if (op->type == TokenType::IN and v2->type.raw_type != RawType::ANY and !v2->type.is_container()) {
+	if (op->type == TokenType::IN and v2->type.raw() != RawType::ANY and !v2->type.is_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
 		return;
 	}
@@ -445,7 +445,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 		vector<Compiler::value> args;
 		// TODO simplify condition
-		if ((v1->type.raw_type == RawType::BOOLEAN and op->type == TokenType::EQUAL) or native_method_v1_addr) {
+		if ((v1->type.raw() == RawType::BOOLEAN and op->type == TokenType::EQUAL) or native_method_v1_addr) {
 			args.push_back(((LeftValue*) v1)->compile_l(c));
 			if (native_method_v2_addr) {
 				args.push_back(((LeftValue*) v2)->compile_l(c));

@@ -29,7 +29,7 @@ Location String::location() const {
 }
 
 bool String::will_store(SemanticAnalyser* analyser, const Type& type) {
-	if (type.raw_type != RawType::STRING) {
+	if (type.raw() != RawType::STRING) {
 		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), location(), {}});
 	}
 	return false;

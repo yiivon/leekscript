@@ -9,16 +9,19 @@ void Test::test_types() {
 	std::cout << types << std::endl;
 
 	// Print type names
-	assert(ls::Type::LONG.raw_type->getJsonName() == "number");
-	assert(ls::Type::MAP.raw_type->getJsonName() == "map");
-	assert(ls::Type::INTERVAL.raw_type->getJsonName() == "interval");
-	assert(ls::Type::OBJECT.raw_type->getJsonName() == "object");
-	assert(ls::Type::CLASS.raw_type->getJsonName() == "class");
-	assert(ls::Type::SET.raw_type->getJsonName() == "set");
-	assert(ls::Type::NULLL.raw_type->getJsonName() == "null");
-	assert(ls::Type::FUNCTION.raw_type->getName() == "function");
+	assert(ls::Type::LONG.getJsonName() == "number");
+	assert(ls::Type::MAP.getJsonName() == "map");
+	assert(ls::Type::INTERVAL.getJsonName() == "interval");
+	assert(ls::Type::OBJECT.getJsonName() == "object");
+	assert(ls::Type::CLASS.getJsonName() == "class");
+	assert(ls::Type::SET.getJsonName() == "set");
+	assert(ls::Type::NULLL.getJsonName() == "null");
+	assert(ls::Type::FUNCTION.getJsonName() == "function");
 
 	// Type::more_specific
+	assert(ls::Type::get_compatible_type({}, ls::Type::INTEGER) == ls::Type::INTEGER);
+	assert(ls::Type::get_compatible_type(ls::Type::INTEGER, ls::Type::REAL) == ls::Type::REAL);
+	assert(ls::Type::more_specific(ls::Type::POINTER, ls::Type::INTEGER));
 	assert(ls::Type::more_specific(ls::Type::PTR_ARRAY, ls::Type::INT_ARRAY));
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::INT_INT_MAP));
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::REAL_REAL_MAP));

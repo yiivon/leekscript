@@ -44,7 +44,7 @@ Location Foreach::location() const {
 
 void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	if (req_type.raw_type == RawType::ARRAY) {
+	if (req_type.raw() == RawType::ARRAY) {
 		type = req_type;
 	} else {
 		type = {};
@@ -58,16 +58,16 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		return;
 	}
 
-	if (container->type.raw_type == RawType::MAP) {
+	if (container->type.raw() == RawType::MAP) {
 		key_type = container->type.getKeyType();
 		value_type = container->type.getElementType();
-	} else if (container->type.raw_type == RawType::ARRAY or container->type.raw_type == RawType::INTERVAL or container->type.raw_type == RawType::SET) {
+	} else if (container->type.raw() == RawType::ARRAY or container->type.raw() == RawType::INTERVAL or container->type.raw() == RawType::SET) {
 		key_type = Type::INTEGER;
 		value_type = container->type.getElementType();
-	} else if (container->type.raw_type == RawType::INTEGER || container->type.raw_type == RawType::LONG) {
+	} else if (container->type.raw() == RawType::INTEGER || container->type.raw() == RawType::LONG) {
 		key_type = Type::INTEGER;
 		value_type = Type::INTEGER;
-	} else if (container->type.raw_type == RawType::STRING) {
+	} else if (container->type.raw() == RawType::STRING) {
 		key_type = Type::INTEGER;
 		value_type = Type::STRING;
 	} else {
@@ -97,7 +97,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	// Potential output [for ...]
 	Compiler::value output_v;
-	if (type.raw_type == RawType::ARRAY) {
+	if (type.raw() == RawType::ARRAY) {
 		output_v = c.new_array(type.getElementType(), {});
 		c.insn_inc_refs(output_v);
 		c.add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
@@ -129,7 +129,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	auto it = c.iterator_begin(container_v);
 
 	// For arrays, if begin iterator is 0, jump to end directly
-	if (container->type.raw_type == RawType::ARRAY) {
+	if (container->type.raw() == RawType::ARRAY) {
 		LLVMCompiler::value empty_array = {LLVMCompiler::builder.CreateICmpEQ(c.new_integer(0).v, c.to_int(it).v), Type::BOOLEAN};
 		c.insn_if_new(empty_array, &end_label, &cond_label);
 	} else {

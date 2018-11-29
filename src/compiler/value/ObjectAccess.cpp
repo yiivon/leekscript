@@ -54,7 +54,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 	auto vv = dynamic_cast<VariableValue*>(object);
 
 	bool found = false;
-	if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
+	if (object->type.raw() == RawType::CLASS and vv != nullptr) {
 
 		auto std_class = (LSClass*) analyser->vm->system_vars.at(vv->name);
 
@@ -73,7 +73,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 			found = true;
 		}
 	}
-	if (!found and object->type.raw_type == RawType::CLASS and vv != nullptr) {
+	if (!found and object->type.raw() == RawType::CLASS and vv != nullptr) {
 
 		auto std_class = (LSClass*) analyser->vm->system_vars.at(vv->name);
 
@@ -140,7 +140,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 						class_field = true;
 					} catch (...) {
 						if (object_class->name != "Object") {
-							if (object->type.raw_type == RawType::CLASS and vv != nullptr) {
+							if (object->type.raw() == RawType::CLASS and vv != nullptr) {
 								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, vv->name}});
 							} else {
 								analyser->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, object_class->name}});

@@ -57,7 +57,7 @@ void Set::analyse(SemanticAnalyser* analyser) {
 bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 
 	Type added_type = type;
-	if (added_type.raw_type == RawType::ARRAY or added_type.raw_type == RawType::SET) {
+	if (added_type.raw() == RawType::ARRAY or added_type.raw() == RawType::SET) {
 		added_type = added_type.getElementType();
 	}
 	Type current_type = this->type.getElementType();

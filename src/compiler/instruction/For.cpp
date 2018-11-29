@@ -45,7 +45,7 @@ Location For::location() const {
 
 void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	if (req_type.raw_type == RawType::ARRAY) {
+	if (req_type.raw() == RawType::ARRAY) {
 		type = req_type;
 	} else {
 		type = {};
@@ -96,7 +96,7 @@ Compiler::value For::compile(Compiler& c) const {
 	c.enter_block(); // { for init ; cond ; inc { body } }<-- this block
 
 	Compiler::value output_v;
-	if (type.raw_type == RawType::ARRAY) {
+	if (type.raw() == RawType::ARRAY) {
 		output_v = c.new_array(type.getElementType(), {});
 		c.insn_inc_refs(output_v);
 		c.add_var("{output}", output_v); // Why create variable ? in case of `break 2` the output must be deleted

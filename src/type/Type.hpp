@@ -239,7 +239,6 @@ public:
 class Type {
 public:
 	std::vector<const BaseRawType*> _types;
-	const BaseRawType* raw_type;
 	Nature nature;
 	bool native; // A C++ object, memory management is done outside the language
 	std::vector<Type> element_type;
@@ -259,6 +258,7 @@ public:
 	Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native = false, bool constant = false);
 
 	int id() const;
+	const BaseRawType* raw() const;
 
 	bool must_manage_memory() const;
 
@@ -283,6 +283,7 @@ public:
 	void add(const BaseRawType* type);
 
 	void toJson(std::ostream&) const;
+	std::string getJsonName() const;
 	std::string to_string() const;
 	std::string getClass() const;
 
@@ -333,6 +334,7 @@ public:
 	static const Type OBJECT;
 	static const Type OBJECT_TMP;
 	static const Type ARRAY;
+	static const Type CONST_ARRAY;
 	static const Type PTR_ARRAY;
 	static const Type INT_ARRAY;
 	static const Type REAL_ARRAY;

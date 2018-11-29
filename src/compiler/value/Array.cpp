@@ -85,7 +85,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 				supported_type = element_type;
 			}
 			// For function, we store them as pointers
-			else if (element_type.raw_type == RawType::FUNCTION) {
+			else if (element_type.raw() == RawType::FUNCTION) {
 				supported_type = element_type;
 			} else {
 				supported_type = Type::POINTER;
@@ -99,13 +99,13 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			for (size_t i = 0; i < expressions.size(); ++i) {
 				auto ex = expressions[i];
 				ex->analyse(analyser);
-				if (!homogeneous and ex->type.raw_type == RawType::ARRAY) {
+				if (!homogeneous and ex->type.raw() == RawType::ARRAY) {
 					// If the array stores other arrays of different types,
 					// force those arrays to store pointers. (To avoid having
 					// unknown array<int> inside arrays.
 					ex->will_store(analyser, Type::POINTER);
 				}
-				if (ex->type.raw_type == RawType::FUNCTION) {
+				if (ex->type.raw() == RawType::FUNCTION) {
 					std::vector<Type> types;
 					for (unsigned p = 0; p < ex->type.getArgumentTypes().size(); ++p) {
 						types.push_back(Type::POINTER);
@@ -164,7 +164,7 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	// std::cout << "Array::will_store " << this->type << " " << type << std::endl;
 
 	Type added_type = type;
-	if (added_type.raw_type == RawType::ARRAY or added_type.raw_type == RawType::SET) {
+	if (added_type.raw() == RawType::ARRAY or added_type.raw() == RawType::SET) {
 		added_type = added_type.getElementType();
 	}
 	Type current_type = this->type.getElementType();

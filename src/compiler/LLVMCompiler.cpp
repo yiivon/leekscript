@@ -190,7 +190,7 @@ LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMC
 LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 	// assert(v.t.llvm_type() == v.v->getType());
 	// assert(v.t.isNumber());
-	if (v.t.raw_type == RawType::INTEGER) {
+	if (v.t.raw() == RawType::INTEGER) {
 		return v;
 	}
 	if (v.t.not_temporary() == Type::MPZ) {
@@ -212,10 +212,10 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.isNumber());
-	if (x.t.raw_type == RawType::REAL) {
+	if (x.t.raw() == RawType::REAL) {
 		return x;
 	}
-	if (x.t.raw_type == RawType::BOOLEAN) {
+	if (x.t.raw() == RawType::BOOLEAN) {
 		return {builder.CreateUIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
 	}
 	return {builder.CreateSIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
@@ -290,9 +290,9 @@ LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
-	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
+	if (a.t.raw() == RawType::REAL or b.t.raw() == RawType::REAL) {
 		return {builder.CreateFAdd(to_real(a).v, to_real(b).v, "add"), Type::REAL};
-	} else if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
+	} else if (a.t.raw() == RawType::LONG or b.t.raw() == RawType::LONG) {
 		return {builder.CreateAdd(to_long(a).v, to_long(b).v, "add"), Type::LONG};
 	} else {
 		return {builder.CreateAdd(to_int(a).v, to_int(b).v, "add"), Type::INTEGER};
@@ -303,7 +303,7 @@ LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
-	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
+	if (a.t.raw() == RawType::REAL or b.t.raw() == RawType::REAL) {
 		return {builder.CreateFSub(to_real(a).v, to_real(b).v, "sub"), Type::REAL};
 	} else {
 		return {builder.CreateSub(to_int(a).v, to_int(b).v, "sub"), Type::INTEGER};
@@ -321,9 +321,9 @@ LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::v
 			return r;
 		});
 	}
-	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
+	if (a.t.raw() == RawType::REAL or b.t.raw() == RawType::REAL) {
 		return {builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::BOOLEAN};
-	} else if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
+	} else if (a.t.raw() == RawType::LONG or b.t.raw() == RawType::LONG) {
 		return {builder.CreateICmpEQ(to_long(a).v, to_long(b).v), Type::BOOLEAN};
 	} else {
 		return {builder.CreateICmpEQ(to_int(a).v, to_int(b).v), Type::BOOLEAN};
@@ -343,9 +343,9 @@ LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::v
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::REAL || b.t.raw_type == RawType::REAL) {
+	if (a.t.raw() == RawType::REAL || b.t.raw() == RawType::REAL) {
 		r = {builder.CreateFCmpOLT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
-	} else if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+	} else if (a.t.raw() == RawType::LONG || b.t.raw() == RawType::LONG) {
 		r = {builder.CreateICmpSLT(to_long(a).v, to_long(b).v), Type::BOOLEAN};
 	} else {
 		r = {builder.CreateICmpSLT(a.v, b.v), Type::BOOLEAN};
@@ -359,9 +359,9 @@ LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::v
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::REAL || b.t.raw_type == RawType::REAL) {
+	if (a.t.raw() == RawType::REAL || b.t.raw() == RawType::REAL) {
 		r = {builder.CreateFCmpOLE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
-	} else if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+	} else if (a.t.raw() == RawType::LONG || b.t.raw() == RawType::LONG) {
 		r = {builder.CreateICmpSLE(to_long(a).v, to_long(b).v), Type::BOOLEAN};
 	} else {
 		r = {builder.CreateICmpSLE(a.v, b.v), Type::BOOLEAN};
@@ -375,9 +375,9 @@ LLVMCompiler::value LLVMCompiler::insn_gt(LLVMCompiler::value a, LLVMCompiler::v
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::REAL || b.t.raw_type == RawType::REAL) {
+	if (a.t.raw() == RawType::REAL || b.t.raw() == RawType::REAL) {
 		r = {builder.CreateFCmpOGT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
-	} else if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+	} else if (a.t.raw() == RawType::LONG || b.t.raw() == RawType::LONG) {
 		r = {builder.CreateICmpSGT(to_long(a).v, to_long(b).v), Type::BOOLEAN};
 	} else {
 		r = {builder.CreateICmpSGT(a.v, b.v), Type::BOOLEAN};
@@ -391,9 +391,9 @@ LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::v
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::REAL || b.t.raw_type == RawType::REAL) {
+	if (a.t.raw() == RawType::REAL || b.t.raw() == RawType::REAL) {
 		r = {builder.CreateFCmpOGE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
-	} else if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+	} else if (a.t.raw() == RawType::LONG || b.t.raw() == RawType::LONG) {
 		r = {builder.CreateICmpSGE(to_long(a).v, to_long(b).v), Type::BOOLEAN};
 	} else {
 		r = {builder.CreateICmpSGE(a.v, b.v), Type::BOOLEAN};
@@ -406,9 +406,9 @@ LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
-	if (a.t.raw_type == RawType::REAL or b.t.raw_type == RawType::REAL) {
+	if (a.t.raw() == RawType::REAL or b.t.raw() == RawType::REAL) {
 		return {builder.CreateFMul(to_real(a).v, to_real(b).v, "multmp"), Type::REAL};
-	} else if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
+	} else if (a.t.raw() == RawType::LONG or b.t.raw() == RawType::LONG) {
 		return {builder.CreateMul(to_long(a).v, to_long(b).v), Type::LONG};
 	}
 	return {builder.CreateMul(to_int(a).v, to_int(b).v, "multmp"), Type::INTEGER};
@@ -423,7 +423,7 @@ LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value a, LLVMCompil
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
-	if (a.t.raw_type == RawType::LONG or b.t.raw_type == RawType::LONG) {
+	if (a.t.raw() == RawType::LONG or b.t.raw() == RawType::LONG) {
 		return {builder.CreateSDiv(a.v, b.v), Type::LONG};
 	}
 	return {builder.CreateSDiv(a.v, b.v), Type::INTEGER};
@@ -473,7 +473,7 @@ LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
-	if (a.t.raw_type == RawType::LONG || b.t.raw_type == RawType::LONG) {
+	if (a.t.raw() == RawType::LONG || b.t.raw() == RawType::LONG) {
 		return {builder.CreateSRem(a.v, b.v), Type::LONG};
 	} else {
 		return {builder.CreateSRem(a.v, b.v), Type::INTEGER};
@@ -635,7 +635,7 @@ LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value a, LLVMCompiler::
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
 	LLVMCompiler::value r;
-	if (a.t.raw_type == RawType::INTEGER && b.t.raw_type == RawType::INTEGER) {
+	if (a.t.raw() == RawType::INTEGER && b.t.raw() == RawType::INTEGER) {
 		r = insn_call(Type::INTEGER, {a, b}, +[](int a, int b) {
 			return (int) std::pow(a, b);
 		});
@@ -720,15 +720,15 @@ LLVMCompiler::value LLVMCompiler::insn_to_any(LLVMCompiler::value v) const {
 	if (!v.t.isNumber()) {
 		return v; // already any
 	}
-	if (v.t.raw_type == RawType::LONG) {
+	if (v.t.raw() == RawType::LONG) {
 		return insn_call(Type::POINTER, {v}, +[](long n) {
 			return LSNumber::get(n);
 		});
-	} else if (v.t.raw_type == RawType::REAL) {
+	} else if (v.t.raw() == RawType::REAL) {
 		return insn_call(Type::POINTER, {v}, +[](double n) {
 			return LSNumber::get(n);
 		});
-	} else if (v.t.raw_type == RawType::BOOLEAN) {
+	} else if (v.t.raw() == RawType::BOOLEAN) {
 		return insn_call(Type::POINTER, {v}, +[](bool n) {
 			return LSBoolean::get(n);
 		});
@@ -741,25 +741,25 @@ LLVMCompiler::value LLVMCompiler::insn_to_any(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	if (v.t.raw_type == RawType::BOOLEAN) {
+	if (v.t.raw() == RawType::BOOLEAN) {
 		return v;
 	}
-	if (v.t.raw_type == RawType::INTEGER) {
+	if (v.t.raw() == RawType::INTEGER) {
 		LLVMCompiler::value r {builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType()), "ifcond"), Type::BOOLEAN};
 		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
 	}
-	if (v.t.raw_type == RawType::STRING) {
+	if (v.t.raw() == RawType::STRING) {
 		return insn_call(Type::BOOLEAN, {v}, (void*) &LSString::to_bool);
 	}
-	if (v.t.raw_type == RawType::ARRAY) {
+	if (v.t.raw() == RawType::ARRAY) {
 		// Always take LSArray<int>, but the array is not necessarily of this type
 		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool);
 	}
-	if (v.t.raw_type == RawType::FUNCTION or v.t.raw_type == RawType::CLOSURE) {
+	if (v.t.raw() == RawType::FUNCTION or v.t.raw() == RawType::CLOSURE) {
 		return new_bool(true);
 	}
-	if (v.t.raw_type == RawType::MPZ) {
+	if (v.t.raw() == RawType::MPZ) {
 		// TODO
 		return v;
 	}
@@ -785,18 +785,18 @@ void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) cons
 
 LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	if (v.t.raw_type == RawType::NULLL) return new_integer(LSValue::NULLL);
-	if (v.t.raw_type == RawType::BOOLEAN) return new_integer(LSValue::BOOLEAN);
+	if (v.t.raw() == RawType::NULLL) return new_integer(LSValue::NULLL);
+	if (v.t.raw() == RawType::BOOLEAN) return new_integer(LSValue::BOOLEAN);
 	if (v.t.isNumber()) return new_integer(LSValue::NUMBER);
-	if (v.t.raw_type == RawType::STRING) return new_integer(LSValue::STRING);
-	if (v.t.raw_type == RawType::ARRAY) return new_integer(LSValue::ARRAY);
-	if (v.t.raw_type == RawType::MAP) return new_integer(LSValue::MAP);
-	if (v.t.raw_type == RawType::SET) return new_integer(LSValue::SET);
-	if (v.t.raw_type == RawType::INTERVAL) return new_integer(LSValue::INTERVAL);
-	if (v.t.raw_type == RawType::FUNCTION) return new_integer(LSValue::FUNCTION);
-	if (v.t.raw_type == RawType::CLOSURE) return new_integer(LSValue::CLOSURE);
-	if (v.t.raw_type == RawType::OBJECT) return new_integer(LSValue::OBJECT);
-	if (v.t.raw_type == RawType::CLASS) return new_integer(LSValue::CLASS);
+	if (v.t.raw() == RawType::STRING) return new_integer(LSValue::STRING);
+	if (v.t.raw() == RawType::ARRAY) return new_integer(LSValue::ARRAY);
+	if (v.t.raw() == RawType::MAP) return new_integer(LSValue::MAP);
+	if (v.t.raw() == RawType::SET) return new_integer(LSValue::SET);
+	if (v.t.raw() == RawType::INTERVAL) return new_integer(LSValue::INTERVAL);
+	if (v.t.raw() == RawType::FUNCTION) return new_integer(LSValue::FUNCTION);
+	if (v.t.raw() == RawType::CLOSURE) return new_integer(LSValue::CLOSURE);
+	if (v.t.raw() == RawType::OBJECT) return new_integer(LSValue::OBJECT);
+	if (v.t.raw() == RawType::CLASS) return new_integer(LSValue::CLASS);
 	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
 		return v->type;
 	});
@@ -804,25 +804,25 @@ LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	if (v.t.raw_type == RawType::BOOLEAN)
+	if (v.t.raw() == RawType::BOOLEAN)
 		return new_pointer(vm->system_vars["Boolean"]);
 	if (v.t.isNumber())
 		return new_pointer(vm->system_vars["Number"]);
-	if (v.t.raw_type == RawType::STRING)
+	if (v.t.raw() == RawType::STRING)
 		return new_pointer(vm->system_vars["String"]);
-	if (v.t.raw_type == RawType::ARRAY)
+	if (v.t.raw() == RawType::ARRAY)
 		return new_pointer(vm->system_vars["Array"]);
-	if (v.t.raw_type == RawType::MAP)
+	if (v.t.raw() == RawType::MAP)
 		return new_pointer(vm->system_vars["Map"]);
-	if (v.t.raw_type == RawType::SET)
+	if (v.t.raw() == RawType::SET)
 		return new_pointer(vm->system_vars["Set"]);
-	if (v.t.raw_type == RawType::INTERVAL)
+	if (v.t.raw() == RawType::INTERVAL)
 		return new_pointer(vm->system_vars["Interval"]);
-	if (v.t.raw_type == RawType::FUNCTION)
+	if (v.t.raw() == RawType::FUNCTION)
 		return new_pointer(vm->system_vars["Function"]);
-	if (v.t.raw_type == RawType::OBJECT)
+	if (v.t.raw() == RawType::OBJECT)
 		return new_pointer(vm->system_vars["Object"]);
-	if (v.t.raw_type == RawType::CLASS)
+	if (v.t.raw() == RawType::CLASS)
 		return new_pointer(vm->system_vars["Class"]);
 	return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
 		return v->getClass();
@@ -861,11 +861,11 @@ void LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	if (v.t.raw_type == RawType::STRING) {
+	if (v.t.raw() == RawType::STRING) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size);
-	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::INTEGER) {
+	} else if (v.t.raw() == RawType::ARRAY and v.t.getElementType() == Type::INTEGER) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size);
-	} else if (v.t.raw_type == RawType::ARRAY and v.t.getElementType() == Type::REAL) {
+	} else if (v.t.raw() == RawType::ARRAY and v.t.getElementType() == Type::REAL) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size);
 	} else {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size);
@@ -1040,7 +1040,7 @@ LLVMCompiler::value LLVMCompiler::insn_get_argument(const std::string& name) con
 LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	log_insn_code("iterator.begin()");
-	if (v.t.raw_type == RawType::ARRAY) {
+	if (v.t.raw() == RawType::ARRAY) {
 		auto array_type = v.v->getType()->getPointerElementType();
 		auto raw_data = builder.CreateStructGEP(array_type, v.v, 5);
 		auto it_type = v.t.getElementType().llvm_type()->getPointerTo();
@@ -1048,7 +1048,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		insn_store(it, {builder.CreateLoad(raw_data), Type::POINTER});
 		return it;
 	}
-	if (v.t.raw_type == RawType::INTERVAL) {
+	if (v.t.raw() == RawType::INTERVAL) {
 		// jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
 		// auto interval_iterator = jit_type_create_struct(types, 2, 1);
 		// Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
@@ -1058,7 +1058,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// jit_insn_store_relative(F, addr.v, 8, insn_load(v, 20, Type::INTEGER).v);
 		// return it;
 	}
-	if (v.t.raw_type == RawType::STRING) {
+	if (v.t.raw() == RawType::STRING) {
 		// jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
 		// auto string_iterator = jit_type_create_struct(types, 5, 1);
 		// Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
@@ -1074,10 +1074,10 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// });
 		// return it;
 	}
-	if (v.t.raw_type == RawType::MAP) {
+	if (v.t.raw() == RawType::MAP) {
 		// return insn_load(v, 48, v.t);
 	}
-	if (v.t.raw_type == RawType::SET) {
+	if (v.t.raw() == RawType::SET) {
 		// jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
 		// auto set_iterator = jit_type_create_struct(types, 2, 1);
 		// Compiler::value it = {jit_value_create(F, set_iterator), Type::SET_ITERATOR};
@@ -1087,7 +1087,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// jit_insn_store_relative(F, addr.v, 8, new_integer(0).v);
 		// return it;
 	}
-	if (v.t.raw_type == RawType::INTEGER) {
+	if (v.t.raw() == RawType::INTEGER) {
 		// Compiler::value it = insn_create_value(Type::INTEGER_ITERATOR);
 		// builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 0);
 		// builder.CreateAlignedStore(it.v, v.v, 0);
@@ -1095,7 +1095,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// builder.CreateAlignedStore(it.v, new_integer(0).v, 8);
 		// return it;
 	}
-	if (v.t.raw_type == RawType::LONG) {
+	if (v.t.raw() == RawType::LONG) {
 		// jit_type_t types[3] = {jit_type_long, jit_type_long, jit_type_int};
 		// auto long_iterator = jit_type_create_struct(types, 3, 1);
 		// Compiler::value it = {jit_value_create(F, long_iterator), Type::LONG_ITERATOR};
@@ -1106,7 +1106,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// jit_insn_store_relative(F, addr, 16, new_long(0).v);
 		// return it;
 	}
-	if (v.t.raw_type == RawType::MPZ) {
+	if (v.t.raw() == RawType::MPZ) {
 		// jit_type_t types[3] = {VM::mpz_type, VM::mpz_type, jit_type_int};
 		// auto mpz_iterator = jit_type_create_struct(types, 3, 1);
 		// Compiler::value it = {jit_value_create(F, mpz_iterator), Type::MPZ_ITERATOR};
@@ -1124,7 +1124,7 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 	assert(v.t.llvm_type() == v.v->getType());
 	// assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.end()");
-	if (v.t.raw_type == RawType::ARRAY) {
+	if (v.t.raw() == RawType::ARRAY) {
 		return {builder.CreateICmpEQ(insn_load(it).v, insn_array_end(v).v), Type::BOOLEAN};
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
@@ -1138,7 +1138,7 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 		// auto addr = insn_address_of(it);
 		// return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
 	}
-	if (v.t.raw_type == RawType::MAP) {
+	if (v.t.raw() == RawType::MAP) {
 		auto end = insn_add(v, new_integer(32)); // end_ptr = &map + 24
 		return insn_eq(it, end);
 	}
@@ -1165,7 +1165,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 	// assert(it.t.llvm_type() == it.v->getType());
 	// assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.get()");
-	if (collectionType.raw_type == RawType::ARRAY) {
+	if (collectionType.raw() == RawType::ARRAY) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
@@ -1196,7 +1196,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		// 	return s;
 		// });
 	}
-	if (it.t.raw_type == RawType::MAP) {
+	if (it.t.raw() == RawType::MAP) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
@@ -1240,7 +1240,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 	// assert(it.t.llvm_type() == it.v->getType());
 	// assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.key()");
-	if (v.t.raw_type == RawType::ARRAY) {
+	if (v.t.raw() == RawType::ARRAY) {
 		auto array_begin = insn_array_at(v, new_integer(0));
 		return { builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::POINTER };
 	}
@@ -1255,7 +1255,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		// auto addr = insn_address_of(it);
 		// return insn_call(Type::INTEGER, {addr}, &LSString::iterator_key);
 	}
-	if (it.t.raw_type == RawType::MAP) {
+	if (it.t.raw() == RawType::MAP) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
@@ -1284,7 +1284,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value it) const {
 	// assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.increment()");
-	if (collectionType.raw_type == RawType::ARRAY) {
+	if (collectionType.raw() == RawType::ARRAY) {
 		auto it2 = insn_load(it);
 		auto next_element = builder.CreateGEP(it2.v, new_integer(1).v);
 		insn_store(it, {next_element, Type::POINTER});
@@ -1301,7 +1301,7 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		// insn_call({}, {addr}, &LSString::iterator_next);
 		// return;
 	}
-	if (it.t.raw_type == RawType::MAP) {
+	if (it.t.raw() == RawType::MAP) {
 		insn_store(it, insn_call(Type::POINTER, {it}, (void*) +[](LSMap<int, int>::iterator it) {
 			it++;
 			return it;

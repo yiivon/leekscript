@@ -49,7 +49,7 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 }
 
 Type Function::getReturnType() {
-	if (current_version->type.getReturnType().raw_type == RawType::ANY) {
+	if (current_version->type.getReturnType().raw() == RawType::ANY) {
 		if (placeholder_type == RawType::ANY) {
 			placeholder_type = (BaseRawType*) Type::generate_new_placeholder_type()._types[0];
 		}
@@ -213,7 +213,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 		if (versions.find(args) == versions.end()) {
 
 			for (const auto& t : args) {
-				if (t.raw_type->is_placeholder()) return false;
+				if (t.raw()->is_placeholder()) return false;
 				// if (t.nature == ANY) return false;
 			}
 
@@ -349,8 +349,8 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 		default_version->function->refs = 1;
 		default_version->function->native = true;
 	}
-	default_version->type.raw_type = RawType::CLOSURE;
-	type.raw_type = RawType::CLOSURE;
+	default_version->type._types[0] = RawType::CLOSURE;
+	type._types[0] = RawType::CLOSURE;
 	for (auto& version : versions) {
 		if (!version.second->function->closure()) {
 			delete version.second->function;
@@ -358,7 +358,7 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 			version.second->function->refs = 1;
 			version.second->function->native = true;
 		}
-		version.second->type.raw_type = RawType::CLOSURE;
+		version.second->type._types[0] = RawType::CLOSURE;
 	}
 
 	for (size_t i = 0; i < captures.size(); ++i) {
@@ -381,7 +381,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 	auto ls_fun = default_version->function;
 	ls_fun->args.clear();
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		auto& clazz = type.getArgumentType(i).raw_type->getClass();
+		auto clazz = type.getArgumentType(i).getClass();
 		LSClass* arg_class = (LSClass*) analyser->vm->system_vars[clazz];
 		if (arg_class != nullptr) {
 			ls_fun->args.push_back((LSValue*) arg_class);
@@ -389,7 +389,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 			ls_fun->args.push_back(analyser->vm->system_vars["Value"]);
 		}
 	}
-	auto return_class_name = type.getReturnType().raw_type->getClass();
+	auto return_class_name = type.getReturnType().getClass();
 	LSClass* return_class = (LSClass*) analyser->vm->system_vars[return_class_name];
 	if (return_class != nullptr) {
 		ls_fun->return_type = (LSValue*) return_class;
