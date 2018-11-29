@@ -280,7 +280,6 @@ public:
 	void setKeyType(const Type&);
 
 	bool will_take(const std::vector<Type>& args_type);
-	Type mix(const Type& x) const;
 
 	void add(const Type type);
 	void add(const BaseRawType* type);

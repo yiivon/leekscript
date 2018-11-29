@@ -65,6 +65,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::CONST_LONG, Type::CONST_LONG, Type::LONG, (void*) &NumberSTD::mul_real_real},
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
 		{Type::INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
+		{Type::CONST_INTEGER, Type::CONST_STRING, Type::STRING, (void*) &NumberSTD::mul_int_string},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_mpz_mpz}
 	});
 	operator_("×", {
@@ -483,6 +484,12 @@ Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value>
 	// 	c.insn_delete_mpz(args[1]);
 	// }
 	// return r;
+}
+
+Compiler::value NumberSTD::mul_int_string(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::STRING, {args[0], args[1]}, +[](int a, LSString* b) {
+		return b->mul(LSNumber::get(a));
+	});
 }
 
 Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {

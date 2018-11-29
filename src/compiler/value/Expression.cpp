@@ -274,7 +274,11 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
 			type = v2->type;
 		} else {
-			type = v1->type.mix(v2->type);
+			if (v1->type == Type::ANY || v2->type == Type::ANY) {
+				type = Type::ANY;
+			} else {
+				type = v1->type;
+			}
 		}
 		if (type == Type::MPZ) {
 			type.temporary = true;

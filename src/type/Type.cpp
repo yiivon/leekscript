@@ -326,21 +326,6 @@ bool Type::will_take(const std::vector<Type>& args_type) {
 	return changed;
 }
 
-Type Type::mix(const Type& x) const {
-	if (*this == x) return *this;
-	if (*this == Type::ANY) {
-		return x;
-	}
-	if (x == Type::ANY) {
-		return *this;
-	}
-	if (nature == Nature::POINTER || x.nature == Nature::POINTER) return Type::POINTER;
-	if (raw_type == RawType::REAL || x.raw_type == RawType::REAL) return Type::REAL;
-	if (raw_type == RawType::LONG || x.raw_type == RawType::LONG) return Type::LONG;
-	if (raw_type == RawType::INTEGER || x.raw_type == RawType::INTEGER) return Type::INTEGER;
-	assert(false); // LCOV_EXCL_LINE
-}
-
 void Type::add(const Type type) {
 	for (const auto& t : type._types) {
 		add(t);
