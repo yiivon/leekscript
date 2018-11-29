@@ -28,10 +28,10 @@ bool Value::elements_will_store(SemanticAnalyser*, const Type&, int level) {
 }
 
 bool Value::must_be_any(SemanticAnalyser*) {
-	if (type.nature == Nature::POINTER) {
+	if (type == Type::POINTER) {
 		return false;
 	}
-	type.nature = Nature::POINTER;
+	type = Type::POINTER;
 	return true;
 }
 

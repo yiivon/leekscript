@@ -57,17 +57,17 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 	bool has_default = false;
 
 	value->analyse(analyser);
-	if (value->type.nature == Nature::POINTER) any_pointer = true;
+	// if (value->type.nature == POINTER) any_pointer = true;
 
 	for (auto& ps : pattern_list) {
 		for (Pattern& p : ps) {
 			if (p.begin) {
 				p.begin->analyse(analyser);
-				if (p.begin->type.nature == Nature::POINTER) any_pointer = true;
+				// if (p.begin->type.nature == POINTER) any_pointer = true;
 			}
 			if (p.end) {
 				p.end->analyse(analyser);
-				if (p.end->type.nature == Nature::POINTER) any_pointer = true;
+				// if (p.end->type.nature == POINTER) any_pointer = true;
 			}
 			has_default = has_default || p.is_default();
 		}

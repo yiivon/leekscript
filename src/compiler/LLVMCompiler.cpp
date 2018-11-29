@@ -717,25 +717,23 @@ LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value x) const {
 }
 
 LLVMCompiler::value LLVMCompiler::insn_to_any(LLVMCompiler::value v) const {
-	if (v.t.nature == Nature::POINTER) {
-		return v; // already a pointer
+	if (!v.t.isNumber()) {
+		return v; // already any
 	}
-	Type new_type = v.t;
-	new_type.nature = Nature::POINTER;
 	if (v.t.raw_type == RawType::LONG) {
-		return insn_call(new_type, {v}, +[](long n) {
+		return insn_call(Type::POINTER, {v}, +[](long n) {
 			return LSNumber::get(n);
 		});
 	} else if (v.t.raw_type == RawType::REAL) {
-		return insn_call(new_type, {v}, +[](double n) {
+		return insn_call(Type::POINTER, {v}, +[](double n) {
 			return LSNumber::get(n);
 		});
 	} else if (v.t.raw_type == RawType::BOOLEAN) {
-		return insn_call(new_type, {v}, +[](bool n) {
+		return insn_call(Type::POINTER, {v}, +[](bool n) {
 			return LSBoolean::get(n);
 		});
 	} else {
-		return insn_call(new_type, {v}, +[](int n) {
+		return insn_call(Type::POINTER, {v}, +[](int n) {
 			return LSNumber::get(n);
 		});
 	}

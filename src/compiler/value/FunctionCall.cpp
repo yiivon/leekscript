@@ -300,7 +300,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		if (is_unknown_method && ret_type == Type::ANY && function_type != Type::ANY) {
 			type = Type::POINTER;
 		}
-		if (ret_type.nature != Nature::ANY) {
+		if (ret_type != Type::ANY) {
 			type = ret_type;
 		}
 	}
@@ -445,7 +445,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			// 	auto v1 = arguments[1]->compile(c);
 				// jit_value_t ret = jit_func(c.F, v0.v, v1.v);
                 //
-				// if (type.nature == Nature::POINTER) {
+				// if (type.nature == POINTER) {
 				// 	return c.insn_to_pointer({ret, Type::INTEGER});
 				// }
 				// return {ret, type};

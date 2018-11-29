@@ -152,7 +152,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 			}
 		}
 	}
-	if (!access_function and !native_access_function and !static_access_function and !native_static_access_function and !class_method and object->type.nature != Nature::ANY) {
+	if (!access_function and !native_access_function and !static_access_function and !native_static_access_function and !class_method) {
 		object->analyse(analyser);
 	}
 }

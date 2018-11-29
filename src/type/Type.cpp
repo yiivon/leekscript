@@ -383,9 +383,6 @@ bool Type::is_container() const {
 }
 
 int Type::size() const {
-	if (nature == Nature::POINTER) {
-		return 64;
-	}
 	return raw_type->size();
 }
 
@@ -725,27 +722,19 @@ ostream& operator << (ostream& os, const Type& type) {
 			os << "iterator<array<real>>";
 		} else if (type == Type::PTR_ARRAY_ITERATOR) {
 			os << "iterator<array<*>>";
-		} else if (type.nature == Nature::POINTER) {
-			os << "*";
 		} else {
 			os << "?";
 		}
 	} else if (type.raw_type == RawType::FUNCTION || type.raw_type == RawType::CLOSURE) {
-		if (type.nature == Nature::POINTER) {
-			os << BLUE_BOLD;
-		}
+		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
 		os << (type.raw_type == RawType::FUNCTION ? "fun(" : "closure(");
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
 			os << type.arguments_types[t];
-			if (type.nature == Nature::POINTER) {
-				os << BLUE_BOLD;
-			}
-		}
-		if (type.nature == Nature::POINTER) {
 			os << BLUE_BOLD;
 		}
+		os << BLUE_BOLD;
 		os << ") → " << type.getReturnType();
 	} else if (type.raw_type == RawType::STRING || type.raw_type == RawType::CLASS
 		|| type.raw_type == RawType::OBJECT || type.raw_type == RawType::NULLL

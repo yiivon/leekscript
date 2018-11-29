@@ -235,8 +235,8 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	/*
 	 * OLD
 	 */
-	if (v1->type.nature == Nature::POINTER or v2->type.nature == Nature::POINTER) {
-		type.nature = Nature::POINTER;
+	if (!v1->type.isNumber() or !v2->type.isNumber()) {
+		type = Type::POINTER;
 	}
 	constant = v1->constant and v2->constant;
 
@@ -262,11 +262,11 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		auto vv = dynamic_cast<VariableValue*>(v1);
 
 		// Set the correct type nature for the two members
-		if (v2->type.nature == Nature::POINTER and v1->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
+		if (!v2->type.isNumber() and v1->type.isNumber() and !(vv and op->type == TokenType::EQUAL)) {
 			v1->analyse(analyser);
 			v1_type = Type::POINTER;
 		}
-		if (v1->type.nature == Nature::POINTER and v2->type.nature != Nature::POINTER and !(vv and op->type == TokenType::EQUAL)) {
+		if (!v1->type.isNumber() and v2->type.isNumber() and !(vv and op->type == TokenType::EQUAL)) {
 			v2->analyse(analyser);
 			v2_type = Type::POINTER;
 		}
@@ -487,7 +487,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				}, true);
 			}
 
-			if (equal_previous_type.nature == Nature::POINTER && v2_type.nature == Nature::POINTER) {
+			if (!equal_previous_type.isNumber() && !v2_type.isNumber()) {
 				auto vv = dynamic_cast<VariableValue*>(v1);
 				if (vv && vv->scope != VarScope::PARAMETER) {
 					c.set_var_type(vv->name, v1->type);
