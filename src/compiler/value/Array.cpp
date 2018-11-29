@@ -60,7 +60,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 
 		if (expressions.size() > 0) {
 
-			Type element_type = Type::ANY;
+			Type element_type = {};
 			auto homogeneous = true;
 
 			// First analyse pass
@@ -73,13 +73,13 @@ void Array::analyse(SemanticAnalyser* analyser) {
 				if (ex->constant == false) {
 					constant = false;
 				}
-				if (element_type != Type::ANY and element_type != ex->type) {
+				if (element_type._types.size() and element_type != ex->type) {
 					homogeneous = false;
 				}
 				element_type = Type::get_compatible_type(element_type, ex->type);
 			}
 
-			Type supported_type = Type::ANY;
+			Type supported_type = {};
 			// Native elements types supported : integer, double
 			if (element_type == Type::INTEGER || element_type == Type::REAL) {
 				supported_type = element_type;
@@ -95,11 +95,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 
 			// Re-analyze expressions with the supported type
 			// and second computation of the array type
-			element_type = Type::ANY;
-			// if (req_type == Type::ANY_OLD) {
-			// 	element_type = Type::POINTER;
-			// 	supported_type = Type::POINTER;
-			// }
+			element_type = {};
 			for (size_t i = 0; i < expressions.size(); ++i) {
 				auto ex = expressions[i];
 				ex->analyse(analyser);
@@ -120,7 +116,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					// e.g. Should compile a generic version
 					ex->must_return(analyser, Type::POINTER);
 				}
-				if (element_type == Type::ANY or !element_type.compatible(ex->type)) {
+				if (element_type._types.size() == 0 or !element_type.compatible(ex->type)) {
 					element_type = Type::get_compatible_type(element_type, ex->type);
 				}
 			}

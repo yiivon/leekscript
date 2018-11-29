@@ -44,7 +44,7 @@ public:
 	bool generate_default_version = false;
 	Version* current_version = nullptr;
 	bool analyzed = false;
-	Type return_type = Type::ANY;
+	Type return_type;
 	llvm::orc::IRCompileLayer<llvm::orc::RTDyldObjectLinkingLayer, llvm::orc::SimpleCompiler>::ModuleHandleT function_handle;
 	bool handle_created = false;
 	llvm::BasicBlock* block;

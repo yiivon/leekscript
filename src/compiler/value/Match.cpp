@@ -94,7 +94,7 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 			r->analyse(analyser);
 		}
 	} else {
-		type = Type::ANY;
+		type = {};
 		for (Value* ret : returns) {
 			ret->analyse(analyser);
 			type = Type::get_compatible_type(type, ret->type);

@@ -107,7 +107,7 @@ Compiler::value Block::compile(Compiler& c) const {
 
 		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
 			// no need to compile after a return
-			return {nullptr, Type::ANY};
+			return {nullptr, {}};
 		}
 		if (i < instructions.size() - 1) {
 			if (val.v != nullptr && instructions[i]->type._types.size() != 0) {
@@ -139,7 +139,7 @@ Compiler::value Block::compile(Compiler& c) const {
 		}
 	}
 	c.leave_block();
-	return {nullptr, Type::ANY};
+	return {nullptr, {}};
 }
 
 Value* Block::clone() const {

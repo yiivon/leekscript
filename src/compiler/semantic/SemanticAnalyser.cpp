@@ -28,7 +28,7 @@ SemanticAnalyser::~SemanticAnalyser() {}
 void SemanticVar::must_be_any(SemanticAnalyser* analyser) {
 	if (value != nullptr) {
 		value->must_be_any(analyser);
-		this->type = Type::ANY;
+		this->type = Type::POINTER;
 	}
 }
 

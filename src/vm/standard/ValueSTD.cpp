@@ -12,7 +12,7 @@ ValueSTD::ValueSTD() : Module("Value") {
 	/*
 	 * Static attributes
 	 */
-	static_field("unknown", Type::ANY, ValueSTD::unknown);
+	static_field("unknown", Type::POINTER, ValueSTD::unknown);
 
 	/*
 	 * Attributes
@@ -79,7 +79,7 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::POINTER, Type::POINTER, Type::POINTER, (void*) &ValueSTD::op_swap_ptr, {}, false, true, true}
 	});
 	operator_("**", {
-		{Type::CONST_ANY, Type::CONST_ANY, Type::ANY, (void*) &ValueSTD::op_pow}
+		{Type::CONST_POINTER, Type::CONST_POINTER, Type::POINTER, (void*) &ValueSTD::op_pow}
 	});
 
 	/*

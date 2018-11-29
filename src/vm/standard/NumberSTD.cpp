@@ -179,7 +179,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::MPZ, {Type::MPZ}, (void*) &ValueSTD::copy},
 	});
 	method("int", Method::Static, {
-		{Type::INTEGER, {Type::ANY}, (void*) &NumberSTD::_int},
+		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::_int},
 	});
 	method("abs", {
 		{Type::REAL, {Type::POINTER}, (void*) &NumberSTD::abs_ptr},

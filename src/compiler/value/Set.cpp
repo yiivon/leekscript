@@ -28,7 +28,7 @@ Location Set::location() const {
 
 void Set::analyse(SemanticAnalyser* analyser) {
 
-	Type element_type = Type::ANY;
+	Type element_type = {};
 
 	for (auto& ex : expressions) {
 		ex->analyse(analyser);
@@ -39,8 +39,8 @@ void Set::analyse(SemanticAnalyser* analyser) {
 		if (element_type != Type::INTEGER && element_type != Type::REAL) {
 			element_type = Type::POINTER;
 		}
-	} else if (element_type.isNumber()) {
-		element_type = Type::ANY;
+	} else if (!element_type.isNumber()) {
+		element_type = Type::POINTER;
 	}
 
 	constant = true;

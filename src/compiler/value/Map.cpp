@@ -44,8 +44,8 @@ Location Map::location() const {
 
 void Map::analyse(SemanticAnalyser* analyser) {
 
-	Type key_type = Type::ANY;
-	Type value_type = Type::ANY;
+	Type key_type = {};
+	Type value_type = {};
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		Value* ex = keys[i];

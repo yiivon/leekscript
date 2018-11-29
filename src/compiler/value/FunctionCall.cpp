@@ -23,7 +23,6 @@ namespace ls {
 
 FunctionCall::FunctionCall(std::shared_ptr<Token> t) : token(t) {
 	function = nullptr;
-	type = Type::ANY;
 	std_func = nullptr;
 	this_ptr = nullptr;
 	constant = false;
@@ -197,8 +196,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				}
 			} else {
 				bool has_unknown_argument = false;
-				for (const auto& a : arguments)
-					if (a->type == Type::ANY) has_unknown_argument = true;
+				// for (const auto& a : arguments)
+					// if (a->type == ANY) has_unknown_argument = true;
 				if (object_type.raw_type != RawType::ANY && !has_unknown_argument) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
@@ -270,7 +269,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			std::to_string(function->type.getArgumentTypes().size()),
 			std::to_string(total_arguments_passed)
 		}});
-		type = Type::ANY;
 		return;
 	}
 
@@ -497,7 +495,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
 			auto convert_type = function_type.getArgumentType(i);
-			if (convert_type == Type::ANY) convert_type = Type::POINTER;
+			// if (convert_type == ANY) convert_type = Type::POINTER;
 			args.push_back(c.insn_convert(arguments.at(i)->compile(c), convert_type));
 			arguments.at(i)->compile_end(c);
 			if (function_type.getArgumentType(i) == Type::MPZ && arguments.at(i)->type != Type::MPZ_TMP) {

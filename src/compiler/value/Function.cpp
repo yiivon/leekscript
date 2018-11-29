@@ -49,7 +49,7 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 }
 
 Type Function::getReturnType() {
-	if (current_version->type.getReturnType() == Type::ANY) {
+	if (current_version->type.getReturnType().raw_type == RawType::ANY) {
 		if (placeholder_type == RawType::ANY) {
 			placeholder_type = (BaseRawType*) Type::generate_new_placeholder_type()._types[0];
 		}
@@ -163,11 +163,10 @@ void Function::analyse(SemanticAnalyser* analyser) {
 	type = Type::FUNCTION_P;
 
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		auto argument_type = Type::ANY;
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyse(analyser);
 		}
-		type.setArgumentType(i, argument_type, defaultValues[i] != nullptr);
+		type.setArgumentType(i, Type::POINTER, defaultValues[i] != nullptr);
 	}
 
 	// for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
@@ -288,7 +287,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	version->type.arguments_types = args;
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::ANY);
+		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::POINTER);
 		analyser->add_parameter(arguments.at(i).get(), type);
 		version->type.arguments_types.at(i) = type;
 	}

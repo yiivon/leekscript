@@ -46,7 +46,7 @@ Compiler::value Return::compile(Compiler& c) const {
 	} else {
 		c.insn_return_void();
 	}
-	return {nullptr, Type::ANY};
+	return {nullptr, {}};
 }
 
 Instruction* Return::clone() const {

@@ -5,7 +5,7 @@
 namespace ls {
 
 Value::Value() {
-	type = Type::ANY;
+	type = Type::POINTER;
 	constant = false;
 }
 

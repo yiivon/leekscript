@@ -14,7 +14,7 @@ JsonSTD::JsonSTD() : Module("Json") {
 		{Type::STRING, {Type::CONST_ANY}, (void*) &JsonSTD::encode}
 	});
 	method("decode", {
-		{Type::ANY, {Type::CONST_STRING}, (void*) &JsonSTD::decode},
+		{Type::POINTER, {Type::CONST_STRING}, (void*) &JsonSTD::decode},
 	});
 }
 

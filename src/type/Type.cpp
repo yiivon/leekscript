@@ -237,7 +237,7 @@ void Type::addArgumentType(Type type) {
 
 void Type::setArgumentType(size_t index, Type type, bool has_default) {
 	while (arguments_types.size() <= index) {
-		arguments_types.push_back(Type::ANY);
+		arguments_types.push_back(Type::POINTER);
 	}
 	arguments_types[index] = type;
 
@@ -253,7 +253,7 @@ void Type::setArgumentType(size_t index, Type type, bool has_default) {
  */
 const Type& Type::getArgumentType(size_t index) const {
 	if (index >= arguments_types.size()) {
-		return Type::ANY;
+		return Type::POINTER;
 	}
 	return arguments_types[index];
 }

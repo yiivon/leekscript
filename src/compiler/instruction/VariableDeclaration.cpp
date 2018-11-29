@@ -62,7 +62,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
 		auto& var = variables.at(i);
-		auto v = analyser->add_var(var.get(), Type::ANY, expressions.at(i), this);
+		auto v = analyser->add_var(var.get(), Type::POINTER, expressions.at(i), this);
 		if (v == nullptr) {
 			continue;
 		}
@@ -129,7 +129,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			c.insn_store(var, val);
 		}
 	}
-	return {nullptr, Type::ANY};
+	return {nullptr, {}};
 }
 
 Instruction* VariableDeclaration::clone() const {

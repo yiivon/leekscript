@@ -206,7 +206,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		return_type = m->return_type;
 		type = return_type;
 
-		if (v1->type.not_temporary() != this->v1_type.not_temporary() && v2->type != Type::ANY) {
+		if (v1->type.not_temporary() != this->v1_type.not_temporary()) {
 			// if (native_method_v1_addr) {
 				// ((LeftValue*) v1)->change_type(analyser, this->v1_type);
 			// } else {
@@ -274,8 +274,8 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
 			type = v2->type;
 		} else {
-			if (v1->type == Type::ANY || v2->type == Type::ANY) {
-				type = Type::ANY;
+			if (v1->type == Type::POINTER || v2->type == Type::POINTER) {
+				type = Type::POINTER;
 			} else {
 				type = v1->type;
 			}
@@ -438,7 +438,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 	if ((op->type == TokenType::DIVIDE or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL) and v2->is_zero()) {
 		c.mark_offset(op->token->location.start.line);
 		c.insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
-		return {nullptr, Type::ANY};
+		return {nullptr, {}};
 	}
 
 	if (operator_fun != nullptr) {

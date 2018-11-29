@@ -58,7 +58,7 @@ public:
 		bool operator != (const value& o) const {
 			return v != o.v or t != o.t;
 		}
-		value() : v(nullptr), t(Type::ANY) {}
+		value() : v(nullptr), t({}) {}
 		value(llvm::Value* v, Type t) : v(v), t(t) {}
 	};
 	struct label {
