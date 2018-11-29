@@ -126,6 +126,9 @@ void Array::analyse(SemanticAnalyser* analyser) {
 		}
 	}
 	type.temporary = true;
+	if (type.getElementType()._types.size() == 0) {
+		type.setElementType(Type::POINTER);
+	}
 	// std::cout << "Array type : " << type << std::endl;
 }
 

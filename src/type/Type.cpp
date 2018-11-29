@@ -100,14 +100,14 @@ const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
 const Type Type::OBJECT_TMP(RawType::OBJECT, Nature::POINTER, false, true);
 
 const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
-const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
+const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, {});
 const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
 const Type Type::REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL);
 const Type Type::PTR_ARRAY_TMP(RawType::ARRAY, Nature::POINTER, Type::POINTER, false, true);
 const Type Type::INT_ARRAY_TMP(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, true);
 const Type Type::REAL_ARRAY_TMP(RawType::ARRAY, Nature::POINTER, Type::REAL, false, true);
 const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
-const Type Type::CONST_PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER, false, false, true);
+const Type Type::CONST_PTR_ARRAY(RawType::ARRAY, Nature::POINTER, {}, false, false, true);
 const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, false, true);
 const Type Type::CONST_REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL, false, false, true);
 const Type Type::CONST_STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING, false, false, true);
@@ -491,11 +491,9 @@ bool Type::compatible(const Type& type) const {
 	if (this->temporary and not type.temporary) {
 		return false; // type not compatible with type&&
 	}
-
 	if (not this->constant and type.constant) {
 		return false; // 'const type' not compatible with 'type'
 	}
-
 	if (this->raw_type != type.raw_type) {
 		// Every type is compatible with 'Unknown' type
 		if (this->raw_type == RawType::ANY) {
