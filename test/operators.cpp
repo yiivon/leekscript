@@ -74,7 +74,7 @@ void Test::test_operators() {
 	code("'hello'[2:5] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {});
 	DISABLED_code("let a = [null, ''][0] a[2:5]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = [null, ''][0] a[2:5] = 5").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_CONTAINER, {"a"});
-	code("var a = [null, ''][0] a.toto = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	DISABLED_code("var a = [null, ''][0] a.toto = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("12 in [12, ''][0]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("'hello' in [12, ''][0]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 

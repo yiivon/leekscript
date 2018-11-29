@@ -219,7 +219,7 @@ Compiler::value Array::compile(Compiler& c) const {
 		elements.push_back(v);
 	}
 	auto array = c.new_array(type.getElementType(), elements);
-	if (conversion_type == Type::ANY_OLD) {
+	if (conversion_type == Type::NULLL) {
 		return { c.builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
 	}
 	if (type.not_temporary() == Type::POINTER) {

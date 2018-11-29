@@ -787,7 +787,7 @@ void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) cons
 
 LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	if (v.t.raw_type == RawType::ANY_OLD) return new_integer(LSValue::NULLL);
+	if (v.t.raw_type == RawType::NULLL) return new_integer(LSValue::NULLL);
 	if (v.t.raw_type == RawType::BOOLEAN) return new_integer(LSValue::BOOLEAN);
 	if (v.t.isNumber()) return new_integer(LSValue::NUMBER);
 	if (v.t.raw_type == RawType::STRING) return new_integer(LSValue::STRING);

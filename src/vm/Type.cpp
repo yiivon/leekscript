@@ -12,7 +12,7 @@ namespace ls {
 BaseRawType::~BaseRawType() {}
 
 const AnyRawType RawType::_ANY;
-const AnyOldRawType RawType::_ANY_OLD;
+const NullRawType RawType::_NULL;
 const BooleanRawType RawType::_BOOLEAN;
 const NumberRawType RawType::_NUMBER;
 const MpzRawType RawType::_MPZ;
@@ -30,7 +30,7 @@ const ClosureRawType RawType::_CLOSURE;
 const ClassRawType RawType::_CLASS;
 
 const AnyRawType* const RawType::ANY = &_ANY;
-const AnyOldRawType* const RawType::ANY_OLD = &_ANY_OLD;
+const NullRawType* const RawType::NULLL = &_NULL;
 const BooleanRawType* const RawType::BOOLEAN = &_BOOLEAN;
 const NumberRawType* const RawType::NUMBER = &_NUMBER;
 const IntegerRawType* const RawType::INTEGER = &_INTEGER;
@@ -80,7 +80,7 @@ const Type Type::CONST_VALUE(RawType::ANY, Nature::VALUE, false, false, true);
 const Type Type::POINTER(RawType::ANY, Nature::POINTER);
 const Type Type::CONST_POINTER(RawType::ANY, Nature::POINTER, false, false, true);
 
-const Type Type::ANY_OLD(RawType::ANY_OLD, Nature::POINTER, true);
+const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
 const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
 const Type Type::CONST_BOOLEAN(RawType::BOOLEAN, Nature::VALUE, false, false, true);
@@ -685,8 +685,8 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	if (t1 == t2) {
 		return t1;
 	}
-	if (t1.raw_type == RawType::ANY_OLD or t2.raw_type == RawType::ANY_OLD) {
-		return Type::ANY_OLD;
+	if (t1.raw_type == RawType::NULLL or t2.raw_type == RawType::NULLL) {
+		return Type::NULLL;
 	}
 	if (t1.nature == Nature::POINTER and t2.nature == Nature::VALUE) {
 		return Type::POINTER;
@@ -779,7 +779,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		}
 		os << ") → " << type.getReturnType();
 	} else if (type.raw_type == RawType::STRING || type.raw_type == RawType::CLASS
-		|| type.raw_type == RawType::OBJECT || type.raw_type == RawType::ANY_OLD
+		|| type.raw_type == RawType::OBJECT || type.raw_type == RawType::NULLL
 		|| type.raw_type == RawType::INTERVAL) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";

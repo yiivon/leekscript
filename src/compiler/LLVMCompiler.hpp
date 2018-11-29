@@ -243,7 +243,7 @@ public:
 	value insn_clone_mpz(value mpz) const;
 	void  insn_delete_mpz(value mpz) const;
 	value insn_inc_refs(value v) const;
-	value insn_dec_refs(value v, value previous = {nullptr, Type::ANY_OLD}) const;
+	value insn_dec_refs(value v, value previous = {nullptr, Type::NULLL}) const;
 	value insn_move(value v) const;
 	value insn_refs(value v) const;
 	value insn_native(value v) const;

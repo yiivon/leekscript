@@ -78,7 +78,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 			v->type.constant = constant;
 			v->value = expressions[i];
 		} else {
-			v->type = Type::ANY_OLD;
+			v->type = Type::NULLL;
 			v->type.constant = constant;
 		}
 		if (v->type ._types.size() == 0) {
@@ -124,7 +124,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			c.insn_store(var, val);
 
 		} else {
-			auto var = c.create_and_add_var(name, Type::ANY_OLD);
+			auto var = c.create_and_add_var(name, Type::NULLL);
 			auto val = c.new_null();
 			c.insn_store(var, val);
 		}
