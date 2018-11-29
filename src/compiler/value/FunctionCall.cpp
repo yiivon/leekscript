@@ -3,7 +3,7 @@
 #include <string>
 #include "../../vm/Module.hpp"
 #include "../../vm/Program.hpp"
-#include "../../vm/Type.hpp"
+#include "../../type/Type.hpp"
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/value/LSNumber.hpp"

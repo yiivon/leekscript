@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include "../LSValue.hpp"
-#include "../Type.hpp"
+#include "../../type/Type.hpp"
 #include "../../compiler/Compiler.hpp"
 #include "../TypeMutator.hpp"
 

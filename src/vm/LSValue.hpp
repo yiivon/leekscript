@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <map>
 #include "../../lib/json.hpp"
-#include "Type.hpp"
+#include "../type/Type.hpp"
 #include "../constants.h"
 
 namespace ls {

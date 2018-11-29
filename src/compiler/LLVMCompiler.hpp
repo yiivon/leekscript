@@ -33,7 +33,7 @@
 #include "llvm/Support/DynamicLibrary.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
-#include "../vm/Type.hpp"
+#include "../type/Type.hpp"
 #include "../vm/Exception.hpp"
 #include "../vm/LSValue.hpp"
 #include <gmp.h>

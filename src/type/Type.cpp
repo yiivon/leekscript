@@ -3,7 +3,7 @@
 #include "../colors.h"
 #include <sstream>
 #include "../../lib/utf8.h"
-#include "VM.hpp"
+#include "../vm/VM.hpp"
 
 using namespace std;
 

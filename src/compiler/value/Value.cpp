@@ -1,6 +1,6 @@
 #include <sstream>
 #include "Value.hpp"
-#include "../../vm/Type.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

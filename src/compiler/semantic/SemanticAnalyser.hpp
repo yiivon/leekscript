@@ -6,7 +6,7 @@
 #include <map>
 
 #include "../../vm/VM.hpp"
-#include "../../vm/Type.hpp"
+#include "../../type/Type.hpp"
 #include "SemanticError.hpp"
 
 namespace ls {
