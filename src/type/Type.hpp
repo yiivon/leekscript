@@ -367,10 +367,9 @@ public:
 	static const Type CONST_INT_INT_MAP;
 	static const Type CONST_INT_REAL_MAP;
 	static const Type SET;
-	static const Type PTR_SET;
 	static const Type INT_SET;
 	static const Type REAL_SET;
-	static const Type CONST_PTR_SET;
+	static const Type CONST_SET;
 	static const Type CONST_INT_SET;
 	static const Type CONST_REAL_SET;
 	static const Type INTERVAL;

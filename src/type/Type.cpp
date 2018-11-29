@@ -133,10 +133,9 @@ const Type Type::CONST_INT_INT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER,
 const Type Type::CONST_INT_REAL_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::REAL, false, true);
 
 const Type Type::SET(RawType::SET, Nature::POINTER);
-const Type Type::PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER);
 const Type Type::INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER);
 const Type Type::REAL_SET(RawType::SET, Nature::POINTER, Type::REAL);
-const Type Type::CONST_PTR_SET(RawType::SET, Nature::POINTER, Type::POINTER, false, false, true);
+const Type Type::CONST_SET(RawType::SET, Nature::POINTER, {}, false, false, true);
 const Type Type::CONST_INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER, false, false, true);
 const Type Type::CONST_REAL_SET(RawType::SET, Nature::POINTER, Type::REAL, false, false, true);
 
