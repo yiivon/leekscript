@@ -180,7 +180,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	this->v1_type = op->reversed ? v2->type : v1->type;
 	this->v2_type = op->reversed ? v1->type : v2->type;
 
-	LSClass* object_class = (LSClass*) analyser->vm->system_vars[this->v1_type.clazz];
+	LSClass* object_class = (LSClass*) analyser->vm->system_vars[this->v1_type.getClass()];
 	LSClass::Operator* m = nullptr;
 
 	if (object_class) {

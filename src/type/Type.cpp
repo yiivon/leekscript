@@ -164,7 +164,6 @@ Type::Type() {
 	raw_type = RawType::ANY;
 	nature = (Nature) 3;
 	native = false;
-	clazz = "?";
 }
 
 Type::Type(const BaseRawType* raw_type) {
@@ -177,7 +176,6 @@ Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool tempora
 	_types.push_back(raw_type);
 	this->nature = nature;
 	this->native = native;
-	this->clazz = raw_type->getClass();
 	this->temporary = temporary;
 	this->constant = constant;
 }
@@ -187,7 +185,6 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type,
 	_types.push_back(raw_type);
 	this->nature = nature;
 	this->native = native;
-	this->clazz = raw_type->getClass();
 	this->setElementType(element_type);
 	this->constant = constant;
 	this->temporary = temporary;
@@ -198,7 +195,6 @@ Type::Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, con
 	_types.push_back(raw_type);
 	this->nature = nature;
 	this->native = native;
-	this->clazz = raw_type->getClass();
 	this->setKeyType(key_type);
 	this->setElementType(element_type);
 	this->constant = constant;
@@ -348,6 +344,13 @@ std::string Type::to_string() const {
 	std::ostringstream oss;
 	oss << *this;
 	return oss.str();
+}
+
+std::string Type::getClass() const {
+	if (_types.size() == 0) {
+		return "?";
+	}
+	return _types[0]->getClass();
 }
 
 bool Type::isNumber() const {

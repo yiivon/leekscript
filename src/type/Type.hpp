@@ -242,7 +242,6 @@ public:
 	const BaseRawType* raw_type;
 	Nature nature;
 	bool native; // A C++ object, memory management is done outside the language
-	std::string clazz;
 	std::vector<Type> element_type;
 	std::vector<Type> key_type;
 	std::vector<Type> return_types;
@@ -285,6 +284,7 @@ public:
 
 	void toJson(std::ostream&) const;
 	std::string to_string() const;
+	std::string getClass() const;
 
 	bool isNumber() const;
 	bool iterable() const;
