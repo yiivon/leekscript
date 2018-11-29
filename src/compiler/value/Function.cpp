@@ -198,9 +198,6 @@ void Function::analyse(SemanticAnalyser* analyser) {
 
 	type = default_version->type;
 
-	// if (req_type.nature != Nature::ANY) {
-	// 	type.nature = req_type.nature;
-	// }
 	update_function_args(analyser);
 	type.nature = Nature::POINTER;
 

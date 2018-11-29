@@ -155,13 +155,6 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		v = c.insn_load(c.insn_get_argument(name));
 	}
 
-	if (var->type.nature != Nature::ANY and var->type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-		return c.insn_to_pointer(v);
-	}
-	if (type.nature == Nature::VALUE && var->type.raw_type == RawType::INTEGER and type.raw_type == RawType::REAL) {
-		// return {VM::int_to_real(c.F, v), type};
-	}
-
 	if (var->type.reference) {
 		return c.insn_load(v);
 	}

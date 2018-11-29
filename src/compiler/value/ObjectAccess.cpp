@@ -166,19 +166,10 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	// Special case for custom attributes, accessible via a function
 	// Static attributes : Number.PI
 	if (static_access_function != nullptr) {
-		auto res = static_access_function(c);
-		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-			return c.insn_to_pointer(res);
-		}
-		return res;
+		return static_access_function(c);
 	}
 	if (native_static_access_function != nullptr) {
-
-		auto res = c.insn_call(field_type, {}, native_static_access_function);
-		if (field_type.nature != Nature::POINTER and type.nature == Nature::POINTER) {
-			return c.insn_to_pointer(res);
-		}
-		return res;
+		return c.insn_call(field_type, {}, native_static_access_function);
 	}
 
 	// Field with an access function : 12.class

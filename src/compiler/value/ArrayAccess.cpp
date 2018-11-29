@@ -196,15 +196,9 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
-
-			auto res = c.insn_call(Type::INTEGER, {compiled_array, k}, +[](LSInterval* interval, int k) {
+			return c.insn_call(Type::INTEGER, {compiled_array, k}, +[](LSInterval* interval, int k) {
 				return interval->atv(k);
-			}, "interval_access");
-
-			if (type.nature == Nature::POINTER) {
-				return c.insn_to_pointer(res);
-			}
-			return res;
+			});
 
 		} else if (array->type.raw_type == RawType::MAP) {
 
@@ -238,18 +232,9 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 					func = (void*) &LSMap<LSValue*, LSValue*>::at;
 				}
 			}
-
 			auto res = c.insn_call(array_element_type, {compiled_array, k}, func, "map_access");
-
-			// if (key->type.must_manage_memory()) {
-				c.insn_delete_temporary(k);
-			// }
-
+			c.insn_delete_temporary(k);
 			c.inc_ops(2);
-
-			if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-				return c.insn_to_pointer(res);
-			}
 			return res;
 
 		} else if (array->type.raw_type == RawType::STRING or array->type.raw_type == RawType::ARRAY) {
@@ -285,11 +270,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			} else {
 				auto element_addr = c.insn_array_at(compiled_array, k);
 				auto e = c.insn_load(element_addr);
-				e = c.clone(e);
-				if (array_element_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(e);
-				}
-				return e;
+				return c.clone(e);
 			}
 		} else {
 			// Unknown type, call generic at() operator

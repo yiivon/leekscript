@@ -135,9 +135,6 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_add(x, c.new_integer(1));
 				c.insn_store(x_addr, sum);
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(sum);
-				}
 				return sum;
 			} else {
 				arg = expression->compile(c);
@@ -151,9 +148,6 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_sub(x, c.new_integer(1));
 				c.insn_store(x_addr, sum);
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(sum);
-				}
 				return sum;
 			} else {
 				arg = expression->compile(c);
@@ -164,11 +158,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		case TokenType::NOT: {
 			if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
-				auto r = c.insn_not_bool(x);
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(r);
-				}
-				return r;
+				return c.insn_not_bool(x);
 			} else {
 				arg = expression->compile(c);
 				func = (void*) jit_not;
@@ -196,11 +186,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		case TokenType::TILDE: {
 			if (expression->type.nature == Nature::VALUE) {
 				auto x = expression->compile(c);
-				auto r = c.insn_not(x);
-				if (type.nature == Nature::POINTER) {
-					return c.insn_to_pointer(r);
-				}
-				return r;
+				return c.insn_not(x);
 			} else {
 				arg = expression->compile(c);
 				func = (void*) jit_pre_tilde;
@@ -208,7 +194,6 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::NEW: {
-
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
 				if (vv->name == "Number") {
 					return c.new_integer(0);
@@ -233,25 +218,13 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
 					if (vv->name == "Number") {
 						if (fc->arguments.size() > 0) {
-							auto n = fc->arguments[0]->compile(c);
-							if (type.nature == Nature::POINTER) {
-								return c.insn_to_pointer(n);
-							}
-							return n;
+							return fc->arguments[0]->compile(c);
 						} else {
-							auto n = c.new_integer(0);
-							if (type.nature == Nature::POINTER) {
-								return c.insn_to_pointer(n);
-							}
-							return n;
+							return c.new_integer(0);
 						}
 					}
 					if (vv->name == "Boolean") {
-						auto n = c.new_bool(false);
-						if (type.nature == Nature::POINTER) {
-							return c.insn_to_pointer(n);
-						}
-						return n;
+						return c.new_bool(false);
 					}
 					if (vv->name == "String") {
 						if (fc->arguments.size() > 0) {

@@ -338,24 +338,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
 	if (vv != nullptr) {
 		if (vv->name == "Boolean") {
-			auto b = c.new_bool(false);
-			if (type.nature == Nature::POINTER) {
-				return c.insn_to_pointer(b);
-			}
-			return b;
+			return c.new_bool(false);
 		}
 		if (vv->name == "Number") {
-			auto n = [&]() {
-				if (arguments.size() > 0) {
-					return arguments.at(0)->compile(c);
-				} else {
-					return c.new_integer(0);
-				}
-			}();
-			if (type.nature == Nature::POINTER) {
-				return c.insn_to_pointer(n);
+			if (arguments.size() > 0) {
+				return arguments.at(0)->compile(c);
+			} else {
+				return c.new_integer(0);
 			}
-			return n;
 		}
 		if (vv->name == "String") {
 			if (arguments.size() > 0) {
@@ -403,10 +393,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);
 		}
-
-		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-			return c.insn_to_pointer(res);
-		}
 		return res;
 	}
 
@@ -429,10 +415,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		} else {
 			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);
-		}
-
-		if (return_type.nature == Nature::VALUE and type.nature == Nature::POINTER) {
-			return c.insn_to_pointer(res);
 		}
 		return res;
 	}
