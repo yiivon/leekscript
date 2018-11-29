@@ -72,124 +72,116 @@ void RawType::clear_placeholder_types() {
 
 unsigned int Type::placeholder_counter = 0;
 
-const Type Type::VALUE(RawType::ANY, Nature::VALUE);
-const Type Type::CONST_VALUE(RawType::ANY, Nature::VALUE, false, false, true);
-const Type Type::POINTER(RawType::ANY, Nature::POINTER);
-const Type Type::CONST_POINTER(RawType::ANY, Nature::POINTER, false, false, true);
+const Type Type::VALUE(RawType::ANY);
+const Type Type::CONST_VALUE(RawType::ANY, false, false, true);
+const Type Type::POINTER(RawType::ANY);
+const Type Type::CONST_POINTER(RawType::ANY, false, false, true);
 
-const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
-const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
-const Type Type::CONST_BOOLEAN(RawType::BOOLEAN, Nature::VALUE, false, false, true);
-const Type Type::NUMBER(RawType::NUMBER, Nature::VALUE);
-const Type Type::CONST_NUMBER(RawType::NUMBER, Nature::VALUE, false, false, true);
-const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
-const Type Type::CONST_INTEGER(RawType::INTEGER, Nature::VALUE, false, false, true);
-const Type Type::MPZ(RawType::MPZ, Nature::VALUE);
-const Type Type::MPZ_TMP(RawType::MPZ, Nature::VALUE, false, true);
-const Type Type::LONG(RawType::LONG, Nature::VALUE);
-const Type Type::CONST_LONG(RawType::LONG, Nature::VALUE, false, false, true);
-const Type Type::REAL(RawType::REAL, Nature::VALUE);
-const Type Type::CONST_REAL(RawType::REAL, Nature::VALUE, false, false, true);
-const Type Type::STRING(RawType::STRING, Nature::POINTER);
-const Type Type::CONST_STRING(RawType::STRING, Nature::POINTER, false, false, true);
-const Type Type::STRING_TMP(RawType::STRING, Nature::POINTER, false, true);
-const Type Type::OBJECT(RawType::OBJECT, Nature::POINTER);
-const Type Type::OBJECT_TMP(RawType::OBJECT, Nature::POINTER, false, true);
+const Type Type::NULLL(RawType::NULLL, true);
+const Type Type::BOOLEAN(RawType::BOOLEAN);
+const Type Type::CONST_BOOLEAN(RawType::BOOLEAN, false, false, true);
+const Type Type::NUMBER(RawType::NUMBER);
+const Type Type::CONST_NUMBER(RawType::NUMBER, false, false, true);
+const Type Type::INTEGER(RawType::INTEGER);
+const Type Type::CONST_INTEGER(RawType::INTEGER, false, false, true);
+const Type Type::MPZ(RawType::MPZ);
+const Type Type::MPZ_TMP(RawType::MPZ, false, true);
+const Type Type::LONG(RawType::LONG);
+const Type Type::CONST_LONG(RawType::LONG, false, false, true);
+const Type Type::REAL(RawType::REAL);
+const Type Type::CONST_REAL(RawType::REAL, false, false, true);
+const Type Type::STRING(RawType::STRING);
+const Type Type::CONST_STRING(RawType::STRING, false, false, true);
+const Type Type::STRING_TMP(RawType::STRING, false, true);
+const Type Type::OBJECT(RawType::OBJECT);
+const Type Type::OBJECT_TMP(RawType::OBJECT, false, true);
 
-const Type Type::ARRAY(RawType::ARRAY, Nature::POINTER);
-const Type Type::PTR_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER);
-const Type Type::CONST_ARRAY(RawType::ARRAY, Nature::POINTER, Type::POINTER, false, false, true);
-const Type Type::INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER);
-const Type Type::REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL);
-const Type Type::PTR_ARRAY_TMP(RawType::ARRAY, Nature::POINTER, Type::POINTER, false, true);
-const Type Type::INT_ARRAY_TMP(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, true);
-const Type Type::REAL_ARRAY_TMP(RawType::ARRAY, Nature::POINTER, Type::REAL, false, true);
-const Type Type::STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING);
-const Type Type::CONST_PTR_ARRAY(RawType::ARRAY, Nature::POINTER, {}, false, false, true);
-const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INTEGER, false, false, true);
-const Type Type::CONST_REAL_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL, false, false, true);
-const Type Type::CONST_STRING_ARRAY(RawType::ARRAY, Nature::POINTER, Type::STRING, false, false, true);
+const Type Type::ARRAY(RawType::ARRAY);
+const Type Type::PTR_ARRAY(RawType::ARRAY, Type::POINTER);
+const Type Type::CONST_ARRAY(RawType::ARRAY, Type::POINTER, false, false, true);
+const Type Type::INT_ARRAY(RawType::ARRAY, Type::INTEGER);
+const Type Type::REAL_ARRAY(RawType::ARRAY, Type::REAL);
+const Type Type::PTR_ARRAY_TMP(RawType::ARRAY, Type::POINTER, false, true);
+const Type Type::INT_ARRAY_TMP(RawType::ARRAY, Type::INTEGER, false, true);
+const Type Type::REAL_ARRAY_TMP(RawType::ARRAY, Type::REAL, false, true);
+const Type Type::STRING_ARRAY(RawType::ARRAY, Type::STRING);
+const Type Type::CONST_PTR_ARRAY(RawType::ARRAY, {}, false, false, true);
+const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Type::INTEGER, false, false, true);
+const Type Type::CONST_REAL_ARRAY(RawType::ARRAY, Type::REAL, false, false, true);
+const Type Type::CONST_STRING_ARRAY(RawType::ARRAY, Type::STRING, false, false, true);
 
-const Type Type::MAP(RawType::MAP, Nature::POINTER);
-const Type Type::PTR_PTR_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::POINTER);
-const Type Type::PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER);
-const Type Type::PTR_REAL_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::REAL);
-const Type Type::REAL_PTR_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::POINTER);
-const Type Type::REAL_INT_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::INTEGER);
-const Type Type::REAL_REAL_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::REAL);
-const Type Type::INT_PTR_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::POINTER);
-const Type Type::INT_INT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::INTEGER);
-const Type Type::INT_REAL_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::REAL);
-const Type Type::CONST_PTR_PTR_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::POINTER, false, true);
-const Type Type::CONST_PTR_INT_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::INTEGER, false, true);
-const Type Type::CONST_PTR_REAL_MAP(RawType::MAP, Nature::POINTER, Type::POINTER, Type::REAL, false, true);
-const Type Type::CONST_REAL_PTR_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::POINTER, false, true);
-const Type Type::CONST_REAL_INT_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::INTEGER, false, true);
-const Type Type::CONST_REAL_REAL_MAP(RawType::MAP, Nature::POINTER, Type::REAL, Type::REAL, false, true);
-const Type Type::CONST_INT_PTR_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::POINTER, false, true);
-const Type Type::CONST_INT_INT_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::INTEGER, false, true);
-const Type Type::CONST_INT_REAL_MAP(RawType::MAP, Nature::POINTER, Type::INTEGER, Type::REAL, false, true);
+const Type Type::MAP(RawType::MAP);
+const Type Type::PTR_PTR_MAP(RawType::MAP, Type::POINTER, Type::POINTER);
+const Type Type::PTR_INT_MAP(RawType::MAP, Type::POINTER, Type::INTEGER);
+const Type Type::PTR_REAL_MAP(RawType::MAP, Type::POINTER, Type::REAL);
+const Type Type::REAL_PTR_MAP(RawType::MAP, Type::REAL, Type::POINTER);
+const Type Type::REAL_INT_MAP(RawType::MAP, Type::REAL, Type::INTEGER);
+const Type Type::REAL_REAL_MAP(RawType::MAP, Type::REAL, Type::REAL);
+const Type Type::INT_PTR_MAP(RawType::MAP, Type::INTEGER, Type::POINTER);
+const Type Type::INT_INT_MAP(RawType::MAP, Type::INTEGER, Type::INTEGER);
+const Type Type::INT_REAL_MAP(RawType::MAP, Type::INTEGER, Type::REAL);
+const Type Type::CONST_PTR_PTR_MAP(RawType::MAP, Type::POINTER, Type::POINTER, false, true);
+const Type Type::CONST_PTR_INT_MAP(RawType::MAP, Type::POINTER, Type::INTEGER, false, true);
+const Type Type::CONST_PTR_REAL_MAP(RawType::MAP, Type::POINTER, Type::REAL, false, true);
+const Type Type::CONST_REAL_PTR_MAP(RawType::MAP, Type::REAL, Type::POINTER, false, true);
+const Type Type::CONST_REAL_INT_MAP(RawType::MAP, Type::REAL, Type::INTEGER, false, true);
+const Type Type::CONST_REAL_REAL_MAP(RawType::MAP, Type::REAL, Type::REAL, false, true);
+const Type Type::CONST_INT_PTR_MAP(RawType::MAP, Type::INTEGER, Type::POINTER, false, true);
+const Type Type::CONST_INT_INT_MAP(RawType::MAP, Type::INTEGER, Type::INTEGER, false, true);
+const Type Type::CONST_INT_REAL_MAP(RawType::MAP, Type::INTEGER, Type::REAL, false, true);
 
-const Type Type::SET(RawType::SET, Nature::POINTER, {});
-const Type Type::INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER);
-const Type Type::REAL_SET(RawType::SET, Nature::POINTER, Type::REAL);
-const Type Type::CONST_SET(RawType::SET, Nature::POINTER, {}, false, false, true);
-const Type Type::CONST_INT_SET(RawType::SET, Nature::POINTER, Type::INTEGER, false, false, true);
-const Type Type::CONST_REAL_SET(RawType::SET, Nature::POINTER, Type::REAL, false, false, true);
+const Type Type::SET(RawType::SET, {});
+const Type Type::INT_SET(RawType::SET, Type::INTEGER);
+const Type Type::REAL_SET(RawType::SET, Type::REAL);
+const Type Type::CONST_SET(RawType::SET, {}, false, false, true);
+const Type Type::CONST_INT_SET(RawType::SET, Type::INTEGER, false, false, true);
+const Type Type::CONST_REAL_SET(RawType::SET, Type::REAL, false, false, true);
 
-const Type Type::INTERVAL(RawType::INTERVAL, Nature::POINTER, Type::INTEGER);
-const Type Type::INTERVAL_TMP(RawType::INTERVAL, Nature::POINTER, Type::INTEGER, false, true);
-const Type Type::PTR_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::PTR_ARRAY);
-const Type Type::REAL_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::REAL_ARRAY);
-const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Nature::POINTER, Type::INT_ARRAY);
+const Type Type::INTERVAL(RawType::INTERVAL, Type::INTEGER);
+const Type Type::INTERVAL_TMP(RawType::INTERVAL, Type::INTEGER, false, true);
+const Type Type::PTR_ARRAY_ARRAY(RawType::ARRAY, Type::PTR_ARRAY);
+const Type Type::REAL_ARRAY_ARRAY(RawType::ARRAY, Type::REAL_ARRAY);
+const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Type::INT_ARRAY);
 
-const Type Type::FUNCTION(RawType::FUNCTION, Nature::VALUE, false, false, true);
-const Type Type::FUNCTION_P(RawType::FUNCTION, Nature::POINTER, false, false, true);
-const Type Type::CONST_FUNCTION(RawType::FUNCTION, Nature::VALUE, false, true, true);
-const Type Type::CONST_FUNCTION_P(RawType::FUNCTION, Nature::POINTER, false, true, true);
-const Type Type::CLOSURE(RawType::CLOSURE, Nature::POINTER, false, false, true);
-const Type Type::CLASS(RawType::CLASS, Nature::POINTER, true);
-const Type Type::CONST_CLASS(RawType::CLASS, Nature::POINTER, true, false, true);
+const Type Type::FUNCTION(RawType::FUNCTION, false, false, true);
+const Type Type::FUNCTION_P(RawType::FUNCTION, false, false, true);
+const Type Type::CONST_FUNCTION(RawType::FUNCTION, false, true, true);
+const Type Type::CONST_FUNCTION_P(RawType::FUNCTION, false, true, true);
+const Type Type::CLOSURE(RawType::CLOSURE, false, false, true);
+const Type Type::CLASS(RawType::CLASS, true);
+const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 
-const Type Type::STRING_ITERATOR(RawType::STRING, Nature::VALUE, Type::STRING);
-const Type Type::INTERVAL_ITERATOR(RawType::INTERVAL, Nature::VALUE, Type::INTEGER);
-const Type Type::SET_ITERATOR(RawType::SET, Nature::VALUE, Type::POINTER);
-const Type Type::INTEGER_ITERATOR(RawType::INTEGER, Nature::VALUE, Type::INTEGER);
-const Type Type::LONG_ITERATOR(RawType::LONG, Nature::VALUE, Type::INTEGER);
-const Type Type::MPZ_ITERATOR(RawType::MPZ, Nature::VALUE, Type::INTEGER);
-const Type Type::INT_ARRAY_ITERATOR(RawType::INTEGER, Nature::POINTER, Type::INTEGER);
-const Type Type::REAL_ARRAY_ITERATOR(RawType::REAL, Nature::POINTER, Type::REAL);
-const Type Type::PTR_ARRAY_ITERATOR(RawType::ANY, Nature::POINTER, Type::POINTER);
+const Type Type::STRING_ITERATOR(RawType::STRING, Type::STRING);
+const Type Type::INTERVAL_ITERATOR(RawType::INTERVAL, Type::INTEGER);
+const Type Type::SET_ITERATOR(RawType::SET, Type::POINTER);
+const Type Type::INTEGER_ITERATOR(RawType::INTEGER, Type::INTEGER);
+const Type Type::LONG_ITERATOR(RawType::LONG, Type::INTEGER);
+const Type Type::MPZ_ITERATOR(RawType::MPZ, Type::INTEGER);
+const Type Type::INT_ARRAY_ITERATOR(RawType::INTEGER, Type::INTEGER);
+const Type Type::REAL_ARRAY_ITERATOR(RawType::REAL, Type::REAL);
+const Type Type::PTR_ARRAY_ITERATOR(RawType::ANY, Type::POINTER);
 
 Type::Type() {
-	nature = Nature::VALUE;
 	native = false;
 }
 
-Type::Type(const BaseRawType* raw_type) {
+Type::Type(const BaseRawType* raw_type, bool native, bool temporary, bool constant) {
 	_types.push_back(raw_type);
-}
-
-Type::Type(const BaseRawType* raw_type, Nature nature, bool native, bool temporary, bool constant) {
-	_types.push_back(raw_type);
-	this->nature = nature;
 	this->native = native;
 	this->temporary = temporary;
 	this->constant = constant;
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const Type& element_type, bool native, bool temporary, bool constant) {
+Type::Type(const BaseRawType* raw_type, const Type& element_type, bool native, bool temporary, bool constant) {
 	_types.push_back(raw_type);
-	this->nature = nature;
 	this->native = native;
 	this->setElementType(element_type);
 	this->constant = constant;
 	this->temporary = temporary;
 }
 
-Type::Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native, bool constant) {
+Type::Type(const BaseRawType* raw_type, const Type& key_type, const Type& element_type, bool native, bool constant) {
 	_types.push_back(raw_type);
-	this->nature = nature;
 	this->native = native;
 	this->setKeyType(key_type);
 	this->setElementType(element_type);
@@ -309,7 +301,6 @@ void Type::add(const Type type) {
 	}
 	key_type = type.key_type;
 	element_type = type.element_type;
-	nature = type.nature;
 }
 
 void Type::add(const BaseRawType* type) {
@@ -373,7 +364,6 @@ int Type::size() const {
 
 bool Type::operator == (const Type& type) const {
 	return raw() == type.raw() &&
-			nature == type.nature &&
 			// native == type.native &&
 			element_type == type.element_type &&
 			key_type == type.key_type &&
@@ -387,9 +377,6 @@ bool Type::operator == (const Type& type) const {
 bool Type::operator < (const Type& type) const {
 	if ((void*) raw() != (void*) type.raw()) {
 		return (void*) raw() < (void*) type.raw();
-	}
-	if (nature != type.nature) {
-		return nature < type.nature;
 	}
 	if (temporary != type.temporary) {
 		return temporary < type.temporary;
@@ -650,10 +637,10 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	if (t1.raw() == RawType::NULLL or t2.raw() == RawType::NULLL) {
 		return Type::NULLL;
 	}
-	if (t1.nature == Nature::POINTER and t2.isNumber()) {
+	if (!t1.isNumber() and t2.isNumber()) {
 		return Type::POINTER;
 	}
-	if (t2.nature == Nature::POINTER and t1.isNumber()) {
+	if (!t2.isNumber() and t1.isNumber()) {
 		return Type::POINTER;
 	}
 	if (t1.raw() == RawType::ANY) {
@@ -669,14 +656,13 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 		return t1;
 	}
 	if (t1.raw() == RawType::ARRAY and t2.raw() == RawType::ARRAY) {
-		return {RawType::ARRAY, Nature::POINTER, Type::get_compatible_type(t1.getElementType(), t2.getElementType())};
+		return {RawType::ARRAY, Type::get_compatible_type(t1.getElementType(), t2.getElementType())};
 	}
 	return Type::POINTER;
 }
 
 Type Type::generate_new_placeholder_type() {
 	Type type;
-	// type.nature = VALUE;
 	u_int32_t character = 0x03B1 + placeholder_counter;
 	char buff[5];
 	u8_toutf8(buff, 5, &character, 1);
@@ -731,11 +717,11 @@ ostream& operator << (ostream& os, const Type& type) {
 		|| type.raw() == RawType::INTERVAL) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
-		os << type.raw()->getName(); // << Type::get_nature_symbol(type.nature);
+		os << type.raw()->getName();
 	} else if (type.raw() == RawType::ARRAY || type.raw() == RawType::SET) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
-		os << type.raw()->getName(); // << Type::get_nature_symbol(type.nature);
+		os << type.raw()->getName();
 		os << "<" << type.getElementType() << BLUE_BOLD << ">";
 	} else if (type.raw() == RawType::MAP) {
 		os << BLUE_BOLD;

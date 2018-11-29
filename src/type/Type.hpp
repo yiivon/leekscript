@@ -239,7 +239,6 @@ public:
 class Type {
 public:
 	std::vector<const BaseRawType*> _types;
-	Nature nature;
 	bool native; // A C++ object, memory management is done outside the language
 	std::vector<Type> element_type;
 	std::vector<Type> key_type;
@@ -252,10 +251,9 @@ public:
 	bool reference = false;
 
 	Type();
-	Type(const BaseRawType* raw_type);
-	Type(const BaseRawType* raw_type, Nature nature, bool native = false, bool temporary = false, bool constant = false);
-	Type(const BaseRawType* raw_type, Nature nature, const Type& elements_type, bool native = false, bool temporary = false, bool constant = false);
-	Type(const BaseRawType* raw_type, Nature nature, const Type& key_type, const Type& element_type, bool native = false, bool constant = false);
+	Type(const BaseRawType* raw_type, bool native = false, bool temporary = false, bool constant = false);
+	Type(const BaseRawType* raw_type, const Type& elements_type, bool native = false, bool temporary = false, bool constant = false);
+	Type(const BaseRawType* raw_type, const Type& key_type, const Type& element_type, bool native = false, bool constant = false);
 
 	int id() const;
 	const BaseRawType* raw() const;

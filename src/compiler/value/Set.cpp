@@ -51,7 +51,7 @@ void Set::analyse(SemanticAnalyser* analyser) {
 	if (element_type._types.size() == 0) {
 		element_type = Type::POINTER;
 	}
-	type = Type(RawType::SET, Nature::POINTER, element_type);
+	type = Type(RawType::SET, element_type);
 }
 
 bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
