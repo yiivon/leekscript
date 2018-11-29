@@ -100,13 +100,24 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			} else {
 				type = Type::INTEGER;
 			}
+			return;
 		}
-		else if (vv->name == "Boolean") type = Type::BOOLEAN;
-		else if (vv->name == "String") type = Type::STRING;
-		else if (vv->name == "Array") type = Type::PTR_ARRAY;
-		else if (vv->name == "Object") type = Type::OBJECT;
-		else if (vv->name == "Set") type = Type::PTR_SET;
-		else {
+		else if (vv->name == "Boolean") {
+			type = Type::BOOLEAN;
+			return;
+		} else if (vv->name == "String") {
+			type = Type::STRING;
+			return;
+		} else if (vv->name == "Array") {
+			type = Type::PTR_ARRAY;
+			return;
+		} else if (vv->name == "Object") {
+			type = Type::OBJECT;
+			return;
+		} else if (vv->name == "Set") {
+			type = Type::PTR_SET;
+			return;
+		} else {
 			type = Type::POINTER; // Class constructor
 		}
 	} else if (function->type == Type::CLASS) {
@@ -288,19 +299,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		if (vv->var->name == analyser->current_function()->name) {
 			type = analyser->current_function()->getReturnType();
 		} else {
-			auto ret_type = function_type.getReturnType();
-			if (ret_type != Type::ANY) {
-				type = ret_type;
-			}
+			type = function_type.getReturnType();
 		}
 	} else {
-		auto ret_type = function_type.getReturnType();
-		if (is_unknown_method && ret_type == Type::ANY && function_type != Type::ANY) {
-			type = Type::POINTER;
-		}
-		if (ret_type != Type::ANY) {
-			type = ret_type;
-		}
+		type = function_type.getReturnType();
 	}
 
 	a = 0;

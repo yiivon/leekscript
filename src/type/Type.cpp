@@ -156,7 +156,7 @@ const Type Type::CONST_CLASS(RawType::CLASS, Nature::POINTER, true, false, true)
 
 const Type Type::STRING_ITERATOR(RawType::STRING, Nature::VALUE, Type::STRING);
 const Type Type::INTERVAL_ITERATOR(RawType::INTERVAL, Nature::VALUE, Type::INTEGER);
-const Type Type::SET_ITERATOR(RawType::SET, Nature::VALUE, Type::ANY);
+const Type Type::SET_ITERATOR(RawType::SET, Nature::VALUE, Type::POINTER);
 const Type Type::INTEGER_ITERATOR(RawType::INTEGER, Nature::VALUE, Type::INTEGER);
 const Type Type::LONG_ITERATOR(RawType::LONG, Nature::VALUE, Type::INTEGER);
 const Type Type::MPZ_ITERATOR(RawType::MPZ, Nature::VALUE, Type::INTEGER);
@@ -219,14 +219,14 @@ bool Type::must_manage_memory() const {
 
 Type Type::getReturnType() const {
 	if (return_types.size() == 0) {
-		return Type::ANY;
+		return Type::POINTER;
 	}
 	return return_types[0];
 }
 
 void Type::setReturnType(Type type) {
 	if (return_types.size() == 0) {
-		return_types.push_back(Type::ANY);
+		return_types.push_back({});
 	}
 	return_types[0] = type;
 }
@@ -303,21 +303,12 @@ void Type::setKeyType(const Type& type) {
 }
 
 bool Type::will_take(const std::vector<Type>& args_type) {
-
 	bool changed = false;
-
 	for (size_t i = 0; i < args_type.size(); ++i) {
-
 		Type current_type = getArgumentType(i);
-
-		if (current_type == Type::ANY) {
-			setArgumentType(i, args_type[i]);
+		if (current_type.isNumber() and !args_type[i].isNumber()) {
+			setArgumentType(i, Type::POINTER);
 			changed = true;
-		} else {
-			if (current_type.isNumber() and !args_type[i].isNumber()) {
-				setArgumentType(i, Type::POINTER);
-				changed = true;
-			}
 		}
 	}
 	return changed;
@@ -458,7 +449,7 @@ llvm::Type* Type::llvm_type() const {
 			return LLVM_VECTOR_TYPE_PTR;
 		}
 	}
-	if (reference or !isNumber() or *this == Type::ANY or raw_type == RawType::FUNCTION) {
+	if (reference or !isNumber() or raw_type == RawType::FUNCTION) {
 		return LLVM_LSVALUE_TYPE_PTR;
 	}
 	if (raw_type == RawType::MPZ) {

@@ -11,7 +11,7 @@ namespace ls {
 JsonSTD::JsonSTD() : Module("Json") {
 
 	method("encode", {
-		{Type::STRING, {Type::CONST_ANY}, (void*) &JsonSTD::encode}
+		{Type::STRING, {Type::CONST_POINTER}, (void*) &JsonSTD::encode}
 	});
 	method("decode", {
 		{Type::POINTER, {Type::CONST_STRING}, (void*) &JsonSTD::decode},
