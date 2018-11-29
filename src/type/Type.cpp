@@ -672,6 +672,10 @@ Type Type::generate_new_placeholder_type() {
 	return type;
 }
 
+Type Type::array(const Type element) {
+	return { RawType::ARRAY, element };
+}
+
 ostream& operator << (ostream& os, const Type& type) {
 
 	if (type._types.size() == 0) {

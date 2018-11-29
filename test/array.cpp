@@ -414,7 +414,7 @@ void Test::test_arrays() {
 	DISABLED_code("[1, 2, 3].foldRight((x, acc -> acc.push({w: x})), [])").equals("[{w: 3}, {w: 2}, {w: 1}]");
 
 	section("Array.shuffle()");
-	DISABLED_code("[].shuffle()");
+	code("[].shuffle()");
 	code("[1.5, 2.5].shuffle().size()").equals("2");
 	DISABLED_code("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()").equals("7");
 	DISABLED_code("var a = [1, 2, 3, 10, true, 'yo', null] a.shuffle().size()").equals("7");

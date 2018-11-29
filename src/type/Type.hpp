@@ -331,6 +331,9 @@ public:
 	static const Type STRING_TMP;
 	static const Type OBJECT;
 	static const Type OBJECT_TMP;
+
+	// Arrays
+	static Type array(const Type);
 	static const Type ARRAY;
 	static const Type CONST_ARRAY;
 	static const Type PTR_ARRAY;
@@ -344,6 +347,10 @@ public:
 	static const Type CONST_INT_ARRAY;
 	static const Type CONST_REAL_ARRAY;
 	static const Type CONST_STRING_ARRAY;
+	static const Type PTR_ARRAY_ARRAY;
+	static const Type REAL_ARRAY_ARRAY;
+	static const Type INT_ARRAY_ARRAY;
+
 	static const Type MAP;
 	static const Type PTR_PTR_MAP;
 	static const Type PTR_INT_MAP;
@@ -378,9 +385,7 @@ public:
 	static const Type CLOSURE;
 	static const Type CLASS;
 	static const Type CONST_CLASS;
-	static const Type PTR_ARRAY_ARRAY;
-	static const Type REAL_ARRAY_ARRAY;
-	static const Type INT_ARRAY_ARRAY;
+
 	static const Type INT_ARRAY_ITERATOR;
 	static const Type REAL_ARRAY_ITERATOR;
 	static const Type PTR_ARRAY_ITERATOR;
