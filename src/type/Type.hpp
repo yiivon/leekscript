@@ -10,7 +10,7 @@
 namespace ls {
 
 enum class Nature {
-	ANY, VALUE, POINTER
+	VALUE, POINTER
 };
 
 class BaseRawType {
