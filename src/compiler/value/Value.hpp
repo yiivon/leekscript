@@ -39,7 +39,7 @@ public:
 	virtual bool will_take(SemanticAnalyser*, const std::vector<Type>& args_type, int level);
 	virtual bool will_store(SemanticAnalyser*, const Type&);
 	virtual bool elements_will_store(SemanticAnalyser*, const Type&, int level);
-	virtual bool must_be_pointer(SemanticAnalyser*);
+	virtual bool must_be_any(SemanticAnalyser*);
 	virtual void must_return(SemanticAnalyser*, const Type&);
 	virtual void will_be_in_array(SemanticAnalyser*);
 	virtual void set_version(const std::vector<Type>&, int level);

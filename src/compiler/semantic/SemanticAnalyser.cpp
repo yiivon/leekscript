@@ -25,10 +25,10 @@ SemanticAnalyser::SemanticAnalyser() {
 
 SemanticAnalyser::~SemanticAnalyser() {}
 
-void SemanticVar::must_be_pointer(SemanticAnalyser* analyser) {
+void SemanticVar::must_be_any(SemanticAnalyser* analyser) {
 	if (value != nullptr) {
-		value->must_be_pointer(analyser);
-		this->type.nature = Nature::POINTER;
+		value->must_be_any(analyser);
+		this->type = Type::ANY;
 	}
 }
 

@@ -35,12 +35,12 @@ void Set::analyse(SemanticAnalyser* analyser) {
 		element_type = Type::get_compatible_type(element_type, ex->type);
 	}
 
-	if (element_type.nature == Nature::VALUE) {
+	if (element_type.isNumber()) {
 		if (element_type != Type::INTEGER && element_type != Type::REAL) {
 			element_type = Type::POINTER;
 		}
-	} else if (element_type.nature == Nature::ANY) {
-		element_type.nature = Nature::POINTER;
+	} else if (element_type.isNumber()) {
+		element_type = Type::ANY;
 	}
 
 	constant = true;

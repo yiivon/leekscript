@@ -45,7 +45,7 @@ public:
 
 	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), type(o.type), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), initial_type(type) {}
 
-	void must_be_pointer(SemanticAnalyser*);
+	void must_be_any(SemanticAnalyser*);
 };
 
 class SemanticAnalyser {

@@ -41,11 +41,7 @@ Location ObjectAccess::location() const {
 void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 
 	object->analyse(analyser);
-	if (object->type.nature == Nature::ANY) {
-		type = Type::ANY;
-	} else {
-		type = Type::POINTER;
-	}
+	type = Type::POINTER;
 
 	// Get the object class : 12 => Number
 	object_class_name = object->type.clazz;

@@ -198,7 +198,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			} else {
 				bool has_unknown_argument = false;
 				for (const auto& a : arguments)
-					if (a->type.nature == Nature::ANY) has_unknown_argument = true;
+					if (a->type == Type::ANY) has_unknown_argument = true;
 				if (object_type.raw_type != RawType::ANY && !has_unknown_argument) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
@@ -221,7 +221,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			for (auto& arg : arguments) {
 				arg->analyse(analyser);
 				effectiveType = arg->type;
-				if (arg->type.nature != Nature::VALUE) {
+				if (!arg->type.isNumber()) {
 					isByValue = false;
 				}
 			}
@@ -423,8 +423,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	VariableValue* f = dynamic_cast<VariableValue*>(function);
 
 	if (f != nullptr) {
-		if (function->type.getArgumentType(0).nature == Nature::VALUE
-			and function->type.getArgumentType(1).nature == Nature::VALUE) {
+		if (function->type.getArgumentType(0).isNumber()
+			and function->type.getArgumentType(1).isNumber()) {
 
 			// jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
 			// if (f->name == "+") {

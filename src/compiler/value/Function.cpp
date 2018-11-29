@@ -199,7 +199,6 @@ void Function::analyse(SemanticAnalyser* analyser) {
 	type = default_version->type;
 
 	update_function_args(analyser);
-	type.nature = Nature::POINTER;
 
 //	cout << "Function type: " << type << endl;
 }
@@ -216,7 +215,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 			for (const auto& t : args) {
 				if (t.raw_type->is_placeholder()) return false;
-				if (t.nature == Nature::ANY) return false;
+				// if (t.nature == ANY) return false;
 			}
 
 			auto version = new Function::Version();
@@ -376,7 +375,6 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 		var->scope = VarScope::CAPTURE;
 		var->parent_index = new_var->index;
 	}
-	type.nature = Nature::POINTER;
 	return captures.size() - 1;
 }
 
@@ -483,7 +481,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 				int offset = c.is_current_function_closure() ? 1 : 0;
 				jit_cap = {c.F->arg_begin() + offset + cap->index, cap->initial_type};
 			}
-			if (cap->initial_type.nature != Nature::POINTER) {
+			if (cap->initial_type.isNumber()) {
 				jit_cap = c.insn_to_any({jit_cap.v, cap->initial_type});
 			}
 			c.function_add_capture(jit_fun, jit_cap);

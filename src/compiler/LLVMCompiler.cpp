@@ -240,7 +240,7 @@ LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) co
 	if (v.t.nature == Nature::POINTER && t.nature == Nature::POINTER) {
 		return v;
 	}
-	if (v.t.nature == Nature::VALUE && t.nature == Nature::POINTER) {
+	if (v.t.isNumber() && t.nature == Nature::POINTER) {
 		return insn_to_any(v);
 	}
 	if (v.t.not_temporary() == t.not_temporary()) return v;
@@ -888,7 +888,7 @@ LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const {
 		// v->refs++;
 		return v;
 	});
-	if (type.nature == Nature::VALUE) {
+	if (type == Type::INTEGER) {
 		v = insn_call(Type::INTEGER, {v}, +[](LSNumber* n) {
 			return (int) n->value;
 		});
@@ -1663,7 +1663,7 @@ void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::v
 		auto arg = args[i];
 		// assert(arg.t.llvm_type() == arg.v->getType());
 		auto type = types[i];
-		if (arg.t.nature != Nature::VALUE and type != arg.t.id() and type != 0) {
+		if (!arg.t.isNumber() and type != arg.t.id() and type != 0) {
 			auto type = types[i];
 			insn_if(insn_ne(insn_typeof(arg), new_integer(type)), [&]() {
 				for (auto& a : args) {

@@ -228,7 +228,7 @@ std::string Program::underline_code(Location location, Location focus) const {
 			jit_value_t jit_val = LS_CREATE_POINTER(c.F, value);
 			jit_insn_store(c.F, jit_var, jit_val);
 
-			c.add_var(name, jit_var, Type(value->getRawType(), Nature::POINTER), false);
+			c.add_var(name, jit_var, Type(value->getRawType(), POINTER), false);
 
 			value->refs++;
 		}
@@ -270,7 +270,7 @@ std::string Program::underline_code(Location location, Location focus) const {
 
 			jit_value_t var_args[2] = {array, g.second};
 
-			if (type.nature == Nature::POINTER) {
+			if (type.nature == POINTER) {
 
 //				cout << "save pointer" << endl;
 				jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, var_args, 2, 0);

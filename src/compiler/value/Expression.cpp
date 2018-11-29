@@ -522,7 +522,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				c.insn_store(var, y);
 				return y;
 
-			} else if (equal_previous_type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			} else if (equal_previous_type.isNumber() and v2->type.isNumber()) {
 				auto y = v2->compile(c);
 				v2->compile_end(c);
 				if (v1->type == Type::MPZ) {
@@ -617,7 +617,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::INT_DIV: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -630,7 +630,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::INT_DIV_EQUAL: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v2->compile_end(c);
@@ -696,7 +696,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_LEFT : {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -707,7 +707,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_LEFT_EQUALS : {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -721,7 +721,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT : {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -732,7 +732,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT_EQUALS : {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -746,7 +746,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED : {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -757,7 +757,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS : {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -828,7 +828,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::DOUBLE_MODULO: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -840,7 +840,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::DOUBLE_MODULO_EQUALS: {
-			if (v1->type.nature == Nature::VALUE and v2->type.nature == Nature::VALUE) {
+			if (v1->type.isNumber() and v2->type.isNumber()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v2->compile_end(c);

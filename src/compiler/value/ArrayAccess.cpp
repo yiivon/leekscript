@@ -242,7 +242,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			auto k = key->compile(c);
 			key->compile_end(c);
 
-			if (k.t.nature == Nature::POINTER) {
+			if (!k.t.isNumber()) {
 				k = c.insn_call(Type::INTEGER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
 					auto n = dynamic_cast<LSNumber*>(key_pointer);
 					if (!n) {

@@ -317,7 +317,7 @@ bool Type::will_take(const std::vector<Type>& args_type) {
 			setArgumentType(i, args_type[i]);
 			changed = true;
 		} else {
-			if (current_type.nature == Nature::VALUE and args_type[i].nature == Nature::POINTER) {
+			if (current_type.isNumber() and args_type[i].nature == Nature::POINTER) {
 				setArgumentType(i, Type(RawType::ANY, Nature::POINTER));
 				changed = true;
 			}
@@ -506,7 +506,7 @@ Type Type::iteratorType() const {
  */
 bool Type::compatible(const Type& type) const {
 
-	if (this->nature == Nature::VALUE && type.nature == Nature::POINTER) {
+	if (this->isNumber() && type.nature == Nature::POINTER) {
 		return false;
 	}
 
@@ -625,16 +625,13 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 		if (old.raw_type == RawType::ANY) {
 			return true;
 		}
-		if (old.raw_type == RawType::NUMBER
-				&& (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG || neww.raw_type == RawType::REAL)) {
+		if (old.raw_type == RawType::NUMBER && (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG || neww.raw_type == RawType::REAL)) {
 			return true;
 		}
-		if (old.raw_type == RawType::REAL
-				&& (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG)) {
+		if (old.raw_type == RawType::REAL && (neww.raw_type == RawType::INTEGER || neww.raw_type == RawType::LONG)) {
 			return true;
 		}
-		if (old.raw_type == RawType::LONG
-				&& neww.raw_type == RawType::INTEGER) {
+		if (old.raw_type == RawType::LONG && neww.raw_type == RawType::INTEGER) {
 			return true;
 		}
 	}
@@ -673,10 +670,10 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	if (t1.raw_type == RawType::NULLL or t2.raw_type == RawType::NULLL) {
 		return Type::NULLL;
 	}
-	if (t1.nature == Nature::POINTER and t2.nature == Nature::VALUE) {
+	if (t1.nature == Nature::POINTER and t2.isNumber()) {
 		return Type::POINTER;
 	}
-	if (t2.nature == Nature::POINTER and t1.nature == Nature::VALUE) {
+	if (t2.nature == Nature::POINTER and t1.isNumber()) {
 		return Type::POINTER;
 	}
 	if (t1.raw_type == RawType::ANY) {
@@ -695,19 +692,6 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 		return {RawType::ARRAY, Nature::POINTER, Type::get_compatible_type(t1.getElementType(), t2.getElementType())};
 	}
 	return Type::POINTER;
-}
-
-string Type::get_nature_symbol(const Nature& nature) {
-	switch (nature) {
-	case Nature::POINTER:
-		return "*";
-	case Nature::ANY:
-		return "any";
-	case Nature::VALUE:
-		return "";
-	default:
-		return "???";
-	}
 }
 
 Type Type::generate_new_placeholder_type() {
@@ -729,7 +713,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		return os;
 	}
 
-	auto color = (type.nature == Nature::VALUE) ? C_GREEN : C_RED;
+	auto color = (type.isNumber()) ? C_GREEN : C_RED;
 	os << color;
 
 	if (type.raw_type == RawType::ANY) {
@@ -782,7 +766,7 @@ ostream& operator << (ostream& os, const Type& type) {
 			<< ", " << type.getElementType() << BLUE_BOLD << ">";
 	} else {
 		if (type.constant) os << "const:";
-		os << type.raw_type->getName() << Type::get_nature_symbol(type.nature);
+		os << type.raw_type->getName();
 	}
 	if (type.temporary && type.raw_type != RawType::REAL) {
 		os << "&&";
