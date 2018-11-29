@@ -44,12 +44,11 @@ Location Foreach::location() const {
 
 void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	if (req_type.raw_type == RawType::ARRAY && req_type.nature == Nature::POINTER) {
+	if (req_type.raw_type == RawType::ARRAY) {
 		type = req_type;
 	} else {
 		type = {};
 	}
-
 	analyser->enter_block();
 
 	container->analyse(analyser);
@@ -98,7 +97,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	// Potential output [for ...]
 	Compiler::value output_v;
-	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
+	if (type.raw_type == RawType::ARRAY) {
 		output_v = c.new_array(type.getElementType(), {});
 		c.insn_inc_refs(output_v);
 		c.add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted

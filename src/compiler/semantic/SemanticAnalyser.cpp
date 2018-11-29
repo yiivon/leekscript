@@ -41,7 +41,7 @@ void SemanticAnalyser::analyse(Program* program, Context*) {
 	// Add context variables
 	/*
 	for (auto var : context->vars) {
-		add_var(new Token(var.first), Type(var.second->getRawType(), Nature::POINTER), nullptr, nullptr);
+		add_var(new Token(var.first), Type(var.second->getRawType(), ), nullptr, nullptr);
 	}
 	*/
 	program->analyse(this);

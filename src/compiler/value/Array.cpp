@@ -86,7 +86,6 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			}
 			// For function, we store them as pointers
 			else if (element_type.raw_type == RawType::FUNCTION) {
-				element_type.nature = Nature::POINTER;
 				supported_type = element_type;
 			} else {
 				supported_type = Type::POINTER;

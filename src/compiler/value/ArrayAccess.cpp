@@ -119,14 +119,11 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		} else {
 			key->analyse(analyser);
 		}
-
-		if (map_key_type != Type::POINTER) {
-			if (map_key_type.nature == Nature::VALUE and key->type.nature == Nature::POINTER) {
-				std::string a = array->to_string();
-				std::string k = key->to_string();
-				std::string kt = key->type.to_string();
-				analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
-			}
+		if (!map_key_type.compatible(key->type)) {
+			std::string a = array->to_string();
+			std::string k = key->to_string();
+			std::string kt = key->type.to_string();
+			analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
 		}
 	} else {
 		key->analyse(analyser);

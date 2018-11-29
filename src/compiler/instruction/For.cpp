@@ -45,7 +45,7 @@ Location For::location() const {
 
 void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
-	if (req_type.raw_type == RawType::ARRAY && req_type.nature == Nature::POINTER) {
+	if (req_type.raw_type == RawType::ARRAY) {
 		type = req_type;
 	} else {
 		type = {};
@@ -96,7 +96,7 @@ Compiler::value For::compile(Compiler& c) const {
 	c.enter_block(); // { for init ; cond ; inc { body } }<-- this block
 
 	Compiler::value output_v;
-	if (type.raw_type == RawType::ARRAY && type.nature == Nature::POINTER) {
+	if (type.raw_type == RawType::ARRAY) {
 		output_v = c.new_array(type.getElementType(), {});
 		c.insn_inc_refs(output_v);
 		c.add_var("{output}", output_v); // Why create variable ? in case of `break 2` the output must be deleted
@@ -124,13 +124,9 @@ Compiler::value For::compile(Compiler& c) const {
 	if (condition != nullptr) {
 		auto condition_v = condition->compile(c);
 		condition->compile_end(c);
-		if (condition->type.nature == Nature::POINTER) {
-			auto bool_v = c.insn_to_bool(condition_v);
-			c.insn_delete_temporary(condition_v);
-			c.insn_if_new(bool_v, &loop_label, &end_label);
-		} else {
-			c.insn_if_new(condition_v, &loop_label, &end_label);
-		}
+		auto bool_v = c.insn_to_bool(condition_v);
+		c.insn_delete_temporary(condition_v);
+		c.insn_if_new(bool_v, &loop_label, &end_label);
 	}
 
 	// Body
