@@ -250,14 +250,14 @@ void Type::setArgumentType(size_t index, Type type, bool has_default) {
  * By default, all arguments are type INTEGER, but if we see it's not always
  * a integer, it will switch to UNKNOWN
  */
-const Type& Type::getArgumentType(size_t index) const {
+const Type Type::getArgumentType(size_t index) const {
 	if (index >= arguments_types.size()) {
 		return Type::POINTER;
 	}
 	return arguments_types[index];
 }
 
-const std::vector<Type>& Type::getArgumentTypes() const {
+const std::vector<Type> Type::getArgumentTypes() const {
 	return arguments_types;
 }
 
@@ -268,15 +268,11 @@ bool Type::argumentHasDefault(size_t index) const {
 	return arguments_has_default[index];
 }
 
-const Type& Type::getElementType() const {
+const Type Type::getElementType() const {
 	if (element_type.size()) {
 		return element_type[0];
 	}
-	return Type::ANY;
-}
-
-const Type& Type::element() const {
-	return getElementType();
+	return {};
 }
 
 void Type::setElementType(const Type& type) {
@@ -287,11 +283,11 @@ void Type::setElementType(const Type& type) {
 	}
 }
 
-const Type& Type::getKeyType() const {
+const Type Type::getKeyType() const {
 	if (key_type.size()) {
 		return key_type[0];
 	}
-	assert(false); // LCOV_EXCL_LINE
+	return {};
 }
 void Type::setKeyType(const Type& type) {
 	if (key_type.size() == 0) {
@@ -529,9 +525,12 @@ bool Type::compatible(const Type& type) const {
 	}
 
 	if (this->raw_type == RawType::ARRAY || this->raw_type == RawType::SET) {
-		const Type& e1 = this->getElementType();
-		const Type& e2 = type.getElementType();
-		if (e1 == Type::ANY or e2 == Type::ANY) {
+		const Type e1 = this->getElementType();
+		const Type e2 = type.getElementType();
+		if (e1.raw_type == RawType::ANY or e2.raw_type == RawType::ANY) {
+			return true;
+		}
+		if (e1._types.size() == 0 or e2._types.size() == 0) {
 			return true;
 		}
 		if (!e1.isNumber() && !e2.isNumber()) return true;

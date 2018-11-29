@@ -268,15 +268,14 @@ public:
 
 	void addArgumentType(Type type);
 	void setArgumentType(size_t index, Type type, bool has_default = false);
-	const Type& getArgumentType(size_t index) const;
-	const std::vector<Type>& getArgumentTypes() const;
+	const Type getArgumentType(size_t index) const;
+	const std::vector<Type> getArgumentTypes() const;
 	bool argumentHasDefault(size_t index) const;
 
-	const Type& getElementType() const;
-	const Type& element() const;
+	const Type getElementType() const;
 	void setElementType(const Type&);
 
-	const Type& getKeyType() const;
+	const Type getKeyType() const;
 	void setKeyType(const Type&);
 
 	bool will_take(const std::vector<Type>& args_type);
