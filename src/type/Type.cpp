@@ -72,9 +72,6 @@ void RawType::clear_placeholder_types() {
 
 unsigned int Type::placeholder_counter = 0;
 
-const Type Type::ANY(RawType::ANY, Nature::ANY);
-const Type Type::CONST_ANY(RawType::ANY, Nature::ANY, false, false, true);
-
 const Type Type::VALUE(RawType::ANY, Nature::VALUE);
 const Type Type::CONST_VALUE(RawType::ANY, Nature::VALUE, false, false, true);
 const Type Type::POINTER(RawType::ANY, Nature::POINTER);
@@ -213,7 +210,7 @@ int Type::id() const {
 
 bool Type::must_manage_memory() const {
 	if (_types.size() == 0) { return false; }
-	return nature == Nature::POINTER and not native;
+	return !isNumber() and not native;
 }
 
 Type Type::getReturnType() const {

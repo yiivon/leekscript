@@ -83,11 +83,11 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		key->analyse(analyser);
 		key2->analyse(analyser);
 
-		if (key->type != Type::ANY and not key->type.isNumber()) {
+		if (key->type.raw_type != RawType::ANY and not key->type.isNumber()) {
 			std::string k = "<key 1>";
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
 		}
-		if (key2->type != Type::ANY and not key2->type.isNumber()) {
+		if (key2->type.raw_type != RawType::ANY and not key2->type.isNumber()) {
 			std::string k = "<key 2>";
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
 		}

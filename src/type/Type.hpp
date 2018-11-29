@@ -314,9 +314,7 @@ public:
 	static const Type POINTER;
 	static const Type CONST_POINTER;
 
-	static const Type ANY;
 	static const Type NULLL;
-	static const Type CONST_ANY;
 	static const Type BOOLEAN;
 	static const Type CONST_BOOLEAN;
 	static const Type NUMBER;
