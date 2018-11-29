@@ -274,7 +274,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			}
 		} else {
 			// Unknown type, call generic at() operator
-			auto k = c.insn_to_pointer(key->compile(c));
+			auto k = c.insn_to_any(key->compile(c));
 			key->compile_end(c);
 			auto e = c.insn_call(Type::POINTER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->at(key);
@@ -364,7 +364,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 				});
 			}
 		} else {
-			k = c.insn_to_pointer(k);
+			k = c.insn_to_any(k);
 			return c.insn_call(type.add_pointer(), {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->atL(key);
 			});

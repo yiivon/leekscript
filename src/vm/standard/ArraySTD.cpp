@@ -445,7 +445,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 }
 
 Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args) {
-	args[1] = c.insn_to_pointer(args[1]);
+	args[1] = c.insn_to_any(args[1]);
 	return c.insn_call(Type::POINTER, args, (void*) +[](LSValue** x, LSValue* y) {
 		return (*x)->add_eq(y);
 	});

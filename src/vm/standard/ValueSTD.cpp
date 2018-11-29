@@ -139,10 +139,8 @@ Compiler::value ValueSTD::op_not_equals(Compiler& c, std::vector<Compiler::value
 }
 
 Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) {
-	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0
-		or args[1].t.id() == 0) {
-		auto res = c.insn_call(Type::BOOLEAN,
-			{c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])},
+	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0 or args[1].t.id() == 0) {
+		auto res = c.insn_call(Type::BOOLEAN, {c.insn_to_any(args[0]), c.insn_to_any(args[1])},
 			+[](LSValue* a, LSValue* b) {
 				auto res = *a < *b;
 				LSValue::delete_temporary(a);
@@ -160,10 +158,8 @@ Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) 
 }
 
 Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) {
-	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0
-		or args[1].t.id() == 0) {
-		auto res = c.insn_call(Type::BOOLEAN,
-			{c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])},
+	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0	or args[1].t.id() == 0) {
+		auto res = c.insn_call(Type::BOOLEAN, {c.insn_to_any(args[0]), c.insn_to_any(args[1])},
 			+[](LSValue* a, LSValue* b) {
 				auto res = *a <= *b;
 				LSValue::delete_temporary(a);
@@ -181,10 +177,8 @@ Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) 
 }
 
 Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) {
-	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0
-		or args[1].t.id() == 0) {
-		auto res = c.insn_call(Type::BOOLEAN,
-			{c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])},
+	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0	or args[1].t.id() == 0) {
+		auto res = c.insn_call(Type::BOOLEAN, {c.insn_to_any(args[0]), c.insn_to_any(args[1])},
 			+[](LSValue* a, LSValue* b) {
 				auto res = *a > *b;
 				LSValue::delete_temporary(a);
@@ -202,10 +196,8 @@ Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) 
 }
 
 Compiler::value ValueSTD::op_ge(Compiler& c, std::vector<Compiler::value> args) {
-	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0
-		or args[1].t.id() == 0) {
-		auto res = c.insn_call(Type::BOOLEAN,
-			{c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])},
+	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0 or args[1].t.id() == 0) {
+		auto res = c.insn_call(Type::BOOLEAN, {c.insn_to_any(args[0]), c.insn_to_any(args[1])},
 			+[](LSValue* a, LSValue* b) {
 				auto res = *a >= *b;
 				LSValue::delete_temporary(a);
@@ -249,7 +241,7 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 }
 
 Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])}, +[](LSValue* x, LSValue* y) {
+	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
 		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
@@ -264,7 +256,7 @@ Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> a
 }
 
 Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])}, +[](LSValue* x, LSValue* y) {
+	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
 		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
 			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
@@ -280,7 +272,7 @@ Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> ar
 }
 
 Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_pointer(args[1])},
+	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_any(args[1])},
 	+[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
 		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
@@ -376,7 +368,7 @@ Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args)
 }
 
 Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::POINTER, {c.insn_to_pointer(args[0]), c.insn_to_pointer(args[1])}, +[](LSValue* x, LSValue* y) {
+	return c.insn_call(Type::POINTER, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		return x->pow(y);
 	});
 }

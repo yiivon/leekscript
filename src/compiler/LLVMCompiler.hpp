@@ -230,7 +230,7 @@ public:
 	value insn_abs(value) const;
 
 	// Value management
-	value insn_to_pointer(value v) const;
+	value insn_to_any(value v) const;
 	value insn_to_bool(value v) const;
 	value insn_load(value v) const;
 	void  insn_store(value, value) const;

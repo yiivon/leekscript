@@ -109,7 +109,7 @@ bool Number::is_zero() const {
 
 Compiler::value Number::compile(Compiler& c) const {
 	if (type == Type::POINTER) {
-		return c.insn_to_pointer(c.new_real(double_value));
+		return c.insn_to_any(c.new_real(double_value));
 	}
 	if (type == Type::LONG) {
 		return c.new_long(long_value);

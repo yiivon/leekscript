@@ -241,7 +241,7 @@ LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) co
 		return v;
 	}
 	if (v.t.nature == Nature::VALUE && t.nature == Nature::POINTER) {
-		return insn_to_pointer(v);
+		return insn_to_any(v);
 	}
 	if (v.t.not_temporary() == t.not_temporary()) return v;
 	if (t == Type::REAL) {
@@ -313,8 +313,8 @@ LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::
 LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	// assert(a.t.llvm_type() == a.v->getType());
 	// assert(b.t.llvm_type() == b.v->getType());
-	if (a.t.nature == Nature::POINTER or b.t.nature == Nature::POINTER) {
-		return insn_call(Type::BOOLEAN, {insn_to_pointer(a), insn_to_pointer(b)}, +[](LSValue* x, LSValue* y) {
+	if (!a.t.isNumber() or !b.t.isNumber()) {
+		return insn_call(Type::BOOLEAN, {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
 			bool r = *x == *y;
 			LSValue::delete_temporary(x);
 			LSValue::delete_temporary(y);
@@ -716,7 +716,7 @@ LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_to_pointer(LLVMCompiler::value v) const {
+LLVMCompiler::value LLVMCompiler::insn_to_any(LLVMCompiler::value v) const {
 	if (v.t.nature == Nature::POINTER) {
 		return v; // already a pointer
 	}

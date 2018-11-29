@@ -480,7 +480,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto array_access = dynamic_cast<ArrayAccess*>(v1);
 			if (array_access && array_access->key == nullptr) {
 				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
+				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
@@ -493,7 +493,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 					c.set_var_type(vv->name, v1->type);
 				}
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
+				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
 				c.insn_call({}, {c.insn_load(x_addr)}, &LSValue::delete_ref);
 				c.insn_store(x_addr, y);
@@ -554,7 +554,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		case TokenType::PLUS_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			v1->compile_end(c);
-			auto y = c.insn_to_pointer(v2->compile(c));
+			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
 			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->add_eq(y);
@@ -562,7 +562,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::MINUS_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_pointer(v2->compile(c));
+			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
 			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->sub_eq(y);
@@ -570,7 +570,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::TIMES_EQUAL: {
 			auto x = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_pointer(v2->compile(c));
+			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
 			return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->mul_eq(y);
@@ -578,7 +578,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::DIVIDE_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_pointer(v2->compile(c));
+			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
 			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->div_eq(y);
@@ -586,7 +586,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::MODULO_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_pointer(v2->compile(c));
+			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
 			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->mod_eq(y);
@@ -594,7 +594,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::POWER_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_pointer(v2->compile(c));
+			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
 			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->pow_eq(y);
@@ -640,7 +640,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return r;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
+				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue* res = (*x)->int_div_eq(y);
@@ -850,7 +850,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				return r;
 			} else {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_pointer(v2->compile(c));
+				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue* res = (*x)->double_mod_eq(y);
@@ -865,8 +865,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 	}
 	if (args.size() == 0) {
-		args.push_back(c.insn_to_pointer(v1->compile(c)));
-		args.push_back(c.insn_to_pointer(v2->compile(c)));
+		args.push_back(c.insn_to_any(v1->compile(c)));
+		args.push_back(c.insn_to_any(v2->compile(c)));
 		v1->compile_end(c);
 		v2->compile_end(c);
 	}

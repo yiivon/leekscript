@@ -484,7 +484,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 				jit_cap = {c.F->arg_begin() + offset + cap->index, cap->initial_type};
 			}
 			if (cap->initial_type.nature != Nature::POINTER) {
-				jit_cap = c.insn_to_pointer({jit_cap.v, cap->initial_type});
+				jit_cap = c.insn_to_any({jit_cap.v, cap->initial_type});
 			}
 			c.function_add_capture(jit_fun, jit_cap);
 		}

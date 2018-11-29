@@ -4,9 +4,6 @@
 void Test::test_types() {
 
 	header("Types");
-	// Print any type nature (should not be printed elsewhere)
-	std::cout << ls::Type::get_nature_symbol(ls::Nature::ANY) << std::endl;
-
 	// Print a list of types
 	std::vector<ls::Type> types { ls::Type::INTEGER, ls::Type::STRING, ls::Type::REAL_ARRAY };
 	std::cout << types << std::endl;
