@@ -319,9 +319,7 @@ public:
 	static const Type NULLL;
 	static const Type CONST_ANY;
 	static const Type BOOLEAN;
-	static const Type BOOLEAN_P;
 	static const Type CONST_BOOLEAN;
-	static const Type CONST_BOOLEAN_P;
 	static const Type NUMBER;
 	static const Type CONST_NUMBER;
 	static const Type INTEGER;

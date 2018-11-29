@@ -82,9 +82,7 @@ const Type Type::CONST_POINTER(RawType::ANY, Nature::POINTER, false, false, true
 
 const Type Type::NULLL(RawType::NULLL, Nature::POINTER, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN, Nature::VALUE);
-const Type Type::BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER);
 const Type Type::CONST_BOOLEAN(RawType::BOOLEAN, Nature::VALUE, false, false, true);
-const Type Type::CONST_BOOLEAN_P(RawType::BOOLEAN, Nature::POINTER, false, false, true);
 const Type Type::NUMBER(RawType::NUMBER, Nature::VALUE);
 const Type Type::CONST_NUMBER(RawType::NUMBER, Nature::VALUE, false, false, true);
 const Type Type::INTEGER(RawType::INTEGER, Nature::VALUE);
@@ -215,6 +213,7 @@ int Type::id() const {
 }
 
 bool Type::must_manage_memory() const {
+	if (_types.size() == 0) { return false; }
 	return nature == Nature::POINTER and not native;
 }
 
@@ -311,12 +310,12 @@ bool Type::will_take(const std::vector<Type>& args_type) {
 
 		Type current_type = getArgumentType(i);
 
-		if (current_type.nature == Nature::ANY) {
+		if (current_type == Type::ANY) {
 			setArgumentType(i, args_type[i]);
 			changed = true;
 		} else {
-			if (current_type.isNumber() and args_type[i].nature == Nature::POINTER) {
-				setArgumentType(i, Type(RawType::ANY, Nature::POINTER));
+			if (current_type.isNumber() and !args_type[i].isNumber()) {
+				setArgumentType(i, Type::POINTER);
 				changed = true;
 			}
 		}
@@ -459,7 +458,7 @@ llvm::Type* Type::llvm_type() const {
 			return LLVM_VECTOR_TYPE_PTR;
 		}
 	}
-	if (reference or nature == Nature::POINTER or nature == Nature::ANY or raw_type == RawType::FUNCTION) {
+	if (reference or !isNumber() or *this == Type::ANY or raw_type == RawType::FUNCTION) {
 		return LLVM_LSVALUE_TYPE_PTR;
 	}
 	if (raw_type == RawType::MPZ) {
@@ -500,11 +499,9 @@ Type Type::iteratorType() const {
  * {int}.compatible({int*}) == false
  */
 bool Type::compatible(const Type& type) const {
-
-	if (this->isNumber() && type.nature == Nature::POINTER) {
+	if (this->isNumber() && !type.isNumber()) {
 		return false;
 	}
-
 	if (this->temporary and not type.temporary) {
 		return false; // type not compatible with type&&
 	}
@@ -547,22 +544,21 @@ bool Type::compatible(const Type& type) const {
 		if (e1 == Type::ANY or e2 == Type::ANY) {
 			return true;
 		}
-		if (e1.nature == Nature::POINTER && e2.nature == Nature::POINTER) return true;
+		if (!e1.isNumber() && !e2.isNumber()) return true;
 		return e1 == e2;
 	}
-
 	if (this->raw_type == RawType::MAP) {
 		const Type& k1 = this->getKeyType();
 		const Type& k2 = type.getKeyType();
 		const Type& v1 = this->getElementType();
 		const Type& v2 = type.getElementType();
-		if (k1.nature == Nature::POINTER && k2.nature == Nature::POINTER) {
-			if (v1.nature == Nature::POINTER && v2.nature == Nature::POINTER) {
+		if (!k1.isNumber() && !k2.isNumber()) {
+			if (!v1.isNumber() && !v2.isNumber()) {
 				return true;
 			}
 			return v1 == v2;
 		} else {
-			if (v1.nature == Nature::POINTER && v2.nature == Nature::POINTER) {
+			if (!v1.isNumber() && !v2.isNumber()) {
 				return k1 == k2;
 			}
 			return k1 == k2 && v1 == v2;
@@ -588,7 +584,7 @@ bool Type::may_be_compatible(const Type& type) const {
 		return true;
 	}
 	// Example: Number.abs(number*) => we allow to call with a unknown pointer
-	if (this->nature == Nature::POINTER and type == Type::POINTER) {
+	if (!isNumber() and type == Type::POINTER) {
 		return true;
 	}
 	return false;
@@ -691,7 +687,7 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 
 Type Type::generate_new_placeholder_type() {
 	Type type;
-	type.nature = Nature::VALUE;
+	// type.nature = VALUE;
 	u_int32_t character = 0x03B1 + placeholder_counter;
 	char buff[5];
 	u8_toutf8(buff, 5, &character, 1);
