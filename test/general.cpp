@@ -141,7 +141,7 @@ void Test::test_general() {
 	code("12.string()").equals("'12'");
 	code("(-7).string()").equals("'-7'");
 	// long
-	code("12434324223112123.string()").equals("'12434324223112123'");
+	DISABLED_code("12434324223112123.string()").equals("'12434324223112123'");
 	code("(-1243439967898452).string()").equals("'-1243439967898452'");
 	// real
 	code("12.5.string()").equals("'12.5'");

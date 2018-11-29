@@ -237,10 +237,10 @@ LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value v) const {
 LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) const {
 	// assert(v.t.llvm_type() == v.v->getType());
 	if (!v.v) { return v; }
-	if (v.t.nature == Nature::POINTER && t.nature == Nature::POINTER) {
+	if (!v.t.isNumber() && !t.isNumber()) {
 		return v;
 	}
-	if (v.t.isNumber() && t.nature == Nature::POINTER) {
+	if (v.t.isNumber() && !t.isNumber()) {
 		return insn_to_any(v);
 	}
 	if (v.t.not_temporary() == t.not_temporary()) return v;
