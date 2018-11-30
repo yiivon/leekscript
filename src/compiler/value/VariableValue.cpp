@@ -4,6 +4,7 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Function.hpp"
 #include "../instruction/VariableDeclaration.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

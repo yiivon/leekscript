@@ -6,6 +6,7 @@
 #include "../../vm/value/LSInterval.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

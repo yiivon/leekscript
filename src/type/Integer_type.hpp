@@ -5,6 +5,15 @@
 
 namespace ls {
 
+class IntegerRawType : public NumberRawType {
+public:
+	IntegerRawType() {}
+	virtual const std::string getName() const { return "int"; }
+	virtual const std::string getClass() const { return "Number"; }
+	virtual const std::string getJsonName() const { return "number"; }
+	virtual int size() const { return 32; }
+};
+
 class Integer_type : public Number_type {
 	static int _id;
 public:

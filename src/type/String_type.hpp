@@ -2,8 +2,20 @@
 #define STRING_TYPE_HPP
 
 #include "List_type.hpp"
+#include "BaseRawType.hpp"
 
 namespace ls {
+
+class StringRawType : public BaseRawType {
+public:
+	StringRawType() {}
+	virtual int id() const { return 4; }
+	virtual const std::string getName() const { return "string"; }
+	virtual const std::string getClass() const { return "String"; }
+	virtual const std::string getJsonName() const { return "string"; }
+	virtual bool iterable() const { return true; }
+	virtual bool is_container() const { return true; }
+};
 
 class String_type : public List_type {
 	static int _id;

@@ -11,6 +11,7 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/standard/BooleanSTD.hpp"
 #include "../../vm/Exception.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

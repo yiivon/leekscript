@@ -2,8 +2,18 @@
 #define BOOL_TYPE_HPP
 
 #include "Base_type.hpp"
+#include "BaseRawType.hpp"
 
 namespace ls {
+
+class BooleanRawType : public BaseRawType {
+public:
+	BooleanRawType() {}
+	virtual int id() const { return 2; }
+	virtual const std::string getName() const { return "bool"; }
+	virtual const std::string getClass() const { return "Boolean"; }
+	virtual const std::string getJsonName() const { return "boolean"; }
+};
 
 class Bool_type : public Base_type {
 	static int _id;

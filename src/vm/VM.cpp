@@ -29,6 +29,7 @@
 #include "standard/IntervalSTD.hpp"
 #include "standard/JsonSTD.hpp"
 #include "legacy/Functions.hpp"
+#include "../type/RawType.hpp"
 
 using namespace std;
 

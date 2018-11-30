@@ -3,6 +3,7 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSSet.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

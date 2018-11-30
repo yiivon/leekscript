@@ -2,6 +2,7 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSInterval.hpp"
 #include <math.h>
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

@@ -2,6 +2,7 @@
 #include "../../vm/VM.hpp"
 #include <limits.h>
 #include "../../vm/value/LSNumber.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

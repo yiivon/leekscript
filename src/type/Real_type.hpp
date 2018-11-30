@@ -5,6 +5,14 @@
 
 namespace ls {
 
+class FloatRawType : public NumberRawType {
+public:
+	FloatRawType() {}
+	virtual const std::string getName() const { return "real"; }
+	virtual const std::string getClass() const { return "Number"; }
+	virtual const std::string getJsonName() const { return "number"; }
+};
+
 class Real_type : public Number_type {
 	static int _id;
 public:

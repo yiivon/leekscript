@@ -1,9 +1,19 @@
 #ifndef CLASS_TYPE_HPP
 #define CLASS_TYPE_HPP
 
+#include "BaseRawType.hpp"
 #include "Base_type.hpp"
 
 namespace ls {
+
+class ClassRawType : public BaseRawType {
+public:
+	ClassRawType() {}
+	virtual int id() const { return 11; }
+	virtual const std::string getName() const { return "class"; }
+	virtual const std::string getClass() const { return "Class"; }
+	virtual const std::string getJsonName() const { return "class"; }
+};
 
 class Class_type : public Base_type {
 public:

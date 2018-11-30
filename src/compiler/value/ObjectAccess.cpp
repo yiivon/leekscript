@@ -8,6 +8,7 @@
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Module.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

@@ -4,6 +4,7 @@
 #include <sstream>
 #include "../../lib/utf8.h"
 #include "../vm/VM.hpp"
+#include "RawType.hpp"
 
 using namespace std;
 

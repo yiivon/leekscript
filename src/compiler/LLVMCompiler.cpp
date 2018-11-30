@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <bitset>
 #include "LLVMCompiler.hpp"
 #include "value/Function.hpp"
 #include "../vm/VM.hpp"
@@ -16,7 +17,7 @@
 #include "../vm/value/LSMap.hpp"
 #include "../vm/value/LSClosure.hpp"
 #include "../colors.h"
-#include <bitset>
+#include "../type/RawType.hpp"
 
 #define log_insn(i) log_instructions && _log_insn((i))
 

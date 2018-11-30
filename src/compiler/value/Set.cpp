@@ -1,6 +1,7 @@
 #include "Set.hpp"
 #include "../../vm/value/LSSet.hpp"
 #include "../../vm/VM.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

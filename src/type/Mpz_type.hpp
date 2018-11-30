@@ -5,6 +5,14 @@
 
 namespace ls {
 
+class MpzRawType : public NumberRawType {
+public:
+	MpzRawType() {}
+	virtual const std::string getName() const { return "mpz"; }
+	virtual const std::string getClass() const { return "Number"; }
+	virtual const std::string getJsonName() const { return "number"; }
+};
+
 class Mpz_type : public Integer_type {
 	static int _id;
 public:

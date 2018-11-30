@@ -4,6 +4,7 @@
 #include "../value/LSString.hpp"
 #include "../value/LSNumber.hpp"
 #include "../../vm/VM.hpp"
+#include "../../type/RawType.hpp"
 
 namespace ls {
 

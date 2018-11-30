@@ -16,6 +16,7 @@
 #include "../semantic/SemanticError.hpp"
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 

@@ -7,7 +7,7 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/Exception.hpp"
 #include "llvm/IR/Verifier.h"
-using namespace std;
+#include "../../type/RawType.hpp"
 
 namespace ls {
 

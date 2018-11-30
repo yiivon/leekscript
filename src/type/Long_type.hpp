@@ -5,6 +5,14 @@
 
 namespace ls {
 
+class LongRawType : public NumberRawType {
+public:
+	LongRawType() {}
+	virtual const std::string getName() const { return "long"; }
+	virtual const std::string getClass() const { return "Number"; }
+	virtual const std::string getJsonName() const { return "number"; }
+};
+
 class Long_type : public Integer_type {
 	static int ID;
 public:

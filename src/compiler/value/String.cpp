@@ -1,6 +1,7 @@
 #include "String.hpp"
 #include "../../vm/value/LSString.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
+#include "../../type/RawType.hpp"
 
 using namespace std;
 
