@@ -15,7 +15,6 @@ class Type {
 public:
 	std::vector<const BaseRawType*> _types;
 	bool native; // A C++ object, memory management is done outside the language
-	std::vector<Type> element_type;
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
 	std::vector<bool> arguments_has_default;
@@ -26,7 +25,6 @@ public:
 
 	Type();
 	Type(const BaseRawType* raw_type, bool native = false, bool temporary = false, bool constant = false);
-	Type(const BaseRawType* raw_type, const Type& elements_type, bool native = false, bool temporary = false, bool constant = false);
 
 	int id() const;
 	const BaseRawType* raw() const;
@@ -199,6 +197,7 @@ public:
 	static Type interval();
 	static Type tmp_interval();
 	static Type fun();
+	static Type iterator(const Type);
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);

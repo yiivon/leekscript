@@ -116,15 +116,15 @@ const Type Type::CLOSURE(RawType::CLOSURE, false, false, true);
 const Type Type::CLASS(RawType::CLASS, true);
 const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 
-const Type Type::STRING_ITERATOR(RawType::STRING, Type::STRING);
-const Type Type::INTERVAL_ITERATOR(RawType::INTEGER, Type::INTEGER);
-const Type Type::SET_ITERATOR(RawType::INTEGER, Type::POINTER);
-const Type Type::INTEGER_ITERATOR(RawType::INTEGER, Type::INTEGER);
-const Type Type::LONG_ITERATOR(RawType::LONG, Type::INTEGER);
-const Type Type::MPZ_ITERATOR(RawType::MPZ, Type::INTEGER);
-const Type Type::INT_ARRAY_ITERATOR(RawType::INTEGER, Type::INTEGER);
-const Type Type::REAL_ARRAY_ITERATOR(RawType::REAL, Type::REAL);
-const Type Type::PTR_ARRAY_ITERATOR(RawType::ANY, Type::POINTER);
+const Type Type::STRING_ITERATOR = Type::iterator(Type::STRING);
+const Type Type::INTERVAL_ITERATOR = Type::iterator(Type::INTERVAL);
+const Type Type::SET_ITERATOR = Type::iterator(Type::PTR_SET);
+const Type Type::INTEGER_ITERATOR = Type::iterator(Type::INTEGER);
+const Type Type::LONG_ITERATOR = Type::iterator(Type::LONG);
+const Type Type::MPZ_ITERATOR = Type::iterator(Type::MPZ);
+const Type Type::INT_ARRAY_ITERATOR = Type::iterator(Type::INT_ARRAY);
+const Type Type::REAL_ARRAY_ITERATOR = Type::iterator(Type::REAL_ARRAY);
+const Type Type::PTR_ARRAY_ITERATOR = Type::iterator(Type::PTR_ARRAY);
 
 Type::Type() {
 	native = false;
@@ -135,14 +135,6 @@ Type::Type(const BaseRawType* raw_type, bool native, bool temporary, bool consta
 	this->native = native;
 	this->temporary = temporary;
 	this->constant = constant;
-}
-
-Type::Type(const BaseRawType* raw_type, const Type& element_type, bool native, bool temporary, bool constant) {
-	_types.push_back(raw_type);
-	this->native = native;
-	this->setElementType(element_type);
-	this->constant = constant;
-	this->temporary = temporary;
 }
 
 int Type::id() const {
@@ -215,15 +207,6 @@ const Type Type::getElementType() const {
 	if (_types.size() == 0) { return {}; }
 	return _types[0]->element();
 }
-
-void Type::setElementType(const Type& type) {
-	if (element_type.size() == 0) {
-		element_type.push_back(type);
-	} else {
-		element_type[0] = type;
-	}
-}
-
 const Type Type::getKeyType() const {
 	if (_types.size() == 0) { return {}; }
 	return _types[0]->key();
@@ -245,7 +228,6 @@ void Type::add(const Type type) {
 	for (const auto& t : type._types) {
 		add(t);
 	}
-	element_type = type.element_type;
 }
 
 void Type::add(const BaseRawType* type) {
@@ -313,7 +295,6 @@ bool Type::operator == (const Type& type) const {
 	}
 	return raw() == type.raw() &&
 			// native == type.native &&
-			element_type == type.element_type &&
 			// temporary == type.temporary &&
 			// reference == type.reference &&
 			((raw() != RawType::FUNCTION and raw() != RawType::CLOSURE) ||
@@ -333,12 +314,6 @@ bool Type::operator < (const Type& type) const {
 	}
 	if (native != type.native) {
 		return native < type.native;
-	}
-	for (size_t i = 0; i < element_type.size(); ++i) {
-		if (i >= type.element_type.size()) return false;
-		if (element_type.at(i) != type.element_type.at(i)) {
-			return element_type.at(i) < type.element_type.at(i);
-		}
 	}
 	return false;
 }
@@ -633,6 +608,9 @@ Type Type::tmp_interval() {
 }
 Type Type::fun() {
 	return { RawType::FUNCTION };
+}
+Type Type::iterator(const Type container) {
+	return { new Iterator_type(container) };
 }
 
 ostream& operator << (ostream& os, const Type& type) {

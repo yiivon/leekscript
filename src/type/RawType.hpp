@@ -16,6 +16,7 @@
 #include "Real_type.hpp"
 #include "Null_type.hpp"
 #include "Map_type.hpp"
+#include "Iterator_type.hpp"
 
 namespace ls {
 
