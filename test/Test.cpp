@@ -35,8 +35,8 @@ int Test::all() {
 	clock_t begin = clock();
 	exeTime = 0;
 
-	test_general();
 	test_types();
+	test_general();
 	test_booleans();
 	test_numbers();
 	test_strings();
