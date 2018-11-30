@@ -16,7 +16,6 @@ public:
 	std::vector<const BaseRawType*> _types;
 	bool native; // A C++ object, memory management is done outside the language
 	std::vector<Type> element_type;
-	std::vector<Type> key_type;
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
 	std::vector<bool> arguments_has_default;
@@ -45,9 +44,7 @@ public:
 
 	const Type getElementType() const;
 	void setElementType(const Type&);
-
 	const Type getKeyType() const;
-	void setKeyType(const Type&);
 
 	bool will_take(const std::vector<Type>& args_type);
 

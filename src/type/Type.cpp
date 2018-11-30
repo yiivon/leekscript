@@ -226,17 +226,8 @@ void Type::setElementType(const Type& type) {
 }
 
 const Type Type::getKeyType() const {
-	if (key_type.size()) {
-		return key_type[0];
-	}
-	return {};
-}
-void Type::setKeyType(const Type& type) {
-	if (key_type.size() == 0) {
-		key_type.push_back(type);
-	} else {
-		key_type[0] = type;
-	}
+	if (_types.size() == 0) { return {}; }
+	return _types[0]->key();
 }
 
 bool Type::will_take(const std::vector<Type>& args_type) {
@@ -255,7 +246,6 @@ void Type::add(const Type type) {
 	for (const auto& t : type._types) {
 		add(t);
 	}
-	key_type = type.key_type;
 	element_type = type.element_type;
 }
 
@@ -322,7 +312,6 @@ bool Type::operator == (const Type& type) const {
 	return raw() == type.raw() &&
 			// native == type.native &&
 			element_type == type.element_type &&
-			key_type == type.key_type &&
 			// temporary == type.temporary &&
 			// reference == type.reference &&
 			((raw() != RawType::FUNCTION and raw() != RawType::CLOSURE) ||
@@ -347,12 +336,6 @@ bool Type::operator < (const Type& type) const {
 		if (i >= type.element_type.size()) return false;
 		if (element_type.at(i) != type.element_type.at(i)) {
 			return element_type.at(i) < type.element_type.at(i);
-		}
-	}
-	for (size_t i = 0; i < key_type.size(); ++i) {
-		if (i >= type.key_type.size()) return false;
-		if (key_type.at(i) != type.key_type.at(i)) {
-			return key_type.at(i) < type.key_type.at(i);
 		}
 	}
 	return false;
