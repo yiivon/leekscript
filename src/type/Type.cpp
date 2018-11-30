@@ -652,7 +652,7 @@ ostream& operator << (ostream& os, const Type& type) {
 	os << color;
 
 	if (type.raw() == RawType::ANY) {
-		os << C_YELLOW;
+		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
 		if (type == Type::INT_ARRAY_ITERATOR) {
 			os << "iterator<array<int>>";
@@ -661,7 +661,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		} else if (type == Type::PTR_ARRAY_ITERATOR) {
 			os << "iterator<array<*>>";
 		} else {
-			os << "?";
+			os << "any";
 		}
 	} else if (type.raw() == RawType::FUNCTION || type.raw() == RawType::CLOSURE) {
 		os << BLUE_BOLD;
