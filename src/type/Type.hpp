@@ -9,23 +9,6 @@
 
 namespace ls {
 
-enum class Nature {
-	VALUE, POINTER
-};
-
-class BaseRawType {
-public:
-	virtual ~BaseRawType() = 0;
-	virtual int id() const { return 0; }
-	virtual const std::string getName() const = 0;
-	virtual const std::string getClass() const { return "?"; }
-	virtual const std::string getJsonName() const { return "?"; }
-	virtual bool iterable() const { return false; }
-	virtual bool is_container() const { return false; }
-	virtual int size() const { return 64; }
-	virtual bool is_placeholder() const { return false; }
-};
-
 class AnyRawType : public BaseRawType {
 public:
 	AnyRawType() {}
@@ -193,48 +176,7 @@ public:
 	virtual const std::string getName() const { return name; }
 	virtual bool is_placeholder() const { return true; }
 };
-
-class RawType {
-public:
-	static const AnyRawType _ANY;
-	static const NullRawType _NULL;
-	static const BooleanRawType _BOOLEAN;
-	static const NumberRawType _NUMBER;
-	static const MpzRawType _MPZ;
-	static const IntegerRawType _INTEGER;
-	static const LongRawType _LONG;
-	static const FloatRawType _REAL;
-	static const StringRawType _STRING;
-	static const ArrayRawType _ARRAY;
-	static const MapRawType _MAP;
-	static const SetRawType _SET;
-	static const IntervalRawType _INTERVAL;
-	static const ObjectRawType _OBJECT;
-	static const FunctionRawType _FUNCTION;
-	static const ClosureRawType _CLOSURE;
-	static const ClassRawType _CLASS;
-
-	static const AnyRawType* const ANY;
-	static const NullRawType* const NULLL;
-	static const BooleanRawType* const BOOLEAN;
-	static const NumberRawType* const NUMBER;
-	static const MpzRawType* const MPZ;
-	static const IntegerRawType* const INTEGER;
-	static const LongRawType* const LONG;
-	static const FloatRawType* const REAL;
-	static const StringRawType* const STRING;
-	static const ArrayRawType* const ARRAY;
-	static const MapRawType* const MAP;
-	static const SetRawType* const SET;
-	static const IntervalRawType* const INTERVAL;
-	static const ObjectRawType* const OBJECT;
-	static const FunctionRawType* const FUNCTION;
-	static const ClosureRawType* const CLOSURE;
-	static const ClassRawType* const CLASS;
-
-	static std::vector<const BaseRawType*> placeholder_types;
-	static void clear_placeholder_types();
-};
+class BaseRawType;
 
 class Type {
 public:
