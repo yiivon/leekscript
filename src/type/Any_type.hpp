@@ -12,6 +12,7 @@ public:
 	virtual ~AnyRawType() {}
 	virtual const std::string getName() const { return "any"; }
 	virtual llvm::Type* llvm() const;
+	virtual std::ostream& print(std::ostream& os) const override;
 };
 
 class PlaceholderRawType : public BaseRawType {
@@ -23,14 +24,6 @@ public:
 	virtual const std::string getName() const { return name; }
 	virtual bool is_placeholder() const { return true; }
 	virtual llvm::Type* llvm() const override { }
-};
-
-class Any_type : public Base_type {
-public:
-	Any_type();
-	virtual ~Any_type();
-	virtual bool compatible(std::shared_ptr<Base_type>) const override;
-	virtual std::ostream& print(std::ostream&) const override;
 };
 
 }

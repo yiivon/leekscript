@@ -1,7 +1,6 @@
 #ifndef STRING_TYPE_HPP
 #define STRING_TYPE_HPP
 
-#include "List_type.hpp"
 #include "BaseRawType.hpp"
 
 namespace ls {
@@ -16,14 +15,7 @@ public:
 	virtual bool iterable() const { return true; }
 	virtual bool is_container() const { return true; }
 	virtual llvm::Type* llvm() const override;
-};
-
-class String_type : public List_type {
-	static int _id;
-public:
-	String_type(int id = 1, const std::string name = "string");
-	virtual ~String_type();
-	virtual std::ostream& print(std::ostream&) const override;
+	virtual std::ostream& print(std::ostream& os) const override;
 };
 
 }
