@@ -92,7 +92,7 @@ VM::VM(bool v1) : compiler(this) {
 	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\"};
 	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
 
-	Type op_type = Type(RawType::FUNCTION);
+	auto op_type = Type::fun();
 	op_type.setArgumentType(0, Type::POINTER);
 	op_type.setArgumentType(1, Type::POINTER);
 	op_type.setReturnType(Type::POINTER);
@@ -108,7 +108,7 @@ VM::VM(bool v1) : compiler(this) {
 		add_internal_var(ops[o], op_type);
 	}
 
-	Type ptr_type = Type(RawType::FUNCTION);
+	auto ptr_type = Type::fun();
 	ptr_type.setArgumentType(0, Type::POINTER);
 	ptr_type.setReturnType(Type::POINTER);
 	auto fun = new LSFunction((void*) ptr_fun);

@@ -20,7 +20,7 @@ public:
 	std::vector<TypeMutator*> mutators;
 	StaticMethod(Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {}) {
 		this->addr = addr;
-		type = {RawType::FUNCTION};
+		type = Type::fun();
 		type.setReturnType(return_type);
 		for (auto& arg : args) {
 			type.addArgumentType(arg);

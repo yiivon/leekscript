@@ -28,7 +28,6 @@ public:
 	Type();
 	Type(const BaseRawType* raw_type, bool native = false, bool temporary = false, bool constant = false);
 	Type(const BaseRawType* raw_type, const Type& elements_type, bool native = false, bool temporary = false, bool constant = false);
-	Type(const BaseRawType* raw_type, const Type& key_type, const Type& element_type, bool native = false, bool constant = false);
 
 	int id() const;
 	const BaseRawType* raw() const;
@@ -108,7 +107,6 @@ public:
 	static const Type OBJECT_TMP;
 
 	// Arrays
-	static Type array(const Type);
 	static const Type ARRAY;
 	static const Type CONST_ARRAY;
 	static const Type PTR_ARRAY;
@@ -127,6 +125,7 @@ public:
 	static const Type INT_ARRAY_ARRAY;
 
 	static const Type MAP;
+	static const Type CONST_MAP;
 	static const Type PTR_PTR_MAP;
 	static const Type PTR_INT_MAP;
 	static const Type PTR_REAL_MAP;
@@ -185,6 +184,18 @@ public:
 	static llvm::StructType* LLVM_FUNCTION_TYPE;
 	static llvm::Type* LLVM_FUNCTION_TYPE_PTR;
 	static llvm::StructType* LLVM_INTEGER_ITERATOR_TYPE;
+
+	static Type array(const Type = {});
+	static Type const_array(const Type = {});
+	static Type tmp_array(const Type = {});
+	static Type set(const Type = {});
+	static Type const_set(const Type = {});
+	static Type tmp_set(const Type = {});
+	static Type map(const Type = {}, const Type = {});
+	static Type const_map(const Type = {}, const Type = {});
+	static Type interval();
+	static Type tmp_interval();
+	static Type fun();
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);

@@ -86,10 +86,7 @@ void Map::analyse(SemanticAnalyser* analyser) {
 			constant = false;
 		}
 	}
-
-	type = Type::PTR_PTR_MAP;
-	type.setKeyType(key_type);
-	type.setElementType(value_type);
+	type = Type::map(key_type, value_type);
 	type.temporary = true;
 }
 

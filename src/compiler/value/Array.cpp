@@ -123,13 +123,13 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			}
 			if (element_type == Type::BOOLEAN) element_type = Type::POINTER;
 			element_type.temporary = false;
-			type.setElementType(element_type);
+			type = Type::array(element_type);
 		}
 	}
-	type.temporary = true;
 	if (type.getElementType()._types.size() == 0) {
-		type.setElementType(Type::POINTER);
+		type = Type::PTR_ARRAY;
 	}
+	type.temporary = true;
 	// std::cout << "Array type : " << type << std::endl;
 }
 
@@ -156,7 +156,7 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 			element_type = Type::get_compatible_type(element_type, ex->type);
 		}
 	}
-	this->type.setElementType(element_type);
+	this->type = Type::array(element_type);
 	// cout << "Array::elements_will_take type after " << this->type << endl;
 }
 
@@ -170,9 +170,9 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	}
 	Type current_type = this->type.getElementType();
 	if (expressions.size() == 0) {
-		this->type.setElementType(added_type);
+		this->type = Type::array(added_type);
 	} else {
-		this->type.setElementType(Type::get_compatible_type(current_type, added_type));
+		this->type = Type::array(Type::get_compatible_type(current_type, added_type));
 	}
 	// Re-analyze expressions with the new type
 	for (size_t i = 0; i < expressions.size(); ++i) {
@@ -195,7 +195,7 @@ bool Array::elements_will_store(SemanticAnalyser* analyser, const Type& type, in
 			element_type = Type::get_compatible_type(element_type, ex->type);
 		}
 	}
-	this->type.setElementType(element_type);
+	this->type = Type::array(element_type);
 }
 
 Compiler::value Array::compile(Compiler& c) const {

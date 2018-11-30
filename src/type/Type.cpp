@@ -59,52 +59,53 @@ const Type Type::STRING_TMP(RawType::STRING, false, true);
 const Type Type::OBJECT(RawType::OBJECT);
 const Type Type::OBJECT_TMP(RawType::OBJECT, false, true);
 
-const Type Type::ARRAY(RawType::ARRAY);
-const Type Type::PTR_ARRAY(RawType::ARRAY, Type::POINTER);
-const Type Type::CONST_ARRAY(RawType::ARRAY, Type::POINTER, false, false, true);
-const Type Type::INT_ARRAY(RawType::ARRAY, Type::INTEGER);
-const Type Type::REAL_ARRAY(RawType::ARRAY, Type::REAL);
-const Type Type::PTR_ARRAY_TMP(RawType::ARRAY, Type::POINTER, false, true);
-const Type Type::INT_ARRAY_TMP(RawType::ARRAY, Type::INTEGER, false, true);
-const Type Type::REAL_ARRAY_TMP(RawType::ARRAY, Type::REAL, false, true);
-const Type Type::STRING_ARRAY(RawType::ARRAY, Type::STRING);
-const Type Type::CONST_PTR_ARRAY(RawType::ARRAY, {}, false, false, true);
-const Type Type::CONST_INT_ARRAY(RawType::ARRAY, Type::INTEGER, false, false, true);
-const Type Type::CONST_REAL_ARRAY(RawType::ARRAY, Type::REAL, false, false, true);
-const Type Type::CONST_STRING_ARRAY(RawType::ARRAY, Type::STRING, false, false, true);
+const Type Type::ARRAY = Type::array();
+const Type Type::PTR_ARRAY = Type::array(Type::POINTER);
+const Type Type::CONST_ARRAY = Type::const_array();
+const Type Type::INT_ARRAY = Type::array(Type::INTEGER);
+const Type Type::REAL_ARRAY = Type::array(Type::REAL);
+const Type Type::PTR_ARRAY_TMP = Type::tmp_array(Type::POINTER);
+const Type Type::INT_ARRAY_TMP = Type::tmp_array(Type::INTEGER);
+const Type Type::REAL_ARRAY_TMP = Type::tmp_array(Type::REAL);
+const Type Type::STRING_ARRAY = Type::array(Type::STRING);
+const Type Type::CONST_PTR_ARRAY = Type::const_array(Type::POINTER);
+const Type Type::CONST_INT_ARRAY = Type::const_array(Type::INTEGER);
+const Type Type::CONST_REAL_ARRAY = Type::const_array(Type::REAL);
+const Type Type::CONST_STRING_ARRAY = Type::const_array(Type::STRING);
 
-const Type Type::MAP(RawType::MAP);
-const Type Type::PTR_PTR_MAP(RawType::MAP, Type::POINTER, Type::POINTER);
-const Type Type::PTR_INT_MAP(RawType::MAP, Type::POINTER, Type::INTEGER);
-const Type Type::PTR_REAL_MAP(RawType::MAP, Type::POINTER, Type::REAL);
-const Type Type::REAL_PTR_MAP(RawType::MAP, Type::REAL, Type::POINTER);
-const Type Type::REAL_INT_MAP(RawType::MAP, Type::REAL, Type::INTEGER);
-const Type Type::REAL_REAL_MAP(RawType::MAP, Type::REAL, Type::REAL);
-const Type Type::INT_PTR_MAP(RawType::MAP, Type::INTEGER, Type::POINTER);
-const Type Type::INT_INT_MAP(RawType::MAP, Type::INTEGER, Type::INTEGER);
-const Type Type::INT_REAL_MAP(RawType::MAP, Type::INTEGER, Type::REAL);
-const Type Type::CONST_PTR_PTR_MAP(RawType::MAP, Type::POINTER, Type::POINTER, false, true);
-const Type Type::CONST_PTR_INT_MAP(RawType::MAP, Type::POINTER, Type::INTEGER, false, true);
-const Type Type::CONST_PTR_REAL_MAP(RawType::MAP, Type::POINTER, Type::REAL, false, true);
-const Type Type::CONST_REAL_PTR_MAP(RawType::MAP, Type::REAL, Type::POINTER, false, true);
-const Type Type::CONST_REAL_INT_MAP(RawType::MAP, Type::REAL, Type::INTEGER, false, true);
-const Type Type::CONST_REAL_REAL_MAP(RawType::MAP, Type::REAL, Type::REAL, false, true);
-const Type Type::CONST_INT_PTR_MAP(RawType::MAP, Type::INTEGER, Type::POINTER, false, true);
-const Type Type::CONST_INT_INT_MAP(RawType::MAP, Type::INTEGER, Type::INTEGER, false, true);
-const Type Type::CONST_INT_REAL_MAP(RawType::MAP, Type::INTEGER, Type::REAL, false, true);
+const Type Type::MAP = Type::map();
+const Type Type::PTR_PTR_MAP = Type::map(Type::POINTER, Type::POINTER);
+const Type Type::PTR_INT_MAP = Type::map(Type::POINTER, Type::INTEGER);
+const Type Type::PTR_REAL_MAP = Type::map(Type::POINTER, Type::REAL);
+const Type Type::REAL_PTR_MAP = Type::map(Type::REAL, Type::POINTER);
+const Type Type::REAL_INT_MAP = Type::map(Type::REAL, Type::INTEGER);
+const Type Type::REAL_REAL_MAP = Type::map(Type::REAL, Type::REAL);
+const Type Type::INT_PTR_MAP = Type::map(Type::INTEGER, Type::POINTER);
+const Type Type::INT_INT_MAP = Type::map(Type::INTEGER, Type::INTEGER);
+const Type Type::INT_REAL_MAP = Type::map(Type::INTEGER, Type::REAL);
+const Type Type::CONST_MAP = Type::const_map();
+const Type Type::CONST_PTR_PTR_MAP = Type::const_map(Type::POINTER, Type::POINTER);
+const Type Type::CONST_PTR_INT_MAP = Type::const_map(Type::POINTER, Type::INTEGER);
+const Type Type::CONST_PTR_REAL_MAP = Type::const_map(Type::POINTER, Type::REAL);
+const Type Type::CONST_REAL_PTR_MAP = Type::const_map(Type::REAL, Type::POINTER);
+const Type Type::CONST_REAL_INT_MAP = Type::const_map(Type::REAL, Type::INTEGER);
+const Type Type::CONST_REAL_REAL_MAP = Type::const_map(Type::REAL, Type::REAL);
+const Type Type::CONST_INT_PTR_MAP = Type::const_map(Type::INTEGER, Type::POINTER);
+const Type Type::CONST_INT_INT_MAP = Type::const_map(Type::INTEGER, Type::INTEGER);
+const Type Type::CONST_INT_REAL_MAP = Type::const_map(Type::INTEGER, Type::REAL);
 
-const Type Type::SET(RawType::SET, {});
-const Type Type::INT_SET(RawType::SET, Type::INTEGER);
-const Type Type::REAL_SET(RawType::SET, Type::REAL);
-const Type Type::CONST_SET(RawType::SET, {}, false, false, true);
-const Type Type::CONST_INT_SET(RawType::SET, Type::INTEGER, false, false, true);
-const Type Type::CONST_REAL_SET(RawType::SET, Type::REAL, false, false, true);
+const Type Type::SET = Type::set();
+const Type Type::INT_SET = Type::set(Type::INTEGER);
+const Type Type::REAL_SET = Type::set(Type::REAL);
+const Type Type::CONST_SET = Type::const_set();
+const Type Type::CONST_INT_SET = Type::const_set(Type::INTEGER);
+const Type Type::CONST_REAL_SET = Type::const_set(Type::REAL);
 
-const Type Type::INTERVAL(RawType::INTERVAL, Type::INTEGER);
-const Type Type::INTERVAL_TMP(RawType::INTERVAL, Type::INTEGER, false, true);
-const Type Type::PTR_ARRAY_ARRAY(RawType::ARRAY, Type::PTR_ARRAY);
-const Type Type::REAL_ARRAY_ARRAY(RawType::ARRAY, Type::REAL_ARRAY);
-const Type Type::INT_ARRAY_ARRAY(RawType::ARRAY, Type::INT_ARRAY);
+const Type Type::INTERVAL = Type::interval();
+const Type Type::INTERVAL_TMP = Type::tmp_interval();
+const Type Type::PTR_ARRAY_ARRAY = Type::array(Type::PTR_ARRAY);
+const Type Type::REAL_ARRAY_ARRAY = Type::array(Type::REAL_ARRAY);
+const Type Type::INT_ARRAY_ARRAY = Type::array(Type::INT_ARRAY);
 
 const Type Type::FUNCTION(RawType::FUNCTION, false, false, true);
 const Type Type::FUNCTION_P(RawType::FUNCTION, false, false, true);
@@ -115,8 +116,8 @@ const Type Type::CLASS(RawType::CLASS, true);
 const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 
 const Type Type::STRING_ITERATOR(RawType::STRING, Type::STRING);
-const Type Type::INTERVAL_ITERATOR(RawType::INTERVAL, Type::INTEGER);
-const Type Type::SET_ITERATOR(RawType::SET, Type::POINTER);
+const Type Type::INTERVAL_ITERATOR(RawType::INTEGER, Type::INTEGER);
+const Type Type::SET_ITERATOR(RawType::INTEGER, Type::POINTER);
 const Type Type::INTEGER_ITERATOR(RawType::INTEGER, Type::INTEGER);
 const Type Type::LONG_ITERATOR(RawType::LONG, Type::INTEGER);
 const Type Type::MPZ_ITERATOR(RawType::MPZ, Type::INTEGER);
@@ -141,14 +142,6 @@ Type::Type(const BaseRawType* raw_type, const Type& element_type, bool native, b
 	this->setElementType(element_type);
 	this->constant = constant;
 	this->temporary = temporary;
-}
-
-Type::Type(const BaseRawType* raw_type, const Type& key_type, const Type& element_type, bool native, bool constant) {
-	_types.push_back(raw_type);
-	this->native = native;
-	this->setKeyType(key_type);
-	this->setElementType(element_type);
-	this->constant = constant;
 }
 
 int Type::id() const {
@@ -636,7 +629,37 @@ Type Type::generate_new_placeholder_type() {
 }
 
 Type Type::array(const Type element) {
-	return { RawType::ARRAY, element };
+	return { new Array_type(element) };
+}
+Type Type::const_array(const Type element) {
+	return { new Array_type(element), false, false, true };
+}
+Type Type::tmp_array(const Type element) {
+	return { new Array_type(element), false, true };
+}
+Type Type::set(const Type element) {
+	return { new Set_type(element) };
+}
+Type Type::const_set(const Type element) {
+	return { new Set_type(element), false, false, true };
+}
+Type Type::tmp_set(const Type element) {
+	return { new Set_type(element), false, true };
+}
+Type Type::map(const Type key, const Type element) {
+	return { new Map_type(key, element) };
+}
+Type Type::const_map(const Type key, const Type element) {
+	return { new Map_type(key, element), false, false, true };
+}
+Type Type::interval() {
+	return { new Interval_type() };
+}
+Type Type::tmp_interval() {
+	return { new Interval_type(), false, true };
+}
+Type Type::fun() {
+	return { RawType::FUNCTION };
 }
 
 ostream& operator << (ostream& os, const Type& type) {

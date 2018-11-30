@@ -70,11 +70,9 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 
 	// Body
 	analyser->enter_loop();
-	if (type._types.size() == 0) {
-		body->analyse(analyser);
-	} else {
-		body->analyse(analyser);
-		type.setElementType(body->type);
+	body->analyse(analyser);
+	if (req_type.is_array()) {
+		type = Type::array(body->type);
 	}
 	analyser->leave_loop();
 

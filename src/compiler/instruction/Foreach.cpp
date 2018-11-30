@@ -82,11 +82,10 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	value_var = analyser->add_var(value.get(), value_type, nullptr, nullptr);
 
 	analyser->enter_loop();
-	if (type._types.size() == 0) {
+	body->analyse(analyser);
+	if (req_type.is_array()) {
 		body->analyse(analyser);
-	} else {
-		body->analyse(analyser);
-		type.setElementType(body->type);
+		type = Type::array(body->type);
 	}
 	analyser->leave_loop();
 	analyser->leave_block();
