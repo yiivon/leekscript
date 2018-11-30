@@ -24,5 +24,8 @@ bool Map_type::compatible(const BaseRawType* type) const {
 	}
 	return false;
 }
+llvm::Type* Map_type::llvm() const {
+	return Type::LLVM_LSVALUE_TYPE_PTR;
+}
 
 }

@@ -1,8 +1,13 @@
 #include "Null_type.hpp"
 #include "Ty.hpp"
+#include "Type.hpp"
 #include "../colors.h"
 
 namespace ls {
+
+llvm::Type* NullRawType::llvm() const {
+	return Type::LLVM_LSVALUE_TYPE_PTR;
+}
 
 int Null_type::_id = Ty::get_next_id();
 

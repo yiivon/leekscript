@@ -11,6 +11,7 @@ public:
 	AnyRawType() {}
 	virtual ~AnyRawType() {}
 	virtual const std::string getName() const { return "any"; }
+	virtual llvm::Type* llvm() const;
 };
 
 class PlaceholderRawType : public BaseRawType {
@@ -21,6 +22,7 @@ public:
 	virtual int id() const { return -1; } // LCOV_EXCL_LINE id() method is used at compilation and placeholder types mustn't be compiled.
 	virtual const std::string getName() const { return name; }
 	virtual bool is_placeholder() const { return true; }
+	virtual llvm::Type* llvm() const override { }
 };
 
 class Any_type : public Base_type {

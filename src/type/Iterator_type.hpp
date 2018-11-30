@@ -18,6 +18,7 @@ public:
 	virtual bool is_container() const { return true; }
 	virtual bool operator == (const BaseRawType*) const override;
 	virtual bool compatible(const BaseRawType*) const override;
+	virtual llvm::Type* llvm() const override;
 };
 
 }

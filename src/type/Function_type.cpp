@@ -1,7 +1,12 @@
 #include "Function_type.hpp"
 #include "../colors.h"
+#include "Type.hpp"
 
 namespace ls {
+
+llvm::Type* FunctionRawType::llvm() const {
+	return Type::LLVM_LSVALUE_TYPE_PTR;
+}
 
 Function_type::Function_type() : Base_type(1, "function") {}
 Function_type::~Function_type() {}

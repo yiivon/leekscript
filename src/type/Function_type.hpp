@@ -13,6 +13,7 @@ public:
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getClass() const { return "Function"; }
 	virtual const std::string getJsonName() const { return "function"; }
+	virtual llvm::Type* llvm() const override;
 };
 
 class ClosureRawType : public FunctionRawType {

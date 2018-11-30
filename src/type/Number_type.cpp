@@ -5,6 +5,10 @@
 
 namespace ls {
 
+llvm::Type* NumberRawType::llvm() const {
+	assert(false);
+}
+
 int Number_type::_id = Ty::get_next_id();
 
 Number_type::Number_type(int id, const std::string name) : Base_type(_id * id, name) {}

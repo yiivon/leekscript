@@ -2,6 +2,7 @@
 #include "Any_type.hpp"
 #include "../colors.h"
 #include <iostream>
+#include "../compiler/Compiler.hpp"
 
 namespace ls {
 
@@ -17,7 +18,14 @@ bool Iterator_type::compatible(const BaseRawType* type) const {
 	}
 	return false;
 }
-
+llvm::Type* Iterator_type::llvm() const {
+	if (_container == Type::INT_ARRAY_ITERATOR) {
+		return llvm::Type::getInt32PtrTy(LLVMCompiler::context);
+	}
+	if (_container == Type::PTR_ARRAY_ITERATOR) {
+		return Type::LLVM_LSVALUE_TYPE_PTR->getPointerTo();
+	}
+}
 // std::ostream& Array_type::print(std::ostream& os) const {
 // 	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
 // 	return os;

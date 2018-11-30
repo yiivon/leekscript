@@ -3,8 +3,13 @@
 #include "Ty.hpp"
 #include "../colors.h"
 #include <iostream>
+#include "Type.hpp"
 
 namespace ls {
+
+llvm::Type* StringRawType::llvm() const {
+	return Type::LLVM_LSVALUE_TYPE_PTR;
+}
 
 int String_type::_id = Ty::get_next_id();
 

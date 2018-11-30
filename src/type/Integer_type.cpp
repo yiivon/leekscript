@@ -2,9 +2,13 @@
 #include "Ty.hpp"
 #include "../colors.h"
 #include <iostream>
+#include "../compiler/Compiler.hpp"
 
 namespace ls {
 
+llvm::Type* IntegerRawType::llvm() const {
+	return llvm::Type::getInt32Ty(LLVMCompiler::context);
+}
 std::ostream& IntegerRawType::print(std::ostream& os) const {
 	os << BLUE_BOLD << "int" << END_COLOR;
 	return os;

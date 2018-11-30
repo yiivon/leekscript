@@ -1,8 +1,13 @@
 #include "Bool_type.hpp"
 #include "Ty.hpp"
 #include "../colors.h"
+#include "../compiler/Compiler.hpp"
 
 namespace ls {
+
+llvm::Type* BooleanRawType::llvm() const {
+	return llvm::Type::getInt1Ty(LLVMCompiler::context);
+}
 
 int Bool_type::_id = Ty::get_next_id();
 

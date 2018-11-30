@@ -15,6 +15,7 @@ public:
 	virtual const std::string getJsonName() const { return "string"; }
 	virtual bool iterable() const { return true; }
 	virtual bool is_container() const { return true; }
+	virtual llvm::Type* llvm() const override;
 };
 
 class String_type : public List_type {

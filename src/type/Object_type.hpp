@@ -15,6 +15,7 @@ public:
 	virtual const std::string getJsonName() const { return "object"; }
 	virtual bool iterable() const { return false; } // TODO not iterable for now
 	virtual bool is_container() const { return true; }
+	virtual llvm::Type* llvm() const override;
 };
 
 class Object_type : public Base_type {

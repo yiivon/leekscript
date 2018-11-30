@@ -1,7 +1,12 @@
 #include "Any_type.hpp"
+#include "Type.hpp"
 #include "../colors.h"
 
 namespace ls {
+
+llvm::Type* AnyRawType::llvm() const {
+	return Type::LLVM_LSVALUE_TYPE_PTR;
+}
 
 Any_type::Any_type() : Base_type(1, "any") {}
 Any_type::~Any_type() {}

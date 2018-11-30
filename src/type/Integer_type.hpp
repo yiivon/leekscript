@@ -11,8 +11,8 @@ public:
 	virtual const std::string getName() const { return "int"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
-	virtual int size() const { return 32; }
 	virtual std::ostream& print(std::ostream&) const override;
+	virtual llvm::Type* llvm() const override;
 };
 
 class Integer_type : public Number_type {

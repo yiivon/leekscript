@@ -14,6 +14,7 @@ public:
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
 	virtual bool iterable() const { return true; }
+	virtual llvm::Type* llvm() const override;
 };
 
 class Number_type : public Base_type {

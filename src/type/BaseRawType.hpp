@@ -2,6 +2,7 @@
 #define BASE_RAW_TYPE
 
 #include <string>
+#include "llvm/IR/Type.h"
 
 namespace ls {
 
@@ -16,12 +17,12 @@ public:
 	virtual const std::string getJsonName() const { return "?"; }
 	virtual bool iterable() const { return false; }
 	virtual bool is_container() const { return false; }
-	virtual int size() const { return 64; }
 	virtual bool is_placeholder() const { return false; }
 	virtual Type element() const;
 	virtual Type key() const;
 	virtual bool operator == (const BaseRawType*) const;
 	virtual bool compatible(const BaseRawType*) const;
+	virtual llvm::Type* llvm() const = 0;
 	virtual std::ostream& print(std::ostream&) const;
 };
 

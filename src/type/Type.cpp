@@ -280,10 +280,6 @@ bool Type::is_container() const {
 	return raw()->is_container();
 }
 
-int Type::size() const {
-	return raw()->size();
-}
-
 bool Type::operator == (const Type& type) const {
 	if (is_array() or is_set() or is_map()) {
 		return raw()->operator == (type.raw());
@@ -328,37 +324,7 @@ llvm::Type* Type::llvm_type() const {
 	if (_types.size() == 0) {
 		return llvm::Type::getVoidTy(LLVMCompiler::context);
 	}
-	if (*this == Type::INT_ARRAY_ITERATOR) {
-		return llvm::Type::getInt32PtrTy(LLVMCompiler::context);
-	}
-	if (*this == Type::PTR_ARRAY_ITERATOR) {
-		return LLVM_LSVALUE_TYPE_PTR->getPointerTo();
-	}
-	if (is_array()) {
-		if (getElementType() == Type::INTEGER) {
-			return LLVM_VECTOR_INT_TYPE_PTR;
-		} else if (getElementType() == Type::REAL) {
-			return LLVM_VECTOR_REAL_TYPE_PTR;
-		} else {
-			return LLVM_VECTOR_TYPE_PTR;
-		}
-	}
-	if (reference or !isNumber() or raw() == RawType::FUNCTION) {
-		return LLVM_LSVALUE_TYPE_PTR;
-	}
-	if (raw() == RawType::MPZ) {
-		return LLVM_MPZ_TYPE;
-	}
-	if (raw() == RawType::BOOLEAN) {
-		return llvm::Type::getInt1Ty(LLVMCompiler::context);
-	}
-	if (raw() == RawType::LONG) {
-		return llvm::Type::getInt64Ty(LLVMCompiler::context);
-	}
-	if (raw() == RawType::REAL) {
-		return llvm::Type::getDoubleTy(LLVMCompiler::context);
-	}
-	return llvm::Type::getInt32Ty(LLVMCompiler::context);
+	return _types[0]->llvm();
 }
 
 Type Type::add_pointer() const {

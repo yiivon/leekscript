@@ -3,6 +3,7 @@
 
 #include "Any_type.hpp"
 #include "Array_type.hpp"
+#include "Set_type.hpp"
 #include "Function_type.hpp"
 #include "Class_type.hpp"
 #include "Object_type.hpp"

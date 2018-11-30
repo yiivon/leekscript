@@ -1,8 +1,13 @@
 #include "Real_type.hpp"
 #include "Ty.hpp"
 #include "../colors.h"
+#include "../compiler/Compiler.hpp"
 
 namespace ls {
+
+llvm::Type* FloatRawType::llvm() const {
+	return llvm::Type::getDoubleTy(LLVMCompiler::context);
+}
 
 int Real_type::_id = Ty::get_next_id();
 

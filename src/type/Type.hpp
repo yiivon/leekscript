@@ -57,7 +57,6 @@ public:
 	bool isNumber() const;
 	bool iterable() const;
 	bool is_container() const;
-	int size() const;
 	Type not_temporary() const;
 	Type add_temporary() const;
 	llvm::Type* llvm_type() const;

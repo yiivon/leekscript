@@ -2,8 +2,13 @@
 #include "Ty.hpp"
 #include "../colors.h"
 #include <iostream>
+#include "../compiler/Compiler.hpp"
 
 namespace ls {
+
+llvm::Type* LongRawType::llvm() const {
+	return llvm::Type::getInt64Ty(LLVMCompiler::context);
+}
 
 int Long_type::ID = Ty::get_next_id();
 

@@ -13,6 +13,7 @@ public:
 	virtual const std::string getName() const { return "bool"; }
 	virtual const std::string getClass() const { return "Boolean"; }
 	virtual const std::string getJsonName() const { return "boolean"; }
+	virtual llvm::Type* llvm() const override;
 };
 
 class Bool_type : public Base_type {

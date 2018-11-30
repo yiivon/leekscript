@@ -13,6 +13,7 @@ public:
 	virtual const std::string getName() const { return "class"; }
 	virtual const std::string getClass() const { return "Class"; }
 	virtual const std::string getJsonName() const { return "class"; }
+	virtual llvm::Type* llvm() const override;
 };
 
 class Class_type : public Base_type {

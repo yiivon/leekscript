@@ -1,7 +1,12 @@
 #include "Class_type.hpp"
 #include "../colors.h"
+#include "Type.hpp"
 
 namespace ls {
+
+llvm::Type* ClassRawType::llvm() const {
+	return Type::LLVM_LSVALUE_TYPE_PTR;
+}
 
 Class_type::Class_type() : Base_type(1, "class") {}
 Class_type::~Class_type() {}

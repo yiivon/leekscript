@@ -1,8 +1,13 @@
 #include "Mpz_type.hpp"
 #include "Ty.hpp"
+#include "Type.hpp"
 #include "../colors.h"
 
 namespace ls {
+
+llvm::Type* MpzRawType::llvm() const {
+	return Type::LLVM_MPZ_TYPE;
+}
 
 int Mpz_type::_id = Ty::get_next_id();
 
