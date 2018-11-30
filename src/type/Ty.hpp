@@ -48,8 +48,6 @@ public:
 	static Ty get_long();
 	static Ty get_double();
 	static Ty mpz();
-	static Ty array();
-	static Ty array(const Ty&);
 	static Ty get_string();
 	static Ty get_class();
 	static Ty object();

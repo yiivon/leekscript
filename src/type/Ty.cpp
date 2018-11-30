@@ -55,7 +55,6 @@ void Ty::init_types() {
 	Ty::string_type = std::make_shared<Base_type>(String_type());
 	Ty::class_type = std::make_shared<Base_type>(Class_type());
 	Ty::object_type = std::make_shared<Base_type>(Object_type());
-	Ty::interval_type = std::make_shared<Base_type>(Interval_type());
 	Ty::fun_type = std::make_shared<Base_type>(Function_type());
 	Ty::char_type = std::make_shared<Base_type>(Char_type());
 
@@ -200,12 +199,6 @@ Ty Ty::get_double() {
 }
 Ty Ty::mpz() {
 	return { mpz_type };
-}
-Ty Ty::array() {
-	return { std::make_shared<Array_type>() };
-}
-Ty Ty::array(const Ty& type) {
-	return { std::make_shared<Array_type>(type) };
 }
 Ty Ty::get_string() {
 	return { string_type };
