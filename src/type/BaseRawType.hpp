@@ -22,6 +22,7 @@ public:
 	virtual Type key() const;
 	virtual bool operator == (const BaseRawType*) const;
 	virtual bool compatible(const BaseRawType*) const;
+	virtual Type iterator() const;
 	virtual llvm::Type* llvm() const = 0;
 	virtual std::ostream& print(std::ostream&) const;
 };

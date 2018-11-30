@@ -61,7 +61,7 @@ public:
 	Type add_temporary() const;
 	llvm::Type* llvm_type() const;
 	Type add_pointer() const;
-	Type iteratorType() const;
+	Type iterator() const;
 
 	bool is_array() const;
 	bool is_set() const;

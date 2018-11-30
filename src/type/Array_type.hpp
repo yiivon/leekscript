@@ -20,6 +20,7 @@ public:
 	virtual bool operator == (const BaseRawType*) const override;
 	virtual bool compatible(const BaseRawType*) const override;
 	virtual llvm::Type* llvm() const override;
+	virtual Type iterator() const override;
 	virtual std::ostream& print(std::ostream&) const override;
 };
 

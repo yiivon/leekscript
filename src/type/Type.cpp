@@ -333,13 +333,11 @@ Type Type::add_pointer() const {
 	return new_type;
 }
 
-Type Type::iteratorType() const {
-	if (is_array()) {
-		if (getElementType() == Type::INTEGER) return Type::INT_ARRAY_ITERATOR;
-		if (getElementType() == Type::REAL) return Type::REAL_ARRAY_ITERATOR;
-		else if (getElementType() == Type::ANY) return Type::PTR_ARRAY_ITERATOR;
+Type Type::iterator() const {
+	if (_types.size() > 0) {
+		return _types[0]->iterator();
 	}
-	assert(false && "No iterator type available");
+	assert(false && "No iterator for void");
 }
 
 bool Type::is_array() const {

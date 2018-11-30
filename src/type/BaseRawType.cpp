@@ -17,6 +17,9 @@ bool BaseRawType::operator == (const BaseRawType*) const {
 bool BaseRawType::compatible(const BaseRawType*) const {
 	return false;
 }
+Type BaseRawType::iterator() const {
+	assert(false && "No iterator available on this type");
+}
 std::ostream& BaseRawType::print(std::ostream& os) const {
 	os << "???";
 	return os;
