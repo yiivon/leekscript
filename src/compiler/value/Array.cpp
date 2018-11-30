@@ -117,6 +117,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					// e.g. Should compile a generic version
 					ex->must_return(analyser, Type::ANY);
 				}
+				// element_type += ex->type;
 				if (element_type._types.size() == 0 or !element_type.compatible(ex->type)) {
 					element_type = element_type * ex->type;
 				}
@@ -211,12 +212,11 @@ Compiler::value Array::compile(Compiler& c) const {
 	}
 	std::vector<Compiler::value> elements;
 	for (Value* val : expressions) {
-		auto v = c.insn_convert(val->compile(c), type.getElementType());
+		auto v = val->compile(c);
 		val->compile_end(c);
-		v = c.insn_move(v);
 		elements.push_back(v);
 	}
-	auto array = c.new_array(type.getElementType(), elements);
+	auto array = c.new_array(type, elements);
 	if (conversion_type == Type::NULLL) {
 		return { c.builder.CreatePointerCast(array.v, Type::ANY.llvm_type()), Type::ANY };
 	}

@@ -250,7 +250,7 @@ public:
 	value insn_get_argument(const std::string& name) const;
 
 	// Arrays
-	value new_array(Type element_type, std::vector<value> elements) const;
+	value new_array(Type type, std::vector<value> elements) const;
 	value insn_array_size(value v) const;
 	void  insn_push_array(value array, value element) const;
 	value insn_array_at(value array, value index) const;

@@ -160,28 +160,30 @@ LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
 	// return {builder.CreateIntCast(v, Type::LLVM_MPZ_TYPE, false), Type::MPZ};
 }
 
-LLVMCompiler::value LLVMCompiler::new_array(Type element_type, std::vector<LLVMCompiler::value> elements) const {
+LLVMCompiler::value LLVMCompiler::new_array(Type type, std::vector<LLVMCompiler::value> elements) const {
+	auto element_type = type.getElementType();
 	auto array = [&]() { if (element_type == Type::INTEGER) {
-		return insn_call(Type::INT_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
+		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<int>();
 			array->reserve(capacity);
 			return array;
 		});
 	} else if (element_type == Type::REAL) {
-		return insn_call(Type::REAL_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
+		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<double>();
 			array->reserve(capacity);
 			return array;
 		});
 	} else {
-		return insn_call(Type::PTR_ARRAY_TMP, {new_integer(elements.size())}, +[](int capacity) {
+		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<LSValue*>();
 			array->reserve(capacity);
 			return array;
 		});
 	}}();
 	for (const auto& element : elements) {
-		insn_push_array(array, element);
+		auto v = insn_move(insn_convert(element, element_type));
+		insn_push_array(array, v);
 	}
 	// size of the array + 1 operations
 	inc_ops(elements.size() + 1);
@@ -898,11 +900,12 @@ LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const {
 void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::value value) const {
 	assert(array.t.llvm_type() == array.v->getType());
 	assert(value.t.llvm_type() == value.v->getType());
-	if (array.t.getElementType() == Type::INTEGER) {
+	auto element_type = array.t.getElementType().fold();
+	if (element_type == Type::INTEGER) {
 		insn_call({}, {array, value}, (void*) +[](LSArray<int>* array, int value) {
 			array->push_back(value);
 		});
-	} else if (array.t.getElementType() == Type::REAL) {
+	} else if (element_type == Type::REAL) {
 		value.t = Type::REAL;
 		insn_call({}, {array, value}, (void*) +[](LSArray<double>* array, double value) {
 			array->push_back(value);

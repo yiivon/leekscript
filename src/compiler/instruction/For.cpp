@@ -95,7 +95,7 @@ Compiler::value For::compile(Compiler& c) const {
 
 	Compiler::value output_v;
 	if (type.is_array()) {
-		output_v = c.new_array(type.getElementType(), {});
+		output_v = c.new_array(type, {});
 		c.insn_inc_refs(output_v);
 		c.add_var("{output}", output_v); // Why create variable ? in case of `break 2` the output must be deleted
 	}
