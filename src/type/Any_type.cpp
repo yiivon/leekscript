@@ -4,10 +4,10 @@
 
 namespace ls {
 
-llvm::Type* AnyRawType::llvm() const {
+llvm::Type* Any_type::llvm() const {
 	return Type::LLVM_LSVALUE_TYPE_PTR;
 }
-std::ostream& AnyRawType::print(std::ostream& os) const {
+std::ostream& Any_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "any" << END_COLOR;
 	return os;
 }

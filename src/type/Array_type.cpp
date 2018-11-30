@@ -8,13 +8,13 @@ namespace ls {
 Type Array_type::element() const {
 	return _element;
 }
-bool Array_type::operator == (const BaseRawType* type) const {
+bool Array_type::operator == (const Base_type* type) const {
 	if (auto array = dynamic_cast<const Array_type*>(type)) {
 		return _element == array->_element;
 	}
 	return false;
 }
-bool Array_type::compatible(const BaseRawType* type) const {
+bool Array_type::compatible(const Base_type* type) const {
 	if (auto array = dynamic_cast<const Array_type*>(type)) {
 		return _element.compatible(array->_element);
 	}

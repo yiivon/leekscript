@@ -4,7 +4,6 @@
 #include <map>
 #include <vector>
 #include "../Compiler.hpp"
-#include "../../type/Ty.hpp"
 #include "../lexical/Location.hpp"
 
 namespace ls {

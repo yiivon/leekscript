@@ -6,13 +6,13 @@
 
 namespace ls {
 
-bool Iterator_type::operator == (const BaseRawType* type) const {
+bool Iterator_type::operator == (const Base_type* type) const {
 	if (auto array = dynamic_cast<const Iterator_type*>(type)) {
 		return _container == array->_container;
 	}
 	return false;
 }
-bool Iterator_type::compatible(const BaseRawType* type) const {
+bool Iterator_type::compatible(const Base_type* type) const {
 	if (auto array = dynamic_cast<const Iterator_type*>(type)) {
 		return _container.compatible(array->_container);
 	}

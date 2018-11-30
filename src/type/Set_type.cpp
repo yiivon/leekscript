@@ -7,13 +7,13 @@ namespace ls {
 Type Set_type::element() const {
 	return _element;
 }
-bool Set_type::operator == (const BaseRawType* type) const {
+bool Set_type::operator == (const Base_type* type) const {
 	if (auto array = dynamic_cast<const Set_type*>(type)) {
 		return _element == array->_element;
 	}
 	return false;
 }
-bool Set_type::compatible(const BaseRawType* type) const {
+bool Set_type::compatible(const Base_type* type) const {
 	if (auto set = dynamic_cast<const Set_type*>(type)) {
 		return _element.compatible(set->_element);
 	}

@@ -5,21 +5,14 @@
 
 namespace ls {
 
-class MpzRawType : public NumberRawType {
+class Mpz_type : public Integer_type {
 public:
-	MpzRawType() {}
+	Mpz_type() {}
 	virtual const std::string getName() const { return "mpz"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
 	virtual llvm::Type* llvm() const override;
-};
-
-class Mpz_type : public Integer_type {
-	static int _id;
-public:
-	Mpz_type();
-	virtual ~Mpz_type();
-	virtual std::ostream& print(std::ostream&) const override;
+	virtual std::ostream& print(std::ostream& os) const override;
 };
 
 }

@@ -9,11 +9,11 @@
 
 namespace ls {
 
-class BaseRawType;
+class Base_type;
 
 class Type {
 public:
-	std::vector<const BaseRawType*> _types;
+	std::vector<const Base_type*> _types;
 	bool native; // A C++ object, memory management is done outside the language
 	std::vector<Type> return_types;
 	std::vector<Type> arguments_types;
@@ -24,12 +24,10 @@ public:
 	bool reference = false;
 
 	Type();
-	Type(const BaseRawType* raw_type, bool native = false, bool temporary = false, bool constant = false);
+	Type(const Base_type* raw_type, bool native = false, bool temporary = false, bool constant = false);
 
 	int id() const;
-	const BaseRawType* raw() const;
-
-	bool must_manage_memory() const;
+	const Base_type* raw() const;
 
 	Type getReturnType() const;
 	void setReturnType(Type type);
@@ -47,13 +45,14 @@ public:
 	bool will_take(const std::vector<Type>& args_type);
 
 	void add(const Type type);
-	void add(const BaseRawType* type);
+	void add(const Base_type* type);
 
 	void toJson(std::ostream&) const;
 	std::string getJsonName() const;
 	std::string to_string() const;
 	std::string getClass() const;
 
+	bool must_manage_memory() const;
 	bool isNumber() const;
 	bool iterable() const;
 	bool is_container() const;
@@ -67,6 +66,8 @@ public:
 	bool is_set() const;
 	bool is_interval() const;
 	bool is_map() const;
+	bool is_closure() const;
+	bool is_function() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }

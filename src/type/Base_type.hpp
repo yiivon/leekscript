@@ -1,33 +1,29 @@
-#ifndef BASE_TYPE_HPP
-#define BASE_TYPE_HPP
+#ifndef BASE_TYPE
+#define BASE_TYPE
 
-#include <ostream>
-#include <memory>
 #include <string>
-#include <functional>
+#include "llvm/IR/Type.h"
 
 namespace ls {
 
-class Ty;
+class Type;
 
 class Base_type {
-private:
-	int _id;
-	std::string name;
 public:
-	Base_type(int id, const std::string name);
-	virtual ~Base_type();
-	bool operator == (const Base_type&) const;
-	virtual bool all(std::function<bool(const Base_type* const)>) const;
-	virtual const std::string clazz() const { return "?"; }
-	virtual const std::string json_name() const { return "?"; }
-	virtual bool compatible(std::shared_ptr<Base_type>) const;
+	virtual ~Base_type() = 0;
+	virtual int id() const { return 0; }
+	virtual const std::string getName() const = 0;
+	virtual const std::string getClass() const { return "?"; }
+	virtual const std::string getJsonName() const { return "?"; }
 	virtual bool iterable() const { return false; }
-	virtual bool container() const { return false; }
-	virtual Ty element() const;
-	virtual int size() const { return 64; }
+	virtual bool is_container() const { return false; }
 	virtual bool is_placeholder() const { return false; }
-	virtual int id() const;
+	virtual Type element() const;
+	virtual Type key() const;
+	virtual bool operator == (const Base_type*) const;
+	virtual bool compatible(const Base_type*) const;
+	virtual Type iterator() const;
+	virtual llvm::Type* llvm() const = 0;
 	virtual std::ostream& print(std::ostream&) const;
 };
 

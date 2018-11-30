@@ -25,7 +25,7 @@ llvm::StructType* Type::LLVM_FUNCTION_TYPE;
 llvm::Type* Type::LLVM_FUNCTION_TYPE_PTR;
 llvm::StructType* Type::LLVM_INTEGER_ITERATOR_TYPE;
 
-std::vector<const BaseRawType*> RawType::placeholder_types;
+std::vector<const Base_type*> RawType::placeholder_types;
 
 void RawType::clear_placeholder_types() {
 	for (const auto& t : placeholder_types)
@@ -125,7 +125,7 @@ Type::Type() {
 	native = false;
 }
 
-Type::Type(const BaseRawType* raw_type, bool native, bool temporary, bool constant) {
+Type::Type(const Base_type* raw_type, bool native, bool temporary, bool constant) {
 	_types.push_back(raw_type);
 	this->native = native;
 	this->temporary = temporary;
@@ -136,7 +136,7 @@ int Type::id() const {
 	if (_types.size() == 0) { return 0; }
 	return _types[0]->id();
 }
-const BaseRawType* Type::raw() const {
+const Base_type* Type::raw() const {
 	if (_types.size() == 0) { return nullptr; }
 	return _types[0];
 }
@@ -225,7 +225,7 @@ void Type::add(const Type type) {
 	}
 }
 
-void Type::add(const BaseRawType* type) {
+void Type::add(const Base_type* type) {
 	for (const auto& t : _types) {
 		if (type == t)
 			return;
@@ -269,15 +269,19 @@ std::string Type::getClass() const {
 }
 
 bool Type::isNumber() const {
-	return dynamic_cast<const NumberRawType*>(raw()) != nullptr || raw() == RawType::BOOLEAN;
+	return dynamic_cast<const Number_type*>(raw()) != nullptr || raw() == RawType::BOOLEAN;
 }
 
 bool Type::iterable() const {
-	return raw()->iterable();
+	return std::all_of(begin(_types), end(_types), [](auto& type) {
+		return type->iterable();
+	});
 }
 
 bool Type::is_container() const {
-	return raw()->is_container();
+	return std::all_of(begin(_types), end(_types), [](auto& type) {
+		return type->is_container();
+	});
 }
 
 bool Type::operator == (const Type& type) const {
@@ -356,6 +360,17 @@ bool Type::is_map() const {
 	if (_types.size() == 0) { return false; }
 	return dynamic_cast<const Map_type*>(_types[0]) != nullptr;
 }
+bool Type::is_closure() const {
+	if (_types.size() == 0) { return false; }
+	if (auto fun = dynamic_cast<const Function_type*>(_types[0])) {
+		return fun->closure();
+	}
+	return false;
+}
+bool Type::is_function() const {
+	if (_types.size() == 0) { return false; }
+	return dynamic_cast<const Function_type*>(_types[0]) != nullptr;
+}
 
 /*
  * Can we convert type into this ?
@@ -377,7 +392,7 @@ bool Type::compatible(const Type& type) const {
 	if (not this->constant and type.constant) {
 		return false; // 'const type' not compatible with 'type'
 	}
-	if ((is_array() && is_array()) || (is_set() && is_set()) || (is_map() && type.is_map())) {
+	if ((is_array() && type.is_array()) || (is_set() && type.is_set()) || (is_map() && type.is_map())) {
 		return raw()->compatible(type.raw());
 	}
 	if (this->raw() != type.raw()) {
@@ -529,7 +544,7 @@ Type Type::generate_new_placeholder_type() {
 	u_int32_t character = 0x03B1 + placeholder_counter;
 	char buff[5];
 	u8_toutf8(buff, 5, &character, 1);
-	type._types.push_back(new PlaceholderRawType(std::string { buff }));
+	type._types.push_back(new Placeholder_type(std::string { buff }));
 	placeholder_counter++;
 	RawType::placeholder_types.push_back(type.raw());
 	return type;
@@ -578,7 +593,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		return os;
 	}
 	if (type.constant) {
-		os << BLUE_BOLD << "const" << END_COLOR;
+		os << BLUE_BOLD << "const:" << END_COLOR;
 	}
 	for (int i = 0; i < type._types.size(); ++i) {
 		if (i > 0) { os << " | "; }

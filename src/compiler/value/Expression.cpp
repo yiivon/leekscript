@@ -119,11 +119,11 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	v1->analyse(analyser);
 	v2->analyse(analyser);
 
-	if (dynamic_cast<const PlaceholderRawType*>(v1->type.raw())) {
+	if (dynamic_cast<const Placeholder_type*>(v1->type.raw())) {
 		type = v1->type;
 		return;
 	}
-	if (dynamic_cast<const PlaceholderRawType*>(v2->type.raw())) {
+	if (dynamic_cast<const Placeholder_type*>(v2->type.raw())) {
 		type = v2->type;
 		return;
 	}

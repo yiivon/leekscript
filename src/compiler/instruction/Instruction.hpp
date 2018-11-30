@@ -3,7 +3,6 @@
 
 #include <ostream>
 #include "../Compiler.hpp"
-#include "../../type/Ty.hpp"
 #include "../lexical/Token.hpp"
 
 namespace ls {

@@ -2,25 +2,24 @@
 #define ANY_TYPE_HPP
 
 #include "Base_type.hpp"
-#include "BaseRawType.hpp"
+#include "Base_type.hpp"
 
 namespace ls {
 
-class AnyRawType : public BaseRawType {
+class Any_type : public Base_type {
 public:
-	AnyRawType() {}
-	virtual ~AnyRawType() {}
+	Any_type() {}
+	virtual ~Any_type() {}
 	virtual const std::string getName() const { return "any"; }
 	virtual llvm::Type* llvm() const;
 	virtual std::ostream& print(std::ostream& os) const override;
 };
 
-class PlaceholderRawType : public BaseRawType {
+class Placeholder_type : public Base_type {
 public:
 	std::string name;
-	PlaceholderRawType(std::string name) : name(name) {}
-	virtual ~PlaceholderRawType() {}
-	virtual int id() const { return -1; } // LCOV_EXCL_LINE id() method is used at compilation and placeholder types mustn't be compiled.
+	Placeholder_type(std::string name) : name(name) {}
+	virtual ~Placeholder_type() {}
 	virtual const std::string getName() const { return name; }
 	virtual bool is_placeholder() const { return true; }
 	virtual llvm::Type* llvm() const override { }

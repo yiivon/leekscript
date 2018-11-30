@@ -1,14 +1,13 @@
 #ifndef STRING_TYPE_HPP
 #define STRING_TYPE_HPP
 
-#include "BaseRawType.hpp"
+#include "Base_type.hpp"
 
 namespace ls {
 
-class StringRawType : public BaseRawType {
+class String_type : public Base_type {
 public:
-	StringRawType() {}
-	virtual int id() const { return 4; }
+	String_type() {}
 	virtual const std::string getName() const { return "string"; }
 	virtual const std::string getClass() const { return "String"; }
 	virtual const std::string getJsonName() const { return "string"; }

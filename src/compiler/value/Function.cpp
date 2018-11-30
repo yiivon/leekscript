@@ -51,7 +51,7 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 Type Function::getReturnType() {
 	if (current_version->type.getReturnType().raw() == RawType::ANY) {
 		if (placeholder_type == RawType::ANY) {
-			placeholder_type = (BaseRawType*) Type::generate_new_placeholder_type()._types[0];
+			placeholder_type = (Base_type*) Type::generate_new_placeholder_type()._types[0];
 		}
 		return placeholder_type;
 	} else {
@@ -621,7 +621,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	((Function*) this)->handle_created = true;
 
 	// }
-	// Search the JIT for the "fun" symbol.	
+	// Search the JIT for the "fun" symbol.
 	auto ExprSymbol = c.findSymbol("fun_" + name + std::to_string(id));
 	assert(ExprSymbol && "Function not found");
 	// Get the symbol's address and cast it to the right type (takes no

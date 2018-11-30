@@ -1,5 +1,4 @@
 #include "Test.hpp"
-#include "../src/type/Ty.hpp"
 #include "../src/colors.h"
 
 void Test::test_types() {

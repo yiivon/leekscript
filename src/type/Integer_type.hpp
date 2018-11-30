@@ -5,22 +5,14 @@
 
 namespace ls {
 
-class IntegerRawType : public NumberRawType {
+class Integer_type : public Number_type {
 public:
-	IntegerRawType() {}
+	Integer_type() {}
 	virtual const std::string getName() const { return "int"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
 	virtual std::ostream& print(std::ostream&) const override;
 	virtual llvm::Type* llvm() const override;
-};
-
-class Integer_type : public Number_type {
-	static int _id;
-public:
-	Integer_type(int id = 1, const std::string name = "integer");
-	virtual ~Integer_type();
-	virtual std::ostream& print(std::ostream&) const override;
 };
 
 }
