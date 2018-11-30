@@ -19,6 +19,7 @@ public:
 	virtual Type element() const override;
 	virtual bool operator == (const BaseRawType*) const override;
 	virtual bool compatible(const BaseRawType*) const override;
+	virtual std::ostream& print(std::ostream&) const override;
 };
 
 class Set_type : public BaseRawType {
@@ -34,6 +35,7 @@ public:
 	virtual Type element() const override;
 	virtual bool operator == (const BaseRawType*) const override;
 	virtual bool compatible(const BaseRawType*) const override;
+	virtual std::ostream& print(std::ostream&) const override;
 };
 
 class MapRawType : public BaseRawType {

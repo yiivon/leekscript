@@ -17,5 +17,9 @@ bool BaseRawType::operator == (const BaseRawType*) const {
 bool BaseRawType::compatible(const BaseRawType*) const {
 	return false;
 }
+std::ostream& BaseRawType::print(std::ostream& os) const {
+	os << "???";
+	return os;
+}
 
 }

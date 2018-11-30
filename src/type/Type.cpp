@@ -614,18 +614,18 @@ Type Type::iterator(const Type container) {
 }
 
 ostream& operator << (ostream& os, const Type& type) {
-
 	if (type._types.size() == 0) {
 		os << C_GREY << "void" << END_COLOR;
 		return os;
 	}
-	// os << BLUE_BOLD;
-	// for (int i = 0; i < type._types.size(); ++i) {
-	// 	if (i > 0) { os << " | "; }
-	// 	os << type._types[i]->getName();
-	// }
-	// os << END_COLOR;
-	// return os;
+	if (type.constant) {
+		os << BLUE_BOLD << "const" << END_COLOR;
+	}
+	for (int i = 0; i < type._types.size(); ++i) {
+		if (i > 0) { os << " | "; }
+		type._types[i]->print(os);
+	}
+	return os;
 
 	auto color = type.isNumber() ? C_GREEN : C_RED;
 	os << color;

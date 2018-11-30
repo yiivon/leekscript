@@ -22,7 +22,10 @@ public:
 	virtual Type key() const;
 	virtual bool operator == (const BaseRawType*) const;
 	virtual bool compatible(const BaseRawType*) const;
+	virtual std::ostream& print(std::ostream&) const;
 };
+
+std::ostream& operator << (std::ostream&, const BaseRawType*);
 
 }
 

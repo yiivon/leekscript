@@ -5,6 +5,11 @@
 
 namespace ls {
 
+std::ostream& IntegerRawType::print(std::ostream& os) const {
+	os << BLUE_BOLD << "int" << END_COLOR;
+	return os;
+}
+
 int Integer_type::_id = Ty::get_next_id();
 
 Integer_type::Integer_type(int id, const std::string name) : Number_type(_id * id, name) {}

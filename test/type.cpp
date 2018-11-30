@@ -1,5 +1,6 @@
 #include "Test.hpp"
 #include "../src/type/Ty.hpp"
+#include "../src/colors.h"
 
 void Test::test_types() {
 
@@ -17,6 +18,15 @@ void Test::test_types() {
 	assert(ls::Type::SET.getJsonName() == "set");
 	assert(ls::Type::NULLL.getJsonName() == "null");
 	assert(ls::Type::FUNCTION.getJsonName() == "function");
+
+	auto assert_print = [&](const ls::Type& type, const std::string& result) {
+		std::ostringstream oss;	oss << type;
+		std::cout << oss.str() << std::endl;
+		assert(oss.str() == result);
+	};
+	assert_print({}, C_GREY "void" END_COLOR);
+	assert_print(ls::Type::INTEGER, BLUE_BOLD "int" END_COLOR);
+	assert_print(ls::Type::INT_ARRAY, BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "int" END_COLOR ">");
 
 	assert(ls::Type::INT_ARRAY == ls::Type::INT_ARRAY);
 	assert(ls::Type::REAL_ARRAY == ls::Type::REAL_ARRAY);

@@ -37,9 +37,14 @@ bool Set_type::compatible(const BaseRawType* type) const {
 	}
 	return false;
 }
-// std::ostream& Array_type::print(std::ostream& os) const {
-// 	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
-// 	return os;
-// }
+
+std::ostream& Array_type::print(std::ostream& os) const {
+	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
+	return os;
+}
+std::ostream& Set_type::print(std::ostream& os) const {
+	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
+	return os;
+}
 
 }
