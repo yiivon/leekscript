@@ -18,9 +18,19 @@ void Test::test_types() {
 	assert(ls::Type::NULLL.getJsonName() == "null");
 	assert(ls::Type::FUNCTION.getJsonName() == "function");
 
-	// Type::more_specific
+	assert(ls::Type::INT_ARRAY == ls::Type::INT_ARRAY);
+	assert(ls::Type::REAL_ARRAY == ls::Type::REAL_ARRAY);
+	assert(ls::Type::PTR_PTR_MAP == ls::Type::PTR_PTR_MAP);
+
+	assert(ls::Type::REAL.compatible(ls::Type::INTEGER));
+	assert(ls::Type::ARRAY.compatible(ls::Type::INT_ARRAY));
+	assert(ls::Type::MAP.compatible(ls::Type::PTR_PTR_MAP));
+	assert(ls::Type::MAP.compatible(ls::Type::INT_PTR_MAP));
+	assert(ls::Type::MAP.compatible(ls::Type::REAL_PTR_MAP));
+
 	assert(ls::Type::get_compatible_type({}, ls::Type::INTEGER) == ls::Type::INTEGER);
 	assert(ls::Type::get_compatible_type(ls::Type::INTEGER, ls::Type::REAL) == ls::Type::REAL);
+
 	assert(ls::Type::more_specific(ls::Type::POINTER, ls::Type::INTEGER));
 	assert(ls::Type::more_specific(ls::Type::PTR_ARRAY, ls::Type::INT_ARRAY));
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::INT_INT_MAP));
