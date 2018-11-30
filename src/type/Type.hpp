@@ -82,8 +82,6 @@ public:
 	 */
 	static unsigned int placeholder_counter;
 
-	static const Type VALUE;
-	static const Type CONST_VALUE;
 	static const Type ANY;
 	static const Type CONST_ANY;
 

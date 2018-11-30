@@ -31,7 +31,7 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 
 	method("compare", {
 		{Type::ANY, {Type::CONST_ANY, Type::CONST_ANY}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_BOOLEAN, Type::CONST_VALUE}, (void*) &BooleanSTD::compare_val_val}
+		{Type::INTEGER, {Type::CONST_BOOLEAN, Type::CONST_ANY}, (void*) &BooleanSTD::compare_val_val}
 	});
 }
 

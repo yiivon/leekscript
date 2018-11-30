@@ -35,11 +35,8 @@ void RawType::clear_placeholder_types() {
 
 unsigned int Type::placeholder_counter = 0;
 
-const Type Type::VALUE(RawType::ANY);
-const Type Type::CONST_VALUE(RawType::ANY, false, false, true);
 const Type Type::ANY(RawType::ANY);
 const Type Type::CONST_ANY(RawType::ANY, false, false, true);
-
 const Type Type::NULLL(RawType::NULLL, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN);
 const Type Type::CONST_BOOLEAN(RawType::BOOLEAN, false, false, true);

@@ -107,7 +107,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	operator_fun = nullptr;
 	operations = 1;
-	type = Type::VALUE;
+	type = Type::ANY;
 
 	// No operator : just analyse v1 and return
 	if (op == nullptr) {
