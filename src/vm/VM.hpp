@@ -57,6 +57,7 @@ public:
 		std::string assembly;
 		std::string pseudo_code;
 		std::string instructions_log;
+		Type type;
 	};
 
 	std::vector<Module*> modules;

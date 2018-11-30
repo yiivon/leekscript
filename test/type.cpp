@@ -47,14 +47,13 @@ void Test::test_types() {
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::INT_INT_MAP));
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::REAL_REAL_MAP));
 
-	// New type
-	// code("12").type(ls::Ty::get_int());
-	// code("12.5").type(ls::Ty::get_double());
-	// code("'salut'").type(ls::Ty::get_string());
-	// code("[]").type(ls::Ty::array());
-	// code("[1]").type(ls::Ty::array(ls::Ty::get_int()));
-	// code("[1, 2.5]").type(ls::Ty::array(ls::Ty::get_int()));
-	// code("[[1]]").type(ls::Ty::array(ls::Ty::array(ls::Ty::get_int())));
+	code("12").type(ls::Type::INTEGER);
+	code("12.5").type(ls::Type::REAL);
+	code("'salut'").type(ls::Type::STRING);
+	code("[]").type(ls::Type::PTR_ARRAY);
+	code("[1]").type(ls::Type::array(ls::Type::INTEGER));
+	code("[1, 2.5]").type(ls::Type::array(ls::Type::REAL));
+	code("[[1]]").type(ls::Type::array(ls::Type::array(ls::Type::INTEGER)));
 
 	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_long()) << std::endl;
 	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_integer()) << std::endl;

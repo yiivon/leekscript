@@ -5,7 +5,6 @@
 #include <string>
 #include "../src/vm/VM.hpp"
 #include "../src/vm/value/LSNumber.hpp"
-#include "../src/type/Ty.hpp"
 
 class Test {
 private:
@@ -91,7 +90,7 @@ public:
 		void exception(ls::vm::Exception, std::vector<ls::vm::exception_frame> frames = {{"main", 1}});
 		void output(std::string expected);
 		void quine();
-		void type(ls::Ty);
+		void type(ls::Type);
 		Input& timeout(int ms);
 		Input& ops_limit(long int ops);
 

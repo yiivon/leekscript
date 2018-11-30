@@ -1,7 +1,6 @@
 #ifndef INTERVAL_TYPE_HPP
 #define INTERVAL_TYPE_HPP
 
-#include "List_type.hpp"
 #include "BaseRawType.hpp"
 
 namespace ls {
