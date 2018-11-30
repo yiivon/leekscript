@@ -676,16 +676,16 @@ ostream& operator << (ostream& os, const Type& type) {
 		os << ") → " << type.getReturnType();
 	} else if (type.raw() == RawType::STRING || type.raw() == RawType::CLASS
 		|| type.raw() == RawType::OBJECT || type.raw() == RawType::NULLL
-		|| type.raw() == RawType::INTERVAL) {
+		|| type.is_interval()) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
 		os << type.raw()->getName();
-	} else if (type.raw() == RawType::ARRAY || type.raw() == RawType::SET) {
+	} else if (type.is_array() || type.is_set()) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
 		os << type.raw()->getName();
 		os << "<" << type.getElementType() << BLUE_BOLD << ">";
-	} else if (type.raw() == RawType::MAP) {
+	} else if (type.is_map()) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
 		os << type.raw()->getName();
