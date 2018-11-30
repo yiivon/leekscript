@@ -307,6 +307,9 @@ int Type::size() const {
 }
 
 bool Type::operator == (const Type& type) const {
+	if (is_array() or is_set() or is_map()) {
+		return raw()->operator == (type.raw());
+	}
 	return raw() == type.raw() &&
 			// native == type.native &&
 			element_type == type.element_type &&
