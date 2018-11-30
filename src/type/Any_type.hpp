@@ -11,6 +11,7 @@ public:
 	Any_type() {}
 	virtual ~Any_type() {}
 	virtual const std::string getName() const { return "any"; }
+	virtual bool operator == (const Base_type*) const override;
 	virtual llvm::Type* llvm() const;
 	virtual std::ostream& print(std::ostream& os) const override;
 };
@@ -22,6 +23,7 @@ public:
 	virtual ~Placeholder_type() {}
 	virtual const std::string getName() const { return name; }
 	virtual bool is_placeholder() const { return true; }
+	virtual bool operator == (const Base_type*) const override;
 	virtual llvm::Type* llvm() const override { }
 };
 

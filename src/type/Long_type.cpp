@@ -5,6 +5,9 @@
 
 namespace ls {
 
+bool Long_type::operator == (const Base_type* type) const {
+	return dynamic_cast<const Long_type*>(type);
+}
 llvm::Type* Long_type::llvm() const {
 	return llvm::Type::getInt64Ty(LLVMCompiler::context);
 }

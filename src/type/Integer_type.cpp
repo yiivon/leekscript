@@ -5,6 +5,9 @@
 
 namespace ls {
 
+bool Integer_type::operator == (const Base_type* type) const {
+	return dynamic_cast<const Integer_type*>(type);
+}
 llvm::Type* Integer_type::llvm() const {
 	return llvm::Type::getInt32Ty(LLVMCompiler::context);
 }

@@ -4,6 +4,9 @@
 
 namespace ls {
 
+bool Number_type::operator == (const Base_type* type) const {
+	return dynamic_cast<const Number_type*>(type);
+}
 llvm::Type* Number_type::llvm() const {
 	assert(false);
 }

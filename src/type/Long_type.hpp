@@ -1,7 +1,7 @@
 #ifndef LONG_TYPE_HPP
 #define LONG_TYPE_HPP
 
-#include "Integer_type.hpp"
+#include "Number_type.hpp"
 
 namespace ls {
 
@@ -11,6 +11,7 @@ public:
 	virtual const std::string getName() const { return "long"; }
 	virtual const std::string getClass() const { return "Number"; }
 	virtual const std::string getJsonName() const { return "number"; }
+	virtual bool operator == (const Base_type*) const override;
 	virtual llvm::Type* llvm() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 };

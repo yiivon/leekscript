@@ -33,7 +33,7 @@ void Set::analyse(SemanticAnalyser* analyser) {
 
 	for (auto& ex : expressions) {
 		ex->analyse(analyser);
-		element_type = Type::get_compatible_type(element_type, ex->type);
+		element_type = element_type * ex->type;
 	}
 
 	if (element_type.isNumber()) {
@@ -65,7 +65,7 @@ bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 	if (expressions.size() == 0) {
 		this->type = Type::set(added_type);
 	} else {
-		this->type = Type::set(Type::get_compatible_type(current_type, added_type));
+		this->type = Type::set(current_type * added_type);
 	}
 	// Re-analyze expressions with the new type
 	for (size_t i = 0; i < expressions.size(); ++i) {

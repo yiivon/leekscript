@@ -20,7 +20,7 @@ public:
 	virtual bool is_placeholder() const { return false; }
 	virtual Type element() const;
 	virtual Type key() const;
-	virtual bool operator == (const Base_type*) const;
+	virtual bool operator == (const Base_type*) const = 0;
 	virtual bool compatible(const Base_type*) const;
 	virtual Type iterator() const;
 	virtual llvm::Type* llvm() const = 0;

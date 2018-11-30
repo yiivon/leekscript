@@ -65,7 +65,7 @@ void Block::analyse(SemanticAnalyser* analyser) {
 		instructions[i]->analyse(analyser);
 		if (i == instructions.size() - 1 or instructions[i]->can_return()) {
 			// Last instruction : must return the required type
-			type.add(instructions[i]->type);
+			type += instructions[i]->type;
 			was_reference = type.reference;
 			// for (auto& t : instructions[i]->types) t.reference = false;
 			type.reference = false;

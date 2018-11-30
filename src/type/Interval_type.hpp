@@ -14,6 +14,7 @@ public:
 	virtual bool iterable() const { return true; }
 	virtual bool is_container() const { return true; }
 	virtual Type element() const override;
+	virtual bool operator == (const Base_type*) const override;
 	virtual llvm::Type* llvm() const override;
 };
 

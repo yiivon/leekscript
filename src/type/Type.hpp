@@ -24,6 +24,7 @@ public:
 	bool reference = false;
 
 	Type();
+	Type(std::initializer_list<const Base_type*>);
 	Type(const Base_type* raw_type, bool native = false, bool temporary = false, bool constant = false);
 
 	int id() const;
@@ -44,9 +45,6 @@ public:
 
 	bool will_take(const std::vector<Type>& args_type);
 
-	void add(const Type type);
-	void add(const Base_type* type);
-
 	void toJson(std::ostream&) const;
 	std::string getJsonName() const;
 	std::string to_string() const;
@@ -61,6 +59,11 @@ public:
 	llvm::Type* llvm_type() const;
 	Type add_pointer() const;
 	Type iterator() const;
+
+	void operator += (const Type type);
+	void operator += (const Base_type* type);
+	Type operator * (const Type& t2) const;
+	Type fold() const;
 
 	bool is_array() const;
 	bool is_set() const;
@@ -199,7 +202,6 @@ public:
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww);
 	static bool more_specific(const Type& old, const Type& neww);
-	static Type get_compatible_type(const Type& t1, const Type& t2);
 	static Type generate_new_placeholder_type();
 };
 

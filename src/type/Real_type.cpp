@@ -4,6 +4,9 @@
 
 namespace ls {
 
+bool Real_type::operator == (const Base_type* type) const {
+	return dynamic_cast<const Real_type*>(type);
+}
 llvm::Type* Real_type::llvm() const {
 	return llvm::Type::getDoubleTy(LLVMCompiler::context);
 }

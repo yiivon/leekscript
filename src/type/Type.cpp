@@ -1,7 +1,8 @@
+#include <sstream>
+#include <numeric>
 #include "Type.hpp"
 #include "../constants.h"
 #include "../colors.h"
-#include <sstream>
 #include "../../lib/utf8.h"
 #include "../vm/VM.hpp"
 #include "RawType.hpp"
@@ -124,7 +125,9 @@ const Type Type::PTR_ARRAY_ITERATOR = Type::iterator(Type::PTR_ARRAY);
 Type::Type() {
 	native = false;
 }
-
+Type::Type(std::initializer_list<const Base_type*> types) {
+	_types = types;
+}
 Type::Type(const Base_type* raw_type, bool native, bool temporary, bool constant) {
 	_types.push_back(raw_type);
 	this->native = native;
@@ -219,18 +222,59 @@ bool Type::will_take(const std::vector<Type>& args_type) {
 	return changed;
 }
 
-void Type::add(const Type type) {
+void Type::operator += (const Type type) {
 	for (const auto& t : type._types) {
-		add(t);
+		operator += (t);
 	}
 }
 
-void Type::add(const Base_type* type) {
+void Type::operator += (const Base_type* type) {
 	for (const auto& t : _types) {
 		if (type == t)
 			return;
 	}
 	_types.push_back(type);
+}
+
+Type Type::operator * (const Type& t2) const {
+	if (_types.size() == 0) {
+		return t2;
+	}
+	if (t2._types.size() == 0) {
+		return *this;
+	}
+	if (*this == t2) {
+		return *this;
+	}
+	if (raw() == RawType::NULLL or t2.raw() == RawType::NULLL) {
+		return Type::NULLL;
+	}
+	if (!isNumber() and t2.isNumber()) {
+		return Type::ANY;
+	}
+	if (!t2.isNumber() and isNumber()) {
+		return Type::ANY;
+	}
+	if (raw() == RawType::ANY) {
+		return t2;
+	}
+	if (t2.raw() == RawType::ANY) {
+		return *this;
+	}
+	if (t2.compatible(*this)) {
+		return t2;
+	}
+	if (compatible(t2)) {
+		return *this;
+	}
+	if (is_array() and t2.is_array()) {
+		return array(getElementType() * t2.getElementType());
+	}
+	return Type::ANY;
+}
+
+Type Type::fold() const {
+	return std::accumulate(_types.begin(), _types.end(), Type(), std::multiplies<>());
 }
 
 void Type::toJson(ostream& os) const {
@@ -285,14 +329,12 @@ bool Type::is_container() const {
 }
 
 bool Type::operator == (const Type& type) const {
-	if (is_array() or is_set() or is_map() or is_function()) {
+	return _types.size() == type._types.size() && std::equal(_types.begin(), _types.end(), type._types.begin(), [&](const Base_type* t1, const Base_type* t2) {
+		if (dynamic_cast<const Function_type*>(t1) && dynamic_cast<const Function_type*>(t2)) {
+			return t1 == t2 && (!is_function() || (return_types == type.return_types && arguments_types == type.arguments_types));
+		}
 		return raw()->operator == (type.raw());
-	}
-	return raw() == type.raw() &&
-		// native == type.native &&
-		// temporary == type.temporary &&
-		// reference == type.reference &&
-		(!is_function() || (return_types == type.return_types && arguments_types == type.arguments_types));
+	});
 }
 
 bool Type::operator < (const Type& type) const {
@@ -500,43 +542,6 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 	return false;
 }
 
-Type Type::get_compatible_type(const Type& t1, const Type& t2) {
-	if (t1._types.size() == 0) {
-		return t2;
-	}
-	if (t2._types.size() == 0) {
-		return t1;
-	}
-	if (t1 == t2) {
-		return t1;
-	}
-	if (t1.raw() == RawType::NULLL or t2.raw() == RawType::NULLL) {
-		return Type::NULLL;
-	}
-	if (!t1.isNumber() and t2.isNumber()) {
-		return Type::ANY;
-	}
-	if (!t2.isNumber() and t1.isNumber()) {
-		return Type::ANY;
-	}
-	if (t1.raw() == RawType::ANY) {
-		return t2;
-	}
-	if (t2.raw() == RawType::ANY) {
-		return t1;
-	}
-	if (t2.compatible(t1)) {
-		return t2;
-	}
-	if (t1.compatible(t2)) {
-		return t1;
-	}
-	if (t1.is_array() and t2.is_array()) {
-		return array(get_compatible_type(t1.getElementType(), t2.getElementType()));
-	}
-	return Type::ANY;
-}
-
 Type Type::generate_new_placeholder_type() {
 	Type type;
 	u_int32_t character = 0x03B1 + placeholder_counter;
@@ -597,6 +602,9 @@ ostream& operator << (ostream& os, const Type& type) {
 		if (i > 0) { os << " | "; }
 		type._types[i]->print(os);
 	}
+	if (type.temporary) {
+		os << BLUE_BOLD << "&&" << END_COLOR;
+	}
 	return os;
 
 	auto color = type.isNumber() ? C_GREEN : C_RED;
@@ -619,11 +627,6 @@ ostream& operator << (ostream& os, const Type& type) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
 		os << type.raw()->getName();
-	} else if (type.is_array() || type.is_set()) {
-		os << BLUE_BOLD;
-		if (type.constant) os << "const:";
-		os << type.raw()->getName();
-		os << "<" << type.getElementType() << BLUE_BOLD << ">";
 	} else if (type.is_map()) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";

@@ -4,6 +4,9 @@
 
 namespace ls {
 
+bool Bool_type::operator == (const Base_type* type) const {
+	return dynamic_cast<const Bool_type*>(type);
+}
 llvm::Type* Bool_type::llvm() const {
 	return llvm::Type::getInt1Ty(LLVMCompiler::context);
 }

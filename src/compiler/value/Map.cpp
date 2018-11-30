@@ -50,14 +50,14 @@ void Map::analyse(SemanticAnalyser* analyser) {
 	for (size_t i = 0; i < keys.size(); ++i) {
 		Value* ex = keys[i];
 		ex->analyse(analyser);
-		key_type = Type::get_compatible_type(key_type, ex->type);
+		key_type = key_type * ex->type;
 	}
 	key_type.temporary = false;
 
 	for (size_t i = 0; i < values.size(); ++i) {
 		Value* ex = values[i];
 		ex->analyse(analyser);
-		value_type = Type::get_compatible_type(value_type, ex->type);
+		value_type = value_type * ex->type;
 	}
 	value_type.temporary = false;
 

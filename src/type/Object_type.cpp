@@ -4,6 +4,9 @@
 
 namespace ls {
 
+bool Object_type::operator == (const Base_type* type) const {
+	return dynamic_cast<const Object_type*>(type);
+}
 llvm::Type* Object_type::llvm() const {
 	return Type::LLVM_LSVALUE_TYPE_PTR;
 }

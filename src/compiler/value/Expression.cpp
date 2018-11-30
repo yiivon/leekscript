@@ -328,7 +328,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
-		type = Type::get_compatible_type(v1->type, v2->type);
+		type = v1->type * v2->type;
 		v1->analyse(analyser);
 		v2->analyse(analyser);
 		v1_type = type;

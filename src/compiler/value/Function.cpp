@@ -313,7 +313,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 		// The body had multiple types, compute a compatible type and re-analyse it
 		auto ret = return_type._types[0];
 		for (const auto& t : return_type._types) {
-			ret = Type::get_compatible_type({ret}, {t})._types[0];
+			ret = (Type(ret) * Type(t))._types[0];
 		}
 		version->type.return_types.clear();
 		version->type.setReturnType(return_type);

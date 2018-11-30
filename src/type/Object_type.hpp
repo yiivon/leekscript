@@ -13,6 +13,7 @@ public:
 	virtual const std::string getJsonName() const { return "object"; }
 	virtual bool iterable() const { return false; } // TODO not iterable for now
 	virtual bool is_container() const { return true; }
+	virtual bool operator == (const Base_type*) const override;
 	virtual llvm::Type* llvm() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 };

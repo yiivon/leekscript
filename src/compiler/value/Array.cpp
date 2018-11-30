@@ -77,7 +77,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 				if (element_type._types.size() and element_type != ex->type) {
 					homogeneous = false;
 				}
-				element_type = Type::get_compatible_type(element_type, ex->type);
+				element_type = element_type * ex->type;
 			}
 
 			Type supported_type = {};
@@ -118,7 +118,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					ex->must_return(analyser, Type::ANY);
 				}
 				if (element_type._types.size() == 0 or !element_type.compatible(ex->type)) {
-					element_type = Type::get_compatible_type(element_type, ex->type);
+					element_type = element_type * ex->type;
 				}
 			}
 			if (element_type == Type::BOOLEAN) element_type = Type::ANY;
@@ -152,7 +152,7 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 		if (i == 0) {
 			element_type = ex->type;
 		} else {
-			element_type = Type::get_compatible_type(element_type, ex->type);
+			element_type = element_type * ex->type;
 		}
 	}
 	this->type = Type::array(element_type);
@@ -171,7 +171,7 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	if (expressions.size() == 0) {
 		this->type = Type::array(added_type);
 	} else {
-		this->type = Type::array(Type::get_compatible_type(current_type, added_type));
+		this->type = Type::array(current_type * added_type);
 	}
 	// Re-analyze expressions with the new type
 	for (size_t i = 0; i < expressions.size(); ++i) {
@@ -191,7 +191,7 @@ bool Array::elements_will_store(SemanticAnalyser* analyser, const Type& type, in
 		if (i == 0) {
 			element_type = ex->type;
 		} else {
-			element_type = Type::get_compatible_type(element_type, ex->type);
+			element_type = element_type * ex->type;
 		}
 	}
 	this->type = Type::array(element_type);

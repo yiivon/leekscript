@@ -4,6 +4,9 @@
 
 namespace ls {
 
+bool Mpz_type::operator == (const Base_type* type) const {
+	return dynamic_cast<const Mpz_type*>(type);
+}
 llvm::Type* Mpz_type::llvm() const {
 	return Type::LLVM_MPZ_TYPE;
 }
