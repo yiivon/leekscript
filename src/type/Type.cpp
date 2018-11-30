@@ -430,6 +430,9 @@ bool Type::is_map() const {
  * {int}.compatible({int*}) == false
  */
 bool Type::compatible(const Type& type) const {
+	if (_types.size() == 0 or type._types.size() == 0) {
+		return true;
+	}
 	if (this->isNumber() && !type.isNumber()) {
 		return false;
 	}
@@ -438,6 +441,9 @@ bool Type::compatible(const Type& type) const {
 	}
 	if (not this->constant and type.constant) {
 		return false; // 'const type' not compatible with 'type'
+	}
+	if ((is_array() && is_array()) || (is_set() && is_set()) || (is_map() && type.is_map())) {
+		return raw()->compatible(type.raw());
 	}
 	if (this->raw() != type.raw()) {
 		// Every type is compatible with 'Unknown' type
@@ -464,35 +470,6 @@ bool Type::compatible(const Type& type) const {
 		)) return true;
 
 		return false;
-	}
-	if (this->raw() == RawType::ARRAY || this->raw() == RawType::SET) {
-		const Type e1 = this->getElementType();
-		const Type e2 = type.getElementType();
-		if (e1.raw() == RawType::ANY or e2.raw() == RawType::ANY) {
-			return true;
-		}
-		if (e1._types.size() == 0 or e2._types.size() == 0) {
-			return true;
-		}
-		if (!e1.isNumber() && !e2.isNumber()) return true;
-		return e1 == e2;
-	}
-	if (this->raw() == RawType::MAP) {
-		const Type& k1 = this->getKeyType();
-		const Type& k2 = type.getKeyType();
-		const Type& v1 = this->getElementType();
-		const Type& v2 = type.getElementType();
-		if (!k1.isNumber() && !k2.isNumber()) {
-			if (!v1.isNumber() && !v2.isNumber()) {
-				return true;
-			}
-			return v1 == v2;
-		} else {
-			if (!v1.isNumber() && !v2.isNumber()) {
-				return k1 == k2;
-			}
-			return k1 == k2 && v1 == v2;
-		}
 	}
 	return true;
 }
