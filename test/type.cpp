@@ -67,13 +67,15 @@ void Test::test_types() {
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::REAL_REAL_MAP));
 
 	section("fold");
+	assert(ls::Type().fold() == ls::Type());
+	assert(ls::Type({ls::RawType::INTEGER}).fold() == ls::Type::INTEGER);
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::INTEGER}).fold() == ls::Type::INTEGER);
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::REAL}).fold() == ls::Type::REAL);
 
 	section("LLVM type");
 	assert(ls::Type::INTEGER.llvm_type() == llvm::Type::getInt32Ty(ls::LLVMCompiler::context));
 	assert(ls::Type::REAL.llvm_type() == llvm::Type::getDoubleTy(ls::LLVMCompiler::context));
-	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::REAL}).llvm_type() == llvm::Type::getInt32Ty(ls::LLVMCompiler::context));
+	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::REAL}).llvm_type() == llvm::Type::getDoubleTy(ls::LLVMCompiler::context));
 
 	section("Program type");
 	code("").type(ls::Type());

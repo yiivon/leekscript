@@ -368,7 +368,7 @@ llvm::Type* Type::llvm_type() const {
 	if (_types.size() == 0) {
 		return llvm::Type::getVoidTy(LLVMCompiler::context);
 	}
-	return _types[0]->llvm();
+	return fold()._types[0]->llvm();
 }
 
 Type Type::add_pointer() const {
