@@ -66,7 +66,7 @@ MapSTD::MapSTD() : Module("Map") {
     });
 
 	method("clear", {
-		{Type::PTR_PTR_MAP, {Type::PTR_PTR_MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear, Method::NATIVE},
+		{Type::PTR_PTR_MAP, {Type::MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear, Method::NATIVE},
 		{Type::PTR_REAL_MAP, {Type::PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_clear, Method::NATIVE},
 		{Type::PTR_INT_MAP, {Type::PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_clear, Method::NATIVE},
 		{Type::INT_PTR_MAP, {Type::INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_clear, Method::NATIVE},

@@ -43,7 +43,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY}, (void*) &ValueSTD::copy},
 	});
 	method("average", {
-		{Type::REAL, {Type::CONST_ARRAY}, (void*) &LSArray<LSValue*>::ls_average, Method::NATIVE},
+		{Type::REAL, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_average, Method::NATIVE},
 		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_average, Method::NATIVE},
 		{Type::REAL, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_average, Method::NATIVE},
 	});
@@ -58,7 +58,7 @@ ArraySTD::ArraySTD() : Module("Array") {
     });
 
 	method("clear", {
-		{Type::PTR_ARRAY, {Type::CONST_ARRAY}, (void*) &LSArray<LSValue*>::ls_clear, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_clear, Method::NATIVE},
 		{Type::REAL_ARRAY, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_clear, Method::NATIVE},
 		{Type::INT_ARRAY, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_clear, Method::NATIVE},
 	});
@@ -367,7 +367,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("join", {
-		{Type::STRING, {Type::CONST_ARRAY, Type::CONST_STRING}, (void*) &LSArray<LSValue*>::ls_join, Method::NATIVE},
+		{Type::STRING, {Type::CONST_PTR_ARRAY, Type::CONST_STRING}, (void*) &LSArray<LSValue*>::ls_join, Method::NATIVE},
 		{Type::STRING, {Type::CONST_REAL_ARRAY, Type::CONST_STRING}, (void*) &LSArray<double>::ls_join, Method::NATIVE},
 		{Type::STRING, {Type::CONST_INT_ARRAY, Type::CONST_STRING}, (void*) &LSArray<int>::ls_join, Method::NATIVE},
 	});
@@ -432,7 +432,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("sum", {
-		{Type::POINTER, {Type::CONST_ARRAY}, (void*) &LSArray<LSValue*>::ls_sum, Method::NATIVE},
+		{Type::POINTER, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_sum, Method::NATIVE},
 		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_sum, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_sum, Method::NATIVE},
 	});

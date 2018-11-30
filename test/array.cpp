@@ -273,7 +273,7 @@ void Test::test_arrays() {
 	code("Array.average([])").equals("0");
 	code("[1, 2, 3, 4, 5, 6].average()").equals("3.5");
 	code("[].average()").equals("0");
-	DISABLED_code("['salut', true, []].average()").equals("0");
+	code("['salut', true, []].average()").equals("0");
 	code("[10, -5.7, 30.89, 66].average()").almost(25.2975);
 
 	section("Array.sum()");
@@ -281,7 +281,7 @@ void Test::test_arrays() {
 	code("[10, -5, 30, 66].sum()").equals("101");
 	code("Array.sum(['ab', 'cd', 'ef'])").equals("'abcdef'");
 	code("['ab', 'cd', 'ef'].sum()").equals("'abcdef'");
-	DISABLED_code("['abc', true, 12, [1, 2]].sum()").equals("'abctrue12[1, 2]'");
+	code("['abc', true, 12, [1, 2]].sum()").equals("'abctrue12[1, 2]'");
 	code("[10, -5.7, 30.89, 66].sum()").almost(101.19);
 
 	section("Array.product()");
@@ -345,7 +345,7 @@ void Test::test_arrays() {
 	code("Array.sort([3, 2, 1])").equals("[1, 2, 3]");
 
 	section("Array.filter()");
-	DISABLED_code("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("[3, 10, 'yo']");
+	code("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("[3, 10, 'yo']");
 	code("[3, 4, 5].filter(x -> x > 6)").equals("[]");
 	code("[1, 2, 3, 4, 5, 6, 7].filter(x -> x % 2 == 0)").equals("[2, 4, 6]");
 	code("let a = [3, 4, 5] a.filter(x -> x < 5)").equals("[3, 4]");
@@ -356,7 +356,7 @@ void Test::test_arrays() {
 	code("[3, 4, 5].contains(6)").equals("false");
 	code("[3.5, 4.5, 5.5].contains(6.5)").equals("false");
 	code("[3.5, 4.5, 6.5].contains(6.5)").equals("true");
-	DISABLED_code("['a', true, {}].contains(true)").equals("true");
+	code("['a', true, {}].contains(true)").equals("true");
 	code("['a', true, {}].contains(12)").equals("false");
 
 	section("Array.isEmpty()");
@@ -375,15 +375,15 @@ void Test::test_arrays() {
 
 	section("Array.partition()");
 	code("Array.partition([1, 2, 3, 4, 5], (x -> x < 3))").equals("[[1, 2], [3, 4, 5]]");
-	DISABLED_code("Array.partition([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("[[3, 10, 'yo'], [1, 2, true]]");
+	code("Array.partition([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("[[3, 10, 'yo'], [1, 2, true]]");
 	code("[1, 2, 3, 4, 5].partition(x -> x > 3)").equals("[[4, 5], [1, 2, 3]]");
 	code("[1, 2, 3, 4, 5].partition(x -> x == 3)").equals("[[3], [1, 2, 4, 5]]");
 	DISABLED_code("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)").equals("[[5, 6], [3, 4]]");
-	DISABLED_code("[1, 2, 3, 4, 5].partition(x -> 'yolo')").equals("[[1, 2, 3, 4, 5], []]");
+	code("[1, 2, 3, 4, 5].partition(x -> 'yolo')").equals("[[1, 2, 3, 4, 5], []]");
 
 	section("Array.first()");
-	DISABLED_code("Array.first([1, 2, 3, 10, true, 'yo', null])").equals("1");
-	DISABLED_code("['yo', 3, 4, 5].first()").equals("'yo'");
+	code("Array.first([1, 2, 3, 10, true, 'yo', null])").equals("1");
+	code("['yo', 3, 4, 5].first()").equals("'yo'");
 	code("[12, 2].first()").equals("12");
 	code("[12.891, 2].first()").equals("12.891");
 	code("[].first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -391,8 +391,8 @@ void Test::test_arrays() {
 	code("[12.5].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Array.last()");
-	DISABLED_code("Array.last([1, 2, 3, 10, true, 'yo', null])").equals("null");
-	DISABLED_code("['yo', 3, 4, 5].last()").equals("5");
+	code("Array.last([1, 2, 3, 10, true, 'yo', null])").equals("null");
+	code("['yo', 3, 4, 5].last()").equals("5");
 	code("[12, 2].last()").equals("2");
 	code("[12.891, 2].last()").equals("2");
 	code("[].last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -402,25 +402,25 @@ void Test::test_arrays() {
 	DISABLED_code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");
 
 	section("Array.foldLeft()");
-	DISABLED_code("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')").equals("'concat:12310trueyonull'");
-	DISABLED_code("Array.foldLeft([2, 2, 3], (x, y -> x ** y), 1)").equals("1");
-	DISABLED_code("Array.foldLeft([2.5, 3.5], (x, y -> x ** y), 1.5)").equals("34.7374965567");
+	code("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')").equals("'concat:12310trueyonull'");
+	code("Array.foldLeft([2, 2, 3], (x, y -> x ** y), 1)").equals("1");
+	code("Array.foldLeft([2.5, 3.5], (x, y -> x ** y), 1.5)").equals("34.7374965567");
 	code("Array.foldLeft(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'Xabcd'");
 
 	section("Array.foldRight()");
-	DISABLED_code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");
+	code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");
 	code("Array.foldRight(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'abcdX'");
-	DISABLED_code("Array.foldRight([1.5, 2.0, 2.5], (x, y -> x ** y), 1.5)").equals("533.166813742");
+	code("Array.foldRight([1.5, 2.0, 2.5], (x, y -> x ** y), 1.5)").equals("533.166813742");
 	DISABLED_code("[1, 2, 3].foldRight((x, acc -> acc.push({w: x})), [])").equals("[{w: 3}, {w: 2}, {w: 1}]");
 
 	section("Array.shuffle()");
 	code("[].shuffle()");
 	code("[1.5, 2.5].shuffle().size()").equals("2");
-	DISABLED_code("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()").equals("7");
-	DISABLED_code("var a = [1, 2, 3, 10, true, 'yo', null] a.shuffle().size()").equals("7");
+	code("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()").equals("7");
+	code("var a = [1, 2, 3, 10, true, 'yo', null] a.shuffle().size()").equals("7");
 
 	section("Array.reverse()");
-	DISABLED_code("Array.reverse([1, 2, 3, 10, true, 'yo', null])").equals("[null, 'yo', true, 10, 3, 2, 1]");
+	code("Array.reverse([1, 2, 3, 10, true, 'yo', null])").equals("[null, 'yo', true, 10, 3, 2, 1]");
 	code("[null].reverse()").equals("[null]");
 	code("[].reverse()").equals("[]");
 	code("[1, 2, 3].reverse()").equals("[3, 2, 1]");
@@ -428,7 +428,7 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3] a.reverse()").equals("[3, 2, 1]");
 
 	section("Array.search()");
-	DISABLED_code("Array.search([1, 2, 3, 10, true, 'yo', null], 10, 0)").equals("3");
+	code("Array.search([1, 2, 3, 10, true, 'yo', null], 10, 0)").equals("3");
 	code("Array.search([1, 2, 3, 4, 5], 5, 0)").equals("4");
 	code("Array.search([1, 2, 3, 10, true, 'yo', null], 3, 3)").equals("-1");
 	code("[1, 2, 3, 10, true, 'yo', null].search('yo', 0)").equals("5");
@@ -481,7 +481,7 @@ void Test::test_arrays() {
 	section("Array.clear()");
 	code("var a = [1, 2, 3] a.clear() a").equals("[]");
 	code("var a = [1, 2, 3] Array.clear(a)").equals("[]");
-	DISABLED_code("var a = [1, 'yo', true] a.clear() a").equals("[]");
+	code("var a = [1, 'yo', true] a.clear() a").equals("[]");
 
 	section("Array.fill()");
 	code("var a = [1, 2, 3] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
@@ -508,12 +508,12 @@ void Test::test_arrays() {
 	code("['a', 'b'].isPermutation(['b', 'a'])").equals("true");
 	code("['a', 'b', 'c', 'd', 'e'].isPermutation(['d', 'a', 'c', 'e', 'b'])").equals("true");
 	code("['a', 'b', 'c', 'd', 'e'].isPermutation(['d', 'a', 'c', 'd', 'c'])").equals("false");
-	DISABLED_code("var a = [1, 2, 3, 'a'] a.pop() a.isPermutation([3, 2, 1])").equals("true");
-	DISABLED_code("var a = [1, 2, 3.5, 'a'] a.pop() a.isPermutation([3.5, 2, 1])").equals("true");
-	DISABLED_code("var a = [1, 2, 3, 4.5] a.pop() a.isPermutation([3, 2, 1])").equals("true");
-	DISABLED_code("var a = [1, 2, 3, 'a'] a.pop() [2, 1, 3].isPermutation(a)").equals("true");
-	DISABLED_code("var a = [1, 2, 3.5, 'a'] a.pop() [2, 1, 3.5].isPermutation(a)").equals("true");
-	DISABLED_code("var a = [1, 2, 3, 4.5] a.pop() [3, 1, 2].isPermutation(a)").equals("true");
+	code("var a = [1, 2, 3, 'a'] a.pop() a.isPermutation([3, 2, 1])").equals("true");
+	code("var a = [1, 2, 3.5, 'a'] a.pop() a.isPermutation([3.5, 2, 1])").equals("true");
+	code("var a = [1, 2, 3, 4.5] a.pop() a.isPermutation([3, 2, 1])").equals("true");
+	code("var a = [1, 2, 3, 'a'] a.pop() [2, 1, 3].isPermutation(a)").equals("true");
+	code("var a = [1, 2, 3.5, 'a'] a.pop() [2, 1, 3.5].isPermutation(a)").equals("true");
+	code("var a = [1, 2, 3, 4.5] a.pop() [3, 1, 2].isPermutation(a)").equals("true");
 
 	section("Array.random()");
 	code("[].random(1)").equals("[]");
@@ -532,7 +532,7 @@ void Test::test_arrays() {
 	code("var a = [1, 2, 3] Array.remove(a, 1)").equals("2");
 	code("var a = [1, 2, 3] Array.remove(a, 1) a").equals("[1, 3]");
 	code("var a = [1, 2, 3] Array.remove(a, 1)").equals("2");
-	DISABLED_code("var a = [1, 'yo', true] Array.remove(a, 1)").equals("'yo'");
+	code("var a = [1, 'yo', true] Array.remove(a, 1)").equals("'yo'");
 	// TODO
 	DISABLED_code("let a = [] Array.removeKey(a, 'key')").equals("null");
 	DISABLED_code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key')").equals("'test'");
