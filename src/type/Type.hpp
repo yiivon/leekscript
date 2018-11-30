@@ -69,6 +69,11 @@ public:
 	Type add_pointer() const;
 	Type iteratorType() const;
 
+	bool is_array() const;
+	bool is_set() const;
+	bool is_interval() const;
+	bool is_map() const;
+
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }
 

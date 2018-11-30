@@ -100,7 +100,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			for (size_t i = 0; i < expressions.size(); ++i) {
 				auto ex = expressions[i];
 				ex->analyse(analyser);
-				if (!homogeneous and ex->type.raw() == RawType::ARRAY) {
+				if (!homogeneous and ex->type.is_array()) {
 					// If the array stores other arrays of different types,
 					// force those arrays to store pointers. (To avoid having
 					// unknown array<int> inside arrays.
@@ -145,7 +145,6 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 			expressions[i]->will_take(analyser, arg_types, 1);
 		}
 	}
-
 	// Computation of the new array type
 	Type element_type;
 	for (unsigned i = 0; i < expressions.size(); ++i) {
@@ -165,7 +164,7 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	// std::cout << "Array::will_store " << this->type << " " << type << std::endl;
 
 	Type added_type = type;
-	if (added_type.raw() == RawType::ARRAY or added_type.raw() == RawType::SET) {
+	if (added_type.is_array() or added_type.is_set()) {
 		added_type = added_type.getElementType();
 	}
 	Type current_type = this->type.getElementType();

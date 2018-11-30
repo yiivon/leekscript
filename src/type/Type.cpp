@@ -379,7 +379,7 @@ llvm::Type* Type::llvm_type() const {
 	if (*this == Type::PTR_ARRAY_ITERATOR) {
 		return LLVM_LSVALUE_TYPE_PTR->getPointerTo();
 	}
-	if (raw() == RawType::ARRAY) {
+	if (is_array()) {
 		if (getElementType() == Type::INTEGER) {
 			return LLVM_VECTOR_INT_TYPE_PTR;
 		} else if (getElementType() == Type::REAL) {
@@ -413,12 +413,29 @@ Type Type::add_pointer() const {
 }
 
 Type Type::iteratorType() const {
-	if (raw() == RawType::ARRAY) {
+	if (is_array()) {
 		if (getElementType() == Type::INTEGER) return Type::INT_ARRAY_ITERATOR;
 		if (getElementType() == Type::REAL) return Type::REAL_ARRAY_ITERATOR;
 		else if (getElementType() == Type::POINTER) return Type::PTR_ARRAY_ITERATOR;
 	}
 	assert(false && "No iterator type available");
+}
+
+bool Type::is_array() const {
+	if (_types.size() == 0) { return false; }
+	return dynamic_cast<const Array_type*>(_types[0]) != nullptr;
+}
+bool Type::is_set() const {
+	if (_types.size() == 0) { return false; }
+	return dynamic_cast<const Set_type*>(_types[0]) != nullptr;
+}
+bool Type::is_interval() const {
+	if (_types.size() == 0) { return false; }
+	return dynamic_cast<const Interval_type*>(_types[0]) != nullptr;
+}
+bool Type::is_map() const {
+	if (_types.size() == 0) { return false; }
+	return dynamic_cast<const Map_type*>(_types[0]) != nullptr;
 }
 
 /*
@@ -539,7 +556,6 @@ bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Ty
 }
 
 bool Type::more_specific(const Type& old, const Type& neww) {
-
 	if (neww.raw() != old.raw()) {
 		if (old.raw() == RawType::ANY) {
 			return true;
@@ -554,29 +570,24 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 			return true;
 		}
 	}
-
-	if ((neww.raw() == RawType::ARRAY and old.raw() == RawType::ARRAY) || (neww.raw() == RawType::SET and old.raw() == RawType::SET)) {
+	if ((neww.is_array() and old.is_array()) || (neww.is_set() and old.is_set())) {
 		if (Type::more_specific(old.getElementType(), neww.getElementType())) {
 			return true;
 		}
 	}
-
-	if (neww.raw() == RawType::MAP and old.raw() == RawType::MAP) {
+	if (neww.is_map() and old.is_map()) {
 		if (Type::more_specific(old.getKeyType(), neww.getKeyType()) || Type::more_specific(old.getElementType(), neww.getElementType())) {
 			return true;
 		}
 	}
-
 	if ((neww.raw() == RawType::FUNCTION or neww.raw() == RawType::CLOSURE) and (old.raw() == RawType::FUNCTION or old.raw() == RawType::CLOSURE)) {
 		if (Type::more_specific(old.getArgumentType(0), neww.getArgumentType(0))) { //! TODO only the first arg
 			return true;
 		}
 	}
-
 	if (not old.temporary and neww.temporary) {
 		return true;
 	}
-
 	return false;
 }
 
@@ -611,8 +622,8 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	if (t1.compatible(t2)) {
 		return t1;
 	}
-	if (t1.raw() == RawType::ARRAY and t2.raw() == RawType::ARRAY) {
-		return {RawType::ARRAY, Type::get_compatible_type(t1.getElementType(), t2.getElementType())};
+	if (t1.is_array() and t2.is_array()) {
+		return array(get_compatible_type(t1.getElementType(), t2.getElementType()));
 	}
 	return Type::POINTER;
 }

@@ -57,7 +57,6 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
 		return;
 	}
-
 	if (key == nullptr) {
 		return;
 	}
@@ -66,15 +65,15 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 	constant = array->constant && key->constant;
 
 	array_element_type = {};
-	if (array->type.raw() == RawType::ARRAY || array->type.raw() == RawType::INTERVAL || array->type.raw() == RawType::MAP) {
+	if (array->type.is_array() || array->type.is_interval() || array->type.is_map()) {
 		array_element_type = array->type.getElementType();
 		type = array_element_type;
 	}
-	if (array->type.raw() == RawType::MAP) {
+	if (array->type.is_map()) {
 		map_key_type = array->type.getKeyType();
 	}
 
-	if (array->type.raw() == RawType::INTERVAL) {
+	if (array->type.is_interval()) {
 		key->analyse(analyser);
 	}
 
@@ -94,7 +93,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		}
 		type = array->type;
 
-	} else if (array->type.raw() == RawType::ARRAY or array->type.raw() == RawType::STRING or array->type.raw() == RawType::INTERVAL) {
+	} else if (array->type.is_array() or array->type.raw() == RawType::STRING or array->type.is_interval()) {
 
 		if (key->type.raw() != RawType::ANY and not (key->type.isNumber() or key->type.raw() == RawType::BOOLEAN)) {
 			std::string a = array->to_string();
@@ -108,7 +107,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 			type = Type::STRING;
 		}
 
-	} else if (array->type.raw() == RawType::MAP) {
+	} else if (array->type.is_map()) {
 
 		key->analyse(analyser);
 
@@ -192,7 +191,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 	if (key2 == nullptr) {
 
-		if (array->type.raw() == RawType::INTERVAL) {
+		if (array->type.is_interval()) {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
@@ -200,7 +199,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				return interval->atv(k);
 			});
 
-		} else if (array->type.raw() == RawType::MAP) {
+		} else if (array->type.is_map()) {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
@@ -237,7 +236,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			c.inc_ops(2);
 			return res;
 
-		} else if (array->type.raw() == RawType::STRING or array->type.raw() == RawType::ARRAY) {
+		} else if (array->type.raw() == RawType::STRING or array->type.is_array()) {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
@@ -311,7 +310,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		key->compile_end(c);
 		// Access
 		c.mark_offset(location().start.line);
-		if (array->type.raw() == RawType::ARRAY) {
+		if (array->type.is_array()) {
 
 			// return c.insn_call(Type::POINTER, {compiled_array, k}, +[](LSArray<LSValue*>* array, int key) {
 			// 	return array->atL(LSNumber::get(key));
@@ -324,7 +323,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			});
 			return c.insn_array_at(compiled_array, k);
 
-		} else if (array->type.raw() == RawType::MAP) {
+		} else if (array->type.is_map()) {
 
 			if (array->type.not_temporary() == Type::PTR_INT_MAP) {
 				return c.insn_call(Type::POINTER.add_pointer(), {compiled_array, k}, (void*) +[](LSMap<LSValue*, int>* map, LSValue* key) {

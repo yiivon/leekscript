@@ -58,14 +58,14 @@ void Set::analyse(SemanticAnalyser* analyser) {
 bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 
 	Type added_type = type;
-	if (added_type.raw() == RawType::ARRAY or added_type.raw() == RawType::SET) {
+	if (added_type.is_array() or added_type.is_set()) {
 		added_type = added_type.getElementType();
 	}
 	Type current_type = this->type.getElementType();
 	if (expressions.size() == 0) {
-		this->type.setElementType(added_type);
+		this->type = Type::set(added_type);
 	} else {
-		this->type.setElementType(Type::get_compatible_type(current_type, added_type));
+		this->type = Type::set(Type::get_compatible_type(current_type, added_type));
 	}
 	// Re-analyze expressions with the new type
 	for (size_t i = 0; i < expressions.size(); ++i) {
