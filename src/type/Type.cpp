@@ -211,10 +211,8 @@ bool Type::argumentHasDefault(size_t index) const {
 }
 
 const Type Type::getElementType() const {
-	if (element_type.size()) {
-		return element_type[0];
-	}
-	return {};
+	if (_types.size() == 0) { return {}; }
+	return _types[0]->element();
 }
 
 void Type::setElementType(const Type& type) {
