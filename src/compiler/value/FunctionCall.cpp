@@ -116,7 +116,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			type = Type::OBJECT;
 			return;
 		} else if (vv->name == "Set") {
-			type = Type::SET;
+			type = Type::PTR_SET;
 			return;
 		} else {
 			type = Type::POINTER; // Class constructor

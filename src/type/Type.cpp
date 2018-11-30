@@ -95,6 +95,7 @@ const Type Type::CONST_INT_INT_MAP = Type::const_map(Type::INTEGER, Type::INTEGE
 const Type Type::CONST_INT_REAL_MAP = Type::const_map(Type::INTEGER, Type::REAL);
 
 const Type Type::SET = Type::set();
+const Type Type::PTR_SET = Type::set(Type::POINTER);
 const Type Type::INT_SET = Type::set(Type::INTEGER);
 const Type Type::REAL_SET = Type::set(Type::REAL);
 const Type Type::CONST_SET = Type::const_set();

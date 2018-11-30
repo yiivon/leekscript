@@ -34,12 +34,12 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::INTEGER, {Type::CONST_INT_SET}, (void*) &LSSet<int>::ls_size, Method::NATIVE},
 	});
 	method("insert", {
-		{Type::BOOLEAN, {Type::SET, Type::POINTER}, (void*) &LSSet<LSValue*>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_SET, Type::POINTER}, (void*) &LSSet<LSValue*>::ls_insert, Method::NATIVE},
 		{Type::BOOLEAN, {Type::REAL_SET, Type::REAL}, (void*) &LSSet<double>::ls_insert, Method::NATIVE},
 		{Type::BOOLEAN, {Type::INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_insert, Method::NATIVE},
 	});
 	method("clear", {
-		{Type::SET, {Type::SET}, (void*) &LSSet<LSValue*>::ls_clear, Method::NATIVE},
+		{Type::SET, {Type::PTR_SET}, (void*) &LSSet<LSValue*>::ls_clear, Method::NATIVE},
 		{Type::REAL_SET, {Type::REAL_SET}, (void*) &LSSet<double>::ls_clear, Method::NATIVE},
 		{Type::INT_SET, {Type::INT_SET}, (void*) &LSSet<int>::ls_clear, Method::NATIVE},
 	});

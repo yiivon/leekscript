@@ -75,7 +75,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 			else if (vv->name == "String") type = Type::STRING;
 			else if (vv->name == "Array") type = Type::PTR_ARRAY;
 			else if (vv->name == "Object") type = Type::OBJECT;
-			else if (vv->name == "Set") type = Type::SET;
+			else if (vv->name == "Set") type = Type::PTR_SET;
 		}
 		else if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
@@ -91,7 +91,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 				else if (vv->name == "String") type = Type::STRING;
 				else if (vv->name == "Array") type = Type::PTR_ARRAY;
 				else if (vv->name == "Object") type = Type::OBJECT;
-				else if (vv->name == "Set") type = Type::SET;
+				else if (vv->name == "Set") type = Type::PTR_SET;
 			}
 		}
 	}
