@@ -118,7 +118,7 @@ LLVMCompiler::value LLVMCompiler::new_long(long l) const {
 
 LLVMCompiler::value LLVMCompiler::new_pointer(const void* p) const {
 	auto longp = llvm::ConstantInt::get(context, llvm::APInt(64, (long) p, false));
-	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, Type::LLVM_LSVALUE_TYPE_PTR), Type::POINTER};
+	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, Type::LLVM_LSVALUE_TYPE_PTR), Type::ANY};
 }
 
 LLVMCompiler::value LLVMCompiler::new_object() const {
@@ -130,7 +130,7 @@ LLVMCompiler::value LLVMCompiler::new_object() const {
 }
 
 LLVMCompiler::value LLVMCompiler::new_object_class(LLVMCompiler::value clazz) const {
-	return insn_call(Type::POINTER, {clazz}, +[](LSClass* clazz) {
+	return insn_call(Type::ANY, {clazz}, +[](LSClass* clazz) {
 		return new LSObject(clazz);
 	});
 }
@@ -722,19 +722,19 @@ LLVMCompiler::value LLVMCompiler::insn_to_any(LLVMCompiler::value v) const {
 		return v; // already any
 	}
 	if (v.t.raw() == RawType::LONG) {
-		return insn_call(Type::POINTER, {v}, +[](long n) {
+		return insn_call(Type::ANY, {v}, +[](long n) {
 			return LSNumber::get(n);
 		});
 	} else if (v.t.raw() == RawType::REAL) {
-		return insn_call(Type::POINTER, {v}, +[](double n) {
+		return insn_call(Type::ANY, {v}, +[](double n) {
 			return LSNumber::get(n);
 		});
 	} else if (v.t.raw() == RawType::BOOLEAN) {
-		return insn_call(Type::POINTER, {v}, +[](bool n) {
+		return insn_call(Type::ANY, {v}, +[](bool n) {
 			return LSBoolean::get(n);
 		});
 	} else {
-		return insn_call(Type::POINTER, {v}, +[](int n) {
+		return insn_call(Type::ANY, {v}, +[](int n) {
 			return LSNumber::get(n);
 		});
 	}
@@ -880,7 +880,7 @@ LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const {
 	LLVMCompiler::value arg0 = {F->arg_begin(), Type::INTEGER};
 
 	auto jit_index = new_integer(index);
-	auto v = insn_call(Type::POINTER, {arg0, jit_index}, +[](LSClosure* fun, int index) {
+	auto v = insn_call(Type::ANY, {arg0, jit_index}, +[](LSClosure* fun, int index) {
 		// std::cout << "fun->get_capture(" << fun << ", " << index << ")" << std::endl;
 		LSValue* v = fun->get_capture(index);
 		// std::cout << "capture : " << ((LSNumber*) v)->value << std::endl;
@@ -930,7 +930,7 @@ LLVMCompiler::value LLVMCompiler::insn_array_end(LLVMCompiler::value array) cons
 	assert(array.t.llvm_type() == array.v->getType());
 	auto array_type = array.v->getType()->getPointerElementType();
 	auto raw_data = builder.CreateStructGEP(array_type, array.v, 6);
-	return {builder.CreateLoad(raw_data), Type::POINTER};
+	return {builder.CreateLoad(raw_data), Type::ANY};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const {
@@ -1045,8 +1045,8 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		auto array_type = v.v->getType()->getPointerElementType();
 		auto raw_data = builder.CreateStructGEP(array_type, v.v, 5);
 		auto it_type = v.t.getElementType().llvm_type()->getPointerTo();
-		value it = {CreateEntryBlockAlloca("it", it_type), Type::POINTER};
-		insn_store(it, {builder.CreateLoad(raw_data), Type::POINTER});
+		value it = {CreateEntryBlockAlloca("it", it_type), Type::ANY};
+		insn_store(it, {builder.CreateLoad(raw_data), Type::ANY});
 		return it;
 	}
 	if (v.t.is_interval()) {
@@ -1243,7 +1243,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 	log_insn_code("iterator.key()");
 	if (v.t.is_array()) {
 		auto array_begin = insn_array_at(v, new_integer(0));
-		return { builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::POINTER };
+		return { builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::ANY };
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
 		// auto addr = insn_address_of(it);
@@ -1288,7 +1288,7 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 	if (collectionType.is_array()) {
 		auto it2 = insn_load(it);
 		auto next_element = builder.CreateGEP(it2.v, new_integer(1).v);
-		insn_store(it, {next_element, Type::POINTER});
+		insn_store(it, {next_element, Type::ANY});
 		return;
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
@@ -1303,7 +1303,7 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		// return;
 	}
 	if (it.t.is_map()) {
-		insn_store(it, insn_call(Type::POINTER, {it}, (void*) +[](LSMap<int, int>::iterator it) {
+		insn_store(it, insn_call(Type::ANY, {it}, (void*) +[](LSMap<int, int>::iterator it) {
 			it++;
 			return it;
 		}));

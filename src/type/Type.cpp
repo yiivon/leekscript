@@ -37,8 +37,8 @@ unsigned int Type::placeholder_counter = 0;
 
 const Type Type::VALUE(RawType::ANY);
 const Type Type::CONST_VALUE(RawType::ANY, false, false, true);
-const Type Type::POINTER(RawType::ANY);
-const Type Type::CONST_POINTER(RawType::ANY, false, false, true);
+const Type Type::ANY(RawType::ANY);
+const Type Type::CONST_ANY(RawType::ANY, false, false, true);
 
 const Type Type::NULLL(RawType::NULLL, true);
 const Type Type::BOOLEAN(RawType::BOOLEAN);
@@ -60,42 +60,42 @@ const Type Type::OBJECT(RawType::OBJECT);
 const Type Type::OBJECT_TMP(RawType::OBJECT, false, true);
 
 const Type Type::ARRAY = Type::array();
-const Type Type::PTR_ARRAY = Type::array(Type::POINTER);
+const Type Type::PTR_ARRAY = Type::array(Type::ANY);
 const Type Type::CONST_ARRAY = Type::const_array();
 const Type Type::INT_ARRAY = Type::array(Type::INTEGER);
 const Type Type::REAL_ARRAY = Type::array(Type::REAL);
-const Type Type::PTR_ARRAY_TMP = Type::tmp_array(Type::POINTER);
+const Type Type::PTR_ARRAY_TMP = Type::tmp_array(Type::ANY);
 const Type Type::INT_ARRAY_TMP = Type::tmp_array(Type::INTEGER);
 const Type Type::REAL_ARRAY_TMP = Type::tmp_array(Type::REAL);
 const Type Type::STRING_ARRAY = Type::array(Type::STRING);
-const Type Type::CONST_PTR_ARRAY = Type::const_array(Type::POINTER);
+const Type Type::CONST_PTR_ARRAY = Type::const_array(Type::ANY);
 const Type Type::CONST_INT_ARRAY = Type::const_array(Type::INTEGER);
 const Type Type::CONST_REAL_ARRAY = Type::const_array(Type::REAL);
 const Type Type::CONST_STRING_ARRAY = Type::const_array(Type::STRING);
 
 const Type Type::MAP = Type::map();
-const Type Type::PTR_PTR_MAP = Type::map(Type::POINTER, Type::POINTER);
-const Type Type::PTR_INT_MAP = Type::map(Type::POINTER, Type::INTEGER);
-const Type Type::PTR_REAL_MAP = Type::map(Type::POINTER, Type::REAL);
-const Type Type::REAL_PTR_MAP = Type::map(Type::REAL, Type::POINTER);
+const Type Type::PTR_PTR_MAP = Type::map(Type::ANY, Type::ANY);
+const Type Type::PTR_INT_MAP = Type::map(Type::ANY, Type::INTEGER);
+const Type Type::PTR_REAL_MAP = Type::map(Type::ANY, Type::REAL);
+const Type Type::REAL_PTR_MAP = Type::map(Type::REAL, Type::ANY);
 const Type Type::REAL_INT_MAP = Type::map(Type::REAL, Type::INTEGER);
 const Type Type::REAL_REAL_MAP = Type::map(Type::REAL, Type::REAL);
-const Type Type::INT_PTR_MAP = Type::map(Type::INTEGER, Type::POINTER);
+const Type Type::INT_PTR_MAP = Type::map(Type::INTEGER, Type::ANY);
 const Type Type::INT_INT_MAP = Type::map(Type::INTEGER, Type::INTEGER);
 const Type Type::INT_REAL_MAP = Type::map(Type::INTEGER, Type::REAL);
 const Type Type::CONST_MAP = Type::const_map();
-const Type Type::CONST_PTR_PTR_MAP = Type::const_map(Type::POINTER, Type::POINTER);
-const Type Type::CONST_PTR_INT_MAP = Type::const_map(Type::POINTER, Type::INTEGER);
-const Type Type::CONST_PTR_REAL_MAP = Type::const_map(Type::POINTER, Type::REAL);
-const Type Type::CONST_REAL_PTR_MAP = Type::const_map(Type::REAL, Type::POINTER);
+const Type Type::CONST_PTR_PTR_MAP = Type::const_map(Type::ANY, Type::ANY);
+const Type Type::CONST_PTR_INT_MAP = Type::const_map(Type::ANY, Type::INTEGER);
+const Type Type::CONST_PTR_REAL_MAP = Type::const_map(Type::ANY, Type::REAL);
+const Type Type::CONST_REAL_PTR_MAP = Type::const_map(Type::REAL, Type::ANY);
 const Type Type::CONST_REAL_INT_MAP = Type::const_map(Type::REAL, Type::INTEGER);
 const Type Type::CONST_REAL_REAL_MAP = Type::const_map(Type::REAL, Type::REAL);
-const Type Type::CONST_INT_PTR_MAP = Type::const_map(Type::INTEGER, Type::POINTER);
+const Type Type::CONST_INT_PTR_MAP = Type::const_map(Type::INTEGER, Type::ANY);
 const Type Type::CONST_INT_INT_MAP = Type::const_map(Type::INTEGER, Type::INTEGER);
 const Type Type::CONST_INT_REAL_MAP = Type::const_map(Type::INTEGER, Type::REAL);
 
 const Type Type::SET = Type::set();
-const Type Type::PTR_SET = Type::set(Type::POINTER);
+const Type Type::PTR_SET = Type::set(Type::ANY);
 const Type Type::INT_SET = Type::set(Type::INTEGER);
 const Type Type::REAL_SET = Type::set(Type::REAL);
 const Type Type::CONST_SET = Type::const_set();
@@ -109,9 +109,7 @@ const Type Type::REAL_ARRAY_ARRAY = Type::array(Type::REAL_ARRAY);
 const Type Type::INT_ARRAY_ARRAY = Type::array(Type::INT_ARRAY);
 
 const Type Type::FUNCTION(RawType::FUNCTION, false, false, true);
-const Type Type::FUNCTION_P(RawType::FUNCTION, false, false, true);
 const Type Type::CONST_FUNCTION(RawType::FUNCTION, false, true, true);
-const Type Type::CONST_FUNCTION_P(RawType::FUNCTION, false, true, true);
 const Type Type::CLOSURE(RawType::CLOSURE, false, false, true);
 const Type Type::CLASS(RawType::CLASS, true);
 const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
@@ -153,7 +151,7 @@ bool Type::must_manage_memory() const {
 
 Type Type::getReturnType() const {
 	if (return_types.size() == 0) {
-		return Type::POINTER;
+		return Type::ANY;
 	}
 	return return_types[0];
 }
@@ -171,7 +169,7 @@ void Type::addArgumentType(Type type) {
 
 void Type::setArgumentType(size_t index, Type type, bool has_default) {
 	while (arguments_types.size() <= index) {
-		arguments_types.push_back(Type::POINTER);
+		arguments_types.push_back(Type::ANY);
 	}
 	arguments_types[index] = type;
 
@@ -187,7 +185,7 @@ void Type::setArgumentType(size_t index, Type type, bool has_default) {
  */
 const Type Type::getArgumentType(size_t index) const {
 	if (index >= arguments_types.size()) {
-		return Type::POINTER;
+		return Type::ANY;
 	}
 	return arguments_types[index];
 }
@@ -217,7 +215,7 @@ bool Type::will_take(const std::vector<Type>& args_type) {
 	for (size_t i = 0; i < args_type.size(); ++i) {
 		Type current_type = getArgumentType(i);
 		if (current_type.isNumber() and !args_type[i].isNumber()) {
-			setArgumentType(i, Type::POINTER);
+			setArgumentType(i, Type::ANY);
 			changed = true;
 		}
 	}
@@ -376,7 +374,7 @@ Type Type::iteratorType() const {
 	if (is_array()) {
 		if (getElementType() == Type::INTEGER) return Type::INT_ARRAY_ITERATOR;
 		if (getElementType() == Type::REAL) return Type::REAL_ARRAY_ITERATOR;
-		else if (getElementType() == Type::POINTER) return Type::PTR_ARRAY_ITERATOR;
+		else if (getElementType() == Type::ANY) return Type::PTR_ARRAY_ITERATOR;
 	}
 	assert(false && "No iterator type available");
 }
@@ -466,7 +464,7 @@ bool Type::may_be_compatible(const Type& type) const {
 		return true;
 	}
 	// Example: Number.abs(number*) => we allow to call with a unknown pointer
-	if (!isNumber() and type == Type::POINTER) {
+	if (!isNumber() and type == Type::ANY) {
 		return true;
 	}
 	return false;
@@ -542,10 +540,10 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 		return Type::NULLL;
 	}
 	if (!t1.isNumber() and t2.isNumber()) {
-		return Type::POINTER;
+		return Type::ANY;
 	}
 	if (!t2.isNumber() and t1.isNumber()) {
-		return Type::POINTER;
+		return Type::ANY;
 	}
 	if (t1.raw() == RawType::ANY) {
 		return t2;
@@ -562,7 +560,7 @@ Type Type::get_compatible_type(const Type& t1, const Type& t2) {
 	if (t1.is_array() and t2.is_array()) {
 		return array(get_compatible_type(t1.getElementType(), t2.getElementType()));
 	}
-	return Type::POINTER;
+	return Type::ANY;
 }
 
 Type Type::generate_new_placeholder_type() {

@@ -84,8 +84,8 @@ public:
 
 	static const Type VALUE;
 	static const Type CONST_VALUE;
-	static const Type POINTER;
-	static const Type CONST_POINTER;
+	static const Type ANY;
+	static const Type CONST_ANY;
 
 	static const Type NULLL;
 	static const Type BOOLEAN;
@@ -155,8 +155,6 @@ public:
 	static const Type INTERVAL_TMP;
 	static const Type FUNCTION;
 	static const Type CONST_FUNCTION;
-	static const Type FUNCTION_P;
-	static const Type CONST_FUNCTION_P;
 	static const Type CLOSURE;
 	static const Type CLASS;
 	static const Type CONST_CLASS;

@@ -49,7 +49,7 @@ void VariableDeclaration::analyse_global_functions(SemanticAnalyser* analyser) {
 	if (global && function) {
 		auto var = variables.at(0);
 		auto expr = expressions.at(0);
-		auto v = analyser->add_var(var.get(), Type::FUNCTION_P, expr, this);
+		auto v = analyser->add_var(var.get(), Type::FUNCTION, expr, this);
 		vars.insert({var->content, v});
 	}
 }
@@ -62,7 +62,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
 		auto& var = variables.at(i);
-		auto v = analyser->add_var(var.get(), Type::POINTER, expressions.at(i), this);
+		auto v = analyser->add_var(var.get(), Type::ANY, expressions.at(i), this);
 		if (v == nullptr) {
 			continue;
 		}

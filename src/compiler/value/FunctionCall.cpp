@@ -119,10 +119,10 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			type = Type::PTR_SET;
 			return;
 		} else {
-			type = Type::POINTER; // Class constructor
+			type = Type::ANY; // Class constructor
 		}
 	} else if (function->type == Type::CLASS) {
-		type = Type::POINTER; // Class constructor
+		type = Type::ANY; // Class constructor
 	}
 
 	// Detect standard library functions
@@ -464,7 +464,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		auto oa = static_cast<ObjectAccess*>(function);
 		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
 		auto k = c.new_pointer(&oa->field->content);
-		ls_fun_addr = c.insn_call(Type::POINTER, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
+		ls_fun_addr = c.insn_call(Type::ANY, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
 		});
 	} else {
@@ -525,7 +525,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	Compiler::value result;
 	if (is_unknown_method) {
-		result = c.insn_call(Type::POINTER, args, (void*) &LSFunction::call);
+		result = c.insn_call(Type::ANY, args, (void*) &LSFunction::call);
 	} else {
 		result = c.insn_call_indirect(return_type, fun, args);
 	}

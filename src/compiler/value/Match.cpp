@@ -89,7 +89,7 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 
 	if (!has_default) {
 		// Return type is always pointer because in the default case, null is return
-		type = Type::POINTER;
+		type = Type::ANY;
 		for (Value* r : returns) {
 			r->analyse(analyser);
 		}

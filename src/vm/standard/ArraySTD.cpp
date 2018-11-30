@@ -17,19 +17,19 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::CONST_PTR_ARRAY, Type::CONST_POINTER, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in, {}, Method::NATIVE},
+		{Type::CONST_PTR_ARRAY, Type::CONST_ANY, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in, {}, Method::NATIVE},
 		{Type::CONST_REAL_ARRAY, Type::CONST_REAL, Type::BOOLEAN, (void*) &LSArray<double>::in, {}, Method::NATIVE},
 		{Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in_i, {}, Method::NATIVE}
 	});
 	operator_("+=", {
-		{Type::ARRAY, Type::CONST_POINTER, Type::POINTER, (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
+		{Type::ARRAY, Type::CONST_ANY, Type::ANY, (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
 		{Type::REAL_ARRAY, Type::CONST_REAL, Type::REAL_ARRAY, (void*) &LSArray<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
 		{Type::INT_ARRAY, Type::CONST_INTEGER, Type::INT_ARRAY, (void*) &LSArray<int>::add_eq_int, {new WillStoreMutator()}, Method::NATIVE}
 	});
 
-	/* Type tilde_tilde_fun_type = Type::FUNCTION_P;
+	/* Type tilde_tilde_fun_type = Type::FUNCTION;
 	tilde_tilde_fun_type.setArgumentType(0, Type::T);
-	tilde_tilde_fun_type.setReturnType(Type::POINTER);
+	tilde_tilde_fun_type.setReturnType(Type::ANY);
 	operator_("~~", {
 		{Type::T_ARRAY, tilde_tilde_fun_type, Type::PTR_ARRAY, (void*) &LSArray<LSValue*>::ls_map}
 	});*/
@@ -64,23 +64,23 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("contains", {
-		{Type::BOOLEAN, {Type::CONST_ARRAY, Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_ARRAY, Type::CONST_ANY}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
 		{Type::BOOLEAN, {Type::CONST_REAL_ARRAY, Type::CONST_REAL}, (void*) &LSArray<double>::ls_contains, Method::NATIVE},
 		{Type::BOOLEAN, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_contains, Method::NATIVE},
-		{Type::BOOLEAN, {Type::CONST_POINTER, Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_ANY, Type::CONST_ANY}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
 	});
 
-	Type iter_fun_type = Type::FUNCTION_P;
-	iter_fun_type.setArgumentType(0, Type::POINTER);
+	Type iter_fun_type = Type::FUNCTION;
+	iter_fun_type.setArgumentType(0, Type::ANY);
 	iter_fun_type.setReturnType({});
-	Type iter_fun_type_int = Type::FUNCTION_P;
+	Type iter_fun_type_int = Type::FUNCTION;
 	iter_fun_type_int.setArgumentType(0, Type::INTEGER);
 	iter_fun_type_int.setReturnType({});
-	Type iter_fun_type_float = Type::FUNCTION_P;
+	Type iter_fun_type_float = Type::FUNCTION;
 	iter_fun_type_float.setArgumentType(0, Type::REAL);
 	iter_fun_type_float.setReturnType({});
 	Type iter_clo_type = Type::CLOSURE;
-	iter_clo_type.setArgumentType(0, Type::POINTER);
+	iter_clo_type.setArgumentType(0, Type::ANY);
 	iter_clo_type.setReturnType({});
 	Type iter_clo_type_int = Type::CLOSURE;
 	iter_clo_type_int.setArgumentType(0, Type::INTEGER);
@@ -104,32 +104,32 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("max", {
-		{Type::POINTER, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_max, Method::NATIVE},
+		{Type::ANY, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_max, Method::NATIVE},
 		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_max, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_max, Method::NATIVE}
 	});
 
 	method("min", {
-		{Type::POINTER, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_min, Method::NATIVE},
+		{Type::ANY, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_min, Method::NATIVE},
 		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_min, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_min, Method::NATIVE}
 	});
 
-	Type map_int_fun_type = Type::FUNCTION_P;
+	Type map_int_fun_type = Type::FUNCTION;
 	map_int_fun_type.setArgumentType(0, Type::INTEGER);
 	map_int_fun_type.setReturnType(Type::INTEGER);
 
-	Type map_int_ptr_fun_type = Type::FUNCTION_P;
+	Type map_int_ptr_fun_type = Type::FUNCTION;
 	map_int_ptr_fun_type.setArgumentType(0, Type::INTEGER);
-	map_int_ptr_fun_type.setReturnType(Type::POINTER);
+	map_int_ptr_fun_type.setReturnType(Type::ANY);
 
-	Type map_real_fun_type = Type::FUNCTION_P;
+	Type map_real_fun_type = Type::FUNCTION;
 	map_real_fun_type.setArgumentType(0, Type::REAL);
 	map_real_fun_type.setReturnType(Type::REAL);
 
-	Type map_fun_type = Type::FUNCTION_P;
-	map_fun_type.setArgumentType(0, Type::POINTER);
-	map_fun_type.setReturnType(Type::POINTER);
+	Type map_fun_type = Type::FUNCTION;
+	map_fun_type.setArgumentType(0, Type::ANY);
+	map_fun_type.setReturnType(Type::ANY);
 
 	auto map_ptr = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
 	auto map_real = &LSArray<double>::ls_map<LSFunction*, double>;
@@ -155,15 +155,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY_TMP, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_sort, Method::NATIVE},
 	});
 
-	Type map2_fun_type = Type::FUNCTION_P;
-	map2_fun_type.setArgumentType(0, Type::POINTER);
-	map2_fun_type.setArgumentType(1, Type::POINTER);
-	map2_fun_type.setReturnType(Type::POINTER);
+	Type map2_fun_type = Type::FUNCTION;
+	map2_fun_type.setArgumentType(0, Type::ANY);
+	map2_fun_type.setArgumentType(1, Type::ANY);
+	map2_fun_type.setReturnType(Type::ANY);
 
-	Type map2_fun_type_int = Type::FUNCTION_P;
-	map2_fun_type_int.setArgumentType(0, Type::POINTER);
+	Type map2_fun_type_int = Type::FUNCTION;
+	map2_fun_type_int.setArgumentType(0, Type::ANY);
 	map2_fun_type_int.setArgumentType(1, Type::INTEGER);
-	map2_fun_type_int.setReturnType(Type::POINTER);
+	map2_fun_type_int.setReturnType(Type::ANY);
 
 	auto map2_ptr_ptr = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, LSValue*>;
 	auto map2_ptr_int = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, int>;
@@ -173,17 +173,17 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, Type::CONST_INT_ARRAY, map2_fun_type_int}, (void*) map2_ptr_int, Method::NATIVE},
 	});
 
-	Type pred_fun_type = Type::FUNCTION_P;
-	pred_fun_type.setArgumentType(0, Type::POINTER);
+	Type pred_fun_type = Type::FUNCTION;
+	pred_fun_type.setArgumentType(0, Type::ANY);
 	pred_fun_type.setReturnType(Type::BOOLEAN);
-	Type pred_fun_type_float = Type::FUNCTION_P;
+	Type pred_fun_type_float = Type::FUNCTION;
 	pred_fun_type_float.setArgumentType(0, Type::REAL);
 	pred_fun_type_float.setReturnType(Type::BOOLEAN);
-	Type pred_fun_type_int = Type::FUNCTION_P;
+	Type pred_fun_type_int = Type::FUNCTION;
 	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
 	Type pred_clo_type = Type::CLOSURE;
-	pred_clo_type.setArgumentType(0, Type::POINTER);
+	pred_clo_type.setArgumentType(0, Type::ANY);
 	pred_clo_type.setReturnType(Type::BOOLEAN);
 	Type pred_clo_type_float = Type::CLOSURE;
 	pred_clo_type_float.setArgumentType(0, Type::REAL);
@@ -243,41 +243,41 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("first", {
-		{Type::POINTER, {Type::CONST_ARRAY}, (void*) &LSArray<LSValue*>::ls_first, Method::NATIVE},
+		{Type::ANY, {Type::CONST_ARRAY}, (void*) &LSArray<LSValue*>::ls_first, Method::NATIVE},
 		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_first, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_first, Method::NATIVE},
 	});
 
 	method("last", {
-		{Type::POINTER, {Type::CONST_ARRAY}, (void*) &LSArray<LSValue*>::ls_last, Method::NATIVE},
+		{Type::ANY, {Type::CONST_ARRAY}, (void*) &LSArray<LSValue*>::ls_last, Method::NATIVE},
 		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_last, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_last, Method::NATIVE},
 	});
 
-	Type fold_fun_type = Type::FUNCTION_P;
-	fold_fun_type.setArgumentType(0, Type::POINTER);
-	fold_fun_type.setArgumentType(1, Type::POINTER);
-	fold_fun_type.setReturnType(Type::POINTER);
-	Type fold_fun_type_float = Type::FUNCTION_P;
-	fold_fun_type_float.setArgumentType(0, Type::POINTER);
+	Type fold_fun_type = Type::FUNCTION;
+	fold_fun_type.setArgumentType(0, Type::ANY);
+	fold_fun_type.setArgumentType(1, Type::ANY);
+	fold_fun_type.setReturnType(Type::ANY);
+	Type fold_fun_type_float = Type::FUNCTION;
+	fold_fun_type_float.setArgumentType(0, Type::ANY);
 	fold_fun_type_float.setArgumentType(1, Type::REAL);
-	fold_fun_type_float.setReturnType(Type::POINTER);
-	Type fold_fun_type_int = Type::FUNCTION_P;
-	fold_fun_type_int.setArgumentType(0, Type::POINTER);
+	fold_fun_type_float.setReturnType(Type::ANY);
+	Type fold_fun_type_int = Type::FUNCTION;
+	fold_fun_type_int.setArgumentType(0, Type::ANY);
 	fold_fun_type_int.setArgumentType(1, Type::INTEGER);
-	fold_fun_type_int.setReturnType(Type::POINTER);
+	fold_fun_type_int.setReturnType(Type::ANY);
 	Type fold_clo_type = Type::CLOSURE;
-	fold_clo_type.setArgumentType(0, Type::POINTER);
-	fold_clo_type.setArgumentType(1, Type::POINTER);
-	fold_clo_type.setReturnType(Type::POINTER);
+	fold_clo_type.setArgumentType(0, Type::ANY);
+	fold_clo_type.setArgumentType(1, Type::ANY);
+	fold_clo_type.setReturnType(Type::ANY);
 	Type fold_clo_type_float = Type::CLOSURE;
-	fold_clo_type_float.setArgumentType(0, Type::POINTER);
+	fold_clo_type_float.setArgumentType(0, Type::ANY);
 	fold_clo_type_float.setArgumentType(1, Type::REAL);
-	fold_clo_type_float.setReturnType(Type::POINTER);
+	fold_clo_type_float.setReturnType(Type::ANY);
 	Type fold_clo_type_int = Type::CLOSURE;
-	fold_clo_type_int.setArgumentType(0, Type::POINTER);
+	fold_clo_type_int.setArgumentType(0, Type::ANY);
 	fold_clo_type_int.setArgumentType(1, Type::INTEGER);
-	fold_clo_type_int.setReturnType(Type::POINTER);
+	fold_clo_type_int.setReturnType(Type::ANY);
 
 	auto fold_left_ptr = &LSArray<LSValue*>::ls_foldLeft<LSFunction*, LSValue*>;
 	auto fold_left_int = &LSArray<int>::ls_foldLeft<LSFunction*, LSValue*>;
@@ -287,38 +287,38 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto fold_left_clo_real = &LSArray<double>::ls_foldLeft<LSClosure*, LSValue*>;
 
 	method("foldLeft", {
-		{Type::POINTER, {Type::PTR_ARRAY, fold_fun_type, Type::POINTER}, (void*) fold_left_ptr, Method::NATIVE},
-		{Type::POINTER, {Type::REAL_ARRAY, fold_fun_type_float, Type::POINTER}, (void*) fold_left_real, Method::NATIVE},
-		{Type::POINTER, {Type::INT_ARRAY, fold_fun_type_int, Type::POINTER}, (void*) fold_left_int, Method::NATIVE},
-		{Type::POINTER, {Type::PTR_ARRAY, fold_clo_type, Type::POINTER}, (void*) fold_left_clo_ptr, Method::NATIVE},
-		{Type::POINTER, {Type::REAL_ARRAY, fold_clo_type_float, Type::POINTER}, (void*) fold_left_clo_real, Method::NATIVE},
-		{Type::POINTER, {Type::INT_ARRAY, fold_clo_type_int, Type::POINTER}, (void*) fold_left_clo_int, Method::NATIVE}
+		{Type::ANY, {Type::PTR_ARRAY, fold_fun_type, Type::ANY}, (void*) fold_left_ptr, Method::NATIVE},
+		{Type::ANY, {Type::REAL_ARRAY, fold_fun_type_float, Type::ANY}, (void*) fold_left_real, Method::NATIVE},
+		{Type::ANY, {Type::INT_ARRAY, fold_fun_type_int, Type::ANY}, (void*) fold_left_int, Method::NATIVE},
+		{Type::ANY, {Type::PTR_ARRAY, fold_clo_type, Type::ANY}, (void*) fold_left_clo_ptr, Method::NATIVE},
+		{Type::ANY, {Type::REAL_ARRAY, fold_clo_type_float, Type::ANY}, (void*) fold_left_clo_real, Method::NATIVE},
+		{Type::ANY, {Type::INT_ARRAY, fold_clo_type_int, Type::ANY}, (void*) fold_left_clo_int, Method::NATIVE}
 	});
 
-	Type fold_right_fun_type = Type::FUNCTION_P;
-	fold_right_fun_type.setArgumentType(0, Type::POINTER);
-	fold_right_fun_type.setArgumentType(1, Type::POINTER);
-	fold_right_fun_type.setReturnType(Type::POINTER);
-	Type fold_right_fun_type_float = Type::FUNCTION_P;
+	Type fold_right_fun_type = Type::FUNCTION;
+	fold_right_fun_type.setArgumentType(0, Type::ANY);
+	fold_right_fun_type.setArgumentType(1, Type::ANY);
+	fold_right_fun_type.setReturnType(Type::ANY);
+	Type fold_right_fun_type_float = Type::FUNCTION;
 	fold_right_fun_type_float.setArgumentType(0, Type::REAL);
-	fold_right_fun_type_float.setArgumentType(1, Type::POINTER);
-	fold_right_fun_type_float.setReturnType(Type::POINTER);
-	Type fold_right_fun_type_int = Type::FUNCTION_P;
+	fold_right_fun_type_float.setArgumentType(1, Type::ANY);
+	fold_right_fun_type_float.setReturnType(Type::ANY);
+	Type fold_right_fun_type_int = Type::FUNCTION;
 	fold_right_fun_type_int.setArgumentType(0, Type::INTEGER);
-	fold_right_fun_type_int.setArgumentType(1, Type::POINTER);
-	fold_right_fun_type_int.setReturnType(Type::POINTER);
+	fold_right_fun_type_int.setArgumentType(1, Type::ANY);
+	fold_right_fun_type_int.setReturnType(Type::ANY);
 	Type fold_right_clo_type = Type::CLOSURE;
-	fold_right_clo_type.setArgumentType(0, Type::POINTER);
-	fold_right_clo_type.setArgumentType(1, Type::POINTER);
-	fold_right_clo_type.setReturnType(Type::POINTER);
+	fold_right_clo_type.setArgumentType(0, Type::ANY);
+	fold_right_clo_type.setArgumentType(1, Type::ANY);
+	fold_right_clo_type.setReturnType(Type::ANY);
 	Type fold_right_clo_type_float = Type::CLOSURE;
 	fold_right_clo_type_float.setArgumentType(0, Type::REAL);
-	fold_right_clo_type_float.setArgumentType(1, Type::POINTER);
-	fold_right_clo_type_float.setReturnType(Type::POINTER);
+	fold_right_clo_type_float.setArgumentType(1, Type::ANY);
+	fold_right_clo_type_float.setReturnType(Type::ANY);
 	Type fold_right_clo_type_int = Type::CLOSURE;
 	fold_right_clo_type_int.setArgumentType(0, Type::INTEGER);
-	fold_right_clo_type_int.setArgumentType(1, Type::POINTER);
-	fold_right_clo_type_int.setReturnType(Type::POINTER);
+	fold_right_clo_type_int.setArgumentType(1, Type::ANY);
+	fold_right_clo_type_int.setReturnType(Type::ANY);
 
 	auto fold_right_ptr = &LSArray<LSValue*>::ls_foldRight<LSFunction*, LSValue*>;
 	auto fold_right_int = &LSArray<int>::ls_foldRight<LSFunction*, LSValue*>;
@@ -328,16 +328,16 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto fold_right_clo_real = &LSArray<double>::ls_foldRight<LSClosure*, LSValue*>;
 
 	method("foldRight", {
-		{Type::POINTER, {Type::PTR_ARRAY, fold_right_fun_type, Type::POINTER}, (void*) fold_right_ptr, Method::NATIVE},
-		{Type::POINTER, {Type::REAL_ARRAY, fold_right_fun_type_float, Type::POINTER}, (void*) fold_right_real, Method::NATIVE},
-		{Type::POINTER, {Type::INT_ARRAY, fold_right_fun_type_int, Type::POINTER}, (void*) fold_right_int, Method::NATIVE},
-		{Type::POINTER, {Type::PTR_ARRAY, fold_right_clo_type, Type::POINTER}, (void*) fold_right_clo_ptr, Method::NATIVE},
-		{Type::POINTER, {Type::REAL_ARRAY, fold_right_clo_type_float, Type::POINTER}, (void*) fold_right_clo_real, Method::NATIVE},
-		{Type::POINTER, {Type::INT_ARRAY, fold_right_clo_type_int, Type::POINTER}, (void*) fold_right_clo_int, Method::NATIVE},
+		{Type::ANY, {Type::PTR_ARRAY, fold_right_fun_type, Type::ANY}, (void*) fold_right_ptr, Method::NATIVE},
+		{Type::ANY, {Type::REAL_ARRAY, fold_right_fun_type_float, Type::ANY}, (void*) fold_right_real, Method::NATIVE},
+		{Type::ANY, {Type::INT_ARRAY, fold_right_fun_type_int, Type::ANY}, (void*) fold_right_int, Method::NATIVE},
+		{Type::ANY, {Type::PTR_ARRAY, fold_right_clo_type, Type::ANY}, (void*) fold_right_clo_ptr, Method::NATIVE},
+		{Type::ANY, {Type::REAL_ARRAY, fold_right_clo_type_float, Type::ANY}, (void*) fold_right_clo_real, Method::NATIVE},
+		{Type::ANY, {Type::INT_ARRAY, fold_right_clo_type_int, Type::ANY}, (void*) fold_right_clo_int, Method::NATIVE},
 	});
 
 	method("pop", {
-		{Type::POINTER, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_pop, Method::NATIVE},
+		{Type::ANY, {Type::PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_pop, Method::NATIVE},
 		{Type::REAL, {Type::REAL_ARRAY}, (void*) &LSArray<double>::ls_pop, Method::NATIVE},
 		{Type::INTEGER, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_pop, Method::NATIVE},
 	});
@@ -348,10 +348,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("push", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::CONST_ANY}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
 		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::CONST_REAL}, (void*) &LSArray<double>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
 		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
-		{Type::PTR_ARRAY, {Type::POINTER, Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
+		{Type::PTR_ARRAY, {Type::ANY, Type::CONST_ANY}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
 	});
 
 	method("pushAll", {
@@ -377,13 +377,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("fill", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::POINTER, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_fill, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::ANY, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_fill, Method::NATIVE},
 		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::REAL, Type::CONST_INTEGER}, (void*) &LSArray<double>::ls_fill, Method::NATIVE},
 		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_fill, Method::NATIVE},
 	});
 
 	method("insert", {
-		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::POINTER, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_insert, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::PTR_ARRAY, Type::ANY, Type::INTEGER}, (void*) &LSArray<LSValue*>::ls_insert, Method::NATIVE},
 		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::REAL, Type::INTEGER}, (void*) &LSArray<double>::ls_insert, Method::NATIVE},
 		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::INTEGER}, (void*) &LSArray<int>::ls_insert, Method::NATIVE},
 	});
@@ -395,13 +395,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("remove", {
-		{Type::POINTER, {Type::PTR_ARRAY, Type::INTEGER}, (void*)&LSArray<LSValue*>::ls_remove, Method::NATIVE},
+		{Type::ANY, {Type::PTR_ARRAY, Type::INTEGER}, (void*)&LSArray<LSValue*>::ls_remove, Method::NATIVE},
 		{Type::REAL, {Type::REAL_ARRAY, Type::INTEGER}, (void*)&LSArray<double>::ls_remove, Method::NATIVE},
 		{Type::INTEGER, {Type::INT_ARRAY, Type::INTEGER}, (void*)&LSArray<int>::ls_remove, Method::NATIVE},
 	});
 
 	method("removeElement", {
-		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::CONST_POINTER}, (void*)&LSArray<LSValue*>::ls_remove_element, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_ARRAY, Type::CONST_ANY}, (void*)&LSArray<LSValue*>::ls_remove_element, Method::NATIVE},
 		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::CONST_REAL}, (void*)&LSArray<double>::ls_remove_element, Method::NATIVE},
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::CONST_INTEGER}, (void*)&LSArray<int>::ls_remove_element, Method::NATIVE},
 	});
@@ -419,20 +419,20 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("search", {
-		{Type::INTEGER, {Type::CONST_PTR_ARRAY, Type::CONST_POINTER, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_search, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_PTR_ARRAY, Type::CONST_ANY, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_search, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_REAL_ARRAY, Type::CONST_REAL, Type::CONST_INTEGER}, (void*) &LSArray<double>::ls_search, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_search, Method::NATIVE},
 	});
 
 	method("size", {
-		{Type::POINTER, {Type::CONST_POINTER}, (void*) &LSArray<LSValue*>::ls_size_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_POINTER}, (void*) &ArraySTD::size},
+		{Type::ANY, {Type::CONST_ANY}, (void*) &LSArray<LSValue*>::ls_size_ptr, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_ANY}, (void*) &ArraySTD::size},
 		{Type::INTEGER, {Type::CONST_REAL_ARRAY}, (void*) &ArraySTD::size},
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &ArraySTD::size}
 	});
 
 	method("sum", {
-		{Type::POINTER, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_sum, Method::NATIVE},
+		{Type::ANY, {Type::CONST_PTR_ARRAY}, (void*) &LSArray<LSValue*>::ls_sum, Method::NATIVE},
 		{Type::REAL, {Type::CONST_REAL_ARRAY}, (void*) &LSArray<double>::ls_sum, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_sum, Method::NATIVE},
 	});
@@ -446,7 +446,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args) {
 	args[1] = c.insn_to_any(args[1]);
-	return c.insn_call(Type::POINTER, args, (void*) +[](LSValue** x, LSValue* y) {
+	return c.insn_call(Type::ANY, args, (void*) +[](LSValue** x, LSValue* y) {
 		return (*x)->add_eq(y);
 	});
 }

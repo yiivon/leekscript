@@ -72,7 +72,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		key_type = Type::INTEGER;
 		value_type = Type::STRING;
 	} else {
-		key_type = Type::POINTER;
+		key_type = Type::ANY;
 		value_type = container->type.getElementType();
 	}
 

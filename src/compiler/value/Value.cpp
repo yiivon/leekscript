@@ -5,7 +5,7 @@
 namespace ls {
 
 Value::Value() {
-	type = Type::POINTER;
+	type = Type::ANY;
 	constant = false;
 }
 
@@ -28,10 +28,10 @@ bool Value::elements_will_store(SemanticAnalyser*, const Type&, int level) {
 }
 
 bool Value::must_be_any(SemanticAnalyser*) {
-	if (type == Type::POINTER) {
+	if (type == Type::ANY) {
 		return false;
 	}
-	type = Type::POINTER;
+	type = Type::ANY;
 	return true;
 }
 

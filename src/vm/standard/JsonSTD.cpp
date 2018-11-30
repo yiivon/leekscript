@@ -11,10 +11,10 @@ namespace ls {
 JsonSTD::JsonSTD() : Module("Json") {
 
 	method("encode", {
-		{Type::STRING, {Type::CONST_POINTER}, (void*) &JsonSTD::encode}
+		{Type::STRING, {Type::CONST_ANY}, (void*) &JsonSTD::encode}
 	});
 	method("decode", {
-		{Type::POINTER, {Type::CONST_STRING}, (void*) &JsonSTD::decode},
+		{Type::ANY, {Type::CONST_STRING}, (void*) &JsonSTD::decode},
 	});
 }
 
@@ -55,7 +55,7 @@ Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) 
 }
 
 Compiler::value JsonSTD::decode(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::POINTER, args, (void*) +[](LSString* string) {
+	return c.insn_call(Type::ANY, args, (void*) +[](LSString* string) {
 		try {
 			Json json = Json::parse(*string);
 			LSValue::delete_temporary(string);

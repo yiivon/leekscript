@@ -42,7 +42,7 @@ Location ObjectAccess::location() const {
 void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 
 	object->analyse(analyser);
-	type = Type::POINTER;
+	type = Type::ANY;
 
 	// Get the object class : 12 => Number
 	object_class_name = object->type.getClass();

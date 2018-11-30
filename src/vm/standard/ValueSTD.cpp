@@ -13,7 +13,7 @@ ValueSTD::ValueSTD() : Module("Value") {
 	/*
 	 * Static attributes
 	 */
-	static_field("unknown", Type::POINTER, ValueSTD::unknown);
+	static_field("unknown", Type::ANY, ValueSTD::unknown);
 
 	/*
 	 * Attributes
@@ -28,75 +28,75 @@ ValueSTD::ValueSTD() : Module("Value") {
 		//{Type::NUMBER_VALUE, Type::NUMBER_VALUE, Type::NUMBER_VALUE, (void*) &ValueSTD::op_store}
 	});
 	operator_("is", {
-		{Type::CONST_POINTER, Type::CONST_CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
+		{Type::CONST_ANY, Type::CONST_CLASS, Type::BOOLEAN, (void*) &ValueSTD::op_instanceof}
 	});
 	operator_("==", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_equals}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_equals}
 	});
 	operator_("!=", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_not_equals}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_not_equals}
 	});
 	operator_("<", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_lt}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_lt}
 	});
 	operator_("<=", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_le}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_le}
 	});
 	operator_(">", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_gt}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_gt}
 	});
 	operator_(">=", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_ge}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_ge}
 	});
 	operator_("and", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_and}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_and}
 	});
 	operator_("&&", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_and}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_and}
 	});
 	operator_("or", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_or}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_or}
 	});
 	operator_("||", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_or}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_or}
 	});
 	operator_("xor", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_xor}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_xor}
 	});
 	operator_("&", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::INTEGER, (void*) &ValueSTD::op_bit_and}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::INTEGER, (void*) &ValueSTD::op_bit_and}
 	});
 	operator_("|", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::INTEGER, (void*) &ValueSTD::op_bit_or}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::INTEGER, (void*) &ValueSTD::op_bit_or}
 	});
 	operator_("^", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::INTEGER, (void*) &ValueSTD::op_bit_xor}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::INTEGER, (void*) &ValueSTD::op_bit_xor}
 	});
 	operator_("in", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::BOOLEAN, (void*) &ValueSTD::op_in}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_in}
 	});
 	operator_("<=>", {
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &ValueSTD::op_swap_val, {}, false, true, true},
-		{Type::POINTER, Type::POINTER, Type::POINTER, (void*) &ValueSTD::op_swap_ptr, {}, false, true, true}
+		{Type::ANY, Type::ANY, Type::ANY, (void*) &ValueSTD::op_swap_ptr, {}, false, true, true}
 	});
 	operator_("**", {
-		{Type::CONST_POINTER, Type::CONST_POINTER, Type::POINTER, (void*) &ValueSTD::op_pow}
+		{Type::CONST_ANY, Type::CONST_ANY, Type::ANY, (void*) &ValueSTD::op_pow}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("copy", {
-		{Type::POINTER, {Type::CONST_POINTER}, (void*) &ValueSTD::copy}
+		{Type::ANY, {Type::CONST_ANY}, (void*) &ValueSTD::copy}
 	});
 	method("string", {
-		{Type::STRING, {Type::CONST_POINTER}, (void*) &ValueSTD::to_string}
+		{Type::STRING, {Type::CONST_ANY}, (void*) &ValueSTD::to_string}
 	});
 	method("json", {
-		{Type::STRING, {Type::CONST_POINTER}, (void*) &JsonSTD::encode}
+		{Type::STRING, {Type::CONST_ANY}, (void*) &JsonSTD::encode}
 	});
 	method("typeID", {
-		{Type::INTEGER, {Type::CONST_POINTER}, (void*) &ValueSTD::typeID}
+		{Type::INTEGER, {Type::CONST_ANY}, (void*) &ValueSTD::typeID}
 	});
 }
 
@@ -312,7 +312,7 @@ Compiler::value ValueSTD::op_swap_val(Compiler& c, std::vector<Compiler::value> 
 }
 
 Compiler::value ValueSTD::op_swap_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::POINTER, args, +[](LSValue** x, LSValue** y) {
+	return c.insn_call(Type::ANY, args, +[](LSValue** x, LSValue** y) {
 		auto tmp = *x;
 		*x = *y;
 		*y = tmp;
@@ -369,7 +369,7 @@ Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args)
 }
 
 Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::POINTER, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+	return c.insn_call(Type::ANY, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		return x->pow(y);
 	});
 }

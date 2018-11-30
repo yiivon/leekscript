@@ -8,7 +8,7 @@ namespace legacy {
 void Functions::add(VM* vm, std::string name, Type return_type, std::vector<Type> args, void* fun) {
 	auto f = new LSFunction(fun);
 	f->native = true;
-	auto type = Type::FUNCTION_P;
+	auto type = Type::FUNCTION;
 	type.native = true;
 	type.setReturnType(return_type);
 	for (size_t i = 0; i < args.size(); ++i) {
@@ -19,8 +19,8 @@ void Functions::add(VM* vm, std::string name, Type return_type, std::vector<Type
 }
 
 void Functions::create(VM* vm) {
-	add(vm, "debug", {}, {Type::POINTER}, (void*) &Functions::v1_debug);
-	add(vm, "count", Type::INTEGER, {Type::POINTER}, (void*) &Functions::v1_count);
+	add(vm, "debug", {}, {Type::ANY}, (void*) &Functions::v1_debug);
+	add(vm, "count", Type::INTEGER, {Type::ANY}, (void*) &Functions::v1_count);
 	add(vm, "charAt", Type::STRING, {Type::STRING, Type::INTEGER}, (void*) &Functions::v1_charAt);
 	add(vm, "pushAll", {}, {Type::PTR_ARRAY, Type::PTR_ARRAY}, (void*) &Functions::v1_pushAll);
 	add(vm, "replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &Functions::v1_replace);

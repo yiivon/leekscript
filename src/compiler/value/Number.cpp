@@ -90,14 +90,14 @@ void Number::analyse(SemanticAnalyser*) {
 		}
 	}
 	if (pointer) {
-		type = Type::POINTER;
+		type = Type::ANY;
 	}
 	// TODO ?
 	// type.constant = true;
 }
 
 bool Number::is_zero() const {
-	if (type == Type::POINTER or type == Type::REAL) {
+	if (type == Type::ANY or type == Type::REAL) {
 		return double_value == 0;
 	} else if (type == Type::LONG) {
 		return long_value == 0;
@@ -109,7 +109,7 @@ bool Number::is_zero() const {
 }
 
 Compiler::value Number::compile(Compiler& c) const {
-	if (type == Type::POINTER) {
+	if (type == Type::ANY) {
 		return c.insn_to_any(c.new_real(double_value));
 	}
 	if (type == Type::LONG) {

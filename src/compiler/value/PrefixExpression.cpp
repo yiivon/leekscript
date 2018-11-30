@@ -68,7 +68,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 
 	} else if (operatorr->type == TokenType::NEW) {
 
-		type = Type::POINTER;
+		type = Type::ANY;
 		if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
 			if (vv->name == "Number") type = Type::INTEGER;
 			else if (vv->name == "Boolean") type = Type::BOOLEAN;
@@ -205,7 +205,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return {c.new_pointer(new LSString("")).v, type};
 				}
 				else if (vv->name == "Array") {
-					return c.new_array(Type::POINTER, {});
+					return c.new_array(Type::ANY, {});
 				}
 				else if (vv->name == "Object") {
 					return {c.new_pointer(new LSObject()).v, type};
@@ -233,7 +233,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						return {c.new_pointer(new LSString("")).v, type};
 					}
 					if (vv->name == "Array") {
-						return c.new_array(Type::POINTER, {});
+						return c.new_array(Type::ANY, {});
 					}
 					if (vv->name == "Object") {
 						return {c.new_pointer(new LSObject()).v, type};

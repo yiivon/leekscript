@@ -89,9 +89,9 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			else if (element_type.raw() == RawType::FUNCTION) {
 				supported_type = element_type;
 			} else {
-				supported_type = Type::POINTER;
+				supported_type = Type::ANY;
 				// If there are some functions, they types will be lost, so tell them to return pointers
-				supported_type.setReturnType(Type::POINTER);
+				supported_type.setReturnType(Type::ANY);
 			}
 
 			// Re-analyze expressions with the supported type
@@ -104,24 +104,24 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					// If the array stores other arrays of different types,
 					// force those arrays to store pointers. (To avoid having
 					// unknown array<int> inside arrays.
-					ex->will_store(analyser, Type::POINTER);
+					ex->will_store(analyser, Type::ANY);
 				}
 				if (ex->type.raw() == RawType::FUNCTION) {
 					std::vector<Type> types;
 					for (unsigned p = 0; p < ex->type.getArgumentTypes().size(); ++p) {
-						types.push_back(Type::POINTER);
+						types.push_back(Type::ANY);
 					}
 					if (types.size() > 0) {
 						ex->will_take(analyser, types, 1);
 					}
 					// e.g. Should compile a generic version
-					ex->must_return(analyser, Type::POINTER);
+					ex->must_return(analyser, Type::ANY);
 				}
 				if (element_type._types.size() == 0 or !element_type.compatible(ex->type)) {
 					element_type = Type::get_compatible_type(element_type, ex->type);
 				}
 			}
-			if (element_type == Type::BOOLEAN) element_type = Type::POINTER;
+			if (element_type == Type::BOOLEAN) element_type = Type::ANY;
 			element_type.temporary = false;
 			type = Type::array(element_type);
 		}
@@ -218,10 +218,10 @@ Compiler::value Array::compile(Compiler& c) const {
 	}
 	auto array = c.new_array(type.getElementType(), elements);
 	if (conversion_type == Type::NULLL) {
-		return { c.builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
+		return { c.builder.CreatePointerCast(array.v, Type::ANY.llvm_type()), Type::ANY };
 	}
-	if (type.not_temporary() == Type::POINTER) {
-		return { c.builder.CreatePointerCast(array.v, Type::POINTER.llvm_type()), Type::POINTER };
+	if (type.not_temporary() == Type::ANY) {
+		return { c.builder.CreatePointerCast(array.v, Type::ANY.llvm_type()), Type::ANY };
 	}
 	return array;
 }

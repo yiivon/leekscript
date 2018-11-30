@@ -31,7 +31,7 @@ SystemSTD::SystemSTD() : Module("System") {
 	static_field("nanoTime", Type::LONG, (void*) &System_nanotime);
 
 	method("print", Method::Static, {
-		{{}, {Type::POINTER}, (void*) &System_print, Method::NATIVE},
+		{{}, {Type::ANY}, (void*) &System_print, Method::NATIVE},
 		{{}, {Type::MPZ}, (void*) &System_print_mpz, Method::NATIVE},
 		{{}, {Type::MPZ_TMP}, (void*) &System_print_mpz_tmp, Method::NATIVE},
 		{{}, {Type::BOOLEAN}, (void*) &System_print_bool, Method::NATIVE},

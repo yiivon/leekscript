@@ -12,7 +12,7 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 	field("args", Type::PTR_ARRAY);
 
 	method("copy", {
-		{Type::FUNCTION_P, {Type::CONST_FUNCTION_P}, (void*) &ValueSTD::copy}
+		{Type::FUNCTION, {Type::CONST_FUNCTION}, (void*) &ValueSTD::copy}
 	});
 }
 

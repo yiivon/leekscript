@@ -38,10 +38,10 @@ void Set::analyse(SemanticAnalyser* analyser) {
 
 	if (element_type.isNumber()) {
 		if (element_type != Type::INTEGER && element_type != Type::REAL) {
-			element_type = Type::POINTER;
+			element_type = Type::ANY;
 		}
 	} else if (!element_type.isNumber()) {
-		element_type = Type::POINTER;
+		element_type = Type::ANY;
 	}
 
 	constant = true;
@@ -50,7 +50,7 @@ void Set::analyse(SemanticAnalyser* analyser) {
 		constant = constant && ex->constant;
 	}
 	if (element_type._types.size() == 0) {
-		element_type = Type::POINTER;
+		element_type = Type::ANY;
 	}
 	type = Type::set(element_type);
 }

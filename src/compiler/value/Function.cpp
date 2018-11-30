@@ -160,13 +160,13 @@ void Function::analyse(SemanticAnalyser* analyser) {
 		function_added = true;
 	}
 
-	type = Type::FUNCTION_P;
+	type = Type::FUNCTION;
 
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyse(analyser);
 		}
-		type.setArgumentType(i, Type::POINTER, defaultValues[i] != nullptr);
+		type.setArgumentType(i, Type::ANY, defaultValues[i] != nullptr);
 	}
 
 	// for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
@@ -283,11 +283,11 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	analyser->enter_function(this);
 	current_version = version;
 
-	version->type = Type::FUNCTION_P;
+	version->type = Type::FUNCTION;
 	version->type.arguments_types = args;
 
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::POINTER);
+		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::ANY);
 		analyser->add_parameter(arguments.at(i).get(), type);
 		version->type.arguments_types.at(i) = type;
 	}
@@ -406,7 +406,7 @@ Type Function::version_type(std::vector<Type> version) const {
 }
 
 void Function::must_return(SemanticAnalyser*, const Type& type) {
-	if (type == Type::POINTER) {
+	if (type == Type::ANY) {
 		generate_default_version = true;
 	}
 	return_type = type;
@@ -508,7 +508,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	std::vector<llvm::Type*> args = {};
 	if (captures.size()) {
-		args.push_back(Type::POINTER.llvm_type()); // first arg is the function pointer
+		args.push_back(Type::ANY.llvm_type()); // first arg is the function pointer
 	}
 	for (auto& t : version->type.getArgumentTypes()) {
 		args.push_back(t.llvm_type());

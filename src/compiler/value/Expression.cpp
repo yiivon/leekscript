@@ -237,7 +237,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	 * OLD
 	 */
 	if (!v1->type.isNumber() or !v2->type.isNumber()) {
-		type = Type::POINTER;
+		type = Type::ANY;
 	}
 	constant = v1->constant and v2->constant;
 
@@ -265,18 +265,18 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		// Set the correct type nature for the two members
 		if (!v2->type.isNumber() and v1->type.isNumber() and !(vv and op->type == TokenType::EQUAL)) {
 			v1->analyse(analyser);
-			v1_type = Type::POINTER;
+			v1_type = Type::ANY;
 		}
 		if (!v1->type.isNumber() and v2->type.isNumber() and !(vv and op->type == TokenType::EQUAL)) {
 			v2->analyse(analyser);
-			v2_type = Type::POINTER;
+			v2_type = Type::ANY;
 		}
 
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
 			type = v2->type;
 		} else {
-			if (v1->type == Type::POINTER || v2->type == Type::POINTER) {
-				type = Type::POINTER;
+			if (v1->type == Type::ANY || v2->type == Type::ANY) {
+				type = Type::ANY;
 			} else {
 				type = v1->type;
 			}
@@ -482,7 +482,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
 				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
-				return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
 				}, true);
 			}
@@ -556,7 +556,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			v1->compile_end(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->add_eq(y);
 			}, true);
 		}
@@ -564,7 +564,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->sub_eq(y);
 			}, true);
 		}
@@ -572,7 +572,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::POINTER, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_call(Type::ANY, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->mul_eq(y);
 			}, true);
 		}
@@ -580,7 +580,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->div_eq(y);
 			}, true);
 		}
@@ -588,7 +588,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->mod_eq(y);
 			}, true);
 		}
@@ -596,7 +596,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::POINTER, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->pow_eq(y);
 			}, true);
 		}
@@ -794,7 +794,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			label_else.block = LLVMCompiler::builder.GetInsertBlock();
 
 			c.insn_label(&label_end);
-			auto PN = LLVMCompiler::builder.CreatePHI(Type::POINTER.llvm_type(), 2);
+			auto PN = LLVMCompiler::builder.CreatePHI(Type::ANY.llvm_type(), 2);
 			PN->addIncoming(y.v, label_then.block);
 			PN->addIncoming(x.v, label_else.block);
 			return {PN, type};

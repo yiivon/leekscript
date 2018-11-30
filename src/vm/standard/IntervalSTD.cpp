@@ -23,7 +23,7 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 		{Type::INTERVAL, {Type::INTERVAL}, (void*) &ValueSTD::copy}
 	});
 
-	Type pred_fun_type_int = Type::FUNCTION_P;
+	Type pred_fun_type_int = Type::FUNCTION;
 	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
 	pred_fun_type_int.setReturnType(Type::BOOLEAN);
 	Type pred_clo_type_int = Type::CLOSURE;

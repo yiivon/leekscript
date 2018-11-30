@@ -79,18 +79,18 @@ StringSTD::StringSTD() : Module("String") {
 	method("endsWith", {
 		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_endsWith, Method::NATIVE},
 	});
-	Type fold_fun_type = Type::FUNCTION_P;
-	fold_fun_type.setArgumentType(0, Type::POINTER);
+	Type fold_fun_type = Type::FUNCTION;
+	fold_fun_type.setArgumentType(0, Type::ANY);
 	fold_fun_type.setArgumentType(1, Type::STRING);
-	fold_fun_type.setReturnType(Type::POINTER);
+	fold_fun_type.setReturnType(Type::ANY);
 	method("fold", {
-		{Type::POINTER, {Type::CONST_STRING, fold_fun_type, Type::POINTER}, (void*) &LSString::ls_foldLeft, Method::NATIVE},
+		{Type::ANY, {Type::CONST_STRING, fold_fun_type, Type::ANY}, (void*) &LSString::ls_foldLeft, Method::NATIVE},
 	});
 	method("indexOf", {
 		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_indexOf, Method::NATIVE},
 	});
 	method("isPermutation", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_POINTER}, (void*) &LSString::is_permutation, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_ANY}, (void*) &LSString::is_permutation, Method::NATIVE},
 	});
 	method("isPalindrome", {
 		{Type::BOOLEAN, {Type::CONST_STRING}, (void*) &LSString::is_palindrome, Method::NATIVE},
@@ -102,7 +102,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::STRING_ARRAY, {Type::CONST_STRING}, (void*) &LSString::ls_lines, Method::NATIVE},
 	});
 	method("size", {
-		{Type::POINTER, {Type::CONST_STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
+		{Type::ANY, {Type::CONST_STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::ls_size, Method::NATIVE},
 	});
 	method("replace", {
@@ -125,22 +125,22 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	method("split", {
 		{Type::STRING_ARRAY, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_split, Method::NATIVE},
-		{Type::STRING_ARRAY, {Type::CONST_POINTER, Type::CONST_POINTER}, (void*) &string_split, Method::NATIVE},
+		{Type::STRING_ARRAY, {Type::CONST_ANY, Type::CONST_ANY}, (void*) &string_split, Method::NATIVE},
 	});
 	method("startsWith", {
 		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_startsWith, Method::NATIVE},
 	});
 	method("code", {
-		{Type::POINTER, {Type::CONST_POINTER}, (void*) &string_begin_code_ptr, Method::NATIVE},
+		{Type::ANY, {Type::CONST_ANY}, (void*) &string_begin_code_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_STRING}, (void*) &string_begin_code, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_POINTER}, (void*) &string_begin_code, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_ANY}, (void*) &string_begin_code, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_INTEGER}, (void*) &string_code, Method::NATIVE},
 	});
 	method("number", {
 		{Type::LONG, {Type::CONST_STRING}, (void*) &string_number, Method::NATIVE},
-		{Type::LONG, {Type::CONST_POINTER}, (void*) &string_number, Method::NATIVE},
+		{Type::LONG, {Type::CONST_ANY}, (void*) &string_number, Method::NATIVE},
 	});
-	Type map_fun_type = Type::FUNCTION_P;
+	Type map_fun_type = Type::FUNCTION;
 	map_fun_type.setArgumentType(0, Type::STRING);
 	map_fun_type.setReturnType(Type::STRING);
 	auto map_fun = &LSString::ls_map<LSFunction*>;
@@ -151,7 +151,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::STRING, {Type::CONST_STRING}, (void*) &LSString::sort, Method::NATIVE},
 	});
 	method("wordCount", {
-		{Type::POINTER, {Type::CONST_STRING}, (void*) &LSString::word_count_ptr, Method::NATIVE},
+		{Type::ANY, {Type::CONST_STRING}, (void*) &LSString::word_count_ptr, Method::NATIVE},
 		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::word_count, Method::NATIVE},
 	});
 }

@@ -24,7 +24,7 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::OBJECT, Type::POINTER, Type::BOOLEAN, (void*) &LSObject::in, {}, Method::NATIVE}
+		{Type::OBJECT, Type::ANY, Type::BOOLEAN, (void*) &LSObject::in, {}, Method::NATIVE}
 	});
 
 	/*
@@ -33,9 +33,9 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	method("copy", {
 		{Type::OBJECT, {Type::OBJECT}, (void*) &ValueSTD::copy}
 	});
-	Type map_fun_type = Type::FUNCTION_P;
-	map_fun_type.setArgumentType(0, Type::POINTER);
-	map_fun_type.setReturnType(Type::POINTER);
+	Type map_fun_type = Type::FUNCTION;
+	map_fun_type.setArgumentType(0, Type::ANY);
+	map_fun_type.setReturnType(Type::ANY);
 	auto map_fun = &LSObject::ls_map<LSFunction*>;
 	method("map", {
 		{Type::OBJECT, {Type::OBJECT, map_fun_type}, (void*) map_fun, Method::NATIVE}

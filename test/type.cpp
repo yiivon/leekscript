@@ -41,7 +41,7 @@ void Test::test_types() {
 	assert(ls::Type::get_compatible_type({}, ls::Type::INTEGER) == ls::Type::INTEGER);
 	assert(ls::Type::get_compatible_type(ls::Type::INTEGER, ls::Type::REAL) == ls::Type::REAL);
 
-	assert(ls::Type::more_specific(ls::Type::POINTER, ls::Type::INTEGER));
+	assert(ls::Type::more_specific(ls::Type::ANY, ls::Type::INTEGER));
 	assert(ls::Type::more_specific(ls::Type::PTR_ARRAY, ls::Type::INT_ARRAY));
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::INT_INT_MAP));
 	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::REAL_REAL_MAP));

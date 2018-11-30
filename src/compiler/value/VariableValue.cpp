@@ -55,7 +55,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 			scope = VarScope::CAPTURE;
 		}
 	} else {
-		type = Type::POINTER;
+		type = Type::ANY;
 	}
 	type.temporary = false;
 
