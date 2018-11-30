@@ -757,7 +757,7 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 		// Always take LSArray<int>, but the array is not necessarily of this type
 		return insn_call(Type::BOOLEAN, {v}, (void*) &LSArray<int>::to_bool);
 	}
-	if (v.t.raw() == RawType::FUNCTION or v.t.raw() == RawType::CLOSURE) {
+	if (v.t.is_function()) {
 		return new_bool(true);
 	}
 	if (v.t.raw() == RawType::MPZ) {
@@ -794,8 +794,8 @@ LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 	if (v.t.is_map()) return new_integer(LSValue::MAP);
 	if (v.t.is_set()) return new_integer(LSValue::SET);
 	if (v.t.is_interval()) return new_integer(LSValue::INTERVAL);
-	if (v.t.raw() == RawType::FUNCTION) return new_integer(LSValue::FUNCTION);
-	if (v.t.raw() == RawType::CLOSURE) return new_integer(LSValue::CLOSURE);
+	if (v.t.is_closure()) return new_integer(LSValue::CLOSURE);
+	if (v.t.is_function()) return new_integer(LSValue::FUNCTION);
 	if (v.t.raw() == RawType::OBJECT) return new_integer(LSValue::OBJECT);
 	if (v.t.raw() == RawType::CLASS) return new_integer(LSValue::CLASS);
 	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
@@ -819,7 +819,7 @@ LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
 		return new_pointer(vm->system_vars["Set"]);
 	if (v.t.is_interval())
 		return new_pointer(vm->system_vars["Interval"]);
-	if (v.t.raw() == RawType::FUNCTION)
+	if (v.t.is_function())
 		return new_pointer(vm->system_vars["Function"]);
 	if (v.t.raw() == RawType::OBJECT)
 		return new_pointer(vm->system_vars["Object"]);

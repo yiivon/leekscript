@@ -1,5 +1,4 @@
 #include "Mpz_type.hpp"
-#include "Ty.hpp"
 #include "Type.hpp"
 #include "../colors.h"
 

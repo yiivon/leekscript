@@ -86,7 +86,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 				supported_type = element_type;
 			}
 			// For function, we store them as pointers
-			else if (element_type.raw() == RawType::FUNCTION) {
+			else if (element_type.is_function()) {
 				supported_type = element_type;
 			} else {
 				supported_type = Type::ANY;
@@ -106,7 +106,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					// unknown array<int> inside arrays.
 					ex->will_store(analyser, Type::ANY);
 				}
-				if (ex->type.raw() == RawType::FUNCTION) {
+				if (ex->type.is_function()) {
 					std::vector<Type> types;
 					for (unsigned p = 0; p < ex->type.getArgumentTypes().size(); ++p) {
 						types.push_back(Type::ANY);

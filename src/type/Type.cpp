@@ -236,7 +236,7 @@ void Type::add(const Base_type* type) {
 void Type::toJson(ostream& os) const {
 	os << "{\"type\":\"" << getJsonName() << "\"";
 
-	if (raw() == RawType::FUNCTION) {
+	if (is_function()) {
 		os << ",\"args\":[";
 		for (unsigned t = 0; t < arguments_types.size(); ++t) {
 			if (t > 0) os << ",";
@@ -285,16 +285,14 @@ bool Type::is_container() const {
 }
 
 bool Type::operator == (const Type& type) const {
-	if (is_array() or is_set() or is_map()) {
+	if (is_array() or is_set() or is_map() or is_function()) {
 		return raw()->operator == (type.raw());
 	}
 	return raw() == type.raw() &&
-			// native == type.native &&
-			// temporary == type.temporary &&
-			// reference == type.reference &&
-			((raw() != RawType::FUNCTION and raw() != RawType::CLOSURE) ||
-				(return_types == type.return_types &&
-				arguments_types == type.arguments_types));
+		// native == type.native &&
+		// temporary == type.temporary &&
+		// reference == type.reference &&
+		(!is_function() || (return_types == type.return_types && arguments_types == type.arguments_types));
 }
 
 bool Type::operator < (const Type& type) const {
@@ -491,7 +489,7 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 			return true;
 		}
 	}
-	if ((neww.raw() == RawType::FUNCTION or neww.raw() == RawType::CLOSURE) and (old.raw() == RawType::FUNCTION or old.raw() == RawType::CLOSURE)) {
+	if (neww.is_function() and old.is_function()) {
 		if (Type::more_specific(old.getArgumentType(0), neww.getArgumentType(0))) { //! TODO only the first arg
 			return true;
 		}
@@ -604,10 +602,10 @@ ostream& operator << (ostream& os, const Type& type) {
 	auto color = type.isNumber() ? C_GREEN : C_RED;
 	os << color;
 
-	if (type.raw() == RawType::FUNCTION || type.raw() == RawType::CLOSURE) {
+	if (type.is_function()) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
-		os << (type.raw() == RawType::FUNCTION ? "fun(" : "closure(");
+		os << (type.is_closure() ? "closure(" : "fun(");
 		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
 			if (t > 0) os << ", ";
 			os << type.arguments_types[t];

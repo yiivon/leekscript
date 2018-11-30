@@ -1,5 +1,4 @@
 #include "String_type.hpp"
-#include "Ty.hpp"
 #include "../colors.h"
 #include <iostream>
 #include "Type.hpp"

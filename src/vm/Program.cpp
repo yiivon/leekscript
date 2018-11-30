@@ -298,7 +298,7 @@ std::string Program::underline_code(Location location, Location focus) const {
 					jit_type_t args_float[2] = {JIT_POINTER, JIT_REAL};
 					jit_type_t sig_push_float = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args_float, 2, 0);
 					jit_insn_call_native(F, "push", (void*) &Program_push_float, sig_push_float, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::FUNCTION) {
+				} else if (type.is_function()) {
 					jit_insn_call_native(F, "push", (void*) &Program_push_function, push_sig_pointer, var_args, 2, JIT_CALL_NOTHROW);
 				}
 			}
