@@ -27,6 +27,7 @@ void Test::test_types() {
 	assert_print({}, C_GREY "void" END_COLOR);
 	assert_print(ls::Type::INTEGER, BLUE_BOLD "int" END_COLOR);
 	assert_print(ls::Type::INT_ARRAY, BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "int" END_COLOR ">");
+	assert_print(ls::Type::INT_ARRAY_ITERATOR, BLUE_BOLD "iterator" END_COLOR "<" BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "int" END_COLOR ">>");
 
 	assert(ls::Type::INT_ARRAY == ls::Type::INT_ARRAY);
 	assert(ls::Type::REAL_ARRAY == ls::Type::REAL_ARRAY);

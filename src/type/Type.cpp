@@ -589,19 +589,7 @@ ostream& operator << (ostream& os, const Type& type) {
 	auto color = type.isNumber() ? C_GREEN : C_RED;
 	os << color;
 
-	if (type.raw() == RawType::ANY) {
-		os << BLUE_BOLD;
-		if (type.constant) os << "const:";
-		if (type == Type::INT_ARRAY_ITERATOR) {
-			os << "iterator<array<int>>";
-		} else if (type == Type::REAL_ARRAY_ITERATOR) {
-			os << "iterator<array<real>>";
-		} else if (type == Type::PTR_ARRAY_ITERATOR) {
-			os << "iterator<array<*>>";
-		} else {
-			os << "any";
-		}
-	} else if (type.raw() == RawType::FUNCTION || type.raw() == RawType::CLOSURE) {
+	if (type.raw() == RawType::FUNCTION || type.raw() == RawType::CLOSURE) {
 		os << BLUE_BOLD;
 		if (type.constant) os << "const:";
 		os << (type.raw() == RawType::FUNCTION ? "fun(" : "closure(");
