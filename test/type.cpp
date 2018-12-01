@@ -45,6 +45,17 @@ void Test::test_types() {
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::STRING}) != ls::Type::INTEGER);
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::STRING}) == ls::Type({ls::RawType::INTEGER, ls::RawType::STRING}));
 
+	section("is_array");
+	assert(ls::Type().is_array() == false);
+	assert(ls::Type::ANY.is_array() == false);
+	assert(ls::Type::INTEGER.is_array() == false);
+	assert(ls::Type::ARRAY.is_array() == true);
+	assert(ls::Type::PTR_ARRAY.is_array() == true);
+	assert(ls::Type::INT_ARRAY.is_array() == true);
+	assert(ls::Type::REAL_ARRAY.is_array() == true);
+	assert(ls::Type({ new ls::Array_type(ls::Type::INTEGER), new ls::Array_type(ls::Type::INTEGER) }).is_array() == true);
+	assert(ls::Type({ new ls::Array_type(ls::Type::INTEGER), ls::RawType::INTEGER }).is_array() == false);
+
 	section("compatible");
 	assert(ls::Type::REAL.compatible(ls::Type::INTEGER));
 	assert(ls::Type::ARRAY.compatible(ls::Type::INT_ARRAY));

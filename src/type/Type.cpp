@@ -313,7 +313,9 @@ std::string Type::getClass() const {
 }
 
 bool Type::isNumber() const {
-	return dynamic_cast<const Number_type*>(raw()) != nullptr || raw() == RawType::BOOLEAN;
+	return _types.size() && all([&](const Base_type* type) {
+		return dynamic_cast<const Number_type*>(type) != nullptr || dynamic_cast<const Bool_type*>(type) != nullptr;
+	});
 }
 
 bool Type::iterable() const {
@@ -333,7 +335,7 @@ bool Type::operator == (const Type& type) const {
 		if (dynamic_cast<const Function_type*>(t1) && dynamic_cast<const Function_type*>(t2)) {
 			return t1 == t2 && (!is_function() || (return_types == type.return_types && arguments_types == type.arguments_types));
 		}
-		return raw()->operator == (type.raw());
+		return t1->operator == (t2);
 	});
 }
 
@@ -385,31 +387,35 @@ Type Type::iterator() const {
 }
 
 bool Type::is_array() const {
-	if (_types.size() == 0) { return false; }
-	return dynamic_cast<const Array_type*>(_types[0]) != nullptr;
+	return _types.size() && all([&](const Base_type* type) {
+		return dynamic_cast<const Array_type*>(type) != nullptr;
+	});
 }
 bool Type::is_set() const {
-	if (_types.size() == 0) { return false; }
-	return dynamic_cast<const Set_type*>(_types[0]) != nullptr;
+	return _types.size() && all([&](const Base_type* type) {
+		return dynamic_cast<const Set_type*>(type) != nullptr;
+	});
 }
 bool Type::is_interval() const {
-	if (_types.size() == 0) { return false; }
-	return dynamic_cast<const Interval_type*>(_types[0]) != nullptr;
+	return _types.size() && all([&](const Base_type* type) {
+		return dynamic_cast<const Interval_type*>(type) != nullptr;
+	});
 }
 bool Type::is_map() const {
-	if (_types.size() == 0) { return false; }
-	return dynamic_cast<const Map_type*>(_types[0]) != nullptr;
+	return _types.size() && all([&](const Base_type* type) {
+		return dynamic_cast<const Map_type*>(type) != nullptr;
+	});
 }
 bool Type::is_closure() const {
-	if (_types.size() == 0) { return false; }
-	if (auto fun = dynamic_cast<const Function_type*>(_types[0])) {
-		return fun->closure();
-	}
-	return false;
+	return _types.size() && all([&](const Base_type* type) {
+		auto f = dynamic_cast<const Function_type*>(type);
+		return f && f->closure();
+	});
 }
 bool Type::is_function() const {
-	if (_types.size() == 0) { return false; }
-	return dynamic_cast<const Function_type*>(_types[0]) != nullptr;
+	return _types.size() && all([&](const Base_type* type) {
+		return dynamic_cast<const Function_type*>(type) != nullptr;
+	});
 }
 
 /*
@@ -588,6 +594,9 @@ Type Type::fun() {
 }
 Type Type::iterator(const Type container) {
 	return { new Iterator_type(container) };
+}
+bool Type::all(std::function<bool(const Base_type*)> fun) const {
+	return std::all_of(_types.begin(), _types.end(), fun);
 }
 
 ostream& operator << (ostream& os, const Type& type) {

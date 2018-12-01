@@ -59,6 +59,7 @@ public:
 	llvm::Type* llvm_type() const;
 	Type add_pointer() const;
 	Type iterator() const;
+	bool all(std::function<bool(const Base_type*)>) const;
 
 	void operator += (const Type type);
 	void operator += (const Base_type* type);
