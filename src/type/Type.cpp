@@ -613,11 +613,10 @@ ostream& operator << (ostream& os, const Type& type) {
 	}
 	if (type.temporary) {
 		os << BLUE_BOLD << "&&" << END_COLOR;
+	} else if (type.reference) {
+		os << BLUE_BOLD << "&" << END_COLOR;
 	}
 	return os;
-
-	auto color = type.isNumber() ? C_GREEN : C_RED;
-	os << color;
 
 	if (type.is_function()) {
 		os << BLUE_BOLD;
@@ -630,29 +629,7 @@ ostream& operator << (ostream& os, const Type& type) {
 		}
 		os << BLUE_BOLD;
 		os << ") → " << type.getReturnType();
-	} else if (type.raw() == RawType::STRING || type.raw() == RawType::CLASS
-		|| type.raw() == RawType::OBJECT || type.raw() == RawType::NULLL
-		|| type.is_interval()) {
-		os << BLUE_BOLD;
-		if (type.constant) os << "const:";
-		os << type.raw()->getName();
-	} else if (type.is_map()) {
-		os << BLUE_BOLD;
-		if (type.constant) os << "const:";
-		os << type.raw()->getName();
-		os << "<" << type.getKeyType() << BLUE_BOLD
-			<< ", " << type.getElementType() << BLUE_BOLD << ">";
-	} else {
-		if (type.constant) os << "const:";
-		os << type.raw()->getName();
 	}
-	if (type.temporary && type.raw() != RawType::REAL) {
-		os << "&&";
-	} else if (type.reference) {
-		os << "&";
-	}
-	os << END_COLOR;
-
 	return os;
 }
 
