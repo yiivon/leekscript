@@ -11,6 +11,9 @@ bool String_type::operator == (const Base_type* type) const {
 llvm::Type* String_type::llvm() const {
 	return Type::LLVM_LSVALUE_TYPE_PTR;
 }
+std::string String_type::clazz() const {
+	return "String";
+}
 std::ostream& String_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "string" << END_COLOR;
 	return os;

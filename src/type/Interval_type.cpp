@@ -10,6 +10,9 @@ bool Interval_type::operator == (const Base_type* type) const {
 Type Interval_type::element() const {
 	return Type::INTEGER;
 }
+std::string Interval_type::clazz() const {
+	return "Interval";
+}
 llvm::Type* Interval_type::llvm() const {
 	return Type::LLVM_LSVALUE_TYPE_PTR;
 }

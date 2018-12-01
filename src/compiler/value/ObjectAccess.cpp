@@ -45,7 +45,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 	type = Type::ANY;
 
 	// Get the object class : 12 => Number
-	object_class_name = object->type.getClass();
+	object_class_name = object->type.clazz();
 	LSClass* object_class = nullptr;
 	if (analyser->vm->system_vars.find(object_class_name) != analyser->vm->system_vars.end()) {
 		object_class = (LSClass*) analyser->vm->system_vars[object_class_name];

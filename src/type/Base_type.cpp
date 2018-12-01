@@ -1,5 +1,6 @@
 #include "Base_type.hpp"
 #include "Type.hpp"
+#include "../vm/LSValue.hpp"
 
 namespace ls {
 
@@ -19,6 +20,9 @@ bool Base_type::compatible(const Base_type*) const {
 }
 Type Base_type::iterator() const {
 	assert(false && "No iterator available on this type");
+}
+std::string Base_type::clazz() const {
+	return "";
 }
 std::ostream& Base_type::print(std::ostream& os) const {
 	os << "???";

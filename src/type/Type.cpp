@@ -305,11 +305,9 @@ std::string Type::to_string() const {
 	return oss.str();
 }
 
-std::string Type::getClass() const {
-	if (_types.size() == 0) {
-		return "?";
-	}
-	return _types[0]->getClass();
+std::string Type::clazz() const {
+	if (_types.size() == 0) { return "Any"; }
+	return fold()._types[0]->clazz();
 }
 
 bool Type::isNumber() const {

@@ -26,6 +26,9 @@ llvm::Type* Iterator_type::llvm() const {
 		return Type::LLVM_LSVALUE_TYPE_PTR->getPointerTo();
 	}
 }
+std::string Iterator_type::clazz() const {
+	return "Iterator";
+}
 std::ostream& Iterator_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "iterator" << END_COLOR << "<" << _container << ">";
 	return os;

@@ -10,6 +10,9 @@ bool Number_type::operator == (const Base_type* type) const {
 llvm::Type* Number_type::llvm() const {
 	assert(false);
 }
+std::string Number_type::clazz() const {
+	return "Number";
+}
 std::ostream& Number_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "number" << END_COLOR;
 	return os;

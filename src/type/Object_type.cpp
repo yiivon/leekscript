@@ -10,6 +10,9 @@ bool Object_type::operator == (const Base_type* type) const {
 llvm::Type* Object_type::llvm() const {
 	return Type::LLVM_LSVALUE_TYPE_PTR;
 }
+std::string Object_type::clazz() const {
+	return "Object";
+}
 std::ostream& Object_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "object" << END_COLOR;
 	return os;

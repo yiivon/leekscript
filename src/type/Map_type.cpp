@@ -23,6 +23,9 @@ bool Map_type::compatible(const Base_type* type) const {
 	}
 	return false;
 }
+std::string Map_type::clazz() const {
+	return "Map";
+}
 llvm::Type* Map_type::llvm() const {
 	return Type::LLVM_LSVALUE_TYPE_PTR;
 }

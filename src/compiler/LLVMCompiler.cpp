@@ -807,29 +807,14 @@ LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	if (v.t.raw() == RawType::BOOLEAN)
-		return new_pointer(vm->system_vars["Boolean"]);
-	if (v.t.isNumber())
-		return new_pointer(vm->system_vars["Number"]);
-	if (v.t.raw() == RawType::STRING)
-		return new_pointer(vm->system_vars["String"]);
-	if (v.t.is_array())
-		return new_pointer(vm->system_vars["Array"]);
-	if (v.t.is_map())
-		return new_pointer(vm->system_vars["Map"]);
-	if (v.t.is_set())
-		return new_pointer(vm->system_vars["Set"]);
-	if (v.t.is_interval())
-		return new_pointer(vm->system_vars["Interval"]);
-	if (v.t.is_function())
-		return new_pointer(vm->system_vars["Function"]);
-	if (v.t.raw() == RawType::OBJECT)
-		return new_pointer(vm->system_vars["Object"]);
-	if (v.t.raw() == RawType::CLASS)
-		return new_pointer(vm->system_vars["Class"]);
-	return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
-		return v->getClass();
-	});
+	auto clazz = v.t.clazz();
+	if (clazz.size()) {
+		return new_pointer(vm->system_vars[clazz]);
+	} else {
+		return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
+			return v->getClass();
+		});
+	}
 }
 
 void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {

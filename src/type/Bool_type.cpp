@@ -10,6 +10,9 @@ bool Bool_type::operator == (const Base_type* type) const {
 llvm::Type* Bool_type::llvm() const {
 	return llvm::Type::getInt1Ty(LLVMCompiler::context);
 }
+std::string Bool_type::clazz() const {
+	return "Boolean";
+}
 std::ostream& Bool_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "bool" << END_COLOR;
 	return os;

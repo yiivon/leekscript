@@ -48,8 +48,7 @@ public:
 	void toJson(std::ostream&) const;
 	std::string getJsonName() const;
 	std::string to_string() const;
-	std::string getClass() const;
-
+	std::string clazz() const;
 	bool must_manage_memory() const;
 	bool isNumber() const;
 	bool iterable() const;

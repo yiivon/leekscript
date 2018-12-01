@@ -12,7 +12,6 @@ class Map_type : public Base_type {
 public:
 	Map_type(Type key, Type element) : _key(key), _element(element) {}
 	virtual const std::string getName() const { return "map"; }
-	virtual const std::string getClass() const { return "Map"; }
 	virtual const std::string getJsonName() const { return "map"; }
 	virtual bool iterable() const { return true; }
 	virtual bool is_container() const { return true; }
@@ -20,6 +19,7 @@ public:
 	virtual Type key() const override;
 	virtual bool operator == (const Base_type*) const override;
 	virtual bool compatible(const Base_type*) const override;
+	virtual std::string clazz() const override;
 	virtual llvm::Type* llvm() const override;
 };
 

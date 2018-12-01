@@ -11,7 +11,6 @@ class Array_type : public Base_type {
 public:
 	Array_type(Type element) : _element(element) {}
 	virtual const std::string getName() const { return "array"; }
-	virtual const std::string getClass() const { return "Array"; }
 	virtual const std::string getJsonName() const { return "array"; }
 	virtual bool iterable() const { return true; }
 	virtual bool is_container() const { return true; }
@@ -20,6 +19,7 @@ public:
 	virtual bool compatible(const Base_type*) const override;
 	virtual llvm::Type* llvm() const override;
 	virtual Type iterator() const override;
+	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream&) const override;
 };
 

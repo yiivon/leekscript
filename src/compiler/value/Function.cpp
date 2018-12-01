@@ -381,7 +381,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 	auto ls_fun = default_version->function;
 	ls_fun->args.clear();
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		auto clazz = type.getArgumentType(i).getClass();
+		auto clazz = type.getArgumentType(i).clazz();
 		LSClass* arg_class = (LSClass*) analyser->vm->system_vars[clazz];
 		if (arg_class != nullptr) {
 			ls_fun->args.push_back((LSValue*) arg_class);
@@ -389,7 +389,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 			ls_fun->args.push_back(analyser->vm->system_vars["Value"]);
 		}
 	}
-	auto return_class_name = type.getReturnType().getClass();
+	auto return_class_name = type.getReturnType().clazz();
 	LSClass* return_class = (LSClass*) analyser->vm->system_vars[return_class_name];
 	if (return_class != nullptr) {
 		ls_fun->return_type = (LSValue*) return_class;

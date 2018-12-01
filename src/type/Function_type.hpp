@@ -11,10 +11,10 @@ public:
 	Function_type(bool closure = false) : _closure(closure) {}
 	bool closure() const { return _closure; }
 	virtual const std::string getName() const { return "function"; }
-	virtual const std::string getClass() const { return "Function"; }
 	virtual const std::string getJsonName() const { return "function"; }
 	virtual bool operator == (const Base_type*) const override;
 	virtual llvm::Type* llvm() const override;
+	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 };
 

@@ -11,7 +11,6 @@ class Set_type : public Base_type {
 public:
 	Set_type(Type element) : _element(element) {}
 	virtual const std::string getName() const { return "set"; }
-	virtual const std::string getClass() const { return "Set"; }
 	virtual const std::string getJsonName() const { return "set"; }
 	virtual bool iterable() const { return true; }
 	virtual bool is_container() const { return true; }
@@ -19,6 +18,7 @@ public:
 	virtual bool operator == (const Base_type*) const override;
 	virtual bool compatible(const Base_type*) const override;
 	virtual llvm::Type* llvm() const override;
+	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream&) const override;
 };
 

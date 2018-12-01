@@ -22,6 +22,9 @@ bool Set_type::compatible(const Base_type* type) const {
 llvm::Type* Set_type::llvm() const {
 	return Type::LLVM_LSVALUE_TYPE_PTR;
 }
+std::string Set_type::clazz() const {
+	return "Set";
+}
 std::ostream& Set_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
 	return os;
