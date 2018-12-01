@@ -16,7 +16,6 @@ public:
 	virtual const std::string getJsonName() const { return "?"; }
 	virtual bool iterable() const { return false; }
 	virtual bool is_container() const { return false; }
-	virtual bool is_placeholder() const { return false; }
 	virtual Type element() const;
 	virtual Type key() const;
 	virtual bool operator == (const Base_type*) const = 0;

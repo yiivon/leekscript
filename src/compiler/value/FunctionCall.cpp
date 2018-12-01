@@ -76,7 +76,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 	// The function call be called?
 	// TODO add a is_callable() on Type
-	if (function->type.raw() != RawType::ANY and !function->type.is_function() and function->type.raw() != RawType::CLASS) {
+	if (!function->type.is_any() and !function->type.is_function() and !function->type.is_class()) {
 		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 
@@ -141,7 +141,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			args_string += oss.str();
 		}
 
-		if (object_type.raw() == RawType::CLASS) { // String.size("salut")
+		if (object_type.is_class()) { // String.size("salut")
 
 			string clazz = ((VariableValue*) oa->object)->name;
 			auto object_class = (LSClass*) analyser->vm->system_vars[clazz];
@@ -180,7 +180,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 			Method* m = nullptr;
 			LSClass* clazz;
-			if (object_type.raw() != RawType::ANY) {
+			if (!object_type.is_any()) {
 				clazz = (LSClass*) analyser->vm->system_vars[object_type.clazz()];
 				m = clazz->getMethod(oa->field->content, object_type, arg_types);
 				// std::cout << "Method " << oa->field->content << " found : " << m->type << std::endl;
@@ -207,7 +207,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				bool has_unknown_argument = false;
 				// for (const auto& a : arguments)
 					// if (a->type == ANY) has_unknown_argument = true;
-				if (object_type.raw() != RawType::ANY && !has_unknown_argument) {
+				if (!object_type.is_any() && !has_unknown_argument) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
 					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});

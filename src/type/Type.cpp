@@ -139,10 +139,6 @@ int Type::id() const {
 	if (_types.size() == 0) { return 0; }
 	return _types[0]->id();
 }
-const Base_type* Type::raw() const {
-	if (_types.size() == 0) { return nullptr; }
-	return _types[0];
-}
 
 bool Type::must_manage_memory() const {
 	if (_types.size() == 0) { return false; }
@@ -246,7 +242,7 @@ Type Type::operator * (const Type& t2) const {
 	if (*this == t2) {
 		return *this;
 	}
-	if (raw() == RawType::NULLL or t2.raw() == RawType::NULLL) {
+	if (is_null() or t2.is_null()) {
 		return Type::NULLL;
 	}
 	if (!isNumber() and t2.isNumber()) {
@@ -255,10 +251,10 @@ Type Type::operator * (const Type& t2) const {
 	if (!t2.isNumber() and isNumber()) {
 		return Type::ANY;
 	}
-	if (raw() == RawType::ANY) {
+	if (is_any()) {
 		return t2;
 	}
-	if (t2.raw() == RawType::ANY) {
+	if (t2.is_any()) {
 		return *this;
 	}
 	if (t2.compatible(*this)) {
@@ -338,8 +334,10 @@ bool Type::operator == (const Type& type) const {
 }
 
 bool Type::operator < (const Type& type) const {
-	if ((void*) raw() != (void*) type.raw()) {
-		return (void*) raw() < (void*) type.raw();
+	auto t1 = _types.size() ? _types[0] : nullptr;
+	auto t2 = type._types.size() ? type._types[0] : nullptr;
+	if ((void*) t1 != (void*) t2) {
+		return (void*) t1 < (void*) t2;
 	}
 	if (temporary != type.temporary) {
 		return temporary < type.temporary;
@@ -384,35 +382,32 @@ Type Type::iterator() const {
 	assert(false && "No iterator for void");
 }
 
-bool Type::is_array() const {
+template <class T> bool Type::is_type() const {
 	return _types.size() && all([&](const Base_type* type) {
-		return dynamic_cast<const Array_type*>(type) != nullptr;
+		return dynamic_cast<const T*>(type) != nullptr;
 	});
 }
-bool Type::is_set() const {
-	return _types.size() && all([&](const Base_type* type) {
-		return dynamic_cast<const Set_type*>(type) != nullptr;
-	});
-}
-bool Type::is_interval() const {
-	return _types.size() && all([&](const Base_type* type) {
-		return dynamic_cast<const Interval_type*>(type) != nullptr;
-	});
-}
-bool Type::is_map() const {
-	return _types.size() && all([&](const Base_type* type) {
-		return dynamic_cast<const Map_type*>(type) != nullptr;
-	});
-}
+bool Type::is_any() const { return is_type<Any_type>(); }
+bool Type::is_bool() const { return is_type<Bool_type>(); }
+bool Type::is_number() const { return is_type<Number_type>(); }
+bool Type::is_real() const { return is_type<Real_type>(); }
+bool Type::is_integer() const { return is_type<Integer_type>(); }
+bool Type::is_long() const { return is_type<Long_type>(); }
+bool Type::is_mpz() const { return is_type<Mpz_type>(); }
+bool Type::is_string() const { return is_type<String_type>(); }
+bool Type::is_array() const { return is_type<Array_type>(); }
+bool Type::is_set() const { return is_type<Set_type>(); }
+bool Type::is_interval() const { return is_type<Interval_type>(); }
+bool Type::is_map() const { return is_type<Map_type>(); }
+bool Type::is_function() const { return is_type<Function_type>(); }
+bool Type::is_object() const { return is_type<Object_type>(); }
+bool Type::is_null() const { return is_type<Null_type>(); }
+bool Type::is_class() const { return is_type<Class_type>(); }
+bool Type::is_placeholder() const { return is_type<Placeholder_type>(); }
 bool Type::is_closure() const {
 	return _types.size() && all([&](const Base_type* type) {
 		auto f = dynamic_cast<const Function_type*>(type);
 		return f && f->closure();
-	});
-}
-bool Type::is_function() const {
-	return _types.size() && all([&](const Base_type* type) {
-		return dynamic_cast<const Function_type*>(type) != nullptr;
 	});
 }
 
@@ -427,6 +422,9 @@ bool Type::compatible(const Type& type) const {
 	if (_types.size() == 0 or type._types.size() == 0) {
 		return true;
 	}
+	if (is_any()) {
+		return true;
+	}
 	if (this->isNumber() && !type.isNumber()) {
 		return false;
 	}
@@ -437,32 +435,25 @@ bool Type::compatible(const Type& type) const {
 		return false; // 'const type' not compatible with 'type'
 	}
 	if ((is_array() && type.is_array()) || (is_set() && type.is_set()) || (is_map() && type.is_map())) {
-		return raw()->compatible(type.raw());
+		return _types[0]->compatible(type._types[0]);
 	}
-	if (this->raw() != type.raw()) {
-		// Every type is compatible with 'Unknown' type
-		if (this->raw() == RawType::ANY) {
-			return true;
-		}
+	if (_types[0] != type._types[0]) {
 		// 'Integer' is compatible with 'Float'
-		if (this->raw() == RawType::REAL and type.raw() == RawType::INTEGER) {
+		if (this->is_real() and type.is_integer()) {
 			return true;
 		}
 		// 'Boolean' is compatible with 'Integer'
-		if (this->raw() == RawType::INTEGER and type.raw() == RawType::BOOLEAN) {
+		if (this->is_integer() and type.is_bool()) {
 			return true;
 		}
 		// 'Integer' is compatible with 'Long'
-		if (this->raw() == RawType::LONG and type.raw() == RawType::INTEGER) {
+		if (this->is_long() and type.is_integer()) {
 			return true;
 		}
 		// All numbers types are compatible with the base 'Number' type
-		if (this->raw() == RawType::NUMBER and (
-			type.raw() == RawType::INTEGER or
-			type.raw() == RawType::LONG or
-			type.raw() == RawType::REAL
-		)) return true;
-
+		if (_types[0] == RawType::NUMBER and (type.is_integer() or type.is_long() or type.is_real())) {
+			return true;
+		}
 		return false;
 	}
 	return true;
@@ -511,17 +502,20 @@ bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Ty
 }
 
 bool Type::more_specific(const Type& old, const Type& neww) {
-	if (neww.raw() != old.raw()) {
-		if (old.raw() == RawType::ANY) {
+	if (neww._types.size() == 0 or old._types.size() == 0) {
+		return false;
+	}
+	if (neww._types[0] != old._types[0]) {
+		if (old.is_any()) {
 			return true;
 		}
-		if (old.raw() == RawType::NUMBER && (neww.raw() == RawType::INTEGER || neww.raw() == RawType::LONG || neww.raw() == RawType::REAL)) {
+		if ((old._types.size() && old._types[0] == RawType::NUMBER) && (neww.is_integer() || neww.is_long() || neww.is_real())) {
 			return true;
 		}
-		if (old.raw() == RawType::REAL && (neww.raw() == RawType::INTEGER || neww.raw() == RawType::LONG)) {
+		if (old.is_real() and (neww.is_integer() or neww.is_long())) {
 			return true;
 		}
-		if (old.raw() == RawType::LONG && neww.raw() == RawType::INTEGER) {
+		if (old.is_long() and neww.is_integer()) {
 			return true;
 		}
 	}
@@ -553,7 +547,7 @@ Type Type::generate_new_placeholder_type() {
 	u8_toutf8(buff, 5, &character, 1);
 	type._types.push_back(new Placeholder_type(std::string { buff }));
 	placeholder_counter++;
-	RawType::placeholder_types.push_back(type.raw());
+	RawType::placeholder_types.push_back(type._types[0]);
 	return type;
 }
 

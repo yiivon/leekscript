@@ -147,7 +147,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 			return f->compile_version(c, version);
 		}
 		v = c.get_var(name);
-		if (type.raw() != RawType::MPZ) {
+		if (!type.is_mpz()) {
 			v = {LLVMCompiler::builder.CreateLoad(v.v, name.c_str()), v.t};
 		} else {
 			v = {LLVMCompiler::builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v, name.c_str()), v.t};

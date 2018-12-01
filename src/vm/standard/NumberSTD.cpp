@@ -534,7 +534,7 @@ Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value>
 
 Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = c.insn_pow(args[0], args[1]);
-	if (args[0].t.raw() == RawType::INTEGER && args[1].t.raw() == RawType::INTEGER) {
+	if (args[0].t.is_integer() && args[1].t.is_integer()) {
 		r = c.to_int(r);
 	}
 	return r;

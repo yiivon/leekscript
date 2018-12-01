@@ -49,7 +49,7 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 }
 
 Type Function::getReturnType() {
-	if (current_version->type.getReturnType().raw() == RawType::ANY) {
+	if (current_version->type.getReturnType().is_any()) {
 		if (placeholder_type == RawType::ANY) {
 			placeholder_type = (Base_type*) Type::generate_new_placeholder_type()._types[0];
 		}
@@ -213,7 +213,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 		if (versions.find(args) == versions.end()) {
 
 			for (const auto& t : args) {
-				if (t.raw()->is_placeholder()) return false;
+				if (t.is_placeholder()) return false;
 				// if (t.nature == ANY) return false;
 			}
 

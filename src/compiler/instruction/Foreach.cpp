@@ -65,10 +65,10 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	} else if (container->type.is_array() or container->type.is_interval() or container->type.is_set()) {
 		key_type = Type::INTEGER;
 		value_type = container->type.getElementType();
-	} else if (container->type.raw() == RawType::INTEGER || container->type.raw() == RawType::LONG) {
+	} else if (container->type.is_integer() || container->type.is_long()) {
 		key_type = Type::INTEGER;
 		value_type = Type::INTEGER;
-	} else if (container->type.raw() == RawType::STRING) {
+	} else if (container->type.is_string()) {
 		key_type = Type::INTEGER;
 		value_type = Type::STRING;
 	} else {

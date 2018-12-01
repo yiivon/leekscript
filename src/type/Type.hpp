@@ -28,8 +28,6 @@ public:
 	Type(const Base_type* raw_type, bool native = false, bool temporary = false, bool constant = false);
 
 	int id() const;
-	const Base_type* raw() const;
-
 	Type getReturnType() const;
 	void setReturnType(Type type);
 
@@ -65,12 +63,25 @@ public:
 	Type operator * (const Type& t2) const;
 	Type fold() const;
 
+	template <class T> bool is_type() const;
+	bool is_any() const;
+	bool is_number() const;
+	bool is_integer() const;
+	bool is_bool() const;
+	bool is_long() const;
+	bool is_real() const;
+	bool is_mpz() const;
 	bool is_array() const;
+	bool is_string() const;
 	bool is_set() const;
 	bool is_interval() const;
 	bool is_map() const;
 	bool is_closure() const;
 	bool is_function() const;
+	bool is_object() const;
+	bool is_null() const;
+	bool is_class() const;
+	bool is_placeholder() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }

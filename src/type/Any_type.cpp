@@ -18,5 +18,8 @@ std::ostream& Any_type::print(std::ostream& os) const {
 bool Placeholder_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Placeholder_type*>(type);
 }
+llvm::Type* Placeholder_type::llvm() const {
+	return Type::LLVM_LSVALUE_TYPE_PTR;
+}
 
 }

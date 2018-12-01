@@ -101,7 +101,7 @@ bool Number::is_zero() const {
 		return double_value == 0;
 	} else if (type == Type::LONG) {
 		return long_value == 0;
-	} else if (type.raw() == RawType::MPZ) {
+	} else if (type.is_mpz()) {
 		return mpz_cmp_ui(mpz_value, 0) == 0;
 	} else {
 		return int_value == 0;
@@ -118,7 +118,7 @@ Compiler::value Number::compile(Compiler& c) const {
 	if (type == Type::REAL) {
 		return c.new_real(double_value);
 	}
-	if (type.raw() == RawType::MPZ) {
+	if (type.is_mpz()) {
 		return c.new_mpz_init(mpz_value);
 	}
 	return c.new_integer(int_value);

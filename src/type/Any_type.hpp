@@ -22,9 +22,8 @@ public:
 	Placeholder_type(std::string name) : name(name) {}
 	virtual ~Placeholder_type() {}
 	virtual const std::string getName() const { return name; }
-	virtual bool is_placeholder() const { return true; }
 	virtual bool operator == (const Base_type*) const override;
-	virtual llvm::Type* llvm() const override { }
+	virtual llvm::Type* llvm() const override;
 };
 
 }

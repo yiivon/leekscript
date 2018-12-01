@@ -334,7 +334,7 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 			return new LSString(b ? "true" : "false");
 		});
 	}
-	if (args[0].t == Type::INTEGER) {
+	if (args[0].t.is_integer()) {
 		return c.insn_call(Type::STRING, args, +[](int v) {
 			return new LSString(std::to_string(v));
 		});
@@ -344,7 +344,7 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 			return new LSString(std::to_string(v));
 		});
 	}
-	if (args[0].t.raw() == RawType::MPZ) {
+	if (args[0].t.is_mpz()) {
 		auto s = c.insn_call(Type::STRING, args, +[](__mpz_struct v) {
 			char buff[10000];
 			mpz_get_str(buff, 10, &v);

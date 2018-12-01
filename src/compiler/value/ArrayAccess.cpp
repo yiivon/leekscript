@@ -53,7 +53,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 
 	array->analyse(analyser);
 
-	if (array->type.raw() != RawType::ANY and !array->type.raw()->is_placeholder() and !array->type.is_container()) {
+	if (!array->type.is_any() and !array->type.is_placeholder() and !array->type.is_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
 		return;
 	}
@@ -83,19 +83,19 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		key->analyse(analyser);
 		key2->analyse(analyser);
 
-		if (key->type.raw() != RawType::ANY and not key->type.isNumber()) {
+		if (!key->type.is_any() and not key->type.isNumber()) {
 			std::string k = "<key 1>";
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
 		}
-		if (key2->type.raw() != RawType::ANY and not key2->type.isNumber()) {
+		if (!key2->type.is_any() and not key2->type.isNumber()) {
 			std::string k = "<key 2>";
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
 		}
 		type = array->type;
 
-	} else if (array->type.is_array() or array->type.raw() == RawType::STRING or array->type.is_interval()) {
+	} else if (array->type.is_array() or array->type.is_string() or array->type.is_interval()) {
 
-		if (key->type.raw() != RawType::ANY and not (key->type.isNumber() or key->type.raw() == RawType::BOOLEAN)) {
+		if (!key->type.is_any() and not (key->type.isNumber() or key->type.is_bool())) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
@@ -103,7 +103,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		}
 		key->analyse(analyser);
 
-		if (array->type.raw() == RawType::STRING) {
+		if (array->type.is_string()) {
 			type = Type::STRING;
 		}
 
@@ -236,7 +236,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			c.inc_ops(2);
 			return res;
 
-		} else if (array->type.raw() == RawType::STRING or array->type.is_array()) {
+		} else if (array->type.is_string() or array->type.is_array()) {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
@@ -263,7 +263,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 				c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 			});
 
-			if (array->type.raw() == RawType::STRING) {
+			if (array->type.is_string()) {
 				auto e = c.insn_call(Type::STRING, {compiled_array, k}, (void*) &LSString::codePointAt);
 				return e;
 			} else {

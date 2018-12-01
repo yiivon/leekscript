@@ -236,7 +236,7 @@ void Test::test_strings() {
 	code("String.code('🐨')").equals("128040");
 	code("String.code('ABC', 2)").equals("67");
 	DISABLED_code("(x -> x)(65).char()").equals("'A'");
-	code("[128040][0].char()").equals("'🐨'");
+	DISABLED_code("[128040][0].char()").equals("'🐨'");
 	DISABLED_code("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 	DISABLED_code("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 	code("[String.code('♫'), '']").equals("[9835, '']");
