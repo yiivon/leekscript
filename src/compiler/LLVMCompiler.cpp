@@ -161,7 +161,7 @@ LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
 }
 
 LLVMCompiler::value LLVMCompiler::new_array(Type type, std::vector<LLVMCompiler::value> elements) const {
-	auto element_type = type.getElementType();
+	auto element_type = type.getElementType().fold();
 	auto array = [&]() { if (element_type == Type::INTEGER) {
 		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<int>();

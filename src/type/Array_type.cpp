@@ -16,22 +16,25 @@ bool Array_type::operator == (const Base_type* type) const {
 }
 bool Array_type::compatible(const Base_type* type) const {
 	if (auto array = dynamic_cast<const Array_type*>(type)) {
-		return _element.compatible(array->_element);
+		// TODO no need to fold the element types
+		return _element.fold().compatible(array->_element.fold());
 	}
 	return false;
 }
 llvm::Type* Array_type::llvm() const {
-	if (_element == Type::INTEGER) {
+	const auto merged = _element.fold();
+	if (merged.is_integer()) {
 		return Type::LLVM_VECTOR_INT_TYPE_PTR;
-	} else if (_element == Type::REAL) {
+	} else if (merged.is_real()) {
 		return Type::LLVM_VECTOR_REAL_TYPE_PTR;
 	} else {
 		return Type::LLVM_VECTOR_TYPE_PTR;
 	}
 }
 Type Array_type::iterator() const {
-	if (_element == Type::INTEGER) return Type::INT_ARRAY_ITERATOR;
-	if (_element == Type::REAL) return Type::REAL_ARRAY_ITERATOR;
+	const auto merged = _element.fold();
+	if (merged.is_integer()) return Type::INT_ARRAY_ITERATOR;
+	if (merged.is_real()) return Type::REAL_ARRAY_ITERATOR;
 	return Type::PTR_ARRAY_ITERATOR;
 }
 std::string Array_type::clazz() const {

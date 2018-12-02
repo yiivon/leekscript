@@ -66,7 +66,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 
 	array_element_type = {};
 	if (array->type.is_array() || array->type.is_interval() || array->type.is_map()) {
-		array_element_type = array->type.getElementType();
+		array_element_type = array->type.getElementType().fold();
 		type = array_element_type;
 	}
 	if (array->type.is_map()) {
@@ -144,7 +144,7 @@ bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>&
 		arr->array_access_will_take(analyser, args, 1);
 	}
 
-	type = array->type.getElementType();
+	type = array->type.getElementType().fold();
 
 	return false;
 }
@@ -160,14 +160,14 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::
 		arr->array_access_will_take(analyser, arg_types, level + 1);
 	}
 
-	type = array->type.getElementType();
+	type = array->type.getElementType().fold();
 
 	return false;
 }
 
 bool ArrayAccess::will_store(SemanticAnalyser* analyser, const Type& type) {
 	array->elements_will_store(analyser, type, 1);
-	this->type = array->type.getElementType();
+	this->type = array->type.getElementType().fold();
 	array_element_type = this->type;
 	return false;
 }
@@ -175,7 +175,7 @@ bool ArrayAccess::will_store(SemanticAnalyser* analyser, const Type& type) {
 void ArrayAccess::change_type(SemanticAnalyser* analyser, const Type& new_type) {
 	array->will_store(analyser, new_type);
 	if (Type::more_specific(new_type, type)) {
-		this->type = array->type.getElementType();
+		this->type = array->type.getElementType().fold();
 		array_element_type = this->type;
 	}
 }

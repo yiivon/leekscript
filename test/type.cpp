@@ -101,10 +101,10 @@ void Test::test_types() {
 	code("'salut'").type(ls::Type::STRING);
 	code("[]").type(ls::Type::PTR_ARRAY);
 	code("[1]").type(ls::Type::array(ls::Type::INTEGER));
-	code("[1, 2.5]").type(ls::Type::array(ls::Type::REAL));
+	code("[1, 2.5]").type(ls::Type::array({ls::RawType::INTEGER, ls::RawType::REAL}));
 	code("['a']").type(ls::Type::array(ls::Type::STRING));
 	code("[[1]]").type(ls::Type::array(ls::Type::array(ls::Type::INTEGER)));
-	code("[[1, 2.5]]").type(ls::Type::array(ls::Type::array(ls::Type::REAL)));
+	code("[[1, 2.5]]").type(ls::Type::array(ls::Type::array({ls::RawType::INTEGER, ls::RawType::REAL})));
 	code("[['a']]").type(ls::Type::array(ls::Type::array(ls::Type::STRING)));
 
 	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_long()) << std::endl;

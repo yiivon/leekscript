@@ -270,6 +270,7 @@ Type Type::operator * (const Type& t2) const {
 }
 
 Type Type::fold() const {
+	if (_types.size() == 1) return *this;
 	return std::accumulate(_types.begin(), _types.end(), Type(), std::multiplies<>());
 }
 
@@ -377,7 +378,7 @@ Type Type::add_pointer() const {
 
 Type Type::iterator() const {
 	if (_types.size() > 0) {
-		return _types[0]->iterator();
+		return fold()._types[0]->iterator();
 	}
 	assert(false && "No iterator for void");
 }

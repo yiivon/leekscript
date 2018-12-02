@@ -117,10 +117,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					// e.g. Should compile a generic version
 					ex->must_return(analyser, Type::ANY);
 				}
-				// element_type += ex->type;
-				if (element_type._types.size() == 0 or !element_type.compatible(ex->type)) {
-					element_type = element_type * ex->type;
-				}
+				element_type += ex->type;
 			}
 			if (element_type == Type::BOOLEAN) element_type = Type::ANY;
 			element_type.temporary = false;
