@@ -141,24 +141,24 @@ void Test::test_functions() {
 	code("let f = x -> x f[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
 
 	section("Function operators");
-	DISABLED_code("(+)(1, 2)").equals("3");
-	DISABLED_code("(+)([1], 2)").equals("[1, 2]");
-	DISABLED_code("(+)('test', 2)").equals("'test2'");
-	DISABLED_code("(-)(9, 2)").equals("7");
-	DISABLED_code("*(5, 8)").equals("40");
-	DISABLED_code("*('test', 2)").equals("'testtest'");
-	DISABLED_code("×(5, 8)").equals("40");
-	DISABLED_code("×('test', 2)").equals("'testtest'");
-	DISABLED_code("**(2, 11)").equals("2048");
-	DISABLED_code("/(48, 12)").equals("4");
-	DISABLED_code("/('banana', 'n')").equals("['ba', 'a', 'a']");
-	DISABLED_code("÷(48, 12)").equals("4");
-	DISABLED_code("÷('banana', 'n')").equals("['ba', 'a', 'a']");
-	DISABLED_code("**(2, 11)").equals("2048");
-	DISABLED_code("%(48, 5)").equals("3");
-	DISABLED_code("\\(72, 7)").equals("10");
-	DISABLED_code("(\\)(72, 7)").equals("10");
-	DISABLED_code("['', **(2, 11)]").equals("['', 2048]");
+	code("(+)(1, 2)").equals("3");
+	code("(+)([1], 2)").equals("[1, 2]");
+	code("(+)('test', 2)").equals("'test2'");
+	code("(-)(9, 2)").equals("7");
+	code("*(5, 8)").equals("40");
+	code("*('test', 2)").equals("'testtest'");
+	code("×(5, 8)").equals("40");
+	code("×('test', 2)").equals("'testtest'");
+	code("**(2, 11)").equals("2048");
+	code("/(48, 12)").equals("4");
+	code("/('banana', 'n')").equals("['ba', 'a', 'a']");
+	code("÷(48, 12)").equals("4");
+	code("÷('banana', 'n')").equals("['ba', 'a', 'a']");
+	code("**(2, 11)").equals("2048");
+	code("%(48, 5)").equals("3");
+	code("\\(72, 7)").equals("10");
+	code("(\\)(72, 7)").equals("10");
+	code("['', **(2, 11)]").equals("['', 2048]");
 	// TODO flaky
 	DISABLED_code("let p = +; p(1, 2)").equals("3");
 	DISABLED_code("let p = +; p('test', 2)").equals("'test2'");
@@ -171,8 +171,8 @@ void Test::test_functions() {
 	DISABLED_code("let p = ** p(2, 11)").equals("2048");
 	DISABLED_code("let p = \\ p(72, 7)").equals("10");
 	code("+").equals("<function>");
-	DISABLED_code("+.class").equals("<class Function>");
-	DISABLED_code("let p = +; p.class").equals("<class Function>");
+	code("+.class").equals("<class Function>");
+	code("let p = +; p.class").equals("<class Function>");
 
 	section("Function.isTrue()");
 	code("if [x -> x, 12][0] { 'ok' } else { null }").equals("'ok'");

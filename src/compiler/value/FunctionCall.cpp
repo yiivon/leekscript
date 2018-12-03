@@ -418,33 +418,20 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	VariableValue* f = dynamic_cast<VariableValue*>(function);
 
 	if (f != nullptr) {
-		if (function->type.argument(0).isNumber()
-			and function->type.argument(1).isNumber()) {
-
-			// jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
-			// if (f->name == "+") {
-			// 	jit_func = &jit_insn_add;
-			// } else if (f->name == "-") {
-			// 	jit_func = &jit_insn_sub;
-			// } else if (f->name == "*" or f->name == "×") {
-			// 	jit_func = &jit_insn_mul;
-			// } else if (f->name == "/" or f->name == "÷") {
-			// 	jit_func = &jit_insn_div;
-			// } else if (f->name == "**") {
-			// 	jit_func = &jit_insn_pow;
-			// } else if (f->name == "%") {
-			// 	jit_func = &jit_insn_rem;
-			// }
-			// if (jit_func != nullptr) {
-			// 	auto v0 = arguments[0]->compile(c);
-			// 	auto v1 = arguments[1]->compile(c);
-				// jit_value_t ret = jit_func(c.F, v0.v, v1.v);
-                //
-				// if (type.nature == POINTER) {
-				// 	return c.insn_to_pointer({ret, Type::INTEGER});
-				// }
-				// return {ret, type};
-			// }
+		if (function->type.argument(0).isNumber() and function->type.argument(1).isNumber()) {
+			if (f->name == "+") {
+				return c.insn_add(arguments[0]->compile(c), arguments[1]->compile(c));
+			} else if (f->name == "-") {
+				return c.insn_sub(arguments[0]->compile(c), arguments[1]->compile(c));
+			} else if (f->name == "*" or f->name == "×") {
+				return c.insn_mul(arguments[0]->compile(c), arguments[1]->compile(c));
+			} else if (f->name == "/" or f->name == "÷") {
+				return c.insn_div(arguments[0]->compile(c), arguments[1]->compile(c));
+			} else if (f->name == "**") {
+				return c.insn_pow(arguments[0]->compile(c), arguments[1]->compile(c));
+			} else if (f->name == "%") {
+				return c.insn_mod(arguments[0]->compile(c), arguments[1]->compile(c));
+			}
 		}
 	}
 
