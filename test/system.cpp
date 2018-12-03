@@ -63,5 +63,5 @@ void Test::test_system() {
 	code("System.print(['a', 'b', 'c'])").output("['a', 'b', 'c']\n");
 
 	section("v1 debug");
-	DISABLED_code_v1("debug('hello')").output("hello\n");
+	code_v1("debug('hello')").output("hello\n");
 }

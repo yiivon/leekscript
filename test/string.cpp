@@ -66,7 +66,7 @@ void Test::test_strings() {
 	section("String.operator *");
 	code("'salut' * 3").equals("'salutsalutsalut'");
 	code("'salut' * (1 + 2)").equals("'salutsalutsalut'");
-	DISABLED_code("('salut' * 1) + 2").equals("'salut2'");
+	code("('salut' * 1) + 2").equals("'salut2'");
 	code("'hello' * 'abc'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator |x|");
@@ -190,8 +190,8 @@ void Test::test_strings() {
 	code("String.map('salut', x -> '(' + x + ')')").equals("'(s)(a)(l)(u)(t)'");
 	code("'salut'.map(char -> char + '.')").equals("'s.a.l.u.t.'");
 	code("'♫☯🐖👽韭'.map(u -> u + ' ')").equals("'♫ ☯ 🐖 👽 韭 '");
-	DISABLED_code("let f = n -> n.string().split('').map(d -> d.code()) f(196457238)").equals("[49, 57, 54, 52, 53, 55, 50, 51, 56]");
-	DISABLED_code("let f = n -> n.string().map(d -> (d.code() + 9263).char() + ' ') f(196457238)").equals("'① ⑨ ⑥ ④ ⑤ ⑦ ② ③ ⑧ '");
+	code("let f = n -> n.string().split('').map(d -> d.code()) f(196457238)").equals("[49, 57, 54, 52, 53, 55, 50, 51, 56]");
+	code("let f = n -> n.string().map(d -> (d.code() + 9263).char() + ' ') f(196457238)").equals("'① ⑨ ⑥ ④ ⑤ ⑦ ② ③ ⑧ '");
 
 	section("String.split()");
 	code("String.split('bonjour ça va', ' ')").equals("['bonjour', 'ça', 'va']");
@@ -235,10 +235,10 @@ void Test::test_strings() {
 	code("'🐨'.code()").equals("128040");
 	code("String.code('🐨')").equals("128040");
 	code("String.code('ABC', 2)").equals("67");
-	DISABLED_code("(x -> x)(65).char()").equals("'A'");
-	DISABLED_code("[128040][0].char()").equals("'🐨'");
-	DISABLED_code("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
-	DISABLED_code("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
+	code("(x -> x)(65).char()").equals("'A'");
+	code("[128040][0].char()").equals("'🐨'");
+	code("'hello'.map(x -> { let b = x == ' ' if b then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
+	code("'hello'.map(x -> { if x == ' ' then ' ' else x.code() - 'a'.code() + 1 + ' ' end })").equals("'8 5 12 12 15 '");
 	code("[String.code('♫'), '']").equals("[9835, '']");
 
 	section("String.number()");
@@ -262,7 +262,7 @@ void Test::test_strings() {
 	code("'hello world how are you today'.wordCount()").equals("6");
 	code("'aujourd\\'hui j\\'ai'.wordCount()").equals("2");
 	code("String.wordCount('abc def ghi')").equals("3");
-	DISABLED_code("['a b c', 'd e', 'f', 'g h i j'].map(x -> x.wordCount())").equals("[3, 2, 1, 4]");
+	code("['a b c', 'd e', 'f', 'g h i j'].map(x -> x.wordCount())").equals("[3, 2, 1, 4]");
 
 	section("String.sort()");
 	code("''.sort()").equals("''");
@@ -275,9 +275,9 @@ void Test::test_strings() {
 	code("let a = '97615432304655212' a.sort()").equals("'01122233445556679'");
 
 	section("v1 string charAt");
-	DISABLED_code_v1("charAt('hello', 3)").equals("'l'");
+	code_v1("charAt('hello', 3)").equals("'l'");
 
 	section("v1 string replace()");
-	DISABLED_code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
-	DISABLED_code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
+	code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
+	code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
 }

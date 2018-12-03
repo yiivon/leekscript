@@ -111,7 +111,7 @@ void Test::test_objects() {
 	code("let a = {v: 12} [a]").equals("[{v: 12}]");
 
 	section("Object.map()");
-	DISABLED_code("{}.map(x -> x + 1)").equals("{}");
-	DISABLED_code("{x: 12, y: 5}.map(x -> x + 1)").equals("{x: 13, y: 6}");
-	DISABLED_code("{x: 'a', y: 'b'}.map(x -> x + ' !')").equals("{x: 'a !', y: 'b !'}");
+	code("{}.map(x -> x + 1)").equals("{}");
+	code("{x: 12, y: 5}.map(x -> x + 1)").equals("{x: 13, y: 6}");
+	code("{x: 'a', y: 'b'}.map(x -> x + ' !')").equals("{x: 'a !', y: 'b !'}");
 }

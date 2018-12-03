@@ -40,7 +40,7 @@ void Test::test_json() {
 
 	section("Value.json()");
 	// null
-	DISABLED_code("null.json()").equals("'null'");
+	code("null.json()").equals("'null'");
 	// integer
 	code("0.json()").equals("'0'");
 	code("12.json()").equals("'12'");
