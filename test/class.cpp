@@ -60,27 +60,28 @@ void Test::test_classes() {
 	code("[1, 2, 3] is Array").equals("true");
 	code("[1..12] is Interval").equals("true");
 	code("{a: 12} is Object").equals("true");
-	DISABLED_code("(-> 12) is Function").equals("true");
+	code("(-> 12) is Function").equals("true");
 	code("true is Boolean").equals("true");
 	code("Number is Class").equals("true");
 
 	section("Class creation");
 	code("class A {} A").equals("<class A>");
-	DISABLED_code("class A {} let a = A() a").equals("A {}");
-	DISABLED_code("class A {} let a = new A a").equals("A {}");
-	DISABLED_code("class A {} let a = new A() a").equals("A {}");
-	DISABLED_code("class A { let b = 2 } let a = new A a").equals("A {b: 2}");
-	DISABLED_code("class A { let b = 2 } let a = new A a.class").equals("<class A>");
+	code("class A {} let a = A() a").equals("A {}");
+	code("class A {} let a = new A a").equals("A {}");
+	code("class A {} let a = new A() a").equals("A {}");
+	code("class A { let b = 2 } let a = new A a").equals("A {b: 2}");
+	code("class A { let b = 2 } let a = new A a.class").equals("<class A>");
 	DISABLED_code("class A { let b = 2 } let a = new A a.b").equals("2");
 	DISABLED_code("class A { let b = 'a' } let t = [A] let a = new t[0] a").equals("A {b: 'a'}");
 	DISABLED_code("class A { let b = [1] } let t = [A] let c = t[0] let a = new c a").equals("A {b: [1]}");
-	DISABLED_code("class A {} let a = new A let b = new a.class b.class").equals("<class A>");
+	code("class A {} let a = new A let b = new a.class b.class").equals("<class A>");
 
 	section("Methods access");
 	code("['hello', 2][0].toto").exception(ls::vm::Exception::NO_SUCH_ATTRIBUTE);
 	code("[].map").equals("<function>");
 	code("[].azertyuiop").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"azertyuiop", "Array"});
 	code("[[], ''][0].azertyuiop").exception(ls::vm::Exception::NO_SUCH_ATTRIBUTE);
+	// TODO
 	DISABLED_code("let my_map = [].map; my_map([1, 2, 3], x -> x ^ 2)").equals("[1, 4, 9]");
 	code("[].map == [].map").equals("true");
 	code("{}.map == {}.map").equals("true");
