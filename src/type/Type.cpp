@@ -156,14 +156,6 @@ const std::vector<Type> Type::arguments() const {
 	if (_types.size() == 0) { return {}; }
 	return _types[0]->arguments();
 }
-
-bool Type::argumentHasDefault(size_t index) const {
-	if (index >= arguments_has_default.size()) {
-		return false;
-	}
-	return arguments_has_default[index];
-}
-
 const Type Type::getElementType() const {
 	if (_types.size() == 0) { return {}; }
 	return _types[0]->element();

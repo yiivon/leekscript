@@ -15,7 +15,6 @@ class Type {
 public:
 	std::vector<const Base_type*> _types;
 	bool native; // A C++ object, memory management is done outside the language
-	std::vector<bool> arguments_has_default;
 	bool pointer = false;
 	bool temporary = false;
 	bool constant = false;
@@ -29,8 +28,6 @@ public:
 	Type return_type() const;
 	const Type argument(size_t index) const;
 	const std::vector<Type> arguments() const;
-	bool argumentHasDefault(size_t index) const;
-
 	const Type getElementType() const;
 	void setElementType(const Type&);
 	const Type getKeyType() const;
