@@ -173,26 +173,11 @@ const Type Type::getKeyType() const {
 	return _types[0]->key();
 }
 
-bool Type::will_take(const std::vector<Type>& args_type) {
-	// std::cout << "Type will take " << args_type << std::endl;
-	bool changed = false;
-	for (size_t i = 0; i < args_type.size(); ++i) {
-		Type current_type = argument(i);
-		if (current_type.isNumber() and !args_type[i].isNumber()) {
-			std::cout << "set argument " << i << std::endl;
-			// setArgumentType(i, Type::ANY);
-			changed = true;
-		}
-	}
-	return changed;
-}
-
 void Type::operator += (const Type type) {
 	for (const auto& t : type._types) {
 		operator += (t);
 	}
 }
-
 void Type::operator += (const Base_type* type) {
 	for (const auto& t : _types) {
 		if (type == t)
@@ -200,7 +185,6 @@ void Type::operator += (const Base_type* type) {
 	}
 	_types.push_back(type);
 }
-
 Type Type::operator * (const Type& t2) const {
 	if (_types.size() == 0) {
 		return t2;

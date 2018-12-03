@@ -35,8 +35,6 @@ public:
 	void setElementType(const Type&);
 	const Type getKeyType() const;
 
-	bool will_take(const std::vector<Type>& args_type);
-
 	void toJson(std::ostream&) const;
 	std::string getJsonName() const;
 	std::string to_string() const;

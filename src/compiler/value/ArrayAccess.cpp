@@ -135,8 +135,6 @@ bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>&
 
 	// std::cout << "ArrayAccess::will_take(" << args << ", " << level << ")" << std::endl;
 
-	type.will_take(args);
-
 	if (Array* arr = dynamic_cast<Array*>(array)) {
 		arr->elements_will_take(analyser, args, 1);
 	}
@@ -150,8 +148,6 @@ bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>&
 }
 
 bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types, int level) {
-
-	type.will_take(arg_types);
 
 	if (auto arr = dynamic_cast<Array*>(array)) {
 		arr->elements_will_take(analyser, arg_types, level);

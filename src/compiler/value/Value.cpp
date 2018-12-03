@@ -14,10 +14,8 @@ Value::~Value() {}
 void Value::analyse(SemanticAnalyser*) {}
 
 bool Value::will_take(SemanticAnalyser*, const std::vector<Type>& args, int) {
-	// std::cout << "Value will_take " << std::endl;
-	auto r = type.will_take(args);
 	set_version(args, 1);
-	return r;
+	return false;
 }
 
 bool Value::will_store(SemanticAnalyser*, const Type&) {
