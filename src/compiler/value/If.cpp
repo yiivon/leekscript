@@ -64,7 +64,7 @@ void If::analyse(SemanticAnalyser* analyser) {
 
 	if (elze != nullptr) {
 		elze->analyse(analyser);
-		type = then->type * elze->type;
+		type += elze->type;
 	}
 }
 
