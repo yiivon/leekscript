@@ -166,26 +166,26 @@ Compiler::value Map::compile(Compiler &c) const {
 	void* create = nullptr;
 	void* insert = nullptr;
 
-	if (type.getKeyType() == Type::INTEGER) {
-		create = type.getElementType() == Type::INTEGER ? (void*) LSMap_create_int_int :
-				 type.getElementType() == Type::REAL   ? (void*) LSMap_create_int_float
+	if (type.key() == Type::INTEGER) {
+		create = type.element() == Type::INTEGER ? (void*) LSMap_create_int_int :
+				 type.element() == Type::REAL   ? (void*) LSMap_create_int_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_create_int_ptr;
-		insert = type.getElementType() == Type::INTEGER ? (void*) LSMap_insert_int_int :
-				 type.getElementType() == Type::REAL   ? (void*) LSMap_insert_int_float
+		insert = type.element() == Type::INTEGER ? (void*) LSMap_insert_int_int :
+				 type.element() == Type::REAL   ? (void*) LSMap_insert_int_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_insert_int_ptr;
-	} else if (type.getKeyType() == Type::REAL) {
-		create = type.getElementType() == Type::INTEGER ? (void*) LSMap_create_real_int :
-				 type.getElementType() == Type::REAL   ? (void*) LSMap_create_real_float
+	} else if (type.key() == Type::REAL) {
+		create = type.element() == Type::INTEGER ? (void*) LSMap_create_real_int :
+				 type.element() == Type::REAL   ? (void*) LSMap_create_real_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_create_real_ptr;
-		insert = type.getElementType() == Type::INTEGER ? (void*) LSMap_insert_real_int :
-				 type.getElementType() == Type::REAL   ? (void*) LSMap_insert_real_float
+		insert = type.element() == Type::INTEGER ? (void*) LSMap_insert_real_int :
+				 type.element() == Type::REAL   ? (void*) LSMap_insert_real_float
 													    : (void*) LSMap_insert_real_ptr;
 	} else {
-		create = type.getElementType() == Type::INTEGER ? (void*) LSMap_create_ptr_int :
-				 type.getElementType() == Type::REAL   ? (void*) LSMap_create_ptr_float
+		create = type.element() == Type::INTEGER ? (void*) LSMap_create_ptr_int :
+				 type.element() == Type::REAL   ? (void*) LSMap_create_ptr_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_create_ptr_ptr;
-		insert = type.getElementType() == Type::INTEGER ? (void*) LSMap_insert_ptr_int :
-				 type.getElementType() == Type::REAL   ? (void*) LSMap_insert_ptr_float
+		insert = type.element() == Type::INTEGER ? (void*) LSMap_insert_ptr_int :
+				 type.element() == Type::REAL   ? (void*) LSMap_insert_ptr_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_insert_ptr_ptr;
 	}
 
@@ -193,9 +193,9 @@ Compiler::value Map::compile(Compiler &c) const {
 	auto map = c.insn_call(type, {}, (void*) create);
 
 	for (size_t i = 0; i < keys.size(); ++i) {
-		auto k = c.insn_convert(keys[i]->compile(c), type.getKeyType());
+		auto k = c.insn_convert(keys[i]->compile(c), type.key());
 		keys[i]->compile_end(c);
-		auto v = c.insn_convert(values[i]->compile(c), type.getElementType());
+		auto v = c.insn_convert(values[i]->compile(c), type.element());
 		values[i]->compile_end(c);
 
 		c.insn_call({}, {map, k, v}, (void*) insert);

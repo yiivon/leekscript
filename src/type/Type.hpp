@@ -28,8 +28,8 @@ public:
 	Type return_type() const;
 	const Type argument(size_t index) const;
 	const std::vector<Type> arguments() const;
-	const Type getElementType() const;
-	const Type getKeyType() const;
+	const Type element() const;
+	const Type key() const;
 
 	void toJson(std::ostream&) const;
 	std::string getJsonName() const;

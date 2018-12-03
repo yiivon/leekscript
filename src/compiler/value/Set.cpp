@@ -59,9 +59,9 @@ bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 
 	Type added_type = type;
 	if (added_type.is_array() or added_type.is_set()) {
-		added_type = added_type.getElementType();
+		added_type = added_type.element();
 	}
-	Type current_type = this->type.getElementType();
+	Type current_type = this->type.element();
 	if (expressions.size() == 0) {
 		this->type = Type::set(added_type);
 	} else {
@@ -93,11 +93,11 @@ void Set_insert_float(LSSet<double>* set, double value) {
 }
 
 Compiler::value Set::compile(Compiler& c) const {
-	void* create = type.getElementType() == Type::INTEGER ? (void*) Set_create_int :
-				   type.getElementType() == Type::REAL   ? (void*) Set_create_float :
+	void* create = type.element() == Type::INTEGER ? (void*) Set_create_int :
+				   type.element() == Type::REAL   ? (void*) Set_create_float :
 															(void*) Set_create_ptr;
-	void* insert = type.getElementType() == Type::INTEGER ? (void*) Set_insert_int :
-				   type.getElementType() == Type::REAL   ? (void*) Set_insert_float :
+	void* insert = type.element() == Type::INTEGER ? (void*) Set_insert_int :
+				   type.element() == Type::REAL   ? (void*) Set_insert_float :
 															(void*) Set_insert_ptr;
 
 	unsigned ops = 1;
@@ -105,7 +105,7 @@ Compiler::value Set::compile(Compiler& c) const {
 
 	double i = 0;
 	for (Value* ex : expressions) {
-		auto v = c.insn_convert(ex->compile(c), type.getElementType());
+		auto v = c.insn_convert(ex->compile(c), type.element());
 		ex->compile_end(c);
 		c.insn_call({}, {s, v}, (void*) insert);
 		ops += std::log2(++i);

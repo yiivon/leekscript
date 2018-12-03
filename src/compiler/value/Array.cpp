@@ -125,7 +125,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			type = Type::array(element_type);
 		}
 	}
-	if (type.getElementType()._types.size() == 0) {
+	if (type.element()._types.size() == 0) {
 		type = Type::PTR_ARRAY;
 	}
 	type.temporary = true;
@@ -164,9 +164,9 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 
 	Type added_type = type;
 	if (added_type.is_array() or added_type.is_set()) {
-		added_type = added_type.getElementType();
+		added_type = added_type.element();
 	}
-	Type current_type = this->type.getElementType();
+	Type current_type = this->type.element();
 	if (expressions.size() == 0) {
 		this->type = Type::array(added_type);
 	} else {

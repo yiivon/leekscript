@@ -320,7 +320,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
-		auto version = { v1->type.getElementType() };
+		auto version = { v1->type.element() };
 		v2->will_take(analyser, version, 1);
 		v2->set_version(version, 1);
 		type = Type::array(v2->version_type(version).return_type());
@@ -655,22 +655,22 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::TILDE_TILDE: {
-			if (v1->type.getElementType() == Type::INTEGER) {
-				if (type.getElementType() == Type::INTEGER) {
+			if (v1->type.element() == Type::INTEGER) {
+				if (type.element() == Type::INTEGER) {
 					auto m = &LSArray<int>::ls_map<LSFunction*, int>;
 					ls_func = (void*) m;
-				} else if (type.getElementType() == Type::REAL) {
+				} else if (type.element() == Type::REAL) {
 					auto m = &LSArray<int>::ls_map<LSFunction*, double>;
 					ls_func = (void*) m;
 				} else {
 					auto m = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
 					ls_func = (void*) m;
 				}
-			} else if (v1->type.getElementType() == Type::REAL) {
-				if (type.getElementType() == Type::REAL) {
+			} else if (v1->type.element() == Type::REAL) {
+				if (type.element() == Type::REAL) {
 					auto m = &LSArray<double>::ls_map<LSFunction*, double>;
 					ls_func = (void*) m;
-				} else if (type.getElementType() == Type::INTEGER) {
+				} else if (type.element() == Type::INTEGER) {
 					auto m = &LSArray<double>::ls_map<LSFunction*, int>;
 					ls_func = (void*) m;
 				} else {

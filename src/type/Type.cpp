@@ -156,11 +156,11 @@ const std::vector<Type> Type::arguments() const {
 	if (_types.size() == 0) { return {}; }
 	return _types[0]->arguments();
 }
-const Type Type::getElementType() const {
+const Type Type::element() const {
 	if (_types.size() == 0) { return {}; }
 	return _types[0]->element();
 }
-const Type Type::getKeyType() const {
+const Type Type::key() const {
 	if (_types.size() == 0) { return {}; }
 	return _types[0]->key();
 }
@@ -209,7 +209,7 @@ Type Type::operator * (const Type& t2) const {
 		return *this;
 	}
 	if (is_array() and t2.is_array()) {
-		return array(getElementType() * t2.getElementType());
+		return array(element() * t2.element());
 	}
 	return Type::ANY;
 }
@@ -463,12 +463,12 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 		}
 	}
 	if ((neww.is_array() and old.is_array()) || (neww.is_set() and old.is_set())) {
-		if (Type::more_specific(old.getElementType(), neww.getElementType())) {
+		if (Type::more_specific(old.element(), neww.element())) {
 			return true;
 		}
 	}
 	if (neww.is_map() and old.is_map()) {
-		if (Type::more_specific(old.getKeyType(), neww.getKeyType()) || Type::more_specific(old.getElementType(), neww.getElementType())) {
+		if (Type::more_specific(old.key(), neww.key()) || Type::more_specific(old.element(), neww.element())) {
 			return true;
 		}
 	}

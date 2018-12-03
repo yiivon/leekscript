@@ -60,11 +60,11 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	}
 
 	if (container->type.is_map()) {
-		key_type = container->type.getKeyType();
-		value_type = container->type.getElementType();
+		key_type = container->type.key();
+		value_type = container->type.element();
 	} else if (container->type.is_array() or container->type.is_interval() or container->type.is_set()) {
 		key_type = Type::INTEGER;
-		value_type = container->type.getElementType();
+		value_type = container->type.element();
 	} else if (container->type.is_integer() || container->type.is_long()) {
 		key_type = Type::INTEGER;
 		value_type = Type::INTEGER;
@@ -73,7 +73,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		value_type = Type::STRING;
 	} else {
 		key_type = Type::ANY;
-		value_type = container->type.getElementType();
+		value_type = container->type.element();
 	}
 
 	if (key != nullptr) {
@@ -110,7 +110,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	c.add_var("{array}", container_v);
 
 	// Create variables
-	auto value_var = c.create_and_add_var(value->content, container->type.getElementType());
+	auto value_var = c.create_and_add_var(value->content, container->type.element());
 
 	LLVMCompiler::value key_var;
 	LLVMCompiler::value key_v;

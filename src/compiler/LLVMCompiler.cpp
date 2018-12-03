@@ -161,7 +161,7 @@ LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
 }
 
 LLVMCompiler::value LLVMCompiler::new_array(Type type, std::vector<LLVMCompiler::value> elements) const {
-	auto element_type = type.getElementType().fold();
+	auto element_type = type.element().fold();
 	auto array = [&]() { if (element_type == Type::INTEGER) {
 		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<int>();
@@ -851,9 +851,9 @@ LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.is_string()) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size);
-	} else if (v.t.is_array() and v.t.getElementType() == Type::INTEGER) {
+	} else if (v.t.is_array() and v.t.element() == Type::INTEGER) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<int>::int_size);
-	} else if (v.t.is_array() and v.t.getElementType() == Type::REAL) {
+	} else if (v.t.is_array() and v.t.element() == Type::REAL) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<double>::int_size);
 	} else {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSArray<LSValue*>::int_size);
@@ -885,7 +885,7 @@ LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const {
 void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::value value) const {
 	assert(array.t.llvm_type() == array.v->getType());
 	assert(value.t.llvm_type() == value.v->getType());
-	auto element_type = array.t.getElementType().fold();
+	auto element_type = array.t.element().fold();
 	if (element_type == Type::INTEGER) {
 		insn_call({}, {array, value}, (void*) +[](LSArray<int>* array, int value) {
 			array->push_back(value);
@@ -909,9 +909,9 @@ LLVMCompiler::value LLVMCompiler::insn_array_at(LLVMCompiler::value array, LLVMC
 	auto array_type = array.v->getType()->getPointerElementType();
 	auto raw_data = builder.CreateStructGEP(array_type, array.v, 5);
 	auto data_base = builder.CreateLoad(raw_data);
-	auto data_type = array.t.getElementType().llvm_type()->getPointerTo();
+	auto data_type = array.t.element().llvm_type()->getPointerTo();
 	auto data = builder.CreatePointerCast(data_base, data_type);
-	return {builder.CreateGEP(data, index.v), array.t.getElementType()};
+	return {builder.CreateGEP(data, index.v), array.t.element()};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_array_end(LLVMCompiler::value array) const {
@@ -1032,7 +1032,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	if (v.t.is_array()) {
 		auto array_type = v.v->getType()->getPointerElementType();
 		auto raw_data = builder.CreateStructGEP(array_type, v.v, 5);
-		auto it_type = v.t.getElementType().llvm_type()->getPointerTo();
+		auto it_type = v.t.element().llvm_type()->getPointerTo();
 		value it = {CreateEntryBlockAlloca("it", it_type), Type::ANY};
 		insn_store(it, {builder.CreateLoad(raw_data), Type::ANY});
 		return it;
@@ -1163,7 +1163,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		}
 		auto e = insn_load(it);
 		auto f = insn_load(e);
-		insn_inc_refs({f.v, collectionType.getElementType()});
+		insn_inc_refs({f.v, collectionType.element()});
 		return f;
 	}
 	if (it.t == Type::INTERVAL_ITERATOR) {
