@@ -149,7 +149,7 @@ void Test::test_arrays() {
 	code("var a = [1, 2] a[] = 3 a").equals("[1, 2, 3]");
 	code("var a = [] a[] = 'a' a").equals("['a']");
 	code("var a = ['a', 'b'] a[] = 'c' a").equals("['a', 'b', 'c']");
-	DISABLED_code("var a = [1, 'b', true] a[] = x -> x a").equals("[1, 'b', true, <function>]");
+	code("var a = [1, 'b', true] a[] = x -> x a").equals("[1, 'b', true, <function>]");
 
 	section("Methods calls on unknown array");
 	code("var a = [1, [1, 2]] a[1].size()").equals("2");
@@ -203,7 +203,7 @@ void Test::test_arrays() {
 	code("[1.2, 321.42] ~~ x -> x * 1.7").equals("[2.04, 546.414]");
 	code("[1, 2, 3, 4, 5] ~~ x -> x.max(3)").equals("[3, 3, 3, 4, 5]");
 	code("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)").equals("[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
-	DISABLED_code("[1, 2, 3, 4] ~~ x -> x + 0.5").equals("[1.5, 2.5, 3.5, 4.5]");
+	code("[1, 2, 3, 4] ~~ x -> x + 0.5").equals("[1.5, 2.5, 3.5, 4.5]");
 	DISABLED_code("[1, 2, 3] ~~ (x -> x * 5) ~~ (x -> x - 1)").equals("[4, 9, 14]");
 	code("let f = x -> x + 10 let g = x -> x ** 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
 	code("[1, 2, 3] ~~ Number.sqrt").equals("[1, 1.41421, 1.73205]");
@@ -249,11 +249,12 @@ void Test::test_arrays() {
 	code("'yo' in ['ya', 'yu', 'yo']").equals("true");
 	code("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }").equals("'ok'");
 	code("'a' in [['a', 'b', 'c'], ''][0]").equals("true");
+	// TODO
 	DISABLED_code("2★ in [1, 2, 3]").equals("true");
 	DISABLED_code("4★ in [1, 2, 3]").equals("false");
 	DISABLED_code("'salut' in [1, 2, 3]").equals("false");
-	DISABLED_code("let f = x -> x[0]; [f([1]), f([0..3])]").equals("[1, 0]");
-	DISABLED_code("let f = x -> x[0]; [f([1]), f([0..3]), f(['a'])]").equals("[1, 0, 'a']");
+	code("let f = x -> x[0]; [f([1]), f([0..3])]").equals("[1, 0]");
+	code("let f = x -> x[0]; [f([1]), f([0..3]), f(['a'])]").equals("[1, 0, 'a']");
 
 	/*
 	 * Methods
@@ -294,13 +295,14 @@ void Test::test_arrays() {
 	code("let a = [3, 4, 5] a.map(x -> x ** 2)").equals("[9, 16, 25]");
 	code("[321, 213, 121].map(x -> x ** 2).size()").equals("3");
 	code("[3.2, 4.5, 5.8].map(x -> x ** 2)").equals("[10.24, 20.25, 33.64]");
-	DISABLED_code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
-	DISABLED_code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
+	code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
+	code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
+	// TODO
 	DISABLED_code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
 	DISABLED_code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
 
 	section("Array.map2()");
-	DISABLED_code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
+	code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
 
 	section("Array.max()");
 	code("[].max()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -326,7 +328,7 @@ void Test::test_arrays() {
 	code("let x = [1, 2, 3, 4] x.chunk()").equals("[[1], [2], [3], [4]]");
 	code("let x = ['a', 'b', 'c', 'd'] x.chunk()").equals("[['a'], ['b'], ['c'], ['d']]");
 	code("let x = [1.6, 2.5, 3.1, 4.67] x.chunk()").equals("[[1.6], [2.5], [3.1], [4.67]]");
-	DISABLED_code("let x = ['hello', x -> x, true, Number] x.chunk()").equals("[['hello'], [<function>], [true], [<class Number>]]");
+	code("let x = ['hello', x -> x, true, Number] x.chunk()").equals("[['hello'], [<function>], [true], [<class Number>]]");
 
 	section("Array.unique()");
 	code("var x = [1, 1, 2, 2, 1] x.unique() x").equals("[1, 2, 1]");
@@ -541,6 +543,7 @@ void Test::test_arrays() {
 	section("Array.removeElement()");
 	code("[].removeElement(12)").equals("false");
 	code("var a = [1, 2, 3] a.removeElement(1) a").equals("[3, 2]");
+	// TODO
 	DISABLED_code("var a = [1, 2, 3] a.removeElement('key') a").semantic_error(ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::INT_ARRAY.to_string() + ".removeElement(" + ls::Type::STRING_TMP.to_string() + ")"});
 	code("[1, 2, 3].removeElement(3)").equals("true");
 	code("[1, 2, 3].removeElement(4)").equals("false");
@@ -572,10 +575,10 @@ void Test::test_arrays() {
 	DISABLED_code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])]").equals("[]");
 
 	section("Array v1 pushAll");
-	DISABLED_code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("['a', 'b', 'c']");
+	code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("['a', 'b', 'c']");
 
 	section("Array v1 count");
-	DISABLED_code_v1("var a = ['a', 'b', 'c'] count(a)").equals("3");
+	code_v1("var a = ['a', 'b', 'c'] count(a)").equals("3");
 
 	// TODO misc
 	DISABLED_code("3 ~ x -> x ^ x").equals("27");
