@@ -127,6 +127,11 @@ Type::Type() {
 Type::Type(std::initializer_list<const Base_type*> types) {
 	_types = types;
 }
+Type::Type(std::initializer_list<Type> types) {
+	for (const auto& t : types) {
+		operator += (t);
+	}
+}
 Type::Type(const Base_type* raw_type, bool native, bool temporary, bool constant) {
 	_types.push_back(raw_type);
 	this->native = native;
@@ -172,7 +177,7 @@ void Type::operator += (const Type type) {
 }
 void Type::operator += (const Base_type* type) {
 	for (const auto& t : _types) {
-		if (type == t)
+		if (type->operator == (t))
 			return;
 	}
 	_types.push_back(type);
@@ -207,9 +212,6 @@ Type Type::operator * (const Type& t2) const {
 	}
 	if (compatible(t2)) {
 		return *this;
-	}
-	if (is_array() and t2.is_array()) {
-		return array(element() * t2.element());
 	}
 	return Type::ANY;
 }

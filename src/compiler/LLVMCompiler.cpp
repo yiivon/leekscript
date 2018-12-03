@@ -241,7 +241,7 @@ LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) co
 	// assert(v.t.llvm_type() == v.v->getType());
 	if (!v.v) { return v; }
 	if (!v.t.isNumber() && !t.isNumber()) {
-		return v;
+		return { builder.CreatePointerCast(v.v, t.llvm_type()), t };
 	}
 	if (v.t.isNumber() && !t.isNumber()) {
 		return insn_to_any(v);

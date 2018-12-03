@@ -22,6 +22,7 @@ public:
 
 	Type();
 	Type(std::initializer_list<const Base_type*>);
+	Type(std::initializer_list<Type> types);
 	Type(const Base_type* raw_type, bool native = false, bool temporary = false, bool constant = false);
 
 	int id() const;

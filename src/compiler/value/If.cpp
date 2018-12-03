@@ -84,7 +84,7 @@ Compiler::value If::compile(Compiler& c) const {
 
 	c.insn_label(&label_then);
 
-	then_v = c.insn_convert(then->compile(c), type);
+	then_v = c.insn_convert(then->compile(c), type.fold());
 	then->compile_end(c);
 
 	if (dynamic_cast<Return*>(then->instructions[0]) == nullptr && dynamic_cast<Break*>(then->instructions[0]) == nullptr && dynamic_cast<Continue*>(then->instructions[0]) == nullptr) {
@@ -95,7 +95,7 @@ Compiler::value If::compile(Compiler& c) const {
 	c.insn_label(&label_else);
 
 	if (elze != nullptr) {
-		else_v = c.insn_convert(elze->compile(c), type);
+		else_v = c.insn_convert(elze->compile(c), type.fold());
 		elze->compile_end(c);
 	}
 
@@ -103,7 +103,7 @@ Compiler::value If::compile(Compiler& c) const {
 	label_else.block = LLVMCompiler::builder.GetInsertBlock();
 
 	c.insn_label(&label_end);
-
+	
 	auto phi = LLVMCompiler::builder.CreatePHI(type.llvm_type(), 2, "iftmp");
 	if (then_v.v) phi->addIncoming(then_v.v, label_then.block);
 	if (else_v.v) phi->addIncoming(else_v.v, label_else.block);

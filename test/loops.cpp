@@ -46,6 +46,11 @@ void Test::test_loops() {
 	code("if 1212 { 'ok' } else { 5 }").equals("'ok'");
 	code("if ['str', true][0] { 12 } else { 5 }").equals("12");
 	code("if null { 12 } else { 5 }").equals("5");
+	
+	section("Different branch types");
+	code("if (1) ['a'] else if (0) [2] else [5.5]").equals("['a']");
+	code("if (0) ['a'] else if (1) [2] else [5.5]").equals("[2]");
+	code("if (0) ['a'] else if (0) [2] else [5.5]").equals("[5.5]");
 
 	section("Ternary conditions");
 	code("true ? 5 : 12").equals("5");
