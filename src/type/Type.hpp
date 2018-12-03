@@ -29,7 +29,6 @@ public:
 	const Type argument(size_t index) const;
 	const std::vector<Type> arguments() const;
 	const Type getElementType() const;
-	void setElementType(const Type&);
 	const Type getKeyType() const;
 
 	void toJson(std::ostream&) const;
