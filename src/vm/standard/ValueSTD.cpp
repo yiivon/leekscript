@@ -90,7 +90,8 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::ANY, {Type::CONST_ANY}, (void*) &ValueSTD::copy}
 	});
 	method("string", {
-		{Type::STRING, {Type::CONST_ANY}, (void*) &ValueSTD::to_string}
+		{Type::STRING, {Type::CONST_ANY}, (void*) &ValueSTD::to_string},
+		{Type::STRING, {Type::CONST_LONG}, (void*) &ValueSTD::to_string}
 	});
 	method("json", {
 		{Type::STRING, {Type::CONST_ANY}, (void*) &JsonSTD::encode}
@@ -339,7 +340,7 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 			return new LSString(std::to_string(v));
 		});
 	}
-	if (args[0].t == Type::LONG) {
+	if (args[0].t.is_long()) {
 		return c.insn_call(Type::STRING, args, +[](long v) {
 			return new LSString(std::to_string(v));
 		});
