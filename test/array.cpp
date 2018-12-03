@@ -378,7 +378,7 @@ void Test::test_arrays() {
 	code("Array.partition([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("[[3, 10, 'yo'], [1, 2, true]]");
 	code("[1, 2, 3, 4, 5].partition(x -> x > 3)").equals("[[4, 5], [1, 2, 3]]");
 	code("[1, 2, 3, 4, 5].partition(x -> x == 3)").equals("[[3], [1, 2, 4, 5]]");
-	DISABLED_code("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)").equals("[[5, 6], [3, 4]]");
+	code("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)").equals("[[5, 6], [3, 4]]");
 	code("[1, 2, 3, 4, 5].partition(x -> 'yolo')").equals("[[1, 2, 3, 4, 5], []]");
 
 	section("Array.first()");

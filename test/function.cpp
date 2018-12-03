@@ -45,10 +45,10 @@ void Test::test_functions() {
 	DISABLED_code("[-> 12, 'toto'][0]()").equals("12");
 	code("(x -> x + 12.12)(1.01)").almost(13.13);
 	code("(x -> x + 12)(1.01)").almost(13.01);
-	DISABLED_code("[x -> x ** 2][0](12)").equals("144");
-	DISABLED_code("[[x -> x ** 2]][0][0](12)").equals("144");
-	DISABLED_code("[[[x -> x ** 2]]][0][0][0](12)").equals("144");
-	DISABLED_code("[[[[[[[x -> x ** 2]]]]]]][0][0][0][0][0][0][0](12)").equals("144");
+	code("[x -> x ** 2][0](12)").equals("144");
+	code("[[x -> x ** 2]][0][0](12)").equals("144");
+	code("[[[x -> x ** 2]]][0][0][0](12)").equals("144");
+	code("[[[[[[[x -> x ** 2]]]]]]][0][0][0][0][0][0][0](12)").equals("144");
 	code("(-> -> 12)()()").equals("12");
 	code("(-> -> -> 13)()()()").equals("13");
 	code("(-> -> -> -> 14)()()()()").equals("14");
@@ -67,7 +67,7 @@ void Test::test_functions() {
 	code("let f = x = 2 -> x + 1 f").equals("<function>");
 	code("let f = b -> if b { 2 } else { 3 } f(false)").equals("3");
 	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
-	DISABLED_code("(x -> y -> x + 1)(1)(2)").equals("2");
+	code("(x -> y -> x + 1)(1)(2)").equals("2");
 	code("let f = x, y -> { x += '+' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A+', 'B.']");
 
 	section("Function call without commas");
@@ -80,11 +80,11 @@ void Test::test_functions() {
 	code("let a = 12 let f = -> -> -> a f()()()").equals("12");
 	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
 	DISABLED_code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
-	DISABLED_code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
-	DISABLED_code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
-	DISABLED_code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
-	DISABLED_code("let f = x -> y -> x + y f(5)(12)").equals("17");
-	DISABLED_code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
+	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
+	code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
+	code("let f = x -> y -> x + y f(5)(12)").equals("17");
+	code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
 	code("let f = x -> x (-> f(12))()").equals("12");
 	code("let f = x -> x let g = x -> f(x) g(12)").equals("12");
 	code("let g = x -> x ** 2 let f = x, y -> g(x + y) f(6, 2)").equals("64");
@@ -102,9 +102,9 @@ void Test::test_functions() {
 	// code("let test = x -> if x > 0 { test(x - 1) } else { 77 } test(4)").equals("77");
 
 	section("Functions in array");
-	DISABLED_code("var a = [12, x -> x + 7] a[1](12)").equals("19");
-	DISABLED_code("var a = [12, x -> x + '!'] a[1](12)").equals("'12!'");
-	DISABLED_code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
+	code("var a = [12, x -> x + 7] a[1](12)").equals("19");
+	code("var a = [12, x -> x + '!'] a[1](12)").equals("'12!'");
+	code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
 
 	section("Multiple versions of a function");
 	code("let f = x -> x f(5) f('a')").equals("'a'");
