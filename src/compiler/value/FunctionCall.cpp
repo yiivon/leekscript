@@ -85,7 +85,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		auto arg = arguments.at(a);
 		arg->analyse(analyser);
 		arguments.at(a)->type = arg->type;
-		arguments.at(a)->type.reference = function->type.getArgumentType(a).reference;
+		// arguments.at(a)->type.reference = function->type.getArgumentType(a).reference;
 	}
 
 	// Standard library constructors TODO better
@@ -93,7 +93,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	if (vv != nullptr) {
 		if (vv->name == "Number") {
 			if (arguments.size()) {
-				function->type.setArgumentType(0, arguments.at(0)->type);
+				// function->type.setArgumentType(0, arguments.at(0)->type);
 				type = arguments.at(0)->type;
 			} else {
 				type = Type::INTEGER;
@@ -234,36 +234,34 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				}
 			}
 			if (isByValue) {
-				function->type.setArgumentType(0, effectiveType);
-				function->type.setArgumentType(1, effectiveType);
-				function->type.setReturnType(effectiveType);
+				// function->type.setArgumentType(0, effectiveType);
+				// function->type.setArgumentType(1, effectiveType);
+				// function->type.setReturnType(effectiveType);
 			}
-			type = function->type.getReturnType();
+			type = function->type.return_type();
 		}
 	}
 
 	// Check arguments count
 	arg_types.clear();
-	bool arguments_valid = arguments.size() <= function->type.getArgumentTypes().size();
-	auto total_arguments_passed = std::max(arguments.size(), function->type.getArgumentTypes().size());
+	bool arguments_valid = arguments.size() <= function->type.arguments().size();
+	auto total_arguments_passed = std::max(arguments.size(), function->type.arguments().size());
 	size_t a = 0;
-	for (auto& argument_type : function->type.getArgumentTypes()) {
+	for (auto& argument_type : function->type.arguments()) {
 		if (a < arguments.size()) {
-			auto arg_type = function->type.getArgumentType(a);
+			auto arg_type = function->type.argument(a);
 			// OK, the argument is present in the call
 			arguments.at(a)->analyse(analyser);
 			arguments.at(a)->type.reference = arg_type.reference;
 			if (arg_type.is_function()) {
-				arguments.at(a)->will_take(analyser, arg_type.arguments_types, 1);
-				arguments.at(a)->set_version(arg_type.arguments_types, 1);
-				arguments.at(a)->must_return(analyser, arg_type.getReturnType());
+				arguments.at(a)->will_take(analyser, arg_type.arguments(), 1);
+				arguments.at(a)->set_version(arg_type.arguments(), 1);
+				arguments.at(a)->must_return(analyser, arg_type.return_type());
 			}
 			arg_types.push_back(arguments.at(a)->type);
-		} else if (function->type.argumentHasDefault(a)) {
+		} else if (function_object && function_object->defaultValues.at(a) != nullptr) {
 			// OK, there's no argument in the call but a default value is set.
-			if (function_object) {
-				arg_types.push_back(function_object->defaultValues.at(a)->type);
-			}
+			arg_types.push_back(function_object->defaultValues.at(a)->type);
 		} else {
 			// Missing argument
 			arguments_valid = false;
@@ -275,7 +273,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	if (function->type.is_function() and !arguments_valid) {
 		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
 			function->to_string(),
-			std::to_string(function->type.getArgumentTypes().size()),
+			std::to_string(function->type.arguments().size()),
 			std::to_string(total_arguments_passed)
 		}});
 		return;
@@ -297,20 +295,20 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		if (vv->var->name == analyser->current_function()->name) {
 			type = analyser->current_function()->getReturnType();
 		} else {
-			type = function_type.getReturnType();
+			type = function_type.return_type();
 		}
 	} else {
-		type = function_type.getReturnType();
+		type = function_type.return_type();
 	}
 
 	a = 0;
 	for (auto& arg : arguments) {
-		auto t = function_type.getArgumentType(a);
+		auto t = function_type.argument(a);
 		arg->analyse(analyser);
-		arg->type.reference = function->type.getArgumentType(a).reference;
+		arg->type.reference = function->type.argument(a).reference;
 		a++;
 	}
-	return_type = function_type.getReturnType();
+	return_type = function_type.return_type();
 	// std::cout << "FC " << this << " type " << type << std::endl;
 }
 
@@ -325,7 +323,7 @@ void FunctionCall::set_version(const std::vector<Type>& args, int level) {
 }
 
 Type FunctionCall::version_type(std::vector<Type> version) const {
-	return function->version_type(version).getReturnType();
+	return function->version_type(version).return_type();
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {
@@ -377,9 +375,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		this_ptr->compile_end(c);
 		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr_type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function->type.getArgumentType(i)));
+			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function->type.argument(i)));
 			arguments.at(i)->compile_end(c);
-			lsvalue_types.push_back(function->type.getArgumentType(i).id());
+			lsvalue_types.push_back(function->type.argument(i).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
 
@@ -400,9 +398,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		vector<Compiler::value> args;
 		vector<LSValueType> lsvalue_types;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function->type.getArgumentType(i)));
+			args.push_back(c.insn_convert(arguments.at(i)->compile(c), function->type.argument(i)));
 			arguments.at(i)->compile_end(c);
-			lsvalue_types.push_back((LSValueType) function->type.getArgumentType(i).id());
+			lsvalue_types.push_back((LSValueType) function->type.argument(i).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
 
@@ -421,8 +419,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	VariableValue* f = dynamic_cast<VariableValue*>(function);
 
 	if (f != nullptr) {
-		if (function->type.getArgumentType(0).isNumber()
-			and function->type.getArgumentType(1).isNumber()) {
+		if (function->type.argument(0).isNumber()
+			and function->type.argument(1).isNumber()) {
 
 			// jit_value_t (*jit_func)(jit_function_t, jit_value_t, jit_value_t) = nullptr;
 			// if (f->name == "+") {
@@ -494,17 +492,17 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// std::cout << this << " args " << args.size() << " " << arg_count << " " << offset << std::endl;
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
-			auto convert_type = function_type.getArgumentType(i);
+			auto convert_type = function_type.argument(i);
 			// if (convert_type == ANY) convert_type = Type::POINTER;
 			args.push_back(c.insn_convert(arguments.at(i)->compile(c), convert_type));
 			arguments.at(i)->compile_end(c);
-			if (function_type.getArgumentType(i) == Type::MPZ && arguments.at(i)->type != Type::MPZ_TMP) {
+			if (function_type.argument(i) == Type::MPZ && arguments.at(i)->type != Type::MPZ_TMP) {
 				args.at(offset + i) = c.insn_clone_mpz(args.at(offset + i));
 			}
 		} else {
 			args.push_back(function_object->defaultValues.at(i)->compile(c));
 		}
-		lsvalue_types.push_back(function_type.getArgumentType(i).id());
+		lsvalue_types.push_back(function_type.argument(i).id());
 
 		// Increment references of argument
 		c.insn_inc_refs(args.at(offset + i));

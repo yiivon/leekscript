@@ -21,6 +21,18 @@ bool Base_type::compatible(const Base_type*) const {
 Type Base_type::iterator() const {
 	assert(false && "No iterator available on this type");
 }
+Type Base_type::return_type() const {
+	// assert(false && "No return type on this type");
+	return Type::ANY;
+}
+Type Base_type::argument(size_t) const {
+	// assert(false && "No arguments on this type");
+	return Type::ANY;
+}
+std::vector<Type> Base_type::arguments() const {
+	// assert(false && "No arguments on this type");
+	return {};
+}
 std::string Base_type::clazz() const {
 	return "";
 }

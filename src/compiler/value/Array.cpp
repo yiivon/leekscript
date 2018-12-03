@@ -91,7 +91,8 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			} else {
 				supported_type = Type::ANY;
 				// If there are some functions, they types will be lost, so tell them to return pointers
-				supported_type.setReturnType(Type::ANY);
+				// TODO
+				// supported_type.setReturnType(Type::ANY);
 			}
 
 			// Re-analyze expressions with the supported type
@@ -108,7 +109,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 				}
 				if (ex->type.is_function()) {
 					std::vector<Type> types;
-					for (unsigned p = 0; p < ex->type.getArgumentTypes().size(); ++p) {
+					for (unsigned p = 0; p < ex->type.arguments().size(); ++p) {
 						types.push_back(Type::ANY);
 					}
 					if (types.size() > 0) {

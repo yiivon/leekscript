@@ -15,8 +15,6 @@ class Type {
 public:
 	std::vector<const Base_type*> _types;
 	bool native; // A C++ object, memory management is done outside the language
-	std::vector<Type> return_types;
-	std::vector<Type> arguments_types;
 	std::vector<bool> arguments_has_default;
 	bool pointer = false;
 	bool temporary = false;
@@ -28,13 +26,9 @@ public:
 	Type(const Base_type* raw_type, bool native = false, bool temporary = false, bool constant = false);
 
 	int id() const;
-	Type getReturnType() const;
-	void setReturnType(Type type);
-
-	void addArgumentType(Type type);
-	void setArgumentType(size_t index, Type type, bool has_default = false);
-	const Type getArgumentType(size_t index) const;
-	const std::vector<Type> getArgumentTypes() const;
+	Type return_type() const;
+	const Type argument(size_t index) const;
+	const std::vector<Type> arguments() const;
 	bool argumentHasDefault(size_t index) const;
 
 	const Type getElementType() const;
@@ -166,7 +160,6 @@ public:
 	static const Type INTERVAL;
 	static const Type INTERVAL_TMP;
 	static const Type FUNCTION;
-	static const Type CONST_FUNCTION;
 	static const Type CLOSURE;
 	static const Type CLASS;
 	static const Type CONST_CLASS;
@@ -206,7 +199,8 @@ public:
 	static Type const_map(const Type = {}, const Type = {});
 	static Type interval();
 	static Type tmp_interval();
-	static Type fun();
+	static Type fun(Type return_type, std::vector<Type> arguments);
+	static Type closure(Type return_type, std::vector<Type> arguments);
 	static Type iterator(const Type);
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);

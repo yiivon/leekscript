@@ -128,35 +128,12 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::INTEGER, {Type::CONST_INT_INT_MAP}, (void*) &LSMap<int,int>::ls_maxKey, Method::NATIVE},
 	});
 
-	Type iter_ptr_ptr = Type::FUNCTION;
-	iter_ptr_ptr.setArgumentType(0, Type::ANY);
-	iter_ptr_ptr.setArgumentType(1, Type::ANY);
-	iter_ptr_ptr.setReturnType({});
-
-	Type iter_ptr_real = Type::FUNCTION;
-	iter_ptr_real.setArgumentType(0, Type::ANY);
-	iter_ptr_real.setArgumentType(1, Type::REAL);
-	iter_ptr_real.setReturnType({});
-
-	Type iter_ptr_int = Type::FUNCTION;
-	iter_ptr_int.setArgumentType(0, Type::ANY);
-	iter_ptr_int.setArgumentType(1, Type::INTEGER);
-	iter_ptr_int.setReturnType({});
-
-	Type iter_int_ptr = Type::FUNCTION;
-	iter_int_ptr.setArgumentType(0, Type::INTEGER);
-	iter_int_ptr.setArgumentType(1, Type::ANY);
-	iter_int_ptr.setReturnType({});
-
-	Type iter_int_real = Type::FUNCTION;
-	iter_int_real.setArgumentType(0, Type::INTEGER);
-	iter_int_real.setArgumentType(1, Type::REAL);
-	iter_int_real.setReturnType({});
-
-	Type iter_int_int = Type::FUNCTION;
-	iter_int_int.setArgumentType(0, Type::INTEGER);
-	iter_int_int.setArgumentType(1, Type::INTEGER);
-	iter_int_int.setReturnType({});
+	auto iter_ptr_ptr = Type::fun({}, {Type::ANY, Type::ANY});
+	auto iter_ptr_real = Type::fun({}, {Type::ANY, Type::REAL});
+	auto iter_ptr_int = Type::fun({}, {Type::ANY, Type::INTEGER});
+	auto iter_int_ptr = Type::fun({}, {Type::INTEGER, Type::ANY});
+	auto iter_int_real = Type::fun({}, {Type::INTEGER, Type::REAL});
+	auto iter_int_int = Type::fun({}, {Type::INTEGER, Type::INTEGER});
 
 	auto iter_ptr_ptr_fun = &LSMap<LSValue*, LSValue*>::ls_iter<LSFunction*>;
 	auto iter_ptr_real_fun = &LSMap<LSValue*, double>::ls_iter<LSFunction*>;

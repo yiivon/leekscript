@@ -33,14 +33,11 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	method("copy", {
 		{Type::OBJECT, {Type::OBJECT}, (void*) &ValueSTD::copy}
 	});
-	Type map_fun_type = Type::FUNCTION;
-	map_fun_type.setArgumentType(0, Type::ANY);
-	map_fun_type.setReturnType(Type::ANY);
+	Type map_fun_type = Type::fun(Type::ANY, {Type::ANY});
 	auto map_fun = &LSObject::ls_map<LSFunction*>;
 	method("map", {
 		{Type::OBJECT, {Type::OBJECT, map_fun_type}, (void*) map_fun, Method::NATIVE}
 	});
-
 	method("keys", {
 		{Type::STRING_ARRAY, {Type::OBJECT}, (void*) &LSObject::ls_get_keys, Method::NATIVE}
 	});

@@ -22,20 +22,14 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	method("copy", {
 		{Type::INTERVAL, {Type::INTERVAL}, (void*) &ValueSTD::copy}
 	});
-
-	Type pred_fun_type_int = Type::FUNCTION;
-	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
-	pred_fun_type_int.setReturnType(Type::BOOLEAN);
-	Type pred_clo_type_int = Type::CLOSURE;
-	pred_clo_type_int.setArgumentType(0, Type::INTEGER);
-	pred_clo_type_int.setReturnType(Type::BOOLEAN);
+	Type pred_fun_type_int = Type::fun(Type::BOOLEAN, {Type::INTEGER});
+	Type pred_clo_type_int = Type::closure(Type::BOOLEAN, {Type::INTEGER});
 	auto filter_fun = &LSInterval::ls_filter<LSFunction*>;
 	auto filter_clo = &LSInterval::ls_filter<LSClosure*>;
 	method("filter", {
 		{Type::INT_ARRAY, {Type::INTERVAL, pred_fun_type_int}, (void*) filter_fun, Method::NATIVE},
 		{Type::INT_ARRAY, {Type::INTERVAL, pred_clo_type_int}, (void*) filter_clo, Method::NATIVE}
 	});
-
 	method("sum", {
 		{Type::LONG, {Type::INTERVAL}, (void*) &LSInterval::ls_sum, Method::NATIVE},
 	});

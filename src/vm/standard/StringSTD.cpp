@@ -79,10 +79,7 @@ StringSTD::StringSTD() : Module("String") {
 	method("endsWith", {
 		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_endsWith, Method::NATIVE},
 	});
-	Type fold_fun_type = Type::FUNCTION;
-	fold_fun_type.setArgumentType(0, Type::ANY);
-	fold_fun_type.setArgumentType(1, Type::STRING);
-	fold_fun_type.setReturnType(Type::ANY);
+	Type fold_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::STRING});
 	method("fold", {
 		{Type::ANY, {Type::CONST_STRING, fold_fun_type, Type::ANY}, (void*) &LSString::ls_foldLeft, Method::NATIVE},
 	});
@@ -140,12 +137,9 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::LONG, {Type::CONST_STRING}, (void*) &string_number, Method::NATIVE},
 		{Type::LONG, {Type::CONST_ANY}, (void*) &string_number, Method::NATIVE},
 	});
-	Type map_fun_type = Type::FUNCTION;
-	map_fun_type.setArgumentType(0, Type::STRING);
-	map_fun_type.setReturnType(Type::STRING);
 	auto map_fun = &LSString::ls_map<LSFunction*>;
 	method("map", {
-		{Type::STRING, {Type::CONST_STRING, map_fun_type}, (void*) map_fun, Method::NATIVE},
+		{Type::STRING, {Type::CONST_STRING, Type::fun(Type::STRING, {Type::STRING})}, (void*) map_fun, Method::NATIVE},
 	});
 	method("sort", {
 		{Type::STRING, {Type::CONST_STRING}, (void*) &LSString::sort, Method::NATIVE},

@@ -14,6 +14,7 @@ Value::~Value() {}
 void Value::analyse(SemanticAnalyser*) {}
 
 bool Value::will_take(SemanticAnalyser*, const std::vector<Type>& args, int) {
+	// std::cout << "Value will_take " << std::endl;
 	auto r = type.will_take(args);
 	set_version(args, 1);
 	return r;
@@ -36,7 +37,8 @@ bool Value::must_be_any(SemanticAnalyser*) {
 }
 
 void Value::must_return(SemanticAnalyser*, const Type& ret_type) {
-	type.setReturnType(ret_type);
+	// TODO
+	// type.setReturnType(ret_type);
 }
 
 void Value::will_be_in_array(SemanticAnalyser*) {}

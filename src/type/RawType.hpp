@@ -35,8 +35,6 @@ public:
 	static const Array_type _ARRAY;
 	static const Object_type _OBJECT;
 	static const Class_type _CLASS;
-	static const Function_type _FUNCTION;
-	static const Function_type _CLOSURE;
 
 	static const Any_type* const ANY;
 	static const Null_type* const NULLL;
@@ -49,8 +47,6 @@ public:
 	static const String_type* const STRING;
 	static const Object_type* const OBJECT;
 	static const Class_type* const CLASS;
-	static const Function_type* const FUNCTION;
-	static const Function_type* const CLOSURE;
 
 	static std::vector<const Base_type*> placeholder_types;
 	static void clear_placeholder_types();

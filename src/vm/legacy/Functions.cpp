@@ -8,12 +8,8 @@ namespace legacy {
 void Functions::add(VM* vm, std::string name, Type return_type, std::vector<Type> args, void* fun) {
 	auto f = new LSFunction(fun);
 	f->native = true;
-	auto type = Type::FUNCTION;
+	auto type = Type::fun(return_type, args);
 	type.native = true;
-	type.setReturnType(return_type);
-	for (size_t i = 0; i < args.size(); ++i) {
-		type.setArgumentType(i, args.at(i));
-	}
 	vm->system_vars.insert({name, f});
 	vm->add_internal_var(name, type);
 }

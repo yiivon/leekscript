@@ -106,9 +106,8 @@ const Type Type::PTR_ARRAY_ARRAY = Type::array(Type::PTR_ARRAY);
 const Type Type::REAL_ARRAY_ARRAY = Type::array(Type::REAL_ARRAY);
 const Type Type::INT_ARRAY_ARRAY = Type::array(Type::INT_ARRAY);
 
-const Type Type::FUNCTION(RawType::FUNCTION, false, false, true);
-const Type Type::CONST_FUNCTION(RawType::FUNCTION, false, true, true);
-const Type Type::CLOSURE(RawType::CLOSURE, false, false, true);
+const Type Type::FUNCTION(new Function_type({}, {}));
+const Type Type::CLOSURE(new Function_type({}, {}, true));
 const Type Type::CLASS(RawType::CLASS, true);
 const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 
@@ -145,49 +144,17 @@ bool Type::must_manage_memory() const {
 	return !isNumber() and not native;
 }
 
-Type Type::getReturnType() const {
-	if (return_types.size() == 0) {
-		return Type::ANY;
-	}
-	return return_types[0];
+Type Type::return_type() const {
+	if (_types.size() == 0) { return {}; }
+	return _types[0]->return_type();
 }
-
-void Type::setReturnType(Type type) {
-	if (return_types.size() == 0) {
-		return_types.push_back({});
-	}
-	return_types[0] = type;
+const Type Type::argument(size_t index) const {
+	if (_types.size() == 0) { return {}; }
+	return _types[0]->argument(index);
 }
-
-void Type::addArgumentType(Type type) {
-	arguments_types.push_back(type);
-}
-
-void Type::setArgumentType(size_t index, Type type, bool has_default) {
-	while (arguments_types.size() <= index) {
-		arguments_types.push_back(Type::ANY);
-	}
-	arguments_types[index] = type;
-
-	while (arguments_has_default.size() <= index) {
-		arguments_has_default.push_back(false);
-	}
-	arguments_has_default[index] = has_default;
-}
-
-/*
- * By default, all arguments are type INTEGER, but if we see it's not always
- * a integer, it will switch to UNKNOWN
- */
-const Type Type::getArgumentType(size_t index) const {
-	if (index >= arguments_types.size()) {
-		return Type::ANY;
-	}
-	return arguments_types[index];
-}
-
-const std::vector<Type> Type::getArgumentTypes() const {
-	return arguments_types;
+const std::vector<Type> Type::arguments() const {
+	if (_types.size() == 0) { return {}; }
+	return _types[0]->arguments();
 }
 
 bool Type::argumentHasDefault(size_t index) const {
@@ -207,11 +174,13 @@ const Type Type::getKeyType() const {
 }
 
 bool Type::will_take(const std::vector<Type>& args_type) {
+	// std::cout << "Type will take " << args_type << std::endl;
 	bool changed = false;
 	for (size_t i = 0; i < args_type.size(); ++i) {
-		Type current_type = getArgumentType(i);
+		Type current_type = argument(i);
 		if (current_type.isNumber() and !args_type[i].isNumber()) {
-			setArgumentType(i, Type::ANY);
+			std::cout << "set argument " << i << std::endl;
+			// setArgumentType(i, Type::ANY);
 			changed = true;
 		}
 	}
@@ -279,13 +248,13 @@ void Type::toJson(ostream& os) const {
 
 	if (is_function()) {
 		os << ",\"args\":[";
-		for (unsigned t = 0; t < arguments_types.size(); ++t) {
+		for (unsigned t = 0; t < arguments().size(); ++t) {
 			if (t > 0) os << ",";
-			arguments_types[t].toJson(os);
+			argument(t).toJson(os);
 		}
 		os << "]";
 		os << ",\"return\":";
-		getReturnType().toJson(os);
+		return_type().toJson(os);
 	}
 	os << "}";
 }
@@ -327,9 +296,6 @@ bool Type::is_container() const {
 
 bool Type::operator == (const Type& type) const {
 	return _types.size() == type._types.size() && std::equal(_types.begin(), _types.end(), type._types.begin(), [&](const Base_type* t1, const Base_type* t2) {
-		if (dynamic_cast<const Function_type*>(t1) && dynamic_cast<const Function_type*>(t2)) {
-			return t1 == t2 && (!is_function() || (return_types == type.return_types && arguments_types == type.arguments_types));
-		}
 		return t1->operator == (t2);
 	});
 }
@@ -435,7 +401,7 @@ bool Type::compatible(const Type& type) const {
 	if (not this->constant and type.constant) {
 		return false; // 'const type' not compatible with 'type'
 	}
-	if ((is_array() && type.is_array()) || (is_set() && type.is_set()) || (is_map() && type.is_map())) {
+	if ((is_array() && type.is_array()) || (is_set() && type.is_set()) || (is_map() && type.is_map()) || (is_function() && type.is_function())) {
 		return _types[0]->compatible(type._types[0]);
 	}
 	if (_types[0] != type._types[0]) {
@@ -531,7 +497,7 @@ bool Type::more_specific(const Type& old, const Type& neww) {
 		}
 	}
 	if (neww.is_function() and old.is_function()) {
-		if (Type::more_specific(old.getArgumentType(0), neww.getArgumentType(0))) { //! TODO only the first arg
+		if (Type::more_specific(old.argument(0), neww.argument(0))) { //! TODO only the first arg
 			return true;
 		}
 	}
@@ -582,8 +548,11 @@ Type Type::interval() {
 Type Type::tmp_interval() {
 	return { new Interval_type(), false, true };
 }
-Type Type::fun() {
-	return { RawType::FUNCTION };
+Type Type::fun(Type return_type, std::vector<Type> arguments) {
+	return { new Function_type(return_type, arguments) };
+}
+Type Type::closure(Type return_type, std::vector<Type> arguments) {
+	return { new Function_type(return_type, arguments, true) };
 }
 Type Type::iterator(const Type container) {
 	return { new Iterator_type(container) };
@@ -608,20 +577,6 @@ ostream& operator << (ostream& os, const Type& type) {
 		os << BLUE_BOLD << "&&" << END_COLOR;
 	} else if (type.reference) {
 		os << BLUE_BOLD << "&" << END_COLOR;
-	}
-	return os;
-
-	if (type.is_function()) {
-		os << BLUE_BOLD;
-		if (type.constant) os << "const:";
-		os << (type.is_closure() ? "closure(" : "fun(");
-		for (unsigned t = 0; t < type.arguments_types.size(); ++t) {
-			if (t > 0) os << ", ";
-			os << type.arguments_types[t];
-			os << BLUE_BOLD;
-		}
-		os << BLUE_BOLD;
-		os << ") → " << type.getReturnType();
 	}
 	return os;
 }

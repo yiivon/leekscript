@@ -64,12 +64,12 @@ void Map::analyse(SemanticAnalyser* analyser) {
 	if (key_type == Type::INTEGER or key_type == Type::REAL) {
 	} else {
 		key_type = Type::ANY;
-		key_type.setReturnType(Type::ANY);
+		// key_type.setReturnType(Type::ANY);
 	}
 	if (value_type == Type::INTEGER || value_type == Type::REAL) {
 	} else {
 		value_type = Type::ANY;
-		value_type.setReturnType(Type::ANY);
+		// value_type.setReturnType(Type::ANY);
 	}
 
 	// Re-analyze expressions with the supported type

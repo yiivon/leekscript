@@ -64,7 +64,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 			auto method = std_class->methods.at(field->content);
 			for (const auto& m : method) {
 				if (!m.native) continue;
-				auto args = m.type.getArgumentTypes();
+				auto args = m.type.arguments();
 				args.insert(args.begin(), m.obj_type);
 				versions.insert({args, m.addr});
 			}
@@ -125,7 +125,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 				try {
 					for (const auto& m : object_class->methods.at(field->content)) {
 						if (!m.native) continue;
-						versions.insert({m.type.getArgumentTypes(), m.addr});
+						versions.insert({m.type.arguments(), m.addr});
 					}
 					type = object_class->methods.at(field->content)[0].type;
 					default_version_fun = object_class->methods.at(field->content)[0].addr;
@@ -134,7 +134,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 					try {
 						for (const auto& m : value_class->methods.at(field->content)) {
 							if (!m.native) continue;
-							versions.insert({m.type.getArgumentTypes(), m.addr});
+							versions.insert({m.type.arguments(), m.addr});
 						}
 						type = value_class->methods.at(field->content)[0].type;
 						default_version_fun = value_class->methods.at(field->content)[0].addr;

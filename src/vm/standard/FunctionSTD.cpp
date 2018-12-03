@@ -11,9 +11,9 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 	field("return", Type::CLASS);
 	field("args", Type::PTR_ARRAY);
 
-	method("copy", {
-		{Type::FUNCTION, {Type::CONST_FUNCTION}, (void*) &ValueSTD::copy}
-	});
+	// method("copy", {
+	// 	{Type::FUNCTION, {Type::CONST_FUNCTION}, (void*) &ValueSTD::copy}
+	// });
 }
 
 }

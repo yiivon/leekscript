@@ -323,7 +323,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		auto version = { v1->type.getElementType() };
 		v2->will_take(analyser, version, 1);
 		v2->set_version(version, 1);
-		type = Type::array(v2->version_type(version).getReturnType());
+		type = Type::array(v2->version_type(version).return_type());
 	}
 
 	// object ?? default

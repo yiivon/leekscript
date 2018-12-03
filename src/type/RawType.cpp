@@ -2,8 +2,6 @@
 
 namespace ls {
 
-const Function_type RawType::_FUNCTION(false);
-const Function_type RawType::_CLOSURE(true);
 const Any_type RawType::_ANY;
 const Null_type RawType::_NULL;
 const Bool_type RawType::_BOOLEAN;
@@ -16,8 +14,6 @@ const String_type RawType::_STRING;
 const Object_type RawType::_OBJECT;
 const Class_type RawType::_CLASS;
 
-const Function_type* const RawType::FUNCTION = &_FUNCTION;
-const Function_type* const RawType::CLOSURE = &_CLOSURE;
 const Any_type* const RawType::ANY = &_ANY;
 const Null_type* const RawType::NULLL = &_NULL;
 const Bool_type* const RawType::BOOLEAN = &_BOOLEAN;

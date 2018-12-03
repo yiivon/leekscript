@@ -70,24 +70,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::BOOLEAN, {Type::CONST_ANY, Type::CONST_ANY}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
 	});
 
-	Type iter_fun_type = Type::FUNCTION;
-	iter_fun_type.setArgumentType(0, Type::ANY);
-	iter_fun_type.setReturnType({});
-	Type iter_fun_type_int = Type::FUNCTION;
-	iter_fun_type_int.setArgumentType(0, Type::INTEGER);
-	iter_fun_type_int.setReturnType({});
-	Type iter_fun_type_float = Type::FUNCTION;
-	iter_fun_type_float.setArgumentType(0, Type::REAL);
-	iter_fun_type_float.setReturnType({});
-	Type iter_clo_type = Type::CLOSURE;
-	iter_clo_type.setArgumentType(0, Type::ANY);
-	iter_clo_type.setReturnType({});
-	Type iter_clo_type_int = Type::CLOSURE;
-	iter_clo_type_int.setArgumentType(0, Type::INTEGER);
-	iter_clo_type_int.setReturnType({});
-	Type iter_clo_type_float = Type::CLOSURE;
-	iter_clo_type_float.setArgumentType(0, Type::REAL);
-	iter_clo_type_float.setReturnType({});
+	Type iter_fun_type = Type::fun({}, {Type::ANY});
+	Type iter_fun_type_int = Type::fun({}, {Type::INTEGER});
+	Type iter_fun_type_float = Type::fun({}, {Type::REAL});
+	Type iter_clo_type = Type::closure({}, {Type::ANY});
+	Type iter_clo_type_int = Type::closure({}, {Type::INTEGER});
+	Type iter_clo_type_float = Type::closure({}, {Type::REAL});
 	auto iter_ptr = &LSArray<LSValue*>::ls_iter<LSFunction*>;
 	auto iter_real = &LSArray<double>::ls_iter<LSFunction*>;
 	auto iter_int = &LSArray<int>::ls_iter<LSFunction*>;
@@ -115,27 +103,14 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_min, Method::NATIVE}
 	});
 
-	Type map_int_fun_type = Type::FUNCTION;
-	map_int_fun_type.setArgumentType(0, Type::INTEGER);
-	map_int_fun_type.setReturnType(Type::INTEGER);
-
-	Type map_int_ptr_fun_type = Type::FUNCTION;
-	map_int_ptr_fun_type.setArgumentType(0, Type::INTEGER);
-	map_int_ptr_fun_type.setReturnType(Type::ANY);
-
-	Type map_real_fun_type = Type::FUNCTION;
-	map_real_fun_type.setArgumentType(0, Type::REAL);
-	map_real_fun_type.setReturnType(Type::REAL);
-
-	Type map_fun_type = Type::FUNCTION;
-	map_fun_type.setArgumentType(0, Type::ANY);
-	map_fun_type.setReturnType(Type::ANY);
-
+	Type map_int_fun_type = Type::fun(Type::INTEGER, {Type::INTEGER});
+	Type map_int_ptr_fun_type = Type::fun(Type::ANY, {Type::INTEGER});
+	Type map_real_fun_type = Type::fun(Type::REAL, {Type::REAL});
+	Type map_fun_type = Type::fun(Type::ANY, {Type::ANY});
 	auto map_ptr = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
 	auto map_real = &LSArray<double>::ls_map<LSFunction*, double>;
 	auto map_int = &LSArray<int>::ls_map<LSFunction*, int>;
 	auto map_int_ptr = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
-
 	method("map", {
 		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_fun_type}, (void*) map_int, Method::NATIVE},
 		{Type::PTR_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_ptr_fun_type}, (void*) map_int_ptr, Method::NATIVE},
@@ -155,42 +130,21 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INT_ARRAY_TMP, {Type::INT_ARRAY}, (void*) &LSArray<int>::ls_sort, Method::NATIVE},
 	});
 
-	Type map2_fun_type = Type::FUNCTION;
-	map2_fun_type.setArgumentType(0, Type::ANY);
-	map2_fun_type.setArgumentType(1, Type::ANY);
-	map2_fun_type.setReturnType(Type::ANY);
-
-	Type map2_fun_type_int = Type::FUNCTION;
-	map2_fun_type_int.setArgumentType(0, Type::ANY);
-	map2_fun_type_int.setArgumentType(1, Type::INTEGER);
-	map2_fun_type_int.setReturnType(Type::ANY);
-
+	Type map2_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::ANY});
+	Type map2_fun_type_int = Type::fun(Type::ANY, {Type::ANY, Type::INTEGER});
 	auto map2_ptr_ptr = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, LSValue*>;
 	auto map2_ptr_int = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, int>;
-
 	method("map2", {
 		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, Type::CONST_PTR_ARRAY, map2_fun_type}, (void*) map2_ptr_ptr, Method::NATIVE},
 		{Type::PTR_ARRAY_TMP, {Type::CONST_PTR_ARRAY, Type::CONST_INT_ARRAY, map2_fun_type_int}, (void*) map2_ptr_int, Method::NATIVE},
 	});
 
-	Type pred_fun_type = Type::FUNCTION;
-	pred_fun_type.setArgumentType(0, Type::ANY);
-	pred_fun_type.setReturnType(Type::BOOLEAN);
-	Type pred_fun_type_float = Type::FUNCTION;
-	pred_fun_type_float.setArgumentType(0, Type::REAL);
-	pred_fun_type_float.setReturnType(Type::BOOLEAN);
-	Type pred_fun_type_int = Type::FUNCTION;
-	pred_fun_type_int.setArgumentType(0, Type::INTEGER);
-	pred_fun_type_int.setReturnType(Type::BOOLEAN);
-	Type pred_clo_type = Type::CLOSURE;
-	pred_clo_type.setArgumentType(0, Type::ANY);
-	pred_clo_type.setReturnType(Type::BOOLEAN);
-	Type pred_clo_type_float = Type::CLOSURE;
-	pred_clo_type_float.setArgumentType(0, Type::REAL);
-	pred_clo_type_float.setReturnType(Type::BOOLEAN);
-	Type pred_clo_type_int = Type::CLOSURE;
-	pred_clo_type_int.setArgumentType(0, Type::INTEGER);
-	pred_clo_type_int.setReturnType(Type::BOOLEAN);
+	Type pred_fun_type = Type::fun(Type::BOOLEAN, {Type::ANY});
+	Type pred_fun_type_float = Type::fun(Type::BOOLEAN, {Type::REAL});
+	Type pred_fun_type_int = Type::fun(Type::BOOLEAN, {Type::INTEGER});
+	Type pred_clo_type = Type::closure(Type::BOOLEAN, {Type::ANY});
+	Type pred_clo_type_float = Type::closure(Type::BOOLEAN, {Type::REAL});
+	Type pred_clo_type_int = Type::closure(Type::BOOLEAN, {Type::INTEGER});
 	auto filter_ptr = &LSArray<LSValue*>::ls_filter<LSFunction*>;
 	auto filter_real = &LSArray<double>::ls_filter<LSFunction*>;
 	auto filter_int = &LSArray<int>::ls_filter<LSFunction*>;
@@ -254,38 +208,18 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_last, Method::NATIVE},
 	});
 
-	Type fold_fun_type = Type::FUNCTION;
-	fold_fun_type.setArgumentType(0, Type::ANY);
-	fold_fun_type.setArgumentType(1, Type::ANY);
-	fold_fun_type.setReturnType(Type::ANY);
-	Type fold_fun_type_float = Type::FUNCTION;
-	fold_fun_type_float.setArgumentType(0, Type::ANY);
-	fold_fun_type_float.setArgumentType(1, Type::REAL);
-	fold_fun_type_float.setReturnType(Type::ANY);
-	Type fold_fun_type_int = Type::FUNCTION;
-	fold_fun_type_int.setArgumentType(0, Type::ANY);
-	fold_fun_type_int.setArgumentType(1, Type::INTEGER);
-	fold_fun_type_int.setReturnType(Type::ANY);
-	Type fold_clo_type = Type::CLOSURE;
-	fold_clo_type.setArgumentType(0, Type::ANY);
-	fold_clo_type.setArgumentType(1, Type::ANY);
-	fold_clo_type.setReturnType(Type::ANY);
-	Type fold_clo_type_float = Type::CLOSURE;
-	fold_clo_type_float.setArgumentType(0, Type::ANY);
-	fold_clo_type_float.setArgumentType(1, Type::REAL);
-	fold_clo_type_float.setReturnType(Type::ANY);
-	Type fold_clo_type_int = Type::CLOSURE;
-	fold_clo_type_int.setArgumentType(0, Type::ANY);
-	fold_clo_type_int.setArgumentType(1, Type::INTEGER);
-	fold_clo_type_int.setReturnType(Type::ANY);
-
+	Type fold_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::ANY});
+	Type fold_fun_type_float = Type::fun(Type::ANY, {Type::ANY, Type::REAL});
+	Type fold_fun_type_int = Type::fun(Type::ANY, {Type::ANY, Type::INTEGER});
+	Type fold_clo_type = Type::closure(Type::ANY, {Type::ANY, Type::ANY});
+	Type fold_clo_type_float = Type::closure(Type::ANY, {Type::ANY, Type::REAL});
+	Type fold_clo_type_int = Type::closure(Type::ANY, {Type::ANY, Type::INTEGER});
 	auto fold_left_ptr = &LSArray<LSValue*>::ls_foldLeft<LSFunction*, LSValue*>;
 	auto fold_left_int = &LSArray<int>::ls_foldLeft<LSFunction*, LSValue*>;
 	auto fold_left_real = &LSArray<double>::ls_foldLeft<LSFunction*, LSValue*>;
 	auto fold_left_clo_ptr = &LSArray<LSValue*>::ls_foldLeft<LSClosure*, LSValue*>;
 	auto fold_left_clo_int = &LSArray<int>::ls_foldLeft<LSClosure*, LSValue*>;
 	auto fold_left_clo_real = &LSArray<double>::ls_foldLeft<LSClosure*, LSValue*>;
-
 	method("foldLeft", {
 		{Type::ANY, {Type::PTR_ARRAY, fold_fun_type, Type::ANY}, (void*) fold_left_ptr, Method::NATIVE},
 		{Type::ANY, {Type::REAL_ARRAY, fold_fun_type_float, Type::ANY}, (void*) fold_left_real, Method::NATIVE},
@@ -295,30 +229,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::ANY, {Type::INT_ARRAY, fold_clo_type_int, Type::ANY}, (void*) fold_left_clo_int, Method::NATIVE}
 	});
 
-	Type fold_right_fun_type = Type::FUNCTION;
-	fold_right_fun_type.setArgumentType(0, Type::ANY);
-	fold_right_fun_type.setArgumentType(1, Type::ANY);
-	fold_right_fun_type.setReturnType(Type::ANY);
-	Type fold_right_fun_type_float = Type::FUNCTION;
-	fold_right_fun_type_float.setArgumentType(0, Type::REAL);
-	fold_right_fun_type_float.setArgumentType(1, Type::ANY);
-	fold_right_fun_type_float.setReturnType(Type::ANY);
-	Type fold_right_fun_type_int = Type::FUNCTION;
-	fold_right_fun_type_int.setArgumentType(0, Type::INTEGER);
-	fold_right_fun_type_int.setArgumentType(1, Type::ANY);
-	fold_right_fun_type_int.setReturnType(Type::ANY);
-	Type fold_right_clo_type = Type::CLOSURE;
-	fold_right_clo_type.setArgumentType(0, Type::ANY);
-	fold_right_clo_type.setArgumentType(1, Type::ANY);
-	fold_right_clo_type.setReturnType(Type::ANY);
-	Type fold_right_clo_type_float = Type::CLOSURE;
-	fold_right_clo_type_float.setArgumentType(0, Type::REAL);
-	fold_right_clo_type_float.setArgumentType(1, Type::ANY);
-	fold_right_clo_type_float.setReturnType(Type::ANY);
-	Type fold_right_clo_type_int = Type::CLOSURE;
-	fold_right_clo_type_int.setArgumentType(0, Type::INTEGER);
-	fold_right_clo_type_int.setArgumentType(1, Type::ANY);
-	fold_right_clo_type_int.setReturnType(Type::ANY);
+	Type fold_right_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::ANY});
+	Type fold_right_fun_type_float = Type::fun(Type::ANY, {Type::REAL, Type::ANY});
+	Type fold_right_fun_type_int = Type::fun(Type::ANY, {Type::INTEGER, Type::ANY});
+	Type fold_right_clo_type = Type::closure(Type::ANY, {Type::ANY, Type::ANY});
+	Type fold_right_clo_type_float = Type::closure(Type::ANY, {Type::REAL, Type::ANY});
+	Type fold_right_clo_type_int = Type::closure(Type::ANY, {Type::INTEGER, Type::ANY});
 
 	auto fold_right_ptr = &LSArray<LSValue*>::ls_foldRight<LSFunction*, LSValue*>;
 	auto fold_right_int = &LSArray<int>::ls_foldRight<LSFunction*, LSValue*>;

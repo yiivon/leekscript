@@ -92,10 +92,7 @@ VM::VM(bool v1) : compiler(this) {
 	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\"};
 	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
 
-	auto op_type = Type::fun();
-	op_type.setArgumentType(0, Type::ANY);
-	op_type.setArgumentType(1, Type::ANY);
-	op_type.setReturnType(Type::ANY);
+	auto op_type = Type::fun(Type::ANY, {Type::ANY, Type::ANY});
 	auto value_class = system_vars["Value"];
 
 	for (unsigned o = 0; o < ops.size(); ++o) {
@@ -108,9 +105,7 @@ VM::VM(bool v1) : compiler(this) {
 		add_internal_var(ops[o], op_type);
 	}
 
-	auto ptr_type = Type::fun();
-	ptr_type.setArgumentType(0, Type::ANY);
-	ptr_type.setReturnType(Type::ANY);
+	auto ptr_type = Type::fun(Type::ANY, {Type::ANY});
 	auto fun = new LSFunction((void*) ptr_fun);
 	fun->refs = 1;
 	fun->native = true;

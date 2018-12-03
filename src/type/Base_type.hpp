@@ -21,6 +21,9 @@ public:
 	virtual bool operator == (const Base_type*) const = 0;
 	virtual bool compatible(const Base_type*) const;
 	virtual Type iterator() const;
+	virtual Type return_type() const;
+	virtual Type argument(size_t) const;
+	virtual std::vector<Type> arguments() const;
 	virtual llvm::Type* llvm() const = 0;
 	virtual std::string clazz() const;
 	virtual std::ostream& print(std::ostream&) const;

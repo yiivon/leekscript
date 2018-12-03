@@ -139,18 +139,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::MPZ, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::eq_mpz_mpz},
 		{Type::MPZ, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_mpz_int}
 	});
-
-	Type tilde_fun_type_int = Type::FUNCTION;
-	tilde_fun_type_int.setArgumentType(0, Type::INTEGER);
-	tilde_fun_type_int.setReturnType(Type::ANY);
-	Type tilde_fun_type_real = Type::FUNCTION;
-	tilde_fun_type_real.setArgumentType(0, Type::REAL);
-	tilde_fun_type_real.setReturnType(Type::ANY);
 	operator_("~", {
-		{Type::REAL, tilde_fun_type_real, Type::ANY, (void*) &NumberSTD::tilde_real},
-		{Type::INTEGER, tilde_fun_type_int, Type::ANY, (void*) &NumberSTD::tilde_int}
+		{Type::REAL, Type::fun(Type::ANY, {Type::REAL}), Type::ANY, (void*) &NumberSTD::tilde_real},
+		{Type::INTEGER, Type::fun(Type::ANY, {Type::INTEGER}), Type::ANY, (void*) &NumberSTD::tilde_int}
 	});
-
 	operator_("&", {
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::bit_and}
 	});
@@ -228,10 +220,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::exp_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::exp_real},
 	});
-	Type fold_fun_type = Type::FUNCTION;
-	fold_fun_type.setArgumentType(0, Type::ANY);
-	fold_fun_type.setArgumentType(1, Type::INTEGER);
-	fold_fun_type.setReturnType(Type::ANY);
+	Type fold_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::INTEGER});
 	auto fold_fun = &LSNumber::ls_fold<LSFunction*>;
 	method("fold", {
 		{Type::ANY, {Type::ANY, fold_fun_type, Type::ANY}, (void*) fold_fun, Method::NATIVE}
