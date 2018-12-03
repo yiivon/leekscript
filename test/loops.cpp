@@ -15,7 +15,7 @@ void Test::test_loops() {
 	code("let a = if (true) { 12 } else { 'hello' } a").equals("12");
 	code("let a = if (true) { 'hello' } else { 12 } a").equals("'hello'");
 	code("if (true) {} else {}").equals("{}");
-	// TODO
+	// TODO then is empty
 	DISABLED_code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
@@ -115,7 +115,7 @@ void Test::test_loops() {
 	 */
 	header("Foreach loops");
 	code("for v in [] {}").equals("(void)");
-	DISABLED_code("for v in new Array {}").equals("(void)");
+	code("for v in new Array {}").equals("(void)");
 	code("for v in [1, 2, 3, 4] {}").equals("(void)");
 	code("for (v in [1, 2, 3, 4]) {}").equals("(void)");
 	code("for (v in [1, 2, 3, 4]) do end").equals("(void)");
