@@ -249,14 +249,13 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	size_t a = 0;
 	for (auto& argument_type : function->type.arguments()) {
 		if (a < arguments.size()) {
-			auto arg_type = function->type.argument(a);
 			// OK, the argument is present in the call
 			arguments.at(a)->analyse(analyser);
-			arguments.at(a)->type.reference = arg_type.reference;
-			if (arg_type.is_function()) {
-				arguments.at(a)->will_take(analyser, arg_type.arguments(), 1);
-				arguments.at(a)->set_version(arg_type.arguments(), 1);
-				arguments.at(a)->must_return(analyser, arg_type.return_type());
+			arguments.at(a)->type.reference = argument_type.reference;
+			if (argument_type.is_function()) {
+				arguments.at(a)->will_take(analyser, argument_type.arguments(), 1);
+				arguments.at(a)->set_version(argument_type.arguments(), 1);
+				arguments.at(a)->must_return(analyser, argument_type.return_type());
 			}
 			arg_types.push_back(arguments.at(a)->type);
 		} else if (function_object && function_object->defaultValues.at(a) != nullptr) {
