@@ -434,57 +434,6 @@ bool Type::list_may_be_compatible(const std::vector<Type>& expected, const std::
 	return true;
 }
 
-bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww) {
-
-	if (old.size() != neww.size()) return false;
-
-	for (size_t i = 0; i < old.size(); ++i) {
-		if (Type::more_specific(old[i], neww[i])) {
-			return true;
-		}
-	}
-	return false;
-}
-
-bool Type::more_specific(const Type& old, const Type& neww) {
-	if (old._types.size() == 0) {
-		return true;
-	}
-	if (neww._types[0] != old._types[0]) {
-		if (old.is_any()) {
-			return true;
-		}
-		if ((old._types.size() && old._types[0] == RawType::NUMBER) && (neww.is_integer() || neww.is_long() || neww.is_real())) {
-			return true;
-		}
-		if (old.is_real() and (neww.is_integer() or neww.is_long())) {
-			return true;
-		}
-		if (old.is_long() and neww.is_integer()) {
-			return true;
-		}
-	}
-	if ((neww.is_array() and old.is_array()) || (neww.is_set() and old.is_set())) {
-		if (Type::more_specific(old.element(), neww.element())) {
-			return true;
-		}
-	}
-	if (neww.is_map() and old.is_map()) {
-		if (Type::more_specific(old.key(), neww.key()) || Type::more_specific(old.element(), neww.element())) {
-			return true;
-		}
-	}
-	if (neww.is_function() and old.is_function()) {
-		if (Type::more_specific(old.argument(0), neww.argument(0))) { //! TODO only the first arg
-			return true;
-		}
-	}
-	if (not old.temporary and neww.temporary) {
-		return true;
-	}
-	return false;
-}
-
 Type Type::generate_new_placeholder_type() {
 	Type type;
 	u_int32_t character = 0x03B1 + placeholder_counter;

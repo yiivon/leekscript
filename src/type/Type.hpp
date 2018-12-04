@@ -200,8 +200,6 @@ public:
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
-	static bool list_more_specific(const std::vector<Type>& old, const std::vector<Type>& neww);
-	static bool more_specific(const Type& old, const Type& neww);
 	static Type generate_new_placeholder_type();
 };
 

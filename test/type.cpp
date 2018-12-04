@@ -72,12 +72,6 @@ void Test::test_types() {
 	assert(ls::Type::INTEGER * ls::Type::REAL == ls::Type::REAL);
 	assert(ls::Type::INTEGER * ls::Type::STRING == ls::Type::ANY);
 
-	section("more_specific");
-	assert(ls::Type::more_specific(ls::Type::ANY, ls::Type::INTEGER));
-	assert(ls::Type::more_specific(ls::Type::PTR_ARRAY, ls::Type::INT_ARRAY));
-	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::INT_INT_MAP));
-	assert(ls::Type::more_specific(ls::Type::PTR_PTR_MAP, ls::Type::REAL_REAL_MAP));
-
 	section("fold");
 	assert(ls::Type().fold() == ls::Type());
 	assert(ls::Type({ls::RawType::INTEGER}).fold() == ls::Type::INTEGER);
