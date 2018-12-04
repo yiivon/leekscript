@@ -54,8 +54,8 @@ StringSTD::StringSTD() : Module("String") {
 	 * Operators
 	 */
 	operator_("+", {
-		{Type::STRING, Type::BOOLEAN, Type::STRING, (void*) &StringSTD::add_bool, {}, Method::NATIVE},
 		{Type::STRING, Type::INTEGER, Type::STRING, (void*) &StringSTD::add_int, {}, Method::NATIVE},
+		{Type::STRING, Type::BOOLEAN, Type::STRING, (void*) &StringSTD::add_bool, {}, Method::NATIVE},
 		{Type::STRING, Type::REAL, Type::STRING, (void*) &StringSTD::add_real, {}, Method::NATIVE},
 		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_mpz, {}, Method::NATIVE},
 		{Type::STRING, Type::MPZ_TMP, Type::STRING, (void*) &plus_mpz_tmp, {}, Method::NATIVE}

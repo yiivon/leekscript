@@ -76,8 +76,8 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::CONST_ANY, Type::CONST_ANY, Type::BOOLEAN, (void*) &ValueSTD::op_in}
 	});
 	operator_("<=>", {
+		{Type::ANY, Type::ANY, Type::ANY, (void*) &ValueSTD::op_swap_ptr, {}, false, true, true},
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &ValueSTD::op_swap_val, {}, false, true, true},
-		{Type::ANY, Type::ANY, Type::ANY, (void*) &ValueSTD::op_swap_ptr, {}, false, true, true}
 	});
 	operator_("**", {
 		{Type::CONST_ANY, Type::CONST_ANY, Type::ANY, (void*) &ValueSTD::op_pow}
