@@ -103,19 +103,19 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::INTEGER, {Type::CONST_INT_ARRAY}, (void*) &LSArray<int>::ls_min, Method::NATIVE}
 	});
 
-	Type map_int_fun_type = Type::fun(Type::INTEGER, {Type::INTEGER});
+	Type map_int_int_fun_type = Type::fun(Type::INTEGER, {Type::INTEGER});
 	Type map_int_ptr_fun_type = Type::fun(Type::ANY, {Type::INTEGER});
 	Type map_real_fun_type = Type::fun(Type::REAL, {Type::REAL});
 	Type map_fun_type = Type::fun(Type::ANY, {Type::ANY});
 	auto map_ptr = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
 	auto map_real = &LSArray<double>::ls_map<LSFunction*, double>;
-	auto map_int = &LSArray<int>::ls_map<LSFunction*, int>;
+	auto map_int_int = &LSArray<int>::ls_map<LSFunction*, int>;
 	auto map_int_ptr = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
 	method("map", {
 		{Type::PTR_ARRAY_TMP, {Type::CONST_ARRAY, map_fun_type}, (void*) map_ptr, Method::NATIVE},
 		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, map_real_fun_type}, (void*) map_real, Method::NATIVE},
 		{Type::PTR_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_ptr_fun_type}, (void*) map_int_ptr, Method::NATIVE},
-		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_fun_type}, (void*) map_int, Method::NATIVE},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_int_fun_type}, (void*) map_int_int, Method::NATIVE},
 	});
 
 	method("unique", {

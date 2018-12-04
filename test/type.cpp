@@ -101,8 +101,4 @@ void Test::test_types() {
 	code("[[1]]").type(ls::Type::array(ls::Type::array(ls::Type::INTEGER)));
 	code("[[1, 2.5]]").type(ls::Type::array(ls::Type::array({ls::RawType::INTEGER, ls::RawType::REAL})));
 	code("[['a']]").type(ls::Type::array(ls::Type::array(ls::Type::STRING)));
-
-	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_long()) << std::endl;
-	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::get_integer()) << std::endl;
-	// std::cout << ls::Ty::get_int().get_compatible(ls::Ty::array()) << std::endl;
 }
