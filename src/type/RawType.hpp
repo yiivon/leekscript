@@ -18,6 +18,7 @@
 #include "Map_type.hpp"
 #include "Iterator_type.hpp"
 #include "Integer_type.hpp"
+#include "Placeholder_type.hpp"
 
 namespace ls {
 

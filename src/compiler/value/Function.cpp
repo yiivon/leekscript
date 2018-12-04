@@ -90,7 +90,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 	if (arguments.size() != 1) {
 		os << ")";
 	}
-	os << " → ";
+	os << " => ";
 	version->body->print(os, indent, debug, true);
 
 	if (debug) {
@@ -100,7 +100,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 		for (const auto& v : versions) {
 			if (i > 0) os << ", ";
 			if (v.second == version) os << "$";
-			os << v.first << " → " << v.second->type.return_type();
+			os << v.first << " => " << v.second->type.return_type();
 			i++;
 		}
 		os << ">";
@@ -152,28 +152,21 @@ r2('hello')
  */
 void Function::analyse(SemanticAnalyser* analyser) {
 
-//	cout << "Function::analyse req_type " << req_type << endl;
-
 	parent = analyser->current_function();
 
 	if (!function_added) {
 		analyser->add_function(this);
 		function_added = true;
 	}
-
 	std::vector<Type> args;
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyse(analyser);
 		}
 		args.push_back(Type::ANY);
-		// type.setArgumentType(i, Type::ANY, defaultValues[i] != nullptr);
+		// args.push_back(Type::generate_new_placeholder_type());
 	}
 	type = Type::fun({}, args);
-
-	// for (unsigned int i = 0; i < req_type.getArgumentTypes().size(); ++i) {
-	// 	type.setArgumentType(i, Type::POINTER);
-	// }
 
 	if (!default_version) {
 		default_version = new Function::Version();
@@ -213,12 +206,9 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 
 	if (level == 1) {
 		if (versions.find(args) == versions.end()) {
-
 			for (const auto& t : args) {
 				if (t.is_placeholder()) return false;
-				// if (t.nature == ANY) return false;
 			}
-
 			auto version = new Function::Version();
 			version->body = (Block*) body->clone();
 			if (captures.size()) {

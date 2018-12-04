@@ -16,16 +16,6 @@ public:
 	virtual std::ostream& print(std::ostream& os) const override;
 };
 
-class Placeholder_type : public Base_type {
-public:
-	std::string name;
-	Placeholder_type(std::string name) : name(name) {}
-	virtual ~Placeholder_type() {}
-	virtual const std::string getName() const { return name; }
-	virtual bool operator == (const Base_type*) const override;
-	virtual llvm::Type* llvm() const override;
-};
-
 }
 
 #endif
