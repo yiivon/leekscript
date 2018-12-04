@@ -183,7 +183,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			if (!object_type.is_any()) {
 				clazz = (LSClass*) analyser->vm->system_vars[object_type.clazz()];
 				m = clazz->getMethod(oa->field->content, object_type, arg_types);
-				// std::cout << "Method " << oa->field->content << " found : " << m->type << std::endl;
+				// std::cout << "Method " << oa->field->content << " found : " << m->obj_type << "." << m->type << std::endl;
 			}
 			if (m == nullptr) {
 				clazz = (LSClass*) analyser->vm->system_vars["Value"];
