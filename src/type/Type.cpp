@@ -447,8 +447,8 @@ bool Type::list_more_specific(const std::vector<Type>& old, const std::vector<Ty
 }
 
 bool Type::more_specific(const Type& old, const Type& neww) {
-	if (neww._types.size() == 0 or old._types.size() == 0) {
-		return false;
+	if (old._types.size() == 0) {
+		return true;
 	}
 	if (neww._types[0] != old._types[0]) {
 		if (old.is_any()) {

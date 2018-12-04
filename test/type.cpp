@@ -83,7 +83,7 @@ void Test::test_types() {
 	assert(ls::Type({ls::RawType::INTEGER}).fold() == ls::Type::INTEGER);
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::INTEGER}).fold() == ls::Type::INTEGER);
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::REAL}).fold() == ls::Type::REAL);
-	assert(ls::Type({ls::Type::array(ls::Type::INTEGER), ls::Type::array(ls::Type::REAL)}).fold() == ls::Type::array(ls::Type::REAL));
+	assert(ls::Type({ls::Type::array(ls::Type::INTEGER), ls::Type::array(ls::Type::REAL)}).fold() == ls::Type::ANY);
 
 	section("LLVM type");
 	assert(ls::Type().llvm_type() == llvm::Type::getVoidTy(ls::LLVMCompiler::context));
