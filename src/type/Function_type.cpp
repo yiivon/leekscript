@@ -14,7 +14,7 @@ bool Function_type::operator == (const Base_type* type) const {
 }
 bool Function_type::compatible(const Base_type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
-		return true;
+		return _closure == fun->_closure;
 	}
 	return false;
 }

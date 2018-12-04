@@ -65,15 +65,8 @@ Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args)
 		auto& impl = methods.at(name);
 		Method* best = nullptr;
 		for (Method& m : impl) {
-			// std::cout << "Impl obj type " << m.obj_type << " arg types " << m.type.arguments() << std::endl;
 			if (m.obj_type.may_be_compatible(obj_type) and Type::list_may_be_compatible(m.type.arguments(), args)) {
-				// std::cout << "compatible" << std::endl;
-				if (best == nullptr or
-					Type::more_specific(best->type.return_type(), m.type.return_type()) or
-					Type::list_more_specific(best->type.arguments(), m.type.arguments()) or
-					Type::more_specific(best->obj_type, m.obj_type) /* old, new */) {
-					best = &m;
-				}
+				best = &m;
 			}
 		}
 		return best;
@@ -86,12 +79,9 @@ StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
 	try {
 		vector<StaticMethod>& impl = static_methods.at(name);
 		StaticMethod* best = nullptr;
-
 		for (auto& m : impl) {
 			if (Type::list_may_be_compatible(m.type.arguments(), args)) {
-				if (best == nullptr or Type::list_more_specific(best->type.arguments(), m.type.arguments())) {
-					best = &m;
-				}
+				best = &m;
 			}
 		}
 		return best;
