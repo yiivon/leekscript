@@ -297,8 +297,8 @@ void Test::test_arrays() {
 	code("[3.2, 4.5, 5.8].map(x -> x ** 2)").equals("[10.24, 20.25, 33.64]");
 	code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
 	code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
+	code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
 	// TODO
-	DISABLED_code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
 	DISABLED_code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
 
 	section("Array.map2()");
@@ -414,6 +414,7 @@ void Test::test_arrays() {
 	code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");
 	code("Array.foldRight(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'abcdX'");
 	code("Array.foldRight([1.5, 2.0, 2.5], (x, y -> x ** y), 1.5)").equals("533.166813742");
+	// TODO
 	DISABLED_code("[1, 2, 3].foldRight((x, acc -> acc.push({w: x})), [])").equals("[{w: 3}, {w: 2}, {w: 1}]");
 
 	section("Array.shuffle()");
@@ -467,8 +468,7 @@ void Test::test_arrays() {
 	code("var s = new Array() Array.push(s, 'a')").equals("['a']");
 
 	section("Array.pushAll()");
-	// TODO
-	DISABLED_code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
+	code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
 	code("[0].pushAll([1, 2, 3])").equals("[0, 1, 2, 3]");
 	code("[0].pushAll([3.5])").equals("[0, 3]");
 	code("[0.5].pushAll(['a'])").equals("[0.5, 'a']");
@@ -567,8 +567,7 @@ void Test::test_arrays() {
 	// TODO add more
 
 	section("Misc");
-	// TODO
-	DISABLED_code("let a = [1, []] a[1].push('str') a").equals("[1, ['str']]");
+	code("let a = [1, []] a[1].push('str') a").equals("[1, ['str']]");
 	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
 	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
 	code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
