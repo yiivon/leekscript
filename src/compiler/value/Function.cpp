@@ -194,16 +194,14 @@ void Function::analyse(SemanticAnalyser* analyser) {
 
 	update_function_args(analyser);
 
-//	cout << "Function type: " << type << endl;
+	// std::cout << "Function type: " << type << std::endl;
 }
 
 bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
-
-	// cout << "Function " << this << " ::will_take " << args << " level " << level << endl;
+	// std::cout << "Function " << this << " ::will_take " << args << " level " << level << std::endl;
 	if (!analyzed) {
 		analyse(analyser);
 	}
-
 	if (level == 1) {
 		if (versions.find(args) == versions.end()) {
 			for (const auto& t : args) {
@@ -378,6 +376,7 @@ Type Function::version_type(std::vector<Type> version) const {
 }
 
 void Function::must_return(SemanticAnalyser*, const Type& type) {
+	// std::cout << "Function::must_return " << type << std::endl;
 	if (type == Type::ANY) {
 		generate_default_version = true;
 	}
@@ -485,7 +484,6 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	for (auto& t : version->type.arguments()) {
 		args.push_back(t.llvm_type());
 	}
-
 	auto llvm_return_type = version->type.return_type().llvm_type();
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
 	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun_" + name + std::to_string(id), module.get());
