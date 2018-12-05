@@ -9,6 +9,7 @@ class SetSTD : public Module {
 public:
 	SetSTD();
 
+	static Compiler::value in_any(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value set_add_eq(Compiler& c, std::vector<Compiler::value> args);
 };
 

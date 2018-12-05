@@ -24,7 +24,8 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::OBJECT, Type::ANY, Type::BOOLEAN, (void*) &LSObject::in, {}, Method::NATIVE}
+		{Type::OBJECT, Type::ANY, Type::BOOLEAN, (void*) &LSObject::in, {}, Method::NATIVE},
+		{Type::OBJECT, Type::NUMBER, Type::BOOLEAN, (void*) &in_any}
 	});
 
 	/*
@@ -43,6 +44,12 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	});
 	method("values", {
 		{Type::PTR_ARRAY, {Type::OBJECT}, (void*) &LSObject::ls_get_values, Method::NATIVE}
+	});
+}
+
+Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::ANY, {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
+		return x->in(y);
 	});
 }
 

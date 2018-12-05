@@ -172,17 +172,17 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	this->v1_type = op->reversed ? v2->type : v1->type;
 	this->v2_type = op->reversed ? v1->type : v2->type;
 
-	LSClass* object_class = (LSClass*) analyser->vm->system_vars[this->v1_type.clazz()];
+	const auto object_class = (LSClass*) analyser->vm->system_vars[v1_type.clazz()];
 	LSClass::Operator* m = nullptr;
 
 	if (object_class) {
 		// Search in the object class first
-		m = object_class->getOperator(op->character, this->v1_type, this->v2_type);
+		m = object_class->getOperator(op->character, v1_type, v2_type);
 	}
 	if (m == nullptr) {
 		// Search in the Value class if not found
 		auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
-		m = value_class->getOperator(op->character, this->v1_type, this->v2_type);
+		m = value_class->getOperator(op->character, v1_type, v2_type);
 	}
 
 	if (m != nullptr) {
@@ -193,19 +193,15 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		is_native_method = m->native;
 		native_method_v1_addr = m->v1_addr;
 		native_method_v2_addr = m->v2_addr;
-		this->v1_type = op->reversed ? m->operand_type : m->object_type;
-		this->v2_type = op->reversed ? m->object_type : m->operand_type;
+		v1_type = op->reversed ? m->operand_type : m->object_type;
+		v2_type = op->reversed ? m->object_type : m->operand_type;
 		return_type = m->return_type;
 		type = return_type;
 
-		if (v1->type.not_temporary() != this->v1_type.not_temporary()) {
-			// if (native_method_v1_addr) {
-				// ((LeftValue*) v1)->change_type(analyser, this->v1_type);
-			// } else {
-				v1->analyse(analyser);
-			// }
+		if (v1->type.not_temporary() != v1_type.not_temporary()) {
+			v1->analyse(analyser);
 		}
-		if (v2->type.not_temporary() != this->v2_type.not_temporary()) {
+		if (v2->type.not_temporary() != v2_type.not_temporary()) {
 			v2->analyse(analyser);
 		}
 
@@ -444,8 +440,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 				args.push_back(v2->compile(c));
 			}
 		} else {
-			args.push_back(op->reversed ? c.insn_convert(v2->compile(c), v2_type) : c.insn_convert(v1->compile(c), v1_type));
-			args.push_back(op->reversed ? c.insn_convert(v1->compile(c), v1_type) : c.insn_convert(v2->compile(c), v2_type));
+			args.push_back(op->reversed ? v2->compile(c) : v1->compile(c));
+			args.push_back(op->reversed ? v1->compile(c) : v2->compile(c));
 		}
 		v1->compile_end(c);
 		v2->compile_end(c);

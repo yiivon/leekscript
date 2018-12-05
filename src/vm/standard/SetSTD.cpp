@@ -16,6 +16,7 @@ SetSTD::SetSTD() : Module("Set") {
 	 */
 	operator_("in", {
 		{Type::CONST_SET, Type::ANY, Type::BOOLEAN, (void*) &LSSet<LSValue*>::in_v, {}, Method::NATIVE},
+		{Type::CONST_SET, Type::INTEGER, Type::BOOLEAN, (void*) &in_any},
 		{Type::CONST_REAL_SET, Type::REAL, Type::BOOLEAN, (void*) &LSSet<double>::in_v, {}, Method::NATIVE},
 		{Type::CONST_INT_SET, Type::INTEGER, Type::BOOLEAN, (void*) &LSSet<int>::in_v, {}, Method::NATIVE}
 	});
@@ -52,6 +53,12 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::BOOLEAN, {Type::CONST_SET, Type::ANY}, (void*) &LSSet<LSValue*>::ls_contains, Method::NATIVE},
 		{Type::BOOLEAN, {Type::CONST_REAL_SET, Type::REAL}, (void*) &LSSet<double>::ls_contains, Method::NATIVE},
 		{Type::BOOLEAN, {Type::CONST_INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_contains, Method::NATIVE},
+	});
+}
+
+Compiler::value SetSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::ANY, {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
+		return x->in(y);
 	});
 }
 

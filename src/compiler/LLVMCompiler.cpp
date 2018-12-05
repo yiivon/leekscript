@@ -643,7 +643,7 @@ LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value a, LLVMCompiler::
 			return (int) std::pow(a, b);
 		});
 	} else {
-		r = insn_call(Type::REAL, {a, b}, +[](double a, double b) {
+		r = insn_call(Type::REAL, {to_real(a), to_real(b)}, +[](double a, double b) {
 			return std::pow(a, b);
 		});
 	}
