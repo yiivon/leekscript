@@ -189,8 +189,7 @@ void Test::test_general() {
 	section("Value.copy()");
 	code("2.copy()").equals("2");
 	code("2.5.copy()").equals("2.5");
-	// TODO method not found
-	DISABLED_code("12l.copy()").equals("12");
+	code("12l.copy()").equals("12");
 	code("100m").equals("100");
 	code("'abc'.copy()").equals("'abc'");
 	code("[].copy()").equals("[]");
