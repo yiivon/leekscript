@@ -40,5 +40,8 @@ std::ostream& Base_type::print(std::ostream& os) const {
 	os << "???";
 	return os;
 }
+std::ostream& operator << (std::ostream& os, const Base_type* type) {
+	return type->print(os);
+}
 
 }
