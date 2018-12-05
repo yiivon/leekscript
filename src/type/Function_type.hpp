@@ -3,6 +3,7 @@
 
 #include "Base_type.hpp"
 #include "Type.hpp"
+#include "../compiler/value/Function.hpp"
 
 namespace ls {
 
@@ -10,9 +11,11 @@ class Function_type : public Base_type {
 	bool _closure;
 	Type _return_type;
 	std::vector<Type> _arguments;
+	const Function* _function;
 public:
-	Function_type(const Type&, const std::vector<Type>&, bool closure = false);
+	Function_type(const Type&, const std::vector<Type>&, bool closure = false, const Function* function = nullptr);
 	bool closure() const { return _closure; }
+	const Function* function() const { return _function; }
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getJsonName() const { return "function"; }
 	virtual bool operator == (const Base_type*) const override;

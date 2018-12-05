@@ -6,6 +6,7 @@
 #include "../../lib/utf8.h"
 #include "../vm/VM.hpp"
 #include "RawType.hpp"
+#include "../compiler/value/Function.hpp"
 
 using namespace std;
 
@@ -475,11 +476,11 @@ Type Type::interval() {
 Type Type::tmp_interval() {
 	return { new Interval_type(), false, true };
 }
-Type Type::fun(Type return_type, std::vector<Type> arguments) {
-	return { new Function_type(return_type, arguments) };
+Type Type::fun(Type return_type, std::vector<Type> arguments, const Function* function) {
+	return { new Function_type(return_type, arguments, false, function), false, false, true };
 }
-Type Type::closure(Type return_type, std::vector<Type> arguments) {
-	return { new Function_type(return_type, arguments, true) };
+Type Type::closure(Type return_type, std::vector<Type> arguments, const Function* function) {
+	return { new Function_type(return_type, arguments, true, function), false, false, true };
 }
 Type Type::iterator(const Type container) {
 	return { new Iterator_type(container) };

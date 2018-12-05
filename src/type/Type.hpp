@@ -10,6 +10,7 @@
 namespace ls {
 
 class Base_type;
+class Function;
 
 class Type {
 public:
@@ -194,8 +195,8 @@ public:
 	static Type const_map(const Type = {}, const Type = {});
 	static Type interval();
 	static Type tmp_interval();
-	static Type fun(Type return_type, std::vector<Type> arguments);
-	static Type closure(Type return_type, std::vector<Type> arguments);
+	static Type fun(Type return_type, std::vector<Type> arguments, const Function* function = nullptr);
+	static Type closure(Type return_type, std::vector<Type> arguments, const Function* function = nullptr);
 	static Type iterator(const Type);
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);

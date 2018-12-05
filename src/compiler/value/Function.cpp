@@ -166,7 +166,7 @@ void Function::analyse(SemanticAnalyser* analyser) {
 		args.push_back(Type::ANY);
 		// args.push_back(Type::generate_new_placeholder_type());
 	}
-	type = Type::fun({}, args);
+	type = Type::fun({}, args, this);
 
 	if (!default_version) {
 		default_version = new Function::Version();
@@ -239,9 +239,9 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 				analyser->leave_function();
 
 				if (captures.size()) {
-					v->type = Type::closure(f->versions[args]->type, v->type.arguments());
+					v->type = Type::closure(f->versions[args]->type, v->type.arguments(), this);
 				} else {
-					v->type = Type::fun(f->versions[args]->type, v->type.arguments());
+					v->type = Type::fun(f->versions[args]->type, v->type.arguments(), this);
 				}
 
 				// std::cout << "Sub function type: " << f->versions.begin()->second->type << std::endl;
@@ -285,9 +285,9 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	}
 	version->body->analyse(analyser);
 	if (captures.size()) {
-		version->type = Type::closure(version->body->type, arg_types);
+		version->type = Type::closure(version->body->type, arg_types, this);
 	} else {
-		version->type = Type::fun(version->body->type, arg_types);
+		version->type = Type::fun(version->body->type, arg_types, this);
 	}
 	// // Ignore recursive types
 	// for (const auto& t : version->body->type._types) {
@@ -396,6 +396,7 @@ Compiler::value Function::compile(Compiler& c) const {
 	}
 
 	// Compile default version
+	// std::cout << "generate_default_version " << generate_default_version << std::endl;
 	if (is_main_function || generate_default_version) {
 		compile_version_internal(c, type.arguments(), default_version);
 	}

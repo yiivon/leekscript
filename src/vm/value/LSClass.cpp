@@ -3,14 +3,13 @@
 #include "LSNumber.hpp"
 #include "LSFunction.hpp"
 #include "../Module.hpp"
-
-using namespace std;
+#include "../../type/Function_type.hpp"
 
 namespace ls {
 
 LSValue* LSClass::clazz;
 
-LSClass::LSClass(string name) : LSValue(CLASS), name(name) {
+LSClass::LSClass(std::string name) : LSValue(CLASS), name(name) {
 	parent = nullptr;
 	refs = 1;
 	native = true;
@@ -29,11 +28,11 @@ LSClass::~LSClass() {
 	}
 }
 
-void LSClass::addMethod(string& name, vector<Method> method) {
+void LSClass::addMethod(std::string& name, std::vector<Method> method) {
 	methods.insert({name, method});
 }
 
-void LSClass::addStaticMethod(string& name, vector<StaticMethod> method) {
+void LSClass::addStaticMethod(std::string& name, std::vector<StaticMethod> method) {
 	static_methods.insert({name, method});
 
 	// Add first implementation as default method
@@ -59,38 +58,59 @@ void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
 	operators.insert({name, impl});
 }
 
-Method* LSClass::getMethod(std::string& name, Type obj_type, vector<Type>& args) {
+Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, Type obj_type, std::vector<Type> arguments) {
 	// std::cout << "getMethod " << name << " in class " << this->name <<  " obj type " << obj_type << " with args " << args << std::endl;
 	try {
-		auto& impl = methods.at(name);
 		Method* best = nullptr;
-		for (Method& m : impl) {
-			if (m.obj_type.may_be_compatible(obj_type) and Type::list_may_be_compatible(m.type.arguments(), args)) {
-				best = &m;
+		for (auto& implementation : methods.at(name)) {
+			if (implementation.obj_type.may_be_compatible(obj_type)) {
+				for (int i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
+					const auto& a = arguments.at(i);
+					if (auto fun = dynamic_cast<const Function_type*>(a._types[0])) {
+						if (fun->function()) {
+							auto version = implementation.type.arguments().at(i).arguments();
+							((Function*) fun->function())->will_take(analyser, version, 1);
+							arguments.at(i) = fun->function()->versions.at(version)->type;
+						}
+					}
+				}
+				if (Type::list_may_be_compatible(implementation.type.arguments(), arguments)) {
+					best = &implementation;
+				}
 			}
 		}
 		return best;
-	} catch (exception&) {
+	} catch (std::exception&) {
 		return nullptr;
 	}
 }
 
-StaticMethod* LSClass::getStaticMethod(std::string& name, vector<Type>& args) {
+StaticMethod* LSClass::getStaticMethod(SemanticAnalyser* analyser, std::string& name, std::vector<Type> arguments) {
 	try {
-		vector<StaticMethod>& impl = static_methods.at(name);
 		StaticMethod* best = nullptr;
-		for (auto& m : impl) {
-			if (Type::list_may_be_compatible(m.type.arguments(), args)) {
-				best = &m;
+		for (auto& implementation : static_methods.at(name)) {
+			for (int i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
+				const auto a = arguments.at(i);
+				const auto implem_arg = implementation.type.arguments().at(i);
+				if (auto fun = dynamic_cast<const Function_type*>(a._types[0])) {
+					if (fun->function() and implem_arg.is_function()) {
+						auto version = implem_arg.arguments();
+						((Function*) fun->function())->will_take(analyser, version, 1);
+						arguments.at(i) = fun->function()->versions.at(version)->type;
+					}
+				}
+			}
+			if (Type::list_may_be_compatible(implementation.type.arguments(), arguments)) {
+				best = &implementation;
 			}
 		}
 		return best;
-	} catch (exception&) {
+	} catch (std::exception&) {
 		return nullptr;
 	}
 }
 
-LSFunction* LSClass::getDefaultMethod(const string& name) {
+LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	try {
 		auto f = static_fields.at(name);
 		f.value->refs++;
@@ -104,15 +124,16 @@ LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type&
 	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
 	if (name == "is not") name = "!=";
 	try {
-		vector<Operator>& impl = operators.at(name);
+		auto& impl = operators.at(name);
 		Operator* best = nullptr;
 		for (Operator& m : impl) {
+			// std::cout << m.object_type.compatible(obj_type) << " " << m.operand_type.compatible(operand_type) << std::endl;
 			if (m.object_type.compatible(obj_type) and m.operand_type.compatible(operand_type)) {
 				best = &m;
 			}
 		}
 		return best;
-	} catch (exception&) {
+	} catch (std::exception&) {
 		return nullptr;
 	}
 }
@@ -145,7 +166,7 @@ LSValue* LSClass::attr(const std::string& key) const {
 	}
 	try {
 		return static_fields.at(key).value;
-	} catch (exception&) {
+	} catch (std::exception&) {
 		return LSValue::attr(key);
 	}
 }
@@ -155,7 +176,7 @@ std::ostream& LSClass::dump(std::ostream& os, int) const {
 	return os;
 }
 
-string LSClass::json() const {
+std::string LSClass::json() const {
 	return "\"<class " + name + ">\"";
 }
 

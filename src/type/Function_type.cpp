@@ -1,10 +1,11 @@
 #include "Function_type.hpp"
 #include "../colors.h"
 #include "Type.hpp"
+#include "Placeholder_type.hpp"
 
 namespace ls {
 
-Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure) : _return_type(ret), _arguments(args), _closure(closure) {}
+Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
 
 bool Function_type::operator == (const Base_type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
@@ -14,7 +15,8 @@ bool Function_type::operator == (const Base_type* type) const {
 }
 bool Function_type::compatible(const Base_type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
-		return _closure == fun->_closure;
+		if (_closure != fun->_closure or _arguments.size() < fun->_arguments.size()) return false;
+		return _return_type.compatible(fun->_return_type);
 	}
 	return false;
 }
