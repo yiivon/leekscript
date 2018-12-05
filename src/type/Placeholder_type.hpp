@@ -1,19 +1,19 @@
 #ifndef PLACEHOLDER_TYPE_HPP
 #define PLACEHOLDER_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "Any_type.hpp"
+#include "Type.hpp"
 
 namespace ls {
 
-class Placeholder_type : public Base_type {
+class Placeholder_type : public Any_type {
 	std::string _name;
+	Type _implementation;
 public:
 	Placeholder_type(const std::string name) : _name(name) {}
-	virtual const std::string getName() const { return "object"; }
-	virtual const std::string getJsonName() const { return "object"; }
-	virtual bool iterable() const { return false; } // TODO not iterable for now
-	virtual bool is_container() const { return true; }
+	void implement(Type type) const;
 	virtual bool operator == (const Base_type*) const override;
+	virtual bool compatible(const Base_type*) const override;
 	virtual llvm::Type* llvm() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 };

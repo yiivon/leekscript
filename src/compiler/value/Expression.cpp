@@ -119,15 +119,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	v1->analyse(analyser);
 	v2->analyse(analyser);
 
-	if (v1->type.is_placeholder()) {
-		type = v1->type;
-		return;
-	}
-	if (v2->type.is_placeholder()) {
-		type = v2->type;
-		return;
-	}
-
 	// in operator : v1 must be a container
 	if (op->type == TokenType::IN and !v2->type.is_any() and !v2->type.is_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});

@@ -4,6 +4,10 @@
 
 void Test::test_types() {
 
+	auto p1 = ls::Type::generate_new_placeholder_type();
+	auto p2 = ls::Type::generate_new_placeholder_type();
+	auto p3 = ls::Type::generate_new_placeholder_type();
+
 	header("Types");
 	section("JSON name");
 	assert(ls::Type::LONG.getJsonName() == "number");
@@ -63,6 +67,7 @@ void Test::test_types() {
 	assert(ls::Type::MAP.compatible(ls::Type::PTR_PTR_MAP));
 	assert(ls::Type::MAP.compatible(ls::Type::INT_PTR_MAP));
 	assert(ls::Type::MAP.compatible(ls::Type::REAL_PTR_MAP));
+	assert(ls::Type::ANY.compatible(p1));
 
 	section("operator *");
 	assert(ls::Type() * ls::Type() == ls::Type());
@@ -87,6 +92,10 @@ void Test::test_types() {
 	assert(ls::Type::REAL.llvm_type() == llvm::Type::getDoubleTy(ls::LLVMCompiler::context));
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::REAL}).llvm_type() == llvm::Type::getDoubleTy(ls::LLVMCompiler::context));
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::STRING}).llvm_type() == ls::Type::LLVM_LSVALUE_TYPE_PTR);
+	assert(p1.llvm_type() == ls::Type::LLVM_LSVALUE_TYPE_PTR);
+
+	section("Placeholder types");
+	assert(p1.is_any());
 
 	section("Program type");
 	code("").type(ls::Type());
