@@ -143,8 +143,7 @@ void Test::test_numbers() {
 	code("['', new Number]").equals("['', 0]");
 	code("['', Number()]").equals("['', 0]");
 	code("['', new Number(12)]").equals("['', 12]");
-	// TODO
-	DISABLED_code("['', Number(12)]").equals("['', 12]");
+	code("['', Number(12)]").equals("['', 12]");
 
 	section("Constants");
 	code("Number.pi").almost(3.141592653589793116);
@@ -722,7 +721,7 @@ void Test::test_numbers() {
 	code("Number.log10([55555, ''][0])").equals("4.7447231519");
 
 	section("Number.pow");
-	DISABLED_code("2.pow(10)").equals("1024");
+	code("2.pow(10)").equals("1024");
 	code("Number.pow([10, ''][0], 5)").equals("100000");
 
 	section("Object-like calls");
@@ -736,7 +735,7 @@ void Test::test_numbers() {
 	code("12.2.ceil()").equals("13");
 	code("12.8.round()").equals("13");
 	code("-12.8.round()").equals("-13");
-	DISABLED_code("2.pow(10)").equals("1024");
+	code("2.pow(10)").equals("1024");
 	code("0.isInteger()").equals("true");
 	code("56.7.isInteger()").equals("false");
 	code("(-56.7).isInteger()").equals("false");
