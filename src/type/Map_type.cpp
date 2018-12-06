@@ -29,5 +29,9 @@ std::string Map_type::clazz() const {
 llvm::Type* Map_type::llvm() const {
 	return Type::LLVM_LSVALUE_TYPE_PTR;
 }
+std::ostream& Map_type::print(std::ostream& os) const {
+	os << BLUE_BOLD << "map" << END_COLOR << "<" << _key << ", " << _element << ">";
+	return os;
+}
 
 }
