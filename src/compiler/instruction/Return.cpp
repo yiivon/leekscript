@@ -22,7 +22,6 @@ void Return::print(ostream& os, int indent, bool debug) const {
 }
 
 void Return::analyse(SemanticAnalyser* analyser, const Type&) {
-	auto f = analyser->current_function();
 	if (expression != nullptr) {
 		expression->analyse(analyser);
 		type = expression->type;

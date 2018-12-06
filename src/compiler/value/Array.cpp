@@ -190,6 +190,7 @@ bool Array::elements_will_store(SemanticAnalyser* analyser, const Type& type, in
 		}
 	}
 	this->type = Type::array(element_type);
+	return false;
 }
 
 Compiler::value Array::compile(Compiler& c) const {
