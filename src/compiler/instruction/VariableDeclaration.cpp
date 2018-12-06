@@ -28,9 +28,6 @@ void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto name = variables.at(i)->content;
 		os << name;
-		if (debug && vars.find(name) != vars.end()) {
-			os << " " << vars.at(name)->type();
-		}
 		if (expressions[i] != nullptr) {
 			os << " = ";
 			expressions.at(i)->print(os, indent, debug);
