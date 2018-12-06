@@ -204,7 +204,7 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 	if (v.t.not_temporary() == Type::BOOLEAN) {
 		return {builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), false), Type::INTEGER};
 	}
-	if (v.t.not_temporary() == Type::REAL) {
+	if (v.t.is_real()) {
 		return {builder.CreateFPToSI(v.v, Type::INTEGER.llvm_type()), Type::INTEGER};
 	}
 	LLVMCompiler::value r {builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), true), Type::INTEGER};
