@@ -91,7 +91,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 		if (expressions[i] != nullptr) {
 
 			Value* ex = expressions[i];
-			auto var = c.create_and_add_var(name, v->type());
+			auto var = c.create_and_add_var(name, ex->type.not_temporary());
 
 			if (Function* f = dynamic_cast<Function*>(ex)) {
 				if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
@@ -108,18 +108,14 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			// 	std::cout << "mpz store size = " << mpz._mp_size << std::endl;
 			// 	std::cout << "mpz store d = " << mpz._mp_d << std::endl;
 			// });
-
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
-			c.set_var_type(name, ex->type.not_temporary());
 			c.add_function_var(var);
 			c.insn_store(var, val);
-
 		} else {
 			auto var = c.create_and_add_var(name, Type::NULLL);
-			auto val = c.new_null();
-			c.insn_store(var, val);
+			c.insn_store(var, c.new_null());
 		}
 	}
 	return {nullptr, {}};

@@ -303,7 +303,6 @@ public:
 	value get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
 	void update_var(std::string& name, value value);
-	value update_var_create(std::string& name, Type type);
 
 	// Loops
 	void enter_loop(label*, label*);

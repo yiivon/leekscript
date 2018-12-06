@@ -108,7 +108,6 @@ void VariableValue::change_value(SemanticAnalyser*, Value* value) {
 	if (var != nullptr) {
 		var->value = value;
 		var->value->type.constant = false;
-		type = var->type();
 	}
 }
 
@@ -129,7 +128,6 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	if (scope == VarScope::CAPTURE) {
 		return c.insn_get_capture(capture_index, type);
 	}
-
 	Compiler::value v;
 	if (scope == VarScope::INTERNAL) {
 		v = {c.vm->internals.at(name), type};
@@ -147,11 +145,11 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_load(c.insn_get_argument(name));
 	}
-
+	assert(v.t.llvm_type() == type.llvm_type());
 	if (var->type().reference) {
 		return c.insn_load(v);
 	}
-	// std::cout << "return var" << v.v->getType() << std::endl;
+	// std::cout << "return var " << v.v->getType() << std::endl;
 	return v;
 }
 
@@ -160,7 +158,6 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	if (scope == VarScope::CAPTURE) {
 		return c.insn_get_capture(capture_index, type);
 	}
-	
 	Compiler::value v;
 	// No internal values here
 	if (scope == VarScope::LOCAL) {
@@ -168,12 +165,8 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_get_argument(name);
 	}
+	assert(type == v.t and type.llvm_type()->getPointerTo() == v.v->getType());
 	return v;
-	// if (type.reference) {
-	// 	return v;
-	// } else {
-	// 	return c.insn_address_of(v);
-	// }
 }
 
 Value* VariableValue::clone() const {

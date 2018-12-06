@@ -8,9 +8,9 @@
 namespace ls {
 
 class Function_type : public Base_type {
-	bool _closure;
 	Type _return_type;
 	std::vector<Type> _arguments;
+	bool _closure;
 	const Function* _function;
 public:
 	Function_type(const Type&, const std::vector<Type>&, bool closure = false, const Function* function = nullptr);

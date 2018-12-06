@@ -779,6 +779,7 @@ LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v) const {
 }
 
 void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) const {
+	// std::cout << "insn_store " << x.t << " " << x.v->getType() << " " << y.t << std::endl;
 	assert(x.v->getType()->isPointerTy());
 	// assert(x.t.llvm_type() == x.v->getType()->getPointerElementType());
 	// assert(y.t.llvm_type() == y.v->getType());
@@ -1548,6 +1549,7 @@ bool LLVMCompiler::is_current_function_closure() const {
 // Variables
 LLVMCompiler::value LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value value) {
 	assert((value.v != nullptr) && "value must not be null");
+	assert(value.t.llvm_type() == value.v->getType());
 	LLVMCompiler::value var = { CreateEntryBlockAlloca(name, value.t.llvm_type()), value.t };
 	insn_store(var, value);
 	variables.back()[name] = var;
@@ -1555,6 +1557,7 @@ LLVMCompiler::value LLVMCompiler::add_var(const std::string& name, LLVMCompiler:
 }
 
 LLVMCompiler::value LLVMCompiler::create_and_add_var(const std::string& name, Type type) {
+	// std::cout << "Compiler::create_and_add_var(" << name << ", " << type << ")" << std::endl;
 	LLVMCompiler::value var = { CreateEntryBlockAlloca(name, type.llvm_type()), type };
 	variables.back()[name] = var;
 	return var;
@@ -1588,14 +1591,16 @@ void LLVMCompiler::set_var_type(std::string& name, const Type& type) {
 
 void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value v) {
 	assert(v.t.llvm_type() == v.v->getType());
-	insn_store(variables.back()[name], v);
-}
-
-LLVMCompiler::value LLVMCompiler::update_var_create(std::string& name, Type type) {
-	auto value = CreateEntryBlockAlloca(name, type.llvm_type());
-	LLVMCompiler::value v { value, type };
-	variables.back()[name] = v;
-	return v;
+	for (int i = variables.size() - 1; i >= 0; --i) {
+		if (variables[i].find(name) != variables[i].end()) {
+			auto& var = variables[i].at(name);
+			if (var.t != v.t) {
+				var.t = v.t;
+				var.v = CreateEntryBlockAlloca(name, v.t.llvm_type());
+			}
+			insn_store(var, v);
+		}
+	}
 }
 
 // Loops

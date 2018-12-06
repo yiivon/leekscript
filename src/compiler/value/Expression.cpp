@@ -141,7 +141,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 			return; // don't analyse more
 		}
 		// Change the type of x for operator =
-		equal_previous_type = v1->type; // todo inside
 		if (op->type == TokenType::EQUAL) {
 			if (v2->type._types.size() == 0) {
 				analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
@@ -469,70 +468,26 @@ Compiler::value Expression::compile(Compiler& c) const {
 					return (*x)->add_eq(y);
 				}, true);
 			}
-
-			if (!equal_previous_type.isNumber() && !v2_type.isNumber()) {
-				auto vv = dynamic_cast<VariableValue*>(v1);
-				if (vv && vv->scope != VarScope::PARAMETER) {
-					c.set_var_type(vv->name, v1->type);
-				}
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_any(v2->compile(c));
-				v2->compile_end(c);
-				c.insn_call({}, {c.insn_load(x_addr)}, &LSValue::delete_ref);
-				c.insn_store(x_addr, y);
-				c.insn_inc_refs(c.insn_load(x_addr));
-				return y;
-			}
-
+			// Normal a = b operator
 			auto vv = dynamic_cast<VariableValue*>(v1);
-			if (vv != nullptr and equal_previous_type != v1->type) {
-				// we have a variable, like
-				// var a = 12 a = 'hello' or var a = 12 a = 200l
-				// create a new variable a and replace the old one
-
-				// Delete previous variable reference
-				if (equal_previous_type.must_manage_memory() && vv->scope != VarScope::PARAMETER) {
-					auto v = c.get_var(vv->name);
-					c.insn_delete(v);
-				}
-				auto y = v2->compile(c);
-				v2->compile_end(c);
-				// Move the object
-				y = c.insn_move_inc(y);
-				// Create a new variable
-				auto var = c.update_var_create(vv->name, v1->type);
-				// Store
-				c.insn_store(var, y);
-				return y;
-
-			} else if (equal_previous_type.isNumber() and v2->type.isNumber()) {
-				auto y = v2->compile(c);
-				v2->compile_end(c);
-				if (v1->type == Type::MPZ) {
-					auto x = ((LeftValue*) v1)->compile_l(c);
-					v1->compile_end(c);
-					c.insn_call({}, {x, y}, +[](mpz_t x, __mpz_struct y) {
-						mpz_set(x, &y);
-					});
-					if (y.t.temporary) {
-						return y;
-					} else {
-						return c.insn_clone_mpz(y);
-					}
-				} else {
-					if (dynamic_cast<VariableValue*>(v1)) {
-						auto x = ((LeftValue*) v1)->compile_l(c);
-						c.insn_store(x, y);
-					} else {
-						auto v1_addr = ((LeftValue*) v1)->compile_l(c);
-						c.insn_store(v1_addr, y);
-					}
-					return y;
-				}
-			} else {
-				std::cout << "Invalid " << v1->to_string() << " (" << equal_previous_type << " => " << v1->type << ") = " << v2->to_string() << " (" << v2->type << ")" << std::endl; // LCOV_EXCL_LINE
-				assert(false); // LCOV_EXCL_LINE
+			auto x_addr = ((LeftValue*) v1)->compile_l(c);
+			// Compile new value
+			auto y = v2->compile(c);
+			v2->compile_end(c);
+			if (vv == nullptr) {
+				y = c.insn_convert(y, v1->type);
 			}
+			// Move the object
+			y = c.insn_move_inc(y);
+			// Delete previous variable reference
+			c.insn_delete(c.insn_load(x_addr));
+			// Create the new variable
+			if (vv != nullptr && vv->scope != VarScope::PARAMETER) {
+				c.update_var(vv->name, y);
+			} else {
+				c.insn_store(x_addr, y);
+			}
+			return y;
 		}
 		case TokenType::PLUS_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
