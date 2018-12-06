@@ -302,7 +302,6 @@ public:
 	void add_function_var(value value);
 	value get_var(const std::string& name);
 	void set_var_type(std::string& name, const Type& type);
-	std::map<std::string, value> get_vars();
 	void update_var(std::string& name, value value);
 	value update_var_create(std::string& name, Type type);
 
