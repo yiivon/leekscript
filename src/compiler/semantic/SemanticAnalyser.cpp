@@ -28,8 +28,13 @@ SemanticAnalyser::~SemanticAnalyser() {}
 void SemanticVar::must_be_any(SemanticAnalyser* analyser) {
 	if (value != nullptr) {
 		value->must_be_any(analyser);
-		this->type = Type::ANY;
 	}
+}
+Type SemanticVar::type() const {
+	if (value != nullptr) {
+		return value->type;
+	}
+	return initial_type;
 }
 
 void SemanticAnalyser::analyse(Program* program, Context*) {

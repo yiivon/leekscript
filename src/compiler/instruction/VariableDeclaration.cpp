@@ -4,6 +4,7 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
 #include "../value/Function.hpp"
+#include "../value/Nulll.hpp"
 
 using namespace std;
 
@@ -28,7 +29,7 @@ void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
 		auto name = variables.at(i)->content;
 		os << name;
 		if (debug && vars.find(name) != vars.end()) {
-			os << " " << vars.at(name)->type;
+			os << " " << vars.at(name)->type();
 		}
 		if (expressions[i] != nullptr) {
 			os << " = ";
@@ -60,28 +61,23 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
-
 		auto& var = variables.at(i);
 		auto v = analyser->add_var(var.get(), Type::ANY, expressions.at(i), this);
 		if (v == nullptr) {
 			continue;
 		}
-
 		if (expressions[i] != nullptr) {
 			if (Function* f = dynamic_cast<Function*>(expressions[i])) {
 				f->name = var->content;
 				f->file = VM::current()->file_name;
 			}
 			expressions[i]->analyse(analyser);
-			v->type = expressions[i]->type;
-			v->type.temporary = false;
-			v->type.constant = constant;
 			v->value = expressions[i];
 		} else {
-			v->type = Type::NULLL;
-			v->type.constant = constant;
+			v->value = new Nulll(std::shared_ptr<Token>(nullptr));
 		}
-		if (v->type ._types.size() == 0) {
+		v->value->type.constant = constant;
+		if (v->type()._types.size() == 0) {
 			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
 		}
 		vars.insert({var->content, v});
@@ -98,7 +94,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 		if (expressions[i] != nullptr) {
 
 			Value* ex = expressions[i];
-			auto var = c.create_and_add_var(name, v->type);
+			auto var = c.create_and_add_var(name, v->type());
 
 			if (Function* f = dynamic_cast<Function*>(ex)) {
 				if (v->has_version && f->versions.find(v->version) != f->versions.end()) {

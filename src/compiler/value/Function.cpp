@@ -69,7 +69,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 		os << "[";
 		for (unsigned c = 0; c < captures.size(); ++c) {
 			if (c > 0) os << ", ";
-			os << captures[c]->name << " " << captures[c]->type;
+			os << captures[c]->name << " " << captures[c]->type();
 		}
 		os << "] ";
 	}

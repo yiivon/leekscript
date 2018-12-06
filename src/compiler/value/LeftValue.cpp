@@ -5,6 +5,6 @@ namespace ls {
 bool LeftValue::isLeftValue() const {
 	return true;
 }
-void LeftValue::change_type(SemanticAnalyser*, const Type&) {}
+void LeftValue::change_value(SemanticAnalyser*, Value* value) {}
 
 }

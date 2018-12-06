@@ -41,11 +41,9 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 			// Analyse the real function (if the function is defined below its call for example)
 			if (!function_object->analyzed) {
 				function_object->analyse(analyser);
-				var->type = function_object->type;
 			}
 		}
-
-		type = var->type;
+		type = var->type();
 		var->initial_type = type;
 		scope = var->scope;
 		attr_types = var->attr_types;
@@ -70,16 +68,11 @@ bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& ar
 		var->value->will_take(analyser, args, level);
 		if (auto f = dynamic_cast<Function*>(var->value)) {
 			if (f->versions.find(args) != f->versions.end()) {
-				var->type = f->versions.at(args)->type;
 				var->version = args;
 				var->has_version = true;
-			} else {
-				var->type = this->type;
 			}
-		} else {
-			var->type = this->type;
 		}
-		type = var->type;
+		type = var->type();
 	}
 	set_version(args, level);
 	return false;
@@ -98,8 +91,7 @@ void VariableValue::set_version(const vector<Type>& args, int level) {
 bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_store(analyser, type);
-		this->type = var->value->type;
-		var->type = this->type;
+		this->type = var->type();
 	}
 	return false;
 }
@@ -108,15 +100,15 @@ bool VariableValue::elements_will_store(SemanticAnalyser* analyser, const Type& 
 	if (var != nullptr and var->value != nullptr) {
 		var->value->elements_will_store(analyser, type, level);
 		this->type = var->value->type.not_temporary();
-		var->type = this->type;
 	}
 	return false;
 }
 
-void VariableValue::change_type(SemanticAnalyser*, const Type& type) {
+void VariableValue::change_value(SemanticAnalyser*, Value* value) {
 	if (var != nullptr) {
-		var->type = type;
-		this->type = type;
+		var->value = value;
+		var->value->type.constant = false;
+		type = var->type();
 	}
 }
 
@@ -156,7 +148,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		v = c.insn_load(c.insn_get_argument(name));
 	}
 
-	if (var->type.reference) {
+	if (var->type().reference) {
 		return c.insn_load(v);
 	}
 	// std::cout << "return var" << v.v->getType() << std::endl;

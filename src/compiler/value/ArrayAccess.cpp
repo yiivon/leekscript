@@ -168,8 +168,8 @@ bool ArrayAccess::will_store(SemanticAnalyser* analyser, const Type& type) {
 	return false;
 }
 
-void ArrayAccess::change_type(SemanticAnalyser* analyser, const Type& new_type) {
-	array->will_store(analyser, new_type);
+void ArrayAccess::change_value(SemanticAnalyser* analyser, Value* value) {
+	array->will_store(analyser, value->type);
 	if (!type.is_any()) {
 		this->type = array->type.element().fold();
 		array_element_type = this->type;

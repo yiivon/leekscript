@@ -147,11 +147,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 				analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
 			if (v1->type.not_temporary() != v2->type.not_temporary()) {
-				auto new_type = v2->type.not_temporary();
-				new_type.constant = false;
-				if (v2->type.reference) new_type.reference = true;
-				if (v1->type.reference) new_type.reference = true;
-				((LeftValue*) v1)->change_type(analyser, new_type);
+				((LeftValue*) v1)->change_value(analyser, v2);
 			}
 		}
 	}
