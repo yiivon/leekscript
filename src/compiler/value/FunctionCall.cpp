@@ -366,7 +366,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Standard function call on object : "hello".size() */
 	if (this_ptr != nullptr) {
 		auto obj = this_ptr->compile(c);
-		if (obj.t.isNumber()) obj = c.insn_convert(obj, this_ptr_type);
 		if (obj.t.reference) {
 			obj = c.insn_load(obj);
 		}
@@ -374,9 +373,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		this_ptr->compile_end(c);
 		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr_type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
-			auto arg = arguments.at(i)->compile(c);
-			if (arg.t.isNumber()) arg = c.insn_convert(arg, function->type.argument(i));
-			args.push_back(arg);
+			args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
 			lsvalue_types.push_back(function->type.argument(i).id());
 		}
@@ -395,18 +392,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Static standard function call : Number.char(65) */
 	if (std_func != nullptr) {
-
 		vector<Compiler::value> args;
 		vector<LSValueType> lsvalue_types;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
-			auto arg = arguments.at(i)->compile(c);
-			if (arg.t.isNumber()) arg = c.insn_convert(arg, function->type.argument(i));
-			args.push_back(arg);
+			args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
 			lsvalue_types.push_back((LSValueType) function->type.argument(i).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
-
 		Compiler::value res;
 		if (is_native_method) {
 			auto fun = (void*) std_func;
@@ -420,7 +413,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Operator functions : +(1, 2) */
 	VariableValue* f = dynamic_cast<VariableValue*>(function);
-
 	if (f != nullptr) {
 		if (function->type.argument(0).isNumber() and function->type.argument(1).isNumber()) {
 			if (f->name == "+") {
