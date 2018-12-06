@@ -2,6 +2,7 @@
 #define PROGRAM_HPP
 
 #include "../compiler/value/Function.hpp"
+#include "VM.hpp"
 
 namespace ls {
 

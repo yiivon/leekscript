@@ -3,13 +3,13 @@
 
 #include <vector>
 #include "../lexical/Ident.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
 #include "Value.hpp"
 #include "Block.hpp"
 
 namespace ls {
 
 class SemanticVar;
+class SemanticAnalyser;
 
 class Function : public Value {
 public:
