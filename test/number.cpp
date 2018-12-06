@@ -564,6 +564,7 @@ void Test::test_numbers() {
 	code("Number.max([15.7, ''][0], 12.8)").equals("15.7");
 	code("Number.max(5.5, [12.8, ''][0])").equals("12.8");
 	code("2.max([7.5, ''][0])").equals("7.5");
+	code("[2, ''][0].max([7.5, ''][0])").equals("7.5");
 	DISABLED_code("2.max([7.5, ''][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
 
 	section("Number.min()");
@@ -633,15 +634,15 @@ void Test::test_numbers() {
 	code("Number.atan2(0, -1)").almost(M_PI);
 	code("Number.atan2(12.12, 42.42)").almost(0.278299659005111333);
 	code("1.atan2(1)").almost(M_PI / 4);
-	// TODO
-	DISABLED_code("['', -1][1].atan2(1)").almost(-M_PI / 4);
+	code("['', -1][1].atan2(1)").almost(-M_PI / 4);
 	code("1.atan2(['', -1][1])").almost(3 * M_PI / 4);
-	// TODO
-	DISABLED_code("['', -1][1].atan2(['', -1][1])").almost(-3 * M_PI / 4);
+	code("['', -1][1].atan2(['', -1][1])").almost(-3 * M_PI / 4);
 	code("Number.atan2(1, 1)").almost(M_PI / 4);
 	code("Number.atan2(['', -1][1], 1)").almost(-M_PI / 4);
 	code("Number.atan2(1, ['', -1][1])").almost(3 * M_PI / 4);
 	code("Number.atan2(['', -1][1], ['', -1][1])").almost(-3 * M_PI / 4);
+	code("Number.atan2(1, true)").almost(M_PI / 4);
+	code("Number.atan2(true, false)").almost(M_PI / 2);
 
 	section("Number.cbrt()");
 	code("Number.cbrt(1728)").almost(12.0, 1e-14);
@@ -662,6 +663,10 @@ void Test::test_numbers() {
 	code("Number.isInteger(12.9)").equals("false");
 	code("Number.isInteger(-5.2)").equals("false");
 	code("Number.isInteger(π)").equals("false");
+	code("12.isInteger()").equals("true");
+	code("12.5.isInteger()").equals("false");
+	code("[12, 0][0].isInteger()").equals("true");
+	DISABLED_code("[12.5, 0][0].isInteger()").equals("false");
 
 	section("Number.fold");
 	DISABLED_code("1234567.fold((x, y) -> x + y, 0)").equals("28");
