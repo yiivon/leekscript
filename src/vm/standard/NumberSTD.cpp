@@ -2,6 +2,7 @@
 #include "ValueSTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSString.hpp"
+#include "../value/LSBoolean.hpp"
 #include "../../../lib/utf8.h"
 #include "../../compiler/Compiler.hpp"
 #include "../VM.hpp"
@@ -192,10 +193,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::atan_real},
 	});
 	method("atan2", {
-		{Type::REAL, {Type::ANY, Type::ANY}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
-		{Type::REAL, {Type::ANY, Type::REAL}, (void*) &NumberSTD::atan2_ptr_real, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::ANY}, (void*) &NumberSTD::atan2_real_ptr, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::atan2_real_real},
+		{Type::ANY, {Type::ANY, Type::ANY}, (void*) &NumberSTD::atan2_ptr_ptr},
+		{Type::REAL, {Type::ANY, Type::ANY}, (void*) &NumberSTD::atan2},
 	});
 	method("cbrt", {
 		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
@@ -207,10 +206,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::ceil_int},
 	});
 	method("char", {
-		{Type::ANY, {Type::CONST_ANY}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
+		{Type::STRING, {Type::CONST_ANY}, (void*) &NumberSTD::char_ptr},
 		{Type::STRING, {Type::CONST_REAL}, (void*) &NumberSTD::char_real},
 		{Type::STRING, {Type::CONST_INTEGER}, (void*) &NumberSTD::char_int},
-		{Type::STRING, {Type::CONST_ANY}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
 	});
 	method("cos", {
 		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
@@ -232,9 +230,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::floor_int},
 	});
 	method("hypot", {
-		{Type::ANY, {Type::REAL, Type::ANY}, (void*) &NumberSTD::hypot_ptr_ptr},
 		{Type::REAL, {Type::ANY, Type::ANY}, (void*) &NumberSTD::hypot_ptr_ptr},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::hypot_real_real},
 	});
 	method("log", {
 		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::log_ptr},
@@ -245,9 +241,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::log10_real},
 	});
 	method("max", {
+		{Type::ANY, {Type::ANY, Type::ANY}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::ANY}, (void*) &NumberSTD::max_float_ptr, Method::NATIVE},
 		{Type::REAL, {Type::INTEGER, Type::ANY}, (void*) &NumberSTD::max_int_ptr, Method::NATIVE},
-		{Type::REAL, {Type::ANY, Type::ANY}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::ANY, Type::REAL}, (void*) &NumberSTD::max_ptr_float, Method::NATIVE},
 		{Type::REAL, {Type::ANY, Type::INTEGER}, (void*) &NumberSTD::max_ptr_int, Method::NATIVE},
 		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::max_float_float},
@@ -259,12 +255,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::ANY, Type::ANY}, (void*) &NumberSTD::min_ptr_ptr, Method::NATIVE},
 		{Type::REAL, {Type::ANY, Type::REAL}, (void*) &NumberSTD::min_ptr_float, Method::NATIVE},
 		{Type::REAL, {Type::ANY, Type::INTEGER}, (void*) &NumberSTD::min_ptr_int, Method::NATIVE},
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float},
 		{Type::REAL, {Type::REAL, Type::ANY}, (void*) &NumberSTD::min_float_ptr, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::min_float_float},
 		{Type::REAL, {Type::REAL, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
-		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
 		{Type::REAL, {Type::INTEGER, Type::ANY}, (void*) &NumberSTD::min_int_ptr, Method::NATIVE},
 		{Type::REAL, {Type::INTEGER, Type::REAL}, (void*) &NumberSTD::min_float_float},
+		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::min_float_float},
 	});
 	method("pow", {
 		{Type::REAL, {Type::ANY, Type::ANY}, (void*) &NumberSTD::pow_ptr},
@@ -285,10 +281,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::INTEGER, Type::INTEGER}, (void*) &NumberSTD::randInt, Method::NATIVE},
 	});
 	method("randFloat", Method::Static, {
-		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &NumberSTD::randFloat, Method::NATIVE},
+		{Type::REAL, {Type::REAL, Type::REAL}, (void*) &randFloat},
 	});
 	method("signum", {
-		{Type::INTEGER, {Type::ANY}, (void*) &NumberSTD::signum, Method::NATIVE},
+		{Type::INTEGER, {Type::ANY}, (void*) &NumberSTD::signum},
 	});
 	method("sin", {
 		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
@@ -297,9 +293,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	method("sqrt", {
 		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
+		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sqrt_real},
 		{Type::REAL, {Type::INTEGER}, (void*) &NumberSTD::sqrt_int, Method::NATIVE},
-		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::MPZ_TMP, {Type::MPZ}, (void*) NumberSTD::sqrt_mpz}
 	});
 	method("tan", {
@@ -308,13 +304,16 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::tan_real},
 	});
 	method("toDegrees", {
-		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::toDegrees, Method::NATIVE},
+		{Type::ANY, {Type::ANY}, (void*) &NumberSTD::toDegrees_ptr, Method::NATIVE},
+		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::toDegrees},
 	});
 	method("toRadians", {
-		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::toRadians, Method::NATIVE},
+		{Type::ANY, {Type::ANY}, (void*) &NumberSTD::toRadians_ptr, Method::NATIVE},
+		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::toRadians},
 	});
 	method("isInteger", {
-		{Type::BOOLEAN, {Type::ANY}, (void*) &NumberSTD::isInteger, Method::NATIVE},
+		{Type::ANY, {Type::ANY}, (void*) &NumberSTD::isInteger_ptr, Method::NATIVE},
+		{Type::BOOLEAN, {Type::ANY}, (void*) &NumberSTD::isInteger},
 	});
 	method("isPrime", {
 		{Type::INTEGER, {Type::MPZ}, (void*) &NumberSTD::is_prime},
@@ -808,35 +807,33 @@ Compiler::value NumberSTD::atan_real(Compiler& c, std::vector<Compiler::value> a
 	return c.insn_atan(args[0]);
 }
 
-double NumberSTD::atan2_ptr_ptr(LSNumber* y, LSNumber* x) {
-	double a = atan2(y->value, x->value);
+LSValue* NumberSTD::atan2_ptr_ptr(LSNumber* x, LSNumber* y) {
+	auto r = LSNumber::get(std::atan2(x->value, y->value));
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
-	return a;
+	return r;
+}
+Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args) {
+	if (args[0].t.isNumber() and args[1].t.isNumber()) {
+		return c.insn_atan2(args[0], args[1]);
+	} else {
+		return c.insn_call(Type::REAL, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSNumber* x, LSNumber* y) {
+			double a = std::atan2(x->value, y->value);
+			LSValue::delete_temporary(x);
+			LSValue::delete_temporary(y);
+			return a;
+		});
+	}
 }
 
-double NumberSTD::atan2_ptr_real(LSNumber* y, double x) {
-	double a = atan2(y->value, x);
-	LSValue::delete_temporary(y);
-	return a;
-}
-
-double NumberSTD::atan2_real_ptr(double y, LSNumber* x) {
-	double a = atan2(y, x->value);
-	LSValue::delete_temporary(x);
-	return a;
-}
-
-Compiler::value NumberSTD::atan2_real_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_atan2(args[0], args[1]);
-}
-
-LSString* NumberSTD::char_ptr(LSNumber* x) {
-	unsigned int n = x->value;
-	LSValue::delete_temporary(x);
-	char dest[5];
-	u8_toutf8(dest, 5, &n, 1);
-	return new LSString(dest);
+Compiler::value NumberSTD::char_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::STRING, {c.insn_to_any(args[0])}, +[](LSNumber* x) {
+		unsigned int n = x->value;
+		LSValue::delete_temporary(x);
+		char dest[5];
+		u8_toutf8(dest, 5, &n, 1);
+		return new LSString(dest);
+	});
 }
 
 Compiler::value NumberSTD::char_real(Compiler& c, vector<Compiler::value> args) {
@@ -909,8 +906,8 @@ Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args
 	return args[0]; // Nothing to do
 }
 
-double NumberSTD::max_ptr_ptr(LSNumber* x, LSNumber* y) {
-	double max = fmax(x->value, y->value);
+LSValue* NumberSTD::max_ptr_ptr(LSNumber* x, LSNumber* y) {
+	auto max = LSNumber::get(fmax(x->value, y->value));
 	LSValue::delete_temporary(x);
 	LSValue::delete_temporary(y);
 	return max;
@@ -1030,9 +1027,8 @@ double NumberSTD::cbrt_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return s;
 }
-
 Compiler::value NumberSTD::cbrt_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::REAL, args, +[] (double x) {
+	return c.insn_call(Type::REAL, {c.to_real(args[0])}, +[] (double x) {
 		return cbrt(x);
 	});
 }
@@ -1086,7 +1082,7 @@ Compiler::value NumberSTD::is_prime_long(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::REAL, args, +[](LSNumber* x, LSNumber* y) {
+	return c.insn_call(Type::REAL, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSNumber* x, LSNumber* y) {
 		auto r = hypot(x->value, y->value);
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
@@ -1122,7 +1118,7 @@ Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> 
 }
 
 Compiler::value NumberSTD::pow_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::REAL, args, +[](LSNumber* x, LSNumber* y) {
+	return c.insn_call(Type::REAL, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSNumber* x, LSNumber* y) {
 		double r = pow(x->value, y->value);
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
@@ -1134,39 +1130,68 @@ double NumberSTD::rand01() {
 	return (double) rand() / RAND_MAX;
 }
 
-double NumberSTD::randFloat(double min, double max) {
-	return min + ((double) rand() / RAND_MAX) * (max - min);
+Compiler::value NumberSTD::randFloat(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, {c.to_real(args[0]), c.to_real(args[1])}, (void*) +[](double min, double max) {
+		return min + ((double) rand() / RAND_MAX) * (max - min);
+	});
 }
 
 int NumberSTD::randInt(int min, int max) {
 	return min + floor(((double) rand() / RAND_MAX) * (max - min));
 }
 
-int NumberSTD::signum(LSNumber* x) {
-	int s = 0;
-	if (x->value > 0) s = 1;
-	if (x->value < 0) s = -1;
-	LSValue::delete_temporary(x);
-	return s;
+Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::INTEGER, {c.insn_to_any(args[0])}, +[](LSNumber* x) {
+		int s = 0;
+		if (x->value > 0) s = 1;
+		if (x->value < 0) s = -1;
+		LSValue::delete_temporary(x);
+		return s;
+	});
 }
 
-double NumberSTD::toDegrees(LSNumber* x) {
+double NumberSTD::toDegrees_ptr(LSNumber* x) {
 	double d = (x->value * 180) / M_PI;
 	LSValue::delete_temporary(x);
 	return d;
 }
-
-double NumberSTD::toRadians(LSNumber* x) {
+Compiler::value NumberSTD::toDegrees(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, {c.insn_to_any(args[0])}, +[](LSNumber* x) {
+		double d = (x->value * 180) / M_PI;
+		LSValue::delete_temporary(x);
+		return d;
+	});
+}
+double NumberSTD::toRadians_ptr(LSNumber* x) {
 	double r = (x->value * M_PI) / 180;
 	LSValue::delete_temporary(x);
 	return r;
 }
+Compiler::value NumberSTD::toRadians(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::REAL, {c.insn_to_any(args[0])}, +[](LSNumber* x) {
+		double r = (x->value * M_PI) / 180;
+		LSValue::delete_temporary(x);
+		return r;
+	});
+}
 
-bool NumberSTD::isInteger(LSNumber* x) {
-	bool is = x->value == (int) x->value;
+LSValue* NumberSTD::isInteger_ptr(LSNumber* x) {
+	auto is = LSBoolean::get(x->value == (int) x->value);
 	LSValue::delete_temporary(x);
 	return is;
 }
-
+Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> args) {
+	if (args[0].t.is_integer() or args[0].t.is_long()) {
+		return c.new_bool(true);
+	} else if (args[0].t.isNumber()) {
+		return c.insn_eq(c.to_int(args[0]), args[0]);
+	} else {
+		return c.insn_call(Type::BOOLEAN, args, +[](LSNumber* x) {
+			auto is = x->value == (int) x->value;
+			LSValue::delete_temporary(x);
+			return is;
+		});
+	}
+}
 
 }

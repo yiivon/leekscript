@@ -64,8 +64,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("contains", {
-		{Type::BOOLEAN, {Type::CONST_ANY, Type::CONST_ANY}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
-		{Type::BOOLEAN, {Type::CONST_ARRAY, Type::CONST_ANY}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
+		{Type::BOOLEAN, {Type::CONST_ARRAY, Type::CONST_ANY}, (void*) &ArraySTD::contains},
 		{Type::BOOLEAN, {Type::CONST_REAL_ARRAY, Type::CONST_REAL}, (void*) &LSArray<double>::ls_contains, Method::NATIVE},
 		{Type::BOOLEAN, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_contains, Method::NATIVE},
 	});
@@ -214,19 +213,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type fold_clo_type = Type::closure(Type::ANY, {Type::ANY, Type::ANY});
 	Type fold_clo_type_float = Type::closure(Type::ANY, {Type::ANY, Type::REAL});
 	Type fold_clo_type_int = Type::closure(Type::ANY, {Type::ANY, Type::INTEGER});
-	auto fold_left_ptr = &LSArray<LSValue*>::ls_foldLeft<LSFunction*, LSValue*>;
-	auto fold_left_int = &LSArray<int>::ls_foldLeft<LSFunction*, LSValue*>;
-	auto fold_left_real = &LSArray<double>::ls_foldLeft<LSFunction*, LSValue*>;
-	auto fold_left_clo_ptr = &LSArray<LSValue*>::ls_foldLeft<LSClosure*, LSValue*>;
-	auto fold_left_clo_int = &LSArray<int>::ls_foldLeft<LSClosure*, LSValue*>;
-	auto fold_left_clo_real = &LSArray<double>::ls_foldLeft<LSClosure*, LSValue*>;
 	method("foldLeft", {
-		{Type::ANY, {Type::ARRAY, fold_fun_type, Type::ANY}, (void*) fold_left_ptr, Method::NATIVE},
-		{Type::ANY, {Type::ARRAY, fold_clo_type, Type::ANY}, (void*) fold_left_clo_ptr, Method::NATIVE},
-		{Type::ANY, {Type::REAL_ARRAY, fold_fun_type_float, Type::ANY}, (void*) fold_left_real, Method::NATIVE},
-		{Type::ANY, {Type::REAL_ARRAY, fold_clo_type_float, Type::ANY}, (void*) fold_left_clo_real, Method::NATIVE},
-		{Type::ANY, {Type::INT_ARRAY, fold_fun_type_int, Type::ANY}, (void*) fold_left_int, Method::NATIVE},
-		{Type::ANY, {Type::INT_ARRAY, fold_clo_type_int, Type::ANY}, (void*) fold_left_clo_int, Method::NATIVE}
+		{Type::ANY, {Type::ARRAY, fold_fun_type, Type::ANY}, (void*) &fold_left_ptr},
+		{Type::ANY, {Type::ARRAY, fold_clo_type, Type::ANY}, (void*) &fold_left_clo_ptr},
+		{Type::ANY, {Type::REAL_ARRAY, fold_fun_type_float, Type::ANY}, (void*) &fold_left_real},
+		{Type::ANY, {Type::REAL_ARRAY, fold_clo_type_float, Type::ANY}, (void*) &fold_left_clo_real},
+		{Type::ANY, {Type::INT_ARRAY, fold_fun_type_int, Type::ANY}, (void*) &fold_left_int},
+		{Type::ANY, {Type::INT_ARRAY, fold_clo_type_int, Type::ANY}, (void*) &fold_left_clo_int},
 	});
 
 	Type fold_right_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::ANY});
@@ -236,20 +229,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type fold_right_clo_type_float = Type::closure(Type::ANY, {Type::REAL, Type::ANY});
 	Type fold_right_clo_type_int = Type::closure(Type::ANY, {Type::INTEGER, Type::ANY});
 
-	auto fold_right_ptr = &LSArray<LSValue*>::ls_foldRight<LSFunction*, LSValue*>;
-	auto fold_right_int = &LSArray<int>::ls_foldRight<LSFunction*, LSValue*>;
-	auto fold_right_real = &LSArray<double>::ls_foldRight<LSFunction*, LSValue*>;
-	auto fold_right_clo_ptr = &LSArray<LSValue*>::ls_foldRight<LSClosure*, LSValue*>;
-	auto fold_right_clo_int = &LSArray<int>::ls_foldRight<LSClosure*, LSValue*>;
-	auto fold_right_clo_real = &LSArray<double>::ls_foldRight<LSClosure*, LSValue*>;
-
 	method("foldRight", {
-		{Type::ANY, {Type::ARRAY, fold_right_fun_type, Type::ANY}, (void*) fold_right_ptr, Method::NATIVE},
-		{Type::ANY, {Type::ARRAY, fold_right_clo_type, Type::ANY}, (void*) fold_right_clo_ptr, Method::NATIVE},
-		{Type::ANY, {Type::REAL_ARRAY, fold_right_fun_type_float, Type::ANY}, (void*) fold_right_real, Method::NATIVE},
-		{Type::ANY, {Type::REAL_ARRAY, fold_right_clo_type_float, Type::ANY}, (void*) fold_right_clo_real, Method::NATIVE},
-		{Type::ANY, {Type::INT_ARRAY, fold_right_fun_type_int, Type::ANY}, (void*) fold_right_int, Method::NATIVE},
-		{Type::ANY, {Type::INT_ARRAY, fold_right_clo_type_int, Type::ANY}, (void*) fold_right_clo_int, Method::NATIVE},
+		{Type::ANY, {Type::ARRAY, fold_right_fun_type, Type::ANY}, (void*) &fold_right_ptr},
+		{Type::ANY, {Type::ARRAY, fold_right_clo_type, Type::ANY}, (void*) &fold_right_clo_ptr},
+		{Type::ANY, {Type::REAL_ARRAY, fold_right_fun_type_float, Type::ANY}, (void*) &fold_right_real},
+		{Type::ANY, {Type::REAL_ARRAY, fold_right_clo_type_float, Type::ANY}, (void*) &fold_right_clo_real},
+		{Type::ANY, {Type::INT_ARRAY, fold_right_fun_type_int, Type::ANY}, (void*) &fold_right_int},
+		{Type::ANY, {Type::INT_ARRAY, fold_right_clo_type_int, Type::ANY}, (void*) &fold_right_clo_int},
 	});
 
 	method("pop", {
@@ -293,9 +279,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("fill", {
-		{Type::PTR_ARRAY, {Type::ARRAY, Type::ANY, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_fill, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::REAL, Type::CONST_INTEGER}, (void*) &LSArray<double>::ls_fill, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_fill, Method::NATIVE},
+		{Type::PTR_ARRAY, {Type::ARRAY, Type::ANY, Type::CONST_INTEGER}, (void*) &fill_any},
+		{Type::REAL_ARRAY, {Type::REAL_ARRAY, Type::REAL, Type::CONST_INTEGER}, (void*) &fill_real},
+		{Type::INT_ARRAY, {Type::INT_ARRAY, Type::INTEGER, Type::CONST_INTEGER}, (void*) &fill_int},
 	});
 
 	method("insert", {
@@ -317,9 +303,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("removeElement", {
-		{Type::BOOLEAN, {Type::ARRAY, Type::CONST_ANY}, (void*)&LSArray<LSValue*>::ls_remove_element, Method::NATIVE},
-		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::CONST_REAL}, (void*)&LSArray<double>::ls_remove_element, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_ARRAY, Type::CONST_INTEGER}, (void*)&LSArray<int>::ls_remove_element, Method::NATIVE},
+		{Type::BOOLEAN, {Type::ARRAY, Type::CONST_ANY}, (void*) &remove_element_any},
+		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::CONST_REAL}, (void*) &remove_element_real},
+		{Type::BOOLEAN, {Type::INT_ARRAY, Type::CONST_INTEGER}, (void*) &remove_element_int},
 	});
 
 	method("reverse", {
@@ -335,9 +321,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("search", {
-		{Type::INTEGER, {Type::CONST_ARRAY, Type::CONST_ANY, Type::CONST_INTEGER}, (void*) &LSArray<LSValue*>::ls_search, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_REAL_ARRAY, Type::CONST_REAL, Type::CONST_INTEGER}, (void*) &LSArray<double>::ls_search, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void*) &LSArray<int>::ls_search, Method::NATIVE},
+		{Type::INTEGER, {Type::CONST_ARRAY, Type::CONST_ANY, Type::CONST_INTEGER}, (void*) &ArraySTD::search_any},
+		{Type::INTEGER, {Type::CONST_REAL_ARRAY, Type::CONST_REAL, Type::CONST_INTEGER}, (void*) &ArraySTD::search_real},
+		{Type::INTEGER, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void*) &ArraySTD::search_int},
 	});
 
 	method("size", {
@@ -376,6 +362,12 @@ Compiler::value ArraySTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 	return res;
 }
 
+Compiler::value ArraySTD::contains(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1])}, +[](LSArray<LSValue*>* array, LSValue* v) {
+		return array->ls_contains(v);
+	});
+}
+
 Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_array_size(args[0]);
 	c.insn_delete_temporary(args[0]);
@@ -398,6 +390,86 @@ LSValue* ArraySTD::sub(LSArray<LSValue*>* array, int begin, int end) {
 	LSValue* r = array->range(begin, end);
 	if (array->refs == 0) delete array;
 	return r;
+}
+
+Compiler::value ArraySTD::search_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSArray<LSValue*>::ls_search);
+}
+Compiler::value ArraySTD::search_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_real(args[1]), c.to_int(args[2])}, (void*) &LSArray<double>::ls_search);
+}
+Compiler::value ArraySTD::search_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSArray<int>::ls_search);
+}
+
+Compiler::value ArraySTD::fill_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(args[0].t, {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSArray<LSValue*>::ls_fill);
+}
+Compiler::value ArraySTD::fill_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(args[0].t, {args[0], c.to_real(args[1]), c.to_int(args[2])}, (void*) &LSArray<double>::ls_fill);
+}
+Compiler::value ArraySTD::fill_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(args[0].t, {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSArray<int>::ls_fill);
+}
+
+Compiler::value ArraySTD::fold_left_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_left_ptr = &LSArray<LSValue*>::ls_foldLeft<LSFunction*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_left_ptr);
+}
+Compiler::value ArraySTD::fold_left_clo_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_left_clo_ptr = &LSArray<LSValue*>::ls_foldLeft<LSClosure*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_left_clo_ptr);
+}
+Compiler::value ArraySTD::fold_left_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_left_real = &LSArray<double>::ls_foldLeft<LSFunction*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_left_real);
+}
+Compiler::value ArraySTD::fold_left_clo_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_left_clo_real = &LSArray<double>::ls_foldLeft<LSClosure*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_left_clo_real);
+}
+Compiler::value ArraySTD::fold_left_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_left_int = &LSArray<int>::ls_foldLeft<LSFunction*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_left_int);
+}
+Compiler::value ArraySTD::fold_left_clo_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_left_clo_int = &LSArray<int>::ls_foldLeft<LSClosure*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_left_clo_int);
+}
+
+Compiler::value ArraySTD::fold_right_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_right_ptr = &LSArray<LSValue*>::ls_foldRight<LSFunction*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_right_ptr);
+}
+Compiler::value ArraySTD::fold_right_clo_ptr(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_right_clo_ptr = &LSArray<LSValue*>::ls_foldRight<LSClosure*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_right_clo_ptr);
+}
+Compiler::value ArraySTD::fold_right_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_right_real = &LSArray<double>::ls_foldRight<LSFunction*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_right_real);
+}
+Compiler::value ArraySTD::fold_right_clo_real(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_right_clo_real = &LSArray<double>::ls_foldRight<LSClosure*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_right_clo_real);
+}
+Compiler::value ArraySTD::fold_right_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_right_int = &LSArray<int>::ls_foldRight<LSFunction*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_right_int);
+}
+Compiler::value ArraySTD::fold_right_clo_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto fold_right_clo_int = &LSArray<int>::ls_foldRight<LSClosure*, LSValue*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) fold_right_clo_int);
+}
+
+Compiler::value ArraySTD::remove_element_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1])}, (void*) &LSArray<LSValue*>::ls_remove_element);
+}
+Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_real(args[1])}, (void*) &LSArray<double>::ls_remove_element);
+}
+Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1])}, (void*) &LSArray<int>::ls_remove_element);
 }
 
 }

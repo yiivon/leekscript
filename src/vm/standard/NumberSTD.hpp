@@ -105,12 +105,10 @@ public:
 	static double atan_ptr(LSNumber* x);
 	static Compiler::value atan_real(Compiler&, std::vector<Compiler::value>);
 
-	static double atan2_ptr_ptr(LSNumber*, LSNumber*);
-	static double atan2_ptr_real(LSNumber*, double);
-	static double atan2_real_ptr(double, LSNumber*);
-	static Compiler::value atan2_real_real(Compiler&, std::vector<Compiler::value>);
+	static LSValue* atan2_ptr_ptr(LSNumber* x, LSNumber* y);
+	static Compiler::value atan2(Compiler&, std::vector<Compiler::value>);
 
-	static LSString* char_ptr(LSNumber* x);
+	static Compiler::value char_ptr(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value char_real(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value char_int(Compiler&, std::vector<Compiler::value>);
 
@@ -129,9 +127,10 @@ public:
 	static Compiler::value ceil_real(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value ceil_int(Compiler&, std::vector<Compiler::value>);
 
-	static bool isInteger(LSNumber* x);
+	static LSValue* isInteger_ptr(LSNumber* x);
+	static Compiler::value isInteger(Compiler&, std::vector<Compiler::value>);
 
-	static double max_ptr_ptr(LSNumber* x, LSNumber* y);
+	static LSValue* max_ptr_ptr(LSNumber* x, LSNumber* y);
 	static double max_ptr_float(LSNumber* x, double y);
 	static double max_ptr_int(LSNumber* x, int y);
 	static double max_float_ptr(double x, LSNumber* y);
@@ -181,13 +180,15 @@ public:
 	static Compiler::value log10_real(Compiler&, std::vector<Compiler::value>);
 
 	static double rand01();
-	static double randFloat(double min, double max);
+	static Compiler::value randFloat(Compiler& c, std::vector<Compiler::value> args);
 	static int randInt(int min, int max);
 
-	static int signum(LSNumber* x);
+	static Compiler::value signum(Compiler& c, std::vector<Compiler::value> args);
 
-	static double toDegrees(LSNumber* x);
-	static double toRadians(LSNumber* x);
+	static double toDegrees_ptr(LSNumber* x);
+	static Compiler::value toDegrees(Compiler& c, std::vector<Compiler::value> args);
+	static double toRadians_ptr(LSNumber* x);
+	static Compiler::value toRadians(Compiler& c, std::vector<Compiler::value> args);
 };
 
 }

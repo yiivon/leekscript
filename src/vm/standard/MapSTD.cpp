@@ -57,12 +57,12 @@ MapSTD::MapSTD() : Module("Map") {
 	});
 
 	method("insert", {
-		{Type::BOOLEAN, {Type::PTR_PTR_MAP, Type::ANY, Type::ANY}, (void*) &LSMap<LSValue*,LSValue*>::ls_insert, Method::NATIVE},
-		{Type::BOOLEAN, {Type::PTR_REAL_MAP, Type::ANY, Type::REAL}, (void*) &LSMap<LSValue*,double>::ls_insert, Method::NATIVE},
-		{Type::BOOLEAN, {Type::PTR_INT_MAP, Type::ANY, Type::INTEGER}, (void*) &LSMap<LSValue*,int>::ls_insert, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_PTR_MAP, Type::INTEGER, Type::ANY}, (void*) &LSMap<int,LSValue*>::ls_insert, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_REAL_MAP, Type::INTEGER, Type::REAL}, (void*) &LSMap<int,double>::ls_insert, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_INT_MAP, Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_PTR_MAP, Type::ANY, Type::ANY}, (void*) &insert_any_any},
+		{Type::BOOLEAN, {Type::PTR_REAL_MAP, Type::ANY, Type::REAL}, (void*) &insert_any_real},
+		{Type::BOOLEAN, {Type::PTR_INT_MAP, Type::ANY, Type::INTEGER}, (void*) &insert_any_int},
+		{Type::BOOLEAN, {Type::INT_PTR_MAP, Type::INTEGER, Type::ANY}, (void*) &insert_int_any},
+		{Type::BOOLEAN, {Type::INT_REAL_MAP, Type::INTEGER, Type::REAL}, (void*) &insert_int_real},
+		{Type::BOOLEAN, {Type::INT_INT_MAP, Type::INTEGER, Type::INTEGER}, (void*) &insert_int_int},
     });
 
 	method("clear", {
@@ -150,6 +150,25 @@ MapSTD::MapSTD() : Module("Map") {
 		{{}, {Type::CONST_INT_REAL_MAP, iter_int_real}, (void*) &iter_int_real_fun, Method::NATIVE},
 		{{}, {Type::CONST_INT_INT_MAP, iter_int_int}, (void*) &iter_int_int_fun, Method::NATIVE},
 	});
+}
+
+Compiler::value MapSTD::insert_any_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<LSValue*, LSValue*>::ls_insert);
+}
+Compiler::value MapSTD::insert_any_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1]), c.to_real(args[2])}, (void*) &LSMap<LSValue*, double>::ls_insert);
+}
+Compiler::value MapSTD::insert_any_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSMap<LSValue*, int>::ls_insert);
+}
+Compiler::value MapSTD::insert_int_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<int, LSValue*>::ls_insert);
+}
+Compiler::value MapSTD::insert_int_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1]), c.to_real(args[2])}, (void*) &LSMap<int, double>::ls_insert);
+}
+Compiler::value MapSTD::insert_int_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSMap<int, int>::ls_insert);
 }
 
 }

@@ -35,9 +35,9 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::INTEGER, {Type::CONST_INT_SET}, (void*) &LSSet<int>::ls_size, Method::NATIVE},
 	});
 	method("insert", {
-		{Type::BOOLEAN, {Type::PTR_SET, Type::ANY}, (void*) &LSSet<LSValue*>::ls_insert, Method::NATIVE},
-		{Type::BOOLEAN, {Type::REAL_SET, Type::REAL}, (void*) &LSSet<double>::ls_insert, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_insert, Method::NATIVE},
+		{Type::BOOLEAN, {Type::PTR_SET, Type::ANY}, (void*) &insert_any},
+		{Type::BOOLEAN, {Type::REAL_SET, Type::REAL}, (void*) &insert_real},
+		{Type::BOOLEAN, {Type::INT_SET, Type::INTEGER}, (void*) &insert_int},
 	});
 	method("clear", {
 		{Type::SET, {Type::PTR_SET}, (void*) &LSSet<LSValue*>::ls_clear, Method::NATIVE},
@@ -66,6 +66,16 @@ Compiler::value SetSTD::set_add_eq(Compiler& c, std::vector<Compiler::value> arg
 	return c.insn_call(Type::ANY, {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
 		return x->add_eq(y);
 	});
+}
+
+Compiler::value SetSTD::insert_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1])}, (void*) &LSSet<LSValue*>::ls_insert);
+}
+Compiler::value SetSTD::insert_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_real(args[1])}, (void*) &LSSet<double>::ls_insert);
+}
+Compiler::value SetSTD::insert_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1])}, (void*) &LSSet<int>::ls_insert);
 }
 
 }
