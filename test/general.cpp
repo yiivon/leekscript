@@ -168,10 +168,12 @@ void Test::test_general() {
 	code("var a a = 12m").equals("12");
 	code("var a a = 12m a").equals("12");
 	code("var a = 2 a = 'hello'").equals("'hello'");
-	DISABLED_code("var a = 'hello' a = 2").equals("2");
+	code("var a = 'hello' a = 2").equals("2");
 	code("var a = 2 a = 'hello' a").equals("'hello'");
 	code("var a = 2 a = [1, 2] a").equals("[1, 2]");
 	code("var a = 5.5 a = {} a").equals("{}");
+	code("var a = [5, 7] a = 7 System.print(a)").output("7\n");
+	code("var a = 7 a = [5, 12] a").equals("[5, 12]");
 	DISABLED_code("var a = 7 System.print(a) a = <5, 12> System.print(a)").output("7\n<5, 12>\n");
 	code("var a = 5 a = 200l").equals("200");
 	code("var a = 5 a = 200l a").equals("200");

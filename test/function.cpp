@@ -75,6 +75,9 @@ void Test::test_functions() {
 	code("let f = x, y -> x + y f(12 7)").equals("19");
 	code("String.replace('banana' 'a' '_')").equals("'b_n_n_'");
 
+	section("Arguments");
+	code("let f = x => { x++ x *= 2 return x } f(12)").equals("26");
+
 	section("Closures");
 	code("let a = 5 let f = -> a f()").equals("5");
 	code("let a = 12 let f = -> -> a f()()").equals("12");

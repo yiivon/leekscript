@@ -74,6 +74,7 @@ void Test::test_arrays() {
 	code("let a = ['a', 'b'] a + Number").equals("['a', 'b', <class Number>]");
 	code("let a = [1, 2] a + [3, 4]").equals("[1, 2, 3, 4]");
 	code("let a = ['a'] [3.5, 4.6] + a").equals("[3.5, 4.6, 'a']");
+	code("var pq = [] pq = pq + 1 pq").equals("[1]");
 
 	section("Array.operator ~");
 	code("let a = [1, 2, 3]; ~a").equals("[3, 2, 1]");
