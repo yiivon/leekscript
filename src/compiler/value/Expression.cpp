@@ -20,7 +20,7 @@ namespace ls {
 Expression::Expression() : Expression(nullptr) {}
 
 Expression::Expression(Value* v) :
-	v1(v), v2(nullptr), op(nullptr), store_result_in_v1(false), no_op(false), operations(1) {
+	v1(v), v2(nullptr), op(nullptr), no_op(false), operations(1) {
 }
 
 Expression::~Expression() {
@@ -33,7 +33,6 @@ Expression::~Expression() {
 }
 
 void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
-
 	/*
 	 * Single expression (2, 'hello', ...), just add the operator
 	 */
@@ -42,9 +41,7 @@ void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 		v2 = exp;
 		return;
 	}
-
-	if (!parenthesis and (op->priority < this->op->priority
-		   or (op->priority == this->op->priority and op->character == "="))) {
+	if (!parenthesis and (op->priority < this->op->priority or (op->priority == this->op->priority and op->character == "="))) {
 		/*
 		 * We already have '5 + 2' for example,
 		 * and try to add a operator with a higher priority,
@@ -55,7 +52,6 @@ void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 		ex->op = op;
 		ex->v2 = exp;
 		this->v2 = ex;
-
 	} else {
 		/*
 		 * We already have '5 + 2' for example,
@@ -283,16 +279,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
 
 		type = Type::INTEGER;
-	}
-
-	// A = B, A += B, etc. A must be a l-value
-	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
-		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
-		or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::MODULO_EQUAL
-		or op->type == TokenType::POWER_EQUAL) {
-		// TODO other operators like |= ^= &=
-
-		store_result_in_v1 = true;
 	}
 
 	// "hello" + ? => string

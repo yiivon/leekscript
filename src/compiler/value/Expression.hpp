@@ -14,7 +14,6 @@ public:
 	Value* v2;
 	std::shared_ptr<Operator> op;
 
-	bool store_result_in_v1;
 	bool no_op;
 	int operations;
 	void* operator_fun = nullptr;
