@@ -215,7 +215,7 @@ LLVMCompiler::value LLVMCompiler::insn_not(LLVMCompiler::value v) const {
 }
 
 LLVMCompiler::value LLVMCompiler::insn_not_bool(LLVMCompiler::value v) const {
-	LLVMCompiler::value r {builder.CreateNot(v.v), Type::BOOLEAN};
+	LLVMCompiler::value r {builder.CreateNot(insn_to_bool(v).v), Type::BOOLEAN};
 	log_insn(4) << "not_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
@@ -713,7 +713,7 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 		return v;
 	}
 	if (v.t.is_integer()) {
-		LLVMCompiler::value r {builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType()), "ifcond"), Type::BOOLEAN};
+		LLVMCompiler::value r {builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::BOOLEAN};
 		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
 	}
