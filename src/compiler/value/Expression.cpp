@@ -270,11 +270,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		type = Type::INTEGER;
 	}
 
-	// "hello" + ? => string
-	if (op->type == TokenType::PLUS and (v1->type == Type::STRING || v1->type == Type::STRING_TMP)) {
-		type = Type::STRING_TMP;
-	}
-
 	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
 		auto version = { v1->type.element() };
