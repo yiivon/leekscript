@@ -20,6 +20,11 @@ public:
 	virtual llvm::Type* llvm() const override;
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream&) const;
+
+	static llvm::Type* integer_iterator;
+	static llvm::Type* long_iterator;
+	static llvm::Type* get_integer_iterator();
+	static llvm::Type* get_long_iterator();
 };
 
 }

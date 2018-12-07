@@ -170,8 +170,6 @@ public:
 	static const Type LONG_ITERATOR;
 	static const Type MPZ_ITERATOR;
 
-	static llvm::StructType* LLVM_INTEGER_ITERATOR_TYPE;
-
 	static Type array(const Type = {});
 	static Type const_array(const Type = {});
 	static Type tmp_array(const Type = {});

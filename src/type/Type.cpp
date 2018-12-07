@@ -12,8 +12,6 @@ using namespace std;
 
 namespace ls {
 
-llvm::StructType* Type::LLVM_INTEGER_ITERATOR_TYPE;
-
 std::vector<const Base_type*> RawType::placeholder_types;
 
 void RawType::clear_placeholder_types() {

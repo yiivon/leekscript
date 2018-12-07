@@ -27,12 +27,8 @@ llvm::LLVMContext LLVMCompiler::context;
 llvm::IRBuilder<> LLVMCompiler::builder(context);
 
 void LLVMCompiler::init() {
-
 	mappings.clear();
-
-	Type::LLVM_INTEGER_ITERATOR_TYPE = llvm::StructType::create("integeriterator", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context));
 }
-
 void LLVMCompiler::end() {}
 
 LLVMCompiler::value LLVMCompiler::clone(LLVMCompiler::value v) const {
@@ -995,7 +991,6 @@ LLVMCompiler::value LLVMCompiler::insn_get_argument(const std::string& name) con
 	return arguments.top().at(name);
 }
 
-// Iterators
 LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	log_insn_code("iterator.begin()");
@@ -1007,7 +1002,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		insn_store(it, {builder.CreateLoad(raw_data), Type::ANY});
 		return it;
 	}
-	if (v.t.is_interval()) {
+	else if (v.t.is_interval()) {
 		// jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
 		// auto interval_iterator = jit_type_create_struct(types, 2, 1);
 		// Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
@@ -1017,7 +1012,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// jit_insn_store_relative(F, addr.v, 8, insn_load(v, 20, Type::INTEGER).v);
 		// return it;
 	}
-	if (v.t.is_string()) {
+	else if (v.t.is_string()) {
 		// jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
 		// auto string_iterator = jit_type_create_struct(types, 5, 1);
 		// Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
@@ -1033,10 +1028,10 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// });
 		// return it;
 	}
-	if (v.t.is_map()) {
+	else if (v.t.is_map()) {
 		// return insn_load(v, 48, v.t);
 	}
-	if (v.t.is_set()) {
+	else if (v.t.is_set()) {
 		// jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
 		// auto set_iterator = jit_type_create_struct(types, 2, 1);
 		// Compiler::value it = {jit_value_create(F, set_iterator), Type::SET_ITERATOR};
@@ -1046,26 +1041,27 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// jit_insn_store_relative(F, addr.v, 8, new_integer(0).v);
 		// return it;
 	}
-	if (v.t.is_integer()) {
-		// Compiler::value it = insn_create_value(Type::INTEGER_ITERATOR);
-		// builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 0);
-		// builder.CreateAlignedStore(it.v, v.v, 0);
-		// builder.CreateAlignedStore(it.v, to_int(insn_pow(new_integer(10), to_int(insn_log10(v)))).v, 4);
-		// builder.CreateAlignedStore(it.v, new_integer(0).v, 8);
-		// return it;
+	else if (v.t.is_integer()) {
+		value it = {CreateEntryBlockAlloca("it", Iterator_type::get_integer_iterator()), Type::INTEGER_ITERATOR};
+		auto n = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 0);
+		auto p = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 1);
+		auto i = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 2);
+		builder.CreateStore(v.v, n);
+		builder.CreateStore(to_int(insn_pow(new_integer(10), to_int(insn_log10(v)))).v, p);
+		builder.CreateStore(new_integer(0).v, i);
+		return it;
 	}
-	if (v.t.is_long()) {
-		// jit_type_t types[3] = {jit_type_long, jit_type_long, jit_type_int};
-		// auto long_iterator = jit_type_create_struct(types, 3, 1);
-		// Compiler::value it = {jit_value_create(F, long_iterator), Type::LONG_ITERATOR};
-		// jit_type_free(long_iterator);
-		// auto addr = jit_insn_address_of(F, it.v);
-		// jit_insn_store_relative(F, addr, 0, v.v);
-		// jit_insn_store_relative(F, addr, 8, to_long(insn_pow(new_integer(10), to_int(insn_log10(v)))).v);
-		// jit_insn_store_relative(F, addr, 16, new_long(0).v);
-		// return it;
+	else if (v.t.is_long()) {
+		value it = {CreateEntryBlockAlloca("it", Iterator_type::get_long_iterator()), Type::LONG_ITERATOR};
+		auto n = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 0);
+		auto p = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 1);
+		auto i = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 2);
+		builder.CreateStore(v.v, n);
+		builder.CreateStore(insn_pow(new_long(10), to_int(insn_log10(v))).v, p);
+		builder.CreateStore(new_integer(0).v, i);
+		return it;
 	}
-	if (v.t.is_mpz()) {
+	else if (v.t.is_mpz()) {
 		// jit_type_t types[3] = {VM::mpz_type, VM::mpz_type, jit_type_int};
 		// auto mpz_iterator = jit_type_create_struct(types, 3, 1);
 		// Compiler::value it = {jit_value_create(F, mpz_iterator), Type::MPZ_ITERATOR};
@@ -1081,47 +1077,45 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompiler::value it) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	// assert(it.t.llvm_type() == it.v->getType());
+	// assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
 	log_insn_code("iterator.end()");
 	if (v.t.is_array()) {
 		return {builder.CreateICmpEQ(insn_load(it).v, insn_array_end(v).v), Type::BOOLEAN};
 	}
-	if (it.t == Type::INTERVAL_ITERATOR) {
+	else if (it.t == Type::INTERVAL_ITERATOR) {
 		// auto addr = insn_address_of(it);
 		// auto interval = insn_load(addr, 0, Type::POINTER);
 		// auto end = insn_load(interval, 24, Type::INTEGER);
 		// auto pos = insn_load(addr, 8, Type::INTEGER);
 		// return insn_gt(pos, end);
 	}
-	if (it.t == Type::STRING_ITERATOR) {
+	else if (it.t == Type::STRING_ITERATOR) {
 		// auto addr = insn_address_of(it);
 		// return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
 	}
-	if (v.t.is_map()) {
+	else if (v.t.is_map()) {
 		auto end = insn_add(v, new_integer(32)); // end_ptr = &map + 24
 		return insn_eq(it, end);
 	}
-	if (it.t == Type::SET_ITERATOR) {
+	else if (it.t == Type::SET_ITERATOR) {
 		// auto addr = insn_address_of(it);
 		// auto ptr = insn_load(addr, 0, Type::POINTER);
 		// auto end = insn_add(v, new_integer(32)); // end_ptr = &set + 24
 		// return insn_eq(ptr, end);
 	}
-	if (it.t == Type::INTEGER_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto p = insn_load(addr, 4, Type::INTEGER);
-		// return insn_eq(p, new_integer(0));
+	else if (it.t == Type::INTEGER_ITERATOR) {
+		auto e = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 1);
+		return insn_eq({builder.CreateLoad(e), Type::INTEGER}, new_integer(0));
 	}
-	if (it.t == Type::LONG_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto p = insn_load(addr, 8, Type::LONG);
-		// return insn_eq(p, new_integer(0));
+	else if (it.t == Type::LONG_ITERATOR) {
+		auto e = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 1);
+		return insn_eq({builder.CreateLoad(e), Type::LONG}, new_long(0));
 	}
 	return {nullptr, {}};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler::value it, LLVMCompiler::value previous) const {
-	// assert(it.t.llvm_type() == it.v->getType());
+	// assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
 	// assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.get()");
 	if (collectionType.is_array()) {
@@ -1179,24 +1173,22 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		// insn_inc_refs(e);
 		// return e;
 	}
-	if (it.t == Type::INTEGER_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto n = insn_load(addr, 0, Type::INTEGER);
-		// auto p = insn_load(addr, 4, Type::INTEGER);
-		// return insn_int_div(n, p);
+	if (collectionType.is_integer()) {
+		auto n = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 0);
+		auto p = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 1);
+		return insn_int_div({builder.CreateLoad(n), Type::INTEGER}, {builder.CreateLoad(p), Type::INTEGER});
 	}
-	if (it.t == Type::LONG_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto n = insn_load(addr, 0, Type::LONG);
-		// auto p = insn_load(addr, 8, Type::LONG);
-		// return insn_int_div(n, p);
+	else if (collectionType.is_long()) {
+		auto n = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 0);
+		auto p = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 1);
+		return to_int(insn_int_div({builder.CreateLoad(n), Type::LONG}, {builder.CreateLoad(p), Type::LONG}));
 	}
 	return {nullptr, {}};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompiler::value it, LLVMCompiler::value previous) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	// assert(it.t.llvm_type() == it.v->getType());
+	// assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
 	// assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.key()");
 	if (v.t.is_array()) {
@@ -1229,19 +1221,19 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		// auto addr = insn_address_of(it);
 		// return insn_load(addr, 8, Type::INTEGER);
 	}
-	if (it.t == Type::INTEGER_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// return insn_load(addr, 8, Type::INTEGER);
+	if (v.t.is_integer()) {
+		auto i = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 2);
+		return {builder.CreateLoad(i), Type::INTEGER};
 	}
-	if (it.t == Type::LONG_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// return insn_load(addr, 16, Type::INTEGER);
+	else if (v.t.is_long()) {
+		auto i = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 2);
+		return {builder.CreateLoad(i), Type::INTEGER};
 	}
 	return {nullptr, {}};
 }
 
 void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value it) const {
-	// assert(it.t.llvm_type() == it.v->getType());
+	// assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
 	log_insn_code("iterator.increment()");
 	if (collectionType.is_array()) {
 		auto it2 = insn_load(it);
@@ -1277,25 +1269,27 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		// }));
 		return;
 	}
-	if (it.t == Type::INTEGER_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto n = insn_load(addr, 0, Type::INTEGER);
-		// auto p = insn_load(addr, 4, Type::INTEGER);
-		// auto i = insn_load(addr, 8, Type::INTEGER);
-		// jit_insn_store_relative(F, addr.v, 0, insn_mod(n, p).v);
-		// jit_insn_store_relative(F, addr.v, 4, insn_int_div(p, new_integer(10)).v);
-		// jit_insn_store_relative(F, addr.v, 8, insn_add(i, new_integer(1)).v);
-		return;
+	if (collectionType.is_integer()) {
+		auto n = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 0);
+		auto p = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 1);
+		auto i = builder.CreateStructGEP(Type::INTEGER_ITERATOR.llvm_type(), it.v, 2);
+		value nv = {builder.CreateLoad(n), Type::INTEGER};
+		value pv = {builder.CreateLoad(p), Type::INTEGER};
+		value iv = {builder.CreateLoad(i), Type::INTEGER};
+		builder.CreateStore(insn_mod(nv, pv).v, n);
+		builder.CreateStore(insn_int_div(pv, new_integer(10)).v, p);
+		builder.CreateStore(insn_add(iv, new_integer(1)).v, i);
 	}
-	if (it.t == Type::LONG_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto n = insn_load(addr, 0, Type::LONG);
-		// auto p = insn_load(addr, 8, Type::LONG);
-		// auto i = insn_load(addr, 16, Type::INTEGER);
-		// jit_insn_store_relative(F, addr.v, 0, insn_mod(n, p).v);
-		// jit_insn_store_relative(F, addr.v, 8, insn_int_div(p, new_integer(10)).v);
-		// jit_insn_store_relative(F, addr.v, 16, insn_add(i, new_integer(1)).v);
-		return;
+	else if (collectionType.is_long()) {
+		auto n = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 0);
+		auto p = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 1);
+		auto i = builder.CreateStructGEP(Type::LONG_ITERATOR.llvm_type(), it.v, 2);
+		value nv = {builder.CreateLoad(n), Type::LONG};
+		value pv = {builder.CreateLoad(p), Type::LONG};
+		value iv = {builder.CreateLoad(i), Type::INTEGER};
+		builder.CreateStore(insn_mod(nv, pv).v, n);
+		builder.CreateStore(insn_int_div(pv, new_long(10)).v, p);
+		builder.CreateStore(insn_add(iv, new_integer(1)).v, i);
 	}
 }
 
