@@ -218,8 +218,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
 		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
-		or op->type == TokenType::SWAP or op->type == TokenType::INT_DIV
-		or op->type == TokenType::INT_DIV_EQUAL
+		or op->type == TokenType::SWAP
 		or op->type == TokenType::BIT_AND_EQUALS or op->type == TokenType::BIT_OR_EQUALS
 		or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
@@ -286,11 +285,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		v1_type = type;
 		v2_type = type;
 	}
-
-	// int div => result is int
-	if (op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL) {
-		type = v1->type == Type::LONG ? Type::LONG : Type::INTEGER;
-	}
 }
 
 LSValue* jit_add(LSValue* x, LSValue* y) {
@@ -304,12 +298,6 @@ LSValue* jit_mul(LSValue* x, LSValue* y) {
 }
 LSValue* jit_div(LSValue* x, LSValue* y) {
 	return x->div(y);
-}
-long jit_int_div(LSValue* x, LSValue* y) {
-	LSValue* res = x->int_div(y);
-	long v = ((LSNumber*) res)->value;
-	LSValue::delete_temporary(res);
-	return v;
 }
 LSValue* jit_mod(LSValue* x, LSValue* y) {
 	return x->mod(y);
@@ -522,40 +510,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::DIVIDE: {
 			ls_func = (void*) &jit_div;
-			break;
-		}
-		case TokenType::INT_DIV: {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				return c.insn_int_div(x, y);
-			} else {
-				ls_func = (void*) &jit_int_div;
-				ls_returned_type = Type::LONG;
-			}
-			break;
-		}
-		case TokenType::INT_DIV_EQUAL: {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
-				v2->compile_end(c);
-				auto x = c.insn_load(x_addr);
-				auto r = c.insn_int_div(x, y);
-				c.insn_store(x_addr, r);
-				return r;
-			} else {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_any(v2->compile(c));
-				v2->compile_end(c);
-				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					LSValue* res = (*x)->int_div_eq(y);
-					long v = ((LSNumber*) res)->value;
-					return v;
-				}, true);
-			}
 			break;
 		}
 		case TokenType::MODULO: {

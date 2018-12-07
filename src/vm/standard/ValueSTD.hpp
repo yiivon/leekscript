@@ -40,6 +40,8 @@ public:
 	static Compiler::value op_swap_val(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_swap_ptr(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_pow(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_int_div(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value op_int_div_eq(Compiler& c, std::vector<Compiler::value> args);
 
 	/*
 	 * Methods

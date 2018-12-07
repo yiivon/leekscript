@@ -47,9 +47,11 @@ public:
 	static Compiler::value mul_eq_real(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value div_val_val(Compiler& c, std::vector<Compiler::value> args);
-
 	static Compiler::value div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value div_eq_real(Compiler& c, std::vector<Compiler::value> args);
+
+	static Compiler::value int_div_val_val(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value int_div_eq_val_val(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value pow_real_real(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);

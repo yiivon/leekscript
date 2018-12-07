@@ -82,6 +82,12 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("**", {
 		{Type::CONST_ANY, Type::CONST_ANY, Type::ANY, (void*) &ValueSTD::op_pow}
 	});
+	operator_("\\", {
+		{Type::CONST_ANY, Type::CONST_ANY, Type::LONG, (void*) &ValueSTD::op_int_div}
+	});
+	operator_("\\=", {
+		{Type::CONST_ANY, Type::CONST_ANY, Type::LONG, (void*) &ValueSTD::op_int_div_eq, {}, false, true}
+	});
 
 	/*
 	 * Methods
@@ -373,6 +379,21 @@ Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args)
 	return c.insn_call(Type::ANY, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		return x->pow(y);
 	});
+}
+
+Compiler::value ValueSTD::op_int_div(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::LONG, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+		auto res = x->int_div(y);
+		long v = ((LSNumber*) res)->value;
+		LSValue::delete_temporary(res);
+		return v;
+	}, true);
+}
+Compiler::value ValueSTD::op_int_div_eq(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::LONG, {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
+		auto res = (*x)->int_div_eq(y);
+		return (long) ((LSNumber*) res)->value;
+	}, true);
 }
 
 }

@@ -96,16 +96,20 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::mul_eq_real, {}, false, true},
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_eq_real, {}, false, true}
 	});
-
 	operator_("/", {
 		{Type::CONST_NUMBER, Type::CONST_NUMBER, Type::REAL, (void*) &NumberSTD::div_val_val}
 	});
-
 	operator_("/=", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::div_eq_mpz_mpz},
 		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::div_eq_real, {}, false, true}
 	});
-
+	operator_("\\", {
+		{Type::CONST_NUMBER, Type::CONST_NUMBER, Type::LONG, (void*) &NumberSTD::int_div_val_val},
+		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::int_div_val_val},
+	});
+	operator_("\\=", {
+		{Type::CONST_NUMBER, Type::CONST_NUMBER, Type::INTEGER, (void*) &NumberSTD::int_div_eq_val_val, {}, false, true}
+	});
 	operator_("<", {
 		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::lt},
 		{Type::MPZ, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::lt_mpz_mpz}
@@ -540,6 +544,16 @@ Compiler::value NumberSTD::div_eq_real(Compiler& c, std::vector<Compiler::value>
 	auto sum = c.insn_div(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
+}
+
+Compiler::value NumberSTD::int_div_val_val(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_int_div(args[0], args[1]);
+}
+Compiler::value NumberSTD::int_div_eq_val_val(Compiler& c, std::vector<Compiler::value> args) {
+	auto x = c.insn_load(args[0]);
+	auto r = c.insn_int_div(x, args[1]);
+	c.insn_store(args[0], r);
+	return r;
 }
 
 Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
