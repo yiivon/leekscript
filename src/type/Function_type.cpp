@@ -6,6 +6,8 @@
 
 namespace ls {
 
+llvm::Type* Function_type::function_type = nullptr;
+
 Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
 
 bool Function_type::operator == (const Base_type* type) const {
@@ -35,7 +37,7 @@ Type Function_type::argument(size_t i) const {
 	return Type::ANY;
 }
 llvm::Type* Function_type::llvm() const {
-	return Any_type::get_any_type();
+	return get_function_type();
 }
 std::string Function_type::clazz() const {
 	return "Function";
@@ -49,5 +51,21 @@ std::ostream& Function_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << ") => " << _return_type;
 	return os;
 }
+
+llvm::Type* Function_type::get_function_type() {
+	if (function_type == nullptr) {
+		function_type = llvm::StructType::create("lsfunction",
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt1Ty(LLVMCompiler::context),
+			llvm::Type::getInt64Ty(LLVMCompiler::context)->getPointerTo()
+		)->getPointerTo();
+	}
+	return function_type;
+}
+
+
 
 }

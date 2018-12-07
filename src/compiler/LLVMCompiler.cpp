@@ -30,19 +30,10 @@ void LLVMCompiler::init() {
 
 	mappings.clear();
 
-	// Type::LLVM_MPZ_TYPE = llvm::StructType::create({llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context)}, "mpz", true);
-	Type::LLVM_MPZ_TYPE = llvm::Type::getInt128Ty(LLVMCompiler::context);
-	Type::LLVM_MPZ_TYPE_PTR = Type::LLVM_MPZ_TYPE->getPointerTo();
-
-	Type::LLVM_FUNCTION_TYPE = llvm::StructType::create("lsfunction", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context),
-	llvm::Type::getInt64Ty(LLVMCompiler::context)->getPointerTo());
-	Type::LLVM_FUNCTION_TYPE_PTR = Type::LLVM_FUNCTION_TYPE->getPointerTo();
-
 	Type::LLVM_INTEGER_ITERATOR_TYPE = llvm::StructType::create("integeriterator", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context));
 }
 
-void LLVMCompiler::end() {
-}
+void LLVMCompiler::end() {}
 
 LLVMCompiler::value LLVMCompiler::clone(LLVMCompiler::value v) const {
 	if (v.t.must_manage_memory()) {

@@ -1,7 +1,7 @@
+#include <iostream>
 #include "Map_type.hpp"
 #include "Any_type.hpp"
 #include "../colors.h"
-#include <iostream>
 #include "Any_type.hpp"
 
 namespace ls {

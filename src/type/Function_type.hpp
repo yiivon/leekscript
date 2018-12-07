@@ -26,6 +26,9 @@ public:
 	virtual llvm::Type* llvm() const override;
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
+
+	static llvm::Type* function_type;
+	static llvm::Type* get_function_type();
 };
 
 }

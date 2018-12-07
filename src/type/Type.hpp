@@ -170,10 +170,6 @@ public:
 	static const Type LONG_ITERATOR;
 	static const Type MPZ_ITERATOR;
 
-	static llvm::Type* LLVM_MPZ_TYPE;
-	static llvm::Type* LLVM_MPZ_TYPE_PTR;
-	static llvm::StructType* LLVM_FUNCTION_TYPE;
-	static llvm::Type* LLVM_FUNCTION_TYPE_PTR;
 	static llvm::StructType* LLVM_INTEGER_ITERATOR_TYPE;
 
 	static Type array(const Type = {});

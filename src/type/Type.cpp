@@ -12,10 +12,6 @@ using namespace std;
 
 namespace ls {
 
-llvm::Type* Type::LLVM_MPZ_TYPE;
-llvm::Type* Type::LLVM_MPZ_TYPE_PTR;
-llvm::StructType* Type::LLVM_FUNCTION_TYPE;
-llvm::Type* Type::LLVM_FUNCTION_TYPE_PTR;
 llvm::StructType* Type::LLVM_INTEGER_ITERATOR_TYPE;
 
 std::vector<const Base_type*> RawType::placeholder_types;
