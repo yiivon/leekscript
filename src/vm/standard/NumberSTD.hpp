@@ -191,6 +191,8 @@ public:
 	static Compiler::value toDegrees(Compiler& c, std::vector<Compiler::value> args);
 	static double toRadians_ptr(LSNumber* x);
 	static Compiler::value toRadians(Compiler& c, std::vector<Compiler::value> args);
+
+	static Compiler::value fold(Compiler& c, std::vector<Compiler::value> args);
 };
 
 }

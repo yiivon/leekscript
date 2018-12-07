@@ -223,9 +223,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::exp_real},
 	});
 	Type fold_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::INTEGER});
-	auto fold_fun = &LSNumber::ls_fold<LSFunction*>;
 	method("fold", {
-		{Type::ANY, {Type::ANY, fold_fun_type, Type::ANY}, (void*) fold_fun, Method::NATIVE}
+		{Type::ANY, {Type::ANY, fold_fun_type, Type::ANY}, (void*) &fold}
 	});
 	method("floor", {
 		{Type::INTEGER, {Type::ANY}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
@@ -1206,6 +1205,12 @@ Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> a
 			return is;
 		});
 	}
+}
+
+Compiler::value NumberSTD::fold(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::ANY, {c.insn_to_any(args[0]), args[1], c.insn_to_any(args[2])}, +[](LSNumber* n, LSFunction* f, LSValue* x) {
+		return n->ls_fold<LSFunction*>(f, x);
+	});
 }
 
 }
