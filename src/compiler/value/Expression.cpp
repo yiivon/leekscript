@@ -175,11 +175,8 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
 		m = value_class->getOperator(op->character, v1_type, v2_type);
 	}
-
 	if (m != nullptr) {
-
 		// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << (void*) m->addr << std::endl;
-
 		operator_fun = m->addr;
 		is_native_method = m->native;
 		native_method_v1_addr = m->v1_addr;
@@ -188,14 +185,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		v2_type = op->reversed ? m->object_type : m->operand_type;
 		return_type = m->return_type;
 		type = return_type;
-
-		if (v1->type.not_temporary() != v1_type.not_temporary()) {
-			v1->analyse(analyser);
-		}
-		if (v2->type.not_temporary() != v2_type.not_temporary()) {
-			v2->analyse(analyser);
-		}
-
 		// Apply mutators
 		for (const auto& mutator : m->mutators) {
 			mutator->apply(analyser, {v1, v2});
