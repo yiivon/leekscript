@@ -30,6 +30,8 @@ void Test::test_functions() {
 	code("return 'a'").equals("'a'");
 	code("let x = 'yolo' return '1'; 2").equals("'1'");
 	code("let x = '1' return x; 2").equals("'1'");
+	code("{ return 12; 'salut' }").equals("12");
+	code("{ { return 12; 'salut' } 'salut' }").equals("12");
 
 	section("Functions / Lambdas");
 	code("let f = x -> x f(12)").equals("12");
