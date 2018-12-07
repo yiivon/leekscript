@@ -497,15 +497,15 @@ void Test::test_numbers() {
 	 * Iteration
 	 */
 	section("Number iterators");
-	DISABLED_code("for d in 123456 { System.print(d) }").output("1\n2\n3\n4\n5\n6\n");
-	DISABLED_code("for d in -123456 { System.print(d) }").output("");
-	DISABLED_code("for d in 0 { System.print(d) }").output("");
-	DISABLED_code("var s = 0 for d in 159753 { s += d } s").equals("30");
-	DISABLED_code("for d in 0 { System.print(d) }").output("");
-	DISABLED_code("var s = 0 for k : d in 987654 { s += k * d } s").equals("80");
-	DISABLED_code("var s = 0 for d in 123456789123456789 { s += d } s").equals("90");
-	DISABLED_code("var s = 0 for k, d in 123456789123456789 { s += k * d } s").equals("885");
-	DISABLED_code("var s = '' for d in 1234567891234567891 { s += d + ' ' } s").equals("'1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 '");
+	code("for d in 123456 { System.print(d) }").output("1\n2\n3\n4\n5\n6\n");
+	code("for d in -123456 { System.print(d) }").output("");
+	code("for d in 0 { System.print(d) }").output("");
+	code("var s = 0 for d in 159753 { s += d } s").equals("30");
+	code("for d in 0 { System.print(d) }").output("");
+	code("var s = 0 for k : d in 987654 { s += k * d } s").equals("80");
+	code("var s = 0 for d in 123456789123456789 { s += d } s").equals("90");
+	code("var s = 0 for k, d in 123456789123456789 { s += k * d } s").equals("885");
+	code("var s = '' for d in 1234567891234567891 { s += d + ' ' } s").equals("'1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 '");
 
 	/*
 	 * Methods
