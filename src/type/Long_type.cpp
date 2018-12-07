@@ -5,6 +5,9 @@
 
 namespace ls {
 
+Type Long_type::element() const {
+	return Type::INTEGER;
+}
 bool Long_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Long_type*>(type);
 }
