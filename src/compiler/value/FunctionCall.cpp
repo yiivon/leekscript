@@ -433,7 +433,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Default function : f(12) */
 	Compiler::value fun;
-	auto ls_fun_addr = c.new_pointer(nullptr);
+	auto ls_fun_addr = c.new_function(nullptr);
 	auto jit_object = c.new_pointer(nullptr);
 	auto is_closure = function->type.is_closure();
 
@@ -441,13 +441,13 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		auto oa = static_cast<ObjectAccess*>(function);
 		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
 		auto k = c.new_pointer(&oa->field->content);
-		ls_fun_addr = c.insn_call(Type::ANY, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
+		ls_fun_addr = c.insn_call(Type::FUNCTION, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
 		});
 	} else {
 		ls_fun_addr = function->compile(c);
-		auto fun_to_ptr = LLVMCompiler::builder.CreatePointerCast(ls_fun_addr.v, Type::LLVM_FUNCTION_TYPE_PTR);
-		auto f = LLVMCompiler::builder.CreateStructGEP(Type::LLVM_FUNCTION_TYPE, fun_to_ptr, 5);
+		auto fun_to_ptr = LLVMCompiler::builder.CreatePointerCast(ls_fun_addr.v, Function_type::get_function_type());
+		auto f = LLVMCompiler::builder.CreateStructGEP(Function_type::get_function_type()->getPointerElementType(), fun_to_ptr, 5);
 		fun = { LLVMCompiler::builder.CreateLoad(f), Type::FUNCTION };
 	}
 

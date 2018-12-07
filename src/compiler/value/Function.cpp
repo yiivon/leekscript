@@ -9,6 +9,7 @@
 #include "llvm/IR/Verifier.h"
 #include "../../type/RawType.hpp"
 #include <string>
+#include "../../vm/LSValue.hpp"
 
 namespace ls {
 
@@ -410,7 +411,7 @@ Compiler::value Function::compile(Compiler& c) const {
 		return compile_version(c, version);
 	} else {
 		// Return default version
-		return c.new_pointer(default_version->function);
+		return c.new_function(default_version->function);
 	}
 }
 
@@ -423,7 +424,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
 		return c.new_pointer(LSNull::get());
 	}
-	return c.new_pointer(versions.at(args)->function);
+	return c.new_function(versions.at(args)->function);
 }
 
 void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
@@ -435,7 +436,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	Compiler::value jit_fun;
 	if (!is_main_function) {
-		jit_fun = c.new_pointer(ls_fun);
+		jit_fun = c.new_function(ls_fun);
 		for (const auto& cap : captures) {
 			Compiler::value jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
@@ -464,7 +465,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		for (auto var : c.vm->system_vars) {
 			auto name = var.first;
 			auto value = var.second;
-			auto val = c.new_pointer(value);
+			auto val = var.second && var.second->type == LSValue::FUNCTION ? c.new_function(value) : c.new_pointer(value);
 			c.vm->internals.insert({name, val.v});
 		}
 	}
