@@ -281,6 +281,9 @@ void Test::test_numbers() {
 	code("let a = 14★ a ** false").equals("1");
 	code("14★ ** []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("2 ** 50").equals("-2147483648");
+	code("2l ** 50").equals("1125899906842624");
+	code("257l ** 20").equals("1580019571820317091067056229141713082467867426816");
+	code("257m ** 20").equals("1580019571820317063568778786121273112555213952001");
 	code("2m ** 50").equals("1125899906842624");
 	code("(5m + 2m) ** (16m * 2m)").equals("1104427674243920646305299201");
 	code("123m ** 1900").exception(ls::vm::Exception::NUMBER_OVERFLOW);

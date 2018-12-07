@@ -593,13 +593,17 @@ LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value a, LLVMCompiler::
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
 	LLVMCompiler::value r;
-	if (a.t.is_integer() && b.t.is_integer()) {
-		r = insn_call(Type::INTEGER, {a, b}, +[](int a, int b) {
-			return (int) std::pow(a, b);
-		});
-	} else {
+	if (a.t.is_real() or b.t.is_real()) {
 		r = insn_call(Type::REAL, {to_real(a), to_real(b)}, +[](double a, double b) {
 			return std::pow(a, b);
+		});
+	} else if (a.t.is_long()) {
+		r = insn_call(Type::LONG, {a, to_int(b)}, +[](long a, int b) {
+			return (long) std::pow(a, b);
+		});
+	} else if (a.t.is_integer()) {
+		r = insn_call(Type::INTEGER, {a, b}, +[](int a, int b) {
+			return (int) std::pow(a, b);
 		});
 	}
 	log_insn(4) << "pow " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
