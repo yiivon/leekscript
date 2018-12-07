@@ -349,7 +349,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			return {c.new_pointer(new LSString("")).v, type};
 		}
 		if (vv->name == "Array") {
-			return {c.new_pointer(new LSArray<LSValue*>()).v, type};
+			return c.new_array(Type::PTR_ARRAY, {});
 		}
 		if (vv->name == "Object") {
 			return {c.new_pointer(new LSObject()).v, type};

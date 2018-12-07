@@ -33,6 +33,7 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 	auto v = value->compile(c);
 	value->compile_end(c);
+	assert(!v.v or v.t.llvm_type() == v.v->getType());
 	return v;
 }
 
