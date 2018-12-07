@@ -382,7 +382,7 @@ LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value a, LLVMCompil
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
 	if (a.t.is_long() or b.t.is_long()) {
-		return {builder.CreateSDiv(a.v, b.v), Type::LONG};
+		return {builder.CreateSDiv(to_long(a).v, to_long(b).v), Type::LONG};
 	}
 	return {builder.CreateSDiv(a.v, b.v), Type::INTEGER};
 }
@@ -452,6 +452,11 @@ LLVMCompiler::value LLVMCompiler::insn_log(LLVMCompiler::value x) const {
 			return std::log(x);
 		});
 	}
+	if (x.t == Type::LONG) {
+		return insn_call(Type::REAL, {x}, +[](long x) {
+			return std::log(x);
+		});
+	}
 	return insn_call(Type::REAL, {x}, +[](double x) {
 		return std::log(x);
 	});
@@ -462,6 +467,11 @@ LLVMCompiler::value LLVMCompiler::insn_log10(LLVMCompiler::value x) const {
 	assert(x.t.isNumber());
 	if (x.t == Type::INTEGER) {
 		return insn_call(Type::REAL, {x}, +[](int x) {
+			return std::log10(x);
+		});
+	}
+	if (x.t == Type::LONG) {
+		return insn_call(Type::REAL, {x}, +[](long x) {
 			return std::log10(x);
 		});
 	}
