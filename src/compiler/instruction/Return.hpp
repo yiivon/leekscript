@@ -18,7 +18,6 @@ public:
 	virtual Location location() const override;
 
 	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
-	virtual bool can_return() const override;
 	
 	virtual Compiler::value compile(Compiler&) const override;
 

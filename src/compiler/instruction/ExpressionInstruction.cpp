@@ -1,4 +1,6 @@
 #include "ExpressionInstruction.hpp"
+#include "../value/Block.hpp"
+#include "../value/If.hpp"
 
 using namespace std;
 
@@ -27,6 +29,14 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 	} else {
 		value->analyse(analyser);
 		type = value->type;
+	}
+	if (auto block = dynamic_cast<Block*>(value)) {
+		returning = block->returning;
+		may_return = block->may_return;
+	}
+	if (auto iff = dynamic_cast<If*>(value)) {
+		returning = iff->returning;
+		may_return = iff->may_return;
 	}
 }
 

@@ -13,6 +13,8 @@ public:
 	std::vector<Instruction*> instructions;
 	bool temporary_mpz = false;
 	bool was_reference = false;
+	bool returning = false;
+	bool may_return = false;
 
 	Block();
 	virtual ~Block();

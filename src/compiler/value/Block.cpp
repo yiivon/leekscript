@@ -63,15 +63,17 @@ void Block::analyse(SemanticAnalyser* analyser) {
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		instructions[i]->analyse(analyser);
-		if (i == instructions.size() - 1 or instructions[i]->can_return()) {
+		if (i == instructions.size() - 1 or instructions[i]->may_return) {
 			// Last instruction : must return the required type
 			type += instructions[i]->type;
 			was_reference = type.reference;
 			// for (auto& t : instructions[i]->types) t.reference = false;
 			type.reference = false;
+			if (instructions[i]->may_return) may_return = true;
+			if (instructions[i]->returning) returning = true;
 		}
 		// A return instruction
-		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
+		if (instructions[i]->returning) {
 			// type = {}; // This block has really no type
 			analyser->leave_block();
 			return; // no need to compile after a return
@@ -105,7 +107,7 @@ Compiler::value Block::compile(Compiler& c) const {
 
 		auto val = instructions[i]->compile(c);
 
-		if (dynamic_cast<Return*>(instructions[i]) or dynamic_cast<Throw*>(instructions[i])) {
+		if (instructions[i]->returning) {
 			// no need to compile after a return
 			return {nullptr, {}};
 		}

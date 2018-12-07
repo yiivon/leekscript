@@ -14,6 +14,8 @@ class Instruction {
 public:
 
 	Type type;
+	bool returning = false;
+	bool may_return = false;
 
 	virtual ~Instruction() = 0;
 
@@ -21,7 +23,6 @@ public:
 	virtual Location location() const = 0;
 
 	virtual void analyse(SemanticAnalyser* analyser, const Type& type = Type::ANY) = 0;
-	virtual bool can_return() const;
 
 	virtual Compiler::value compile(Compiler&) const;
 

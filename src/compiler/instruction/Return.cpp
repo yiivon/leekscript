@@ -8,6 +8,8 @@ namespace ls {
 
 Return::Return(Value* v) {
 	expression = v;
+	returning = true;
+	may_return = true;
 }
 
 Return::~Return() {
@@ -30,10 +32,6 @@ void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 
 Location Return::location() const {
 	return expression->location();
-}
-
-bool Return::can_return() const {
-	return true;
 }
 
 Compiler::value Return::compile(Compiler& c) const {

@@ -66,6 +66,8 @@ void If::analyse(SemanticAnalyser* analyser) {
 		elze->analyse(analyser);
 		type += elze->type;
 	}
+	returning = then->returning and (elze != nullptr and elze->returning);
+	may_return = then->returning or (elze != nullptr and elze->returning);
 }
 
 Compiler::value If::compile(Compiler& c) const {
