@@ -175,12 +175,6 @@ public:
 	static llvm::Type* LLVM_LSVALUE_TYPE_PTR_PTR;
 	static llvm::Type* LLVM_MPZ_TYPE;
 	static llvm::Type* LLVM_MPZ_TYPE_PTR;
-	static llvm::StructType* LLVM_VECTOR_TYPE;
-	static llvm::Type* LLVM_VECTOR_TYPE_PTR;
-	static llvm::StructType* LLVM_VECTOR_INT_TYPE;
-	static llvm::Type* LLVM_VECTOR_INT_TYPE_PTR;
-	static llvm::StructType* LLVM_VECTOR_REAL_TYPE;
-	static llvm::Type* LLVM_VECTOR_REAL_TYPE_PTR;
 	static llvm::StructType* LLVM_FUNCTION_TYPE;
 	static llvm::Type* LLVM_FUNCTION_TYPE_PTR;
 	static llvm::StructType* LLVM_INTEGER_ITERATOR_TYPE;

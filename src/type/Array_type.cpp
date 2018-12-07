@@ -2,8 +2,13 @@
 #include "../colors.h"
 #include "Type.hpp"
 #include <iostream>
+#include "../compiler/LLVMCompiler.hpp"
 
 namespace ls {
+
+llvm::Type* Array_type::any_array_type = nullptr;
+llvm::Type* Array_type::int_array_type = nullptr;
+llvm::Type* Array_type::real_array_type = nullptr;
 
 Type Array_type::element() const {
 	return _element;
@@ -25,11 +30,11 @@ bool Array_type::compatible(const Base_type* type) const {
 llvm::Type* Array_type::llvm() const {
 	const auto merged = _element.fold();
 	if (merged.is_integer()) {
-		return Type::LLVM_VECTOR_INT_TYPE_PTR;
+		return get_int_array_type();
 	} else if (merged.is_real()) {
-		return Type::LLVM_VECTOR_REAL_TYPE_PTR;
+		return get_real_array_type();
 	} else {
-		return Type::LLVM_VECTOR_TYPE_PTR;
+		return get_any_array_type();
 	}
 }
 Type Array_type::iterator() const {
@@ -44,6 +49,52 @@ std::string Array_type::clazz() const {
 std::ostream& Array_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
 	return os;
+}
+
+llvm::Type* Array_type::get_any_array_type() {
+	if (any_array_type == nullptr) {
+		any_array_type = llvm::StructType::create("lsarray_any",
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt1Ty(LLVMCompiler::context),
+			Type::LLVM_LSVALUE_TYPE_PTR_PTR,
+			Type::LLVM_LSVALUE_TYPE_PTR_PTR,
+			Type::LLVM_LSVALUE_TYPE_PTR_PTR
+		)->getPointerTo();
+	}
+	return any_array_type;
+}
+llvm::Type* Array_type::get_int_array_type() {
+	if (int_array_type == nullptr) {
+		int_array_type = llvm::StructType::create("lsarray_int",
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt1Ty(LLVMCompiler::context),
+			llvm::Type::getInt32PtrTy(LLVMCompiler::context),
+			llvm::Type::getInt32PtrTy(LLVMCompiler::context),
+			llvm::Type::getInt32PtrTy(LLVMCompiler::context)
+		)->getPointerTo();
+	}
+	return int_array_type;
+}
+llvm::Type* Array_type::get_real_array_type() {
+	if (real_array_type == nullptr) {
+		real_array_type = llvm::StructType::create("lsarray_real",
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt32Ty(LLVMCompiler::context),
+			llvm::Type::getInt1Ty(LLVMCompiler::context),
+			llvm::Type::getDoublePtrTy(LLVMCompiler::context),
+			llvm::Type::getDoublePtrTy(LLVMCompiler::context),
+			llvm::Type::getDoublePtrTy(LLVMCompiler::context)
+		)->getPointerTo();
+	}
+	return real_array_type;
 }
 
 }

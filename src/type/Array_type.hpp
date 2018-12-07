@@ -21,6 +21,13 @@ public:
 	virtual Type iterator() const override;
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream&) const override;
+
+	static llvm::Type* any_array_type;
+	static llvm::Type* int_array_type;
+	static llvm::Type* real_array_type;
+	static llvm::Type* get_any_array_type();
+	static llvm::Type* get_int_array_type();
+	static llvm::Type* get_real_array_type();
 };
 
 }

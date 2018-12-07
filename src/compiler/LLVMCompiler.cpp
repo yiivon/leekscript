@@ -38,47 +38,15 @@ void LLVMCompiler::init() {
 	Type::LLVM_MPZ_TYPE = llvm::Type::getInt128Ty(LLVMCompiler::context);
 	Type::LLVM_MPZ_TYPE_PTR = Type::LLVM_MPZ_TYPE->getPointerTo();
 
-	Type::LLVM_VECTOR_TYPE = llvm::StructType::create("lsarray_ptr",
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt1Ty(LLVMCompiler::context), 
-		Type::LLVM_LSVALUE_TYPE_PTR_PTR,
-		Type::LLVM_LSVALUE_TYPE_PTR_PTR,
-		Type::LLVM_LSVALUE_TYPE_PTR_PTR
-	);
-	Type::LLVM_VECTOR_TYPE_PTR = Type::LLVM_VECTOR_TYPE->getPointerTo();
-
-	Type::LLVM_VECTOR_INT_TYPE = llvm::StructType::create("lsarray_int",
-		llvm::Type::getInt32Ty(LLVMCompiler::context),
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt1Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32PtrTy(LLVMCompiler::context), 
-		llvm::Type::getInt32PtrTy(LLVMCompiler::context), 
-		llvm::Type::getInt32PtrTy(LLVMCompiler::context)
-	);
-	Type::LLVM_VECTOR_INT_TYPE_PTR = Type::LLVM_VECTOR_INT_TYPE->getPointerTo();
-
-	Type::LLVM_VECTOR_REAL_TYPE = llvm::StructType::create("lsarray_real",
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt32Ty(LLVMCompiler::context), 
-		llvm::Type::getInt1Ty(LLVMCompiler::context), 
-		llvm::Type::getDoublePtrTy(LLVMCompiler::context), 
-		llvm::Type::getDoublePtrTy(LLVMCompiler::context), 
-		llvm::Type::getDoublePtrTy(LLVMCompiler::context)
-	);
-	Type::LLVM_VECTOR_REAL_TYPE_PTR = Type::LLVM_VECTOR_REAL_TYPE->getPointerTo();
-
 	Type::LLVM_FUNCTION_TYPE = llvm::StructType::create("lsfunction", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context),
 	llvm::Type::getInt64Ty(LLVMCompiler::context)->getPointerTo());
 	Type::LLVM_FUNCTION_TYPE_PTR = Type::LLVM_FUNCTION_TYPE->getPointerTo();
 
 	Type::LLVM_INTEGER_ITERATOR_TYPE = llvm::StructType::create("integeriterator", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context));
+
+	Array_type::any_array_type = nullptr;
+	Array_type::int_array_type = nullptr;
+	Array_type::real_array_type = nullptr;
 }
 
 void LLVMCompiler::end() {
