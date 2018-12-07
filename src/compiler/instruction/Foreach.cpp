@@ -30,7 +30,7 @@ void Foreach::print(ostream& os, int indent, bool debug) const {
 		os << key->content;
 		os << " : ";
 	}
-	os << value->content;
+	os << value->content << " " << container->type.element();
 
 	os << " in ";
 	container->print(os, indent + 1, debug);
