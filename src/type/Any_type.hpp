@@ -14,6 +14,9 @@ public:
 	virtual bool operator == (const Base_type*) const override;
 	virtual llvm::Type* llvm() const;
 	virtual std::ostream& print(std::ostream& os) const override;
+
+	static llvm::Type* any_type;
+	static llvm::Type* get_any_type();
 };
 
 }

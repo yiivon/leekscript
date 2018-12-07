@@ -170,9 +170,6 @@ public:
 	static const Type LONG_ITERATOR;
 	static const Type MPZ_ITERATOR;
 
-	static llvm::StructType* LLVM_LSVALUE_TYPE;
-	static llvm::Type* LLVM_LSVALUE_TYPE_PTR;
-	static llvm::Type* LLVM_LSVALUE_TYPE_PTR_PTR;
 	static llvm::Type* LLVM_MPZ_TYPE;
 	static llvm::Type* LLVM_MPZ_TYPE_PTR;
 	static llvm::StructType* LLVM_FUNCTION_TYPE;

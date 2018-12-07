@@ -86,13 +86,13 @@ void Test::test_types() {
 
 	section("LLVM type");
 	assert(ls::Type().llvm_type() == llvm::Type::getVoidTy(ls::LLVMCompiler::context));
-	assert(ls::Type::ANY.llvm_type() == ls::Type::LLVM_LSVALUE_TYPE_PTR);
+	assert(ls::Type::ANY.llvm_type() == ls::Any_type::get_any_type());
 	assert(ls::Type::INTEGER.llvm_type() == llvm::Type::getInt32Ty(ls::LLVMCompiler::context));
 	assert(ls::Type::BOOLEAN.llvm_type() == llvm::Type::getInt1Ty(ls::LLVMCompiler::context));
 	assert(ls::Type::REAL.llvm_type() == llvm::Type::getDoubleTy(ls::LLVMCompiler::context));
 	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::REAL}).llvm_type() == llvm::Type::getDoubleTy(ls::LLVMCompiler::context));
-	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::STRING}).llvm_type() == ls::Type::LLVM_LSVALUE_TYPE_PTR);
-	assert(p1.llvm_type() == ls::Type::LLVM_LSVALUE_TYPE_PTR);
+	assert(ls::Type({ls::RawType::INTEGER, ls::RawType::STRING}).llvm_type() == ls::Any_type::get_any_type());
+	assert(p1.llvm_type() == ls::Any_type::get_any_type());
 
 	section("Placeholder types");
 	assert(p1.is_any());

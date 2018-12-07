@@ -1,6 +1,7 @@
 #include "Set_type.hpp"
 #include "../colors.h"
 #include <iostream>
+#include "Any_type.hpp"
 
 namespace ls {
 
@@ -20,7 +21,7 @@ bool Set_type::compatible(const Base_type* type) const {
 	return false;
 }
 llvm::Type* Set_type::llvm() const {
-	return Type::LLVM_LSVALUE_TYPE_PTR;
+	return Any_type::get_any_type();
 }
 std::string Set_type::clazz() const {
 	return "Set";

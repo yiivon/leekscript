@@ -30,10 +30,6 @@ void LLVMCompiler::init() {
 
 	mappings.clear();
 
-	Type::LLVM_LSVALUE_TYPE = llvm::StructType::create("lsvalue", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context));
-	Type::LLVM_LSVALUE_TYPE_PTR = Type::LLVM_LSVALUE_TYPE->getPointerTo();
-	Type::LLVM_LSVALUE_TYPE_PTR_PTR = Type::LLVM_LSVALUE_TYPE_PTR->getPointerTo();
-
 	// Type::LLVM_MPZ_TYPE = llvm::StructType::create({llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context)}, "mpz", true);
 	Type::LLVM_MPZ_TYPE = llvm::Type::getInt128Ty(LLVMCompiler::context);
 	Type::LLVM_MPZ_TYPE_PTR = Type::LLVM_MPZ_TYPE->getPointerTo();
@@ -43,10 +39,6 @@ void LLVMCompiler::init() {
 	Type::LLVM_FUNCTION_TYPE_PTR = Type::LLVM_FUNCTION_TYPE->getPointerTo();
 
 	Type::LLVM_INTEGER_ITERATOR_TYPE = llvm::StructType::create("integeriterator", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context));
-
-	Array_type::any_array_type = nullptr;
-	Array_type::int_array_type = nullptr;
-	Array_type::real_array_type = nullptr;
 }
 
 void LLVMCompiler::end() {
@@ -86,7 +78,7 @@ LLVMCompiler::value LLVMCompiler::new_long(long l) const {
 
 LLVMCompiler::value LLVMCompiler::new_pointer(const void* p) const {
 	auto longp = llvm::ConstantInt::get(context, llvm::APInt(64, (long) p, false));
-	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, Type::LLVM_LSVALUE_TYPE_PTR), Type::ANY};
+	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, Type::ANY.llvm_type()), Type::ANY};
 }
 
 LLVMCompiler::value LLVMCompiler::new_object() const {

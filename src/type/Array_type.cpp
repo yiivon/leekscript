@@ -3,6 +3,7 @@
 #include "Type.hpp"
 #include <iostream>
 #include "../compiler/LLVMCompiler.hpp"
+#include "Any_type.hpp"
 
 namespace ls {
 
@@ -59,9 +60,9 @@ llvm::Type* Array_type::get_any_array_type() {
 			llvm::Type::getInt32Ty(LLVMCompiler::context),
 			llvm::Type::getInt32Ty(LLVMCompiler::context),
 			llvm::Type::getInt1Ty(LLVMCompiler::context),
-			Type::LLVM_LSVALUE_TYPE_PTR_PTR,
-			Type::LLVM_LSVALUE_TYPE_PTR_PTR,
-			Type::LLVM_LSVALUE_TYPE_PTR_PTR
+			Any_type::get_any_type()->getPointerTo(),
+			Any_type::get_any_type()->getPointerTo(),
+			Any_type::get_any_type()->getPointerTo()
 		)->getPointerTo();
 	}
 	return any_array_type;

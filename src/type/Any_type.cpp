@@ -1,18 +1,28 @@
 #include "Any_type.hpp"
 #include "Type.hpp"
 #include "../colors.h"
+#include "../compiler/LLVMCompiler.hpp"
 
 namespace ls {
+
+llvm::Type* Any_type::any_type = nullptr;
 
 bool Any_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Any_type*>(type);
 }
 llvm::Type* Any_type::llvm() const {
-	return Type::LLVM_LSVALUE_TYPE_PTR;
+	return Any_type::get_any_type();
 }
 std::ostream& Any_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "any" << END_COLOR;
 	return os;
+}
+
+llvm::Type* Any_type::get_any_type() {
+	if (any_type == nullptr) {
+		any_type = llvm::StructType::create("lsvalue", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context))->getPointerTo();
+	}
+	return any_type;
 }
 
 }

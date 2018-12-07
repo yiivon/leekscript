@@ -12,9 +12,6 @@ using namespace std;
 
 namespace ls {
 
-llvm::StructType* Type::LLVM_LSVALUE_TYPE;
-llvm::Type* Type::LLVM_LSVALUE_TYPE_PTR;
-llvm::Type* Type::LLVM_LSVALUE_TYPE_PTR_PTR;
 llvm::Type* Type::LLVM_MPZ_TYPE;
 llvm::Type* Type::LLVM_MPZ_TYPE_PTR;
 llvm::StructType* Type::LLVM_FUNCTION_TYPE;

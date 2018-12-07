@@ -1,6 +1,7 @@
 #include "Placeholder_type.hpp"
 #include "../colors.h"
 #include "Type.hpp"
+#include "Any_type.hpp"
 
 namespace ls {
 
@@ -16,7 +17,7 @@ bool Placeholder_type::compatible(const Base_type* type) const {
 }
 llvm::Type* Placeholder_type::llvm() const {
 	// assert(false && "Placeholder type should not be compiled");
-	return Type::LLVM_LSVALUE_TYPE_PTR;
+	return Any_type::get_any_type();
 }
 std::ostream& Placeholder_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << _name;

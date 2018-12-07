@@ -2,6 +2,7 @@
 #include "Any_type.hpp"
 #include "../colors.h"
 #include <iostream>
+#include "Any_type.hpp"
 
 namespace ls {
 
@@ -27,7 +28,7 @@ std::string Map_type::clazz() const {
 	return "Map";
 }
 llvm::Type* Map_type::llvm() const {
-	return Type::LLVM_LSVALUE_TYPE_PTR;
+	return Any_type::get_any_type();
 }
 std::ostream& Map_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "map" << END_COLOR << "<" << _key << ", " << _element << ">";

@@ -2,6 +2,7 @@
 #include "../colors.h"
 #include "Type.hpp"
 #include "Placeholder_type.hpp"
+#include "Any_type.hpp"
 
 namespace ls {
 
@@ -34,7 +35,7 @@ Type Function_type::argument(size_t i) const {
 	return Type::ANY;
 }
 llvm::Type* Function_type::llvm() const {
-	return Type::LLVM_LSVALUE_TYPE_PTR;
+	return Any_type::get_any_type();
 }
 std::string Function_type::clazz() const {
 	return "Function";

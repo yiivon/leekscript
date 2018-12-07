@@ -23,7 +23,7 @@ llvm::Type* Iterator_type::llvm() const {
 		return llvm::Type::getInt32PtrTy(LLVMCompiler::context);
 	}
 	if (_container == Type::PTR_ARRAY_ITERATOR) {
-		return Type::LLVM_LSVALUE_TYPE_PTR->getPointerTo();
+		return Any_type::get_any_type()->getPointerTo();
 	}
 }
 std::string Iterator_type::clazz() const {
