@@ -884,7 +884,7 @@ LLVMCompiler::value LLVMCompiler::insn_array_end(LLVMCompiler::value array) cons
 	assert(array.t.llvm_type() == array.v->getType());
 	auto array_type = array.v->getType()->getPointerElementType();
 	auto raw_data = builder.CreateStructGEP(array_type, array.v, 6);
-	return {builder.CreateLoad(raw_data), Type::ANY};
+	return {builder.CreateLoad(raw_data), array.t.iterator()};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const {
@@ -997,8 +997,8 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	if (v.t.is_array()) {
 		auto array_type = v.v->getType()->getPointerElementType();
 		auto raw_data = builder.CreateStructGEP(array_type, v.v, 5);
-		auto it_type = v.t.element().llvm_type()->getPointerTo();
-		value it = {CreateEntryBlockAlloca("it", it_type), Type::ANY};
+		auto it_type = v.t.iterator();
+		value it = {CreateEntryBlockAlloca("it", it_type.llvm_type()), it_type};
 		insn_store(it, {builder.CreateLoad(raw_data), Type::ANY});
 		return it;
 	}
@@ -1077,7 +1077,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompiler::value it) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	// assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
+	assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
 	log_insn_code("iterator.end()");
 	if (v.t.is_array()) {
 		return {builder.CreateICmpEQ(insn_load(it).v, insn_array_end(v).v), Type::BOOLEAN};
@@ -1115,14 +1115,15 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler::value it, LLVMCompiler::value previous) const {
-	// assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
-	// assert(previous.t.llvm_type() == previous.v->getType());
+	assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
+	assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.get()");
 	if (collectionType.is_array()) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr)
+				if (previous != nullptr) {
 					LSValue::delete_ref(previous);
+				}
 			});
 		}
 		auto e = insn_load(it);
@@ -1188,7 +1189,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 
 LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompiler::value it, LLVMCompiler::value previous) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	// assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
+	assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
 	// assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.key()");
 	if (v.t.is_array()) {
@@ -1233,7 +1234,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 }
 
 void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value it) const {
-	// assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
+	assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
 	log_insn_code("iterator.increment()");
 	if (collectionType.is_array()) {
 		auto it2 = insn_load(it);

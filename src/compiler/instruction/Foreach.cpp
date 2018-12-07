@@ -111,6 +111,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	// Create variables
 	auto value_var = c.create_and_add_var(value->content, container->type.element());
+	c.insn_store(value_var, c.new_null());
 
 	LLVMCompiler::value key_var;
 	LLVMCompiler::value key_v;
@@ -145,7 +146,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	// loop label:
 	c.insn_label(&loop_label);
 	// Get Value
-	c.insn_store(value_var, c.iterator_get(container->type, it, value_var));
+	c.insn_store(value_var, c.iterator_get(container->type, it, c.insn_load(value_var)));
 	// Get Key
 	if (key != nullptr) {
 		c.insn_store(key_var, c.iterator_key(container_v, it, key_var));

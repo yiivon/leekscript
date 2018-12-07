@@ -126,8 +126,9 @@ void Test::test_loops() {
 	code("for (v in [1, 2, 3, 4]) do end").equals("(void)");
 	code("var s = 0 for v in [1, 2, 3, 4] { s += v } s").equals("10");
 	code("var s = 0.0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.97);
+	// Wrong type
 	DISABLED_code("var s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.97);
-	DISABLED_code("var s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s").equals("'salut ça va ?'");
+	code("var s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s").equals("'salut ça va ?'");
 	DISABLED_code("var a = 0 let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] for i in x { if i < 5 { continue } a++ } a").equals("5");
 	code("var s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s").equals("20");
 	DISABLED_code("var s = '' for k : v in ['a': 1, 'b': 2, 'c': 3, 'd': 4] { s += v * k } s").equals("'abbcccdddd'");

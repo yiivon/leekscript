@@ -24,16 +24,16 @@ bool Iterator_type::compatible(const Base_type* type) const {
 llvm::Type* Iterator_type::llvm() const {
 	if (_container == Type::INTEGER) {
 		return get_integer_iterator();
-	}
-	if (_container == Type::LONG) {
+	} else if (_container == Type::LONG) {
 		return get_long_iterator();
-	}
-	if (_container == Type::INT_ARRAY_ITERATOR) {
+	} else if (_container == Type::INT_ARRAY) {
 		return llvm::Type::getInt32PtrTy(LLVMCompiler::context);
-	}
-	if (_container == Type::PTR_ARRAY_ITERATOR) {
+	} else if (_container == Type::REAL_ARRAY) {
+		return llvm::Type::getDoublePtrTy(LLVMCompiler::context);
+	} else if (_container == Type::PTR_ARRAY) {
 		return Any_type::get_any_type()->getPointerTo();
 	}
+	assert(false && "No LLVM type for this iterator");
 }
 std::string Iterator_type::clazz() const {
 	return "Iterator";
