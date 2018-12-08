@@ -155,6 +155,10 @@ const Type Type::key() const {
 	if (_types.size() == 0) { return {}; }
 	return _types[0]->key();
 }
+const Type Type::member(int i) const {
+	if (_types.size() == 0) { return {}; }
+	return _types[0]->member(i);
+}
 
 void Type::operator += (const Type type) {
 	for (const auto& t : type._types) {

@@ -12,6 +12,9 @@ Type Base_type::element() const {
 Type Base_type::key() const {
 	return {};
 }
+Type Base_type::member(int) const {
+	return {};
+}
 bool Base_type::operator == (const Base_type*) const {
 	return false;
 }

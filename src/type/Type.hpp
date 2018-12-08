@@ -32,6 +32,7 @@ public:
 	const std::vector<Type> arguments() const;
 	const Type element() const;
 	const Type key() const;
+	const Type member(int i) const;
 
 	void toJson(std::ostream&) const;
 	std::string getJsonName() const;
