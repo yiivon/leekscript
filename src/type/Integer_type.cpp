@@ -8,6 +8,9 @@ namespace ls {
 Type Integer_type::element() const {
 	return Type::INTEGER;
 }
+Type Integer_type::iterator() const {
+	return Type::INTEGER_ITERATOR;
+}
 bool Integer_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Integer_type*>(type);
 }
