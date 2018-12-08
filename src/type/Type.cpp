@@ -470,6 +470,9 @@ Type Type::closure(Type return_type, std::vector<Type> arguments, const Function
 Type Type::iterator(const Type container) {
 	return { new Iterator_type(container) };
 }
+Type Type::structure(const std::string name, std::initializer_list<Type> types) {
+	return { new Struct_type(name, types) };
+}
 bool Type::all(std::function<bool(const Base_type*)> fun) const {
 	return std::all_of(_types.begin(), _types.end(), fun);
 }
