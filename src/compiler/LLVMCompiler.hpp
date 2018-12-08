@@ -177,6 +177,7 @@ public:
 	value new_object_class(value clazz) const;
 	value new_mpz(long value = 0) const;
 	value new_mpz_init(const mpz_t mpz) const;
+	value create_entry(const std::string& name, Type type) const;
 
 	// Conversions
 	value to_int(value) const;

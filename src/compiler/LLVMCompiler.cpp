@@ -141,6 +141,10 @@ LLVMCompiler::value LLVMCompiler::new_array(Type type, std::vector<LLVMCompiler:
 	return array;
 }
 
+LLVMCompiler::value LLVMCompiler::create_entry(const std::string& name, Type type) const {
+	return { CreateEntryBlockAlloca(name, type.llvm_type()), type };
+}
+
 LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 	// assert(v.t.llvm_type() == v.v->getType());
 	// assert(v.t.isNumber());
@@ -997,8 +1001,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	if (v.t.is_array()) {
 		auto array_type = v.v->getType()->getPointerElementType();
 		auto raw_data = builder.CreateStructGEP(array_type, v.v, 5);
-		auto it_type = v.t.iterator();
-		value it = {CreateEntryBlockAlloca("it", it_type.llvm_type()), it_type};
+		value it = create_entry("it", v.t.iterator());
 		insn_store(it, {builder.CreateLoad(raw_data), Type::ANY});
 		return it;
 	}
@@ -1514,7 +1517,7 @@ bool LLVMCompiler::is_current_function_closure() const {
 LLVMCompiler::value LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value value) {
 	assert((value.v != nullptr) && "value must not be null");
 	assert(value.t.llvm_type() == value.v->getType());
-	LLVMCompiler::value var = { CreateEntryBlockAlloca(name, value.t.llvm_type()), value.t };
+	auto var = create_entry(name, value.t);
 	insn_store(var, value);
 	variables.back()[name] = var;
 	return var;
@@ -1522,7 +1525,7 @@ LLVMCompiler::value LLVMCompiler::add_var(const std::string& name, LLVMCompiler:
 
 LLVMCompiler::value LLVMCompiler::create_and_add_var(const std::string& name, Type type) {
 	// std::cout << "Compiler::create_and_add_var(" << name << ", " << type << ")" << std::endl;
-	LLVMCompiler::value var = { CreateEntryBlockAlloca(name, type.llvm_type()), type };
+	auto var = create_entry(name, type);
 	variables.back()[name] = var;
 	return var;
 }
