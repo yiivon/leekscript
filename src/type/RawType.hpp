@@ -16,7 +16,6 @@
 #include "Real_type.hpp"
 #include "Null_type.hpp"
 #include "Map_type.hpp"
-#include "Iterator_type.hpp"
 #include "Integer_type.hpp"
 #include "Placeholder_type.hpp"
 #include "Struct_type.hpp"

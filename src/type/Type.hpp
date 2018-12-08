@@ -185,7 +185,6 @@ public:
 	static Type tmp_interval();
 	static Type fun(Type return_type, std::vector<Type> arguments, const Function* function = nullptr);
 	static Type closure(Type return_type, std::vector<Type> arguments, const Function* function = nullptr);
-	static Type iterator(const Type);
 	static Type structure(const std::string name, std::initializer_list<Type> types);
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);

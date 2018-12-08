@@ -97,9 +97,9 @@ const Type Type::CLOSURE(new Function_type({}, {}, true));
 const Type Type::CLASS(RawType::CLASS, true);
 const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 
-const Type Type::STRING_ITERATOR = Type::iterator(Type::STRING);
-const Type Type::INTERVAL_ITERATOR = Type::iterator(Type::INTERVAL);
-const Type Type::SET_ITERATOR = Type::iterator(Type::PTR_SET);
+const Type Type::STRING_ITERATOR = Type::STRING;
+const Type Type::INTERVAL_ITERATOR = Type::INTERVAL;
+const Type Type::SET_ITERATOR = Type::PTR_SET;
 const Type Type::INTEGER_ITERATOR = Type::structure("int_iterator", {
 	Type::INTEGER,
 	Type::INTEGER,
@@ -110,10 +110,10 @@ const Type Type::LONG_ITERATOR = Type::structure("long_iterator", {
 	Type::LONG,
 	Type::INTEGER
 });
-const Type Type::MPZ_ITERATOR = Type::iterator(Type::MPZ);
-const Type Type::INT_ARRAY_ITERATOR = Type::iterator(Type::INT_ARRAY);
-const Type Type::REAL_ARRAY_ITERATOR = Type::iterator(Type::REAL_ARRAY);
-const Type Type::PTR_ARRAY_ITERATOR = Type::iterator(Type::PTR_ARRAY);
+const Type Type::MPZ_ITERATOR = Type::MPZ;
+const Type Type::INT_ARRAY_ITERATOR = Type::INTEGER.pointer();
+const Type Type::REAL_ARRAY_ITERATOR = Type::REAL.pointer();
+const Type Type::PTR_ARRAY_ITERATOR = Type::ANY.pointer();
 
 Type::Type() {
 	native = false;
@@ -488,9 +488,6 @@ Type Type::fun(Type return_type, std::vector<Type> arguments, const Function* fu
 }
 Type Type::closure(Type return_type, std::vector<Type> arguments, const Function* function) {
 	return { new Function_type(return_type, arguments, true, function), false, false, true };
-}
-Type Type::iterator(const Type container) {
-	return { new Iterator_type(container) };
 }
 Type Type::structure(const std::string name, std::initializer_list<Type> types) {
 	return { new Struct_type(name, types) };

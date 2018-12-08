@@ -37,7 +37,7 @@ void Test::test_types() {
 	assert_print(ls::Type::REAL_ARRAY, BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "real" END_COLOR ">");
 	assert_print(ls::Type::PTR_ARRAY, BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "any" END_COLOR ">");
 	assert_print(ls::Type::OBJECT, BLUE_BOLD "object" END_COLOR);
-	assert_print(ls::Type::INT_ARRAY_ITERATOR, BLUE_BOLD "iterator" END_COLOR "<" BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "int" END_COLOR ">>");
+	// assert_print(ls::Type::INT_ARRAY_ITERATOR, BLUE_BOLD "iterator" END_COLOR "<" BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "int" END_COLOR ">>");
 	assert_print(ls::Type({ls::RawType::INTEGER, ls::RawType::STRING}), BLUE_BOLD "int" END_COLOR " | " BLUE_BOLD "string" END_COLOR);
 
 	section("operator ==");
