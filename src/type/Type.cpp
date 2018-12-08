@@ -100,8 +100,16 @@ const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 const Type Type::STRING_ITERATOR = Type::iterator(Type::STRING);
 const Type Type::INTERVAL_ITERATOR = Type::iterator(Type::INTERVAL);
 const Type Type::SET_ITERATOR = Type::iterator(Type::PTR_SET);
-const Type Type::INTEGER_ITERATOR = Type::iterator(Type::INTEGER);
-const Type Type::LONG_ITERATOR = Type::iterator(Type::LONG);
+const Type Type::INTEGER_ITERATOR = Type::structure("int_iterator", {
+	Type::INTEGER,
+	Type::INTEGER,
+	Type::INTEGER
+});
+const Type Type::LONG_ITERATOR = Type::structure("long_iterator", {
+	Type::LONG,
+	Type::LONG,
+	Type::INTEGER
+});
 const Type Type::MPZ_ITERATOR = Type::iterator(Type::MPZ);
 const Type Type::INT_ARRAY_ITERATOR = Type::iterator(Type::INT_ARRAY);
 const Type Type::REAL_ARRAY_ITERATOR = Type::iterator(Type::REAL_ARRAY);
