@@ -16,7 +16,6 @@ class Type {
 public:
 	std::vector<const Base_type*> _types;
 	bool native; // A C++ object, memory management is done outside the language
-	bool pointer = false;
 	bool temporary = false;
 	bool constant = false;
 	bool reference = false;
@@ -47,6 +46,7 @@ public:
 	llvm::Type* llvm_type() const;
 	Type add_pointer() const;
 	Type iterator() const;
+	Type pointer() const;
 	bool all(std::function<bool(const Base_type*)>) const;
 
 	void operator += (const Type type);
@@ -73,6 +73,7 @@ public:
 	bool is_null() const;
 	bool is_class() const;
 	bool is_placeholder() const;
+	bool is_pointer() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }

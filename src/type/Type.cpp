@@ -314,7 +314,6 @@ llvm::Type* Type::llvm_type() const {
 
 Type Type::add_pointer() const {
 	Type new_type = *this;
-	new_type.pointer = true;
 	return new_type;
 }
 
@@ -323,6 +322,9 @@ Type Type::iterator() const {
 		return fold()._types[0]->iterator();
 	}
 	assert(false && "No iterator for void");
+}
+Type Type::pointer() const {
+	return { new Pointer_type(*this) };
 }
 
 template <class T> bool Type::is_type() const {
@@ -347,6 +349,7 @@ bool Type::is_object() const { return is_type<Object_type>(); }
 bool Type::is_null() const { return is_type<Null_type>(); }
 bool Type::is_class() const { return is_type<Class_type>(); }
 bool Type::is_placeholder() const { return is_type<Placeholder_type>(); }
+bool Type::is_pointer() const { return is_type<Pointer_type>(); }
 bool Type::is_closure() const {
 	return _types.size() && all([&](const Base_type* type) {
 		auto f = dynamic_cast<const Function_type*>(type);

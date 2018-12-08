@@ -1366,7 +1366,7 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 	auto i = mappings.find(function_name);
 	if (i == mappings.end()) {
 		auto ret_type = return_type.llvm_type();
-		if (return_type.pointer) ret_type = ret_type->getPointerTo();
+		if (return_type.is_pointer()) ret_type = ret_type->getPointerTo();
 		auto fun_type = llvm::FunctionType::get(ret_type, llvm_types, false);
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
 		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});

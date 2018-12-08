@@ -212,7 +212,7 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	auto o = object->compile(c);
 	object->compile_end(c);
 	auto k = c.new_pointer(&field->content);
-	return c.insn_call(type.add_pointer(), {o, k}, (void*) +[](LSValue* object, std::string* key) {
+	return c.insn_call(type.pointer(), {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attrL(*key);
 	});
 }

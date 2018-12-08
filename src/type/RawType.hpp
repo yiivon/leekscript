@@ -20,6 +20,7 @@
 #include "Integer_type.hpp"
 #include "Placeholder_type.hpp"
 #include "Struct_type.hpp"
+#include "Pointer_type.hpp"
 
 namespace ls {
 
