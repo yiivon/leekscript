@@ -50,7 +50,7 @@ void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
 Compiler::value ClassDeclaration::compile(Compiler& c) const {
 
-	auto clazz = c.new_pointer(ls_class);
+	auto clazz = c.new_class(ls_class);
 
 	for (auto vd : fields) {
 		for (size_t i = 0; i < vd->variables.size(); ++i) {
