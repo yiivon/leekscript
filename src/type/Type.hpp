@@ -47,6 +47,7 @@ public:
 	Type add_pointer() const;
 	Type iterator() const;
 	Type pointer() const;
+	Type pointed() const;
 	bool all(std::function<bool(const Base_type*)>) const;
 
 	void operator += (const Type type);

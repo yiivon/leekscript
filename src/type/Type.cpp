@@ -326,6 +326,13 @@ Type Type::iterator() const {
 Type Type::pointer() const {
 	return { new Pointer_type(*this) };
 }
+Type Type::pointed() const {
+	assert(is_pointer());
+	if (_types.size() > 0) {
+		return dynamic_cast<const Pointer_type*>(_types[0])->pointed();
+	}
+	assert(false && "Void type is not pointer");
+}
 
 template <class T> bool Type::is_type() const {
 	return _types.size() && all([&](const Base_type* type) {

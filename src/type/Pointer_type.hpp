@@ -11,6 +11,7 @@ class Pointer_type : public Base_type {
 	llvm::Type* _llvm_type;
 public:
 	Pointer_type(Type type);
+	Type pointed() const;
 	virtual const std::string getName() const { return "pointer"; }
 	virtual const std::string getJsonName() const { return "pointer"; }
 	virtual bool operator == (const Base_type*) const override;
