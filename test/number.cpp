@@ -90,6 +90,7 @@ void Test::test_numbers() {
 	code("var a = 56 a %= 17").equals("5");
 	code("var a = 15 a **= 2").equals("225");
 	code("let a = 1.5 a * 0.5").equals("0.75");
+	code("var i = 1m i = i + 2m").equals("3");
 
 	section("multiple operations");
 	code("(33 - 2) / 2").equals("15.5");
