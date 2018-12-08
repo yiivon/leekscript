@@ -146,7 +146,7 @@ LLVMCompiler::value LLVMCompiler::new_array(Type type, std::vector<LLVMCompiler:
 }
 
 LLVMCompiler::value LLVMCompiler::create_entry(const std::string& name, Type type) const {
-	return { CreateEntryBlockAlloca(name, type.llvm_type()), type };
+	return { CreateEntryBlockAlloca(name, type.llvm_type()), type.pointer() };
 }
 
 LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
@@ -745,15 +745,20 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 }
 
 LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v) const {
-	// assert(v.t.llvm_type() == v.v->getType());
-	LLVMCompiler::value r {builder.CreateLoad(v.v), v.t};
+	// std::cout << "insn_load " << v.t << " " << v.v->getType() << std::endl;
+	assert(v.t.llvm_type() == v.v->getType());
+	assert(v.t.is_pointer());
+	LLVMCompiler::value r { builder.CreateLoad(v.v), v.t.pointed() };
 	log_insn(4) << "load " << dump_val(v) << " " << dump_val(r) << std::endl;
+	assert(r.t == v.t.pointed());
+	assert(r.t.llvm_type() == r.v->getType());
 	return r;
 }
 LLVMCompiler::value LLVMCompiler::insn_load_member(LLVMCompiler::value v, int pos) const {
-	assert(v.t.llvm_type()->getPointerTo() == v.v->getType());
-	auto s = builder.CreateStructGEP(v.t.llvm_type(), v.v, pos);
-	return { builder.CreateLoad(s), v.t.member(pos) };
+	assert(v.t.llvm_type() == v.v->getType());
+	assert(v.t.is_pointer());
+	auto s = builder.CreateStructGEP(v.t.pointed().llvm_type(), v.v, pos);
+	return { builder.CreateLoad(s), v.t.pointed().member(pos) };
 }
 
 void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) const {
@@ -765,10 +770,11 @@ void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) cons
 	log_insn(4) << "store " << dump_val(x) << " " << dump_val(y) << std::endl;
 }
 void LLVMCompiler::insn_store_member(LLVMCompiler::value x, int pos, LLVMCompiler::value y) const {
-	assert(x.t.llvm_type()->getPointerTo() == x.v->getType());
+	assert(x.t.llvm_type() == x.v->getType());
 	assert(y.t.llvm_type() == y.v->getType());
-	assert(x.t.member(pos) == y.t);
-	auto s = builder.CreateStructGEP(x.t.llvm_type(), x.v, pos);
+	assert(x.t.is_pointer());
+	assert(x.t.pointed().member(pos) == y.t);
+	auto s = builder.CreateStructGEP(x.t.pointed().llvm_type(), x.v, pos);
 	builder.CreateStore(y.v, s);
 }
 
@@ -804,8 +810,8 @@ LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
 }
 
 void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
-	assert(v.t.llvm_type() == v.v->getType());
 	// std::cout << "insn_delete " << v.t << " " << v.v->getType() << std::endl;
+	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.must_manage_memory()) {
 		// insn_call({}, {v}, (void*) &LSValue::delete_ref);
 		insn_if_not(insn_native(v), [&]() {
@@ -891,13 +897,16 @@ void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::valu
 LLVMCompiler::value LLVMCompiler::insn_array_at(LLVMCompiler::value array, LLVMCompiler::value index) const {
 	assert(array.t.llvm_type() == array.v->getType());
 	assert(index.t.llvm_type() == index.v->getType());
+	assert(array.t.is_array());
 	assert(index.t.isNumber());
 	auto array_type = array.v->getType()->getPointerElementType();
 	auto raw_data = builder.CreateStructGEP(array_type, array.v, 5);
 	auto data_base = builder.CreateLoad(raw_data);
 	auto data_type = array.t.element().llvm_type()->getPointerTo();
 	auto data = builder.CreatePointerCast(data_base, data_type);
-	return {builder.CreateGEP(data, index.v), array.t.element()};
+	value r = { builder.CreateGEP(data, index.v), array.t.element().pointer() };
+	assert(r.t.llvm_type() == r.v->getType());
+	return r;
 }
 
 LLVMCompiler::value LLVMCompiler::insn_array_end(LLVMCompiler::value array) const {
@@ -1015,10 +1024,8 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	log_insn_code("iterator.begin()");
 	if (v.t.is_array()) {
-		auto array_type = v.v->getType()->getPointerElementType();
-		auto raw_data = builder.CreateStructGEP(array_type, v.v, 5);
-		value it = create_entry("it", v.t.iterator());
-		insn_store(it, {builder.CreateLoad(raw_data), Type::ANY});
+		auto it = create_entry("it", v.t.iterator());
+		insn_store(it, insn_load_member(v, 5));
 		return it;
 	}
 	else if (v.t.is_interval()) {
@@ -1090,7 +1097,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompiler::value it) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
+	assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.end()");
 	if (v.t.is_array()) {
 		return {builder.CreateICmpEQ(insn_load(it).v, insn_array_end(v).v), Type::BOOLEAN};
@@ -1116,17 +1123,17 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 		// auto end = insn_add(v, new_integer(32)); // end_ptr = &set + 24
 		// return insn_eq(ptr, end);
 	}
-	else if (it.t == Type::INTEGER_ITERATOR) {
+	else if (v.t == Type::INTEGER) {
 		return insn_eq(insn_load_member(it, 1), new_integer(0));
 	}
-	else if (it.t == Type::LONG_ITERATOR) {
+	else if (v.t == Type::LONG) {
 		return insn_eq(insn_load_member(it, 1), new_long(0));
 	}
 	return {nullptr, {}};
 }
 
 LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler::value it, LLVMCompiler::value previous) const {
-	assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
+	assert(it.t.llvm_type() == it.v->getType());
 	assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.get()");
 	if (collectionType.is_array()) {
@@ -1196,7 +1203,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 
 LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompiler::value it, LLVMCompiler::value previous) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
+	assert(it.t.llvm_type() == it.v->getType());
 	// assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.key()");
 	if (v.t.is_array()) {
@@ -1239,7 +1246,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 }
 
 void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value it) const {
-	assert(it.t.llvm_type()->getPointerTo() == it.v->getType());
+	assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.increment()");
 	if (collectionType.is_array()) {
 		auto it2 = insn_load(it);
@@ -1369,9 +1376,7 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 	auto function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
 	auto i = mappings.find(function_name);
 	if (i == mappings.end()) {
-		auto ret_type = return_type.llvm_type();
-		if (return_type.is_pointer()) ret_type = ret_type->getPointerTo();
-		auto fun_type = llvm::FunctionType::get(ret_type, llvm_types, false);
+		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
 		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
@@ -1397,15 +1402,18 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 
 		builder.SetInsertPoint(catchBlock);
 		delete_function_variables();
-		insn_call({}, {insn_load({ExceptionSlot, Type::LONG})}, +[](void* ex) {
+		insn_call({}, {{builder.CreateLoad(ExceptionSlot), Type::LONG}}, +[](void* ex) {
 			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru);
 		});
 		builder.CreateBr(continueBlock);
 
 		builder.SetInsertPoint(continueBlock);
+		assert(r.t.llvm_type() == r.v->getType());
 		return r;
 	} else {
-		return {builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type};
+		value r = { builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type };
+		assert(r.t.llvm_type() == r.v->getType());
+		return r;
 	}
 }
 
@@ -1454,8 +1462,7 @@ void LLVMCompiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			// std::cout << "delete variable block " << it->first << " " << it->second.t << " " << it->second.v->getType() << std::endl;
-			auto var = builder.CreateLoad(it->second.v, it->first.c_str());
-			insn_delete({var, it->second.t});
+			insn_delete(insn_load(it->second));
 		}
 	}
 }
@@ -1501,8 +1508,7 @@ int LLVMCompiler::get_current_function_blocks() const {
 }
 void LLVMCompiler::delete_function_variables() const {
 	for (const auto& v : function_variables.back()) {
-		auto var = builder.CreateLoad(v.v);
-		insn_delete({var, v.t});
+		insn_delete(insn_load(v));
 	}
 }
 bool LLVMCompiler::is_current_function_closure() const {
@@ -1527,7 +1533,7 @@ LLVMCompiler::value LLVMCompiler::create_and_add_var(const std::string& name, Ty
 }
 
 void LLVMCompiler::add_function_var(LLVMCompiler::value value) {
-	assert(value.t.llvm_type() == value.v->getType()->getPointerElementType());
+	assert(value.t.llvm_type() == value.v->getType());
 	function_variables.back().push_back(value);
 }
 
@@ -1557,8 +1563,8 @@ void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value v) {
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		if (variables[i].find(name) != variables[i].end()) {
 			auto& var = variables[i].at(name);
-			if (var.t != v.t) {
-				var.t = v.t;
+			if (var.t != v.t.pointer()) {
+				var.t = v.t.pointer();
 				var.v = CreateEntryBlockAlloca(name, v.t.llvm_type());
 			}
 			insn_store(var, v);

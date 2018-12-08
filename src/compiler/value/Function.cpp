@@ -444,8 +444,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 				if (cap->has_version && f) {
 					jit_cap = f->compile_version(c, cap->version);
 				} else {
-					jit_cap = c.get_var(cap->name);
-					jit_cap = {LLVMCompiler::builder.CreateLoad(jit_cap.v, cap->name.c_str()), jit_cap.t};
+					jit_cap = c.insn_load(c.get_var(cap->name));
 				}
 			} else if (cap->scope == VarScope::CAPTURE) {
 				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);

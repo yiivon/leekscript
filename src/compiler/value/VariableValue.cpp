@@ -138,14 +138,16 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		}
 		v = c.get_var(name);
 		if (!type.is_mpz()) {
-			v = {LLVMCompiler::builder.CreateLoad(v.v, name.c_str()), v.t};
+			v = c.insn_load(v);
 		} else {
-			v = {LLVMCompiler::builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v, name.c_str()), v.t};
+			v = {LLVMCompiler::builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v), v.t.pointed()};
 		}
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_load(c.insn_get_argument(name));
 	}
-	assert(v.t.llvm_type() == type.llvm_type());
+	// std::cout << v.t << " / " << type << std::endl;
+	// assert(v.t == type);
+	// assert(v.t.llvm_type() == type.llvm_type());
 	if (var->type().reference) {
 		return c.insn_load(v);
 	}
@@ -154,18 +156,18 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 }
 
 Compiler::value VariableValue::compile_l(Compiler& c) const {
-
-	if (scope == VarScope::CAPTURE) {
-		return c.insn_get_capture(capture_index, type);
-	}
 	Compiler::value v;
 	// No internal values here
 	if (scope == VarScope::LOCAL) {
 		v = c.get_var(name);
+	} else if (scope == VarScope::CAPTURE) {
+		v = c.insn_get_capture(capture_index, type);
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_get_argument(name);
 	}
-	assert(type == v.t and type.llvm_type()->getPointerTo() == v.v->getType());
+	// std::cout << "var l " << type << " " << v.t << std::endl;
+	// assert(type.pointer() == v.t);
+	// assert(type.llvm_type()->getPointerTo() == v.v->getType());
 	return v;
 }
 

@@ -12,13 +12,15 @@ Struct_type::Struct_type(const std::string name, std::initializer_list<Type> typ
 		llvm_types.push_back(type.llvm_type());
 	}
 	_llvm_type = llvm::StructType::create(llvm_types, name);
-	std::cout << "Struct type " << _llvm_type << std::endl;
 }
 Type Struct_type::member(int p) const {
 	return _types.at(p);
 }
 bool Struct_type::operator == (const Base_type* type) const {
-	return dynamic_cast<const Struct_type*>(type);
+	if (auto s = dynamic_cast<const Struct_type*>(type)) {
+		return s->_types == _types;
+	}
+	return false;
 }
 llvm::Type* Struct_type::llvm() const {
 	return _llvm_type;
