@@ -235,7 +235,9 @@ public:
 	value insn_to_any(value v) const;
 	value insn_to_bool(value v) const;
 	value insn_load(value v) const;
+	value insn_load_member(value v, int pos) const;
 	void  insn_store(value, value) const;
+	void  insn_store_member(value, int, value) const;
 	value insn_typeof(value v) const;
 	value insn_class_of(value v) const;
 	void  insn_delete(value v) const;

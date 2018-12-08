@@ -746,6 +746,11 @@ LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v) const {
 	log_insn(4) << "load " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
+LLVMCompiler::value LLVMCompiler::insn_load_member(LLVMCompiler::value v, int pos) const {
+	assert(v.t.llvm_type()->getPointerTo() == v.v->getType());
+	auto s = builder.CreateStructGEP(v.t.llvm_type(), v.v, pos);
+	return { builder.CreateLoad(s), v.t.member(pos) };
+}
 
 void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) const {
 	// std::cout << "insn_store " << x.t << " " << x.v->getType() << " " << y.t << std::endl;
@@ -754,6 +759,13 @@ void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) cons
 	// assert(y.t.llvm_type() == y.v->getType());
 	builder.CreateStore(y.v, x.v);
 	log_insn(4) << "store " << dump_val(x) << " " << dump_val(y) << std::endl;
+}
+void LLVMCompiler::insn_store_member(LLVMCompiler::value x, int pos, LLVMCompiler::value y) const {
+	assert(x.t.llvm_type()->getPointerTo() == x.v->getType());
+	assert(y.t.llvm_type() == y.v->getType());
+	assert(x.t.member(pos) == y.t);
+	auto s = builder.CreateStructGEP(x.t.llvm_type(), x.v, pos);
+	builder.CreateStore(y.v, s);
 }
 
 LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
