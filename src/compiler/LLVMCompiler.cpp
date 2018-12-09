@@ -757,6 +757,7 @@ LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v) const {
 LLVMCompiler::value LLVMCompiler::insn_load_member(LLVMCompiler::value v, int pos) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(v.t.is_pointer());
+	assert(v.t.pointed().is_struct());
 	auto s = builder.CreateStructGEP(v.t.pointed().llvm_type(), v.v, pos);
 	return { builder.CreateLoad(s), v.t.pointed().member(pos) };
 }
@@ -773,6 +774,7 @@ void LLVMCompiler::insn_store_member(LLVMCompiler::value x, int pos, LLVMCompile
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(y.t.llvm_type() == y.v->getType());
 	assert(x.t.is_pointer());
+	assert(x.t.pointed().is_struct());
 	assert(x.t.pointed().member(pos) == y.t);
 	auto s = builder.CreateStructGEP(x.t.pointed().llvm_type(), x.v, pos);
 	builder.CreateStore(y.v, s);
@@ -1058,14 +1060,13 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// return insn_load(v, 48, v.t);
 	}
 	else if (v.t.is_set()) {
-		// jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
-		// auto set_iterator = jit_type_create_struct(types, 2, 1);
-		// Compiler::value it = {jit_value_create(F, set_iterator), Type::SET_ITERATOR};
-		// jit_type_free(set_iterator);
-		// auto addr = insn_address_of(it);
-		// jit_insn_store_relative(F, addr.v, 0, insn_load(v, 48, v.t).v);
-		// jit_insn_store_relative(F, addr.v, 8, new_integer(0).v);
-		// return it;
+		auto it = create_entry("it", v.t.iterator());
+		insn_call({}, {v}, +[](LSSet<int>* set) {
+			std::cout << "set data() " << set->begin()._M_node << std::endl;
+		});
+		insn_store_member(it, 0, insn_load_member(v, 8));
+		insn_store_member(it, 1, new_integer(0));
+		return it;
 	}
 	else if (v.t.is_integer()) {
 		auto it = create_entry("it", Type::INTEGER_ITERATOR);
@@ -1117,11 +1118,10 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 		auto end = insn_add(v, new_integer(32)); // end_ptr = &map + 24
 		return insn_eq(it, end);
 	}
-	else if (it.t == Type::SET_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto ptr = insn_load(addr, 0, Type::POINTER);
-		// auto end = insn_add(v, new_integer(32)); // end_ptr = &set + 24
-		// return insn_eq(ptr, end);
+	else if (v.t.is_set()) {
+		auto node = insn_load_member(it, 0);
+		auto end = insn_call(node.t, {v}, +[](LSSet<int>* set) { return set->end()._M_node; });
+		return {builder.CreateICmpEQ(node.v, end.v), Type::BOOLEAN};
 	}
 	else if (v.t == Type::INTEGER) {
 		return insn_eq(insn_load_member(it, 1), new_integer(0));
@@ -1179,18 +1179,17 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		// insn_inc_refs(e);
 		// return e;
 	}
-	if (it.t == Type::SET_ITERATOR) {
+	if (collectionType.is_set()) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
 					LSValue::delete_ref(previous);
 			});
 		}
-		// auto addr = insn_address_of(it);
-		// auto ptr = insn_load(addr, 0, Type::POINTER);
-		// auto e = insn_load(ptr, 32, previous.t);
-		// insn_inc_refs(e);
-		// return e;
+		auto node = insn_load_member(it, 0);
+		auto e = insn_load_member(node, 4);
+		insn_inc_refs(e);
+		return e;
 	}
 	if (collectionType.is_integer()) {
 		return insn_int_div(insn_load_member(it, 0), insn_load_member(it, 1));
@@ -1232,9 +1231,8 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		// insn_inc_refs(key);
 		// return key;
 	}
-	if (it.t == Type::SET_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// return insn_load(addr, 8, Type::INTEGER);
+	if (v.t.is_set()) {
+		return insn_load_member(it, 1);
 	}
 	if (v.t.is_integer()) {
 		return insn_load_member(it, 2);
@@ -1272,14 +1270,13 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		}));
 		return;
 	}
-	if (it.t == Type::SET_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto ptr = insn_load(addr, 0, Type::POINTER);
-		// insn_store_relative(addr, 8, insn_add(insn_load(addr, 8, Type::INTEGER), new_integer(1)));
-		// insn_store_relative(addr, 0, insn_call(Type::POINTER, {ptr}, (void*) +[](LSSet<int>::iterator it) {
-		// 	it++;
-		// 	return it;
-		// }));
+	if (collectionType.is_set()) {
+		auto node = insn_load_member(it, 0);
+		insn_store_member(it, 1, insn_add(insn_load_member(it, 1), new_integer(1)));
+		insn_store_member(it, 0, insn_call(node.t, {node}, (void*) +[](LSSet<int>::iterator it) {
+			it++;
+			return it;
+		}));
 		return;
 	}
 	if (collectionType.is_integer()) {
