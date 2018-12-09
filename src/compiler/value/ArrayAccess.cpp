@@ -227,7 +227,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 					func = (void*) &LSMap<LSValue*, LSValue*>::at;
 				}
 			}
-			auto res = c.insn_call(array_element_type, {compiled_array, k}, func, "map_access");
+			auto res = c.insn_call(array_element_type, {compiled_array, k}, func, true);
 			c.insn_delete_temporary(k);
 			c.inc_ops(2);
 			return res;
