@@ -99,7 +99,6 @@ const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 
 const Type Type::STRING_ITERATOR = Type::STRING;
 const Type Type::INTERVAL_ITERATOR = Type::INTERVAL;
-const Type Type::SET_ITERATOR = Type::PTR_SET;
 const Type Type::INTEGER_ITERATOR = Type::structure("int_iterator", {
 	Type::INTEGER,
 	Type::INTEGER,
@@ -114,6 +113,18 @@ const Type Type::MPZ_ITERATOR = Type::MPZ;
 const Type Type::INT_ARRAY_ITERATOR = Type::INTEGER.pointer();
 const Type Type::REAL_ARRAY_ITERATOR = Type::REAL.pointer();
 const Type Type::PTR_ARRAY_ITERATOR = Type::ANY.pointer();
+const Type Type::INT_SET_ITERATOR = Type::structure("int_set_iterator", {
+	Type({ new Struct_type("set_node", { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER }) }).pointer(),
+	Type::INTEGER
+});
+const Type Type::REAL_SET_ITERATOR = Type::structure("real_set_iterator", {
+	Type({ new Struct_type("set_node", { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::REAL }) }).pointer(),
+	Type::INTEGER
+});
+const Type Type::PTR_SET_ITERATOR = Type::structure("any_set_iterator", {
+	Type({ new Struct_type("set_node", { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY }) }).pointer(),
+	Type::INTEGER
+});
 
 Type::Type() {
 	native = false;
@@ -357,6 +368,7 @@ bool Type::is_null() const { return is_type<Null_type>(); }
 bool Type::is_class() const { return is_type<Class_type>(); }
 bool Type::is_placeholder() const { return is_type<Placeholder_type>(); }
 bool Type::is_pointer() const { return is_type<Pointer_type>(); }
+bool Type::is_struct() const { return is_type<Struct_type>(); }
 bool Type::is_closure() const {
 	return _types.size() && all([&](const Base_type* type) {
 		auto f = dynamic_cast<const Function_type*>(type);

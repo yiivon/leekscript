@@ -75,6 +75,7 @@ public:
 	bool is_class() const;
 	bool is_placeholder() const;
 	bool is_pointer() const;
+	bool is_struct() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }
@@ -172,6 +173,9 @@ public:
 	static const Type INTEGER_ITERATOR;
 	static const Type LONG_ITERATOR;
 	static const Type MPZ_ITERATOR;
+	static const Type INT_SET_ITERATOR;
+	static const Type REAL_SET_ITERATOR;
+	static const Type PTR_SET_ITERATOR;
 
 	static Type array(const Type = {});
 	static Type const_array(const Type = {});

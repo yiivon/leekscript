@@ -2,11 +2,35 @@
 #include "../colors.h"
 #include <iostream>
 #include "Any_type.hpp"
+#include "Struct_type.hpp"
 
 namespace ls {
 
+Set_type::Set_type(Type element) : Pointer_type(Type {
+	new Struct_type(std::string("_set"), {
+		Type::INTEGER, // ?
+		Type::INTEGER, // ?
+		Type::INTEGER, // ?
+		Type::INTEGER, // ?
+		Type::BOOLEAN, // native
+		element.pointer(),
+		element.pointer(),
+		element.pointer(),
+		Type({ new Struct_type("set_node", {
+			Type::LONG, Type::LONG,	Type::LONG,	Type::LONG,
+			element	
+		}) }).pointer()
+	})
+}), _element(element) {}
+
 Type Set_type::element() const {
 	return _element;
+}
+Type Set_type::iterator() const {
+	const auto merged = _element.fold();
+	if (merged.is_integer()) return Type::INT_SET_ITERATOR;
+	if (merged.is_real()) return Type::REAL_SET_ITERATOR;
+	return Type::PTR_SET_ITERATOR;
 }
 bool Set_type::operator == (const Base_type* type) const {
 	if (auto array = dynamic_cast<const Set_type*>(type)) {
@@ -19,9 +43,6 @@ bool Set_type::compatible(const Base_type* type) const {
 		return _element.compatible(set->_element);
 	}
 	return false;
-}
-llvm::Type* Set_type::llvm() const {
-	return Any_type::get_any_type();
 }
 std::string Set_type::clazz() const {
 	return "Set";
