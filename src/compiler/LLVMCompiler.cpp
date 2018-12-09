@@ -1375,30 +1375,9 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 	const auto lambda = mappings.at(function_name).function;
 
 	if (exception) {
+		// std::cout << "Invoke function landing pad : " << fun->current_version->landing_pad << std::endl;
 		auto continueBlock = llvm::BasicBlock::Create(context, "cont", F);
-		auto catchBlock = llvm::BasicBlock::Create(context, "catch", F);
-
-		auto savedIP = builder.saveAndClearIP();
-		auto lpad = llvm::BasicBlock::Create(context, "lpad", F);
-		builder.SetInsertPoint(lpad);
-		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(context));
-		auto LPadInst = builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(context), llvm::Type::getInt32Ty(context)), 1);
-		auto LPadExn = builder.CreateExtractValue(LPadInst, 0);
-		auto ExceptionSlot = CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(context));
-		builder.CreateStore(LPadExn, ExceptionSlot);
-		LPadInst->addClause(catchAllSelector);
-		builder.CreateBr(catchBlock);
-		builder.restoreIP(savedIP);
-
-		value r = {builder.CreateInvoke(lambda, continueBlock, lpad, llvm_args, function_name), return_type};
-
-		builder.SetInsertPoint(catchBlock);
-		delete_function_variables();
-		insn_call({}, {{builder.CreateLoad(ExceptionSlot), Type::LONG}}, +[](void* ex) {
-			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru);
-		});
-		builder.CreateBr(continueBlock);
-
+		value r = {builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name), return_type};
 		builder.SetInsertPoint(continueBlock);
 		assert(r.t.llvm_type() == r.v->getType());
 		return r;

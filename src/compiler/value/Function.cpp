@@ -427,8 +427,30 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	return c.new_function(versions.at(args)->function);
 }
 
+llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
+	// std::cout << "get_landing_pad " << current_version->type << " " << current_version->landing_pad << std::endl;
+	if (current_version->landing_pad == nullptr) {
+		current_version->catch_block = llvm::BasicBlock::Create(LLVMCompiler::context, "catch", c.F);
+		auto savedIP = LLVMCompiler::builder.saveAndClearIP();
+		current_version->landing_pad = llvm::BasicBlock::Create(LLVMCompiler::context, "lpad", c.F);
+		c.builder.SetInsertPoint(current_version->landing_pad);
+		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(LLVMCompiler::context));
+		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context)), 1);
+		auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
+		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(LLVMCompiler::context));
+		c.builder.CreateStore(LPadExn, current_version->exception_slot);
+		landingPadInst->addClause(catchAllSelector);
+		c.builder.CreateBr(current_version->catch_block);
+		c.builder.restoreIP(savedIP);
+		// std::cout << "Landing pad of " << current_version->type << " created! " << current_version->landing_pad << std::endl;
+	}
+	return current_version->landing_pad;
+}
+
+void fake_ex_destru_fun(void*) {}
 void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
 	// std::cout << "Function::compile_version_internal(" << version->type << ")" << std::endl;
+	((Function*) this)->current_version = version;
 
 	const int id = id_counter++;
 
@@ -530,6 +552,17 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.insn_return(res);
 	} else {
 		c.insn_return_void();
+	}
+
+	// Catch block
+	if (current_version->landing_pad != nullptr) {
+		// std::cout << "Create catch block " << current_version->type << std::endl;
+		c.builder.SetInsertPoint(current_version->catch_block);
+		c.delete_function_variables();
+		c.insn_call({}, {{c.builder.CreateLoad(current_version->exception_slot), Type::LONG}}, +[](void* ex) {
+			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
+		});
+		c.builder.CreateRetVoid();
 	}
 
 	verifyFunction(*llvm_function);

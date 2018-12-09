@@ -20,6 +20,9 @@ public:
 		Block* body;
 		LSFunction* function = nullptr;
 		Type type;
+		llvm::BasicBlock* landing_pad = nullptr;
+		llvm::BasicBlock* catch_block = nullptr;
+		llvm::AllocaInst* exception_slot = nullptr;
 	};
 
 	std::string name;
@@ -72,6 +75,7 @@ public:
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const override;
 	void compile_version_internal(Compiler& c, std::vector<Type> args, Version* version) const;
+	llvm::BasicBlock* get_landing_pad(const Compiler& c);
 
 	virtual Value* clone() const override;
 };
