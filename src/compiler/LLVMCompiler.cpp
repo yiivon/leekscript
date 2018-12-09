@@ -1059,9 +1059,6 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	}
 	else if (v.t.is_set()) {
 		auto it = create_entry("it", v.t.iterator());
-		insn_call({}, {v}, +[](LSSet<int>* set) {
-			std::cout << "set data() " << set->begin()._M_node << std::endl;
-		});
 		insn_store_member(it, 0, insn_load_member(v, 8));
 		insn_store_member(it, 1, new_integer(0));
 		return it;
