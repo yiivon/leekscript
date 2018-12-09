@@ -68,12 +68,10 @@ LLVMCompiler::value LLVMCompiler::new_pointer(const void* p, Type type) const {
 	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, type.llvm_type()), type};
 }
 LLVMCompiler::value LLVMCompiler::new_function(const void* p) const {
-	auto longp = llvm::ConstantInt::get(context, llvm::APInt(64, (long) p, false));
-	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, Function_type::get_function_type()), Type::FUNCTION};
+	return new_pointer(p, Type::FUNCTION);
 }
 LLVMCompiler::value LLVMCompiler::new_class(const void* p) const {
-	auto longp = llvm::ConstantInt::get(context, llvm::APInt(64, (long) p, false));
-	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, Type::ANY.llvm_type()), Type::CLASS};
+	return new_pointer(p, Type::CLASS);
 }
 
 LLVMCompiler::value LLVMCompiler::new_object() const {
