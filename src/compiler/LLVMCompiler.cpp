@@ -1598,7 +1598,6 @@ void LLVMCompiler::inc_ops_jit(LLVMCompiler::value add) const {
 	assert(add.t.isNumber());
 	// TODO
 }
-void LLVMCompiler::get_operations() const { assert(false); }
 
 /** Exceptions **/
 void LLVMCompiler::mark_offset(int line) {

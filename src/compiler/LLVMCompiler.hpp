@@ -319,7 +319,6 @@ public:
 	/** Operations **/
 	void inc_ops(int add) const;
 	void inc_ops_jit(value add) const;
-	void get_operations() const;
 
 	/** Exceptions **/
 	void mark_offset(int line);
