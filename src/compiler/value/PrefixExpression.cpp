@@ -209,10 +209,10 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return c.new_array(Type::PTR_ARRAY, {});
 				}
 				else if (vv->name == "Object") {
-					return {c.new_pointer(new LSObject()).v, type};
+					return c.new_pointer(new LSObject(), type);
 				}
 				else if (vv->name == "Set") {
-					return {c.new_pointer(new LSSet<LSValue*>()).v, type};
+					return c.new_pointer(new LSSet<LSValue*>(), type);
 				}
 			}
 			if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
@@ -237,10 +237,10 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						return c.new_array(Type::PTR_ARRAY, {});
 					}
 					if (vv->name == "Object") {
-						return {c.new_pointer(new LSObject()).v, type};
+						return c.new_pointer(new LSObject(), type);
 					}
 					if (vv->name == "Set") {
-						return {c.new_pointer(new LSSet<LSValue*>()).v, type};
+						return c.new_pointer(new LSSet<LSValue*>(), type);
 					}
 				}
 				// new A(), convert to new A

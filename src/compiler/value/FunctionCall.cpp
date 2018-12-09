@@ -352,10 +352,10 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			return c.new_array(Type::PTR_ARRAY, {});
 		}
 		if (vv->name == "Object") {
-			return {c.new_pointer(new LSObject()).v, type};
+			return c.new_pointer(new LSObject(), type);
 		}
 		if (vv->name == "Set") {
-			return {c.new_pointer(new LSSet<LSValue*>()).v, type};
+			return c.new_pointer(new LSSet<LSValue*>(), type);
 		}
 	}
 	if (function->type == Type::CLASS) {

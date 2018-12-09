@@ -171,7 +171,7 @@ public:
 	value new_integer(int i) const;
 	value new_real(double r) const;
 	value new_long(long l) const;
-	value new_pointer(const void* p) const;
+	value new_pointer(const void* p, Type type = Type::ANY) const;
 	value new_function(const void* p) const;
 	value new_class(const void* p) const;
 	value new_object() const;
