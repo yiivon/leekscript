@@ -97,10 +97,10 @@ bool LSString::is_palindrome() const {
 	return r;
 }
 
-LSValue* LSString::ls_foldLeft(LSFunction* function, LSValue* v0) {
+template <class F>
+LSValue* string_base_fold(LSString* string, F function, LSValue* v0) {
 	char buff[5];
-	auto fun = (LSValue* (*)(void*, LSValue*, LSValue*)) function->function;
-	const char* string_chars = this->c_str();
+	const char* string_chars = string->c_str();
 	int i = 0;
 	int l = strlen(string_chars);
 	auto result = ls::move(v0);
@@ -109,11 +109,19 @@ LSValue* LSString::ls_foldLeft(LSFunction* function, LSValue* v0) {
 		u8_toutf8(buff, 5, &c, 1);
 		LSString* ch = new LSString(buff);
 		ch->refs = 1;
-		result = fun(function, result, ch);
+		result = ls::call<F>(function, result, ch);
 		LSValue::delete_ref(ch);
 	}
-	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(string);
 	return result;
+}
+template <>
+LSValue* LSString::ls_foldLeft(LSFunction* function, LSValue* v0) {
+	return string_base_fold(this, function, v0);
+}
+template <>
+LSValue* LSString::ls_foldLeft(LSClosure* closure, LSValue* v0) {
+	return string_base_fold(this, closure, v0);
 }
 
 int LSString::int_size() const {

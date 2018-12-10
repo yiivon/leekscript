@@ -20,6 +20,9 @@ public:
 	static LSString* add_real(LSString* s, double i);
 
 	static LSString* replace(LSString*, LSString*, LSString*);
+	
+	static Compiler::value fold_fun(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value fold_clo(Compiler& c, std::vector<Compiler::value> args);
 };
 
 }

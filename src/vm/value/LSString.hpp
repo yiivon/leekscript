@@ -40,7 +40,7 @@ public:
 	bool is_permutation(LSString* other);
 	LSString* sort();
 	bool is_palindrome() const;
-	LSValue* ls_foldLeft(LSFunction*, LSValue* v0);
+	template <class F> LSValue* ls_foldLeft(F, LSValue* v0);
 	int int_size() const;
 	int ls_size() const;
 	LSValue* ls_size_ptr() const;

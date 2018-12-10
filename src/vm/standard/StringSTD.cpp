@@ -80,8 +80,10 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_endsWith, Method::NATIVE},
 	});
 	Type fold_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::STRING});
+	Type fold_clo_type = Type::closure(Type::ANY, {Type::ANY, Type::STRING});
 	method("fold", {
-		{Type::ANY, {Type::CONST_STRING, fold_fun_type, Type::ANY}, (void*) &LSString::ls_foldLeft, Method::NATIVE},
+		{Type::ANY, {Type::CONST_STRING, fold_fun_type, Type::ANY}, (void*) fold_fun},
+		{Type::ANY, {Type::CONST_STRING, fold_clo_type, Type::ANY}, (void*) fold_clo},
 	});
 	method("indexOf", {
 		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_indexOf, Method::NATIVE},
@@ -356,6 +358,16 @@ long string_number(const LSString* s) {
 	long r = stol(*s);
 	if (s->refs == 0) delete s;
 	return r;
+}
+
+Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> args) {
+	auto f = &LSString::ls_foldLeft<LSFunction*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
+}
+
+Compiler::value StringSTD::fold_clo(Compiler& c, std::vector<Compiler::value> args) {
+	auto f = &LSString::ls_foldLeft<LSClosure*>;
+	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
 }
 
 }
