@@ -269,7 +269,7 @@ public:
 	void iterator_increment(Type collectionType, value it) const;
 
 	// Controls
-	label insn_init_label(std::string name, llvm::Function* fun = nullptr) const;
+	label insn_init_label(std::string name) const;
 	void insn_if(value v, std::function<void()> then) const;
 	void insn_if_new(value cond, label* then, label* elze) const;
 	void insn_if_not(value v, std::function<void()> then) const;

@@ -1293,8 +1293,8 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 }
 
 // Controls
-LLVMCompiler::label LLVMCompiler::insn_init_label(std::string name, llvm::Function* fun) const {
-	return {llvm::BasicBlock::Create(LLVMCompiler::context, name, fun)};
+LLVMCompiler::label LLVMCompiler::insn_init_label(std::string name) const {
+	return {llvm::BasicBlock::Create(LLVMCompiler::context, name)};
 }
 void LLVMCompiler::insn_if(LLVMCompiler::value condition, std::function<void()> then) const {
 	assert(condition.t.llvm_type() == condition.v->getType());
