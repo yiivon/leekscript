@@ -94,11 +94,9 @@ void Set_insert_float(LSSet<double>* set, double value) {
 
 Compiler::value Set::compile(Compiler& c) const {
 	void* create = type.element() == Type::INTEGER ? (void*) Set_create_int :
-				   type.element() == Type::REAL   ? (void*) Set_create_float :
-															(void*) Set_create_ptr;
+				   type.element() == Type::REAL    ? (void*) Set_create_float : (void*) Set_create_ptr;
 	void* insert = type.element() == Type::INTEGER ? (void*) Set_insert_int :
-				   type.element() == Type::REAL   ? (void*) Set_insert_float :
-															(void*) Set_insert_ptr;
+				   type.element() == Type::REAL    ? (void*) Set_insert_float : (void*) Set_insert_ptr;
 
 	unsigned ops = 1;
 	auto s = c.insn_call(type, {}, (void*) create);
