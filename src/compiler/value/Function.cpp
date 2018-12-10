@@ -568,28 +568,6 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	verifyFunction(*llvm_function);
 	fpm->run(*llvm_function);
 
-	// catch (ex)
-	// auto ex = jit_insn_start_catcher(jit_function);
-	// auto catchers = c.catchers.back();
-	// if (catchers.size() > 0) {
-	// 	for (size_t i = 0; i < catchers.size() - 1; ++i) {
-	// 		auto ca = catchers[i];
-	// 		c.insn_branch_if_pc_not_in_range(&ca.start, &ca.end, &ca.next);
-	// 		// c.insn_call({}, {{ex, Type::POINTER}}, (void*)+[](vm::ExceptionObj* ex) {
-	// 		// 	delete ex;
-	// 		// });
-	// 		c.insn_branch(&ca.handler);
-	// 		c.insn_label(&ca.next);
-	// 	}
-	// 	c.insn_branch(&catchers.back().handler);
-	// } else {
-	// 	c.delete_function_variables();
-	// 	if (is_main_function) {
-	// 		c.vm->store_exception(jit_function, ex);
-	// 	} else {
-	// 		jit_insn_rethrow_unhandled(jit_function);
-	// 	}
-	// }
 
 	if (c.output_pseudo_code) {
 		// char buf[64 * 1024];
