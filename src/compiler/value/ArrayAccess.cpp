@@ -362,7 +362,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			k = c.insn_to_any(k);
 			return c.insn_call(type.pointer(), {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->atL(key);
-			});
+			}, true);
 		}
 	} else {
 		auto start = key->compile(c);

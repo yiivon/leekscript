@@ -105,10 +105,10 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4, 5][1:3]").equals("[2, 3, 4]");
 	code("let a = [5, 'yolo', 12] a[1]").equals("'yolo'");
 	code("let a = [12] a[0]++ a").equals("[13]");
-	DISABLED_code("[1, 2, 'a'][['salut', 2][0]]").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	code("[1, 2, 'a'][['salut', 2][0]]").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	code("['a', 'b', 'c'][[2, ''][0]]").equals("'c'");
 	code("let a = [[12], ''][0] a[0]++ a").equals("[13]");
-	DISABLED_code("let a = [[12], ''][0] a[a]++ a").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	code("let a = [[12], ''][0] a[a]++ a").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	code("let a = [[12], [5.5], ['a']] a[0][0] += 1 a[1][0] += 1 a[2][0] += 1 a").equals("[[13], [6.5], ['a1']]");
 	code("let a = [1, 2, 3] a[0l]").equals("1");
 	code("let a = [1, 2, 3] a[1l]").equals("2");
@@ -125,17 +125,17 @@ void Test::test_arrays() {
 	code("[['a', 'b'], 12][0][['yolo', 1][0]]").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	code("[['a', 'b'], 12][0][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
-	DISABLED_code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("[1, 2, 3][100]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("let a = [1, 2, 3] a[10]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1, 2, 3][100]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let a = [1, 2, 3] a[10]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[5.6, 7.2][-5]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("['hello', true][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("let a = [1, 2, 3] a[100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("let a = [1, 2, 3] a[-100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("let a = [[12], ''][0] a[100]++ a").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let a = [1, 2, 3] a[100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let a = [1, 2, 3] a[-100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let a = [[12], ''][0] a[100]++ a").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	DISABLED_code("let a = [5] let e = a[1] !? 5 e").equals("5");
 
 	section("Access with booleans");
