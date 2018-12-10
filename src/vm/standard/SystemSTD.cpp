@@ -66,10 +66,8 @@ long System_nanotime() {
 }
 
 Compiler::value System_operations(Compiler& c) {
-	// TODO
-	// jit_value_t jit_ops_ptr = jit_value_create_long_constant(c.F, jit_type_void_ptr, (long int) &c.vm->operations);
-	// return {jit_insn_load_relative(c.F, jit_ops_ptr, 0, jit_type_uint), Type::LONG};
-	return c.new_long(0);
+	auto ops_ptr = c.new_pointer(&c.vm->operations, Type::INTEGER.pointer());
+	return c.insn_load(ops_ptr);
 }
 
 Compiler::value System_version(Compiler& c) {
