@@ -571,7 +571,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	if (!is_main_function) {
 		c.leave_function();
 		// Create a function : 1 op
-		// c.inc_ops(1);
+		c.inc_ops(1);
 	} else {
 		c.instructions_debug << "}" << std::endl;
 	}

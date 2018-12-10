@@ -1569,13 +1569,40 @@ int LLVMCompiler::get_current_loop_blocks(int deepness) const {
 }
 
 /** Operations **/
-void LLVMCompiler::inc_ops(int add) const {
-	// TODO
+void LLVMCompiler::inc_ops(int amount) const {
+	inc_ops_jit(new_integer(amount));
 }
-void LLVMCompiler::inc_ops_jit(LLVMCompiler::value add) const {
-	assert(add.t.llvm_type() == add.v->getType());
-	assert(add.t.isNumber());
-	// TODO
+void LLVMCompiler::inc_ops_jit(LLVMCompiler::value amount) const {
+	assert(amount.t.llvm_type() == amount.v->getType());
+	assert(amount.t.isNumber());
+
+	// Operations enabled?
+	if (not vm->enable_operations) return;
+
+	// Variable counter pointer
+	auto ops_ptr = new_pointer(&vm->operations, Type::INTEGER.pointer());
+
+	// Increment counter
+	auto jit_ops = insn_load(ops_ptr);
+
+	// Compare to the limit
+	auto limit = new_long(vm->operation_limit);
+	// insn_call({}, {jit_ops, limit}, +[](int ops, int limit) {
+	// 	if (ops > limit) {
+	// 		throw vm::ExceptionObj(vm::Exception::OPERATION_LIMIT_EXCEEDED);
+	// 	}
+	// }, true);
+
+	auto compare = insn_gt(jit_ops, limit);
+	// If greater than the limit, throw exception
+	
+	// insn_if(compare, [&]() {
+	// 	insn_throw_object(vm::Exception::OPERATION_LIMIT_EXCEEDED);
+	// });
+	insn_store(ops_ptr, insn_add(jit_ops, amount));
+	// insn_call({}, {jit_ops, limit}, +[](int ops, int limit) {
+	// 	std::cout << "operatations : " << ops << " / " << limit << std::endl;
+	// });
 }
 
 /** Exceptions **/
