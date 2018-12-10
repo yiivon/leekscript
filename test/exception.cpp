@@ -10,8 +10,8 @@ void Test::test_exceptions() {
 	code("var a = 12m + 5m; throw").exception(ls::vm::Exception::EXCEPTION);
 
 	section("Exceptions - Avoid leaks");
-	DISABLED_code("var x = 'hello' [][0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("var x = 'hello' throw").exception(ls::vm::Exception::EXCEPTION);
+	code("var x = 'hello' [][0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("var x = 'hello' throw").exception(ls::vm::Exception::EXCEPTION);
 	DISABLED_code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
 		{"f", 1}, {"main", 1}
 	});

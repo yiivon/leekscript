@@ -47,11 +47,11 @@ void Test::test_intervals() {
 	code("['', [10..20]][1][5]").equals("15");
 	code("['', [10..20]][1][50]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[1..10]['hello']").semantic_error( ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "[1..10]", ls::Type::STRING_TMP.to_string()});
-	DISABLED_code("let i = ['', [10..20]][1] i['hello']").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	code("let i = ['', [10..20]][1] i['hello']").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	code("[1..10][50]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[1..10][-10]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("['', [1..10][5]]").equals("['', 6]");
-	DISABLED_code("let a = [1..10] a[5] = 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("let a = [1..10] a[5] = 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Interval.operator [:]");
 	code("[5..5][0:0]").equals("[5]");
