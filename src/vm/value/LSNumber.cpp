@@ -52,9 +52,7 @@ LSValue* base_fold(LSNumber* number, F function, LSValue* v0) {
 	int remain = number->value;
 	while (remain) {
         int digit = remain % 10;
-		std::cout << "digit = " << digit << std::endl;
 		result = ls::call<LSValue*>(function, result, digit);
-		std::cout << "result = " << result << std::endl;
         remain /= 10;
     }
 	LSValue::delete_temporary(number);
