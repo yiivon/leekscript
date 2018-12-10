@@ -1324,15 +1324,14 @@ void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void
 
 void LLVMCompiler::insn_throw(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
+	delete_function_variables();
 	insn_call({}, {v}, +[](int type) {
 		throw vm::ExceptionObj((vm::Exception) type);
 	});
 }
 
 void LLVMCompiler::insn_throw_object(vm::Exception type) const {
-	insn_call({}, {new_integer(type)}, +[](int type) {
-		throw vm::ExceptionObj((vm::Exception) type);
-	});
+	insn_throw(new_integer(type));
 }
 
 void LLVMCompiler::insn_label(label* l) const {
