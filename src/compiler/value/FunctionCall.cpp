@@ -433,7 +433,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Default function : f(12) */
 	Compiler::value fun;
-	auto ls_fun_addr = c.new_function(nullptr);
+	auto ls_fun_addr = c.new_function(nullptr, function->type);
 	auto jit_object = c.new_pointer(nullptr);
 	auto is_closure = function->type.is_closure();
 
