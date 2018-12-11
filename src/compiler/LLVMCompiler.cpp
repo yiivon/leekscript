@@ -1614,7 +1614,7 @@ void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::v
 	// TODO too much cheks sometimes
 	for (size_t i = 0; i < args.size(); ++i) {
 		auto arg = args[i];
-		// assert(arg.t.llvm_type() == arg.v->getType());
+		assert(arg.t.llvm_type() == arg.v->getType());
 		auto type = types[i];
 		if (!arg.t.isNumber() and type != arg.t.id() and type != 0) {
 			auto type = types[i];
