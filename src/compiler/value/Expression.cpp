@@ -203,7 +203,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	/*
 	 * OLD
 	 */
-	if (!v1->type.isNumber() or !v2->type.isNumber()) {
+	if (v1->type.is_polymorphic() or v2->type.is_polymorphic()) {
 		type = Type::ANY;
 	}
 	constant = v1->constant and v2->constant;
@@ -229,11 +229,11 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		auto vv = dynamic_cast<VariableValue*>(v1);
 
 		// Set the correct type nature for the two members
-		if (!v2->type.isNumber() and v1->type.isNumber() and !(vv and op->type == TokenType::EQUAL)) {
+		if (v2->type.is_polymorphic() and v1->type.is_primitive() and !(vv and op->type == TokenType::EQUAL)) {
 			v1->analyse(analyser);
 			v1_type = Type::ANY;
 		}
-		if (!v1->type.isNumber() and v2->type.isNumber() and !(vv and op->type == TokenType::EQUAL)) {
+		if (v1->type.is_polymorphic() and v2->type.is_primitive() and !(vv and op->type == TokenType::EQUAL)) {
 			v2->analyse(analyser);
 			v2_type = Type::ANY;
 		}
@@ -542,7 +542,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_LEFT : {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
+			if (v1->type.is_primitive() and v2->type.is_primitive()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -553,7 +553,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_LEFT_EQUALS : {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
+			if (v1->type.is_primitive() and v2->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -567,7 +567,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT : {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
+			if (v1->type.is_primitive() and v2->type.is_primitive()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -578,7 +578,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT_EQUALS : {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
+			if (v1->type.is_primitive() and v2->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -592,7 +592,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED : {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
+			if (v1->type.is_primitive() and v2->type.is_primitive()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -603,7 +603,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS : {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
+			if (v1->type.is_primitive() and v2->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -674,7 +674,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::DOUBLE_MODULO: {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
+			if (v1->type.is_primitive() and v2->type.is_primitive()) {
 				auto x = v1->compile(c);
 				auto y = v2->compile(c);
 				v1->compile_end(c);
@@ -686,7 +686,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::DOUBLE_MODULO_EQUALS: {
-			if (v1->type.isNumber() and v2->type.isNumber()) {
+			if (v1->type.is_primitive() and v2->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = v2->compile(c);
 				v2->compile_end(c);

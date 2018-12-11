@@ -36,11 +36,11 @@ void Set::analyse(SemanticAnalyser* analyser) {
 		element_type = element_type * ex->type;
 	}
 
-	if (element_type.isNumber()) {
+	if (element_type.is_primitive()) {
 		if (element_type != Type::INTEGER && element_type != Type::REAL) {
 			element_type = Type::ANY;
 		}
-	} else if (!element_type.isNumber()) {
+	} else if (!element_type.is_primitive()) {
 		element_type = Type::ANY;
 	}
 

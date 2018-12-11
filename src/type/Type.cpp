@@ -151,7 +151,7 @@ int Type::id() const {
 
 bool Type::must_manage_memory() const {
 	if (_types.size() == 0) { return false; }
-	return !isNumber() and not native;
+	return is_polymorphic() and not native;
 }
 
 Type Type::return_type() const {
@@ -204,10 +204,10 @@ Type Type::operator * (const Type& t2) const {
 	if (is_null() or t2.is_null()) {
 		return Type::NULLL;
 	}
-	if (!isNumber() and t2.isNumber()) {
+	if (is_polymorphic() and t2.is_primitive()) {
 		return Type::ANY;
 	}
-	if (!t2.isNumber() and isNumber()) {
+	if (t2.is_polymorphic() and is_primitive()) {
 		return Type::ANY;
 	}
 	if (is_any()) {
@@ -261,12 +261,6 @@ std::string Type::to_string() const {
 std::string Type::clazz() const {
 	if (_types.size() == 0) { return "Any"; }
 	return fold()._types[0]->clazz();
-}
-
-bool Type::isNumber() const {
-	return _types.size() && all([&](const Base_type* type) {
-		return dynamic_cast<const Number_type*>(type) != nullptr || dynamic_cast<const Bool_type*>(type) != nullptr;
-	});
 }
 
 bool Type::iterable() const {
@@ -384,6 +378,14 @@ bool Type::is_polymorphic() const {
 			and dynamic_cast<const Bool_type*>(t) == nullptr;
 	});
 }
+bool Type::is_primitive() const {
+	return _types.size() && all([&](const Base_type* t) {
+		return dynamic_cast<const Integer_type*>(t) != nullptr
+			or dynamic_cast<const Long_type*>(t) != nullptr 
+			or dynamic_cast<const Real_type*>(t) != nullptr 
+			or dynamic_cast<const Bool_type*>(t) != nullptr;
+	});
+}
 
 /*
  * Can we convert type into this ?
@@ -399,7 +401,7 @@ bool Type::compatible(const Type& type) const {
 	if (is_any()) {
 		return true;
 	}
-	if (this->isNumber() && !type.isNumber()) {
+	if (this->is_primitive() && type.is_polymorphic()) {
 		return false;
 	}
 	if (this->temporary and not type.temporary) {

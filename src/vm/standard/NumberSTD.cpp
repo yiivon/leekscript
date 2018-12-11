@@ -818,7 +818,7 @@ LSValue* NumberSTD::atan2_ptr_ptr(LSNumber* x, LSNumber* y) {
 	return r;
 }
 Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args) {
-	if (args[0].t.isNumber() and args[1].t.isNumber()) {
+	if (!args[0].t.is_polymorphic() and !args[1].t.is_polymorphic()) {
 		return c.insn_atan2(args[0], args[1]);
 	} else {
 		return c.insn_call(Type::REAL, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSNumber* x, LSNumber* y) {
@@ -1187,7 +1187,7 @@ LSValue* NumberSTD::isInteger_ptr(LSNumber* x) {
 Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[0].t.is_integer() or args[0].t.is_long()) {
 		return c.new_bool(true);
-	} else if (args[0].t.isNumber()) {
+	} else if (args[0].t.is_primitive()) {
 		return c.insn_eq(c.to_int(args[0]), args[0]);
 	} else {
 		return c.insn_call(Type::BOOLEAN, args, +[](LSNumber* x) {

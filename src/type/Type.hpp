@@ -38,7 +38,6 @@ public:
 	std::string to_string() const;
 	std::string clazz() const;
 	bool must_manage_memory() const;
-	bool isNumber() const;
 	bool iterable() const;
 	bool is_container() const;
 	Type not_temporary() const;
@@ -78,6 +77,7 @@ public:
 	bool is_pointer() const;
 	bool is_struct() const;
 	bool is_polymorphic() const;
+	bool is_primitive() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }

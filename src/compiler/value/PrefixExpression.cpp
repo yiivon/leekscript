@@ -130,7 +130,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto one = c.new_integer(1);
 				c.insn_call({}, {x, x, one}, &mpz_add_ui);
 				return c.insn_load(x);
-			} else if (expression->type.isNumber()) {
+			} else if (expression->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);
 				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_add(x, c.new_integer(1));
@@ -143,7 +143,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MINUS_MINUS: {
-			if (expression->type.isNumber()) {
+			if (expression->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);
 				auto x = c.insn_load(x_addr);
 				auto sum = c.insn_sub(x, c.new_integer(1));
@@ -156,7 +156,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::NOT: {
-			if (expression->type.isNumber()) {
+			if (expression->type.is_primitive()) {
 				auto x = expression->compile(c);
 				assert(x.t.llvm_type() == x.v->getType());
 				return c.insn_not_bool(x);
@@ -175,7 +175,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					mpz_neg(neg, &x);
 					return *neg;
 				});
-			} else if (expression->type.isNumber()) {
+			} else if (expression->type.is_primitive()) {
 				auto x = expression->compile(c);
 				return c.insn_neg(x);
 			} else {
@@ -185,7 +185,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::TILDE: {
-			if (expression->type.isNumber()) {
+			if (expression->type.is_primitive()) {
 				auto x = expression->compile(c);
 				return c.insn_not(x);
 			} else {

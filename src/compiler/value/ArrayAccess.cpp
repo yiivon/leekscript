@@ -237,7 +237,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			auto k = key->compile(c);
 			key->compile_end(c);
 
-			if (!k.t.isNumber()) {
+			if (k.t.is_polymorphic()) {
 				k = c.insn_call(Type::INTEGER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
 					auto n = dynamic_cast<LSNumber*>(key_pointer);
 					if (!n) {

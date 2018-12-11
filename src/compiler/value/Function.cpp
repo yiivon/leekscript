@@ -474,7 +474,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 				int offset = c.is_current_function_closure() ? 1 : 0;
 				jit_cap = {c.F->arg_begin() + offset + cap->index, cap->initial_type};
 			}
-			if (cap->initial_type.isNumber()) {
+			if (!cap->initial_type.is_polymorphic()) {
 				jit_cap = c.insn_to_any({jit_cap.v, cap->initial_type});
 			}
 			c.function_add_capture(jit_fun, jit_cap);

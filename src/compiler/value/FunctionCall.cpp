@@ -229,7 +229,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			for (auto& arg : arguments) {
 				arg->analyse(analyser);
 				effectiveType = arg->type;
-				if (!arg->type.isNumber()) {
+				if (arg->type.is_polymorphic()) {
 					isByValue = false;
 				}
 			}
@@ -414,7 +414,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Operator functions : +(1, 2) */
 	VariableValue* f = dynamic_cast<VariableValue*>(function);
 	if (f != nullptr) {
-		if (function->type.argument(0).isNumber() and function->type.argument(1).isNumber()) {
+		if (function->type.argument(0).is_primitive() and function->type.argument(1).is_primitive()) {
 			if (f->name == "+") {
 				return c.insn_add(arguments[0]->compile(c), arguments[1]->compile(c));
 			} else if (f->name == "-") {
@@ -475,7 +475,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
 			auto arg = arguments.at(i)->compile(c);
-			if (arg.t.isNumber()) arg = c.insn_convert(arg, function_type.argument(i));
+			if (arg.t.is_primitive()) arg = c.insn_convert(arg, function_type.argument(i));
 			args.push_back(arg);
 			arguments.at(i)->compile_end(c);
 			if (function_type.argument(i) == Type::MPZ && arguments.at(i)->type != Type::MPZ_TMP) {
