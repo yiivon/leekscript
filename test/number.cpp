@@ -73,8 +73,8 @@ void Test::test_numbers() {
 	code("null < 0").equals("true");
 	code("null + 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("5 + null").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("5 / null").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("null / 12").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("5 / null").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::INTEGER.to_string(), "/", ls::Type::NULLL.to_string()});
+	code("null / 12").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::NULLL.to_string(), "/", ls::Type::INTEGER.to_string()});
 	code("null * 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("5 * null").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
@@ -338,12 +338,12 @@ void Test::test_numbers() {
 	code("var a = -721★ a %%= 57★").equals("20");
 
 	section("Number.operator /");
-	code("12★ / false").equals("nan");
-	code("let a = 13★; a / false").equals("nan");
-	code("13★ / true").equals("13");
+	DISABLED_code("12★ / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	DISABLED_code("let a = 13★; a / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	DISABLED_code("13★ / true").equals("13");
 	code("14★ / 2").equals("7");
 	code("let a = 18★; a / 3").equals("6");
-	code("14★ / []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("14★ / []").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::ANY.to_string(), "/", ls::Type::PTR_ARRAY.add_temporary().to_string()});
 	code("let a = 17, b = 5 a / b").equals("3.4");
 
 	section("Number.operator /=");

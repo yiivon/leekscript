@@ -68,6 +68,7 @@ void Test::test_types() {
 	assert(ls::Type::MAP.compatible(ls::Type::INT_PTR_MAP));
 	assert(ls::Type::MAP.compatible(ls::Type::REAL_PTR_MAP));
 	assert(ls::Type::ANY.compatible(p1));
+	// assert(ls::Type::NUMBER.compatible(ls::Type::BOOLEAN));
 
 	section("operator *");
 	assert(ls::Type() * ls::Type() == ls::Type());
