@@ -91,6 +91,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("%", {
 		{Type::ANY, Type::ANY, Type::REAL, (void*) &ValueSTD::op_mod},
 	});
+	operator_("/", {
+		{Type::CONST_NUMBER, Type::CONST_NUMBER, Type::REAL, (void*) &ValueSTD::op_div},
+	});
 
 	/*
 	 * Methods
@@ -386,6 +389,10 @@ Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args)
 
 Compiler::value ValueSTD::op_mod(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_mod(args[0], args[1]);
+}
+
+Compiler::value ValueSTD::op_div(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_div(args[0], args[1]);
 }
 
 Compiler::value ValueSTD::op_int_div(Compiler& c, std::vector<Compiler::value> args) {
