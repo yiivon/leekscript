@@ -158,7 +158,7 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 			return mpz_get_si(&a);
 		}));
 	}
-	if (v.t.not_temporary() == Type::BOOLEAN) {
+	if (v.t.is_bool()) {
 		return {builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), false), Type::INTEGER};
 	}
 	if (v.t.is_real()) {
@@ -171,7 +171,7 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
-	if (!x.t.isNumber()) {
+	if (x.t.is_polymorphic()) {
 		return insn_call(Type::REAL, {x}, +[](const LSValue* x) {
 			if (auto number = dynamic_cast<const LSNumber*>(x)) {
 				auto r = number->value;
@@ -200,6 +200,9 @@ LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value v) const {
 	assert(v.t.isNumber());
 	if (v.t.not_temporary() == Type::LONG) {
 		return v;
+	}
+	if (v.t.is_bool()) {
+		return {builder.CreateIntCast(v.v, Type::LONG.llvm_type(), false), Type::LONG};
 	}
 	if (v.t.not_temporary() == Type::INTEGER) {
 		return {builder.CreateIntCast(v.v, Type::LONG.llvm_type(), true), Type::LONG};
@@ -331,9 +334,11 @@ LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::v
 LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
-	assert(a.t.isNumber() && b.t.isNumber());
+	// assert(a.t.isNumber() && b.t.isNumber());
 	LLVMCompiler::value r;
-	if (a.t.is_real() || b.t.is_real()) {
+	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
+		r = {builder.CreateFCmpOLE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
+	} else if (a.t.is_real() || b.t.is_real()) {
 		r = {builder.CreateFCmpOLE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
 	} else if (a.t.is_long() || b.t.is_long()) {
 		r = {builder.CreateICmpSLE(to_long(a).v, to_long(b).v), Type::BOOLEAN};
@@ -380,12 +385,13 @@ LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.isNumber() && b.t.isNumber());
+	// std::cout << "insn_mul " << a.t << " " << b.t << std::endl;
 	if (a.t.is_real() or b.t.is_real()) {
-		return {builder.CreateFMul(to_real(a).v, to_real(b).v, "multmp"), Type::REAL};
+		return {builder.CreateFMul(to_real(a).v, to_real(b).v), Type::REAL};
 	} else if (a.t.is_long() or b.t.is_long()) {
 		return {builder.CreateMul(to_long(a).v, to_long(b).v), Type::LONG};
 	}
-	return {builder.CreateMul(to_int(a).v, to_int(b).v, "multmp"), Type::INTEGER};
+	return {builder.CreateMul(to_int(a).v, to_int(b).v), Type::INTEGER};
 }
 
 LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
