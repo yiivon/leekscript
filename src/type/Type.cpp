@@ -507,6 +507,9 @@ Type Type::structure(const std::string name, std::initializer_list<Type> types) 
 bool Type::all(std::function<bool(const Base_type*)> fun) const {
 	return std::all_of(_types.begin(), _types.end(), fun);
 }
+bool Type::some(std::function<bool(const Base_type*)> fun) const {
+	return std::any_of(_types.begin(), _types.end(), fun);
+}
 
 ostream& operator << (ostream& os, const Type& type) {
 	if (type._types.size() == 0) {

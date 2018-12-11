@@ -49,6 +49,7 @@ public:
 	Type pointer() const;
 	Type pointed() const;
 	bool all(std::function<bool(const Base_type*)>) const;
+	bool some(std::function<bool(const Base_type*)>) const;
 
 	void operator += (const Type type);
 	void operator += (const Base_type* type);
