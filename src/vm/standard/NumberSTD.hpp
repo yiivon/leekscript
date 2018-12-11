@@ -95,8 +95,7 @@ public:
 	 */
 	static Compiler::value _int(Compiler&, std::vector<Compiler::value>);
 
-	static Compiler::value abs_ptr(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value abs_number(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value abs(Compiler&, std::vector<Compiler::value>);
 
 	static double acos_ptr(LSNumber* x);
 	static Compiler::value acos_real(Compiler&, std::vector<Compiler::value>);

@@ -705,7 +705,12 @@ LLVMCompiler::value LLVMCompiler::insn_atan2(LLVMCompiler::value x, LLVMCompiler
 
 LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
-	assert(x.t.isNumber());
+	// std::cout << "abs " << x.t << std::endl;
+	if (x.t.is_polymorphic()) {
+		return insn_call(Type::REAL, {to_real(x)}, +[](double x) {
+			return std::fabs(x);
+		});
+	}
 	if (x.t == Type::INTEGER) {
 		return insn_call(Type::INTEGER, {x}, +[](int x) {
 			return std::abs(x);

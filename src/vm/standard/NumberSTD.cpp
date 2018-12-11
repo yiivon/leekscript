@@ -180,9 +180,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::INTEGER, {Type::NUMBER}, (void*) &NumberSTD::_int},
 	});
 	method("abs", {
-		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::abs_ptr},
-		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::abs_number},
-		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs_number},
+		{Type::REAL, {Type::NUMBER}, (void*) &NumberSTD::abs},
+		{Type::INTEGER, {Type::INTEGER}, (void*) &NumberSTD::abs},
 	});
 	method("acos", {
 		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
@@ -778,15 +777,7 @@ Compiler::value NumberSTD::_int(Compiler& c, std::vector<Compiler::value> args) 
 	return c.to_int(args[0]);
 }
 
-Compiler::value NumberSTD::abs_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::REAL, {args[0]}, +[](LSNumber* n) {
-		auto a = fabs(n->value);
-		LSValue::delete_temporary(n);
-		return a;
-	});
-}
-
-Compiler::value NumberSTD::abs_number(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::abs(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_abs(args[0]);
 }
 
