@@ -8,6 +8,7 @@ namespace ls {
 class Interval_type : public Base_type {
 public:
 	Interval_type() {}
+	virtual int id() const override { return 8; }
 	virtual const std::string getName() const { return "interval"; }
 	virtual const std::string getJsonName() const { return "interval"; }
 	virtual bool iterable() const { return true; }

@@ -8,6 +8,7 @@ namespace ls {
 class Object_type : public Base_type {
 public:
 	Object_type() {}
+	virtual int id() const override { return 10; }
 	virtual const std::string getName() const { return "object"; }
 	virtual const std::string getJsonName() const { return "object"; }
 	virtual bool iterable() const { return false; } // TODO not iterable for now

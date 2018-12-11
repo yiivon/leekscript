@@ -8,6 +8,7 @@ namespace ls {
 class String_type : public Base_type {
 public:
 	String_type() {}
+	virtual int id() const override { return 4; }
 	virtual const std::string getName() const { return "string"; }
 	virtual const std::string getJsonName() const { return "string"; }
 	virtual bool iterable() const { return true; }

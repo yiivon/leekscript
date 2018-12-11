@@ -10,6 +10,7 @@ class Set_type : public Pointer_type {
 	Type _element;
 public:
 	Set_type(Type element);
+	virtual int id() const override { return 7; }
 	virtual const std::string getName() const { return "set"; }
 	virtual const std::string getJsonName() const { return "set"; }
 	virtual bool iterable() const { return true; }

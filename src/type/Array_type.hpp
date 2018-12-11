@@ -10,6 +10,7 @@ class Array_type : public Pointer_type {
 	Type _element;
 public:
 	Array_type(Type element);
+	virtual int id() const override { return 5; }
 	virtual const std::string getName() const { return "array"; }
 	virtual const std::string getJsonName() const { return "array"; }
 	virtual bool iterable() const { return true; }

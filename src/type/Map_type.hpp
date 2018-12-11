@@ -11,6 +11,7 @@ class Map_type : public Base_type {
 	Type _element;
 public:
 	Map_type(Type key, Type element) : _key(key), _element(element) {}
+	virtual int id() const override { return 6; }
 	virtual const std::string getName() const { return "map"; }
 	virtual const std::string getJsonName() const { return "map"; }
 	virtual bool iterable() const { return true; }

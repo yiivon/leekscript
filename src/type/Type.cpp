@@ -146,7 +146,7 @@ Type::Type(const Base_type* raw_type, bool native, bool temporary, bool constant
 
 int Type::id() const {
 	if (_types.size() == 0) { return 0; }
-	return _types[0]->id();
+	return fold()._types[0]->id();
 }
 
 bool Type::must_manage_memory() const {
