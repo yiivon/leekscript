@@ -104,9 +104,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	}
 
 	auto container_v = container->compile(c);
-	if (container->type.must_manage_memory()) {
-		c.insn_inc_refs(container_v);
-	}
+	c.insn_inc_refs(container_v);
 	c.add_var("{array}", container_v);
 
 	// Create variables
