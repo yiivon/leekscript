@@ -195,7 +195,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	}
 
 	// Don't use old stuff for boolean
-	if (v1->type == Type::BOOLEAN) {
+	if (v1->type == Type::BOOLEAN or op->type == TokenType::DIVIDE) {
 		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}
@@ -251,11 +251,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 			type.temporary = true;
 		}
 		type.reference = false;
-
-		// String / String => Array<String>
-		if (op->type == TokenType::DIVIDE and (v1->type == Type::STRING or v1->type == Type::STRING_TMP) and (v2->type == Type::STRING or v2->type == Type::STRING_TMP)) {
-			type = Type::STRING_ARRAY;
-		}
 	}
 
 	// Bitwise operators : result is a integer
@@ -503,10 +498,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::TIMES: {
 			ls_func = (void*) &jit_mul;
-			break;
-		}
-		case TokenType::DIVIDE: {
-			ls_func = (void*) &jit_div;
 			break;
 		}
 		case TokenType::TILDE_TILDE: {

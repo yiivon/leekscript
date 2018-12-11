@@ -389,8 +389,13 @@ LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::
 }
 
 LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
-	assert(a.t.isNumber() && b.t.isNumber());
-	return {builder.CreateFDiv(to_real(a).v, to_real(b).v), Type::REAL};
+	auto bv = to_real(b);
+	insn_if(insn_eq(bv, new_integer(0)), [&]() {
+		insn_delete_temporary(a);
+		insn_delete_temporary(b);
+		insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
+	});
+	return { builder.CreateFDiv(to_real(a).v, bv.v), Type::REAL };
 }
 
 LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
