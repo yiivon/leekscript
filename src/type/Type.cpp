@@ -449,7 +449,7 @@ bool Type::may_be_compatible(const Type& type) const {
 		return true;
 	}
 	// Example: Number.abs(number*) => we allow to call with a unknown pointer
-	if (!isNumber() and type == Type::ANY) {
+	if (is_polymorphic() and type == Type::ANY) {
 		return true;
 	}
 	return false;
