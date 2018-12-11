@@ -65,8 +65,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("*", {
 		{Type::CONST_REAL, Type::CONST_REAL, Type::CONST_REAL, (void*) &NumberSTD::mul_real_real},
 		{Type::CONST_LONG, Type::CONST_LONG, Type::LONG, (void*) &NumberSTD::mul_real_real},
+		{Type::CONST_INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mul_real_real},
-		{Type::INTEGER, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_int_mpz},
 		{Type::CONST_INTEGER, Type::CONST_STRING, Type::STRING, (void*) &NumberSTD::mul_int_string},
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mul_mpz_mpz}
 	});
