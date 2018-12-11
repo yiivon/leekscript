@@ -299,9 +299,6 @@ LSValue* jit_mul(LSValue* x, LSValue* y) {
 LSValue* jit_div(LSValue* x, LSValue* y) {
 	return x->div(y);
 }
-LSValue* jit_mod(LSValue* x, LSValue* y) {
-	return x->mod(y);
-}
 LSValue* jit_double_mod(LSValue* x, LSValue* y) {
 	return x->double_mod(y);
 }
@@ -510,10 +507,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 		case TokenType::DIVIDE: {
 			ls_func = (void*) &jit_div;
-			break;
-		}
-		case TokenType::MODULO: {
-			ls_func = (void*) &jit_mod;
 			break;
 		}
 		case TokenType::TILDE_TILDE: {

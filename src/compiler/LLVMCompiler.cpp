@@ -171,7 +171,21 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 
 LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
-	assert(x.t.isNumber());
+	if (!x.t.isNumber()) {
+		return insn_call(Type::REAL, {x}, +[](const LSValue* x) {
+			if (auto number = dynamic_cast<const LSNumber*>(x)) {
+				auto r = number->value;
+				LSValue::delete_temporary(x);
+				return r;
+			} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
+				auto r = boolean->value ? 1.0 : 0.0;
+				LSValue::delete_temporary(x);
+				return r;
+			}
+			LSValue::delete_temporary(x);
+			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+		}, true);
+	}
 	if (x.t.is_real()) {
 		return x;
 	}
@@ -432,11 +446,12 @@ LLVMCompiler::value LLVMCompiler::insn_lshr(LLVMCompiler::value a, LLVMCompiler:
 LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
-	assert(a.t.isNumber() && b.t.isNumber());
-	if (a.t.is_long() || b.t.is_long()) {
-		return {builder.CreateSRem(a.v, b.v), Type::LONG};
+	if (a.t.is_long() and b.t.is_long()) {
+		return { builder.CreateSRem(a.v, b.v), Type::LONG };
+	} else if (a.t.is_integer() and b.t.is_integer()) {
+		return { builder.CreateSRem(a.v, b.v), Type::INTEGER };
 	} else {
-		return {builder.CreateSRem(a.v, b.v), Type::INTEGER};
+		return { builder.CreateFRem(to_real(a).v, to_real(b).v), Type::REAL };
 	}
 }
 

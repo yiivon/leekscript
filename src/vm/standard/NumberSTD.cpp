@@ -130,8 +130,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 
 	operator_("%", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_mpz_mpz},
-		{Type::CONST_LONG, Type::CONST_LONG, Type::LONG, (void*) &NumberSTD::mod_real_real},
-		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mod_real_real},
+		{Type::CONST_LONG, Type::CONST_LONG, Type::LONG, (void*) &NumberSTD::mod},
+		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mod},
 	});
 
 	operator_("%=", {
@@ -645,7 +645,7 @@ Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_ge(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::mod_real_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_mod(args[0], args[1]);
 }
 
