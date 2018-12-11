@@ -162,7 +162,7 @@ void Test::test_strings() {
 	code("String.toUpper('')").equals("''");
 	code("String.toUpper('salut')").equals("'SALUT'");
 	code("String.toUpper([1, 'yolo'][1])").equals("'YOLO'");
-	DISABLED_code("String.toUpper([1, 'yolo'][0])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
+	code("String.toUpper([1, 'yolo'][0])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
 
 	section("String.toLower()");
 	code("String.toLower('')").equals("''");
