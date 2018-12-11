@@ -375,6 +375,15 @@ bool Type::is_closure() const {
 		return f && f->closure();
 	});
 }
+bool Type::is_polymorphic() const {
+	return _types.size() && some([&](const Base_type* t) {
+		return dynamic_cast<const Integer_type*>(t) == nullptr
+			and dynamic_cast<const Mpz_type*>(t) == nullptr 
+			and dynamic_cast<const Long_type*>(t) == nullptr 
+			and dynamic_cast<const Real_type*>(t) == nullptr 
+			and dynamic_cast<const Bool_type*>(t) == nullptr;
+	});
+}
 
 /*
  * Can we convert type into this ?

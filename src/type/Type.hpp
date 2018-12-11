@@ -77,6 +77,7 @@ public:
 	bool is_placeholder() const;
 	bool is_pointer() const;
 	bool is_struct() const;
+	bool is_polymorphic() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }
