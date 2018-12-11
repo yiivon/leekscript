@@ -54,14 +54,17 @@ StringSTD::StringSTD() : Module("String") {
 	 * Operators
 	 */
 	operator_("+", {
+		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_mpz, {}, Method::NATIVE},
+		{Type::STRING, Type::MPZ_TMP, Type::STRING, (void*) &plus_mpz_tmp, {}, Method::NATIVE},
 		{Type::STRING, Type::REAL, Type::STRING, (void*) &StringSTD::add_real, {}, Method::NATIVE},
 		{Type::STRING, Type::INTEGER, Type::STRING, (void*) &StringSTD::add_int, {}, Method::NATIVE},
 		{Type::STRING, Type::BOOLEAN, Type::STRING, (void*) &StringSTD::add_bool, {}, Method::NATIVE},
-		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_mpz, {}, Method::NATIVE},
-		{Type::STRING, Type::MPZ_TMP, Type::STRING, (void*) &plus_mpz_tmp, {}, Method::NATIVE}
 	});
 	operator_("<", {
 		{Type::STRING, Type::STRING, Type::BOOLEAN, (void*) &StringSTD::lt}
+	});
+	operator_("/", {
+		{Type::STRING, Type::STRING, Type::STRING_ARRAY, (void*) &StringSTD::div}
 	});
 
 	/*
@@ -191,6 +194,12 @@ Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return res;
+}
+
+Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::STRING_ARRAY, args, +[](LSValue* a, LSValue* b) {
+		return a->div(b);
+	});
 }
 
 /*

@@ -14,6 +14,7 @@ public:
 	virtual ~StringSTD();
 
 	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value div(Compiler& c, std::vector<Compiler::value> args);
 
 	static LSString* add_int(LSString* s, int i);
 	static LSString* add_bool(LSString* s, bool i);
