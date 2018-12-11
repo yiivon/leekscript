@@ -128,7 +128,7 @@ LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type&
 		Operator* best = nullptr;
 		for (Operator& m : impl) {
 			// std::cout << m.object_type.compatible(obj_type) << " " << m.operand_type.compatible(operand_type) << std::endl;
-			if (m.object_type.compatible(obj_type) and m.operand_type.compatible(operand_type)) {
+			if (m.object_type.may_be_compatible(obj_type) and m.operand_type.may_be_compatible(operand_type)) {
 				best = &m;
 			}
 		}
