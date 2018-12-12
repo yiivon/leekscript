@@ -403,8 +403,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		});
 	} else {
 		ls_fun_addr = function->compile(c);
-		auto fun_to_ptr = Compiler::builder.CreatePointerCast(ls_fun_addr.v, Function_type::get_function_type());
-		auto f = Compiler::builder.CreateStructGEP(Function_type::get_function_type()->getPointerElementType(), fun_to_ptr, 5);
+		auto fun_to_ptr = Compiler::builder.CreatePointerCast(ls_fun_addr.v, Type::FUNCTION.llvm_type());
+		auto f = Compiler::builder.CreateStructGEP(Type::FUNCTION.llvm_type()->getPointerElementType(), fun_to_ptr, 5);
 		fun = { Compiler::builder.CreateLoad(f), Type::FUNCTION };
 	}
 
