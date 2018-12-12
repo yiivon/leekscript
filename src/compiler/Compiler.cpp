@@ -988,8 +988,7 @@ Compiler::value Compiler::insn_array_at(Compiler::value array, Compiler::value i
 Compiler::value Compiler::insn_array_end(Compiler::value array) const {
 	assert(array.t.llvm_type() == array.v->getType());
 	auto array_type = array.v->getType()->getPointerElementType();
-	auto raw_data = builder.CreateStructGEP(array_type, array.v, 6);
-	return {builder.CreateLoad(raw_data), array.t.iterator()};
+	return insn_load_member(array, 6);
 }
 
 Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
