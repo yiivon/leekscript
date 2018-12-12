@@ -3,8 +3,17 @@
 #include <iostream>
 #include "Type.hpp"
 #include "Any_type.hpp"
+#include "Struct_type.hpp"
 
 namespace ls {
+
+String_type::String_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("string"), std::initializer_list<Type> {
+	Type::INTEGER, // ?
+	Type::INTEGER, // ?
+	Type::INTEGER, // ?
+	Type::INTEGER, // refs
+	Type::BOOLEAN // native
+}) }) {}
 
 Type String_type::key() const {
 	return Type::INTEGER;
@@ -22,9 +31,6 @@ int String_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 1; }
 	if (dynamic_cast<const String_type*>(type)) { return 0; }
 	return -1;
-}
-llvm::Type* String_type::llvm() const {
-	return Any_type::get_any_type();
 }
 std::string String_type::clazz() const {
 	return "String";

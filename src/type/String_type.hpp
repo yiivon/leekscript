@@ -1,13 +1,13 @@
 #ifndef STRING_TYPE_HPP
 #define STRING_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "Pointer_type.hpp"
 
 namespace ls {
 
-class String_type : public Base_type {
+class String_type : public Pointer_type {
 public:
-	String_type() {}
+	String_type();
 	virtual int id() const override { return 4; }
 	virtual const std::string getName() const { return "string"; }
 	virtual const std::string getJsonName() const { return "string"; }
@@ -18,7 +18,6 @@ public:
 	virtual bool is_container() const { return true; }
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;
-	virtual llvm::Type* llvm() const override;
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 };

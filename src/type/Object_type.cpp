@@ -1,9 +1,18 @@
 #include "Object_type.hpp"
 #include "../colors.h"
 #include "Type.hpp"
+#include "Struct_type.hpp"
 #include "Any_type.hpp"
 
 namespace ls {
+
+Object_type::Object_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("object"), std::initializer_list<Type> {
+	Type::INTEGER, // ?
+	Type::INTEGER, // ?
+	Type::INTEGER, // ?
+	Type::INTEGER, // refs
+	Type::BOOLEAN // native
+}) }) {}
 
 bool Object_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Object_type*>(type);
@@ -12,9 +21,6 @@ int Object_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 1; }
 	if (dynamic_cast<const Object_type*>(type)) { return 0; }
 	return -1;
-}
-llvm::Type* Object_type::llvm() const {
-	return Any_type::get_any_type();
 }
 std::string Object_type::clazz() const {
 	return "Object";

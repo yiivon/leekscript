@@ -3,12 +3,18 @@
 #include "Type.hpp"
 #include "Placeholder_type.hpp"
 #include "Any_type.hpp"
+#include "Struct_type.hpp"
 
 namespace ls {
 
-llvm::Type* Function_type::function_type = nullptr;
-
-Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
+Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : _return_type(ret), _arguments(args), _closure(closure), _function(function), Pointer_type(Type { std::make_shared<const Struct_type>(std::string("lsfunction"), std::initializer_list<Type> {
+	Type::INTEGER, // ?
+	Type::INTEGER, // ?
+	Type::INTEGER, // ?
+	Type::INTEGER, // refs
+	Type::BOOLEAN, // native
+	Type::LONG.pointer() // pointer to the function
+}) }) {}
 
 bool Function_type::operator == (const Base_type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
@@ -52,9 +58,6 @@ Type Function_type::argument(size_t i) const {
 	}
 	return Type::ANY;
 }
-llvm::Type* Function_type::llvm() const {
-	return get_function_type();
-}
 std::string Function_type::clazz() const {
 	return "Function";
 }
@@ -67,21 +70,5 @@ std::ostream& Function_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << ") => " << _return_type;
 	return os;
 }
-
-llvm::Type* Function_type::get_function_type() {
-	if (function_type == nullptr) {
-		function_type = llvm::StructType::create("lsfunction",
-			llvm::Type::getInt32Ty(Compiler::context),
-			llvm::Type::getInt32Ty(Compiler::context),
-			llvm::Type::getInt32Ty(Compiler::context),
-			llvm::Type::getInt32Ty(Compiler::context),
-			llvm::Type::getInt1Ty(Compiler::context),
-			llvm::Type::getInt64Ty(Compiler::context)->getPointerTo()
-		)->getPointerTo();
-	}
-	return function_type;
-}
-
-
 
 }

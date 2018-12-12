@@ -2,8 +2,17 @@
 #include "../colors.h"
 #include "Type.hpp"
 #include "Any_type.hpp"
+#include "Struct_type.hpp"
 
 namespace ls {
+
+Class_type::Class_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("class"), std::initializer_list<Type> {
+	Type::INTEGER, // ?
+	Type::INTEGER, // ?
+	Type::INTEGER, // ?
+	Type::INTEGER, // refs
+	Type::BOOLEAN // native
+}) }) {}
 
 bool Class_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Class_type*>(type);
@@ -12,9 +21,6 @@ int Class_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 1; }
 	if (dynamic_cast<const Class_type*>(type)) { return 0; }
 	return -1;
-}
-llvm::Type* Class_type::llvm() const {
-	return Any_type::get_any_type();
 }
 std::string Class_type::clazz() const {
 	return "Class";

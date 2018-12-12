@@ -1,13 +1,13 @@
 #ifndef FUNCTION_TYPE_HPP
 #define FUNCTION_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "Pointer_type.hpp"
 #include "Type.hpp"
 #include "../compiler/value/Function.hpp"
 
 namespace ls {
 
-class Function_type : public Base_type {
+class Function_type : public Pointer_type {
 	Type _return_type;
 	std::vector<Type> _arguments;
 	bool _closure;
@@ -27,7 +27,6 @@ public:
 	virtual Type return_type() const override;
 	virtual std::vector<Type> arguments() const override;
 	virtual Type argument(size_t) const override;
-	virtual llvm::Type* llvm() const override;
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 

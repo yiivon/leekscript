@@ -14,10 +14,6 @@ bool Placeholder_type::operator == (const Base_type* type) const {
 bool Placeholder_type::compatible(const Base_type* type) const {
 	return false;
 }
-llvm::Type* Placeholder_type::llvm() const {
-	// assert(false && "Placeholder type should not be compiled");
-	return Any_type::get_any_type();
-}
 std::ostream& Placeholder_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << _name;
 	if (_implementation._types.size()) {
