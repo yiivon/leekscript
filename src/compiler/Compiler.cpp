@@ -1165,7 +1165,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.end()");
 	if (v.t.is_array()) {
-		return {builder.CreateICmpEQ(insn_load(it).v, insn_array_end(v).v), Type::BOOLEAN};
+		return insn_pointer_eq(insn_load(it), insn_array_end(v));
 	}
 	else if (v.t.is_interval()) {
 		auto interval = insn_load_member(it, 0);
@@ -1209,7 +1209,7 @@ Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, 
 		}
 		auto e = insn_load(it);
 		auto f = insn_load(e);
-		insn_inc_refs({f.v, collectionType.element()});
+		insn_inc_refs(f);
 		return f;
 	}
 	if (collectionType.is_interval()) {
