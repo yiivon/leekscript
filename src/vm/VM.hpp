@@ -63,7 +63,7 @@ public:
 	std::vector<Module*> modules;
 	std::map<std::string, LSValue*> system_vars;
 	std::map<std::string, std::shared_ptr<SemanticVar>> internal_vars;
-	std::map<std::string, llvm::Value*> internals;
+	std::map<std::string, Compiler::value> internals;
 	Compiler compiler;
 	LSNull* null_value;
 	LSBoolean* true_value;

@@ -129,7 +129,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	}
 	Compiler::value v;
 	if (scope == VarScope::INTERNAL) {
-		v = {c.vm->internals.at(name), type};
+		v = c.vm->internals.at(name);
 	} else if (scope == VarScope::LOCAL) {
 		auto f = dynamic_cast<Function*>(var->value);
 		if (has_version && f) {

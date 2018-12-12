@@ -488,8 +488,13 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		for (auto var : c.vm->system_vars) {
 			auto name = var.first;
 			auto value = var.second;
-			auto val = var.second && var.second->type == LSValue::FUNCTION ? c.new_function(value, Type::FUNCTION) : c.new_pointer(value);
-			c.vm->internals.insert({name, val.v});
+			auto type = [&]() {
+				if (!var.second) return Type::ANY;
+				if (var.second->type == LSValue::FUNCTION) return Type::FUNCTION;
+				if (var.second->type == LSValue::CLASS) return Type::CONST_CLASS;
+			}();
+			auto val = c.new_pointer(value, type);
+			c.vm->internals.insert({name, val});
 		}
 	}
 
