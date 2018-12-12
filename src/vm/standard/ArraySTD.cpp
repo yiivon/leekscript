@@ -17,9 +17,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::CONST_PTR_ARRAY, Type::CONST_ANY, Type::BOOLEAN, (void*) &LSArray<LSValue*>::in, {}, Method::NATIVE},
-		{Type::CONST_REAL_ARRAY, Type::CONST_REAL, Type::BOOLEAN, (void*) &LSArray<double>::in, {}, Method::NATIVE},
-		{Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::BOOLEAN, (void*) &LSArray<int>::in_i, {}, Method::NATIVE}
+		{Type::CONST_ARRAY, Type::CONST_ANY, Type::BOOLEAN, (void*) &in},
 	});
 	operator_("+=", {
 		{Type::ARRAY, Type::CONST_ANY, Type::ANY, (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
@@ -344,6 +342,22 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
 		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void* ) &ArraySTD::sub, Method::NATIVE},
 	});
+}
+
+Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
+	const auto& type = args[0].t.element().fold();
+	auto f = [&]() {
+		if (type.is_integer()) return (void*) &LSArray<int>::in_i;
+		if (type.is_integer()) return (void*) &LSArray<double>::in;
+		return (void*) &LSArray<LSValue*>::in;
+	}();
+	if (args[1].t.castable(type)) {
+		return c.insn_call(Type::BOOLEAN, {args[0], c.insn_convert(args[1], type)}, f);
+	} else {
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
+		return c.new_bool(false);
+	}
 }
 
 Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args) {

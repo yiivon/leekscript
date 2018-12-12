@@ -250,10 +250,9 @@ void Test::test_arrays() {
 	code("'yo' in ['ya', 'yu', 'yo']").equals("true");
 	code("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }").equals("'ok'");
 	code("'a' in [['a', 'b', 'c'], ''][0]").equals("true");
-	// TODO
-	DISABLED_code("2★ in [1, 2, 3]").equals("true");
-	DISABLED_code("4★ in [1, 2, 3]").equals("false");
-	DISABLED_code("'salut' in [1, 2, 3]").equals("false");
+	code("2★ in [1, 2, 3]").equals("true");
+	code("4★ in [1, 2, 3]").equals("false");
+	code("'salut' in [1, 2, 3]").equals("false");
 	code("let f = x -> x[0]; [f([1]), f([0..3])]").equals("[1, 0]");
 	code("let f = x -> x[0]; [f([1]), f([0..3]), f(['a'])]").equals("[1, 0, 'a']");
 
