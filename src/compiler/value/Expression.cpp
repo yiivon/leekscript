@@ -610,7 +610,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			Compiler::label label_else = c.insn_init_label("else");
 			Compiler::label label_end = c.insn_init_label("end");
 
-			auto x = c.insn_convert(v1->compile(c), v1_type);
+			auto x = c.insn_convert(v1->compile(c), type);
 			v1->compile_end(c);
 			auto condition = c.insn_call(Type::BOOLEAN, {x}, +[](LSValue* v) {
 				return v->type == LSValue::NULLL;
@@ -618,7 +618,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			c.insn_if_new(condition, &label_then, &label_else);
 
 			c.insn_label(&label_then);
-			auto y = c.insn_convert(v2->compile(c), v2_type);
+			auto y = c.insn_convert(v2->compile(c), type);
 			v2->compile_end(c);
 			c.insn_branch(&label_end);
 			label_then.block = Compiler::builder.GetInsertBlock();
@@ -628,7 +628,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			label_else.block = Compiler::builder.GetInsertBlock();
 
 			c.insn_label(&label_end);
-			auto PN = Compiler::builder.CreatePHI(Type::ANY.llvm_type(), 2);
+			auto PN = Compiler::builder.CreatePHI(type.llvm_type(), 2);
 			PN->addIncoming(y.v, label_then.block);
 			PN->addIncoming(x.v, label_else.block);
 			return {PN, type};
