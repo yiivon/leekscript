@@ -112,7 +112,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container->type.is_array()) {
-		Compiler::value empty_array = { Compiler::builder.CreateICmpEQ(c.new_integer(0).v, c.to_int(it).v), Type::BOOLEAN };
+		auto empty_array = c.insn_pointer_eq(it, c.new_pointer(nullptr, Type::ANY));
 		c.insn_if_new(empty_array, &end_label, &cond_label);
 	} else {
 		c.insn_branch(&cond_label);

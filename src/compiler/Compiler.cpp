@@ -314,6 +314,16 @@ Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 	}
 }
 
+Compiler::value Compiler::insn_pointer_eq(Compiler::value a, Compiler::value b) const {
+	assert(a.t.llvm_type() == a.v->getType());
+	assert(b.t.llvm_type() == b.v->getType());
+	assert(a.t.is_pointer());
+	assert(b.t.is_pointer());
+	auto p1 = builder.CreatePointerCast(a.v, llvm::Type::getInt8PtrTy(Compiler::context));
+	auto p2 = builder.CreatePointerCast(b.v, llvm::Type::getInt8PtrTy(Compiler::context));
+	return { builder.CreateICmpEQ(p1, p2), Type::BOOLEAN };
+}
+
 Compiler::value Compiler::insn_ne(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());

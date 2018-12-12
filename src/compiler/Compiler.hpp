@@ -195,6 +195,7 @@ public:
 	value insn_add(value, value) const;
 	value insn_sub(value, value) const;
 	value insn_eq(value, value) const;
+	value insn_pointer_eq(value, value) const;
 	value insn_ne(value, value) const;
 	value insn_lt(value, value) const;
 	value insn_le(value, value) const;
