@@ -203,7 +203,10 @@ public:
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
+	
 	static std::shared_ptr<const Base_type> generate_new_placeholder_type();
+	static std::vector<std::shared_ptr<const Base_type>> placeholder_types;
+	static void clear_placeholder_types();
 };
 
 std::ostream& operator << (std::ostream&, const Type&);

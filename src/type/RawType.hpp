@@ -37,8 +37,7 @@ public:
 	static const std::shared_ptr<const Object_type> OBJECT;
 	static const std::shared_ptr<const Class_type> CLASS;
 
-	static std::vector<std::shared_ptr<const Base_type>> placeholder_types;
-	static void clear_placeholder_types();
+	
 };
 
 }

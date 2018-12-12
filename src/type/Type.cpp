@@ -14,9 +14,9 @@ using namespace std;
 
 namespace ls {
 
-std::vector<std::shared_ptr<const Base_type>> RawType::placeholder_types;
+std::vector<std::shared_ptr<const Base_type>> Type::placeholder_types;
 
-void RawType::clear_placeholder_types() {
+void Type::clear_placeholder_types() {
 	placeholder_types.clear();
 }
 
@@ -494,7 +494,7 @@ std::shared_ptr<const Base_type> Type::generate_new_placeholder_type() {
 	u8_toutf8(buff, 5, &character, 1);
 	auto type = std::make_shared<Placeholder_type>(std::string { buff });
 	placeholder_counter++;
-	RawType::placeholder_types.push_back(type);
+	Type::placeholder_types.push_back(type);
 	return type;
 }
 

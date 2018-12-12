@@ -222,7 +222,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	// Cleaning
 	delete program;
 	VM::enable_operations = true;
-	RawType::clear_placeholder_types();
+	Type::clear_placeholder_types();
 
 	// Results
 	result.objects_created = LSValue::obj_count;
