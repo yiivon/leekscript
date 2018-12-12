@@ -861,7 +861,7 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	auto clazz = v.t.clazz();
 	if (clazz.size()) {
-		return new_pointer(vm->system_vars[clazz]);
+		return new_pointer(vm->system_vars[clazz], Type::CLASS);
 	} else {
 		return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
 			return v->getClass();
