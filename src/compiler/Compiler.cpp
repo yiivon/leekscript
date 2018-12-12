@@ -46,7 +46,7 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 	return v;
 }
 Compiler::value Compiler::new_null() const {
-	return new_pointer(LSNull::get());
+	return new_pointer(LSNull::get(), Type::NULLL);
 }
 Compiler::value Compiler::new_bool(bool b) const {
 	return {llvm::ConstantInt::get(context, llvm::APInt(1, b, false)), Type::BOOLEAN};

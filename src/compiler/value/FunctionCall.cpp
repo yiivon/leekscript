@@ -303,7 +303,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			if (arguments.size() > 0) {
 				return arguments[0]->compile(c);
 			}
-			return {c.new_pointer(new LSString("")).v, type};
+			return c.new_pointer(new LSString(""), type);
 		}
 		if (vv->name == "Array") {
 			return c.new_array(Type::PTR_ARRAY, {});
@@ -391,13 +391,13 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Default function : f(12) */
 	Compiler::value fun;
 	auto ls_fun_addr = c.new_function(nullptr, function->type);
-	auto jit_object = c.new_pointer(nullptr);
+	auto jit_object = c.new_pointer(nullptr, Type::ANY);
 	auto is_closure = function->type.is_closure();
 
 	if (is_unknown_method) {
 		auto oa = static_cast<ObjectAccess*>(function);
 		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
-		auto k = c.new_pointer(&oa->field->content);
+		auto k = c.new_pointer(&oa->field->content, Type::ANY);
 		ls_fun_addr = c.insn_call(Type::FUNCTION, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
 		});

@@ -95,9 +95,9 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 
 			if (Function* f = dynamic_cast<Function*>(ex)) {
 				if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
-					c.insn_store(var, c.new_pointer((void*) f->versions.at(v->version)->function));
+					c.insn_store(var, c.new_pointer((void*) f->versions.at(v->version)->function, Type::FUNCTION));
 				} else {
-					c.insn_store(var, c.new_pointer((void*) f->default_version->function));
+					c.insn_store(var, c.new_pointer((void*) f->default_version->function, Type::FUNCTION));
 				}
 			}
 			auto val = ex->compile(c);

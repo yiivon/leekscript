@@ -185,13 +185,13 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		function->native = true;
 		function->refs = 1;
 		((ObjectAccess*) this)->ls_function = function;
-		return c.new_pointer(ls_function);
+		return c.new_pointer(ls_function, Type::ANY);
 	}
 
 	// Default : object.attr
 	auto o = object->compile(c);
 	object->compile_end(c);
-	auto k = c.new_pointer(&field->content);
+	auto k = c.new_pointer(&field->content, Type::ANY);
 	auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attr(*key);
 	});
@@ -200,7 +200,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> version) const {
 	if (class_method) {
-		return c.new_pointer(new LSFunction(versions.at(version)));
+		return c.new_function(new LSFunction(versions.at(version)), Type::FUNCTION);
 	}
 	assert(false && "ObjectAccess::compile_version must be on a class method.");
 }
@@ -208,7 +208,7 @@ Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> ver
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	auto o = object->compile(c);
 	object->compile_end(c);
-	auto k = c.new_pointer(&field->content);
+	auto k = c.new_pointer(&field->content, Type::ANY);
 	return c.insn_call(type.pointer(), {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attrL(*key);
 	});

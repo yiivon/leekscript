@@ -202,7 +202,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return c.new_bool(0);
 				}
 				else if (vv->name == "String") {
-					return {c.new_pointer(new LSString("")).v, type};
+					return c.new_pointer(new LSString(""), type);
 				}
 				else if (vv->name == "Array") {
 					return c.new_array(Type::PTR_ARRAY, {});
@@ -230,7 +230,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						if (fc->arguments.size() > 0) {
 							return fc->arguments[0]->compile(c);
 						}
-						return {c.new_pointer(new LSString("")).v, type};
+						return c.new_pointer(new LSString(""), type);
 					}
 					if (vv->name == "Array") {
 						return c.new_array(Type::PTR_ARRAY, {});

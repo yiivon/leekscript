@@ -115,7 +115,7 @@ ValueSTD::ValueSTD() : Module("Value") {
  * Static attributes
  */
 Compiler::value ValueSTD::unknown(Compiler& c) {
-	return c.new_pointer(LSNumber::get(floor(1 + ((double) rand() / RAND_MAX) * 100)));
+	return c.new_pointer(LSNumber::get(floor(1 + ((double) rand() / RAND_MAX) * 100)), Type::ANY);
 }
 
 /*
