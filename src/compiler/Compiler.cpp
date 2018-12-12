@@ -151,6 +151,21 @@ Compiler::value Compiler::create_entry(const std::string& name, Type type) const
 
 Compiler::value Compiler::to_int(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
+	if (v.t.is_polymorphic()) {
+		return insn_invoke(Type::INTEGER, {v}, +[](const LSValue* x) {
+			if (auto number = dynamic_cast<const LSNumber*>(x)) {
+				auto r = (int) number->value;
+				LSValue::delete_temporary(x);
+				return r;
+			} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
+				auto r = boolean->value ? 1 : 0;
+				LSValue::delete_temporary(x);
+				return r;
+			}
+			LSValue::delete_temporary(x);
+			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+		});
+	}
 	if (v.t.is_integer()) {
 		return v;
 	}
