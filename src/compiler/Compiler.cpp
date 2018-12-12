@@ -65,8 +65,9 @@ Compiler::value Compiler::new_long(long l) const {
 }
 
 Compiler::value Compiler::new_pointer(const void* p, Type type) const {
+	assert(type.is_pointer());
 	auto longp = llvm::ConstantInt::get(context, llvm::APInt(64, (long) p, false));
-	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, type.llvm_type()), type};
+	return { builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, type.llvm_type()), type };
 }
 Compiler::value Compiler::new_function(const void* p, Type type) const {
 	return new_pointer(p, type);
