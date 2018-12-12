@@ -38,7 +38,12 @@ std::string Struct_type::clazz() const {
 	return "Struct";
 }
 std::ostream& Struct_type::print(std::ostream& os) const {
-	os << BLUE_BOLD << _name << END_COLOR;
+	os << BLUE_BOLD << _name << END_COLOR << " { ";
+	for (size_t i = 0; i < _types.size(); ++i) {
+		if (i > 0) os << ", ";
+		os << _types[i];
+	}
+	os << " }";
 	return os;
 }
 
