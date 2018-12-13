@@ -163,17 +163,13 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	this->v1_type = op->reversed ? v2->type : v1->type;
 	this->v2_type = op->reversed ? v1->type : v2->type;
 
-	const auto object_class = (LSClass*) analyser->vm->system_vars[v1_type.clazz()];
-	LSClass::Operator* m = nullptr;
-
-	if (object_class) {
-		// Search in the object class first
-		m = object_class->getOperator(op->character, v1_type, v2_type);
+	auto object_class = (LSClass*) analyser->vm->system_vars[v1_type.clazz()];
+	if (!object_class) {
+		object_class = (LSClass*) analyser->vm->system_vars["Value"];
 	}
-	if (m == nullptr) {
-		// Search in the Value class if not found
-		auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
-		m = value_class->getOperator(op->character, v1_type, v2_type);
+	const LSClass::Operator* m = nullptr;
+	if (object_class) {
+		m = object_class->getOperator(op->character, v1_type, v2_type);
 	}
 	if (m != nullptr) {
 		// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << (void*) m->addr << std::endl;
