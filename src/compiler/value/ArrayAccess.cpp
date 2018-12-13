@@ -73,10 +73,6 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		map_key_type = array->type.key();
 	}
 
-	if (array->type.is_interval()) {
-		key->analyse(analyser);
-	}
-
 	// Range array access : array[4:12], check if the values are numbers
 	if (key != nullptr and key2 != nullptr) {
 
@@ -111,13 +107,6 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 
 		key->analyse(analyser);
 
-		if (map_key_type == Type::INTEGER) {
-			key->analyse(analyser);
-		} else if (map_key_type == Type::REAL) {
-			key->analyse(analyser);
-		} else {
-			key->analyse(analyser);
-		}
 		if (!map_key_type.compatible(key->type)) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
