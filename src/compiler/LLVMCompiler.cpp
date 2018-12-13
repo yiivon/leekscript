@@ -326,7 +326,19 @@ LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::v
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
 	LLVMCompiler::value r;
-	if (a.t.is_real() || b.t.is_real()) {
+	if (a.t.is_mpz() and b.t.is_integer()) {
+		// TODO cleaning
+		return insn_call(Type::BOOLEAN, {a, b}, +[](__mpz_struct x, int i) {
+			return _mpz_cmp_si(&x, i) < 0;
+		});
+	} else if (a.t.is_mpz() and b.t.is_mpz()) {
+		auto res = insn_call(Type::INTEGER, {a, b}, +[](__mpz_struct a, __mpz_struct b) {
+			return mpz_cmp(&a, &b);
+		});
+		if (a.t.temporary) insn_delete_mpz(a);
+		if (b.t.temporary) insn_delete_mpz(b);
+		return insn_lt(res, new_integer(0));
+	} else if (a.t.is_real() || b.t.is_real()) {
 		r = {builder.CreateFCmpOLT(to_real(a).v, to_real(b).v), Type::BOOLEAN};
 	} else if (a.t.is_long() || b.t.is_long()) {
 		r = {builder.CreateICmpSLT(to_long(a).v, to_long(b).v), Type::BOOLEAN};

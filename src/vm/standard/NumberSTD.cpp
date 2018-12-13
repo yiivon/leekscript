@@ -111,10 +111,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::CONST_NUMBER, Type::CONST_NUMBER, Type::INTEGER, (void*) &NumberSTD::int_div_eq_val_val, {}, false, true}
 	});
 	operator_("<", {
-		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::lt},
-		{Type::MPZ, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::lt_mpz_mpz}
+		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::lt}
 	});
-
 	operator_("<=", {
 		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::le}
 	});
@@ -603,24 +601,9 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_lt(args[0], args[1]);
 }
-
-Compiler::value NumberSTD::lt_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_call(Type::INTEGER, {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
-		return mpz_cmp(&a, &b);
-	});
-	if (args[0].t.temporary) {
-		c.insn_delete_mpz(args[0]);
-	}
-	if (args[1].t.temporary) {
-		c.insn_delete_mpz(args[1]);
-	}
-	return c.insn_lt(res, c.new_integer(0));
-}
-
 Compiler::value NumberSTD::le(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_le(args[0], args[1]);
 }
-
 Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_gt(args[0], args[1]);
 }

@@ -61,7 +61,6 @@ public:
 	static Compiler::value pow_eq_real(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value lt_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value le(Compiler& c, std::vector<Compiler::value> args);
 
