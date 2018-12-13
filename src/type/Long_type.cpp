@@ -33,6 +33,9 @@ int Long_type::distance(const Base_type* type) const {
 llvm::Type* Long_type::llvm() const {
 	return llvm::Type::getInt64Ty(LLVMCompiler::context);
 }
+std::string Long_type::clazz() const {
+	return "Number";
+}
 std::ostream& Long_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "long" << END_COLOR;
 	return os;

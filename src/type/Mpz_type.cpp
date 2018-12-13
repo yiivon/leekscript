@@ -30,6 +30,9 @@ int Mpz_type::distance(const Base_type* type) const {
 llvm::Type* Mpz_type::llvm() const {
 	return get_mpz_type();
 }
+std::string Mpz_type::clazz() const {
+	return "Number";
+}
 std::ostream& Mpz_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "mpz" << END_COLOR;
 	return os;

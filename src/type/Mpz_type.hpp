@@ -5,14 +5,16 @@
 
 namespace ls {
 
-class Mpz_type : public Number_type {
+class Mpz_type : public Base_type {
 public:
 	Mpz_type() {}
+	virtual int id() const override { return 3; }
 	virtual const std::string getName() const { return "mpz"; }
 	virtual const std::string getJsonName() const { return "number"; }
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;
 	virtual llvm::Type* llvm() const override;
+	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 
 	static llvm::Type* mpz_type;

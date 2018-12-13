@@ -26,6 +26,9 @@ int Real_type::distance(const Base_type* type) const {
 llvm::Type* Real_type::llvm() const {
 	return llvm::Type::getDoubleTy(LLVMCompiler::context);
 }
+std::string Real_type::clazz() const {
+	return "Number";
+}
 std::ostream& Real_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "real" << END_COLOR;
 	return os;
