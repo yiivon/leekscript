@@ -460,8 +460,10 @@ bool Type::list_may_be_compatible(const std::vector<Type>& expected, const std::
 	return true;
 }
 
-bool Type::castable(Type type) const {
-	return distance(type) >= 0;
+bool Type::castable(Type type, bool strictCast) const {
+	if (!_types.size()) return false;
+	auto d = distance(type);
+	return d >= 0 and (!strictCast or d < 100000);
 }
 int Type::distance(Type type) const {
 	if (_types.size() == 0 or type._types.size() == 0) return -1;

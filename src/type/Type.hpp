@@ -49,7 +49,7 @@ public:
 	Type pointed() const;
 	bool all(std::function<bool(const Base_type*)>) const;
 	bool some(std::function<bool(const Base_type*)>) const;
-	bool castable(Type type) const;
+	bool castable(Type type, bool strictCast = false) const;
 	int distance(Type type) const;
 
 	void operator += (const Type type);
