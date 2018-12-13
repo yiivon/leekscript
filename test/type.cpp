@@ -70,6 +70,19 @@ void Test::test_types() {
 	assert(ls::Type::ANY.compatible(p1));
 	// assert(ls::Type::NUMBER.compatible(ls::Type::BOOLEAN));
 
+	section("is_number");
+	assert(ls::Type::NUMBER.is_number());
+	assert(ls::Type::LONG.is_number());
+	assert(ls::Type::MPZ.is_number());
+	assert(ls::Type::INTEGER.is_number());
+	assert(ls::Type::REAL.is_number());
+	assert(ls::Type::BOOLEAN.is_number());
+	assert(not ls::Type::STRING.is_number());
+	assert(not ls::Type::ANY.is_number());
+	assert(not ls::Type::ARRAY.is_number());
+	assert(not ls::Type::MAP.is_number());
+	assert(not ls::Type().is_number());
+
 	section("operator *");
 	assert(ls::Type() * ls::Type() == ls::Type());
 	assert(ls::Type::ANY * ls::Type::ANY == ls::Type::ANY);

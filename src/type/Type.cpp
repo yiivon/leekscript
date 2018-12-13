@@ -347,7 +347,7 @@ template <class T> bool Type::is_type() const {
 }
 bool Type::is_any() const { return is_type<Any_type>(); }
 bool Type::is_bool() const { return is_type<Bool_type>(); }
-bool Type::is_number() const { return is_type<Number_type>(); }
+bool Type::is_number() const { return castable(Type::NUMBER, true); }
 bool Type::is_real() const { return is_type<Real_type>(); }
 bool Type::is_integer() const { return is_type<Integer_type>(); }
 bool Type::is_long() const { return is_type<Long_type>(); }
@@ -467,7 +467,9 @@ bool Type::castable(Type type, bool strictCast) const {
 }
 int Type::distance(Type type) const {
 	if (_types.size() == 0 or type._types.size() == 0) return -1;
-	return fold()._types[0]->distance(type.fold()._types[0]);
+	auto t1 = fold()._types[0];
+	auto t2 = type.fold()._types[0];
+	return t1->distance(t2);
 }
 
 Type Type::generate_new_placeholder_type() {
