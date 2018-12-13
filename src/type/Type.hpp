@@ -49,7 +49,6 @@ public:
 	Type pointed() const;
 	bool all(std::function<bool(const Base_type*)>) const;
 	bool some(std::function<bool(const Base_type*)>) const;
-	int max(std::function<int(const Base_type*)>) const;
 	bool castable(Type type) const;
 	int distance(Type type) const;
 

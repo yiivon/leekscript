@@ -524,11 +524,6 @@ bool Type::all(std::function<bool(const Base_type*)> fun) const {
 bool Type::some(std::function<bool(const Base_type*)> fun) const {
 	return std::any_of(_types.begin(), _types.end(), fun);
 }
-int Type::max(std::function<int(const Base_type*)> fun) const {
-	std::vector<int> v;
-	std::transform(_types.begin(), _types.end(), std::back_inserter(v), fun);
-	return *std::max_element(v.begin(), v.end());
-}
 
 ostream& operator << (ostream& os, const Type& type) {
 	if (type._types.size() == 0) {
