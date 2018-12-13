@@ -123,26 +123,18 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::gt},
 		{Type::INTEGER, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::gt_int_mpz}
 	});
-
 	operator_(">=", {
 		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::ge}
 	});
-
 	operator_("%", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_mpz_mpz},
 		{Type::CONST_LONG, Type::CONST_LONG, Type::LONG, (void*) &NumberSTD::mod},
 		{Type::CONST_INTEGER, Type::CONST_INTEGER, Type::INTEGER, (void*) &NumberSTD::mod},
 	});
-
 	operator_("%=", {
 		{Type::MPZ, Type::MPZ, Type::MPZ_TMP, (void*) &NumberSTD::mod_eq_mpz_mpz},
 		{Type::REAL, Type::REAL, Type::REAL, (void*) &NumberSTD::mod_eq_real, {}, false, true},
 		{Type::INTEGER, Type::INTEGER, Type::INTEGER, (void*) &NumberSTD::mod_eq_real, {}, false, true}
-	});
-
-	operator_("==", {
-		{Type::MPZ, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::eq_mpz_mpz},
-		{Type::MPZ, Type::INTEGER, Type::BOOLEAN, (void*) &NumberSTD::eq_mpz_int}
 	});
 	operator_("~", {
 		{Type::REAL, Type::fun(Type::ANY, {Type::REAL}), Type::ANY, (void*) &NumberSTD::tilde_real},
@@ -683,32 +675,6 @@ Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value>
 	auto sum = c.insn_mod(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
-}
-
-Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto a_addr = c.insn_address_of(args[0]);
-	// auto b_addr = c.insn_address_of(args[1]);
-	return c.insn_call(Type::BOOLEAN, {args[0], args[1]}, +[](__mpz_struct x, __mpz_struct y) {
-		return mpz_cmp(&x, &y) == 0;
-	});
-	// if (args[0].t.temporary) {
-	// 	c.insn_delete_mpz(args[0]);
-	// }
-	// if (args[1].t.temporary) {
-	// 	c.insn_delete_mpz(args[1]);
-	// }
-	// return c.insn_eq(res, c.new_integer(0));
-}
-
-Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	// auto a_addr = c.insn_address_of(args[0]);
-	return c.insn_call(Type::BOOLEAN, {args[0], args[1]}, +[](__mpz_struct x, int i) {
-		return _mpz_cmp_si(&x, i) == 0;
-	});
-	// if (args[0].t.temporary) {
-	// 	c.insn_delete_mpz(args[0]);
-	// }
-	// return c.insn_eq(res, c.new_integer(0));
 }
 
 Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> args) {

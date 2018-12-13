@@ -294,7 +294,17 @@ LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::v
 			return r;
 		});
 	}
-	if (a.t.is_real() or b.t.is_real()) {
+	if (a.t.is_mpz() and b.t.is_integer()) {
+		// TODO cleaning
+		return insn_call(Type::BOOLEAN, {a, b}, +[](__mpz_struct x, int i) {
+			return _mpz_cmp_si(&x, i) == 0;
+		});
+	} else if (a.t.is_mpz() and b.t.is_mpz()) {
+		// TODO cleaning
+		return insn_call(Type::BOOLEAN, {a, b}, +[](__mpz_struct x, __mpz_struct y) {
+			return mpz_cmp(&x, &y) == 0;
+		});
+	} else if (a.t.is_real() or b.t.is_real()) {
 		return {builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::BOOLEAN};
 	} else if (a.t.is_long() or b.t.is_long()) {
 		return {builder.CreateICmpEQ(to_long(a).v, to_long(b).v), Type::BOOLEAN};
