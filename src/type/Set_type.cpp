@@ -58,7 +58,7 @@ std::string Set_type::clazz() const {
 	return "Set";
 }
 std::ostream& Set_type::print(std::ostream& os) const {
-	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
+	os << BLUE_BOLD << "set" << END_COLOR << "<" << _element << ">";
 	return os;
 }
 
