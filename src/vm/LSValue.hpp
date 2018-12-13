@@ -41,6 +41,7 @@ public:
 	static LSValueType CLOSURE;
 	static LSValueType OBJECT;
 	static LSValueType CLASS;
+	static LSClass* ValueClass;
 
 	static int obj_count;
 	static int obj_deleted;

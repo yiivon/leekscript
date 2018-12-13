@@ -10,6 +10,8 @@ namespace ls {
 
 ValueSTD::ValueSTD() : Module("Value") {
 
+	LSValue::ValueClass = clazz;
+
 	/*
 	 * Static attributes
 	 */

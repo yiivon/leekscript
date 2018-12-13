@@ -16,6 +16,9 @@ bool Method::NATIVE = true;
 
 Module::Module(std::string name) : name(name) {
 	clazz = new LSClass(name);
+	if (name != "Value") {
+		clazz->parent = LSValue::ValueClass;
+	}
 }
 
 Module::~Module() {
