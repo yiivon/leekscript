@@ -64,7 +64,7 @@ Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, Type o
 		Method* best = nullptr;
 		for (auto& implementation : methods.at(name)) {
 			if (implementation.obj_type.may_be_compatible(obj_type)) {
-				for (int i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
+				for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
 					const auto& a = arguments.at(i);
 					if (auto fun = dynamic_cast<const Function_type*>(a._types[0])) {
 						if (fun->function()) {
