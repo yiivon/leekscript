@@ -265,11 +265,11 @@ LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	if (a.t.is_real() or b.t.is_real()) {
-		return {builder.CreateFAdd(to_real(a).v, to_real(b).v, "add"), Type::REAL};
+		return {builder.CreateFAdd(to_real(a).v, to_real(b).v), Type::REAL};
 	} else if (a.t.is_long() or b.t.is_long()) {
-		return {builder.CreateAdd(to_long(a).v, to_long(b).v, "add"), Type::LONG};
+		return {builder.CreateAdd(to_long(a).v, to_long(b).v), Type::LONG};
 	} else {
-		return {builder.CreateAdd(to_int(a).v, to_int(b).v, "add"), Type::INTEGER};
+		return {builder.CreateAdd(to_int(a).v, to_int(b).v), Type::INTEGER};
 	}
 }
 
