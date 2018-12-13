@@ -148,7 +148,7 @@ LLVMCompiler::value LLVMCompiler::create_entry(const std::string& name, Type typ
 }
 
 LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
-	// assert(v.t.llvm_type() == v.v->getType());
+	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.is_integer()) {
 		return v;
 	}
