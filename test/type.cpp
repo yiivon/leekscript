@@ -61,14 +61,21 @@ void Test::test_types() {
 	assert(ls::Type({ new ls::Array_type(ls::Type::INTEGER), new ls::Array_type(ls::Type::INTEGER) }).is_array() == true);
 	assert(ls::Type({ new ls::Array_type(ls::Type::INTEGER), ls::RawType::INTEGER }).is_array() == false);
 
-	section("compatible");
-	assert(ls::Type::REAL.compatible(ls::Type::INTEGER));
-	assert(ls::Type::ARRAY.compatible(ls::Type::INT_ARRAY));
-	assert(ls::Type::MAP.compatible(ls::Type::PTR_PTR_MAP));
-	assert(ls::Type::MAP.compatible(ls::Type::INT_PTR_MAP));
-	assert(ls::Type::MAP.compatible(ls::Type::REAL_PTR_MAP));
-	assert(ls::Type::ANY.compatible(p1));
-	// assert(ls::Type::NUMBER.compatible(ls::Type::BOOLEAN));
+	section("castable");
+	assert(ls::Type::REAL.castable(ls::Type::INTEGER));
+	assert(ls::Type::INT_ARRAY.castable(ls::Type::INT_ARRAY));
+	assert(ls::Type::INT_ARRAY.castable(ls::Type::ARRAY));
+	assert(ls::Type::REAL_ARRAY.castable(ls::Type::ARRAY));
+	assert(ls::Type::REAL_ARRAY.castable(ls::Type::INT_ARRAY));
+	assert(ls::Type::INT_ARRAY.castable(ls::Type::REAL_ARRAY));
+	assert(ls::Type::MAP.castable(ls::Type::PTR_PTR_MAP));
+	assert(ls::Type::MAP.castable(ls::Type::INT_PTR_MAP));
+	assert(ls::Type::MAP.castable(ls::Type::REAL_PTR_MAP));
+	// assert(ls::Type::ANY.castable(p1));
+	assert(ls::Type::NUMBER.castable(ls::Type::BOOLEAN));
+	assert(ls::Type::BOOLEAN.castable(ls::Type::NUMBER));
+	assert(ls::Type::REAL_ARRAY.castable(ls::Type::ANY));
+	assert(ls::Type::REAL_ARRAY.castable(ls::Type::CONST_ANY));
 
 	section("is_number");
 	assert(ls::Type::NUMBER.is_number());
