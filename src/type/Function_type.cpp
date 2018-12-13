@@ -23,6 +23,14 @@ bool Function_type::compatible(const Base_type* type) const {
 	}
 	return false;
 }
+bool Function_type::castable(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type) != nullptr) { return true; }
+	if (auto fun = dynamic_cast<const Function_type*>(type)) {
+		if (_closure != fun->_closure or _arguments.size() > fun->_arguments.size()) return false;
+		return fun->_return_type.castable(_return_type);
+	}
+	return false;
+}
 Type Function_type::return_type() const {
 	return _return_type;
 }

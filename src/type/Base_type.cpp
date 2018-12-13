@@ -1,6 +1,7 @@
 #include "Base_type.hpp"
 #include "Type.hpp"
 #include "../vm/LSValue.hpp"
+#include "Any_type.hpp"
 
 namespace ls {
 
@@ -20,6 +21,22 @@ bool Base_type::operator == (const Base_type*) const {
 }
 bool Base_type::compatible(const Base_type*) const {
 	return false;
+}
+bool Base_type::castable(const Base_type*) const {
+	return false;
+}
+bool Base_type::castable(const Type& type) const {
+	return type.all([&](const Base_type* t) {
+		return castable(t);
+	});
+}
+int Base_type::distance(const Base_type* type) const {
+	return -1;
+}
+int Base_type::distance(const Type& type) const {
+	return type.max([&](const Base_type* t) {
+		return distance(t);
+	});
 }
 Type Base_type::iterator() const {
 	assert(false && "No iterator available on this type");

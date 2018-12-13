@@ -31,11 +31,19 @@ bool Array_type::operator == (const Base_type* type) const {
 }
 bool Array_type::compatible(const Base_type* type) const {
 	if (auto array = dynamic_cast<const Array_type*>(type)) {
-		// TODO no need to fold the element types
-		// return _element.fold().compatible(array->_element.fold());
 		return _element._types.size() == 0 or _element.fold() == array->_element.fold();
 	}
 	return false;
+}
+int Array_type::distance(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
+	if (auto array = dynamic_cast<const Array_type*>(type)) {
+		if (_element._types.size() == 0) {
+			return 999;
+		}
+		return _element.distance(array->_element);
+	}
+	return -1;
 }
 Type Array_type::iterator() const {
 	const auto merged = _element.fold();

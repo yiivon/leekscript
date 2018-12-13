@@ -24,6 +24,16 @@ bool Map_type::compatible(const Base_type* type) const {
 	}
 	return false;
 }
+int Map_type::distance(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
+	if (auto map = dynamic_cast<const Map_type*>(type)) {
+		if (_element._types.size() == 0 or _key._types.size() == 0) {
+			return 999;
+		}
+		return _element.distance(map->_element) + _key.distance(map->_key);
+	}
+	return -1;
+}
 std::string Map_type::clazz() const {
 	return "Map";
 }

@@ -21,6 +21,10 @@ public:
 	virtual Type member(int) const;
 	virtual bool operator == (const Base_type*) const = 0;
 	virtual bool compatible(const Base_type*) const;
+	virtual bool castable(const Base_type*) const;
+	bool castable(const Type&) const;
+	virtual int distance(const Base_type*) const;
+	int distance(const Type&) const;
 	virtual Type iterator() const;
 	virtual Type return_type() const;
 	virtual Type argument(size_t) const;

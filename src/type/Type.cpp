@@ -1,5 +1,6 @@
 #include <sstream>
 #include <numeric>
+#include <algorithm>
 #include "Type.hpp"
 #include "../constants.h"
 #include "../colors.h"
@@ -381,19 +382,13 @@ bool Type::is_polymorphic() const {
 bool Type::is_primitive() const {
 	return _types.size() && all([&](const Base_type* t) {
 		return dynamic_cast<const Integer_type*>(t) != nullptr
+			or dynamic_cast<const Mpz_type*>(t) != nullptr 
 			or dynamic_cast<const Long_type*>(t) != nullptr 
 			or dynamic_cast<const Real_type*>(t) != nullptr 
 			or dynamic_cast<const Bool_type*>(t) != nullptr;
 	});
 }
 
-/*
- * Can we convert type into this ?
- * {float}.compatible({int}) == true
- * {int*}.compatible({int}) == true
- * {int}.compatible({float}) == false
- * {int}.compatible({int*}) == false
- */
 bool Type::compatible(const Type& type) const {
 	if (_types.size() == 0 or type._types.size() == 0) {
 		return true;
@@ -465,6 +460,14 @@ bool Type::list_may_be_compatible(const std::vector<Type>& expected, const std::
 	return true;
 }
 
+bool Type::castable(Type type) const {
+	return distance(type) >= 0;
+}
+int Type::distance(Type type) const {
+	if (_types.size() == 0 or type._types.size() == 0) return -1;
+	return fold()._types[0]->distance(type.fold()._types[0]);
+}
+
 Type Type::generate_new_placeholder_type() {
 	Type type;
 	u_int32_t character = 0x03B1 + placeholder_counter;
@@ -520,6 +523,11 @@ bool Type::all(std::function<bool(const Base_type*)> fun) const {
 }
 bool Type::some(std::function<bool(const Base_type*)> fun) const {
 	return std::any_of(_types.begin(), _types.end(), fun);
+}
+int Type::max(std::function<int(const Base_type*)> fun) const {
+	std::vector<int> v;
+	std::transform(_types.begin(), _types.end(), std::back_inserter(v), fun);
+	return *std::max_element(v.begin(), v.end());
 }
 
 ostream& operator << (ostream& os, const Type& type) {
