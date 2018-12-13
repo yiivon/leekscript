@@ -11,7 +11,7 @@
 namespace ls {
 
 bool Real_type::operator == (const Base_type* type) const {
-	return dynamic_cast<const Real_type*>(type);
+	return dynamic_cast<const Real_type*>(type) != nullptr;
 }
 int Real_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 5; }

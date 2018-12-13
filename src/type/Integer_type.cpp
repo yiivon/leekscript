@@ -17,7 +17,7 @@ Type Integer_type::iterator() const {
 	return Type::INTEGER_ITERATOR;
 }
 bool Integer_type::operator == (const Base_type* type) const {
-	return dynamic_cast<const Integer_type*>(type);
+	return dynamic_cast<const Integer_type*>(type) != nullptr;
 }
 int Integer_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 5; }

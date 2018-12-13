@@ -18,7 +18,7 @@ Type Long_type::iterator() const {
 	return Type::LONG_ITERATOR;
 }
 bool Long_type::operator == (const Base_type* type) const {
-	return dynamic_cast<const Long_type*>(type);
+	return dynamic_cast<const Long_type*>(type) != nullptr;
 }
 int Long_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 6; }

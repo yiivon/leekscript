@@ -15,7 +15,7 @@ namespace ls {
 llvm::Type* Mpz_type::mpz_type = nullptr;
 
 bool Mpz_type::operator == (const Base_type* type) const {
-	return dynamic_cast<const Mpz_type*>(type);
+	return dynamic_cast<const Mpz_type*>(type) != nullptr;
 }
 int Mpz_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 2; }
