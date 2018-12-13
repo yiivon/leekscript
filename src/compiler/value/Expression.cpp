@@ -195,7 +195,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	}
 
 	// Don't use old stuff for boolean
-	if (v1->type == Type::BOOLEAN or op->type == TokenType::DIVIDE) {
+	if ((v1->type == Type::BOOLEAN and op->type != TokenType::EQUAL) or op->type == TokenType::DIVIDE) {
 		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}

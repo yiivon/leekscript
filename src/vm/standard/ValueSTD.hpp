@@ -22,7 +22,6 @@ public:
 	/*
 	 * Operators
 	 */
-	static Compiler::value op_store(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_equals(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_not_equals(Compiler& c, std::vector<Compiler::value> args);
