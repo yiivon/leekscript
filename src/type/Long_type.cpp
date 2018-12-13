@@ -21,9 +21,9 @@ bool Long_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Long_type*>(type);
 }
 int Long_type::distance(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type)) { return 4; }
-	if (dynamic_cast<const Number_type*>(type)) { return 3; }
-	if (dynamic_cast<const Mpz_type*>(type)) { return 2; }
+	if (dynamic_cast<const Any_type*>(type)) { return 6; }
+	if (dynamic_cast<const Number_type*>(type)) { return 5; }
+	if (dynamic_cast<const Mpz_type*>(type)) { return 4; }
 	if (dynamic_cast<const Real_type*>(type)) { return 1; }
 	if (dynamic_cast<const Long_type*>(type)) { return 0; }
 	if (dynamic_cast<const Integer_type*>(type)) { return 100; }

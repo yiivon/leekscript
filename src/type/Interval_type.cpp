@@ -8,6 +8,11 @@ namespace ls {
 bool Interval_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Interval_type*>(type);
 }
+int Interval_type::distance(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type)) { return 1; }
+	if (dynamic_cast<const Interval_type*>(type)) { return 0; }
+	return -1;
+}
 Type Interval_type::element() const {
 	return Type::INTEGER;
 }

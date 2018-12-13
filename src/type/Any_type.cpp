@@ -10,6 +10,10 @@ llvm::Type* Any_type::any_type = nullptr;
 bool Any_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Any_type*>(type);
 }
+int Any_type::distance(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type)) { return 0; }
+	return 100000;
+}
 llvm::Type* Any_type::llvm() const {
 	return Any_type::get_any_type();
 }

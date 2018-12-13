@@ -24,7 +24,6 @@ public:
 	virtual bool castable(const Base_type*) const;
 	bool castable(const Type&) const;
 	virtual int distance(const Base_type*) const;
-	int distance(const Type&) const;
 	virtual Type iterator() const;
 	virtual Type return_type() const;
 	virtual Type argument(size_t) const;

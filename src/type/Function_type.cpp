@@ -31,6 +31,14 @@ bool Function_type::castable(const Base_type* type) const {
 	}
 	return false;
 }
+int Function_type::distance(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type)) { return 1; }
+	if (auto fun = dynamic_cast<const Function_type*>(type)) {
+		if (_closure != fun->_closure or _arguments.size() > fun->_arguments.size()) return -1;
+		return fun->_return_type.distance(_return_type);
+	}
+	return -1;
+}
 Type Function_type::return_type() const {
 	return _return_type;
 }

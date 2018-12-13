@@ -22,6 +22,15 @@ bool Struct_type::operator == (const Base_type* type) const {
 	}
 	return false;
 }
+int Struct_type::distance(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type)) { return 1; }
+	if (auto s = dynamic_cast<const Struct_type*>(type)) {
+		if (s->_types == _types) {
+			return 0;
+		}
+	}
+	return -1;
+}
 llvm::Type* Struct_type::llvm() const {
 	return _llvm_type;
 }

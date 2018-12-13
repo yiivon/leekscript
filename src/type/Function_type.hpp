@@ -20,6 +20,7 @@ public:
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getJsonName() const { return "function"; }
 	virtual bool operator == (const Base_type*) const override;
+	virtual int distance(const Base_type* type) const override;
 	virtual bool compatible(const Base_type*) const override;
 	virtual bool castable(const Base_type*) const override;
 	virtual Type return_type() const override;

@@ -8,12 +8,10 @@ namespace ls {
 bool Null_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Null_type*>(type);
 }
-bool Null_type::castable(const Base_type* type) const {
-	if (dynamic_cast<const Null_type*>(type)
-		or dynamic_cast<const Any_type*>(type)) {
-		return true;
-	}
-	return false;
+int Null_type::distance(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type)) { return 1; }
+	if (dynamic_cast<const Null_type*>(type)) { return 0; }
+	return -1;
 }
 llvm::Type* Null_type::llvm() const {
 	return Any_type::get_any_type();

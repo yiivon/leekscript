@@ -33,11 +33,6 @@ bool Base_type::castable(const Type& type) const {
 int Base_type::distance(const Base_type* type) const {
 	return -1;
 }
-int Base_type::distance(const Type& type) const {
-	return type.max([&](const Base_type* t) {
-		return distance(t);
-	});
-}
 Type Base_type::iterator() const {
 	assert(false && "No iterator available on this type");
 }

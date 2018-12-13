@@ -44,6 +44,16 @@ bool Set_type::compatible(const Base_type* type) const {
 	}
 	return false;
 }
+int Set_type::distance(const Base_type* type) const {
+	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
+	if (auto set = dynamic_cast<const Set_type*>(type)) {
+		if (set->_element._types.size() == 0) {
+			return 999;
+		}
+		return _element.distance(set->_element);
+	}
+	return -1;
+}
 std::string Set_type::clazz() const {
 	return "Set";
 }
