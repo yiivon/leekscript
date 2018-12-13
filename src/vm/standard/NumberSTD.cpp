@@ -116,10 +116,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("<=", {
 		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::le}
 	});
-
 	operator_(">", {
-		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::gt},
-		{Type::INTEGER, Type::MPZ, Type::BOOLEAN, (void*) &NumberSTD::gt_int_mpz}
+		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::gt}
 	});
 	operator_(">=", {
 		{Type::NUMBER, Type::NUMBER, Type::BOOLEAN, (void*) &NumberSTD::ge}
@@ -607,14 +605,6 @@ Compiler::value NumberSTD::le(Compiler& c, std::vector<Compiler::value> args) {
 Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_gt(args[0], args[1]);
 }
-
-Compiler::value NumberSTD::gt_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_call(Type::INTEGER, {args[1], args[0]}, +[](__mpz_struct a, int b) {
-		return _mpz_cmp_si(&a, b);
-	});
-	return c.insn_lt(res, c.new_integer(0));
-}
-
 Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_ge(args[0], args[1]);
 }
