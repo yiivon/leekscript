@@ -165,7 +165,7 @@ void Test::test_arrays() {
 	code("var v = 12 var a = [v, 2, 3] a[0] += 5 a[0]").equals("17");
 	code("var a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
 	code("var a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");
-	code("var a = [1.5] a += false a").equals("[1.5, false]");
+	DISABLED_code("var a = [1.5] a += false a").equals("[1.5, false]");
 	code("var a = [1] a += <2, 3> a").equals("[1, 2, 3]");
 	code("var a = [1] a += <5.5, 7.314> a").equals("[1, 5.5, 7.314]");
 	code("var a = [1] a += <5, 7.314, 'hello'> a").equals("[1, 5, 7.314, 'hello']");
