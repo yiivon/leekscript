@@ -123,19 +123,31 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 const LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type& operand_type) {
 	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
 	if (name == "is not") name = "!=";
-	try {
-		auto& impl = operators.at(name);
-		Operator* best = nullptr;
-		for (Operator& m : impl) {
-			// std::cout << m.object_type.compatible(obj_type) << " " << m.operand_type.compatible(operand_type) << std::endl;
-			if (m.object_type.may_be_compatible(obj_type) and m.operand_type.may_be_compatible(operand_type)) {
-				best = &m;
-			}
-		}
-		return best;
-	} catch (std::exception&) {
-		return nullptr;
+	std::vector<const Operator*> implementations;
+	if (operators.find(name) != operators.end()) {
+		for (const auto& i : operators.at(name)) implementations.push_back(&i);
 	}
+	auto parent = name == "Value" ? nullptr : LSValue::ValueClass;
+	if (parent && parent->operators.find(name) != parent->operators.end()) {
+		for (const auto& i : parent->operators.at(name)) implementations.push_back(&i);
+	}
+	const Operator* best = nullptr;
+	int best_score = std::numeric_limits<int>::max();
+	for (const Operator* m : implementations) {
+		if (obj_type.castable(m->object_type) and operand_type.castable(m->operand_type)) {
+			int score = obj_type.distance(m->object_type) + operand_type.distance(m->operand_type);
+			// std::cout << " + " << m->object_type << ", " << m->operand_type << " / " << score << std::endl;
+			if (best == nullptr or score <= best_score) {
+				best_score = score;
+				best = m;
+			}
+			// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
+		} else {
+			// std::cout << " - " << m->object_type << ", " << m->operand_type << std::endl;
+		}
+	}
+	// if (best) std::cout << " = " << best->object_type << ", " << best->operand_type << std::endl;
+	return best;
 }
 
 bool LSClass::to_bool() const {
