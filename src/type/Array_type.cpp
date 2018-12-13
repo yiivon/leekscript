@@ -38,7 +38,7 @@ bool Array_type::compatible(const Base_type* type) const {
 int Array_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
 	if (auto array = dynamic_cast<const Array_type*>(type)) {
-		if (_element._types.size() == 0) {
+		if (array->_element._types.size() == 0) {
 			return 999;
 		}
 		return _element.distance(array->_element);
