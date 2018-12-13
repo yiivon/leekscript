@@ -90,31 +90,22 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		type = array->type;
 
 	} else if (array->type.is_array() or array->type.is_string() or array->type.is_interval()) {
-
 		if (!key->type.is_any() and not (key->type.is_number() or key->type.is_bool())) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
 		}
-		key->analyse(analyser);
-
 		if (array->type.is_string()) {
 			type = Type::STRING;
 		}
-
 	} else if (array->type.is_map()) {
-
-		key->analyse(analyser);
-
 		if (!map_key_type.compatible(key->type)) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
 			analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
 		}
-	} else {
-		key->analyse(analyser);
 	}
 	// TODO should be temporary
 	// type.temporary = true;
