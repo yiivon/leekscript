@@ -134,8 +134,10 @@ const LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type,
 	const Operator* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
 	for (const Operator* m : implementations) {
-		if (obj_type.castable(m->object_type) and operand_type.castable(m->operand_type)) {
-			int score = obj_type.distance(m->object_type) + operand_type.distance(m->operand_type);
+		auto d1 = obj_type.distance(m->object_type);
+		auto d2 = operand_type.distance(m->operand_type);
+		if (d1 >= 0 and d2 >= 0) {
+			int score = d1 + d2;
 			// std::cout << " + " << m->object_type << ", " << m->operand_type << " / " << score << std::endl;
 			if (best == nullptr or score <= best_score) {
 				best_score = score;
