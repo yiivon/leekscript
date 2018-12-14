@@ -248,7 +248,7 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 }
 
 Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+	return c.insn_invoke(Type::INTEGER, {args[0], c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
 		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 			LSValue::delete_temporary(x);
@@ -259,11 +259,11 @@ Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> a
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	}, true);
+	});
 }
 
 Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::INTEGER, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+	return c.insn_invoke(Type::INTEGER, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
 		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
 			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
@@ -275,11 +275,11 @@ Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> ar
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	}, true);
+	});
 }
 
 Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::INTEGER, {args[0], c.insn_to_any(args[1])},
+	return c.insn_invoke(Type::INTEGER, {args[0], c.insn_to_any(args[1])},
 	+[](LSValue* x, LSValue* y) {
 		LSNumber *a, *b;
 		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
@@ -292,7 +292,7 @@ Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> a
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
 		return res;
-	}, true);
+	});
 }
 
 Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) {
@@ -389,18 +389,18 @@ Compiler::value ValueSTD::op_div(Compiler& c, std::vector<Compiler::value> args)
 }
 
 Compiler::value ValueSTD::op_int_div(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::LONG, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+	return c.insn_invoke(Type::LONG, {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		auto res = x->int_div(y);
 		long v = ((LSNumber*) res)->value;
 		LSValue::delete_temporary(res);
 		return v;
-	}, true);
+	});
 }
 Compiler::value ValueSTD::op_int_div_eq(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::LONG, {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
+	return c.insn_invoke(Type::LONG, {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
 		auto res = (*x)->int_div_eq(y);
 		return (long) ((LSNumber*) res)->value;
-	}, true);
+	});
 }
 
 }

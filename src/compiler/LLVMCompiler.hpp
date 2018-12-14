@@ -283,10 +283,15 @@ public:
 
 	// Call functions
 	template <typename R, typename... A>
-	value insn_call(Type return_type, std::vector<value> args, R(*func)(A...), bool exception = false) const {
-		return insn_call(return_type, args, (void*) func, exception);
+	value insn_call(Type return_type, std::vector<value> args, R(*func)(A...)) const {
+		return insn_call(return_type, args, (void*) func);
 	}
-	value insn_call(Type return_type, std::vector<value> args, void* func, bool exception = false) const;
+	value insn_call(Type return_type, std::vector<value> args, void* func) const;
+	template <typename R, typename... A>
+	value insn_invoke(Type return_type, std::vector<value> args, R(*func)(A...)) const {
+		return insn_invoke(return_type, args, (void*) func);
+	}
+	value insn_invoke(Type return_type, std::vector<value> args, void* func) const;
 	value insn_call_indirect(Type return_type, value fun, std::vector<value> args) const;
 	void function_add_capture(value fun, value capture);
 	void log(const std::string&& str) const;

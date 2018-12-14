@@ -69,9 +69,9 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				return x;
 			} else {
 				auto e = expression->compile_l(c);
-				return c.insn_call(Type::ANY, {e}, (void*) +[](LSValue** x) {
+				return c.insn_invoke(Type::ANY, {e}, (void*) +[](LSValue** x) {
 					return (*x)->ls_inc();
-				}, true);
+				});
 			}
 			break;
 		}
@@ -84,9 +84,9 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				return x;
 			} else {
 				auto e = expression->compile_l(c);
-				return c.insn_call(Type::ANY, {e}, (void*) +[](LSValue** x) {
+				return c.insn_invoke(Type::ANY, {e}, (void*) +[](LSValue** x) {
 					return (*x)->ls_dec();
-				}, true);
+				});
 			}
 			break;
 		}

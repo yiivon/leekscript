@@ -207,7 +207,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 					func = (void*) &LSMap<LSValue*, LSValue*>::at;
 				}
 			}
-			auto res = c.insn_call(array_element_type, {compiled_array, k}, func, true);
+			auto res = c.insn_invoke(array_element_type, {compiled_array, k}, func);
 			c.insn_delete_temporary(k);
 			c.inc_ops(2);
 			return res;
@@ -218,7 +218,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			key->compile_end(c);
 
 			if (k.t.is_polymorphic()) {
-				k = c.insn_call(Type::INTEGER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
+				k = c.insn_invoke(Type::INTEGER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
 					auto n = dynamic_cast<LSNumber*>(key_pointer);
 					if (!n) {
 						LSValue::delete_temporary(array);
@@ -228,7 +228,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 					int key_int = n->value;
 					LSValue::delete_temporary(key_pointer);
 					return key_int;
-				}, true);
+				});
 			}
 			k = c.to_int(k);
 
@@ -251,9 +251,9 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			// Unknown type, call generic at() operator
 			auto k = c.insn_to_any(key->compile(c));
 			key->compile_end(c);
-			auto e = c.insn_call(Type::ANY, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
+			auto e = c.insn_invoke(Type::ANY, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->at(key);
-			}, true);
+			});
 			c.insn_delete_temporary(k);
 			return e;
 		}
@@ -340,9 +340,9 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			}
 		} else {
 			k = c.insn_to_any(k);
-			return c.insn_call(type.pointer(), {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
+			return c.insn_invoke(type.pointer(), {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
 				return array->atL(key);
-			}, true);
+			});
 		}
 	} else {
 		auto start = key->compile(c);

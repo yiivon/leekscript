@@ -171,7 +171,7 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	if (x.t.is_polymorphic()) {
-		return insn_call(Type::REAL, {x}, +[](const LSValue* x) {
+		return insn_invoke(Type::REAL, {x}, +[](const LSValue* x) {
 			if (auto number = dynamic_cast<const LSNumber*>(x)) {
 				auto r = number->value;
 				LSValue::delete_temporary(x);
@@ -183,7 +183,7 @@ LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 			}
 			LSValue::delete_temporary(x);
 			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		}, true);
+		});
 	}
 	if (x.t.is_real()) {
 		return x;
@@ -1414,7 +1414,7 @@ void LLVMCompiler::insn_return_void() const {
 
 // Call functions
 void fake_ex_destru(void*) {}
-LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCompiler::value> args, void* func, bool exception) const {
+LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCompiler::value> args, void* func) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1430,19 +1430,33 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
 	const auto lambda = mappings.at(function_name).function;
+	value r = { builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type };
+	assert(r.t.llvm_type() == r.v->getType());
+	return r;
+}
 
-	if (exception) {
-		// std::cout << "Invoke function landing pad : " << fun->current_version->landing_pad << std::endl;
-		auto continueBlock = llvm::BasicBlock::Create(context, "cont", F);
-		value r = {builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name), return_type};
-		builder.SetInsertPoint(continueBlock);
-		assert(r.t.llvm_type() == r.v->getType());
-		return r;
-	} else {
-		value r = { builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type };
-		assert(r.t.llvm_type() == r.v->getType());
-		return r;
+LLVMCompiler::value LLVMCompiler::insn_invoke(Type return_type, std::vector<LLVMCompiler::value> args, void* func) const {
+	std::vector<llvm::Value*> llvm_args;
+	std::vector<llvm::Type*> llvm_types;
+	for (unsigned i = 0, e = args.size(); i != e; ++i) {
+		// assert(args[i].t.llvm_type() == args[i].v->getType());
+		llvm_args.push_back(args[i].v);
+		llvm_types.push_back(args[i].t.llvm_type());
 	}
+	auto function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
+	auto i = mappings.find(function_name);
+	if (i == mappings.end()) {
+		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
+		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
+		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
+	}
+	const auto lambda = mappings.at(function_name).function;
+	auto continueBlock = llvm::BasicBlock::Create(context, "cont", F);
+	value r = {builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name), return_type};
+	builder.SetInsertPoint(continueBlock);
+	assert(r.t.llvm_type() == r.v->getType());
+	std::cout << "Invoke function landing pad : " << fun->current_version->landing_pad << std::endl;
+	return r;
 }
 
 LLVMCompiler::value LLVMCompiler::insn_call_indirect(Type return_type, LLVMCompiler::value fun, std::vector<LLVMCompiler::value> args) const {

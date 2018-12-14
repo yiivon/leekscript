@@ -407,9 +407,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
 				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
-				return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
-				}, true);
+				});
 			}
 			// Normal a = b operator
 			auto vv = dynamic_cast<VariableValue*>(v1);
@@ -437,49 +437,49 @@ Compiler::value Expression::compile(Compiler& c) const {
 			v1->compile_end(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->add_eq(y);
-			}, true);
+			});
 		}
 		case TokenType::MINUS_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->sub_eq(y);
-			}, true);
+			});
 		}
 		case TokenType::TIMES_EQUAL: {
 			auto x = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::ANY, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::ANY, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->mul_eq(y);
-			}, true);
+			});
 		}
 		case TokenType::DIVIDE_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->div_eq(y);
-			}, true);
+			});
 		}
 		case TokenType::MODULO_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->mod_eq(y);
-			}, true);
+			});
 		}
 		case TokenType::POWER_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_call(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->pow_eq(y);
-			}, true);
+			});
 		}
 		case TokenType::PLUS: {
 			ls_func = (void*) &jit_add;
@@ -691,10 +691,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) v1)->compile_l(c);
 				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
-				return c.insn_call(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return c.insn_invoke(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					LSValue* res = (*x)->double_mod_eq(y);
 					return res;
-				}, true);
+				});
 			}
 			break;
 		}
@@ -709,7 +709,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		v1->compile_end(c);
 		v2->compile_end(c);
 	}
-	return c.insn_call(ls_returned_type, args, ls_func, true);
+	return c.insn_invoke(ls_returned_type, args, ls_func);
 }
 
 Value* Expression::clone() const {
