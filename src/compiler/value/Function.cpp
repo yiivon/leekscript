@@ -522,22 +522,22 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
 
 	// Create arguments
-	unsigned Idx = 0;
+	unsigned index = 0;
 	int offset = captures.size() ? -1 : 0;
 	for (auto &arg : llvm_function->args()) {
-		if (captures.size() && Idx == 0) {
+		if (captures.size() && index == 0) {
 			arg.setName("__fun_ptr");
 		} else {
-			if (offset + Idx < arguments.size()) {
-				const auto name = arguments.at(offset + Idx)->content;
-				const auto type = version->type.arguments().at(offset + Idx);
+			if (offset + index < arguments.size()) {
+				const auto name = arguments.at(offset + index)->content;
+				const auto type = version->type.arguments().at(offset + index);
 				arg.setName(name);
 				auto var = c.create_entry(name, type);
 				c.insn_store(var, {&arg, type});
 				c.arguments.top()[name] = var;
 			}
 		}
-		Idx++;
+		index++;
 	}
 
 	// Compile body
