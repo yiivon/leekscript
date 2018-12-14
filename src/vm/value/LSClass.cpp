@@ -89,7 +89,7 @@ StaticMethod* LSClass::getStaticMethod(SemanticAnalyser* analyser, std::string& 
 	try {
 		StaticMethod* best = nullptr;
 		for (auto& implementation : static_methods.at(name)) {
-			for (int i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
+			for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
 				const auto a = arguments.at(i);
 				const auto implem_arg = implementation.type.arguments().at(i);
 				if (auto fun = dynamic_cast<const Function_type*>(a._types[0])) {
