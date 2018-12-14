@@ -1465,7 +1465,7 @@ LLVMCompiler::value LLVMCompiler::insn_call_indirect(Type return_type, LLVMCompi
 	}
 	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
 	auto fun_conv = builder.CreatePointerCast(fun.v, fun_type->getPointerTo());
-	return {builder.CreateCall(fun_type, fun_conv, llvm_args, "call"), return_type};
+	return {builder.CreateCall(fun_type, fun_conv, llvm_args), return_type};
 }
 
 void LLVMCompiler::function_add_capture(LLVMCompiler::value fun, LLVMCompiler::value capture) {
