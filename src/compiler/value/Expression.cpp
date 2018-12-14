@@ -167,10 +167,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	if (!object_class) {
 		object_class = (LSClass*) analyser->vm->system_vars["Value"];
 	}
-	const LSClass::Operator* m = nullptr;
-	if (object_class) {
-		m = object_class->getOperator(op->character, v1_type, v2_type);
-	}
+	const LSClass::Operator* m = object_class->getOperator(op->character, v1_type, v2_type);
 	if (m != nullptr) {
 		// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << (void*) m->addr << std::endl;
 		operator_fun = m->addr;
