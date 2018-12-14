@@ -559,9 +559,6 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.builder.CreateRetVoid();
 	}
 
-	verifyFunction(*llvm_function);
-	fpm->run(*llvm_function);
-
 	if (!is_main_function) {
 		c.leave_function();
 		// Create a function : 1 op
@@ -570,25 +567,19 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.instructions_debug << "}" << std::endl;
 	}
 
-	// Function are always pointers for now
-	// functions as a simple pointer value can be like :
-	// {c.new_pointer(f).v, type};
+	verifyFunction(*llvm_function);
+	fpm->run(*llvm_function);
 
 	// JIT the module containing the anonymous expression, keeping a handle so we can free it later.
-	// if (is_main_function) {
 	((Function*) this)->function_handle = c.addModule(module);
 	((Function*) this)->handle_created = true;
-
-	// }
 	// Search the JIT for the "fun" symbol.
 	auto ExprSymbol = c.findSymbol("fun_" + name + std::to_string(id));
 	assert(ExprSymbol && "Function not found");
-	// Get the symbol's address and cast it to the right type (takes no
-	// arguments, returns a double) so we can call it as a native function.
+	// Get the symbol's address and cast it to the right type (takes no arguments, returns a double) so we can call it as a native function.
 	ls_fun->function = (void*) cantFail(ExprSymbol.getAddress());
 	version->function = ls_fun;
-
-	// std::cout << "Function compiled: " << ls_fun->function << std::endl;
+	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;
 }
 
 Value* Function::clone() const {
