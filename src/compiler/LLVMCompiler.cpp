@@ -1410,7 +1410,6 @@ void LLVMCompiler::insn_return_void() const {
 }
 
 // Call functions
-void fake_ex_destru(void*) {}
 LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCompiler::value> args, void* func) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
