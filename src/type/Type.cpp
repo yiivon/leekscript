@@ -537,7 +537,7 @@ ostream& operator << (ostream& os, const Type& type) {
 	if (type.constant) {
 		os << BLUE_BOLD << "const:" << END_COLOR;
 	}
-	for (int i = 0; i < type._types.size(); ++i) {
+	for (size_t i = 0; i < type._types.size(); ++i) {
 		if (i > 0) { os << " | "; }
 		type._types[i]->print(os);
 	}
