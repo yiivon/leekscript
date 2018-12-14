@@ -500,7 +500,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	fpm->add(llvm::createCFGSimplificationPass());
 	fpm->doInitialization();
 
-	std::vector<llvm::Type*> args = {};
+	std::vector<llvm::Type*> args;
 	if (captures.size()) {
 		args.push_back(Type::ANY.llvm_type()); // first arg is the function pointer
 	}
