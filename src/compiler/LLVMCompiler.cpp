@@ -1393,8 +1393,7 @@ void LLVMCompiler::insn_throw_object(vm::Exception type) const {
 }
 
 void LLVMCompiler::insn_label(label* l) const {
-	auto function = LLVMCompiler::builder.GetInsertBlock()->getParent();
-	function->getBasicBlockList().push_back(l->block);
+	F->getBasicBlockList().push_back(l->block);
 	builder.SetInsertPoint(l->block);
 }
 
