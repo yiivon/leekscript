@@ -2,15 +2,15 @@
 #define MAP_TYPE_HPP
 
 #include "Type.hpp"
-#include "Base_type.hpp"
+#include "Pointer_type.hpp"
 
 namespace ls {
 
-class Map_type : public Base_type {
+class Map_type : public Pointer_type {
 	Type _key;
 	Type _element;
 public:
-	Map_type(Type key, Type element) : _key(key), _element(element) {}
+	Map_type(Type key, Type element);
 	virtual int id() const override { return 6; }
 	virtual const std::string getName() const { return "map"; }
 	virtual const std::string getJsonName() const { return "map"; }
@@ -22,7 +22,6 @@ public:
 	virtual bool compatible(const Base_type*) const override;
 	virtual int distance(const Base_type*) const override;
 	virtual std::string clazz() const override;
-	virtual llvm::Type* llvm() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 };
 

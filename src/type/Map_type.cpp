@@ -3,8 +3,26 @@
 #include "Any_type.hpp"
 #include "../colors.h"
 #include "Any_type.hpp"
+#include "Struct_type.hpp"
 
 namespace ls {
+
+Map_type::Map_type(Type key, Type element) : Pointer_type(Type {
+	new Struct_type(std::string("_map"), {
+		Type::INTEGER, // ?
+		Type::INTEGER, // ?
+		Type::INTEGER, // ?
+		Type::INTEGER, // ?
+		Type::BOOLEAN, // native
+		element.pointer(),
+		element.pointer(),
+		element.pointer(),
+		Type({ new Struct_type("map_node", {
+			Type::LONG, Type::LONG,	Type::LONG,	Type::LONG,
+			element	
+		}) }).pointer()
+	})
+}), _key(key), _element(element) {}
 
 Type Map_type::key() const {
 	return _key;
@@ -36,9 +54,6 @@ int Map_type::distance(const Base_type* type) const {
 }
 std::string Map_type::clazz() const {
 	return "Map";
-}
-llvm::Type* Map_type::llvm() const {
-	return Any_type::get_any_type();
 }
 std::ostream& Map_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "map" << END_COLOR << "<" << _key << ", " << _element << ">";
