@@ -80,6 +80,11 @@ void Test::test_map() {
 	code("['', [1: 2][1]]").equals("['', 2]");
 	code("['', [1: 2.5][1]]").equals("['', 2.5]");
 
+	section("Map.operator [] left-value");
+	code("var m = [1: 2] m[1]++ m").equals("[1: 3]");
+	code("var m = ['a': 2] m['a']++ m").equals("['a': 3]");
+	code("var k = ['a', 12][0] var m = ['a': 2] m[k]++ m").equals("['a': 3]");
+
 	section("Map.operator [] on unknown maps");
 	code("var m = ptr(['a': '2']) m['c'] = '6' m").equals("['a': '2', 'c': '6']");
 	code("var m = ptr([2: 'a']) m[3] = 'b' m").equals("[2: 'a', 3: 'b']");
