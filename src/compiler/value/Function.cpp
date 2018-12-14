@@ -542,12 +542,6 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	// Compile body
 	auto res = version->body->compile(c);
-	// Must return a boolean
-	if (return_type == Type::BOOLEAN) {
-		auto old_res = res;
-		res = c.insn_to_bool(res);
-		c.insn_delete_temporary(old_res);
-	}
 	if (res.v) {
 		c.insn_return(res);
 	} else {
