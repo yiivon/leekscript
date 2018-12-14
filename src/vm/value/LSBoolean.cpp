@@ -28,7 +28,7 @@ bool LSBoolean::ls_not() const {
 }
 
 LSValue* LSBoolean::ls_tilde() {
-	return LSNumber::get(~value);
+	return LSNumber::get(~(int) value);
 }
 
 LSValue* LSBoolean::ls_minus() {
