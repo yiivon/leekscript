@@ -277,7 +277,6 @@ public:
 	void insn_throw_object(vm::Exception type) const;
 	void insn_label(label*) const;
 	void insn_branch(label* l) const;
-	void insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const;
 	void insn_return(value v) const;
 	void insn_return_void() const;
 

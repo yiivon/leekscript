@@ -1402,8 +1402,6 @@ void LLVMCompiler::insn_branch(label* l) const {
 	builder.CreateBr(l->block);
 }
 
-void LLVMCompiler::insn_branch_if_pc_not_in_range(label* a, label* b, label* n) const { assert(false); }
-
 void LLVMCompiler::insn_return(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	builder.CreateRet(v.v);
