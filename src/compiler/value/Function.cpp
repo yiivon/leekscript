@@ -53,9 +53,9 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 Type Function::getReturnType() {
 	if (current_version->type.return_type().is_any()) {
 		if (placeholder_type == RawType::ANY) {
-			placeholder_type = (Base_type*) Type::generate_new_placeholder_type()._types[0];
+			placeholder_type = Type::generate_new_placeholder_type();
 		}
-		return placeholder_type;
+		return { placeholder_type };
 	} else {
 		return current_version->type.return_type();
 	}

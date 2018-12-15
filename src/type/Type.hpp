@@ -14,16 +14,16 @@ class Function;
 
 class Type {
 public:
-	std::vector<const Base_type*> _types;
+	std::vector<std::shared_ptr<const Base_type>> _types;
 	bool native; // A C++ object, memory management is done outside the language
 	bool temporary = false;
 	bool constant = false;
 	bool reference = false;
 
 	Type();
-	Type(std::initializer_list<const Base_type*>);
+	Type(std::initializer_list<std::shared_ptr<const Base_type>>);
 	Type(std::initializer_list<Type> types);
-	Type(const Base_type* raw_type, bool native = false, bool temporary = false, bool constant = false);
+	Type(std::shared_ptr<const Base_type> raw_type, bool native = false, bool temporary = false, bool constant = false);
 
 	int id() const;
 	Type return_type() const;
@@ -47,13 +47,13 @@ public:
 	Type iterator() const;
 	Type pointer() const;
 	Type pointed() const;
-	bool all(std::function<bool(const Base_type*)>) const;
-	bool some(std::function<bool(const Base_type*)>) const;
+	bool all(std::function<bool(std::shared_ptr<const Base_type>)>) const;
+	bool some(std::function<bool(std::shared_ptr<const Base_type>)>) const;
 	bool castable(Type type, bool strictCast = false) const;
 	int distance(Type type) const;
 
 	void operator += (const Type type);
-	void operator += (const Base_type* type);
+	void operator += (std::shared_ptr<const Base_type> type);
 	Type operator * (const Type& t2) const;
 	Type fold() const;
 
@@ -197,7 +197,7 @@ public:
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
-	static Type generate_new_placeholder_type();
+	static std::shared_ptr<const Base_type> generate_new_placeholder_type();
 };
 
 std::ostream& operator << (std::ostream&, const Type&);

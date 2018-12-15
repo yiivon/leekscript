@@ -25,32 +25,19 @@ namespace ls {
 
 class RawType {
 public:
-	static const Any_type _ANY;
-	static const Null_type _NULL;
-	static const Bool_type _BOOLEAN;
-	static const Number_type _NUMBER;
-	static const Mpz_type _MPZ;
-	static const Integer_type _INTEGER;
-	static const Long_type _LONG;
-	static const Real_type _REAL;
-	static const String_type _STRING;
-	static const Array_type _ARRAY;
-	static const Object_type _OBJECT;
-	static const Class_type _CLASS;
+	static const std::shared_ptr<const Any_type> ANY;
+	static const std::shared_ptr<const Null_type> NULLL;
+	static const std::shared_ptr<const Bool_type> BOOLEAN;
+	static const std::shared_ptr<const Number_type> NUMBER;
+	static const std::shared_ptr<const Mpz_type> MPZ;
+	static const std::shared_ptr<const Integer_type> INTEGER;
+	static const std::shared_ptr<const Long_type> LONG;
+	static const std::shared_ptr<const Real_type> REAL;
+	static const std::shared_ptr<const String_type> STRING;
+	static const std::shared_ptr<const Object_type> OBJECT;
+	static const std::shared_ptr<const Class_type> CLASS;
 
-	static const Any_type* const ANY;
-	static const Null_type* const NULLL;
-	static const Bool_type* const BOOLEAN;
-	static const Number_type* const NUMBER;
-	static const Mpz_type* const MPZ;
-	static const Integer_type* const INTEGER;
-	static const Long_type* const LONG;
-	static const Real_type* const REAL;
-	static const String_type* const STRING;
-	static const Object_type* const OBJECT;
-	static const Class_type* const CLASS;
-
-	static std::vector<const Base_type*> placeholder_types;
+	static std::vector<std::shared_ptr<const Base_type>> placeholder_types;
 	static void clear_placeholder_types();
 };
 

@@ -2,28 +2,16 @@
 
 namespace ls {
 
-const Any_type RawType::_ANY;
-const Null_type RawType::_NULL;
-const Bool_type RawType::_BOOLEAN;
-const Number_type RawType::_NUMBER;
-const Mpz_type RawType::_MPZ;
-const Integer_type RawType::_INTEGER;
-const Long_type RawType::_LONG;
-const Real_type RawType::_REAL;
-const String_type RawType::_STRING;
-const Object_type RawType::_OBJECT;
-const Class_type RawType::_CLASS;
-
-const Any_type* const RawType::ANY = &_ANY;
-const Null_type* const RawType::NULLL = &_NULL;
-const Bool_type* const RawType::BOOLEAN = &_BOOLEAN;
-const Number_type* const RawType::NUMBER = &_NUMBER;
-const Integer_type* const RawType::INTEGER = &_INTEGER;
-const Mpz_type* const RawType::MPZ = &_MPZ;
-const Long_type* const RawType::LONG = &_LONG;
-const Real_type* const RawType::REAL = &_REAL;
-const String_type* const RawType::STRING = &_STRING;
-const Object_type* const RawType::OBJECT = &_OBJECT;
-const Class_type* const RawType::CLASS = &_CLASS;
+const std::shared_ptr<const Any_type> RawType::ANY = std::make_shared<Any_type>();
+const std::shared_ptr<const Null_type> RawType::NULLL = std::make_shared<Null_type>();
+const std::shared_ptr<const Bool_type> RawType::BOOLEAN = std::make_shared<Bool_type>();
+const std::shared_ptr<const Number_type> RawType::NUMBER = std::make_shared<Number_type>();
+const std::shared_ptr<const Integer_type> RawType::INTEGER = std::make_shared<Integer_type>();
+const std::shared_ptr<const Mpz_type> RawType::MPZ = std::make_shared<Mpz_type>();
+const std::shared_ptr<const Long_type> RawType::LONG = std::make_shared<Long_type>();
+const std::shared_ptr<const Real_type> RawType::REAL = std::make_shared<Real_type>();
+const std::shared_ptr<const String_type> RawType::STRING = std::make_shared<String_type>();
+const std::shared_ptr<const Object_type> RawType::OBJECT = std::make_shared<Object_type>();
+const std::shared_ptr<const Class_type> RawType::CLASS = std::make_shared<Class_type>();
 
 }

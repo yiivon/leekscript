@@ -7,8 +7,8 @@
 
 namespace ls {
 
-Map_type::Map_type(Type key, Type element) : Pointer_type(Type {
-	new Struct_type(std::string("_map"), {
+Map_type::Map_type(Type key, Type element) : Pointer_type(Type({
+	std::make_shared<const Struct_type>(std::string("_map"), std::initializer_list<Type> {
 		Type::INTEGER, // ?
 		Type::INTEGER, // ?
 		Type::INTEGER, // ?
@@ -17,12 +17,12 @@ Map_type::Map_type(Type key, Type element) : Pointer_type(Type {
 		element.pointer(),
 		element.pointer(),
 		element.pointer(),
-		Type({ new Struct_type("map_node", {
+		Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> {
 			Type::LONG, Type::LONG,	Type::LONG,	Type::LONG,
 			element	
 		}) }).pointer()
 	})
-}), _key(key), _element(element) {}
+})), _key(key), _element(element) {}
 
 Type Map_type::key() const {
 	return _key;

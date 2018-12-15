@@ -1,6 +1,7 @@
 #include <sstream>
 #include <numeric>
 #include <algorithm>
+#include <memory>
 #include "Type.hpp"
 #include "../constants.h"
 #include "../colors.h"
@@ -13,11 +14,9 @@ using namespace std;
 
 namespace ls {
 
-std::vector<const Base_type*> RawType::placeholder_types;
+std::vector<std::shared_ptr<const Base_type>> RawType::placeholder_types;
 
 void RawType::clear_placeholder_types() {
-	for (const auto& t : placeholder_types)
-		delete t;
 	placeholder_types.clear();
 }
 
@@ -93,8 +92,8 @@ const Type Type::PTR_ARRAY_ARRAY = Type::array(Type::PTR_ARRAY);
 const Type Type::REAL_ARRAY_ARRAY = Type::array(Type::REAL_ARRAY);
 const Type Type::INT_ARRAY_ARRAY = Type::array(Type::INT_ARRAY);
 
-const Type Type::FUNCTION(new Function_type({}, {}));
-const Type Type::CLOSURE(new Function_type({}, {}, true));
+const Type Type::FUNCTION({ std::make_shared<const Function_type>(Type(), std::vector<Type>(), false, nullptr) });
+const Type Type::CLOSURE({ std::make_shared<const Function_type>(Type(), std::vector<Type>(), true, nullptr) });
 const Type Type::CLASS(RawType::CLASS, true);
 const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 
@@ -115,22 +114,22 @@ const Type Type::INT_ARRAY_ITERATOR = Type::INTEGER.pointer();
 const Type Type::REAL_ARRAY_ITERATOR = Type::REAL.pointer();
 const Type Type::PTR_ARRAY_ITERATOR = Type::ANY.pointer();
 const Type Type::INT_SET_ITERATOR = Type::structure("int_set_iterator", {
-	Type({ new Struct_type("set_node", { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER }) }).pointer(),
+	Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER }) }).pointer(),
 	Type::INTEGER
 });
 const Type Type::REAL_SET_ITERATOR = Type::structure("real_set_iterator", {
-	Type({ new Struct_type("set_node", { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::REAL }) }).pointer(),
+	Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::REAL }) }).pointer(),
 	Type::INTEGER
 });
 const Type Type::PTR_SET_ITERATOR = Type::structure("any_set_iterator", {
-	Type({ new Struct_type("set_node", { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY }) }).pointer(),
+	Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY }) }).pointer(),
 	Type::INTEGER
 });
 
 Type::Type() {
 	native = false;
 }
-Type::Type(std::initializer_list<const Base_type*> types) {
+Type::Type(std::initializer_list<std::shared_ptr<const Base_type>> types) {
 	_types = types;
 }
 Type::Type(std::initializer_list<Type> types) {
@@ -138,7 +137,7 @@ Type::Type(std::initializer_list<Type> types) {
 		operator += (t);
 	}
 }
-Type::Type(const Base_type* raw_type, bool native, bool temporary, bool constant) {
+Type::Type(std::shared_ptr<const Base_type> raw_type, bool native, bool temporary, bool constant) {
 	_types.push_back(raw_type);
 	this->native = native;
 	this->temporary = temporary;
@@ -185,9 +184,9 @@ void Type::operator += (const Type type) {
 		operator += (t);
 	}
 }
-void Type::operator += (const Base_type* type) {
+void Type::operator += (std::shared_ptr<const Base_type> type) {
 	for (const auto& t : _types) {
-		if (type->operator == (t))
+		if (type->operator == (t.get()))
 			return;
 	}
 	_types.push_back(type);
@@ -228,7 +227,9 @@ Type Type::operator * (const Type& t2) const {
 
 Type Type::fold() const {
 	if (_types.size() == 1) return *this;
-	return std::accumulate(_types.begin(), _types.end(), Type(), std::multiplies<>());
+	return std::accumulate(_types.begin(), _types.end(), Type(), [](const Type& type, std::shared_ptr<const Base_type> t) {
+		return type * Type(t);
+	});
 }
 
 void Type::toJson(ostream& os) const {
@@ -277,16 +278,16 @@ bool Type::is_container() const {
 }
 
 bool Type::operator == (const Type& type) const {
-	return _types.size() == type._types.size() && std::equal(_types.begin(), _types.end(), type._types.begin(), [&](const Base_type* t1, const Base_type* t2) {
-		return t1->operator == (t2);
+	return _types.size() == type._types.size() && std::equal(_types.begin(), _types.end(), type._types.begin(), [&](std::shared_ptr<const Base_type> t1, std::shared_ptr<const Base_type> t2) {
+		return t1->operator == (t2.get());
 	});
 }
 
 bool Type::operator < (const Type& type) const {
 	auto t1 = _types.size() ? _types[0] : nullptr;
 	auto t2 = type._types.size() ? type._types[0] : nullptr;
-	if ((void*) t1 != (void*) t2) {
-		return (void*) t1 < (void*) t2;
+	if ((void*) t1.get() != (void*) t2.get()) {
+		return (void*) t1.get() < (void*) t2.get();
 	}
 	if (temporary != type.temporary) {
 		return temporary < type.temporary;
@@ -330,19 +331,19 @@ Type Type::iterator() const {
 	assert(false && "No iterator for void");
 }
 Type Type::pointer() const {
-	return { new Pointer_type(*this) };
+	return { std::make_shared<Pointer_type>(*this) };
 }
 Type Type::pointed() const {
 	assert(is_pointer());
 	if (_types.size() > 0) {
-		return dynamic_cast<const Pointer_type*>(_types[0])->pointed();
+		return dynamic_cast<const Pointer_type*>(_types[0].get())->pointed();
 	}
 	assert(false && "Void type is not pointer");
 }
 
 template <class T> bool Type::is_type() const {
-	return _types.size() && all([&](const Base_type* type) {
-		return dynamic_cast<const T*>(type) != nullptr;
+	return _types.size() && all([&](std::shared_ptr<const Base_type> type) {
+		return dynamic_cast<const T*>(type.get()) != nullptr;
 	});
 }
 bool Type::is_any() const { return is_type<Any_type>(); }
@@ -365,27 +366,27 @@ bool Type::is_placeholder() const { return is_type<Placeholder_type>(); }
 bool Type::is_pointer() const { return is_type<Pointer_type>(); }
 bool Type::is_struct() const { return is_type<Struct_type>(); }
 bool Type::is_closure() const {
-	return _types.size() && all([&](const Base_type* type) {
-		auto f = dynamic_cast<const Function_type*>(type);
+	return _types.size() && all([&](std::shared_ptr<const Base_type> type) {
+		auto f = dynamic_cast<const Function_type*>(type.get());
 		return f && f->closure();
 	});
 }
 bool Type::is_polymorphic() const {
-	return _types.size() && some([&](const Base_type* t) {
-		return dynamic_cast<const Integer_type*>(t) == nullptr
-			and dynamic_cast<const Mpz_type*>(t) == nullptr 
-			and dynamic_cast<const Long_type*>(t) == nullptr 
-			and dynamic_cast<const Real_type*>(t) == nullptr 
-			and dynamic_cast<const Bool_type*>(t) == nullptr;
+	return _types.size() && some([&](std::shared_ptr<const Base_type> t) {
+		return dynamic_cast<const Integer_type*>(t.get()) == nullptr
+			and dynamic_cast<const Mpz_type*>(t.get()) == nullptr 
+			and dynamic_cast<const Long_type*>(t.get()) == nullptr 
+			and dynamic_cast<const Real_type*>(t.get()) == nullptr 
+			and dynamic_cast<const Bool_type*>(t.get()) == nullptr;
 	});
 }
 bool Type::is_primitive() const {
-	return _types.size() && all([&](const Base_type* t) {
-		return dynamic_cast<const Integer_type*>(t) != nullptr
-			or dynamic_cast<const Mpz_type*>(t) != nullptr 
-			or dynamic_cast<const Long_type*>(t) != nullptr 
-			or dynamic_cast<const Real_type*>(t) != nullptr 
-			or dynamic_cast<const Bool_type*>(t) != nullptr;
+	return _types.size() && all([&](std::shared_ptr<const Base_type> t) {
+		return dynamic_cast<const Integer_type*>(t.get()) != nullptr
+			or dynamic_cast<const Mpz_type*>(t.get()) != nullptr 
+			or dynamic_cast<const Long_type*>(t.get()) != nullptr 
+			or dynamic_cast<const Real_type*>(t.get()) != nullptr 
+			or dynamic_cast<const Bool_type*>(t.get()) != nullptr;
 	});
 }
 
@@ -406,7 +407,7 @@ bool Type::compatible(const Type& type) const {
 		return false; // 'const type' not compatible with 'type'
 	}
 	if ((is_array() && type.is_array()) || (is_set() && type.is_set()) || (is_map() && type.is_map()) || (is_function() && type.is_function())) {
-		return _types[0]->compatible(type._types[0]);
+		return _types[0]->compatible(type._types[0].get());
 	}
 	if (_types[0] != type._types[0]) {
 		// 'Integer' is compatible with 'Float'
@@ -469,63 +470,62 @@ int Type::distance(Type type) const {
 	if (_types.size() == 0 or type._types.size() == 0) return -1;
 	auto t1 = fold()._types[0];
 	auto t2 = type.fold()._types[0];
-	return t1->distance(t2);
+	return t1->distance(t2.get());
 }
 
-Type Type::generate_new_placeholder_type() {
-	Type type;
+std::shared_ptr<const Base_type> Type::generate_new_placeholder_type() {
 	u_int32_t character = 0x03B1 + placeholder_counter;
 	char buff[5];
 	u8_toutf8(buff, 5, &character, 1);
-	type._types.push_back(new Placeholder_type(std::string { buff }));
+	auto type = std::make_shared<Placeholder_type>(std::string { buff });
 	placeholder_counter++;
-	RawType::placeholder_types.push_back(type._types[0]);
+	RawType::placeholder_types.push_back(type);
 	return type;
 }
 
 Type Type::array(const Type element) {
-	return { new Array_type(element) };
+	return { std::make_shared<Array_type>(element) };
 }
 Type Type::const_array(const Type element) {
-	return { new Array_type(element), false, false, true };
+	return { std::make_shared<Array_type>(element), false, false, true };
 }
 Type Type::tmp_array(const Type element) {
-	return { new Array_type(element), false, true };
+	return { std::make_shared<Array_type>(element), false, true };
 }
 Type Type::set(const Type element) {
-	return { new Set_type(element) };
+	return { std::make_shared<Set_type>(element) };
 }
 Type Type::const_set(const Type element) {
-	return { new Set_type(element), false, false, true };
+	return { std::make_shared<Set_type>(element), false, false, true };
 }
 Type Type::tmp_set(const Type element) {
-	return { new Set_type(element), false, true };
+	return { std::make_shared<Set_type>(element), false, true };
 }
 Type Type::map(const Type key, const Type element) {
-	return { new Map_type(key, element) };
+	return { std::make_shared<Map_type>(key, element) };
 }
 Type Type::const_map(const Type key, const Type element) {
-	return { new Map_type(key, element), false, false, true };
+	return { std::make_shared<Map_type>(key, element), false, false, true };
 }
 Type Type::interval() {
-	return { new Interval_type() };
+	return { std::make_shared<Interval_type>() };
 }
 Type Type::tmp_interval() {
-	return { new Interval_type(), false, true };
+	return { std::make_shared<Interval_type>(), false, true };
 }
 Type Type::fun(Type return_type, std::vector<Type> arguments, const Function* function) {
-	return { new Function_type(return_type, arguments, false, function), false, false, true };
+	return { std::make_shared<Function_type>(return_type, arguments, false, function), false, false, true };
 }
 Type Type::closure(Type return_type, std::vector<Type> arguments, const Function* function) {
-	return { new Function_type(return_type, arguments, true, function), false, false, true };
+	return { std::make_shared<Function_type>(return_type, arguments, true, function), false, false, true };
 }
 Type Type::structure(const std::string name, std::initializer_list<Type> types) {
-	return { new Struct_type(name, types) };
+	return { std::make_shared<Struct_type>(name, types) };
 }
-bool Type::all(std::function<bool(const Base_type*)> fun) const {
+bool Type::all(std::function<bool(std::shared_ptr<const Base_type>)> fun) const {
 	return std::all_of(_types.begin(), _types.end(), fun);
 }
-bool Type::some(std::function<bool(const Base_type*)> fun) const {
+bool Type::some(std::function<bool(std::shared_ptr<const Base_type>)> fun) const {
 	return std::any_of(_types.begin(), _types.end(), fun);
 }
 

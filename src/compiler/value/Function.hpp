@@ -37,7 +37,7 @@ public:
 	std::map<std::string, std::shared_ptr<SemanticVar>> vars;
 	bool function_added;
 	Function* parent;
-	Base_type* placeholder_type;
+	std::shared_ptr<const Base_type> placeholder_type;
 	bool is_main_function = false;
 	std::string file;
 	Version* default_version = nullptr;

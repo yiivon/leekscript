@@ -66,7 +66,7 @@ Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, Type o
 			if (implementation.obj_type.may_be_compatible(obj_type)) {
 				for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
 					const auto& a = arguments.at(i);
-					if (auto fun = dynamic_cast<const Function_type*>(a._types[0])) {
+					if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
 						if (fun->function()) {
 							auto version = implementation.type.arguments().at(i).arguments();
 							((Function*) fun->function())->will_take(analyser, version, 1);
@@ -92,7 +92,7 @@ StaticMethod* LSClass::getStaticMethod(SemanticAnalyser* analyser, std::string& 
 			for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
 				const auto a = arguments.at(i);
 				const auto implem_arg = implementation.type.arguments().at(i);
-				if (auto fun = dynamic_cast<const Function_type*>(a._types[0])) {
+				if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
 					if (fun->function() and implem_arg.is_function()) {
 						auto version = implem_arg.arguments();
 						((Function*) fun->function())->will_take(analyser, version, 1);

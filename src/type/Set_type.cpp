@@ -7,7 +7,7 @@
 namespace ls {
 
 Set_type::Set_type(Type element) : Pointer_type(Type {
-	new Struct_type(std::string("_set"), {
+	std::make_shared<const Struct_type>(std::string("_set"), std::initializer_list<Type> {
 		Type::INTEGER, // ?
 		Type::INTEGER, // ?
 		Type::INTEGER, // ?
@@ -16,7 +16,7 @@ Set_type::Set_type(Type element) : Pointer_type(Type {
 		element.pointer(),
 		element.pointer(),
 		element.pointer(),
-		Type({ new Struct_type("set_node", {
+		Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> {
 			Type::LONG, Type::LONG,	Type::LONG,	Type::LONG,
 			element	
 		}) }).pointer()

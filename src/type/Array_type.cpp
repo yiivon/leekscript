@@ -8,7 +8,7 @@
 
 namespace ls {
 
-Array_type::Array_type(Type element) : Pointer_type(Type { new Struct_type(std::string("_array"), {
+Array_type::Array_type(Type element) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("_array"), std::initializer_list<Type> {
 	Type::INTEGER, // ?
 	Type::INTEGER, // ?
 	Type::INTEGER, // ?
