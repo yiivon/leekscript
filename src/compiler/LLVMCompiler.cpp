@@ -1425,7 +1425,6 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
 		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
-	const auto lambda = mappings.at(function_name).function;
 	value r = { builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type };
 	assert(r.t.llvm_type() == r.v->getType());
 	return r;
