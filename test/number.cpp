@@ -338,9 +338,9 @@ void Test::test_numbers() {
 	code("var a = -721★ a %%= 57★").equals("20");
 
 	section("Number.operator /");
-	DISABLED_code("12★ / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	DISABLED_code("let a = 13★; a / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	DISABLED_code("13★ / true").equals("13");
+	code("12★ / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("let a = 13★; a / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("13★ / true").equals("13");
 	code("14★ / 2").equals("7");
 	code("let a = 18★; a / 3").equals("6");
 	code("14★ / []").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::ANY.to_string(), "/", ls::Type::PTR_ARRAY.add_temporary().to_string()});
