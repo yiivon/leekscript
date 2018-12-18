@@ -178,8 +178,7 @@ void Test::test_arrays() {
 	code("var a = [[1.55]] a[0] += [-1.5, 6.7] a[0]").equals("[1.55, -1.5, 6.7]");
 	code("var a = [[1.55]] a[0] += <8, 4> a[0]").equals("[1.55, 4, 8]");
 	code("var a = [[1.55]] a[0] += < -8.5, 4.7> a[0]").equals("[1.55, -8.5, 4.7]");
-	// TODO crashing
-	DISABLED_code("var a = [[1.55]] a[0] += < -8.5, 4.7, 'hello'> a[0]").equals("[1.55, -8.5, 4.7, 'hello']");
+	code("var a = [[1.55]] a[0] += < -8.5, 4.7, 'hello'> a[0]").equals("[1.55, -8.5, 4.7, 'hello']");
 	code("var a = ['a'] a += [1, 2]").equals("['a', 1, 2]");
 	code("var a = ['a'] a += [1.5, 2.5]").equals("['a', 1.5, 2.5]");
 	code("var a = ['a'] a += <1, 2>").equals("['a', 1, 2]");
