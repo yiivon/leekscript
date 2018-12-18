@@ -1104,7 +1104,9 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// return it;
 	}
 	else if (v.t.is_map()) {
-		// return insn_load(v, 48, v.t);
+		auto it = create_entry("it", v.t.iterator());
+		insn_store(it, insn_load_member(v, 8));
+		return it;
 	}
 	else if (v.t.is_set()) {
 		auto it = create_entry("it", v.t.iterator());
@@ -1159,8 +1161,9 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 		// return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
 	}
 	else if (v.t.is_map()) {
-		auto end = insn_add(v, new_integer(32)); // end_ptr = &map + 24
-		return insn_eq(it, end);
+		auto node = insn_load(it);
+		auto end = insn_call(node.t, {v}, +[](LSMap<int,int>* map) { return map->end()._M_node; });
+		return { builder.CreateICmpEQ(node.v, end.v), Type::BOOLEAN };
 	}
 	else if (v.t.is_set()) {
 		auto node = insn_load_member(it, 0);
@@ -1212,16 +1215,17 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		// 	return s;
 		// });
 	}
-	if (it.t.is_map()) {
+	if (collectionType.is_map()) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, +[](LSValue* previous) {
 				if (previous != nullptr)
 					LSValue::delete_ref(previous);
 			});
 		}
-		// auto e = insn_load(it, 32 + 8, it.t.element());
-		// insn_inc_refs(e);
-		// return e;
+		auto node = insn_load(it);
+		auto e = insn_load_member(node, 5);
+		insn_inc_refs(e);
+		return e;
 	}
 	if (collectionType.is_set()) {
 		if (previous.t.must_manage_memory()) {
@@ -1264,16 +1268,16 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		// auto addr = insn_address_of(it);
 		// return insn_call(Type::INTEGER, {addr}, &LSString::iterator_key);
 	}
-	if (it.t.is_map()) {
+	if (v.t.is_map()) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr)
-					LSValue::delete_ref(previous);
+				if (previous != nullptr) LSValue::delete_ref(previous);
 			});
 		}
-		// auto key = insn_load(it, 32, it.t.getKeyType());
-		// insn_inc_refs(key);
-		// return key;
+		auto node = insn_load(it);
+		auto e = insn_load_member(node, 4);
+		insn_inc_refs(e);
+		return e;
 	}
 	if (v.t.is_set()) {
 		return insn_load_member(it, 1);
@@ -1307,8 +1311,9 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		// insn_call({}, {addr}, &LSString::iterator_next);
 		// return;
 	}
-	if (it.t.is_map()) {
-		insn_store(it, insn_call(Type::ANY, {it}, (void*) +[](LSMap<int, int>::iterator it) {
+	if (collectionType.is_map()) {
+		auto node = insn_load(it);
+		insn_store(it, insn_call(node.t, {node}, (void*) +[](LSMap<int,int>::iterator it) {
 			it++;
 			return it;
 		}));
