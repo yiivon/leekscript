@@ -100,12 +100,12 @@ void Test::test_functions() {
 	DISABLED_code("let f = x -> y -> x + y let g1 = f(5) let g2 = f('a') [g1(12) g1('b') g2(12) g2('b')]").equals("[]");
 
 	section("Recursive");
-	// code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
-	// DISABLED_code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
-	// code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
-	// DISABLED_code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
-	// DISABLED_code("let fact = x -> if x > 1 x * fact(x - 1) else x fact(5)").equals("120");
-	// code("let test = x -> if x > 0 { test(x - 1) } else { 77 } test(4)").equals("77");
+	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
+	DISABLED_code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
+	code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
+	code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
+	code("let fact = x -> if x > 1 x * fact(x - 1) else x fact(5)").equals("120");
+	code("let test = x -> if x > 0 { test(x - 1) } else { 77 } test(4)").equals("77");
 
 	section("Functions in array");
 	code("var a = [12, x -> x + 7] a[1](12)").equals("19");
