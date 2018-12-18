@@ -97,10 +97,9 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	c.insn_store(value_var, c.new_null());
 
 	LLVMCompiler::value key_var;
-	LLVMCompiler::value key_v;
 	if (key) {
-		key_v = c.new_integer(0);
-		key_var = c.add_var(key->content, key_v);
+		key_var = c.create_and_add_var(key->content, container->type.key());
+		c.insn_store(key_var, c.new_null());
 	}
 
 	auto it_label = c.insn_init_label("it");
@@ -132,7 +131,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	c.insn_store(value_var, c.iterator_get(container->type, it, c.insn_load(value_var)));
 	// Get Key
 	if (key != nullptr) {
-		c.insn_store(key_var, c.iterator_key(container_v, it, key_var));
+		c.insn_store(key_var, c.iterator_key(container_v, it, c.insn_load(key_var)));
 	}
 	// Body
 	auto body_v = body->compile(c);
