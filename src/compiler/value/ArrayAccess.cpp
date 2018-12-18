@@ -100,7 +100,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 			type = Type::STRING;
 		}
 	} else if (array->type.is_map()) {
-		if (!map_key_type.compatible(key->type)) {
+		if (!key->type.castable(map_key_type)) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();

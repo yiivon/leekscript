@@ -61,7 +61,7 @@ void Test::test_map() {
 	code("let m = ['a': 'b'] m['a'] = 'c' m").equals("['a': 'c']");
 	code("let m = ['salut': 12] m['salut'] = 13 m['salut']").equals("13");
 	code("let m = ['salut': 'yo'] m['salut'] = 'ya' m['salut']").equals("'ya'");
-	DISABLED_code("let m = [5: 12] m[5.7]").equals("12");
+	code("let m = [5: 12] m[5.7]").equals("12");
 	code("let m = [5: 12] m['salut']").semantic_error(ls::SemanticError::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::STRING_TMP.to_string()});
 	code("let m = [5.7: 'hello'] m['salut']").semantic_error(ls::SemanticError::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::STRING_TMP.to_string()});
 	code("var m = [1: 'a', 2: 'b'] m[2] = 'B' m").equals("[1: 'a', 2: 'B']");
