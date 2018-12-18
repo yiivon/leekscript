@@ -144,11 +144,11 @@ MapSTD::MapSTD() : Module("Map") {
 
 	method("iter", {
 		{{}, {Type::CONST_PTR_PTR_MAP, iter_ptr_ptr}, (void*) iter_ptr_ptr_fun, Method::NATIVE},
-		{{}, {Type::CONST_PTR_REAL_MAP, iter_ptr_real}, (void*) &iter_ptr_real_fun, Method::NATIVE},
-		{{}, {Type::CONST_PTR_INT_MAP, iter_ptr_int}, (void*) &iter_ptr_int_fun, Method::NATIVE},
-		{{}, {Type::CONST_INT_PTR_MAP, iter_int_ptr}, (void*) &iter_int_ptr_fun, Method::NATIVE},
-		{{}, {Type::CONST_INT_REAL_MAP, iter_int_real}, (void*) &iter_int_real_fun, Method::NATIVE},
-		{{}, {Type::CONST_INT_INT_MAP, iter_int_int}, (void*) &iter_int_int_fun, Method::NATIVE},
+		{{}, {Type::CONST_PTR_REAL_MAP, iter_ptr_real}, (void*) iter_ptr_real_fun, Method::NATIVE},
+		{{}, {Type::CONST_PTR_INT_MAP, iter_ptr_int}, (void*) iter_ptr_int_fun, Method::NATIVE},
+		{{}, {Type::CONST_INT_PTR_MAP, iter_int_ptr}, (void*) iter_int_ptr_fun, Method::NATIVE},
+		{{}, {Type::CONST_INT_REAL_MAP, iter_int_real}, (void*) iter_int_real_fun, Method::NATIVE},
+		{{}, {Type::CONST_INT_INT_MAP, iter_int_int}, (void*) iter_int_int_fun, Method::NATIVE},
 	});
 }
 

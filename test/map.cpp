@@ -145,8 +145,8 @@ void Test::test_map() {
 	code("[(x, y -> x + y): (x, y -> x - y), null: 'null', <'a', 'b'>: 0].values()").equals("['null', 0, <function>]");
 
 	section("Map.iter");
-	DISABLED_code("[1: 2, 3: 4].iter((k, v) -> System.print(k + ' ' + v))").output("1 2\n3 4\n");
-	DISABLED_code("[1: 2.5, 3: 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("1 2.5\n3 4.5\n");
+	code("[1: 2, 3: 4].iter((k, v) -> System.print(k + ' ' + v))").output("1 2\n3 4\n");
+	code("[1: 2.5, 3: 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("1 2.5\n3 4.5\n");
 	DISABLED_code("[1: 'a', 3: 'b'].iter((k, v) -> System.print(k + ' ' + v))").output("1 a\n3 b\n");
 	DISABLED_code("['a': 2, 'b': 4].iter((k, v) -> System.print(k + ' ' + v))").output("a 2\nb 4\n");
 	DISABLED_code("['a': 2.5, 'b': 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("a 2.5\nb 4.5\n");

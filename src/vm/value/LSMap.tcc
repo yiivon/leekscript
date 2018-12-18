@@ -184,7 +184,6 @@ LSArray<V>* LSMap<K, V>::values() const {
 template <class K, class V>
 template <class F>
 void LSMap<K, V>::ls_iter(F function) const {
-	std::cout << "Map::ls_iter " << std::endl;
 	for (auto v : *this) {
 		ls::call<void>(function, v.first, v.second);
 	}
