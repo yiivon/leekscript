@@ -49,7 +49,7 @@ public:
 	Type return_type;
 	llvm::orc::IRCompileLayer<llvm::orc::RTDyldObjectLinkingLayer, llvm::orc::SimpleCompiler>::ModuleHandleT function_handle;
 	bool handle_created = false;
-	llvm::BasicBlock* block;
+	llvm::BasicBlock* block = nullptr;
 	std::shared_ptr<llvm::Module> module;
 	LLVMCompiler* compiler = nullptr;
 
