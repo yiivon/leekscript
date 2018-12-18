@@ -1451,7 +1451,6 @@ LLVMCompiler::value LLVMCompiler::insn_invoke(Type return_type, std::vector<LLVM
 	value r = {builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name), return_type};
 	builder.SetInsertPoint(continueBlock);
 	assert(r.t.llvm_type() == r.v->getType());
-	std::cout << "Invoke function landing pad : " << fun->current_version->landing_pad << std::endl;
 	return r;
 }
 
