@@ -11,12 +11,10 @@ namespace ls {
 
 class FunctionCall : public Value {
 public:
-
 	std::shared_ptr<Token> token;
 	Value* function;
 	std::vector<Value*> arguments;
 	std::shared_ptr<Token> closing_parenthesis;
-
 	bool is_native = false;
 	Type return_type;
 	void* std_func;
