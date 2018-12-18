@@ -23,6 +23,9 @@ Set_type::Set_type(Type element) : Pointer_type(Type {
 	})
 }), _element(element) {}
 
+Type Set_type::key() const {
+	return Type::INTEGER;
+}
 Type Set_type::element() const {
 	return _element;
 }

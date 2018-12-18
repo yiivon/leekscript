@@ -20,6 +20,9 @@ Array_type::Array_type(Type element) : Pointer_type(Type { std::make_shared<cons
 }) }), _element(element) {
 }
 
+Type Array_type::key() const {
+	return Type::INTEGER;
+}
 Type Array_type::element() const {
 	return _element;
 }

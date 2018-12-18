@@ -16,6 +16,7 @@ public:
 	virtual bool iterable() const { return true; }
 	virtual Type iterator() const override;
 	virtual bool is_container() const { return true; }
+	virtual Type key() const override;
 	virtual Type element() const override;
 	virtual bool operator == (const Base_type*) const override;
 	virtual bool compatible(const Base_type*) const override;

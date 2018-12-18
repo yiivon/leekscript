@@ -11,6 +11,9 @@
 
 namespace ls {
 
+Type Long_type::key() const {
+	return Type::INTEGER;
+}
 Type Long_type::element() const {
 	return Type::INTEGER;
 }

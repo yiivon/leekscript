@@ -10,6 +10,9 @@
 
 namespace ls {
 
+Type Integer_type::key() const {
+	return Type::INTEGER;
+}
 Type Integer_type::element() const {
 	return Type::INTEGER;
 }
