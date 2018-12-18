@@ -264,4 +264,7 @@ void Test::test_functions() {
 	code("var dumb = function(x) { }").equals("(void)");
 	code("var dumb = function(x) { } var dumber = function(y) { dumb(y) }").equals("(void)");
 	code("var dumb = function(x) { } var dumber = function(y) { let z = y dumb(z) }").equals("(void)");
+
+	section("Weird");
+	DISABLED_code("1 / 5; (-> 0)()").works();
 }
