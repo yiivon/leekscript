@@ -18,6 +18,7 @@
 #include "../vm/value/LSClosure.hpp"
 #include "../colors.h"
 #include "../type/RawType.hpp"
+#include "leekscript/lib/utf8.h"
 
 #define log_insn(i) log_instructions && _log_insn((i))
 
@@ -1088,20 +1089,16 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		// return it;
 	}
 	else if (v.t.is_string()) {
-		// jit_type_t types[5] = {jit_type_void_ptr, jit_type_int, jit_type_int, jit_type_int, jit_type_int};
-		// auto string_iterator = jit_type_create_struct(types, 5, 1);
-		// Compiler::value it = {jit_value_create(F, string_iterator), Type::STRING_ITERATOR};
-		// jit_type_free(string_iterator);
-		// auto addr = insn_address_of(it);
-		// insn_call({}, {v, addr}, (void*) +[](LSString* str, LSString::iterator* it) {
-		// 	auto i = LSString::iterator_begin(str);
-		// 	it->buffer = i.buffer;
-		// 	it->index = 0;
-		// 	it->pos = 0;
-		// 	it->next_pos = 0;
-		// 	it->character = 0;
-		// });
-		// return it;
+		auto it = create_entry("it", v.t.iterator());
+		insn_call({}, {v, it}, (void*) +[](LSString* str, LSString::iterator* it) {
+			auto i = LSString::iterator_begin(str);
+			it->buffer = i.buffer;
+			it->index = 0;
+			it->pos = 0;
+			it->next_pos = 0;
+			it->character = 0;
+		});
+		return it;
 	}
 	else if (v.t.is_map()) {
 		auto it = create_entry("it", v.t.iterator());
@@ -1156,9 +1153,8 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 		// auto pos = insn_load(addr, 8, Type::INTEGER);
 		// return insn_gt(pos, end);
 	}
-	else if (it.t == Type::STRING_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// return insn_call(Type::BOOLEAN, {addr}, &LSString::iterator_end);
+	else if (v.t.is_string()) {
+		return insn_call(Type::BOOLEAN, {it}, &LSString::iterator_end);
 	}
 	else if (v.t.is_map()) {
 		auto node = insn_load(it);
@@ -1201,19 +1197,18 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		// auto e = insn_load(addr, 8, Type::INTEGER);
 		// return e;
 	}
-	if (it.t == Type::STRING_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto int_char = insn_call(Type::INTEGER, {addr}, &LSString::iterator_get);
-		// return insn_call(Type::STRING, {int_char, previous}, (void*) +[](unsigned int c, LSString* previous) {
-		// 	if (previous != nullptr) {
-		// 		LSValue::delete_ref(previous);
-		// 	}
-		// 	char dest[5];
-		// 	// u8_toutf8(dest, 5, &c, 1);
-		// 	auto s = new LSString(dest);
-		// 	s->refs = 1;
-		// 	return s;
-		// });
+	if (collectionType.is_string()) {
+		auto int_char = insn_call(Type::INTEGER, {it}, &LSString::iterator_get);
+		return insn_call(Type::STRING, {int_char, previous}, (void*) +[](unsigned int c, LSString* previous) {
+			if (previous != nullptr) {
+				LSValue::delete_ref(previous);
+			}
+			char dest[5];
+			u8_toutf8(dest, 5, &c, 1);
+			auto s = new LSString(dest);
+			s->refs = 1;
+			return s;
+		});
 	}
 	if (collectionType.is_map()) {
 		if (previous.t.must_manage_memory()) {
@@ -1264,9 +1259,8 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		// auto e = insn_load(addr, 8, Type::INTEGER);
 		// return insn_sub(e, start);
 	}
-	if (it.t == Type::STRING_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// return insn_call(Type::INTEGER, {addr}, &LSString::iterator_key);
+	if (v.t.is_string()) {
+		return insn_call(Type::INTEGER, {it}, &LSString::iterator_key);
 	}
 	if (v.t.is_map()) {
 		if (previous.t.must_manage_memory()) {
@@ -1306,10 +1300,9 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		// insn_store_relative(addr, 8, insn_add(pos, new_integer(1)));
 		return;
 	}
-	if (it.t == Type::STRING_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// insn_call({}, {addr}, &LSString::iterator_next);
-		// return;
+	if (collectionType.is_string()) {
+		insn_call({}, {it}, &LSString::iterator_next);
+		return;
 	}
 	if (collectionType.is_map()) {
 		auto node = insn_load(it);
