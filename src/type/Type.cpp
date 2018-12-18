@@ -97,7 +97,9 @@ const Type Type::CLOSURE({ std::make_shared<const Function_type>(Type(), std::ve
 const Type Type::CLASS(RawType::CLASS, true);
 const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 
-const Type Type::STRING_ITERATOR = Type::STRING;
+const Type Type::STRING_ITERATOR = Type::structure("string_iterator", {
+	Type::ANY, Type::INTEGER, Type::INTEGER, Type::INTEGER, Type::INTEGER
+});
 const Type Type::INTERVAL_ITERATOR = Type::INTERVAL;
 const Type Type::INTEGER_ITERATOR = Type::structure("int_iterator", {
 	Type::INTEGER,

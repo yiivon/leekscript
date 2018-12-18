@@ -12,6 +12,9 @@ public:
 	virtual const std::string getName() const { return "string"; }
 	virtual const std::string getJsonName() const { return "string"; }
 	virtual bool iterable() const { return true; }
+	virtual Type iterator() const override;
+	virtual Type key() const override;
+	virtual Type element() const override;
 	virtual bool is_container() const { return true; }
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;

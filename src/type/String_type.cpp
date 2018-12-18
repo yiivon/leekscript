@@ -6,6 +6,15 @@
 
 namespace ls {
 
+Type String_type::key() const {
+	return Type::INTEGER;
+}
+Type String_type::element() const {
+	return Type::STRING;
+}
+Type String_type::iterator() const {
+	return Type::STRING_ITERATOR;
+}
 bool String_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const String_type*>(type);
 }
