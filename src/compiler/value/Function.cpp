@@ -51,8 +51,8 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 }
 
 Type Function::getReturnType() {
-	if (current_version->type.return_type().is_any()) {
-		if (placeholder_type == RawType::ANY) {
+	if (current_version->type.return_type()._types.size() == 0) {
+		if (!placeholder_type) {
 			placeholder_type = Type::generate_new_placeholder_type();
 		}
 		return { placeholder_type };
@@ -274,7 +274,6 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	// std::cout << "Function::analyse_body(" << args << ", " << req_type << ")" << std::endl;
 
 	captures.clear();
-
 	analyser->enter_function(this);
 	current_version = version;
 
@@ -290,20 +289,23 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	} else {
 		version->type = Type::fun(version->body->type, arg_types, this);
 	}
-	// // Ignore recursive types
-	// for (const auto& t : version->body->type._types) {
-	// 	if (placeholder_type != RawType::ANY and t == placeholder_type) {
-	// 		continue;
-	// 	}
-	// 	return_type.add(t);
-	// }
-
-	// std::cout << "version body type " << version->body->type << std::endl;
+	Type return_type;
+	for (const auto& t : version->body->type._types) {
+		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
+			return_type += t;
+		}
+	}
+	version->body->type = return_type;
+	if (captures.size()) {
+		version->type = Type::closure(return_type, arg_types, this);
+	} else {
+		version->type = Type::fun(return_type, arg_types, this);
+	}
+	version->body->analyse(analyser);
 
 	if (version->type.return_type() == Type::MPZ) {
 		// version->type.setReturnType(Type::MPZ_TMP);
 	}
-
 	vars = analyser->get_local_vars();
 	analyser->leave_function();
 
