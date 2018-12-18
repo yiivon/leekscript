@@ -180,6 +180,11 @@ public:
 	static const Type INT_SET_ITERATOR;
 	static const Type REAL_SET_ITERATOR;
 	static const Type PTR_SET_ITERATOR;
+	static const Type INT_INT_MAP_ITERATOR;
+	static const Type PTR_PTR_MAP_ITERATOR;
+	static const Type PTR_INT_MAP_ITERATOR;
+	static const Type INT_PTR_MAP_ITERATOR;
+	static const Type INT_REAL_MAP_ITERATOR;
 
 	static Type array(const Type = {});
 	static Type const_array(const Type = {});

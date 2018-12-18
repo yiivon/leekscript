@@ -30,6 +30,15 @@ Type Map_type::key() const {
 Type Map_type::element() const {
 	return _element;
 }
+Type Map_type::iterator() const {
+	const auto key_merged = _key.fold();
+	const auto element_merged = _element.fold();
+	if (key_merged.is_integer() and element_merged.is_integer()) return Type::INT_INT_MAP_ITERATOR;
+	if (key_merged.is_any() and element_merged.is_integer()) return Type::PTR_INT_MAP_ITERATOR;
+	if (key_merged.is_integer() and element_merged.is_any()) return Type::INT_PTR_MAP_ITERATOR;
+	if (key_merged.is_integer() and element_merged.is_real()) return Type::INT_REAL_MAP_ITERATOR;
+	return Type::PTR_PTR_MAP_ITERATOR;
+}
 bool Map_type::operator == (const Base_type* type) const {
 	if (auto map = dynamic_cast<const Map_type*>(type)) {
 		return _element == map->_element && _key == map->_key;

@@ -15,6 +15,7 @@ public:
 	virtual const std::string getName() const { return "map"; }
 	virtual const std::string getJsonName() const { return "map"; }
 	virtual bool iterable() const { return true; }
+	virtual Type iterator() const override;
 	virtual bool is_container() const { return true; }
 	virtual Type element() const override;
 	virtual Type key() const override;

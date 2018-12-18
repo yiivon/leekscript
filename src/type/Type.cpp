@@ -125,6 +125,11 @@ const Type Type::PTR_SET_ITERATOR = Type::structure("any_set_iterator", {
 	Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY }) }).pointer(),
 	Type::INTEGER
 });
+const Type Type::INT_INT_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER, Type::INTEGER }) }).pointer();
+const Type Type::PTR_PTR_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY, Type::ANY }) }).pointer();
+const Type Type::PTR_INT_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY, Type::INTEGER }) }).pointer();
+const Type Type::INT_PTR_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER, Type::ANY }) }).pointer();
+const Type Type::INT_REAL_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER, Type::REAL }) }).pointer();
 
 Type::Type() {
 	native = false;
