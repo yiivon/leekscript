@@ -138,7 +138,7 @@ void Test::test_loops() {
 	code("var y = '' for k, x in { var x = [1: '2'] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	// TODO crash
 	DISABLED_code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
-	DISABLED_code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
+	code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
 	DISABLED_code("var y = '' for k, x in { var x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
 	// TODO crash
@@ -160,7 +160,7 @@ void Test::test_loops() {
 	code("[for x in [1, 2, 3] { x }]").equals("[1, 2, 3]");
 	code("let a = ['a': 'b', 'c': 'd'] [for k, x in a { k + x }]").equals("['ab', 'cd']");
 	DISABLED_code("[for x in [1, 2, 3] {[ for y in [1, 2, 3] { if y == 2 continue x * y }] }]").equals("[[1, 3], [2, 6], [3, 9]]");
-	DISABLED_code("let sorted = [for x in <5, 2, 4, 1, 3> { x }] sorted").equals("[1, 2, 3, 4, 5]");
+	code("let sorted = [for x in <5, 2, 4, 1, 3> { x }] sorted").equals("[1, 2, 3, 4, 5]");
 	DISABLED_code("[for i in [1..10] { i }]").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 	DISABLED_code("function attrs(o) { [for k : v in o {v}] } attrs(['a'])").equals("['a']");
 	DISABLED_code("function attrs(o) { [for k : v in o {v}] } attrs([1])").equals("[1]");
@@ -178,6 +178,7 @@ void Test::test_loops() {
 	code("while (true) { continue 2 }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
 	code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r").equals("14");
 	DISABLED_code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y continue 2 } r = 0 } r").equals("23");
+	// TODO leak
 	DISABLED_code("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
 	DISABLED_code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
 	DISABLED_code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
