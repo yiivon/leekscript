@@ -838,21 +838,12 @@ void LLVMCompiler::insn_store_member(LLVMCompiler::value x, int pos, LLVMCompile
 
 LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	if (v.t.is_null()) return new_integer(LSValue::NULLL);
-	if (v.t.is_bool()) return new_integer(LSValue::BOOLEAN);
-	if (v.t.is_number()) return new_integer(LSValue::NUMBER);
-	if (v.t.is_string()) return new_integer(LSValue::STRING);
-	if (v.t.is_array()) return new_integer(LSValue::ARRAY);
-	if (v.t.is_map()) return new_integer(LSValue::MAP);
-	if (v.t.is_set()) return new_integer(LSValue::SET);
-	if (v.t.is_interval()) return new_integer(LSValue::INTERVAL);
-	if (v.t.is_closure()) return new_integer(LSValue::CLOSURE);
-	if (v.t.is_function()) return new_integer(LSValue::FUNCTION);
-	if (v.t.is_object()) return new_integer(LSValue::OBJECT);
-	if (v.t.is_class()) return new_integer(LSValue::CLASS);
-	return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
-		return v->type;
-	});
+	if (v.t.fold().is_any()) {
+		return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
+			return v->type;
+		});
+	}
+	return new_integer(v.t.id());
 }
 
 LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
