@@ -12,7 +12,6 @@ bool Placeholder_type::operator == (const Base_type* type) const {
 	return this == type;
 }
 bool Placeholder_type::compatible(const Base_type* type) const {
-	std::cout << "placeholder compatible " << this << " " << type << std::endl;
 	return false;
 }
 llvm::Type* Placeholder_type::llvm() const {
