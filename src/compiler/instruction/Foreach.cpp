@@ -27,7 +27,7 @@ void Foreach::print(ostream& os, int indent, bool debug) const {
 	os << "for ";
 
 	if (key != nullptr) {
-		os << key->content;
+		os << key->content << " " << container->type.key();
 		os << " : ";
 	}
 	os << value->content << " " << container->type.element();
