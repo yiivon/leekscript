@@ -90,6 +90,13 @@ void Test::test_types() {
 	assert(not ls::Type::MAP.is_number());
 	assert(not ls::Type().is_number());
 
+	section("is_callable");
+	assert(ls::Type::ANY.is_callable());
+	assert(ls::Type::FUNCTION.is_callable());
+	assert(ls::Type::CLASS.is_callable());
+	assert(not ls::Type::INTEGER.is_callable());
+	assert(not ls::Type::ARRAY.is_callable());
+
 	section("operator *");
 	assert(ls::Type() * ls::Type() == ls::Type());
 	assert(ls::Type::ANY * ls::Type::ANY == ls::Type::ANY);
