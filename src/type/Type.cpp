@@ -100,7 +100,10 @@ const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
 const Type Type::STRING_ITERATOR = Type::structure("string_iterator", {
 	Type::ANY, Type::INTEGER, Type::INTEGER, Type::INTEGER, Type::INTEGER
 });
-const Type Type::INTERVAL_ITERATOR = Type::INTERVAL;
+
+const Type Type::INTERVAL_ITERATOR = Type::structure("interval_iterator", {
+	Type::INTERVAL, Type::INTEGER
+});
 const Type Type::INTEGER_ITERATOR = Type::structure("int_iterator", {
 	Type::INTEGER,
 	Type::INTEGER,
