@@ -219,29 +219,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		}
 	}
 
-	// Operator function? TODO better, no special behavior
-	vv = dynamic_cast<VariableValue*>(function);
-	if (vv != nullptr) {
-		auto name = vv->name;
-		if (name == "+" or name == "-" or name == "*" or name == "/" or name == "**" or name == "%") {
-			bool isByValue = true;
-			Type effectiveType;
-			for (auto& arg : arguments) {
-				arg->analyse(analyser);
-				effectiveType = arg->type;
-				if (arg->type.is_polymorphic()) {
-					isByValue = false;
-				}
-			}
-			if (isByValue) {
-				// function->type.setArgumentType(0, effectiveType);
-				// function->type.setArgumentType(1, effectiveType);
-				// function->type.setReturnType(effectiveType);
-			}
-			type = function->type.return_type();
-		}
-	}
-
 	// Check arguments count
 	arg_types.clear();
 	bool arguments_valid = arguments.size() <= function->type.arguments().size();
