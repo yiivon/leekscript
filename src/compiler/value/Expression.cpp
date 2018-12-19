@@ -223,14 +223,11 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 		// Set the correct type nature for the two members
 		if (v2->type.is_polymorphic() and v1->type.is_primitive() and !(vv and op->type == TokenType::EQUAL)) {
-			v1->analyse(analyser);
 			v1_type = Type::ANY;
 		}
 		if (v1->type.is_polymorphic() and v2->type.is_primitive() and !(vv and op->type == TokenType::EQUAL)) {
-			v2->analyse(analyser);
 			v2_type = Type::ANY;
 		}
-
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
 			type = v2->type;
 		} else {
@@ -268,8 +265,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
 		type = v1->type * v2->type;
-		v1->analyse(analyser);
-		v2->analyse(analyser);
 		v1_type = type;
 		v2_type = type;
 	}
