@@ -19,8 +19,8 @@ void Test::test_classes() {
 	code("'salut'.class").equals("<class String>");
 	code("[].class").equals("<class Array>");
 	code("[1..12].class").equals("<class Interval>");
-	DISABLED_code("[:].class").equals("<class Map>");
-	DISABLED_code("<>.class").equals("<class Set>");
+	code("[:].class").equals("<class Map>");
+	code("<>.class").equals("<class Set>");
 	code("[1, 2, 3].class").equals("<class Array>");
 	code("{}.class").equals("<class Object>");
 	code("{a: 12, b: 'yo'}.class").equals("<class Object>");

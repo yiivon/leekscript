@@ -499,34 +499,34 @@ std::shared_ptr<const Base_type> Type::generate_new_placeholder_type() {
 }
 
 Type Type::array(const Type element) {
-	return { std::make_shared<Array_type>(element) };
+	return { std::make_shared<Array_type>(element), false, false, false };
 }
 Type Type::const_array(const Type element) {
 	return { std::make_shared<Array_type>(element), false, false, true };
 }
 Type Type::tmp_array(const Type element) {
-	return { std::make_shared<Array_type>(element), false, true };
+	return { std::make_shared<Array_type>(element), false, true, false };
 }
 Type Type::set(const Type element) {
-	return { std::make_shared<Set_type>(element) };
+	return { std::make_shared<Set_type>(element), false, false, false };
 }
 Type Type::const_set(const Type element) {
 	return { std::make_shared<Set_type>(element), false, false, true };
 }
 Type Type::tmp_set(const Type element) {
-	return { std::make_shared<Set_type>(element), false, true };
+	return { std::make_shared<Set_type>(element), false, true, false };
 }
 Type Type::map(const Type key, const Type element) {
-	return { std::make_shared<Map_type>(key, element) };
+	return { std::make_shared<Map_type>(key, element), false, false, false };
 }
 Type Type::const_map(const Type key, const Type element) {
 	return { std::make_shared<Map_type>(key, element), false, false, true };
 }
 Type Type::interval() {
-	return { std::make_shared<Interval_type>() };
+	return { std::make_shared<Interval_type>(), false, false, false };
 }
 Type Type::tmp_interval() {
-	return { std::make_shared<Interval_type>(), false, true };
+	return { std::make_shared<Interval_type>(), false, true, false };
 }
 Type Type::fun(Type return_type, std::vector<Type> arguments, const Function* function) {
 	return { std::make_shared<Function_type>(return_type, arguments, false, function), false, false, true };
@@ -535,7 +535,7 @@ Type Type::closure(Type return_type, std::vector<Type> arguments, const Function
 	return { std::make_shared<Function_type>(return_type, arguments, true, function), false, false, true };
 }
 Type Type::structure(const std::string name, std::initializer_list<Type> types) {
-	return { std::make_shared<Struct_type>(name, types) };
+	return { std::make_shared<Struct_type>(name, types), false, false, false };
 }
 bool Type::all(std::function<bool(std::shared_ptr<const Base_type>)> fun) const {
 	return std::all_of(_types.begin(), _types.end(), fun);
