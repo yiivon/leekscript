@@ -446,9 +446,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		});
 	} else {
 		ls_fun_addr = function->compile(c);
-		auto fun_to_ptr = LLVMCompiler::builder.CreatePointerCast(ls_fun_addr.v, Function_type::get_function_type());
-		auto f = LLVMCompiler::builder.CreateStructGEP(Function_type::get_function_type()->getPointerElementType(), fun_to_ptr, 5);
-		fun = { LLVMCompiler::builder.CreateLoad(f), Type::FUNCTION };
+		auto fun_to_ptr = Compiler::builder.CreatePointerCast(ls_fun_addr.v, Function_type::get_function_type());
+		auto f = Compiler::builder.CreateStructGEP(Function_type::get_function_type()->getPointerElementType(), fun_to_ptr, 5);
+		fun = { Compiler::builder.CreateLoad(f), Type::FUNCTION };
 	}
 
 	/** Arguments */

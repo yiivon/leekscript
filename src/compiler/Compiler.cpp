@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 #include <bitset>
-#include "LLVMCompiler.hpp"
+#include "Compiler.hpp"
 #include "value/Function.hpp"
 #include "../vm/VM.hpp"
 #include "../vm/value/LSNull.hpp"
@@ -24,15 +24,15 @@
 
 namespace ls {
 
-llvm::LLVMContext LLVMCompiler::context;
-llvm::IRBuilder<> LLVMCompiler::builder(context);
+llvm::LLVMContext Compiler::context;
+llvm::IRBuilder<> Compiler::builder(context);
 
-void LLVMCompiler::init() {
+void Compiler::init() {
 	mappings.clear();
 }
-void LLVMCompiler::end() {}
+void Compiler::end() {}
 
-LLVMCompiler::value LLVMCompiler::clone(LLVMCompiler::value v) const {
+Compiler::value Compiler::clone(Compiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		if (v.t.reference) {
 			v = insn_load(v);
@@ -45,37 +45,37 @@ LLVMCompiler::value LLVMCompiler::clone(LLVMCompiler::value v) const {
 	}
 	return v;
 }
-LLVMCompiler::value LLVMCompiler::new_null() const {
+Compiler::value Compiler::new_null() const {
 	return new_pointer(LSNull::get());
 }
-LLVMCompiler::value LLVMCompiler::new_bool(bool b) const {
+Compiler::value Compiler::new_bool(bool b) const {
 	return {llvm::ConstantInt::get(context, llvm::APInt(1, b, false)), Type::BOOLEAN};
 }
 
-LLVMCompiler::value LLVMCompiler::new_integer(int x) const {
+Compiler::value Compiler::new_integer(int x) const {
 	return {llvm::ConstantInt::get(context, llvm::APInt(32, x, true)), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::new_real(double r) const {
+Compiler::value Compiler::new_real(double r) const {
 	return {llvm::ConstantFP::get(context, llvm::APFloat(r)), Type::REAL};
 }
 
-LLVMCompiler::value LLVMCompiler::new_long(long l) const {
+Compiler::value Compiler::new_long(long l) const {
 	return {llvm::ConstantInt::get(context, llvm::APInt(64, l, true)), Type::LONG};
 }
 
-LLVMCompiler::value LLVMCompiler::new_pointer(const void* p, Type type) const {
+Compiler::value Compiler::new_pointer(const void* p, Type type) const {
 	auto longp = llvm::ConstantInt::get(context, llvm::APInt(64, (long) p, false));
 	return {builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, type.llvm_type()), type};
 }
-LLVMCompiler::value LLVMCompiler::new_function(const void* p, Type type) const {
+Compiler::value Compiler::new_function(const void* p, Type type) const {
 	return new_pointer(p, type);
 }
-LLVMCompiler::value LLVMCompiler::new_class(const void* p) const {
+Compiler::value Compiler::new_class(const void* p) const {
 	return new_pointer(p, Type::CLASS);
 }
 
-LLVMCompiler::value LLVMCompiler::new_object() const {
+Compiler::value Compiler::new_object() const {
 	return insn_call(Type::OBJECT_TMP, {}, +[]() {
 		// FIXME coverage doesn't work for the one line version
 		auto o = new LSObject();
@@ -83,19 +83,19 @@ LLVMCompiler::value LLVMCompiler::new_object() const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::new_object_class(LLVMCompiler::value clazz) const {
+Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
 	return insn_call(Type::ANY, {clazz}, +[](LSClass* clazz) {
 		return new LSObject(clazz);
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::new_mpz(long value) const {
+Compiler::value Compiler::new_mpz(long value) const {
 	mpz_t mpz;
 	mpz_init_set_ui(mpz, value);
 	return new_mpz_init(mpz);
 }
 
-LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
+Compiler::value Compiler::new_mpz_init(const mpz_t mpz) const {
 	// std::cout << "mpz alloc = " << mpz->_mp_alloc << std::endl;
 	// std::cout << "mpz size = " << mpz->_mp_size << std::endl;
 	// std::cout << "mpz d = " << mpz->_mp_d << std::endl;
@@ -114,7 +114,7 @@ LLVMCompiler::value LLVMCompiler::new_mpz_init(const mpz_t mpz) const {
 	// return {builder.CreateIntCast(v, Type::LLVM_MPZ_TYPE, false), Type::MPZ};
 }
 
-LLVMCompiler::value LLVMCompiler::new_array(Type type, std::vector<LLVMCompiler::value> elements) const {
+Compiler::value Compiler::new_array(Type type, std::vector<Compiler::value> elements) const {
 	auto element_type = type.element().fold();
 	auto array = [&]() { if (element_type == Type::INTEGER) {
 		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
@@ -144,11 +144,11 @@ LLVMCompiler::value LLVMCompiler::new_array(Type type, std::vector<LLVMCompiler:
 	return array;
 }
 
-LLVMCompiler::value LLVMCompiler::create_entry(const std::string& name, Type type) const {
+Compiler::value Compiler::create_entry(const std::string& name, Type type) const {
 	return { CreateEntryBlockAlloca(name, type.llvm_type()), type.pointer() };
 }
 
-LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
+Compiler::value Compiler::to_int(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.is_integer()) {
 		return v;
@@ -164,12 +164,12 @@ LLVMCompiler::value LLVMCompiler::to_int(LLVMCompiler::value v) const {
 	if (v.t.is_real()) {
 		return {builder.CreateFPToSI(v.v, Type::INTEGER.llvm_type()), Type::INTEGER};
 	}
-	LLVMCompiler::value r {builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), true), Type::INTEGER};
+	Compiler::value r {builder.CreateIntCast(v.v, Type::INTEGER.llvm_type(), true), Type::INTEGER};
 	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
+Compiler::value Compiler::to_real(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	if (x.t.is_polymorphic()) {
 		return insn_invoke(Type::REAL, {x}, +[](const LSValue* x) {
@@ -195,7 +195,7 @@ LLVMCompiler::value LLVMCompiler::to_real(LLVMCompiler::value x) const {
 	return {builder.CreateSIToFP(x.v, Type::REAL.llvm_type()), Type::REAL};
 }
 
-LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value v) const {
+Compiler::value Compiler::to_long(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.not_temporary() == Type::LONG) {
 		return v;
@@ -210,7 +210,7 @@ LLVMCompiler::value LLVMCompiler::to_long(LLVMCompiler::value v) const {
 	return v;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) const {
+Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
 	// assert(v.t.llvm_type() == v.v->getType());
 	if (!v.v) { return v; }
 	if (v.t.is_polymorphic() and t.is_polymorphic()) {
@@ -231,18 +231,18 @@ LLVMCompiler::value LLVMCompiler::insn_convert(LLVMCompiler::value v, Type t) co
 }
 
 // Operators wrapping
-LLVMCompiler::value LLVMCompiler::insn_not(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_not(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	return {builder.CreateNot(to_int(v).v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_not_bool(LLVMCompiler::value v) const {
-	LLVMCompiler::value r {builder.CreateNot(insn_to_bool(v).v), Type::BOOLEAN};
+Compiler::value Compiler::insn_not_bool(Compiler::value v) const {
+	Compiler::value r {builder.CreateNot(insn_to_bool(v).v), Type::BOOLEAN};
 	log_insn(4) << "not_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_neg(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_neg(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t == Type::REAL) {
 		return {builder.CreateFNeg(v.v), v.t};
@@ -251,18 +251,18 @@ LLVMCompiler::value LLVMCompiler::insn_neg(LLVMCompiler::value v) const {
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_and(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_and(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	return {builder.CreateAnd(a.v, b.v), Type::BOOLEAN};
 }
-LLVMCompiler::value LLVMCompiler::insn_or(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	return {builder.CreateOr(a.v, b.v), Type::BOOLEAN};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	if (a.t.is_real() or b.t.is_real()) {
@@ -274,7 +274,7 @@ LLVMCompiler::value LLVMCompiler::insn_add(LLVMCompiler::value a, LLVMCompiler::
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	if (a.t.is_real() or b.t.is_real()) {
@@ -284,7 +284,7 @@ LLVMCompiler::value LLVMCompiler::insn_sub(LLVMCompiler::value a, LLVMCompiler::
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 	// assert(a.t.llvm_type() == a.v->getType());
 	// assert(b.t.llvm_type() == b.v->getType());
 	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
@@ -314,19 +314,19 @@ LLVMCompiler::value LLVMCompiler::insn_eq(LLVMCompiler::value a, LLVMCompiler::v
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_ne(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_ne(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
-	LLVMCompiler::value r {builder.CreateICmpNE(a.v, b.v), Type::BOOLEAN};
+	Compiler::value r {builder.CreateICmpNE(a.v, b.v), Type::BOOLEAN};
 	log_insn(4) << "ne " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
-	LLVMCompiler::value r;
+	Compiler::value r;
 	if (a.t.is_mpz() and b.t.is_integer()) {
 		// TODO cleaning
 		return insn_call(Type::BOOLEAN, {a, b}, +[](__mpz_struct x, int i) {
@@ -350,10 +350,10 @@ LLVMCompiler::value LLVMCompiler::insn_lt(LLVMCompiler::value a, LLVMCompiler::v
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_le(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
-	LLVMCompiler::value r;
+	Compiler::value r;
 	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
 		r = {builder.CreateFCmpOLE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
 	} else if (a.t.is_real() || b.t.is_real()) {
@@ -367,11 +367,11 @@ LLVMCompiler::value LLVMCompiler::insn_le(LLVMCompiler::value a, LLVMCompiler::v
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_gt(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
-	LLVMCompiler::value r;
+	Compiler::value r;
 	if (a.t.is_mpz() and b.t.is_integer()) {
 		auto res = insn_call(Type::INTEGER, {a, b}, +[](__mpz_struct a, int b) {
 			return _mpz_cmp_si(&a, b);
@@ -393,11 +393,11 @@ LLVMCompiler::value LLVMCompiler::insn_gt(LLVMCompiler::value a, LLVMCompiler::v
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
-	LLVMCompiler::value r;
+	Compiler::value r;
 	if (a.t.is_real() || b.t.is_real()) {
 		r = {builder.CreateFCmpOGE(to_real(a).v, to_real(b).v), Type::BOOLEAN};
 	} else if (a.t.is_long() || b.t.is_long()) {
@@ -409,7 +409,7 @@ LLVMCompiler::value LLVMCompiler::insn_ge(LLVMCompiler::value a, LLVMCompiler::v
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
@@ -422,7 +422,7 @@ LLVMCompiler::value LLVMCompiler::insn_mul(LLVMCompiler::value a, LLVMCompiler::
 	return {builder.CreateMul(to_int(a).v, to_int(b).v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
 	auto bv = to_real(b);
 	insn_if(insn_eq(bv, new_integer(0)), [&]() {
 		insn_delete_temporary(a);
@@ -432,7 +432,7 @@ LLVMCompiler::value LLVMCompiler::insn_div(LLVMCompiler::value a, LLVMCompiler::
 	return { builder.CreateFDiv(to_real(a).v, bv.v), Type::REAL };
 }
 
-LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_int_div(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
@@ -442,47 +442,47 @@ LLVMCompiler::value LLVMCompiler::insn_int_div(LLVMCompiler::value a, LLVMCompil
 	return {builder.CreateSDiv(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_bit_and(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_bit_and(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	return {builder.CreateAnd(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_bit_or(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_bit_or(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	return {builder.CreateOr(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_bit_xor(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_bit_xor(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
 	return {builder.CreateXor(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_shl(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_shl(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
 	return {builder.CreateShl(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_ashr(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_ashr(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
 	return {builder.CreateAShr(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_lshr(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_lshr(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
 	return {builder.CreateLShr(a.v, b.v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	if (a.t.is_long() and b.t.is_long()) {
@@ -494,13 +494,13 @@ LLVMCompiler::value LLVMCompiler::insn_mod(LLVMCompiler::value a, LLVMCompiler::
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_cmpl(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_cmpl(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	return {builder.CreateSub(to_int(insn_to_bool(a)).v, to_int(insn_to_bool(b)).v), Type::INTEGER};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_log(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_log(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -518,7 +518,7 @@ LLVMCompiler::value LLVMCompiler::insn_log(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_log10(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_log10(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -536,7 +536,7 @@ LLVMCompiler::value LLVMCompiler::insn_log10(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_ceil(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_ceil(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) return x;
@@ -545,7 +545,7 @@ LLVMCompiler::value LLVMCompiler::insn_ceil(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_round(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_round(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) return x;
@@ -554,7 +554,7 @@ LLVMCompiler::value LLVMCompiler::insn_round(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_floor(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_floor(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) return x;
@@ -563,7 +563,7 @@ LLVMCompiler::value LLVMCompiler::insn_floor(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_cos(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_cos(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -576,7 +576,7 @@ LLVMCompiler::value LLVMCompiler::insn_cos(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_sin(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_sin(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -589,7 +589,7 @@ LLVMCompiler::value LLVMCompiler::insn_sin(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_tan(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_tan(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -602,7 +602,7 @@ LLVMCompiler::value LLVMCompiler::insn_tan(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_acos(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_acos(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -615,7 +615,7 @@ LLVMCompiler::value LLVMCompiler::insn_acos(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_asin(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_asin(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -628,7 +628,7 @@ LLVMCompiler::value LLVMCompiler::insn_asin(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_atan(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_atan(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -641,7 +641,7 @@ LLVMCompiler::value LLVMCompiler::insn_atan(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_sqrt(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_sqrt(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -654,11 +654,11 @@ LLVMCompiler::value LLVMCompiler::insn_sqrt(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value a, LLVMCompiler::value b) const {
+Compiler::value Compiler::insn_pow(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
-	LLVMCompiler::value r;
+	Compiler::value r;
 	if (a.t.is_real() or b.t.is_real()) {
 		r = insn_call(Type::REAL, {to_real(a), to_real(b)}, +[](double a, double b) {
 			return std::pow(a, b);
@@ -676,7 +676,7 @@ LLVMCompiler::value LLVMCompiler::insn_pow(LLVMCompiler::value a, LLVMCompiler::
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_min(LLVMCompiler::value x, LLVMCompiler::value y) const {
+Compiler::value Compiler::insn_min(Compiler::value x, Compiler::value y) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(y.t.llvm_type() == y.v->getType());
 	assert(x.t.is_primitive() && y.t.is_primitive());
@@ -690,7 +690,7 @@ LLVMCompiler::value LLVMCompiler::insn_min(LLVMCompiler::value x, LLVMCompiler::
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_max(LLVMCompiler::value x, LLVMCompiler::value y) const {
+Compiler::value Compiler::insn_max(Compiler::value x, Compiler::value y) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(y.t.llvm_type() == y.v->getType());
 	assert(x.t.is_primitive() && y.t.is_primitive());
@@ -704,7 +704,7 @@ LLVMCompiler::value LLVMCompiler::insn_max(LLVMCompiler::value x, LLVMCompiler::
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_exp(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_exp(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::INTEGER) {
@@ -717,7 +717,7 @@ LLVMCompiler::value LLVMCompiler::insn_exp(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_atan2(LLVMCompiler::value x, LLVMCompiler::value y) const {
+Compiler::value Compiler::insn_atan2(Compiler::value x, Compiler::value y) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(y.t.llvm_type() == y.v->getType());
 	assert(x.t.is_primitive() && y.t.is_primitive());
@@ -731,7 +731,7 @@ LLVMCompiler::value LLVMCompiler::insn_atan2(LLVMCompiler::value x, LLVMCompiler
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value x) const {
+Compiler::value Compiler::insn_abs(Compiler::value x) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	// std::cout << "abs " << x.t << std::endl;
 	if (x.t.is_polymorphic()) {
@@ -749,7 +749,7 @@ LLVMCompiler::value LLVMCompiler::insn_abs(LLVMCompiler::value x) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_to_any(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 	if (v.t.is_polymorphic()) {
 		return v; // already any
 	}
@@ -772,13 +772,13 @@ LLVMCompiler::value LLVMCompiler::insn_to_any(LLVMCompiler::value v) const {
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.is_bool()) {
 		return v;
 	}
 	if (v.t.is_integer()) {
-		LLVMCompiler::value r {builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::BOOLEAN};
+		Compiler::value r {builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::BOOLEAN};
 		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
 	}
@@ -801,17 +801,17 @@ LLVMCompiler::value LLVMCompiler::insn_to_bool(LLVMCompiler::value v) const {
 	});
 }
 
-LLVMCompiler::value LLVMCompiler::insn_load(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_load(Compiler::value v) const {
 	// std::cout << "insn_load " << v.t << " " << v.v->getType() << std::endl;
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(v.t.is_pointer());
-	LLVMCompiler::value r { builder.CreateLoad(v.v), v.t.pointed() };
+	Compiler::value r { builder.CreateLoad(v.v), v.t.pointed() };
 	log_insn(4) << "load " << dump_val(v) << " " << dump_val(r) << std::endl;
 	assert(r.t == v.t.pointed());
 	assert(r.t.llvm_type() == r.v->getType());
 	return r;
 }
-LLVMCompiler::value LLVMCompiler::insn_load_member(LLVMCompiler::value v, int pos) const {
+Compiler::value Compiler::insn_load_member(Compiler::value v, int pos) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(v.t.is_pointer());
 	assert(v.t.pointed().is_struct());
@@ -819,7 +819,7 @@ LLVMCompiler::value LLVMCompiler::insn_load_member(LLVMCompiler::value v, int po
 	return { builder.CreateLoad(s), v.t.pointed().member(pos) };
 }
 
-void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) const {
+void Compiler::insn_store(Compiler::value x, Compiler::value y) const {
 	// std::cout << "insn_store " << x.t << " " << x.v->getType() << " " << y.t << std::endl;
 	assert(x.v->getType()->isPointerTy());
 	// assert(x.t.llvm_type() == x.v->getType()->getPointerElementType());
@@ -827,7 +827,7 @@ void LLVMCompiler::insn_store(LLVMCompiler::value x, LLVMCompiler::value y) cons
 	builder.CreateStore(y.v, x.v);
 	log_insn(4) << "store " << dump_val(x) << " " << dump_val(y) << std::endl;
 }
-void LLVMCompiler::insn_store_member(LLVMCompiler::value x, int pos, LLVMCompiler::value y) const {
+void Compiler::insn_store_member(Compiler::value x, int pos, Compiler::value y) const {
 	assert(x.t.llvm_type() == x.v->getType());
 	assert(y.t.llvm_type() == y.v->getType());
 	assert(x.t.is_pointer());
@@ -837,7 +837,7 @@ void LLVMCompiler::insn_store_member(LLVMCompiler::value x, int pos, LLVMCompile
 	builder.CreateStore(y.v, s);
 }
 
-LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_typeof(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.fold().is_any()) {
 		return insn_call(Type::INTEGER, {v}, +[](LSValue* v) {
@@ -847,7 +847,7 @@ LLVMCompiler::value LLVMCompiler::insn_typeof(LLVMCompiler::value v) const {
 	return new_integer(v.t.id());
 }
 
-LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	auto clazz = v.t.clazz();
 	if (clazz.size()) {
@@ -859,7 +859,7 @@ LLVMCompiler::value LLVMCompiler::insn_class_of(LLVMCompiler::value v) const {
 	}
 }
 
-void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
+void Compiler::insn_delete(Compiler::value v) const {
 	// std::cout << "insn_delete " << v.t << " " << v.v->getType() << std::endl;
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.must_manage_memory()) {
@@ -877,7 +877,7 @@ void LLVMCompiler::insn_delete(LLVMCompiler::value v) const {
 	}
 }
 
-void LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
+void Compiler::insn_delete_temporary(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.must_manage_memory()) {
 		// insn_call({}, {v}, (void*) &LSValue::delete_temporary);
@@ -889,7 +889,7 @@ void LLVMCompiler::insn_delete_temporary(LLVMCompiler::value v) const {
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.is_string()) {
 		return insn_call(Type::INTEGER, {v}, (void*) &LSString::int_size);
@@ -903,10 +903,10 @@ LLVMCompiler::value LLVMCompiler::insn_array_size(LLVMCompiler::value v) const {
 	return {};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const {
+Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	// std::cout << "get_capture " << fun << " " << F->arg_size() << " " << type << " " << F->arg_begin()->getType() << " " << index << std::endl;
 
-	LLVMCompiler::value arg0 = {F->arg_begin(), Type::INTEGER};
+	Compiler::value arg0 = {F->arg_begin(), Type::INTEGER};
 
 	auto jit_index = new_integer(index);
 	auto v = insn_call(Type::ANY, {arg0, jit_index}, +[](LSClosure* fun, int index) {
@@ -924,7 +924,7 @@ LLVMCompiler::value LLVMCompiler::insn_get_capture(int index, Type type) const {
 	return v;
 }
 
-void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::value value) const {
+void Compiler::insn_push_array(Compiler::value array, Compiler::value value) const {
 	assert(array.t.llvm_type() == array.v->getType());
 	assert(value.t.llvm_type() == value.v->getType());
 	auto element_type = array.t.element().fold();
@@ -944,7 +944,7 @@ void LLVMCompiler::insn_push_array(LLVMCompiler::value array, LLVMCompiler::valu
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_array_at(LLVMCompiler::value array, LLVMCompiler::value index) const {
+Compiler::value Compiler::insn_array_at(Compiler::value array, Compiler::value index) const {
 	assert(array.t.llvm_type() == array.v->getType());
 	assert(index.t.llvm_type() == index.v->getType());
 	assert(array.t.is_array());
@@ -959,14 +959,14 @@ LLVMCompiler::value LLVMCompiler::insn_array_at(LLVMCompiler::value array, LLVMC
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_array_end(LLVMCompiler::value array) const {
+Compiler::value Compiler::insn_array_end(Compiler::value array) const {
 	assert(array.t.llvm_type() == array.v->getType());
 	auto array_type = array.v->getType()->getPointerElementType();
 	auto raw_data = builder.CreateStructGEP(array_type, array.v, 6);
 	return {builder.CreateLoad(raw_data), array.t.iterator()};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const {
+Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 	assert(value.t.llvm_type() == value.v->getType());
 	if (value.t.must_manage_memory()) {
 		if (value.t.reference) {
@@ -988,7 +988,7 @@ LLVMCompiler::value LLVMCompiler::insn_move_inc(LLVMCompiler::value value) const
 	}
 }
 
-LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const {
+Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 	assert(mpz.t.llvm_type() == mpz.v->getType());
 	return insn_call(Type::MPZ, {mpz}, +[](__mpz_struct x) {
 		mpz_t new_mpz;
@@ -1003,7 +1003,7 @@ LLVMCompiler::value LLVMCompiler::insn_clone_mpz(LLVMCompiler::value mpz) const 
 	// return v;
 }
 
-void LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const {
+void Compiler::insn_delete_mpz(Compiler::value mpz) const {
 	assert(mpz.t.llvm_type() == mpz.v->getType());
 	// std::cout << "delete mpz " << mpz.v->getType() << std::endl;
 	// insn_call({}, {mpz}, &mpz_clear, "mpz_clear");
@@ -1013,7 +1013,7 @@ void LLVMCompiler::insn_delete_mpz(LLVMCompiler::value mpz) const {
 	// jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
 }
 
-LLVMCompiler::value LLVMCompiler::insn_inc_refs(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_inc_refs(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.must_manage_memory()) {
 		auto previous = insn_refs(v);
@@ -1026,7 +1026,7 @@ LLVMCompiler::value LLVMCompiler::insn_inc_refs(LLVMCompiler::value v) const {
 	return new_integer(0);
 }
 
-LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompiler::value previous) const {
+Compiler::value Compiler::insn_dec_refs(Compiler::value v, Compiler::value previous) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(previous.t.llvm_type() == previous.v->getType());
 	if (v.t.must_manage_memory()) {
@@ -1042,7 +1042,7 @@ LLVMCompiler::value LLVMCompiler::insn_dec_refs(LLVMCompiler::value v, LLVMCompi
 	return new_integer(0);
 }
 
-LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_move(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	if (v.t.must_manage_memory() and !v.t.temporary and !v.t.reference) {
 		return insn_call(v.t, {v}, (void*) +[](LSValue* v) {
@@ -1051,14 +1051,14 @@ LLVMCompiler::value LLVMCompiler::insn_move(LLVMCompiler::value v) const {
 	}
 	return v;
 }
-LLVMCompiler::value LLVMCompiler::insn_refs(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_refs(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(v.t.must_manage_memory());
 	auto llvm_type = v.v->getType()->getPointerElementType();
 	auto r = builder.CreateStructGEP(llvm_type, v.v, 3);
 	return {builder.CreateLoad(r), Type::INTEGER};
 }
-LLVMCompiler::value LLVMCompiler::insn_native(LLVMCompiler::value v) const {
+Compiler::value Compiler::insn_native(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(v.t.must_manage_memory());
 	auto llvm_type = v.v->getType()->getPointerElementType();
@@ -1066,11 +1066,11 @@ LLVMCompiler::value LLVMCompiler::insn_native(LLVMCompiler::value v) const {
 	return {builder.CreateLoad(r), Type::BOOLEAN};
 }
 
-LLVMCompiler::value LLVMCompiler::insn_get_argument(const std::string& name) const {
+Compiler::value Compiler::insn_get_argument(const std::string& name) const {
 	return arguments.top().at(name);
 }
 
-LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
+Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	log_insn_code("iterator.begin()");
 	if (v.t.is_array()) {
@@ -1135,7 +1135,7 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 	return {nullptr, {}};
 }
 
-LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompiler::value it) const {
+Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.end()");
@@ -1170,7 +1170,7 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 	return {nullptr, {}};
 }
 
-LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler::value it, LLVMCompiler::value previous) const {
+Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, Compiler::value previous) const {
 	assert(it.t.llvm_type() == it.v->getType());
 	assert(previous.t.llvm_type() == previous.v->getType());
 	log_insn_code("iterator.get()");
@@ -1236,7 +1236,7 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 	return {nullptr, {}};
 }
 
-LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompiler::value it, LLVMCompiler::value previous) const {
+Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Compiler::value previous) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(it.t.llvm_type() == it.v->getType());
 	// assert(previous.t.llvm_type() == previous.v->getType());
@@ -1277,7 +1277,7 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 	return {nullptr, {}};
 }
 
-void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value it) const {
+void Compiler::iterator_increment(Type collectionType, Compiler::value it) const {
 	assert(it.t.llvm_type() == it.v->getType());
 	log_insn_code("iterator.increment()");
 	if (collectionType.is_array()) {
@@ -1331,10 +1331,10 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 }
 
 // Controls
-LLVMCompiler::label LLVMCompiler::insn_init_label(std::string name) const {
-	return {llvm::BasicBlock::Create(LLVMCompiler::context, name)};
+Compiler::label Compiler::insn_init_label(std::string name) const {
+	return {llvm::BasicBlock::Create(Compiler::context, name)};
 }
-void LLVMCompiler::insn_if(LLVMCompiler::value condition, std::function<void()> then) const {
+void Compiler::insn_if(Compiler::value condition, std::function<void()> then) const {
 	assert(condition.t.llvm_type() == condition.v->getType());
 	auto label_then = insn_init_label("then");
 	auto label_end = insn_init_label("ifcont");
@@ -1344,12 +1344,12 @@ void LLVMCompiler::insn_if(LLVMCompiler::value condition, std::function<void()> 
 	insn_branch(&label_end);
 	insn_label(&label_end);
 }
-void LLVMCompiler::insn_if_new(LLVMCompiler::value cond, label* then, label* elze) const {
+void Compiler::insn_if_new(Compiler::value cond, label* then, label* elze) const {
 	assert(cond.t.llvm_type() == cond.v->getType());
 	builder.CreateCondBr(cond.v, then->block, elze->block);
 }
 
-void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void()> then) const {
+void Compiler::insn_if_not(Compiler::value condition, std::function<void()> then) const {
 	assert(condition.t.llvm_type() == condition.v->getType());
 	auto label_then = insn_init_label("then");
 	auto label_end = insn_init_label("ifcont");
@@ -1360,7 +1360,7 @@ void LLVMCompiler::insn_if_not(LLVMCompiler::value condition, std::function<void
 	insn_label(&label_end);
 }
 
-void LLVMCompiler::insn_throw(LLVMCompiler::value v) const {
+void Compiler::insn_throw(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	delete_function_variables();
 	insn_call({}, {v}, +[](int type) {
@@ -1368,29 +1368,29 @@ void LLVMCompiler::insn_throw(LLVMCompiler::value v) const {
 	});
 }
 
-void LLVMCompiler::insn_throw_object(vm::Exception type) const {
+void Compiler::insn_throw_object(vm::Exception type) const {
 	insn_throw(new_integer(type));
 }
 
-void LLVMCompiler::insn_label(label* l) const {
+void Compiler::insn_label(label* l) const {
 	F->getBasicBlockList().push_back(l->block);
 	builder.SetInsertPoint(l->block);
 }
 
-void LLVMCompiler::insn_branch(label* l) const {
+void Compiler::insn_branch(label* l) const {
 	builder.CreateBr(l->block);
 }
 
-void LLVMCompiler::insn_return(LLVMCompiler::value v) const {
+void Compiler::insn_return(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	builder.CreateRet(v.v);
 }
-void LLVMCompiler::insn_return_void() const {
+void Compiler::insn_return_void() const {
 	builder.CreateRetVoid();
 }
 
 // Call functions
-LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCompiler::value> args, void* func) const {
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1403,14 +1403,14 @@ LLVMCompiler::value LLVMCompiler::insn_call(Type return_type, std::vector<LLVMCo
 	if (i == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
-		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
+		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
 	value r = { builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type };
 	assert(r.t.llvm_type() == r.v->getType());
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_invoke(Type return_type, std::vector<LLVMCompiler::value> args, void* func) const {
+Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, void* func) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1423,7 +1423,7 @@ LLVMCompiler::value LLVMCompiler::insn_invoke(Type return_type, std::vector<LLVM
 	if (i == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
-		((LLVMCompiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
+		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
 	const auto lambda = mappings.at(function_name).function;
 	auto continueBlock = llvm::BasicBlock::Create(context, "cont", F);
@@ -1433,7 +1433,7 @@ LLVMCompiler::value LLVMCompiler::insn_invoke(Type return_type, std::vector<LLVM
 	return r;
 }
 
-LLVMCompiler::value LLVMCompiler::insn_call_indirect(Type return_type, LLVMCompiler::value fun, std::vector<LLVMCompiler::value> args) const {
+Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value fun, std::vector<Compiler::value> args) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1446,7 +1446,7 @@ LLVMCompiler::value LLVMCompiler::insn_call_indirect(Type return_type, LLVMCompi
 	return {builder.CreateCall(fun_type, fun_conv, llvm_args), return_type};
 }
 
-void LLVMCompiler::function_add_capture(LLVMCompiler::value fun, LLVMCompiler::value capture) {
+void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) {
 	assert(fun.t.llvm_type() == fun.v->getType());
 	assert(capture.t.llvm_type() == capture.v->getType());
 	// std::cout << "add capture " << capture.t << std::endl;
@@ -1456,17 +1456,17 @@ void LLVMCompiler::function_add_capture(LLVMCompiler::value fun, LLVMCompiler::v
 	});
 }
 
-void LLVMCompiler::log(const std::string&& str) const { assert(false); }
+void Compiler::log(const std::string&& str) const { assert(false); }
 
 // Blocks
-void LLVMCompiler::enter_block() {
+void Compiler::enter_block() {
 	variables.push_back(std::map<std::string, value> {});
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()++;
 	}
 	functions_blocks.back()++;
 }
-void LLVMCompiler::leave_block() {
+void Compiler::leave_block() {
 	delete_variables_block(1);
 	variables.pop_back();
 	if (!loops_blocks.empty()) {
@@ -1474,7 +1474,7 @@ void LLVMCompiler::leave_block() {
 	}
 	functions_blocks.back()--;
 }
-void LLVMCompiler::delete_variables_block(int deepness) {
+void Compiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			// std::cout << "delete variable block " << it->first << " " << it->second.t << " " << it->second.v->getType() << std::endl;
@@ -1483,7 +1483,7 @@ void LLVMCompiler::delete_variables_block(int deepness) {
 	}
 }
 
-void LLVMCompiler::enter_function(llvm::Function* F, bool is_closure, Function* fun) {
+void Compiler::enter_function(llvm::Function* F, bool is_closure, Function* fun) {
 	variables.push_back(std::map<std::string, value> {});
 	function_variables.push_back(std::vector<value> {});
 	functions.push(F);
@@ -1504,7 +1504,7 @@ void LLVMCompiler::enter_function(llvm::Function* F, bool is_closure, Function* 
 	log_insn(0) << ") {" << std::endl;
 }
 
-void LLVMCompiler::leave_function() {
+void Compiler::leave_function() {
 	variables.pop_back();
 	function_variables.pop_back();
 	functions.pop();
@@ -1519,20 +1519,20 @@ void LLVMCompiler::leave_function() {
 	log_insn(0) << "}" << std::endl;
 }
 
-int LLVMCompiler::get_current_function_blocks() const {
+int Compiler::get_current_function_blocks() const {
 	return functions_blocks.back();
 }
-void LLVMCompiler::delete_function_variables() const {
+void Compiler::delete_function_variables() const {
 	for (const auto& v : function_variables.back()) {
 		insn_delete(insn_load(v));
 	}
 }
-bool LLVMCompiler::is_current_function_closure() const {
+bool Compiler::is_current_function_closure() const {
 	return function_is_closure.size() ? function_is_closure.top() : false;
 }
 
 // Variables
-LLVMCompiler::value LLVMCompiler::add_var(const std::string& name, LLVMCompiler::value value) {
+Compiler::value Compiler::add_var(const std::string& name, Compiler::value value) {
 	assert((value.v != nullptr) && "value must not be null");
 	assert(value.t.llvm_type() == value.v->getType());
 	auto var = create_entry(name, value.t);
@@ -1541,19 +1541,19 @@ LLVMCompiler::value LLVMCompiler::add_var(const std::string& name, LLVMCompiler:
 	return var;
 }
 
-LLVMCompiler::value LLVMCompiler::create_and_add_var(const std::string& name, Type type) {
+Compiler::value Compiler::create_and_add_var(const std::string& name, Type type) {
 	// std::cout << "Compiler::create_and_add_var(" << name << ", " << type << ")" << std::endl;
 	auto var = create_entry(name, type);
 	variables.back()[name] = var;
 	return var;
 }
 
-void LLVMCompiler::add_function_var(LLVMCompiler::value value) {
+void Compiler::add_function_var(Compiler::value value) {
 	assert(value.t.llvm_type() == value.v->getType());
 	function_variables.back().push_back(value);
 }
 
-LLVMCompiler::value LLVMCompiler::get_var(const std::string& name) {
+Compiler::value Compiler::get_var(const std::string& name) {
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		auto it = variables[i].find(name);
 		if (it != variables[i].end()) {
@@ -1561,10 +1561,10 @@ LLVMCompiler::value LLVMCompiler::get_var(const std::string& name) {
 		}
 	}
 	assert(false && "var not found !");
-	return *((LLVMCompiler::value*) nullptr); // Should not reach this line
+	return *((Compiler::value*) nullptr); // Should not reach this line
 }
 
-void LLVMCompiler::set_var_type(std::string& name, const Type& type) {
+void Compiler::set_var_type(std::string& name, const Type& type) {
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		auto it = variables[i].find(name);
 		if (it != variables[i].end()) {
@@ -1574,7 +1574,7 @@ void LLVMCompiler::set_var_type(std::string& name, const Type& type) {
 	}
 }
 
-void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value v) {
+void Compiler::update_var(std::string& name, Compiler::value v) {
 	assert(v.t.llvm_type() == v.v->getType());
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		if (variables[i].find(name) != variables[i].end()) {
@@ -1589,23 +1589,23 @@ void LLVMCompiler::update_var(std::string& name, LLVMCompiler::value v) {
 }
 
 // Loops
-void LLVMCompiler::enter_loop(LLVMCompiler::label* end_label, LLVMCompiler::label* cond_label) {
+void Compiler::enter_loop(Compiler::label* end_label, Compiler::label* cond_label) {
 	loops_end_labels.push_back(end_label);
 	loops_cond_labels.push_back(cond_label);
 	loops_blocks.push_back(0);
 }
-void LLVMCompiler::leave_loop() {
+void Compiler::leave_loop() {
 	loops_end_labels.pop_back();
 	loops_cond_labels.pop_back();
 	loops_blocks.pop_back();
 }
-LLVMCompiler::label* LLVMCompiler::get_current_loop_end_label(int deepness) const {
+Compiler::label* Compiler::get_current_loop_end_label(int deepness) const {
 	return loops_end_labels[loops_end_labels.size() - deepness];
 }
-LLVMCompiler::label* LLVMCompiler::get_current_loop_cond_label(int deepness) const {
+Compiler::label* Compiler::get_current_loop_cond_label(int deepness) const {
 	return loops_end_labels[loops_end_labels.size() - deepness];
 }
-int LLVMCompiler::get_current_loop_blocks(int deepness) const {
+int Compiler::get_current_loop_blocks(int deepness) const {
 	int sum = 0;
 	for (size_t i = loops_blocks.size() - deepness; i < loops_blocks.size(); ++i) {
 		sum += loops_blocks[i];
@@ -1614,10 +1614,10 @@ int LLVMCompiler::get_current_loop_blocks(int deepness) const {
 }
 
 /** Operations **/
-void LLVMCompiler::inc_ops(int amount) const {
+void Compiler::inc_ops(int amount) const {
 	inc_ops_jit(new_integer(amount));
 }
-void LLVMCompiler::inc_ops_jit(LLVMCompiler::value amount) const {
+void Compiler::inc_ops_jit(Compiler::value amount) const {
 	assert(amount.t.llvm_type() == amount.v->getType());
 	assert(amount.t.is_number());
 
@@ -1651,12 +1651,12 @@ void LLVMCompiler::inc_ops_jit(LLVMCompiler::value amount) const {
 }
 
 /** Exceptions **/
-void LLVMCompiler::mark_offset(int line) {
+void Compiler::mark_offset(int line) {
 	// TODO
 }
-void LLVMCompiler::add_catcher(label start, label end, label handler) { assert(false); }
+void Compiler::add_catcher(label start, label end, label handler) { assert(false); }
 
-void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::vector<LSValueType> types) const {
+void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LSValueType> types) const {
 	// TODO too much cheks sometimes
 	for (size_t i = 0; i < args.size(); ++i) {
 		auto arg = args[i];
@@ -1675,20 +1675,20 @@ void LLVMCompiler::insn_check_args(std::vector<LLVMCompiler::value> args, std::v
 }
 
 // Utils
-std::ostringstream& LLVMCompiler::_log_insn(int indent) const { assert(false); }
+std::ostringstream& Compiler::_log_insn(int indent) const { assert(false); }
 
-std::string LLVMCompiler::dump_val(LLVMCompiler::value v) const { assert(false); }
+std::string Compiler::dump_val(Compiler::value v) const { assert(false); }
 
-void LLVMCompiler::register_label(label* v) const { assert(false); }
+void Compiler::register_label(label* v) const { assert(false); }
 
-void LLVMCompiler::log_insn_code(std::string instruction) const {
+void Compiler::log_insn_code(std::string instruction) const {
 	log_insn(0) << C_BLUE << instruction << END_COLOR << std::endl;
 }
-void LLVMCompiler::add_literal(void* ptr, std::string value) const {
-	((LLVMCompiler*) this)->literals.insert({ptr, value});
+void Compiler::add_literal(void* ptr, std::string value) const {
+	((Compiler*) this)->literals.insert({ptr, value});
 }
 
-void LLVMCompiler::print_mpz(__mpz_struct value) {
+void Compiler::print_mpz(__mpz_struct value) {
 	char buff[10000];
 	mpz_get_str(buff, 10, &value);
 	std::cout << buff;

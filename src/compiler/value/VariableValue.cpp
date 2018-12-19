@@ -140,7 +140,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		if (!type.is_mpz()) {
 			v = c.insn_load(v);
 		} else {
-			v = {LLVMCompiler::builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v), v.t.pointed()};
+			v = { Compiler::builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v), v.t.pointed() };
 		}
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_load(c.insn_get_argument(name));

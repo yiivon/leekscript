@@ -34,7 +34,7 @@ int Long_type::distance(const Base_type* type) const {
 	return -1;
 }
 llvm::Type* Long_type::llvm() const {
-	return llvm::Type::getInt64Ty(LLVMCompiler::context);
+	return llvm::Type::getInt64Ty(Compiler::context);
 }
 std::string Long_type::clazz() const {
 	return "Number";

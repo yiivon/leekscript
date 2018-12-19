@@ -432,14 +432,14 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 	// std::cout << "get_landing_pad " << current_version->type << " " << current_version->landing_pad << std::endl;
 	if (current_version->landing_pad == nullptr) {
-		current_version->catch_block = llvm::BasicBlock::Create(LLVMCompiler::context, "catch", c.F);
-		auto savedIP = LLVMCompiler::builder.saveAndClearIP();
-		current_version->landing_pad = llvm::BasicBlock::Create(LLVMCompiler::context, "lpad", c.F);
+		current_version->catch_block = llvm::BasicBlock::Create(Compiler::context, "catch", c.F);
+		auto savedIP = Compiler::builder.saveAndClearIP();
+		current_version->landing_pad = llvm::BasicBlock::Create(Compiler::context, "lpad", c.F);
 		c.builder.SetInsertPoint(current_version->landing_pad);
-		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(LLVMCompiler::context));
-		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context)), 1);
+		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(Compiler::context));
+		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(Compiler::context), llvm::Type::getInt32Ty(Compiler::context)), 1);
 		auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
-		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(LLVMCompiler::context));
+		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(Compiler::context));
 		c.builder.CreateStore(LPadExn, current_version->exception_slot);
 		landingPadInst->addClause(catchAllSelector);
 		c.builder.CreateBr(current_version->catch_block);
@@ -493,8 +493,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		}
 	}
 
-	((Function*) this)->module = std::make_shared<llvm::Module>("jit_" + name, LLVMCompiler::context);
-	module->setDataLayout(((LLVMCompiler&) c).getTargetMachine().createDataLayout());
+	((Function*) this)->module = std::make_shared<llvm::Module>("jit_" + name, Compiler::context);
+	module->setDataLayout(((Compiler&) c).getTargetMachine().createDataLayout());
 	auto fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
 	fpm->add(llvm::createInstructionCombiningPass());
 	fpm->add(llvm::createReassociatePass());
@@ -518,8 +518,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
 	llvm_function->setPersonalityFn(personality);
 
-	((Function*) this)->block = llvm::BasicBlock::Create(LLVMCompiler::context, "entry_" + name, llvm_function);
-	LLVMCompiler::builder.SetInsertPoint(block);
+	((Function*) this)->block = llvm::BasicBlock::Create(Compiler::context, "entry_" + name, llvm_function);
+	Compiler::builder.SetInsertPoint(block);
 
 	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
 

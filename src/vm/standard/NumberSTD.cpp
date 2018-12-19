@@ -330,7 +330,7 @@ Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	// auto b = args[1];
 	// c.insn_call({}, {a, b}, +[](mpz_t a, mpz_t b) {
 	// 	std::cout << "a = " << (void*) &a << std::endl;
-	// 	LLVMCompiler::print_mpz(*a);
+	// 	Compiler::print_mpz(*a);
 	// });
 	// c.insn_call({}, {r, a, b}, &mpz_add, "mpz_add");
 	// if (args[1].t.temporary && args[1] != r) {

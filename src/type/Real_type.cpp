@@ -24,7 +24,7 @@ int Real_type::distance(const Base_type* type) const {
 	return -1;
 }
 llvm::Type* Real_type::llvm() const {
-	return llvm::Type::getDoubleTy(LLVMCompiler::context);
+	return llvm::Type::getDoubleTy(Compiler::context);
 }
 std::string Real_type::clazz() const {
 	return "Number";

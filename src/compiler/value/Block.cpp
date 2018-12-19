@@ -129,7 +129,7 @@ Compiler::value Block::compile(Compiler& c) const {
 				// 	std::cout << "ret size = " << v._mp_size << std::endl;
 				// 	std::cout << "ret d = " << v._mp_d << std::endl;
 				// 	std::cout << "mpz = ";
-				// 	LLVMCompiler::print_mpz(v);
+				// 	Compiler::print_mpz(v);
 				// 	std::cout << std::endl;
 				// });
 				c.leave_block();

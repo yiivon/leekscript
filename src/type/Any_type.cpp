@@ -1,7 +1,7 @@
 #include "Any_type.hpp"
 #include "Type.hpp"
 #include "../colors.h"
-#include "../compiler/LLVMCompiler.hpp"
+#include "../compiler/Compiler.hpp"
 
 namespace ls {
 
@@ -24,7 +24,7 @@ std::ostream& Any_type::print(std::ostream& os) const {
 
 llvm::Type* Any_type::get_any_type() {
 	if (any_type == nullptr) {
-		any_type = llvm::StructType::create("lsvalue", llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt1Ty(LLVMCompiler::context))->getPointerTo();
+		any_type = llvm::StructType::create("lsvalue", llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt1Ty(Compiler::context))->getPointerTo();
 	}
 	return any_type;
 }

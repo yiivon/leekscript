@@ -51,7 +51,7 @@ public:
 	bool handle_created = false;
 	llvm::BasicBlock* block = nullptr;
 	std::shared_ptr<llvm::Module> module;
-	LLVMCompiler* compiler = nullptr;
+	Compiler* compiler = nullptr;
 
 	Function();
 	virtual ~Function();

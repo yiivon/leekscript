@@ -96,7 +96,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	auto value_var = c.create_and_add_var(value->content, container->type.element());
 	c.insn_store(value_var, c.new_null());
 
-	LLVMCompiler::value key_var;
+	Compiler::value key_var;
 	if (key) {
 		key_var = c.create_and_add_var(key->content, container->type.key());
 		c.insn_store(key_var, c.new_null());
@@ -113,7 +113,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container->type.is_array()) {
-		LLVMCompiler::value empty_array = {LLVMCompiler::builder.CreateICmpEQ(c.new_integer(0).v, c.to_int(it).v), Type::BOOLEAN};
+		Compiler::value empty_array = { Compiler::builder.CreateICmpEQ(c.new_integer(0).v, c.to_int(it).v), Type::BOOLEAN };
 		c.insn_if_new(empty_array, &end_label, &cond_label);
 	} else {
 		c.insn_branch(&cond_label);

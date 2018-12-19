@@ -1,7 +1,7 @@
 #include "Mpz_type.hpp"
 #include "Type.hpp"
 #include "../colors.h"
-#include "../compiler/LLVMCompiler.hpp"
+#include "../compiler/Compiler.hpp"
 #include "Number_type.hpp"
 #include "Any_type.hpp"
 #include "Real_type.hpp"
@@ -40,8 +40,8 @@ std::ostream& Mpz_type::print(std::ostream& os) const {
 
 llvm::Type* Mpz_type::get_mpz_type() {
 	if (mpz_type == nullptr) {
-		// llvm::StructType::create({llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32Ty(LLVMCompiler::context), llvm::Type::getInt32PtrTy(LLVMCompiler::context)}, "mpz", true);
-		mpz_type = llvm::Type::getInt128Ty(LLVMCompiler::context);
+		// llvm::StructType::create({llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32PtrTy(Compiler::context)}, "mpz", true);
+		mpz_type = llvm::Type::getInt128Ty(Compiler::context);
 	}
 	return mpz_type;
 }

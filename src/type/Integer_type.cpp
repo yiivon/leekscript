@@ -33,7 +33,7 @@ int Integer_type::distance(const Base_type* type) const {
 	return -1;
 }
 llvm::Type* Integer_type::llvm() const {
-	return llvm::Type::getInt32Ty(LLVMCompiler::context);
+	return llvm::Type::getInt32Ty(Compiler::context);
 }
 std::string Integer_type::clazz() const {
 	return "Number";

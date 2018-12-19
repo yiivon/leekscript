@@ -2,7 +2,7 @@
 #include "../colors.h"
 #include "Type.hpp"
 #include <iostream>
-#include "../compiler/LLVMCompiler.hpp"
+#include "../compiler/Compiler.hpp"
 #include "Struct_type.hpp"
 #include "Any_type.hpp"
 

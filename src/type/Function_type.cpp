@@ -71,12 +71,12 @@ std::ostream& Function_type::print(std::ostream& os) const {
 llvm::Type* Function_type::get_function_type() {
 	if (function_type == nullptr) {
 		function_type = llvm::StructType::create("lsfunction",
-			llvm::Type::getInt32Ty(LLVMCompiler::context),
-			llvm::Type::getInt32Ty(LLVMCompiler::context),
-			llvm::Type::getInt32Ty(LLVMCompiler::context),
-			llvm::Type::getInt32Ty(LLVMCompiler::context),
-			llvm::Type::getInt1Ty(LLVMCompiler::context),
-			llvm::Type::getInt64Ty(LLVMCompiler::context)->getPointerTo()
+			llvm::Type::getInt32Ty(Compiler::context),
+			llvm::Type::getInt32Ty(Compiler::context),
+			llvm::Type::getInt32Ty(Compiler::context),
+			llvm::Type::getInt32Ty(Compiler::context),
+			llvm::Type::getInt1Ty(Compiler::context),
+			llvm::Type::getInt64Ty(Compiler::context)->getPointerTo()
 		)->getPointerTo();
 	}
 	return function_type;

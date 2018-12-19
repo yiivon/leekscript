@@ -324,7 +324,7 @@ Type Type::add_temporary() const {
 
 llvm::Type* Type::llvm_type() const {
 	if (_types.size() == 0) {
-		return llvm::Type::getVoidTy(LLVMCompiler::context);
+		return llvm::Type::getVoidTy(Compiler::context);
 	}
 	return fold()._types[0]->llvm();
 }
