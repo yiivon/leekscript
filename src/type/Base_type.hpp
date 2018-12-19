@@ -15,6 +15,7 @@ public:
 	virtual const std::string getName() const = 0;
 	virtual const std::string getJsonName() const { return "?"; }
 	virtual bool iterable() const { return false; }
+	virtual bool callable() const { return false; }
 	virtual bool is_container() const { return false; }
 	virtual Type element() const;
 	virtual Type key() const;

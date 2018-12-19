@@ -19,6 +19,7 @@ public:
 	virtual int id() const override { return _closure ? 12 : 9; }
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getJsonName() const { return "function"; }
+	virtual bool callable() const override { return true; }
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;
 	virtual bool compatible(const Base_type*) const override;

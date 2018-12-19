@@ -399,6 +399,11 @@ bool Type::is_primitive() const {
 			or dynamic_cast<const Bool_type*>(t.get()) != nullptr;
 	});
 }
+bool Type::is_callable() const {
+	return _types.size() && all([&](std::shared_ptr<const Base_type> t) {
+		return t->callable();
+	});
+}
 
 bool Type::compatible(const Type& type) const {
 	if (_types.size() == 0 or type._types.size() == 0) {

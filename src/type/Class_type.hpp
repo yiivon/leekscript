@@ -12,6 +12,7 @@ public:
 	virtual const std::string getName() const { return "class"; }
 	virtual const std::string getJsonName() const { return "class"; }
 	virtual bool operator == (const Base_type*) const override;
+	virtual bool callable() const override { return true; }
 	virtual int distance(const Base_type* type) const override;
 	virtual llvm::Type* llvm() const override;
 	virtual std::string clazz() const override;
