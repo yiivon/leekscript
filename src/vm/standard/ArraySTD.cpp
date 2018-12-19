@@ -304,8 +304,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	method("removeElement", {
 		{Type::BOOLEAN, {Type::ARRAY, Type::CONST_ANY}, (void*) &remove_element_any},
-		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::CONST_REAL}, (void*) &remove_element_real},
-		{Type::BOOLEAN, {Type::INT_ARRAY, Type::CONST_INTEGER}, (void*) &remove_element_int},
+		{Type::BOOLEAN, {Type::REAL_ARRAY, Type::CONST_ANY}, (void*) &remove_element_real},
+		{Type::BOOLEAN, {Type::INT_ARRAY, Type::CONST_ANY}, (void*) &remove_element_int},
 	});
 
 	method("reverse", {
@@ -466,10 +466,22 @@ Compiler::value ArraySTD::remove_element_any(Compiler& c, std::vector<Compiler::
 	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1])}, (void*) &LSArray<LSValue*>::ls_remove_element);
 }
 Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.to_real(args[1])}, (void*) &LSArray<double>::ls_remove_element);
+	if (args[1].t.castable(Type::REAL)) {
+		return c.insn_call(Type::BOOLEAN, {args[0], c.to_real(args[1])}, (void*) &LSArray<double>::ls_remove_element);
+	} else {
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
+		return c.new_bool(false);
+	}
 }
 Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1])}, (void*) &LSArray<int>::ls_remove_element);
+	if (args[1].t.castable(Type::INTEGER)) {
+		return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1])}, (void*) &LSArray<int>::ls_remove_element);
+	} else {
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
+		return c.new_bool(false);
+	}
 }
 
 }

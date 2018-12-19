@@ -546,10 +546,11 @@ void Test::test_arrays() {
 	section("Array.removeElement()");
 	code("[].removeElement(12)").equals("false");
 	code("var a = [1, 2, 3] a.removeElement(1) a").equals("[3, 2]");
-	// TODO
-	DISABLED_code("var a = [1, 2, 3] a.removeElement('key') a").semantic_error(ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::INT_ARRAY.to_string() + ".removeElement(" + ls::Type::STRING_TMP.to_string() + ")"});
+	code("var a = [1, 2, 3] a.removeElement('key') a").equals("[1, 2, 3]");
+	code("var a = [1, 2, 3] a.removeElement('key')").equals("false");
 	code("[1, 2, 3].removeElement(3)").equals("true");
 	code("[1, 2, 3].removeElement(4)").equals("false");
+	code("[1, 2, 3].removeElement('key')").equals("false");
 	code("var a = [true, 'hello', [1, 2, 3]] a.removeElement([1, 2, 3]) a").equals("[true, 'hello']");
 	code("[true, 'hello', [1, 2, 3]].removeElement('hello')").equals("true");
 	code("[true, 'hello', [1, 2, 3]].removeElement('yolo')").equals("false");
