@@ -123,7 +123,6 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 
 	// std::cout << "Compile var " << name << " " << version << std::endl;
 	// cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << endl;
-	// cout << "req type : " << req_type << endl;
 
 	if (scope == VarScope::CAPTURE) {
 		return c.insn_get_capture(capture_index, type);
@@ -145,9 +144,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_load(c.insn_get_argument(name));
 	}
-	// std::cout << v.t << " / " << type << std::endl;
-	// assert(v.t == type);
-	// assert(v.t.llvm_type() == type.llvm_type());
+	assert(v.t == type);
 	if (var->type().reference) {
 		return c.insn_load(v);
 	}
@@ -165,9 +162,8 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_get_argument(name);
 	}
-	// std::cout << "var l " << type << " " << v.t << std::endl;
-	// assert(type.pointer() == v.t);
-	// assert(type.llvm_type()->getPointerTo() == v.v->getType());
+	assert(type.pointer() == v.t);
+	assert(type.llvm_type()->getPointerTo() == v.v->getType());
 	return v;
 }
 
