@@ -79,7 +79,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 
-	// Analyse all arguments a first time
+	// Analyse arguments
 	for (size_t a = 0; a < arguments.size(); ++a) {
 		auto arg = arguments.at(a);
 		arg->analyse(analyser);
