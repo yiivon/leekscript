@@ -145,7 +145,7 @@ void Test::test_loops() {
 	DISABLED_code("var fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3");
 	// TODO crash
 	DISABLED_code("var fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
-	DISABLED_code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
+	code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
 
 	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::NULLL.to_string()});
 	code("for x in true {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::BOOLEAN.to_string()});
@@ -161,7 +161,7 @@ void Test::test_loops() {
 	code("let a = ['a': 'b', 'c': 'd'] [for k, x in a { k + x }]").equals("['ab', 'cd']");
 	DISABLED_code("[for x in [1, 2, 3] {[ for y in [1, 2, 3] { if y == 2 continue x * y }] }]").equals("[[1, 3], [2, 6], [3, 9]]");
 	code("let sorted = [for x in <5, 2, 4, 1, 3> { x }] sorted").equals("[1, 2, 3, 4, 5]");
-	DISABLED_code("[for i in [1..10] { i }]").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
+	code("[for i in [1..10] { i }]").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 	DISABLED_code("function attrs(o) { [for k : v in o {v}] } attrs(['a'])").equals("['a']");
 	DISABLED_code("function attrs(o) { [for k : v in o {v}] } attrs([1])").equals("[1]");
 	DISABLED_code("function attrs(o) { [for k : v in o {v}] } attrs([])").equals("[]");

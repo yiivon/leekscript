@@ -74,12 +74,12 @@ void Test::test_intervals() {
 	DISABLED_code("[1..10] ~~ isPrime").equals("");
 
 	section("Iteration");
-	DISABLED_code("for k, i in [1..0] { System.print(k + ' => ' + i) }").output("");
-	DISABLED_code("for k, i in [1..1] { System.print(k + ' => ' + i) }").output("0 => 1\n");
-	DISABLED_code("for k, i in [5..7] { System.print(k + ' => ' + i) }").output("0 => 5\n1 => 6\n2 => 7\n");
-	DISABLED_code("var s = 0 for i in [100..110] { s += i } s").equals("1155");
-	DISABLED_code("var s = 0 for k, i in [100..110] { s += k * i } s").equals("5885");
-	DISABLED_code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
+	code("for k, i in [1..0] { System.print(k + ' => ' + i) }").output("");
+	code("for k, i in [1..1] { System.print(k + ' => ' + i) }").output("0 => 1\n");
+	code("for k, i in [5..7] { System.print(k + ' => ' + i) }").output("0 => 5\n1 => 6\n2 => 7\n");
+	code("var s = 0 for i in [100..110] { s += i } s").equals("1155");
+	code("var s = 0 for k, i in [100..110] { s += k * i } s").equals("5885");
+	code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
 
 	/*
 	 * Methods
