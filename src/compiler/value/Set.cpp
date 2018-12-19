@@ -62,10 +62,6 @@ bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 	} else {
 		this->type = Type::set(current_type * added_type);
 	}
-	// Re-analyze expressions with the new type
-	for (size_t i = 0; i < expressions.size(); ++i) {
-		expressions[i]->analyse(analyser);
-	}
 	return false;
 }
 
