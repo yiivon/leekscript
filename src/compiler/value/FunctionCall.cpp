@@ -253,7 +253,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		}});
 		return;
 	}
-
 	if (arguments_valid) {
 		function->will_take(analyser, arg_types, 1);
 		function->set_version(arg_types, 1);
@@ -261,8 +260,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 	// Get the function type
 	function_type = function->version_type(arg_types);
-
-	// std::cout << "FC function type: " << function_type << std::endl;
 
 	// Recursive function
 	if (vv and vv->var and vv->var->value and vv->var->name == analyser->current_function()->name) {
