@@ -1079,14 +1079,10 @@ LLVMCompiler::value LLVMCompiler::iterator_begin(LLVMCompiler::value v) const {
 		return it;
 	}
 	else if (v.t.is_interval()) {
-		// jit_type_t types[2] = {jit_type_void_ptr, jit_type_int};
-		// auto interval_iterator = jit_type_create_struct(types, 2, 1);
-		// Compiler::value it = {jit_value_create(F, interval_iterator), Type::INTERVAL_ITERATOR};
-		// jit_type_free(interval_iterator);
-		// auto addr = insn_address_of(it);
-		// jit_insn_store_relative(F, addr.v, 0, v.v);
-		// jit_insn_store_relative(F, addr.v, 8, insn_load(v, 20, Type::INTEGER).v);
-		// return it;
+		auto it = create_entry("it", v.t.iterator());
+		insn_store_member(it, 0, v);
+		insn_store_member(it, 1, insn_load_member(v, 5));
+		return it;
 	}
 	else if (v.t.is_string()) {
 		auto it = create_entry("it", v.t.iterator());
@@ -1146,12 +1142,11 @@ LLVMCompiler::value LLVMCompiler::iterator_end(LLVMCompiler::value v, LLVMCompil
 	if (v.t.is_array()) {
 		return {builder.CreateICmpEQ(insn_load(it).v, insn_array_end(v).v), Type::BOOLEAN};
 	}
-	else if (it.t == Type::INTERVAL_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto interval = insn_load(addr, 0, Type::POINTER);
-		// auto end = insn_load(interval, 24, Type::INTEGER);
-		// auto pos = insn_load(addr, 8, Type::INTEGER);
-		// return insn_gt(pos, end);
+	else if (v.t.is_interval()) {
+		auto interval = insn_load_member(it, 0);
+		auto end = insn_load_member(interval, 6);
+		auto pos = insn_load_member(it, 1);
+		return insn_gt(pos, end);
 	}
 	else if (v.t.is_string()) {
 		return insn_call(Type::BOOLEAN, {it}, &LSString::iterator_end);
@@ -1192,10 +1187,8 @@ LLVMCompiler::value LLVMCompiler::iterator_get(Type collectionType, LLVMCompiler
 		insn_inc_refs({f.v, collectionType.element()});
 		return f;
 	}
-	if (it.t == Type::INTERVAL_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto e = insn_load(addr, 8, Type::INTEGER);
-		// return e;
+	if (collectionType.is_interval()) {
+		return insn_load_member(it, 1);
 	}
 	if (collectionType.is_string()) {
 		auto int_char = insn_call(Type::INTEGER, {it}, &LSString::iterator_get);
@@ -1252,12 +1245,11 @@ LLVMCompiler::value LLVMCompiler::iterator_key(LLVMCompiler::value v, LLVMCompil
 		auto array_begin = insn_array_at(v, new_integer(0));
 		return { builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::ANY };
 	}
-	if (it.t == Type::INTERVAL_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto interval = insn_load(addr, 0);
-		// auto start = insn_load(interval, 20);
-		// auto e = insn_load(addr, 8, Type::INTEGER);
-		// return insn_sub(e, start);
+	if (v.t.is_interval()) {
+		auto interval = insn_load_member(it, 0);
+		auto start = insn_load_member(interval, 5);
+		auto e = insn_load_member(it, 1);
+		return insn_sub(e, start);
 	}
 	if (v.t.is_string()) {
 		return insn_call(Type::INTEGER, {it}, &LSString::iterator_key);
@@ -1294,10 +1286,9 @@ void LLVMCompiler::iterator_increment(Type collectionType, LLVMCompiler::value i
 		insn_store(it, {next_element, Type::ANY});
 		return;
 	}
-	if (it.t == Type::INTERVAL_ITERATOR) {
-		// auto addr = insn_address_of(it);
-		// auto pos = insn_load(addr, 8, Type::INTEGER);
-		// insn_store_relative(addr, 8, insn_add(pos, new_integer(1)));
+	if (collectionType.is_interval()) {
+		auto pos = insn_load_member(it, 1);
+		insn_store_member(it, 1, insn_add(pos, new_integer(1)));
 		return;
 	}
 	if (collectionType.is_string()) {
