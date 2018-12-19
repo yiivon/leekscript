@@ -153,9 +153,6 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 			}
 		}
 	}
-	if (!access_function and !native_access_function and !static_access_function and !native_static_access_function and !class_method) {
-		object->analyse(analyser);
-	}
 }
 
 Compiler::value ObjectAccess::compile(Compiler& c) const {

@@ -69,7 +69,6 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->enter_loop();
 	body->analyse(analyser);
 	if (req_type.is_array()) {
-		body->analyse(analyser);
 		type = Type::array(body->type);
 	}
 	analyser->leave_loop();

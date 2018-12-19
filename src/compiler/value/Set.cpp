@@ -31,23 +31,18 @@ void Set::analyse(SemanticAnalyser* analyser) {
 
 	Type element_type = {};
 
+	constant = true;
 	for (auto& ex : expressions) {
 		ex->analyse(analyser);
 		element_type = element_type * ex->type;
+		constant = constant && ex->constant;
 	}
-
 	if (element_type.is_primitive()) {
 		if (element_type != Type::INTEGER && element_type != Type::REAL) {
 			element_type = Type::ANY;
 		}
 	} else if (!element_type.is_primitive()) {
 		element_type = Type::ANY;
-	}
-
-	constant = true;
-	for (auto& ex : expressions) {
-		ex->analyse(analyser);
-		constant = constant && ex->constant;
 	}
 	if (element_type._types.size() == 0) {
 		element_type = Type::ANY;

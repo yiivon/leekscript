@@ -76,7 +76,6 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 	// Range array access : array[4:12], check if the values are numbers
 	if (key != nullptr and key2 != nullptr) {
 
-		key->analyse(analyser);
 		key2->analyse(analyser);
 
 		if (!key->type.is_any() and not key->type.is_number()) {

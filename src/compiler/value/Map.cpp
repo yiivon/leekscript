@@ -51,6 +51,7 @@ void Map::analyse(SemanticAnalyser* analyser) {
 		Value* ex = keys[i];
 		ex->analyse(analyser);
 		key_type = key_type * ex->type;
+		if (ex->constant == false) constant = false;
 	}
 	key_type.temporary = false;
 
@@ -58,6 +59,7 @@ void Map::analyse(SemanticAnalyser* analyser) {
 		Value* ex = values[i];
 		ex->analyse(analyser);
 		value_type = value_type * ex->type;
+		if (ex->constant == false) constant = false;
 	}
 	value_type.temporary = false;
 
@@ -70,21 +72,6 @@ void Map::analyse(SemanticAnalyser* analyser) {
 	} else {
 		value_type = Type::ANY;
 		// value_type.setReturnType(Type::ANY);
-	}
-
-	// Re-analyze expressions with the supported type
-	constant = true;
-	for (size_t i = 0; i < keys.size(); ++i) {
-		keys[i]->analyse(analyser);
-		if (keys[i]->constant == false) {
-			constant = false;
-		}
-	}
-	for (size_t i = 0; i < values.size(); ++i) {
-		values[i]->analyse(analyser);
-		if (values[i]->constant == false) {
-			constant = false;
-		}
 	}
 	type = Type::map(key_type, value_type);
 	type.temporary = true;

@@ -81,7 +81,6 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
 				if (vv->name == "Number") {
 					if (fc->arguments.size() > 0) {
-						fc->arguments[0]->analyse(analyser);
 						type = fc->arguments[0]->type;
 					} else {
 						type = Type::INTEGER;

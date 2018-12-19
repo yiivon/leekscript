@@ -100,7 +100,6 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			element_type = {};
 			for (size_t i = 0; i < expressions.size(); ++i) {
 				auto ex = expressions[i];
-				ex->analyse(analyser);
 				if (!homogeneous and ex->type.is_array()) {
 					// If the array stores other arrays of different types,
 					// force those arrays to store pointers. (To avoid having
