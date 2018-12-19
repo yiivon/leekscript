@@ -283,7 +283,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	method("sqrt", {
 		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
-		{Type::REAL, {Type::ANY}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::REAL, {Type::REAL}, (void*) &NumberSTD::sqrt_real},
 		{Type::REAL, {Type::INTEGER}, (void*) &NumberSTD::sqrt_int, Method::NATIVE},
 		{Type::MPZ_TMP, {Type::MPZ}, (void*) NumberSTD::sqrt_mpz}
