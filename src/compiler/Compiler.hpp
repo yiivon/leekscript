@@ -310,7 +310,6 @@ public:
 	value create_and_add_var(const std::string& name, Type type);
 	void add_function_var(value value);
 	value get_var(const std::string& name);
-	void set_var_type(std::string& name, const Type& type);
 	void update_var(std::string& name, value value);
 
 	// Loops
