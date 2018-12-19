@@ -85,7 +85,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		auto arg = arguments.at(a);
 		arg->analyse(analyser);
 		arguments.at(a)->type = arg->type;
-		// arguments.at(a)->type.reference = function->type.getArgumentType(a).reference;
 	}
 
 	// Standard library constructors TODO better
@@ -93,7 +92,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	if (vv != nullptr) {
 		if (vv->name == "Number") {
 			if (arguments.size()) {
-				// function->type.setArgumentType(0, arguments.at(0)->type);
 				type = arguments.at(0)->type;
 			} else {
 				type = Type::INTEGER;
