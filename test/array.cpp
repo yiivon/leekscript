@@ -423,6 +423,7 @@ void Test::test_arrays() {
 	code("[1.5, 2.5].shuffle().size()").equals("2");
 	code("Array.shuffle([1, 2, 3, 10, true, 'yo', null]).size()").equals("7");
 	code("var a = [1, 2, 3, 10, true, 'yo', null] a.shuffle().size()").equals("7");
+	code("([] + 'a' + 'b').shuffle()").works();
 
 	section("Array.reverse()");
 	code("Array.reverse([1, 2, 3, 10, true, 'yo', null])").equals("[null, 'yo', true, 10, 3, 2, 1]");
