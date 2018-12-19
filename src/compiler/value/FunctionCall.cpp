@@ -75,8 +75,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	}
 
 	// The function call be called?
-	// TODO add a is_callable() on Type
-	if (!function->type.is_any() and !function->type.is_function() and !function->type.is_class()) {
+	if (not function->type.is_callable()) {
 		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 
