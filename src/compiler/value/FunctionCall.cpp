@@ -227,7 +227,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	for (auto& argument_type : function->type.arguments()) {
 		if (a < arguments.size()) {
 			// OK, the argument is present in the call
-			arguments.at(a)->analyse(analyser);
 			arguments.at(a)->type.reference = argument_type.reference;
 			if (argument_type.is_function()) {
 				arguments.at(a)->will_take(analyser, argument_type.arguments(), 1);
@@ -265,24 +264,11 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 	// std::cout << "FC function type: " << function_type << std::endl;
 
-	// The function is a variable
-	if (vv and vv->var and vv->var->value) {
-		// Recursive function
-		if (vv->var->name == analyser->current_function()->name) {
-			type = analyser->current_function()->getReturnType();
-		} else {
-			type = function_type.return_type();
-		}
+	// Recursive function
+	if (vv and vv->var and vv->var->value and vv->var->name == analyser->current_function()->name) {
+		type = analyser->current_function()->getReturnType();
 	} else {
 		type = function_type.return_type();
-	}
-
-	a = 0;
-	for (auto& arg : arguments) {
-		auto t = function_type.argument(a);
-		arg->analyse(analyser);
-		arg->type.reference = function->type.argument(a).reference;
-		a++;
 	}
 	return_type = function_type.return_type();
 	// std::cout << "FC " << this << " type " << type << std::endl;
