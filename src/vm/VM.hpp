@@ -87,9 +87,6 @@ public:
 	/** Add a module **/
 	void add_module(Module* m);
 	void add_internal_var(std::string name, Type type, LSValue* value);
-
-	/** Add a constant **/
-	void add_constant(std::string name, Type type, LSValue* value);
 };
 
 }

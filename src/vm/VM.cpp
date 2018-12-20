@@ -138,13 +138,7 @@ void VM::add_module(Module* m) {
 	modules.push_back(m);
 	Type const_class = Type::CLASS;
 	const_class.constant = true;
-	add_internal_var(m->name, const_class);
-}
-
-void VM::add_constant(std::string name, Type type, LSValue* value) {
-	system_vars.insert({name, value});
-	type.constant = true;
-	add_internal_var(name, type);
+	add_internal_var(m->name, const_class, m->clazz);
 }
 
 VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool log_instructions) {
