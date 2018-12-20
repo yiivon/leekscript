@@ -135,12 +135,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		if (has_version && f) {
 			return f->compile_version(c, version);
 		}
-		v = c.get_var(name);
-		if (!type.is_mpz()) {
-			v = c.insn_load(v);
-		} else {
-			v = { Compiler::builder.CreateLoad(llvm::Type::getInt128Ty(c.context), v.v), v.t.pointed() };
-		}
+		v = c.insn_load(c.get_var(name));
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_load(c.insn_get_argument(name));
 	}
