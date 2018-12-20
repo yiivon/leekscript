@@ -988,7 +988,6 @@ Compiler::value Compiler::insn_array_at(Compiler::value array, Compiler::value i
 
 Compiler::value Compiler::insn_array_end(Compiler::value array) const {
 	assert(array.t.llvm_type() == array.v->getType());
-	auto array_type = array.v->getType()->getPointerElementType();
 	return insn_load_member(array, 6);
 }
 
