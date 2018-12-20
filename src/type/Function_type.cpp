@@ -7,14 +7,14 @@
 
 namespace ls {
 
-Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : _return_type(ret), _arguments(args), _closure(closure), _function(function), Pointer_type(Type { std::make_shared<const Struct_type>(std::string("lsfunction"), std::initializer_list<Type> {
+Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("lsfunction"), std::initializer_list<Type> {
 	Type::INTEGER, // ?
 	Type::INTEGER, // ?
 	Type::INTEGER, // ?
 	Type::INTEGER, // refs
 	Type::BOOLEAN, // native
 	Type::LONG.pointer() // pointer to the function
-}) }) {}
+}) }), _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
 
 bool Function_type::operator == (const Base_type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
