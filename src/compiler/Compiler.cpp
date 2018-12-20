@@ -1079,17 +1079,13 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 }
 Compiler::value Compiler::insn_refs(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	assert(v.t.must_manage_memory());
-	auto llvm_type = v.v->getType()->getPointerElementType();
-	auto r = builder.CreateStructGEP(llvm_type, v.v, 3);
-	return {builder.CreateLoad(r), Type::INTEGER};
+	assert(v.t.is_polymorphic());
+	return insn_load_member(v, 3);
 }
 Compiler::value Compiler::insn_native(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	assert(v.t.must_manage_memory());
-	auto llvm_type = v.v->getType()->getPointerElementType();
-	auto r = builder.CreateStructGEP(llvm_type, v.v, 4);
-	return {builder.CreateLoad(r), Type::BOOLEAN};
+	assert(v.t.is_polymorphic());
+	return insn_load_member(v, 4);
 }
 
 Compiler::value Compiler::insn_get_argument(const std::string& name) const {
