@@ -839,11 +839,12 @@ Compiler::value Compiler::insn_load(Compiler::value v) const {
 	return r;
 }
 Compiler::value Compiler::insn_load_member(Compiler::value v, int pos) const {
-	assert(v.t.llvm_type() == v.v->getType());
-	assert(v.t.is_pointer());
-	assert(v.t.pointed().is_struct());
-	auto s = builder.CreateStructGEP(v.t.pointed().llvm_type(), v.v, pos);
-	return { builder.CreateLoad(s), v.t.pointed().member(pos) };
+	auto type = v.t.fold();
+	assert(type.llvm_type() == v.v->getType());
+	assert(type.fold().is_pointer());
+	assert(type.fold().pointed().is_struct());
+	auto s = builder.CreateStructGEP(type.pointed().llvm_type(), v.v, pos);
+	return { builder.CreateLoad(s), type.pointed().member(pos) };
 }
 
 void Compiler::insn_store(Compiler::value x, Compiler::value y) const {
