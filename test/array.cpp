@@ -208,6 +208,9 @@ void Test::test_arrays() {
 	DISABLED_code("[1, 2, 3] ~~ (x -> x * 5) ~~ (x -> x - 1)").equals("[4, 9, 14]");
 	code("let f = x -> x + 10 let g = x -> x ** 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
 	code("[1, 2, 3] ~~ Number.sqrt").equals("[1, 1.41421, 1.73205]");
+	code("[1, 2, 3] ~~ x -> [x, x]").equals("[[1, 1], [2, 2], [3, 3]]");
+	DISABLED_code("[1, 2, 3] ~~ System.print").output("1\n2\n3\n");
+	DISABLED_code("let s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
 
 	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
@@ -374,6 +377,7 @@ void Test::test_arrays() {
 	DISABLED_code("var a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
 	// TODO works but leaks
 	DISABLED_code("var a = '' Array.iter([1, 2, 3], x -> a += x) a").equals("");
+	DISABLED_code("var s = 0 [1, 2, 3, 4, 5].iter(x -> s += x)").equals("15");
 
 	section("Array.partition()");
 	code("Array.partition([1, 2, 3, 4, 5], (x -> x < 3))").equals("[[1, 2], [3, 4, 5]]");
@@ -409,6 +413,7 @@ void Test::test_arrays() {
 	code("Array.foldLeft([2, 2, 3], (x, y -> x ** y), 1)").equals("1");
 	code("Array.foldLeft([2.5, 3.5], (x, y -> x ** y), 1.5)").equals("34.7374965567");
 	code("Array.foldLeft(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'Xabcd'");
+	DISABLED_code("[1, 2, 3, 4, 5].foldLeft(+, 0)").equals("15");
 
 	section("Array.foldRight()");
 	code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");
@@ -537,10 +542,6 @@ void Test::test_arrays() {
 	code("var a = [1, 2, 3] Array.remove(a, 1) a").equals("[1, 3]");
 	code("var a = [1, 2, 3] Array.remove(a, 1)").equals("2");
 	code("var a = [1, 'yo', true] Array.remove(a, 1)").equals("'yo'");
-	// TODO
-	DISABLED_code("let a = [] Array.removeKey(a, 'key')").equals("null");
-	DISABLED_code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key')").equals("'test'");
-	DISABLED_code("let a = [1, 2, 3] a.insert('test', 'key') a.removeKey('key') a").equals("[0: 1, 1: 2, 2: 3]");
 
 	section("Array.removeElement()");
 	code("[].removeElement(12)").equals("false");
@@ -582,14 +583,6 @@ void Test::test_arrays() {
 	section("Array v1 count");
 	code_v1("var a = ['a', 'b', 'c'] count(a)").equals("3");
 
-	// TODO misc
-	DISABLED_code("3 ~ x -> x ^ x").equals("27");
-	DISABLED_code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");
-	DISABLED_code("[1, 2, 3] ~~ print").equals("[null, null, null]");
-	DISABLED_code("[1, 2, 3] ~~ x -> [x, x]").equals("[[1, 1], [2, 2], [3, 3]]");
-	DISABLED_code("let s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
-	DISABLED_code("let s = 0 [1, 2, 3, 4, 5].each(x -> s += x)").equals("15");
-	DISABLED_code("[1, 2, 3, 4, 5].fold_left(+,0)").equals("15");
 	/*
 	[1, 2, 3] ~~= (x -> x * 5 + 2)
 	[1, 2, 3] ~+= 1   =>   [2, 3, 4]

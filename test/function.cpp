@@ -142,6 +142,8 @@ void Test::test_functions() {
 	section("Operator ~ ");
 	DISABLED_code("let a = 10 a ~ x -> x ** 2").equals("100");
 	DISABLED_code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
+	DISABLED_code("3 ~ x -> x ^ x").equals("27");
+	DISABLED_code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");
 
 	section("Operator []");
 	code("let f = x -> x f[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
