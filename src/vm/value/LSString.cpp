@@ -179,7 +179,6 @@ LSString* base_map(LSString* s, F function) {
 
 template <>
 LSString* LSString::ls_map(LSFunction* function) {
-	std::cout << "ls_map function" << std::endl;
 	return base_map(this, function);
 }
 template <>
