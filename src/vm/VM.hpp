@@ -61,7 +61,7 @@ public:
 	};
 
 	std::vector<Module*> modules;
-	std::map<std::string, LSValue*> system_vars;
+	std::vector<LSValue*> system_vars;
 	std::map<std::string, std::shared_ptr<SemanticVar>> internal_vars;
 	std::map<std::string, Compiler::value> internals;
 	Compiler compiler;
@@ -86,7 +86,7 @@ public:
 
 	/** Add a module **/
 	void add_module(Module* m);
-	void add_internal_var(std::string name, Type type);
+	void add_internal_var(std::string name, Type type, LSValue* value);
 
 	/** Add a constant **/
 	void add_constant(std::string name, Type type, LSValue* value);

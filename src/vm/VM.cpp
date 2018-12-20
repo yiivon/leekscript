@@ -93,7 +93,7 @@ VM::VM(bool v1) : compiler(this) {
 	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
 
 	auto op_type = Type::fun(Type::ANY, {Type::ANY, Type::ANY});
-	auto value_class = system_vars["Value"];
+	auto value_class = internal_vars["Value"]->lsvalue;
 
 	for (unsigned o = 0; o < ops.size(); ++o) {
 		auto fun = new LSFunction(ops_funs[o]);
@@ -101,8 +101,7 @@ VM::VM(bool v1) : compiler(this) {
 		fun->native = true;
 		fun->args = {value_class, value_class};
 		fun->return_type = value_class;
-		system_vars.insert({ops[o], fun});
-		add_internal_var(ops[o], op_type);
+		add_internal_var(ops[o], op_type, fun);
 	}
 
 	auto ptr_type = Type::fun(Type::ANY, {Type::ANY});
@@ -111,8 +110,7 @@ VM::VM(bool v1) : compiler(this) {
 	fun->native = true;
 	fun->args = {value_class};
 	fun->return_type = value_class;
-	system_vars.insert({"ptr", fun});
-	add_internal_var("ptr", ptr_type);
+	add_internal_var("ptr", ptr_type, fun);
 
 	// Add v1 functions
 	if (v1) {
@@ -125,7 +123,7 @@ VM::~VM() {
 		delete module;
 	}
 	for (auto& fun : system_vars) {
-		delete fun.second;
+		delete fun;
 	}
 	delete null_value;
 	delete true_value;
@@ -137,10 +135,7 @@ VM* VM::current() {
 }
 
 void VM::add_module(Module* m) {
-
 	modules.push_back(m);
-	system_vars.insert({m->name, m->clazz});
-
 	Type const_class = Type::CLASS;
 	const_class.constant = true;
 	add_internal_var(m->name, const_class);
@@ -246,10 +241,10 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	return result;
 }
 
-void VM::add_internal_var(std::string name, Type type) {
-	internal_vars.insert({name,
-		std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr)
-	});
+void VM::add_internal_var(std::string name, Type type, LSValue* value) {
+	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
+	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr, value) });
+	system_vars.push_back(value);
 }
 
 int VM_boolean_to_value(LSBoolean* b) {

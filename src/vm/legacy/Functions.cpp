@@ -10,8 +10,7 @@ void Functions::add(VM* vm, std::string name, Type return_type, std::vector<Type
 	f->native = true;
 	auto type = Type::fun(return_type, args);
 	type.native = true;
-	vm->system_vars.insert({name, f});
-	vm->add_internal_var(name, type);
+	vm->add_internal_var(name, type, f);
 }
 
 void Functions::create(VM* vm) {

@@ -285,7 +285,7 @@ std::string Type::to_string() const {
 }
 
 std::string Type::clazz() const {
-	if (_types.size() == 0) { return "Any"; }
+	if (_types.size() == 0) { return ""; }
 	return fold()._types[0]->clazz();
 }
 

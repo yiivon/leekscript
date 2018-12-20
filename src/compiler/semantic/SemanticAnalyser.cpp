@@ -98,8 +98,7 @@ bool SemanticAnalyser::in_loop(int deepness) const {
 }
 
 std::shared_ptr<SemanticVar> SemanticAnalyser::add_parameter(Token* v, Type type) {
-
-	auto arg = std::make_shared<SemanticVar>(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function());
+	auto arg = std::make_shared<SemanticVar>(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function(), nullptr);
 	parameters.back().insert({v->content, arg});
 	return arg;
 }
@@ -145,7 +144,7 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::add_var(Token* v, Type type, Valu
 	}
 	variables.back().back().insert(pair<string, std::shared_ptr<SemanticVar>>(
 		v->content,
-		std::make_shared<SemanticVar>(v->content, VarScope::LOCAL, type, 0, value, vd, current_function())
+		std::make_shared<SemanticVar>(v->content, VarScope::LOCAL, type, 0, value, vd, current_function(), nullptr)
 	));
 	return variables.back().back().at(v->content);
 }

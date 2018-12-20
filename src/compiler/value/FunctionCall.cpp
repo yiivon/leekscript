@@ -141,7 +141,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		if (object_type.is_class()) { // String.size("salut")
 
 			string clazz = ((VariableValue*) oa->object)->name;
-			auto object_class = (LSClass*) analyser->vm->system_vars[clazz];
+			auto object_class = (LSClass*) analyser->vm->internal_vars[clazz]->lsvalue;
 			auto sm = object_class->getStaticMethod(analyser, oa->field->content, arg_types);
 
 			if (sm != nullptr) {
@@ -154,7 +154,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 					mutator->apply(analyser, arguments);
 				}
 			} else {
-				auto value_class = (LSClass*) analyser->vm->system_vars["Value"];
+				auto value_class = (LSClass*) analyser->vm->internal_vars["Value"]->lsvalue;
 				auto m = value_class->getMethod(analyser, oa->field->content, object_type, arg_types);
 
 				if (m != nullptr) {
@@ -178,12 +178,12 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			Method* m = nullptr;
 			LSClass* clazz;
 			if (!object_type.is_any() && !object_type.is_placeholder()) {
-				clazz = (LSClass*) analyser->vm->system_vars[object_type.clazz()];
+				clazz = (LSClass*) analyser->vm->internal_vars[object_type.clazz()]->lsvalue;
 				m = clazz->getMethod(analyser, oa->field->content, object_type, arg_types);
 				// std::cout << "Method " << oa->field->content << " found : " << m->obj_type << "." << m->type << std::endl;
 			}
 			if (m == nullptr) {
-				clazz = (LSClass*) analyser->vm->system_vars["Value"];
+				clazz = (LSClass*) analyser->vm->internal_vars["Value"]->lsvalue;
 				m = clazz->getMethod(analyser, oa->field->content, object_type, arg_types);
 			}
 			if (m != nullptr) {

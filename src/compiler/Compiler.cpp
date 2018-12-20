@@ -19,6 +19,7 @@
 #include "../colors.h"
 #include "../type/RawType.hpp"
 #include "leekscript/lib/utf8.h"
+#include "semantic/SemanticAnalyser.hpp"
 
 #define log_insn(i) log_instructions && _log_insn((i))
 
@@ -877,7 +878,7 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	auto clazz = v.t.clazz();
 	if (clazz.size()) {
-		return new_pointer(vm->system_vars[clazz], Type::CLASS);
+		return new_pointer(vm->internal_vars.at(clazz)->lsvalue, Type::CLASS);
 	} else {
 		return insn_call(Type::CLASS, {v}, +[](LSValue* v) {
 			return v->getClass();

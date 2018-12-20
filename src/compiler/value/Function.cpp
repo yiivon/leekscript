@@ -355,19 +355,17 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 	ls_fun->args.clear();
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		auto clazz = type.argument(i).clazz();
-		LSClass* arg_class = (LSClass*) analyser->vm->system_vars[clazz];
-		if (arg_class != nullptr) {
-			ls_fun->args.push_back((LSValue*) arg_class);
+		if (clazz.size()) {
+			ls_fun->args.push_back(analyser->vm->internal_vars.at(clazz)->lsvalue);
 		} else {
-			ls_fun->args.push_back(analyser->vm->system_vars["Value"]);
+			ls_fun->args.push_back(analyser->vm->internal_vars.at("Value")->lsvalue);
 		}
 	}
 	auto return_class_name = type.return_type().clazz();
-	LSClass* return_class = (LSClass*) analyser->vm->system_vars[return_class_name];
-	if (return_class != nullptr) {
-		ls_fun->return_type = (LSValue*) return_class;
+	if (return_class_name.size()) {
+		ls_fun->return_type = analyser->vm->internal_vars.at(return_class_name)->lsvalue;
 	} else {
-		ls_fun->return_type = analyser->vm->system_vars["Value"];
+		ls_fun->return_type = analyser->vm->internal_vars.at("Value")->lsvalue;
 	}
 }
 
@@ -485,15 +483,10 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	// System internal variables (for main function only)
 	if (is_main_function) {
-		for (auto var : c.vm->system_vars) {
+		for (auto var : c.vm->internal_vars) {
 			auto name = var.first;
-			auto value = var.second;
-			auto type = [&]() {
-				if (!var.second) return Type::ANY;
-				if (var.second->type == LSValue::FUNCTION) return Type::FUNCTION;
-				if (var.second->type == LSValue::CLASS) return Type::CONST_CLASS;
-			}();
-			auto val = c.new_pointer(value, type);
+			auto variable = var.second;
+			auto val = c.new_pointer(variable->lsvalue, variable->type());
 			c.vm->internals.insert({name, val});
 		}
 	}
