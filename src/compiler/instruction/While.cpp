@@ -31,11 +31,11 @@ Location While::location() const {
 }
 
 void While::analyse(SemanticAnalyser* analyser, const Type&) {
-
 	condition->analyse(analyser);
 	analyser->enter_loop();
 	body->analyse(analyser);
 	analyser->leave_loop();
+	type = body->type;
 }
 
 Compiler::value While::compile(Compiler& c) const {
