@@ -79,6 +79,7 @@ void Test::test_map() {
 	code("var m = [1.5: 'a', 2.5: 'b'] m[2.5] = 'c' m").equals("[1.5: 'a', 2.5: 'c']");
 	code("['', [1: 2][1]]").equals("['', 2]");
 	code("['', [1: 2.5][1]]").equals("['', 2.5]");
+	code("var m = [:] var ns = '01234566' m[ns] = 1").equals("1");
 
 	section("Map.operator [] left-value");
 	code("var m = [1: 2] m[1]++ m").equals("[1: 3]");
