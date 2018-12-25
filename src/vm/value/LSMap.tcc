@@ -349,8 +349,8 @@ inline T* LSMap<K, T>::atL_base(K key) const {
 		ls::release(key);
 		return r;
 	} catch (std::exception&) {
-		ls::move_inc(key);
-		auto r = map->insert({key, ls::construct<T>()});
+		auto k = ls::move_inc(key);
+		auto r = map->insert({k, ls::construct<T>()});
 		return &r.first->second;
 	}
 }
