@@ -57,12 +57,15 @@ Compiler::value While::compile(Compiler& c) const {
 	c.insn_label(&loop_label);
 	c.inc_ops(1);
 	c.enter_loop(&end_label, &loop_label);
-	body->compile(c);
+	auto body_v = body->compile(c);
+	if (body_v.v) {
+		c.insn_delete_temporary(body_v);
+	}
 	c.leave_loop();
 	c.insn_branch(&cond_label);
 
 	c.insn_label(&end_label);
-	return {nullptr, {}};
+	return c.new_null();
 }
 
 Instruction* While::clone() const {
