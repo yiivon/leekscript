@@ -1488,8 +1488,10 @@ void Compiler::enter_block() {
 	}
 	functions_blocks.back()++;
 }
-void Compiler::leave_block() {
-	delete_variables_block(1);
+void Compiler::leave_block(bool delete_vars) {
+	if (delete_vars) {
+		delete_variables_block(1);
+	}
 	variables.pop_back();
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()--;

@@ -298,7 +298,7 @@ public:
 
 	// Blocks
 	void enter_block();
-	void leave_block();
+	void leave_block(bool delete_vars = true);
 	void delete_variables_block(int deepness); // delete all variables in the #deepness current blocks
 	void enter_function(llvm::Function* F, bool is_closure, Function* fun);
 	void leave_function();
