@@ -35,7 +35,9 @@ void While::analyse(SemanticAnalyser* analyser, const Type&) {
 	analyser->enter_loop();
 	body->analyse(analyser);
 	analyser->leave_loop();
-	type = body->type;
+	if (body->may_return) {
+		type = body->type;
+	}
 }
 
 Compiler::value While::compile(Compiler& c) const {
