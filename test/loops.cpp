@@ -41,6 +41,7 @@ void Test::test_loops() {
 	code("if true then if false then 1 else 2 end end").equals("2");
 	// TODO should be void
 	DISABLED_code("if true then if false then 1 end else 2 end").equals("null");
+	code("var k = '121212' if (false) { return 12 } 5").equals("5");
 
 	section("Conditions with other types");
 	code("if 1212 { 'ok' } else { 5 }").equals("'ok'");
