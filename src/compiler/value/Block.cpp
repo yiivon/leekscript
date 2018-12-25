@@ -109,6 +109,7 @@ Compiler::value Block::compile(Compiler& c) const {
 
 		if (instructions[i]->returning) {
 			// no need to compile after a return
+			c.leave_block(false); // Variables already deleted by the return instruction
 			return {nullptr, {}};
 		}
 		if (i < instructions.size() - 1) {
