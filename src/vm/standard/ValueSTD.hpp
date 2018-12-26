@@ -33,8 +33,11 @@ public:
 	static Compiler::value op_or(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_xor(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_bit_and(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_bit_and_eq(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_bit_or(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_bit_or_eq(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_bit_xor(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_bit_xor_eq(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_in(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_swap_val(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_swap_ptr(Compiler&, std::vector<Compiler::value>);
