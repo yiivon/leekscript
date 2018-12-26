@@ -10,7 +10,6 @@ namespace ls {
 
 Array::Array() {
 	type = Type::ARRAY;
-	conversion_type = {};
 }
 
 Array::~Array() {
@@ -210,14 +209,7 @@ Compiler::value Array::compile(Compiler& c) const {
 		val->compile_end(c);
 		elements.push_back(v);
 	}
-	auto array = c.new_array(type, elements);
-	if (conversion_type == Type::NULLL) {
-		return { c.builder.CreatePointerCast(array.v, Type::ANY.llvm_type()), Type::ANY };
-	}
-	if (type.not_temporary() == Type::ANY) {
-		return { c.builder.CreatePointerCast(array.v, Type::ANY.llvm_type()), Type::ANY };
-	}
-	return array;
+	return c.new_array(type, elements);
 }
 
 Value* Array::clone() const {
