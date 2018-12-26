@@ -125,6 +125,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL
 		or op->type == TokenType::MINUS_EQUAL or op->type == TokenType::TIMES_EQUAL
 		or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::MODULO_EQUAL
+		or op->type == TokenType::BIT_AND_EQUALS or op->type == TokenType::BIT_OR_EQUALS or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::POWER_EQUAL or op->type == TokenType::INT_DIV_EQUAL) {
 		// TODO other operators like |= ^= &=
 		if (v1->type.constant) {
@@ -213,8 +214,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
 		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
 		or op->type == TokenType::SWAP
-		or op->type == TokenType::BIT_AND_EQUALS or op->type == TokenType::BIT_OR_EQUALS
-		or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE or op->type == TokenType::DOUBLE_MODULO or op->type == TokenType::DOUBLE_MODULO_EQUALS
@@ -245,9 +244,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	}
 
 	// Bitwise operators : result is a integer
-	if (op->type == TokenType::BIT_AND or op->type == TokenType::PIPE
-		or op->type == TokenType::BIT_XOR or op->type == TokenType::BIT_AND_EQUALS
-		or op->type == TokenType::BIT_OR_EQUALS or op->type == TokenType::BIT_XOR_EQUALS
+	if (op->type == TokenType::BIT_AND or op->type == TokenType::PIPE or op->type == TokenType::BIT_XOR
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
@@ -285,24 +282,6 @@ LSValue* jit_div(LSValue* x, LSValue* y) {
 }
 LSValue* jit_double_mod(LSValue* x, LSValue* y) {
 	return x->double_mod(y);
-}
-int jit_bit_and_equal(LSValue* x, LSValue* y) {
-	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value & (int) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-int jit_bit_or_equal(LSValue* x, LSValue* y) {
-	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value | (int) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-int jit_bit_xor_equal(LSValue* x, LSValue* y) {
-	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value ^ (int) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
 }
 int jit_bit_shl(LSValue* x, LSValue* y) {
 	int r = (int) ((LSNumber*) x)->value << (int) ((LSNumber*) y)->value;
@@ -516,18 +495,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto m = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
 				ls_func = (void*) m;
 			}
-			break;
-		}
-		case TokenType::BIT_AND_EQUALS : {
-			ls_func = (void*) &jit_bit_and_equal;
-			break;
-		}
-		case TokenType::BIT_OR_EQUALS : {
-			ls_func = (void*) &jit_bit_or_equal;
-			break;
-		}
-		case TokenType::BIT_XOR_EQUALS : {
-			ls_func = (void*) &jit_bit_xor_equal;
 			break;
 		}
 		case TokenType::BIT_SHIFT_LEFT : {
