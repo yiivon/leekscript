@@ -427,8 +427,10 @@ void Test::test_numbers() {
 	code("var a = 87619 a &= 18431").equals("17987");
 	code("var a = 87619 a &= 18431 a").equals("17987");
 	code("87619★ & 18431").equals("17987");
-	code("87619★ &= 18431").equals("17987");
+	code("87619★ &= 18431").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("var a = 87619★ a &= 18431 a").equals("17987");
 	code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = [12, 'hello'][1] a &= 18431 a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator |");
 	code("0 | 0").equals("0");
@@ -440,7 +442,8 @@ void Test::test_numbers() {
 	code("var a = 87619 a |= 18431").equals("88063");
 	code("var a = 87619 a |= 18431 a").equals("88063");
 	code("[87619, ''][0] | 18431").equals("88063");
-	code("[87619, ''][0] |= 18431").equals("88063");
+	code("87619★ |= 18431").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("var a = 87619★ a |= 18431 a").equals("88063");
 	code("[12, 'hello'][1] | 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator ^");
@@ -453,7 +456,8 @@ void Test::test_numbers() {
 	code("var a = 87619 a ^= 18431").equals("70076");
 	code("var a = 87619 a ^= 18431 a").equals("70076");
 	code("[87619, ''][0] ^ 18431").equals("70076");
-	code("[87619, ''][0] ^= 18431").equals("70076");
+	code("87619★ ^= 18431").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("var a = 87619★ a ^= 18431 a").equals("70076");
 	code("[12, 'hello'][1] ^ 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator <<");
