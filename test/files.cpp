@@ -42,7 +42,7 @@ void Test::test_files() {
 	DISABLED_file("test/code/recursive_2_versions.leek").equals("");
 	DISABLED_file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
 	file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
-	DISABLED_file("test/code/classes_multiple.leek").equals("[4, 40, 80]");
+	file("test/code/classes_multiple.leek").equals("[4, 40, 80]");
 
 	section("Issues (fixed)");
 	file("test/code/issue/207_basic.leek").equals("[1, 2, 3]");
