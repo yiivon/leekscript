@@ -241,11 +241,4 @@ void VM::add_internal_var(std::string name, Type type, LSValue* value) {
 	system_vars.push_back(value);
 }
 
-int VM_boolean_to_value(LSBoolean* b) {
-	return b->value;
-}
-int VM_integer_to_value(LSNumber* n) {
-	return n->value;
-}
-
 }
