@@ -17,7 +17,7 @@ void Test::test_files() {
 	file_v1("test/code/quine_zwik.leek").quine();
 	file("test/code/dynamic_operators").works();
 	file("test/code/euler1.leek").equals("2333316668");
-	DISABLED_file("test/code/text_analysis.leek").equals("[3, 47, 338]");
+	file("test/code/text_analysis.leek").equals("[3, 47, 338]");
 	// TODO crashing
 	DISABLED_file("test/code/recursive.leek").equals("");
 	file("test/code/divisors.leek").equals("[1, 3, 9, 13, 17, 39]");
