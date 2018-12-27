@@ -372,7 +372,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	void* ls_func;
 	vector<Compiler::value> args;
-	Type ls_returned_type = type;
 
 	switch (op->type) {
 		case TokenType::EQUAL: {
@@ -672,7 +671,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		v1->compile_end(c);
 		v2->compile_end(c);
 	}
-	return c.insn_invoke(ls_returned_type, args, ls_func);
+	return c.insn_invoke(type, args, ls_func);
 }
 
 Value* Expression::clone() const {
