@@ -517,9 +517,10 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	llvm_function->setPersonalityFn(personality);
 
 	((Function*) this)->block = llvm::BasicBlock::Create(Compiler::context, "entry_" + name, llvm_function);
-	Compiler::builder.SetInsertPoint(block);
 
 	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
+
+	Compiler::builder.SetInsertPoint(block);
 
 	// Create arguments
 	unsigned index = 0;

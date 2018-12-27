@@ -82,6 +82,7 @@ public:
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks;
 	std::stack<std::map<std::string, value>> arguments;
+	std::stack<llvm::BasicBlock*> function_llvm_blocks;
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<label*> loops_end_labels;
 	std::vector<label*> loops_cond_labels;

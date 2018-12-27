@@ -1515,6 +1515,9 @@ void Compiler::enter_function(llvm::Function* F, bool is_closure, Function* fun)
 	functions_blocks.push_back(0);
 	catchers.push_back({});
 	function_is_closure.push(is_closure);
+	auto block = builder.GetInsertBlock();
+	if (!block) block = fun->block;
+	function_llvm_blocks.push(block);
 	this->F = F;
 	this->fun = fun;
 	std::vector<std::string> args;
@@ -1539,7 +1542,8 @@ void Compiler::leave_function() {
 	arguments.pop();
 	this->F = functions.top();
 	this->fun = functions2.top();
-	builder.SetInsertPoint(this->fun->block);
+	builder.SetInsertPoint(function_llvm_blocks.top());
+	function_llvm_blocks.pop();
 	log_insn(0) << "}" << std::endl;
 }
 
