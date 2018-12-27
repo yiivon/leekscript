@@ -28,6 +28,10 @@ LSValue* string_begin_code_ptr(const LSString*);
 int string_code(const LSString*, int pos);
 long string_number(const LSString*);
 
+LSString* plus_any(LSString* s, LSValue* v) {
+	return (LSString*) s->add(v);
+}
+
 LSString* plus_mpz(LSString* s, __mpz_struct mpz) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &mpz);
@@ -54,6 +58,7 @@ StringSTD::StringSTD() : Module("String") {
 	 * Operators
 	 */
 	operator_("+", {
+		{Type::STRING, Type::ANY, Type::STRING, (void*) &plus_any, {}, Method::NATIVE},
 		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_mpz, {}, Method::NATIVE},
 		{Type::STRING, Type::MPZ_TMP, Type::STRING, (void*) &plus_mpz_tmp, {}, Method::NATIVE},
 		{Type::STRING, Type::REAL, Type::STRING, (void*) &StringSTD::add_real, {}, Method::NATIVE},
