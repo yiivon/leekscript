@@ -192,7 +192,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	auto o = object->compile(c);
 	object->compile_end(c);
 	auto k = c.new_pointer(&field->content, Type::ANY);
-	auto r = c.insn_call(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
+	auto r = c.insn_invoke(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attr(*key);
 	});
 	return r;
