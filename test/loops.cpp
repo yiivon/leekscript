@@ -86,7 +86,7 @@ void Test::test_loops() {
 	code("var i = 10 while (['hello', i][1]) { i-- } i").equals("0");
 	code("var i = 0 while i < 10 do i++ end i").equals("10");
 	code("var i = 5 while (i-- > 0) { System.print(i) }").output("4\n3\n2\n1\n0\n");
-	code("while (true) { return 12 }").equals("12");
+	DISABLED_code("while (true) { return 12 }").equals("12");
 	code("var n = 5 var a = [] while n-- { a += 1 }").equals("(void)");
 
 	/*

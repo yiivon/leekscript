@@ -1650,22 +1650,12 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 
 	// Compare to the limit
 	auto limit = new_long(vm->operation_limit);
-	// insn_call({}, {jit_ops, limit}, +[](int ops, int limit) {
-	// 	if (ops > limit) {
-	// 		throw vm::ExceptionObj(vm::Exception::OPERATION_LIMIT_EXCEEDED);
-	// 	}
-	// }, true);
-
 	auto compare = insn_gt(jit_ops, limit);
 	// If greater than the limit, throw exception
-	
-	// insn_if(compare, [&]() {
-	// 	insn_throw_object(vm::Exception::OPERATION_LIMIT_EXCEEDED);
-	// });
+	insn_if(compare, [&]() {
+		insn_throw_object(vm::Exception::OPERATION_LIMIT_EXCEEDED);
+	});
 	insn_store(ops_ptr, insn_add(jit_ops, amount));
-	// insn_call({}, {jit_ops, limit}, +[](int ops, int limit) {
-	// 	std::cout << "operatations : " << ops << " / " << limit << std::endl;
-	// });
 }
 
 /** Exceptions **/
