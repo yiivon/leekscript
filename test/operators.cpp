@@ -64,7 +64,7 @@ void Test::test_operators() {
 	code("let a = null !a").equals("true");
 	code("|null|").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("null[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
-	DISABLED_code("let a = [null, ''][0] a[2]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("let a = [null, ''][0] a[2]").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_CONTAINER, {"a"});
 	code("let a = [null, ''][0] a[2] = 5").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_CONTAINER, {"a"});
 	code("null[2:5]").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
 	code("null[2:5] = 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
@@ -72,7 +72,7 @@ void Test::test_operators() {
 	code("2[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"2"});
 	code("'hello'[2] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {});
 	code("'hello'[2:5] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {});
-	DISABLED_code("let a = [null, ''][0] a[2:5]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("let a = [null, ''][0] a[2:5]").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_CONTAINER, {"a"});
 	code("var a = [null, ''][0] a[2:5] = 5").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_CONTAINER, {"a"});
 	// TODO class of a is (Null | String) actually
 	code("var a = [null, ''][0] a.toto = 5").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"toto", "Null"});
