@@ -23,23 +23,19 @@ Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) 
 		return c.insn_call(Type::STRING, args, +[](int v) {
 			return new LSString(std::to_string(v));
 		});
-	}
-	if (args[0].t == Type::LONG) {
+	} else if (args[0].t == Type::LONG) {
 		return c.insn_call(Type::STRING, args, +[](long v) {
 			return new LSString(std::to_string(v));
 		});
-	}
-	if (args[0].t == Type::REAL) {
+	} else if (args[0].t == Type::REAL) {
 		return c.insn_call(Type::STRING, args, +[](double v) {
 			return new LSString(LSNumber::print(v));
 		});
-	}
-	if (args[0].t == Type::BOOLEAN) {
+	} else if (args[0].t == Type::BOOLEAN) {
 		return c.insn_call(Type::STRING, args, +[](bool b) {
 			return new LSString(b ? "true" : "false");
 		});
-	}
-	if (args[0].t.not_temporary() == Type::MPZ) {
+	} else if (args[0].t.not_temporary() == Type::MPZ) {
 		auto s = c.insn_call(Type::STRING, args, +[](__mpz_struct v) {
 			char buff[10000];
 			mpz_get_str(buff, 10, &v);
