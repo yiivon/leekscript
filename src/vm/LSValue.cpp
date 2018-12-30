@@ -317,7 +317,7 @@ std::string LSValue::to_string() const {
 }
 
 LSString* LSValue::ls_json() {
-	LSString* json = new LSString(this->json());
+	auto json = new LSString(this->json());
 	LSValue::delete_temporary(this);
 	return json;
 }
