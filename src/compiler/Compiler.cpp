@@ -1427,9 +1427,14 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
 		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
-	value r = { builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name), return_type };
-	assert(r.t.llvm_type() == r.v->getType());
-	return r;
+	auto r = builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name);
+	if (return_type._types.size() == 0) {
+		return {nullptr, {}};
+	} else {
+		value result = { r, return_type };
+		assert(result.t.llvm_type() == result.v->getType());
+		return result;
+	}
 }
 
 Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, void* func) const {
@@ -1449,10 +1454,15 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	}
 	const auto lambda = mappings.at(function_name).function;
 	auto continueBlock = llvm::BasicBlock::Create(context, "cont", F);
-	value r = {builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name), return_type};
+	auto r = builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name);
 	builder.SetInsertPoint(continueBlock);
-	assert(r.t.llvm_type() == r.v->getType());
-	return r;
+	if (return_type._types.size() == 0) {
+		return {nullptr, {}};
+	} else {
+		value result = { r, return_type };
+		assert(result.t.llvm_type() == result.v->getType());
+		return result;
+	}
 }
 
 Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value fun, std::vector<Compiler::value> args) const {
@@ -1465,7 +1475,14 @@ Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value f
 	}
 	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
 	auto fun_conv = builder.CreatePointerCast(fun.v, fun_type->getPointerTo());
-	return {builder.CreateCall(fun_type, fun_conv, llvm_args), return_type};
+	auto r = builder.CreateCall(fun_type, fun_conv, llvm_args);
+	if (return_type._types.size() == 0) {
+		return {nullptr, {}};
+	} else {
+		value result = { r, return_type };
+		assert(result.t.llvm_type() == result.v->getType());
+		return result;
+	}
 }
 
 void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) {

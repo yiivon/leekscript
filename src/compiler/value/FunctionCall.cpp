@@ -479,12 +479,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	// Custom function call : 1 op
 	c.inc_ops(1);
-	
-	if (type._types.size() == 0) {
-		return {nullptr, {}};
-	} else {
-		return result;
-	}
+
+	return result;
 }
 
 Value* FunctionCall::clone() const {
