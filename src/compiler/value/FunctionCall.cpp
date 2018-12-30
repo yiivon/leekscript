@@ -153,6 +153,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				for (const auto& mutator : sm->mutators) {
 					mutator->apply(analyser, arguments);
 				}
+				// std::cout << "Static method " << oa->field->content << " found : " << sm->type << std::endl;
 			} else {
 				auto value_class = (LSClass*) analyser->vm->internal_vars["Value"]->lsvalue;
 				auto m = value_class->getMethod(analyser, oa->field->content, object_type, arg_types);
