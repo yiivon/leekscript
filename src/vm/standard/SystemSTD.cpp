@@ -31,13 +31,13 @@ SystemSTD::SystemSTD() : Module("System") {
 	static_field("nanoTime", Type::LONG, (void*) &System_nanotime);
 
 	method("print", Method::Static, {
-		{{}, {Type::ANY}, (void*) &System_print, Method::NATIVE},
+		{{}, {Type::CONST_ANY}, (void*) &System_print, Method::NATIVE},
 		{{}, {Type::MPZ}, (void*) &System_print_mpz, Method::NATIVE},
 		{{}, {Type::MPZ_TMP}, (void*) &System_print_mpz_tmp, Method::NATIVE},
-		{{}, {Type::LONG}, (void*) &System_print_long, Method::NATIVE},
-		{{}, {Type::REAL}, (void*) &System_print_float, Method::NATIVE},
-		{{}, {Type::INTEGER}, (void*) &System_print_int, Method::NATIVE},
-		{{}, {Type::BOOLEAN}, (void*) &System_print_bool, Method::NATIVE},
+		{{}, {Type::CONST_LONG}, (void*) &System_print_long, Method::NATIVE},
+		{{}, {Type::CONST_REAL}, (void*) &System_print_float, Method::NATIVE},
+		{{}, {Type::CONST_INTEGER}, (void*) &System_print_int, Method::NATIVE},
+		{{}, {Type::CONST_BOOLEAN}, (void*) &System_print_bool, Method::NATIVE},
 	});
 }
 
