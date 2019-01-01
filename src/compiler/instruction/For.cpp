@@ -86,6 +86,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (Instruction* ins : increments) {
 		ins->analyse(analyser, {});
 		if (dynamic_cast<Return*>(ins)) {
+			type = ins->type;
 			break;
 		}
 	}
@@ -152,9 +153,9 @@ Compiler::value For::compile(Compiler& c) const {
 	c.insn_label(&inc_label);
 	c.enter_block();
 	for (auto& ins : increments) {
-		ins->compile(c);
+		auto r = ins->compile(c);
 		if (dynamic_cast<Return*>(ins)) {
-			break;
+			return r;
 		}
 	}
 	c.leave_block();
