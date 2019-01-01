@@ -81,7 +81,7 @@ void Test::test_loops() {
 	code("var i = 0 while (i < 10) { i++ } i").equals("10");
 	code("var i = 0 var s = 0 while (i < 10) { s += i i++ } s").equals("45");
 	code("var i = 0 while (i < 100) { i++ if (i == 50) break } i").equals("50");
-	DISABLED_code("var i = 0 var a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a").equals("3");
+	code("var i = 0 var a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a").equals("3");
 	DISABLED_code("while (true) { break }").equals("(void)");
 	code("var i = 10 while (['hello', i][1]) { i-- } i").equals("0");
 	code("var i = 0 while i < 10 do i++ end i").equals("10");
@@ -102,7 +102,7 @@ void Test::test_loops() {
 	code("var i = 0 for i = 0; i < 10; i++ { } i").equals("10");
 	code("var i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i").equals("5");
 	code("var a = 0 for var i = 0; i < 10; i++ { a++ } a").equals("10");
-	DISABLED_code("var a = 0 for var i = 0; i < 10; i++ { if i < 5 { continue } a++ } a").equals("5");
+	code("var a = 0 for var i = 0; i < 10; i++ { if i < 5 { continue } a++ } a").equals("5");
 	code("var c = 0 for var t = []; t.size() < 10; t.push('x') { c++ } c").equals("10");
 	code("var s = 0 for var m = [1: 3, 2: 2, 3: 1]; m; var l = 0 for k, x in m { l = k } m.erase(l) { for x in m { s += x } } s").equals("14");
 	code("for var i = 0; ['', i < 10][1]; i++ {}").equals("(void)");
@@ -132,7 +132,7 @@ void Test::test_loops() {
 	// Wrong type
 	DISABLED_code("var s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.97);
 	code("var s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s").equals("'salut ça va ?'");
-	DISABLED_code("var a = 0 let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] for i in x { if i < 5 { continue } a++ } a").equals("5");
+	code("var a = 0 let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] for i in x { if i < 5 { continue } a++ } a").equals("5");
 	code("var s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s").equals("20");
 	code("var s = '' for k : v in ['a': 1, 'b': 2, 'c': 3, 'd': 4] { s += v * k } s").equals("'abbcccdddd'");
 	DISABLED_code("(a -> { var s = 0.0; for x in a { s += x } s })([1, 2, 3, 4.25])").equals("10.25");
