@@ -1638,7 +1638,7 @@ Compiler::label* Compiler::get_current_loop_end_label(int deepness) const {
 	return loops_end_labels[loops_end_labels.size() - deepness];
 }
 Compiler::label* Compiler::get_current_loop_cond_label(int deepness) const {
-	return loops_end_labels[loops_end_labels.size() - deepness];
+	return loops_cond_labels[loops_cond_labels.size() - deepness];
 }
 int Compiler::get_current_loop_blocks(int deepness) const {
 	int sum = 0;
