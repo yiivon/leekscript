@@ -43,7 +43,7 @@ Compiler::value Throw::compile(Compiler& c) const {
 
 	c.insn_throw(exception);
 
-	return {nullptr, {}};
+	return {};
 }
 
 Instruction* Throw::clone() const {

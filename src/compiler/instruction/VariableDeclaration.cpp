@@ -118,7 +118,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			c.insn_store(var, c.new_null());
 		}
 	}
-	return {nullptr, {}};
+	return {};
 }
 
 Instruction* VariableDeclaration::clone() const {

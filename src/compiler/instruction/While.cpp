@@ -41,11 +41,9 @@ void While::analyse(SemanticAnalyser* analyser, const Type&) {
 }
 
 Compiler::value While::compile(Compiler& c) const {
-
 	auto cond_label = c.insn_init_label("cond");
 	auto end_label = c.insn_init_label("afterloop");
 	auto loop_label = c.insn_init_label("loop");
-
 	c.insn_branch(&cond_label);
 	c.insn_label(&cond_label);
 	auto cond = condition->compile(c);
@@ -53,7 +51,6 @@ Compiler::value While::compile(Compiler& c) const {
 	auto cond_bool = c.insn_to_bool(cond);
 	c.insn_delete_temporary(cond);
 	c.insn_if_new(cond_bool, &loop_label, &end_label);
-
 	c.insn_label(&loop_label);
 	c.inc_ops(1);
 	c.enter_loop(&end_label, &cond_label);
@@ -63,9 +60,8 @@ Compiler::value While::compile(Compiler& c) const {
 	}
 	c.leave_loop();
 	c.insn_branch(&cond_label);
-
 	c.insn_label(&end_label);
-	return c.new_null();
+	return {};
 }
 
 Instruction* While::clone() const {
