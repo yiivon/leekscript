@@ -94,7 +94,7 @@ void Test::test_loops() {
 	 * For loops
 	 */
 	header("For loops");
-	DISABLED_code("for var i = 0; ; i++ {}").ops_limit(1000).exception(ls::vm::Exception::OPERATION_LIMIT_EXCEEDED);
+	code("for var i = 0; ; i++ {}").ops_limit(1000).exception(ls::vm::Exception::OPERATION_LIMIT_EXCEEDED);
 	code("for var i = 0; false; i++ {}").equals("(void)");
 	code("for var i = 0; i < 10; i++ {}").equals("(void)");
 	code("var s = 0 for var i = 0; i < 5; i++ do s += i end s").equals("10");
@@ -116,7 +116,7 @@ void Test::test_loops() {
 
 	section("For loops with returns");
 	code("for return 12; true; null {}").equals("12");
-	DISABLED_code("for ;; return 'hello' {}").equals("'hello'");
+	code("for ;; return 'hello' {}").equals("'hello'");
 
 	/*
 	 * Foreach loops
