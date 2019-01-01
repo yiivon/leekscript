@@ -106,10 +106,14 @@ Compiler::value If::compile(Compiler& c) const {
 
 	c.insn_label(&label_end);
 	
-	auto phi = Compiler::builder.CreatePHI(type.llvm_type(), 2, "iftmp");
-	if (then_v.v) phi->addIncoming(then_v.v, label_then.block);
-	if (else_v.v) phi->addIncoming(else_v.v, label_else.block);
-	return {phi, type};
+	if (type._types.size() == 0) {
+		return {};
+	} else {
+		auto phi = Compiler::builder.CreatePHI(type.llvm_type(), 2, "iftmp");
+		if (then_v.v) phi->addIncoming(then_v.v, label_then.block);
+		if (else_v.v) phi->addIncoming(else_v.v, label_else.block);
+		return {phi, type};
+	}
 }
 
 Value* If::clone() const {
