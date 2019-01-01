@@ -130,6 +130,8 @@ Compiler::value For::compile(Compiler& c) const {
 		auto bool_v = c.insn_to_bool(condition_v);
 		c.insn_delete_temporary(condition_v);
 		c.insn_if_new(bool_v, &loop_label, &end_label);
+	} else {
+		c.insn_branch(&loop_label);
 	}
 
 	// Body
