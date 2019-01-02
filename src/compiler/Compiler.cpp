@@ -1265,6 +1265,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 	log_insn_code("iterator.key()");
 	if (v.t.is_array()) {
 		auto array_begin = insn_array_at(v, new_integer(0));
+		if (v.t.element().is_polymorphic()) array_begin = { builder.CreatePointerCast(array_begin.v, Type::ANY.pointer().llvm_type()), Type::ANY.pointer() };
 		return { builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::ANY };
 	}
 	if (v.t.is_interval()) {
