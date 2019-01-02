@@ -1255,7 +1255,7 @@ Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, 
 	else if (collectionType.is_long()) {
 		return to_int(insn_int_div(insn_load_member(it, 0), insn_load_member(it, 1)));
 	}
-	return {nullptr, {}};
+	return {};
 }
 
 Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Compiler::value previous) const {
@@ -1429,7 +1429,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	}
 	auto r = builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name);
 	if (return_type._types.size() == 0) {
-		return {nullptr, {}};
+		return {};
 	} else {
 		value result = { r, return_type };
 		assert(result.t.llvm_type() == result.v->getType());
@@ -1457,7 +1457,7 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	auto r = builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name);
 	builder.SetInsertPoint(continueBlock);
 	if (return_type._types.size() == 0) {
-		return {nullptr, {}};
+		return {};
 	} else {
 		value result = { r, return_type };
 		assert(result.t.llvm_type() == result.v->getType());
@@ -1477,7 +1477,7 @@ Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value f
 	auto fun_conv = builder.CreatePointerCast(fun.v, fun_type->getPointerTo());
 	auto r = builder.CreateCall(fun_type, fun_conv, llvm_args);
 	if (return_type._types.size() == 0) {
-		return {nullptr, {}};
+		return {};
 	} else {
 		value result = { r, return_type };
 		assert(result.t.llvm_type() == result.v->getType());
