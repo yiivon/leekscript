@@ -136,12 +136,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::PTR_ARRAY_TMP, {Type::CONST_ARRAY, Type::CONST_INT_ARRAY, map2_fun_type_int}, (void*) map2_ptr_int, Method::NATIVE},
 	});
 
-	Type pred_fun_type = Type::fun(Type::BOOLEAN, {Type::ANY});
-	Type pred_fun_type_float = Type::fun(Type::BOOLEAN, {Type::REAL});
-	Type pred_fun_type_int = Type::fun(Type::BOOLEAN, {Type::INTEGER});
-	Type pred_clo_type = Type::closure(Type::BOOLEAN, {Type::ANY});
-	Type pred_clo_type_float = Type::closure(Type::BOOLEAN, {Type::REAL});
-	Type pred_clo_type_int = Type::closure(Type::BOOLEAN, {Type::INTEGER});
+	Type pred_fun_type = Type::fun(Type::ANY, {Type::ANY});
+	Type pred_fun_type_float = Type::fun(Type::ANY, {Type::REAL});
+	Type pred_fun_type_int = Type::fun(Type::ANY, {Type::INTEGER});
+	Type pred_clo_type = Type::closure(Type::ANY, {Type::ANY});
+	Type pred_clo_type_float = Type::closure(Type::ANY, {Type::REAL});
+	Type pred_clo_type_int = Type::closure(Type::ANY, {Type::INTEGER});
 	auto filter_ptr = &LSArray<LSValue*>::ls_filter<LSFunction*>;
 	auto filter_real = &LSArray<double>::ls_filter<LSFunction*>;
 	auto filter_int = &LSArray<int>::ls_filter<LSFunction*>;
@@ -184,13 +184,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::BOOLEAN, {Type::INT_ARRAY, Type::INT_ARRAY}, (void*) perm_int_int, Method::NATIVE},
 	});
 
-	auto partition_ptr = &LSArray<LSValue*>::ls_partition<LSFunction*>;
-	auto partition_real = &LSArray<double>::ls_partition<LSFunction*>;
-	auto partition_int = &LSArray<int>::ls_partition<LSFunction*>;
 	method("partition", {
-		{Type::PTR_ARRAY_TMP, {Type::ARRAY, pred_fun_type}, (void*) partition_ptr, Method::NATIVE},
-		{Type::PTR_ARRAY_TMP, {Type::REAL_ARRAY, pred_fun_type_float}, (void*) partition_real, Method::NATIVE},
-		{Type::PTR_ARRAY_TMP, {Type::INT_ARRAY, pred_fun_type_int}, (void*) partition_int, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::ARRAY, pred_fun_type}, (void*) partition},
+		{Type::PTR_ARRAY_TMP, {Type::REAL_ARRAY, pred_fun_type_float}, (void*) partition},
+		{Type::PTR_ARRAY_TMP, {Type::INT_ARRAY, pred_fun_type_int}, (void*) partition},
 	});
 
 	method("first", {
@@ -496,6 +493,24 @@ Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::
 		c.insn_delete_temporary(args[1]);
 		return c.new_bool(false);
 	}
+}
+
+Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> args) {
+	auto array = args[0];
+	auto function = args[1];
+	auto array_true = c.new_array(array.t, {});
+	auto array_false = c.new_array(array.t, {});
+	c.insn_foreach(array, [&](Compiler::value v, Compiler::value k) {
+		auto r = c.insn_call(function.t.return_type(), {v}, function);
+		c.insn_if(r, [&]() {
+			c.insn_push_array(array_true, v);
+		}, [&]() {
+			c.insn_push_array(array_false, v);
+		});
+		c.insn_delete_temporary(r);
+	});
+	c.insn_delete_temporary(array);
+	return c.new_array(Type::array(array.t), {array_true, array_false});
 }
 
 }

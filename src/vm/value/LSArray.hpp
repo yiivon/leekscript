@@ -64,8 +64,6 @@ public:
 	template <class F, class R>
 	R ls_foldRight(F function, R initial);
 	LSArray<T>* ls_insert(T value, int pos);
-	template <class F>
-	LSArray<LSValue*>* ls_partition(F function);
 	template <class F, class R, class T2>
 	LSArray<R>* ls_map2(LSArray<T2>*, F function);
 	int ls_search(T needle, int start);
