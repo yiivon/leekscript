@@ -255,6 +255,14 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		function->will_take(analyser, arg_types, 1);
 		function->set_version(arg_types, 1);
 	}
+	if (is_unknown_method) {
+		for (size_t a = 0; a < arguments.size(); ++a) {
+			auto arg = arguments.at(a);
+			if (arguments.at(a)->type.is_function()) {
+				arguments.at(a)->must_return(analyser, Type::ANY);
+			}
+		}
+	}
 
 	// Get the function type
 	function_type = function->version_type(arg_types);
