@@ -1356,14 +1356,20 @@ void Compiler::iterator_increment(Type collectionType, Compiler::value it) const
 Compiler::label Compiler::insn_init_label(std::string name) const {
 	return {llvm::BasicBlock::Create(Compiler::context, name)};
 }
-void Compiler::insn_if(Compiler::value condition, std::function<void()> then) const {
+void Compiler::insn_if(Compiler::value condition, std::function<void()> then, std::function<void()> elze) const {
 	assert(condition.t.llvm_type() == condition.v->getType());
 	auto label_then = insn_init_label("then");
+	auto label_else = insn_init_label("else");
 	auto label_end = insn_init_label("ifcont");
-	insn_if_new(insn_to_bool(condition), &label_then, &label_end);
+	insn_if_new(insn_to_bool(condition), &label_then, elze ? &label_else : &label_end);
 	insn_label(&label_then);
 	then();
 	insn_branch(&label_end);
+	if (elze) {
+		insn_label(&label_else);
+		elze();
+		insn_branch(&label_end);
+	}
 	insn_label(&label_end);
 }
 void Compiler::insn_if_new(Compiler::value cond, label* then, label* elze) const {

@@ -272,7 +272,7 @@ public:
 
 	// Controls
 	label insn_init_label(std::string name) const;
-	void insn_if(value v, std::function<void()> then) const;
+	void insn_if(value v, std::function<void()> then, std::function<void()> elze = nullptr) const;
 	void insn_if_new(value cond, label* then, label* elze) const;
 	void insn_if_not(value v, std::function<void()> then) const;
 	void insn_throw(value v) const;
