@@ -1352,6 +1352,70 @@ void Compiler::iterator_increment(Type collectionType, Compiler::value it) const
 	}
 }
 
+void Compiler::insn_foreach(Compiler::value container, std::function<void(Compiler::value, Compiler::value)> body) {
+	bool key = true;
+	enter_block(); // { for x in [1, 2] {} }<-- this block
+
+	// Create variables
+	auto value_var = create_and_add_var("v", container.t.element());
+	insn_store(value_var, new_null());
+
+	Compiler::value key_var;
+	if (key) {
+		key_var = create_and_add_var("k", container.t.key());
+		insn_store(key_var, new_null());
+	}
+
+	auto it_label = insn_init_label("it");
+	auto cond_label = insn_init_label("cond");
+	auto end_label = insn_init_label("end");
+	auto loop_label = insn_init_label("loop");
+
+	enter_loop(&end_label, &it_label);
+
+	auto it = iterator_begin(container);
+
+	// For arrays, if begin iterator is 0, jump to end directly
+	if (container.t.is_array()) {
+		auto empty_array = insn_pointer_eq(it, new_pointer(nullptr, Type::ANY));
+		insn_if_new(empty_array, &end_label, &cond_label);
+	} else {
+		insn_branch(&cond_label);
+	}
+
+	// cond label:
+	insn_label(&cond_label);
+	// Condition to continue
+	auto finished = iterator_end(container, it);
+	insn_if_new(finished, &end_label, &loop_label);
+
+	// loop label:
+	insn_label(&loop_label);
+	// Get Value
+	insn_store(value_var, iterator_get(container.t, it, insn_load(value_var)));
+	// Get Key
+	if (key) {
+		insn_store(key_var, iterator_key(container, it, insn_load(key_var)));
+	}
+	// Body
+	body(insn_load(value_var), insn_load(key_var));
+	
+	insn_branch(&it_label);
+
+	// it++
+	insn_label(&it_label);
+	iterator_increment(container.t, it);
+	// jump to cond
+	insn_branch(&cond_label);
+
+	leave_loop();
+
+	// end label:
+	insn_label(&end_label);
+
+	leave_block(); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block
+}
+
 // Controls
 Compiler::label Compiler::insn_init_label(std::string name) const {
 	return {llvm::BasicBlock::Create(Compiler::context, name)};
