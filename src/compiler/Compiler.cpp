@@ -1465,7 +1465,10 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	}
 }
 
-Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value fun, std::vector<Compiler::value> args) const {
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, Compiler::value fun) const {
+	auto fun_to_ptr = Compiler::builder.CreatePointerCast(fun.v, Type::FUNCTION.llvm_type());
+	auto f = Compiler::builder.CreateStructGEP(Type::FUNCTION.llvm_type()->getPointerElementType(), fun_to_ptr, 5);
+	value function = { Compiler::builder.CreateLoad(f), Type::FUNCTION };
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1474,7 +1477,7 @@ Compiler::value Compiler::insn_call_indirect(Type return_type, Compiler::value f
 		llvm_types.push_back(args[i].t.llvm_type());
 	}
 	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
-	auto fun_conv = builder.CreatePointerCast(fun.v, fun_type->getPointerTo());
+	auto fun_conv = builder.CreatePointerCast(function.v, fun_type->getPointerTo());
 	auto r = builder.CreateCall(fun_type, fun_conv, llvm_args);
 	if (return_type._types.size() == 0) {
 		return {};
