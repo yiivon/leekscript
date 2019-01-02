@@ -301,8 +301,8 @@ void Test::test_arrays() {
 	code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
 	code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
 	code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
-	// TODO
-	DISABLED_code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
+	code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
+	code("[{}, [], true, '42'].map(_ => 42)").equals("[42, 42, 42, 42]");
 
 	section("Array.map2()");
 	code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
