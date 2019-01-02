@@ -1054,7 +1054,7 @@ Compiler::value Compiler::insn_inc_refs(Compiler::value v) const {
 
 Compiler::value Compiler::insn_dec_refs(Compiler::value v, Compiler::value previous) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	assert(previous.t.llvm_type() == previous.v->getType());
+	assert(!previous.v or previous.t.llvm_type() == previous.v->getType());
 	if (v.t.must_manage_memory()) {
 		if (previous.v == nullptr) {
 			previous = insn_refs(v);
