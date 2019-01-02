@@ -50,6 +50,7 @@ public:
 	static Compiler::value remove_element_int(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value partition(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value map(Compiler&, std::vector<Compiler::value>);
 };
 
 }

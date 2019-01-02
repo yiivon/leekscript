@@ -104,16 +104,18 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type map_int_ptr_fun_type = Type::fun(Type::ANY, {Type::INTEGER});
 	Type map_real_fun_type = Type::fun(Type::REAL, {Type::REAL});
 	Type map_fun_type = Type::fun(Type::ANY, {Type::ANY});
-	auto map_ptr = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
-	auto map_real = &LSArray<double>::ls_map<LSFunction*, double>;
-	auto map_int_int = &LSArray<int>::ls_map<LSFunction*, int>;
-	auto map_int_ptr = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
+	auto map_fun = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
 	method("map", {
-		{Type::PTR_ARRAY_TMP, {Type::CONST_ARRAY, map_fun_type}, (void*) map_ptr, Method::NATIVE},
-		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, map_real_fun_type}, (void*) map_real, Method::NATIVE},
-		{Type::PTR_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_ptr_fun_type}, (void*) map_int_ptr, Method::NATIVE},
-		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_int_fun_type}, (void*) map_int_int, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_ARRAY, map_fun_type}, (void*) map_fun, Method::NATIVE},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_ARRAY, map_fun_type}, (void*) map},
+		{Type::REAL_ARRAY_TMP, {Type::CONST_REAL_ARRAY, map_real_fun_type}, (void*) map},
+		{Type::PTR_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_ptr_fun_type}, (void*) map},
+		{Type::INT_ARRAY_TMP, {Type::CONST_INT_ARRAY, map_int_int_fun_type}, (void*) map},
 	});
+	// TODO templates
+	// method("map", {
+	// 	{Type::array(Type::U), {Type::array(Type::T), Type::fun(Type::U, {Type::T})}, (void*) map}
+	// });
 
 	method("unique", {
 		{Type::PTR_ARRAY_TMP, {Type::ARRAY}, (void*) &LSArray<LSValue*>::ls_unique, Method::NATIVE},
@@ -511,6 +513,21 @@ Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> ar
 	});
 	c.insn_delete_temporary(array);
 	return c.new_array(Type::array(array.t), {array_true, array_false});
+}
+
+Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args) {
+	auto array = args[0];
+	auto function = args[1];
+	auto result = c.new_array(Type::array(function.t.return_type()), {});
+	c.insn_foreach(array, [&](Compiler::value v, Compiler::value k) {
+		auto x = c.clone(v);
+		c.insn_inc_refs(x);
+		auto r = c.insn_call(function.t.return_type(), {x}, function);
+		c.insn_push_array(result, r);
+		c.insn_delete(x);
+	});
+	c.insn_delete_temporary(array);
+	return result;
 }
 
 }
