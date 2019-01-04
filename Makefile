@@ -42,6 +42,11 @@ all: build/leekscript
 clang: COMPILER=clang++
 clang: all
 
+ninja:
+	gyp leekscript.gyp --depth=. -f ninja -Goutput_dir=build --generator-output default
+	ninja -v -C build/default leekscript-test
+	build/default/leekscript-test
+
 # Main build task, default build
 build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
 	$(COMPILER) $(FLAGS) -o build/leekscript $(OBJ) $(OBJ_TOPLEVEL) $(LIBS)
