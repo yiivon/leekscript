@@ -1,8 +1,7 @@
 #ifndef RETURN_HPP
 #define RETURN_HPP
 
-#include "../../compiler/instruction/Instruction.hpp"
-#include "../../compiler/value/Function.hpp"
+#include "Instruction.hpp"
 
 namespace ls {
 

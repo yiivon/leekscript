@@ -1,8 +1,7 @@
 #ifndef THROW_HPP
 #define THROW_HPP
 
-#include "../../compiler/instruction/Instruction.hpp"
-#include "../../compiler/value/Function.hpp"
+#include "Instruction.hpp"
 
 namespace ls {
 

@@ -1,5 +1,4 @@
 #include "Number.hpp"
-#include "../../vm/VM.hpp"
 #include <limits.h>
 #include "../../vm/value/LSNumber.hpp"
 

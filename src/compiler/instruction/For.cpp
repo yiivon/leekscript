@@ -1,6 +1,7 @@
 #include "For.hpp"
 #include "../instruction/Return.hpp"
 #include "../../vm/LSValue.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
 
 using namespace std;
 

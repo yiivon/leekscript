@@ -1,5 +1,4 @@
 #include "Map.hpp"
-#include "../../vm/VM.hpp"
 #include "../../vm/value/LSMap.hpp"
 #include <cmath>
 

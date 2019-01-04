@@ -11,7 +11,6 @@
 #include <bitset>
 #include "Compiler.hpp"
 #include "value/Function.hpp"
-#include "../vm/VM.hpp"
 #include "../vm/value/LSNull.hpp"
 #include "../vm/value/LSArray.hpp"
 #include "../vm/value/LSMap.hpp"

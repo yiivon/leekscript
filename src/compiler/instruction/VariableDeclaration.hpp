@@ -4,8 +4,6 @@
 #include <vector>
 #include "Instruction.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-#include "../value/Expression.hpp"
-#include "../lexical/Ident.hpp"
 
 namespace ls {
 

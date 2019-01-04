@@ -5,7 +5,6 @@
 #include "../value/LSBoolean.hpp"
 #include "../../../lib/utf8.h"
 #include "../../compiler/Compiler.hpp"
-#include "../VM.hpp"
 
 using namespace std;
 

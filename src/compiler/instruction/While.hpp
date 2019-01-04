@@ -2,10 +2,6 @@
 #define WHILE_HPP
 
 #include <vector>
-
-#include "../../compiler/lexical/Ident.hpp"
-#include "../../compiler/semantic/SemanticAnalyser.hpp"
-#include "../../compiler/value/Expression.hpp"
 #include "../../compiler/value/Value.hpp"
 #include "../value/Block.hpp"
 class SemanticVar;

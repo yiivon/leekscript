@@ -1,8 +1,7 @@
 #ifndef EXPRESSIONINSTRUCTION_HPP
 #define EXPRESSIONINSTRUCTION_HPP
 
-#include "../../compiler/instruction/Instruction.hpp"
-#include "../../compiler/value/Expression.hpp"
+#include "Instruction.hpp"
 
 namespace ls {
 

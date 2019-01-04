@@ -6,7 +6,6 @@
 
 #include <vector>
 #include <iterator>
-
 #include "../LSValue.hpp"
 
 namespace ls {

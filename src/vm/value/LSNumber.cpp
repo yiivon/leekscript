@@ -5,7 +5,6 @@
 #include "LSNull.hpp"
 #include "LSFunction.hpp"
 #include "LSBoolean.hpp"
-#include "../VM.hpp"
 #include "LSString.hpp"
 #include "LSClass.hpp"
 #include "LSClosure.hpp"

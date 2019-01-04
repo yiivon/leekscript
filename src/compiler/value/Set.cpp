@@ -1,6 +1,5 @@
 #include "Set.hpp"
 #include "../../vm/value/LSSet.hpp"
-#include "../../vm/VM.hpp"
 
 using namespace std;
 

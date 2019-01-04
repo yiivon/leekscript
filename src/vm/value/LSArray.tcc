@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include "../LSValue.hpp"
-#include "../VM.hpp"
 #include "LSNull.hpp"
 #include "LSNumber.hpp"
 #include "LSBoolean.hpp"

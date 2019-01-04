@@ -1,6 +1,7 @@
 #include "Functions.hpp"
 #include "../value/LSArray.hpp"
 #include "../value/LSString.hpp"
+#include "../VM.hpp"
 
 namespace ls {
 namespace legacy {

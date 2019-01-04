@@ -1,5 +1,4 @@
 #include "VariableValue.hpp"
-#include "../../vm/VM.hpp"
 #include "math.h"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Function.hpp"

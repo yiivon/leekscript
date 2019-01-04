@@ -3,7 +3,6 @@
 
 #include <math.h>
 #include "../Module.hpp"
-#include "../../compiler/Compiler.hpp"
 
 namespace ls {
 

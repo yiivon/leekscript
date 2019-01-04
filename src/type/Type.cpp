@@ -6,7 +6,6 @@
 #include "../constants.h"
 #include "../colors.h"
 #include "../../lib/utf8.h"
-#include "../vm/VM.hpp"
 #include "Any_type.hpp"
 #include "Array_type.hpp"
 #include "Set_type.hpp"

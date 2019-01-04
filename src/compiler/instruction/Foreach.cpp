@@ -3,6 +3,7 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSSet.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
 
 using namespace std;
 

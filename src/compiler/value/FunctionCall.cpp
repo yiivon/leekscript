@@ -9,7 +9,6 @@
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSObject.hpp"
 #include "../../vm/value/LSString.hpp"
-#include "../../vm/VM.hpp"
 #include "../Compiler.hpp"
 #include "../lexical/Token.hpp"
 #include "../semantic/SemanticAnalyser.hpp"

@@ -2,8 +2,6 @@
 #define FOR_HPP
 
 #include <vector>
-
-#include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Value.hpp"
 #include "../value/Block.hpp"
 #include "Instruction.hpp"
