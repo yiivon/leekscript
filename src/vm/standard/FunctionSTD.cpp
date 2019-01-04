@@ -8,8 +8,8 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 
 	LSFunction::clazz = clazz;
 
-	field("return", Type::CLASS);
-	field("args", Type::PTR_ARRAY);
+	field("return", Type::clazz());
+	field("args", Type::array());
 
 	// method("copy", {
 	// 	{Type::FUNCTION, {Type::CONST_FUNCTION}, (void*) &ValueSTD::copy}

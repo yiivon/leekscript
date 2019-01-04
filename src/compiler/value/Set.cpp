@@ -1,7 +1,6 @@
 #include "Set.hpp"
 #include "../../vm/value/LSSet.hpp"
 #include "../../vm/VM.hpp"
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
@@ -38,14 +37,14 @@ void Set::analyse(SemanticAnalyser* analyser) {
 		constant = constant && ex->constant;
 	}
 	if (element_type.is_primitive()) {
-		if (element_type != Type::INTEGER && element_type != Type::REAL) {
-			element_type = Type::ANY;
+		if (element_type != Type::integer() && element_type != Type::real()) {
+			element_type = Type::any();
 		}
 	} else if (!element_type.is_primitive()) {
-		element_type = Type::ANY;
+		element_type = Type::any();
 	}
 	if (element_type._types.size() == 0) {
-		element_type = Type::ANY;
+		element_type = Type::any();
 	}
 	type = Type::set(element_type);
 }
@@ -84,10 +83,10 @@ void Set_insert_float(LSSet<double>* set, double value) {
 }
 
 Compiler::value Set::compile(Compiler& c) const {
-	void* create = type.element() == Type::INTEGER ? (void*) Set_create_int :
-				   type.element() == Type::REAL    ? (void*) Set_create_float : (void*) Set_create_ptr;
-	void* insert = type.element() == Type::INTEGER ? (void*) Set_insert_int :
-				   type.element() == Type::REAL    ? (void*) Set_insert_float : (void*) Set_insert_ptr;
+	void* create = type.element() == Type::integer() ? (void*) Set_create_int :
+				   type.element() == Type::real()    ? (void*) Set_create_float : (void*) Set_create_ptr;
+	void* insert = type.element() == Type::integer() ? (void*) Set_insert_int :
+				   type.element() == Type::real()    ? (void*) Set_insert_float : (void*) Set_insert_ptr;
 
 	unsigned ops = 1;
 	auto s = c.insn_call(type, {}, (void*) create);

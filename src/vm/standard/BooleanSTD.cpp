@@ -10,28 +10,28 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 	LSBoolean::clazz = clazz;
 
 	operator_("+", {
-		{Type::CONST_BOOLEAN, Type::CONST_STRING, Type::STRING_TMP, (void*) &BooleanSTD::add, {}, Method::NATIVE},
-		{Type::CONST_BOOLEAN, Type::STRING_TMP, Type::STRING_TMP, (void*) &BooleanSTD::add_tmp, {}, Method::NATIVE},
-		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::add_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_REAL, Type::REAL, (void*) &BooleanSTD::add_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_INTEGER, Type::INTEGER, (void*) &BooleanSTD::add_bool}
+		{Type::const_boolean(), Type::const_string(), Type::tmp_string(), (void*) &BooleanSTD::add, {}, Method::NATIVE},
+		{Type::const_boolean(), Type::tmp_string(), Type::tmp_string(), (void*) &BooleanSTD::add_tmp, {}, Method::NATIVE},
+		{Type::const_boolean(), Type::const_boolean(), Type::integer(), (void*) &BooleanSTD::add_bool},
+		{Type::const_boolean(), Type::const_real(), Type::real(), (void*) &BooleanSTD::add_bool},
+		{Type::const_boolean(), Type::const_integer(), Type::integer(), (void*) &BooleanSTD::add_bool}
 	});
 
 	operator_("-", {
-		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::sub_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_REAL, Type::REAL, (void*) &BooleanSTD::sub_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_INTEGER, Type::INTEGER, (void*) &BooleanSTD::sub_bool}
+		{Type::const_boolean(), Type::const_boolean(), Type::integer(), (void*) &BooleanSTD::sub_bool},
+		{Type::const_boolean(), Type::const_real(), Type::real(), (void*) &BooleanSTD::sub_bool},
+		{Type::const_boolean(), Type::const_integer(), Type::integer(), (void*) &BooleanSTD::sub_bool}
 	});
 
 	operator_("*", {
-		{Type::CONST_BOOLEAN, Type::CONST_BOOLEAN, Type::INTEGER, (void*) &BooleanSTD::mul_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_REAL, Type::REAL, (void*) &BooleanSTD::mul_bool},
-		{Type::CONST_BOOLEAN, Type::CONST_INTEGER, Type::INTEGER, (void*) &BooleanSTD::mul_bool}
+		{Type::const_boolean(), Type::const_boolean(), Type::integer(), (void*) &BooleanSTD::mul_bool},
+		{Type::const_boolean(), Type::const_real(), Type::real(), (void*) &BooleanSTD::mul_bool},
+		{Type::const_boolean(), Type::const_integer(), Type::integer(), (void*) &BooleanSTD::mul_bool}
 	});
 
 	method("compare", {
-		{Type::ANY, {Type::CONST_ANY, Type::CONST_ANY}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_BOOLEAN, Type::CONST_ANY}, (void*) &BooleanSTD::compare_val_val}
+		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
+		{Type::integer(), {Type::const_boolean(), Type::const_any()}, (void*) &BooleanSTD::compare_val_val}
 	});
 }
 

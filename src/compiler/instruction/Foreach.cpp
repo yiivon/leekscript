@@ -3,7 +3,6 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSSet.hpp"
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
@@ -112,7 +111,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container->type.is_array()) {
-		auto empty_array = c.insn_pointer_eq(it, c.new_pointer(nullptr, Type::ANY));
+		auto empty_array = c.insn_pointer_eq(it, c.new_pointer(nullptr, Type::any()));
 		c.insn_if_new(empty_array, &end_label, &cond_label);
 	} else {
 		c.insn_branch(&cond_label);

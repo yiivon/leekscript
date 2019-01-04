@@ -4,7 +4,6 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Function.hpp"
 #include "../instruction/VariableDeclaration.hpp"
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
@@ -53,7 +52,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 			scope = VarScope::CAPTURE;
 		}
 	} else {
-		type = Type::ANY;
+		type = Type::any();
 	}
 	type.temporary = false;
 

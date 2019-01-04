@@ -2,7 +2,6 @@
 #include "../../vm/VM.hpp"
 #include <limits.h>
 #include "../../vm/value/LSNumber.hpp"
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
@@ -70,7 +69,7 @@ void Number::analyse(SemanticAnalyser*) {
 			assert(false && "No support for mpf numbers yet");
 			// LCOV_EXCL_STOP
 		} else {
-			type = Type::REAL;
+			type = Type::real();
 		}
 	} else {
 		if (!mpz_value_initialized) {
@@ -78,28 +77,28 @@ void Number::analyse(SemanticAnalyser*) {
 			mpz_value_initialized = true;
 		}
 		if (!mp_number and !long_number and mpz_fits_sint_p(mpz_value)) {
-			type = Type::INTEGER;
+			type = Type::integer();
 			int_value = mpz_get_si(mpz_value);
 			double_value = int_value;
 		} else if (!mp_number and mpz_fits_slong_p(mpz_value)) {
-			type = Type::LONG;
+			type = Type::long_();
 			long_value = mpz_get_si(mpz_value);
 			double_value = long_value;
 		} else {
-			type = Type::MPZ;
+			type = Type::mpz();
 		}
 	}
 	if (pointer) {
-		type = Type::ANY;
+		type = Type::any();
 	}
 	// TODO ?
 	// type.constant = true;
 }
 
 bool Number::is_zero() const {
-	if (type == Type::ANY or type == Type::REAL) {
+	if (type == Type::any() or type == Type::real()) {
 		return double_value == 0;
-	} else if (type == Type::LONG) {
+	} else if (type == Type::long_()) {
 		return long_value == 0;
 	} else if (type.is_mpz()) {
 		return mpz_cmp_ui(mpz_value, 0) == 0;
@@ -109,13 +108,13 @@ bool Number::is_zero() const {
 }
 
 Compiler::value Number::compile(Compiler& c) const {
-	if (type == Type::ANY) {
+	if (type == Type::any()) {
 		return c.insn_to_any(c.new_real(double_value));
 	}
-	if (type == Type::LONG) {
+	if (type == Type::long_()) {
 		return c.new_long(long_value);
 	}
-	if (type == Type::REAL) {
+	if (type == Type::real()) {
 		return c.new_real(double_value);
 	}
 	if (type.is_mpz()) {

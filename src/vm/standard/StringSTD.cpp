@@ -58,105 +58,105 @@ StringSTD::StringSTD() : Module("String") {
 	 * Operators
 	 */
 	operator_("+", {
-		{Type::STRING, Type::ANY, Type::STRING, (void*) &plus_any, {}, Method::NATIVE},
-		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_mpz, {}, Method::NATIVE},
-		{Type::STRING, Type::MPZ_TMP, Type::STRING, (void*) &plus_mpz_tmp, {}, Method::NATIVE},
-		{Type::STRING, Type::REAL, Type::STRING, (void*) &StringSTD::add_real, {}, Method::NATIVE},
-		{Type::STRING, Type::INTEGER, Type::STRING, (void*) &StringSTD::add_int, {}, Method::NATIVE},
-		{Type::STRING, Type::BOOLEAN, Type::STRING, (void*) &StringSTD::add_bool, {}, Method::NATIVE},
+		{Type::string(), Type::any(), Type::string(), (void*) &plus_any, {}, Method::NATIVE},
+		{Type::string(), Type::mpz(), Type::string(), (void*) &plus_mpz, {}, Method::NATIVE},
+		{Type::string(), Type::tmp_mpz(), Type::string(), (void*) &plus_mpz_tmp, {}, Method::NATIVE},
+		{Type::string(), Type::real(), Type::string(), (void*) &StringSTD::add_real, {}, Method::NATIVE},
+		{Type::string(), Type::integer(), Type::string(), (void*) &StringSTD::add_int, {}, Method::NATIVE},
+		{Type::string(), Type::boolean(), Type::string(), (void*) &StringSTD::add_bool, {}, Method::NATIVE},
 	});
 	operator_("<", {
-		{Type::STRING, Type::STRING, Type::BOOLEAN, (void*) &StringSTD::lt}
+		{Type::string(), Type::string(), Type::boolean(), (void*) &StringSTD::lt}
 	});
 	operator_("/", {
-		{Type::STRING, Type::STRING, Type::STRING_ARRAY, (void*) &StringSTD::div}
+		{Type::string(), Type::string(), Type::array(Type::string()), (void*) &StringSTD::div}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("copy", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &ValueSTD::copy}
+		{Type::string(), {Type::const_string()}, (void*) &ValueSTD::copy}
 	});
 	method("charAt", {
-		{Type::STRING, {Type::CONST_STRING, Type::CONST_INTEGER}, (void*) &string_charAt, Method::NATIVE},
+		{Type::string(), {Type::const_string(), Type::const_integer()}, (void*) &string_charAt, Method::NATIVE},
 	});
 	method("contains", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_contains, Method::NATIVE},
+		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) &string_contains, Method::NATIVE},
 	});
 	method("endsWith", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_endsWith, Method::NATIVE},
+		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) &string_endsWith, Method::NATIVE},
 	});
-	Type fold_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::STRING});
-	Type fold_clo_type = Type::closure(Type::ANY, {Type::ANY, Type::STRING});
+	Type fold_fun_type = Type::fun(Type::any(), {Type::any(), Type::string()});
+	Type fold_clo_type = Type::closure(Type::any(), {Type::any(), Type::string()});
 	method("fold", {
-		{Type::ANY, {Type::CONST_STRING, fold_fun_type, Type::ANY}, (void*) fold_fun},
-		{Type::ANY, {Type::CONST_STRING, fold_clo_type, Type::ANY}, (void*) fold_clo},
+		{Type::any(), {Type::const_string(), fold_fun_type, Type::any()}, (void*) fold_fun},
+		{Type::any(), {Type::const_string(), fold_clo_type, Type::any()}, (void*) fold_clo},
 	});
 	method("indexOf", {
-		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_indexOf, Method::NATIVE},
+		{Type::integer(), {Type::const_string(), Type::const_string()}, (void*) &string_indexOf, Method::NATIVE},
 	});
 	method("isPermutation", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_ANY}, (void*) &LSString::is_permutation, Method::NATIVE},
+		{Type::boolean(), {Type::const_string(), Type::const_any()}, (void*) &LSString::is_permutation, Method::NATIVE},
 	});
 	method("isPalindrome", {
-		{Type::BOOLEAN, {Type::CONST_STRING}, (void*) &LSString::is_palindrome, Method::NATIVE},
+		{Type::boolean(), {Type::const_string()}, (void*) &LSString::is_palindrome, Method::NATIVE},
 	});
 	method("length", {
-		{Type::INTEGER, {Type::CONST_STRING}, (void*) &string_length, Method::NATIVE},
+		{Type::integer(), {Type::const_string()}, (void*) &string_length, Method::NATIVE},
 	});
 	method("lines", {
-		{Type::STRING_ARRAY, {Type::CONST_STRING}, (void*) &LSString::ls_lines, Method::NATIVE},
+		{Type::array(Type::string()), {Type::const_string()}, (void*) &LSString::ls_lines, Method::NATIVE},
 	});
 	method("size", {
-		{Type::ANY, {Type::CONST_STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::ls_size, Method::NATIVE},
+		{Type::any(), {Type::const_string()}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
+		{Type::integer(), {Type::const_string()}, (void*) &LSString::ls_size, Method::NATIVE},
 	});
 	method("replace", {
-		{Type::STRING, {Type::CONST_STRING, Type::CONST_STRING, Type::CONST_STRING}, (void*) &StringSTD::replace, Method::NATIVE},
+		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &StringSTD::replace, Method::NATIVE},
 	});
 	method("reverse", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &LSString::ls_tilde, Method::NATIVE},
+		{Type::string(), {Type::const_string()}, (void*) &LSString::ls_tilde, Method::NATIVE},
 	});
 	method("substring", {
-		{Type::STRING, {Type::CONST_STRING, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void*) &string_substring, Method::NATIVE},
+		{Type::string(), {Type::const_string(), Type::const_integer(), Type::const_integer()}, (void*) &string_substring, Method::NATIVE},
 	});
 	method("toArray", {
-		{Type::PTR_ARRAY, {Type::CONST_STRING}, (void*) &string_toArray, Method::NATIVE},
+		{Type::array(Type::any()), {Type::const_string()}, (void*) &string_toArray, Method::NATIVE},
 	});
 	method("toLower", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &string_toLower, Method::NATIVE},
+		{Type::string(), {Type::const_string()}, (void*) &string_toLower, Method::NATIVE},
 	});
 	method("toUpper", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &string_toUpper, Method::NATIVE},
+		{Type::string(), {Type::const_string()}, (void*) &string_toUpper, Method::NATIVE},
 	});
 	method("split", {
-		{Type::STRING_ARRAY, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_split, Method::NATIVE},
-		{Type::STRING_ARRAY, {Type::CONST_ANY, Type::CONST_ANY}, (void*) &string_split, Method::NATIVE},
+		{Type::array(Type::string()), {Type::const_string(), Type::const_string()}, (void*) &string_split, Method::NATIVE},
+		{Type::array(Type::string()), {Type::const_any(), Type::const_any()}, (void*) &string_split, Method::NATIVE},
 	});
 	method("startsWith", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_startsWith, Method::NATIVE},
+		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) &string_startsWith, Method::NATIVE},
 	});
 	method("code", {
-		{Type::ANY, {Type::CONST_ANY}, (void*) &string_begin_code_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_STRING}, (void*) &string_begin_code, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_ANY}, (void*) &string_begin_code, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_INTEGER}, (void*) &string_code, Method::NATIVE},
+		{Type::any(), {Type::const_any()}, (void*) &string_begin_code_ptr, Method::NATIVE},
+		{Type::integer(), {Type::const_string()}, (void*) &string_begin_code, Method::NATIVE},
+		{Type::integer(), {Type::const_any()}, (void*) &string_begin_code, Method::NATIVE},
+		{Type::integer(), {Type::const_string(), Type::const_integer()}, (void*) &string_code, Method::NATIVE},
 	});
 	method("number", {
-		{Type::LONG, {Type::CONST_STRING}, (void*) &string_number, Method::NATIVE},
-		{Type::LONG, {Type::CONST_ANY}, (void*) &string_number, Method::NATIVE},
+		{Type::long_(), {Type::const_string()}, (void*) &string_number, Method::NATIVE},
+		{Type::long_(), {Type::const_any()}, (void*) &string_number, Method::NATIVE},
 	});
 	auto map_fun = &LSString::ls_map<LSFunction*>;
 	method("map", {
-		{Type::STRING, {Type::CONST_STRING, Type::fun(Type::STRING, {Type::STRING})}, (void*) map_fun, Method::NATIVE},
+		{Type::string(), {Type::const_string(), Type::fun(Type::string(), {Type::string()})}, (void*) map_fun, Method::NATIVE},
 	});
 	method("sort", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &LSString::sort, Method::NATIVE},
+		{Type::string(), {Type::const_string()}, (void*) &LSString::sort, Method::NATIVE},
 	});
 	method("wordCount", {
-		{Type::ANY, {Type::CONST_STRING}, (void*) &LSString::word_count_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::word_count, Method::NATIVE},
+		{Type::any(), {Type::const_string()}, (void*) &LSString::word_count_ptr, Method::NATIVE},
+		{Type::integer(), {Type::const_string()}, (void*) &LSString::word_count, Method::NATIVE},
 	});
 }
 
@@ -193,7 +193,7 @@ LSString* StringSTD::add_real(LSString* s, double i) {
 }
 
 Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, LSValue* b) {
+	auto res = c.insn_call(Type::boolean(), args, +[](LSValue* a, LSValue* b) {
 		return a->lt(b);
 	});
 	c.insn_delete_temporary(args[0]);
@@ -202,7 +202,7 @@ Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 }
 
 Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::STRING_ARRAY, args, +[](LSValue* a, LSValue* b) {
+	return c.insn_call(Type::array(Type::string()), args, +[](LSValue* a, LSValue* b) {
 		return a->div(b);
 	});
 }
@@ -376,12 +376,12 @@ long string_number(const LSString* s) {
 
 Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> args) {
 	auto f = &LSString::ls_foldLeft<LSFunction*>;
-	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
+	return c.insn_call(Type::any(), {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
 }
 
 Compiler::value StringSTD::fold_clo(Compiler& c, std::vector<Compiler::value> args) {
 	auto f = &LSString::ls_foldLeft<LSClosure*>;
-	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
+	return c.insn_call(Type::any(), {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
 }
 
 }

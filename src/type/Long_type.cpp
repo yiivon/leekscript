@@ -12,13 +12,17 @@
 namespace ls {
 
 Type Long_type::key() const {
-	return Type::INTEGER;
+	return Type::integer();
 }
 Type Long_type::element() const {
-	return Type::INTEGER;
+	return Type::integer();
 }
 Type Long_type::iterator() const {
-	return Type::LONG_ITERATOR;
+	return Type::structure("long_iterator", {
+		Type::long_(),
+		Type::long_(),
+		Type::integer()
+	});
 }
 bool Long_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Long_type*>(type) != nullptr;

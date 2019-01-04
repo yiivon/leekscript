@@ -9,11 +9,11 @@
 namespace ls {
 
 Array_type::Array_type(Type element) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("array"), std::initializer_list<Type> {
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // refs
-	Type::BOOLEAN, // native
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // refs
+	Type::boolean(), // native
 	element.pointer(), // vector.begin
 	element.pointer(), // vector.end
 	element.pointer() // vector.data
@@ -21,7 +21,7 @@ Array_type::Array_type(Type element) : Pointer_type(Type { std::make_shared<cons
 }
 
 Type Array_type::key() const {
-	return Type::INTEGER;
+	return Type::integer();
 }
 Type Array_type::element() const {
 	return _element;
@@ -50,9 +50,9 @@ int Array_type::distance(const Base_type* type) const {
 }
 Type Array_type::iterator() const {
 	const auto merged = _element.fold();
-	if (merged.is_integer()) return Type::INT_ARRAY_ITERATOR;
-	if (merged.is_real()) return Type::REAL_ARRAY_ITERATOR;
-	return Type::PTR_ARRAY_ITERATOR;
+	if (merged.is_integer()) return Type::integer().pointer();
+	if (merged.is_real()) return Type::real().pointer();
+	return Type::any().pointer();
 }
 std::string Array_type::clazz() const {
 	return "Array";

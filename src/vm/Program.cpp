@@ -116,21 +116,21 @@ std::string Program::execute(VM& vm) {
 		return "(void)";
 	}
 
-	if (output_type.not_temporary() == Type::BOOLEAN) {
+	if (output_type.not_temporary() == Type::boolean()) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
 		// if (vm.last_exception) throw vm.last_exception;
 		return res ? "true" : "false";
 	}
 
-	if (output_type.not_temporary() == Type::INTEGER) {
+	if (output_type.not_temporary() == Type::integer()) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
 		// if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
 
-	if (output_type.not_temporary() == Type::MPZ) {
+	if (output_type.not_temporary() == Type::mpz()) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
 		// if (vm.last_exception) throw vm.last_exception;
@@ -141,14 +141,14 @@ std::string Program::execute(VM& vm) {
 		return std::string(buff);
 	}
 
-	if (output_type.not_temporary() == Type::REAL) {
+	if (output_type.not_temporary() == Type::real()) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
 		// if (vm.last_exception) throw vm.last_exception;
 		return LSNumber::print(res);
 	}
 
-	if (output_type.not_temporary() == Type::LONG) {
+	if (output_type.not_temporary() == Type::long_()) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
 		// if (vm.last_exception) throw vm.last_exception;
@@ -286,7 +286,7 @@ std::string Program::underline_code(Location location, Location focus) const {
 					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
 					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
 					jit_insn_call_native(F, "push", (void*) &Program_push_null, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::BOOLEAN) {
+				} else if (type.raw_type == RawType::boolean()) {
 					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
 					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
 					jit_insn_call_native(F, "push", (void*) &Program_push_boolean, push_sig, var_args, 2, JIT_CALL_NOTHROW);
@@ -294,7 +294,7 @@ std::string Program::underline_code(Location location, Location focus) const {
 					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
 					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
 					jit_insn_call_native(F, "push", (void*) &Program_push_integer, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::REAL) {
+				} else if (type.raw_type == RawType::real()) {
 					jit_type_t args_float[2] = {JIT_POINTER, JIT_REAL};
 					jit_type_t sig_push_float = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args_float, 2, 0);
 					jit_insn_call_native(F, "push", (void*) &Program_push_float, sig_push_float, var_args, 2, JIT_CALL_NOTHROW);

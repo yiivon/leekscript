@@ -7,12 +7,43 @@
 #include "../colors.h"
 #include "../../lib/utf8.h"
 #include "../vm/VM.hpp"
-#include "RawType.hpp"
+#include "Any_type.hpp"
+#include "Array_type.hpp"
+#include "Set_type.hpp"
+#include "Function_type.hpp"
+#include "Class_type.hpp"
+#include "Object_type.hpp"
+#include "Class_type.hpp"
+#include "Interval_type.hpp"
+#include "String_type.hpp"
+#include "Long_type.hpp"
+#include "Bool_type.hpp"
+#include "Mpz_type.hpp"
+#include "Real_type.hpp"
+#include "Map_type.hpp"
+#include "Null_type.hpp"
+#include "Integer_type.hpp"
+#include "Placeholder_type.hpp"
+#include "Struct_type.hpp"
+#include "Pointer_type.hpp"
+
 #include "../compiler/value/Function.hpp"
 
 using namespace std;
 
 namespace ls {
+
+std::shared_ptr<Base_type> Type::_raw_null = nullptr;
+std::shared_ptr<Base_type> Type::_raw_any = nullptr;
+std::shared_ptr<Base_type> Type::_raw_boolean = nullptr;
+std::shared_ptr<Base_type> Type::_raw_integer = nullptr;
+std::shared_ptr<Base_type> Type::_raw_number = nullptr;
+std::shared_ptr<Base_type> Type::_raw_long = nullptr;
+std::shared_ptr<Base_type> Type::_raw_real = nullptr;
+std::shared_ptr<Base_type> Type::_raw_mpz = nullptr;
+std::shared_ptr<Base_type> Type::_raw_string = nullptr;
+std::shared_ptr<Base_type> Type::_raw_interval = nullptr;
+std::shared_ptr<Base_type> Type::_raw_object = nullptr;
 
 std::vector<std::shared_ptr<const Base_type>> Type::placeholder_types;
 
@@ -21,134 +52,6 @@ void Type::clear_placeholder_types() {
 }
 
 unsigned int Type::placeholder_counter = 0;
-
-const std::shared_ptr<const Bool_type> RawType::BOOLEAN = std::make_shared<Bool_type>();
-const std::shared_ptr<const Integer_type> RawType::INTEGER = std::make_shared<Integer_type>();
-const std::shared_ptr<const Long_type> RawType::LONG = std::make_shared<Long_type>();
-const std::shared_ptr<const Real_type> RawType::REAL = std::make_shared<Real_type>();
-const std::shared_ptr<const Mpz_type> RawType::MPZ = std::make_shared<Mpz_type>();
-const std::shared_ptr<const Number_type> RawType::NUMBER = std::make_shared<Number_type>();
-
-const Type Type::BOOLEAN(RawType::BOOLEAN);
-const Type Type::CONST_BOOLEAN(RawType::BOOLEAN, false, false, true);
-const Type Type::NUMBER(RawType::NUMBER);
-const Type Type::CONST_NUMBER(RawType::NUMBER, false, false, true);
-const Type Type::INTEGER(RawType::INTEGER);
-const Type Type::CONST_INTEGER(RawType::INTEGER, false, false, true);
-const Type Type::MPZ(RawType::MPZ);
-const Type Type::MPZ_TMP(RawType::MPZ, false, true);
-const Type Type::LONG(RawType::LONG);
-const Type Type::CONST_LONG(RawType::LONG, false, false, true);
-const Type Type::REAL(RawType::REAL);
-const Type Type::CONST_REAL(RawType::REAL, false, false, true);
-
-const std::shared_ptr<const Any_type> RawType::ANY = std::make_shared<Any_type>();
-const std::shared_ptr<const Null_type> RawType::NULLL = std::make_shared<Null_type>();
-const std::shared_ptr<const String_type> RawType::STRING = std::make_shared<String_type>();
-const std::shared_ptr<const Object_type> RawType::OBJECT = std::make_shared<Object_type>();
-const std::shared_ptr<const Class_type> RawType::CLASS = std::make_shared<Class_type>();
-
-const Type Type::ANY(RawType::ANY);
-const Type Type::CONST_ANY(RawType::ANY, false, false, true);
-const Type Type::NULLL(RawType::NULLL, true);
-const Type Type::STRING(RawType::STRING);
-const Type Type::CONST_STRING(RawType::STRING, false, false, true);
-const Type Type::STRING_TMP(RawType::STRING, false, true);
-const Type Type::OBJECT(RawType::OBJECT);
-const Type Type::OBJECT_TMP(RawType::OBJECT, false, true);
-
-const Type Type::ARRAY = Type::array();
-const Type Type::PTR_ARRAY = Type::array(Type::ANY);
-const Type Type::CONST_ARRAY = Type::const_array();
-const Type Type::INT_ARRAY = Type::array(Type::INTEGER);
-const Type Type::REAL_ARRAY = Type::array(Type::REAL);
-const Type Type::PTR_ARRAY_TMP = Type::tmp_array(Type::ANY);
-const Type Type::INT_ARRAY_TMP = Type::tmp_array(Type::INTEGER);
-const Type Type::REAL_ARRAY_TMP = Type::tmp_array(Type::REAL);
-const Type Type::STRING_ARRAY = Type::array(Type::STRING);
-const Type Type::CONST_PTR_ARRAY = Type::const_array(Type::ANY);
-const Type Type::CONST_INT_ARRAY = Type::const_array(Type::INTEGER);
-const Type Type::CONST_REAL_ARRAY = Type::const_array(Type::REAL);
-const Type Type::CONST_STRING_ARRAY = Type::const_array(Type::STRING);
-
-const Type Type::MAP = Type::map();
-const Type Type::PTR_PTR_MAP = Type::map(Type::ANY, Type::ANY);
-const Type Type::PTR_INT_MAP = Type::map(Type::ANY, Type::INTEGER);
-const Type Type::PTR_REAL_MAP = Type::map(Type::ANY, Type::REAL);
-const Type Type::REAL_PTR_MAP = Type::map(Type::REAL, Type::ANY);
-const Type Type::REAL_INT_MAP = Type::map(Type::REAL, Type::INTEGER);
-const Type Type::REAL_REAL_MAP = Type::map(Type::REAL, Type::REAL);
-const Type Type::INT_PTR_MAP = Type::map(Type::INTEGER, Type::ANY);
-const Type Type::INT_INT_MAP = Type::map(Type::INTEGER, Type::INTEGER);
-const Type Type::INT_REAL_MAP = Type::map(Type::INTEGER, Type::REAL);
-const Type Type::CONST_MAP = Type::const_map();
-const Type Type::CONST_PTR_PTR_MAP = Type::const_map(Type::ANY, Type::ANY);
-const Type Type::CONST_PTR_INT_MAP = Type::const_map(Type::ANY, Type::INTEGER);
-const Type Type::CONST_PTR_REAL_MAP = Type::const_map(Type::ANY, Type::REAL);
-const Type Type::CONST_REAL_PTR_MAP = Type::const_map(Type::REAL, Type::ANY);
-const Type Type::CONST_REAL_INT_MAP = Type::const_map(Type::REAL, Type::INTEGER);
-const Type Type::CONST_REAL_REAL_MAP = Type::const_map(Type::REAL, Type::REAL);
-const Type Type::CONST_INT_PTR_MAP = Type::const_map(Type::INTEGER, Type::ANY);
-const Type Type::CONST_INT_INT_MAP = Type::const_map(Type::INTEGER, Type::INTEGER);
-const Type Type::CONST_INT_REAL_MAP = Type::const_map(Type::INTEGER, Type::REAL);
-
-const Type Type::SET = Type::set();
-const Type Type::PTR_SET = Type::set(Type::ANY);
-const Type Type::INT_SET = Type::set(Type::INTEGER);
-const Type Type::REAL_SET = Type::set(Type::REAL);
-const Type Type::CONST_SET = Type::const_set();
-const Type Type::CONST_INT_SET = Type::const_set(Type::INTEGER);
-const Type Type::CONST_REAL_SET = Type::const_set(Type::REAL);
-
-const Type Type::INTERVAL = Type::interval();
-const Type Type::INTERVAL_TMP = Type::tmp_interval();
-const Type Type::PTR_ARRAY_ARRAY = Type::array(Type::PTR_ARRAY);
-const Type Type::REAL_ARRAY_ARRAY = Type::array(Type::REAL_ARRAY);
-const Type Type::INT_ARRAY_ARRAY = Type::array(Type::INT_ARRAY);
-
-const Type Type::FUNCTION({ std::make_shared<const Function_type>(Type(), std::vector<Type>(), false, nullptr) });
-const Type Type::CLOSURE({ std::make_shared<const Function_type>(Type(), std::vector<Type>(), true, nullptr) });
-const Type Type::CLASS(RawType::CLASS, true);
-const Type Type::CONST_CLASS(RawType::CLASS, true, false, true);
-
-const Type Type::STRING_ITERATOR = Type::structure("string_iterator", {
-	Type::ANY, Type::INTEGER, Type::INTEGER, Type::INTEGER, Type::INTEGER
-});
-
-const Type Type::INTERVAL_ITERATOR = Type::structure("interval_iterator", {
-	Type::INTERVAL, Type::INTEGER
-});
-const Type Type::INTEGER_ITERATOR = Type::structure("int_iterator", {
-	Type::INTEGER,
-	Type::INTEGER,
-	Type::INTEGER
-});
-const Type Type::LONG_ITERATOR = Type::structure("long_iterator", {
-	Type::LONG,
-	Type::LONG,
-	Type::INTEGER
-});
-const Type Type::MPZ_ITERATOR = Type::MPZ;
-const Type Type::INT_ARRAY_ITERATOR = Type::INTEGER.pointer();
-const Type Type::REAL_ARRAY_ITERATOR = Type::REAL.pointer();
-const Type Type::PTR_ARRAY_ITERATOR = Type::ANY.pointer();
-const Type Type::INT_SET_ITERATOR = Type::structure("int_set_iterator", {
-	Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER }) }).pointer(),
-	Type::INTEGER
-});
-const Type Type::REAL_SET_ITERATOR = Type::structure("real_set_iterator", {
-	Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::REAL }) }).pointer(),
-	Type::INTEGER
-});
-const Type Type::PTR_SET_ITERATOR = Type::structure("any_set_iterator", {
-	Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY }) }).pointer(),
-	Type::INTEGER
-});
-const Type Type::INT_INT_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER, Type::INTEGER }) }).pointer();
-const Type Type::PTR_PTR_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY, Type::ANY }) }).pointer();
-const Type Type::PTR_INT_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::ANY, Type::INTEGER }) }).pointer();
-const Type Type::INT_PTR_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER, Type::ANY }) }).pointer();
-const Type Type::INT_REAL_MAP_ITERATOR = Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> { Type::LONG, Type::LONG, Type::LONG, Type::LONG, Type::INTEGER, Type::REAL }) }).pointer();
 
 Type::Type() {
 	native = false;
@@ -226,13 +129,13 @@ Type Type::operator * (const Type& t2) const {
 		return *this;
 	}
 	if (is_null() or t2.is_null()) {
-		return Type::NULLL;
+		return Type::null();
 	}
 	if (is_polymorphic() and t2.is_primitive()) {
-		return Type::ANY;
+		return Type::any();
 	}
 	if (t2.is_polymorphic() and is_primitive()) {
-		return Type::ANY;
+		return Type::any();
 	}
 	if (is_any()) {
 		return t2;
@@ -246,7 +149,7 @@ Type Type::operator * (const Type& t2) const {
 	if (compatible(t2)) {
 		return *this;
 	}
-	return Type::ANY;
+	return Type::any();
 }
 
 Type Type::fold() const {
@@ -284,7 +187,7 @@ std::string Type::to_string() const {
 	return oss.str();
 }
 
-std::string Type::clazz() const {
+std::string Type::class_name() const {
 	if (_types.size() == 0) { return ""; }
 	return fold()._types[0]->clazz();
 }
@@ -372,7 +275,7 @@ template <class T> bool Type::is_type() const {
 }
 bool Type::is_any() const { return is_type<Any_type>(); }
 bool Type::is_bool() const { return is_type<Bool_type>(); }
-bool Type::is_number() const { return castable(Type::NUMBER, true); }
+bool Type::is_number() const { return castable(Type::number(), true); }
 bool Type::is_real() const { return is_type<Real_type>(); }
 bool Type::is_integer() const { return is_type<Integer_type>(); }
 bool Type::is_long() const { return is_type<Long_type>(); }
@@ -452,7 +355,7 @@ bool Type::compatible(const Type& type) const {
 			return true;
 		}
 		// All numbers types are compatible with the base 'Number' type
-		if (_types[0] == RawType::NUMBER and (type.is_integer() or type.is_long() or type.is_real())) {
+		if (dynamic_cast<const Number_type*>(_types[0].get()) and (type.is_integer() or type.is_long() or type.is_real())) {
 			return true;
 		}
 		return false;
@@ -476,7 +379,7 @@ bool Type::may_be_compatible(const Type& type) const {
 		return true;
 	}
 	// Example: Number.abs(number*) => we allow to call with a unknown pointer
-	if (is_polymorphic() and type == Type::ANY) {
+	if (is_polymorphic() and type == Type::any()) {
 		return true;
 	}
 	return false;
@@ -512,6 +415,63 @@ std::shared_ptr<const Base_type> Type::generate_new_placeholder_type() {
 	return type;
 }
 
+Type Type::null() {
+	return { raw_null(), false, false, false };
+}
+Type Type::any() {
+	return { raw_any(), false, false, false };
+}
+Type Type::const_any() {
+	return { raw_any(), false, false, true };
+}
+Type Type::boolean() {
+	return { raw_boolean(), false, false, false };
+}
+Type Type::const_boolean() {
+	return { raw_boolean(), false, false, true };
+}
+Type Type::number() {
+	return { raw_number(), false, false, false };
+}
+Type Type::const_number() {
+	return { raw_number(), false, false, true };
+}
+Type Type::integer() {
+	return { raw_integer(), false, false, false };
+}
+Type Type::const_integer() {
+	return { raw_integer(), false, false, true };
+}
+Type Type::long_() {
+	return { raw_long(), false, false, false };
+}
+Type Type::const_long() {
+	return { raw_long(), false, false, true };
+}
+Type Type::mpz() {
+	return { raw_mpz(), false, false, false };
+}
+Type Type::tmp_mpz() {
+	return { raw_mpz(), false, true, false };
+}
+Type Type::const_mpz() {
+	return { raw_mpz(), false, false, true };
+}
+Type Type::string() {
+	return { raw_string(), false, false, false };
+}
+Type Type::tmp_string() {
+	return { raw_string(), false, true, false };
+}
+Type Type::const_string() {
+	return { raw_string(), false, false, true };
+}
+Type Type::real() {
+	return { raw_real(), false, false, false };
+}
+Type Type::const_real() {
+	return { raw_real(), false, false, true };
+}
 Type Type::array(const Type element) {
 	return { std::make_shared<Array_type>(element), false, false, false };
 }
@@ -520,6 +480,12 @@ Type Type::const_array(const Type element) {
 }
 Type Type::tmp_array(const Type element) {
 	return { std::make_shared<Array_type>(element), false, true, false };
+}
+Type Type::object() {
+	return { raw_object(), false, false, false };
+}
+Type Type::tmp_object() {
+	return { raw_object(), false, true, false };
 }
 Type Type::set(const Type element) {
 	return { std::make_shared<Set_type>(element), false, false, false };
@@ -537,10 +503,10 @@ Type Type::const_map(const Type key, const Type element) {
 	return { std::make_shared<Map_type>(key, element), false, false, true };
 }
 Type Type::interval() {
-	return { std::make_shared<Interval_type>(), false, false, false };
+	return { raw_interval(), false, false, false };
 }
 Type Type::tmp_interval() {
-	return { std::make_shared<Interval_type>(), false, true, false };
+	return { raw_interval(), false, true, false };
 }
 Type Type::fun(Type return_type, std::vector<Type> arguments, const Function* function) {
 	return { std::make_shared<Function_type>(return_type, arguments, false, function), false, false, true };
@@ -551,11 +517,62 @@ Type Type::closure(Type return_type, std::vector<Type> arguments, const Function
 Type Type::structure(const std::string name, std::initializer_list<Type> types) {
 	return { std::make_shared<Struct_type>(name, types), false, false, false };
 }
+Type Type::clazz() {
+	return { std::make_shared<Class_type>(), false, false, false };
+}
+Type Type::const_class() {
+	return { std::make_shared<Class_type>(), false, false, true };
+}
 bool Type::all(std::function<bool(std::shared_ptr<const Base_type>)> fun) const {
 	return std::all_of(_types.begin(), _types.end(), fun);
 }
 bool Type::some(std::function<bool(std::shared_ptr<const Base_type>)> fun) const {
 	return std::any_of(_types.begin(), _types.end(), fun);
+}
+
+const std::shared_ptr<Base_type> Type::raw_null() {
+	if (!_raw_null) _raw_null = std::make_shared<Null_type>();
+	return _raw_null;
+}
+const std::shared_ptr<Base_type> Type::raw_any() {
+	if (!_raw_any) _raw_any = std::make_shared<Any_type>();
+	return _raw_any;
+}
+const std::shared_ptr<Base_type> Type::raw_boolean() {
+	if (!_raw_boolean) _raw_boolean = std::make_shared<Bool_type>();
+	return _raw_boolean;
+}
+const std::shared_ptr<Base_type> Type::raw_number() {
+	if (!_raw_number) _raw_number = std::make_shared<Number_type>();
+	return _raw_number;
+}
+const std::shared_ptr<Base_type> Type::raw_integer() {
+	if (!_raw_integer) _raw_integer = std::make_shared<Integer_type>();
+	return _raw_integer;
+}
+const std::shared_ptr<Base_type> Type::raw_long() {
+	if (!_raw_long) _raw_long = std::make_shared<Long_type>();
+	return _raw_long;
+}
+const std::shared_ptr<Base_type> Type::raw_real() {
+	if (!_raw_real) _raw_real = std::make_shared<Real_type>();
+	return _raw_real;
+}
+const std::shared_ptr<Base_type> Type::raw_mpz() {
+	if (!_raw_mpz) _raw_mpz = std::make_shared<Mpz_type>();
+	return _raw_mpz;
+}
+const std::shared_ptr<Base_type> Type::raw_string() {
+	if (!_raw_string) _raw_string = std::make_shared<String_type>();
+	return _raw_string;
+}
+const std::shared_ptr<Base_type> Type::raw_interval() {
+	if (!_raw_interval) _raw_interval = std::make_shared<Interval_type>();
+	return _raw_interval;
+}
+const std::shared_ptr<Base_type> Type::raw_object() {
+	if (!_raw_object) _raw_object = std::make_shared<Object_type>();
+	return _raw_object;
 }
 
 ostream& operator << (ostream& os, const Type& type) {

@@ -89,7 +89,7 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 
 	if (!has_default) {
 		// Return type is always pointer because in the default case, null is return
-		type = Type::ANY;
+		type = Type::any();
 		for (Value* r : returns) {
 			r->analyse(analyser);
 		}
@@ -155,13 +155,13 @@ Compiler::value Match::compile(Compiler& c) const {
 
 		if (pattern_list[i].size() == 1) {
 			// jit_value_t cond = pattern_list[i][0].match(c, v.v);
-			// c.insn_branch_if_not({cond, Type::BOOLEAN}, &label_next);
+			// c.insn_branch_if_not({cond, Type::boolean()}, &label_next);
 		} else {
 			Compiler::label label_match;
 
 			for (const Pattern& pattern : pattern_list[i]) {
 				// jit_value_t cond = pattern.match(c, v.v);
-				// c.insn_branch_if({cond, Type::BOOLEAN}, &label_match);
+				// c.insn_branch_if({cond, Type::boolean()}, &label_match);
 			}
 			c.insn_branch(&label_next);
 			c.insn_label(&label_match);

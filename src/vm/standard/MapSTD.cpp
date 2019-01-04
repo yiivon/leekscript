@@ -24,116 +24,116 @@ MapSTD::MapSTD() : Module("Map") {
 	LSMap<double, double>::clazz = clazz;
 
 	operator_("in", {
-		{Type::CONST_PTR_PTR_MAP, Type::ANY, Type::BOOLEAN, (void*) &LSMap<LSValue*, LSValue*>::in, {}, Method::NATIVE},
-		{Type::CONST_PTR_REAL_MAP, Type::ANY, Type::BOOLEAN, (void*) &LSMap<LSValue*, double>::in, {}, Method::NATIVE},
-		{Type::CONST_PTR_INT_MAP, Type::ANY, Type::BOOLEAN, (void*) &LSMap<LSValue*, int>::in, {}, Method::NATIVE},
-		{Type::CONST_REAL_PTR_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, LSValue*>::in, {}, Method::NATIVE},
-		{Type::CONST_REAL_REAL_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, double>::in, {}, Method::NATIVE},
-		{Type::CONST_REAL_INT_MAP, Type::REAL, Type::BOOLEAN, (void*) &LSMap<double, int>::in, {}, Method::NATIVE},
-		{Type::CONST_INT_PTR_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, LSValue*>::in, {}, Method::NATIVE},
-		{Type::CONST_INT_REAL_MAP, Type::INTEGER, Type::BOOLEAN, (void*) &LSMap<int, double>::in, {}, Method::NATIVE},
-		{Type::CONST_INT_INT_MAP, Type::LONG, Type::BOOLEAN, (void*) &LSMap<int, int>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::any(), Type::any()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, LSValue*>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::any(), Type::real()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, double>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::any(), Type::integer()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, int>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::real(), Type::any()), Type::real(), Type::boolean(), (void*) &LSMap<double, LSValue*>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::real(), Type::real()), Type::real(), Type::boolean(), (void*) &LSMap<double, double>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::real(), Type::integer()), Type::real(), Type::boolean(), (void*) &LSMap<double, int>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::integer(), Type::any()), Type::integer(), Type::boolean(), (void*) &LSMap<int, LSValue*>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::integer(), Type::real()), Type::integer(), Type::boolean(), (void*) &LSMap<int, double>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::integer(), Type::integer()), Type::long_(), Type::boolean(), (void*) &LSMap<int, int>::in, {}, Method::NATIVE},
 	});
 
 	method("size", {
-		{Type::INTEGER, {Type::CONST_PTR_PTR_MAP}, (void*) map_size, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_PTR_REAL_MAP}, (void*) map_size, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_PTR_INT_MAP}, (void*) map_size, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_PTR_MAP}, (void*) map_size, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_REAL_MAP}, (void*) map_size, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_INT_MAP}, (void*) map_size, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::any(), Type::any())}, (void*) map_size, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::any(), Type::real())}, (void*) map_size, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::any(), Type::integer())}, (void*) map_size, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::any())}, (void*) map_size, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::real())}, (void*) map_size, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) map_size, Method::NATIVE},
     });
 
 	method("values", {
-		{Type::PTR_ARRAY, {Type::CONST_PTR_PTR_MAP}, (void*) &LSMap<LSValue*, LSValue*>::values, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_PTR_REAL_MAP}, (void*) &LSMap<LSValue*, double>::values, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_PTR_INT_MAP}, (void*) &LSMap<LSValue*, int>::values, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::CONST_REAL_PTR_MAP}, (void*) &LSMap<double, LSValue*>::values, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_REAL_REAL_MAP}, (void*) &LSMap<double, double>::values, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_REAL_INT_MAP}, (void*) &LSMap<double, int>::values, Method::NATIVE},
-		{Type::PTR_ARRAY, {Type::CONST_INT_PTR_MAP}, (void*) &LSMap<int, LSValue*>::values, Method::NATIVE},
-		{Type::REAL_ARRAY, {Type::CONST_INT_REAL_MAP}, (void*) &LSMap<int, double>::values, Method::NATIVE},
-		{Type::INT_ARRAY, {Type::CONST_INT_INT_MAP}, (void*) &LSMap<int, int>::values, Method::NATIVE}
+		{Type::array(Type::any()), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*, LSValue*>::values, Method::NATIVE},
+		{Type::array(Type::real()), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*, double>::values, Method::NATIVE},
+		{Type::array(Type::integer()), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*, int>::values, Method::NATIVE},
+		{Type::array(Type::any()), {Type::const_map(Type::real(), Type::any())}, (void*) &LSMap<double, LSValue*>::values, Method::NATIVE},
+		{Type::array(Type::real()), {Type::const_map(Type::real(), Type::real())}, (void*) &LSMap<double, double>::values, Method::NATIVE},
+		{Type::array(Type::integer()), {Type::const_map(Type::real(), Type::integer())}, (void*) &LSMap<double, int>::values, Method::NATIVE},
+		{Type::array(Type::any()), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int, LSValue*>::values, Method::NATIVE},
+		{Type::array(Type::real()), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int, double>::values, Method::NATIVE},
+		{Type::array(Type::integer()), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int, int>::values, Method::NATIVE}
 	});
 
 	method("insert", {
-		{Type::BOOLEAN, {Type::PTR_PTR_MAP, Type::ANY, Type::ANY}, (void*) &insert_any_any},
-		{Type::BOOLEAN, {Type::PTR_REAL_MAP, Type::ANY, Type::REAL}, (void*) &insert_any_real},
-		{Type::BOOLEAN, {Type::PTR_INT_MAP, Type::ANY, Type::INTEGER}, (void*) &insert_any_int},
-		{Type::BOOLEAN, {Type::INT_PTR_MAP, Type::INTEGER, Type::ANY}, (void*) &insert_int_any},
-		{Type::BOOLEAN, {Type::INT_REAL_MAP, Type::INTEGER, Type::REAL}, (void*) &insert_int_real},
-		{Type::BOOLEAN, {Type::INT_INT_MAP, Type::INTEGER, Type::INTEGER}, (void*) &insert_int_int},
+		{Type::boolean(), {Type::map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &insert_any_any},
+		{Type::boolean(), {Type::map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &insert_any_real},
+		{Type::boolean(), {Type::map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &insert_any_int},
+		{Type::boolean(), {Type::map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &insert_int_any},
+		{Type::boolean(), {Type::map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &insert_int_real},
+		{Type::boolean(), {Type::map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &insert_int_int},
     });
 
 	method("clear", {
-		{Type::PTR_PTR_MAP, {Type::MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear, Method::NATIVE},
-		{Type::PTR_REAL_MAP, {Type::PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_clear, Method::NATIVE},
-		{Type::PTR_INT_MAP, {Type::PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_clear, Method::NATIVE},
-		{Type::INT_PTR_MAP, {Type::INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_clear, Method::NATIVE},
-		{Type::INT_REAL_MAP, {Type::INT_REAL_MAP}, (void*) &LSMap<int,double>::ls_clear, Method::NATIVE},
-		{Type::INT_INT_MAP, {Type::INT_INT_MAP}, (void*) &LSMap<int,int>::ls_clear, Method::NATIVE},
+		{Type::map(Type::any(), Type::any()), {Type::map()}, (void*) &LSMap<LSValue*,LSValue*>::ls_clear, Method::NATIVE},
+		{Type::map(Type::any(), Type::real()), {Type::map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_clear, Method::NATIVE},
+		{Type::map(Type::any(), Type::integer()), {Type::map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_clear, Method::NATIVE},
+		{Type::map(Type::integer(), Type::any()), {Type::map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_clear, Method::NATIVE},
+		{Type::map(Type::integer(), Type::real()), {Type::map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_clear, Method::NATIVE},
+		{Type::map(Type::integer(), Type::integer()), {Type::map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_clear, Method::NATIVE},
 	});
 
 	method("erase", {
-		{Type::BOOLEAN, {Type::PTR_PTR_MAP, Type::ANY}, (void*) &LSMap<LSValue*,LSValue*>::ls_erase, Method::NATIVE},
-		{Type::BOOLEAN, {Type::PTR_REAL_MAP, Type::ANY}, (void*) &LSMap<LSValue*,double>::ls_erase, Method::NATIVE},
-		{Type::BOOLEAN, {Type::PTR_INT_MAP, Type::ANY}, (void*) &LSMap<LSValue*,int>::ls_erase, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_PTR_MAP, Type::INTEGER}, (void*) &LSMap<int,LSValue*>::ls_erase, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_REAL_MAP, Type::INTEGER}, (void*) &LSMap<int,double>::ls_erase, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_INT_MAP, Type::INTEGER}, (void*) &LSMap<int,int>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::any(), Type::any()), Type::any()}, (void*) &LSMap<LSValue*,LSValue*>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::any(), Type::real()), Type::any()}, (void*) &LSMap<LSValue*,double>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::any(), Type::integer()), Type::any()}, (void*) &LSMap<LSValue*,int>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::integer(), Type::any()), Type::integer()}, (void*) &LSMap<int,LSValue*>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::integer(), Type::real()), Type::integer()}, (void*) &LSMap<int,double>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::integer(), Type::integer()), Type::integer()}, (void*) &LSMap<int,int>::ls_erase, Method::NATIVE},
 	});
 
 	method("look", {
-		{Type::ANY, {Type::CONST_PTR_PTR_MAP, Type::ANY, Type::ANY}, (void*) &LSMap<LSValue*,LSValue*>::ls_look, Method::NATIVE},
-		{Type::REAL, {Type::CONST_PTR_REAL_MAP, Type::ANY, Type::REAL}, (void*) &LSMap<LSValue*,double>::ls_look, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_PTR_INT_MAP, Type::ANY, Type::INTEGER}, (void*) &LSMap<LSValue*,int>::ls_look, Method::NATIVE},
-		{Type::ANY, {Type::CONST_INT_PTR_MAP, Type::INTEGER, Type::ANY}, (void*) &LSMap<int,LSValue*>::ls_look, Method::NATIVE},
-		{Type::REAL, {Type::CONST_INT_REAL_MAP, Type::INTEGER, Type::REAL}, (void*) &LSMap<int,double>::ls_look, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_INT_MAP, Type::INTEGER, Type::INTEGER}, (void*) &LSMap<int,int>::ls_look, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &LSMap<LSValue*,LSValue*>::ls_look, Method::NATIVE},
+		{Type::real(), {Type::const_map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &LSMap<LSValue*,double>::ls_look, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &LSMap<LSValue*,int>::ls_look, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &LSMap<int,LSValue*>::ls_look, Method::NATIVE},
+		{Type::real(), {Type::const_map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int,double>::ls_look, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int,int>::ls_look, Method::NATIVE},
 	});
 
 	method("min", {
-		{Type::ANY, {Type::CONST_PTR_PTR_MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_min, Method::NATIVE},
-		{Type::REAL, {Type::CONST_PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_min, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_min, Method::NATIVE},
-		{Type::ANY, {Type::CONST_INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_min, Method::NATIVE},
-		{Type::REAL, {Type::CONST_INT_REAL_MAP}, (void*) &LSMap<int,double>::ls_min, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_INT_MAP}, (void*) &LSMap<int,int>::ls_min, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_min, Method::NATIVE},
+		{Type::real(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_min, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_min, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_min, Method::NATIVE},
+		{Type::real(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_min, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_min, Method::NATIVE},
 	});
 
 	method("minKey", {
-		{Type::ANY, {Type::CONST_PTR_PTR_MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_minKey, Method::NATIVE},
-		{Type::ANY, {Type::CONST_PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_minKey, Method::NATIVE},
-		{Type::ANY, {Type::CONST_PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_minKey, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_minKey, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_REAL_MAP}, (void*) &LSMap<int,double>::ls_minKey, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_INT_MAP}, (void*) &LSMap<int,int>::ls_minKey, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_minKey, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_minKey, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_minKey, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_minKey, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_minKey, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_minKey, Method::NATIVE},
 	});
 
 	method("max", {
-		{Type::ANY, {Type::CONST_PTR_PTR_MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_max, Method::NATIVE},
-		{Type::REAL, {Type::CONST_PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_max, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_max, Method::NATIVE},
-		{Type::ANY, {Type::CONST_INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_max, Method::NATIVE},
-		{Type::REAL, {Type::CONST_INT_REAL_MAP}, (void*) &LSMap<int,double>::ls_max, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_INT_MAP}, (void*) &LSMap<int,int>::ls_max, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_max, Method::NATIVE},
+		{Type::real(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_max, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_max, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_max, Method::NATIVE},
+		{Type::real(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_max, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_max, Method::NATIVE},
 	});
 
 	method("maxKey", {
-		{Type::ANY, {Type::CONST_PTR_PTR_MAP}, (void*) &LSMap<LSValue*,LSValue*>::ls_maxKey, Method::NATIVE},
-		{Type::ANY, {Type::CONST_PTR_REAL_MAP}, (void*) &LSMap<LSValue*,double>::ls_maxKey, Method::NATIVE},
-		{Type::ANY, {Type::CONST_PTR_INT_MAP}, (void*) &LSMap<LSValue*,int>::ls_maxKey, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_PTR_MAP}, (void*) &LSMap<int,LSValue*>::ls_maxKey, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_REAL_MAP}, (void*) &LSMap<int,double>::ls_maxKey, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_INT_MAP}, (void*) &LSMap<int,int>::ls_maxKey, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_maxKey, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_maxKey, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_maxKey, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_maxKey, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_maxKey, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_maxKey, Method::NATIVE},
 	});
 
-	auto iter_ptr_ptr = Type::fun({}, {Type::ANY, Type::ANY});
-	auto iter_ptr_real = Type::fun({}, {Type::ANY, Type::REAL});
-	auto iter_ptr_int = Type::fun({}, {Type::ANY, Type::INTEGER});
-	auto iter_int_ptr = Type::fun({}, {Type::INTEGER, Type::ANY});
-	auto iter_int_real = Type::fun({}, {Type::INTEGER, Type::REAL});
-	auto iter_int_int = Type::fun({}, {Type::INTEGER, Type::INTEGER});
+	auto iter_ptr_ptr = Type::fun({}, {Type::any(), Type::any()});
+	auto iter_ptr_real = Type::fun({}, {Type::any(), Type::real()});
+	auto iter_ptr_int = Type::fun({}, {Type::any(), Type::integer()});
+	auto iter_int_ptr = Type::fun({}, {Type::integer(), Type::any()});
+	auto iter_int_real = Type::fun({}, {Type::integer(), Type::real()});
+	auto iter_int_int = Type::fun({}, {Type::integer(), Type::integer()});
 
 	auto iter_ptr_ptr_fun = &LSMap<LSValue*, LSValue*>::ls_iter<LSFunction*>;
 	auto iter_ptr_real_fun = &LSMap<LSValue*, double>::ls_iter<LSFunction*>;
@@ -143,32 +143,32 @@ MapSTD::MapSTD() : Module("Map") {
 	auto iter_int_int_fun = &LSMap<int, int>::ls_iter<LSFunction*>;
 
 	method("iter", {
-		{{}, {Type::CONST_PTR_PTR_MAP, iter_ptr_ptr}, (void*) iter_ptr_ptr_fun, Method::NATIVE},
-		{{}, {Type::CONST_PTR_REAL_MAP, iter_ptr_real}, (void*) iter_ptr_real_fun, Method::NATIVE},
-		{{}, {Type::CONST_PTR_INT_MAP, iter_ptr_int}, (void*) iter_ptr_int_fun, Method::NATIVE},
-		{{}, {Type::CONST_INT_PTR_MAP, iter_int_ptr}, (void*) iter_int_ptr_fun, Method::NATIVE},
-		{{}, {Type::CONST_INT_REAL_MAP, iter_int_real}, (void*) iter_int_real_fun, Method::NATIVE},
-		{{}, {Type::CONST_INT_INT_MAP, iter_int_int}, (void*) iter_int_int_fun, Method::NATIVE},
+		{{}, {Type::const_map(Type::any(), Type::any()), iter_ptr_ptr}, (void*) iter_ptr_ptr_fun, Method::NATIVE},
+		{{}, {Type::const_map(Type::any(), Type::real()), iter_ptr_real}, (void*) iter_ptr_real_fun, Method::NATIVE},
+		{{}, {Type::const_map(Type::any(), Type::integer()), iter_ptr_int}, (void*) iter_ptr_int_fun, Method::NATIVE},
+		{{}, {Type::const_map(Type::integer(), Type::any()), iter_int_ptr}, (void*) iter_int_ptr_fun, Method::NATIVE},
+		{{}, {Type::const_map(Type::integer(), Type::real()), iter_int_real}, (void*) iter_int_real_fun, Method::NATIVE},
+		{{}, {Type::const_map(Type::integer(), Type::integer()), iter_int_int}, (void*) iter_int_int_fun, Method::NATIVE},
 	});
 }
 
 Compiler::value MapSTD::insert_any_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<LSValue*, LSValue*>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<LSValue*, LSValue*>::ls_insert);
 }
 Compiler::value MapSTD::insert_any_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1]), c.to_real(args[2])}, (void*) &LSMap<LSValue*, double>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1]), c.to_real(args[2])}, (void*) &LSMap<LSValue*, double>::ls_insert);
 }
 Compiler::value MapSTD::insert_any_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSMap<LSValue*, int>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSMap<LSValue*, int>::ls_insert);
 }
 Compiler::value MapSTD::insert_int_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<int, LSValue*>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<int, LSValue*>::ls_insert);
 }
 Compiler::value MapSTD::insert_int_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1]), c.to_real(args[2])}, (void*) &LSMap<int, double>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.to_real(args[2])}, (void*) &LSMap<int, double>::ls_insert);
 }
 Compiler::value MapSTD::insert_int_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSMap<int, int>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSMap<int, int>::ls_insert);
 }
 
 }

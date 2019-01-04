@@ -63,15 +63,15 @@ void Map::analyse(SemanticAnalyser* analyser) {
 	}
 	value_type.temporary = false;
 
-	if (key_type == Type::INTEGER or key_type == Type::REAL) {
+	if (key_type == Type::integer() or key_type == Type::real()) {
 	} else {
-		key_type = Type::ANY;
-		// key_type.setReturnType(Type::ANY);
+		key_type = Type::any();
+		// key_type.setReturnType(Type::any());
 	}
-	if (value_type == Type::INTEGER || value_type == Type::REAL) {
+	if (value_type == Type::integer() || value_type == Type::real()) {
 	} else {
-		value_type = Type::ANY;
-		// value_type.setReturnType(Type::ANY);
+		value_type = Type::any();
+		// value_type.setReturnType(Type::any());
 	}
 	type = Type::map(key_type, value_type);
 	type.temporary = true;
@@ -153,26 +153,26 @@ Compiler::value Map::compile(Compiler &c) const {
 	void* create = nullptr;
 	void* insert = nullptr;
 
-	if (type.key() == Type::INTEGER) {
-		create = type.element() == Type::INTEGER ? (void*) LSMap_create_int_int :
-				 type.element() == Type::REAL   ? (void*) LSMap_create_int_float
+	if (type.key() == Type::integer()) {
+		create = type.element() == Type::integer() ? (void*) LSMap_create_int_int :
+				 type.element() == Type::real()   ? (void*) LSMap_create_int_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_create_int_ptr;
-		insert = type.element() == Type::INTEGER ? (void*) LSMap_insert_int_int :
-				 type.element() == Type::REAL   ? (void*) LSMap_insert_int_float
+		insert = type.element() == Type::integer() ? (void*) LSMap_insert_int_int :
+				 type.element() == Type::real()   ? (void*) LSMap_insert_int_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_insert_int_ptr;
-	} else if (type.key() == Type::REAL) {
-		create = type.element() == Type::INTEGER ? (void*) LSMap_create_real_int :
-				 type.element() == Type::REAL   ? (void*) LSMap_create_real_float
+	} else if (type.key() == Type::real()) {
+		create = type.element() == Type::integer() ? (void*) LSMap_create_real_int :
+				 type.element() == Type::real()   ? (void*) LSMap_create_real_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_create_real_ptr;
-		insert = type.element() == Type::INTEGER ? (void*) LSMap_insert_real_int :
-				 type.element() == Type::REAL   ? (void*) LSMap_insert_real_float
+		insert = type.element() == Type::integer() ? (void*) LSMap_insert_real_int :
+				 type.element() == Type::real()   ? (void*) LSMap_insert_real_float
 													    : (void*) LSMap_insert_real_ptr;
 	} else {
-		create = type.element() == Type::INTEGER ? (void*) LSMap_create_ptr_int :
-				 type.element() == Type::REAL   ? (void*) LSMap_create_ptr_float
+		create = type.element() == Type::integer() ? (void*) LSMap_create_ptr_int :
+				 type.element() == Type::real()   ? (void*) LSMap_create_ptr_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_create_ptr_ptr;
-		insert = type.element() == Type::INTEGER ? (void*) LSMap_insert_ptr_int :
-				 type.element() == Type::REAL   ? (void*) LSMap_insert_ptr_float
+		insert = type.element() == Type::integer() ? (void*) LSMap_insert_ptr_int :
+				 type.element() == Type::real()   ? (void*) LSMap_insert_ptr_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_insert_ptr_ptr;
 	}
 

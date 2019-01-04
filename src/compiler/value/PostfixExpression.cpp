@@ -41,7 +41,7 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
 	}
 	type = expression->type;
-	if (type == Type::MPZ) {
+	if (type == Type::mpz()) {
 		type.temporary = true;
 	}
 	this->return_value = return_value;
@@ -55,7 +55,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 
 		case TokenType::PLUS_PLUS: {
 
-			if (expression->type == Type::MPZ) {
+			if (expression->type == Type::mpz()) {
 				auto x = expression->compile_l(c);
 				auto r = c.insn_clone_mpz(c.insn_load(x));
 				auto one = c.new_integer(1);
@@ -69,7 +69,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				return x;
 			} else {
 				auto e = expression->compile_l(c);
-				return c.insn_invoke(Type::ANY, {e}, (void*) +[](LSValue** x) {
+				return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
 					return (*x)->ls_inc();
 				});
 			}
@@ -84,7 +84,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				return x;
 			} else {
 				auto e = expression->compile_l(c);
-				return c.insn_invoke(Type::ANY, {e}, (void*) +[](LSValue** x) {
+				return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
 					return (*x)->ls_dec();
 				});
 			}

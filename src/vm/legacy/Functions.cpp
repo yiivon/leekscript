@@ -14,11 +14,11 @@ void Functions::add(VM* vm, std::string name, Type return_type, std::vector<Type
 }
 
 void Functions::create(VM* vm) {
-	add(vm, "debug", {}, {Type::ANY}, (void*) &Functions::v1_debug);
-	add(vm, "count", Type::INTEGER, {Type::ANY}, (void*) &Functions::v1_count);
-	add(vm, "charAt", Type::STRING, {Type::STRING, Type::INTEGER}, (void*) &Functions::v1_charAt);
-	add(vm, "pushAll", {}, {Type::PTR_ARRAY, Type::PTR_ARRAY}, (void*) &Functions::v1_pushAll);
-	add(vm, "replace", Type::STRING, {Type::STRING, Type::STRING, Type::STRING}, (void*) &Functions::v1_replace);
+	add(vm, "debug", {}, {Type::any()}, (void*) &Functions::v1_debug);
+	add(vm, "count", Type::integer(), {Type::any()}, (void*) &Functions::v1_count);
+	add(vm, "charAt", Type::string(), {Type::string(), Type::integer()}, (void*) &Functions::v1_charAt);
+	add(vm, "pushAll", {}, {Type::array(Type::any()), Type::array(Type::any())}, (void*) &Functions::v1_pushAll);
+	add(vm, "replace", Type::string(), {Type::string(), Type::string(), Type::string()}, (void*) &Functions::v1_replace);
 }
 
 void Functions::v1_debug(LSValue* v) {

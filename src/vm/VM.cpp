@@ -29,7 +29,6 @@
 #include "standard/IntervalSTD.hpp"
 #include "standard/JsonSTD.hpp"
 #include "legacy/Functions.hpp"
-#include "../type/RawType.hpp"
 
 using namespace std;
 
@@ -95,7 +94,7 @@ VM::VM(bool v1) : compiler(this) {
 	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\"};
 	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
 
-	auto op_type = Type::fun(Type::ANY, {Type::ANY, Type::ANY});
+	auto op_type = Type::fun(Type::any(), {Type::any(), Type::any()});
 	auto value_class = internal_vars["Value"]->lsvalue;
 
 	for (unsigned o = 0; o < ops.size(); ++o) {
@@ -107,7 +106,7 @@ VM::VM(bool v1) : compiler(this) {
 		add_internal_var(ops[o], op_type, fun);
 	}
 
-	auto ptr_type = Type::fun(Type::ANY, {Type::ANY});
+	auto ptr_type = Type::fun(Type::any(), {Type::any()});
 	auto fun = new LSFunction((void*) ptr_fun);
 	fun->refs = 1;
 	fun->native = true;
@@ -139,7 +138,7 @@ VM* VM::current() {
 
 void VM::add_module(Module* m) {
 	modules.push_back(m);
-	Type const_class = Type::CLASS;
+	Type const_class = Type::clazz();
 	const_class.constant = true;
 	add_internal_var(m->name, const_class, m->clazz);
 }

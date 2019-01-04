@@ -8,21 +8,23 @@
 namespace ls {
 
 String_type::String_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("string"), std::initializer_list<Type> {
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // refs
-	Type::BOOLEAN // native
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // refs
+	Type::boolean() // native
 }) }) {}
 
 Type String_type::key() const {
-	return Type::INTEGER;
+	return Type::integer();
 }
 Type String_type::element() const {
-	return Type::STRING;
+	return Type::string();
 }
 Type String_type::iterator() const {
-	return Type::STRING_ITERATOR;
+	return Type::structure("string_iterator", {
+		Type::any(), Type::integer(), Type::integer(), Type::integer(), Type::integer()
+	});
 }
 bool String_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const String_type*>(type);

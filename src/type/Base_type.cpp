@@ -38,11 +38,11 @@ Type Base_type::iterator() const {
 }
 Type Base_type::return_type() const {
 	// assert(false && "No return type on this type");
-	return Type::ANY;
+	return Type::any();
 }
 Type Base_type::argument(size_t) const {
 	// assert(false && "No arguments on this type");
-	return Type::ANY;
+	return Type::any();
 }
 std::vector<Type> Base_type::arguments() const {
 	// assert(false && "No arguments on this type");

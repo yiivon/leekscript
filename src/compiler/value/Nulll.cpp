@@ -6,7 +6,7 @@ using namespace std;
 namespace ls {
 
 Nulll::Nulll(std::shared_ptr<Token> token) : token(token) {
-	type = Type::NULLL;
+	type = Type::null();
 	constant = true;
 }
 

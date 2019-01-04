@@ -47,7 +47,7 @@ void VariableDeclaration::analyse_global_functions(SemanticAnalyser* analyser) {
 	if (global && function) {
 		auto var = variables.at(0);
 		auto expr = expressions.at(0);
-		auto v = analyser->add_var(var.get(), Type::FUNCTION, expr, this);
+		auto v = analyser->add_var(var.get(), Type::fun(), expr, this);
 		vars.insert({var->content, v});
 	}
 }
@@ -59,7 +59,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto& var = variables.at(i);
-		auto v = analyser->add_var(var.get(), Type::ANY, expressions.at(i), this);
+		auto v = analyser->add_var(var.get(), Type::any(), expressions.at(i), this);
 		if (v == nullptr) {
 			continue;
 		}
@@ -95,9 +95,9 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 
 			if (Function* f = dynamic_cast<Function*>(ex)) {
 				if (v->has_version && f->versions.find(v->version) != f->versions.end()) {
-					c.insn_store(var, c.new_pointer((void*) f->versions.at(v->version)->function, Type::FUNCTION));
+					c.insn_store(var, c.new_pointer((void*) f->versions.at(v->version)->function, Type::fun()));
 				} else {
-					c.insn_store(var, c.new_pointer((void*) f->default_version->function, Type::FUNCTION));
+					c.insn_store(var, c.new_pointer((void*) f->default_version->function, Type::fun()));
 				}
 			}
 			auto val = ex->compile(c);
@@ -114,7 +114,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			c.add_function_var(var);
 			c.insn_store(var, val);
 		} else {
-			auto var = c.create_and_add_var(name, Type::NULLL);
+			auto var = c.create_and_add_var(name, Type::null());
 			c.insn_store(var, c.new_null());
 		}
 	}

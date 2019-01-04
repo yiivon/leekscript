@@ -2,14 +2,13 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSInterval.hpp"
 #include <math.h>
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
 namespace ls {
 
 Array::Array() {
-	type = Type::ARRAY;
+	type = Type::array();
 }
 
 Array::~Array() {
@@ -51,7 +50,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 
 	if (interval) {
 
-		type = Type::INTERVAL;
+		type = Type::interval();
 		type.temporary = true;
 		expressions[0]->analyse(analyser);
 		expressions[1]->analyse(analyser);
@@ -81,17 +80,17 @@ void Array::analyse(SemanticAnalyser* analyser) {
 
 			Type supported_type = {};
 			// Native elements types supported : integer, double
-			if (element_type == Type::INTEGER || element_type == Type::REAL) {
+			if (element_type == Type::integer() || element_type == Type::real()) {
 				supported_type = element_type;
 			}
 			// For function, we store them as pointers
 			else if (element_type.is_function()) {
 				supported_type = element_type;
 			} else {
-				supported_type = Type::ANY;
+				supported_type = Type::any();
 				// If there are some functions, they types will be lost, so tell them to return pointers
 				// TODO
-				// supported_type.setReturnType(Type::ANY);
+				// supported_type.setReturnType(Type::any());
 			}
 
 			// Re-analyze expressions with the supported type
@@ -103,28 +102,28 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					// If the array stores other arrays of different types,
 					// force those arrays to store pointers. (To avoid having
 					// unknown array<int> inside arrays.
-					ex->will_store(analyser, Type::ANY);
+					ex->will_store(analyser, Type::any());
 				}
 				if (ex->type.is_function()) {
 					std::vector<Type> types;
 					for (unsigned p = 0; p < ex->type.arguments().size(); ++p) {
-						types.push_back(Type::ANY);
+						types.push_back(Type::any());
 					}
 					if (types.size() > 0) {
 						ex->will_take(analyser, types, 1);
 					}
 					// e.g. Should compile a generic version
-					ex->must_return(analyser, Type::ANY);
+					ex->must_return(analyser, Type::any());
 				}
 				element_type += ex->type;
 			}
-			if (element_type == Type::BOOLEAN) element_type = Type::ANY;
+			if (element_type == Type::boolean()) element_type = Type::any();
 			element_type.temporary = false;
 			type = Type::array(element_type);
 		}
 	}
 	if (type.element()._types.size() == 0) {
-		type = Type::PTR_ARRAY;
+		type = Type::array(Type::any());
 	}
 	type.temporary = true;
 	// std::cout << "Array type : " << type << std::endl;
@@ -195,7 +194,7 @@ Compiler::value Array::compile(Compiler& c) const {
 	if (interval) {
 		auto a = c.to_int(expressions[0]->compile(c));
 		auto b = c.to_int(expressions[1]->compile(c));
-		return c.insn_call(Type::INTERVAL_TMP, {a, b}, +[](int a, int b) {
+		return c.insn_call(Type::tmp_interval(), {a, b}, +[](int a, int b) {
 			// TODO a better constructor?
 			LSInterval* interval = new LSInterval();
 			interval->a = a;

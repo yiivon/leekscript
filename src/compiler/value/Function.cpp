@@ -7,9 +7,9 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/Exception.hpp"
 #include "llvm/IR/Verifier.h"
-#include "../../type/RawType.hpp"
 #include <string>
 #include "../../vm/LSValue.hpp"
+#include "../../type/Placeholder_type.hpp"
 
 namespace ls {
 
@@ -164,7 +164,7 @@ void Function::analyse(SemanticAnalyser* analyser) {
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyse(analyser);
 		}
-		args.push_back(Type::ANY);
+		args.push_back(Type::any());
 		// args.push_back(Type::generate_new_placeholder_type());
 	}
 	type = Type::fun({}, args, this);
@@ -279,7 +279,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 
 	std::vector<Type> arg_types;
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::ANY);
+		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::any());
 		analyser->add_parameter(arguments.at(i).get(), type);
 		arg_types.push_back(type);
 	}
@@ -303,8 +303,8 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	}
 	version->body->analyse(analyser);
 
-	if (version->type.return_type() == Type::MPZ) {
-		// version->type.setReturnType(Type::MPZ_TMP);
+	if (version->type.return_type() == Type::mpz()) {
+		// version->type.setReturnType(Type::tmp_mpz());
 	}
 	vars = analyser->get_local_vars();
 	analyser->leave_function();
@@ -354,14 +354,14 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 	auto ls_fun = default_version->function;
 	ls_fun->args.clear();
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		auto clazz = type.argument(i).clazz();
+		auto clazz = type.argument(i).class_name();
 		if (clazz.size()) {
 			ls_fun->args.push_back(analyser->vm->internal_vars.at(clazz)->lsvalue);
 		} else {
 			ls_fun->args.push_back(analyser->vm->internal_vars.at("Value")->lsvalue);
 		}
 	}
-	auto return_class_name = type.return_type().clazz();
+	auto return_class_name = type.return_type().class_name();
 	if (return_class_name.size()) {
 		ls_fun->return_type = analyser->vm->internal_vars.at(return_class_name)->lsvalue;
 	} else {
@@ -378,7 +378,7 @@ Type Function::version_type(std::vector<Type> version) const {
 
 void Function::must_return(SemanticAnalyser*, const Type& type) {
 	// std::cout << "Function::must_return " << type << std::endl;
-	if (type == Type::ANY) {
+	if (type == Type::any()) {
 		generate_default_version = true;
 	}
 	return_type = type;
@@ -422,7 +422,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	}
 	if (versions.find(args) == versions.end()) {
 		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
-		return c.new_pointer(LSNull::get(), Type::NULLL);
+		return c.new_pointer(LSNull::get(), Type::null());
 	}
 	return c.new_function(versions.at(args)->function, versions.at(args)->type);
 }
@@ -502,7 +502,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	std::vector<llvm::Type*> args;
 	if (captures.size()) {
-		args.push_back(Type::ANY.llvm_type()); // first arg is the function pointer
+		args.push_back(Type::any().llvm_type()); // first arg is the function pointer
 	}
 	for (auto& t : version->type.arguments()) {
 		args.push_back(t.llvm_type());
@@ -554,7 +554,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		// std::cout << "Create catch block " << current_version->type << std::endl;
 		c.builder.SetInsertPoint(current_version->catch_block);
 		c.delete_function_variables();
-		c.insn_call({}, {{c.builder.CreateLoad(current_version->exception_slot), Type::LONG}}, +[](void* ex) {
+		c.insn_call({}, {{c.builder.CreateLoad(current_version->exception_slot), Type::long_()}}, +[](void* ex) {
 			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
 		});
 		c.builder.CreateRetVoid();

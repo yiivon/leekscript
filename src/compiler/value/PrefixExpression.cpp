@@ -43,8 +43,8 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 
 	if (operatorr->type == TokenType::TILDE) {
 		type = expression->type;
-		if (type == Type::BOOLEAN) {
-			type = Type::INTEGER;
+		if (type == Type::boolean()) {
+			type = Type::integer();
 		}
 	}
 
@@ -53,8 +53,8 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 		or operatorr->type == TokenType::MINUS) {
 
 		type = expression->type;
-		if (type == Type::MPZ and operatorr->type == TokenType::MINUS) {
-			type = Type::MPZ_TMP;
+		if (type == Type::mpz() and operatorr->type == TokenType::MINUS) {
+			type = Type::tmp_mpz();
 		}
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
@@ -64,18 +64,18 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 
 	} else if (operatorr->type == TokenType::NOT) {
 
-		type = Type::BOOLEAN;
+		type = Type::boolean();
 
 	} else if (operatorr->type == TokenType::NEW) {
 
-		type = Type::ANY;
+		type = Type::any();
 		if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
-			if (vv->name == "Number") type = Type::INTEGER;
-			else if (vv->name == "Boolean") type = Type::BOOLEAN;
-			else if (vv->name == "String") type = Type::STRING;
-			else if (vv->name == "Array") type = Type::PTR_ARRAY;
-			else if (vv->name == "Object") type = Type::OBJECT;
-			else if (vv->name == "Set") type = Type::PTR_SET;
+			if (vv->name == "Number") type = Type::integer();
+			else if (vv->name == "Boolean") type = Type::boolean();
+			else if (vv->name == "String") type = Type::string();
+			else if (vv->name == "Array") type = Type::array();
+			else if (vv->name == "Object") type = Type::object();
+			else if (vv->name == "Set") type = Type::set(Type::any());
 		}
 		else if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
@@ -83,14 +83,14 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 					if (fc->arguments.size() > 0) {
 						type = fc->arguments[0]->type;
 					} else {
-						type = Type::INTEGER;
+						type = Type::integer();
 					}
 				}
-				else if (vv->name == "Boolean") type = Type::BOOLEAN;
-				else if (vv->name == "String") type = Type::STRING;
-				else if (vv->name == "Array") type = Type::PTR_ARRAY;
-				else if (vv->name == "Object") type = Type::OBJECT;
-				else if (vv->name == "Set") type = Type::PTR_SET;
+				else if (vv->name == "Boolean") type = Type::boolean();
+				else if (vv->name == "String") type = Type::string();
+				else if (vv->name == "Array") type = Type::array();
+				else if (vv->name == "Object") type = Type::object();
+				else if (vv->name == "Set") type = Type::set(Type::any());
 			}
 		}
 	}
@@ -124,7 +124,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 	switch (operatorr->type) {
 
 		case TokenType::PLUS_PLUS: {
-			if (expression->type == Type::MPZ) {
+			if (expression->type == Type::mpz()) {
 				auto x = ((LeftValue*) expression)->compile_l(c);
 				auto one = c.new_integer(1);
 				c.insn_call({}, {x, x, one}, &mpz_add_ui);
@@ -166,9 +166,9 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MINUS: {
-			if (expression->type.not_temporary() == Type::MPZ) {
+			if (expression->type.not_temporary() == Type::mpz()) {
 				auto x = expression->compile(c);
-				return c.insn_call(Type::MPZ, {x}, +[](__mpz_struct x) {
+				return c.insn_call(Type::mpz(), {x}, +[](__mpz_struct x) {
 					mpz_t neg;
 					mpz_init(neg);
 					mpz_neg(neg, &x);
@@ -205,7 +205,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return c.new_pointer(new LSString(""), type);
 				}
 				else if (vv->name == "Array") {
-					return c.new_array(Type::PTR_ARRAY, {});
+					return c.new_array(Type::array(), {});
 				}
 				else if (vv->name == "Object") {
 					return c.new_pointer(new LSObject(), type);
@@ -233,7 +233,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						return c.new_pointer(new LSString(""), type);
 					}
 					if (vv->name == "Array") {
-						return c.new_array(Type::PTR_ARRAY, {});
+						return c.new_array(Type::array(), {});
 					}
 					if (vv->name == "Object") {
 						return c.new_pointer(new LSObject(), type);

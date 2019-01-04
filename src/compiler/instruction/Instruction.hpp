@@ -22,7 +22,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug) const = 0;
 	virtual Location location() const = 0;
 
-	virtual void analyse(SemanticAnalyser* analyser, const Type& type = Type::ANY) = 0;
+	virtual void analyse(SemanticAnalyser* analyser, const Type& type = Type::any()) = 0;
 
 	virtual Compiler::value compile(Compiler&) const;
 

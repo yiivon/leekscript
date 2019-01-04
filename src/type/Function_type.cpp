@@ -8,12 +8,12 @@
 namespace ls {
 
 Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("lsfunction"), std::initializer_list<Type> {
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // refs
-	Type::BOOLEAN, // native
-	Type::LONG.pointer() // pointer to the function
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // refs
+	Type::boolean(), // native
+	Type::long_().pointer() // pointer to the function
 }) }), _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
 
 bool Function_type::operator == (const Base_type* type) const {
@@ -56,7 +56,7 @@ Type Function_type::argument(size_t i) const {
 	if (i < _arguments.size()) {
 		return _arguments[i];
 	}
-	return Type::ANY;
+	return Type::any();
 }
 std::string Function_type::clazz() const {
 	return "Function";

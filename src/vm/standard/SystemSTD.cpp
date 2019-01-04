@@ -23,21 +23,21 @@ void System_print_float(double v);
 
 SystemSTD::SystemSTD() : Module("System") {
 
-	static_field("version", Type::INTEGER, System_version);
-	static_field("operations", Type::INTEGER, System_operations);
-	static_field("time", Type::LONG, (void*) &System_time);
-	static_field("milliTime", Type::LONG, (void*) &System_millitime);
-	static_field("microTime", Type::LONG, (void*) &System_microtime);
-	static_field("nanoTime", Type::LONG, (void*) &System_nanotime);
+	static_field("version", Type::integer(), System_version);
+	static_field("operations", Type::integer(), System_operations);
+	static_field("time", Type::long_(), (void*) &System_time);
+	static_field("milliTime", Type::long_(), (void*) &System_millitime);
+	static_field("microTime", Type::long_(), (void*) &System_microtime);
+	static_field("nanoTime", Type::long_(), (void*) &System_nanotime);
 
 	method("print", Method::Static, {
-		{{}, {Type::CONST_ANY}, (void*) &System_print, Method::NATIVE},
-		{{}, {Type::MPZ}, (void*) &System_print_mpz, Method::NATIVE},
-		{{}, {Type::MPZ_TMP}, (void*) &System_print_mpz_tmp, Method::NATIVE},
-		{{}, {Type::CONST_LONG}, (void*) &System_print_long, Method::NATIVE},
-		{{}, {Type::CONST_REAL}, (void*) &System_print_float, Method::NATIVE},
-		{{}, {Type::CONST_INTEGER}, (void*) &System_print_int, Method::NATIVE},
-		{{}, {Type::CONST_BOOLEAN}, (void*) &System_print_bool, Method::NATIVE},
+		{{}, {Type::const_any()}, (void*) &System_print, Method::NATIVE},
+		{{}, {Type::mpz()}, (void*) &System_print_mpz, Method::NATIVE},
+		{{}, {Type::tmp_mpz()}, (void*) &System_print_mpz_tmp, Method::NATIVE},
+		{{}, {Type::const_long()}, (void*) &System_print_long, Method::NATIVE},
+		{{}, {Type::const_real()}, (void*) &System_print_float, Method::NATIVE},
+		{{}, {Type::const_integer()}, (void*) &System_print_int, Method::NATIVE},
+		{{}, {Type::const_boolean()}, (void*) &System_print_bool, Method::NATIVE},
 	});
 }
 
@@ -66,7 +66,7 @@ long System_nanotime() {
 }
 
 Compiler::value System_operations(Compiler& c) {
-	auto ops_ptr = c.new_pointer(&c.vm->operations, Type::INTEGER.pointer());
+	auto ops_ptr = c.new_pointer(&c.vm->operations, Type::integer().pointer());
 	return c.insn_load(ops_ptr);
 }
 

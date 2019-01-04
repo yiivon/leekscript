@@ -36,13 +36,13 @@ Location ClassDeclaration::location() const {
 
 void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 
-	var = analyser->add_var(token.get(), Type::CLASS, nullptr, nullptr);
+	var = analyser->add_var(token.get(), Type::clazz(), nullptr, nullptr);
 
 	for (auto vd : fields) {
-		vd->analyse(analyser, Type::ANY);
+		vd->analyse(analyser, Type::any());
 		for (size_t i = 0; i < vd->variables.size(); ++i) {
 			// std::cout << "Add class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
-			auto t = i < vd->expressions.size() ? vd->expressions.at(i)->type : Type::ANY;
+			auto t = i < vd->expressions.size() ? vd->expressions.at(i)->type : Type::any();
 			ls_class->addField(vd->variables.at(i)->content, t, nullptr);
 		}
 	}
@@ -57,7 +57,7 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 			// std::cout << "Compile class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
 			auto default_value = vd->expressions.at(i)->compile(c);
 			default_value = c.insn_to_any(default_value);
-			auto field_name = c.new_pointer(&vd->variables.at(i)->content, Type::ANY);
+			auto field_name = c.new_pointer(&vd->variables.at(i)->content, Type::any());
 			c.insn_call({}, {clazz, field_name, default_value}, +[](LSClass* clazz, std::string* field_name, LSValue* default_value) {
 				clazz->fields.at(*field_name).default_value = default_value;
 			});

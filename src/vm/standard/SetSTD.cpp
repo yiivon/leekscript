@@ -15,67 +15,67 @@ SetSTD::SetSTD() : Module("Set") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::CONST_SET, Type::ANY, Type::BOOLEAN, (void*) &LSSet<LSValue*>::in_v, {}, Method::NATIVE},
-		{Type::CONST_SET, Type::INTEGER, Type::BOOLEAN, (void*) &in_any},
-		{Type::CONST_REAL_SET, Type::REAL, Type::BOOLEAN, (void*) &LSSet<double>::in_v, {}, Method::NATIVE},
-		{Type::CONST_INT_SET, Type::INTEGER, Type::BOOLEAN, (void*) &LSSet<int>::in_v, {}, Method::NATIVE}
+		{Type::const_set(), Type::any(), Type::boolean(), (void*) &LSSet<LSValue*>::in_v, {}, Method::NATIVE},
+		{Type::const_set(), Type::integer(), Type::boolean(), (void*) &in_any},
+		{Type::const_set(Type::real()), Type::real(), Type::boolean(), (void*) &LSSet<double>::in_v, {}, Method::NATIVE},
+		{Type::const_set(Type::integer()), Type::integer(), Type::boolean(), (void*) &LSSet<int>::in_v, {}, Method::NATIVE}
 	});
 	operator_("+=", {
-		{Type::SET, Type::CONST_ANY, Type::ANY, (void*) &set_add_eq, {new WillStoreMutator()}},
-		{Type::REAL_SET, Type::CONST_REAL, Type::REAL_ARRAY, (void*) &LSSet<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
-		{Type::INT_SET, Type::CONST_INTEGER, Type::INT_ARRAY, (void*) &LSSet<int>::add_eq_int, {new WillStoreMutator()}, Method::NATIVE}
+		{Type::set(), Type::const_any(), Type::any(), (void*) &set_add_eq, {new WillStoreMutator()}},
+		{Type::set(Type::real()), Type::const_real(), Type::array(Type::real()), (void*) &LSSet<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
+		{Type::set(Type::integer()), Type::const_integer(), Type::array(Type::integer()), (void*) &LSSet<int>::add_eq_int, {new WillStoreMutator()}, Method::NATIVE}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("size", {
-		{Type::INTEGER, {Type::CONST_SET}, (void*) &LSSet<LSValue*>::ls_size, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_REAL_SET}, (void*) &LSSet<double>::ls_size, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_INT_SET}, (void*) &LSSet<int>::ls_size, Method::NATIVE},
+		{Type::integer(), {Type::const_set()}, (void*) &LSSet<LSValue*>::ls_size, Method::NATIVE},
+		{Type::integer(), {Type::const_set(Type::real())}, (void*) &LSSet<double>::ls_size, Method::NATIVE},
+		{Type::integer(), {Type::const_set(Type::integer())}, (void*) &LSSet<int>::ls_size, Method::NATIVE},
 	});
 	method("insert", {
-		{Type::BOOLEAN, {Type::PTR_SET, Type::ANY}, (void*) &insert_any},
-		{Type::BOOLEAN, {Type::REAL_SET, Type::REAL}, (void*) &insert_real},
-		{Type::BOOLEAN, {Type::INT_SET, Type::INTEGER}, (void*) &insert_int},
+		{Type::boolean(), {Type::set(Type::any()), Type::any()}, (void*) &insert_any},
+		{Type::boolean(), {Type::set(Type::real()), Type::real()}, (void*) &insert_real},
+		{Type::boolean(), {Type::set(Type::integer()), Type::integer()}, (void*) &insert_int},
 	});
 	method("clear", {
-		{Type::SET, {Type::PTR_SET}, (void*) &LSSet<LSValue*>::ls_clear, Method::NATIVE},
-		{Type::REAL_SET, {Type::REAL_SET}, (void*) &LSSet<double>::ls_clear, Method::NATIVE},
-		{Type::INT_SET, {Type::INT_SET}, (void*) &LSSet<int>::ls_clear, Method::NATIVE},
+		{Type::set(), {Type::set(Type::any())}, (void*) &LSSet<LSValue*>::ls_clear, Method::NATIVE},
+		{Type::set(Type::real()), {Type::set(Type::real())}, (void*) &LSSet<double>::ls_clear, Method::NATIVE},
+		{Type::set(Type::integer()), {Type::set(Type::integer())}, (void*) &LSSet<int>::ls_clear, Method::NATIVE},
 	});
 	method("erase", {
-		{Type::BOOLEAN, {Type::SET, Type::ANY}, (void*) &LSSet<LSValue*>::ls_erase, Method::NATIVE},
-		{Type::BOOLEAN, {Type::REAL_SET, Type::REAL}, (void*) &LSSet<double>::ls_erase, Method::NATIVE},
-		{Type::BOOLEAN, {Type::INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::set(), Type::any()}, (void*) &LSSet<LSValue*>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::set(Type::real()), Type::real()}, (void*) &LSSet<double>::ls_erase, Method::NATIVE},
+		{Type::boolean(), {Type::set(Type::integer()), Type::integer()}, (void*) &LSSet<int>::ls_erase, Method::NATIVE},
 	});
 	method("contains", {
-		{Type::BOOLEAN, {Type::CONST_SET, Type::ANY}, (void*) &LSSet<LSValue*>::ls_contains, Method::NATIVE},
-		{Type::BOOLEAN, {Type::CONST_REAL_SET, Type::REAL}, (void*) &LSSet<double>::ls_contains, Method::NATIVE},
-		{Type::BOOLEAN, {Type::CONST_INT_SET, Type::INTEGER}, (void*) &LSSet<int>::ls_contains, Method::NATIVE},
+		{Type::boolean(), {Type::const_set(), Type::any()}, (void*) &LSSet<LSValue*>::ls_contains, Method::NATIVE},
+		{Type::boolean(), {Type::const_set(Type::real()), Type::real()}, (void*) &LSSet<double>::ls_contains, Method::NATIVE},
+		{Type::boolean(), {Type::const_set(Type::integer()), Type::integer()}, (void*) &LSSet<int>::ls_contains, Method::NATIVE},
 	});
 }
 
 Compiler::value SetSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::ANY, {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
+	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
 		return x->in(y);
 	});
 }
 
 Compiler::value SetSTD::set_add_eq(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::ANY, {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
+	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
 		return x->add_eq(y);
 	});
 }
 
 Compiler::value SetSTD::insert_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.insn_to_any(args[1])}, (void*) &LSSet<LSValue*>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1])}, (void*) &LSSet<LSValue*>::ls_insert);
 }
 Compiler::value SetSTD::insert_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.to_real(args[1])}, (void*) &LSSet<double>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.to_real(args[1])}, (void*) &LSSet<double>::ls_insert);
 }
 Compiler::value SetSTD::insert_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::BOOLEAN, {args[0], c.to_int(args[1])}, (void*) &LSSet<int>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1])}, (void*) &LSSet<int>::ls_insert);
 }
 
 }

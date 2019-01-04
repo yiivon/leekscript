@@ -8,11 +8,11 @@
 namespace ls {
 
 Null_type::Null_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("null"), std::initializer_list<Type> {
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // refs
-	Type::BOOLEAN // native
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // refs
+	Type::boolean() // native
 }) }) {}
 
 bool Null_type::operator == (const Base_type* type) const {

@@ -8,32 +8,33 @@ namespace ls {
 
 Set_type::Set_type(Type element) : Pointer_type(Type {
 	std::make_shared<const Struct_type>(std::string("_set"), std::initializer_list<Type> {
-		Type::INTEGER, // ?
-		Type::INTEGER, // ?
-		Type::INTEGER, // ?
-		Type::INTEGER, // ?
-		Type::BOOLEAN, // native
+		Type::integer(), // ?
+		Type::integer(), // ?
+		Type::integer(), // ?
+		Type::integer(), // ?
+		Type::boolean(), // native
 		element.pointer(),
 		element.pointer(),
 		element.pointer(),
 		Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> {
-			Type::LONG, Type::LONG,	Type::LONG,	Type::LONG,
+			Type::long_(), Type::long_(), Type::long_(), Type::long_(),
 			element	
 		}) }).pointer()
 	})
 }), _element(element) {}
 
 Type Set_type::key() const {
-	return Type::INTEGER;
+	return Type::integer();
 }
 Type Set_type::element() const {
 	return _element;
 }
 Type Set_type::iterator() const {
 	const auto merged = _element.fold();
-	if (merged.is_integer()) return Type::INT_SET_ITERATOR;
-	if (merged.is_real()) return Type::REAL_SET_ITERATOR;
-	return Type::PTR_SET_ITERATOR;
+	return Type::structure("set_iterator", {
+		Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> { Type::long_(), Type::long_(), Type::long_(), Type::long_(), merged }) }).pointer(),
+		Type::integer()
+	});
 }
 bool Set_type::operator == (const Base_type* type) const {
 	if (auto array = dynamic_cast<const Set_type*>(type)) {

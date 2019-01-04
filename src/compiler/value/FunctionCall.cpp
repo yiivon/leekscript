@@ -16,7 +16,6 @@
 #include "../semantic/SemanticError.hpp"
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
@@ -93,30 +92,30 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			if (arguments.size()) {
 				type = arguments.at(0)->type;
 			} else {
-				type = Type::INTEGER;
+				type = Type::integer();
 			}
 			return;
 		}
 		else if (vv->name == "Boolean") {
-			type = Type::BOOLEAN;
+			type = Type::boolean();
 			return;
 		} else if (vv->name == "String") {
-			type = Type::STRING;
+			type = Type::string();
 			return;
 		} else if (vv->name == "Array") {
-			type = Type::PTR_ARRAY;
+			type = Type::array();
 			return;
 		} else if (vv->name == "Object") {
-			type = Type::OBJECT;
+			type = Type::object();
 			return;
 		} else if (vv->name == "Set") {
-			type = Type::PTR_SET;
+			type = Type::set(Type::any());
 			return;
 		} else {
-			type = Type::ANY; // Class constructor
+			type = Type::any(); // Class constructor
 		}
-	} else if (function->type == Type::CLASS) {
-		type = Type::ANY; // Class constructor
+	} else if (function->type == Type::clazz()) {
+		type = Type::any(); // Class constructor
 	}
 
 	// Detect standard library functions
@@ -179,7 +178,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			Method* m = nullptr;
 			LSClass* clazz;
 			if (!object_type.is_any() && !object_type.is_placeholder()) {
-				clazz = (LSClass*) analyser->vm->internal_vars[object_type.clazz()]->lsvalue;
+				clazz = (LSClass*) analyser->vm->internal_vars[object_type.class_name()]->lsvalue;
 				m = clazz->getMethod(analyser, oa->field->content, object_type, arg_types);
 				// std::cout << "Method " << oa->field->content << " found : " << m->obj_type << "." << m->type << std::endl;
 			}
@@ -258,7 +257,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	if (is_unknown_method) {
 		for (const auto& arg : arguments) {
 			if (arg->type.is_function()) {
-				arg->must_return(analyser, Type::ANY);
+				arg->must_return(analyser, Type::any());
 			}
 		}
 	}
@@ -314,7 +313,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			return c.new_pointer(new LSString(""), type);
 		}
 		if (vv->name == "Array") {
-			return c.new_array(Type::PTR_ARRAY, {});
+			return c.new_array(Type::array(), {});
 		}
 		if (vv->name == "Object") {
 			return c.new_pointer(new LSObject(), type);
@@ -323,7 +322,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			return c.new_pointer(new LSSet<LSValue*>(), type);
 		}
 	}
-	if (function->type == Type::CLASS) {
+	if (function->type == Type::clazz()) {
 		auto clazz = function->compile(c);
 		return c.new_object_class(clazz);
 	}
@@ -398,14 +397,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Default function : f(12) */
 	Compiler::value fun;
-	auto jit_object = c.new_pointer(nullptr, Type::ANY);
+	auto jit_object = c.new_pointer(nullptr, Type::any());
 	auto is_closure = function->type.is_closure();
 
 	if (is_unknown_method) {
 		auto oa = static_cast<ObjectAccess*>(function);
 		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
-		auto k = c.new_pointer(&oa->field->content, Type::ANY);
-		fun = c.insn_call(Type::FUNCTION, {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
+		auto k = c.new_pointer(&oa->field->content, Type::any());
+		fun = c.insn_call(Type::fun(), {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
 			return object->attr(*key);
 		});
 	} else {
@@ -421,14 +420,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	if (is_unknown_method) {
 		// add 'function' object as first argument
 		args.push_back(fun);
-		lsvalue_types.push_back(Type::FUNCTION.id());
+		lsvalue_types.push_back(Type::fun().id());
 		// add 'this' object as second argument
 		args.push_back(jit_object);
 		lsvalue_types.push_back(object->type.id());
 	} else if (is_closure) {
 		// Function pointer as first argument
 		args.push_back(fun);
-		lsvalue_types.push_back(Type::CLOSURE.id());
+		lsvalue_types.push_back(Type::closure().id());
 	}
 
 	// Compile arguments
@@ -439,7 +438,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			if (arg.t.is_primitive()) arg = c.insn_convert(arg, function_type.argument(i));
 			args.push_back(arg);
 			arguments.at(i)->compile_end(c);
-			if (function_type.argument(i) == Type::MPZ && arguments.at(i)->type != Type::MPZ_TMP) {
+			if (function_type.argument(i) == Type::mpz() && arguments.at(i)->type != Type::tmp_mpz()) {
 				args.at(offset + i) = c.insn_clone_mpz(args.at(offset + i));
 			}
 		} else {
@@ -463,7 +462,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	Compiler::value result;
 	if (is_unknown_method) {
-		result = c.insn_call(Type::ANY, args, (void*) &LSFunction::call);
+		result = c.insn_call(Type::any(), args, (void*) &LSFunction::call);
 	} else {
 		result = c.insn_call(return_type, args, fun);
 	}

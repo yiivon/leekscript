@@ -11,7 +11,6 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/standard/BooleanSTD.hpp"
 #include "../../vm/Exception.hpp"
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
@@ -103,7 +102,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	operator_fun = nullptr;
 	operations = 1;
-	type = Type::ANY;
+	type = Type::any();
 
 	// No operator : just analyse v1 and return
 	if (op == nullptr) {
@@ -164,8 +163,8 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	this->v1_type = op->reversed ? v2->type : v1->type;
 	this->v2_type = op->reversed ? v1->type : v2->type;
 
-	auto object_class = [&]() { if (v1_type.clazz().size()) {
-		return (LSClass*) analyser->vm->internal_vars.at(v1_type.clazz())->lsvalue;
+	auto object_class = [&]() { if (v1_type.class_name().size()) {
+		return (LSClass*) analyser->vm->internal_vars.at(v1_type.class_name())->lsvalue;
 	} else {
 		return (LSClass*) analyser->vm->internal_vars.at("Value")->lsvalue;
 	} }();
@@ -190,7 +189,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	}
 
 	// Don't use old stuff for boolean
-	if ((v1->type == Type::BOOLEAN and op->type != TokenType::EQUAL) or op->type == TokenType::DIVIDE) {
+	if ((v1->type == Type::boolean() and op->type != TokenType::EQUAL) or op->type == TokenType::DIVIDE) {
 		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}
@@ -199,7 +198,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	 * OLD
 	 */
 	if (v1->type.is_polymorphic() or v2->type.is_polymorphic()) {
-		type = Type::ANY;
+		type = Type::any();
 	}
 	constant = v1->constant and v2->constant;
 
@@ -223,21 +222,21 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 		// Set the correct type nature for the two members
 		if (v2->type.is_polymorphic() and v1->type.is_primitive() and !(vv and op->type == TokenType::EQUAL)) {
-			v1_type = Type::ANY;
+			v1_type = Type::any();
 		}
 		if (v1->type.is_polymorphic() and v2->type.is_primitive() and !(vv and op->type == TokenType::EQUAL)) {
-			v2_type = Type::ANY;
+			v2_type = Type::any();
 		}
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
 			type = v2->type;
 		} else {
-			if (v1->type == Type::ANY || v2->type == Type::ANY) {
-				type = Type::ANY;
+			if (v1->type == Type::any() || v2->type == Type::any()) {
+				type = Type::any();
 			} else {
 				type = v1->type;
 			}
 		}
-		if (type == Type::MPZ) {
+		if (type == Type::mpz()) {
 			type.temporary = true;
 		}
 		type.reference = false;
@@ -249,7 +248,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
 
-		type = Type::INTEGER;
+		type = Type::integer();
 	}
 
 	// [1, 2, 3] ~~ x -> x ^ 2
@@ -381,7 +380,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
 				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
-				return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+				return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 					return (*x)->add_eq(y);
 				});
 			}
@@ -411,7 +410,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			v1->compile_end(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->add_eq(y);
 			});
 		}
@@ -419,7 +418,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->sub_eq(y);
 			});
 		}
@@ -427,7 +426,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_invoke(Type::ANY, {x, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::any(), {x, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->mul_eq(y);
 			});
 		}
@@ -435,7 +434,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->div_eq(y);
 			});
 		}
@@ -443,7 +442,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->mod_eq(y);
 			});
 		}
@@ -451,7 +450,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
 			auto y = c.insn_to_any(v2->compile(c));
 			v2->compile_end(c);
-			return c.insn_invoke(Type::ANY, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->pow_eq(y);
 			});
 		}
@@ -468,22 +467,22 @@ Compiler::value Expression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::TILDE_TILDE: {
-			if (v1->type.element() == Type::INTEGER) {
-				if (type.element() == Type::INTEGER) {
+			if (v1->type.element() == Type::integer()) {
+				if (type.element() == Type::integer()) {
 					auto m = &LSArray<int>::ls_map<LSFunction*, int>;
 					ls_func = (void*) m;
-				} else if (type.element() == Type::REAL) {
+				} else if (type.element() == Type::real()) {
 					auto m = &LSArray<int>::ls_map<LSFunction*, double>;
 					ls_func = (void*) m;
 				} else {
 					auto m = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
 					ls_func = (void*) m;
 				}
-			} else if (v1->type.element() == Type::REAL) {
-				if (type.element() == Type::REAL) {
+			} else if (v1->type.element() == Type::real()) {
+				if (type.element() == Type::real()) {
 					auto m = &LSArray<double>::ls_map<LSFunction*, double>;
 					ls_func = (void*) m;
-				} else if (type.element() == Type::INTEGER) {
+				} else if (type.element() == Type::integer()) {
 					auto m = &LSArray<double>::ls_map<LSFunction*, int>;
 					ls_func = (void*) m;
 				} else {
@@ -579,7 +578,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			auto x = c.insn_convert(v1->compile(c), type);
 			v1->compile_end(c);
-			auto condition = c.insn_call(Type::BOOLEAN, {x}, +[](LSValue* v) {
+			auto condition = c.insn_call(Type::boolean(), {x}, +[](LSValue* v) {
 				return v->type == LSValue::NULLL;
 			});
 			c.insn_if_new(condition, &label_then, &label_else);

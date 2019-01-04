@@ -8,7 +8,6 @@
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Module.hpp"
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
@@ -42,10 +41,10 @@ Location ObjectAccess::location() const {
 void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 
 	object->analyse(analyser);
-	type = Type::ANY;
+	type = Type::any();
 
 	// Get the object class : 12 => Number
-	object_class_name = object->type.clazz();
+	object_class_name = object->type.class_name();
 	LSClass* object_class = nullptr;
 	if (analyser->vm->internal_vars.find(object_class_name) != analyser->vm->internal_vars.end()) {
 		object_class = (LSClass*) analyser->vm->internal_vars[object_class_name]->lsvalue;
@@ -185,13 +184,13 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		function->native = true;
 		function->refs = 1;
 		((ObjectAccess*) this)->ls_function = function;
-		return c.new_pointer(ls_function, Type::ANY);
+		return c.new_pointer(ls_function, Type::any());
 	}
 
 	// Default : object.attr
 	auto o = object->compile(c);
 	object->compile_end(c);
-	auto k = c.new_pointer(&field->content, Type::ANY);
+	auto k = c.new_pointer(&field->content, Type::any());
 	auto r = c.insn_invoke(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attr(*key);
 	});
@@ -200,7 +199,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> version) const {
 	if (class_method) {
-		return c.new_function(new LSFunction(versions.at(version)), Type::FUNCTION);
+		return c.new_function(new LSFunction(versions.at(version)), Type::fun());
 	}
 	assert(false && "ObjectAccess::compile_version must be on a class method.");
 }
@@ -208,7 +207,7 @@ Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> ver
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	auto o = object->compile(c);
 	object->compile_end(c);
-	auto k = c.new_pointer(&field->content, Type::ANY);
+	auto k = c.new_pointer(&field->content, Type::any());
 	return c.insn_call(type.pointer(), {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attrL(*key);
 	});

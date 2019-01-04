@@ -22,7 +22,7 @@ Location ArrayFor::location() const {
 }
 
 void ArrayFor::analyse(SemanticAnalyser* analyser) {
-	forr->analyse(analyser, Type::PTR_ARRAY);
+	forr->analyse(analyser, Type::array());
 	type = forr->type;
 }
 

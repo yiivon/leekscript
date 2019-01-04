@@ -5,7 +5,7 @@
 namespace ls {
 
 Value::Value() {
-	type = Type::ANY;
+	type = Type::any();
 	constant = false;
 }
 
@@ -27,10 +27,10 @@ bool Value::elements_will_store(SemanticAnalyser*, const Type&, int level) {
 }
 
 bool Value::must_be_any(SemanticAnalyser*) {
-	if (type == Type::ANY) {
+	if (type == Type::any()) {
 		return false;
 	}
-	type = Type::ANY;
+	type = Type::any();
 	return true;
 }
 

@@ -7,6 +7,5 @@
 #include "vm/value/LSArray.hpp"
 #include "vm/value/LSObject.hpp"
 #include "vm/Program.hpp"
-#include "type/RawType.hpp"
 
 #endif

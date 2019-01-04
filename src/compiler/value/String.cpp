@@ -1,14 +1,13 @@
 #include "String.hpp"
 #include "../../vm/value/LSString.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-#include "../../type/RawType.hpp"
 
 using namespace std;
 
 namespace ls {
 
 String::String(std::shared_ptr<Token> token) : token(token) {
-	type = Type::STRING;
+	type = Type::string();
 	type.temporary = true;
 	constant = true;
 	ls_string = new LSString(token->content);
@@ -38,8 +37,8 @@ bool String::will_store(SemanticAnalyser* analyser, const Type& type) {
 
 Compiler::value String::compile(Compiler& c) const {
 	c.add_literal(ls_string, std::string("'") + *ls_string + std::string("'"));
-	auto base = c.new_pointer(ls_string, Type::ANY);
-	return c.insn_call(Type::STRING_TMP, {base}, (void*) +[](LSString* s) {
+	auto base = c.new_pointer(ls_string, Type::any());
+	return c.insn_call(Type::tmp_string(), {base}, (void*) +[](LSString* s) {
 		return s->clone();
 	});
 }

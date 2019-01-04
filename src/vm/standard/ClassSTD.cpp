@@ -7,7 +7,7 @@ ClassSTD::ClassSTD() : Module("Class") {
 
 	LSClass::clazz = clazz;
 
-	field("name", Type::STRING);
+	field("name", Type::string());
 
 
 }
