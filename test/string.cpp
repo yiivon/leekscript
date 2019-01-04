@@ -80,7 +80,7 @@ void Test::test_strings() {
 	code("'abc.' / '.'").equals("['abc', '']");
 	code("'.aaaaa.bbbb.ccc.dd.e.' / '.'").equals("['', 'aaaaa', 'bbbb', 'ccc', 'dd', 'e', '']");
 	code("('hello.world.how.are.you' / '.').size()").equals("5");
-	code("'hello' / 2").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::STRING.add_temporary().to_string(), "/", ls::Type::INTEGER.to_string()});
+	code("'hello' / 2").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::string().add_temporary().to_string(), "/", ls::Type::integer().to_string()});
 
 	section("String.operator \\");
 	code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -93,7 +93,7 @@ void Test::test_strings() {
 
 	section("String.operator []");
 	code("'bonjour'[3]").equals("'j'");
-	code("'bonjour'['hello']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "'bonjour'", ls::Type::STRING_TMP.to_string()});
+	code("'bonjour'['hello']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "'bonjour'", ls::Type::tmp_string().to_string()});
 	code("~('salut' + ' ca va ?')").equals("'? av ac tulas'");
 	code("'bonjour'[2:5]").equals("'njou'");
 	code("'bonjour'['a':5]").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});

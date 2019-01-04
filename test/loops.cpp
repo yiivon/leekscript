@@ -151,9 +151,9 @@ void Test::test_loops() {
 	DISABLED_code("var fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
 	code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
 
-	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::NULLL.to_string()});
-	code("for x in true {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::BOOLEAN.to_string()});
-	code("for x in Number {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::CONST_CLASS.to_string()});
+	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::null().to_string()});
+	code("for x in true {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::boolean().to_string()});
+	code("for x in Number {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::const_class().to_string()});
 
 	/*
 	 * Array For

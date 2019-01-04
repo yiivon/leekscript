@@ -73,8 +73,8 @@ void Test::test_numbers() {
 	code("null < 0").equals("true");
 	code("null + 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("5 + null").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("5 / null").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::INTEGER.to_string(), "/", ls::Type::NULLL.to_string()});
-	code("null / 12").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::NULLL.to_string(), "/", ls::Type::INTEGER.to_string()});
+	code("5 / null").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::integer().to_string(), "/", ls::Type::null().to_string()});
+	code("null / 12").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::null().to_string(), "/", ls::Type::integer().to_string()});
 	code("null * 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("5 * null").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
@@ -343,7 +343,7 @@ void Test::test_numbers() {
 	code("13★ / true").equals("13");
 	code("14★ / 2").equals("7");
 	code("let a = 18★; a / 3").equals("6");
-	code("14★ / []").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::ANY.to_string(), "/", ls::Type::PTR_ARRAY.add_temporary().to_string()});
+	code("14★ / []").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::any().to_string(), "/", ls::Type::array(ls::Type::any()).add_temporary().to_string()});
 	code("let a = 17, b = 5 a / b").equals("3.4");
 
 	section("Number.operator /=");

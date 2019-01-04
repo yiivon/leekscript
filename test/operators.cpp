@@ -51,7 +51,7 @@ void Test::test_operators() {
 
 	header("Invalid operators");
 	code("'hello' ** 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("null / 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::NULLL.to_string(), "/", ls::Type::INTEGER.to_string()});
+	code("null / 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::null().to_string(), "/", ls::Type::integer().to_string()});
 	code("null % 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("null - 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = null a += 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
