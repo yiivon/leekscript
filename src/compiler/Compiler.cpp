@@ -1510,7 +1510,7 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		// assert(args[i].t.llvm_type() == args[i].v->getType());
+		assert_value_ok(args[i]);
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type());
 	}
@@ -1529,7 +1529,7 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 		return {};
 	} else {
 		value result = { r, return_type };
-		assert(result.t.llvm_type() == result.v->getType());
+		assert_value_ok(result);
 		return result;
 	}
 }
