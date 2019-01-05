@@ -81,6 +81,7 @@ public:
 	bool is_polymorphic() const;
 	bool is_primitive() const;
 	bool is_callable() const;
+	bool is_void() const;
 
 	bool operator ==(const Type& type) const;
 	inline bool operator !=(const Type& type) const { return !(*this == type); }

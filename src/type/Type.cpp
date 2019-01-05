@@ -320,6 +320,9 @@ bool Type::is_callable() const {
 		return t->callable();
 	});
 }
+bool Type::is_void() const {
+	return _types.size() == 0;
+}
 
 bool Type::compatible(const Type& type) const {
 	if (_types.size() == 0 or type._types.size() == 0) {
