@@ -43,6 +43,7 @@ clang: COMPILER=clang++
 clang: all
 
 ninja:
+	@mkdir -p build/default
 	gyp leekscript.gyp --depth=. -f ninja -Goutput_dir=build --generator-output default
 	ninja -v -C build/default leekscript-test
 	build/default/leekscript-test
