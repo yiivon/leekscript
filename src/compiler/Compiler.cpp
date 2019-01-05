@@ -1067,7 +1067,7 @@ Compiler::value Compiler::insn_dec_refs(Compiler::value v, Compiler::value previ
 }
 
 Compiler::value Compiler::insn_move(Compiler::value v) const {
-	assert(v.t.llvm_type() == v.v->getType());
+	assert_value_ok(v);
 	if (v.t.must_manage_memory() and !v.t.temporary and !v.t.reference) {
 		return insn_call(v.t, {v}, (void*) +[](LSValue* v) {
 			return v->move();
@@ -1473,7 +1473,7 @@ void Compiler::insn_branch(label* l) const {
 }
 
 void Compiler::insn_return(Compiler::value v) const {
-	assert(v.t.llvm_type() == v.v->getType());
+	assert_value_ok(v);
 	builder.CreateRet(v.v);
 }
 void Compiler::insn_return_void() const {
@@ -1790,6 +1790,14 @@ void Compiler::print_mpz(__mpz_struct value) {
 	char buff[10000];
 	mpz_get_str(buff, 10, &value);
 	std::cout << buff;
+}
+
+void Compiler::assert_value_ok(value v) const {
+	if (v.t.is_void()) {
+		assert(v.v == nullptr);
+	} else {
+		assert(v.t.llvm_type() == v.v->getType());
+	}
 }
 
 }

@@ -338,6 +338,7 @@ public:
 	void log_insn_code(std::string instruction) const;
 	void add_literal(void* ptr, std::string value) const;
 	static void print_mpz(__mpz_struct value);
+	void assert_value_ok(value) const;
 };
 
 }
