@@ -237,12 +237,10 @@ void Test::test_numbers() {
 	code("1m - (2m - 3m)").equals("2");
 	code("(1m - 2m) - 3m").equals("-4");
 	code("(1m - 2m) - (3m - 4m)").equals("0");
-	// TODO
-	DISABLED_code("(10m + 10m) - 1").equals("19");
+	code("(10m + 10m) - 1").equals("19");
 	code("15★ - 3★").equals("12");
-	// TODO
-	DISABLED_code("1000m - 12").equals("988");
-	DISABLED_code("1000m - (-12)").equals("1012");
+	code("1000m - 12").equals("988");
+	code("1000m - (-12)").equals("1012");
 	code("15★ - false").equals("15");
 	code("15★ - true").equals("14");
 	code("let a = 15★ a - true").equals("14");
