@@ -434,6 +434,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	for (size_t i = 0; i < arg_count - offset; ++i) {
 		if (i < arguments.size()) {
 			auto arg = arguments.at(i)->compile(c);
+			c.assert_value_ok(arg);
 			if (arg.t.is_primitive()) arg = c.insn_convert(arg, function_type.argument(i));
 			args.push_back(arg);
 			arguments.at(i)->compile_end(c);
