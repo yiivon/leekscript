@@ -118,15 +118,12 @@ Type VariableValue::version_type(std::vector<Type> version) const {
 }
 
 Compiler::value VariableValue::compile(Compiler& c) const {
-
 	// std::cout << "Compile var " << name << " " << version << std::endl;
 	// cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << endl;
-
-	if (scope == VarScope::CAPTURE) {
-		return c.insn_get_capture(capture_index, type);
-	}
 	Compiler::value v;
-	if (scope == VarScope::INTERNAL) {
+	if (scope == VarScope::CAPTURE) {
+		v = c.insn_get_capture(capture_index, type);
+	} else if (scope == VarScope::INTERNAL) {
 		v = c.vm->internals.at(name);
 	} else if (scope == VarScope::LOCAL) {
 		auto f = dynamic_cast<Function*>(var->value);
@@ -138,9 +135,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		v = c.insn_load(c.insn_get_argument(name));
 	}
 	assert(v.t == type);
-	if (var->type().reference) {
-		return c.insn_load(v);
-	}
+	c.assert_value_ok(v);
 	// std::cout << "return var " << v.v->getType() << std::endl;
 	return v;
 }
