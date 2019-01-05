@@ -37,6 +37,7 @@ Location Return::location() const {
 Compiler::value Return::compile(Compiler& c) const {
 	if (expression != nullptr) {
 		auto v = expression->compile(c);
+		c.assert_value_ok(v);
 		auto r = c.insn_move(v);
 		c.delete_function_variables();
 		c.insn_return(r);
