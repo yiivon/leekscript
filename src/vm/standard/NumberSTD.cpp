@@ -403,28 +403,30 @@ Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	// auto a = c.insn_address_of(args[0]);
-	// auto b = args[1];
-	// auto r = c.new_mpz();
-	// auto r_addr = c.insn_address_of(r);
-
-	// Compiler::label label_end;
-	// Compiler::label label_else;
-
-	// auto cond = c.insn_lt(b, c.new_integer(0));
-	// c.insn_branch_if_not(cond, &label_else);
-
-	// Compiler::value neg_b = c.insn_neg(b);
-	// c.insn_call({}, {r_addr, a, neg_b}, &mpz_add_ui, "mpz_add_ui");
-	// c.insn_branch(&label_end);
-
-	// c.insn_label(&label_else);
-	// c.insn_call({}, {r_addr, a, b}, &mpz_sub_ui, "mpz_sub_ui");
-	// c.insn_label(&label_end);
-	// if (args[0].t.temporary) {
-	// 	c.insn_delete_mpz(args[0]);
-	// }
-	// return r;
+	auto a = args[0];
+	auto b = args[1];
+	auto r = c.create_and_add_var("r", Type::mpz());
+	auto cond = c.insn_lt(b, c.new_integer(0));
+	c.insn_if(cond, [&]() {
+		auto neg_b = c.insn_neg(b);
+		c.insn_store(r, c.insn_call(Type::mpz(), {a, neg_b}, +[](__mpz_struct a, int b) {
+			mpz_t r;
+			mpz_init(r);
+			mpz_add_ui(r, &a, (unsigned long) b);
+			return *r;
+		}));
+	}, [&]() {
+		c.insn_store(r, c.insn_call(Type::mpz(), {a, b}, +[](__mpz_struct a, int b) {
+			mpz_t r;
+			mpz_init(r);
+			mpz_sub_ui(r, &a, (unsigned long) b);
+			return *r;
+		}));
+	});
+	if (args[0].t.temporary) {
+		c.insn_delete_mpz(a);
+	}
+	return c.insn_load(r);
 }
 
 Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
