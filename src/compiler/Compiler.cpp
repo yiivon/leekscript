@@ -935,7 +935,8 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	Compiler::value arg0 = {F->arg_begin(), Type::integer()};
 
 	auto jit_index = new_integer(index);
-	auto v = insn_call(Type::any(), {arg0, jit_index}, +[](LSClosure* fun, int index) {
+	auto first_type = type.is_primitive() ? Type::any() : type;
+	auto v = insn_call(first_type, {arg0, jit_index}, +[](LSClosure* fun, int index) {
 		// std::cout << "fun->get_capture(" << fun << ", " << index << ")" << std::endl;
 		LSValue* v = fun->get_capture(index);
 		// std::cout << "capture : " << ((LSNumber*) v)->value << std::endl;
