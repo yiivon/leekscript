@@ -807,6 +807,11 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
 	}
+	if (v.t.is_real()) {
+		Compiler::value r {builder.CreateFCmpONE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::boolean()};
+		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
+		return r;
+	}
 	if (v.t.is_string()) {
 		return insn_call(Type::boolean(), {v}, (void*) &LSString::to_bool);
 	}
