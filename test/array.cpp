@@ -375,8 +375,7 @@ void Test::test_arrays() {
 	DISABLED_code("let a = 0 Array.iter([1, 2, 3], x -> a += x) a").equals("6");
 	// TODO crash
 	DISABLED_code("var a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
-	// TODO works but leaks
-	DISABLED_code("var a = '' Array.iter([1, 2, 3], x -> a += x) a").equals("");
+	code("var a = '' Array.iter([1, 2, 3], x -> a += x) a").equals("'123'");
 	DISABLED_code("var s = 0 [1, 2, 3, 4, 5].iter(x -> s += x)").equals("15");
 
 	section("Array.partition()");
