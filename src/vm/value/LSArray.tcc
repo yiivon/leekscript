@@ -390,7 +390,8 @@ template <class T>
 template <class F>
 void LSArray<T>::ls_iter(F function) {
 	for (auto v : *this) {
-		ls::call<void>(function, v);
+		auto r = ls::call<LSValue*>(function, v);
+		ls::release(r); // TODO not good for primitive type
 	}
 	if (refs == 0) {
 		delete this;
