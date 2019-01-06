@@ -146,7 +146,7 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	if (scope == VarScope::LOCAL) {
 		v = c.get_var(name);
 	} else if (scope == VarScope::CAPTURE) {
-		v = c.insn_get_capture(capture_index, type);
+		v = c.insn_get_capture_l(capture_index, type);
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_get_argument(name);
 	}
