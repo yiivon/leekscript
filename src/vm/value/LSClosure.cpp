@@ -33,5 +33,8 @@ void LSClosure::add_capture(LSValue* value) {
 LSValue* LSClosure::get_capture(int index) {
 	return captures[index];
 }
+LSValue** LSClosure::get_capture_l(int index) {
+	return &captures[index];
+}
 
 }

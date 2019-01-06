@@ -936,17 +936,11 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 
 Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	// std::cout << "get_capture " << fun << " " << F->arg_size() << " " << type << " " << F->arg_begin()->getType() << " " << index << std::endl;
-
 	Compiler::value arg0 = {F->arg_begin(), Type::integer()};
-
 	auto jit_index = new_integer(index);
 	auto first_type = type.is_primitive() ? Type::any() : type;
 	auto v = insn_call(first_type, {arg0, jit_index}, +[](LSClosure* fun, int index) {
-		// std::cout << "fun->get_capture(" << fun << ", " << index << ")" << std::endl;
-		LSValue* v = fun->get_capture(index);
-		// std::cout << "capture : " << ((LSNumber*) v)->value << std::endl;
-		// v->refs++;
-		return v;
+		return fun->get_capture(index);
 	});
 	if (type == Type::integer()) {
 		v = insn_call(Type::integer(), {v}, +[](LSNumber* n) {
@@ -954,6 +948,15 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 		});
 	}
 	return v;
+}
+
+Compiler::value Compiler::insn_get_capture_l(int index, Type type) const {
+	assert(type.is_polymorphic());
+	Compiler::value arg0 = {F->arg_begin(), Type::integer()};
+	auto jit_index = new_integer(index);
+	return insn_call(type.pointer(), {arg0, jit_index}, +[](LSClosure* fun, int index) {
+		return fun->get_capture_l(index);
+	});
 }
 
 void Compiler::insn_push_array(Compiler::value array, Compiler::value value) const {
