@@ -1565,7 +1565,7 @@ Compiler::value Compiler::add_var(const std::string& name, Compiler::value value
 	assert(value.t.llvm_type() == value.v->getType());
 	auto var = create_entry(name, value.t);
 	insn_store(var, value);
-	variables.back().at(name) = var;
+	variables.back()[name] = var;
 	return var;
 }
 
