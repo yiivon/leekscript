@@ -71,6 +71,9 @@ VM::VM(bool v1) : compiler(this) {
 	null_value = LSNull::create();
 	true_value = LSBoolean::create(true);
 	false_value = LSBoolean::create(false);
+	LSNull::set_null_value(this->null_value);
+	LSBoolean::set_true_value(this->true_value);
+	LSBoolean::set_false_value(this->false_value);
 
 	// Include STD modules
 	add_module(new ValueSTD());
