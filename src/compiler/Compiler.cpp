@@ -18,7 +18,7 @@
 #include "../vm/value/LSClosure.hpp"
 #include "../colors.h"
 #include "../type/RawType.hpp"
-#include "leekscript/lib/utf8.h"
+#include "../../lib/utf8.h"
 #include "semantic/SemanticAnalyser.hpp"
 
 #define log_insn(i) log_instructions && _log_insn((i))
