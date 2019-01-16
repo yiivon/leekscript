@@ -40,6 +40,7 @@ public:
 	bool must_manage_memory() const;
 	bool iterable() const;
 	bool is_container() const;
+	bool can_be_container() const;
 	Type not_temporary() const;
 	Type add_temporary() const;
 	llvm::Type* llvm_type() const;

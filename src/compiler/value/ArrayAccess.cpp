@@ -52,7 +52,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 
 	array->analyse(analyser);
 
-	if (!array->type.is_any() and !array->type.is_placeholder() and !array->type.is_container()) {
+	if (not array->type.can_be_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
 		return;
 	}

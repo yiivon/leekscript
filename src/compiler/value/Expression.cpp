@@ -115,7 +115,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	v2->analyse(analyser);
 
 	// in operator : v1 must be a container
-	if (op->type == TokenType::IN and !v2->type.is_any() and !v2->type.is_container()) {
+	if (op->type == TokenType::IN and not v2->type.can_be_container()) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
 		return;
 	}

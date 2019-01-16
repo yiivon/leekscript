@@ -199,6 +199,11 @@ bool Type::is_container() const {
 		return type->is_container();
 	});
 }
+bool Type::can_be_container() const {
+	return is_any() or is_placeholder() or std::any_of(begin(_types), end(_types), [](auto& type) {
+		return type->is_container();
+	});
+}
 
 bool Type::operator == (const Type& type) const {
 	return _types.size() == type._types.size() && std::equal(_types.begin(), _types.end(), type._types.begin(), [&](std::shared_ptr<const Base_type> t1, std::shared_ptr<const Base_type> t2) {
