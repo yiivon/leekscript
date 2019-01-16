@@ -93,8 +93,11 @@ const std::vector<Type> Type::arguments() const {
 	return _types[0]->arguments();
 }
 const Type Type::element() const {
-	if (_types.size() == 0) { return {}; }
-	return _types[0]->element();
+	Type element;
+	for (const auto& type : _types) {
+		element += type->element();
+	}
+	return element;
 }
 const Type Type::key() const {
 	if (_types.size() == 0) { return {}; }
