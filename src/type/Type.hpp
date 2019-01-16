@@ -86,6 +86,7 @@ public:
 	bool is_polymorphic() const;
 	bool is_primitive() const;
 	bool is_callable() const;
+	bool can_be_callable() const;
 	bool is_void() const;
 
 	bool operator ==(const Type& type) const;

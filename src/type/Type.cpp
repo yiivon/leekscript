@@ -336,6 +336,11 @@ bool Type::is_callable() const {
 		return t->callable();
 	});
 }
+bool Type::can_be_callable() const {
+	return is_any() or (_types.size() and some([&](std::shared_ptr<const Base_type> t) {
+		return t->callable();
+	}));
+}
 bool Type::is_void() const {
 	return _types.size() == 0;
 }
