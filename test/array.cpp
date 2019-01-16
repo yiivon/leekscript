@@ -127,6 +127,7 @@ void Test::test_arrays() {
 	code("[['a', 'b'], 12][0][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
 	code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	DISABLED_code("let a = [[12], [1..10]][1] a[5]").equals("6");
 
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
