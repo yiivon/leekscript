@@ -59,6 +59,7 @@ public:
 	Type fold() const;
 
 	template <class T> bool is_type() const;
+	template <class T> bool can_be_type() const;
 	bool is_any() const;
 	bool is_number() const;
 	bool is_integer() const;

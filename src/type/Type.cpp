@@ -274,6 +274,11 @@ template <class T> bool Type::is_type() const {
 		return dynamic_cast<const T*>(type.get()) != nullptr;
 	});
 }
+template <class T> bool Type::can_be_type() const {
+	return _types.size() && some([&](std::shared_ptr<const Base_type> type) {
+		return dynamic_cast<const T*>(type.get()) != nullptr;
+	});
+}
 bool Type::is_any() const { return is_type<Any_type>(); }
 bool Type::is_bool() const { return is_type<Bool_type>(); }
 bool Type::is_number() const { return castable(Type::number(), true); }
