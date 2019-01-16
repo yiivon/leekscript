@@ -62,8 +62,11 @@ public:
 	template <class T> bool can_be_type() const;
 	bool is_any() const;
 	bool is_number() const;
+	bool can_be_number() const;
+	bool can_be_numeric() const;
 	bool is_integer() const;
 	bool is_bool() const;
+	bool can_be_bool() const;
 	bool is_long() const;
 	bool is_real() const;
 	bool is_mpz() const;

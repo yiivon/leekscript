@@ -281,7 +281,16 @@ template <class T> bool Type::can_be_type() const {
 }
 bool Type::is_any() const { return is_type<Any_type>(); }
 bool Type::is_bool() const { return is_type<Bool_type>(); }
+bool Type::can_be_bool() const { return can_be_type<Bool_type>(); }
 bool Type::is_number() const { return castable(Type::number(), true); }
+bool Type::can_be_number() const {
+	return some([&](std::shared_ptr<const Base_type> type) {
+		return type->distance(Type::number()._types[0].get()) >= 0;
+	});
+}
+bool Type::can_be_numeric() const {
+	return is_any() or can_be_bool() or can_be_number();
+}
 bool Type::is_real() const { return is_type<Real_type>(); }
 bool Type::is_integer() const { return is_type<Integer_type>(); }
 bool Type::is_long() const { return is_type<Long_type>(); }

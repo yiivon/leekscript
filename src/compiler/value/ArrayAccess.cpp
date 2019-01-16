@@ -88,7 +88,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 		type = array->type;
 
 	} else if (array->type.is_array() or array->type.is_string() or array->type.is_interval()) {
-		if (!key->type.is_any() and not (key->type.is_number() or key->type.is_bool())) {
+		if (not key->type.can_be_numeric()) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
