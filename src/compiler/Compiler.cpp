@@ -1489,6 +1489,21 @@ void Compiler::insn_return_void() const {
 	builder.CreateRetVoid();
 }
 
+Compiler::value Compiler::insn_phi(Type type, Compiler::value v1, Compiler::label l1, Compiler::value v2, Compiler::label l2) const {
+	const auto folded_type = type.fold();
+	const auto llvm_type = type.llvm_type();
+	auto phi = Compiler::builder.CreatePHI(llvm_type, 2, "phi");
+	if (v1.v) {
+		assert(v1.t == folded_type);
+		phi->addIncoming(v1.v, l1.block);
+	}
+	if (v2.v) {
+		assert(v2.t == folded_type);
+		phi->addIncoming(v2.v, l2.block);
+	}
+	return {phi, folded_type};
+}
+
 // Call functions
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
 	std::vector<llvm::Value*> llvm_args;

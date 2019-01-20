@@ -283,6 +283,7 @@ public:
 	void insn_branch(label* l) const;
 	void insn_return(value v) const;
 	void insn_return_void() const;
+	value insn_phi(Type type, value v1, label l1, value v2, label l2) const;
 
 	// Call functions
 	template <typename R, typename... A>
