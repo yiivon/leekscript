@@ -112,6 +112,8 @@ void Test::test_map() {
 	code("var x = [1 : 'a'] x.insert(2, 3) x").equals("[1: 'a', 2: 3]");
 	code("var x = ['a' : 1] x.insert(2, 3) x").equals("[2: 3, 'a': 1]");
 	code("var x = ['a' : 1] x.insert('a', 3)").equals("false");
+	code("var x = ['a' : 1.5] x.insert('b', 3.2) x").equals("['a': 1.5, 'b': 3.2]");
+	code("var x = ['a' : 1.5] x.insert('a', 3.2)").equals("false");
 
 	section("Map.clear()");
 	code("var x = [:] x.clear()").equals("[:]");
