@@ -14,6 +14,7 @@ class Instruction {
 public:
 
 	Type type;
+	Type return_type;
 	bool returning = false;
 	bool may_return = false;
 

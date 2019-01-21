@@ -27,6 +27,9 @@ void Return::analyse(SemanticAnalyser* analyser, const Type&) {
 	if (expression != nullptr) {
 		expression->analyse(analyser);
 		type = expression->type;
+		return_type = expression->type;
+		returning = true;
+		may_return = true;
 	}
 }
 
