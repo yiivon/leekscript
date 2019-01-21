@@ -14,6 +14,9 @@ class Value {
 public:
 
 	Type type;
+	Type return_type;
+	bool returning = false;
+	bool may_return = false;
 
 	std::vector<Type> version;
 	bool has_version = false;
