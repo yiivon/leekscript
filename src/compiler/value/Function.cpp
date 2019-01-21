@@ -543,10 +543,10 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	// Compile body
 	auto res = version->body->compile(c);
-	if (res.v) {
-		c.insn_return(res);
-	} else {
+	if (version->body->type.is_void()) {
 		c.insn_return_void();
+	} else {
+		c.insn_return(res);
 	}
 
 	// Catch block
