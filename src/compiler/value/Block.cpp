@@ -33,6 +33,7 @@ void Block::print(ostream& os, int indent, bool debug, bool condensed) const {
 	if (!condensed) os << tabs(indent) << "}";
 	if (debug) {
 		os << " " << type;
+		if (may_return) os << " ==>" << return_type;
 	}
 }
 
