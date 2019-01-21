@@ -28,9 +28,9 @@ void Test::test_loops() {
 	code("if (true) 12 else 5").equals("12");
 	code("if (false) 12 else 5").equals("5");
 	code("if (true) 12").equals("12");
-	DISABLED_code("if (false) 12").equals("null");
+	code("if (false) 12").equals("null");
 	code("if true then 12 end").equals("12");
-	DISABLED_code("if false then 12 end").equals("null");
+	code("if false then 12 end").equals("null");
 	code("if true { 5 } else { return 2 }").equals("5");
 	code("if true { return 5 } else { 2 }").equals("5");
 	code("if false { 5 } else { return 2 }").equals("2");
@@ -39,8 +39,8 @@ void Test::test_loops() {
 	code("let a = 5m if true { a } else { a }").equals("5");
 	code("if true then 1 else 2 end").equals("1");
 	code("if true then if false then 1 else 2 end end").equals("2");
-	DISABLED_code("if true then if false then 1 end else 2 end").equals("null");
-	code("var k = '121212' if (false) { return 12 } 5").equals("5");
+	code("if true then if false then 1 end else 2 end").equals("null");
+	DISABLED_code("var k = '121212' if (false) { return 12 } 5").equals("5");
 	DISABLED_code("var L = 5 if L < 1 {;}").equals("(void)");
 
 	section("Conditions with other types");
