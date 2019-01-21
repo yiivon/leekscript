@@ -89,7 +89,7 @@ Compiler::value If::compile(Compiler& c) const {
 	then_v = c.insn_convert(then->compile(c), type.fold());
 	then->compile_end(c);
 
-	if (dynamic_cast<Return*>(then->instructions[0]) == nullptr && dynamic_cast<Break*>(then->instructions[0]) == nullptr && dynamic_cast<Continue*>(then->instructions[0]) == nullptr) {
+	if (then->instructions.size() && dynamic_cast<Return*>(then->instructions[0]) == nullptr && dynamic_cast<Break*>(then->instructions[0]) == nullptr && dynamic_cast<Continue*>(then->instructions[0]) == nullptr) {
 		c.insn_branch(&label_end);
 	}
 	label_then.block = Compiler::builder.GetInsertBlock();
