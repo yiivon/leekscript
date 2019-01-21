@@ -113,7 +113,7 @@ Compiler::value Block::compile(Compiler& c) const {
 			return {};
 		}
 		if (i < instructions.size() - 1) {
-			if (val.v != nullptr && instructions[i]->type._types.size() != 0) {
+			if (val.v != nullptr && !instructions[i]->type.is_void()) {
 				c.insn_delete_temporary(val);
 			}
 		} else {
