@@ -7,5 +7,7 @@
 #include "vm/value/LSArray.hpp"
 #include "vm/value/LSObject.hpp"
 #include "vm/Program.hpp"
+#include "type/Integer_type.hpp"
+#include "type/Object_type.hpp"
 
 #endif
