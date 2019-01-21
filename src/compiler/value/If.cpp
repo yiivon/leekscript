@@ -106,7 +106,7 @@ Compiler::value If::compile(Compiler& c) const {
 
 	c.insn_label(&label_end);
 	
-	if (type._types.size() == 0) {
+	if (type.is_void()) {
 		return {};
 	} else {
 		auto phi = Compiler::builder.CreatePHI(type.llvm_type(), 2, "iftmp");
