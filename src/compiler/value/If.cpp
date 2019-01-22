@@ -109,10 +109,7 @@ Compiler::value If::compile(Compiler& c) const {
 	if (type.is_void()) {
 		return {};
 	} else {
-		auto phi = Compiler::builder.CreatePHI(type.llvm_type(), 2, "iftmp");
-		if (then_v.v) phi->addIncoming(then_v.v, label_then.block);
-		if (else_v.v) phi->addIncoming(else_v.v, label_else.block);
-		return {phi, type};
+		return c.insn_phi(type, then_v, label_then, else_v, label_else);
 	}
 }
 
