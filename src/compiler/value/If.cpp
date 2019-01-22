@@ -70,10 +70,8 @@ void If::analyse(SemanticAnalyser* analyser) {
 	}
 	returning = then->returning and (elze != nullptr and elze->returning);
 	may_return = then->may_return or (elze != nullptr and elze->may_return);
-	if (then->may_return) return_type += then->return_type;
-	if (elze != nullptr && elze->may_return) return_type += elze->return_type; 
-
-	// std::cout << "If " << type << " fold " << type.fold() << std::endl;
+	return_type += then->return_type;
+	if (elze != nullptr) return_type += elze->return_type;
 }
 
 Compiler::value If::compile(Compiler& c) const {

@@ -56,8 +56,12 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Init
 	for (Instruction* ins : inits) {
 		ins->analyse(analyser);
-		if (dynamic_cast<Return*>(ins)) {
-			type = ins->type;
+		if (ins->may_return) {
+			returning = ins->returning;
+			may_return = ins->may_return;
+			return_type += ins->return_type;
+		}
+		if (ins->returning) {
 			analyser->leave_block();
 			return;
 		}
@@ -71,11 +75,9 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Body
 	analyser->enter_loop();
 	body->analyse(analyser);
-	returning = body->returning;
-	may_return = body->may_return;
-	if (returning or may_return) {
-		type = body->type;
-	}
+	if (body->returning) returning = true;
+	if (body->may_return) may_return = true;
+	return_type += body->return_type;
 	if (req_type.is_array()) {
 		type = Type::array(body->type);
 	}
@@ -85,8 +87,12 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	analyser->enter_block();
 	for (Instruction* ins : increments) {
 		ins->analyse(analyser, {});
-		if (dynamic_cast<Return*>(ins)) {
-			type = ins->type;
+		if (ins->may_return) {
+			returning = ins->returning;
+			may_return = ins->may_return;
+			return_type += ins->return_type;
+		}
+		if (ins->returning) {
 			break;
 		}
 	}

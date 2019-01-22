@@ -57,7 +57,7 @@ void Block::analyse_global_functions(SemanticAnalyser* analyser) {
 
 void Block::analyse(SemanticAnalyser* analyser) {
 
-	// std::cout << "Block analyse " << req_type << std::endl;
+	// std::cout << "Block " << this << std::endl;
 	analyser->enter_block();
 
 	type = {};
@@ -65,23 +65,16 @@ void Block::analyse(SemanticAnalyser* analyser) {
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		const auto& instruction = instructions.at(i);
 		instruction->analyse(analyser);
-		// Last instruction or instruction with a return somewhere
-		if (i == instructions.size() - 1 or instruction->may_return) {
+		if (i == instructions.size() - 1) { // Last instruction
 			type += instruction->type;
-			was_reference = type.reference;
-			// for (auto& t : instructions[i]->types) t.reference = false;
-			type.reference = false;
-			if (instruction->may_return) may_return = true;
-			if (instruction->returning) returning = true;
-			return_type += instruction->return_type;
 		}
-		// A return instruction
+		if (instruction->may_return) may_return = true;
+		return_type += instruction->return_type;
 		if (instruction->returning) {
-			analyser->leave_block();
-			return; // no need to compile after a return
+			returning = true;
+			break; // no need to analyse after a return
 		}
 	}
-	// std::cout << "bloc type " << type << std::endl;
 
 	analyser->leave_block();
 

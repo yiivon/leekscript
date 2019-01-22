@@ -295,6 +295,11 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 			return_type += t;
 		}
 	}
+	for (const auto& t : version->body->return_type._types) {
+		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
+			return_type += t;
+		}
+	}
 	version->body->type = return_type;
 	if (captures.size()) {
 		version->type = Type::closure(return_type, arg_types, this);
@@ -309,7 +314,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	vars = analyser->get_local_vars();
 	analyser->leave_function();
 
-	// cout << "function analysed body : " << version->type << endl;
+	// std::cout << "function analysed body : " << version->type << std::endl;
 }
 
 int Function::capture(std::shared_ptr<SemanticVar> var) {

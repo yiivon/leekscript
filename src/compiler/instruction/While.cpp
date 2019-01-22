@@ -36,7 +36,9 @@ void While::analyse(SemanticAnalyser* analyser, const Type&) {
 	body->analyse(analyser);
 	analyser->leave_loop();
 	if (body->may_return) {
-		type = body->type;
+		may_return = body->may_return;
+		returning = body->returning;
+		return_type = body->return_type;
 	}
 }
 

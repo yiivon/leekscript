@@ -13,8 +13,6 @@ public:
 	Block* then;
 	Block* elze;
 	bool ternary;
-	bool returning = false;
-	bool may_return = false;
 
 	If(bool ternary = false);
 	virtual ~If();

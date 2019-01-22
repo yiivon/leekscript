@@ -23,21 +23,15 @@ Location ExpressionInstruction::location() const {
 }
 
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-		value->analyse(analyser);
+	value->analyse(analyser);
 	if (req_type.is_void()) {
 		type = {};
 	} else {
-		value->analyse(analyser);
 		type = value->type;
 	}
-	if (auto block = dynamic_cast<Block*>(value)) {
-		returning = block->returning;
-		may_return = block->may_return;
-	}
-	if (auto iff = dynamic_cast<If*>(value)) {
-		returning = iff->returning;
-		may_return = iff->may_return;
-	}
+	returning = value->returning;
+	may_return = value->may_return;
+	return_type = value->return_type;
 }
 
 Compiler::value ExpressionInstruction::compile(Compiler& c) const {
