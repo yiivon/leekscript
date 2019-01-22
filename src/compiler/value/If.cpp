@@ -65,11 +65,15 @@ void If::analyse(SemanticAnalyser* analyser) {
 	if (elze != nullptr) {
 		elze->analyse(analyser);
 		type += elze->type;
+	} else {
+		type += Type::null();
 	}
 	returning = then->returning and (elze != nullptr and elze->returning);
 	may_return = then->may_return or (elze != nullptr and elze->may_return);
 	if (then->may_return) return_type += then->return_type;
-	if (elze != nullptr && elze->may_return) return_type += elze->return_type;
+	if (elze != nullptr && elze->may_return) return_type += elze->return_type; 
+
+	// std::cout << "If " << type << " fold " << type.fold() << std::endl;
 }
 
 Compiler::value If::compile(Compiler& c) const {
@@ -101,6 +105,8 @@ Compiler::value If::compile(Compiler& c) const {
 	if (elze != nullptr) {
 		else_v = c.insn_convert(elze->compile(c), type.fold());
 		elze->compile_end(c);
+	} else {
+		else_v = c.insn_convert(c.new_null(), type.fold());
 	}
 
 	c.insn_branch(&label_end);
