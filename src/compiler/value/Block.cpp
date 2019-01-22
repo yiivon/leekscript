@@ -73,6 +73,7 @@ void Block::analyse(SemanticAnalyser* analyser) {
 			type.reference = false;
 			if (instruction->may_return) may_return = true;
 			if (instruction->returning) returning = true;
+			return_type += instruction->return_type;
 		}
 		// A return instruction
 		if (instruction->returning) {
