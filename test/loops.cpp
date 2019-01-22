@@ -40,7 +40,8 @@ void Test::test_loops() {
 	code("if true then 1 else 2 end").equals("1");
 	code("if true then if false then 1 else 2 end end").equals("2");
 	code("if true then if false then 1 end else 2 end").equals("null");
-	DISABLED_code("var k = '121212' if (false) { return 12 } 5").equals("5");
+	code("if (false) { return 12 } 5").equals("5");
+	code("var k = '121212' if (false) { return 12 } 5").equals("5");
 	DISABLED_code("var L = 5 if L < 1 {;}").equals("(void)");
 
 	section("Conditions with other types");
