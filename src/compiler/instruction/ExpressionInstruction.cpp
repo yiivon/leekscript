@@ -23,8 +23,8 @@ Location ExpressionInstruction::location() const {
 }
 
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-	if (req_type._types.size() == 0) {
 		value->analyse(analyser);
+	if (req_type.is_void()) {
 		type = {};
 	} else {
 		value->analyse(analyser);
