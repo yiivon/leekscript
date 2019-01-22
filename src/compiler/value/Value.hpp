@@ -33,7 +33,7 @@ public:
 	virtual bool is_zero() const;
 
 	// TODO PrintOptions to merge parameters
-	virtual void print(std::ostream&, int indent = 0, bool debug = false, bool condensed = false) const = 0;
+	virtual void print(std::ostream&, int indent = 0, bool debug = false, bool condensed = true) const = 0;
 	std::string to_string() const;
 
 	virtual Location location() const = 0;

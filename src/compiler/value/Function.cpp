@@ -61,7 +61,7 @@ Type Function::getReturnType() {
 	}
 }
 
-void Function::print_version(std::ostream& os, int indent, bool debug, const Version* version) const {
+void Function::print_version(std::ostream& os, int indent, bool debug, bool condensed, const Version* version) const {
 	if (version == nullptr) {
 		os << "nullptr!!";
 		return;
@@ -92,7 +92,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 		os << ")";
 	}
 	os << " => ";
-	version->body->print(os, indent, debug, true);
+	version->body->print(os, indent, debug, condensed);
 
 	if (debug) {
 		os << " [" << versions.size() << " versions, " << std::boolalpha << has_version << "]";
@@ -114,10 +114,10 @@ void Function::print_version(std::ostream& os, int indent, bool debug, const Ver
 void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (has_version && versions.size() == 1) {
 		// std::cout << "print version " << versions.begin()->second->type << std::endl;
-		print_version(os, indent, debug, versions.begin()->second);
+		print_version(os, indent, debug, condensed, versions.begin()->second);
 	} else {
 		// std::cout << "print default version" << std::endl;
-		print_version(os, indent, debug, default_version);
+		print_version(os, indent, debug, condensed, default_version);
 	}
 }
 
