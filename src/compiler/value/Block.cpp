@@ -63,19 +63,19 @@ void Block::analyse(SemanticAnalyser* analyser) {
 	type = {};
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
-		instructions[i]->analyse(analyser);
-		if (i == instructions.size() - 1 or instructions[i]->may_return) {
-			// Last instruction : must return the required type
-			type += instructions[i]->type;
+		const auto& instruction = instructions.at(i);
+		instruction->analyse(analyser);
+		// Last instruction or instruction with a return somewhere
+		if (i == instructions.size() - 1 or instruction->may_return) {
+			type += instruction->type;
 			was_reference = type.reference;
 			// for (auto& t : instructions[i]->types) t.reference = false;
 			type.reference = false;
-			if (instructions[i]->may_return) may_return = true;
-			if (instructions[i]->returning) returning = true;
+			if (instruction->may_return) may_return = true;
+			if (instruction->returning) returning = true;
 		}
 		// A return instruction
-		if (instructions[i]->returning) {
-			// type = {}; // This block has really no type
+		if (instruction->returning) {
 			analyser->leave_block();
 			return; // no need to compile after a return
 		}
