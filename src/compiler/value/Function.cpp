@@ -563,8 +563,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		// std::cout << "Create catch block " << current_version->type << std::endl;
 		c.builder.SetInsertPoint(current_version->catch_block);
 		c.delete_function_variables();
-		c.insn_call({}, {{c.builder.CreateLoad(current_version->exception_slot), Type::long_()}}, +[](void* ex) {
-			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
+		c.insn_call({}, {{c.builder.CreateLoad(current_version->exception_slot), Type::long_()}}, +[](void** ex) {
+			__cxa_throw((ex + 4), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
 		});
 		c.builder.CreateRetVoid();
 	}
