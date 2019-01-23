@@ -19,4 +19,9 @@ void ChangeTypeMutator::apply(SemanticAnalyser* analyser, std::vector<Value*> va
 	}
 }
 
+void WillTakeMutator::apply(SemanticAnalyser* analyser, std::vector<Value*> values) const {
+	std::cout << "will take mutator " << values[1]->type << " will take " << values[0]->type << ", " << values[2]->type << std::endl;
+	values[1]->will_take(analyser, {Type::any()}, 1);
+}
+
 }

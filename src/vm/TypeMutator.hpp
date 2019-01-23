@@ -24,6 +24,12 @@ public:
 	virtual void apply(SemanticAnalyser*, std::vector<Value*> values) const override;
 };
 
+class WillTakeMutator : public TypeMutator {
+public:
+	WillTakeMutator() {}
+	virtual void apply(SemanticAnalyser*, std::vector<Value*> values) const override;
+};
+
 }
 
 #endif
