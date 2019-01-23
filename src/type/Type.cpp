@@ -148,6 +148,11 @@ Type Type::operator * (const Type& t2) const {
 	if (compatible(t2)) {
 		return *this;
 	}
+	if (is_array() and t2.is_array()) {
+		if (element().is_polymorphic() and t2.element().is_polymorphic()) {
+			return array(any());
+		}
+	}
 	return Type::any();
 }
 
