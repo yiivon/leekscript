@@ -68,7 +68,7 @@ std::string Value::tabs(int indent) {
 
 std::string Value::to_string() const {
 	std::ostringstream oss;
-	oss << this;
+	print(oss, 0, false, true);
 	return oss.str();
 }
 
