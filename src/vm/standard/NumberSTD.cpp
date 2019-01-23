@@ -42,9 +42,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("+=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::add_eq_mpz_mpz, {}, false, true},
-		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::add_eq_real, {}, false, true},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::add_eq_real, {}, false, true}
+		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::add_eq_mpz_mpz, {new ChangeTypeMutator()}, false, true},
+		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::add_eq_real, {new ChangeTypeMutator()}, false, true},
+		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::add_eq_real, {new ChangeTypeMutator()}, false, true}
 	});
 
 	operator_("-", {

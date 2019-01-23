@@ -18,6 +18,12 @@ public:
 	virtual void apply(SemanticAnalyser*, std::vector<Value*> values) const override;
 };
 
+class ChangeTypeMutator : public TypeMutator {
+public:
+	ChangeTypeMutator() {}
+	virtual void apply(SemanticAnalyser*, std::vector<Value*> values) const override;
+};
+
 }
 
 #endif
