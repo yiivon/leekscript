@@ -77,6 +77,7 @@ bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& ar
 }
 
 void VariableValue::set_version(const vector<Type>& args, int level) {
+	// std::cout << "VariableValue::set_version " << args << " " << level << std::endl;
 	if (var != nullptr and var->value != nullptr) {
 		var->value->set_version(args, level);
 	}
