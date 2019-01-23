@@ -51,6 +51,7 @@ public:
 	bool all(std::function<bool(std::shared_ptr<const Base_type>)>) const;
 	bool some(std::function<bool(std::shared_ptr<const Base_type>)>) const;
 	bool castable(Type type, bool strictCast = false) const;
+	bool strictCastable(Type type) const;
 	int distance(Type type) const;
 
 	void operator += (const Type type);

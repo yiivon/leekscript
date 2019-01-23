@@ -419,6 +419,11 @@ bool Type::castable(Type type, bool strictCast) const {
 	auto d = distance(type);
 	return d >= 0 and (!strictCast or d < 100000);
 }
+bool Type::strictCastable(Type type) const {
+	if (!_types.size()) return false;
+	auto d = distance(type);
+	return d >= 0 and d < 100;
+}
 int Type::distance(Type type) const {
 	if (_types.size() == 0 or type._types.size() == 0) return -1;
 	auto t1 = fold()._types[0];
