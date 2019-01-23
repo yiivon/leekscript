@@ -802,7 +802,7 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 	if (v.t.is_bool()) {
 		return v;
 	}
-	if (v.t.is_integer()) {
+	if (v.t.is_integer() or v.t.is_long()) {
 		Compiler::value r {builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::boolean()};
 		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
