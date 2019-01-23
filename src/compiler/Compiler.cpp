@@ -228,10 +228,10 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
 	// assert(v.t.llvm_type() == v.v->getType());
 	if (!v.v) { return v; }
-	if (v.t.is_polymorphic() and t.is_polymorphic()) {
+	if (v.t.fold().is_polymorphic() and t.is_polymorphic()) {
 		return { builder.CreatePointerCast(v.v, t.llvm_type()), t };
 	}
-	if (v.t.is_primitive() && t.is_polymorphic()) {
+	if (v.t.fold().is_primitive() && t.is_polymorphic()) {
 		return insn_to_any(v);
 	}
 	if (v.t.not_temporary() == t.not_temporary()) return v;
