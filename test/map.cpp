@@ -36,8 +36,8 @@ void Test::test_map() {
 
 	section("Map.operator <");
 	code("['a': 1, 'b': 2] < ['a': 1, 'b': 3]").equals("true");
-	code("[1: 1, 2: 0] < [1: 1, 2: true]").equals("true");
-	code("[1: 1, 2: 0.5] < [1: 1, 2: true]").equals("true");
+	code("[1: 1, 2: 0] < [1: 1, 2: true]").equals("false");
+	code("[1: 1, 2: 0.5] < [1: 1, 2: true]").equals("false");
 	code("[1: 1, 2: 'a'] < [1: 1.5, 2: 5.5]").equals("true");
 	for (size_t i = 0; i < maps.size(); ++i)
 		for (size_t j = 0; j < maps.size(); ++j)
