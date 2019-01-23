@@ -215,21 +215,7 @@ bool Type::operator == (const Type& type) const {
 }
 
 bool Type::operator < (const Type& type) const {
-	auto t1 = _types.size() ? _types[0] : nullptr;
-	auto t2 = type._types.size() ? type._types[0] : nullptr;
-	if ((void*) t1.get() != (void*) t2.get()) {
-		return (void*) t1.get() < (void*) t2.get();
-	}
-	if (temporary != type.temporary) {
-		return temporary < type.temporary;
-	}
-	if (reference != type.reference) {
-		return reference < type.reference;
-	}
-	if (native != type.native) {
-		return native < type.native;
-	}
-	return false;
+	return _types < type._types;
 }
 
 Type Type::not_temporary() const {
