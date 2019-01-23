@@ -263,6 +263,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 }
 
 void Function::set_version(const std::vector<Type>& args, int level) {
+	// std::cout << "Function::set_version " << args << " " << level << std::endl;
 	if (level == 1) {
 		version = args;
 		has_version = true;
