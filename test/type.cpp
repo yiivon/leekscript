@@ -104,6 +104,7 @@ void Test::test_types() {
 	assert(ls::Type::any() * ls::Type::integer() == ls::Type::any());
 	assert(ls::Type::integer() * ls::Type::real() == ls::Type::real());
 	assert(ls::Type::integer() * ls::Type::string() == ls::Type::any());
+	assert(ls::Type::integer() * ls::Type::boolean() == ls::Type::any());
 
 	section("fold");
 	assert(ls::Type().fold() == ls::Type());
