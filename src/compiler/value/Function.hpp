@@ -71,6 +71,7 @@ public:
 	virtual Type version_type(std::vector<Type>) const override;
 	virtual void must_return(SemanticAnalyser*, const Type&) override;
 	virtual void analyse(SemanticAnalyser*) override;
+	void create_version(SemanticAnalyser* analyser, std::vector<Type> args);
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const override;

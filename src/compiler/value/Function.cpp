@@ -201,6 +201,24 @@ void Function::analyse(SemanticAnalyser* analyser) {
 	// std::cout << "Function type: " << type << std::endl;
 }
 
+void Function::create_version(SemanticAnalyser* analyser, std::vector<Type> args) {
+	// std::cout << "Function::create_version(" << args << ")" << std::endl;
+	auto version = new Function::Version();
+	version->body = (Block*) body->clone();
+	if (captures.size()) {
+		version->function = new LSClosure(nullptr);
+	} else {
+		version->function = new LSFunction(nullptr);
+	}
+	version->function->refs = 1;
+	version->function->native = true;
+	versions.insert({args, version});
+
+	analyse_body(analyser, args, version);
+
+	update_function_args(analyser);
+}
+
 bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
 	// std::cout << "Function " << this << " ::will_take " << args << " level " << level << std::endl;
 	if (!analyzed) {
@@ -211,21 +229,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 			for (const auto& t : args) {
 				if (t.is_placeholder()) return false;
 			}
-			auto version = new Function::Version();
-			version->body = (Block*) body->clone();
-			if (captures.size()) {
-				version->function = new LSClosure(nullptr);
-			} else {
-				version->function = new LSFunction(nullptr);
-			}
-			version->function->refs = 1;
-			version->function->native = true;
-			versions.insert({args, version});
-
-			analyse_body(analyser, args, version);
-
-			// std::cout << "created version type : " << version->type << std::endl;
-			update_function_args(analyser);
+			create_version(analyser, args);
 			return true;
 		}
 		return false;
