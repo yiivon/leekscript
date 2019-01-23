@@ -642,7 +642,7 @@ Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value> args) {
-	std::cout << "mod " << args[0].t << " " << args[1].t << std::endl;
+	// std::cout << "mod " << args[0].t << " " << args[1].t << std::endl;
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_mod(x, args[1]);
 	c.insn_store(args[0], sum);
