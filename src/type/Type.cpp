@@ -499,13 +499,13 @@ Type Type::const_real() {
 	return { raw_real(), false, false, true };
 }
 Type Type::array(const Type element) {
-	return { std::make_shared<Array_type>(element), false, false, false };
+	return { Array_type::create(element), false, false, false };
 }
 Type Type::const_array(const Type element) {
-	return { std::make_shared<Array_type>(element), false, false, true };
+	return { Array_type::create(element), false, false, true };
 }
 Type Type::tmp_array(const Type element) {
-	return { std::make_shared<Array_type>(element), false, true, false };
+	return { Array_type::create(element), false, true, false };
 }
 Type Type::object() {
 	return { raw_object(), false, false, false };

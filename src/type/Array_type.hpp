@@ -3,6 +3,7 @@
 
 #include "Type.hpp"
 #include "Pointer_type.hpp"
+#include <map>
 
 namespace ls {
 
@@ -23,6 +24,9 @@ public:
 	virtual Type iterator() const override;
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream&) const override;
+
+	static std::map<Type, std::shared_ptr<Array_type>> cache;
+	static std::shared_ptr<Array_type> create(Type element);
 };
 
 }

@@ -8,6 +8,19 @@
 
 namespace ls {
 
+std::map<Type, std::shared_ptr<Array_type>> Array_type::cache;
+
+std::shared_ptr<Array_type> Array_type::create(Type element) {
+	auto i = cache.find(element);
+	if (i != cache.end()) {
+		return i->second;
+	} else {
+		const auto a = std::make_shared<Array_type>(element);
+		cache.insert({element, a});
+		return a;
+	}
+}
+
 Array_type::Array_type(Type element) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("array"), std::initializer_list<Type> {
 	Type::integer(), // ?
 	Type::integer(), // ?
