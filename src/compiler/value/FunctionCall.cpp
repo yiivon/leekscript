@@ -126,7 +126,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 		vector<Type> arg_types;
 		for (auto arg : arguments) {
-			arg_types.push_back(arg->type);
+			arg_types.push_back(arg->type.fold());
 		}
 		std::string args_string = "";
 		for (unsigned i = 0; i < arg_types.size(); ++i) {
@@ -176,7 +176,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 			Method* m = nullptr;
 			LSClass* clazz;
-			if (!object_type.is_any() && !object_type.is_placeholder()) {
+			if (!object_type.fold().is_any() && !object_type.fold().is_placeholder()) {
 				clazz = (LSClass*) analyser->vm->internal_vars[object_type.class_name()]->lsvalue;
 				m = clazz->getMethod(analyser, oa->field->content, object_type, arg_types);
 				// std::cout << "Method " << oa->field->content << " found : " << m->obj_type << "." << m->type << std::endl;
@@ -203,7 +203,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				bool has_unknown_argument = false;
 				// for (const auto& a : arguments)
 					// if (a->type == ANY) has_unknown_argument = true;
-				if (!object_type.is_any() && !has_unknown_argument) {
+				if (!object_type.fold().is_any() && !has_unknown_argument) {
 					std::ostringstream obj_type_ss;
 					obj_type_ss << object_type;
 					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});

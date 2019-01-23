@@ -65,8 +65,10 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 
 	array_element_type = {};
 	if (array->type.is_array() || array->type.is_interval() || array->type.is_map()) {
-		array_element_type = array->type.element().fold();
+		array_element_type = array->type.element();
 		type = array_element_type;
+	} else {
+		type = array->type.element();
 	}
 	if (array->type.is_map()) {
 		map_key_type = array->type.key();

@@ -8,13 +8,13 @@ namespace ls {
 Base_type::~Base_type() {}
 
 Type Base_type::element() const {
-	return {};
+	return Type::any();
 }
 Type Base_type::key() const {
-	return {};
+	return Type::any();
 }
 Type Base_type::member(int) const {
-	return {};
+	return Type::any();
 }
 bool Base_type::operator == (const Base_type*) const {
 	return false;
