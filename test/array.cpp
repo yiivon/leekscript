@@ -127,7 +127,7 @@ void Test::test_arrays() {
 	code("[['a', 'b'], 12][0][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
 	code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("let a = [[12], [1..10]][1] a[5]").equals("6");
+	code("let a = [[12], [1..10]][1] a[5]").equals("6");
 
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -572,8 +572,7 @@ void Test::test_arrays() {
 	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
 	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
 	code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
-	// TODO not working
-	DISABLED_code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])]").equals("[]");
+	code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])] h").equals("[[2, 'text1'], 'text', [1, 2, 3, 'test'], <function>]");
 
 	section("Array v1 pushAll");
 	code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("['a', 'b', 'c']");
