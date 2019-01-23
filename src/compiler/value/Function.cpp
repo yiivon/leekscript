@@ -220,7 +220,7 @@ void Function::create_version(SemanticAnalyser* analyser, std::vector<Type> args
 }
 
 bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
-	// std::cout << "Function " << this << " ::will_take " << args << " level " << level << std::endl;
+	// std::cout << "Function " << " ::will_take " << args << " level " << level << std::endl;
 	if (!analyzed) {
 		analyse(analyser);
 	}
