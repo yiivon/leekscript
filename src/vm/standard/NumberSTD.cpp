@@ -122,6 +122,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	operator_("%", {
 		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mod_mpz_mpz},
+		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::mod},
 		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::mod},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mod},
 	});
@@ -226,6 +227,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	method("log10", {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::log10_ptr},
+		{Type::real(), {Type::long_()}, (void*) &NumberSTD::log10_real},
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::log10_real},
 	});
 	method("max", {
