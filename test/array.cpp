@@ -190,8 +190,7 @@ void Test::test_arrays() {
 	code("var a = [[1.5], ''][0] var b = ['a'] a + b").equals("[1.5, 'a']");
 	code("var a = [['a'], ''][0] var b = [12] a + b").equals("['a', 12]");
 	code("var a = [['a'], ''][0] var b = [12.9] a + b").equals("['a', 12.9]");
-	// TODO
-	DISABLED_code("var a = [1, 2, 3] a[1] += 0.5 a").equals("[1, 2.5, 3]");
+	code("var a = [1, 2, 3] a[1] += 0.5 a").equals("[1, 2.5, 3]");
 	code("var a = [1, 2, 3] a += [4] a").equals("[1, 2, 3, 4]");
 
 	section("Array.operator ~~");
