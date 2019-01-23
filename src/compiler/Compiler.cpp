@@ -436,10 +436,10 @@ Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
 }
 
 Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
-	assert(a.t.llvm_type() == a.v->getType());
-	assert(b.t.llvm_type() == b.v->getType());
-	assert(a.t.is_primitive() && b.t.is_primitive());
-	// std::cout << "insn_mul " << a.t << " " << b.t << std::endl;
+	// std::cout << "insn_mul " << a.t << " " << b.t << " " << b.v->getType() << std::endl;
+	assert_value_ok(a);
+	assert_value_ok(b);
+	assert(a.t.is_primitive() and b.t.is_primitive());
 	if (a.t.is_real() or b.t.is_real()) {
 		return {builder.CreateFMul(to_real(a).v, to_real(b).v), Type::real()};
 	} else if (a.t.is_long() or b.t.is_long()) {
