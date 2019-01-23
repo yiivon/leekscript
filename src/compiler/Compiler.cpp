@@ -226,6 +226,7 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
+	// std::cout << "convert " << v.t << " " << t.is_primitive() << " to " << t << " " << t.is_polymorphic() << std::endl;
 	// assert(v.t.llvm_type() == v.v->getType());
 	if (!v.v) { return v; }
 	if (v.t.fold().is_polymorphic() and t.is_polymorphic()) {
