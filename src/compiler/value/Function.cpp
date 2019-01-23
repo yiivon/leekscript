@@ -271,7 +271,7 @@ void Function::set_version(const std::vector<Type>& args, int level) {
 
 void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version) {
 
-	// std::cout << "Function::analyse_body(" << args << ", " << req_type << ")" << std::endl;
+	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
 
 	captures.clear();
 	analyser->enter_function(this);
