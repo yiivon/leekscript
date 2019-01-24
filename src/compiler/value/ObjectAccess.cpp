@@ -25,6 +25,13 @@ ObjectAccess::~ObjectAccess() {
 	}
 }
 
+bool ObjectAccess::isLeftValue() const {
+	if (auto v = dynamic_cast<VariableValue*>(object)) {
+		if (not v->isLeftValue()) return false;
+	}
+	return true;
+}
+
 void ObjectAccess::print(ostream& os, int indent, bool debug, bool condensed) const {
 	object->print(os, indent, debug);
 	os << "." << field->content;

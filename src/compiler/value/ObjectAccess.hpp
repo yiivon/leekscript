@@ -29,6 +29,8 @@ public:
 	ObjectAccess(std::shared_ptr<Token> token);
 	virtual ~ObjectAccess();
 
+	virtual bool isLeftValue() const override;
+	
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
