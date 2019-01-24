@@ -71,9 +71,9 @@ void Test::test_operators() {
 	code("(5 + 2) += 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5 + 2"});
 	code("2[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"2"});
 	code("'hello'[2] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "=", ls::Type::integer().to_string()});
-	code("'hello'[2:5] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "=", ls::Type::integer().to_string()});
+	code("'hello'[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'[2:5]"});
 	code("let a = [null, ''][0] a[2:5]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("var a = [null, ''][0] a[2:5] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "=", ls::Type::integer().to_string()});
+	code("var a = [null, ''][0] a[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"a[2:5]"});
 	// TODO class of a is (Null | String) actually
 	code("var a = [null, ''][0] a.toto = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("12 in [12, ''][0]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
