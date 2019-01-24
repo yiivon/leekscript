@@ -14,6 +14,10 @@ VariableValue::VariableValue(std::shared_ptr<Token> token) : token(token) {
 	constant = false;
 }
 
+bool VariableValue::isLeftValue() const {
+	return scope != VarScope::INTERNAL; // Internal variables are not left-value
+}
+
 void VariableValue::print(ostream& os, int, bool debug, bool condensed) const {
 	os << token->content;
 	if (debug) {
