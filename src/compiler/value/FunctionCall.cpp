@@ -328,12 +328,13 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Standard function call on object : "hello".size() */
 	if (this_ptr != nullptr) {
-		auto obj = this_ptr->compile(c);
-		if (obj.t.reference) {
-			obj = c.insn_load(obj);
-		}
-		vector<Compiler::value> args = { obj };
+		auto obj = [&]() { if (this_ptr->isLeftValue()) {
+			return c.insn_load(((LeftValue*) this_ptr)->compile_l(c));
+		} else {
+			return this_ptr->compile(c);
+		}}();
 		this_ptr->compile_end(c);
+		vector<Compiler::value> args = { obj };
 		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr_type.id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments.at(i)->compile(c));
