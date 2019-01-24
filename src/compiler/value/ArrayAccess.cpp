@@ -26,6 +26,10 @@ ArrayAccess::~ArrayAccess() {
 	}
 }
 
+bool ArrayAccess::isLeftValue() const {
+	return key2 == nullptr; // Range access is not left-value (yet)
+}
+
 void ArrayAccess::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	array->print(os, indent, debug);
 	os << "[";
