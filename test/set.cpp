@@ -143,6 +143,8 @@ void Test::test_set() {
 	code("var s = Set() s.insert('a') s").equals("<'a'>");
 	code("var s = new Set s.insert('a') s").equals("<'a'>");
 	code("var s = new Set() s.insert('a') s").equals("<'a'>");
+	code("var a = [<>, <>] a[1].insert('a') a").equals("[<>, <'a'>]");
+	code("var a = {b: <>} a.b.insert(0) a").equals("{b: <0>}");
 
 	section("Set.size()");
 	code("<>.size()").equals("0");

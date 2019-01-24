@@ -5,6 +5,7 @@
 #include "LSClass.hpp"
 #include "LSNumber.hpp"
 #include "LSNull.hpp"
+#include "LSBoolean.hpp"
 
 namespace ls {
 
@@ -62,6 +63,11 @@ inline bool LSSet<LSValue*>::ls_insert(LSValue* value) {
 	LSValue::delete_temporary(value);
 	if (refs == 0) delete this;
 	return false;
+}
+
+template <>
+inline LSValue* LSSet<LSValue*>::ls_insert_ptr(LSValue* value) {
+	return LSBoolean::get(ls_insert(value));
 }
 
 template <typename T>

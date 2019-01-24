@@ -35,6 +35,7 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::integer(), {Type::const_set(Type::integer())}, (void*) &LSSet<int>::ls_size, Method::NATIVE},
 	});
 	method("insert", {
+		{Type::boolean(), {Type::set(Type::any()), Type::any()}, (void*) &LSSet<LSValue*>::ls_insert_ptr, Method::NATIVE},
 		{Type::boolean(), {Type::set(Type::any()), Type::any()}, (void*) &insert_any},
 		{Type::boolean(), {Type::set(Type::real()), Type::real()}, (void*) &insert_real},
 		{Type::boolean(), {Type::set(Type::integer()), Type::integer()}, (void*) &insert_int},

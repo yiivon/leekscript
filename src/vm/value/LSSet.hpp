@@ -25,6 +25,7 @@ public:
 	 */
 	int ls_size();
 	bool ls_insert(T value);
+	LSValue* ls_insert_ptr(T value);
 	LSSet<T>* ls_clear();
 	bool ls_erase(T value);
 	bool ls_contains(T value);
