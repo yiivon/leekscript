@@ -212,7 +212,11 @@ Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> ver
 }
 
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {
-	auto o = object->compile(c);
+	auto o = [&]() { if (object->isLeftValue()) {
+		return c.insn_load(((LeftValue*) object)->compile_l(c));
+	} else {
+		return object->compile(c);
+	}}();
 	object->compile_end(c);
 	auto k = c.new_pointer(&field->content, Type::any());
 	return c.insn_call(type.pointer(), {o, k}, (void*) +[](LSValue* object, std::string* key) {
