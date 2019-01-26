@@ -103,6 +103,14 @@ void Test::test_intervals() {
 	// TODO
 	DISABLED_code("[1..10000].filter(isPrime)").equals("");
 
+	section("Interval.map");
+	code("[1..10].map(x -> x + 5)").equals("[6, 7, 8, 9, 10, 11, 12, 13, 14, 15]");
+	code("[1..10].map(x -> x ** 2)").equals("[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]");
+	code("[1..5].map(x -> x.sqrt())").equals("[1, 1.41421, 1.73205, 2, 2.23607]");
+	code("[1..10].map(x -> x.isPrime())").equals("[false, true, true, false, true, false, true, false, false, false]");
+	code("[-10..-5].map(x -> x + '!')").equals("['-10!', '-9!', '-8!', '-7!', '-6!', '-5!']");
+	code("[15..18].map(x -> x ** 2).map(x -> x.sqrt())").equals("[15, 16, 17, 18]");
+
 	section("Interval.sum");
 	code("[1..0].sum()").equals("0");
 	code("[1..1].sum()").equals("1");
