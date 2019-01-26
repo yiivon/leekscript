@@ -36,6 +36,12 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 		{Type::array(Type::integer()), {Type::interval(), pred_fun_type_int}, (void*) filter_fun, Method::NATIVE},
 		{Type::array(Type::integer()), {Type::interval(), pred_clo_type_int}, (void*) filter_clo, Method::NATIVE}
 	});
+	method("map", {
+		{Type::array(Type::any()), {Type::const_interval(), Type::fun(Type::any(), {Type::integer()})}, (void*) &map},
+		{Type::array(Type::real()), {Type::const_interval(), Type::fun(Type::real(), {Type::integer()})}, (void*) &map},
+		{Type::array(Type::integer()), {Type::const_interval(), Type::fun(Type::integer(), {Type::integer()})}, (void*) &map},
+		{Type::array(Type::boolean()), {Type::const_interval(), Type::fun(Type::boolean(), {Type::integer()})}, (void*) &map}
+	});
 	method("sum", {
 		{Type::long_(), {Type::interval()}, (void*) &LSInterval::ls_sum, Method::NATIVE},
 	});
