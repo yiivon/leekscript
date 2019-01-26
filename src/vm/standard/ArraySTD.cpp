@@ -247,9 +247,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("push", {
-		{Type::array(Type::any()), {Type::any(), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
 		{Type::array(Type::any()), {Type::array(), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
 		{Type::array(Type::real()), {Type::array(Type::real()), Type::const_real()}, (void*) &LSArray<double>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
+		{Type::array(Type::real()), {Type::array(Type::integer()), Type::const_real()}, (void*) &LSArray<double>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
 		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_push, Method::NATIVE, {new WillStoreMutator()}}
 	});
 

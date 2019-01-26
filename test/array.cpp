@@ -468,8 +468,7 @@ void Test::test_arrays() {
 	code("var a = [1, 2, 3] Array.push(a, 4)").equals("[1, 2, 3, 4]");
 	code("[].push([])").equals("[[]]");
 	code("var a = [1, 2] a.push(3) a").equals("[1, 2, 3]");
-	// TODO
-	DISABLED_code("let a = [1, 2] a.push(3.5) a").equals("[1, 2, 3]");
+	code("var a = [1, 2] a.push(3.5) a").equals("[1, 2, 3.5]");
 	code("var a = [1.5, -2.9] a.push(3.5) a").equals("[1.5, -2.9, 3.5]");
 	code("var s = new Array() Array.push(s, 'a')").equals("['a']");
 
