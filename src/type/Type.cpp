@@ -531,6 +531,9 @@ Type Type::const_map(const Type key, const Type element) {
 Type Type::interval() {
 	return { raw_interval(), false, false, false };
 }
+Type Type::const_interval() {
+	return { raw_interval(), false, false, true };
+}
 Type Type::tmp_interval() {
 	return { raw_interval(), false, true, false };
 }

@@ -133,6 +133,7 @@ public:
 	static Type map(const Type = {}, const Type = {});
 	static Type const_map(const Type = {}, const Type = {});
 	static Type interval();
+	static Type const_interval();
 	static Type tmp_interval();
 	static Type fun(Type return_type = {}, std::vector<Type> arguments = {}, const Function* function = nullptr);
 	static Type closure(Type return_type = {}, std::vector<Type> arguments = {}, const Function* function = nullptr);
