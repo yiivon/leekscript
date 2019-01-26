@@ -351,7 +351,14 @@ Compiler::value Compiler::insn_ne(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
-	assert(a.t.is_primitive() && b.t.is_primitive());
+	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
+		return insn_call(Type::boolean(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+			bool r = *x < *y;
+			LSValue::delete_temporary(x);
+			LSValue::delete_temporary(y);
+			return r;
+		});
+	}
 	Compiler::value r;
 	if (a.t.is_mpz() and b.t.is_integer()) {
 		// TODO cleaning
@@ -422,7 +429,14 @@ Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
-	assert(a.t.is_primitive() && b.t.is_primitive());
+	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
+		return insn_call(Type::boolean(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+			bool r = *x >= *y;
+			LSValue::delete_temporary(x);
+			LSValue::delete_temporary(y);
+			return r;
+		});
+	}
 	Compiler::value r;
 	if (a.t.is_real() || b.t.is_real()) {
 		r = {builder.CreateFCmpOGE(to_real(a).v, to_real(b).v), Type::boolean()};
