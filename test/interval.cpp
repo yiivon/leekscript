@@ -71,8 +71,11 @@ void Test::test_intervals() {
 	code("|[1..100]|").equals("100");
 
 	section("Interval.operator ~~");
-	// TODO crash
-	DISABLED_code("[1..10] ~~ x -> x.isPrime()").equals("[]");
+	code("[1..10] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]");
+	code("[1..5] ~~ x -> x.sqrt()").equals("[1, 1.41421, 1.73205, 2, 2.23607]");
+	code("[1..10] ~~ x -> x.isPrime()").equals("[false, true, true, false, true, false, true, false, false, false]");
+	code("[-10..-5] ~~ x -> x + '!'").equals("['-10!', '-9!', '-8!', '-7!', '-6!', '-5!']");
+	code("[15..18] ~~ (x -> x ** 2) ~~ x -> x.sqrt()").equals("[15, 16, 17, 18]");
 	// TODO
 	DISABLED_code("[1..10] ~~ isPrime").equals("");
 
