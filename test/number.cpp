@@ -194,10 +194,9 @@ void Test::test_numbers() {
 	DISABLED_code("5++").equals("5");
 
 	section("Number.operator x--");
-	// TODO not implemented
-	DISABLED_code("var a = 20m; a--").equals("20");
-	DISABLED_code("var a = 20m; a-- a").equals("19");
-	DISABLED_code("var a = 20m; let b = a-- b").equals("20");
+	code("var a = 20m; a--").equals("20");
+	code("var a = 20m; a-- a").equals("19");
+	code("var a = 20m; let b = a-- b").equals("20");
 	code("5--").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 
 	section("Number.operator in");
