@@ -1,6 +1,5 @@
 #include "Array.hpp"
 #include "../../vm/value/LSArray.hpp"
-#include "../../vm/value/LSInterval.hpp"
 #include <math.h>
 
 using namespace std;
@@ -18,22 +17,14 @@ Array::~Array() {
 }
 
 void Array::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-	if (interval) {
-		os << "[";
-		expressions[0]->print(os, indent, debug);
-		os << "..";
-		expressions[1]->print(os, indent, debug);
-		os << "]";
-	} else {
-		os << "[";
-		for (size_t i = 0; i < expressions.size(); ++i) {
-			expressions[i]->print(os, indent, debug);
-			if (i < expressions.size() - 1) {
-				os << ", ";
-			}
+	os << "[";
+	for (size_t i = 0; i < expressions.size(); ++i) {
+		expressions[i]->print(os, indent, debug);
+		if (i < expressions.size() - 1) {
+			os << ", ";
 		}
-		os << "]";
 	}
+	os << "]";
 	if (debug) {
 		os << " " << type;
 	}
@@ -48,79 +39,69 @@ void Array::analyse(SemanticAnalyser* analyser) {
 	// std::cout << "Array::analyse " << req_type << std::endl;
 	constant = true;
 
-	if (interval) {
+	if (expressions.size() > 0) {
 
-		type = Type::interval();
-		type.temporary = true;
-		expressions[0]->analyse(analyser);
-		expressions[1]->analyse(analyser);
+		Type element_type = {};
+		auto homogeneous = true;
 
-	} else {
+		// First analyse pass
+		for (size_t i = 0; i < expressions.size(); ++i) {
 
-		if (expressions.size() > 0) {
+			Value* ex = expressions[i];
+			ex->will_be_in_array(analyser);
+			ex->analyse(analyser);
 
-			Type element_type = {};
-			auto homogeneous = true;
-
-			// First analyse pass
-			for (size_t i = 0; i < expressions.size(); ++i) {
-
-				Value* ex = expressions[i];
-				ex->will_be_in_array(analyser);
-				ex->analyse(analyser);
-
-				if (ex->constant == false) {
-					constant = false;
-				}
-				if (element_type._types.size() and element_type != ex->type) {
-					homogeneous = false;
-				}
-				element_type = element_type * ex->type;
+			if (ex->constant == false) {
+				constant = false;
 			}
-
-			Type supported_type = {};
-			// Native elements types supported : integer, double
-			if (element_type == Type::integer() || element_type == Type::real()) {
-				supported_type = element_type;
+			if (element_type._types.size() and element_type != ex->type) {
+				homogeneous = false;
 			}
-			// For function, we store them as pointers
-			else if (element_type.is_function()) {
-				supported_type = element_type;
-			} else {
-				supported_type = Type::any();
-				// If there are some functions, they types will be lost, so tell them to return pointers
-				// TODO
-				// supported_type.setReturnType(Type::any());
-			}
-
-			// Re-analyze expressions with the supported type
-			// and second computation of the array type
-			element_type = {};
-			for (size_t i = 0; i < expressions.size(); ++i) {
-				auto ex = expressions[i];
-				if (!homogeneous and ex->type.is_array()) {
-					// If the array stores other arrays of different types,
-					// force those arrays to store pointers. (To avoid having
-					// unknown array<int> inside arrays.
-					ex->will_store(analyser, Type::any());
-				}
-				if (ex->type.is_function()) {
-					std::vector<Type> types;
-					for (unsigned p = 0; p < ex->type.arguments().size(); ++p) {
-						types.push_back(Type::any());
-					}
-					if (types.size() > 0) {
-						ex->will_take(analyser, types, 1);
-					}
-					// e.g. Should compile a generic version
-					ex->must_return(analyser, Type::any());
-				}
-				element_type += ex->type;
-			}
-			if (element_type == Type::boolean()) element_type = Type::any();
-			element_type.temporary = false;
-			type = Type::array(element_type);
+			element_type = element_type * ex->type;
 		}
+
+		Type supported_type = {};
+		// Native elements types supported : integer, double
+		if (element_type == Type::integer() || element_type == Type::real()) {
+			supported_type = element_type;
+		}
+		// For function, we store them as pointers
+		else if (element_type.is_function()) {
+			supported_type = element_type;
+		} else {
+			supported_type = Type::any();
+			// If there are some functions, they types will be lost, so tell them to return pointers
+			// TODO
+			// supported_type.setReturnType(Type::any());
+		}
+
+		// Re-analyze expressions with the supported type
+		// and second computation of the array type
+		element_type = {};
+		for (size_t i = 0; i < expressions.size(); ++i) {
+			auto ex = expressions[i];
+			if (!homogeneous and ex->type.is_array()) {
+				// If the array stores other arrays of different types,
+				// force those arrays to store pointers. (To avoid having
+				// unknown array<int> inside arrays.
+				ex->will_store(analyser, Type::any());
+			}
+			if (ex->type.is_function()) {
+				std::vector<Type> types;
+				for (unsigned p = 0; p < ex->type.arguments().size(); ++p) {
+					types.push_back(Type::any());
+				}
+				if (types.size() > 0) {
+					ex->will_take(analyser, types, 1);
+				}
+				// e.g. Should compile a generic version
+				ex->must_return(analyser, Type::any());
+			}
+			element_type += ex->type;
+		}
+		if (element_type == Type::boolean()) element_type = Type::any();
+		element_type.temporary = false;
+		type = Type::array(element_type);
 	}
 	if (type.element()._types.size() == 0) {
 		type = Type::array(Type::any());
@@ -191,17 +172,6 @@ bool Array::elements_will_store(SemanticAnalyser* analyser, const Type& type, in
 }
 
 Compiler::value Array::compile(Compiler& c) const {
-	if (interval) {
-		auto a = c.to_int(expressions[0]->compile(c));
-		auto b = c.to_int(expressions[1]->compile(c));
-		return c.insn_call(Type::tmp_interval(), {a, b}, +[](int a, int b) {
-			// TODO a better constructor?
-			LSInterval* interval = new LSInterval();
-			interval->a = a;
-			interval->b = b;
-			return interval;
-		});
-	}
 	std::vector<Compiler::value> elements;
 	for (Value* val : expressions) {
 		auto v = val->compile(c);
@@ -218,7 +188,6 @@ Value* Array::clone() const {
 	for (const auto& ex : expressions) {
 		array->expressions.push_back(ex->clone());
 	}
-	array->interval = interval;
 	return array;
 }
 

@@ -20,6 +20,7 @@
 #include "../instruction/While.hpp"
 #include "../value/AbsoluteValue.hpp"
 #include "../value/Array.hpp"
+#include "../value/Interval.hpp"
 #include "../value/Map.hpp"
 #include "../value/Set.hpp"
 #include "../value/ArrayAccess.hpp"
@@ -894,12 +895,11 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 	// eatInterval
 	if (t->type == TokenType::TWO_DOTS) {
 
-		Array* interval = new Array();
+		Interval* interval = new Interval();
 		interval->opening_bracket.reset(opening_bracket);
-		interval->interval = true;
-		interval->expressions.push_back(value);
+		interval->start = value;
 		eat();
-		interval->expressions.push_back(eatExpression());
+		interval->end = eatExpression();
 
 		interval->closing_bracket.reset(eat_get(TokenType::CLOSING_BRACKET));
 		return interval;
