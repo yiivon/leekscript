@@ -120,7 +120,7 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	}
 }
 
-const LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type& operand_type) {
+const LSClass::Operator* LSClass::getOperator(SemanticAnalyser* analyser, std::string& name, Type& obj_type, Type& operand_type) {
 	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
 	if (name == "is not") name = "!=";
 	std::vector<const Operator*> implementations;
@@ -134,6 +134,15 @@ const LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type,
 	const Operator* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
 	for (const Operator* m : implementations) {
+		if (auto fun = dynamic_cast<const Function_type*>(operand_type._types[0].get())) {
+			if (fun->function()) {
+				std::vector<Type> version = m->operand_type.arguments();
+				if (version.size() == fun->function()->arguments.size()) {
+					((Function*) fun->function())->will_take(analyser, version, 1);
+					operand_type = fun->function()->versions.at(version)->type;
+				}
+			}
+		}
 		auto d1 = obj_type.distance(m->object_type);
 		auto d2 = operand_type.distance(m->operand_type);
 		if (d1 >= 0 and d2 >= 0) {

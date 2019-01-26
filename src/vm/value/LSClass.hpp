@@ -70,7 +70,7 @@ public:
 	void addStaticMethod(std::string& name, std::vector<StaticMethod> method);
 	LSFunction* getDefaultMethod(const std::string& name);
 	StaticMethod* getStaticMethod(SemanticAnalyser* analyser, std::string&, std::vector<Type>);
-	const Operator* getOperator(std::string& name, Type& object_type, Type& operand_type);
+	const Operator* getOperator(SemanticAnalyser* analyser, std::string& name, Type& object_type, Type& operand_type);
 
 	bool to_bool() const override;
 	virtual bool ls_not() const override;
