@@ -395,7 +395,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 								}
 							}
 						}
-						if (!is_longer) {
+						if (!is_longer or (word == "!" and c == '!')) {
 							tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), i, line, character, word));
 							u8_toutf8(buff, 5, &c, 1);
 							word = buff;
