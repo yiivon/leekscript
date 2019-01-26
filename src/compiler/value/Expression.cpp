@@ -179,6 +179,11 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		v2_type = op->reversed ? m->object_type : m->operand_type;
 		return_type = m->return_type;
 		type = return_type;
+		if (v2_type.is_function()) {
+			v2->will_take(analyser, m->operand_type.arguments(), 1);
+			v2->set_version(m->operand_type.arguments(), 1);
+			v2->must_return(analyser, m->operand_type.return_type());
+		}
 		// Apply mutators
 		for (const auto& mutator : m->mutators) {
 			mutator->apply(analyser, {v1, v2});
