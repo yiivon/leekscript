@@ -62,7 +62,7 @@ public:
 		value(llvm::Value* v, Type t) : v(v), t(t) {}
 	};
 	struct label {
-		llvm::BasicBlock* block;
+		llvm::BasicBlock* block = nullptr;
 	};
 	struct catcher {
 		label start;
