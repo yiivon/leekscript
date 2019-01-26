@@ -56,22 +56,18 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 	bool has_default = false;
 
 	value->analyse(analyser);
-	// if (value->type.nature == POINTER) any_pointer = true;
 
 	for (auto& ps : pattern_list) {
 		for (Pattern& p : ps) {
 			if (p.begin) {
 				p.begin->analyse(analyser);
-				// if (p.begin->type.nature == POINTER) any_pointer = true;
 			}
 			if (p.end) {
 				p.end->analyse(analyser);
-				// if (p.end->type.nature == POINTER) any_pointer = true;
 			}
 			has_default = has_default || p.is_default();
 		}
 	}
-
 	if (any_pointer) {
 		value->analyse(analyser);
 		for (auto& ps : pattern_list) {
@@ -85,7 +81,6 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 			}
 		}
 	}
-
 	if (!has_default) {
 		// Return type is always pointer because in the default case, null is return
 		type = Type::any();
@@ -104,87 +99,56 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 	}
 }
 
-/*
- * create res
- *
- * if not pattern[0]==value goto next[0]
- * res = return[0]
- * goto end
- * next[0]:
- *
- * if not pattern[1]==value goto next[1]
- * res = return[1]
- * goto end
- * next[1]:
- *
- * if not pattern[2]==value goto next[2]
- * res = return[2]
- * goto end
- * next[2]:
- *
- * res = default
- *
- * end:
- * return res
- */
-
-Compiler::value Match::compile(Compiler& c) const {
-
-	auto v = value->compile(c);
-
-	// auto res = c.insn_create_value(type);
-	Compiler::label label_end;
-
-	for (size_t i = 0; i < pattern_list.size(); ++i) {
-
-		bool is_default = false;
-		for (const Pattern& pattern : pattern_list[i]) {
-			is_default = is_default || pattern.is_default();
-		}
-
-		if (is_default) {
-			auto ret = returns[i]->compile(c);
-			// c.insn_store(res, ret);
-			c.insn_label(&label_end);
-			c.insn_delete_temporary(v);
-			// return res;
-		}
-
-		Compiler::label label_next;
-
-		if (pattern_list[i].size() == 1) {
-			// jit_value_t cond = pattern_list[i][0].match(c, v.v);
-			// c.insn_branch_if_not({cond, Type::boolean()}, &label_next);
-		} else {
-			Compiler::label label_match;
-
-			for (const Pattern& pattern : pattern_list[i]) {
-				// jit_value_t cond = pattern.match(c, v.v);
-				// c.insn_branch_if({cond, Type::boolean()}, &label_match);
-			}
-			c.insn_branch(&label_next);
-			c.insn_label(&label_match);
-		}
-
-		auto ret = returns[i]->compile(c);
-		// c.insn_store(res, ret);
-		c.insn_branch(&label_end);
-		c.insn_label(&label_next);
+Compiler::value Match::get_pattern_condition(Compiler& c, Compiler::value v, std::vector<Pattern> patterns) const {
+	auto cond = patterns[0].match(c, v);
+	for (size_t i = 1; i < patterns.size(); ++i) {
+		cond = c.insn_or(cond, patterns[i].match(c, v));
 	}
-	// In the case of no default pattern
-
-	// c.insn_store(res, c.new_null());
-
-	c.insn_label(&label_end);
-	c.insn_delete_temporary(v);
-	// return res;
+	return cond;
 }
 
-Match::Pattern::Pattern(Value* value)
-	: interval(false), begin(value), end(nullptr) {}
+Compiler::value Match::construct_branch(Compiler& c, Compiler::value v, size_t i) const {
+	if (i == pattern_list.size()) {
+		return c.insn_convert(c.new_null(), type);
+	}
+	for (const auto& pattern : pattern_list[i]) {
+		if (pattern.is_default()) {
+			return c.insn_convert(returns[i]->compile(c), type);
+		}
+	}
+	auto label_then = c.insn_init_label("then");
+	auto label_else = c.insn_init_label("else");
+	auto label_end = c.insn_init_label("end");
 
-Match::Pattern::Pattern(Value* begin, Value* end)
-	: interval(true), begin(begin), end(end) {}
+	auto cond = get_pattern_condition(c, v, pattern_list[i]);
+	c.insn_if_new(cond, &label_then, &label_else);
+	
+	c.insn_label(&label_then);
+	auto value = c.insn_convert(returns[i]->compile(c), type);
+	returns[i]->compile_end(c);
+	c.insn_branch(&label_end);
+	label_then.block = Compiler::builder.GetInsertBlock();
+
+	c.insn_label(&label_else);
+	auto new_branch = construct_branch(c, v, i + 1);
+	c.insn_branch(&label_end);
+	label_else.block = Compiler::builder.GetInsertBlock();
+
+	c.insn_label(&label_end);
+	return c.insn_phi(type, value, label_then, new_branch, label_else);
+}
+
+Compiler::value Match::compile(Compiler& c) const {
+	auto v = value->compile(c);
+	c.insn_inc_refs(v);
+	auto res = construct_branch(c, v, 0);
+	c.insn_delete(v);
+	return res;
+}
+
+Match::Pattern::Pattern(Value* value) : interval(false), begin(value), end(nullptr) {}
+
+Match::Pattern::Pattern(Value* begin, Value* end) : interval(true), begin(begin), end(end) {}
 
 Match::Pattern::~Pattern() {}
 
@@ -198,69 +162,32 @@ void Match::Pattern::print(ostream &os, int indent, bool debug) const {
 	}
 }
 
-bool jit_equals_(LSValue* x, LSValue* y) {
-	return *x == *y;
+Compiler::value Match::Pattern::match(Compiler &c, Compiler::value v) const {
+	if (interval) {
+		Compiler::value ge;
+		if (begin) {
+			auto b = begin->compile(c);
+			ge = c.insn_ge(v, b);
+		}
+		Compiler::value lt;
+		if (end) {
+			auto e = end->compile(c);
+			lt = c.insn_lt(v, e);
+		}
+		if (ge.v) {
+			if (lt.v) {
+				return c.insn_and(ge, lt);
+			} else {
+				return ge;
+			}
+		} else {
+			return lt;
+		}
+	} else {
+		auto p = begin->compile(c);
+		return c.insn_eq(p, v);
+	}
 }
-bool jit_less_(LSValue* x, LSValue* y) {
-	return *x < *y;
-}
-bool jit_greater_equal_(LSValue* x, LSValue* y) {
-	return *x >= *y;
-}
-
-// jit_value_t Match::Pattern::match(Compiler &c, jit_value_t v) const {
-
-	// jit_type_t args_types[2] = {LS_POINTER, LS_POINTER};
-	// jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, jit_type_sys_bool, args_types, 2, 1);
-    //
-	// if (interval) {
-	// 	jit_value_t ge = nullptr;
-	// 	if (begin) {
-	// 		auto b = begin->compile(c);
-	// 		if (begin->type.nature == VALUE) {
-	// 			ge = jit_insn_ge(c.F, v, b.v);
-	// 		} else {
-	// 			jit_value_t args[2] = { v, b.v };
-	// 			ge = jit_insn_call_native(c.F, "", (void*) jit_greater_equal_, sig, args, 2, JIT_CALL_NOTHROW);
-	// 			c.insn_delete_temporary(b);
-	// 		}
-	// 	}
-	// 	jit_value_t lt = nullptr;
-	// 	if (end) {
-	// 		auto e = end->compile(c);
-	// 		if (end->type.nature == VALUE) {
-	// 			lt = jit_insn_lt(c.F, v, e.v);
-	// 		} else {
-	// 			jit_value_t args[2] = { v, e.v };
-	// 			lt = jit_insn_call_native(c.F, "", (void*) jit_less_, sig, args, 2, JIT_CALL_NOTHROW);
-	// 			c.insn_delete_temporary(e);
-	// 		}
-	// 	}
-	// 	jit_type_free(sig);
-	// 	if (ge) {
-	// 		if (lt) {
-	// 			return jit_insn_and(c.F, ge, lt);
-	// 		} else {
-	// 			return ge;
-	// 		}
-	// 	} else {
-	// 		return lt;
-	// 	}
-	// } else {
-	// 	jit_value_t cond;
-	// 	auto p = begin->compile(c);
-    //
-	// 	if (begin->type.nature == VALUE) {
-	// 		cond = jit_insn_eq(c.F, v, p.v);
-	// 	} else {
-	// 		jit_value_t args[2] = { v, p.v };
-	// 		cond = jit_insn_call_native(c.F, "", (void*) jit_equals_, sig, args, 2, JIT_CALL_NOTHROW);
-	// 		c.insn_delete_temporary(p);
-	// 	}
-	// 	jit_type_free(sig);
-	// 	return cond;
-	// }
-// }
 
 Value* Match::clone() const {
 	auto match = new Match();
