@@ -10,8 +10,11 @@ void Test::test_intervals() {
 	code("[0..44.523]").equals("[0..44]");
 	code("[0l..544l]").equals("[0..544]");
 	code("[45.73..248l]").equals("[45..248]");
-	// TODO intervals with mpz
-	DISABLED_code("[15m..50m]").equals("[15..50]");
+	code("[15m..50m]").equals("[15..50]");
+	code("[-50m..-15m]").equals("[-50..-15]");
+	code("[0..15m]").equals("[0..15]");
+	// TODO Interval with mpz bounds
+	DISABLED_code("[0..100000000000000m]").equals("[0..100000000000000]");
 
 	section("Interval.operator !");
 	code("![1..1000]").equals("false");
