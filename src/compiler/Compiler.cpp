@@ -402,7 +402,7 @@ Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 		auto res = insn_call(Type::integer(), {a, b}, +[](__mpz_struct a, int b) {
 			return _mpz_cmp_si(&a, b);
 		});
-		return insn_lt(res, new_integer(0));
+		return insn_gt(res, new_integer(0));
 	} else if (a.t.is_integer() and b.t.is_mpz()) {
 		auto res = insn_call(Type::integer(), {a, b}, +[](int a, __mpz_struct b) {
 			return _mpz_cmp_si(&b, a);

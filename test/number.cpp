@@ -378,8 +378,7 @@ void Test::test_numbers() {
 	code("2.1 > 5.1").equals("false");
 	code("12 > 5m").equals("true");
 	code("[] > true").equals("true");
-	// TODO
-	DISABLED_code("-100m > 0").equals("false");
+	code("-100m > 0").equals("false");
 
 	section("Number.operator >=");
 	code("5 >= 2").equals("true");
