@@ -26,6 +26,9 @@ ObjectAccess::~ObjectAccess() {
 }
 
 bool ObjectAccess::isLeftValue() const {
+	if (native_access_function != nullptr) {
+		return false;
+	}
 	if (auto v = dynamic_cast<VariableValue*>(object)) {
 		if (not v->isLeftValue()) return false;
 	}
