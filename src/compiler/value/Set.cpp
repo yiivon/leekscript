@@ -45,7 +45,7 @@ void Set::analyse(SemanticAnalyser* analyser) {
 	if (element_type._types.size() == 0) {
 		element_type = Type::any();
 	}
-	type = Type::set(element_type);
+	type = Type::tmp_set(element_type);
 }
 
 bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
@@ -56,9 +56,9 @@ bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 	}
 	Type current_type = this->type.element();
 	if (expressions.size() == 0) {
-		this->type = Type::set(added_type);
+		this->type = Type::tmp_set(added_type);
 	} else {
-		this->type = Type::set(current_type * added_type);
+		this->type = Type::tmp_set(current_type * added_type);
 	}
 	return false;
 }
