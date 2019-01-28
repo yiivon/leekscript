@@ -114,6 +114,7 @@ Compiler::value Compiler::new_mpz_init(const mpz_t mpz) const {
 	// return {builder.CreateIntCast(v, Type::LLVM_MPZ_TYPE, false), Type::mpz()};
 }
 
+// TODO : use the element type only
 Compiler::value Compiler::new_array(Type type, std::vector<Compiler::value> elements) const {
 	auto element_type = type.element().fold();
 	auto array = [&]() { if (element_type == Type::integer()) {
