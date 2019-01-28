@@ -106,7 +106,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::integer(), {Type::const_string()}, (void*) &string_length, Method::NATIVE},
 	});
 	method("lines", {
-		{Type::array(Type::string()), {Type::const_string()}, (void*) &LSString::ls_lines, Method::NATIVE},
+		{Type::tmp_array(Type::string()), {Type::const_string()}, (void*) &LSString::ls_lines, Method::NATIVE},
 	});
 	method("size", {
 		{Type::any(), {Type::const_string()}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
@@ -131,8 +131,8 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::string(), {Type::const_string()}, (void*) &string_toUpper, Method::NATIVE},
 	});
 	method("split", {
-		{Type::array(Type::string()), {Type::const_string(), Type::const_string()}, (void*) &string_split, Method::NATIVE},
-		{Type::array(Type::string()), {Type::const_any(), Type::const_any()}, (void*) &string_split, Method::NATIVE},
+		{Type::tmp_array(Type::string()), {Type::const_string(), Type::const_string()}, (void*) &string_split, Method::NATIVE},
+		{Type::tmp_array(Type::string()), {Type::const_any(), Type::const_any()}, (void*) &string_split, Method::NATIVE},
 	});
 	method("startsWith", {
 		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) &string_startsWith, Method::NATIVE},
