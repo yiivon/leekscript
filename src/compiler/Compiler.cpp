@@ -1742,8 +1742,8 @@ Compiler::value Compiler::get_var(const std::string& name) {
 			return it->second;
 		}
 	}
-	assert(false && "var not found !");
-	return *((Compiler::value*) nullptr); // Should not reach this line
+	std::cout << "var '" << name << "' not found !" << std::endl;
+	assert(false && "var not found!");
 }
 
 void Compiler::update_var(std::string& name, Compiler::value v) {
