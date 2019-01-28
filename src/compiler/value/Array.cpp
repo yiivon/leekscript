@@ -178,7 +178,7 @@ Compiler::value Array::compile(Compiler& c) const {
 		val->compile_end(c);
 		elements.push_back(v);
 	}
-	return c.new_array(type, elements);
+	return c.new_array(type.element(), elements);
 }
 
 Value* Array::clone() const {

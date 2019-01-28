@@ -53,7 +53,7 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 IntervalSTD::~IntervalSTD() {}
 
 Compiler::value IntervalSTD::map(Compiler& c, std::vector<Compiler::value> args) {
-	auto result = c.new_array(Type::array(args[1].t.return_type()), {});
+	auto result = c.new_array(args[1].t.return_type(), {});
 	c.insn_foreach(args[0], {}, "v", "", [&](Compiler::value value, Compiler::value key) -> Compiler::value {
 		auto r = c.insn_call(args[1].t.return_type(), {value}, args[1]);
 		if (r.t.is_bool()) {

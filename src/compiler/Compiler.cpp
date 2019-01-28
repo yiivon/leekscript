@@ -114,30 +114,30 @@ Compiler::value Compiler::new_mpz_init(const mpz_t mpz) const {
 	// return {builder.CreateIntCast(v, Type::LLVM_MPZ_TYPE, false), Type::mpz()};
 }
 
-// TODO : use the element type only
-Compiler::value Compiler::new_array(Type type, std::vector<Compiler::value> elements) const {
-	auto element_type = type.element().fold();
-	auto array = [&]() { if (element_type == Type::integer()) {
-		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
+Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {
+	auto folded_type = element_type.fold();
+	auto array_type = Type::tmp_array(element_type);
+	auto array = [&]() { if (folded_type == Type::integer()) {
+		return insn_call(array_type, {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<int>();
 			array->reserve(capacity);
 			return array;
 		});
-	} else if (element_type == Type::real()) {
-		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
+	} else if (folded_type == Type::real()) {
+		return insn_call(array_type, {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<double>();
 			array->reserve(capacity);
 			return array;
 		});
 	} else {
-		return insn_call(type.add_temporary(), {new_integer(elements.size())}, +[](int capacity) {
+		return insn_call(array_type, {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<LSValue*>();
 			array->reserve(capacity);
 			return array;
 		});
 	}}();
 	for (const auto& element : elements) {
-		auto v = insn_move(insn_convert(element, element_type));
+		auto v = insn_move(insn_convert(element, folded_type));
 		insn_push_array(array, v);
 	}
 	// size of the array + 1 operations
@@ -1385,7 +1385,7 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, c
 	// Potential output [for ...]
 	Compiler::value output_v;
 	if (not output.is_void()) {
-		output_v = new_array(Type::tmp_array(output), {});
+		output_v = new_array(output, {});
 		insn_inc_refs(output_v);
 		add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
 	}

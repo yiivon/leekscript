@@ -312,7 +312,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			return c.new_pointer(new LSString(""), type);
 		}
 		if (vv->name == "Array") {
-			return c.new_array(Type::array(), {});
+			return c.new_array({}, {});
 		}
 		if (vv->name == "Object") {
 			return c.new_pointer(new LSObject(), type);
