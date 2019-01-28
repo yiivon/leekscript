@@ -1439,7 +1439,6 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, c
 	// Body
 	auto body_v = body(insn_load(value_var), key.size() ? insn_load(key_var) : value());
 	if (body_v.v) {
-		std::cout << "body " << body_v.t << " " << output_v.t << std::endl;
 		if (output_v.v) {
 			insn_push_array(output_v, body_v);
 		}
