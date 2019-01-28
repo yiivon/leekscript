@@ -76,86 +76,10 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 }
 
 Compiler::value Foreach::compile(Compiler& c) const {
-
-	c.enter_block(); // { for x in [1, 2] {} }<-- this block
-
-	// Potential output [for ...]
-	Compiler::value output_v;
-	if (type.is_array()) {
-		output_v = c.new_array(type, {});
-		c.insn_inc_refs(output_v);
-		c.add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
-	}
-
 	auto container_v = container->compile(c);
-	c.insn_inc_refs(container_v);
-	c.add_var("{array}", container_v);
-
-	// Create variables
-	auto value_var = c.create_and_add_var(value->content, container->type.element());
-	c.insn_store(value_var, c.new_null());
-
-	Compiler::value key_var;
-	if (key) {
-		key_var = c.create_and_add_var(key->content, container->type.key());
-		c.insn_store(key_var, c.new_null());
-	}
-
-	auto it_label = c.insn_init_label("it");
-	auto cond_label = c.insn_init_label("cond");
-	auto end_label = c.insn_init_label("end");
-	auto loop_label = c.insn_init_label("loop");
-
-	c.enter_loop(&end_label, &it_label);
-
-	auto it = c.iterator_begin(container_v);
-
-	// For arrays, if begin iterator is 0, jump to end directly
-	if (container->type.is_array()) {
-		auto empty_array = c.insn_pointer_eq(it, c.new_pointer(nullptr, Type::any()));
-		c.insn_if_new(empty_array, &end_label, &cond_label);
-	} else {
-		c.insn_branch(&cond_label);
-	}
-
-	// cond label:
-	c.insn_label(&cond_label);
-	// Condition to continue
-	auto finished = c.iterator_end(container_v, it);
-	c.insn_if_new(finished, &end_label, &loop_label);
-
-	// loop label:
-	c.insn_label(&loop_label);
-	// Get Value
-	c.insn_store(value_var, c.iterator_get(container->type, it, c.insn_load(value_var)));
-	// Get Key
-	if (key != nullptr) {
-		c.insn_store(key_var, c.iterator_key(container_v, it, c.insn_load(key_var)));
-	}
-	// Body
-	auto body_v = body->compile(c);
-	if (output_v.v && body_v.v) {
-		c.insn_push_array(output_v, body_v);
-	}
-	if (body_v.v) {
-		c.insn_delete_temporary(body_v);
-	}
-	c.insn_branch(&it_label);
-
-	// it++
-	c.insn_label(&it_label);
-	c.iterator_increment(container->type, it);
-	// jump to cond
-	c.insn_branch(&cond_label);
-
-	c.leave_loop();
-
-	// end label:
-	c.insn_label(&end_label);
-
-	auto return_v = c.clone(output_v); // otherwise it is delete by the c.leave_block
-	c.leave_block(); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block
-	return return_v;
+	return c.insn_foreach(container_v, type.element(), value->content, key ? key->content : "", [&](Compiler::value value, Compiler::value key) {
+		return body->compile(c);
+	});
 }
 
 Instruction* Foreach::clone() const {

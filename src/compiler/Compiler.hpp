@@ -270,7 +270,7 @@ public:
 	value iterator_get(Type collectionType, value it, value previous) const;
 	value iterator_key(value v, value it, value previous) const;
 	void iterator_increment(Type collectionType, value it) const;
-	void insn_foreach(value v, std::function<void(value, value)>);
+	value insn_foreach(value v, Type output, const std::string var, const std::string key, std::function<value(value, value)>);
 
 	// Controls
 	label insn_init_label(std::string name) const;

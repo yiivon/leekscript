@@ -502,7 +502,7 @@ Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> ar
 	auto function = args[1];
 	auto array_true = c.new_array(array.t, {});
 	auto array_false = c.new_array(array.t, {});
-	c.insn_foreach(array, [&](Compiler::value v, Compiler::value k) {
+	c.insn_foreach(array, {}, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		auto r = c.insn_call(function.t.return_type(), {v}, function);
 		c.insn_if(r, [&]() {
 			c.insn_push_array(array_true, v);
@@ -510,8 +510,8 @@ Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> ar
 			c.insn_push_array(array_false, v);
 		});
 		c.insn_delete_temporary(r);
+		return {};
 	});
-	c.insn_delete_temporary(array);
 	return c.new_array(Type::array(array.t), {array_true, array_false});
 }
 
@@ -519,14 +519,14 @@ Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args) {
 	auto array = args[0];
 	auto function = args[1];
 	auto result = c.new_array(Type::array(function.t.return_type()), {});
-	c.insn_foreach(array, [&](Compiler::value v, Compiler::value k) {
+	c.insn_foreach(array, {}, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		auto x = c.clone(v);
 		c.insn_inc_refs(x);
 		auto r = c.insn_call(function.t.return_type(), {x}, function);
 		c.insn_push_array(result, r);
 		c.insn_delete(x);
+		return {};
 	});
-	c.insn_delete_temporary(array);
 	return result;
 }
 

@@ -1377,17 +1377,30 @@ void Compiler::iterator_increment(Type collectionType, Compiler::value it) const
 	}
 }
 
-void Compiler::insn_foreach(Compiler::value container, std::function<void(Compiler::value, Compiler::value)> body) {
-	bool key = true;
+Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, const std::string var, const std::string key, std::function<Compiler::value(Compiler::value, Compiler::value)> body) {
+	
 	enter_block(); // { for x in [1, 2] {} }<-- this block
 
+	// Potential output [for ...]
+	Compiler::value output_v;
+	if (not output.is_void()) {
+		output_v = new_array(Type::tmp_array(output), {});
+		insn_inc_refs(output_v);
+		add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
+	}
+	
+	insn_inc_refs(container);
+	add_var("{array}", container);
+
 	// Create variables
-	auto value_var = create_and_add_var("v", container.t.element());
-	insn_store(value_var, new_null());
+	auto value_var = create_and_add_var(var, container.t.element());
+	if (container.t.element().is_polymorphic()) {
+		insn_store(value_var, new_null());
+	}
 
 	Compiler::value key_var;
-	if (key) {
-		key_var = create_and_add_var("k", container.t.key());
+	if (key.size()) {
+		key_var = create_and_add_var(key, container.t.key());
 		insn_store(key_var, new_null());
 	}
 
@@ -1419,11 +1432,18 @@ void Compiler::insn_foreach(Compiler::value container, std::function<void(Compil
 	// Get Value
 	insn_store(value_var, iterator_get(container.t, it, insn_load(value_var)));
 	// Get Key
-	if (key) {
+	if (key.size()) {
 		insn_store(key_var, iterator_key(container, it, insn_load(key_var)));
 	}
 	// Body
-	body(insn_load(value_var), insn_load(key_var));
+	auto body_v = body(insn_load(value_var), key.size() ? insn_load(key_var) : value());
+	if (body_v.v) {
+		std::cout << "body " << body_v.t << " " << output_v.t << std::endl;
+		if (output_v.v) {
+			insn_push_array(output_v, body_v);
+		}
+		insn_delete_temporary(body_v);
+	}
 	
 	insn_branch(&it_label);
 
@@ -1438,7 +1458,9 @@ void Compiler::insn_foreach(Compiler::value container, std::function<void(Compil
 	// end label:
 	insn_label(&end_label);
 
+	auto return_v = clone(output_v); // otherwise it is delete by the leave_block
 	leave_block(); // { for x in ['a' 'b'] { ... }<--- not this block }<--- this block
+	return return_v;
 }
 
 // Controls

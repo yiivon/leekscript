@@ -54,14 +54,14 @@ IntervalSTD::~IntervalSTD() {}
 
 Compiler::value IntervalSTD::map(Compiler& c, std::vector<Compiler::value> args) {
 	auto result = c.new_array(Type::array(args[1].t.return_type()), {});
-	c.insn_foreach(args[0], [&](Compiler::value value, Compiler::value key) {
+	c.insn_foreach(args[0], {}, "v", "", [&](Compiler::value value, Compiler::value key) -> Compiler::value {
 		auto r = c.insn_call(args[1].t.return_type(), {value}, args[1]);
 		if (r.t.is_bool()) {
 			r = c.insn_convert(r, Type::any());
 		}
 		c.insn_push_array(result, r);
+		return {};
 	});
-	c.insn_delete_temporary(args[0]);
 	return result;
 }
 
