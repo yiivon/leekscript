@@ -1507,14 +1507,30 @@ void Compiler::insn_if_not(Compiler::value condition, std::function<void()> then
 
 void Compiler::insn_throw(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	delete_function_variables();
-	auto line = new_long(exception_line);
-	auto function = new_pointer(&fun->name, Type::any());
-	insn_call({}, {v, function, line}, +[](int type, std::string* function, size_t line) {
-		auto ex = vm::ExceptionObj((vm::Exception) type);
-		ex.frames.push_back({*function, line});
-		throw ex;
-	});
+	// Throw inside a try { ... } catch { ... }, jump to catch block directly
+	auto catcher = find_catcher();
+	if (catcher != nullptr) {
+		auto fun_catchers = catchers.back();
+		int deepness = 0;
+		for (size_t b = fun_catchers.size(); b > 0; --b, deepness++) {
+			if (fun_catchers.at(b - 1).size()) { break; }
+		}
+		if (deepness > 0) {
+			((Compiler*) this)->delete_variables_block(deepness);
+		}
+		builder.CreateBr(catcher->handler);
+		auto contBB = llvm::BasicBlock::Create(context, "throw.cont", F);
+		builder.SetInsertPoint(contBB);
+	} else {
+		delete_function_variables();
+		auto line = new_long(exception_line);
+		auto function = new_pointer(&fun->name, Type::any());
+		insn_call({}, {v, function, line}, +[](int type, std::string* function, size_t line) {
+			auto ex = vm::ExceptionObj((vm::Exception) type);
+			ex.frames.push_back({*function, line});
+			throw ex;
+		});
+	}
 }
 
 void Compiler::insn_throw_object(vm::Exception type) const {
