@@ -528,6 +528,11 @@ Compiler::value Compiler::insn_lshr(Compiler::value a, Compiler::value b) const 
 Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 	assert_value_ok(a);
 	assert_value_ok(b);
+	insn_if(insn_eq(to_real(b), new_real(0)), [&]() {
+		insn_delete_temporary(a);
+		insn_delete_temporary(b);
+		insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
+	});
 	if (a.t.is_long() and b.t.is_long()) {
 		return { builder.CreateSRem(a.v, b.v), Type::long_() };
 	} else if (a.t.is_long() and b.t.is_integer()) {

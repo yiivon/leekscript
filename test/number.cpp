@@ -297,9 +297,8 @@ void Test::test_numbers() {
 	code("let a = 721★ a % 57").equals("37");
 	code("let a = 721★ a % []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("721★ % true").equals("0");
-	// TODO division by zero
-	DISABLED_code("721★ % false").equals("0");
-	DISABLED_code("let a = 721★ a % false").equals("0");
+	code("721★ % false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("let a = 721★ a % false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
 	code("let a = 721★ a % true").equals("0");
 	code("123456789123456789m % 234567m").equals("221463");
 	code("(12m ** 40m) % 234567m").equals("228798");
