@@ -175,23 +175,20 @@ void Test::test_numbers() {
 	code("var a = 20m; ++a").equals("21");
 	code("var a = 20m; ++a a").equals("21");
 	code("var a = 20m; let b = ++a b").equals("21");
-	// TODO should be forbidden
-	DISABLED_code("++5").equals("6");
+	code("++5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 	code("var a = 5 ['', ++a]").equals("['', 6]");
 
 	section("Number.operator --x");
 	code("var a = 20★; --a").equals("19");
 	code("var a = 30★; --a a").equals("29");
-	// TODO should be forbidden
-	DISABLED_code("--5").equals("4");
+	code("--5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 	code("var a = 5 ['', --a]").equals("['', 4]");
 
 	section("Number.operator x++");
 	code("var a = 20m; a++").equals("20");
 	code("var a = 20m; a++ a").equals("21");
 	code("var a = 20m; let b = a++ b").equals("20");
-	// FIXME Crashing
-	DISABLED_code("5++").equals("5");
+	code("5++").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 
 	section("Number.operator x--");
 	code("var a = 20m; a--").equals("20");

@@ -60,6 +60,9 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 			if (expression->type.constant) {
 				analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
 			}
+			if (not expression->isLeftValue()) {
+				analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
+			}
 		}
 
 	} else if (operatorr->type == TokenType::NOT) {
