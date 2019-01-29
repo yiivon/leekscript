@@ -138,7 +138,7 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3] a[100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let a = [1, 2, 3] a[-100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let a = [[12], ''][0] a[100]++ a").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("let a = [5] let e = a[1] !? 5 e").equals("5");
+	code("let a = [5] let e = a[1] !? 5 e").equals("5");
 
 	section("Access with booleans");
 	code("[1, 2, 3][false]").equals("1");

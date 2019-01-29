@@ -20,17 +20,18 @@ void Test::test_exceptions() {
 	});
 
 	section("Catch-else operator");
-	DISABLED_code("2 !? 5").equals("2");
-	DISABLED_code("{ throw } !? 5").equals("5");
-	DISABLED_code("[][0] !? 6").equals("6");
-	DISABLED_code("(2 \\ 0) !? 7").equals("7");
-	DISABLED_code("([][0] !? 12) + ([][0] !? 5)").equals("17");
-	DISABLED_code("([0][1] !? 12) + ([0][1] !? 5)").equals("17");
-	DISABLED_code("let f = -> { { throw } !? 5 } f()").equals("5");
-	DISABLED_code("let f = -> { (2 \\ 0) !? 6 } f()").equals("6");
-	DISABLED_code("let f = -> { var s = 'leak?' { [][0] } !? 7 } f()").equals("7");
-	// TODO a leak in the inner block
-	DISABLED_code("let f = -> { var s = 'leak1' { var s = 'leak2' [][0] } !? 8 } f()").equals("8");
+	code("2 !? 5").equals("2");
+	code("{ throw } !? 5").equals("5");
+	code("[][0] !? 6").equals("6");
+	code("(2 \\ 0) !? 7").equals("7");
+	code("([][0] !? 12) + ([][0] !? 5)").equals("17");
+	code("([0][1] !? 12) + ([0][1] !? 5)").equals("17");
+	code("let f = -> { { throw } !? 5 } f()").equals("5");
+	code("let f = -> { (2 \\ 0) !? 6 } f()").equals("6");
+	code("let f = -> { var s = 'leak?' { [][0] } !? 7 } f()").equals("7");
+	code("{ var s = 'leak2' [][0] } !? 8").equals("8");
+	code("let f = -> { var s = 'leak1' { var s = 'leak2' [][0] } !? 8 } f()").equals("8");
+	code("let a = [12][0] !? 'a' null - 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Stacktraces");
 	file("test/code/exception/exception.leek").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
