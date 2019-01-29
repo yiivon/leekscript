@@ -256,7 +256,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		}
 		default: {}
 	}
-	return c.insn_call(type, {arg}, func);
+	return c.insn_invoke(type, {arg}, func);
 }
 
 Value* PrefixExpression::clone() const {

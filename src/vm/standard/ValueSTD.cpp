@@ -346,11 +346,11 @@ Compiler::value ValueSTD::op_bit_xor_eq(Compiler& c, std::vector<Compiler::value
 
 Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[1].t == Type::integer()) {
-		return c.insn_call(Type::boolean(), args, +[](LSValue* a, int b) {
+		return c.insn_invoke(Type::boolean(), args, +[](LSValue* a, int b) {
 			return a->in_i(b);
 		});
 	} else {
-		return c.insn_call(Type::boolean(), args, +[](LSValue* a, LSValue* b) {
+		return c.insn_invoke(Type::boolean(), args, +[](LSValue* a, LSValue* b) {
 			return a->in(b);
 		});
 	}
@@ -424,7 +424,7 @@ Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args)
 }
 
 Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::any(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+	return c.insn_invoke(Type::any(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
 		return x->pow(y);
 	});
 }

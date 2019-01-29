@@ -366,7 +366,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		Compiler::value res;
 		if (is_native_method) {
 			auto fun = (void*) operator_fun;
-			res = c.insn_call(type, args, fun);
+			res = c.insn_invoke(type, args, fun);
 		} else {
 			auto fun = (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) operator_fun;
 			res = fun(c, args);

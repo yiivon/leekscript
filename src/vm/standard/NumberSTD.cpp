@@ -985,7 +985,7 @@ Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	c.insn_call({}, {args[0], args[1]}, +[](__mpz_struct a, int b) {
+	c.insn_invoke({}, {args[0], args[1]}, +[](__mpz_struct a, int b) {
 		return mpz_pow_ui(&a, &a, b);
 	});
 	return c.insn_clone_mpz(args[0]);

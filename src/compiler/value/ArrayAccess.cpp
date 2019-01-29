@@ -175,7 +175,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
-			return c.insn_call(Type::integer(), {compiled_array, k}, +[](LSInterval* interval, int k) {
+			return c.insn_invoke(Type::integer(), {compiled_array, k}, +[](LSInterval* interval, int k) {
 				return interval->atv(k);
 			});
 
@@ -266,7 +266,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		auto end = key2->compile(c);
 		key->compile_end(c);
 		key2->compile_end(c);
-		return c.insn_call(Type::any(), {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
+		return c.insn_invoke(Type::any(), {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
 			return a->range(start, end);
 		});
 	}

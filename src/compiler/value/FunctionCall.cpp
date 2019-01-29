@@ -346,7 +346,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		Compiler::value res;
 		if (is_native_method) {
 			auto fun = (void*) std_func;
-			res = c.insn_call(return_type, args, fun);
+			res = c.insn_invoke(return_type, args, fun);
 		} else {
 			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
 			res = fun(c, args);

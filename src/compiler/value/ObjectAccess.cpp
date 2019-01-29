@@ -172,7 +172,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		return static_access_function(c);
 	}
 	if (native_static_access_function != nullptr) {
-		return c.insn_call(field_type, {}, native_static_access_function);
+		return c.insn_invoke(field_type, {}, native_static_access_function);
 	}
 
 	// Field with an access function : 12.class
@@ -184,7 +184,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	if (native_access_function != nullptr) {
 		auto obj = object->compile(c);
 		object->compile_end(c);
-		return c.insn_call(type, {obj}, native_access_function);
+		return c.insn_invoke(type, {obj}, native_access_function);
 	}
 
 	// Class method : 12.abs
@@ -222,7 +222,7 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	}}();
 	object->compile_end(c);
 	auto k = c.new_pointer(&field->content, Type::any());
-	return c.insn_call(type.pointer(), {o, k}, (void*) +[](LSValue* object, std::string* key) {
+	return c.insn_invoke(type.pointer(), {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attrL(*key);
 	});
 }
