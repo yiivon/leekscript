@@ -241,6 +241,9 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 				type = v1->type;
 			}
 		}
+		if (type.is_void()) {
+			type = v2_type;
+		}
 		if (type == Type::mpz()) {
 			type.temporary = true;
 		}
@@ -605,31 +608,19 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return {PN, type};
 		}
 		case TokenType::CATCH_ELSE: {
-
-			Compiler::label try_start;
-			Compiler::label try_end;
-			Compiler::label exception_thrown;
-			Compiler::label no_exception;
-
-			c.insn_label(&try_start);
-			// auto r = c.insn_create_value(type);
-			auto v1_value = v1->compile(c);
-			if (v1_value.v) {
-				// c.insn_store(r, v1_value);
-			}
-			v1->compile_end(c);
-			c.insn_label(&try_end);
-
-			c.insn_branch(&no_exception);
-			c.insn_label(&exception_thrown);
-
-			c.add_catcher(try_start, try_end, exception_thrown);
-
-			auto y = v2->compile(c);
-			v2->compile_end(c);
-			// c.insn_store(r, y);
-			c.insn_label(&no_exception);
-			// return r;
+			auto r = c.create_entry("r", type);
+			c.insn_try_catch([&]() {
+				auto v1_value = v1->compile(c);
+				if (v1_value.v) { // can be void
+					c.insn_store(r, c.insn_convert(v1_value, type.fold()));
+				}
+				v1->compile_end(c);
+			}, [&]() {
+				auto y = v2->compile(c);
+				v2->compile_end(c);
+				c.insn_store(r, c.insn_convert(y, type.fold()));
+			});
+			return c.insn_load(r);
 			break;
 		}
 		case TokenType::DOUBLE_MODULO: {
