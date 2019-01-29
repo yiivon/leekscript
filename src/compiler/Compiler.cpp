@@ -1853,7 +1853,18 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 void Compiler::mark_offset(int line) {
 	exception_line = line;
 }
-void Compiler::add_catcher(label start, label end, label handler) { assert(false); }
+void Compiler::insn_try_catch(std::function<void()> try_, std::function<void()> catch_) {
+	auto handler = llvm::BasicBlock::Create(context, "catch", F);
+	catchers.back().back().push_back({handler});
+	try_();
+	catchers.back().back().pop_back();
+	auto ContBB = llvm::BasicBlock::Create(context, "try.cont", F);
+	builder.CreateBr(ContBB);
+	builder.SetInsertPoint(handler);
+	catch_();
+	builder.CreateBr(ContBB);
+	builder.SetInsertPoint(ContBB);
+}
 
 void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LSValueType> types) const {
 	// TODO too much cheks sometimes
