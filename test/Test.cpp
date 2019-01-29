@@ -393,8 +393,8 @@ void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exce
 
 	auto actual_type = result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.type : ls::vm::Exception::NO_EXCEPTION;
 	auto actual_frames = result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.frames : std::vector<ls::vm::exception_frame>();
-
-	if (actual_type == expected /*&& (actual_frames == frames || expected == ls::vm::Exception::NO_EXCEPTION) || actual_frames.size() == 0*/) {
+	
+	if (actual_type == expected and (actual_frames == frames or expected == ls::vm::Exception::NO_EXCEPTION)) {
 		pass(result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.to_string() : "(no exception)");
 	} else {
 		ls::vm::ExceptionObj expected_exception(expected);

@@ -12,10 +12,10 @@ void Test::test_exceptions() {
 	section("Exceptions - Avoid leaks");
 	code("var x = 'hello' [][0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("var x = 'hello' throw").exception(ls::vm::Exception::EXCEPTION);
-	DISABLED_code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
+	code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
 		{"f", 1}, {"main", 1}
 	});
-	DISABLED_code("let f = -> { var x = 'hello' throw } f()").exception(ls::vm::Exception::EXCEPTION, {
+	code("let f = -> { var x = 'hello' throw } f()").exception(ls::vm::Exception::EXCEPTION, {
 		{"f", 1}, {"main", 1}
 	});
 
@@ -33,19 +33,22 @@ void Test::test_exceptions() {
 	DISABLED_code("let f = -> { var s = 'leak1' { var s = 'leak2' [][0] } !? 8 } f()").equals("8");
 
 	section("Stacktraces");
-	DISABLED_file("test/code/exception/exception_1.leek").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
+	file("test/code/exception/exception.leek").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
+		{"main", 3},
+	});
+	file("test/code/exception/exception_1.leek").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	DISABLED_file("test/code/exception/exception_2.leek").exception(ls::vm::Exception::NO_SUCH_OPERATOR, {
+	file("test/code/exception/exception_2.leek").exception(ls::vm::Exception::NO_SUCH_OPERATOR, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	DISABLED_file("test/code/exception/exception_3.leek").exception(ls::vm::Exception::EXCEPTION, {
+	file("test/code/exception/exception_3.leek").exception(ls::vm::Exception::EXCEPTION, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	DISABLED_file("test/code/exception/exception_4.leek").exception(ls::vm::Exception::NUMBER_OVERFLOW, {
+	file("test/code/exception/exception_4.leek").exception(ls::vm::Exception::NUMBER_OVERFLOW, {
 		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
 	});
-	DISABLED_file("test/code/exception/exception_5.leek").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
+	file("test/code/exception/exception_5.leek").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
 		{"crash", 3}, {"power", 8}, {"will_crash", 13}, {"do_something", 18}, {"main", 21}
 	});
 }
