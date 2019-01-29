@@ -296,6 +296,7 @@ public:
 		return insn_invoke(return_type, args, (void*) func);
 	}
 	value insn_invoke(Type return_type, std::vector<value> args, void* func) const;
+	value insn_invoke(Type return_type, std::vector<value> args, value func) const;
 	value insn_call(Type return_type, std::vector<value> args, value fun) const;
 	void function_add_capture(value fun, value capture);
 	void log(const std::string&& str) const;

@@ -1627,6 +1627,32 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	}
 }
 
+Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, Compiler::value func) const {
+	std::vector<llvm::Value*> llvm_args;
+	std::vector<llvm::Type*> llvm_types;
+	for (unsigned i = 0, e = args.size(); i != e; ++i) {
+		assert(args[i].t.llvm_type() == args[i].v->getType());
+		llvm_args.push_back(args[i].v);
+		llvm_types.push_back(args[i].t.llvm_type());
+	}
+	auto convert_type = Type::fun(return_type, {});
+	auto fun_to_ptr = Compiler::builder.CreatePointerCast(func.v, convert_type.llvm_type());
+	auto f = Compiler::builder.CreateStructGEP(convert_type.llvm_type()->getPointerElementType(), fun_to_ptr, 5);
+	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
+	value function = { Compiler::builder.CreateLoad(f), convert_type };
+	auto fun_conv = builder.CreatePointerCast(function.v, fun_type->getPointerTo());
+	auto continueBlock = llvm::BasicBlock::Create(context, "cont", F);
+	auto r = builder.CreateInvoke(fun_conv, continueBlock, fun->get_landing_pad(*this), llvm_args);
+	builder.SetInsertPoint(continueBlock);
+	if (return_type._types.size() == 0) {
+		return {};
+	} else {
+		value result = { r, return_type };
+		assert_value_ok(result);
+		return result;
+	}
+}
+
 void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) {
 	assert(fun.t.llvm_type() == fun.v->getType());
 	assert(capture.t.llvm_type() == capture.v->getType());

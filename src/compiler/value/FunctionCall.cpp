@@ -465,7 +465,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	if (is_unknown_method) {
 		result = c.insn_call(Type::any(), args, (void*) &LSFunction::call);
 	} else {
-		result = c.insn_call(return_type, args, fun);
+		result = c.insn_invoke(return_type, args, fun);
 	}
 
 	// Destroy temporary arguments
