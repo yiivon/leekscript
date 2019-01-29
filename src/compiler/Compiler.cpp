@@ -1884,6 +1884,16 @@ void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LS
 	}
 }
 
+const Compiler::catcher* Compiler::find_catcher() const {
+	const auto& fun_catchers = catchers.back();
+	for (auto block = fun_catchers.size(); block > 0; --block) {
+		if (fun_catchers.at(block - 1).size()) {
+			return &fun_catchers.at(block - 1).back();
+		}
+	}
+	return nullptr;
+}
+
 // Utils
 std::ostringstream& Compiler::_log_insn(int indent) const { assert(false); }
 

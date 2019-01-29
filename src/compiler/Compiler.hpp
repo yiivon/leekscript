@@ -331,6 +331,7 @@ public:
 	void mark_offset(int line);
 	void insn_try_catch(std::function<void()> try_, std::function<void()> catch_);
 	void insn_check_args(std::vector<value> args, std::vector<LSValueType> types) const;
+	const catcher* find_catcher() const;
 
 	// Utils
 	std::ostringstream& _log_insn(int indent) const;
