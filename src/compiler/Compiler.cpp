@@ -151,7 +151,8 @@ Compiler::value Compiler::create_entry(const std::string& name, Type type) const
 
 Compiler::value Compiler::to_int(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
-	if (v.t.is_polymorphic()) {
+	auto type = v.t.fold();
+	if (type.is_polymorphic()) {
 		return insn_invoke(Type::integer(), {v}, +[](const LSValue* x) {
 			if (auto number = dynamic_cast<const LSNumber*>(x)) {
 				auto r = (int) number->value;
@@ -166,18 +167,18 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 		});
 	}
-	if (v.t.is_integer()) {
+	if (type.is_integer()) {
 		return v;
 	}
-	if (v.t.not_temporary() == Type::mpz()) {
+	if (type.not_temporary() == Type::mpz()) {
 		return to_int(insn_call(Type::long_(), {v}, +[](__mpz_struct a) {
 			return mpz_get_si(&a);
 		}));
 	}
-	if (v.t.is_bool()) {
+	if (type.is_bool()) {
 		return {builder.CreateIntCast(v.v, Type::integer().llvm_type(), false), Type::integer()};
 	}
-	if (v.t.is_real()) {
+	if (type.is_real()) {
 		return {builder.CreateFPToSI(v.v, Type::integer().llvm_type()), Type::integer()};
 	}
 	Compiler::value r {builder.CreateIntCast(v.v, Type::integer().llvm_type(), true), Type::integer()};
@@ -304,7 +305,9 @@ Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 	// assert(a.t.llvm_type() == a.v->getType());
 	// assert(b.t.llvm_type() == b.v->getType());
-	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
+	auto a_type = a.t.fold();
+	auto b_type = b.t.fold();
+	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
 		return insn_call(Type::boolean(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
 			bool r = *x == *y;
 			LSValue::delete_temporary(x);
@@ -312,19 +315,19 @@ Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 			return r;
 		});
 	}
-	if (a.t.is_mpz() and b.t.is_integer()) {
+	if (a_type.is_mpz() and b_type.is_integer()) {
 		// TODO cleaning
 		return insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, int i) {
 			return _mpz_cmp_si(&x, i) == 0;
 		});
-	} else if (a.t.is_mpz() and b.t.is_mpz()) {
+	} else if (a_type.is_mpz() and b_type.is_mpz()) {
 		// TODO cleaning
 		return insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, __mpz_struct y) {
 			return mpz_cmp(&x, &y) == 0;
 		});
-	} else if (a.t.is_real() or b.t.is_real()) {
+	} else if (a_type.is_real() or b_type.is_real()) {
 		return {builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::boolean()};
-	} else if (a.t.is_long() or b.t.is_long()) {
+	} else if (a_type.is_long() or b_type.is_long()) {
 		return {builder.CreateICmpEQ(to_long(a).v, to_long(b).v), Type::boolean()};
 	} else {
 		return {builder.CreateICmpEQ(to_int(a).v, to_int(b).v), Type::boolean()};
