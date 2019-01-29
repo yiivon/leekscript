@@ -452,7 +452,12 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 		c.builder.CreateStore(LPadExn, current_version->exception_slot);
 		c.builder.CreateStore(c.new_long(c.exception_line).v, current_version->exception_line_slot);
 		landingPadInst->addClause(catchAllSelector);
-		c.builder.CreateBr(current_version->catch_block);
+		auto catcher = c.find_catcher();
+		if (catcher) {
+			c.builder.CreateBr(catcher->handler);
+		} else {
+			c.builder.CreateBr(current_version->catch_block);
+		}
 		c.builder.restoreIP(savedIP);
 		// std::cout << "Landing pad of " << current_version->type << " created! " << current_version->landing_pad << std::endl;
 	}
