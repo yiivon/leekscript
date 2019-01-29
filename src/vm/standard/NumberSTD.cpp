@@ -1125,9 +1125,10 @@ LSValue* NumberSTD::isInteger_ptr(LSNumber* x) {
 	return is;
 }
 Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> args) {
-	if (args[0].t.is_integer() or args[0].t.is_long()) {
+	auto type = args[0].t.fold();
+	if (type.is_integer() or type.is_long()) {
 		return c.new_bool(true);
-	} else if (args[0].t.is_primitive()) {
+	} else if (type.is_primitive()) {
 		return c.insn_eq(c.to_int(args[0]), args[0]);
 	} else {
 		return c.insn_call(Type::boolean(), args, +[](LSNumber* x) {

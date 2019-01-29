@@ -670,7 +670,7 @@ void Test::test_numbers() {
 	code("12.isInteger()").equals("true");
 	code("12.5.isInteger()").equals("false");
 	code("[12, 0][0].isInteger()").equals("true");
-	DISABLED_code("[12.5, 0][0].isInteger()").equals("false");
+	code("[12.5, 0][0].isInteger()").equals("false");
 
 	section("Number.fold");
 	code("1234567.fold((x, y) -> x + y, 0)").equals("28");
