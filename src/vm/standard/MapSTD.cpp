@@ -83,13 +83,15 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::boolean(), {Type::map(Type::integer(), Type::integer()), Type::integer()}, (void*) &LSMap<int,int>::ls_erase, Method::NATIVE},
 	});
 
+	// V Map<K, V>::look(K, V)
 	method("look", {
 		{Type::any(), {Type::const_map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &LSMap<LSValue*,LSValue*>::ls_look, Method::NATIVE},
-		{Type::real(), {Type::const_map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &LSMap<LSValue*,double>::ls_look, Method::NATIVE},
-		{Type::integer(), {Type::const_map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &LSMap<LSValue*,int>::ls_look, Method::NATIVE},
-		{Type::any(), {Type::const_map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &LSMap<int,LSValue*>::ls_look, Method::NATIVE},
-		{Type::real(), {Type::const_map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int,double>::ls_look, Method::NATIVE},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int,int>::ls_look, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &look_any_any},
+		{Type::real(), {Type::const_map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &look_any_real},
+		{Type::integer(), {Type::const_map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &look_any_int},
+		{Type::any(), {Type::const_map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &look_int_any},
+		{Type::real(), {Type::const_map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &look_int_real},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &look_int_int},
 	});
 
 	method("min", {
@@ -169,6 +171,25 @@ Compiler::value MapSTD::insert_int_real(Compiler& c, std::vector<Compiler::value
 }
 Compiler::value MapSTD::insert_int_int(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSMap<int, int>::ls_insert);
+}
+
+Compiler::value MapSTD::look_any_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<LSValue*, LSValue*>::ls_look);
+}
+Compiler::value MapSTD::look_any_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::real(), {args[0], c.insn_to_any(args[1]), c.to_real(args[2])}, (void*) &LSMap<LSValue*, double>::ls_look);
+}
+Compiler::value MapSTD::look_any_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::integer(), {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSMap<LSValue*, int>::ls_look);
+}
+Compiler::value MapSTD::look_int_any(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::any(), {args[0], c.to_int(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<int, LSValue*>::ls_look);
+}
+Compiler::value MapSTD::look_int_real(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::real(), {args[0], c.to_int(args[1]), c.to_real(args[2])}, (void*) &LSMap<int, double>::ls_look);
+}
+Compiler::value MapSTD::look_int_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::integer(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSMap<int, int>::ls_look);
 }
 
 }
