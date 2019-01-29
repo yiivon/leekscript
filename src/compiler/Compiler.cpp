@@ -1508,8 +1508,12 @@ void Compiler::insn_if_not(Compiler::value condition, std::function<void()> then
 void Compiler::insn_throw(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	delete_function_variables();
-	insn_call({}, {v}, +[](int type) {
-		throw vm::ExceptionObj((vm::Exception) type);
+	auto line = new_long(exception_line);
+	auto function = new_pointer(&fun->name, Type::any());
+	insn_call({}, {v, function, line}, +[](int type, std::string* function, size_t line) {
+		auto ex = vm::ExceptionObj((vm::Exception) type);
+		ex.frames.push_back({*function, line});
+		throw ex;
 	});
 }
 
@@ -1845,7 +1849,7 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 
 /** Exceptions **/
 void Compiler::mark_offset(int line) {
-	// TODO
+	exception_line = line;
 }
 void Compiler::add_catcher(label start, label end, label handler) { assert(false); }
 

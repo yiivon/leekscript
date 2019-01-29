@@ -23,6 +23,7 @@ public:
 		llvm::BasicBlock* landing_pad = nullptr;
 		llvm::BasicBlock* catch_block = nullptr;
 		llvm::AllocaInst* exception_slot = nullptr;
+		llvm::AllocaInst* exception_line_slot = nullptr;
 	};
 
 	std::string name;

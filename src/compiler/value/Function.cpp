@@ -448,7 +448,9 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(Compiler::context), llvm::Type::getInt32Ty(Compiler::context)), 1);
 		auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
 		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(Compiler::context));
+		current_version->exception_line_slot = c.CreateEntryBlockAlloca("exnline.slot", llvm::Type::getInt64Ty(Compiler::context));
 		c.builder.CreateStore(LPadExn, current_version->exception_slot);
+		c.builder.CreateStore(c.new_long(c.exception_line).v, current_version->exception_line_slot);
 		landingPadInst->addClause(catchAllSelector);
 		c.builder.CreateBr(current_version->catch_block);
 		c.builder.restoreIP(savedIP);
@@ -564,8 +566,13 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		// std::cout << "Create catch block " << current_version->type << std::endl;
 		c.builder.SetInsertPoint(current_version->catch_block);
 		c.delete_function_variables();
-		c.insn_call({}, {{c.builder.CreateLoad(current_version->exception_slot), Type::long_()}}, +[](void** ex) {
-			__cxa_throw((ex + 4), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
+		Compiler::value exception = {c.builder.CreateLoad(current_version->exception_slot), Type::long_()};
+		Compiler::value exception_line = {c.builder.CreateLoad(current_version->exception_line_slot), Type::long_()};
+		auto exception_function = c.new_pointer(&c.fun->name, Type::any());
+		c.insn_call({}, {exception, exception_line, exception_function}, +[](void** ex, size_t line, std::string* f) {
+			auto exception = (vm::ExceptionObj*) (ex + 4);
+			exception->frames.push_back({*f, line});
+			__cxa_throw(exception, (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
 		});
 		c.builder.CreateRetVoid();
 	}
