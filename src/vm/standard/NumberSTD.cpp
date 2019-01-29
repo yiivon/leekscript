@@ -718,7 +718,9 @@ Compiler::value NumberSTD::_int(Compiler& c, std::vector<Compiler::value> args) 
 }
 
 Compiler::value NumberSTD::abs(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_abs(args[0]);
+	auto r = c.insn_abs(args[0]);
+	c.insn_delete_temporary(args[0]);
+	return r;
 }
 
 double NumberSTD::acos_ptr(LSNumber* x) {

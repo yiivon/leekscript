@@ -191,13 +191,9 @@ Compiler::value Compiler::to_real(Compiler::value x) const {
 	if (x.t.is_polymorphic()) {
 		return insn_invoke(Type::real(), {x}, +[](const LSValue* x) {
 			if (auto number = dynamic_cast<const LSNumber*>(x)) {
-				auto r = number->value;
-				LSValue::delete_temporary(x);
-				return r;
+				return number->value;
 			} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
-				auto r = boolean->value ? 1.0 : 0.0;
-				LSValue::delete_temporary(x);
-				return r;
+				return boolean->value ? 1.0 : 0.0;
 			}
 			LSValue::delete_temporary(x);
 			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
@@ -473,7 +469,10 @@ Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
 		insn_delete_temporary(b);
 		insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
 	});
-	return { builder.CreateFDiv(to_real(a).v, bv.v), Type::real() };
+	value r = { builder.CreateFDiv(to_real(a).v, bv.v), Type::real() };
+	insn_delete_temporary(a);
+	insn_delete_temporary(b);
+	return r;
 }
 
 Compiler::value Compiler::insn_int_div(Compiler::value a, Compiler::value b) const {
@@ -536,7 +535,10 @@ Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 	} else if (a.t.is_integer() and b.t.is_integer()) {
 		return { builder.CreateSRem(a.v, b.v), Type::integer() };
 	} else {
-		return { builder.CreateFRem(to_real(a).v, to_real(b).v), Type::real() };
+		value r = { builder.CreateFRem(to_real(a).v, to_real(b).v), Type::real() };
+		insn_delete_temporary(a);
+		insn_delete_temporary(b);
+		return r;
 	}
 }
 
