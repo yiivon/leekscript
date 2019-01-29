@@ -65,10 +65,7 @@ public:
 		llvm::BasicBlock* block = nullptr;
 	};
 	struct catcher {
-		label start;
-		label end;
-		label handler;
-		label next;
+		llvm::BasicBlock* handler;
 	};
 	struct function_entry {
 		llvm::JITTargetAddress addr;
@@ -88,7 +85,7 @@ public:
 	std::vector<label*> loops_cond_labels;
 	std::vector<std::vector<value>> function_variables;
 	std::vector<std::map<std::string, value>> variables;
-	std::vector<std::vector<catcher>> catchers;
+	std::vector<std::vector<std::vector<catcher>>> catchers;
 	bool output_assembly = false;
 	std::ostringstream assembly;
 	bool output_pseudo_code = false;

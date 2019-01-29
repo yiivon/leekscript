@@ -1676,6 +1676,7 @@ void Compiler::enter_block() {
 		loops_blocks.back()++;
 	}
 	functions_blocks.back()++;
+	catchers.back().push_back({});
 }
 void Compiler::leave_block(bool delete_vars) {
 	if (delete_vars) {
@@ -1686,6 +1687,7 @@ void Compiler::leave_block(bool delete_vars) {
 		loops_blocks.back()--;
 	}
 	functions_blocks.back()--;
+	catchers.back().pop_back();
 }
 void Compiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
