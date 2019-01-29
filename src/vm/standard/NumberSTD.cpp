@@ -38,6 +38,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::add_mpz_mpz},
 		{Type::mpz(), Type::integer(), Type::tmp_mpz(), (void*) &NumberSTD::add_mpz_int},
 		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::add_real_real},
+		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::add_real_real},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::add_real_real},
 	});
 
