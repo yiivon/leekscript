@@ -18,10 +18,8 @@ void Test::test_loops() {
 	code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
-	// TODO syntaxic error
-	DISABLED_code("if true").equals("null");
-	// TODO crash
-	DISABLED_code("if true else").equals("null");
+	code("if true").syntaxic_error(ls::SyntaxicalError::UNEXPECTED_TOKEN, {""});
+	code("if true else").syntaxic_error(ls::SyntaxicalError::UNEXPECTED_TOKEN, {"else"});
 	code("if (true) {a: 12} else {b: 5}").equals("{a: 12}");
 	code("if (true) { {a: 12} } else { {b: 5} }").equals("{a: 12}");
 	code("if (true) 12 else 5").equals("12");

@@ -247,7 +247,7 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 
 		default:
 			// std::cout << "Unexpected token : " << (int)t->type << " (" << t->content << ")" << std::endl;
-			errors.push_back(SyntaxicalError(t, SyntaxicalError::Type::UNEXPECTED_TOKEN, {to_string((int) t->type), t->content}));
+			errors.push_back(SyntaxicalError(t, SyntaxicalError::Type::UNEXPECTED_TOKEN, {t->content}));
 			eat();
 			return nullptr;
 	}
