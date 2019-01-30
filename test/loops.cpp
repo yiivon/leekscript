@@ -83,11 +83,11 @@ void Test::test_loops() {
 	code("var i = 0 var s = 0 while (i < 10) { s += i i++ } s").equals("45");
 	code("var i = 0 while (i < 100) { i++ if (i == 50) break } i").equals("50");
 	code("var i = 0 var a = 0 while (i < 10) { i++ if (i < 8) continue a++ } a").equals("3");
-	DISABLED_code("while (true) { break }").equals("(void)");
+	code("while (true) { break }").equals("(void)");
 	code("var i = 10 while (['hello', i][1]) { i-- } i").equals("0");
 	code("var i = 0 while i < 10 do i++ end i").equals("10");
 	code("var i = 5 while (i-- > 0) { System.print(i) }").output("4\n3\n2\n1\n0\n");
-	DISABLED_code("while (true) { return 12 }").equals("12");
+	code("while (true) { return 12 }").equals("12");
 	code("var n = 5 var a = [] while n-- { a += 1 }").equals("(void)");
 	DISABLED_code("var mp = 10, grow = [100] while mp-- { grow = [] }").equals("(void)");
 
@@ -141,8 +141,7 @@ void Test::test_loops() {
 	code("var y = '' for k, x in { var x = [1: 2] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
 	code("var y = '' for k, x in { var x = [1: 2.5] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2.5 3:4 '");
 	code("var y = '' for k, x in { var x = [1: '2'] x.insert(3, 4) x } { y += k + ':' + x + ' ' } y").equals("'1:2 3:4 '");
-	// TODO crash
-	DISABLED_code("var y = 'test' for x in 1 { y = x } y").equals("'test'");
+	code("var y = 'test' for x in 1 { y = x } y").equals("1");
 	code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
 	code("var y = '' for k, x in { var x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
@@ -182,11 +181,10 @@ void Test::test_loops() {
 	code("while (true) { break 2 }").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, {});
 	code("while (true) { continue 2 }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
 	code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r").equals("14");
-	DISABLED_code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y continue 2 } r = 0 } r").equals("23");
-	// TODO leak
-	DISABLED_code("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
-	DISABLED_code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
-	DISABLED_code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
+	code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y continue 2 } r = 0 } r").equals("23");
+	code("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
+	code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
+	code("for x in ['a'] { let a = 'a' for y in ['a'] { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
 	code("for var x = 0; x < 2; ++x { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
 	code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
 	code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
