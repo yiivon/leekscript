@@ -308,6 +308,7 @@ public:
 	int get_current_function_blocks() const;
 	void delete_function_variables() const;
 	bool is_current_function_closure() const;
+	void insert_new_generation_block() const;
 
 	// Variables
 	value add_var(const std::string& name, value value);

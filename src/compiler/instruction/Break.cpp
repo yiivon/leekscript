@@ -49,7 +49,8 @@ Compiler::value Break::compile(Compiler& c) const {
 	c.delete_variables_block(c.get_current_loop_blocks(deepness));
 
 	c.insn_branch(c.get_current_loop_end_label(deepness));
-
+	c.insert_new_generation_block();
+	
 	return {};
 }
 

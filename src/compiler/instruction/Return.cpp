@@ -45,6 +45,7 @@ Compiler::value Return::compile(Compiler& c) const {
 	} else {
 		c.insn_return_void();
 	}
+	c.insert_new_generation_block();
 	return {};
 }
 

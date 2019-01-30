@@ -1519,8 +1519,7 @@ void Compiler::insn_throw(Compiler::value v) const {
 			((Compiler*) this)->delete_variables_block(deepness);
 		}
 		builder.CreateBr(catcher->handler);
-		auto contBB = llvm::BasicBlock::Create(context, "throw.cont", F);
-		builder.SetInsertPoint(contBB);
+		insert_new_generation_block();
 	} else {
 		delete_function_variables();
 		auto line = new_long(exception_line);
@@ -1764,6 +1763,10 @@ void Compiler::delete_function_variables() const {
 }
 bool Compiler::is_current_function_closure() const {
 	return function_is_closure.size() ? function_is_closure.top() : false;
+}
+void Compiler::insert_new_generation_block() const {
+	auto block = llvm::BasicBlock::Create(context, "new.block", F);
+	builder.SetInsertPoint(block);
 }
 
 // Variables
