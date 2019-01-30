@@ -260,7 +260,6 @@ LSValue* LSNumber::mul(LSValue* v) {
 	return new LSString(r);
 }
 
-void fake_ex_destru_mul(void*) {}
 LSValue* LSNumber::mul_eq(LSValue* v) {
 	if (v->type == NUMBER) {
 		auto number = static_cast<LSNumber*>(v);
