@@ -89,6 +89,7 @@ public:
 	 * Methods
 	 */
 	static Compiler::value _int(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value _long(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value abs(Compiler&, std::vector<Compiler::value>);
 

@@ -165,7 +165,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::mpz(), {Type::mpz()}, (void*) &ValueSTD::copy},
 	});
 	method("int", Method::Static, {
-		{Type::integer(), {Type::number()}, (void*) &NumberSTD::_int},
+		{Type::integer(), {Type::any()}, (void*) &NumberSTD::_int},
+	});
+	method("long", Method::Static, {
+		{Type::long_(), {Type::any()}, (void*) &NumberSTD::_long},
 	});
 	method("abs", {
 		{Type::real(), {Type::number()}, (void*) &NumberSTD::abs},
@@ -716,6 +719,9 @@ Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> 
 
 Compiler::value NumberSTD::_int(Compiler& c, std::vector<Compiler::value> args) {
 	return c.to_int(args[0]);
+}
+Compiler::value NumberSTD::_long(Compiler& c, std::vector<Compiler::value> args) {
+	return c.to_long(args[0]);
 }
 
 Compiler::value NumberSTD::abs(Compiler& c, std::vector<Compiler::value> args) {
