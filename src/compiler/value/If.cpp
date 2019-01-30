@@ -63,6 +63,9 @@ void If::analyse(SemanticAnalyser* analyser) {
 
 	if (elze != nullptr) {
 		elze->analyse(analyser);
+		if (type.is_void() and not elze->type.is_void()) {
+			type = Type::null();
+		}
 		type += elze->type;
 	} else {
 		type += Type::null();
@@ -90,6 +93,7 @@ Compiler::value If::compile(Compiler& c) const {
 	c.insn_label(&label_then);
 
 	then_v = c.insn_convert(then->compile(c), type.fold());
+	if (!then_v.v) then_v = c.insn_convert(c.new_null(), type.fold());
 	then->compile_end(c);
 
 	c.insn_branch(&label_end);

@@ -15,8 +15,7 @@ void Test::test_loops() {
 	code("let a = if (true) { 12 } else { 'hello' } a").equals("12");
 	code("let a = if (true) { 'hello' } else { 12 } a").equals("'hello'");
 	code("if (true) {} else {}").equals("{}");
-	// TODO then is empty
-	DISABLED_code("if (true) {;} else {}").equals("null");
+	code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
 	// TODO syntaxic error
@@ -42,7 +41,8 @@ void Test::test_loops() {
 	code("if true then if false then 1 end else 2 end").equals("null");
 	code("if (false) { return 12 } 5").equals("5");
 	code("var k = '121212' if (false) { return 12 } 5").equals("5");
-	DISABLED_code("var L = 5 if L < 1 {;}").equals("(void)");
+	code("var L = 5 if L < 1 {;}").equals("null");
+	code("var L = 5 if L > 1 {;}").equals("null");
 
 	section("Conditions with other types");
 	code("if 1212 { 'ok' } else { 5 }").equals("'ok'");
