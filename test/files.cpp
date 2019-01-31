@@ -39,13 +39,13 @@ void Test::test_files() {
 	DISABLED_file("test/code/recursive_2_functions.leek").equals("");
 	// TODO : recursive with 2 versions
 	DISABLED_file("test/code/recursive_2_versions.leek").equals("");
-	DISABLED_file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
+	file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
 	file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
 	file("test/code/classes_multiple.leek").equals("[4, 40, 80]");
 
 	section("Issues (fixed)");
 	file("test/code/issue/207_basic.leek").equals("[1, 2, 3]");
-	DISABLED_file("test/code/issue/207.leek").equals("[{p: 1, v: 1}, {p: 2, v: 2}, {p: 4, v: 4}, {p: 3, v: 3}, {p: 7, v: 7}, {p: 5, v: 5}, {p: 8, v: 8}, {p: 9, v: 9}, {p: 6, v: 6}]");
+	file("test/code/issue/207.leek").equals("[{p: 1, v: 1}, {p: 2, v: 2}, {p: 4, v: 4}, {p: 3, v: 3}, {p: 7, v: 7}, {p: 5, v: 5}, {p: 8, v: 8}, {p: 9, v: 9}, {p: 6, v: 6}]");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
