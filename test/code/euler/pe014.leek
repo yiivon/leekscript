@@ -1,5 +1,5 @@
 let N = 1000000
-var cache = [0]
+var cache = []
 cache.fill(0, N)
 cache[1] = 1
 

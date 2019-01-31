@@ -1,7 +1,7 @@
 let S = 20
 
-var paths = [0] // TODO var paths = new Array<int>(20) ?
-paths.fill(0, 21) // TODO fill gives the array his element type
+var paths = [] // TODO var paths = new Array<int>(20) ?
+paths.fill(0, 21)
 
 let walk = function(x, y) {
 	if (x + y == S) {

@@ -1,5 +1,5 @@
 var N = 2000000
-var numbers = [0]
+var numbers = []
 numbers.fill(1, N + 1)
 numbers[1] = 0
 
