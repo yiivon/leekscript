@@ -500,7 +500,7 @@ void Test::test_arrays() {
 	code("var a = [1.5] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
 	code("var a = [1.5] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
 	code("var a = [] a.fill('test', true) a").equals("['test']");
-	code("var a = [1, 2, 3] a.fill('a', 4) a").equals("['a', 'a', 'a']");
+	code("var a = [1, 2, 3] a.fill('a', 4) a").equals("['a', 'a', 'a', 'a']");
 
 	section("Array.insert()");
 	code("var a = ['a', 'b', 'c'] Array.insert(a, 'hello', 1)").equals("['a', 'hello', 'b', 'c']");

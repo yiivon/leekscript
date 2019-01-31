@@ -690,6 +690,9 @@ LSString* LSArray<T>::ls_join(LSString* glue) {
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_fill(LSValue* element, int size) {
+	for (auto v : *this) {
+		LSValue::delete_ref(v);
+	}
 	this->clear();
 	this->reserve(size);
 	for (int i = 0; i < size; i++) {
