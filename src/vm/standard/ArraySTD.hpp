@@ -26,9 +26,7 @@ public:
 	static Compiler::value search_real(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value search_int(Compiler&, std::vector<Compiler::value>);
 
-	static Compiler::value fill_any(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fill_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fill_int(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value fill(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value fold_left_ptr(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value fold_left_clo_ptr(Compiler&, std::vector<Compiler::value>);

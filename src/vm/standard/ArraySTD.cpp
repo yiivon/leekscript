@@ -275,10 +275,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::string(), {Type::array()}, (void*) &LSValue::ls_json, Method::NATIVE},
 	});
 
+	// template<T> array<T> fill(array, T, integer)
 	method("fill", {
-		{Type::array(Type::any()), {Type::array(), Type::any(), Type::const_integer()}, (void*) &fill_any},
-		{Type::array(Type::real()), {Type::array(Type::real()), Type::real(), Type::const_integer()}, (void*) &fill_real},
-		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::integer(), Type::const_integer()}, (void*) &fill_int},
+		{Type::array(Type::any()), {Type::array(), Type::any(), Type::const_integer()}, (void*) &fill, false, {new WillStoreMutator()}},
+		{Type::array(Type::real()), {Type::array(), Type::real(), Type::const_integer()}, (void*) &fill, false, {new WillStoreMutator()}},
+		{Type::array(Type::integer()), {Type::array(), Type::integer(), Type::const_integer()}, (void*) &fill, false, {new WillStoreMutator()}},
 	});
 
 	method("insert", {
@@ -420,14 +421,13 @@ Compiler::value ArraySTD::search_int(Compiler& c, std::vector<Compiler::value> a
 	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSArray<int>::ls_search);
 }
 
-Compiler::value ArraySTD::fill_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(args[0].t, {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSArray<LSValue*>::ls_fill);
-}
-Compiler::value ArraySTD::fill_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(args[0].t, {args[0], c.to_real(args[1]), c.to_int(args[2])}, (void*) &LSArray<double>::ls_fill);
-}
-Compiler::value ArraySTD::fill_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(args[0].t, {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSArray<int>::ls_fill);
+Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args) {
+	auto fun = [&]() {
+		if (args[0].t.element().is_integer()) return (void*) &LSArray<int>::ls_fill;
+		if (args[0].t.element().is_real()) return (void*) &LSArray<double>::ls_fill;
+		return (void*) &LSArray<LSValue*>::ls_fill;
+	}();
+	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t.element()), c.to_int(args[2])}, fun);
 }
 
 Compiler::value ArraySTD::fold_left_ptr(Compiler& c, std::vector<Compiler::value> args) {
