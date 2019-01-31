@@ -699,6 +699,7 @@ void Test::test_numbers() {
 	code("Number.sqrt(55m ** 20m)").equals("253295162119140625");
 	code("Number.sqrt(12m + 5m)").equals("4");
 	code("var n = 12; n.sqrt()").equals("3.4641016151");
+	code("let f = Number.sqrt f(5)").equals("2.2360679775");
 
 	section("Number.toDegrees");
 	code("π.toDegrees()").equals("180");

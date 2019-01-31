@@ -50,6 +50,8 @@ void Test::test_system() {
 
 	code("let a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, {"a"});
 	code("var a = 2 a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, {"a"});
+	code("let p = System.print p('salut')").output("salut\n");
+	code("let p = System.print p(12)").output("12\n");
 
 	section("print()");
 	code("System.print(true)").output("true\n");
