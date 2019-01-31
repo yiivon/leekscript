@@ -48,6 +48,21 @@ Location ObjectAccess::location() const {
 	return {object->location().start, field->location.end};
 }
 
+void ObjectAccess::set_version(const vector<Type>& args, int level) {
+	version = args;
+	has_version = true;
+	if (class_method) {
+		for (const auto& m : methods) {
+			if (!m.native) continue;
+			auto version = m.type.arguments();
+			version.push_back(m.obj_type);
+			if (version == args) {
+				type = Type::fun(m.type.return_type(), args);
+			}
+		}
+	}
+}
+
 void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 
 	object->analyse(analyser);
@@ -78,8 +93,11 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 				versions.insert({args, m.addr});
 			}
 			type = method[0].type;
+			auto args = type.arguments(); args.insert(args.begin(), method[0].obj_type);
+			type = Type::fun(type.return_type(), args);
 			default_version_fun = method[0].addr;
 			class_method = true;
+			methods = method;
 			found = true;
 		}
 	}

@@ -9,6 +9,8 @@
 
 namespace ls {
 
+class Method;
+
 class ObjectAccess : public LeftValue {
 public:
 
@@ -17,6 +19,7 @@ public:
 	std::string object_class_name;
 	std::string class_name;
 	bool class_method = false;
+	std::vector<Method> methods;
 	bool class_field = false;
 	void* attr_addr;
 	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;
@@ -34,6 +37,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
+	void set_version(const std::vector<Type>& args, int level) override;
 	virtual void analyse(SemanticAnalyser*) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
