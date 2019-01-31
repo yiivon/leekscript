@@ -39,8 +39,8 @@ void Test::test_loops() {
 	code("if true then if false then 1 end else 2 end").equals("null");
 	code("if (false) { return 12 } 5").equals("5");
 	code("var k = '121212' if (false) { return 12 } 5").equals("5");
-	code("var L = 5 if L < 1 {;}").equals("null");
-	code("var L = 5 if L > 1 {;}").equals("null");
+	code("var L = 5 if L < 1 {;}").equals("(void)");
+	code("var L = 5 if L > 1 {;}").equals("(void)");
 
 	section("Conditions with other types");
 	code("if 1212 { 'ok' } else { 5 }").equals("'ok'");

@@ -67,7 +67,7 @@ void If::analyse(SemanticAnalyser* analyser) {
 			type = Type::null();
 		}
 		type += elze->type;
-	} else {
+	} else if (not type.is_void()) {
 		type += Type::null();
 	}
 	returning = then->returning and (elze != nullptr and elze->returning);
