@@ -40,6 +40,8 @@ public:
 	static Compiler::value op_int_div(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_int_div_eq(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value op_mod(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_double_mod(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_double_mod_eq(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_bit_and(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_bit_and_eq(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_bit_or(Compiler&, std::vector<Compiler::value>);

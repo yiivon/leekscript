@@ -84,7 +84,13 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::const_any(), Type::const_any(), Type::long_(), (void*) &ValueSTD::op_int_div_eq, {}, false, true}
 	});
 	operator_("%", {
-		{Type::any(), Type::any(), Type::real(), (void*) &ValueSTD::op_mod},
+		{Type::const_any(), Type::const_any(), Type::real(), (void*) &ValueSTD::op_mod},
+	});
+	operator_("%%", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_double_mod},
+	});
+	operator_("%%=", {
+		{Type::any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_double_mod_eq, {}, false, true}
 	});
 	operator_("&", {
 		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_and}
@@ -305,6 +311,16 @@ Compiler::value ValueSTD::op_div(Compiler& c, std::vector<Compiler::value> args)
 }
 Compiler::value ValueSTD::op_mod(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_mod(args[0], args[1]);
+}
+Compiler::value ValueSTD::op_double_mod(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_double_mod(args[0], args[1]);
+}
+Compiler::value ValueSTD::op_double_mod_eq(Compiler& c, std::vector<Compiler::value> args) {
+	auto x_addr = args[0];
+	auto y = c.insn_to_any(args[1]);
+	return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
+		return (*x)->double_mod_eq(y);
+	});
 }
 
 Compiler::value ValueSTD::op_int_div(Compiler& c, std::vector<Compiler::value> args) {

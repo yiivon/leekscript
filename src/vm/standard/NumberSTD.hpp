@@ -76,6 +76,9 @@ public:
 	static Compiler::value mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mod_eq_real(Compiler& c, std::vector<Compiler::value> args);
 
+	static Compiler::value double_mod(Compiler& c, std::vector<Compiler::value>);
+	static Compiler::value double_mod_eq(Compiler& c, std::vector<Compiler::value>);
+
 	static Compiler::value tilde_int(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value tilde_real(Compiler& c, std::vector<Compiler::value> args);
 

@@ -128,6 +128,16 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::mod},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mod},
 	});
+	operator_("%%", {
+		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::double_mod},
+		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::double_mod},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::double_mod},
+	});
+	operator_("%%=", {
+		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::double_mod_eq, {}, false, true},
+		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::double_mod_eq, {}, false, true},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::double_mod_eq, {}, false, true},
+	});
 	operator_("%=", {
 		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mod_eq_mpz_mpz},
 		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
@@ -627,7 +637,6 @@ Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args) {
 Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_mod(args[0], args[1]);
 }
-
 Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
 	// auto r = [&]() {
 	// 	if (args[0].t.temporary) return args[0];
@@ -663,6 +672,17 @@ Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value>
 	auto sum = c.insn_mod(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
+}
+
+Compiler::value NumberSTD::double_mod(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_double_mod(args[0], args[1]);
+}
+Compiler::value NumberSTD::double_mod_eq(Compiler& c, std::vector<Compiler::value> args) {
+	auto x = c.insn_load(args[0]);
+	auto y = args[1];
+	auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
+	c.insn_store(args[0], r);
+	return r;
 }
 
 Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> args) {
