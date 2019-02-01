@@ -59,6 +59,30 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("xor", {
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_xor}
 	});
+	operator_("+", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_add}
+	});
+	operator_("-", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_sub}
+	});
+	operator_("*", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_mul}
+	});
+	operator_("×", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_mul}
+	});
+	operator_("/", {
+		{Type::const_number(), Type::const_number(), Type::real(), (void*) &ValueSTD::op_div},
+	});
+	operator_("\\", {
+		{Type::const_any(), Type::const_any(), Type::long_(), (void*) &ValueSTD::op_int_div}
+	});
+	operator_("\\=", {
+		{Type::const_any(), Type::const_any(), Type::long_(), (void*) &ValueSTD::op_int_div_eq, {}, false, true}
+	});
+	operator_("%", {
+		{Type::any(), Type::any(), Type::real(), (void*) &ValueSTD::op_mod},
+	});
 	operator_("&", {
 		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_and}
 	});
@@ -104,18 +128,6 @@ ValueSTD::ValueSTD() : Module("Value") {
 	});
 	operator_("**", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_pow}
-	});
-	operator_("\\", {
-		{Type::const_any(), Type::const_any(), Type::long_(), (void*) &ValueSTD::op_int_div}
-	});
-	operator_("\\=", {
-		{Type::const_any(), Type::const_any(), Type::long_(), (void*) &ValueSTD::op_int_div_eq, {}, false, true}
-	});
-	operator_("%", {
-		{Type::any(), Type::any(), Type::real(), (void*) &ValueSTD::op_mod},
-	});
-	operator_("/", {
-		{Type::const_number(), Type::const_number(), Type::real(), (void*) &ValueSTD::op_div},
 	});
 
 	/*
@@ -270,6 +282,44 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
+}
+
+
+Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_invoke(Type::any(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+		return x->pow(y);
+	});
+}
+
+Compiler::value ValueSTD::op_add(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_add(args[0], args[1]);
+}
+Compiler::value ValueSTD::op_sub(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_sub(args[0], args[1]);
+}
+Compiler::value ValueSTD::op_mul(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_mul(args[0], args[1]);
+}
+Compiler::value ValueSTD::op_div(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_div(args[0], args[1]);
+}
+Compiler::value ValueSTD::op_mod(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_mod(args[0], args[1]);
+}
+
+Compiler::value ValueSTD::op_int_div(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_invoke(Type::long_(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+		auto res = x->int_div(y);
+		long v = ((LSNumber*) res)->value;
+		LSValue::delete_temporary(res);
+		return v;
+	});
+}
+Compiler::value ValueSTD::op_int_div_eq(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_invoke(Type::long_(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
+		auto res = (*x)->int_div_eq(y);
+		return (long) ((LSNumber*) res)->value;
+	});
 }
 
 Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> args) {
@@ -515,35 +565,6 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 
 Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_typeof(args[0]);
-}
-
-Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::any(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
-		return x->pow(y);
-	});
-}
-
-Compiler::value ValueSTD::op_mod(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_mod(args[0], args[1]);
-}
-
-Compiler::value ValueSTD::op_div(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_div(args[0], args[1]);
-}
-
-Compiler::value ValueSTD::op_int_div(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::long_(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
-		auto res = x->int_div(y);
-		long v = ((LSNumber*) res)->value;
-		LSValue::delete_temporary(res);
-		return v;
-	});
-}
-Compiler::value ValueSTD::op_int_div_eq(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::long_(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
-		auto res = (*x)->int_div_eq(y);
-		return (long) ((LSNumber*) res)->value;
-	});
 }
 
 }
