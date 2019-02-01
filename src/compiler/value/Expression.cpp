@@ -100,6 +100,8 @@ Location Expression::location() const {
 
 void Expression::analyse(SemanticAnalyser* analyser) {
 
+	// std::cout << "Expression::analyse()" << std::endl;
+
 	operator_fun = nullptr;
 	operations = 1;
 	type = Type::any();
@@ -193,8 +195,12 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		// std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
 	}
 
-	// Don't use old stuff for boolean
-	if ((v1->type == Type::boolean() and op->type != TokenType::EQUAL) or op->type == TokenType::DIVIDE) {
+	// Don't use old stuff for boolean, /, and bit operators
+	if ((v1->type == Type::boolean() and op->type != TokenType::EQUAL) or op->type == TokenType::DIVIDE 
+		or op->type == TokenType::BIT_AND or op->type == TokenType::PIPE or op->type == TokenType::BIT_XOR
+		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
+		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
+		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
 		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}
@@ -250,15 +256,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		type.reference = false;
 	}
 
-	// Bitwise operators : result is a integer
-	if (op->type == TokenType::BIT_AND or op->type == TokenType::PIPE or op->type == TokenType::BIT_XOR
-		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
-
-		type = Type::integer();
-	}
-
 	// [1, 2, 3] ~~ x -> x ^ 2
 	if (op->type == TokenType::TILDE_TILDE) {
 		auto version = { v1->type.element() };
@@ -289,42 +286,6 @@ LSValue* jit_div(LSValue* x, LSValue* y) {
 }
 LSValue* jit_double_mod(LSValue* x, LSValue* y) {
 	return x->double_mod(y);
-}
-int jit_bit_shl(LSValue* x, LSValue* y) {
-	int r = (int) ((LSNumber*) x)->value << (int) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-int jit_bit_shl_equal(LSValue* x, LSValue* y) {
-	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value << (int) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-int jit_bit_shr(LSValue* x, LSValue* y) {
-	int r = (int) ((LSNumber*) x)->value >> (int) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-int jit_bit_shr_equal(LSValue* x, LSValue* y) {
-	int r = ((LSNumber*) x)->value = (int) ((LSNumber*) x)->value >> (int) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-int jit_bit_shr_unsigned(LSValue* x, LSValue* y) {
-	int r = (uint32_t) ((LSNumber*) x)->value >> (uint32_t) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
-}
-int jit_bit_shr_unsigned_equal(LSValue* x, LSValue* y) {
-	int r = ((LSNumber*) x)->value = (uint32_t) ((LSNumber*) x)->value >> (uint32_t) ((LSNumber*) y)->value;
-	LSValue::delete_temporary(x);
-	LSValue::delete_temporary(y);
-	return r;
 }
 
 Compiler::value Expression::compile(Compiler& c) const {
@@ -500,81 +461,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				auto m = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
 				ls_func = (void*) m;
-			}
-			break;
-		}
-		case TokenType::BIT_SHIFT_LEFT : {
-			if (v1->type.is_primitive() and v2->type.is_primitive()) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				return c.insn_shl(x, y);
-			}
-			ls_func = (void*) &jit_bit_shl;
-			break;
-		}
-		case TokenType::BIT_SHIFT_LEFT_EQUALS : {
-			if (v1->type.is_primitive() and v2->type.is_primitive()) {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				auto a = c.insn_shl(c.insn_load(x_addr), y);
-				c.insn_store(x_addr, a);
-				return a;
-			} else {
-				ls_func = (void*) &jit_bit_shl_equal;
-			}
-			break;
-		}
-		case TokenType::BIT_SHIFT_RIGHT : {
-			if (v1->type.is_primitive() and v2->type.is_primitive()) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				return c.insn_ashr(x, y);
-			}
-			ls_func = (void*) &jit_bit_shr;
-			break;
-		}
-		case TokenType::BIT_SHIFT_RIGHT_EQUALS : {
-			if (v1->type.is_primitive() and v2->type.is_primitive()) {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				auto a = c.insn_lshr(c.insn_load(x_addr), y);
-				c.insn_store(x_addr, a);
-				return a;
-			} else {
-				ls_func = (void*) &jit_bit_shr_equal;
-			}
-			break;
-		}
-		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED : {
-			if (v1->type.is_primitive() and v2->type.is_primitive()) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				return c.insn_lshr(x, y);
-			}
-			ls_func = (void*) &jit_bit_shr_unsigned;
-			break;
-		}
-		case TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS : {
-			if (v1->type.is_primitive() and v2->type.is_primitive()) {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				auto a = c.insn_lshr(c.insn_load(x_addr), y);
-				c.insn_store(x_addr, a);
-				return a;
-			} else {
-				ls_func = (void*) &jit_bit_shr_unsigned_equal;
 			}
 			break;
 		}

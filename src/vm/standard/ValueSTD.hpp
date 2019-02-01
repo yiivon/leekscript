@@ -38,6 +38,12 @@ public:
 	static Compiler::value op_bit_or_eq(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_bit_xor(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_bit_xor_eq(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_shift_left(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_shift_left_eq(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_shift_right(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_shift_right_eq(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_shift_uright(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_shift_uright_eq(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_in(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_swap_val(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_swap_ptr(Compiler&, std::vector<Compiler::value>);
