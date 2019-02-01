@@ -461,10 +461,11 @@ void Test::test_numbers() {
 	code("1 << 8").equals("256");
 	code("123 << 12").equals("503808");
 	code("[123, ''][0] << 12").equals("503808");
-	code("let a = 123 a <<= 11").equals("251904");
-	code("let a = 123 a <<= 13 a").equals("1007616");
+	code("var a = 123 a <<= 11").equals("251904");
+	code("var a = 123 a <<= 13 a").equals("1007616");
 	code("var a = [123, ''] a[0] <<= 13").equals("1007616");
 	code("var a = 123 ['', a <<= 13]").equals("['', 1007616]");
+	code("'salut' << 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "<<", ls::Type::integer().to_string()});
 
 	section("Number.operator >>");
 	code("0 >> 0").equals("0");
@@ -481,6 +482,7 @@ void Test::test_numbers() {
 	code("var a = 123123123 a >>= 7 a").equals("961899");
 	code("var a = [123123123, ''] a[0] >>= 7").equals("961899");
 	code("var a = 12345 ['', a >>= 8]").equals("['', 48]");
+	code("'salut' >> 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), ">>", ls::Type::integer().to_string()});
 
 	section("Number.operator >>>");
 	code("155 >>> 3").equals("19");
@@ -490,6 +492,7 @@ void Test::test_numbers() {
 	code("var a = -155 a >>>= 5 a").equals("134217723");
 	code("var a = [-155, ''] a[0] >>>= 5").equals("134217723");
 	code("var a = -155 ['', a >>>= 5]").equals("['', 134217723]");
+	code("'salut' >>> 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), ">>>", ls::Type::integer().to_string()});
 
 	section("Number.operator |x|");
 	code("var a = -12 [] + |a|").equals("[12]");
