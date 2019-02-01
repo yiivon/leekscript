@@ -273,6 +273,7 @@ Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
 }
 
 Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
+	// std::cout << "insn_add(" << a.t << ", " << b.t << ")" << std::endl;
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
 	auto a_type = a.t.fold();
