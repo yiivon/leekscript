@@ -282,18 +282,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	}
 }
 
-LSValue* jit_add(LSValue* x, LSValue* y) {
-	return x->add(y);
-}
-LSValue* jit_sub(LSValue* x, LSValue* y) {
-	return x->sub(y);
-}
-LSValue* jit_mul(LSValue* x, LSValue* y) {
-	return x->mul(y);
-}
-LSValue* jit_div(LSValue* x, LSValue* y) {
-	return x->div(y);
-}
 LSValue* jit_double_mod(LSValue* x, LSValue* y) {
 	return x->double_mod(y);
 }
@@ -432,18 +420,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->pow_eq(y);
 			});
-		}
-		case TokenType::PLUS: {
-			ls_func = (void*) &jit_add;
-			break;
-		}
-		case TokenType::MINUS: {
-			ls_func = (void*) &jit_sub;
-			break;
-		}
-		case TokenType::TIMES: {
-			ls_func = (void*) &jit_mul;
-			break;
 		}
 		case TokenType::TILDE_TILDE: {
 			if (v1->type.element() == Type::integer()) {
