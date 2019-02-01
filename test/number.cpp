@@ -261,6 +261,8 @@ void Test::test_numbers() {
 	code("14★ * []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("12344532132423m * 987657897613412m").equals("12192174652930109838844857276");
 	code("5 * 'yo'").equals("'yoyoyoyoyo'");
+	code("50m * 10").equals("500");
+	code("50 * 10m").equals("500");
 
 	section("Number.operator *=");
 	code("var a = 15★ a *= true a").equals("15");

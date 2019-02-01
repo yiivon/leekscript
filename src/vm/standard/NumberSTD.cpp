@@ -65,6 +65,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::const_real(), Type::const_real(), Type::const_real(), (void*) &NumberSTD::mul_real_real},
 		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::mul_real_real},
 		{Type::const_integer(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mul_int_mpz},
+		{Type::mpz(), Type::integer(), Type::tmp_mpz(), (void*) &NumberSTD::mul_mpz_int},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mul_real_real},
 		{Type::const_integer(), Type::const_string(), Type::string(), (void*) &NumberSTD::mul_int_string},
 		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mul_mpz_mpz}
@@ -467,6 +468,15 @@ Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value>
 	// 	c.insn_delete_mpz(args[1]);
 	// }
 	// return r;
+}
+
+Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::mpz(), {args[0], args[1]}, +[](__mpz_struct a, int b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_mul_si(r, &a, b);
+		return *r;
+	});
 }
 
 Compiler::value NumberSTD::mul_int_string(Compiler& c, std::vector<Compiler::value> args) {
