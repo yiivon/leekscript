@@ -220,11 +220,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	/*
 	 * OLD
 	 */
-	if (v1->type.is_polymorphic() or v2->type.is_polymorphic()) {
-		type = Type::any();
-	}
-	constant = v1->constant and v2->constant;
-
 	// A = B, A += B, A * B, etc. mix types
 	if (op->type == TokenType::EQUAL or op->type == TokenType::XOR
 		or op->type == TokenType::PLUS_EQUAL
