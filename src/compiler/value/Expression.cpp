@@ -262,9 +262,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		if (type.is_void()) {
 			type = v2_type;
 		}
-		if (type == Type::mpz()) {
-			type.temporary = true;
-		}
 		type.reference = false;
 	}
 
