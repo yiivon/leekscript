@@ -238,7 +238,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::SWAP
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE or op->type == TokenType::DOUBLE_MODULO or op->type == TokenType::DOUBLE_MODULO_EQUALS
+		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE
 		) {
 
 		auto vv = dynamic_cast<VariableValue*>(v1);
