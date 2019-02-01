@@ -284,10 +284,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	}
 }
 
-LSValue* jit_double_mod(LSValue* x, LSValue* y) {
-	return x->double_mod(y);
-}
-
 Compiler::value Expression::compile(Compiler& c) const {
 
 	// No operator : compile v1 and return
@@ -495,38 +491,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 				c.insn_store(r, c.insn_convert(y, type.fold()));
 			});
 			return c.insn_load(r);
-			break;
-		}
-		case TokenType::DOUBLE_MODULO: {
-			if (v1->type.is_primitive() and v2->type.is_primitive()) {
-				auto x = v1->compile(c);
-				auto y = v2->compile(c);
-				v1->compile_end(c);
-				v2->compile_end(c);
-				return c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
-			} else {
-				ls_func = (void*) &jit_double_mod;
-			}
-			break;
-		}
-		case TokenType::DOUBLE_MODULO_EQUALS: {
-			if (v1->type.is_primitive() and v2->type.is_primitive()) {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = v2->compile(c);
-				v2->compile_end(c);
-				auto x = c.insn_load(x_addr);
-				auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
-				c.insn_store(x_addr, r);
-				return r;
-			} else {
-				auto x_addr = ((LeftValue*) v1)->compile_l(c);
-				auto y = c.insn_to_any(v2->compile(c));
-				v2->compile_end(c);
-				return c.insn_invoke(type, {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					LSValue* res = (*x)->double_mod_eq(y);
-					return res;
-				});
-			}
 			break;
 		}
 		default: {
