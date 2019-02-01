@@ -275,9 +275,15 @@ Compiler::value Compiler::insn_or(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
-	if (a.t.is_real() or b.t.is_real()) {
+	auto a_type = a.t.fold();
+	auto b_type = b.t.fold();
+	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
+		return insn_call(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+			return x->add(y);
+		});
+	} else if (a_type.is_real() or b_type.is_real()) {
 		return {builder.CreateFAdd(to_real(a).v, to_real(b).v), Type::real()};
-	} else if (a.t.is_long() or b.t.is_long()) {
+	} else if (a_type.is_long() or b_type.is_long()) {
 		return {builder.CreateAdd(to_long(a).v, to_long(b).v), Type::long_()};
 	} else {
 		return {builder.CreateAdd(to_int(a).v, to_int(b).v), Type::integer()};
@@ -287,7 +293,13 @@ Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());
-	if (a.t.is_real() or b.t.is_real()) {
+	auto a_type = a.t.fold();
+	auto b_type = b.t.fold();
+	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
+		return insn_call(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+			return x->sub(y);
+		});
+	} else if (a_type.is_real() or b_type.is_real()) {
 		return {builder.CreateFSub(to_real(a).v, to_real(b).v, "sub"), Type::real()};
 	} else {
 		return {builder.CreateSub(to_int(a).v, to_int(b).v, "sub"), Type::integer()};
@@ -449,10 +461,15 @@ Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	// std::cout << "insn_mul " << a.t << " " << b.t << " " << b.v->getType() << std::endl;
 	assert_value_ok(a);
 	assert_value_ok(b);
-	assert(a.t.is_primitive() and b.t.is_primitive());
-	if (a.t.is_real() or b.t.is_real()) {
+	auto a_type = a.t.fold();
+	auto b_type = b.t.fold();
+	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
+		return insn_call(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+			return x->mul(y);
+		});
+	} else if (a_type.is_real() or b_type.is_real()) {
 		return {builder.CreateFMul(to_real(a).v, to_real(b).v), Type::real()};
-	} else if (a.t.is_long() or b.t.is_long()) {
+	} else if (a_type.is_long() or b_type.is_long()) {
 		return {builder.CreateMul(to_long(a).v, to_long(b).v), Type::long_()};
 	}
 	return {builder.CreateMul(to_int(a).v, to_int(b).v), Type::integer()};
