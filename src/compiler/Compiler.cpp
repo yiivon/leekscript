@@ -278,7 +278,7 @@ Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	auto a_type = a.t.fold();
 	auto b_type = b.t.fold();
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
-		return insn_call(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
 			return x->add(y);
 		});
 	} else if (a_type.is_real() or b_type.is_real()) {
@@ -296,7 +296,7 @@ Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 	auto a_type = a.t.fold();
 	auto b_type = b.t.fold();
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
-		return insn_call(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
 			return x->sub(y);
 		});
 	} else if (a_type.is_real() or b_type.is_real()) {
@@ -464,7 +464,7 @@ Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	auto a_type = a.t.fold();
 	auto b_type = b.t.fold();
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
-		return insn_call(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
 			return x->mul(y);
 		});
 	} else if (a_type.is_real() or b_type.is_real()) {
