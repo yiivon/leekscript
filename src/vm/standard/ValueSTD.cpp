@@ -71,6 +71,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("×", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_mul}
 	});
+	operator_("**", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_pow}
+	});
 	operator_("/", {
 		{Type::const_number(), Type::const_number(), Type::real(), (void*) &ValueSTD::op_div},
 	});
@@ -125,9 +128,6 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("<=>", {
 		{Type::any(), Type::any(), Type::any(), (void*) &ValueSTD::op_swap_ptr, {}, false, true, true},
 		{Type::integer(), Type::integer(), Type::integer(), (void*) &ValueSTD::op_swap_val, {}, false, true, true},
-	});
-	operator_("**", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_pow}
 	});
 
 	/*
