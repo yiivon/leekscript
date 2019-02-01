@@ -165,29 +165,39 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	this->v1_type = op->reversed ? v2->type : v1->type;
 	this->v2_type = op->reversed ? v1->type : v2->type;
 
-	auto object_class = [&]() { if (v1_type.class_name().size()) {
-		return (LSClass*) analyser->vm->internal_vars.at(v1_type.class_name())->lsvalue;
-	} else {
-		return (LSClass*) analyser->vm->internal_vars.at("Value")->lsvalue;
-	} }();
-	const LSClass::Operator* m = object_class->getOperator(analyser, op->character, v1_type, v2_type);
-	if (m != nullptr) {
-		// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << m->return_type << " " << (void*) m->addr << std::endl;
-		operator_fun = m->addr;
-		is_native_method = m->native;
-		native_method_v1_addr = m->v1_addr;
-		native_method_v2_addr = m->v2_addr;
-		v1_type = op->reversed ? m->operand_type : m->object_type;
-		v2_type = op->reversed ? m->object_type : m->operand_type;
-		return_type = m->return_type;
+	const LSClass::Operator* o = nullptr;
+	if (v1_type.class_name().size()) {
+		auto object_class = (LSClass*) analyser->vm->internal_vars.at(v1_type.class_name())->lsvalue;
+		o = object_class->getOperator(analyser, op->character, v1_type, v2_type);
+	}
+	if (o == nullptr) {
+		auto v_class = (LSClass*) analyser->vm->internal_vars.at("Value")->lsvalue;
+		o = v_class->getOperator(analyser, op->character, v1_type, v2_type);
+	}
+	if (o != nullptr) {
+		// For placeholder types, keep them no matter the operator
+		return_type = o->return_type;
+		if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES) {
+			if (v1->type.is_placeholder()) { return_type = v1_type; }
+			if (v2->type.is_placeholder()) { return_type = v2_type; }
+		}
+
+		// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
+
+		operator_fun = o->addr;
+		is_native_method = o->native;
+		native_method_v1_addr = o->v1_addr;
+		native_method_v2_addr = o->v2_addr;
+		v1_type = op->reversed ? o->operand_type : o->object_type;
+		v2_type = op->reversed ? o->object_type : o->operand_type;
 		type = return_type;
 		if (v2_type.is_function()) {
-			v2->will_take(analyser, m->operand_type.arguments(), 1);
-			v2->set_version(m->operand_type.arguments(), 1);
-			v2->must_return(analyser, m->operand_type.return_type());
+			v2->will_take(analyser, o->operand_type.arguments(), 1);
+			v2->set_version(o->operand_type.arguments(), 1);
+			v2->must_return(analyser, o->operand_type.return_type());
 		}
 		// Apply mutators
-		for (const auto& mutator : m->mutators) {
+		for (const auto& mutator : o->mutators) {
 			mutator->apply(analyser, {v1, v2});
 		}
 		return;
