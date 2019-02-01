@@ -227,10 +227,10 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	// A = B, A += B, A * B, etc. mix types
 	if (op->type == TokenType::EQUAL or op->type == TokenType::XOR
-		or op->type == TokenType::PLUS or op->type == TokenType::PLUS_EQUAL
-		or op->type == TokenType::TIMES or op->type == TokenType::TIMES_EQUAL
-		or op->type == TokenType::DIVIDE or op->type == TokenType::DIVIDE_EQUAL
-		or op->type == TokenType::MINUS or op->type == TokenType::MINUS_EQUAL
+		or op->type == TokenType::PLUS_EQUAL
+		or op->type == TokenType::TIMES_EQUAL
+		or op->type == TokenType::DIVIDE_EQUAL
+		or op->type == TokenType::MINUS_EQUAL
 		or op->type == TokenType::POWER_EQUAL
 		or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
