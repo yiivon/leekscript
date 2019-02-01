@@ -19,6 +19,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	operator_("in", {
 		{Type::const_array(), Type::const_any(), Type::boolean(), (void*) &in},
 	});
+	operator_("+", {
+		{Type::const_array(), Type::const_any(), Type::array(Type::any()), (void*) &ArraySTD::op_add},
+	});
 	operator_("+=", {
 		{Type::array(), Type::const_any(), Type::any(), (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
 		{Type::array(Type::real()), Type::const_real(), Type::array(Type::real()), (void*) &LSArray<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
@@ -363,6 +366,12 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
 		c.insn_delete_temporary(args[1]);
 		return c.new_bool(false);
 	}
+}
+
+Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args) {
+	return c.insn_call(Type::array(args[0].t.element()), {args[0], c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
+		return x->add(y);
+	});
 }
 
 Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args) {
