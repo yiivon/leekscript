@@ -561,6 +561,16 @@ Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 	}
 }
 
+Compiler::value Compiler::insn_double_mod(Compiler::value a, Compiler::value b) const {
+	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
+		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
+			return x->double_mod(y);
+		});
+	} else {
+		return insn_mod(insn_add(insn_mod(a, b), b), b);
+	}
+}
+
 Compiler::value Compiler::insn_cmpl(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type() == a.v->getType());
 	assert(b.t.llvm_type() == b.v->getType());

@@ -210,6 +210,7 @@ public:
 	value insn_lshr(value, value) const;
 	value insn_ashr(value, value) const;
 	value insn_mod(value, value) const;
+	value insn_double_mod(value, value) const;
 	value insn_cmpl(value, value) const;
 
 	// Math Functions
