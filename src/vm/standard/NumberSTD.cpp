@@ -202,7 +202,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::atan2},
 	});
 	method("cbrt", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
+		{Type::any(), {Type::any()}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::cbrt_real},
 	});
 	method("ceil", {
@@ -1005,10 +1005,10 @@ Compiler::value NumberSTD::sqrt_real(Compiler& c, std::vector<Compiler::value> a
 	return c.insn_sqrt(args[0]);
 }
 
-double NumberSTD::cbrt_ptr(LSNumber* x) {
-	double s = cbrt(x->value);
+LSValue* NumberSTD::cbrt_ptr(LSNumber* x) {
+	LSValue* r = LSNumber::get(cbrt(x->value));
 	LSValue::delete_temporary(x);
-	return s;
+	return r;
 }
 Compiler::value NumberSTD::cbrt_real(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::real(), {c.to_real(args[0])}, +[] (double x) {

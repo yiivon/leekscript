@@ -656,8 +656,7 @@ void Test::test_numbers() {
 	code("Number.cbrt(1728)").almost(12.0, 1e-14);
 	code("1728.cbrt()").almost(12.0, 0.00000000000001);
 	code("Number.cbrt(['', 1728][1])").almost(12.0, 0.00000000000001);
-	// TODO
-	DISABLED_code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
+	code("['', 1728][1].cbrt()").almost(12.0, 0.00000000000001);
 
 	section("Number.int()");
 	code("Number.int(15.1)").equals("15");
