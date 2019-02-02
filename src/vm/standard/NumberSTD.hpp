@@ -145,7 +145,7 @@ public:
 	static Compiler::value min_float_float(Compiler&, std::vector<Compiler::value>);
 	static double min_int_ptr(int x, LSNumber* y);
 
-	static double cos_ptr(LSNumber* x);
+	static LSValue* cos_ptr(LSNumber* x);
 	static Compiler::value cos_real(Compiler&, std::vector<Compiler::value>);
 
 	static double sin_ptr(LSNumber* x);

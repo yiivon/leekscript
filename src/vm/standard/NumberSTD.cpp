@@ -216,7 +216,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::string(), {Type::const_integer()}, (void*) &NumberSTD::char_int},
 	});
 	method("cos", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
+		{Type::any(), {Type::any()}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::cos_real},
 	});
 	method("exp", {
@@ -949,10 +949,10 @@ Compiler::value NumberSTD::min_float_float(Compiler& c, std::vector<Compiler::va
 	return c.insn_min(args[0], args[1]);
 }
 
-double NumberSTD::cos_ptr(LSNumber* x) {
-	double c = cos(x->value);
+LSValue* NumberSTD::cos_ptr(LSNumber* x) {
+	LSValue* r = LSNumber::get(cos(x->value));
 	LSValue::delete_temporary(x);
-	return c;
+	return r;
 }
 Compiler::value NumberSTD::cos_real(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_cos(args[0]);

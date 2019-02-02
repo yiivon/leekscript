@@ -594,8 +594,7 @@ void Test::test_numbers() {
 	code("Number.cos(π)").equals("-1");
 	code("Number.cos(π / 2)").almost(0.0);
 	code("π.cos()").equals("-1");
-	// TODO
-	DISABLED_code("['', π][1].cos()").equals("-1");
+	code("['', π][1].cos()").equals("-1");
 	code("Number.cos(['', π][1])").equals("-1");
 
 	section("Number.acos()");
