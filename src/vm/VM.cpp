@@ -136,6 +136,13 @@ VM* VM::current() {
 	return current_vm;
 }
 
+void VM::static_init() {
+	// Global initialization
+	llvm::InitializeNativeTarget();
+	llvm::InitializeNativeTargetAsmPrinter();
+	llvm::InitializeNativeTargetAsmParser();
+}
+
 void VM::add_module(Module* m) {
 	modules.push_back(m);
 	Type const_class = Type::clazz();

@@ -80,6 +80,7 @@ public:
 	virtual ~VM();
 
 	static VM* current();
+	static void static_init();
 
 	/** Main execution function **/
 	Result execute(const std::string code, std::string ctx, std::string file_name, bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool log_instructions = false);

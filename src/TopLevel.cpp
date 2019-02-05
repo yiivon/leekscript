@@ -24,9 +24,7 @@ void print_result(ls::VM::Result& result, const std::string& output, bool json, 
 
 int main(int argc, char* argv[]) {
 
-	llvm::InitializeNativeTarget();
-	llvm::InitializeNativeTargetAsmPrinter();
-	llvm::InitializeNativeTargetAsmParser();
+	ls::init();
 
 	/** Seed random one for all */
 	long ns = std::chrono::duration_cast<std::chrono::nanoseconds>(

@@ -4,6 +4,7 @@
 #include "../src/constants.h"
 #include "../src/colors.h"
 #include "../src/vm/Program.hpp"
+#include "../src/leekscript.h"
 
 std::vector<std::string> Test::failed_tests;
 
@@ -21,11 +22,7 @@ Test::Test() : vmv1(true) {
 Test::~Test() {}
 
 int main(int, char**) {
-
-	llvm::InitializeNativeTarget();
-	llvm::InitializeNativeTargetAsmPrinter();
-	llvm::InitializeNativeTargetAsmParser();
-
+	ls::init();
 	srand(time(0));
 	return Test().all();
 }

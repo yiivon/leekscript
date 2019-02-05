@@ -10,4 +10,10 @@
 #include "type/Integer_type.hpp"
 #include "type/Object_type.hpp"
 
+namespace ls {
+	static void init() {
+		VM::static_init();
+	}
+}
+
 #endif
