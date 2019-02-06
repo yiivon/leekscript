@@ -11,9 +11,7 @@
 #include "type/Object_type.hpp"
 
 namespace ls {
-	static void init() {
-		VM::static_init();
-	}
+	#define init() VM::static_init()
 }
 
 #endif
