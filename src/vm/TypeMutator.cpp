@@ -20,8 +20,21 @@ void ChangeTypeMutator::apply(SemanticAnalyser* analyser, std::vector<Value*> va
 }
 
 void WillTakeMutator::apply(SemanticAnalyser* analyser, std::vector<Value*> values) const {
-	std::cout << "will take mutator " << values[1]->type << " will take " << values[0]->type << ", " << values[2]->type << std::endl;
 	values[1]->will_take(analyser, {Type::any()}, 1);
+	// std::vector<Type> args;
+	// for (const auto& extractor : types) {
+	// 	args.push_back(extractor->extract(analyser, values));
+	// }
+}
+
+Type TypeExtractor::extract(SemanticAnalyser* analyser, std::vector<Value*> values) const {
+	return {};
+}
+Type ElementExtractor::extract(SemanticAnalyser* analyser, std::vector<Value*> values) const {
+	return extractor->extract(analyser, values).element();
+}
+Type ArgumentExtractor::extract(SemanticAnalyser* analyser, std::vector<Value*> values) const {
+	return values.at(index)->type;
 }
 
 }
