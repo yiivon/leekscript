@@ -115,9 +115,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::tmp_array(), {Type::const_array(Type::integer()), map_int_ptr_fun_type}, (void*) map},
 		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), map_int_int_fun_type}, (void*) map},
 	});
-	// TODO templates
-	// method("map", {
-	// 	{Type::array(Type::U), {Type::array(Type::T), Type::fun(Type::U, {Type::T})}, (void*) map}
+	// auto map_fun = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
+	// auto E = Type::template_("E");
+	// auto R = Type::template_("R");
+	// template_(E, R).method("map", {
+	// 	{Type::tmp_array(R), {Type::const_array(E), Type::fun(R, {E})}, (void*) map_fun, Method::NATIVE, {
+	// 		new WillTakeMutator(1, {E})
+	// 	}},
 	// });
 
 	method("unique", {
