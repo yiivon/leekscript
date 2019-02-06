@@ -30,10 +30,6 @@ LSClass::~LSClass() {
 
 void LSClass::addMethod(std::string& name, std::vector<Method> method) {
 	methods.insert({name, method});
-}
-
-void LSClass::addStaticMethod(std::string& name, std::vector<StaticMethod> method) {
-	static_methods.insert({name, method});
 
 	// Add first implementation as default method
 	auto fun = new LSFunction(method[0].addr);
@@ -58,39 +54,13 @@ void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
 	operators.insert({name, impl});
 }
 
-Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, Type obj_type, std::vector<Type> arguments) {
 	// std::cout << "getMethod " << name << " in class " << this->name <<  " obj type " << obj_type << " with args " << args << std::endl;
+Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, std::vector<Type> arguments) {
 	try {
 		Method* best = nullptr;
 		for (auto& implementation : methods.at(name)) {
-			if (implementation.obj_type.may_be_compatible(obj_type)) {
-				for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
-					const auto& a = arguments.at(i);
-					if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
-						if (fun->function()) {
-							auto version = implementation.type.arguments().at(i).arguments();
-							((Function*) fun->function())->will_take(analyser, version, 1);
-							arguments.at(i) = fun->function()->versions.at(version)->type;
-						}
-					}
-				}
-				if (Type::list_may_be_compatible(implementation.type.arguments(), arguments)) {
-					best = &implementation;
-				}
-			}
-		}
-		return best;
-	} catch (std::exception&) {
-		return nullptr;
-	}
-}
-
-StaticMethod* LSClass::getStaticMethod(SemanticAnalyser* analyser, std::string& name, std::vector<Type> arguments) {
-	try {
-		StaticMethod* best = nullptr;
-		for (auto& implementation : static_methods.at(name)) {
 			for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
-				const auto a = arguments.at(i);
+				const auto& a = arguments.at(i);
 				const auto implem_arg = implementation.type.arguments().at(i);
 				if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
 					if (fun->function() and implem_arg.is_function()) {

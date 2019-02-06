@@ -48,26 +48,21 @@ void Module::static_field(std::string name, Type type, void* fun) {
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 
-void Module::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr) {
+void Module::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr, vector<Type> templates) {
 	std::vector<Method> inst;
-	std::vector<StaticMethod> st;
 	for (auto constr : methodsConstr) {
-		if (opt == Method::Static || opt == Method::Both) {
-			st.emplace_back(constr.return_type, constr.args, constr.addr, constr.native, constr.mutators);
-		}
 		if (opt == Method::Instantiate || opt == Method::Both) {
 			assert(constr.args.size() > 0); // must be at least one argument to be the object used in instance
-			auto obj_type = constr.args[0];
-			constr.args.erase(constr.args.begin());
-			inst.emplace_back(obj_type, constr.return_type, constr.args, constr.addr, constr.native, constr.mutators);
 		}
+		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.native, constr.mutators, templates);
 	}
 	if (!inst.empty()) {
 		clazz->addMethod(name, inst);
 	}
-	if (!st.empty()) {
-		clazz->addStaticMethod(name, st);
-	}
+}
+
+void Template::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr) {
+	module->method(name, opt, methodsConstr, templates);
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {
@@ -140,7 +135,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
 	os << "},\"static_methods\":{";
 	e = 0;
-	for (auto& m : clazz->static_methods) {
+	for (auto& m : clazz->methods) {
 		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";

@@ -140,7 +140,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 			string clazz = ((VariableValue*) oa->object)->name;
 			auto object_class = (LSClass*) analyser->vm->internal_vars[clazz]->lsvalue;
-			auto sm = object_class->getStaticMethod(analyser, oa->field->content, arg_types);
+			auto sm = object_class->getMethod(analyser, oa->field->content, arg_types);
 
 			if (sm != nullptr) {
 				std_func = sm->addr;
@@ -154,7 +154,9 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				// std::cout << "Static method " << oa->field->content << " found : " << sm->type << std::endl;
 			} else {
 				auto value_class = (LSClass*) analyser->vm->internal_vars["Value"]->lsvalue;
-				auto m = value_class->getMethod(analyser, oa->field->content, object_type, arg_types);
+				std::vector<Type> args = arg_types;
+				args.insert(args.begin(), object_type);
+				auto m = value_class->getMethod(analyser, oa->field->content, args);
 
 				if (m != nullptr) {
 					this_ptr = oa->object;
@@ -178,14 +180,18 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			LSClass* clazz;
 			if (!object_type.fold().is_any() && !object_type.fold().is_placeholder()) {
 				clazz = (LSClass*) analyser->vm->internal_vars[object_type.class_name()]->lsvalue;
-				m = clazz->getMethod(analyser, oa->field->content, object_type, arg_types);
-				// std::cout << "Method " << oa->field->content << " found : " << m->obj_type << "." << m->type << std::endl;
+				std::vector<Type> args = arg_types;
+				args.insert(args.begin(), object_type);
+				m = clazz->getMethod(analyser, oa->field->content, args);
 			}
 			if (m == nullptr) {
 				clazz = (LSClass*) analyser->vm->internal_vars["Value"]->lsvalue;
-				m = clazz->getMethod(analyser, oa->field->content, object_type, arg_types);
+				std::vector<Type> args = arg_types;
+				args.insert(args.begin(), object_type);
+				m = clazz->getMethod(analyser, oa->field->content, args);
 			}
 			if (m != nullptr) {
+				// std::cout << "Method " << oa->field->content << " found : " << m->type << std::endl;
 				this_ptr = oa->object;
 				this_ptr->analyse(analyser);
 				this_ptr_type = m->obj_type;
@@ -217,22 +223,27 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 	// Check arguments count
 	arg_types.clear();
-	bool arguments_valid = arguments.size() <= function->type.arguments().size();
+	auto arguments_count = arguments.size();
+	if (this_ptr != nullptr) arguments_count++;
+	bool arguments_valid = arguments_count <= function->type.arguments().size();
 	auto total_arguments_passed = std::max(arguments.size(), function->type.arguments().size());
+	int offset = this_ptr != nullptr ? 1 : 0;
 	size_t a = 0;
 	for (auto& argument_type : function->type.arguments()) {
-		if (a < arguments.size()) {
+		if (a == 0 and this_ptr != nullptr) {
+			// OK it's the object for method call
+		} else if (a < arguments_count) {
 			// OK, the argument is present in the call
-			arguments.at(a)->type.reference = argument_type.reference;
+			arguments.at(a - offset)->type.reference = argument_type.reference;
 			if (argument_type.is_function()) {
-				arguments.at(a)->will_take(analyser, argument_type.arguments(), 1);
-				arguments.at(a)->set_version(argument_type.arguments(), 1);
-				arguments.at(a)->must_return(analyser, argument_type.return_type());
+				arguments.at(a - offset)->will_take(analyser, argument_type.arguments(), 1);
+				arguments.at(a - offset)->set_version(argument_type.arguments(), 1);
+				arguments.at(a - offset)->must_return(analyser, argument_type.return_type());
 			}
-			arg_types.push_back(arguments.at(a)->type);
-		} else if (function_object && function_object->defaultValues.at(a) != nullptr) {
+			arg_types.push_back(arguments.at(a - offset)->type);
+		} else if (function_object && function_object->defaultValues.at(a - offset) != nullptr) {
 			// OK, there's no argument in the call but a default value is set.
-			arg_types.push_back(function_object->defaultValues.at(a)->type);
+			arg_types.push_back(function_object->defaultValues.at(a - offset)->type);
 		} else {
 			// Missing argument
 			arguments_valid = false;
@@ -335,11 +346,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		}}();
 		this_ptr->compile_end(c);
 		vector<Compiler::value> args = { obj };
-		vector<LSValueType> lsvalue_types = { (LSValueType) this_ptr_type.id() };
+		vector<LSValueType> lsvalue_types = { (LSValueType) function->type.arguments().at(0).id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
-			lsvalue_types.push_back(function->type.argument(i).id());
+			lsvalue_types.push_back(function->type.argument(i + 1).id());
 		}
 		c.insn_check_args(args, lsvalue_types);
 

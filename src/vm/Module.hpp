@@ -12,31 +12,23 @@ namespace ls {
 
 class LSValue;
 
-class StaticMethod {
+class Method {
 public:
 	Type type;
 	void* addr;
 	bool native;
 	std::vector<TypeMutator*> mutators;
-	StaticMethod(Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {}) {
+	std::vector<Type> templates;
+	Method(Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}) {
 		this->addr = addr;
 		type = Type::fun(return_type, args);
 		this->native = native;
 		this->mutators = mutators;
+		this->templates = templates;
 	}
-};
-
-class Method : public StaticMethod {
-public:
-	Type obj_type;
-
-	Method(Type obj_type, Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {})
-		: StaticMethod(return_type, args, addr, native, mutators), obj_type(obj_type) {}
-
 	enum Option {
 		Static, Instantiate, Both
 	};
-
 	static bool NATIVE;
 };
 
@@ -61,14 +53,6 @@ public:
 	: name(name), impl(impl) {}
 };
 
-class ModuleStaticMethod {
-public:
-	std::string name;
-	std::vector<StaticMethod> impl;
-	ModuleStaticMethod(std::string name, std::vector<StaticMethod> impl)
-	: name(name), impl(impl) {}
-};
-
 class ModuleStaticField {
 public:
 	std::string name;
@@ -87,6 +71,19 @@ public:
 	: name(name), type(type), native_fun(fun) {}
 };
 
+class Module;
+
+class Template {
+public:
+	Module* module;
+	std::vector<Type> templates;
+	template<class... Args>
+	Template(Module* module, Args... templates) : module(module), templates({templates...}) {}
+
+	void method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methods);
+	void method(std::string name, std::initializer_list<MethodConstructor> methods) { method(name, Method::Both, methods); }
+};
+
 class Module {
 public:
 
@@ -98,8 +95,13 @@ public:
 
 	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
 
-	void method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methods);
-	void method(std::string name, std::initializer_list<MethodConstructor> methods) { method(name, Method::Both, methods); }
+	template<class... Args>
+	Template template_(Args... templates) {
+		return { this, templates... };
+	}
+
+	void method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methods, std::vector<Type> templates = {});
+	void method(std::string name, std::initializer_list<MethodConstructor> methods, std::vector<Type> templates = {}) { method(name, Method::Both, methods, templates); }
 
 	void field(std::string name, Type type);
 	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);

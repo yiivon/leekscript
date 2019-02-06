@@ -55,7 +55,6 @@ void ObjectAccess::set_version(const vector<Type>& args, int level) {
 		for (const auto& m : methods) {
 			if (!m.native) continue;
 			auto version = m.type.arguments();
-			version.push_back(m.obj_type);
 			if (version == args) {
 				type = Type::fun(m.type.return_type(), args);
 			}
@@ -88,13 +87,11 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 			auto method = std_class->methods.at(field->content);
 			for (const auto& m : method) {
 				if (!m.native) continue;
-				auto args = m.type.arguments();
-				args.insert(args.begin(), m.obj_type);
-				versions.insert({args, m.addr});
+				// auto args = m.type.arguments();
+				// args.insert(args.begin(), m.obj_type);
+				versions.insert({m.type.arguments(), m.addr});
 			}
 			type = method[0].type;
-			auto args = type.arguments(); args.insert(args.begin(), method[0].obj_type);
-			type = Type::fun(type.return_type(), args);
 			default_version_fun = method[0].addr;
 			class_method = true;
 			methods = method;

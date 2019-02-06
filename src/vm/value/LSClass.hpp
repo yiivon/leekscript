@@ -11,7 +11,6 @@
 namespace ls {
 
 class Method;
-class StaticMethod;
 class ModuleStaticField;
 
 class LSClass : public LSValue {
@@ -50,7 +49,6 @@ public:
 
 	std::map<std::string, field> fields;
 	std::map<std::string, std::vector<Method>> methods;
-	std::map<std::string, std::vector<StaticMethod>> static_methods;
 	std::map<std::string, ModuleStaticField> static_fields;
 	std::map<std::string, std::vector<Operator>> operators;
 
@@ -66,10 +64,8 @@ public:
 	void addStaticField(ModuleStaticField f);
 	void addOperator(std::string name, std::vector<Operator>);
 
-	Method* getMethod(SemanticAnalyser* analyser, std::string&, Type obj_type, std::vector<Type>);
-	void addStaticMethod(std::string& name, std::vector<StaticMethod> method);
+	Method* getMethod(SemanticAnalyser* analyser, std::string&, std::vector<Type>);
 	LSFunction* getDefaultMethod(const std::string& name);
-	StaticMethod* getStaticMethod(SemanticAnalyser* analyser, std::string&, std::vector<Type>);
 	const Operator* getOperator(SemanticAnalyser* analyser, std::string& name, Type& object_type, Type& operand_type);
 
 	bool to_bool() const override;
