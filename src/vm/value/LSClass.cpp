@@ -54,11 +54,13 @@ void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
 	operators.insert({name, impl});
 }
 
-	// std::cout << "getMethod " << name << " in class " << this->name <<  " obj type " << obj_type << " with args " << args << std::endl;
 Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, std::vector<Type> arguments) {
+	// std::cout << "getMethod " << name << " in class " << this->name << " with args " << arguments << std::endl;
 	try {
 		Method* best = nullptr;
+		int best_score = std::numeric_limits<int>::max();
 		for (auto& implementation : methods.at(name)) {
+			if (implementation.type.arguments().size() != arguments.size()) continue;
 			for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
 				const auto& a = arguments.at(i);
 				const auto implem_arg = implementation.type.arguments().at(i);
@@ -70,7 +72,16 @@ Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, std::v
 					}
 				}
 			}
-			if (Type::list_may_be_compatible(implementation.type.arguments(), arguments)) {
+			int d = 0;
+			for (size_t i = 0; i < arguments.size(); ++i) {
+				auto di = arguments.at(i).distance(implementation.type.arguments().at(i));
+				// std::cout << " - " << arguments.at(i) << ", " << implementation.type.arguments().at(i) << " " << di << std::endl;
+				if (di < 0) { d = std::numeric_limits<int>::max(); break; };
+				d += di;
+			}
+			// std::cout << implementation.type.arguments() << " distance " << d << std::endl;
+			if (best == nullptr or d <= best_score) {
+				best_score = d;
 				best = &implementation;
 			}
 		}
