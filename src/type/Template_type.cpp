@@ -2,6 +2,7 @@
 #include "../colors.h"
 #include "Type.hpp"
 #include "Any_type.hpp"
+#include "../compiler/Compiler.hpp"
 
 namespace ls {
 
@@ -18,8 +19,9 @@ bool Template_type::compatible(const Base_type* type) const {
 	return _implementation._types[0]->compatible(type);
 }
 llvm::Type* Template_type::llvm() const {
-	assert(_implementation._types.size() > 0);
-	return _implementation._types[0]->llvm();
+	// assert(_implementation._types.size() > 0);
+	// return _implementation._types[0]->llvm();
+	return llvm::Type::getInt32Ty(Compiler::context);
 }
 std::ostream& Template_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << _name;
