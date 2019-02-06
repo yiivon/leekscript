@@ -407,6 +407,20 @@ bool Type::may_be_compatible(const Type& type) const {
 	return false;
 }
 
+void Type::implement(const Type& type) const {
+	if (auto t = dynamic_cast<const Template_type*>(_types[0].get())) {
+		t->implement(type);
+	}
+}
+bool Type::is_implemented(const Type& type) const {
+	return _types.size() and all([&](std::shared_ptr<const Base_type> t) {
+		if (auto tpl = dynamic_cast<const Template_type*>(t.get())) {
+			return not tpl->_implementation.is_void();
+		}
+		return false;
+	});
+}
+
 bool Type::list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual) {
 	if (expected.size() != actual.size()) return false;
 	for (size_t i = 0; i < expected.size(); ++i) {
