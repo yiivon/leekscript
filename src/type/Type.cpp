@@ -270,7 +270,11 @@ Type Type::pointed() const {
 
 template <class T> bool Type::is_type() const {
 	return _types.size() && all([&](std::shared_ptr<const Base_type> type) {
-		return dynamic_cast<const T*>(type.get()) != nullptr;
+		if (dynamic_cast<const T*>(type.get()) != nullptr) return true;
+		if (auto t = dynamic_cast<const Template_type*>(type.get())) {
+			return t->_implementation.is_type<T>();
+		}
+		return false;
 	});
 }
 template <class T> bool Type::can_be_type() const {
