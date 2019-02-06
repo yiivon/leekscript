@@ -61,6 +61,9 @@ Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, std::v
 		int best_score = std::numeric_limits<int>::max();
 		for (auto& implementation : methods.at(name)) {
 			if (implementation.type.arguments().size() != arguments.size()) continue;
+			// std::cout << "templates : " << implementation.templates << std::endl;
+			// implementation.templates[0].implement(Type::real());
+			// implementation.templates[1].implement(Type::real());
 			for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
 				const auto& a = arguments.at(i);
 				const auto implem_arg = implementation.type.arguments().at(i);
