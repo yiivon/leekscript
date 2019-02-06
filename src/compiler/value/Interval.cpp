@@ -3,8 +3,6 @@
 #include "../../vm/value/LSInterval.hpp"
 #include <math.h>
 
-using namespace std;
-
 namespace ls {
 
 Interval::Interval() {

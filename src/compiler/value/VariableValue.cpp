@@ -4,8 +4,6 @@
 #include "../value/Function.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 
-using namespace std;
-
 namespace ls {
 
 VariableValue::VariableValue(std::shared_ptr<Token> token) : token(token) {
@@ -18,7 +16,7 @@ bool VariableValue::isLeftValue() const {
 	return scope != VarScope::INTERNAL; // Internal variables are not left-value
 }
 
-void VariableValue::print(ostream& os, int, bool debug, bool condensed) const {
+void VariableValue::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << token->content;
 	if (debug) {
 		os << " ";
@@ -65,7 +63,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 	//	cout << t.first << " : " << t.second << endl;
 }
 
-bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& args, int level) {
+bool VariableValue::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_take(analyser, args, level);
 		if (auto f = dynamic_cast<Function*>(var->value)) {
@@ -80,7 +78,7 @@ bool VariableValue::will_take(SemanticAnalyser* analyser, const vector<Type>& ar
 	return false;
 }
 
-void VariableValue::set_version(const vector<Type>& args, int level) {
+void VariableValue::set_version(const std::vector<Type>& args, int level) {
 	// std::cout << "VariableValue::set_version " << args << " " << level << std::endl;
 	if (var != nullptr and var->value != nullptr) {
 		var->value->set_version(args, level);

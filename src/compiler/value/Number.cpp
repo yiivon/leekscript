@@ -2,8 +2,6 @@
 #include <limits.h>
 #include "../../vm/value/LSNumber.hpp"
 
-using namespace std;
-
 namespace ls {
 
 Number::Number(std::string value, std::shared_ptr<Token> token) : token(token), value(value) {
@@ -16,7 +14,7 @@ Number::~Number() {
 	}
 }
 
-void Number::print(ostream& os, int, bool debug, bool condensed) const {
+void Number::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << value;
 	if (debug) {
 		os << " " << type;

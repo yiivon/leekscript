@@ -17,8 +17,6 @@
 #include "vm/LSValue.hpp"
 #include "util/Util.hpp"
 
-using namespace std;
-
 void print_errors(ls::VM::Result& result, std::ostream& os, bool json);
 void print_result(ls::VM::Result& result, const std::string& output, bool json, bool display_time, bool ops);
 
@@ -33,8 +31,8 @@ int main(int argc, char* argv[]) {
 	srand(ns);
 
 	/** Generate the standard functions documentation */
-	if (argc > 1 && string(argv[1]) == "-doc") {
-		ls::Documentation().generate(cout);
+	if (argc > 1 && std::string(argv[1]) == "-doc") {
+		ls::Documentation().generate(std::cout);
 		return 0;
 	}
 
@@ -52,7 +50,7 @@ int main(int argc, char* argv[]) {
 	std::string file_or_code;
 
 	for (int i = 1; i < argc; ++i) {
-		auto a = string(argv[i]);
+		auto a = std::string(argv[i]);
 		if (a == "-j" or a == "-J" or a == "--json") output_json = true;
 		else if (a == "-t" or a == "-T" or a == "--time") display_time = true;
 		else if (a == "-v" or a == "-V" or a == "--version") print_version = true;
@@ -84,12 +82,12 @@ int main(int argc, char* argv[]) {
 		std::string code;
 		std::string file_name;
 		if (Util::is_file_name(file_or_code)) {
-			ifstream ifs(file_or_code.data());
+			std::ifstream ifs(file_or_code.data());
 			if (!ifs.good()) {
 				std::cout << "[" << C_YELLOW << "warning" << END_COLOR << "] File '" << BOLD << file_or_code << END_STYLE << "' does not exist." << std::endl;
 				return 0;
 			}
-			code = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
+			code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 			ifs.close();
 			file_name = Util::file_short_name(file_or_code);
 		} else {
@@ -108,13 +106,13 @@ int main(int argc, char* argv[]) {
 	}
 
 	/** Interactive console mode */
-	cout << "~~~ LeekScript v2.0 ~~~" << endl;
-	string code, ctx = "{}";
+	std::cout << "~~~ LeekScript v2.0 ~~~" << std::endl;
+	std::string code, ctx = "{}";
 	ls::VM vm(v1);
 
 	while (!std::cin.eof()) {
 		// Get a instruction
-		cout << ">> ";
+		std::cout << ">> ";
 		std::getline(std::cin, code);
 		// Execute
 		auto result = vm.execute(code, ctx, "(top-level)", debug_mode, ops);
@@ -132,25 +130,25 @@ void print_result(ls::VM::Result& result, const std::string& output, bool json, 
 		std::string res = oss.str() + result.value;
 		res = Util::replace_all(res, "\"", "\\\"");
 		res = Util::replace_all(res, "\n", "");
-		cout << "{\"success\":true,\"ops\":" << result.operations
+		std::cout << "{\"success\":true,\"ops\":" << result.operations
 			<< ",\"time\":" << result.execution_time
 			<< ",\"ctx\":" << result.context
 			<< ",\"res\":\"" << res << "\""
 			<< ",\"output\":" << Json(output)
-			<< "}" << endl;
+			<< "}" << std::endl;
 	} else {
 		print_errors(result, std::cout, json);
 		if (result.execution_success && result.value != "(void)") {
-			cout << result.value << endl;
+			std::cout << result.value << std::endl;
 		}
 		if (display_time) {
 			double compilation_time = round((float) result.compilation_time / 1000) / 1000;
 			double execution_time = round((float) result.execution_time / 1000) / 1000;
-			cout << C_GREY << "(";
+			std::cout << C_GREY << "(";
 			if (ops) {
-				cout << result.operations << " ops, ";
+				std::cout << result.operations << " ops, ";
 			}
-			cout << compilation_time << "ms + " << execution_time << "ms)" << END_COLOR << endl;
+			std::cout << compilation_time << "ms + " << execution_time << "ms)" << END_COLOR << std::endl;
 		}
 	}
 }

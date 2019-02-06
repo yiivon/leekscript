@@ -2,8 +2,6 @@
 #include "../value/Block.hpp"
 #include "../value/If.hpp"
 
-using namespace std;
-
 namespace ls {
 
 ExpressionInstruction::ExpressionInstruction(Value* value) {
@@ -14,7 +12,7 @@ ExpressionInstruction::~ExpressionInstruction() {
 	delete this->value;
 }
 
-void ExpressionInstruction::print(ostream& os, int indent, bool debug) const {
+void ExpressionInstruction::print(std::ostream& os, int indent, bool debug) const {
 	value->print(os, indent, debug);
 }
 

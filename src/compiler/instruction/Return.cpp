@@ -1,8 +1,6 @@
-#include "../../compiler/instruction/Return.hpp"
+#include "Return.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Function.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -16,7 +14,7 @@ Return::~Return() {
 	delete expression;
 }
 
-void Return::print(ostream& os, int indent, bool debug) const {
+void Return::print(std::ostream& os, int indent, bool debug) const {
 	os << "return ";
 	if (expression != nullptr) {
 		expression->print(os, indent, debug);

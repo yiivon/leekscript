@@ -1,8 +1,6 @@
 #include "MapSTD.hpp"
 #include "../value/LSMap.hpp"
 
-using namespace std;
-
 namespace ls {
 
 int map_size(const LSMap<LSValue*,LSValue*>* map) {

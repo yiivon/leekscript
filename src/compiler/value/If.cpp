@@ -6,8 +6,6 @@
 #include "../instruction/Continue.hpp"
 #include "../../vm/LSValue.hpp"
 
-using namespace std;
-
 namespace ls {
 
 If::If(bool ternary) {
@@ -26,7 +24,7 @@ If::~If() {
 	}
 }
 
-void If::print(ostream& os, int indent, bool debug, bool condensed) const {
+void If::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (ternary) {
 		os << "(";
 		condition->print(os, indent, debug);

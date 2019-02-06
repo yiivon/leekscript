@@ -1,9 +1,7 @@
-#include "../../compiler/instruction/Throw.hpp"
+#include "Throw.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Function.hpp"
 #include "../../vm/value/LSNull.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -15,7 +13,7 @@ Throw::~Throw() {
 	delete expression;
 }
 
-void Throw::print(ostream& os, int indent, bool debug) const {
+void Throw::print(std::ostream& os, int indent, bool debug) const {
 	os << "throw";
 	if (expression != nullptr) {
 		os << " ";

@@ -2,8 +2,6 @@
 #include "../../vm/value/LSMap.hpp"
 #include <cmath>
 
-using namespace std;
-
 namespace ls {
 
 Map::Map() {

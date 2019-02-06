@@ -1,5 +1,4 @@
 #include "ArrayFor.hpp"
-using namespace std;
 
 namespace ls {
 
@@ -7,7 +6,7 @@ ArrayFor::~ArrayFor() {
 	delete forr;
 }
 
-void ArrayFor::print(ostream& os, int indent, bool debug, bool condensed) const {
+void ArrayFor::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "[";
 	forr->print(os, indent, debug);
 	os << "]";

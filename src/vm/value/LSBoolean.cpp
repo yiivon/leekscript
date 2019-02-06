@@ -4,8 +4,6 @@
 #include "LSString.hpp"
 #include "LSNumber.hpp"
 
-using namespace std;
-
 namespace ls {
 
 LSValue* LSBoolean::clazz;
@@ -125,7 +123,7 @@ std::ostream& LSBoolean::dump(std::ostream& os, int) const {
 	return os;
 }
 
-string LSBoolean::json() const {
+std::string LSBoolean::json() const {
 	return value ? "true" : "false";
 }
 

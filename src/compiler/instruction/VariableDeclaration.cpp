@@ -6,8 +6,6 @@
 #include "../value/Function.hpp"
 #include "../value/Nulll.hpp"
 
-using namespace std;
-
 namespace ls {
 
 VariableDeclaration::VariableDeclaration() {
@@ -21,7 +19,7 @@ VariableDeclaration::~VariableDeclaration() {
 	}
 }
 
-void VariableDeclaration::print(ostream& os, int indent, bool debug) const {
+void VariableDeclaration::print(std::ostream& os, int indent, bool debug) const {
 
 	os << (global ? "global " : (constant ? "let " : "var "));
 

@@ -4,8 +4,6 @@
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
 
-using namespace std;
-
 namespace ls {
 
 LSValue* LSObject::object_class;
@@ -28,7 +26,7 @@ LSObject::~LSObject() {
 	}
 }
 
-void LSObject::addField(string name, LSValue* var) {
+void LSObject::addField(std::string name, LSValue* var) {
 	this->values.insert({name, var->move_inc()});
 }
 
@@ -156,7 +154,7 @@ LSValue* LSObject::attr(const std::string& key) const {
 			v->refs--;
 		}
 		return v;
-	} catch (exception& e) {
+	} catch (std::exception& e) {
 		return LSValue::attr(key);
 	}
 }
@@ -167,7 +165,7 @@ LSValue** LSObject::attrL(const std::string& key) {
 	}
 	try {
 		return &values.at(key);
-	} catch (exception& e) {
+	} catch (std::exception& e) {
 		values.insert({key, LSNull::get()});
 		return &values[key];
 	}

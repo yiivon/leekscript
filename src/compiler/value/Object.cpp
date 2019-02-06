@@ -3,8 +3,6 @@
 #include "../../vm/value/LSString.hpp"
 #include "../../vm/value/LSObject.hpp"
 
-using namespace std;
-
 namespace ls {
 
 Object::Object() {
@@ -18,7 +16,7 @@ Object::~Object() {
 	}
 }
 
-void Object::print(ostream& os, int indent, bool debug, bool condensed) const {
+void Object::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "{";
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		os << keys.at(i)->content;

@@ -2,13 +2,10 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-
 #include "Module.hpp"
 #include "LSValue.hpp"
 #include "value/LSClass.hpp"
 #include "value/LSNumber.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -26,7 +23,7 @@ Module::~Module() {
 }
 
 void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
-	vector<LSClass::Operator> operators = impl;
+	std::vector<LSClass::Operator> operators = impl;
 	clazz->addOperator(name, operators);
 }
 
@@ -48,7 +45,7 @@ void Module::static_field(std::string name, Type type, void* fun) {
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 
-void Module::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr, vector<Type> templates) {
+void Module::method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methodsConstr, std::vector<Type> templates) {
 	std::vector<Method> inst;
 	for (auto constr : methodsConstr) {
 		if (opt == Method::Instantiate || opt == Method::Both) {
@@ -61,18 +58,18 @@ void Module::method(std::string name, Method::Option opt, initializer_list<Metho
 	}
 }
 
-void Template::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr) {
+void Template::method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methodsConstr) {
 	module->method(name, opt, methodsConstr, templates);
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
-	ifstream f;
+	std::ifstream f;
 	f.open(translation_file);
 	if (!f.good()) {
 		return; // no file
 	}
-	stringstream j;
+	std::stringstream j;
 	j << f.rdbuf();
 	std::string str = j.str();
 	f.close();
@@ -88,7 +85,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		assert(false); // LCOV_EXCL_LINE
 	}
 
-	map<std::string, Json> translation_map;
+	std::map<std::string, Json> translation_map;
 
 	for (Json::iterator it = translation.begin(); it != translation.end(); ++it) {
 		translation_map.insert({it.key(), it.value()});

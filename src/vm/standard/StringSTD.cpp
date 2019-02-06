@@ -8,8 +8,6 @@
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
 
-using namespace std;
-
 namespace ls {
 
 LSValue* string_charAt(LSString* string, int index);
@@ -217,7 +215,7 @@ LSValue* string_charAt(LSString* string, int index) {
 }
 
 bool string_contains(LSString* haystack, LSString* needle) {
-	bool r = haystack->find(*needle) != string::npos;
+	bool r = haystack->find(*needle) != std::string::npos;
 	LSValue::delete_temporary(haystack);
 	LSValue::delete_temporary(needle);
 	return r;
@@ -333,7 +331,7 @@ LSValue* string_toArray(const LSString* string) {
 }
 
 LSValue* string_toLower(LSString* s) {
-	string new_s = string(*s);
+	std::string new_s = std::string(*s);
 	for (auto& c : new_s) c = tolower(c);
 	if (s->refs == 0) {
 		delete s;
@@ -342,7 +340,7 @@ LSValue* string_toLower(LSString* s) {
 }
 
 LSValue* string_toUpper(LSString* s) {
-	string new_s = string(*s);
+	std::string new_s = std::string(*s);
 	for (auto& c : new_s) c = toupper(c);
 	if (s->refs == 0) {
 		delete s;

@@ -1,5 +1,4 @@
 #include "Util.hpp"
-
 #include <iostream>
 #include <stdlib.h>
 #include <ctime>
@@ -10,17 +9,15 @@
 #include <algorithm>
 #include <queue>
 
-using namespace std;
-
-string Util::read_file(string file) {
-	ifstream ifs(file.data());
-	string content = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
+std::string Util::read_file(std::string file) {
+	std::ifstream ifs(file.data());
+	std::string content = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
 	return content;
 }
 
-vector<string> Util::read_file_lines(string file) {
-	ifstream f(file);
+std::vector<std::string> Util::read_file_lines(std::string file) {
+	std::ifstream f(file);
 	std::vector<std::string> lines;
 	for (std::string line; std::getline(f, line);) {
 		lines.push_back(line);
@@ -31,24 +28,24 @@ vector<string> Util::read_file_lines(string file) {
 bool Util::is_file_name(std::string data) {
 	// Real file?
 	std::ifstream test(data);
-  	if (test) return true;
+	if (test) return true;
 	// Contains spaces => no
-	if (data.find_first_of("\t\n ") != string::npos) return false;
+	if (data.find_first_of("\t\n ") != std::string::npos) return false;
 	// Ends with '.leek' or '.ls' => yes
 	if (data.size() <= 4) return false;
-	string dot_leek = ".leek";
-	string dot_ls = ".ls";
+	std::string dot_leek = ".leek";
+	std::string dot_ls = ".ls";
     if (std::equal(dot_leek.rbegin(), dot_leek.rend(), data.rbegin())) return true;
 	if (std::equal(dot_ls.rbegin(), dot_ls.rend(), data.rbegin())) return true;
 	// Not a file
 	return false;
 }
 
-string Util::replace_all(string& haystack, const string& needle, const string& replacement) {
+std::string Util::replace_all(std::string& haystack, const std::string& needle, const std::string& replacement) {
 	size_t pos = 0;
     while ((pos = haystack.find(needle, pos)) != std::string::npos) {
-         haystack.replace(pos, needle.length(), replacement);
-         pos += replacement.length();
+        haystack.replace(pos, needle.length(), replacement);
+        pos += replacement.length();
     }
     return haystack;
 }

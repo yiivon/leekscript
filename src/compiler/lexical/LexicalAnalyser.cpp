@@ -3,11 +3,9 @@
 #include "../../../lib/utf8.h"
 #include <string.h>
 
-using namespace std;
-
 namespace ls {
 
-static vector<vector<string>> type_literals = {
+static std::vector<std::vector<std::string>> type_literals = {
 
 	{}, // Unknown
 	{}, // Finished
@@ -101,7 +99,7 @@ LetterType LexicalAnalyser::getLetterType(char32_t c) {
 	return LetterType::OTHER;
 }
 
-TokenType LexicalAnalyser::getTokenType(string word, TokenType by_default) {
+TokenType LexicalAnalyser::getTokenType(std::string word, TokenType by_default) {
 	for (size_t j = 0; j < type_literals.size(); ++j) {
 		for (const auto& text : type_literals[j]) {
 			if (word == text) return (TokenType) j;
@@ -110,9 +108,9 @@ TokenType LexicalAnalyser::getTokenType(string word, TokenType by_default) {
 	return by_default;
 }
 
-vector<Token*> LexicalAnalyser::analyse(std::string code) {
+std::vector<Token*> LexicalAnalyser::analyse(std::string code) {
 
-	vector<Token*> tokens = LexicalAnalyser::parseTokens(code + " ");
+	std::vector<Token*> tokens = LexicalAnalyser::parseTokens(code + " ");
 
 	tokens.push_back(new Token(TokenType::FINISHED, 0, 0, 1, ""));
 
@@ -127,16 +125,16 @@ vector<Token*> LexicalAnalyser::analyse(std::string code) {
 	return tokens;
 }
 
-vector<Token*> LexicalAnalyser::parseTokens(string code) {
+std::vector<Token*> LexicalAnalyser::parseTokens(std::string code) {
 
 	char buff[5];
 	const char* string_chars = code.c_str();
 
-	vector<Token*> tokens;
+	std::vector<Token*> tokens;
 
 	int line = 1;
 	int character = 0;
-	string word = "";
+	std::string word = "";
 	bool ident = false;
 	bool number = false;
 	bool string1 = false;
@@ -360,7 +358,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 						u8_toutf8(buff, 5, &c, 1);
 						word = buff;
 					} else if (number) {
-						if (!hex && !bin && c == '.' && word.find('.') == string::npos && getLetterType(nc) == LetterType::NUMBER) {
+						if (!hex && !bin && c == '.' && word.find('.') == std::string::npos && getLetterType(nc) == LetterType::NUMBER) {
 							u8_toutf8(buff, 5, &c, 1);
 							word += buff;
 						} else {
@@ -388,7 +386,7 @@ vector<Token*> LexicalAnalyser::parseTokens(string code) {
 					} else if (other) {
 						bool is_longer = false;
 						for (size_t j = 0; j < type_literals.size() && !is_longer; ++j) {
-							for (string text : type_literals[j]) {
+							for (const auto& text : type_literals[j]) {
 								if (text.size() > word.size() && text.compare(0, word.size(), word) == 0 && text[word.size()] == (char) c) {
 									is_longer = true;
 									break;

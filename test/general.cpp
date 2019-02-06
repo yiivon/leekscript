@@ -11,8 +11,6 @@
 #include "../src/vm/value/LSNumber.hpp"
 #include "../src/vm/value/LSObject.hpp"
 
-using namespace std;
-
 void Test::test_general() {
 
 	header("General");

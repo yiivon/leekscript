@@ -1,11 +1,9 @@
-#include "../../compiler/instruction/Foreach.hpp"
+#include "Foreach.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSSet.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -23,7 +21,7 @@ Foreach::~Foreach() {
 	delete body;
 }
 
-void Foreach::print(ostream& os, int indent, bool debug) const {
+void Foreach::print(std::ostream& os, int indent, bool debug) const {
 	os << "for ";
 
 	if (key != nullptr) {

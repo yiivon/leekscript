@@ -3,7 +3,6 @@
 #include <string.h>
 #include <vector>
 #include "../../lib/json.hpp"
-using namespace std;
 
 namespace ls {
 

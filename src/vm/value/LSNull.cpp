@@ -2,8 +2,6 @@
 #include "LSClass.hpp"
 #include "LSNumber.hpp"
 
-using namespace std;
-
 namespace ls {
 
 LSValue* LSNull::null_var;

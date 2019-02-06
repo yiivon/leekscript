@@ -9,8 +9,6 @@
 #include "value/LSObject.hpp"
 #include "value/LSFunction.hpp"
 
-using namespace std;
-
 namespace ls {
 
 LSValueType LSValue::NULLL = 1;

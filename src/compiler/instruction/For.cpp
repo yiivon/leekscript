@@ -3,8 +3,6 @@
 #include "../../vm/LSValue.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 
-using namespace std;
-
 namespace ls {
 
 For::For() {}
@@ -20,7 +18,7 @@ For::~For() {
 	}
 }
 
-void For::print(ostream& os, int indent, bool debug) const {
+void For::print(std::ostream& os, int indent, bool debug) const {
 	os << "for";
 	for (auto ins : inits) {
 		os << " ";

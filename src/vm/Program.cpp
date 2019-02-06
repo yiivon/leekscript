@@ -12,8 +12,6 @@
 #include "../constants.h"
 #include "../colors.h"
 
-using namespace std;
-
 namespace ls {
 
 Program::Program(const std::string& code, const std::string& file_name) {
@@ -164,7 +162,7 @@ std::string Program::execute(VM& vm) {
 	return oss.str();
 }
 
-void Program::print(ostream& os, bool debug) const {
+void Program::print(std::ostream& os, bool debug) const {
 	main->body->print(os, 0, debug, false);
 }
 

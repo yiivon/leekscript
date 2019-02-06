@@ -26,10 +26,7 @@
 #include "Struct_type.hpp"
 #include "Pointer_type.hpp"
 #include "Template_type.hpp"
-
 #include "../compiler/value/Function.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -168,7 +165,7 @@ Type Type::fold() const {
 	});
 }
 
-void Type::toJson(ostream& os) const {
+void Type::toJson(std::ostream& os) const {
 	os << "{\"type\":\"" << getJsonName() << "\"";
 
 	if (is_function()) {
@@ -627,7 +624,7 @@ const std::shared_ptr<Base_type> Type::raw_object() {
 	return _raw_object;
 }
 
-ostream& operator << (ostream& os, const Type& type) {
+std::ostream& operator << (std::ostream& os, const Type& type) {
 	if (type._types.size() == 0) {
 		os << C_GREY << "void" << END_COLOR;
 		return os;
@@ -647,7 +644,7 @@ ostream& operator << (ostream& os, const Type& type) {
 	return os;
 }
 
-ostream& operator << (ostream& os, const std::vector<Type>& types) {
+std::ostream& operator << (std::ostream& os, const std::vector<Type>& types) {
 	os << "[";
 	for (unsigned i = 0; i < types.size(); ++i) {
 		if (i > 0) os << ", ";

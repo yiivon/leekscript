@@ -6,8 +6,6 @@
 #include "../../../lib/utf8.h"
 #include "../../compiler/Compiler.hpp"
 
-using namespace std;
-
 namespace ls {
 
 int mpz_log(__mpz_struct n) {
@@ -819,7 +817,7 @@ Compiler::value NumberSTD::char_ptr(Compiler& c, std::vector<Compiler::value> ar
 	});
 }
 
-Compiler::value NumberSTD::char_real(Compiler& c, vector<Compiler::value> args) {
+Compiler::value NumberSTD::char_real(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::string(), args, +[](double x) {
 		unsigned int n = x;
 		char dest[5];
@@ -828,7 +826,7 @@ Compiler::value NumberSTD::char_real(Compiler& c, vector<Compiler::value> args) 
 	});
 }
 
-Compiler::value NumberSTD::char_int(Compiler& c, vector<Compiler::value> args) {
+Compiler::value NumberSTD::char_int(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::string(), args, +[](int x) {
 		unsigned int n = x;
 		char dest[5];

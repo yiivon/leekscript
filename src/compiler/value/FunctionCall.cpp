@@ -16,8 +16,6 @@
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
 
-using namespace std;
-
 namespace ls {
 
 FunctionCall::FunctionCall(std::shared_ptr<Token> t) : token(t) {
@@ -122,7 +120,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		auto field_name = oa->field->content;
 		auto object_type = oa->object->type;
 
-		vector<Type> arg_types;
+		std::vector<Type> arg_types;
 		for (auto arg : arguments) {
 			arg_types.push_back(arg->type.fold());
 		}
@@ -136,7 +134,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 		if (object_type.is_class()) { // String.size("salut")
 
-			string clazz = ((VariableValue*) oa->object)->name;
+			std::string clazz = ((VariableValue*) oa->object)->name;
 			auto object_class = (LSClass*) analyser->vm->internal_vars[clazz]->lsvalue;
 			auto sm = object_class->getMethod(analyser, oa->field->content, arg_types);
 
@@ -341,8 +339,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			return this_ptr->compile(c);
 		}}();
 		this_ptr->compile_end(c);
-		vector<Compiler::value> args = { obj };
-		vector<LSValueType> lsvalue_types = { (LSValueType) function->type.arguments().at(0).id() };
+		std::vector<Compiler::value> args = { obj };
+		std::vector<LSValueType> lsvalue_types = { (LSValueType) function->type.arguments().at(0).id() };
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
@@ -355,7 +353,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			auto fun = (void*) std_func;
 			res = c.insn_invoke(return_type, args, fun);
 		} else {
-			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
+			auto fun = (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) std_func;
 			res = fun(c, args);
 		}
 		return res;
@@ -363,8 +361,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	/** Static standard function call : Number.char(65) */
 	if (std_func != nullptr) {
-		vector<Compiler::value> args;
-		vector<LSValueType> lsvalue_types;
+		std::vector<Compiler::value> args;
+		std::vector<LSValueType> lsvalue_types;
 		for (unsigned i = 0; i < arguments.size(); ++i) {
 			args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
@@ -376,7 +374,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			auto fun = (void*) std_func;
 			res = c.insn_call(return_type, args, fun);
 		} else {
-			auto fun = (Compiler::value (*)(Compiler&, vector<Compiler::value>)) std_func;
+			auto fun = (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) std_func;
 			res = fun(c, args);
 		}
 		return res;
@@ -421,8 +419,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	/** Arguments */
 	size_t offset = is_closure or is_unknown_method ? 1 : 0;
 	size_t arg_count = std::max(arg_types.size(), arguments.size()) + offset;
-	vector<Compiler::value> args;
-	vector<LSValueType> lsvalue_types;
+	std::vector<Compiler::value> args;
+	std::vector<LSValueType> lsvalue_types;
 
 	if (is_unknown_method) {
 		// add 'function' object as first argument

@@ -7,8 +7,6 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
 
-using namespace std;
-
 namespace ls {
 
 ArrayAccess::ArrayAccess() {

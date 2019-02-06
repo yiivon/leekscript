@@ -8,10 +8,7 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/Module.hpp"
-
 #include <functional>
-
-using namespace std;
 
 namespace ls {
 
@@ -56,11 +53,11 @@ void SemanticAnalyser::analyse(Program* program, Context*) {
 void SemanticAnalyser::enter_function(Function* f) {
 
 	// Create function scope
-	variables.push_back(vector<map<std::string, std::shared_ptr<SemanticVar>>> {});
+	variables.push_back(std::vector<std::map<std::string, std::shared_ptr<SemanticVar>>> {});
 	// First function block
-	variables.back().push_back(map<std::string, std::shared_ptr<SemanticVar>> {});
+	variables.back().push_back(std::map<std::string, std::shared_ptr<SemanticVar>> {});
 	// Parameters
-	parameters.push_back(map<std::string, std::shared_ptr<SemanticVar>> {});
+	parameters.push_back(std::map<std::string, std::shared_ptr<SemanticVar>> {});
 
 	loops.push(0);
 	functions_stack.push(f);
@@ -74,7 +71,7 @@ void SemanticAnalyser::leave_function() {
 }
 
 void SemanticAnalyser::enter_block() {
-	variables.back().push_back(map<std::string, std::shared_ptr<SemanticVar>> {});
+	variables.back().push_back(std::map<std::string, std::shared_ptr<SemanticVar>> {});
 }
 
 void SemanticAnalyser::leave_block() {
@@ -108,7 +105,7 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::get_var(Token* v) {
 	// Search in interval variables : global for the program
 	try {
 		return vm->internal_vars.at(v->content);
-	} catch (exception& e) {}
+	} catch (std::exception& e) {}
 
 	// Search recursively in the functions
 	int f = functions_stack.size() - 1;
@@ -116,14 +113,14 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::get_var(Token* v) {
 		// Search in the function parameters
 		try {
 			return parameters.at(f).at(v->content);
-		} catch (exception& e) {}
+		} catch (std::exception& e) {}
 
 		// Search in the local variables of the function
 		int b = variables.at(f).size() - 1;
 		while (b >= 0) {
 			try {
 				return variables.at(f).at(b).at(v->content);
-			} catch (exception& e) {}
+			} catch (std::exception& e) {}
 			b--;
 		}
 		f--;
@@ -142,7 +139,7 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::add_var(Token* v, Type type, Valu
 		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
-	variables.back().back().insert(pair<string, std::shared_ptr<SemanticVar>>(
+	variables.back().back().insert(std::pair<std::string, std::shared_ptr<SemanticVar>>(
 		v->content,
 		std::make_shared<SemanticVar>(v->content, VarScope::LOCAL, type, 0, value, vd, current_function(), nullptr)
 	));
@@ -153,7 +150,7 @@ void SemanticAnalyser::add_function(Function* l) {
 	functions.push_back(l);
 }
 
-map<string, std::shared_ptr<SemanticVar>>& SemanticAnalyser::get_local_vars() {
+std::map<std::string, std::shared_ptr<SemanticVar>>& SemanticAnalyser::get_local_vars() {
 	return variables.back().back();
 }
 

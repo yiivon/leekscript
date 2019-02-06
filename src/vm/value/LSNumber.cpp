@@ -1,6 +1,5 @@
 #include <cmath>
 #include <sstream>
-
 #include "LSNumber.hpp"
 #include "LSNull.hpp"
 #include "LSFunction.hpp"
@@ -8,8 +7,6 @@
 #include "LSString.hpp"
 #include "LSClass.hpp"
 #include "LSClosure.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -30,7 +27,7 @@ std::string LSNumber::print(double d) {
 	// remove nul terminator
 	s.pop_back();
 	// remove trailing zeros
-	s.erase(s.find_last_not_of('0') + 1, string::npos);
+	s.erase(s.find_last_not_of('0') + 1, std::string::npos);
 	// remove trailing point
 	if (s.back() == L'.') {
 		s.pop_back();
@@ -551,13 +548,13 @@ bool LSNumber::isInteger() const {
 	return value == (int)value;
 }
 
-string LSNumber::toString() const {
+std::string LSNumber::toString() const {
 
 	if (isInteger()) return std::to_string((int)value);
 
 	return LSNumber::print(value);
 }
-string LSNumber::json() const {
+std::string LSNumber::json() const {
 	return toString();
 }
 

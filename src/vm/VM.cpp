@@ -1,6 +1,5 @@
 #include <sstream>
 #include <chrono>
-
 #include "VM.hpp"
 #include "../constants.h"
 #include "../colors.h"
@@ -29,8 +28,6 @@
 #include "standard/IntervalSTD.hpp"
 #include "standard/JsonSTD.hpp"
 #include "legacy/Functions.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -172,9 +169,9 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	auto program = new Program(code, file_name);
 
 	// Compile
-	auto compilation_start = chrono::high_resolution_clock::now();
+	auto compilation_start = std::chrono::high_resolution_clock::now();
 	VM::Result result = program->compile(*this, ctx, assembly, pseudo_code, log_instructions);
-	auto compilation_end = chrono::high_resolution_clock::now();
+	auto compilation_end = std::chrono::high_resolution_clock::now();
 
 	if (log_instructions) {
 		std::cout << result.instructions_log;
@@ -196,16 +193,16 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	std::string value = "";
 	if (result.compilation_success) {
 
-		auto exe_start = chrono::high_resolution_clock::now();
+		auto exe_start = std::chrono::high_resolution_clock::now();
 		try {
 			value = program->execute(*this);
 			result.execution_success = true;
 		} catch (vm::ExceptionObj& ex) {
 			result.exception = ex;
 		}
-		auto exe_end = chrono::high_resolution_clock::now();
+		auto exe_end = std::chrono::high_resolution_clock::now();
 
-		result.execution_time = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
+		result.execution_time = std::chrono::duration_cast<std::chrono::nanoseconds>(exe_end - exe_start).count();
 		result.execution_time_ms = (((double) result.execution_time / 1000) / 1000);
 		result.value = value;
 		result.type = program->main->body->type;
@@ -213,7 +210,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 
 	// Set results
 	result.context = ctx;
-	result.compilation_time = chrono::duration_cast<chrono::nanoseconds>(compilation_end - compilation_start).count();
+	result.compilation_time = std::chrono::duration_cast<std::chrono::nanoseconds>(compilation_end - compilation_start).count();
 	result.compilation_time_ms = (((double) result.compilation_time / 1000) / 1000);
 	result.operations = VM::operations;
 
@@ -230,16 +227,16 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		// LCOV_EXCL_START
-		cout << C_RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
+		std::cout << C_RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << std::endl;
 		#if DEBUG_LEAKS
 			for (auto o : LSValue::objs()) {
-				std::cout << o.second << " (" << o.second->refs << " refs)" << endl;
+				std::cout << o.second << " (" << o.second->refs << " refs)" << std::endl;
 			}
 		#endif
 		// LCOV_EXCL_STOP
 	}
 	if (VM::mpz_deleted != VM::mpz_created) {
-		cout << C_RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << endl; // LCOV_EXCL_LINE
+		std::cout << C_RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << std::endl; // LCOV_EXCL_LINE
 	}
 	return result;
 }

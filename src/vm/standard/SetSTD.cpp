@@ -1,8 +1,6 @@
 #include "SetSTD.hpp"
 #include "../value/LSSet.hpp"
 
-using namespace std;
-
 namespace ls {
 
 SetSTD::SetSTD() : Module("Set") {

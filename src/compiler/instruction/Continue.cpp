@@ -1,10 +1,7 @@
-#include "../../compiler/instruction/Continue.hpp"
-
+#include "Continue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
-
-using namespace std;
 
 namespace ls {
 

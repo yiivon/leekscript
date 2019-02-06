@@ -1,12 +1,9 @@
 #include <exception>
-
 #include "LSInterval.hpp"
 #include "LSNumber.hpp"
 #include "LSFunction.hpp"
 #include "LSNull.hpp"
 #include "LSArray.hpp"
-
-using namespace std;
 
 namespace ls {
 

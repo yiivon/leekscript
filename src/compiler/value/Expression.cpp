@@ -12,8 +12,6 @@
 #include "../../vm/standard/BooleanSTD.hpp"
 #include "../../vm/Exception.hpp"
 
-using namespace std;
-
 namespace ls {
 
 Expression::Expression() : Expression(nullptr) {}
@@ -299,7 +297,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	if (operator_fun != nullptr) {
 
-		vector<Compiler::value> args;
+		std::vector<Compiler::value> args;
 		// TODO simplify condition
 		if ((v1->type.is_bool() and op->type == TokenType::EQUAL) or native_method_v1_addr) {
 			args.push_back(((LeftValue*) v1)->compile_l(c));
@@ -327,7 +325,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 	}
 
 	void* ls_func;
-	vector<Compiler::value> args;
+	std::vector<Compiler::value> args;
 
 	switch (op->type) {
 		case TokenType::EQUAL: {

@@ -4,8 +4,6 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
 
-using namespace std;
-
 namespace ls {
 
 PostfixExpression::PostfixExpression() {
@@ -18,7 +16,7 @@ PostfixExpression::~PostfixExpression() {
 	delete expression;
 }
 
-void PostfixExpression::print(ostream& os, int indent, bool debug, bool condensed) const {
+void PostfixExpression::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	expression->print(os, indent, debug);
 	operatorr->print(os);
 	if (debug) {

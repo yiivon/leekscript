@@ -2,8 +2,6 @@
 #include "../../vm/value/LSArray.hpp"
 #include <math.h>
 
-using namespace std;
-
 namespace ls {
 
 Array::Array() {

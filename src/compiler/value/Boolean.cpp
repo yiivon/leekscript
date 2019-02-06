@@ -1,8 +1,6 @@
 #include "Boolean.hpp"
 #include "../../vm/value/LSBoolean.hpp"
 
-using namespace std;
-
 namespace ls {
 
 Boolean::Boolean(std::shared_ptr<Token> token) {

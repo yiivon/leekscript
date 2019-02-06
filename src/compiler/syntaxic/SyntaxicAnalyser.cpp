@@ -1,8 +1,6 @@
 #include "SyntaxicAnalyser.hpp"
-
 #include <string>
 #include <math.h>
-
 #include "../value/Function.hpp"
 #include "../instruction/Instruction.hpp"
 #include "../value/Block.hpp"
@@ -40,8 +38,6 @@
 #include "SyntaxicalError.hpp"
 #include "../lexical/Token.hpp"
 
-using namespace std;
-
 namespace ls {
 
 SyntaxicAnalyser::SyntaxicAnalyser() {
@@ -53,7 +49,7 @@ SyntaxicAnalyser::SyntaxicAnalyser() {
 
 SyntaxicAnalyser::~SyntaxicAnalyser() {}
 
-Function* SyntaxicAnalyser::analyse(vector<Token*>& tokens) {
+Function* SyntaxicAnalyser::analyse(std::vector<Token*>& tokens) {
 
 	this->tokens = tokens;
 	this->t = tokens.at(0);
@@ -1036,7 +1032,7 @@ Match* SyntaxicAnalyser::eatMatch(bool force_value) {
 	eat(TokenType::OPEN_BRACE);
 
 	while (t->type != TokenType::CLOSING_BRACE && t->type != TokenType::FINISHED) {
-		vector<Match::Pattern> patterns;
+		std::vector<Match::Pattern> patterns;
 		patterns.push_back(eatMatchPattern());
 		while (t->type == TokenType::PIPE) {
 			eat();
@@ -1113,7 +1109,7 @@ Instruction* SyntaxicAnalyser::eatFor() {
 
 	if (!is_foreach) {
 
-		vector<Instruction*> inits;
+		std::vector<Instruction*> inits;
 		while (true) {
 			if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::IN || t->type == TokenType::OPEN_BRACE) {
 				break;
@@ -1339,7 +1335,7 @@ Token* SyntaxicAnalyser::nextTokenAt(int pos) {
 		return new Token(TokenType::FINISHED, 0, 0, 0, "");
 }
 
-vector<SyntaxicalError> SyntaxicAnalyser::getErrors() {
+std::vector<SyntaxicalError> SyntaxicAnalyser::getErrors() {
 	return errors;
 }
 

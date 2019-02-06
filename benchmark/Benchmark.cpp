@@ -12,7 +12,6 @@
 #include <functional>
 #include <iomanip>
 #include "../lib/json.hpp"
-using namespace std;
 
 std::string pad(std::string s, int l) {
 	l -= s.size();

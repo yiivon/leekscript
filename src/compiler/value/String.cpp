@@ -2,8 +2,6 @@
 #include "../../vm/value/LSString.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 
-using namespace std;
-
 namespace ls {
 
 String::String(std::shared_ptr<Token> token) : token(token) {
@@ -17,7 +15,7 @@ String::~String() {
 	delete ls_string;
 }
 
-void String::print(ostream& os, int, bool debug, bool condensed) const {
+void String::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << "'" << token->content << "'";
 	if (debug) {
 		os << " " << type;

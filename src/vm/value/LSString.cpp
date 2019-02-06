@@ -9,8 +9,6 @@
 #include <string.h>
 #include "../../../lib/utf8.h"
 
-using namespace std;
-
 namespace ls {
 
 LSValue* LSString::string_class;
@@ -51,10 +49,10 @@ bool LSString::iterator_end(LSString::iterator* it) {
 }
 
 LSString::LSString() : LSValue(STRING) {}
-LSString::LSString(const char value) : LSValue(STRING), string(string(1, value)) {}
-LSString::LSString(const char* value) : LSValue(STRING), string(value) {}
-LSString::LSString(const string& value) : LSValue(STRING), string(value) {}
-LSString::LSString(const Json& json) : LSValue(STRING), string(json.get<std::string>()) {}
+LSString::LSString(const char value) : LSValue(STRING), std::string(std::string(1, value)) {}
+LSString::LSString(const char* value) : LSValue(STRING), std::string(value) {}
+LSString::LSString(const std::string& value) : LSValue(STRING), std::string(value) {}
+LSString::LSString(const Json& json) : LSValue(STRING), std::string(json.get<std::string>()) {}
 
 LSString::~LSString() {}
 
@@ -202,7 +200,7 @@ LSValue* LSString::ls_tilde() {
 	char* string_chars = (char*) this->c_str();
 	int i = 0;
 	int l = strlen(string_chars);
-	string reversed = "";
+	std::string reversed = "";
 	while (i < l) {
 		u_int32_t c = u8_nextchar(string_chars, &i);
 		u8_toutf8(buff, 5, &c, 1);
@@ -236,7 +234,7 @@ LSValue* LSString::mul(LSValue* v) {
 		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 	}
 	auto number = static_cast<LSNumber*>(v);
-	string r;
+	std::string r;
 	for (int i = 0; i < number->value; ++i) {
 		r += *this;
 	}
@@ -267,8 +265,8 @@ LSValue* LSString::div(LSValue* v) {
 			LSString* ch = new LSString(buff);
 			array->push_inc(ch);
 		}
- 	} else {
- 		u_int32_t separator = u8_char_at((char*) string->c_str(), 0);
+	} else {
+		u_int32_t separator = u8_char_at((char*) string->c_str(), 0);
 		int i = 0;
 		int l = strlen(string_chars);
 		std::string item = "";
@@ -283,7 +281,7 @@ LSValue* LSString::div(LSValue* v) {
 			}
 		}
 		array->push_inc(new LSString(item));
- 	}
+	}
 	if (string->refs == 0) delete string;
 	if (refs == 0) delete this;
 	return array;
@@ -362,11 +360,11 @@ std::ostream& LSString::dump(std::ostream& os, int) const {
 	return os;
 }
 
-string LSString::json() const {
+std::string LSString::json() const {
 	return "\"" + escaped('"') + "\"";
 }
 
-string LSString::escape_control_characters() const {
+std::string LSString::escape_control_characters() const {
 	std::string res = *this;
 	res.erase(std::remove(res.begin(), res.end(), '\b'), res.end());
 	res.erase(std::remove(res.begin(), res.end(), '\f'), res.end());
@@ -374,7 +372,7 @@ string LSString::escape_control_characters() const {
 	return res;
 }
 
-string LSString::escaped(char quote) const {
+std::string LSString::escaped(char quote) const {
 
 	char buff[5];
 	char* string_chars = (char*) this->c_str();

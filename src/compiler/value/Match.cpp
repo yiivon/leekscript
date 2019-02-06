@@ -1,8 +1,6 @@
 #include "Match.hpp"
 #include "../../vm/LSValue.hpp"
 
-using namespace std;
-
 namespace ls {
 
 Match::Match() {
@@ -28,9 +26,9 @@ void Match::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 	os << " {";
 	for (size_t i = 0; i < pattern_list.size(); ++i) {
 
-		os << endl << tabs(indent + 1);
+		os << std::endl << tabs(indent + 1);
 
-		const vector<Pattern>& list = pattern_list[i];
+		const std::vector<Pattern>& list = pattern_list[i];
 		for (size_t j = 0; j < list.size(); ++j) {
 			if (j > 0) {
 				os << "|";
@@ -40,7 +38,7 @@ void Match::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 		os << " : ";
 		returns[i]->print(os, indent + 1, debug);
 	}
-	os << endl << tabs(indent) << "}";
+	os << std::endl << tabs(indent) << "}";
 	if (debug) {
 		os << " " << type;
 	}
@@ -152,7 +150,7 @@ Match::Pattern::Pattern(Value* begin, Value* end) : interval(true), begin(begin)
 
 Match::Pattern::~Pattern() {}
 
-void Match::Pattern::print(ostream &os, int indent, bool debug) const {
+void Match::Pattern::print(std::ostream &os, int indent, bool debug) const {
 	if (interval) {
 		if (begin) begin->print(os, indent, debug);
 		os << "..";

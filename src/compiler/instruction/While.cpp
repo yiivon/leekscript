@@ -1,11 +1,8 @@
-#include "../../compiler/instruction/While.hpp"
-
+#include "While.hpp"
 #include "../../compiler/value/Number.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -19,7 +16,7 @@ While::~While() {
 	delete body;
 }
 
-void While::print(ostream& os, int indent, bool debug) const {
+void While::print(std::ostream& os, int indent, bool debug) const {
 	os << "while ";
 	condition->print(os, indent + 1, debug);
 	os << " ";

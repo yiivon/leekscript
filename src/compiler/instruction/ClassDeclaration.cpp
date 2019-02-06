@@ -1,9 +1,6 @@
-#include "../../compiler/instruction/ClassDeclaration.hpp"
-
+#include "ClassDeclaration.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSClass.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -20,12 +17,12 @@ ClassDeclaration::~ClassDeclaration() {
 	delete ls_class;
 }
 
-void ClassDeclaration::print(ostream& os, int indent, bool debug) const {
-	os << "class " << name << " {" << endl;
+void ClassDeclaration::print(std::ostream& os, int indent, bool debug) const {
+	os << "class " << name << " {" << std::endl;
 	for (VariableDeclaration* vd : fields) {
 		os << tabs(indent + 1);
 		vd->print(os, indent + 1, debug);
-		os << endl;
+		os << std::endl;
 	}
 	os << tabs(indent) << "}";
 }

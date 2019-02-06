@@ -9,8 +9,6 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/Module.hpp"
 
-using namespace std;
-
 namespace ls {
 
 ObjectAccess::ObjectAccess(std::shared_ptr<Token> token) : field(token) {
@@ -35,7 +33,7 @@ bool ObjectAccess::isLeftValue() const {
 	return true;
 }
 
-void ObjectAccess::print(ostream& os, int indent, bool debug, bool condensed) const {
+void ObjectAccess::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	object->print(os, indent, debug);
 	os << "." << field->content;
 	if (debug) {
@@ -48,7 +46,7 @@ Location ObjectAccess::location() const {
 	return {object->location().start, field->location.end};
 }
 
-void ObjectAccess::set_version(const vector<Type>& args, int level) {
+void ObjectAccess::set_version(const std::vector<Type>& args, int level) {
 	version = args;
 	has_version = true;
 	if (class_method) {

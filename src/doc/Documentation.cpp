@@ -18,7 +18,6 @@
 #include "../vm/standard/JsonSTD.hpp"
 #include "../vm/standard/NullSTD.hpp"
 #include "../vm/standard/ValueSTD.hpp"
-using namespace std;
 
 namespace ls {
 
@@ -26,9 +25,9 @@ Documentation::Documentation() {}
 
 Documentation::~Documentation() {}
 
-void Documentation::generate(ostream& os, std::string lang) {
+void Documentation::generate(std::ostream& os, std::string lang) {
 
-	vector<Module*> modules;
+	std::vector<Module*> modules;
 
 	modules.push_back(new NullSTD());
 	modules.push_back(new BooleanSTD());
@@ -51,7 +50,7 @@ void Documentation::generate(ostream& os, std::string lang) {
 		if (m > 0) os << ",";
 
 		Module* mod = modules[m];
-		string file = "src/doc/" + mod->name + "_" + lang + ".json";
+		std::string file = "src/doc/" + mod->name + "_" + lang + ".json";
 
 		mod->generate_doc(os, file);
 	}

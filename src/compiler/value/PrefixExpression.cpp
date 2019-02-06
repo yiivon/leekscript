@@ -9,8 +9,6 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
 
-using namespace std;
-
 namespace ls {
 
 PrefixExpression::PrefixExpression() {
@@ -22,7 +20,7 @@ PrefixExpression::~PrefixExpression() {
 	delete expression;
 }
 
-void PrefixExpression::print(ostream& os, int indent, bool debug, bool condensed) const {
+void PrefixExpression::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	operatorr->print(os);
 	if (operatorr->type == TokenType::NEW) {
 		os << " ";

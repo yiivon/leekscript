@@ -1,12 +1,9 @@
 #include "Block.hpp"
-
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../instruction/Return.hpp"
 #include "../instruction/Throw.hpp"
 #include "../instruction/VariableDeclaration.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -20,15 +17,15 @@ Block::~Block() {
 	}
 }
 
-void Block::print(ostream& os, int indent, bool debug, bool condensed) const {
+void Block::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (!condensed) {
 		os << "{";
-		os << endl;
+		os << std::endl;
 	}
 	for (auto& instruction : instructions) {
 		if (!condensed) os << tabs(indent + 1);
 		instruction->print(os, indent + 1, debug);
-		if (!condensed) os << endl;
+		if (!condensed) os << std::endl;
 	}
 	if (!condensed) os << tabs(indent) << "}";
 	if (debug) {

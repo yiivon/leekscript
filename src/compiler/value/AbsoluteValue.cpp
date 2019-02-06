@@ -1,8 +1,6 @@
 #include "AbsoluteValue.hpp"
 #include "../../vm/LSValue.hpp"
 
-using namespace std;
-
 namespace ls {
 
 AbsoluteValue::AbsoluteValue() {

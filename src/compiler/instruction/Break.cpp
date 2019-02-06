@@ -2,8 +2,6 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
 
-using namespace std;
-
 namespace ls {
 
 Break::Break() {
@@ -12,7 +10,7 @@ Break::Break() {
 
 Break::~Break() {}
 
-void Break::print(ostream& os, int, bool) const {
+void Break::print(std::ostream& os, int, bool) const {
 	os << "break";
 	if (deepness > 1) {
 		os << " " << deepness;
