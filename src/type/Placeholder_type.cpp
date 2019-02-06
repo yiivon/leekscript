@@ -14,6 +14,9 @@ bool Placeholder_type::operator == (const Base_type* type) const {
 bool Placeholder_type::compatible(const Base_type* type) const {
 	return false;
 }
+int Placeholder_type::distance(const Base_type* type) const {
+	return 0;
+}
 std::ostream& Placeholder_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << _name;
 	if (_implementation._types.size()) {

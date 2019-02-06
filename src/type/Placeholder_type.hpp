@@ -14,6 +14,7 @@ public:
 	void implement(Type type) const;
 	virtual bool operator == (const Base_type*) const override;
 	virtual bool compatible(const Base_type*) const override;
+	virtual int distance(const Base_type* type) const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 };
 
