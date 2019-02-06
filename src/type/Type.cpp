@@ -25,6 +25,7 @@
 #include "Placeholder_type.hpp"
 #include "Struct_type.hpp"
 #include "Pointer_type.hpp"
+#include "Template_type.hpp"
 
 #include "../compiler/value/Function.hpp"
 
@@ -551,6 +552,9 @@ Type Type::clazz() {
 }
 Type Type::const_class() {
 	return { std::make_shared<Class_type>(), false, false, true };
+}
+Type Type::template_(std::string name) {
+	return { std::make_shared<Template_type>(name), false, false, false };
 }
 bool Type::all(std::function<bool(std::shared_ptr<const Base_type>)> fun) const {
 	return std::all_of(_types.begin(), _types.end(), fun);

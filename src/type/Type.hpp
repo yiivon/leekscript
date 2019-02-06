@@ -140,6 +140,7 @@ public:
 	static Type structure(const std::string name, std::initializer_list<Type> types);
 	static Type clazz();
 	static Type const_class();
+	static Type template_(std::string name);
 
 	static std::shared_ptr<Base_type> _raw_null;
 	static std::shared_ptr<Base_type> _raw_any;
@@ -163,7 +164,6 @@ public:
 	static const std::shared_ptr<Base_type> raw_string();
 	static const std::shared_ptr<Base_type> raw_interval();
 	static const std::shared_ptr<Base_type> raw_object();
-
 
 	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
