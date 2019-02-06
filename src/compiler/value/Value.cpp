@@ -77,7 +77,7 @@ std::string Value::to_string() const {
 }
 
 std::ostream& operator << (std::ostream& os, const Value* v) {
-	v->print(os);
+	v->print(os, 0, false, true);
 	return os;
 }
 

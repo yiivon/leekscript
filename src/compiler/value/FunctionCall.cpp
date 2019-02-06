@@ -35,10 +35,10 @@ FunctionCall::~FunctionCall() {
 
 void FunctionCall::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 
-	function->print(os, indent, debug);
+	function->print(os, indent, debug, condensed);
 	os << "(";
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		arguments.at(i)->print(os, indent, debug);
+		arguments.at(i)->print(os, indent, debug, condensed);
 		if (i < arguments.size() - 1) {
 			os << ", ";
 		}

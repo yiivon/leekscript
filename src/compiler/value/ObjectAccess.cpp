@@ -35,7 +35,7 @@ bool ObjectAccess::isLeftValue() const {
 }
 
 void ObjectAccess::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-	object->print(os, indent, debug);
+	object->print(os, indent, debug, condensed);
 	os << "." << field->content;
 	if (debug) {
 		os << " " << type;
