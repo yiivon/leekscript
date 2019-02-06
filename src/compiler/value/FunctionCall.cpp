@@ -377,55 +377,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		return c.new_object_class(clazz);
 	}
 
-	/** Standard function call on object : "hello".size() */
-	if (this_ptr != nullptr) {
-		auto obj = [&]() { if (this_ptr->isLeftValue()) {
-			return c.insn_load(((LeftValue*) this_ptr)->compile_l(c));
-		} else {
-			return this_ptr->compile(c);
-		}}();
-		this_ptr->compile_end(c);
-		std::vector<Compiler::value> args = { obj };
-		std::vector<LSValueType> lsvalue_types = { (LSValueType) function->type.arguments().at(0).id() };
-		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(arguments.at(i)->compile(c));
-			arguments.at(i)->compile_end(c);
-			lsvalue_types.push_back(function->type.argument(i + 1).id());
-		}
-		c.insn_check_args(args, lsvalue_types);
-
-		Compiler::value res;
-		if (is_native_method) {
-			auto fun = (void*) std_func;
-			res = c.insn_invoke(return_type, args, fun);
-		} else {
-			auto fun = (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) std_func;
-			res = fun(c, args);
-		}
-		return res;
-	}
-
-	/** Static standard function call : Number.char(65) */
-	if (std_func != nullptr) {
-		std::vector<Compiler::value> args;
-		std::vector<LSValueType> lsvalue_types;
-		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(arguments.at(i)->compile(c));
-			arguments.at(i)->compile_end(c);
-			lsvalue_types.push_back((LSValueType) function->type.argument(i).id());
-		}
-		c.insn_check_args(args, lsvalue_types);
-		Compiler::value res;
-		if (is_native_method) {
-			auto fun = (void*) std_func;
-			res = c.insn_call(return_type, args, fun);
-		} else {
-			auto fun = (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) std_func;
-			res = fun(c, args);
-		}
-		return res;
-	}
-
 	/** Operator functions : +(1, 2) */
 	VariableValue* f = dynamic_cast<VariableValue*>(function);
 	if (f != nullptr) {
