@@ -78,10 +78,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	}
 
 	// Analyse arguments
-	for (size_t a = 0; a < arguments.size(); ++a) {
-		auto arg = arguments.at(a);
-		arg->analyse(analyser);
-		arguments.at(a)->type = arg->type;
+	for (const auto& argument : arguments) {
+		argument->analyse(analyser);
 	}
 
 	// Standard library constructors TODO better
