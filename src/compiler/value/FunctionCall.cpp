@@ -15,6 +15,7 @@
 #include "../semantic/SemanticError.hpp"
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
+#include "../semantic/Callable.hpp"
 
 namespace ls {
 
@@ -59,6 +60,53 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	// Analyse the function (can be anything here)
 	function->analyse(analyser);
 
+	// Analyse arguments
+	for (const auto& argument : arguments) {
+		argument->analyse(analyser);
+	}
+
+	// Retrieve the callable version
+	callable = function->get_callable(analyser);
+	if (/*callable == nullptr or */not function->type.can_be_callable()) {
+		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
+	}
+	if (callable) {
+		// std::cout << "Callable: " << callable << std::endl;
+		std::vector<Type> arguments_types;
+		for (const auto& argument : arguments) {
+			arguments_types.push_back(argument->type);
+		}
+		callable_version = callable->resolve(analyser, arguments_types);
+		if (callable_version) {
+			// std::cout << "Version: " << callable_version << std::endl;
+			type = callable_version->type.return_type();
+			// Apply mutators
+			// for (const auto& mutator : callable_version->mutators) {
+			// 	mutator->apply(analyser, arguments);
+			// }
+			// int offset = callable_version->object ? 1 : 0;
+			// for (size_t a = 0; a < arguments.size(); ++a) {
+			// 	auto argument_type = callable_version->type.argument(a);
+			// 	if (argument_type.is_function()) {
+			// 		arguments.at(a - offset)->will_take(analyser, argument_type.arguments(), 1);
+			// 		arguments.at(a - offset)->set_version(argument_type.arguments(), 1);
+			// 		arguments.at(a - offset)->must_return(analyser, argument_type.return_type());
+			// 	}
+			// }
+			// return;
+		} else {
+			// std::cout << "No version found!" << std::endl;
+			// analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
+			// 	function->to_string(),
+			// 	std::to_string(function->type.arguments().size()),
+			// 	std::to_string(arguments.size())
+			// }});
+			// return;
+		}
+	} else {
+		// std::cout << "No callable! " << function << std::endl;
+	}
+
 	// Find the function object
 	function_object = dynamic_cast<Function*>(function);
 	if (!function_object) {
@@ -68,16 +116,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				function_object = f;
 			}
 		}
-	}
-
-	// The function call can be called?
-	if (not function->type.can_be_callable()) {
-		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
-	}
-
-	// Analyse arguments
-	for (const auto& argument : arguments) {
-		argument->analyse(analyser);
 	}
 
 	// Standard library constructors TODO better

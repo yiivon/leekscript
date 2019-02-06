@@ -9,6 +9,9 @@
 
 namespace ls {
 
+class Callable;
+class CallableVersion;
+
 class FunctionCall : public Value {
 public:
 	std::shared_ptr<Token> token;
@@ -26,6 +29,8 @@ public:
 	Type function_type;
 	std::vector<Type> arg_types;
 	std::string function_name;
+	Callable* callable = nullptr;
+	CallableVersion* callable_version;
 
 	FunctionCall(std::shared_ptr<Token> t);
 	virtual ~FunctionCall();
