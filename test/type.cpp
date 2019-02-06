@@ -68,14 +68,17 @@ void Test::test_types() {
 	assert(ls::Type::array(ls::Type::real()).castable(ls::Type::array()));
 	assert(ls::Type::array(ls::Type::real()).castable(ls::Type::array(ls::Type::integer())));
 	assert(ls::Type::array(ls::Type::integer()).castable(ls::Type::array(ls::Type::real())));
-	assert(ls::Type::map().castable(ls::Type::map(ls::Type::any(), ls::Type::any())));
-	assert(ls::Type::map().castable(ls::Type::map(ls::Type::integer(), ls::Type::any())));
-	assert(ls::Type::map().castable(ls::Type::map(ls::Type::real(), ls::Type::any())));
+	assert(ls::Type::map(ls::Type::any(), ls::Type::any()).castable(ls::Type::map()));
+	assert(ls::Type::map(ls::Type::integer(), ls::Type::any()).castable(ls::Type::map()));
+	assert(ls::Type::map(ls::Type::real(), ls::Type::any()).castable(ls::Type::map()));
 	assert(ls::Type::any().castable(p1));
 	assert(ls::Type::number().castable(ls::Type::boolean()));
 	assert(ls::Type::boolean().castable(ls::Type::number()));
 	assert(ls::Type::array(ls::Type::real()).castable(ls::Type::any()));
 	assert(ls::Type::array(ls::Type::real()).castable(ls::Type::const_any()));
+
+	section("Distance");
+	assert(ls::Type::number().distance(ls::Type::any()) == 1);
 
 	section("is_number");
 	assert(ls::Type::number().is_number());
