@@ -161,7 +161,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				if (m != nullptr) {
 					this_ptr = oa->object;
 					this_ptr->analyse(analyser);
-					this_ptr_type = m->obj_type;
 					std_func = m->addr;
 					function->type = m->type;
 					is_native_method = m->native;
@@ -194,7 +193,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				// std::cout << "Method " << oa->field->content << " found : " << m->type << std::endl;
 				this_ptr = oa->object;
 				this_ptr->analyse(analyser);
-				this_ptr_type = m->obj_type;
 				std_func = m->addr;
 				function->type = m->type;
 				is_native_method = m->native;

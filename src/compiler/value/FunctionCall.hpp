@@ -19,7 +19,6 @@ public:
 	Type return_type;
 	void* std_func;
 	Value* this_ptr;
-	Type this_ptr_type;
 	bool is_native_method = false;
 	bool is_unknown_method = false;
 	Value* object = nullptr;
