@@ -8,6 +8,7 @@
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Module.hpp"
+#include "../../compiler/semantic/Callable.hpp"
 
 namespace ls {
 
@@ -58,6 +59,81 @@ void ObjectAccess::set_version(const std::vector<Type>& args, int level) {
 			}
 		}
 	}
+}
+
+Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
+	// std::cout << "ObjectAccess::get_callable()" << std::endl;
+
+	auto vv = dynamic_cast<VariableValue*>(object);
+	auto value_class = (LSClass*) analyser->vm->internal_vars.at("Value")->lsvalue;
+
+	std::string object_class_name = object->type.class_name();
+	LSClass* object_class = nullptr;
+	if (analyser->vm->internal_vars.find(object_class_name) != analyser->vm->internal_vars.end()) {
+		object_class = (LSClass*) analyser->vm->internal_vars[object_class_name]->lsvalue;
+	}
+	
+	std::ostringstream oss;
+	oss << object << "." << field->content;
+	auto callable = new Callable(oss.str());
+
+	// <class>.<field>
+	if (object->type.is_class() and vv != nullptr) {
+		auto std_class = (LSClass*) analyser->vm->internal_vars.at(vv->name)->lsvalue;
+		// <class>.<method>
+		if (std_class->methods.find(field->content) != std_class->methods.end()) {
+			auto method = std_class->methods.at(field->content);
+			std::string name = vv->name + "." + field->content;
+			for (const auto& m : method) {
+				if (m.native) {
+					callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, nullptr });
+				} else {
+					callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, nullptr });
+				}
+			}
+		}
+		// Value.<method>
+		if (value_class->methods.find(field->content) != value_class->methods.end()) {
+			auto method = value_class->methods.at(field->content);
+			std::string name = "Value." + field->content;
+			for (const auto& m : method) {
+				if (m.native) {
+					callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, nullptr });
+				} else {
+					callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, nullptr });
+				}
+			}
+		}
+	}
+	// <object>.<method>
+	if (object_class) {
+		if (object_class->methods.find(field->content) != object_class->methods.end()) {
+			auto method = object_class->methods.at(field->content);
+			std::string name = object_class_name + "." + field->content;
+			for (const auto& m : method) {
+				if (m.native) {
+					callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, object });
+				} else {
+					callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, object });
+				}
+			}
+		}
+	}
+	if (value_class->methods.find(field->content) != value_class->methods.end()) {
+		auto method = value_class->methods.at(field->content);
+		std::string name = "Value." + field->content;
+		for (const auto& m : method) {
+			if (m.native) {
+				callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, object });
+			} else {
+				callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, object });
+			}
+		}
+	}
+	if (callable->versions.size() == 0) {
+		return nullptr;
+	}
+	return callable;
 }
 
 void ObjectAccess::analyse(SemanticAnalyser* analyser) {

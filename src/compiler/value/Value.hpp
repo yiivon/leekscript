@@ -9,6 +9,7 @@
 namespace ls {
 
 class SemanticAnalyser;
+class Callable;
 
 class Value {
 public:
@@ -46,6 +47,7 @@ public:
 	virtual void will_be_in_array(SemanticAnalyser*);
 	virtual void set_version(const std::vector<Type>&, int level);
 	virtual Type version_type(std::vector<Type>) const;
+	virtual Callable* get_callable(SemanticAnalyser*) const;
 	virtual void analyse(SemanticAnalyser*);
 
 	virtual Compiler::value compile(Compiler&) const = 0;

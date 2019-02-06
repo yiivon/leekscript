@@ -11,6 +11,10 @@ Value::Value() {
 
 Value::~Value() {}
 
+Callable* Value::get_callable(SemanticAnalyser*) const {
+	return nullptr;
+}
+
 void Value::analyse(SemanticAnalyser*) {}
 
 bool Value::will_take(SemanticAnalyser*, const std::vector<Type>& args, int) {
