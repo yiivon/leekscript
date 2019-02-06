@@ -1609,7 +1609,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	auto i = mappings.find(function_name);
 	if (i == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
-		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
+		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
 		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
 	auto r = builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name);
@@ -1634,7 +1634,7 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	auto i = mappings.find(function_name);
 	if (i == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(), llvm_types, false);
-		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module.get());
+		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
 		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
 	const auto lambda = mappings.at(function_name).function;

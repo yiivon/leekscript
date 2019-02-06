@@ -51,7 +51,7 @@ public:
 	llvm::orc::IRCompileLayer<llvm::orc::RTDyldObjectLinkingLayer, llvm::orc::SimpleCompiler>::ModuleHandleT function_handle;
 	bool handle_created = false;
 	llvm::BasicBlock* block = nullptr;
-	std::shared_ptr<llvm::Module> module;
+	llvm::Module* module;
 	Compiler* compiler = nullptr;
 
 	Function();

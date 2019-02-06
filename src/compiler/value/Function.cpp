@@ -508,9 +508,9 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		}
 	}
 
-	((Function*) this)->module = std::make_shared<llvm::Module>("jit_" + name, Compiler::context);
+	((Function*) this)->module = new llvm::Module("jit_" + name, Compiler::context);
 	module->setDataLayout(((Compiler&) c).getTargetMachine().createDataLayout());
-	auto fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+	auto fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module);
 	fpm->add(llvm::createInstructionCombiningPass());
 	fpm->add(llvm::createReassociatePass());
 	fpm->add(llvm::createGVNPass());
@@ -526,9 +526,9 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	}
 	auto llvm_return_type = version->type.return_type().llvm_type();
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
-	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun_" + name + std::to_string(id), module.get());
+	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun_" + name + std::to_string(id), module);
 
-	auto f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.context), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", module.get());
+	auto f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.context), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", module);
 	auto Int8PtrTy = llvm::PointerType::get(llvm::Type::getInt8Ty(c.context), c.DL.getAllocaAddrSpace());
 	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
 	llvm_function->setPersonalityFn(personality);
@@ -594,7 +594,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	fpm->run(*llvm_function);
 
 	// JIT the module containing the anonymous expression, keeping a handle so we can free it later.
-	((Function*) this)->function_handle = c.addModule(module);
+	((Function*) this)->function_handle = c.addModule(std::shared_ptr<llvm::Module>(module));
 	((Function*) this)->handle_created = true;
 	// Search the JIT for the "fun" symbol.
 	auto ExprSymbol = c.findSymbol("fun_" + name + std::to_string(id));
