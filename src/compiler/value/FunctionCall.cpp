@@ -334,6 +334,14 @@ Type FunctionCall::version_type(std::vector<Type> version) const {
 Compiler::value FunctionCall::compile(Compiler& c) const {
 
 	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
+	if (callable) {
+		std::vector<Compiler::value> args;
+		for (unsigned i = 0; i < arguments.size(); ++i) {
+			args.push_back(arguments.at(i)->compile(c));
+			arguments.at(i)->compile_end(c);
+		}
+		return callable_version->compile_call(c, args);
+	}
 
 	/** Standard library constructors : Array(), Number() */
 	VariableValue* vv = dynamic_cast<VariableValue*>(function);
