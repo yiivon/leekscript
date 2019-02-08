@@ -113,6 +113,9 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	v1->analyse(analyser);
 	v2->analyse(analyser);
+	
+	// std::cout << "v1 " << v1 << " " << v1->type << std::endl;
+	// std::cout << "v2 " << v2 << " " << v2->type << std::endl;
 
 	// in operator : v1 must be a container
 	if (op->type == TokenType::IN and not v2->type.can_be_container()) {
