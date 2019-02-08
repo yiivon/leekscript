@@ -3,6 +3,7 @@
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Function.hpp"
 #include "../instruction/VariableDeclaration.hpp"
+#include "../semantic/Callable.hpp"
 
 namespace ls {
 
@@ -32,6 +33,23 @@ Location VariableValue::location() const {
 }
 
 Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
+	if (name == "+" or name == "-" or name == "*" or name == "×" or name == "/" or name == "÷" or name == "**" or name == "%") {
+		auto callable = new Callable(name);
+		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
+		auto fun =  [&](Compiler& c, std::vector<Compiler::value> args) {
+			if (name == "+") return c.insn_add(args[0], args[1]);
+			else if (name == "-") return c.insn_sub(args[0], args[1]);
+			else if (name == "*" or name == "×") return c.insn_mul(args[0], args[1]);
+			else if (name == "/" or name == "÷") return c.insn_div(args[0], args[1]);
+			else if (name == "**") return c.insn_pow(args[0], args[1]);
+			else if (name == "%") return c.insn_mod(args[0], args[1]);
+		};
+		callable->add_version({ name, type, fun, {}, {}, nullptr });
+		auto type2 = Type::fun(Type::integer(), {Type::integer(), Type::integer()});
+		if (name == "/" or name == "÷") type2 = Type::fun(Type::real(), {Type::integer(), Type::integer()});
+		callable->add_version({ name, type2, fun, {}, {}, nullptr });
+		return callable;
+	}
 	if (var && var->value) {
 		// return var->value->get_callable(analyser);
 	}

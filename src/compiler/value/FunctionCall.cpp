@@ -381,26 +381,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		return c.new_object_class(clazz);
 	}
 
-	/** Operator functions : +(1, 2) */
-	VariableValue* f = dynamic_cast<VariableValue*>(function);
-	if (f != nullptr) {
-		if (function->type.argument(0).is_primitive() and function->type.argument(1).is_primitive()) {
-			if (f->name == "+") {
-				return c.insn_add(arguments[0]->compile(c), arguments[1]->compile(c));
-			} else if (f->name == "-") {
-				return c.insn_sub(arguments[0]->compile(c), arguments[1]->compile(c));
-			} else if (f->name == "*" or f->name == "×") {
-				return c.insn_mul(arguments[0]->compile(c), arguments[1]->compile(c));
-			} else if (f->name == "/" or f->name == "÷") {
-				return c.insn_div(arguments[0]->compile(c), arguments[1]->compile(c));
-			} else if (f->name == "**") {
-				return c.insn_pow(arguments[0]->compile(c), arguments[1]->compile(c));
-			} else if (f->name == "%") {
-				return c.insn_mod(arguments[0]->compile(c), arguments[1]->compile(c));
-			}
-		}
-	}
-
 	/** Default function : f(12) */
 	Compiler::value fun;
 	auto jit_object = c.new_pointer(nullptr, Type::any());
