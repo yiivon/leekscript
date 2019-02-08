@@ -19,7 +19,7 @@ VariableDeclaration::~VariableDeclaration() {
 	}
 }
 
-void VariableDeclaration::print(std::ostream& os, int indent, bool debug) const {
+void VariableDeclaration::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 
 	os << (global ? "global " : (constant ? "let " : "var "));
 

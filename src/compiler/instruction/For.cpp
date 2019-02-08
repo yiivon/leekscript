@@ -18,11 +18,11 @@ For::~For() {
 	}
 }
 
-void For::print(std::ostream& os, int indent, bool debug) const {
+void For::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "for";
 	for (auto ins : inits) {
 		os << " ";
-		ins->print(os, indent + 1, debug);
+		ins->print(os, indent + 1, debug, condensed);
 	}
 	os << "; ";
 	if (condition != nullptr) {
@@ -31,7 +31,7 @@ void For::print(std::ostream& os, int indent, bool debug) const {
 	os << ";";
 	for (auto ins : increments) {
 		os << " ";
-		ins->print(os, indent + 1, debug);
+		ins->print(os, indent + 1, debug, condensed);
 	}
 	os << " ";
 	body->print(os, indent, debug);

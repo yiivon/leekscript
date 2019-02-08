@@ -13,7 +13,7 @@ Throw::~Throw() {
 	delete expression;
 }
 
-void Throw::print(std::ostream& os, int indent, bool debug) const {
+void Throw::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "throw";
 	if (expression != nullptr) {
 		os << " ";

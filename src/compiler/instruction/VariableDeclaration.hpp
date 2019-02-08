@@ -23,7 +23,7 @@ public:
 	VariableDeclaration();
 	virtual ~VariableDeclaration();
 
-	virtual void print(std::ostream&, int indent, bool debug) const override;
+	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
 	void analyse_global_functions(SemanticAnalyser* analyser);

@@ -12,8 +12,8 @@ ExpressionInstruction::~ExpressionInstruction() {
 	delete this->value;
 }
 
-void ExpressionInstruction::print(std::ostream& os, int indent, bool debug) const {
-	value->print(os, indent, debug);
+void ExpressionInstruction::print(std::ostream& os, int indent, bool debug, bool condensed) const {
+	value->print(os, indent, debug, condensed);
 }
 
 Location ExpressionInstruction::location() const {

@@ -21,7 +21,7 @@ Foreach::~Foreach() {
 	delete body;
 }
 
-void Foreach::print(std::ostream& os, int indent, bool debug) const {
+void Foreach::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "for ";
 
 	if (key != nullptr) {

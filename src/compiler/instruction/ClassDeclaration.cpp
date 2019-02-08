@@ -17,11 +17,11 @@ ClassDeclaration::~ClassDeclaration() {
 	delete ls_class;
 }
 
-void ClassDeclaration::print(std::ostream& os, int indent, bool debug) const {
+void ClassDeclaration::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "class " << name << " {" << std::endl;
 	for (VariableDeclaration* vd : fields) {
 		os << tabs(indent + 1);
-		vd->print(os, indent + 1, debug);
+		vd->print(os, indent + 1, debug, condensed);
 		os << std::endl;
 	}
 	os << tabs(indent) << "}";

@@ -24,7 +24,7 @@ void Block::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 	}
 	for (auto& instruction : instructions) {
 		if (!condensed) os << tabs(indent + 1);
-		instruction->print(os, indent + 1, debug);
+		instruction->print(os, indent + 1, debug, condensed);
 		if (!condensed) os << std::endl;
 	}
 	if (!condensed) os << tabs(indent) << "}";
@@ -91,7 +91,7 @@ Compiler::value Block::compile(Compiler& c) const {
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 
 		std::ostringstream oss;
-		instructions[i]->print(oss, 0, false);
+		instructions[i]->print(oss, 0, false, false);
 		auto str = oss.str();
 		auto pos = str.find('\n');
 		if (pos != std::string::npos) str = str.substr(0, pos);

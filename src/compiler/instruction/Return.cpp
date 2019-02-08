@@ -14,7 +14,7 @@ Return::~Return() {
 	delete expression;
 }
 
-void Return::print(std::ostream& os, int indent, bool debug) const {
+void Return::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "return ";
 	if (expression != nullptr) {
 		expression->print(os, indent, debug);

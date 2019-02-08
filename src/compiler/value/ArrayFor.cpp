@@ -8,7 +8,7 @@ ArrayFor::~ArrayFor() {
 
 void ArrayFor::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "[";
-	forr->print(os, indent, debug);
+	forr->print(os, indent, debug, condensed);
 	os << "]";
 
 	if (debug) {

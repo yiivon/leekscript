@@ -29,9 +29,9 @@ void If::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 		os << "(";
 		condition->print(os, indent, debug);
 		os << " ? ";
-		then->instructions[0]->print(os, indent, debug);
+		then->instructions[0]->print(os, indent, debug, condensed);
 		os << " : ";
-		elze->instructions[0]->print(os, indent, debug);
+		elze->instructions[0]->print(os, indent, debug, condensed);
 		os << ")";
 	} else {
 		os << "if ";

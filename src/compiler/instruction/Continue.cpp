@@ -11,7 +11,7 @@ Continue::Continue() {
 
 Continue::~Continue() {}
 
-void Continue::print(std::ostream& os, int, bool) const {
+void Continue::print(std::ostream& os, int, bool, bool) const {
 	os << "continue";
 	if (deepness > 1) {
 		os << " " << deepness;

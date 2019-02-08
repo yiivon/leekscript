@@ -16,7 +16,7 @@ While::~While() {
 	delete body;
 }
 
-void While::print(std::ostream& os, int indent, bool debug) const {
+void While::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "while ";
 	condition->print(os, indent + 1, debug);
 	os << " ";
