@@ -4,6 +4,8 @@
 #include "../value/Function.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../semantic/Callable.hpp"
+#include "../../vm/value/LSString.hpp"
+#include "../../vm/value/LSSet.hpp"
 
 namespace ls {
 
@@ -51,8 +53,67 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 		callable->add_version({ name, type2, fun, {}, {}, nullptr });
 		return callable;
 	}
-	if (var && var->value) {
-		// return var->value->get_callable(analyser);
+	if (name == "Number") {
+		auto callable = new Callable(name);
+		callable->add_version({ "Number", Type::fun(Type::integer(), {}), [&](Compiler& c, std::vector<Compiler::value>) {
+			return c.new_integer(0);
+		}, {}, {}, nullptr });
+		callable->add_version({ "Number", Type::fun(Type::real(), {Type::real()}), [&](Compiler& c, std::vector<Compiler::value> args) {
+			return c.to_real(args[0]);
+		}, {}, {}, nullptr });
+		callable->add_version({ "Number", Type::fun(Type::mpz(), {Type::mpz()}), [&](Compiler& c, std::vector<Compiler::value> args) {
+			return args[0];
+		}, {}, {}, nullptr });
+		return callable;
+	}
+	if (name == "Boolean") {
+		auto callable = new Callable(name);
+		auto type = Type::fun(Type::boolean(), {});
+		callable->add_version({ "Boolean", type, [&](Compiler& c, std::vector<Compiler::value>) {
+			return c.new_bool(false);	
+		}, {}, {}, nullptr });
+		return callable;
+	}
+	if (name == "String") {
+		auto callable = new Callable(name);
+		callable->add_version({ "String", Type::fun(Type::string(), {}), [&](Compiler& c, std::vector<Compiler::value>) {
+			return c.new_pointer(new LSString(""), Type::string());
+		}, {}, {}, nullptr });
+		callable->add_version({ "String", Type::fun(Type::string(), {Type::string()}), [&](Compiler& c, std::vector<Compiler::value> args) {
+			return args[0];
+		}, {}, {}, nullptr });
+		return callable;
+	}
+	if (name == "Array") {
+		auto callable = new Callable(name);
+		callable->add_version({ "Array", Type::fun(Type::array(Type::any()), {}), [&](Compiler& c, std::vector<Compiler::value>) {
+			return c.new_array({}, {});
+		}, {}, {}, nullptr });
+		return callable;
+	}
+	if (name == "Object") {
+		auto callable = new Callable(name);
+		callable->add_version({ "Object", Type::fun(Type::array(Type::any()), {}), [&](Compiler& c, std::vector<Compiler::value>) {
+			return c.new_object();
+		}, {}, {}, nullptr });
+		return callable;
+	}
+	if (name == "Set") {
+		auto callable = new Callable(name);
+		auto type = Type::fun(Type::set(Type::any()), {});
+		callable->add_version({ "Set", type, [&](Compiler& c, std::vector<Compiler::value>) {
+			return c.new_pointer(new LSSet<LSValue*>(), Type::set(Type::any()));
+		}, {}, {}, nullptr });
+		return callable;
+	}
+	if (type == Type::clazz()) {
+		auto callable = new Callable(name);
+		auto type = Type::fun(Type::any(), {Type::clazz()});
+		callable->add_version({ name, type, [&](Compiler& c, std::vector<Compiler::value> args) {
+			return c.new_object_class(args[0]);
+		}, {}, {}, (Value*) this });
+		return callable;
+	}
 	}
 	return nullptr;
 }

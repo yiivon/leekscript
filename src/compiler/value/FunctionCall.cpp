@@ -122,39 +122,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		}
 	}
 
-	// Standard library constructors TODO better
-	auto vv = dynamic_cast<VariableValue*>(function);
-	if (vv != nullptr) {
-		if (vv->name == "Number") {
-			if (arguments.size()) {
-				type = arguments.at(0)->type;
-			} else {
-				type = Type::integer();
-			}
-			return;
-		}
-		else if (vv->name == "Boolean") {
-			type = Type::boolean();
-			return;
-		} else if (vv->name == "String") {
-			type = Type::string();
-			return;
-		} else if (vv->name == "Array") {
-			type = Type::array();
-			return;
-		} else if (vv->name == "Object") {
-			type = Type::object();
-			return;
-		} else if (vv->name == "Set") {
-			type = Type::set(Type::any());
-			return;
-		} else {
-			type = Type::any(); // Class constructor
-		}
 	} else if (function->type == Type::clazz()) {
 		type = Type::any(); // Class constructor
-	}
-
 	// Detect standard library functions
 	auto oa = dynamic_cast<ObjectAccess*>(function);
 	if (oa != nullptr) {
@@ -347,35 +316,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		return callable_version->compile_call(c, args);
 	}
 
-	/** Standard library constructors : Array(), Number() */
-	VariableValue* vv = dynamic_cast<VariableValue*>(function);
-	if (vv != nullptr) {
-		if (vv->name == "Boolean") {
-			return c.new_bool(false);
-		}
-		if (vv->name == "Number") {
-			if (arguments.size() > 0) {
-				return arguments.at(0)->compile(c);
-			} else {
-				return c.new_integer(0);
-			}
-		}
-		if (vv->name == "String") {
-			if (arguments.size() > 0) {
-				return arguments[0]->compile(c);
-			}
-			return c.new_pointer(new LSString(""), type);
-		}
-		if (vv->name == "Array") {
-			return c.new_array({}, {});
-		}
-		if (vv->name == "Object") {
-			return c.new_pointer(new LSObject(), type);
-		}
-		if (vv->name == "Set") {
-			return c.new_pointer(new LSSet<LSValue*>(), type);
-		}
-	}
 	if (function->type == Type::clazz()) {
 		auto clazz = function->compile(c);
 		return c.new_object_class(clazz);
