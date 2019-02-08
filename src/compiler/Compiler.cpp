@@ -477,6 +477,11 @@ Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 }
 
 Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
+	if (a.t.is_string() and b.t.is_string()) {
+		return insn_call(Type::array(Type::string()), {a, b}, +[](LSValue* a, LSValue* b) {
+			return a->div(b);
+		});
+	}
 	auto bv = to_real(b);
 	insn_if(insn_eq(bv, new_integer(0)), [&]() {
 		insn_delete_temporary(a);
