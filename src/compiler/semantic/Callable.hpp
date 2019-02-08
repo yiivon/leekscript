@@ -26,6 +26,8 @@ public:
 	CallableVersion(std::string name, Type type, const Value* value, std::vector<TypeMutator*> mutators, std::vector<Type> templates, Value* object, bool unknown = false)
 		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown) {}
 
+	void apply_mutators(SemanticAnalyser* analyser, std::vector<Value*> arguments);
+
 	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args) const;
 };
 

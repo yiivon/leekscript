@@ -84,20 +84,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		if (callable_version) {
 			// std::cout << "Version: " << callable_version << std::endl;
 			type = callable_version->type.return_type();
-			// Apply mutators
-			// for (const auto& mutator : callable_version->mutators) {
-			// 	mutator->apply(analyser, arguments);
-			// }
-			// int offset = callable_version->object ? 1 : 0;
-			// for (size_t a = 0; a < arguments.size(); ++a) {
-			// 	auto argument_type = callable_version->type.argument(a);
-			// 	if (argument_type.is_function()) {
-			// 		arguments.at(a - offset)->will_take(analyser, argument_type.arguments(), 1);
-			// 		arguments.at(a - offset)->set_version(argument_type.arguments(), 1);
-			// 		arguments.at(a - offset)->must_return(analyser, argument_type.return_type());
-			// 	}
-			// }
-			// return;
+			callable_version->apply_mutators(analyser, arguments);
+			
 		} else {
 			// std::cout << "No version found!" << std::endl;
 			// analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {

@@ -48,6 +48,16 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 	return best;
 }
 
+void CallableVersion::apply_mutators(SemanticAnalyser* analyser, std::vector<Value*> arguments) {
+	std::vector<Value*> values;
+	if (object) values.push_back(object);
+	values.insert(values.end(), arguments.begin(), arguments.end());
+	// std::cout << "mutators : " << mutators.size() << std::endl;
+	for (const auto& mutator : mutators) {
+		mutator->apply(analyser, values);
+	}
+}
+
 Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler::value> args) const {
 	// std::cout << "CallableVersion::compile_call(" << args << ")" << std::endl;
 	// Add the object if it's a method call
