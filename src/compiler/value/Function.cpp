@@ -288,7 +288,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 
 	std::vector<Type> arg_types;
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::any());
+		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() && defaultValues.at(i) != nullptr ? defaultValues.at(i)->type : Type::any());
 		analyser->add_parameter(arguments.at(i).get(), type);
 		arg_types.push_back(type);
 	}
