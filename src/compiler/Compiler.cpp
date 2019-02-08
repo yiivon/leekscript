@@ -1981,8 +1981,8 @@ namespace std {
 	std::ostream& operator << (std::ostream& os, const std::vector<ls::Compiler::value>& values) {
 		os << "[";
 		for (size_t i = 0; i < values.size(); ++i) {
-			os << values[i].t;
 			if (i != 0) os << ", ";
+			os << values[i].t;
 		}
 		os << "]";
 		return os;
