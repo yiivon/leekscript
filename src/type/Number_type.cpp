@@ -7,8 +7,17 @@
 #include "Bool_type.hpp"
 #include "Any_type.hpp"
 #include "Mpz_type.hpp"
+#include "Struct_type.hpp"
 
 namespace ls {
+
+Number_type::Number_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("number"), std::initializer_list<Type> {
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // ?
+	Type::integer(), // refs
+	Type::boolean() // native
+}) }) {}
 
 bool Number_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Number_type*>(type);
@@ -22,9 +31,6 @@ int Number_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Integer_type*>(type)) { return 400; }
 	if (dynamic_cast<const Bool_type*>(type)) { return 500; }
 	return -1;
-}
-llvm::Type* Number_type::llvm() const {
-	assert(false);
 }
 std::string Number_type::clazz() const {
 	return "Number";
