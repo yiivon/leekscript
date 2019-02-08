@@ -144,10 +144,11 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	}
 	Type current_type = this->type.element();
 	if (expressions.size() == 0) {
-		this->type = Type::array(added_type);
+		current_type = added_type;
 	} else {
-		this->type = Type::array(current_type * added_type);
+		current_type += added_type;
 	}
+	this->type = Type::array(current_type);
 	return false;
 }
 

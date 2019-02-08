@@ -121,9 +121,8 @@ bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>&
 	if (ArrayAccess* arr = dynamic_cast<ArrayAccess*>(array)) {
 		arr->array_access_will_take(analyser, args, 1);
 	}
-
-	type = array->type.element().fold();
-
+	
+	type = array->type.element();
 	return false;
 }
 
@@ -136,21 +135,21 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::
 		arr->array_access_will_take(analyser, arg_types, level + 1);
 	}
 
-	type = array->type.element().fold();
+	type = array->type.element();
 
 	return false;
 }
 
 bool ArrayAccess::will_store(SemanticAnalyser* analyser, const Type& type) {
 	array->elements_will_store(analyser, type, 1);
-	this->type = array->type.element().fold();
+	this->type = array->type.element();
 	return false;
 }
 
 void ArrayAccess::change_value(SemanticAnalyser* analyser, Value* value) {
 	array->will_store(analyser, value->type);
 	if (!type.is_any()) {
-		this->type = array->type.element().fold();
+		this->type = array->type.element();
 	}
 }
 
