@@ -29,14 +29,14 @@ bool ArrayAccess::isLeftValue() const {
 }
 
 void ArrayAccess::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-	array->print(os, indent, debug);
+	array->print(os, indent, debug, condensed);
 	os << "[";
 	if (key != nullptr) {
-		key->print(os, indent, debug);
+		key->print(os, indent, debug, condensed);
 	}
 	if (key2 != nullptr) {
 		os << ":";
-		key2->print(os, indent, debug);
+		key2->print(os, indent, debug, condensed);
 	}
 	os << "]";
 	if (debug) {

@@ -17,7 +17,7 @@ Array::~Array() {
 void Array::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "[";
 	for (size_t i = 0; i < expressions.size(); ++i) {
-		expressions[i]->print(os, indent, debug);
+		expressions[i]->print(os, indent, debug, condensed);
 		if (i < expressions.size() - 1) {
 			os << ", ";
 		}
