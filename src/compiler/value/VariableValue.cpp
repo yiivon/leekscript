@@ -144,13 +144,14 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 	}
 	type.temporary = false;
 
-	//	cout << "VV " << name << " : " << type << endl;
-	//	cout << "var scope : " << (int)var->scope << endl;
+	// std::cout << "VV " << name << " : " << type << std::endl;
+	// std::cout << "var scope : " << (int)var->scope << std::endl;
 	//	for (auto t : attr_types)
 	//	cout << t.first << " : " << t.second << endl;
 }
 
 bool VariableValue::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
+	// std::cout << "VV will take " << args << " type " << type << std::endl;
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_take(analyser, args, level);
 		if (auto f = dynamic_cast<Function*>(var->value)) {
@@ -177,6 +178,7 @@ void VariableValue::set_version(const std::vector<Type>& args, int level) {
 }
 
 bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
+	// std::cout << "VV will_store " << type << std::endl;
 	if (var != nullptr and var->value != nullptr) {
 		var->value->will_store(analyser, type);
 		this->type = var->type();
@@ -209,7 +211,7 @@ Type VariableValue::version_type(std::vector<Type> version) const {
 
 Compiler::value VariableValue::compile(Compiler& c) const {
 	// std::cout << "Compile var " << name << " " << version << std::endl;
-	// cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << endl;
+	// std::cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << std::endl;
 	Compiler::value v;
 	if (scope == VarScope::CAPTURE) {
 		v = c.insn_get_capture(capture_index, type);
@@ -240,6 +242,7 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_get_argument(name);
 	}
+	// std::cout << "VV " << name << " " << type.pointer() << std::endl << "     " << v.t << std::endl;
 	assert(type.pointer() == v.t);
 	assert(type.llvm_type()->getPointerTo() == v.v->getType());
 	return v;
