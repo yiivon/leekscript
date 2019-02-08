@@ -1978,4 +1978,13 @@ namespace std {
 		os << buff;
 		return os;
 	}
+	std::ostream& operator << (std::ostream& os, const std::vector<ls::Compiler::value>& values) {
+		os << "[";
+		for (size_t i = 0; i < values.size(); ++i) {
+			os << values[i].t;
+			if (i != 0) os << ", ";
+		}
+		os << "]";
+		return os;
+	}
 }

@@ -349,6 +349,7 @@ public:
 
 namespace std {
 	std::ostream& operator << (std::ostream&, const __mpz_struct);
+	std::ostream& operator << (std::ostream&, const std::vector<ls::Compiler::value>&);
 }
 
 #endif
