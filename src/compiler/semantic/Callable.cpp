@@ -34,7 +34,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 			}
 		}
 		int d = 0;
-		for (size_t i = 0; i < version_arguments.size(); ++i) {
+		for (size_t i = 0; i < std::min(version_arguments.size(), version.type.arguments().size()); ++i) {
 			auto di = version_arguments.at(i).distance(version.type.arguments().at(i));
 			if (di < 0) { d = std::numeric_limits<int>::max(); break; };
 			d += di;
