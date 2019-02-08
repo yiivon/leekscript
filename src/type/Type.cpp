@@ -135,12 +135,6 @@ Type Type::operator * (const Type& t2) const {
 	if (t2.is_polymorphic() and is_primitive()) {
 		return Type::any();
 	}
-	if (is_any()) {
-		return t2;
-	}
-	if (t2.is_any()) {
-		return *this;
-	}
 	// Temporary, to be removed when compatible() is removed
 	if ((is_bool() and t2.is_integer()) or (is_integer() and t2.is_bool())) {
 		return any();
