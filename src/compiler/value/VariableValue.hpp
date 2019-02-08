@@ -28,6 +28,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
+	virtual Callable* get_callable(SemanticAnalyser*) const override;
 	virtual void analyse(SemanticAnalyser*) override;
 	virtual bool will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level) override;
 	void set_version(const std::vector<Type>& args, int level) override;

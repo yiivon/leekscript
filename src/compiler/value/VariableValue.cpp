@@ -31,6 +31,13 @@ Location VariableValue::location() const {
 	return token->location;
 }
 
+Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
+	if (var && var->value) {
+		// return var->value->get_callable(analyser);
+	}
+	return nullptr;
+}
+
 void VariableValue::analyse(SemanticAnalyser* analyser) {
 
 	var = analyser->get_var(token.get());
