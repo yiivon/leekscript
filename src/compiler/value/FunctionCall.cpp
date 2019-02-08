@@ -59,7 +59,7 @@ Location FunctionCall::location() const {
 
 void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
-	// std::cout << "FC " << this << " : " << req_type << std::endl;
+	// std::cout << "FC analyse " << std::endl;
 
 	// Analyse the function (can be anything here)
 	function->analyse(analyser);
