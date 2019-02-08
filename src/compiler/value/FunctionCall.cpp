@@ -110,8 +110,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		}
 	}
 
-	} else if (function->type == Type::clazz()) {
-		type = Type::any(); // Class constructor
 	// Detect standard library functions
 	auto oa = dynamic_cast<ObjectAccess*>(function);
 	if (oa != nullptr) {
@@ -302,11 +300,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			arguments.at(i)->compile_end(c);
 		}
 		return callable_version->compile_call(c, args);
-	}
-
-	if (function->type == Type::clazz()) {
-		auto clazz = function->compile(c);
-		return c.new_object_class(clazz);
 	}
 
 	/** Default function : f(12) */
