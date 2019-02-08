@@ -196,7 +196,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::atan_real},
 	});
 	method("atan2", {
-		{Type::any(), {Type::any(), Type::any()}, (void*) &NumberSTD::atan2_ptr_ptr},
+		{Type::any(), {Type::any(), Type::any()}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
 		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::atan2},
 	});
 	method("cbrt", {
