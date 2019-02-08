@@ -35,7 +35,11 @@ FunctionCall::~FunctionCall() {
 
 void FunctionCall::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 
+	auto parenthesis = condensed && dynamic_cast<const Function*>(function);
+	if (parenthesis) os << "(";
 	function->print(os, indent, debug, condensed);
+	if (parenthesis) os << ")";
+
 	os << "(";
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		arguments.at(i)->print(os, indent, debug, condensed);
