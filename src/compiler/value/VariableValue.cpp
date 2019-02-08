@@ -43,6 +43,7 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 			else if (name == "/" or name == "÷") return c.insn_div(args[0], args[1]);
 			else if (name == "**") return c.insn_pow(args[0], args[1]);
 			else if (name == "%") return c.insn_mod(args[0], args[1]);
+			assert(false);
 		};
 		callable->add_version({ name, type, fun, {}, {}, nullptr });
 		auto type2 = Type::fun(Type::integer(), {Type::integer(), Type::integer()});
