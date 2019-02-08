@@ -2,6 +2,7 @@
 #define TYPE_HPP
 
 #include <vector>
+#include <map>
 #include <iostream>
 #include <cassert>
 #include "llvm/IR/Type.h"
@@ -141,8 +142,8 @@ public:
 	static Type fun(Type return_type = {}, std::vector<Type> arguments = {}, const Function* function = nullptr);
 	static Type closure(Type return_type = {}, std::vector<Type> arguments = {}, const Function* function = nullptr);
 	static Type structure(const std::string name, std::initializer_list<Type> types);
-	static Type clazz();
-	static Type const_class();
+	static Type clazz(const std::string name = "class?");
+	static Type const_class(const std::string name = "class?");
 	static Type template_(std::string name);
 
 	static std::shared_ptr<Base_type> _raw_null;
@@ -156,6 +157,7 @@ public:
 	static std::shared_ptr<Base_type> _raw_mpz;
 	static std::shared_ptr<Base_type> _raw_interval;
 	static std::shared_ptr<Base_type> _raw_object;
+	static std::map<std::string, std::shared_ptr<Base_type>> _raw_class;
 	static const std::shared_ptr<Base_type> raw_null();
 	static const std::shared_ptr<Base_type> raw_any();
 	static const std::shared_ptr<Base_type> raw_boolean();

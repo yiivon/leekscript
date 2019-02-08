@@ -7,7 +7,7 @@ namespace ls {
 
 class Class_type : public Pointer_type {
 public:
-	Class_type();
+	Class_type(std::string name);
 	virtual int id() const override { return 11; }
 	virtual const std::string getName() const { return "class"; }
 	virtual const std::string getJsonName() const { return "class"; }

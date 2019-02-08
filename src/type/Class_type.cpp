@@ -6,7 +6,7 @@
 
 namespace ls {
 
-Class_type::Class_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("class"), std::initializer_list<Type> {
+Class_type::Class_type(std::string name) : Pointer_type(Type { std::make_shared<const Struct_type>(name, std::initializer_list<Type> {
 	Type::integer(), // ?
 	Type::integer(), // ?
 	Type::integer(), // ?

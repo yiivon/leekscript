@@ -41,6 +41,7 @@ std::shared_ptr<Base_type> Type::_raw_mpz = nullptr;
 std::shared_ptr<Base_type> Type::_raw_string = nullptr;
 std::shared_ptr<Base_type> Type::_raw_interval = nullptr;
 std::shared_ptr<Base_type> Type::_raw_object = nullptr;
+std::map<std::string, std::shared_ptr<Base_type>> Type::_raw_class;
 
 std::vector<std::shared_ptr<const Base_type>> Type::placeholder_types;
 
@@ -563,11 +564,17 @@ Type Type::closure(Type return_type, std::vector<Type> arguments, const Function
 Type Type::structure(const std::string name, std::initializer_list<Type> types) {
 	return { std::make_shared<Struct_type>(name, types), false, false, false };
 }
-Type Type::clazz() {
-	return { std::make_shared<Class_type>(), false, false, false };
+Type Type::clazz(const std::string name) {
+	if (_raw_class.find(name) == _raw_class.end()) {
+		_raw_class.insert({name, std::make_shared<Class_type>(name) });
+	}
+	return { _raw_class.at(name), false, false, false };
 }
-Type Type::const_class() {
-	return { std::make_shared<Class_type>(), false, false, true };
+Type Type::const_class(const std::string name) {
+	if (_raw_class.find(name) == _raw_class.end()) {
+		_raw_class.insert({name, std::make_shared<Class_type>(name) });
+	}
+	return { _raw_class.at(name), false, false, true };
 }
 Type Type::template_(std::string name) {
 	return { std::make_shared<Template_type>(name), false, false, false };

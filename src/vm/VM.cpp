@@ -142,7 +142,7 @@ void VM::static_init() {
 
 void VM::add_module(Module* m) {
 	modules.push_back(m);
-	Type const_class = Type::clazz();
+	Type const_class = Type::clazz(m->name);
 	const_class.constant = true;
 	add_internal_var(m->name, const_class, m->clazz);
 }
