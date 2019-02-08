@@ -286,10 +286,6 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		c.mark_offset(location().start.line);
 		if (array->type.is_array()) {
 
-			// return c.insn_call(Type::POINTER, {compiled_array, k}, +[](LSArray<LSValue*>* array, int key) {
-			// 	return array->atL(LSNumber::get(key));
-			// });
-
 			auto array_size = c.insn_array_size(compiled_array);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
 				c.insn_delete_temporary(compiled_array);
