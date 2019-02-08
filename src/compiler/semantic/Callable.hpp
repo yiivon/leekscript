@@ -17,13 +17,14 @@ public:
 	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)> func = nullptr;
 	std::vector<TypeMutator*> mutators;
 	std::vector<Type> templates;
+	bool unknown = false;
 
-	CallableVersion(std::string name, Type type, void* addr, std::vector<TypeMutator*> mutators, std::vector<Type> templates, Value* object)
-		: name(name), type(type), object(object), addr(addr), mutators(mutators), templates(templates) {}
-	CallableVersion(std::string name, Type type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)> func, std::vector<TypeMutator*> mutators, std::vector<Type> templates, Value* object)
-		: name(name), type(type), object(object), func(func), mutators(mutators), templates(templates) {}
-	CallableVersion(std::string name, Type type, const Value* value, std::vector<TypeMutator*> mutators, std::vector<Type> templates, Value* object)
-		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates) {}
+	CallableVersion(std::string name, Type type, void* addr, std::vector<TypeMutator*> mutators, std::vector<Type> templates, Value* object, bool unknown = false)
+		: name(name), type(type), object(object), addr(addr), mutators(mutators), templates(templates), unknown(unknown) {}
+	CallableVersion(std::string name, Type type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)> func, std::vector<TypeMutator*> mutators, std::vector<Type> templates, Value* object, bool unknown = false)
+		: name(name), type(type), object(object), func(func), mutators(mutators), templates(templates), unknown(unknown) {}
+	CallableVersion(std::string name, Type type, const Value* value, std::vector<TypeMutator*> mutators, std::vector<Type> templates, Value* object, bool unknown = false)
+		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown) {}
 
 	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args) const;
 };

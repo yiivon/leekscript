@@ -18,7 +18,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 		if (version.object) {
 			version_arguments.insert(version_arguments.begin(), version.object->type);
 		}
-		if (version.type.arguments().size() != version_arguments.size()) continue;
+		if (version.type.arguments().size() != version_arguments.size() and not version.unknown) continue;
 		// std::cout << "templates : " << implementation.templates << std::endl;
 		// implementation.templates[0].implement(Type::real());
 		// implementation.templates[1].implement(Type::real());
@@ -96,6 +96,7 @@ namespace std {
 		} else {
 			os << " (user function)";
 		}
+		if (v.unknown) os << " (unknown)";
 		return os;
 	}
 	std::ostream& operator << (std::ostream& os, const ls::CallableVersion* v) {
