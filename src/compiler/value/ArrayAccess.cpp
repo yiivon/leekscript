@@ -65,10 +65,8 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 	key->analyse(analyser);
 	constant = array->constant && key->constant;
 
-	array_element_type = {};
 	if (array->type.is_array() || array->type.is_interval() || array->type.is_map()) {
-		array_element_type = array->type.element();
-		type = array_element_type;
+		type = array->type.element();
 	} else {
 		type = array->type.element();
 	}
@@ -146,7 +144,6 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::
 bool ArrayAccess::will_store(SemanticAnalyser* analyser, const Type& type) {
 	array->elements_will_store(analyser, type, 1);
 	this->type = array->type.element().fold();
-	array_element_type = this->type;
 	return false;
 }
 
@@ -154,7 +151,6 @@ void ArrayAccess::change_value(SemanticAnalyser* analyser, Value* value) {
 	array->will_store(analyser, value->type);
 	if (!type.is_any()) {
 		this->type = array->type.element().fold();
-		array_element_type = this->type;
 	}
 }
 
@@ -185,31 +181,31 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			void* func = nullptr;
 			if (map_key_type == Type::integer()) {
-				if (array_element_type == Type::integer()) {
+				if (type == Type::integer()) {
 					func = (void*) &LSMap<int, int>::at;
-				} else if (array_element_type == Type::real()) {
+				} else if (type == Type::real()) {
 					func = (void*) &LSMap<int, double>::at;
 				} else {
 					func = (void*) &LSMap<int, LSValue*>::at;
 				}
 			} else if (map_key_type == Type::real()) {
-				if (array_element_type == Type::integer()) {
+				if (type == Type::integer()) {
 					func = (void*) &LSMap<double, int>::at;
-				} else if (array_element_type == Type::real()) {
+				} else if (type == Type::real()) {
 					func = (void*) &LSMap<double, double>::at;
 				} else {
 					func = (void*) &LSMap<double, LSValue*>::at;
 				}
 			} else {
-				if (array_element_type == Type::integer()) {
+				if (type == Type::integer()) {
 					func = (void*) &LSMap<LSValue*, int>::at;
-				} else if (array_element_type == Type::real()) {
+				} else if (type == Type::real()) {
 					func = (void*) &LSMap<LSValue*, double>::at;
 				} else {
 					func = (void*) &LSMap<LSValue*, LSValue*>::at;
 				}
 			}
-			auto res = c.insn_invoke(array_element_type, {compiled_array, k}, func);
+			auto res = c.insn_invoke(type, {compiled_array, k}, func);
 			c.insn_delete_temporary(k);
 			c.inc_ops(2);
 			return res;

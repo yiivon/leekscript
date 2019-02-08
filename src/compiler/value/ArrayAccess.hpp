@@ -16,7 +16,6 @@ public:
 	Value* key2;
 	std::shared_ptr<Token> open_bracket;
 	std::shared_ptr<Token> close_bracket;
-	Type array_element_type;
 	Type map_key_type;
 	Compiler::value compiled_array;
 
