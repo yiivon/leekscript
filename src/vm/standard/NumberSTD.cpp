@@ -175,6 +175,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	method("int", Method::Static, {
 		{Type::integer(), {Type::any()}, (void*) &NumberSTD::_int},
+		{Type::integer(), {Type::real()}, (void*) &NumberSTD::_int}
 	});
 	method("long", Method::Static, {
 		{Type::long_(), {Type::any()}, (void*) &NumberSTD::_long},
@@ -197,7 +198,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	method("atan2", {
 		{Type::any(), {Type::any(), Type::any()}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
-		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::atan2},
+		{Type::real(), {Type::real(), Type::any()}, (void*) &NumberSTD::atan2},
+		{Type::real(), {Type::real(), Type::real()}, (void*) &NumberSTD::atan2},
 	});
 	method("cbrt", {
 		{Type::any(), {Type::any()}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
