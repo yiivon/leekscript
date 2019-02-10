@@ -69,6 +69,16 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		argument->analyse(analyser);
 	}
 
+	// Perform a will_take to prepare eventual versions
+	std::vector<Type> arguments_types;
+	for (const auto& argument : arguments) {
+		arguments_types.push_back(argument->type);
+	}
+	function->will_take(analyser, arguments_types, 1);
+	function->set_version(arguments_types, 1);
+
+	// std::cout << "FC function " << function->version_type(arguments_types) << std::endl;
+
 	// Retrieve the callable version
 	callable = function->get_callable(analyser);
 	if (/*callable == nullptr or */not function->type.can_be_callable()) {
@@ -76,16 +86,40 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	}
 	if (callable) {
 		// std::cout << "Callable: " << callable << std::endl;
-		std::vector<Type> arguments_types;
-		for (const auto& argument : arguments) {
-			arguments_types.push_back(argument->type);
-		}
 		callable_version = callable->resolve(analyser, arguments_types);
 		if (callable_version) {
 			// std::cout << "Version: " << callable_version << std::endl;
 			type = callable_version->type.return_type();
 			callable_version->apply_mutators(analyser, arguments);
 			
+			int offset = callable_version->object ? 1 : 0;
+			for (size_t a = 0; a < arguments.size(); ++a) {
+				auto argument_type = callable_version->type.argument(a + offset);
+				if (argument_type.is_function()) {
+					arguments.at(a)->will_take(analyser, argument_type.arguments(), 1);
+					arguments.at(a)->set_version(argument_type.arguments(), 1);
+					arguments.at(a)->must_return(analyser, argument_type.return_type());
+				}
+			}
+			if (callable_version->value) {
+				function->will_take(analyser, arguments_types, 1);
+				function->set_version(arguments_types, 1);
+				function_type = function->version_type(arguments_types);
+				auto vv = dynamic_cast<VariableValue*>(function);
+				if (vv and vv->var and vv->var->value and vv->var->name == analyser->current_function()->name) {
+					type = analyser->current_function()->getReturnType();
+				} else {
+					type = function_type.return_type();
+				}
+			}
+			if (callable_version->unknown) {
+				for (const auto& arg : arguments) {
+					if (arg->type.is_function()) {
+						arg->must_return(analyser, Type::any());
+					}
+				}
+			}
+			return;
 		} else {
 			// std::cout << "No version found!" << std::endl;
 			// analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
@@ -251,29 +285,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		}});
 		return;
 	}
-	if (arguments_valid) {
-		function->will_take(analyser, arg_types, 1);
-		function->set_version(arg_types, 1);
-	}
-	if (is_unknown_method) {
-		for (const auto& arg : arguments) {
-			if (arg->type.is_function()) {
-				arg->must_return(analyser, Type::any());
-			}
-		}
-	}
-
-	// Get the function type
-	function_type = function->version_type(arg_types);
-
-	// Recursive function
-	if (vv and vv->var and vv->var->value and vv->var->name == analyser->current_function()->name) {
-		type = analyser->current_function()->getReturnType();
-	} else {
-		type = function_type.return_type();
-	}
-	return_type = function_type.return_type();
-	// std::cout << "FC " << this << " type " << type << std::endl;
 }
 
 bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
