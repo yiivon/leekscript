@@ -147,10 +147,8 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	// Detect standard library functions
 	auto oa = dynamic_cast<ObjectAccess*>(function);
 	if (oa != nullptr) {
-
 		auto field_name = oa->field->content;
 		auto object_type = oa->object->type;
-
 		std::vector<Type> arg_types;
 		for (auto arg : arguments) {
 			arg_types.push_back(arg->type.fold());
@@ -162,86 +160,18 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			if (i > 0) args_string += ", ";
 			args_string += oss.str();
 		}
-
 		if (object_type.is_class()) { // String.size("salut")
-
 			std::string clazz = ((VariableValue*) oa->object)->name;
-			auto object_class = (LSClass*) analyser->vm->internal_vars[clazz]->lsvalue;
-			auto sm = object_class->getMethod(analyser, oa->field->content, arg_types);
-
-			if (sm != nullptr) {
-				std_func = sm->addr;
-				function->type = sm->type;
-				is_native_method = sm->native;
-				function_name = object_class->name + std::string("::") + oa->field->content;
-				// Apply mutators
-				for (const auto& mutator : sm->mutators) {
-					mutator->apply(analyser, arguments);
-				}
-				// std::cout << "Static method " << oa->field->content << " found : " << sm->type << std::endl;
-			} else {
-				auto value_class = (LSClass*) analyser->vm->internal_vars["Value"]->lsvalue;
-				std::vector<Type> args = arg_types;
-				args.insert(args.begin(), object_type);
-				auto m = value_class->getMethod(analyser, oa->field->content, args);
-
-				if (m != nullptr) {
-					this_ptr = oa->object;
-					this_ptr->analyse(analyser);
-					std_func = m->addr;
-					function->type = m->type;
-					is_native_method = m->native;
-					function_name = std::string("Value::") + oa->field->content;
-					// Apply mutators
-					for (const auto& mutator : m->mutators) {
-						mutator->apply(analyser, arguments);
-					}
-				} else {
-					analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
-				}
-			}
+			analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
 		} else {  // "salut".size()
-
-			Method* m = nullptr;
-			LSClass* clazz;
-			if (!object_type.fold().is_any() && !object_type.fold().is_placeholder()) {
-				clazz = (LSClass*) analyser->vm->internal_vars[object_type.class_name()]->lsvalue;
-				std::vector<Type> args = arg_types;
-				args.insert(args.begin(), object_type);
-				m = clazz->getMethod(analyser, oa->field->content, args);
-			}
-			if (m == nullptr) {
-				clazz = (LSClass*) analyser->vm->internal_vars["Value"]->lsvalue;
-				std::vector<Type> args = arg_types;
-				args.insert(args.begin(), object_type);
-				m = clazz->getMethod(analyser, oa->field->content, args);
-			}
-			if (m != nullptr) {
-				// std::cout << "Method " << oa->field->content << " found : " << m->type << std::endl;
-				this_ptr = oa->object;
-				this_ptr->analyse(analyser);
-				std_func = m->addr;
-				function->type = m->type;
-				is_native_method = m->native;
-				function_name = clazz->name + std::string("::") + oa->field->content;
-				// Apply mutators
-				std::vector<Value*> values = {oa->object};
-				values.insert(values.end(), arguments.begin(), arguments.end());
-				for (const auto& mutator : m->mutators) {
-					mutator->apply(analyser, values);
-				}
+			bool has_unknown_argument = false;
+			if (!object_type.fold().is_any() && !has_unknown_argument) {
+				std::ostringstream obj_type_ss;
+				obj_type_ss << object_type;
+				analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
 			} else {
-				bool has_unknown_argument = false;
-				// for (const auto& a : arguments)
-					// if (a->type == ANY) has_unknown_argument = true;
-				if (!object_type.fold().is_any() && !has_unknown_argument) {
-					std::ostringstream obj_type_ss;
-					obj_type_ss << object_type;
-					analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
-				} else {
-					is_unknown_method = true;
-					object = oa->object;
-				}
+				is_unknown_method = true;
+				object = oa->object;
 			}
 		}
 	}
