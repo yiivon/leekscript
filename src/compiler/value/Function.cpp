@@ -248,9 +248,9 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 				analyser->leave_function();
 
 				if (captures.size()) {
-					v->type = Type::closure(f->versions[args]->type, v->type.arguments(), this);
+					v->type = Type::closure(f->version_type(args), v->type.arguments(), this);
 				} else {
-					v->type = Type::fun(f->versions[args]->type, v->type.arguments(), this);
+					v->type = Type::fun(f->version_type(args), v->type.arguments(), this);
 				}
 
 				// std::cout << "Sub function type: " << f->versions.begin()->second->type << std::endl;
