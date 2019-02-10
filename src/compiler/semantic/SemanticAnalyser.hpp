@@ -20,6 +20,7 @@ class Value;
 class SemanticAnalyser;
 class Token;
 class VariableDeclaration;
+class Callable;
 
 enum class VarScope {
 	INTERNAL, LOCAL, PARAMETER, CAPTURE
@@ -39,11 +40,12 @@ public:
 	std::vector<Type> version;
 	bool has_version = false;
 	LSValue* lsvalue = nullptr;
+	Callable* callable = nullptr;
 
-	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue) :
-		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), initial_type(type), lsvalue(lsvalue) {}
+	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue, Callable* callable = nullptr) :
+		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), initial_type(type), lsvalue(lsvalue), callable(callable) {}
 
-	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), initial_type(o.type()), lsvalue(o.lsvalue) {}
+	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), initial_type(o.type()), lsvalue(o.lsvalue), callable(o.callable) {}
 
 	Type type() const;
 	void must_be_any(SemanticAnalyser*);
