@@ -298,7 +298,6 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			return array->compile(c);
 		}
 	}();
-	array->compile_end(c);
 
 	if (key2 == nullptr) {
 		// Compile the key
