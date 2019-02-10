@@ -310,7 +310,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("removeElement", {
 		{Type::boolean(), {Type::array(), Type::const_any()}, (void*) &remove_element_any},
 		{Type::boolean(), {Type::array(Type::real()), Type::const_any()}, (void*) &remove_element_real},
+		{Type::boolean(), {Type::array(Type::real()), Type::const_real()}, (void*) &remove_element_real},
 		{Type::boolean(), {Type::array(Type::integer()), Type::const_any()}, (void*) &remove_element_int},
+		{Type::boolean(), {Type::array(Type::integer()), Type::integer()}, (void*) &remove_element_int},
 	});
 
 	method("reverse", {
