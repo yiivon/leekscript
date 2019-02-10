@@ -1,6 +1,7 @@
 #include <sstream>
 #include "Value.hpp"
 #include "../../type/Type.hpp"
+#include "../semantic/Callable.hpp"
 
 namespace ls {
 
@@ -12,7 +13,9 @@ Value::Value() {
 Value::~Value() {}
 
 Callable* Value::get_callable(SemanticAnalyser*) const {
-	return nullptr;
+	auto callable = new Callable("?");
+	callable->add_version({ "?", type, this, {}, {}, nullptr, true });
+	return callable;
 }
 
 void Value::analyse(SemanticAnalyser*) {}
