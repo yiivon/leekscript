@@ -131,7 +131,8 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 		}
 	}
 	if (callable->versions.size() == 0) {
-		return nullptr;
+		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
+		callable->add_version({ oss.str(), type, this, {}, {}, object, true });
 	}
 	return callable;
 }
