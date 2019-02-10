@@ -232,106 +232,33 @@ Type FunctionCall::version_type(std::vector<Type> version) const {
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {
-
-	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
-	if (callable) {
-		std::vector<Compiler::value> args;
-		for (unsigned i = 0; i < arguments.size(); ++i) {
-			args.push_back(arguments.at(i)->compile(c));
-			arguments.at(i)->compile_end(c);
-		}
-		return callable_version->compile_call(c, args);
-	}
-
-	/** Default function : f(12) */
-	Compiler::value fun;
-	auto jit_object = c.new_pointer(nullptr, Type::any());
-	auto is_closure = function->type.is_closure();
-
-	if (is_unknown_method) {
-		auto oa = static_cast<ObjectAccess*>(function);
-		jit_object = c.insn_load(((LeftValue*) object)->compile_l(c));
-		auto k = c.new_pointer(&oa->field->content, Type::any());
-		fun = c.insn_call(Type::fun(), {jit_object, k}, (void*) +[](LSValue* object, std::string* key) {
-			return object->attr(*key);
-		});
-	} else {
-		fun = function->compile(c);
-	}
-
-	/** Arguments */
-	size_t offset = is_closure or is_unknown_method ? 1 : 0;
-	size_t arg_count = std::max(arg_types.size(), arguments.size()) + offset;
-	std::vector<Compiler::value> args;
-	std::vector<LSValueType> lsvalue_types;
-
-	if (is_unknown_method) {
-		// add 'function' object as first argument
-		args.push_back(fun);
-		lsvalue_types.push_back(Type::fun().id());
-		// add 'this' object as second argument
-		args.push_back(jit_object);
-		lsvalue_types.push_back(object->type.id());
-	} else if (is_closure) {
-		// Function pointer as first argument
-		args.push_back(fun);
-		lsvalue_types.push_back(Type::closure().id());
-	}
-
-	// Compile arguments
-	// std::cout << this << " args " << args.size() << " " << arg_count << " " << offset << std::endl;
-	for (size_t i = 0; i < arg_count - offset; ++i) {
-		if (i < arguments.size()) {
-			auto arg = arguments.at(i)->compile(c);
-			c.assert_value_ok(arg);
-			if (arg.t.is_primitive()) arg = c.insn_convert(arg, function_type.argument(i));
-			args.push_back(arg);
-			arguments.at(i)->compile_end(c);
-			if (function_type.argument(i) == Type::mpz() && arguments.at(i)->type != Type::tmp_mpz()) {
-				args.at(offset + i) = c.insn_clone_mpz(args.at(offset + i));
-			}
-		} else {
-			args.push_back(function_object->defaultValues.at(i)->compile(c));
-		}
-		lsvalue_types.push_back(function_type.argument(i).id());
-
-		// Increment references of argument
-		c.insn_inc_refs(args.at(offset + i));
-	}
-
+	
 	c.mark_offset(location().start.line);
 
-	// TODO : some tests are failing with this
-	// c.insn_check_args(args, lsvalue_types);
+	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
+	assert(callable && callable_version);
 
-	// Call
-	// std::cout << "Function call args: " << function << " | ";
-	// for (auto& a : args) { std::cout << a.t << " " << a.v->getType() << ", "; }
-	// std::cout << std::endl;
-
-	Compiler::value result;
-	if (is_unknown_method) {
-		result = c.insn_call(Type::any(), args, (void*) &LSFunction::call);
-	} else {
-		result = c.insn_invoke(return_type, args, fun);
+	std::vector<LSValueType> types;
+	std::vector<Compiler::value> args;
+	int offset = callable_version->object ? 1 : 0;
+	if (callable_version->object) {
+		// types.push_back(callable_version->object->type.id());
 	}
-
-	// Destroy temporary arguments
-	for (size_t i = 0; i < arg_count - offset; ++i) {
-		c.insn_delete(args.at(offset + i));
+	for (unsigned i = 0; i < arguments.size(); ++i) {
+		types.push_back((LSValueType) callable_version->type.argument(i + offset).id());
+		// std::cout << "convert argument to " << callable_version->type.argument(i + offset) << std::endl;
+		if (arguments.at(i)->type.is_primitive()) 
+			args.push_back(c.insn_convert(arguments.at(i)->compile(c), callable_version->type.argument(i + offset))); 
+		else
+			args.push_back(arguments.at(i)->compile(c));
+		arguments.at(i)->compile_end(c);
+		if (arguments.at(i)->type == Type::mpz()) {
+			args.back() = c.insn_clone_mpz(args.back());
+		}
 	}
-	c.insn_delete_temporary(fun);
-
-	if (is_unknown_method) {
-		object->compile_end(c);
-	} else {
-		function->compile_end(c);
-	}
-
-	// Custom function call : 1 op
-	c.inc_ops(1);
-
-	return result;
+	// Check arguments
+	c.insn_check_args(args, types);
+	return callable_version->compile_call(c, args);
 }
 
 Value* FunctionCall::clone() const {
