@@ -2,6 +2,8 @@
 #include "../../colors.h"
 #include "../value/LeftValue.hpp"
 #include "../../type/Function_type.hpp"
+#include "../../vm/value/LSFunction.hpp"
+#include "../value/ObjectAccess.hpp"
 
 namespace ls {
 
@@ -61,33 +63,48 @@ void CallableVersion::apply_mutators(SemanticAnalyser* analyser, std::vector<Val
 Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler::value> args) const {
 	// std::cout << "CallableVersion::compile_call(" << args << ")" << std::endl;
 	// Add the object if it's a method call
+	Compiler::value compiled_object;
 	if (object) {
-		auto obj = [&]() { if (object->isLeftValue()) {
+		compiled_object = [&]() { if (object->isLeftValue()) {
 			return c.insn_load(((LeftValue*) object)->compile_l(c));
 		} else {
 			return object->compile(c);
 		}}();
-		object->compile_end(c);
-		args.insert(args.begin(), obj);
+		args.insert(args.begin(), compiled_object);
 	}
-	// Check arguments
-	std::vector<LSValueType> types;
-	for (unsigned i = 0; i < args.size(); ++i) {
-		types.push_back((LSValueType) type.argument(i).id());
-	}
-	c.insn_check_args(args, types);
 	// Do the call
 	auto r = [&]() { if (addr) {
 		return c.insn_invoke(type.return_type(), args, addr);
 	} else if (func) {
 		return func(c, args);
-	} else {
-		auto fun = value->compile(c);
-		if (fun.t.is_closure()) {
+	} else if (value) {
+		auto fun = [&]() { if (object) {
+			auto oa = dynamic_cast<const ObjectAccess*>(value);
+			auto k = c.new_pointer(&oa->field->content, Type::any());
+			return c.insn_invoke(type.pointer(), {compiled_object, k}, (void*) +[](LSValue* object, std::string* key) {
+				return object->attr(*key);
+			});
+		} else {
+			return value->compile(c);
+		}}();
+		if (fun.t.is_closure() or unknown) {
 			args.insert(args.begin(), fun);
 		}
-		return c.insn_invoke(type.return_type(), args, fun);
+		auto r = [&]() { if (unknown) {
+			return c.insn_call(Type::any(), args, (void*) &LSFunction::call);
+		} else {
+			return c.insn_invoke(type.return_type(), args, fun);
+		}}();
+		if (!object) {
+			value->compile_end(c);
+		}
+		return r;
+	} else {
+		assert(false);
 	}}();
+	if (object) {
+		object->compile_end(c);
+	}
 	c.inc_ops(1);
 	return r;
 }
