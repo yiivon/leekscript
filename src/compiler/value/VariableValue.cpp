@@ -114,6 +114,18 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 		}, {}, {}, (Value*) this });
 		return callable;
 	}
+	if (var) {
+		if (var->callable) return var->callable;
+		if (var->value) {
+			auto callable = new Callable(var->name);
+			auto c = var->value->get_callable(analyser);
+			for (const auto& v : c->versions) {
+				auto v2 = v;
+				v2.value = this;
+				callable->add_version(v2);
+			}
+			return callable;
+		}
 	}
 	return nullptr;
 }
