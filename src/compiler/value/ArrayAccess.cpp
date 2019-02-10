@@ -6,6 +6,7 @@
 #include "../../vm/value/LSInterval.hpp"
 #include "../semantic/SemanticAnalyser.hpp"
 #include "../semantic/SemanticError.hpp"
+#include "../semantic/Callable.hpp"
 
 namespace ls {
 
@@ -46,6 +47,18 @@ void ArrayAccess::print(std::ostream& os, int indent, bool debug, bool condensed
 
 Location ArrayAccess::location() const {
 	return {array->location().start, close_bracket->location.end};
+}
+
+Callable* ArrayAccess::get_callable(SemanticAnalyser*) const {
+	auto callable = new Callable("<aa>");
+	// std::cout << "Array access get callable " << type << std::endl;
+	if (type.is_function()) {
+		callable->add_version({ "<aa>", type, this, {}, {}, nullptr });
+	} else {
+		// The array is not homogeneous, so the function inside an array always returns any
+		callable->add_version({ "<aa>", Type::fun(Type::any(), {Type::any()}), this, {}, {}, nullptr });
+	}
+	return callable;
 }
 
 void ArrayAccess::analyse(SemanticAnalyser* analyser) {
