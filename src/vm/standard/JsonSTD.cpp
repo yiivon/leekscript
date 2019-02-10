@@ -10,7 +10,8 @@ namespace ls {
 JsonSTD::JsonSTD() : Module("Json") {
 
 	method("encode", {
-		{Type::string(), {Type::const_any()}, (void*) &JsonSTD::encode}
+		{Type::string(), {Type::const_any()}, (void*) &JsonSTD::encode},
+		{Type::string(), {Type::mpz()}, (void*) &JsonSTD::encode}
 	});
 	method("decode", {
 		{Type::any(), {Type::const_string()}, (void*) &JsonSTD::decode},
