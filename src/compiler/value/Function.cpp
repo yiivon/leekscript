@@ -397,7 +397,7 @@ void Function::must_return(SemanticAnalyser*, const Type& type) {
 
 Callable* Function::get_callable(SemanticAnalyser*) const {
 	auto callable = new Callable("<function>");
-	// callable->add_version({ "<default>", default_version->type, this, {}, {}, nullptr });
+	callable->add_version({ "<default>", default_version->type, this, {}, {}, nullptr });
 	for (const auto& version : versions) {
 		callable->add_version({ "<version>", version.second->type, this, {}, {}, nullptr });
 	}
