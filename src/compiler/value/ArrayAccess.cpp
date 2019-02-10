@@ -153,6 +153,16 @@ void ArrayAccess::change_value(SemanticAnalyser* analyser, Value* value) {
 	}
 }
 
+Type ArrayAccess::version_type(std::vector<Type> version) const {
+	// std::cout << "AA vt " << type << std::endl;
+	if (type.is_function()) {
+		return type;
+	} else {
+		// The array is not homogeneous, so the function inside an array always returns any
+		return Type::fun(Type::any(), {Type::any()});
+	}
+}
+
 Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 	c.mark_offset(open_bracket->location.start.line);

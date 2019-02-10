@@ -32,6 +32,7 @@ public:
 	bool array_access_will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level);
 	virtual bool will_store(SemanticAnalyser* analyser, const Type& type) override;
 	virtual void change_value(SemanticAnalyser*, Value*) override;
+	virtual Type version_type(std::vector<Type>) const override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_l(Compiler&) const override;
