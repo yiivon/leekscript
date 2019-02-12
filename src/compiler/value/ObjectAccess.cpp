@@ -284,7 +284,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		function->native = true;
 		function->refs = 1;
 		((ObjectAccess*) this)->ls_function = function;
-		return c.new_pointer(ls_function, Type::any());
+		return c.new_pointer(ls_function, type);
 	}
 
 	// Default : object.attr
