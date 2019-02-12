@@ -1030,7 +1030,7 @@ void Compiler::insn_push_array(Compiler::value array, Compiler::value value) con
 			array->push_back(value);
 		});
 	} else {
-		insn_call({}, {array, value}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
+		insn_call({}, {array, insn_convert(value, Type::any())}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
 			array->push_inc(value);
 		});
 	}
