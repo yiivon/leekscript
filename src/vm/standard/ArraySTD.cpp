@@ -270,11 +270,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::string(), {Type::array()}, (void*) &LSValue::ls_json, Method::NATIVE},
 	});
 
-	// template<T> array<T> fill(array, T, integer)
+	auto T = Type::template_("T");
+	template_(T).
 	method("fill", {
-		{Type::array(Type::any()), {Type::array(), Type::any(), Type::const_integer()}, (void*) &fill, false, {new WillStoreMutator()}},
-		{Type::array(Type::real()), {Type::array(), Type::real(), Type::const_integer()}, (void*) &fill, false, {new WillStoreMutator()}},
-		{Type::array(Type::integer()), {Type::array(), Type::integer(), Type::const_integer()}, (void*) &fill, false, {new WillStoreMutator()}},
+		{Type::array(T), {Type::array(), T, Type::const_integer()}, (void*) &fill, false, {new WillStoreMutator()}}
 	});
 
 	method("insert", {
