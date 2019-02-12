@@ -27,6 +27,7 @@ public:
 		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown) {}
 
 	void apply_mutators(SemanticAnalyser* analyser, std::vector<Value*> arguments);
+	void resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments);
 
 	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args) const;
 };

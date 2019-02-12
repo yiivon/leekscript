@@ -4,11 +4,25 @@
 #include "../../type/Function_type.hpp"
 #include "../../vm/value/LSFunction.hpp"
 #include "../value/ObjectAccess.hpp"
+#include "../../type/Template_type.hpp"
 
 namespace ls {
 
 void Callable::add_version(CallableVersion v) {
 	versions.push_back(v);
+}
+
+Type build(const Type& type) {
+	if (type.is_template()) return ((Template_type*) type._types[0].get())->_implementation;
+	if (type.is_array()) return Type::array(build(type.element()));
+	if (type.is_function()) {
+		std::vector<Type> args;
+		for (const auto& t : type.arguments()) {
+			args.push_back(build(t));
+		}
+		return Type::fun(build(type.return_type()), args);
+	}
+	assert(false);
 }
 
 CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type> arguments) {
@@ -21,12 +35,23 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 			version_arguments.insert(version_arguments.begin(), version.object->type);
 		}
 		if (version.type.arguments().size() != version_arguments.size() and not version.unknown) continue;
-		// std::cout << "templates : " << implementation.templates << std::endl;
-		// implementation.templates[0].implement(Type::real());
-		// implementation.templates[1].implement(Type::real());
-		for (size_t i = 0; i < std::min(version.type.arguments().size(), version_arguments.size()); ++i) {
+
+		// Template resolution
+		auto version_type = version.type;
+		if (version.templates.size()) {
+			version.resolve_templates(analyser, version_arguments);
+			version_type = build(version.type);
+			// Reset template implementations
+			for (size_t i = 0; i < version_arguments.size(); ++i) {
+				version.templates.at(i).implement({});
+			}
+		}
+		CallableVersion* new_version = new CallableVersion(version);
+		new_version->type = version_type;
+
+		for (size_t i = 0; i < std::min(version_type.arguments().size(), version_arguments.size()); ++i) {
 			const auto& a = version_arguments.at(i);
-			const auto implem_arg = version.type.arguments().at(i);
+			const auto implem_arg = version_type.arguments().at(i);
 			if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
 				if (fun->function() and implem_arg.is_function()) {
 					auto version = implem_arg.arguments();
@@ -36,15 +61,15 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 			}
 		}
 		int d = 0;
-		for (size_t i = 0; i < std::min(version_arguments.size(), version.type.arguments().size()); ++i) {
-			auto di = version_arguments.at(i).distance(version.type.arguments().at(i));
+		for (size_t i = 0; i < std::min(version_arguments.size(), version_type.arguments().size()); ++i) {
+			auto di = version_arguments.at(i).distance(version_type.arguments().at(i));
 			if (di < 0) { d = std::numeric_limits<int>::max(); break; };
 			d += di;
 		}
 		// std::cout << implementation.type.arguments() << " distance " << d << std::endl;
 		if (best == nullptr or d <= best_score) {
 			best_score = d;
-			best = &version;
+			best = new_version;
 		}
 	}
 	return best;
@@ -57,6 +82,33 @@ void CallableVersion::apply_mutators(SemanticAnalyser* analyser, std::vector<Val
 	// std::cout << "mutators : " << mutators.size() << std::endl;
 	for (const auto& mutator : mutators) {
 		mutator->apply(analyser, values);
+	}
+}
+
+Type solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
+	if (t1.is_template()) {
+		return t2;
+	}
+	if (t1.is_array() and t2.is_array()) {
+		return solve(analyser, t1.element(), t2.element());
+	}
+	if (t1.is_function() and t2.is_function()) {
+		auto fun = dynamic_cast<const Function_type*>(t2._types[0].get());
+		auto t1_args = build(t1).arguments();
+		((Function*) fun->function())->will_take(analyser, t1_args, 1);
+		return solve(analyser, t1.return_type(), fun->function()->version_type(t1_args).return_type());
+	}
+	assert(false);
+}
+
+void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) {
+	// std::cout << "CallableVersion::resolve_templates(" << arguments << ")" << std::endl;
+	assert(arguments.size() == type.arguments().size());
+	for (size_t i = 0; i < arguments.size(); ++i) {
+		const auto& t1 = type.argument(i);
+		const auto& t2 = arguments.at(i);
+		// std::cout << t1 << " <=> " << t2 << std::endl;
+		templates.at(i).implement(solve(analyser, t1, t2));
 	}
 }
 
