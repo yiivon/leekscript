@@ -10,6 +10,7 @@ void Template_type::implement(Type implementation) const {
 	((Template_type*) this)->_implementation = implementation;
 }
 bool Template_type::operator == (const Base_type* type) const {
+	if (this == type) return true;
 	if (_implementation.is_void()) return false;
 	return _implementation._types[0]->operator == (type);
 }
