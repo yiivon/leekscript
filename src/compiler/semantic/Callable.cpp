@@ -113,6 +113,14 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 
 namespace std {
 	std::ostream& operator << (std::ostream& os, const ls::CallableVersion& v) {
+		if (v.templates.size()) {
+			os << "template<";
+			for (size_t i = 0; i < v.templates.size(); ++i) {
+				if (i != 0) std::cout << ", ";
+				std::cout << v.templates.at(i);
+			}
+			os << "> ";
+		}
 		os << v.name << " ";
 		if (v.object) os << "★ " << v.object << ":" << v.object->type << " ";
 		os << v.type.arguments() << BLUE_BOLD << " => " << END_COLOR << v.type.return_type();
