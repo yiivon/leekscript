@@ -291,10 +291,9 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	auto o = object->compile(c);
 	object->compile_end(c);
 	auto k = c.new_pointer(&field->content, Type::any());
-	auto r = c.insn_invoke(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
+	return c.insn_invoke(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
 		return object->attr(*key);
 	});
-	return r;
 }
 
 Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> version) const {
