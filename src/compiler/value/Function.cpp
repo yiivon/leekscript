@@ -294,6 +294,8 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 		version->type = Type::fun(version->body->type, arg_types, this);
 	}
 	Type return_type;
+	// std::cout << "version->body->type " << version->body->type << std::endl;
+	// std::cout << "version->body->return_type " << version->body->return_type << std::endl;
 	for (const auto& t : version->body->type._types) {
 		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
 			return_type += t;
@@ -304,6 +306,7 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 			return_type += t;
 		}
 	}
+	// std::cout << "return_type " << return_type << std::endl;
 	version->body->type = return_type;
 	if (captures.size()) {
 		version->type = Type::closure(return_type, arg_types, this);
