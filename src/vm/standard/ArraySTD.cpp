@@ -103,26 +103,14 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_min, Method::NATIVE}
 	});
 
-	Type map_int_int_fun_type = Type::fun(Type::integer(), {Type::integer()});
-	Type map_int_ptr_fun_type = Type::fun(Type::any(), {Type::integer()});
-	Type map_real_fun_type = Type::fun(Type::real(), {Type::real()});
-	Type map_fun_type = Type::fun(Type::any(), {Type::any()});
 	auto map_fun = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
+	auto E = Type::template_("E");
+	auto R = Type::template_("R");
+	template_(E, R).
 	method("map", {
-		{Type::tmp_array(), {Type::const_array(), map_fun_type}, (void*) map_fun, Method::NATIVE},
-		{Type::tmp_array(), {Type::const_array(), map_fun_type}, (void*) map},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), map_real_fun_type}, (void*) map},
-		{Type::tmp_array(), {Type::const_array(Type::integer()), map_int_ptr_fun_type}, (void*) map},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), map_int_int_fun_type}, (void*) map},
+		{Type::tmp_array(R), {Type::const_array(E), Type::fun(R, {E})}, (void*) map_fun, Method::NATIVE},
+		{Type::tmp_array(R), {Type::const_array(E), Type::fun(R, {E})}, (void*) &map},
 	});
-	// auto map_fun = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
-	// auto E = Type::template_("E");
-	// auto R = Type::template_("R");
-	// template_(E, R).method("map", {
-	// 	{Type::tmp_array(R), {Type::const_array(E), Type::fun(R, {E})}, (void*) map_fun, Method::NATIVE, {
-	// 		new WillTakeMutator(1, {E})
-	// 	}},
-	// });
 
 	method("unique", {
 		{Type::tmp_array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_unique, Method::NATIVE},
