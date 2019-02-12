@@ -85,20 +85,19 @@ void CallableVersion::apply_mutators(SemanticAnalyser* analyser, std::vector<Val
 	}
 }
 
-Type solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
+void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
 	if (t1.is_template()) {
-		return t2;
+		t1.implement(t2);
 	}
 	if (t1.is_array() and t2.is_array()) {
-		return solve(analyser, t1.element(), t2.element());
+		solve(analyser, t1.element(), t2.element());
 	}
 	if (t1.is_function() and t2.is_function()) {
 		auto fun = dynamic_cast<const Function_type*>(t2._types[0].get());
 		auto t1_args = build(t1).arguments();
 		((Function*) fun->function())->will_take(analyser, t1_args, 1);
-		return solve(analyser, t1.return_type(), fun->function()->version_type(t1_args).return_type());
+		solve(analyser, t1.return_type(), fun->function()->version_type(t1_args).return_type());
 	}
-	assert(false);
 }
 
 void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) {
@@ -108,7 +107,7 @@ void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<
 		const auto& t1 = type.argument(i);
 		const auto& t2 = arguments.at(i);
 		// std::cout << t1 << " <=> " << t2 << std::endl;
-		templates.at(i).implement(solve(analyser, t1, t2));
+		solve(analyser, t1, t2);
 	}
 }
 
