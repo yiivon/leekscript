@@ -42,7 +42,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 			version.resolve_templates(analyser, version_arguments);
 			version_type = build(version.type);
 			// Reset template implementations
-			for (size_t i = 0; i < version_arguments.size(); ++i) {
+			for (size_t i = 0; i < version.templates.size(); ++i) {
 				version.templates.at(i).implement({});
 			}
 		}
