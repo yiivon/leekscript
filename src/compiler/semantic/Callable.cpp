@@ -48,6 +48,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 		}
 		CallableVersion* new_version = new CallableVersion(version);
 		new_version->type = version_type;
+		// std::cout << "Resolved version = " << version_type << std::endl;
 
 		for (size_t i = 0; i < std::min(version_type.arguments().size(), version_arguments.size()); ++i) {
 			const auto& a = version_arguments.at(i);
@@ -86,6 +87,7 @@ void CallableVersion::apply_mutators(SemanticAnalyser* analyser, std::vector<Val
 }
 
 void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
+	// std::cout << "Solve " << t1 << " ||| " << t2 << std::endl;
 	if (t1.is_template()) {
 		t1.implement(t2);
 	}
