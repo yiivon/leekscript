@@ -181,6 +181,7 @@ void Function::analyse(SemanticAnalyser* analyser) {
 			default_version->function = new LSClosure(nullptr);
 		} else {
 			default_version->function = new LSFunction(nullptr);
+			default_version->type = Type::fun(getReturnType(), args);
 		}
 		default_version->function->refs = 1;
 		default_version->function->native = true;
