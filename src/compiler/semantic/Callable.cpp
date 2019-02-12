@@ -22,7 +22,7 @@ Type build(const Type& type) {
 		}
 		return Type::fun(build(type.return_type()), args);
 	}
-	assert(false);
+	return type;
 }
 
 CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type> arguments) {
