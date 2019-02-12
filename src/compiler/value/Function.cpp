@@ -252,11 +252,6 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 				} else {
 					v->type = Type::fun(f->version_type(args), v->type.arguments(), this);
 				}
-
-				// std::cout << "Sub function type: " << f->versions.begin()->second->type << std::endl;
-				// std::cout << "Main function type: " << v->type << std::endl;
-
-				// analyse_body(analyser, args, v, Type::UNKNOWN);
 			}
 		}
 	}
