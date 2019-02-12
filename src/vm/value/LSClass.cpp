@@ -70,8 +70,8 @@ Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, std::v
 				if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
 					if (fun->function() and implem_arg.is_function()) {
 						auto version = implem_arg.arguments();
-						((Function*) fun->function())->will_take(analyser, version, 1);
-						arguments.at(i) = fun->function()->versions.at(version)->type;
+						((Value*) fun->function())->will_take(analyser, version, 1);
+						arguments.at(i) = fun->function()->version_type(version);
 					}
 				}
 			}
@@ -121,9 +121,9 @@ const LSClass::Operator* LSClass::getOperator(SemanticAnalyser* analyser, std::s
 		if (auto fun = dynamic_cast<const Function_type*>(operand_type._types[0].get())) {
 			if (fun->function()) {
 				std::vector<Type> version = m->operand_type.arguments();
-				if (version.size() == fun->function()->arguments.size()) {
-					((Function*) fun->function())->will_take(analyser, version, 1);
-					operand_type = fun->function()->versions.at(version)->type;
+				if (version.size() == fun->function()->type.arguments().size()) {
+					((Value*) fun->function())->will_take(analyser, version, 1);
+					operand_type = fun->function()->version_type(version);
 				}
 			}
 		}

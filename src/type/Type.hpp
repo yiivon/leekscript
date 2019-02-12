@@ -12,6 +12,7 @@ namespace ls {
 
 class Base_type;
 class Function;
+class Value;
 
 class Type {
 public:
@@ -140,8 +141,8 @@ public:
 	static Type interval();
 	static Type const_interval();
 	static Type tmp_interval();
-	static Type fun(Type return_type = {}, std::vector<Type> arguments = {}, const Function* function = nullptr);
-	static Type closure(Type return_type = {}, std::vector<Type> arguments = {}, const Function* function = nullptr);
+	static Type fun(Type return_type = {}, std::vector<Type> arguments = {}, const Value* function = nullptr);
+	static Type closure(Type return_type = {}, std::vector<Type> arguments = {}, const Value* function = nullptr);
 	static Type structure(const std::string name, std::initializer_list<Type> types);
 	static Type clazz(const std::string name = "class?");
 	static Type const_class(const std::string name = "class?");

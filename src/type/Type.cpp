@@ -27,6 +27,7 @@
 #include "Pointer_type.hpp"
 #include "Template_type.hpp"
 #include "../compiler/value/Function.hpp"
+#include "../compiler/value/Value.hpp"
 
 namespace ls {
 
@@ -550,10 +551,10 @@ Type Type::const_interval() {
 Type Type::tmp_interval() {
 	return { raw_interval(), false, true, false };
 }
-Type Type::fun(Type return_type, std::vector<Type> arguments, const Function* function) {
+Type Type::fun(Type return_type, std::vector<Type> arguments, const Value* function) {
 	return { std::make_shared<Function_type>(return_type, arguments, false, function), false, false, true };
 }
-Type Type::closure(Type return_type, std::vector<Type> arguments, const Function* function) {
+Type Type::closure(Type return_type, std::vector<Type> arguments, const Value* function) {
 	return { std::make_shared<Function_type>(return_type, arguments, true, function), false, false, true };
 }
 Type Type::structure(const std::string name, std::initializer_list<Type> types) {

@@ -55,8 +55,8 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 			if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
 				if (fun->function() and implem_arg.is_function()) {
 					auto version = implem_arg.arguments();
-					((Function*) fun->function())->will_take(analyser, version, 1);
-					version_arguments.at(i) = fun->function()->versions.at(version)->type;
+					((Value*) fun->function())->will_take(analyser, version, 1);
+					version_arguments.at(i) = fun->function()->version_type(version);
 				}
 			}
 		}
@@ -94,9 +94,14 @@ void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
 	}
 	if (t1.is_function() and t2.is_function()) {
 		auto fun = dynamic_cast<const Function_type*>(t2._types[0].get());
-		auto t1_args = build(t1).arguments();
-		((Function*) fun->function())->will_take(analyser, t1_args, 1);
-		solve(analyser, t1.return_type(), fun->function()->version_type(t1_args).return_type());
+		if (fun) {
+			auto f = (Value*) fun->function();
+			if (f) {
+				auto t1_args = build(t1).arguments();
+				f->will_take(analyser, t1_args, 1);
+				solve(analyser, t1.return_type(), fun->function()->version_type(t1_args).return_type());
+			}
+		}
 	}
 }
 

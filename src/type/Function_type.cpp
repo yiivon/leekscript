@@ -7,7 +7,7 @@
 
 namespace ls {
 
-Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("lsfunction"), std::initializer_list<Type> {
+Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Value* function) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("lsfunction"), std::initializer_list<Type> {
 	Type::integer(), // ?
 	Type::integer(), // ?
 	Type::integer(), // ?

@@ -3,7 +3,7 @@
 
 #include "Pointer_type.hpp"
 #include "Type.hpp"
-#include "../compiler/value/Function.hpp"
+#include "../compiler/value/Value.hpp"
 
 namespace ls {
 
@@ -11,11 +11,11 @@ class Function_type : public Pointer_type {
 	Type _return_type;
 	std::vector<Type> _arguments;
 	bool _closure;
-	const Function* _function;
+	const Value* _function;
 public:
-	Function_type(const Type&, const std::vector<Type>&, bool closure = false, const Function* function = nullptr);
+	Function_type(const Type&, const std::vector<Type>&, bool closure = false, const Value* function = nullptr);
 	bool closure() const { return _closure; }
-	const Function* function() const { return _function; }
+	const Value* function() const { return _function; }
 	virtual int id() const override { return _closure ? 12 : 9; }
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getJsonName() const { return "function"; }
