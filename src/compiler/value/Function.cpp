@@ -576,12 +576,11 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	}
 
 	// Catch block
-	if (current_version->landing_pad != nullptr) {
-		// std::cout << "Create catch block " << current_version->type << std::endl;
-		c.builder.SetInsertPoint(current_version->catch_block);
+	if (version->landing_pad != nullptr) {
+		c.builder.SetInsertPoint(version->catch_block);
 		c.delete_function_variables();
-		Compiler::value exception = {c.builder.CreateLoad(current_version->exception_slot), Type::long_()};
-		Compiler::value exception_line = {c.builder.CreateLoad(current_version->exception_line_slot), Type::long_()};
+		Compiler::value exception = {c.builder.CreateLoad(version->exception_slot), Type::long_()};
+		Compiler::value exception_line = {c.builder.CreateLoad(version->exception_line_slot), Type::long_()};
 		auto exception_function = c.new_pointer(&c.fun->name, Type::any());
 		c.insn_call({}, {exception, exception_line, exception_function}, +[](void** ex, size_t line, std::string* f) {
 			auto exception = (vm::ExceptionObj*) (ex + 4);
