@@ -279,7 +279,8 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 	// Class method : 12.abs
 	if (class_method || class_field) {
-		void* fun = has_version ? versions.at(version) : default_version_fun;
+
+		void* fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
 		auto function = new LSFunction(fun);
 		function->native = true;
 		function->refs = 1;
