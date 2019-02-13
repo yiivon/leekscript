@@ -320,6 +320,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::boolean(), {Type::any()}, (void*) &NumberSTD::isInteger},
 	});
 	method("isPrime", {
+		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_number<int>, Method::NATIVE},
 		{Type::integer(), {Type::mpz()}, (void*) &NumberSTD::is_prime},
 		{Type::boolean(), {Type::long_()}, (void*) &NumberSTD::is_prime_long},
 		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_int},

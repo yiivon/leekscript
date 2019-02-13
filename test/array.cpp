@@ -305,6 +305,7 @@ void Test::test_arrays() {
 	code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
 	code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
 	code("[{}, [], true, '42'].map(_ => 42)").equals("[42, 42, 42, 42]");
+	code("[2, 6, 7, 12, 15].map(Number.isPrime)").equals("[true, false, true, false, false]");
 
 	section("Array.map2()");
 	code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
