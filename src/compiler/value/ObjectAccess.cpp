@@ -48,17 +48,32 @@ Location ObjectAccess::location() const {
 }
 
 void ObjectAccess::set_version(const std::vector<Type>& args, int level) {
+	// std::cout << "ObjectAccess::set_version(" << args << ", " << level << ")" << std::endl;
 	version = args;
 	has_version = true;
-	if (class_method) {
-		for (const auto& m : methods) {
-			if (!m.native) continue;
-			auto version = m.type.arguments();
-			if (version == args) {
-				type = Type::fun(m.type.return_type(), args);
-			}
+	for (const auto& m : methods) {
+		auto version = m.type.arguments();
+		if (version == args) {
+			type = Type::fun(m.type.return_type(), args, (const Value*) this);
 		}
 	}
+}
+
+Type ObjectAccess::version_type(std::vector<Type> args) const {
+	// std::cout << "ObjectAccess::version_tyoe(" << args << ")" << std::endl;
+	for (const auto& m : methods) {
+		auto version = m.type.arguments();
+		if (version == args) {
+			return Type::fun(m.type.return_type(), args, (const Value*) this);
+		}
+	}
+	return type;
+}
+
+bool ObjectAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
+	// std::cout << "OA will take " << args << std::endl;
+	set_version(args, 1);
+	return false;
 }
 
 Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
@@ -85,10 +100,11 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 			auto method = std_class->methods.at(field->content);
 			std::string name = vv->name + "." + field->content;
 			for (const auto& m : method) {
+				auto t = Type::fun(m.type.return_type(), m.type.arguments(), this);
 				if (m.native) {
-					callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, nullptr });
+					callable->add_version({ name, t, m.addr, m.mutators, m.templates, nullptr });
 				} else {
-					callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, nullptr });
+					callable->add_version({ name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, nullptr });
 				}
 			}
 		}
@@ -139,6 +155,8 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 
 void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 
+	// std::cout << "ObjectAccess analyse " << this << std::endl;
+
 	object->analyse(analyser);
 	type = Type::any();
 
@@ -156,17 +174,17 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 	if (object->type.is_class() and vv != nullptr) {
 
 		auto std_class = (LSClass*) analyser->vm->internal_vars.at(vv->name)->lsvalue;
-
+		
 		if (std_class->methods.find(field->content) != std_class->methods.end()) {
 
 			auto method = std_class->methods.at(field->content);
 			for (const auto& m : method) {
-				if (!m.native) continue;
+				// if (!m.native) continue;
 				// auto args = m.type.arguments();
 				// args.insert(args.begin(), m.obj_type);
 				versions.insert({m.type.arguments(), m.addr});
 			}
-			type = method[0].type;
+			type = Type::fun(method[0].type.return_type(), method[0].type.arguments(), (ObjectAccess*) this);
 			default_version_fun = method[0].addr;
 			class_method = true;
 			methods = method;
