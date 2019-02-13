@@ -91,10 +91,10 @@ void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
 	if (t1.is_template()) {
 		t1.implement(t2);
 	}
-	if (t1.is_array() and t2.is_array()) {
+	else if (t1.is_array() and t2.is_array()) {
 		solve(analyser, t1.element(), t2.element());
 	}
-	if (t1.is_function() and t2.is_function()) {
+	else if (t1.is_function() and t2.is_function()) {
 		auto fun = dynamic_cast<const Function_type*>(t2._types[0].get());
 		if (fun) {
 			auto f = (Value*) fun->function();
