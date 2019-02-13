@@ -218,6 +218,17 @@ Type VariableValue::version_type(std::vector<Type> version) const {
 		// std::cout << "VariableValue " << this << " version_type() " << version << std::endl;
 		return var->value->version_type(version);
 	}
+	if (name == "+" or name == "-" or name == "*" or name == "×" or name == "/" or name == "÷" or name == "**" or name == "%") {
+		if (version.size() == 2) {
+			if (version.at(0).is_primitive() and version.at(1).is_primitive()) {
+				auto type = Type::fun(Type::integer(), {Type::integer(), Type::integer()});
+				if (name == "/" or name == "÷") type = Type::fun(Type::real(), {Type::integer(), Type::integer()});
+				return type;
+			} else {
+				return Type::fun(Type::any(), {Type::any(), Type::any()});
+			}
+		}
+	}
 	return type;
 }
 
