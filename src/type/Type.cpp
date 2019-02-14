@@ -383,28 +383,6 @@ bool Type::compatible(const Type& type) const {
 	return true;
 }
 
-bool Type::list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual) {
-
-	if (expected.size() != actual.size()) return false;
-
-	for (size_t i = 0; i < expected.size(); ++i) {
-		// Can we convert type actual[i] into type expected[i] ?
-		if (not expected[i].compatible(actual[i])) return false;
-	}
-	return true;
-}
-
-bool Type::may_be_compatible(const Type& type) const {
-	if (compatible(type)) {
-		return true;
-	}
-	// Example: Number.abs(number*) => we allow to call with a unknown pointer
-	if (is_polymorphic() and type == Type::any()) {
-		return true;
-	}
-	return false;
-}
-
 void Type::implement(const Type& type) const {
 	if (auto t = dynamic_cast<const Template_type*>(_types[0].get())) {
 		t->implement(type);
@@ -417,14 +395,6 @@ bool Type::is_implemented(const Type& type) const {
 		}
 		return false;
 	});
-}
-
-bool Type::list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual) {
-	if (expected.size() != actual.size()) return false;
-	for (size_t i = 0; i < expected.size(); ++i) {
-		if (not expected[i].may_be_compatible(actual[i])) return false;
-	}
-	return true;
 }
 
 bool Type::castable(Type type, bool strictCast) const {

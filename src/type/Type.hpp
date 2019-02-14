@@ -171,9 +171,6 @@ public:
 	static const std::shared_ptr<Base_type> raw_string();
 	static const std::shared_ptr<Base_type> raw_interval();
 	static const std::shared_ptr<Base_type> raw_object();
-
-	static bool list_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
-	static bool list_may_be_compatible(const std::vector<Type>& expected, const std::vector<Type>& actual);
 	
 	static std::shared_ptr<const Base_type> generate_new_placeholder_type();
 	static std::vector<std::shared_ptr<const Base_type>> placeholder_types;
