@@ -187,16 +187,16 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::tmp_array(), {Type::array(Type::integer()), pred_fun_type_int}, (void*) partition},
 	});
 
+	auto fT = Type::template_("T");
+	template_(fT).
 	method("first", {
-		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_first, Method::NATIVE},
-		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_first, Method::NATIVE},
-		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_first, Method::NATIVE},
+		{fT, {Type::const_array(fT)}, (void*) &first}
 	});
 
+	auto lT = Type::template_("T");
+	template_(lT).
 	method("last", {
-		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_last, Method::NATIVE},
-		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_last, Method::NATIVE},
-		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_last, Method::NATIVE},
+		{lT, {Type::const_array(lT)}, (void*) &last}
 	});
 
 	Type fold_fun_type = Type::fun(Type::any(), {Type::any(), Type::any()});
@@ -535,6 +535,31 @@ Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args) {
 		return {};
 	});
 	return result;
+}
+
+
+Compiler::value ArraySTD::first(Compiler& c, std::vector<Compiler::value> args) {
+	auto array = args[0];
+	auto array_size = c.insn_array_size(array);
+	c.insn_if(c.insn_ge(c.new_integer(0), array_size), [&]() {
+		c.insn_delete_temporary(array);
+		c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	});
+	auto e = c.insn_move(c.insn_load(c.insn_array_at(array, c.new_integer(0))));
+	c.insn_delete_temporary(array);
+	return e;
+}
+Compiler::value ArraySTD::last(Compiler& c, std::vector<Compiler::value> args) {
+	auto array = args[0];
+	auto array_size = c.insn_array_size(array);
+	c.insn_if(c.insn_ge(c.new_integer(0), array_size), [&]() {
+		c.insn_delete_temporary(array);
+		c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	});
+	auto k = c.insn_sub(array_size, c.new_integer(1));
+	auto e = c.insn_move(c.insn_load(c.insn_array_at(array, k)));
+	c.insn_delete_temporary(array);
+	return e;
 }
 
 }

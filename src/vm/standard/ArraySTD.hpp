@@ -49,6 +49,8 @@ public:
 
 	static Compiler::value partition(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value map(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value first(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value last(Compiler&, std::vector<Compiler::value>);
 };
 
 }
