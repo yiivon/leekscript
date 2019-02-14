@@ -1668,6 +1668,9 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 }
 
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, Compiler::value fun) const {
+	if (fun.t.is_closure()) {
+		args.insert(args.begin(), fun);
+	}
 	auto convert_type = Type::fun();
 	auto fun_to_ptr = Compiler::builder.CreatePointerCast(fun.v, convert_type.llvm_type());
 	auto f = Compiler::builder.CreateStructGEP(convert_type.llvm_type()->getPointerElementType(), fun_to_ptr, 5);
