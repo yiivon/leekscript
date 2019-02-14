@@ -16,7 +16,7 @@ public:
 	Function_type(const Type&, const std::vector<Type>&, bool closure = false, const Value* function = nullptr);
 	bool closure() const { return _closure; }
 	const Value* function() const { return _function; }
-	virtual int id() const override { return _closure ? 12 : 9; }
+	virtual int id() const override { return 9; }
 	virtual const std::string getName() const { return "function"; }
 	virtual const std::string getJsonName() const { return "function"; }
 	virtual bool callable() const override { return true; }
