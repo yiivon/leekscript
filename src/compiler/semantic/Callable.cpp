@@ -109,12 +109,22 @@ void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
 
 void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) {
 	// std::cout << "CallableVersion::resolve_templates(" << arguments << ")" << std::endl;
-	assert(arguments.size() == type.arguments().size());
+	// First passage to solve easy types
 	for (size_t i = 0; i < arguments.size(); ++i) {
 		const auto& t1 = type.argument(i);
-		const auto& t2 = arguments.at(i);
-		// std::cout << t1 << " <=> " << t2 << std::endl;
-		solve(analyser, t1, t2);
+		if (t1.is_template()) {
+			const auto& t2 = arguments.at(i);
+			// std::cout << t1 << " <=> " << t2 << std::endl;
+			solve(analyser, t1, t2);
+		}
+	}
+	for (size_t i = 0; i < arguments.size(); ++i) {
+		const auto& t1 = type.argument(i);
+		if (not t1.is_template()) {
+			const auto& t2 = arguments.at(i);
+			// std::cout << t1 << " <=> " << t2 << std::endl;
+			solve(analyser, t1, t2);
+		}
 	}
 }
 
