@@ -118,6 +118,9 @@ void Test::test_arrays() {
 	code("['', [2][0]]").equals("['', 2]");
 	code("['', [2.5][0]]").equals("['', 2.5]");
 	code("let a = [1, 2, 3] a[true]").equals("2");
+	code("[1, 2.5][1]").equals("2.5");
+	code("[1, true][0]").equals("1");
+	code("[1, true][1]").equals("true");
 
 	section("[] operator on unknown arrays");
 	code("let v = [['a', 'b'], 12] v[0][0]").equals("'a'");
