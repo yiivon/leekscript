@@ -32,11 +32,11 @@ void Compiler::init() {
 void Compiler::end() {}
 
 Compiler::value Compiler::clone(Compiler::value v) const {
-	if (v.t.must_manage_memory()) {
+	if (v.t.fold().must_manage_memory()) {
 		if (v.t.reference) {
 			v = insn_load(v);
 		}
-		auto r = insn_call(v.t, {v}, +[](LSValue* value) {
+		auto r = insn_call(v.t.fold(), {v}, +[](LSValue* value) {
 			return value->clone();
 		});
 		// log_insn(4) << "clone " << dump_val(v) << " " << dump_val(r) << std::endl;
@@ -1134,8 +1134,8 @@ Compiler::value Compiler::insn_dec_refs(Compiler::value v, Compiler::value previ
 
 Compiler::value Compiler::insn_move(Compiler::value v) const {
 	assert_value_ok(v);
-	if (v.t.must_manage_memory() and !v.t.temporary and !v.t.reference) {
-		return insn_call(v.t, {v}, (void*) +[](LSValue* v) {
+	if (v.t.fold().must_manage_memory() and !v.t.temporary and !v.t.reference) {
+		return insn_call(v.t.fold(), {v}, (void*) +[](LSValue* v) {
 			return v->move();
 		});
 	}
