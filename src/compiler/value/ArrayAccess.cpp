@@ -100,7 +100,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 			std::string k = "<key 2>";
 			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
 		}
-		type = array->type;
+		type = array->type.add_temporary();
 
 	} else if (array->type.is_array() or array->type.is_string() or array->type.is_interval()) {
 		if (not key->type.can_be_numeric()) {
@@ -282,7 +282,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		auto end = key2->compile(c);
 		key->compile_end(c);
 		key2->compile_end(c);
-		return c.insn_invoke(Type::any(), {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
+		return c.insn_invoke(type, {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
 			return a->range(start, end);
 		});
 	}
