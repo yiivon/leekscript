@@ -405,6 +405,8 @@ void Test::test_arrays() {
 	code("[].first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12.5].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[5, true].first()").equals("5");
+	code("[[5, true], [6, false], [7, true]].first().first()").equals("5");
 
 	section("Array.last()");
 	code("Array.last([1, 2, 3, 10, true, 'yo', null])").equals("null");
@@ -414,8 +416,10 @@ void Test::test_arrays() {
 	code("[].last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12].clear().last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12.5].clear().last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	// TODO : the return type of first() must be the element type of the array if it's homogeneous
-	DISABLED_code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");
+	code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");
+	code("[[321, 21], [23, 212], [654, 9876]].last().first()").equals("654");
+	code("[[321, 'a'], [23, 'b'], [654, 'c']].first().last()").equals("'a'");
+	code("[[321, 'a'], [23, 'b'], [654, 'c']].last().first()").equals("654");
 
 	section("Array.foldLeft()");
 	code("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')").equals("'concat:12310trueyonull'");
