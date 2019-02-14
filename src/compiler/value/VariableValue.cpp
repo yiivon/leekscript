@@ -249,9 +249,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_load(c.insn_get_argument(name));
 	}
-	assert(v.t == type);
 	c.assert_value_ok(v);
-	// std::cout << "return var " << v.v->getType() << std::endl;
 	return v;
 }
 
@@ -265,9 +263,6 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_get_argument(name);
 	}
-	// std::cout << "VV " << name << " " << type.pointer() << std::endl << "     " << v.t << std::endl;
-	assert(type.pointer() == v.t);
-	assert(type.llvm_type()->getPointerTo() == v.v->getType());
 	return v;
 }
 
