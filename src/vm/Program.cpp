@@ -110,28 +110,24 @@ std::string Program::execute(VM& vm) {
 	if (output_type._types.size() == 0) {
 		auto fun = (void (*)()) closure;
 		fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return "(void)";
 	}
 
 	if (output_type.not_temporary() == Type::boolean()) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return res ? "true" : "false";
 	}
 
 	if (output_type.not_temporary() == Type::integer()) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
 
 	if (output_type.not_temporary() == Type::mpz()) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
 		// mpz_clear(&ret);
@@ -142,20 +138,17 @@ std::string Program::execute(VM& vm) {
 	if (output_type.not_temporary() == Type::real()) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return LSNumber::print(res);
 	}
 
 	if (output_type.not_temporary() == Type::long_()) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
 
 	auto fun = (LSValue* (*)()) closure;
 	auto ptr = fun();
-	// if (vm.last_exception) throw vm.last_exception;
 	std::ostringstream oss;
 	ptr->dump(oss, 5);
 	LSValue::delete_ref(ptr);
