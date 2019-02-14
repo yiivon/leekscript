@@ -273,7 +273,7 @@ void Test::test_strings() {
 	code("'hello world how are you today'.wordCount()").equals("6");
 	code("'aujourd\\'hui j\\'ai'.wordCount()").equals("2");
 	code("String.wordCount('abc def ghi')").equals("3");
-	DISABLED_code("['a b c', 'd e', 'f', 'g h i j'].map(x -> x.wordCount())").equals("[3, 2, 1, 4]");
+	code("['a b c', 'd e', 'f', 'g h i j'].map(x -> x.wordCount())").equals("[3, 2, 1, 4]");
 
 	section("String.sort()");
 	code("''.sort()").equals("''");
