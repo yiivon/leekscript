@@ -29,13 +29,6 @@ public:
 
 	static Compiler::value fill(Compiler&, std::vector<Compiler::value>);
 
-	static Compiler::value fold_left_ptr(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fold_left_clo_ptr(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fold_left_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fold_left_clo_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fold_left_int(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fold_left_clo_int(Compiler&, std::vector<Compiler::value>);
-
 	static Compiler::value fold_right_ptr(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value fold_right_clo_ptr(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value fold_right_real(Compiler&, std::vector<Compiler::value>);
@@ -51,6 +44,7 @@ public:
 	static Compiler::value map(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value first(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value last(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value fold_left(Compiler&, std::vector<Compiler::value>);
 };
 
 }
