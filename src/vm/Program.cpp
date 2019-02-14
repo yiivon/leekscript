@@ -103,7 +103,7 @@ void Program::analyse(SemanticAnalyser* analyser) {
 
 std::string Program::execute(VM& vm) {
 
-	const auto output_type = main->type.return_type();
+	const auto output_type = main->type.return_type().fold();
 
 	assert(!output_type.reference && "Program return type shouldn't be a reference!");
 
