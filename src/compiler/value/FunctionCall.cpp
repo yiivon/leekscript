@@ -16,6 +16,7 @@
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
 #include "../semantic/Callable.hpp"
+#include "../../type/Function_type.hpp"
 
 namespace ls {
 
@@ -252,19 +253,23 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	std::vector<LSValueType> types;
 	std::vector<Compiler::value> args;
 	int offset = callable_version->object ? 1 : 0;
-	if (callable_version->object) {
-		// types.push_back(callable_version->object->type.id());
-	}
-	for (unsigned i = 0; i < arguments.size(); ++i) {
-		types.push_back((LSValueType) callable_version->type.argument(i + offset).id());
-		// std::cout << "convert argument to " << callable_version->type.argument(i + offset) << std::endl;
-		if (arguments.at(i)->type.is_primitive()) 
-			args.push_back(c.insn_convert(arguments.at(i)->compile(c), callable_version->type.argument(i + offset))); 
-		else
-			args.push_back(arguments.at(i)->compile(c));
-		arguments.at(i)->compile_end(c);
-		if (arguments.at(i)->type == Type::mpz()) {
-			args.back() = c.insn_clone_mpz(args.back());
+	auto fun = dynamic_cast<const Function_type*>(callable_version->type._types[0].get());
+	auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
+
+	for (unsigned i = 0; i < callable_version->type.arguments().size(); ++i) {
+		if (i < arguments.size()) {
+			types.push_back((LSValueType) callable_version->type.argument(i + offset).id());
+			if (arguments.at(i)->type.is_primitive())
+				args.push_back(c.insn_convert(arguments.at(i)->compile(c), callable_version->type.argument(i + offset)));
+			else
+				args.push_back(arguments.at(i)->compile(c));
+			arguments.at(i)->compile_end(c);
+			if (arguments.at(i)->type == Type::mpz()) {
+				args.back() = c.insn_clone_mpz(args.back());
+			}
+		} else if (f and f->defaultValues.at(i)) {
+			types.push_back((LSValueType) f->defaultValues.at(i)->type.id());
+			args.push_back(f->defaultValues.at(i)->compile(c));
 		}
 	}
 	// Check arguments

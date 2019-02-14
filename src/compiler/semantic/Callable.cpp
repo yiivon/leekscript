@@ -5,6 +5,7 @@
 #include "../../vm/value/LSFunction.hpp"
 #include "../value/ObjectAccess.hpp"
 #include "../../type/Template_type.hpp"
+#include "../value/Function.hpp"
 
 namespace ls {
 
@@ -34,7 +35,8 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 		if (version.object) {
 			version_arguments.insert(version_arguments.begin(), version.object->type);
 		}
-		if (version.type.arguments().size() != version_arguments.size() and not version.unknown) continue;
+		auto fun = dynamic_cast<const Function_type*>(version.type._types[0].get());
+		auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
 
 		// Template resolution
 		auto version_type = version.type;
@@ -50,22 +52,41 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 		new_version->type = version_type;
 		// std::cout << "Resolved version = " << version_type << std::endl;
 
-		for (size_t i = 0; i < std::min(version_type.arguments().size(), version_arguments.size()); ++i) {
-			const auto& a = version_arguments.at(i);
-			const auto implem_arg = version_type.arguments().at(i);
-			if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
-				if (fun->function() and implem_arg.is_function()) {
-					auto version = implem_arg.arguments();
-					((Value*) fun->function())->will_take(analyser, version, 1);
-					version_arguments.at(i) = fun->function()->version_type(version);
+		bool valid = true;
+		for (size_t i = 0; i < version_type.arguments().size(); ++i) {
+			if (i < version_arguments.size()) {
+				const auto& a = version_arguments.at(i);
+				const auto implem_arg = version_type.arguments().at(i);
+				if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
+					if (fun->function() and implem_arg.is_function()) {
+						auto version = implem_arg.arguments();
+						((Value*) fun->function())->will_take(analyser, version, 1);
+						version_arguments.at(i) = fun->function()->version_type(version);
+					}
 				}
+			} else if (f and f->defaultValues.at(i)) {
+				// Default argument
+			} else {
+				valid = false;
 			}
 		}
+		if ((!valid or version_arguments.size() > version_type.arguments().size()) and not version.unknown) {
+			continue;
+		}
 		int d = 0;
-		for (size_t i = 0; i < std::min(version_arguments.size(), version_type.arguments().size()); ++i) {
-			auto di = version_arguments.at(i).distance(version_type.arguments().at(i));
-			if (di < 0) { d = std::numeric_limits<int>::max(); break; };
-			d += di;
+		if (!version.unknown) {
+			for (size_t i = 0; i < version_type.arguments().size(); ++i) {
+				auto type = [&]() { if (i < version_arguments.size()) {
+					return version_arguments.at(i);
+				} else if (f and f->defaultValues.at(i)) {
+					return f->defaultValues.at(i)->type;
+				} else {
+					assert(false);
+				}}();
+				auto di = type.distance(version_type.arguments().at(i));
+				if (di < 0) { d = std::numeric_limits<int>::max(); break; };
+				d += di;
+			}
 		}
 		// std::cout << implementation.type.arguments() << " distance " << d << std::endl;
 		if (best == nullptr or d <= best_score) {
