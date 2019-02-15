@@ -257,8 +257,8 @@ void Test::test_functions() {
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f([])").equals("[]");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f(2)").equals("2");
 	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
-	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
-	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
+	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
+	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
 	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
 
 	section("Not compiled functions");
