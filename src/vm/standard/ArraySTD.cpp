@@ -23,9 +23,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::const_array(), Type::const_any(), Type::array(Type::any()), (void*) &ArraySTD::op_add},
 	});
 	operator_("+=", {
-		{Type::array(), Type::const_any(), Type::any(), (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
-		{Type::array(Type::real()), Type::const_real(), Type::array(Type::real()), (void*) &LSArray<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
-		{Type::array(Type::integer()), Type::const_integer(), Type::array(Type::integer()), (void*) &LSArray<int>::add_eq_int, {new WillStoreMutator()}, Method::NATIVE}
+		{Type::array(), Type::const_any(), Type::array(), (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
 	});
 
 	/* Type tilde_tilde_fun_type = Type::FUNCTION;
