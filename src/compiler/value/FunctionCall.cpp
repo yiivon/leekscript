@@ -240,7 +240,11 @@ void FunctionCall::set_version(const std::vector<Type>& args, int level) {
 }
 
 Type FunctionCall::version_type(std::vector<Type> version) const {
-	return function->version_type(version).return_type();
+	// std::cout << "FunctionCall " << this << " ::version_type(" << version << ") " << std::endl;
+	auto function_type = function->version_type(function->version);
+	auto ft = dynamic_cast<const Function_type*>(function_type.return_type()._types[0].get());
+	assert(ft != nullptr);
+	return ft->function()->version_type(version);
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {

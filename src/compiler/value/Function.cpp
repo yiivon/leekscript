@@ -49,6 +49,7 @@ Function::~Function() {
 void Function::addArgument(Token* name, Value* defaultValue) {
 	arguments.push_back(std::unique_ptr<Token> { name });
 	defaultValues.push_back(defaultValue);
+	if (defaultValue) default_values_count++;
 }
 
 Type Function::getReturnType() {
@@ -206,6 +207,8 @@ void Function::analyse(SemanticAnalyser* analyser) {
 
 void Function::create_version(SemanticAnalyser* analyser, std::vector<Type> args) {
 	// std::cout << "Function::create_version(" << args << ")" << std::endl;
+	// TODO should be ==
+	// assert(args.size() >= arguments.size());
 	auto version = new Function::Version();
 	version->body = (Block*) body->clone();
 	if (captures.size()) {
@@ -228,11 +231,18 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 		analyse(analyser);
 	}
 	if (level == 1) {
-		if (versions.find(args) == versions.end()) {
-			for (const auto& t : args) {
+		auto version = args;
+		// Fill with default arguments
+		for (size_t i = version.size(); i < arguments.size(); ++i) {
+			if (defaultValues.at(i)) {
+				version.push_back(defaultValues.at(i)->type);
+			}
+		}
+		if (versions.find(version) == versions.end()) {
+			for (const auto& t : version) {
 				if (t.is_placeholder()) return false;
 			}
-			create_version(analyser, args);
+			create_version(analyser, version);
 			return true;
 		}
 		return false;
@@ -264,6 +274,12 @@ void Function::set_version(const std::vector<Type>& args, int level) {
 	// std::cout << "Function::set_version " << args << " " << level << std::endl;
 	if (level == 1) {
 		version = args;
+		// Fill with defaultValues
+		for (size_t i = version.size(); i < arguments.size(); ++i) {
+			if (defaultValues.at(i)) {
+				version.push_back(defaultValues.at(i)->type);
+			}
+		}
 		has_version = true;
 	} else {
 		auto v = current_version ? current_version : default_version;
@@ -381,6 +397,13 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 }
 
 Type Function::version_type(std::vector<Type> version) const {
+	// std::cout << "Function " << this << " ::version_type(" << version << ") " << std::endl;
+	// Add default values types if needed
+	for (size_t i = version.size(); i < arguments.size(); ++i) {
+		if (defaultValues.at(i)) {
+			version.push_back(defaultValues.at(i)->type);
+		}
+	}
 	if (versions.find(version) != versions.end()) {
 		return versions.at(version)->type;
 	}
@@ -440,11 +463,18 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	if (!compiled) {
 		compile(c);
 	}
-	if (versions.find(args) == versions.end()) {
+	// Fill with default arguments
+	auto version = args;
+	for (size_t i = version.size(); i < arguments.size(); ++i) {
+		if (defaultValues.at(i)) {
+			version.push_back(defaultValues.at(i)->type);
+		}
+	}
+	if (versions.find(version) == versions.end()) {
 		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
 		return c.new_pointer(LSNull::get(), Type::null());
 	}
-	return c.new_function(versions.at(args)->function, versions.at(args)->type);
+	return c.new_function(versions.at(version)->function, versions.at(version)->type);
 }
 
 llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
@@ -629,6 +659,7 @@ Value* Function::clone() const {
 			f->defaultValues.push_back(nullptr);
 		}
 	}
+	f->default_values_count = default_values_count;
 	for (const auto& v : versions) {
 		auto v2 = new Version();
 		if (captures.size()) {
