@@ -179,9 +179,10 @@ void Function::analyse(SemanticAnalyser* analyser) {
 		default_version->body = body;
 		if (captures.size()) {
 			default_version->function = new LSClosure(nullptr);
+			default_version->type = Type::closure(getReturnType(), args, this);
 		} else {
 			default_version->function = new LSFunction(nullptr);
-			default_version->type = Type::fun(getReturnType(), args);
+			default_version->type = Type::fun(getReturnType(), args, this);
 		}
 		default_version->function->refs = 1;
 		default_version->function->native = true;
@@ -332,7 +333,7 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 		default_version->function->refs = 1;
 		default_version->function->native = true;
 	}
-	default_version->type = Type::closure(default_version->type.return_type(), default_version->type.arguments());
+	default_version->type = Type::closure(default_version->type.return_type(), default_version->type.arguments(), this);
 	for (auto& version : versions) {
 		if (!version.second->function->closure()) {
 			delete version.second->function;
@@ -340,9 +341,9 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 			version.second->function->refs = 1;
 			version.second->function->native = true;
 		}
-		version.second->type = Type::closure(version.second->type.return_type(), version.second->type.arguments());
+		version.second->type = Type::closure(version.second->type.return_type(), version.second->type.arguments(), this);
 	}
-	type = Type::closure(type.return_type(), type.arguments());
+	type = Type::closure(type.return_type(), type.arguments(), this);
 
 	for (size_t i = 0; i < captures.size(); ++i) {
 		if (captures[i]->name == var->name)
