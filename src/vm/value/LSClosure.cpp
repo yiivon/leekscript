@@ -13,8 +13,9 @@ LSClosure::LSClosure(void* function) : LSFunction(function) {
 
 LSClosure::~LSClosure() {
 	for (size_t i = 0; i < captures.size(); ++i) {
-		if (!captures_native[i] and captures[i] != this)
+		if (!captures_native[i] and captures[i] != this) {
 			LSValue::delete_ref(captures[i]);
+		}
 	}
 }
 
