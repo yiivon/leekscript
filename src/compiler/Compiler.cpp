@@ -1233,6 +1233,41 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	return {nullptr, {}};
 }
 
+
+Compiler::value Compiler::iterator_rbegin(Compiler::value v) const {
+	assert(v.t.llvm_type() == v.v->getType());
+	log_insn_code("iterator.rbegin()");
+	if (v.t.is_array()) {
+		auto it = create_entry("it", v.t.iterator());
+		auto end = insn_load_member(v, 6);
+		auto previous = builder.CreateGEP(end.v, new_integer(-1).v);
+		insn_store(it, {previous, Type::any()});
+		return it;
+	}
+	else if (v.t.is_interval()) {
+		assert(false);
+	}
+	else if (v.t.is_string()) {
+		assert(false);
+	}
+	else if (v.t.is_map()) {
+		assert(false);
+	}
+	else if (v.t.is_set()) {
+		assert(false);
+	}
+	else if (v.t.is_integer()) {
+		assert(false);
+	}
+	else if (v.t.is_long()) {
+		assert(false);
+	}
+	else if (v.t.is_mpz()) {
+		assert(false);
+	}
+	return {nullptr, {}};
+}
+
 Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(it.t.llvm_type() == it.v->getType());
@@ -1264,6 +1299,36 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	}
 	else if (v.t == Type::long_()) {
 		return insn_eq(insn_load_member(it, 1), new_long(0));
+	}
+	return {nullptr, {}};
+}
+
+
+Compiler::value Compiler::iterator_rend(Compiler::value v, Compiler::value it) const {
+	assert(v.t.llvm_type() == v.v->getType());
+	assert(it.t.llvm_type() == it.v->getType());
+	log_insn_code("iterator.rend()");
+	if (v.t.is_array()) {
+		auto before_first = builder.CreateGEP(insn_load_member(v, 5).v, new_integer(-1).v);
+		return insn_pointer_eq(insn_load(it), {before_first, v.t.element().pointer()});
+	}
+	else if (v.t.is_interval()) {
+		assert(false);
+	}
+	else if (v.t.is_string()) {
+		assert(false);
+	}
+	else if (v.t.is_map()) {
+		assert(false);
+	}
+	else if (v.t.is_set()) {
+		assert(false);
+	}
+	else if (v.t == Type::integer()) {
+		assert(false);
+	}
+	else if (v.t == Type::long_()) {
+		assert(false);
 	}
 	return {nullptr, {}};
 }
@@ -1426,6 +1491,35 @@ void Compiler::iterator_increment(Type collectionType, Compiler::value it) const
 		insn_store_member(it, 0, insn_mod(n, p));
 		insn_store_member(it, 1, insn_int_div(p, new_long(10)));
 		insn_store_member(it, 2, insn_add(i, new_integer(1)));
+	}
+}
+
+void Compiler::iterator_rincrement(Type collectionType, Compiler::value it) const {
+	assert(it.t.llvm_type() == it.v->getType());
+	log_insn_code("iterator.rincrement()");
+	if (collectionType.is_array()) {
+		auto it2 = insn_load(it);
+		auto next_element = builder.CreateGEP(it2.v, new_integer(-1).v);
+		insn_store(it, {next_element, Type::any()});
+		return;
+	}
+	if (collectionType.is_interval()) {
+		assert(false);
+	}
+	if (collectionType.is_string()) {
+		assert(false);
+	}
+	if (collectionType.is_map()) {
+		assert(false);
+	}
+	if (collectionType.is_set()) {
+		assert(false);
+	}
+	if (collectionType.is_integer()) {
+		assert(false);
+	}
+	else if (collectionType.is_long()) {
+		assert(false);
 	}
 }
 
