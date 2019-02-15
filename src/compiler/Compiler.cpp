@@ -1523,7 +1523,7 @@ void Compiler::iterator_rincrement(Type collectionType, Compiler::value it) cons
 	}
 }
 
-Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, const std::string var, const std::string key, std::function<Compiler::value(Compiler::value, Compiler::value)> body) {
+Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, const std::string var, const std::string key, std::function<Compiler::value(Compiler::value, Compiler::value)> body, bool reversed) {
 	
 	enter_block(); // { for x in [1, 2] {} }<-- this block
 
@@ -1557,7 +1557,7 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, c
 
 	enter_loop(&end_label, &it_label);
 
-	auto it = iterator_begin(container);
+	auto it = reversed ? iterator_rbegin(container) : iterator_begin(container);
 
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container.t.is_array()) {
@@ -1570,7 +1570,7 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, c
 	// cond label:
 	insn_label(&cond_label);
 	// Condition to continue
-	auto finished = iterator_end(container, it);
+	auto finished = reversed ? iterator_rend(container, it) : iterator_end(container, it);
 	insn_if_new(finished, &end_label, &loop_label);
 
 	// loop label:
@@ -1594,7 +1594,7 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, c
 
 	// it++
 	insn_label(&it_label);
-	iterator_increment(container.t, it);
+	reversed ? iterator_rincrement(container.t, it) : iterator_increment(container.t, it);
 	// jump to cond
 	insn_branch(&cond_label);
 
