@@ -68,25 +68,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::boolean(), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_contains, Method::NATIVE},
 	});
 
-	Type iter_fun_type = Type::fun({}, {Type::any()});
-	Type iter_fun_type_int = Type::fun({}, {Type::integer()});
-	Type iter_fun_type_float = Type::fun({}, {Type::real()});
-	Type iter_clo_type = Type::closure({}, {Type::any()});
-	Type iter_clo_type_int = Type::closure({}, {Type::integer()});
-	Type iter_clo_type_float = Type::closure({}, {Type::real()});
 	auto iter_ptr = &LSArray<LSValue*>::ls_iter<LSFunction*>;
-	auto iter_real = &LSArray<double>::ls_iter<LSFunction*>;
-	auto iter_int = &LSArray<int>::ls_iter<LSFunction*>;
-	auto iter_clo_ptr = &LSArray<LSValue*>::ls_iter<LSClosure*>;
-	auto iter_clo_real = &LSArray<double>::ls_iter<LSClosure*>;
-	auto iter_clo_int = &LSArray<int>::ls_iter<LSClosure*>;
+	auto iE = Type::template_("E");
+	template_(iE).
 	method("iter", {
-		{{}, {Type::array(), iter_fun_type}, (void*) iter_ptr, Method::NATIVE},
-		{{}, {Type::array(), iter_clo_type}, (void*) iter_clo_ptr, Method::NATIVE},
-		{{}, {Type::array(Type::real()), iter_fun_type_float}, (void*) iter_real, Method::NATIVE},
-		{{}, {Type::array(Type::real()), iter_clo_type_float}, (void*) iter_clo_real, Method::NATIVE},
-		{{}, {Type::array(Type::integer()), iter_fun_type_int}, (void*) iter_int, Method::NATIVE},
-		{{}, {Type::array(Type::integer()), iter_clo_type_int}, (void*) iter_clo_int, Method::NATIVE},
+		{{}, {Type::const_array(iE), Type::fun({}, {iE})}, (void*) iter_ptr, Method::NATIVE},
+		{{}, {Type::const_array(iE), Type::fun({}, {iE})}, (void*) &iter},
 	});
 
 	method("max", {
@@ -433,6 +420,14 @@ Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> a
 		return {};
 	}, true);
 	return c.insn_load(result);
+}
+
+Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args) {
+	auto function = args[1];
+	c.insn_foreach(args[0], {}, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		return c.insn_call(function.t.return_type(), {v}, function);
+	});
+	return {};
 }
 
 Compiler::value ArraySTD::remove_element_any(Compiler& c, std::vector<Compiler::value> args) {
