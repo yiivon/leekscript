@@ -58,6 +58,11 @@ void Module::method(std::string name, Method::Option opt, std::initializer_list<
 	}
 }
 
+void Template::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
+	std::vector<LSClass::Operator> operators = impl;
+	module->clazz->addOperator(name, operators);
+}
+
 void Template::method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methodsConstr) {
 	module->method(name, opt, methodsConstr, templates);
 }

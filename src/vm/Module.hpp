@@ -80,6 +80,8 @@ public:
 	template<class... Args>
 	Template(Module* module, Args... templates) : module(module), templates({templates...}) {}
 
+	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
+
 	void method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methods);
 	void method(std::string name, std::initializer_list<MethodConstructor> methods) { method(name, Method::Both, methods); }
 };
