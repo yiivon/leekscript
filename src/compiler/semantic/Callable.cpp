@@ -74,6 +74,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 			continue;
 		}
 		int d = 0;
+		bool ok = true;
 		if (!version.unknown) {
 			for (size_t i = 0; i < version_type.arguments().size(); ++i) {
 				auto type = [&]() { if (i < version_arguments.size()) {
@@ -84,12 +85,13 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 					assert(false);
 				}}();
 				auto di = type.distance(version_type.arguments().at(i));
-				if (di < 0) { d = std::numeric_limits<int>::max(); break; };
+				// std::cout << type << " distance " << version_type.arguments().at(i) << " " << di << std::endl;
+				if (di < 0) { ok = false; break; };
 				d += di;
 			}
 		}
 		// std::cout << implementation.type.arguments() << " distance " << d << std::endl;
-		if (best == nullptr or d <= best_score) {
+		if (ok and (best == nullptr or d <= best_score)) {
 			best_score = d;
 			best = new_version;
 		}
