@@ -139,7 +139,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("%=", {
 		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mod_eq_mpz_mpz},
 		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::mod_eq_real, {}, false, true}
+		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
+		{Type::integer(), Type::long_(), Type::integer(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
 	});
 	operator_("~", {
 		{Type::real(), Type::fun(Type::any(), {Type::real()}), Type::any(), (void*) &NumberSTD::tilde_real},

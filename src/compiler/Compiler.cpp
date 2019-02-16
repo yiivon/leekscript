@@ -568,6 +568,8 @@ Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 		return { builder.CreateSRem(a.v, b.v), Type::long_() };
 	} else if (a.t.is_long() and b.t.is_integer()) {
 		return { builder.CreateSRem(a.v, to_long(b).v), Type::long_() };
+	} else if (a.t.is_integer() and b.t.is_long()) {
+		return to_int({ builder.CreateSRem(to_long(a).v, to_long(b).v), Type::long_() });
 	} else if (a.t.is_integer() and b.t.is_integer()) {
 		return { builder.CreateSRem(a.v, b.v), Type::integer() };
 	} else {

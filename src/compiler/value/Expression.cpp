@@ -178,7 +178,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	if (o != nullptr) {
 		// For placeholder types, keep them no matter the operator
 		return_type = o->return_type;
-		if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES) {
+		if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES or op->type == TokenType::MODULO) {
 			if (v1->type.is_placeholder()) { return_type = v1_type; }
 			if (v2->type.is_placeholder()) { return_type = v2_type; }
 		}
