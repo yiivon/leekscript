@@ -26,7 +26,7 @@ Type build(const Type& type) {
 	return type;
 }
 
-CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type> arguments) {
+CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type> arguments) const {
 	// std::cout << "Callable::resolve(" << arguments << ")" << std::endl;
 	CallableVersion* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
@@ -128,7 +128,7 @@ void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
 	}
 }
 
-void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) {
+void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) const {
 	// std::cout << "CallableVersion::resolve_templates(" << arguments << ")" << std::endl;
 	// First passage to solve easy types
 	for (size_t i = 0; i < arguments.size(); ++i) {

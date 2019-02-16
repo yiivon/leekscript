@@ -27,7 +27,7 @@ public:
 		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown) {}
 
 	void apply_mutators(SemanticAnalyser* analyser, std::vector<Value*> arguments);
-	void resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments);
+	void resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) const;
 
 	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args) const;
 };
@@ -39,7 +39,7 @@ public:
 
 	Callable(std::string name) : name(name) {}
 	void add_version(CallableVersion v);
-	CallableVersion* resolve(SemanticAnalyser* analyser, std::vector<Type> arguments);
+	CallableVersion* resolve(SemanticAnalyser* analyser, std::vector<Type> arguments) const;
 };
 
 }
