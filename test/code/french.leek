@@ -48,9 +48,8 @@ var french = function(n) {
 		if n { r += i }
 		n %= H
 		r += french(n)
-		return r
+		r
 	}
-	'string'
 }
 
 french(168489999)
