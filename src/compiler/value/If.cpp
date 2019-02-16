@@ -61,11 +61,11 @@ void If::analyse(SemanticAnalyser* analyser) {
 
 	if (elze != nullptr) {
 		elze->analyse(analyser);
-		if (type.is_void() and not elze->type.is_void()) {
+		if (type.is_void() and not elze->type.is_void() and not then->returning) {
 			type = Type::null();
 		}
 		type += elze->type;
-	} else if (not type.is_void()) {
+	} else if (not type.is_void() or then->returning) {
 		type += Type::null();
 	}
 	returning = then->returning and (elze != nullptr and elze->returning);
@@ -102,7 +102,7 @@ Compiler::value If::compile(Compiler& c) const {
 	if (elze != nullptr) {
 		else_v = c.insn_convert(elze->compile(c), type.fold());
 		elze->compile_end(c);
-	} else {
+	} else if (not type.is_void()) {
 		else_v = c.insn_convert(c.new_null(), type.fold());
 	}
 

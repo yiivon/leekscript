@@ -41,6 +41,7 @@ void Test::test_loops() {
 	code("var k = '121212' if (false) { return 12 } 5").equals("5");
 	code("var L = 5 if L < 1 {;}").equals("(void)");
 	code("var L = 5 if L > 1 {;}").equals("(void)");
+	code("if (false) { return 'hello' }").equals("null");
 
 	section("Conditions with other types");
 	code("if 1212 { 'ok' } else { 5 }").equals("'ok'");
