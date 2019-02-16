@@ -259,6 +259,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 			type = v2_type;
 		}
 		type.reference = false;
+		type.temporary = true;
 	}
 
 	// [1, 2, 3] ~~ x -> x ^ 2
