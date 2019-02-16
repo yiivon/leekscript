@@ -278,7 +278,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 	// Check arguments
 	c.insn_check_args(args, types);
-	return callable_version->compile_call(c, args);
+	auto r = callable_version->compile_call(c, args);
+	c.inc_ops(1);
+	return r;
 }
 
 Value* FunctionCall::clone() const {

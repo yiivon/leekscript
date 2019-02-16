@@ -194,7 +194,6 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	if (object) {
 		object->compile_end(c);
 	}
-	c.inc_ops(1);
 	return r;
 }
 
