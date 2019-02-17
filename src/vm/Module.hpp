@@ -95,7 +95,7 @@ public:
 	Module(std::string name);
 	virtual ~Module();
 
-	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
+	void operator_(std::string name, std::initializer_list<LSClass::Operator>, std::vector<Type> templates = {});
 
 	template<class... Args>
 	Template template_(Args... templates) {

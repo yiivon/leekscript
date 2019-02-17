@@ -22,7 +22,7 @@ Module::~Module() {
 	//delete clazz;
 }
 
-void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
+void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl, std::vector<Type> templates) {
 	std::vector<LSClass::Operator> operators = impl;
 	clazz->addOperator(name, operators);
 }
@@ -60,6 +60,9 @@ void Module::method(std::string name, Method::Option opt, std::initializer_list<
 
 void Template::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
 	std::vector<LSClass::Operator> operators = impl;
+	for (auto& i : operators) {
+		i.templates = templates;
+	}
 	module->clazz->addOperator(name, operators);
 }
 

@@ -83,9 +83,9 @@ const Callable* LSClass::getOperator(SemanticAnalyser* analyser, std::string& na
 	for (const auto& implementation : implementations) {
 		auto type = Type::fun(implementation->return_type, {implementation->object_type, implementation->operand_type});
 		if (implementation->native) {
-			callable->add_version({ name, type, implementation->addr, implementation->mutators, {}, nullptr, false, implementation->v1_addr, implementation->v2_addr });
+			callable->add_version({ name, type, implementation->addr, implementation->mutators, implementation->templates, nullptr, false, implementation->v1_addr, implementation->v2_addr });
 		} else {
-			callable->add_version({ name, type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) implementation->addr, implementation->mutators, {}, nullptr, false,  implementation->v1_addr, implementation->v2_addr });
+			callable->add_version({ name, type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) implementation->addr, implementation->mutators, implementation->templates, nullptr, false,  implementation->v1_addr, implementation->v2_addr });
 		}
 	}
 	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
