@@ -110,7 +110,7 @@ long python(const std::string& code) {
 }
 
 void benchmark(const std::string& code) {
-	int r = system((string("echo \"") + code + "\" >> results").c_str());
+	int r = system((std::string("echo \"") + code + "\" >> results").c_str());
 	(void) r;
 	std::cout << "│ " << pad(code, 22) << "│ " << std::flush;
 
@@ -138,12 +138,12 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-	cout << "Starting benchmark..." << endl;
+	std::cout << "Starting benchmark..." << std::endl;
 	std::remove("results");
 
-	cout << "┌───────────────────────┬────────────────┬────────────────┬────────────────┬────────────────┐" << endl;
-	cout << "│ Test case             │ C++ -O2        │ Java           │ LeekScript     │ Python         │" << endl;
-	cout << "├───────────────────────┼────────────────┼────────────────┼────────────────┼────────────────┤" << endl;
+	std::cout << "┌───────────────────────┬────────────────┬────────────────┬────────────────┬────────────────┐" << std::endl;
+	std::cout << "│ Test case             │ C++ -O2        │ Java           │ LeekScript     │ Python         │" << std::endl;
+	std::cout << "├───────────────────────┼────────────────┼────────────────┼────────────────┼────────────────┤" << std::endl;
 
 	long t = chronotime([&]() {
 		benchmark("cubic_permutations");
@@ -152,15 +152,15 @@ int main(int argc, char** argv) {
 		benchmark("factorials");
 	});
 
-	cout << "└───────────────────────┴────────────────┴────────────────┴────────────────┴────────────────┘" << endl;
+	std::cout << "└───────────────────────┴────────────────┴────────────────┴────────────────┴────────────────┘" << std::endl;
 
-	cout << " Total time: " << format_ns(t, 0) << endl;
-	cout << endl;
+	std::cout << " Total time: " << format_ns(t, 0) << std::endl;
+	std::cout << std::endl;
 }
 
-string read_file(string file) {
-	ifstream ifs(file.data());
-	string content = string((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
+std::string read_file(std::string file) {
+	std::ifstream ifs(file.data());
+	std::string content = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
 	return content;
 }
@@ -194,15 +194,15 @@ void Benchmark::operators() {
 
 	for (auto& o : {"+", "-", "*", "/", "\\", "^", "&", "|", "%", "%%", "**", "&&"}) {
 		auto t = run_operator(o);
-		std::cout << pad(string("operator ") + o + " : ", 15) << pad(format_ns(t, b), 15) << std::endl;
+		std::cout << pad(std::string("operator ") + o + " : ", 15) << pad(format_ns(t, b), 15) << std::endl;
 	}
 }
 
 void Benchmark::arrays() {
 
-	auto exe_start = chrono::high_resolution_clock::now();
+	auto exe_start = std::chrono::high_resolution_clock::now();
 
-	vector<int> a;
+	std::vector<int> a;
 	int n = 1000000;
 
 	for (int i = 0; i < n; ++i) {
@@ -212,19 +212,19 @@ void Benchmark::arrays() {
 		a[j] = n - j;
 	}
 
-	auto exe_end = chrono::high_resolution_clock::now();
-	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
+	auto exe_end = std::chrono::high_resolution_clock::now();
+	long exe_time_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(exe_end - exe_start).count();
 
-	cout << (((double) exe_time_ns / 1000) / 1000) << endl;
+	std::cout << (((double) exe_time_ns / 1000) / 1000) << std::endl;
 }
 
 void Benchmark::primes() {
 
-	auto exe_start = chrono::high_resolution_clock::now();
+	auto exe_start = std::chrono::high_resolution_clock::now();
 
 
-	auto exe_end = chrono::high_resolution_clock::now();
-	long exe_time_ns = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
+	auto exe_end = std::chrono::high_resolution_clock::now();
+	long exe_time_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(exe_end - exe_start).count();
 	double exe_time_ms = (((double) exe_time_ns / 1000) / 1000);
-	cout << exe_time_ms << endl;
+	std::cout << exe_time_ms << std::endl;
 }
