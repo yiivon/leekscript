@@ -53,8 +53,8 @@ void Block::analyse_global_functions(SemanticAnalyser* analyser) {
 }
 
 void Block::analyse(SemanticAnalyser* analyser) {
+	// std::cout << "Block::analyse() " << is_void << std::endl;
 
-	// std::cout << "Block " << this << std::endl;
 	analyser->enter_block();
 
 	type = {};

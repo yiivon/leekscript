@@ -42,6 +42,7 @@ Location For::location() const {
 }
 
 void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+	// std::cout << "For::analyse() " << is_void << std::endl;
 
 	if (req_type.is_array()) {
 		type = req_type;

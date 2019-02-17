@@ -21,6 +21,7 @@ Location ExpressionInstruction::location() const {
 }
 
 void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+	// std::cout << "ExpressionInstruction::analyse() " << is_void << std::endl;
 	value->is_void = is_void;
 	value->analyse(analyser);
 	if (req_type.is_void()) {
