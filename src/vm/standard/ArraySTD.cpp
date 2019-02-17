@@ -26,12 +26,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::array(), Type::const_any(), Type::array(), (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
 	});
 
-	/* Type tilde_tilde_fun_type = Type::FUNCTION;
-	tilde_tilde_fun_type.setArgumentType(0, Type::T);
-	tilde_tilde_fun_type.setReturnType(Type::any());
+	auto ttE = Type::template_("E");
+	auto ttR = Type::template_("R");
+	template_(ttE, ttR).
 	operator_("~~", {
-		{Type::T_ARRAY, tilde_tilde_fun_type, Type::array(Type::any()), (void*) &LSArray<LSValue*>::ls_map}
-	});*/
+		{Type::const_array(ttE), Type::fun(ttR, {ttE}), Type::tmp_array(ttR), (void*) &map},
+	});
 
 	/*
 	 * Methods
