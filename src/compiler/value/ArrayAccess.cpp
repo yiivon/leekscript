@@ -56,7 +56,7 @@ Callable* ArrayAccess::get_callable(SemanticAnalyser*) const {
 		callable->add_version({ "<aa>", type, this, {}, {}, nullptr });
 	} else {
 		// The array is not homogeneous, so the function inside an array always returns any
-		callable->add_version({ "<aa>", Type::fun(Type::any(), {Type::any()}), this, {}, {}, nullptr });
+		callable->add_version({ "<aa>", Type::fun(Type::any(), {Type::any()}), this, {}, {}, nullptr, true });
 	}
 	return callable;
 }
