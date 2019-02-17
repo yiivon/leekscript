@@ -40,8 +40,7 @@ void Test::test_general() {
 	code(" ").equals("(void)"); // unbreakable space
 	code("	").equals("(void)"); // tab
 	code("null").equals("null");
-	// TODO syntaxical error
-	// DISABLED_code("()").syntaxic_error();
+	code("()").syntaxic_error(ls::SyntaxicalError::Type::EXPECTED_VALUE, {")"});
 	code("12").equals("12");
 	code("1212m").equals("1212");
 	code("true").equals("true");
