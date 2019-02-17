@@ -227,9 +227,8 @@ void Test::test_strings() {
 	code("let a = '_' let f = (x, y) => x + a + y 'abc'.fold(f, '.')").equals("'._a_b_c'");
 	code("'1234567'.fold((x, y) => x + y.number(), 0)").equals("28");
 	code("'1234567'.fold((x, y) => x + y.number(), 0.12)").equals("28.12");
-	// Leaks
-	DISABLED_code("'salut'.fold((x, y) => '%', '')").equals("'%'");
-	DISABLED_code("'salut'.fold(=> '%', '')").equals("'%'");
+	code("'salut'.fold((x, y) => '%', '')").equals("'%'");
+	code("'salut'.fold(=> '%', '')").equals("'%'");
 
 	section("String.indexOf()");
 	code("'bonjour'.indexOf('jour')").equals("3");
