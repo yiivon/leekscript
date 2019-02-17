@@ -55,46 +55,6 @@ void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
 	operators.insert({name, impl});
 }
 
-Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, std::vector<Type> arguments) {
-	// std::cout << "getMethod " << name << " in class " << this->name << " with args " << arguments << std::endl;
-	try {
-		Method* best = nullptr;
-		int best_score = std::numeric_limits<int>::max();
-		for (auto& implementation : methods.at(name)) {
-			if (implementation.type.arguments().size() != arguments.size()) continue;
-			// std::cout << "templates : " << implementation.templates << std::endl;
-			// implementation.templates[0].implement(Type::real());
-			// implementation.templates[1].implement(Type::real());
-			for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
-				const auto& a = arguments.at(i);
-				const auto implem_arg = implementation.type.arguments().at(i);
-				if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
-					if (fun->function() and implem_arg.is_function()) {
-						auto version = implem_arg.arguments();
-						((Value*) fun->function())->will_take(analyser, version, 1);
-						arguments.at(i) = fun->function()->version_type(version);
-					}
-				}
-			}
-			int d = 0;
-			for (size_t i = 0; i < arguments.size(); ++i) {
-				auto di = arguments.at(i).distance(implementation.type.arguments().at(i));
-				// std::cout << " - " << arguments.at(i) << ", " << implementation.type.arguments().at(i) << " " << di << std::endl;
-				if (di < 0) { d = std::numeric_limits<int>::max(); break; };
-				d += di;
-			}
-			// std::cout << implementation.type.arguments() << " distance " << d << std::endl;
-			if (best == nullptr or d <= best_score) {
-				best_score = d;
-				best = &implementation;
-			}
-		}
-		return best;
-	} catch (std::exception&) {
-		return nullptr;
-	}
-}
-
 LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	try {
 		auto f = static_fields.at(name);

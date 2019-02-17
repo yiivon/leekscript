@@ -64,7 +64,6 @@ public:
 	void addStaticField(ModuleStaticField f);
 	void addOperator(std::string name, std::vector<Operator>);
 
-	Method* getMethod(SemanticAnalyser* analyser, std::string&, std::vector<Type>);
 	LSFunction* getDefaultMethod(const std::string& name);
 	const Callable* getOperator(SemanticAnalyser* analyser, std::string& name, Type& object_type, Type& operand_type);
 
