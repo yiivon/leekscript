@@ -166,7 +166,6 @@ void Function::analyse(SemanticAnalyser* analyser) {
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyse(analyser);
 		}
-		// args.push_back(Type::any());
 		if (!placeholder_type) {
 			placeholder_type = Type::generate_new_placeholder_type();
 		}
