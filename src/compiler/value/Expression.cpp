@@ -313,35 +313,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return callable_version->compile_call(c, args);
 	}
 
-	if (operator_fun != nullptr) {
-
-		std::vector<Compiler::value> args;
-		// TODO simplify condition
-		if ((v1->type.is_bool() and op->type == TokenType::EQUAL) or native_method_v1_addr) {
-			args.push_back(((LeftValue*) v1)->compile_l(c));
-			if (native_method_v2_addr) {
-				args.push_back(((LeftValue*) v2)->compile_l(c));
-			} else {
-				args.push_back(v2->compile(c));
-			}
-		} else {
-			args.push_back(op->reversed ? v2->compile(c) : v1->compile(c));
-			args.push_back(op->reversed ? v1->compile(c) : v2->compile(c));
-		}
-		v1->compile_end(c);
-		v2->compile_end(c);
-
-		Compiler::value res;
-		if (is_native_method) {
-			auto fun = (void*) operator_fun;
-			res = c.insn_invoke(type, args, fun);
-		} else {
-			auto fun = (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) operator_fun;
-			res = fun(c, args);
-		}
-		return res;
-	}
-
 	void* ls_func;
 	std::vector<Compiler::value> args;
 
