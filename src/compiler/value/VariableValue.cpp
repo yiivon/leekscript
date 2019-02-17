@@ -122,6 +122,7 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 			for (const auto& v : c->versions) {
 				auto v2 = v;
 				v2.value = this;
+				v2.object = nullptr;
 				callable->add_version(v2);
 			}
 			return callable;
