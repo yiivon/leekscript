@@ -187,15 +187,13 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 				if (v1->type.is_placeholder()) { return_type = v1_type; }
 				if (v2->type.is_placeholder()) { return_type = v2_type; }
 			}
-
-			// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
-
 			type = return_type;
 			if (v2_type.is_function()) {
 				v2->will_take(analyser, callable_version->type.argument(1).arguments(), 1);
 				v2->set_version(callable_version->type.argument(1).arguments(), 1);
 				v2->must_return(analyser, callable_version->type.argument(1).return_type());
 			}
+			// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
 			return;
 		}
 	}
@@ -255,14 +253,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		}
 		type.reference = false;
 		type.temporary = true;
-	}
-
-	// [1, 2, 3] ~~ x -> x ^ 2
-	if (op->type == TokenType::TILDE_TILDE) {
-		auto version = { v1->type.element() };
-		v2->will_take(analyser, version, 1);
-		v2->set_version(version, 1);
-		type = Type::array(v2->version_type(version).return_type());
 	}
 
 	// object ?? default
@@ -397,35 +387,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
 				return (*x)->pow_eq(y);
 			});
-		}
-		case TokenType::TILDE_TILDE: {
-			if (v1->type.element() == Type::integer()) {
-				if (type.element() == Type::integer()) {
-					auto m = &LSArray<int>::ls_map<LSFunction*, int>;
-					ls_func = (void*) m;
-				} else if (type.element() == Type::real()) {
-					auto m = &LSArray<int>::ls_map<LSFunction*, double>;
-					ls_func = (void*) m;
-				} else {
-					auto m = &LSArray<int>::ls_map<LSFunction*, LSValue*>;
-					ls_func = (void*) m;
-				}
-			} else if (v1->type.element() == Type::real()) {
-				if (type.element() == Type::real()) {
-					auto m = &LSArray<double>::ls_map<LSFunction*, double>;
-					ls_func = (void*) m;
-				} else if (type.element() == Type::integer()) {
-					auto m = &LSArray<double>::ls_map<LSFunction*, int>;
-					ls_func = (void*) m;
-				} else {
-					// FIXME Ugly style to fix uncovered line
-					auto m = &LSArray<double>::ls_map<LSFunction*, LSValue*>; ls_func = (void*) m;
-				}
-			} else {
-				auto m = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
-				ls_func = (void*) m;
-			}
-			break;
 		}
 		case TokenType::DOUBLE_QUESTION_MARK: {
 			// x ?? y ==> if (x != null) { x } else { y }
