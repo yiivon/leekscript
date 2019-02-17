@@ -215,6 +215,7 @@ void Test::test_arrays() {
 	code("[1, 2, 3] ~~ Number.sqrt").equals("[1, 1.41421, 1.73205]");
 	code("[1, 2, 3] ~~ x -> [x, x]").equals("[[1, 1], [2, 2], [3, 3]]");
 	code("[1, 2, 3] ~~ System.print").output("1\n2\n3\n");
+	code("var s = '0' let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("'01234'");
 	DISABLED_code("let s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
 
 	section("Array.operator <");
