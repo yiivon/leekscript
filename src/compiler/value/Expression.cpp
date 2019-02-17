@@ -112,9 +112,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	v1->analyse(analyser);
 	v2->analyse(analyser);
-	
-	// std::cout << "v1 " << v1 << " " << v1->type << std::endl;
-	// std::cout << "v2 " << v2 << " " << v2->type << std::endl;
 
 	// in operator : v1 must be a container
 	if (op->type == TokenType::IN and not v2->type.can_be_container()) {
@@ -271,7 +268,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 	}
 
 	if (callable_version) {
-		// std::cout << "Expression::compile callable" << std::endl;
 		std::vector<Compiler::value> args;
 		args.push_back([&](){ if (callable_version->v1_addr) {
 			return ((LeftValue*) v1)->compile_l(c);
