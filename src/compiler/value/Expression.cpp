@@ -223,10 +223,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL
 		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
 		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
-		or op->type == TokenType::SWAP
-		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE
+		or op->type == TokenType::SWAP or op->type == TokenType::CATCH_ELSE
 		) {
 		// Set the correct type nature for the two members
 		auto vv = dynamic_cast<VariableValue*>(v1);
@@ -273,7 +270,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return {};
 	}
 
-	if (callable and callable_version) {
+	if (callable_version) {
 		// std::cout << "Expression::compile callable" << std::endl;
 		std::vector<Compiler::value> args;
 		args.push_back([&](){ if (callable_version->v1_addr) {
