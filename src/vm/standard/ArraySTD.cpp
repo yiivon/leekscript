@@ -478,7 +478,7 @@ Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args) {
 		auto x = c.clone(v);
 		c.insn_inc_refs(x);
 		auto r = c.insn_call(function.t.return_type(), {x}, function);
-		c.insn_push_array(result, r);
+		c.insn_push_array(result, r.t.is_void() ? c.new_null() : r);
 		c.insn_delete(x);
 		return {};
 	});
