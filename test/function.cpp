@@ -44,8 +44,7 @@ void Test::test_functions() {
 	code("( -> 12)()").equals("12");
 	code("let f = x -> x f(5) + f(7)").equals("12");
 	code("[-> 12][0]()").equals("12");
-	// TODO
-	DISABLED_code("[-> 12, 'toto'][0]()").equals("12");
+	code("[-> 12, 'toto'][0]()").equals("12");
 	code("(x -> x + 12.12)(1.01)").almost(13.13);
 	code("(x -> x + 12)(1.01)").almost(13.01);
 	code("[x -> x ** 2][0](12)").equals("144");

@@ -323,6 +323,10 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 			return_type += t;
 		}
 	}
+	// Default version of the function, the return type must be any
+	if (not return_type.is_void() and not is_main_function and version == default_version) {
+		return_type = Type::any();
+	}
 	// std::cout << "return_type " << return_type << std::endl;
 	version->body->type = return_type;
 	if (captures.size()) {
@@ -387,7 +391,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 			ls_fun->args.push_back(analyser->vm->internal_vars.at("Value")->lsvalue);
 		}
 	}
-	auto return_class_name = type.return_type().class_name();
+	auto return_class_name = default_version->body->type.class_name();
 	if (return_class_name.size()) {
 		ls_fun->return_type = analyser->vm->internal_vars.at(return_class_name)->lsvalue;
 	} else {
@@ -458,7 +462,7 @@ Compiler::value Function::compile(Compiler& c) const {
 }
 
 Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) const {
-	// std::cout << "Function::compile_version(" << args << ")" << std::endl;
+	// std::cout << "Function " << name << "::compile_version(" << args << ")" << std::endl;
 	if (!compiled) {
 		compile(c);
 	}
@@ -505,7 +509,7 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 
 void fake_ex_destru_fun(void*) {}
 void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
-	// std::cout << "Function::compile_version_internal(" << version->type << ")" << std::endl;
+	// std::cout << "Function " << name << "::compile_version_internal(" << version->type << ")" << std::endl;
 	((Function*) this)->current_version = version;
 
 	const int id = id_counter++;
@@ -602,6 +606,9 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	if (version->body->type.is_void()) {
 		c.insn_return_void();
 	} else {
+		if (version->type.return_type().is_any()) {
+			res = c.insn_convert(res, version->type.return_type());
+		}
 		c.insn_return(res);
 	}
 
