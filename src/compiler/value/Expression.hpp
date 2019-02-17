@@ -7,6 +7,9 @@
 
 namespace ls {
 
+class Callable;
+class CallableVersion;
+
 class Expression : public Value {
 public:
 
@@ -24,6 +27,8 @@ public:
 	Type v2_type;
 	Type return_type;
 	Type equal_previous_type;
+	const Callable* callable = nullptr;
+	CallableVersion* callable_version = nullptr;
 
 	Expression();
 	Expression(Value*);

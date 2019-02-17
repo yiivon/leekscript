@@ -11,6 +11,7 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/standard/BooleanSTD.hpp"
 #include "../../vm/Exception.hpp"
+#include "../semantic/Callable.hpp"
 
 namespace ls {
 
@@ -166,45 +167,39 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	this->v1_type = op->reversed ? v2->type : v1->type;
 	this->v2_type = op->reversed ? v1->type : v2->type;
 
-	const LSClass::Operator* o = nullptr;
 	if (v1_type.class_name().size()) {
 		auto object_class = (LSClass*) analyser->vm->internal_vars.at(v1_type.class_name())->lsvalue;
-		o = object_class->getOperator(analyser, op->character, v1_type, v2_type);
+		callable = object_class->getOperator(analyser, op->character, v1_type, v2_type);
 	}
-	if (o == nullptr) {
+	if (callable == nullptr) {
 		auto v_class = (LSClass*) analyser->vm->internal_vars.at("Value")->lsvalue;
-		o = v_class->getOperator(analyser, op->character, v1_type, v2_type);
+		callable = v_class->getOperator(analyser, op->character, v1_type, v2_type);
 	}
-	if (o != nullptr) {
-		// For placeholder types, keep them no matter the operator
-		return_type = o->return_type;
-		if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES or op->type == TokenType::MODULO) {
-			if (v1->type.is_placeholder()) { return_type = v1_type; }
-			if (v2->type.is_placeholder()) { return_type = v2_type; }
-		}
+	if (callable) {
+		// std::cout << "Callable : " << callable << std::endl;
+		callable_version = callable->resolve(analyser, {v1_type, v2_type});
+		if (callable_version) {
+			// std::cout << "Callable version : " << callable_version << std::endl;
+			callable_version->apply_mutators(analyser, {v1, v2});
+			// For placeholder types, keep them no matter the operator
+			return_type = callable_version->type.return_type();
+			if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES or op->type == TokenType::MODULO) {
+				if (v1->type.is_placeholder()) { return_type = v1_type; }
+				if (v2->type.is_placeholder()) { return_type = v2_type; }
+			}
 
-		// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
+			// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
 
-		operator_fun = o->addr;
-		is_native_method = o->native;
-		native_method_v1_addr = o->v1_addr;
-		native_method_v2_addr = o->v2_addr;
-		v1_type = op->reversed ? o->operand_type : o->object_type;
-		v2_type = op->reversed ? o->object_type : o->operand_type;
-		type = return_type;
-		if (v2_type.is_function()) {
-			v2->will_take(analyser, o->operand_type.arguments(), 1);
-			v2->set_version(o->operand_type.arguments(), 1);
-			v2->must_return(analyser, o->operand_type.return_type());
+			type = return_type;
+			if (v2_type.is_function()) {
+				v2->will_take(analyser, callable_version->type.argument(1).arguments(), 1);
+				v2->set_version(callable_version->type.argument(1).arguments(), 1);
+				v2->must_return(analyser, callable_version->type.argument(1).return_type());
+			}
+			return;
 		}
-		// Apply mutators
-		for (const auto& mutator : o->mutators) {
-			mutator->apply(analyser, {v1, v2});
-		}
-		return;
-	} else {
-		// std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
 	}
+	// std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
 
 	// Don't use old stuff for boolean, /, and bit operators
 	if ((v1->type == Type::boolean() and op->type != TokenType::EQUAL) 
@@ -297,6 +292,25 @@ Compiler::value Expression::compile(Compiler& c) const {
 		c.mark_offset(op->token->location.start.line);
 		c.insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
 		return {};
+	}
+
+	if (callable and callable_version) {
+		// std::cout << "Expression::compile callable" << std::endl;
+		std::vector<Compiler::value> args;
+		args.push_back([&](){ if (callable_version->v1_addr) {
+			return ((LeftValue*) v1)->compile_l(c);
+		} else {
+			return v1->compile(c);
+		}}());
+		args.push_back([&](){ if (callable_version->v2_addr) {
+			return ((LeftValue*) v2)->compile_l(c);
+		} else {
+			return v2->compile(c);
+		}}());
+		if (op->reversed) std::reverse(args.begin(), args.end());
+		v1->compile_end(c);
+		v2->compile_end(c);
+		return callable_version->compile_call(c, args);
 	}
 
 	if (operator_fun != nullptr) {
