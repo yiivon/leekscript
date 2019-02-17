@@ -4,6 +4,7 @@
 #include "LSFunction.hpp"
 #include "../Module.hpp"
 #include "../../type/Function_type.hpp"
+#include "../../compiler/semantic/Callable.hpp"
 
 namespace ls {
 
@@ -104,45 +105,31 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	}
 }
 
-const LSClass::Operator* LSClass::getOperator(SemanticAnalyser* analyser, std::string& name, Type& obj_type, Type& operand_type) {
+const Callable* LSClass::getOperator(SemanticAnalyser* analyser, std::string& name, Type& obj_type, Type& operand_type) {
 	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
 	if (name == "is not") name = "!=";
 	std::vector<const Operator*> implementations;
+	std::string op_name;
 	if (operators.find(name) != operators.end()) {
 		for (const auto& i : operators.at(name)) implementations.push_back(&i);
+		op_name = this->name + ".operator" + name;
 	}
 	auto parent = name == "Value" ? nullptr : LSValue::ValueClass;
 	if (parent && parent->operators.find(name) != parent->operators.end()) {
 		for (const auto& i : parent->operators.at(name)) implementations.push_back(&i);
+		op_name = "Value.operator" + name;
 	}
-	const Operator* best = nullptr;
-	int best_score = std::numeric_limits<int>::max();
-	for (const Operator* m : implementations) {
-		if (auto fun = dynamic_cast<const Function_type*>(operand_type._types[0].get())) {
-			if (fun->function()) {
-				std::vector<Type> version = m->operand_type.arguments();
-				if (version.size() == fun->function()->type.arguments().size()) {
-					((Value*) fun->function())->will_take(analyser, version, 1);
-					operand_type = fun->function()->version_type(version);
-				}
-			}
-		}
-		auto d1 = obj_type.distance(m->object_type);
-		auto d2 = operand_type.distance(m->operand_type);
-		if (d1 >= 0 and d2 >= 0) {
-			int score = d1 + d2;
-			// std::cout << " + " << m->object_type << ", " << m->operand_type << " / " << score << std::endl;
-			if (best == nullptr or score <= best_score) {
-				best_score = score;
-				best = m;
-			}
-			// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
+	auto callable = new Callable(op_name);
+	for (const auto& implementation : implementations) {
+		auto type = Type::fun(implementation->return_type, {implementation->object_type, implementation->operand_type});
+		if (implementation->native) {
+			callable->add_version({ name, type, implementation->addr, implementation->mutators, {}, nullptr, false, implementation->v1_addr, implementation->v2_addr });
 		} else {
-			// std::cout << " - " << m->object_type << ", " << m->operand_type << std::endl;
+			callable->add_version({ name, type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) implementation->addr, implementation->mutators, {}, nullptr, false,  implementation->v1_addr, implementation->v2_addr });
 		}
 	}
-	// if (best) std::cout << " = " << best->object_type << ", " << best->operand_type << std::endl;
-	return best;
+	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
+	return callable;
 }
 
 bool LSClass::to_bool() const {

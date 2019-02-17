@@ -26,10 +26,10 @@ public:
 		bool native;
 		bool v1_addr;
 		bool v2_addr;
+		std::vector<Type> templates;
 
-		Operator(Type object_type, Type operand, Type return_type, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool native = false, bool v1_addr = false, bool v2_addr = false)
-		: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), mutators(mutators), native(native), v1_addr(v1_addr), v2_addr(v2_addr) {}
-		static bool NATIVE;
+		Operator(Type object_type, Type operand, Type return_type, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool native = false, bool v1_addr = false, bool v2_addr = false, std::vector<Type> templates = {})
+		: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), mutators(mutators), native(native), v1_addr(v1_addr), v2_addr(v2_addr), templates(templates) {}
 	};
 
 	class field {
@@ -66,7 +66,7 @@ public:
 
 	Method* getMethod(SemanticAnalyser* analyser, std::string&, std::vector<Type>);
 	LSFunction* getDefaultMethod(const std::string& name);
-	const Operator* getOperator(SemanticAnalyser* analyser, std::string& name, Type& object_type, Type& operand_type);
+	const Callable* getOperator(SemanticAnalyser* analyser, std::string& name, Type& object_type, Type& operand_type);
 
 	bool to_bool() const override;
 	virtual bool ls_not() const override;
