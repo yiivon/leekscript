@@ -573,6 +573,7 @@ void Test::test_numbers() {
 	code("Number.max(5.5, [12.8, ''][0])").equals("12.8");
 	code("2.max([7.5, ''][0])").equals("7.5");
 	code("[2, ''][0].max([7.5, ''][0])").equals("7.5");
+	// TODO improve max method
 	DISABLED_code("2.max([7.5, ''][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
 
 	section("Number.min()");

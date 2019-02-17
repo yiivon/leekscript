@@ -216,6 +216,7 @@ void Test::test_arrays() {
 	code("[1, 2, 3] ~~ x -> [x, x]").equals("[[1, 1], [2, 2], [3, 3]]");
 	code("[1, 2, 3] ~~ System.print").output("1\n2\n3\n");
 	code("var s = '0' let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("'01234'");
+	// TODO Manage primitive types captures
 	DISABLED_code("let s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
 
 	section("Array.operator <");
@@ -388,6 +389,7 @@ void Test::test_arrays() {
 	// TODO crash
 	DISABLED_code("var a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
 	code("var a = '' Array.iter([1, 2, 3], x -> a += x) a").equals("'123'");
+	// TODO Manage primitive types captures
 	DISABLED_code("var s = 0 [1, 2, 3, 4, 5].iter(x -> s += x)").equals("15");
 
 	section("Array.partition()");
