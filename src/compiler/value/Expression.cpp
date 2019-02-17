@@ -18,7 +18,7 @@ namespace ls {
 Expression::Expression() : Expression(nullptr) {}
 
 Expression::Expression(Value* v) :
-	v1(v), v2(nullptr), op(nullptr), no_op(false), operations(1) {
+	v1(v), v2(nullptr), op(nullptr), operations(1) {
 }
 
 Expression::~Expression() {
@@ -98,10 +98,8 @@ Location Expression::location() const {
 }
 
 void Expression::analyse(SemanticAnalyser* analyser) {
-
 	// std::cout << "Expression::analyse()" << std::endl;
 
-	operator_fun = nullptr;
 	operations = 1;
 	type = Type::any();
 
@@ -164,9 +162,10 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		}
 	}
 
-	this->v1_type = op->reversed ? v2->type : v1->type;
-	this->v2_type = op->reversed ? v1->type : v2->type;
+	auto v1_type = op->reversed ? v2->type : v1->type;
+	auto v2_type = op->reversed ? v1->type : v2->type;
 
+	const Callable* callable = nullptr;
 	if (v1_type.class_name().size()) {
 		auto object_class = (LSClass*) analyser->vm->internal_vars.at(v1_type.class_name())->lsvalue;
 		callable = object_class->getOperator(analyser, op->character, v1_type, v2_type);
@@ -182,7 +181,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 			// std::cout << "Callable version : " << callable_version << std::endl;
 			callable_version->apply_mutators(analyser, {v1, v2});
 			// For placeholder types, keep them no matter the operator
-			return_type = callable_version->type.return_type();
+			auto return_type = callable_version->type.return_type();
 			if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES or op->type == TokenType::MODULO) {
 				if (v1->type.is_placeholder()) { return_type = v1_type; }
 				if (v2->type.is_placeholder()) { return_type = v2_type; }
@@ -229,16 +228,8 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS or op->type == TokenType::CATCH_ELSE
 		) {
-
-		auto vv = dynamic_cast<VariableValue*>(v1);
-
 		// Set the correct type nature for the two members
-		if (v2->type.is_polymorphic() and v1->type.is_primitive() and !(vv and op->type == TokenType::EQUAL)) {
-			v1_type = Type::any();
-		}
-		if (v1->type.is_polymorphic() and v2->type.is_primitive() and !(vv and op->type == TokenType::EQUAL)) {
-			v2_type = Type::any();
-		}
+		auto vv = dynamic_cast<VariableValue*>(v1);
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
 			type = v2->type;
 		} else {
@@ -258,8 +249,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
 		type = v1->type * v2->type;
-		v1_type = type;
-		v2_type = type;
 	}
 }
 

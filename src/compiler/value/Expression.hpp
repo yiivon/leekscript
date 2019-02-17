@@ -16,18 +16,7 @@ public:
 	Value* v1;
 	Value* v2;
 	std::shared_ptr<Operator> op;
-
-	bool no_op;
 	int operations;
-	void* operator_fun = nullptr;
-	bool is_native_method = false;
-	bool native_method_v1_addr = false;
-	bool native_method_v2_addr = false;
-	Type v1_type;
-	Type v2_type;
-	Type return_type;
-	Type equal_previous_type;
-	const Callable* callable = nullptr;
 	CallableVersion* callable_version = nullptr;
 
 	Expression();
