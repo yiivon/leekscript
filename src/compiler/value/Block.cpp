@@ -61,8 +61,11 @@ void Block::analyse(SemanticAnalyser* analyser) {
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		const auto& instruction = instructions.at(i);
+		if (i < instructions.size() - 1 or is_void) { // Not the instruction
+			instruction->is_void = true;
+		}
 		instruction->analyse(analyser);
-		if (i == instructions.size() - 1) { // Last instruction
+		if (i == instructions.size() - 1 and not is_void) { // Last instruction
 			type += instruction->type;
 		}
 		if (instruction->may_return) may_return = true;

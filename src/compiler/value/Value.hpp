@@ -13,12 +13,10 @@ class Callable;
 
 class Value {
 public:
-
 	Type type;
 	Type return_type;
 	bool returning = false;
 	bool may_return = false;
-
 	std::vector<Type> version;
 	bool has_version = false;
 	std::map<std::string, Type> attr_types;
@@ -26,6 +24,7 @@ public:
 	bool parenthesis = false;
 	void* default_version_fun = nullptr;
 	std::map<std::vector<Type>, void*> versions;
+	bool is_void = false;
 
 	Value();
 	virtual ~Value();

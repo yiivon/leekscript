@@ -53,13 +53,16 @@ Location If::location() const {
 }
 
 void If::analyse(SemanticAnalyser* analyser) {
-
+	// std::cout << "If " << is_void << std::endl;
+	
 	condition->analyse(analyser);
+	then->is_void = is_void;
 	then->analyse(analyser);
 
 	type = then->type;
 
 	if (elze != nullptr) {
+		elze->is_void = is_void;
 		elze->analyse(analyser);
 		if (type.is_void() and not elze->type.is_void() and not then->returning) {
 			type = Type::null();
@@ -68,6 +71,7 @@ void If::analyse(SemanticAnalyser* analyser) {
 	} else if (not type.is_void() or then->returning) {
 		type += Type::null();
 	}
+	if (is_void) type = {};
 	returning = then->returning and (elze != nullptr and elze->returning);
 	may_return = then->may_return or (elze != nullptr and elze->may_return);
 	return_type += then->return_type;

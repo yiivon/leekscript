@@ -17,6 +17,7 @@ public:
 	Type return_type;
 	bool returning = false;
 	bool may_return = false;
+	bool is_void = false;
 
 	virtual ~Instruction() = 0;
 

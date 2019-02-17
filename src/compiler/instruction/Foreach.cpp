@@ -47,6 +47,7 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type = req_type;
 	} else {
 		type = {};
+		body->is_void = true;
 	}
 	analyser->enter_block();
 
