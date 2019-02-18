@@ -100,6 +100,18 @@ void Test::test_map() {
 	code("var m = ptr([2.5: 'a']) m['toto'] = 'b' m").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	/*
+	 * Iteration
+	 */
+	section("Map iteration");
+	code("for k, v in [:] { System.print(k + ' ' + v) }").output("");
+	code("for k, v in [1:2] { System.print(k + ' ' + v) }").output("1 2\n");
+	code("for k, v in [1:2,3:4] { System.print(k + ' ' + v) }").output("1 2\n3 4\n");
+	code("for k, v in [1:2,3:4,5:6] { System.print(k + ' ' + v) }").output("1 2\n3 4\n5 6\n");
+	code("for k, v in ['a':'b'] { System.print(k + ' ' + v) }").output("a b\n");
+	code("for k, v in ['a':'b','c':'d'] { System.print(k + ' ' + v) }").output("a b\nc d\n");
+	code("for k, v in ['a':'b','c':'d','e':'f'] { System.print(k + ' ' + v) }").output("a b\nc d\ne f\n");
+
+	/*
 	 * Methods
 	 */
 	section("Map.size()");
