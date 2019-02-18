@@ -142,10 +142,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
 		{Type::integer(), Type::long_(), Type::integer(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
 	});
-	operator_("~", {
-		{Type::real(), Type::fun(Type::any(), {Type::real()}), Type::any(), (void*) &NumberSTD::tilde_real},
-		{Type::integer(), Type::fun(Type::any(), {Type::integer()}), Type::any(), (void*) &NumberSTD::tilde_int}
-	});
 	operator_("&", {
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::bit_and}
 	});
@@ -685,34 +681,6 @@ Compiler::value NumberSTD::double_mod_eq(Compiler& c, std::vector<Compiler::valu
 	auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
 	c.insn_store(args[0], r);
 	return r;
-}
-
-Compiler::value NumberSTD::tilde_int(Compiler& c, std::vector<Compiler::value> args) {
-	// jit_type_t arg_types[] = {LS_POINTER, LS_INTEGER};
-	// jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 1);
-	// auto i = args[0].v;
-	// auto f = args[1].v;
-	// auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
-	// jit_value_t jit_args[] = {f, i};
-	// Compiler::value r = {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::any()};
-	// // Double-free required here
-	// jit_type_free(sig);
-	// jit_type_free(sig);
-	// return r;
-}
-
-Compiler::value NumberSTD::tilde_real(Compiler& c, std::vector<Compiler::value> args) {
-	// jit_type_t arg_types[] = {LS_POINTER, LS_REAL};
-	// jit_type_t sig = jit_type_create_signature(jit_abi_cdecl, LS_POINTER, arg_types, 2, 1);
-	// auto r = args[0].v;
-	// auto f = args[1].v;
-	// auto fun = jit_insn_load_relative(c.F, f, 24, LS_POINTER);
-	// jit_value_t jit_args[] = {f, r};
-	// Compiler::value res = {jit_insn_call_indirect(c.F, fun, sig, jit_args, 2, 0), Type::any()};
-	// // Double-free required here
-	// jit_type_free(sig);
-	// jit_type_free(sig);
-	// return res;
 }
 
 Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args) {

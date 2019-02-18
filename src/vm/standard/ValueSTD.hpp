@@ -57,6 +57,7 @@ public:
 	static Compiler::value op_in(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_swap_val(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value op_swap_ptr(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_call(Compiler&, std::vector<Compiler::value>);
 
 	/*
 	 * Methods

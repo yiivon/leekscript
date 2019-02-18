@@ -135,6 +135,12 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::any(), Type::any(), Type::any(), (void*) &ValueSTD::op_swap_ptr, {}, false, true, true},
 		{Type::integer(), Type::integer(), Type::integer(), (void*) &ValueSTD::op_swap_val, {}, false, true, true},
 	});
+	auto T = Type::template_("T");
+	auto R = Type::template_("R");
+	template_(T, R).
+	operator_("~", {
+		{T, Type::fun(R, {T}), R, (void*) &op_call},
+	});
 
 	/*
 	 * Methods
@@ -535,6 +541,10 @@ Compiler::value ValueSTD::op_swap_ptr(Compiler& c, std::vector<Compiler::value> 
 	});
 }
 
+Compiler::value ValueSTD::op_call(Compiler& c, std::vector<Compiler::value> args) {
+	auto fun = args[1];
+	return c.insn_call(fun.t.return_type(), {args[0]}, fun);
+}
 
 Compiler::value ValueSTD::copy(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[0].t.temporary) {
