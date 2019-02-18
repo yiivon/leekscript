@@ -39,8 +39,11 @@ void Test::test_intervals() {
 	code("[1..1000] == [1..1000]").equals("true");
 	code("[1..1000] == [1..500]").equals("false");
 	code("[1..1000] == 12").equals("false");
-	// TODO
-	DISABLED_code("[1..10] == [1 2 3 4 5 6 7 8 9 10]").equals("true");
+	code("[1..10] == [1 2 3 4 5 6 7 8 9 10]").equals("true");
+	code("[1..10] == [1 2 3 4 5 6 7 8 9 10 11]").equals("false");
+	code("[1..10] == [1 2 3 4 5 6 7 8 9]").equals("false");
+	code("[1..3] == [1 2 3]").equals("true");
+	code("[1..3] == ['a', 'b', 'c']").equals("false");
 
 	section("Interval.operator []");
 	code("[0..1000][500]").equals("500");

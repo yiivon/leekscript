@@ -65,6 +65,15 @@ bool LSInterval::eq(const LSValue* v) const {
 		auto interval = static_cast<const LSInterval*>(v);
 		return interval->a == a and interval->b == b;
 	}
+	if (auto array = dynamic_cast<const LSArray<int>*>(v)) {
+		int i = a;
+		if (b - a + 1 != array->size()) return false;
+		for (const auto& e : *array) {
+			if (e != i) return false;
+			i++;
+		}
+		return true;
+	}
 	return false;
 }
 
