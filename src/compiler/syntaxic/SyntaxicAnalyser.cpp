@@ -463,7 +463,19 @@ Value* SyntaxicAnalyser::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 						// No expression after the +, so it's the variable '+'
 						e = new VariableValue(std::shared_ptr<Token>(plus));
 					}
+				} else if (t->type == TokenType::TILDE) {
 
+					auto tilde = eat_get(); // eat the ~
+
+					if (beginingOfExpression(t->type)) {
+						auto ex = new PrefixExpression();
+						ex->operatorr = std::make_shared<Operator>(tilde);
+						ex->expression = eatSimpleExpression();
+						e = new Expression(ex);
+					} else {
+						// No expression after the ~, so it's the variable '~'
+						e = new VariableValue(std::shared_ptr<Token>(tilde));
+					}
 				} else {
 					auto ex = new PrefixExpression();
 					ex->operatorr = std::make_shared<Operator>(eat_get());
@@ -650,6 +662,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		case TokenType::POWER:
 		case TokenType::TERNARY:
 		case TokenType::INT_DIV:
+		case TokenType::TILDE:
 		{
 			return new VariableValue(std::shared_ptr<Token>(eat_get()));
 		}

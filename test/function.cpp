@@ -141,7 +141,16 @@ void Test::test_functions() {
 	code("let a = 10 a ~ x -> x ** 2").equals("100");
 	code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
 	code("3 ~ x -> x ** x").equals("27");
+	code("1993 ~ Number.isPrime").equals("true");
+	code("5l ~ x -> x ** x").equals("3125");
+	code("true ~ x -> !x").equals("false");
 	code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");
+	code("['a', 'b', 'c'] ~ x -> x.size()").equals("3");
+	code("['a', 'b', 'c'] ~ Array.size").equals("3");
+	code("(~)(5, x => x + 1000)").equals("1005");
+	code("(~)(5l, x => x * 1000)").equals("5000");
+	code("(~)([], x => x + 'a')").equals("['a']");
+	code("let f = x => x.cos(); (~)(Number.pi, f)").equals("-1");
 
 	section("Operator []");
 	code("let f = x -> x f[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});

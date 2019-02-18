@@ -56,6 +56,9 @@ LSValue* op_pow(LSValue* x, LSValue* y) {
 LSValue* op_mod(LSValue* x, LSValue* y) {
 	return x->mod(y);
 }
+LSValue* op_tilde(LSValue* x, LSValue* y) {
+	return x->mod(y);
+}
 
 LSValue* ptr_fun(LSValue* v) {
 	return v->move();
@@ -89,8 +92,8 @@ VM::VM(bool v1) : compiler(this) {
 	add_module(new JsonSTD());
 
 	// Add function operators
-	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\"};
-	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
+	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~"};
+	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div, (void*) &op_tilde};
 
 	auto op_type = Type::fun(Type::any(), {Type::any(), Type::any()});
 	auto value_class = internal_vars["Value"]->lsvalue;

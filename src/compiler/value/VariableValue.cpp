@@ -35,10 +35,21 @@ Location VariableValue::location() const {
 }
 
 Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
+	if (name == "~") {
+		auto callable = new Callable(name);
+		auto T = Type::template_("T");
+		auto R = Type::template_("R");
+		auto type = Type::fun(R, {T, Type::fun(R, {T})});
+		auto fun = [&](Compiler& c, std::vector<Compiler::value> args) {
+			return c.insn_call(args[1].t.return_type(), {args[0]}, args[1]);
+		};
+		callable->add_version({ name, type, fun, {}, {R, T}, nullptr });
+		return callable;
+	}
 	if (name == "+" or name == "-" or name == "*" or name == "×" or name == "/" or name == "÷" or name == "**" or name == "%") {
 		auto callable = new Callable(name);
 		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
-		auto fun =  [&](Compiler& c, std::vector<Compiler::value> args) {
+		auto fun = [&](Compiler& c, std::vector<Compiler::value> args) {
 			if (name == "+") return c.insn_add(args[0], args[1]);
 			else if (name == "-") return c.insn_sub(args[0], args[1]);
 			else if (name == "*" or name == "×") return c.insn_mul(args[0], args[1]);
@@ -219,7 +230,7 @@ Type VariableValue::version_type(std::vector<Type> version) const {
 		// std::cout << "VariableValue " << this << " version_type() " << version << std::endl;
 		return var->value->version_type(version);
 	}
-	if (name == "+" or name == "-" or name == "*" or name == "×" or name == "/" or name == "÷" or name == "**" or name == "%") {
+	if (name == "+" or name == "-" or name == "*" or name == "×" or name == "/" or name == "÷" or name == "**" or name == "%" or name == "~") {
 		if (version.size() == 2) {
 			if (version.at(0).is_primitive() and version.at(1).is_primitive()) {
 				auto type = Type::fun(Type::integer(), {Type::integer(), Type::integer()});
