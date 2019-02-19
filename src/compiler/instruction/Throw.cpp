@@ -22,7 +22,11 @@ void Throw::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 }
 
 Location Throw::location() const {
-	return expression->location();
+	if (expression != nullptr) {
+		return expression->location();
+	} else {
+		return token->location;
+	}
 }
 
 void Throw::analyse(SemanticAnalyser* analyser, const Type&) {
