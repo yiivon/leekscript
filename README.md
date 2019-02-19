@@ -70,4 +70,4 @@ Libraries used
 License
 -------
 
-Distributed under the GPL3 license. Copyright (c) 2016-2017, Pierre Lauprêtre
+Distributed under the GPL3 license. Copyright (c) 2016-2019, Pierre Lauprêtre
