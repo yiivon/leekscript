@@ -141,6 +141,23 @@ void Test::test_map() {
 	code("var x = ['a' : 'a'] x.erase('b') x").equals("['a': 'a']");
 	code("var x = ['a' : 1] x.erase(3.14) x").equals("['a': 1]");
 
+	section("Map.foldLeft()");
+	code("[:].foldLeft((r, k, v) => r + k * 1000 + v, 0)").equals("0");
+	code("[1: 2, 3: 4].foldLeft((r, k, v) => r + k * 1000 + v, 0)").equals("4006");
+	code("[1: 2.5, 3: 4.7].foldLeft((r, k, v) => r + k * 10000 + v, 0)").equals("40007.2");
+	code("[1: 'b', 3: 'd'].foldLeft((r, k, v) => r + k * 1000 + v, 0)").equals("'1000b3000d'");
+	code("['a': 2, 'c': 4].foldLeft((r, k, v) => r + k * 10 + v, 0)").equals("'0aaaaaaaaaa2cccccccccc4'");
+	code("['a': 2.5, 'c': 4.7].foldLeft((r, k, v) => r + k * 10 + v, 0)").equals("'0aaaaaaaaaa2.5cccccccccc4.7'");
+	code("['a': [55], 'c': [77]].foldLeft((r, k, v) => r + k * 10 + v, 0)").equals("'0aaaaaaaaaa[55]cccccccccc[77]'");
+
+	section("Map.foldRight()");
+	code("[1: 2, 3: 4].foldRight((k, v, r) => r + k * 1000 + v, 0)").equals("4006");
+	code("[1: 2.5, 3: 4.7].foldRight((k, v, r) => r + k * 10000 + v, 0)").equals("40007.2");
+	code("[1: 'b', 3: 'd'].foldRight((k, v, r) => r + k * 1000 + v, 0)").equals("'3000d1000b'");
+	code("['a': 2, 'c': 4].foldRight((k, v, r) => r + k * 10 + v, 0)").equals("'0cccccccccc4aaaaaaaaaa2'");
+	code("['a': 2.5, 'c': 4.7].foldRight((k, v, r) => r + k * 10 + v, 0)").equals("'0cccccccccc4.7aaaaaaaaaa2.5'");
+	code("['a': [55], 'c': [77]].foldRight((k, v, r) => r + k * 10 + v, 0)").equals("'0cccccccccc[77]aaaaaaaaaa[55]'");
+
 	section("Map.look()");
 	code("let x = [1: 1] x.look(1, 0)").equals("1");
 	code("let x = ['a': 'a'] x.look('a', 'b')").equals("'a'");
