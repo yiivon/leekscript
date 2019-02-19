@@ -150,6 +150,22 @@ MapSTD::MapSTD() : Module("Map") {
 		{{}, {Type::const_map(Type::integer(), Type::real()), iter_int_real}, (void*) iter_int_real_fun, Method::NATIVE},
 		{{}, {Type::const_map(Type::integer(), Type::integer()), iter_int_int}, (void*) iter_int_int_fun, Method::NATIVE},
 	});
+
+	auto flT = Type::template_("T");
+	auto flK = Type::template_("K");
+	auto flR = Type::template_("R");
+	template_(flT, flK, flR).
+	method("foldLeft", {
+		{flR, {Type::const_map(flK, flT), Type::fun(flR, {flR, flK, flT}), flR}, (void*) &fold_left},
+	});
+
+	auto frT = Type::template_("T");
+	auto frK = Type::template_("K");
+	auto frR = Type::template_("R");
+	template_(frT, frK, frR).
+	method("foldRight", {
+		{frR, {Type::const_map(frK, frT), Type::fun(frR, {frK, frT, frR}), frR}, (void*) &fold_right},
+	});
 }
 
 Compiler::value MapSTD::insert_any_any(Compiler& c, std::vector<Compiler::value> args) {
@@ -188,6 +204,28 @@ Compiler::value MapSTD::look_int_real(Compiler& c, std::vector<Compiler::value> 
 }
 Compiler::value MapSTD::look_int_int(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(Type::integer(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSMap<int, int>::ls_look);
+}
+
+Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args) {
+	auto function = args[1];
+	auto result = c.create_and_add_var("r", args[2].t);
+	c.insn_store(result, c.insn_move(args[2]));
+	c.insn_foreach(args[0], {}, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		c.insn_store(result, c.insn_call(function.t.return_type(), {c.insn_load(result), k, v}, function));
+		return {};
+	});
+	return c.insn_load(result);
+}
+
+Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> args) {
+	auto function = args[1];
+	auto result = c.create_and_add_var("r", args[2].t);
+	c.insn_store(result, c.insn_move(args[2]));
+	c.insn_foreach(args[0], {}, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		c.insn_store(result, c.insn_call(function.t.return_type(), {k, v, c.insn_load(result)}, function));
+		return {};
+	}, true);
+	return c.insn_load(result);
 }
 
 }
