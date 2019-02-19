@@ -16,6 +16,7 @@ void Callable::add_version(CallableVersion v) {
 Type build(const Type& type) {
 	if (type.is_template()) return ((Template_type*) type._types[0].get())->_implementation;
 	if (type.is_array()) return Type::array(build(type.element()));
+	if (type.is_map()) return Type::map(build(type.key()), build(type.element()));
 	if (type.is_function()) {
 		std::vector<Type> args;
 		for (const auto& t : type.arguments()) {
@@ -115,6 +116,10 @@ void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
 		t1.implement(t2);
 	}
 	else if (t1.is_array() and t2.is_array()) {
+		solve(analyser, t1.element(), t2.element());
+	}
+	else if (t1.is_map() and t2.is_map()) {
+		solve(analyser, t1.key(), t2.key());
 		solve(analyser, t1.element(), t2.element());
 	}
 	else if (t1.is_function() and t2.is_function()) {
