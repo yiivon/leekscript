@@ -1235,7 +1235,6 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	return {nullptr, {}};
 }
 
-
 Compiler::value Compiler::iterator_rbegin(Compiler::value v) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	log_insn_code("iterator.rbegin()");
@@ -1253,7 +1252,12 @@ Compiler::value Compiler::iterator_rbegin(Compiler::value v) const {
 		assert(false);
 	}
 	else if (v.t.is_map()) {
-		assert(false);
+		auto it = create_entry("it", v.t.iterator());
+		auto end = insn_call(it.t, {v}, +[](LSMap<int, int>* map) {
+			return map->end();
+		});
+		insn_store(it, end);
+		return it;
 	}
 	else if (v.t.is_set()) {
 		assert(false);
@@ -1305,7 +1309,6 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	return {nullptr, {}};
 }
 
-
 Compiler::value Compiler::iterator_rend(Compiler::value v, Compiler::value it) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(it.t.llvm_type() == it.v->getType());
@@ -1321,7 +1324,9 @@ Compiler::value Compiler::iterator_rend(Compiler::value v, Compiler::value it) c
 		assert(false);
 	}
 	else if (v.t.is_map()) {
-		assert(false);
+		auto node = insn_load(it);
+		auto end = insn_load_member(v, 8);
+		return insn_pointer_eq(node, end);
 	}
 	else if (v.t.is_set()) {
 		assert(false);
@@ -1401,6 +1406,88 @@ Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, 
 	return {};
 }
 
+Compiler::value Compiler::iterator_rget(Type collectionType, Compiler::value it, Compiler::value previous) const {
+	assert(it.t.llvm_type() == it.v->getType());
+	assert(previous.t.llvm_type() == previous.v->getType());
+	log_insn_code("iterator.get()");
+	if (collectionType.is_array()) {
+		if (previous.t.must_manage_memory()) {
+			insn_call({}, {previous}, +[](LSValue* previous) {
+				if (previous != nullptr) {
+					LSValue::delete_ref(previous);
+				}
+			});
+		}
+		auto e = insn_load(it);
+		auto f = insn_load(e);
+		insn_inc_refs(f);
+		return f;
+	}
+	if (collectionType.is_interval()) {
+		return insn_load_member(it, 1);
+	}
+	if (collectionType.is_string()) {
+		auto int_char = insn_call(Type::integer(), {it}, &LSString::iterator_get);
+		return insn_call(Type::string(), {int_char, previous}, (void*) +[](unsigned int c, LSString* previous) {
+			if (previous != nullptr) {
+				LSValue::delete_ref(previous);
+			}
+			char dest[5];
+			u8_toutf8(dest, 5, &c, 1);
+			auto s = new LSString(dest);
+			s->refs = 1;
+			return s;
+		});
+	}
+	if (collectionType.is_map()) {
+		if (previous.t.must_manage_memory()) {
+			insn_call({}, {previous}, +[](LSValue* previous) {
+				if (previous != nullptr)
+					LSValue::delete_ref(previous);
+			});
+		}
+		auto node = insn_load(it);
+		auto e = [&]() { if (collectionType.element().is_integer() and collectionType.key().is_integer()) {
+			return insn_call(collectionType.element(), {node}, +[](std::map<int, int>::iterator it) {
+				return std::map<int, int>::reverse_iterator(it)->second;
+			});
+		} else if (collectionType.element().is_integer()) {
+			return insn_call(collectionType.element(), {node}, +[](std::map<void*, int>::iterator it) {
+				return std::map<void*, int>::reverse_iterator(it)->second;
+			});
+		} else if (collectionType.element().is_real()) {
+			return insn_call(collectionType.element(), {node}, +[](std::map<int, double>::iterator it) {
+				return std::map<int, double>::reverse_iterator(it)->second;
+			});
+		} else {
+			return insn_call(collectionType.element(), {node}, +[](std::map<void*, void*>::iterator it) {
+				return std::map<void*, void*>::reverse_iterator(it)->second;
+			});
+		}}();
+		insn_inc_refs(e);
+		return e;
+	}
+	if (collectionType.is_set()) {
+		if (previous.t.must_manage_memory()) {
+			insn_call({}, {previous}, +[](LSValue* previous) {
+				if (previous != nullptr)
+					LSValue::delete_ref(previous);
+			});
+		}
+		auto node = insn_load_member(it, 0);
+		auto e = insn_load_member(node, 4);
+		insn_inc_refs(e);
+		return e;
+	}
+	if (collectionType.is_integer()) {
+		return insn_int_div(insn_load_member(it, 0), insn_load_member(it, 1));
+	}
+	else if (collectionType.is_long()) {
+		return to_int(insn_int_div(insn_load_member(it, 0), insn_load_member(it, 1)));
+	}
+	return {};
+}
+
 Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Compiler::value previous) const {
 	assert(v.t.llvm_type() == v.v->getType());
 	assert(it.t.llvm_type() == it.v->getType());
@@ -1428,6 +1515,50 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 		}
 		auto node = insn_load(it);
 		auto e = insn_load_member(node, 4);
+		insn_inc_refs(e);
+		return e;
+	}
+	if (v.t.is_set()) {
+		return insn_load_member(it, 1);
+	}
+	if (v.t.is_integer()) {
+		return insn_load_member(it, 2);
+	}
+	else if (v.t.is_long()) {
+		return insn_load_member(it, 2);
+	}
+	return {nullptr, {}};
+}
+
+Compiler::value Compiler::iterator_rkey(Compiler::value v, Compiler::value it, Compiler::value previous) const {
+	assert(v.t.llvm_type() == v.v->getType());
+	assert(it.t.llvm_type() == it.v->getType());
+	// assert(previous.t.llvm_type() == previous.v->getType());
+	log_insn_code("iterator.key()");
+	if (v.t.is_array()) {
+		auto array_begin = insn_array_at(v, new_integer(0));
+		if (v.t.element().is_polymorphic()) array_begin = { builder.CreatePointerCast(array_begin.v, Type::any().pointer().llvm_type()), Type::any().pointer() };
+		return { builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::any() };
+	}
+	if (v.t.is_interval()) {
+		auto interval = insn_load_member(it, 0);
+		auto start = insn_load_member(interval, 5);
+		auto e = insn_load_member(it, 1);
+		return insn_sub(e, start);
+	}
+	if (v.t.is_string()) {
+		return insn_call(Type::integer(), {it}, &LSString::iterator_key);
+	}
+	if (v.t.is_map()) {
+		if (previous.t.must_manage_memory()) {
+			insn_call({}, {previous}, +[](LSValue* previous) {
+				if (previous != nullptr) LSValue::delete_ref(previous);
+			});
+		}
+		auto node = insn_load(it);
+		auto e = insn_call(v.t.key(), {node}, +[](std::map<void*, void*>::iterator it) {
+			return std::map<void*, void*>::reverse_iterator(it)->first;
+		});
 		insn_inc_refs(e);
 		return e;
 	}
@@ -1512,7 +1643,12 @@ void Compiler::iterator_rincrement(Type collectionType, Compiler::value it) cons
 		assert(false);
 	}
 	if (collectionType.is_map()) {
-		assert(false);
+		auto node = insn_load(it);
+		insn_store(it, insn_call(node.t, {node}, (void*) +[](LSMap<int,int>::iterator it) {
+			it--;
+			return it;
+		}));
+		return;
 	}
 	if (collectionType.is_set()) {
 		assert(false);
@@ -1549,7 +1685,9 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, c
 	Compiler::value key_var;
 	if (key.size()) {
 		key_var = create_and_add_var(key, container.t.key());
-		insn_store(key_var, new_null());
+		if (container.t.key().is_polymorphic()) {
+			insn_store(key_var, new_null());
+		}
 	}
 
 	auto it_label = insn_init_label("it");
@@ -1578,10 +1716,10 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, c
 	// loop label:
 	insn_label(&loop_label);
 	// Get Value
-	insn_store(value_var, iterator_get(container.t, it, insn_load(value_var)));
+	insn_store(value_var, reversed ? iterator_rget(container.t, it, insn_load(value_var)) : iterator_get(container.t, it, insn_load(value_var)));
 	// Get Key
 	if (key.size()) {
-		insn_store(key_var, iterator_key(container, it, insn_load(key_var)));
+		insn_store(key_var, reversed ? iterator_rkey(container, it, insn_load(key_var)) : iterator_key(container, it, insn_load(key_var)));
 	}
 	// Body
 	auto body_v = body(insn_load(value_var), key.size() ? insn_load(key_var) : value());

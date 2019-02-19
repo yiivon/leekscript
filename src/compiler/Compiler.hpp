@@ -269,7 +269,9 @@ public:
 	value iterator_end(value v, value it) const;
 	value iterator_rend(value v, value it) const;
 	value iterator_get(Type collectionType, value it, value previous) const;
+	value iterator_rget(Type collectionType, value it, value previous) const;
 	value iterator_key(value v, value it, value previous) const;
+	value iterator_rkey(value v, value it, value previous) const;
 	void iterator_increment(Type collectionType, value it) const;
 	void iterator_rincrement(Type collectionType, value it) const;
 	value insn_foreach(value v, Type output, const std::string var, const std::string key, std::function<value(value, value)>, bool reversed = false);
