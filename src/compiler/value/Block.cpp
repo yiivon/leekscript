@@ -35,7 +35,10 @@ void Block::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 }
 
 Location Block::location() const {
-	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+	assert(instructions.size());
+	auto start = instructions.at(0)->location().start;
+	auto end = instructions.back()->location().end;
+	return {start, end};
 }
 
 void Block::analyse_global_functions(SemanticAnalyser* analyser) {

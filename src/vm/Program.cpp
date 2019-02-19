@@ -165,6 +165,7 @@ std::ostream& operator << (std::ostream& os, const Program* program) {
 }
 
 std::string Program::underline_code(Location location, Location focus) const {
+	// std::cout << "underline " << location.start.column << " " << location.end.column << " " << focus.start.column << " " << focus.end.column << std::endl;
 	auto padding = 10ul;
 	auto start = padding > location.start.raw ? 0ul : location.start.raw - padding;
 	auto end = std::min(code.size(), location.end.raw + padding);
