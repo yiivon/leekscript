@@ -63,7 +63,7 @@ make doc
 
 Libraries used
 --------------
-* [LLVM](https://llvm.org/)
+* [LLVM](https://llvm.org/) Version 8.0.0
 * [GNU MP](https://gmplib.org/), by Torbjörn Granlund, under GPL license
 * [JSON for modern C++](https://github.com/nlohmann/json), by Niels Lohmann, under MIT license
 
