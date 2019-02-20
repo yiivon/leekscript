@@ -125,12 +125,12 @@ Compiler::value Match::construct_branch(Compiler& c, Compiler::value v, size_t i
 	auto value = c.insn_convert(returns[i]->compile(c), type);
 	returns[i]->compile_end(c);
 	c.insn_branch(&label_end);
-	label_then.block = Compiler::builder.GetInsertBlock();
+	label_then.block = c.builder.GetInsertBlock();
 
 	c.insn_label(&label_else);
 	auto new_branch = construct_branch(c, v, i + 1);
 	c.insn_branch(&label_end);
-	label_else.block = Compiler::builder.GetInsertBlock();
+	label_else.block = c.builder.GetInsertBlock();
 
 	c.insn_label(&label_end);
 	return c.insn_phi(type, value, label_then, new_branch, label_else);

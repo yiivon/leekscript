@@ -48,7 +48,7 @@ public:
 	Version* current_version = nullptr;
 	bool analyzed = false;
 	Type return_type;
-	llvm::orc::IRCompileLayer<llvm::orc::RTDyldObjectLinkingLayer, llvm::orc::SimpleCompiler>::ModuleHandleT function_handle;
+	llvm::orc::VModuleKey module_handle;
 	bool handle_created = false;
 	llvm::BasicBlock* block = nullptr;
 	llvm::Module* module;

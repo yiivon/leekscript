@@ -29,7 +29,7 @@ int Number_type::distance(const Base_type* type) const {
 std::string Number_type::clazz() const {
 	return "Number";
 }
-llvm::Type* Number_type::llvm() const {
+llvm::Type* Number_type::llvm(const Compiler& c) const {
 	assert(false);
 }
 std::ostream& Number_type::print(std::ostream& os) const {

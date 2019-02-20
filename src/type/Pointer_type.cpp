@@ -4,9 +4,8 @@
 
 namespace ls {
 
-Pointer_type::Pointer_type(Type type) : _type(type) {
-	_llvm_type = type.llvm_type()->getPointerTo();
-}
+Pointer_type::Pointer_type(Type type) : _type(type) {}
+
 Type Pointer_type::pointed() const {
 	return _type;
 }
@@ -16,7 +15,10 @@ bool Pointer_type::operator == (const Base_type* type) const {
 	}
 	return false;
 }
-llvm::Type* Pointer_type::llvm() const {
+llvm::Type* Pointer_type::llvm(const Compiler& c) const {
+	if (_llvm_type == nullptr) {
+		((Pointer_type*) this)->_llvm_type = _type.llvm_type(c)->getPointerTo();
+	}
 	return _llvm_type;
 }
 std::ostream& Pointer_type::print(std::ostream& os) const {

@@ -387,14 +387,14 @@ Compiler::value Expression::compile(Compiler& c) const {
 			auto y = c.insn_convert(v2->compile(c), type);
 			v2->compile_end(c);
 			c.insn_branch(&label_end);
-			label_then.block = Compiler::builder.GetInsertBlock();
+			label_then.block = c.builder.GetInsertBlock();
 
 			c.insn_label(&label_else);
 			c.insn_branch(&label_end);
-			label_else.block = Compiler::builder.GetInsertBlock();
+			label_else.block = c.builder.GetInsertBlock();
 
 			c.insn_label(&label_end);
-			auto PN = Compiler::builder.CreatePHI(type.llvm_type(), 2);
+			auto PN = c.builder.CreatePHI(type.llvm_type(c), 2);
 			PN->addIncoming(y.v, label_then.block);
 			PN->addIncoming(x.v, label_else.block);
 			return {PN, type};

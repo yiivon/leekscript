@@ -13,6 +13,7 @@ namespace ls {
 class Base_type;
 class Function;
 class Value;
+class Compiler;
 
 class Type {
 public:
@@ -45,7 +46,7 @@ public:
 	bool can_be_container() const;
 	Type not_temporary() const;
 	Type add_temporary() const;
-	llvm::Type* llvm_type() const;
+	llvm::Type* llvm_type(const Compiler& c) const;
 	Type add_pointer() const;
 	Type iterator() const;
 	Type pointer() const;

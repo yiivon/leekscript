@@ -232,11 +232,11 @@ Type Type::add_temporary() const {
 	return new_type;
 }
 
-llvm::Type* Type::llvm_type() const {
+llvm::Type* Type::llvm_type(const Compiler& c) const {
 	if (_types.size() == 0) {
-		return llvm::Type::getVoidTy(Compiler::context);
+		return llvm::Type::getVoidTy(c.getContext());
 	}
-	return fold()._types[0]->llvm();
+	return fold()._types[0]->llvm(c);
 }
 
 Type Type::add_pointer() const {

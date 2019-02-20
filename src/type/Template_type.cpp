@@ -19,10 +19,10 @@ bool Template_type::compatible(const Base_type* type) const {
 	if (_implementation.is_void()) return false;
 	return _implementation._types[0]->compatible(type);
 }
-llvm::Type* Template_type::llvm() const {
+llvm::Type* Template_type::llvm(const Compiler& c) const {
 	// assert(_implementation._types.size() > 0);
 	// return _implementation._types[0]->llvm();
-	return llvm::Type::getInt32Ty(Compiler::context);
+	return llvm::Type::getInt32Ty(c.getContext());
 }
 std::ostream& Template_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << _name;

@@ -118,11 +118,11 @@ void Test::test_types() {
 	assert(ls::Type({ls::Type::array(ls::Type::integer()), ls::Type::array(ls::Type::real())}).fold() == ls::Type::any());
 
 	section("LLVM type");
-	assert(ls::Type().llvm_type() == llvm::Type::getVoidTy(ls::Compiler::context));
-	assert(ls::Type::integer().llvm_type() == llvm::Type::getInt32Ty(ls::Compiler::context));
-	assert(ls::Type::boolean().llvm_type() == llvm::Type::getInt1Ty(ls::Compiler::context));
-	assert(ls::Type::real().llvm_type() == llvm::Type::getDoubleTy(ls::Compiler::context));
-	assert(ls::Type({ls::Type::integer(), ls::Type::real()}).llvm_type() == llvm::Type::getDoubleTy(ls::Compiler::context));
+	// assert(ls::Type().llvm_type() == llvm::Type::getVoidTy(ls::Compiler::context));
+	// assert(ls::Type::integer().llvm_type() == llvm::Type::getInt32Ty(ls::Compiler::context));
+	// assert(ls::Type::boolean().llvm_type() == llvm::Type::getInt1Ty(ls::Compiler::context));
+	// assert(ls::Type::real().llvm_type() == llvm::Type::getDoubleTy(ls::Compiler::context));
+	// assert(ls::Type({ls::Type::integer(), ls::Type::real()}).llvm_type() == llvm::Type::getDoubleTy(ls::Compiler::context));
 
 	section("Placeholder types");
 	// assert(p1.is_any());

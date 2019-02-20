@@ -27,8 +27,8 @@ int Mpz_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Bool_type*>(type)) { return 400; }
 	return -1;
 }
-llvm::Type* Mpz_type::llvm() const {
-	return get_mpz_type();
+llvm::Type* Mpz_type::llvm(const Compiler& c) const {
+	return get_mpz_type(c);
 }
 std::string Mpz_type::clazz() const {
 	return "Number";
@@ -38,10 +38,10 @@ std::ostream& Mpz_type::print(std::ostream& os) const {
 	return os;
 }
 
-llvm::Type* Mpz_type::get_mpz_type() {
+llvm::Type* Mpz_type::get_mpz_type(const Compiler& c) {
 	if (mpz_type == nullptr) {
 		// llvm::StructType::create({llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32PtrTy(Compiler::context)}, "mpz", true);
-		mpz_type = llvm::Type::getInt128Ty(Compiler::context);
+		mpz_type = llvm::Type::getInt128Ty(c.getContext());
 	}
 	return mpz_type;
 }

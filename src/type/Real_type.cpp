@@ -23,8 +23,8 @@ int Real_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Bool_type*>(type)) { return 102; }
 	return -1;
 }
-llvm::Type* Real_type::llvm() const {
-	return llvm::Type::getDoubleTy(Compiler::context);
+llvm::Type* Real_type::llvm(const Compiler& c) const {
+	return llvm::Type::getDoubleTy(c.getContext());
 }
 std::string Real_type::clazz() const {
 	return "Number";

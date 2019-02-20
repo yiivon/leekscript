@@ -42,7 +42,7 @@ Function::~Function() {
 		delete version.second;
 	}
 	if (compiler != nullptr && handle_created) {
-		compiler->removeModule(function_handle);
+		compiler->removeModule(module_handle);
 	}
 }
 
@@ -483,15 +483,15 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 	// std::cout << "get_landing_pad " << current_version->type << " " << current_version->landing_pad << std::endl;
 	if (current_version->landing_pad == nullptr) {
-		current_version->catch_block = llvm::BasicBlock::Create(Compiler::context, "catch", c.F);
-		auto savedIP = Compiler::builder.saveAndClearIP();
-		current_version->landing_pad = llvm::BasicBlock::Create(Compiler::context, "lpad", c.F);
+		current_version->catch_block = llvm::BasicBlock::Create(c.getContext(), "catch", c.F);
+		auto savedIP = c.builder.saveAndClearIP();
+		current_version->landing_pad = llvm::BasicBlock::Create(c.getContext(), "lpad", c.F);
 		c.builder.SetInsertPoint(current_version->landing_pad);
-		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(Compiler::context));
-		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(Compiler::context), llvm::Type::getInt32Ty(Compiler::context)), 1);
+		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(c.getContext()));
+		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(c.getContext()), llvm::Type::getInt32Ty(c.getContext())), 1);
 		auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
-		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(Compiler::context));
-		current_version->exception_line_slot = c.CreateEntryBlockAlloca("exnline.slot", llvm::Type::getInt64Ty(Compiler::context));
+		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(c.getContext()));
+		current_version->exception_line_slot = c.CreateEntryBlockAlloca("exnline.slot", llvm::Type::getInt64Ty(c.getContext()));
 		c.builder.CreateStore(LPadExn, current_version->exception_slot);
 		c.builder.CreateStore(c.new_long(c.exception_line).v, current_version->exception_line_slot);
 		landingPadInst->addClause(catchAllSelector);
@@ -551,36 +551,31 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		}
 	}
 
-	((Function*) this)->module = new llvm::Module("jit_" + name, Compiler::context);
-	module->setDataLayout(((Compiler&) c).getTargetMachine().createDataLayout());
-	auto fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module);
-	fpm->add(llvm::createInstructionCombiningPass());
-	fpm->add(llvm::createReassociatePass());
-	fpm->add(llvm::createGVNPass());
-	fpm->add(llvm::createCFGSimplificationPass());
-	fpm->doInitialization();
+	((Function*) this)->module = new llvm::Module(name + "$impl", c.getContext());
+	// module->setTargetTriple(c.TM->getTargetTriple().getTriple());
+	module->setDataLayout(c.DL);
 
 	std::vector<llvm::Type*> args;
 	if (captures.size()) {
-		args.push_back(Type::any().llvm_type()); // first arg is the function pointer
+		args.push_back(Type::any().llvm_type(c)); // first arg is the function pointer
 	}
 	for (auto& t : version->type.arguments()) {
-		args.push_back(t.llvm_type());
+		args.push_back(t.llvm_type(c));
 	}
-	auto llvm_return_type = version->type.return_type().llvm_type();
+	auto llvm_return_type = version->type.return_type().llvm_type(c);
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
 	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun_" + name + std::to_string(id), module);
 
-	auto f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.context), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", module);
-	auto Int8PtrTy = llvm::PointerType::get(llvm::Type::getInt8Ty(c.context), c.DL.getAllocaAddrSpace());
+	auto f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", module);
+	auto Int8PtrTy = llvm::PointerType::get(llvm::Type::getInt8Ty(c.getContext()), c.DL.getAllocaAddrSpace());
 	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
 	llvm_function->setPersonalityFn(personality);
 
-	((Function*) this)->block = llvm::BasicBlock::Create(Compiler::context, "entry_" + name, llvm_function);
+	((Function*) this)->block = llvm::BasicBlock::Create(c.getContext(), "entry_" + name, llvm_function);
 
 	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
 
-	Compiler::builder.SetInsertPoint(block);
+	c.builder.SetInsertPoint(block);
 
 	// Create arguments
 	unsigned index = 0;
@@ -635,16 +630,13 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.instructions_debug << "}" << std::endl;
 	}
 
-	verifyFunction(*llvm_function);
-	fpm->run(*llvm_function);
+	llvm::verifyFunction(*llvm_function);
 
-	// JIT the module containing the anonymous expression, keeping a handle so we can free it later.
-	((Function*) this)->function_handle = c.addModule(std::shared_ptr<llvm::Module>(module));
+	((Function*) this)->module_handle = c.addModule(std::unique_ptr<llvm::Module>(module));
 	((Function*) this)->handle_created = true;
-	// Search the JIT for the "fun" symbol.
 	auto ExprSymbol = c.findSymbol("fun_" + name + std::to_string(id));
 	assert(ExprSymbol && "Function not found");
-	// Get the symbol's address and cast it to the right type (takes no arguments, returns a double) so we can call it as a native function.
+
 	ls_fun->function = (void*) cantFail(ExprSymbol.getAddress());
 	version->function = ls_fun;
 	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;

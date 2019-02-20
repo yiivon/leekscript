@@ -99,7 +99,7 @@ Compiler::value If::compile(Compiler& c) const {
 	then->compile_end(c);
 
 	c.insn_branch(&label_end);
-	label_then.block = Compiler::builder.GetInsertBlock();
+	label_then.block = c.builder.GetInsertBlock();
 
 	c.insn_label(&label_else);
 
@@ -111,7 +111,7 @@ Compiler::value If::compile(Compiler& c) const {
 	}
 
 	c.insn_branch(&label_end);
-	label_else.block = Compiler::builder.GetInsertBlock();
+	label_else.block = c.builder.GetInsertBlock();
 
 	c.insn_label(&label_end);
 	

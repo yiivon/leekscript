@@ -28,9 +28,9 @@ OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 COMPILER := g++
 OPTIM := -O0
-FLAGS := -std=c++14 -g3 -Wall -Wno-pmf-conversions
+FLAGS := -std=c++17 -g3 -Wall -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
-LIBS := -lm -lgmp `llvm-config --ldflags --libs core orcjit`
+LIBS := -lm -lgmp `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native`
 MAKEFLAGS += --jobs=$(shell nproc)
 
 CLOC_EXCLUDED := .git,lib,build,doxygen

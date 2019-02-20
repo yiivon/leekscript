@@ -7,6 +7,7 @@
 namespace ls {
 
 class Type;
+class Compiler;
 
 class Base_type {
 public:
@@ -29,7 +30,7 @@ public:
 	virtual Type return_type() const;
 	virtual Type argument(size_t) const;
 	virtual std::vector<Type> arguments() const;
-	virtual llvm::Type* llvm() const = 0;
+	virtual llvm::Type* llvm(const Compiler& c) const = 0;
 	virtual std::string clazz() const;
 	virtual std::ostream& print(std::ostream&) const;
 };

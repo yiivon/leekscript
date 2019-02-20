@@ -15,7 +15,7 @@ public:
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;
 	virtual std::string clazz() const override;
-	virtual llvm::Type* llvm() const override;
+	virtual llvm::Type* llvm(const Compiler& c) const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 };
 

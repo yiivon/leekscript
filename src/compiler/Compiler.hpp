@@ -28,6 +28,11 @@
 #include "llvm/ExecutionEngine/Orc/LambdaResolver.h"
 #include "llvm/ExecutionEngine/Orc/RTDyldObjectLinkingLayer.h"
 #include "llvm/ExecutionEngine/Orc/GlobalMappingLayer.h"
+#include "llvm/ExecutionEngine/Orc/ExecutionUtils.h"
+#include "llvm/ExecutionEngine/Orc/IRTransformLayer.h"
+#include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
+#include "llvm/Transforms/InstCombine/InstCombine.h"
+#include "llvm/ExecutionEngine/Orc/IndirectionUtils.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Mangler.h"
 #include "llvm/Support/DynamicLibrary.h"
@@ -46,9 +51,6 @@ class Function;
 
 class Compiler {
 public:
-	// TODO private builder and context
-	static llvm::IRBuilder<> builder;
-	static llvm::LLVMContext context;
 	struct value {
 		llvm::Value* v;
 		Type t;
@@ -71,6 +73,9 @@ public:
 		llvm::JITTargetAddress addr;
 		llvm::Value* function;
 	};
+
+	static llvm::orc::ThreadSafeContext Ctx;
+	static llvm::IRBuilder<> builder;
 
 	llvm::Function* F;
 	Function* fun;
@@ -99,65 +104,83 @@ public:
 
 	VM* vm;
 	Program* program;
+
 	std::unique_ptr<llvm::TargetMachine> TM;
-	const llvm::DataLayout DL;
-	llvm::orc::RTDyldObjectLinkingLayer ObjectLayer;
-	llvm::orc::IRCompileLayer<decltype(ObjectLayer), llvm::orc::SimpleCompiler> CompileLayer;
-	using ModuleHandle = decltype(CompileLayer)::ModuleHandleT;
+	llvm::DataLayout DL;
+	llvm::orc::ExecutionSession ES;
+	llvm::orc::LegacyRTDyldObjectLinkingLayer ObjectLayer;
+	llvm::orc::LegacyIRCompileLayer<decltype(ObjectLayer), llvm::orc::SimpleCompiler> CompileLayer;
+	using OptimizeFunction = std::function<std::unique_ptr<llvm::Module>(std::unique_ptr<llvm::Module>)>;
+	llvm::orc::LegacyIRTransformLayer<decltype(CompileLayer), OptimizeFunction> OptimizeLayer;
+	
 
-	Compiler(VM* vm) : vm(vm), TM(llvm::EngineBuilder().selectTarget()), DL(TM->createDataLayout()), ObjectLayer([]() { return std::make_shared<llvm::SectionMemoryManager>(); }), CompileLayer(ObjectLayer, llvm::orc::SimpleCompiler(*TM)) {
-		llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
+	Compiler(VM* vm) : vm(vm),
+		TM(llvm::EngineBuilder().selectTarget()),
+		DL(TM->createDataLayout()),
+		ObjectLayer(ES, [this](llvm::orc::VModuleKey K) {
+				return llvm::orc::LegacyRTDyldObjectLinkingLayer::Resources {
+					std::make_shared<llvm::SectionMemoryManager>(),
+					createLegacyLookupResolver(
+						ES,
+						[this](const std::string &Name) -> llvm::JITSymbol {
+							// std::cout << "Resolve " << Name << std::endl;
+							if (auto Sym = CompileLayer.findSymbol(Name, false))
+								return Sym;
+							else if (auto Err = Sym.takeError())
+								return std::move(Err);
+							auto i = mappings.find(Name);
+							if (i != mappings.end()) {
+								return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+							}
+							if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name))
+								return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
+							return nullptr;
+						},
+						[](llvm::Error Err) { llvm::cantFail(std::move(Err), "lookupFlags failed"); })
+				};
+			}),
+        CompileLayer(ObjectLayer, llvm::orc::SimpleCompiler(*TM)),
+        OptimizeLayer(CompileLayer, [this](std::unique_ptr<llvm::Module> M) {
+			return optimizeModule(std::move(M));
+        }) {
+			llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
+		}
+
+	const llvm::DataLayout &getDataLayout() const { return DL; }
+
+	llvm::LLVMContext& getContext() const { return *Ctx.getContext(); }
+
+	std::unique_ptr<llvm::Module> optimizeModule(std::unique_ptr<llvm::Module> M) {
+		// Create a function pass manager.
+		auto FPM = llvm::make_unique<llvm::legacy::FunctionPassManager>(M.get());
+		// Add some optimizations.
+		FPM->add(llvm::createInstructionCombiningPass());
+		FPM->add(llvm::createReassociatePass());
+		FPM->add(llvm::createGVNPass());
+		FPM->add(llvm::createCFGSimplificationPass());
+		FPM->doInitialization();
+		// Run the optimizations over all functions in the module being added to the JIT.
+		for (auto &F : *M)
+			FPM->run(F);
+		return M;
 	}
-
-	llvm::TargetMachine& getTargetMachine() {
-		return *TM;
+	llvm::orc::VModuleKey addModule(std::unique_ptr<llvm::Module> M) {
+		llvm::orc::VModuleKey K = ES.allocateVModule();
+		cantFail(CompileLayer.addModule(K, std::move(M)));
+		return K;
 	}
-
-	ModuleHandle addModule(std::shared_ptr<llvm::Module> M) {
-		// Build our symbol resolver:
-		// Lambda 1: Look back into the JIT itself to find symbols that are part of the same "logical dylib".
-		// Lambda 2: Search for external symbols in the host process.
-		auto Resolver = llvm::orc::createLambdaResolver(
-			[&](const std::string &Name) {
-				// std::cout << "resolve symbol 1 " << Name << std::endl;
-				if (auto Sym = CompileLayer.findSymbol(Name, false))
-					return Sym;
-				auto i = mappings.find(Name);
-				if (i != mappings.end()) {
-					return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
-				}
-				return llvm::JITSymbol(nullptr);
-			},
-			[](const std::string &Name) {
-				// std::cout << "resolve symbol 2 " << Name << std::endl;
-				if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name))
-					return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
-				return llvm::JITSymbol(nullptr);
-		});
-		// Add the set to the JIT with the resolver we created above and a newly created SectionMemoryManager.
-		return cantFail(CompileLayer.addModule(std::move(M), std::move(Resolver)));
-	}
-
 	llvm::JITSymbol findSymbol(const std::string Name) {
-		std::string MangledName;
-		llvm::raw_string_ostream MangledNameStream(MangledName);
-		llvm::Mangler::getNameWithPrefix(MangledNameStream, Name, DL);
-		return CompileLayer.findSymbol(MangledNameStream.str(), true);
+		return CompileLayer.findSymbol(Name, false);
 	}
-
-	llvm::JITTargetAddress getSymbolAddress(const std::string Name) {
-		return cantFail(findSymbol(Name).getAddress());
+	void removeModule(llvm::orc::VModuleKey K) {
+		cantFail(CompileLayer.removeModule(K));
 	}
 
 	/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of the function.  This is used for mutable variables etc.
-	static llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, llvm::Type* type) {
+	llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, llvm::Type* type) const {
 		auto function = builder.GetInsertBlock()->getParent();
 		llvm::IRBuilder<> builder(&function->getEntryBlock(), function->getEntryBlock().begin());
 		return builder.CreateAlloca(type, nullptr, VarName);
-	}
-
-	void removeModule(ModuleHandle H) {
-		cantFail(CompileLayer.removeModule(H));
 	}
 
 	void init();

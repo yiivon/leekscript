@@ -36,8 +36,8 @@ int Integer_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Bool_type*>(type)) { return 100; }
 	return -1;
 }
-llvm::Type* Integer_type::llvm() const {
-	return llvm::Type::getInt32Ty(Compiler::context);
+llvm::Type* Integer_type::llvm(const Compiler& c) const {
+	return llvm::Type::getInt32Ty(c.getContext());
 }
 std::string Integer_type::clazz() const {
 	return "Number";

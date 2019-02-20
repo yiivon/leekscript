@@ -37,8 +37,8 @@ int Long_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Bool_type*>(type)) { return 101; }
 	return -1;
 }
-llvm::Type* Long_type::llvm() const {
-	return llvm::Type::getInt64Ty(Compiler::context);
+llvm::Type* Long_type::llvm(const Compiler& c) const {
+	return llvm::Type::getInt64Ty(c.getContext());
 }
 std::string Long_type::clazz() const {
 	return "Number";

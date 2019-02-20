@@ -24,8 +24,8 @@ int Bool_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Bool_type*>(type)) { return 0; }
 	return -1;
 }
-llvm::Type* Bool_type::llvm() const {
-	return llvm::Type::getInt1Ty(Compiler::context);
+llvm::Type* Bool_type::llvm(const Compiler& c) const {
+	return llvm::Type::getInt1Ty(c.getContext());
 }
 std::string Bool_type::clazz() const {
 	return "Boolean";
