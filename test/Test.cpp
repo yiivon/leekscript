@@ -273,11 +273,11 @@ void Test::Input::almost(T expected, T delta) {
 
 void Test::Input::quine() {
 	if (disabled) return disable();
-	std::ostringstream oss;
+	OutputStringStream oss;
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->output = &oss;
 	auto result = run();
-	vm->output = &std::cout;
+	vm->output = ls::VM::default_output;
 
 	if (oss.str() == code) {
 		pass(code);
@@ -308,11 +308,11 @@ void Test::Input::type(ls::Type type) {
 void Test::Input::output(std::string expected) {
 	if (disabled) return disable();
 
-	std::ostringstream oss;
+	OutputStringStream oss;
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->output = &oss;
 	auto result = run();
-	vm->output = &std::cout;
+	vm->output = ls::VM::default_output;
 
 	if (oss.str() == expected) {
 		pass(expected);
