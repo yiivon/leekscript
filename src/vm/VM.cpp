@@ -246,12 +246,13 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	return result;
 }
 
-void VM::add_internal_var(std::string name, Type type, LSValue* value) {
+void VM::add_internal_var(std::string name, Type type, LSValue* value, Callable* callable) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
-	Callable* callable = nullptr;
 	if (auto f = dynamic_cast<LSFunction*>(value)) {
-		callable = new Callable(name);
-		callable->add_version({ name, type, f->function, {}, {}, nullptr });
+		if (callable == nullptr) {
+			callable = new Callable(name);
+			callable->add_version({ name, type, f->function });
+		}
 	}
 	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr, value, callable) });
 	system_vars.push_back(value);

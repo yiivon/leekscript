@@ -29,6 +29,7 @@ class SemanticVar;
 class LSNull;
 class LSBoolean;
 class LSFunction;
+class Callable;
 
 class VM {
 public:
@@ -89,7 +90,7 @@ public:
 
 	/** Add a module **/
 	void add_module(Module* m);
-	void add_internal_var(std::string name, Type type, LSValue* value);
+	void add_internal_var(std::string name, Type type, LSValue* value, Callable* callable = nullptr);
 };
 
 }
