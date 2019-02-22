@@ -15,6 +15,7 @@
 #include "../compiler/semantic/SemanticError.hpp"
 #include "../compiler/Compiler.hpp"
 #include "Exception.hpp"
+#include "OutputStream.hpp"
 
 #define OPERATION_LIMIT 10000000
 
@@ -34,6 +35,7 @@ public:
 
 	static const unsigned long int DEFAULT_OPERATION_LIMIT;
 	static VM* current_vm;
+	static OutputStream* default_output;
 
 	struct Result {
 		bool compilation_success = false;
@@ -71,7 +73,7 @@ public:
 	unsigned int operations = 0;
 	bool enable_operations = true;
 	unsigned long int operation_limit;
-	std::ostream* output = &std::cout;
+	OutputStream* output = default_output;
 	long mpz_created = 0;
 	long mpz_deleted = 0;
 	std::string file_name;

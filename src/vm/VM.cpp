@@ -34,6 +34,7 @@ namespace ls {
 
 const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
 VM* VM::current_vm = nullptr;
+OutputStream* VM::default_output = new OutputStream();
 
 LSValue* op_add(LSValue* x, LSValue* y) {
 	return x->add(y);
