@@ -19,7 +19,6 @@ int Function::id_counter = 0;
 Function::Function() {
 	body = nullptr;
 	parent = nullptr;
-	pos = 0;
 	constant = true;
 	function_added = false;
 }

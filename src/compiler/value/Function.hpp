@@ -34,7 +34,6 @@ public:
 	Block* body;
 
 	std::vector<std::shared_ptr<SemanticVar>> captures;
-	int pos;
 	std::map<std::string, std::shared_ptr<SemanticVar>> vars;
 	bool function_added;
 	Function* parent;
