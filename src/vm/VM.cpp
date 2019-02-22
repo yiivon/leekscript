@@ -276,4 +276,9 @@ void VM::add_internal_var(std::string name, Type type, LSValue* value, Callable*
 	system_vars.push_back(value);
 }
 
+void VM::add_internal_var(std::string name, Type type, Function* function) {
+	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
+	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, function, nullptr, function, nullptr) });
+}
+
 }
