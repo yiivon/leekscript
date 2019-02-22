@@ -40,6 +40,7 @@ public:
 	std::vector<CallableVersion> versions;
 
 	Callable(std::string name) : name(name) {}
+	Callable(std::string name, std::initializer_list<CallableVersion> versions) : name(name), versions(versions) {}
 	Callable(std::initializer_list<CallableVersion> versions) : name("?"), versions(versions) {}
 	void add_version(CallableVersion v);
 	CallableVersion* resolve(SemanticAnalyser* analyser, std::vector<Type> arguments) const;

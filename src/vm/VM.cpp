@@ -94,18 +94,36 @@ VM::VM(bool v1) : compiler(this) {
 
 	// Add function operators
 	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~"};
-	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div, (void*) &op_tilde};
-
-	auto op_type = Type::fun(Type::any(), {Type::any(), Type::any()});
+	std::vector<void*> ops_funs_native = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div, (void*) &op_tilde};
+	std::vector<std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)>> ops_funs = {
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_add(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_sub(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mul(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mul(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_div(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_div(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_pow(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mod(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_int_div(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mod(args[0], args[1]); },
+	};
+	
 	auto value_class = internal_vars["Value"]->lsvalue;
 
 	for (unsigned o = 0; o < ops.size(); ++o) {
-		auto fun = new LSFunction(ops_funs[o]);
+		auto fun = new LSFunction(ops_funs_native[o]);
 		fun->refs = 1;
 		fun->native = true;
 		fun->args = {value_class, value_class};
 		fun->return_type = value_class;
-		add_internal_var(ops[o], op_type, fun);
+		auto name = ops[o];
+		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
+		auto type2 = Type::fun(Type::integer(), {Type::integer(), Type::integer()});
+		if (name == "/" or name == "÷") type2 = Type::fun(Type::real(), {Type::integer(), Type::integer()});
+		add_internal_var(name, type, fun, new Callable(name, {
+			{ name, type, ops_funs[o] },
+			{ name, type2, ops_funs[o] }
+		}));
 	}
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});

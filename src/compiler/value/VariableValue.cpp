@@ -46,24 +46,6 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 		callable->add_version({ name, type, fun, {}, {R, T}, nullptr });
 		return callable;
 	}
-	if (name == "+" or name == "-" or name == "*" or name == "×" or name == "/" or name == "÷" or name == "**" or name == "%") {
-		auto callable = new Callable(name);
-		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
-		auto fun = [&](Compiler& c, std::vector<Compiler::value> args) {
-			if (name == "+") return c.insn_add(args[0], args[1]);
-			else if (name == "-") return c.insn_sub(args[0], args[1]);
-			else if (name == "*" or name == "×") return c.insn_mul(args[0], args[1]);
-			else if (name == "/" or name == "÷") return c.insn_div(args[0], args[1]);
-			else if (name == "**") return c.insn_pow(args[0], args[1]);
-			else if (name == "%") return c.insn_mod(args[0], args[1]);
-			assert(false);
-		};
-		callable->add_version({ name, type, fun, {}, {}, nullptr });
-		auto type2 = Type::fun(Type::integer(), {Type::integer(), Type::integer()});
-		if (name == "/" or name == "÷") type2 = Type::fun(Type::real(), {Type::integer(), Type::integer()});
-		callable->add_version({ name, type2, fun, {}, {}, nullptr });
-		return callable;
-	}
 	if (name == "Number") {
 		auto callable = new Callable(name);
 		callable->add_version({ "Number", Type::fun(Type::integer(), {}), [&](Compiler& c, std::vector<Compiler::value>) {
@@ -226,18 +208,15 @@ void VariableValue::change_value(SemanticAnalyser*, Value* value) {
 }
 
 Type VariableValue::version_type(std::vector<Type> version) const {
+	// std::cout << "VariableValue::version_type " << version << std::endl;
 	if (var != nullptr && var->value != nullptr) {
 		// std::cout << "VariableValue " << this << " version_type() " << version << std::endl;
 		return var->value->version_type(version);
 	}
-	if (name == "+" or name == "-" or name == "*" or name == "×" or name == "/" or name == "÷" or name == "**" or name == "%" or name == "~") {
-		if (version.size() == 2) {
-			if (version.at(0).is_primitive() and version.at(1).is_primitive()) {
-				auto type = Type::fun(Type::integer(), {Type::integer(), Type::integer()});
-				if (name == "/" or name == "÷") type = Type::fun(Type::real(), {Type::integer(), Type::integer()});
-				return type;
-			} else {
-				return Type::fun(Type::any(), {Type::any(), Type::any()});
+	if (var && var->callable) {
+		for (const auto& v : var->callable->versions) {
+			if (v.type.arguments() == version) {
+				return v.type;
 			}
 		}
 	}
