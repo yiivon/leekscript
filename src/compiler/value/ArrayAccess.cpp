@@ -53,7 +53,7 @@ Callable* ArrayAccess::get_callable(SemanticAnalyser*) const {
 	auto callable = new Callable("<aa>");
 	// std::cout << "Array access get callable " << type << std::endl;
 	if (type.is_function()) {
-		callable->add_version({ "<aa>", type, this, {}, {}, nullptr });
+		callable->add_version({ "<aa>", type, this });
 	} else {
 		// The array is not homogeneous, so the function inside an array always returns any
 		callable->add_version({ "<aa>", Type::fun(Type::any(), {Type::any()}), this, {}, {}, nullptr, true });
