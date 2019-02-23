@@ -127,9 +127,6 @@ Type Type::operator * (const Type& t2) const {
 	if (*this == t2) {
 		return *this;
 	}
-	if (is_null() or t2.is_null()) {
-		return Type::null();
-	}
 	if (is_polymorphic() and t2.is_primitive()) {
 		return Type::any();
 	}
