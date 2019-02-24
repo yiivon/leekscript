@@ -430,8 +430,13 @@ void Test::test_arrays() {
 	code("Array.foldLeft([2.5, 3.5], (x, y -> x ** y), 1.5)").equals("34.7374965567");
 	code("Array.foldLeft(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'Xabcd'");
 	code("['1', '2', '3'].foldLeft(+, '0')").equals("'0123'");
-	// TODO variable operators with primitive types
-	DISABLED_code("[1, 2, 3, 4, 5].foldLeft(+, 0)").equals("15");
+	code("[1, 2, 3, 4, 5].foldLeft(+, 0)").equals("15");
+	code("let a = +; [1, 2, 3, 4, 5].foldLeft(a, 0)").equals("15");
+	code("[1, 2, 3, 4, 5].foldLeft(-, 0)").equals("-15");
+	code("let a = -; [1, 2, 3, 4, 5].foldLeft(a, 0)").equals("-15");
+	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft((+), 0)").equals("45");
+	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft((-), 0)").equals("-45");
+	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft(*, 1)").equals("362880");
 
 	section("Array.foldRight()");
 	code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");
