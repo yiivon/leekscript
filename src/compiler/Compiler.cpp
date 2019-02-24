@@ -1496,7 +1496,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 	if (v.t.is_array()) {
 		auto array_begin = insn_array_at(v, new_integer(0));
 		if (v.t.element().is_polymorphic()) array_begin = { builder.CreatePointerCast(array_begin.v, Type::any().pointer().llvm_type(*this)), Type::any().pointer() };
-		return { builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::any() };
+		return to_int({ builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::long_() });
 	}
 	if (v.t.is_interval()) {
 		auto interval = insn_load_member(it, 0);
@@ -1538,7 +1538,7 @@ Compiler::value Compiler::iterator_rkey(Compiler::value v, Compiler::value it, C
 	if (v.t.is_array()) {
 		auto array_begin = insn_array_at(v, new_integer(0));
 		if (v.t.element().is_polymorphic()) array_begin = { builder.CreatePointerCast(array_begin.v, Type::any().pointer().llvm_type(*this)), Type::any().pointer() };
-		return { builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::any() };
+		return to_int({ builder.CreatePtrDiff(insn_load(it).v, array_begin.v), Type::long_() });
 	}
 	if (v.t.is_interval()) {
 		auto interval = insn_load_member(it, 0);
