@@ -230,11 +230,20 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	if (scope == VarScope::CAPTURE) {
 		v = c.insn_get_capture(capture_index, type);
 	} else if (scope == VarScope::INTERNAL) {
+		auto f = dynamic_cast<Function*>(var->value);
+		if (f) {
+			if (has_version) {
+				return f->compile_version(c, version);
+			} else {
+				return f->compile_default_version(c);
+			}
+		}
 		v = c.vm->internals.at(name);
 	} else if (scope == VarScope::LOCAL) {
 		auto f = dynamic_cast<Function*>(var->value);
-		if (has_version && f) {
-			return f->compile_version(c, version);
+		auto vv = dynamic_cast<VariableValue*>(var->value);
+		if (has_version && (f or vv)) {
+			return var->value->compile_version(c, version);
 		}
 		v = c.insn_load(c.get_var(name));
 	} else { /* if (scope == VarScope::PARAMETER) */
@@ -242,6 +251,14 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	}
 	c.assert_value_ok(v);
 	return v;
+}
+
+Compiler::value VariableValue::compile_version(Compiler& c, std::vector<Type> version) const {
+	auto f = dynamic_cast<Function*>(var->value);
+	if (f) {
+		return f->compile_version(c, version);
+	}
+	return c.insn_load(c.get_var(name));
 }
 
 Compiler::value VariableValue::compile_l(Compiler& c) const {

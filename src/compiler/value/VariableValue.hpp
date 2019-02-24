@@ -38,6 +38,7 @@ public:
 	virtual Type version_type(std::vector<Type>) const override;
 
 	virtual Compiler::value compile(Compiler&) const override;
+	virtual Compiler::value compile_version(Compiler&, std::vector<Type> version) const override;
 	virtual Compiler::value compile_l(Compiler&) const override;
 
 	virtual Value* clone() const override;
