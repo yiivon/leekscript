@@ -16,6 +16,7 @@
 #include "../benchmark/Benchmark.hpp"
 #include "vm/LSValue.hpp"
 #include "util/Util.hpp"
+#include "../test/Test.hpp"
 
 void print_errors(ls::VM::Result& result, std::ostream& os, bool json);
 void print_result(ls::VM::Result& result, const std::string& output, bool json, bool display_time, bool ops);
@@ -96,11 +97,11 @@ int main(int argc, char* argv[]) {
 		}
 		/** Execute **/
 		ls::VM vm {v1};
-		std::ostringstream oss;
+		OutputStringStream oss;
 		if (output_json)
 			vm.output = &oss;
 		auto result = vm.execute(code, "{}", file_name, debug_mode, ops, assembly, pseudo_code, log_instructions);
-		vm.output = &std::cout;
+		vm.output = ls::VM::default_output;
 		print_result(result, oss.str(), output_json, display_time, ops);
 		return 0;
 	}
