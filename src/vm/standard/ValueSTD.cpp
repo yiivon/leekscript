@@ -68,9 +68,6 @@ ValueSTD::ValueSTD() : Module("Value") {
 	operator_("*", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_mul}
 	});
-	operator_("×", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_mul}
-	});
 	operator_("**", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_pow}
 	});

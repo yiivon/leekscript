@@ -68,13 +68,6 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::const_integer(), Type::const_string(), Type::string(), (void*) &NumberSTD::mul_int_string},
 		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mul_mpz_mpz}
 	});
-	operator_("×", {
-		{Type::const_real(), Type::const_real(), Type::const_real(), (void*) &NumberSTD::mul_real_real},
-		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::mul_real_real},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mul_real_real},
-		{Type::integer(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mul_int_mpz},
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mul_mpz_mpz}
-	});
 
 	operator_("**", {
 		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::pow_real_real},
