@@ -300,8 +300,6 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 		void* fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
 		auto function = new LSFunction(fun);
-		function->native = true;
-		function->refs = 1;
 		((ObjectAccess*) this)->ls_function = function;
 		return c.new_pointer(ls_function, type);
 	}

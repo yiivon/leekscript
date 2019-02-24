@@ -128,8 +128,6 @@ VM::VM(bool v1) : compiler(this) {
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
 	auto fun = new LSFunction((void*) ptr_fun);
-	fun->refs = 1;
-	fun->native = true;
 	fun->args = {value_class};
 	fun->return_type = value_class;
 	add_internal_var("ptr", ptr_type, fun);

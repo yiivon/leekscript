@@ -10,10 +10,8 @@ namespace ls {
 
 LSValue* LSClass::clazz;
 
-LSClass::LSClass(std::string name) : LSValue(CLASS), name(name) {
+LSClass::LSClass(std::string name) : LSValue(CLASS, 1, true), name(name) {
 	parent = nullptr;
-	refs = 1;
-	native = true;
 }
 
 LSClass::~LSClass() {
@@ -34,8 +32,6 @@ void LSClass::addMethod(std::string& name, std::vector<Method> method) {
 
 	// Add first implementation as default method
 	auto fun = new LSFunction(method[0].addr);
-	fun->refs = 1;
-	fun->native = true;
 	Type type = method[0].type;
 	static_fields.insert({name, ModuleStaticField(name, type, fun)});
 }

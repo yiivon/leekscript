@@ -56,7 +56,7 @@ public:
 	int refs = 0;
 	bool native = false;
 
-	LSValue(LSValueType type);
+	LSValue(LSValueType type, int refs = 0, bool native = false);
 	LSValue(const LSValue& other);
 	virtual ~LSValue() = 0;
 

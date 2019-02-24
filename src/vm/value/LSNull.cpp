@@ -11,10 +11,7 @@ LSValue* LSNull::get() {
 	return null_var;
 }
 
-LSNull::LSNull() : LSValue(LSValue::NULLL) {
-	refs = 1;
-	native = true;
-}
+LSNull::LSNull() : LSValue(LSValue::NULLL, 1, true) {}
 
 LSNull::~LSNull() {}
 

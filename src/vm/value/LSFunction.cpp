@@ -8,7 +8,7 @@ namespace ls {
 
 LSClass* LSFunction::clazz;
 
-LSFunction::LSFunction(void* function) : LSValue(FUNCTION) {
+LSFunction::LSFunction(void* function) : LSValue(FUNCTION, 1, true) {
 	this->function = function;
 }
 

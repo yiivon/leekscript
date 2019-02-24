@@ -183,8 +183,6 @@ void Function::analyse(SemanticAnalyser* analyser) {
 			default_version->function = new LSFunction(nullptr);
 			default_version->type = Type::fun(getReturnType(), args, this);
 		}
-		default_version->function->refs = 1;
-		default_version->function->native = true;
 	}
 	analyzed = true;
 
@@ -214,8 +212,6 @@ void Function::create_version(SemanticAnalyser* analyser, std::vector<Type> args
 	} else {
 		version->function = new LSFunction(nullptr);
 	}
-	version->function->refs = 1;
-	version->function->native = true;
 	versions.insert({args, version});
 
 	analyse_body(analyser, args, version);
@@ -348,16 +344,12 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 	if (!default_version->function->closure()) {
 		delete default_version->function;
 		default_version->function = new LSClosure(nullptr);
-		default_version->function->refs = 1;
-		default_version->function->native = true;
 	}
 	default_version->type = Type::closure(default_version->type.return_type(), default_version->type.arguments(), this);
 	for (auto& version : versions) {
 		if (!version.second->function->closure()) {
 			delete version.second->function;
 			version.second->function = new LSClosure(nullptr);
-			version.second->function->refs = 1;
-			version.second->function->native = true;
 		}
 		version.second->type = Type::closure(version.second->type.return_type(), version.second->type.arguments(), this);
 	}
@@ -664,8 +656,6 @@ Value* Function::clone() const {
 		} else {
 			v2->function = new LSFunction(nullptr);
 		}
-		v2->function->refs = 1;
-		v2->function->native = true;
 		v2->body = (Block*) v.second->body->clone();
 		v2->type = v.second->type;
 		f->versions.insert({v.first, v2});

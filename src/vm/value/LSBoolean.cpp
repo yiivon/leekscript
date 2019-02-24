@@ -10,10 +10,7 @@ LSValue* LSBoolean::clazz;
 LSBoolean* LSBoolean::false_val;
 LSBoolean* LSBoolean::true_val;
 
-LSBoolean::LSBoolean(bool value) : LSValue(BOOLEAN), value(value) {
-	refs = 1;
-	native = true;
-}
+LSBoolean::LSBoolean(bool value) : LSValue(BOOLEAN, 1, true), value(value) {}
 
 LSBoolean::~LSBoolean() {}
 
