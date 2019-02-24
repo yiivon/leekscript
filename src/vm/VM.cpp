@@ -29,6 +29,9 @@
 #include "standard/JsonSTD.hpp"
 #include "legacy/Functions.hpp"
 #include "../compiler/semantic/Callable.hpp"
+#include "../compiler/value/Expression.hpp"
+#include "../compiler/instruction/ExpressionInstruction.hpp"
+#include "../compiler/value/VariableValue.hpp"
 
 namespace ls {
 
@@ -60,7 +63,6 @@ LSValue* op_mod(LSValue* x, LSValue* y) {
 LSValue* op_tilde(LSValue* x, LSValue* y) {
 	return x->mod(y);
 }
-
 LSValue* ptr_fun(LSValue* v) {
 	return v->move();
 }
@@ -107,23 +109,24 @@ VM::VM(bool v1) : compiler(this) {
 		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_int_div(args[0], args[1]); },
 		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mod(args[0], args[1]); },
 	};
+	std::vector<TokenType> token_types = {TokenType::PLUS, TokenType::MINUS, TokenType::TIMES, TokenType::TIMES, TokenType::DIVIDE, TokenType::DIVIDE, TokenType::POWER, TokenType::MODULO, TokenType::INT_DIV, TokenType::TILDE};
 	
 	auto value_class = internal_vars["Value"]->lsvalue;
 
 	for (unsigned o = 0; o < ops.size(); ++o) {
-		auto fun = new LSFunction(ops_funs_native[o]);
-		fun->refs = 1;
-		fun->native = true;
-		fun->args = {value_class, value_class};
-		fun->return_type = value_class;
 		auto name = ops[o];
+		auto f = new Function();
+		f->addArgument(new Token(TokenType::IDENT, 0, 1, 0, "x"), nullptr);
+		f->addArgument(new Token(TokenType::IDENT, 2, 1, 2, "y"), nullptr);
+		f->body = new Block();
+		auto ex = new Expression();
+		ex->v1 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 0, 1, 0, "x"));
+		ex->v2 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 2, 1, 2, "y"));
+		ex->op = std::make_shared<Operator>(new Token(token_types[o], 1, 1, 1, name));
+		f->body->instructions.push_back( new ExpressionInstruction(ex));
 		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
-		auto type2 = Type::fun(Type::integer(), {Type::integer(), Type::integer()});
-		if (name == "/" or name == "÷") type2 = Type::fun(Type::real(), {Type::integer(), Type::integer()});
-		add_internal_var(name, type, fun, new Callable(name, {
-			{ name, type, ops_funs[o] },
-			{ name, type2, ops_funs[o] }
-		}));
+		type.native = true;
+		add_internal_var(name, type, f);
 	}
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
