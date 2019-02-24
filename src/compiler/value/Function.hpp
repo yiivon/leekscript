@@ -78,6 +78,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const override;
+	Compiler::value compile_default_version(Compiler&) const;
 	void compile_version_internal(Compiler& c, std::vector<Type> args, Version* version) const;
 	llvm::BasicBlock* get_landing_pad(const Compiler& c);
 
