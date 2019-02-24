@@ -24,6 +24,7 @@ public:
 		llvm::BasicBlock* catch_block = nullptr;
 		llvm::AllocaInst* exception_slot = nullptr;
 		llvm::AllocaInst* exception_line_slot = nullptr;
+		bool is_compiled() const;
 	};
 
 	std::string name;

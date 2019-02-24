@@ -14,6 +14,10 @@
 
 namespace ls {
 
+bool Function::Version::is_compiled() const {
+	return function and function->function != nullptr;
+}
+
 int Function::id_counter = 0;
 
 Function::Function() {
@@ -436,12 +440,16 @@ Compiler::value Function::compile(Compiler& c) const {
 	// Compile default version
 	// std::cout << "generate_default_version " << generate_default_version << std::endl;
 	if (is_main_function || generate_default_version) {
-		compile_version_internal(c, type.arguments(), default_version);
+		if (not default_version->is_compiled()) {
+			compile_version_internal(c, type.arguments(), default_version);
+		}
 	}
 
 	// Add captures (for sub functions only)
 	for (auto& version : ((Function*) this)->versions) {
-		compile_version_internal(c, version.first, version.second);
+		if (not version.second->is_compiled()) {
+			compile_version_internal(c, version.first, version.second);
+		}
 	}
 
 	if (has_version) {
@@ -454,9 +462,6 @@ Compiler::value Function::compile(Compiler& c) const {
 
 Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) const {
 	// std::cout << "Function " << name << "::compile_version(" << args << ")" << std::endl;
-	if (!compiled) {
-		compile(c);
-	}
 	// Fill with default arguments
 	auto version = args;
 	for (size_t i = version.size(); i < arguments.size(); ++i) {
@@ -468,6 +473,11 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
 		return c.new_pointer(LSNull::get(), Type::null());
 	}
+	// Compile version if needed
+	if (versions.at(version)->function->function == nullptr) {
+		compile_version_internal(c, args, versions.at(version));
+	}
+	assert(versions.at(version)->function->function != nullptr);
 	return c.new_function(versions.at(version)->function, versions.at(version)->type);
 }
 
@@ -629,6 +639,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	assert(ExprSymbol && "Function not found");
 
 	ls_fun->function = (void*) cantFail(ExprSymbol.getAddress());
+	assert(ls_fun->function != nullptr);
 	version->function = ls_fun;
 	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;
 }
