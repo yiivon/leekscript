@@ -95,7 +95,7 @@ VM::VM(bool v1) : compiler(this) {
 	add_module(new JsonSTD());
 
 	// Add function operators
-	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~"};
+	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~", ">", "<", ">=", "<="};
 	std::vector<void*> ops_funs_native = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div, (void*) &op_tilde};
 	std::vector<std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)>> ops_funs = {
 		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_add(args[0], args[1]); },
@@ -108,8 +108,12 @@ VM::VM(bool v1) : compiler(this) {
 		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mod(args[0], args[1]); },
 		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_int_div(args[0], args[1]); },
 		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mod(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_gt(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_lt(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_ge(args[0], args[1]); },
+		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_le(args[0], args[1]); },
 	};
-	std::vector<TokenType> token_types = {TokenType::PLUS, TokenType::MINUS, TokenType::TIMES, TokenType::TIMES, TokenType::DIVIDE, TokenType::DIVIDE, TokenType::POWER, TokenType::MODULO, TokenType::INT_DIV, TokenType::TILDE};
+	std::vector<TokenType> token_types = {TokenType::PLUS, TokenType::MINUS, TokenType::TIMES, TokenType::TIMES, TokenType::DIVIDE, TokenType::DIVIDE, TokenType::POWER, TokenType::MODULO, TokenType::INT_DIV, TokenType::TILDE, TokenType::GREATER, TokenType::LOWER, TokenType::GREATER_EQUALS, TokenType::LOWER_EQUALS};
 	
 	auto value_class = internal_vars["Value"]->lsvalue;
 

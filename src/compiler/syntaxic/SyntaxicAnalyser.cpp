@@ -199,6 +199,9 @@ Instruction* SyntaxicAnalyser::eatInstruction() {
 		case TokenType::PIPE:
 		case TokenType::TILDE:
 		case TokenType::LOWER:
+		case TokenType::GREATER:
+		case TokenType::LOWER_EQUALS:
+		case TokenType::GREATER_EQUALS:
 		case TokenType::OR:
 			return new ExpressionInstruction(eatExpression());
 
@@ -663,6 +666,9 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 		case TokenType::TERNARY:
 		case TokenType::INT_DIV:
 		case TokenType::TILDE:
+		case TokenType::GREATER:
+		case TokenType::LOWER_EQUALS:
+		case TokenType::GREATER_EQUALS:
 		{
 			return new VariableValue(std::shared_ptr<Token>(eat_get()));
 		}
@@ -707,7 +713,7 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 			return eatArrayOrMap();
 
 		case TokenType::LOWER:
-			return eatSet();
+			return eatSetOrLowerOperator();
 
 		case TokenType::OPEN_BRACE:
 			return eatBlockOrObject();
@@ -720,7 +726,6 @@ Value* SyntaxicAnalyser::eatValue(bool comma_list) {
 
 		case TokenType::FUNCTION:
 			return eatFunction();
-
 
 		case TokenType::ARROW:
 		{
@@ -950,8 +955,13 @@ Value* SyntaxicAnalyser::eatArrayOrMap() {
 	return array;
 }
 
-Set* SyntaxicAnalyser::eatSet() {
-	eat(TokenType::LOWER);
+Value* SyntaxicAnalyser::eatSetOrLowerOperator() {
+	
+	auto lower = eat_get();
+
+	if (t->type == TokenType::CLOSING_PARENTHESIS or t->type == TokenType::COMMA or t->type == TokenType::SEMICOLON or t->type == TokenType::DOT) {
+		return new VariableValue(std::shared_ptr<Token>(lower));
+	}
 
 	auto set = new Set();
 
