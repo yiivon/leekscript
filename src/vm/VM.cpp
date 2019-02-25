@@ -39,30 +39,6 @@ const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
 VM* VM::current_vm = nullptr;
 OutputStream* VM::default_output = new OutputStream();
 
-LSValue* op_add(LSValue* x, LSValue* y) {
-	return x->add(y);
-}
-LSValue* op_sub(LSValue* x, LSValue* y) {
-	return x->sub(y);
-}
-LSValue* op_mul(LSValue* x, LSValue* y) {
-	return x->mul(y);
-}
-LSValue* op_div(LSValue* x, LSValue* y) {
-	return x->div(y);
-}
-LSValue* op_int_div(LSValue* x, LSValue* y) {
-	return x->int_div(y);
-}
-LSValue* op_pow(LSValue* x, LSValue* y) {
-	return x->pow(y);
-}
-LSValue* op_mod(LSValue* x, LSValue* y) {
-	return x->mod(y);
-}
-LSValue* op_tilde(LSValue* x, LSValue* y) {
-	return x->mod(y);
-}
 LSValue* ptr_fun(LSValue* v) {
 	return v->move();
 }
@@ -96,7 +72,6 @@ VM::VM(bool v1) : compiler(this) {
 
 	// Add function operators
 	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~", ">", "<", ">=", "<="};
-	std::vector<void*> ops_funs_native = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div, (void*) &op_tilde};
 	std::vector<std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)>> ops_funs = {
 		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_add(args[0], args[1]); },
 		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_sub(args[0], args[1]); },
