@@ -175,6 +175,14 @@ void Test::test_functions() {
 	code("\\(72, 7)").equals("10");
 	code("(\\)(72, 7)").equals("10");
 	code("['', **(2, 11)]").equals("['', 2048]");
+	code("(<)(1, 2)").equals("true");
+	code("(>)(1, 2)").equals("false");
+	code("(<)('a', 'b')").equals("true");
+	code("(>)('a', 'b')").equals("false");
+	code("(<=)(1, 1)").equals("true");
+	code("(<=)(1, 2)").equals("true");
+	code("(>=)(5, 5)").equals("true");
+	code("(>=)(5, 6)").equals("false");
 	code("let p = +; p(1, 2)").equals("3");
 	code("let p = +; p('test', 2)").equals("'test2'");
 	code("let p = -; p(9, 2)").equals("7");
@@ -185,6 +193,10 @@ void Test::test_functions() {
 	code("let p = % p(48, 5)").equals("3");
 	code("let p = ** p(2, 11)").equals("2048");
 	code("let p = \\ p(72, 7)").equals("10");
+	code("let p = <; p('a', 'b')").equals("true");
+	code("let p = >; p('a', 'b')").equals("false");
+	code("let p = <=; p('a', 'b')").equals("true");
+	code("let p = >=; p('a', 'b')").equals("false");
 	code("+").equals("<function>");
 	code("+.class").equals("<class Function>");
 	code("let p = +; p.class").equals("<class Function>");
@@ -218,6 +230,10 @@ void Test::test_functions() {
 	code("÷.args").equals("[<class Value>, <class Value>]");
 	code("%.args").equals("[<class Value>, <class Value>]");
 	code("**.args").equals("[<class Value>, <class Value>]");
+	code(">.args").equals("[<class Value>, <class Value>]");
+	code("<.args").equals("[<class Value>, <class Value>]");
+	code(">=.args").equals("[<class Value>, <class Value>]");
+	code("<=.args").equals("[<class Value>, <class Value>]");
 	// TODO manage multiple versions of functions
 	DISABLED_code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
 
