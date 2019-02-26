@@ -389,8 +389,8 @@ Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 		auto res = insn_call(Type::integer(), {a, b}, +[](__mpz_struct a, __mpz_struct b) {
 			return mpz_cmp(&a, &b);
 		});
-		if (a.t.temporary) insn_delete_mpz(a);
-		if (b.t.temporary) insn_delete_mpz(b);
+		insn_delete_temporary(a);
+		insn_delete_temporary(b);
 		return insn_lt(res, new_integer(0));
 	} else if (a.t.is_real() || b.t.is_real()) {
 		r = {builder.CreateFCmpOLT(to_real(a).v, to_real(b).v), Type::boolean()};
