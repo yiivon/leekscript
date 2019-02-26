@@ -1108,22 +1108,18 @@ Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 		VM::current()->mpz_created++;
 		return *new_mpz;
 	});
-	// insn_call({}, {v}, +[](__mpz_struct mpz) {
-	// 	std::cout << "mpz cloned alloc = " << mpz._mp_alloc << std::endl;
-	// 	std::cout << "mpz cloned size = " << mpz._mp_size << std::endl;
-	// 	std::cout << "mpz cloned d = " << mpz._mp_d << std::endl;
-	// });
-	// return v;
 }
 
 void Compiler::insn_delete_mpz(Compiler::value mpz) const {
+	// std::cout << "delete mpz " << mpz.t << std::endl;
 	assert(mpz.t.llvm_type(*this) == mpz.v->getType());
-	// std::cout << "delete mpz " << mpz.v->getType() << std::endl;
-	// insn_call({}, {mpz}, &mpz_clear, "mpz_clear");
+	// insn_call({}, {mpz}, +[](__mpz_struct mpz) {
+		// VM::current()->mpz_deleted++;
+		// mpz_clear(&mpz);
+	// });
 	// Increment mpz values counter
-	// jit_value_t jit_counter_ptr = jit_value_create_long_constant(F, LS_POINTER, (long) &vm->mpz_deleted);
-	// jit_value_t jit_counter = jit_insn_load_relative(F, jit_counter_ptr, 0, jit_type_long);
-	// jit_insn_store_relative(F, jit_counter_ptr, 0, jit_insn_add(F, jit_counter, LS_CREATE_INTEGER(F, 1)));
+	// auto mpz_counter = new_pointer(&vm->mpz_deleted, Type::long_().pointer());
+	// insn_store(mpz_counter, insn_add(insn_load(mpz_counter), new_integer(1)));
 }
 
 Compiler::value Compiler::insn_inc_refs(Compiler::value v) const {
