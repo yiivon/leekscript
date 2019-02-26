@@ -12,6 +12,7 @@
 #include "Compiler.hpp"
 #include "value/Function.hpp"
 #include "../vm/value/LSNull.hpp"
+#include "../vm/value/LSMpz.hpp"
 #include "../vm/value/LSArray.hpp"
 #include "../vm/value/LSMap.hpp"
 #include "../vm/value/LSClosure.hpp"
@@ -849,6 +850,10 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 	} else if (v.t.is_bool()) {
 		return insn_call(Type::any(), {v}, +[](bool n) {
 			return LSBoolean::get(n);
+		});
+	} else if (v.t.is_mpz()) {
+		return insn_call(Type::any(), {v}, +[](__mpz_struct n) {
+			return LSMpz::get(n);
 		});
 	} else {
 		return insn_call(Type::any(), {v}, +[](int n) {
