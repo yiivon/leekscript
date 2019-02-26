@@ -8,7 +8,7 @@ namespace ls {
 class Mpz_type : public Base_type {
 public:
 	Mpz_type() {}
-	virtual int id() const override { return 3; }
+	virtual int id() const override { return 13; }
 	virtual const std::string getName() const { return "mpz"; }
 	virtual const std::string getJsonName() const { return "number"; }
 	virtual bool operator == (const Base_type*) const override;
