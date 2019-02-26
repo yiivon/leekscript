@@ -69,7 +69,7 @@ void Block::analyse(SemanticAnalyser* analyser) {
 		}
 		instruction->analyse(analyser);
 		if (i == instructions.size() - 1 and not is_void) { // Last instruction
-			type += instruction->type;
+			type = instruction->type;
 		}
 		if (instruction->may_return) may_return = true;
 		return_type += instruction->return_type;
