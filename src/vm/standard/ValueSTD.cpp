@@ -146,8 +146,7 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::copy}
 	});
 	method("string", {
-		{Type::string(), {Type::const_any()}, (void*) &ValueSTD::to_string},
-		{Type::string(), {Type::const_long()}, (void*) &ValueSTD::to_string}
+		{Type::string(), {Type::const_any()}, (void*) &ValueSTD::to_string}
 	});
 	method("json", {
 		{Type::string(), {Type::const_any()}, (void*) &JsonSTD::encode}
