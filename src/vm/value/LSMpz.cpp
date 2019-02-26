@@ -17,13 +17,17 @@ LSClass* LSMpz::clazz;
 LSMpz* LSMpz::get(__mpz_struct i) {
 	return new LSMpz(i);
 }
+LSMpz* LSMpz::get_from_tmp(__mpz_struct i) {
+	auto mpz = new LSMpz();
+	mpz->value = i;
+	return mpz;
+}
 LSMpz* LSMpz::get(long i) {
 	return new LSMpz(i);
 }
 
-LSMpz::LSMpz() : LSValue(MPZ) {
-	VM::current()->mpz_created++;
-}
+LSMpz::LSMpz() : LSValue(MPZ) {}
+
 LSMpz::LSMpz(__mpz_struct value) : LSValue(MPZ) {
 	mpz_init_set(&this->value, &value);
 	VM::current()->mpz_created++;

@@ -861,9 +861,15 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 			return LSBoolean::get(n);
 		});
 	} else if (v.t.is_mpz()) {
-		return insn_call(Type::any(), {v}, +[](__mpz_struct n) {
-			return LSMpz::get(n);
-		});
+		if (v.t.temporary) {
+			return insn_call(Type::any(), {v}, +[](__mpz_struct n) {
+				return LSMpz::get_from_tmp(n);
+			});
+		} else {
+			return insn_call(Type::any(), {v}, +[](__mpz_struct n) {
+				return LSMpz::get(n);
+			});
+		}
 	} else {
 		return insn_call(Type::any(), {v}, +[](int n) {
 			return LSNumber::get(n);

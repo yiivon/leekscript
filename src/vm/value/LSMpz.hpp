@@ -18,6 +18,7 @@ public:
 
 	static LSClass* clazz;
 	static LSMpz* get(__mpz_struct);
+	static LSMpz* get_from_tmp(__mpz_struct);
 	static LSMpz* get(long);
 
 	LSMpz();
