@@ -130,8 +130,8 @@ std::string Program::execute(VM& vm) {
 		__mpz_struct ret = fun();
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
-		// mpz_clear(&ret);
-		// vm.mpz_deleted++;
+		mpz_clear(&ret);
+		vm.mpz_deleted++;
 		return std::string(buff);
 	}
 
