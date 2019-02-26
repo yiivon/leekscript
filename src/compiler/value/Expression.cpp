@@ -225,7 +225,11 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		// Set the correct type nature for the two members
 		auto vv = dynamic_cast<VariableValue*>(v1);
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
-			type = v2->type;
+			if (is_void) {
+				type = {};
+			} else {
+				type = v2->type;
+			}
 		} else {
 			if (v1->type == Type::any() || v2->type == Type::any()) {
 				type = Type::any();
@@ -233,7 +237,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 				type = v1->type;
 			}
 		}
-		if (type.is_void()) {
+		if (type.is_void() and not is_void) {
 			type = v2_type;
 		}
 		type.reference = false;
@@ -311,6 +315,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 			// Move the object
 			y = c.insn_move_inc(y);
+			y.t = y.t.not_temporary();
 			// Delete previous variable reference
 			c.insn_delete(c.insn_load(x_addr));
 			// Create the new variable
@@ -319,7 +324,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				c.insn_store(x_addr, y);
 			}
-			return y;
+			if (is_void) {
+				return {};
+			} else {
+				return y;
+			}
 		}
 		case TokenType::PLUS_EQUAL: {
 			auto x_addr = ((LeftValue*) v1)->compile_l(c);
