@@ -138,12 +138,12 @@ void Test::test_types() {
 	code("null").type(ls::Type::null());
 	code("12").type(ls::Type::integer());
 	code("12.5").type(ls::Type::real());
-	code("'salut'").type(ls::Type::string());
-	code("[]").type(ls::Type::array(ls::Type::any()));
-	code("[1]").type(ls::Type::array(ls::Type::integer()));
-	code("[1, 2.5]").type(ls::Type::array({ls::Type::integer(), ls::Type::real()}));
-	code("['a']").type(ls::Type::array(ls::Type::string()));
-	code("[[1]]").type(ls::Type::array(ls::Type::array(ls::Type::integer())));
-	code("[[1, 2.5]]").type(ls::Type::array(ls::Type::array({ls::Type::integer(), ls::Type::real()})));
-	code("[['a']]").type(ls::Type::array(ls::Type::array(ls::Type::string())));
+	code("'salut'").type(ls::Type::tmp_string());
+	code("[]").type(ls::Type::tmp_array(ls::Type::any()));
+	code("[1]").type(ls::Type::tmp_array(ls::Type::integer()));
+	code("[1, 2.5]").type(ls::Type::tmp_array({ls::Type::integer(), ls::Type::real()}));
+	code("['a']").type(ls::Type::tmp_array(ls::Type::string()));
+	code("[[1]]").type(ls::Type::tmp_array(ls::Type::array(ls::Type::integer())));
+	code("[[1, 2.5]]").type(ls::Type::tmp_array(ls::Type::array({ls::Type::integer(), ls::Type::real()})));
+	code("[['a']]").type(ls::Type::tmp_array(ls::Type::array(ls::Type::string())));
 }
