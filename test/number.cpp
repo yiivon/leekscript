@@ -219,6 +219,7 @@ void Test::test_numbers() {
 	code("15★ + true").equals("16");
 	code("let a = 15★ a + true").equals("16");
 	code("10000m + 15").equals("10015");
+	code("let a = ['a', 12321111111111111111111111111111111321321321999999] a[1] + 123456789").equals("12321111111111111111111111111111111321321445456788");
 
 	section("Number.operator +=");
 	code("var a = 15★ a += true a").equals("16");
@@ -263,6 +264,7 @@ void Test::test_numbers() {
 	code("5 * 'yo'").equals("'yoyoyoyoyo'");
 	code("50m * 10").equals("500");
 	code("50 * 10m").equals("500");
+	code("let a = ['a', 12321111111111111111111111111111111321321321999999] a[1] * 123456789").equals("1521124814690000000000000000000000025951877651354934543211");
 
 	section("Number.operator *=");
 	code("var a = 15★ a *= true a").equals("15");
