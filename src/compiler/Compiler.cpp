@@ -1983,6 +1983,9 @@ void Compiler::enter_block() {
 void Compiler::leave_block(bool delete_vars) {
 	if (delete_vars) {
 		delete_variables_block(1);
+		// for (const auto& var : variables.back()) {
+		// 	remove_function_var(var.second);
+		// }
 	}
 	variables.pop_back();
 	if (!loops_blocks.empty()) {
@@ -2076,6 +2079,14 @@ Compiler::value Compiler::create_and_add_var(const std::string& name, Type type)
 void Compiler::add_function_var(Compiler::value value) {
 	assert(value.t.llvm_type(*this) == value.v->getType());
 	function_variables.back().push_back(value);
+}
+
+void Compiler::remove_function_var(Compiler::value value) {
+	assert(value.t.llvm_type(*this) == value.v->getType());
+	auto& vars = function_variables.back();
+	auto position = std::find(vars.begin(), vars.end(), value);
+	if (position != vars.end())
+		vars.erase(position);
 }
 
 Compiler::value Compiler::get_var(const std::string& name) {

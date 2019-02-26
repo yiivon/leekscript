@@ -340,6 +340,8 @@ public:
 	value add_var(const std::string& name, value value);
 	value create_and_add_var(const std::string& name, Type type);
 	void add_function_var(value value);
+	void remove_function_var(value value);
+
 	value get_var(const std::string& name);
 	void update_var(std::string& name, value value);
 
