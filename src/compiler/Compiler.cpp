@@ -91,7 +91,7 @@ Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
 }
 
 Compiler::value Compiler::new_mpz(long value) const {
-	return insn_call(Type::mpz(), { new_long(value) }, +[](long v) {
+	return insn_call(Type::tmp_mpz(), { new_long(value) }, +[](long v) {
 		VM::current()->mpz_created++;
 		mpz_t mpz;
 		mpz_init_set_ui(mpz, v);
