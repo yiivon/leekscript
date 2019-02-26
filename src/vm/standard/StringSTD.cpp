@@ -7,6 +7,7 @@
 #include "ValueSTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
+#include "../VM.hpp"
 
 namespace ls {
 
@@ -44,7 +45,7 @@ LSString* plus_mpz_tmp(LSString* s, __mpz_struct mpz) {
 	LSString* res = new LSString(*s + buff);
 	LSValue::delete_temporary(s);
 	mpz_clear(&mpz);
-	//VM::current()->mpz_deleted++;
+	VM::current()->mpz_deleted++;
 	return res;
 }
 

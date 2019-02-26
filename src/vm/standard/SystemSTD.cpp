@@ -96,8 +96,8 @@ void System_print_mpz_tmp(__mpz_struct v) {
 	mpz_get_str(buff, 10, &v);
 	VM::current()->output->stream() << buff;
 	VM::current()->output->end();
-	// mpz_clear(&v);
-	// VM::current()->mpz_deleted++;
+	mpz_clear(&v);
+	VM::current()->mpz_deleted++;
 }
 
 void System_print_long(long v) {
