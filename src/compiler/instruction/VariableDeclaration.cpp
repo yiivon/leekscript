@@ -109,7 +109,10 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
-			c.add_function_var(var);
+			// TODO we don't add mpz values to function vars because function vars doesn't work properly yet
+			if (not val.t.is_mpz()) {
+				c.add_function_var(var);
+			}
 			c.insn_store(var, val);
 		} else {
 			auto var = c.create_and_add_var(name, Type::null());
