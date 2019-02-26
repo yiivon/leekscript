@@ -121,16 +121,8 @@ Compiler::value Block::compile(Compiler& c) const {
 				});
 				c.leave_block();
 				return ret;
-			} else if (type == Type::tmp_mpz() && !temporary_mpz) {
-				auto v = c.insn_clone_mpz(val);
-				// c.insn_call({}, {v}, +[](__mpz_struct v) {
-				// 	std::cout << "ret alloc = " << v._mp_alloc << std::endl;
-				// 	std::cout << "ret size = " << v._mp_size << std::endl;
-				// 	std::cout << "ret d = " << v._mp_d << std::endl;
-				// 	std::cout << "mpz = ";
-				// 	Compiler::print_mpz(v);
-				// 	std::cout << std::endl;
-				// });
+			} else if (type.is_mpz()) {
+				auto v = temporary_mpz ? val : c.insn_clone_mpz(val);
 				c.leave_block();
 				return v;
 			} else {
