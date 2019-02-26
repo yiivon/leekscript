@@ -571,9 +571,7 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 			mpz_get_str(buff, 10, &v);
 			return new LSString(buff);
 		});
-		if (args[0].t.temporary) {
-			c.insn_delete_mpz(args[0]);
-		}
+		c.insn_delete_temporary(args[0]);
 		return s;
 	}
 	if (args[0].t == Type::real()) {
