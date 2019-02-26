@@ -95,6 +95,9 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 			}
 		}
 	}
+	if (is_void) {
+		type = {};
+	}
 }
 
 bool jit_not(LSValue* x) {
@@ -129,7 +132,11 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto x = ((LeftValue*) expression)->compile_l(c);
 				auto one = c.new_integer(1);
 				c.insn_call({}, {x, x, one}, &mpz_add_ui);
-				return c.insn_load(x);
+				if (is_void) {
+					return {};
+				} else {
+					return c.insn_load(x);
+				}
 			} else if (expression->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);
 				auto x = c.insn_load(x_addr);

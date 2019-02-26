@@ -105,6 +105,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	// No operator : just analyse v1 and return
 	if (op == nullptr) {
+		v1->is_void = is_void;
 		v1->analyse(analyser);
 		type = v1->type;
 		return;
