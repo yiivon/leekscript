@@ -43,6 +43,9 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser) {
 		type.temporary = true;
 	}
 	this->return_value = return_value;
+	if (is_void) {
+		type = {};
+	}
 }
 
 Compiler::value PostfixExpression::compile(Compiler& c) const {
@@ -58,7 +61,7 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto r = c.insn_clone_mpz(c.insn_load(x));
 				auto one = c.new_integer(1);
 				c.insn_call({}, {x, x, one}, &mpz_add_ui);
-				return r;
+				return is_void ? Compiler::value() : r;
 			} else if (!expression->type.is_polymorphic()) {
 				auto x_addr = expression->compile_l(c);
 				auto x = c.insn_load(x_addr);
@@ -67,9 +70,15 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				return x;
 			} else {
 				auto e = expression->compile_l(c);
-				return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
-					return (*x)->ls_inc();
-				});
+				if (is_void) {
+					return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
+						return (*x)->ls_preinc();
+					});
+				} else {
+					return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
+						return (*x)->ls_inc();
+					});
+				}
 			}
 			break;
 		}
@@ -88,9 +97,15 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				return x;
 			} else {
 				auto e = expression->compile_l(c);
-				return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
-					return (*x)->ls_dec();
-				});
+				if (is_void) {
+					return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
+						return (*x)->ls_predec();
+					});
+				} else {
+					return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
+						return (*x)->ls_dec();
+					});
+				}
 			}
 			break;
 		}
