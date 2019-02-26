@@ -86,6 +86,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Increment
 	analyser->enter_block();
 	for (Instruction* ins : increments) {
+		ins->is_void = true;
 		ins->analyse(analyser, {});
 		if (ins->may_return) {
 			returning = ins->returning;
