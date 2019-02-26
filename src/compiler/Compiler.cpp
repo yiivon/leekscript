@@ -91,9 +91,12 @@ Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
 }
 
 Compiler::value Compiler::new_mpz(long value) const {
-	mpz_t mpz;
-	mpz_init_set_ui(mpz, value);
-	return new_mpz_init(mpz);
+	return insn_call(Type::mpz(), { new_long(value) }, +[](long v) {
+		VM::current()->mpz_created++;
+		mpz_t mpz;
+		mpz_init_set_ui(mpz, v);
+		return *mpz;
+	});
 }
 
 Compiler::value Compiler::new_mpz_init(const mpz_t mpz) const {
@@ -101,7 +104,13 @@ Compiler::value Compiler::new_mpz_init(const mpz_t mpz) const {
 	unsigned long p1 = (((unsigned long) mpz->_mp_d >> 32) << 32) + (((unsigned long) mpz->_mp_d << 32) >> 32);
 	unsigned long p2 = (((unsigned long) mpz->_mp_size) << 32) + (unsigned long) mpz->_mp_alloc;
 	auto v = llvm::ConstantInt::get(getContext(), llvm::APInt(128, {p2, p1}));
-	return { v, Type::mpz() };
+
+	return insn_call(Type::tmp_mpz(), {{ v, Type::mpz() }}, +[](__mpz_struct v) {
+		VM::current()->mpz_created++;
+		mpz_t mpz;
+		mpz_init_set(mpz, &v);
+		return *mpz;
+	});
 }
 
 Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {

@@ -82,7 +82,7 @@ void Number::analyse(SemanticAnalyser*) {
 			long_value = mpz_get_si(mpz_value);
 			double_value = long_value;
 		} else {
-			type = Type::mpz();
+			type = Type::tmp_mpz();
 		}
 	}
 	if (pointer) {
