@@ -1,9 +1,9 @@
-#define NUMBER_TYPE double
-
-#ifndef LSNUMBER_H_
-#define LSNUMBER_H_
+#ifndef LSMPZ_H_
+#define LSMPZ_H_
 
 #include <iostream>
+#include <gmp.h>
+#include <gmpxx.h>
 #include "../LSValue.hpp"
 #include "LSClosure.hpp"
 
@@ -11,24 +11,20 @@ namespace ls {
 
 class LSClass;
 
-class LSNumber : public LSValue {
+class LSMpz : public LSValue {
 public:
 
-	NUMBER_TYPE value;
+	__mpz_struct value;
 
 	static LSClass* clazz;
-	static LSNumber* get(NUMBER_TYPE);
-	static std::string print(double);
+	static LSMpz* get(__mpz_struct);
+	static LSMpz* get(long);
 
-	LSNumber(NUMBER_TYPE value);
+	LSMpz();
+	LSMpz(__mpz_struct value);
+	LSMpz(long value);
 
-	virtual ~LSNumber();
-
-	/*
-	 * LSNumber
-	 */
-	template <class F>
-	LSValue* ls_fold(F function, LSValue* v0);
+	virtual ~LSMpz();
 
 	/*
 	 * LSValue
@@ -72,11 +68,8 @@ public:
 
 	std::ostream& dump(std::ostream& os, int level) const override;
 	std::string json() const override;
-	std::string toString() const;
 
 	LSValue* getClass() const override;
-
-	bool isInteger() const;
 };
 
 }

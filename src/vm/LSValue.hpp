@@ -41,6 +41,7 @@ public:
 	static LSValueType CLOSURE;
 	static LSValueType OBJECT;
 	static LSValueType CLASS;
+	static LSValueType MPZ;
 	static LSClass* ValueClass;
 
 	static int obj_count;
