@@ -96,22 +96,11 @@ Compiler::value Compiler::new_mpz(long value) const {
 }
 
 Compiler::value Compiler::new_mpz_init(const mpz_t mpz) const {
-	// std::cout << "mpz alloc = " << mpz->_mp_alloc << std::endl;
-	// std::cout << "mpz size = " << mpz->_mp_size << std::endl;
-	// std::cout << "mpz d = " << mpz->_mp_d << std::endl;
+	// Create a 128 bit constant from the mpz struct
 	unsigned long p1 = (((unsigned long) mpz->_mp_d >> 32) << 32) + (((unsigned long) mpz->_mp_d << 32) >> 32);
 	unsigned long p2 = (((unsigned long) mpz->_mp_size) << 32) + (unsigned long) mpz->_mp_alloc;
-	//std::cout << "p1 = " << std::bitset<64>(p1) << std::endl;
-	//std::cout << "p2 = " << std::bitset<64>(p2) << std::endl;
 	auto v = llvm::ConstantInt::get(getContext(), llvm::APInt(128, {p2, p1}));
-	Compiler::value vv {v, Type::mpz()};
-	// insn_call({}, {vv}, +[](__mpz_struct mpz) {
-	// 	std::cout << "mpz alloc = " << mpz._mp_alloc << std::endl;
-	// 	std::cout << "mpz size = " << mpz._mp_size << std::endl;
-	// 	std::cout << "mpz d = " << mpz._mp_d << std::endl;
-	// });
-	return vv;
-	// return {builder.CreateIntCast(v, Type::LLVM_MPZ_TYPE, false), Type::mpz()};
+	return { v, Type::mpz() };
 }
 
 Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {
