@@ -1102,9 +1102,10 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 
 Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 	assert(mpz.t.llvm_type(*this) == mpz.v->getType());
-	return insn_call(Type::mpz(), {mpz}, +[](__mpz_struct x) {
+	return insn_call(Type::tmp_mpz(), {mpz}, +[](__mpz_struct x) {
 		mpz_t new_mpz;
 		mpz_init_set(new_mpz, &x);
+		VM::current()->mpz_created++;
 		return *new_mpz;
 	});
 	// insn_call({}, {v}, +[](__mpz_struct mpz) {
