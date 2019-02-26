@@ -212,7 +212,7 @@ bool Type::can_be_container() const {
 }
 
 bool Type::operator == (const Type& type) const {
-	return _types.size() == type._types.size() && std::equal(_types.begin(), _types.end(), type._types.begin(), [&](std::shared_ptr<const Base_type> t1, std::shared_ptr<const Base_type> t2) {
+	return _types.size() == type._types.size() && temporary == type.temporary && std::equal(_types.begin(), _types.end(), type._types.begin(), [&](std::shared_ptr<const Base_type> t1, std::shared_ptr<const Base_type> t2) {
 		return t1->operator == (t2.get());
 	});
 }

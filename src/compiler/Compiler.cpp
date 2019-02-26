@@ -943,7 +943,7 @@ void Compiler::insn_store_member(Compiler::value x, int pos, Compiler::value y) 
 	assert(y.t.llvm_type(*this) == y.v->getType());
 	assert(x.t.is_pointer());
 	assert(x.t.pointed().is_struct());
-	assert(x.t.pointed().member(pos) == y.t);
+	assert(x.t.pointed().member(pos) == y.t.not_temporary());
 	auto s = builder.CreateStructGEP(x.t.pointed().llvm_type(*this), x.v, pos);
 	builder.CreateStore(y.v, s);
 }
