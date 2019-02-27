@@ -319,6 +319,7 @@ Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 }
 
 Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
+	// std::cout << "insn_eq " << a.t << " == " << b.t << std::endl;
 	// assert(a.t.llvm_type(*this) == a.v->getType());
 	// assert(b.t.llvm_type(*this) == b.v->getType());
 	auto a_type = a.t.fold();
@@ -372,6 +373,7 @@ Compiler::value Compiler::insn_ne(Compiler::value a, Compiler::value b) const {
 }
 
 Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
+	// std::cout << "insn_lt " << a.t << " < " << b.t << std::endl;
 	assert(a.t.llvm_type(*this) == a.v->getType());
 	assert(b.t.llvm_type(*this) == b.v->getType());
 	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
@@ -2054,6 +2056,7 @@ int Compiler::get_current_function_blocks() const {
 }
 void Compiler::delete_function_variables() const {
 	for (const auto& v : function_variables.back()) {
+		// std::cout << "delete function variable " << v.t << std::endl;
 		insn_delete(insn_load(v));
 	}
 }
