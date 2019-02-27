@@ -606,14 +606,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	// Compile body
 	auto res = version->body->compile(c);
-	if (version->body->type.is_void()) {
-		c.insn_return_void();
-	} else {
-		if (version->type.return_type().is_any()) {
-			res = c.insn_convert(res, version->type.return_type());
-		}
-		c.insn_return(res);
-	}
+	compile_return(c, res);
 
 	// Catch block
 	if (version->landing_pad != nullptr) {
