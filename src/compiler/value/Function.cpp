@@ -653,6 +653,29 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;
 }
 
+void Function::compile_return(const Compiler& c, Compiler::value v) const {
+	c.assert_value_ok(v);
+	// Delete temporary mpz arguments
+	for (size_t i = 0; i < current_version->type.arguments().size(); ++i) {
+		const auto& name = arguments.at(i)->content;
+		const auto& arg = ((Compiler&) c).arguments.top().at(name);
+		if (current_version->type.argument(i) == Type::tmp_mpz()) {
+			c.insn_delete(c.insn_load(arg));
+		}
+	}
+	// Return the value
+	if (v.t.is_void()) {
+		c.insn_return_void();
+	} else {
+		auto return_type = c.fun->getReturnType().fold();
+		if (return_type.is_any()) {
+			v = c.insn_convert(v, return_type);
+		}
+		c.assert_value_ok(v);
+		c.insn_return(v);
+	}
+}
+
 Value* Function::clone() const {
 	auto f = new Function();
 	f->lambda = lambda;

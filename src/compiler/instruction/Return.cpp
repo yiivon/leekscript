@@ -34,14 +34,13 @@ Location Return::location() const {
 
 Compiler::value Return::compile(Compiler& c) const {
 	if (expression != nullptr) {
-		auto return_type = c.fun->getReturnType().fold();
-		auto v = c.insn_convert(expression->compile(c), return_type);
-		c.assert_value_ok(v);
-		auto r = c.insn_move(v);
+		auto r = expression->compile(c);
+		r = c.insn_move(r);
 		c.delete_function_variables();
-		c.insn_return(r);
+		c.fun->compile_return(c, r);
 	} else {
-		c.insn_return_void();
+		c.delete_function_variables();
+		c.fun->compile_return(c, {});
 	}
 	c.insert_new_generation_block();
 	return {};
