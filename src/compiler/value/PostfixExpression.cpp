@@ -58,10 +58,15 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 
 			if (expression->type == Type::mpz()) {
 				auto x = expression->compile_l(c);
-				auto r = c.insn_clone_mpz(c.insn_load(x));
 				auto one = c.new_integer(1);
-				c.insn_call({}, {x, x, one}, &mpz_add_ui);
-				return is_void ? Compiler::value() : r;
+				if (is_void) {
+					c.insn_call({}, {x, x, one}, &mpz_add_ui);
+					return {};
+				} else {
+					auto r = c.insn_clone_mpz(c.insn_load(x));
+					c.insn_call({}, {x, x, one}, &mpz_add_ui);
+					return r;
+				}
 			} else if (!expression->type.is_polymorphic()) {
 				auto x_addr = expression->compile_l(c);
 				auto x = c.insn_load(x_addr);
