@@ -332,15 +332,18 @@ Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 		});
 	}
 	if (a_type.is_mpz() and b_type.is_integer()) {
-		// TODO cleaning
-		return insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, int i) {
+		auto r = insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, int i) {
 			return _mpz_cmp_si(&x, i) == 0;
 		});
+		insn_delete_temporary(a);
+		return r;
 	} else if (a_type.is_mpz() and b_type.is_mpz()) {
-		// TODO cleaning
-		return insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, __mpz_struct y) {
+		auto r = insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, __mpz_struct y) {
 			return mpz_cmp(&x, &y) == 0;
 		});
+		insn_delete_temporary(a);
+		insn_delete_temporary(b);
+		return r;
 	} else if (a_type.is_real() or b_type.is_real()) {
 		return {builder.CreateFCmpOEQ(to_real(a).v, to_real(b).v), Type::boolean()};
 	} else if (a_type.is_long() or b_type.is_long()) {
@@ -381,10 +384,11 @@ Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	}
 	Compiler::value r;
 	if (a.t.is_mpz() and b.t.is_integer()) {
-		// TODO cleaning
-		return insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, int i) {
+		auto r = insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, int i) {
 			return _mpz_cmp_si(&x, i) < 0;
 		});
+		insn_delete_temporary(a);
+		return r;
 	} else if (a.t.is_mpz() and b.t.is_mpz()) {
 		auto res = insn_call(Type::integer(), {a, b}, +[](__mpz_struct a, __mpz_struct b) {
 			return mpz_cmp(&a, &b);
@@ -429,11 +433,13 @@ Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 		auto res = insn_call(Type::integer(), {a, b}, +[](__mpz_struct a, int b) {
 			return _mpz_cmp_si(&a, b);
 		});
+		insn_delete_temporary(a);
 		return insn_gt(res, new_integer(0));
 	} else if (a.t.is_integer() and b.t.is_mpz()) {
 		auto res = insn_call(Type::integer(), {a, b}, +[](int a, __mpz_struct b) {
 			return _mpz_cmp_si(&b, a);
 		});
+		insn_delete_temporary(b);
 		return insn_lt(res, new_integer(0));
 	} else if (a.t.is_real() || b.t.is_real()) {
 		r = {builder.CreateFCmpOGT(to_real(a).v, to_real(b).v), Type::boolean()};

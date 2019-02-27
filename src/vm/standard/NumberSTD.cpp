@@ -5,6 +5,7 @@
 #include "../value/LSBoolean.hpp"
 #include "../../../lib/utf8.h"
 #include "../../compiler/Compiler.hpp"
+#include "../VM.hpp"
 
 namespace ls {
 
@@ -326,46 +327,28 @@ LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
 }
 
 Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto r = [&]() {
-	// 	if (args[0].t.temporary) return args[0];
-	// 	if (args[1].t.temporary) return args[1];
-	// 	return c.new_mpz();
-	// }();
-	// auto a = args[0];
-	// auto b = args[1];
-	// c.insn_call({}, {a, b}, +[](mpz_t a, mpz_t b) {
-	// 	std::cout << "a = " << (void*) &a << std::endl;
-	// 	Compiler::print_mpz(*a);
-	// });
-	// c.insn_call({}, {r, a, b}, &mpz_add, "mpz_add");
-	// if (args[1].t.temporary && args[1] != r) {
-	// 	c.insn_delete_mpz(args[1]);
-	// }
-	// return r;
-	return c.insn_call(Type::mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_add(r, &a, &b);
+		VM::current()->mpz_created++;
 		return *r;
 	});
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
+	return r;
 }
 
 Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	// auto r = [&]() {
-	// 	if (args[0].t.temporary) return args[0];
-	// 	return c.new_mpz();
-	// }();
-	// auto r_addr = c.insn_address_of(r);
-	// auto a = c.insn_address_of(args[0]);
-	// auto b = args[1];
-	// c.insn_call({}, {r_addr, a, b}, &mpz_add_ui, "mpz_add_ui");
-	// return r;
-	return c.insn_call(Type::mpz(), {args[0], args[1]}, +[](__mpz_struct a, int b) {
+	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, int b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_add_ui(r, &a, b);
+		VM::current()->mpz_created++;
 		return *r;
 	});
+	c.insn_delete_temporary(args[0]);
+	return r;
 }
 
 Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -389,52 +372,58 @@ Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto r = [&]() {
-	// 	if (args[0].t.temporary) return args[0];
-	// 	if (args[1].t.temporary) return args[1];
-	// 	return c.new_mpz();
-	// }();
-	// auto r_addr = c.insn_address_of(r);
-	// auto a = c.insn_address_of(args[0]);
-	// auto b = c.insn_address_of(args[1]);
-	// c.insn_call({}, {r_addr, a, b}, &mpz_sub, "mpz_sub");
-	// if (args[1].t.temporary && args[1] != r) {
-	// 	c.insn_delete_mpz(args[1]);
-	// }
-	// return r;
-	return c.insn_call(Type::mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_sub(r, &a, &b);
+		VM::current()->mpz_created++;
 		return *r;
 	});
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
+	return r;
 }
 
 Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
 	auto a = args[0];
 	auto b = args[1];
-	auto r = c.create_and_add_var("r", Type::mpz());
+
+	Compiler::label label_then = c.insn_init_label("then");
+	Compiler::label label_else = c.insn_init_label("else");
+	Compiler::label label_end = c.insn_init_label("end");
+
 	auto cond = c.insn_lt(b, c.new_integer(0));
-	c.insn_if(cond, [&]() {
-		auto neg_b = c.insn_neg(b);
-		c.insn_store(r, c.insn_call(Type::mpz(), {a, neg_b}, +[](__mpz_struct a, int b) {
-			mpz_t r;
-			mpz_init(r);
-			mpz_add_ui(r, &a, (unsigned long) b);
-			return *r;
-		}));
-	}, [&]() {
-		c.insn_store(r, c.insn_call(Type::mpz(), {a, b}, +[](__mpz_struct a, int b) {
-			mpz_t r;
-			mpz_init(r);
-			mpz_sub_ui(r, &a, (unsigned long) b);
-			return *r;
-		}));
+	c.insn_if_new(cond, &label_then, &label_else);
+
+	c.insn_label(&label_then);
+	auto neg_b = c.insn_neg(b);
+	auto v1 = c.insn_call(Type::tmp_mpz(), {a, neg_b}, +[](__mpz_struct a, int b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_add_ui(r, &a, (unsigned long) b);
+		VM::current()->mpz_created++;
+		return *r;
 	});
-	if (args[0].t.temporary) {
-		c.insn_delete_mpz(a);
-	}
-	return c.insn_load(r);
+	c.insn_branch(&label_end);
+	label_then.block = c.builder.GetInsertBlock();
+
+	c.insn_label(&label_else);
+	auto v2 = c.insn_call(Type::tmp_mpz(), {a, b}, +[](__mpz_struct a, int b) {
+		mpz_t r;
+		mpz_init(r);
+		mpz_sub_ui(r, &a, (unsigned long) b);
+		VM::current()->mpz_created++;
+		return *r;
+	});
+	c.insn_branch(&label_end);
+	label_else.block = c.builder.GetInsertBlock();
+	
+	c.insn_label(&label_end);
+	auto PN = c.builder.CreatePHI(Type::mpz().llvm_type(c), 2);
+	PN->addIncoming(v1.v, label_then.block);
+	PN->addIncoming(v2.v, label_else.block);
+	c.insn_delete_temporary(a);
+	return {PN, Type::tmp_mpz()};
 }
 
 Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -456,28 +445,27 @@ Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto r = c.new_mpz();
-	// auto r_addr = c.insn_address_of(r);
-	// auto b = c.insn_address_of(args[1]);
-	return c.insn_call(Type::mpz(), {args[0], args[1]}, +[](int a, __mpz_struct b) {
+	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](int a, __mpz_struct b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_mul_si(r, &b, a);
+		VM::current()->mpz_created++;
 		return *r;
 	});
-	// if (args[1].t.temporary) {
-	// 	c.insn_delete_mpz(args[1]);
-	// }
-	// return r;
+	c.insn_delete_temporary(args[1]);
+	return r;
 }
 
 Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::mpz(), {args[0], args[1]}, +[](__mpz_struct a, int b) {
+	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, int b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_mul_si(r, &a, b);
+		VM::current()->mpz_created++;
 		return *r;
 	});
+	c.insn_delete_temporary(args[0]);
+	return r;
 }
 
 Compiler::value NumberSTD::mul_int_string(Compiler& c, std::vector<Compiler::value> args) {
@@ -487,25 +475,18 @@ Compiler::value NumberSTD::mul_int_string(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto r = [&]() {
-	// 	if (args[0].t.temporary) return args[0];
-	// 	if (args[1].t.temporary) return args[1];
-	// 	return c.new_mpz();
-	// }();
-	// auto r_addr = c.insn_address_of(r);
-	// auto a = c.insn_address_of(args[0]);
-	// auto b = c.insn_address_of(args[1]);
-	// c.insn_call({}, {r_addr, a, b}, &mpz_mul, "mpz_mul");
-	// if (args[1].t.temporary && args[1] != r) {
-	// 	c.insn_delete_mpz(args[1]);
-	// }
-	// return r;
-	return c.insn_call(Type::mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_mul(r, &a, &b);
+		VM::current()->mpz_created++;
 		return *r;
 	});
+	c.insn_delete_temporary(args[0]);
+	if (args[0].v != args[1].v) {
+		c.insn_delete_temporary(args[1]);
+	}
+	return r;
 }
 
 Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -559,31 +540,16 @@ Compiler::value NumberSTD::int_div_eq_val_val(Compiler& c, std::vector<Compiler:
 }
 
 Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto r = [&]() {
-	// 	if (args[0].t.temporary) return args[0];
-	// 	if (args[1].t.temporary) return args[1];
-	// 	return c.new_mpz();
-	// }();
-	// auto r_addr = c.insn_address_of(r);
-	// auto a = c.insn_address_of(args[0]);
-	// auto b = c.insn_address_of(args[1]);
-	return c.insn_call(Type::mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
+	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_pow_ui(r, &a, mpz_get_ui(&b));
+		VM::current()->mpz_created++;
 		return *r;
 	});
-	// if (args[1].t.temporary && args[1] != r) {
-	// 	c.insn_delete_mpz(args[1]);
-	// }
-	// return r;
-}
-
-__mpz_struct pow_mpz_int_lambda(__mpz_struct a, int b) throw() {
-	mpz_t res;
-	mpz_init(res);
-	mpz_pow_ui(res, &a, b);
-	return *res;
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
+	return r;
 }
 
 Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
@@ -597,6 +563,7 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	c.insn_if_new(cond, &label_then, &label_else);
 
 	c.insn_label(&label_then);
+	c.insn_delete_temporary(args[0]);
 	c.insn_throw_object(vm::Exception::NUMBER_OVERFLOW);
 	c.insn_branch(&label_end);
 
@@ -608,8 +575,15 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	// Ops: size of the theorical result
 	c.inc_ops_jit(r_size);
 
-	// VM::inc_mpz_counter(c.F);
-	return c.insn_call(Type::tmp_mpz(), args, &pow_mpz_int_lambda);
+	auto r = c.insn_call(Type::tmp_mpz(), args, +[](__mpz_struct a, int b) {
+		mpz_t res;
+		mpz_init(res);
+		mpz_pow_ui(res, &a, b);
+		VM::current()->mpz_created++;
+		return *res;
+	});
+	c.insn_delete_temporary(args[0]);
+	return r;
 }
 
 Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
@@ -642,12 +616,16 @@ Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	// 	c.insn_delete_mpz(args[1]);
 	// }
 	// return r;
-	return c.insn_call(Type::mpz(), args, +[](__mpz_struct a, __mpz_struct b) {
+	auto r = c.insn_call(Type::tmp_mpz(), args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_mod(r, &a, &b);
+		VM::current()->mpz_created++;
 		return *r;
 	});
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
+	return r;
 }
 
 Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -949,19 +927,15 @@ double NumberSTD::sqrt_int(int x) {
 }
 
 Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto r = c.new_mpz();
-	// auto r_addr = c.insn_address_of(r);
-	// auto a_addr = c.insn_address_of(args[0]);
-	return c.insn_call(Type::mpz(), args, +[](__mpz_struct x) {
+	auto r = c.insn_call(Type::tmp_mpz(), args, +[](__mpz_struct x) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_sqrt(r, &x);
+		VM::current()->mpz_created++;
 		return *r;
 	});
-	// if (args[0].t.temporary) {
-	// 	c.insn_delete_mpz(args[0]);
-	// }
-	// return r;
+	c.insn_delete_temporary(args[0]);
+	return r;
 }
 
 Compiler::value NumberSTD::sqrt_real(Compiler& c, std::vector<Compiler::value> args) {
