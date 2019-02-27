@@ -328,7 +328,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (is_void) {
 				return {};
 			} else {
-				return y;
+				if (y.t.is_mpz()) {
+					return c.insn_clone_mpz(y);
+				} else {
+					return y;
+				}
 			}
 		}
 		case TokenType::PLUS_EQUAL: {
