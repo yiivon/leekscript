@@ -594,7 +594,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		} else {
 			if (offset + index < arguments.size()) {
 				const auto name = arguments.at(offset + index)->content;
-				const auto type = version->type.arguments().at(offset + index);
+				const auto type = version->type.arguments().at(offset + index).not_temporary();
 				arg.setName(name);
 				auto var = c.create_entry(name, type);
 				c.insn_store(var, {&arg, type});
