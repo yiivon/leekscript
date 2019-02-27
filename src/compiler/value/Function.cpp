@@ -588,7 +588,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	// Create arguments
 	unsigned index = 0;
 	int offset = captures.size() ? -1 : 0;
-	for (auto &arg : llvm_function->args()) {
+	for (auto& arg : llvm_function->args()) {
 		if (captures.size() && index == 0) {
 			arg.setName("__fun_ptr");
 		} else {
