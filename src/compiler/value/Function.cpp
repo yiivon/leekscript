@@ -618,6 +618,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	// Catch block
 	if (version->landing_pad != nullptr) {
 		c.builder.SetInsertPoint(version->catch_block);
+		// TODO : here, we delete all the function variables, even some variables that may already be destroyed
+		// TODO : To fix, create a landing pad for every call that can throw
 		c.delete_function_variables();
 		Compiler::value exception = {c.builder.CreateLoad(version->exception_slot), Type::long_()};
 		Compiler::value exception_line = {c.builder.CreateLoad(version->exception_line_slot), Type::long_()};
