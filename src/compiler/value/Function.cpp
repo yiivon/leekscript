@@ -190,7 +190,6 @@ void Function::analyse(SemanticAnalyser* analyser) {
 	}
 	analyzed = true;
 
-	// auto return_type = req_type.getReturnType();
 	analyse_body(analyser, type.arguments(), default_version);
 
 	// Re-analyse each version
