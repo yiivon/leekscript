@@ -179,8 +179,11 @@ void Test::Input::pass(std::string expected) {
 	std::cout <<  C_GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	test->success_count++;
-	if (result.objects_created != result.objects_deleted) {
-		oss << C_RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
+	if (result.objects_created != result.objects_deleted or result.mpz_objects_created != result.mpz_objects_deleted) {
+		if (result.objects_created != result.objects_deleted)
+			oss << C_RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
+		if (result.mpz_objects_created != result.mpz_objects_deleted)
+			oss << C_RED << " (" << (result.mpz_objects_created - result.mpz_objects_deleted) << " mpz leaked)" << END_COLOR;
 		failed_tests.push_back(oss.str());
 	}
 }
