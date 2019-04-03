@@ -316,11 +316,13 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 			return_type += t;
 		}
 	}
+	if (version->body->type.temporary) return_type.temporary = true;
 	for (const auto& t : version->body->return_type._types) {
 		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
 			return_type += t;
 		}
 	}
+	if (version->body->return_type.temporary) return_type.temporary = true;
 	// Default version of the function, the return type must be any
 	if (not return_type.is_void() and not is_main_function and version == default_version) {
 		return_type = Type::any();
