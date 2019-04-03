@@ -70,6 +70,7 @@ void Test::test_functions() {
 	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
 	code("(x -> y -> x + 1)(1)(2)").equals("2");
 	code("let f = x, y -> { x += '+' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A+', 'B.']");
+	code("let f = -> 12m f()").equals("12");
 
 	section("Function call without commas");
 	code("let f = x, y -> x + y f(12 7)").equals("19");
