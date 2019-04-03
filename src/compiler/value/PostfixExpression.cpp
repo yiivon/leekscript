@@ -90,10 +90,15 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 		case TokenType::MINUS_MINUS: {
 			if (expression->type == Type::mpz()) {
 				auto x = expression->compile_l(c);
-				auto r = c.insn_clone_mpz(c.insn_load(x));
 				auto one = c.new_integer(1);
-				c.insn_call({}, {x, x, one}, &mpz_sub_ui);
-				return r;
+				if (is_void) {
+					c.insn_call({}, {x, x, one}, &mpz_sub_ui);
+					return {};
+				} else {
+					auto r = c.insn_clone_mpz(c.insn_load(x));
+					c.insn_call({}, {x, x, one}, &mpz_sub_ui);
+					return r;
+				}
 			} else if (expression->type.is_primitive()) {
 				auto x_addr = expression->compile_l(c);
 				auto x = c.insn_load(x_addr);
