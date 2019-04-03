@@ -112,6 +112,7 @@ void Type::operator += (const Type type) {
 	for (const auto& t : type._types) {
 		operator += (t);
 	}
+	if (type.temporary) temporary = true;
 }
 void Type::operator += (std::shared_ptr<const Base_type> type) {
 	for (const auto& t : _types) {
