@@ -250,20 +250,22 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 					return key_int;
 				});
 			}
-			k = c.to_int(k);
+			auto int_key = c.to_int(k);
 
 			// Check index : k < 0 or k >= size
 			auto array_size = c.insn_array_size(compiled_array);
-			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
+			c.insn_if(c.insn_or(c.insn_lt(int_key, c.new_integer(0)), c.insn_ge(int_key, array_size)), [&]() {
 				c.insn_delete_temporary(compiled_array);
 				c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 			});
 
 			if (array->type.is_string()) {
-				auto e = c.insn_call(Type::string(), {compiled_array, k}, (void*) &LSString::codePointAt);
+				auto e = c.insn_call(Type::string(), {compiled_array, int_key}, (void*) &LSString::codePointAt);
+				c.insn_delete_temporary(k);
 				return e;
 			} else {
-				auto element_addr = c.insn_array_at(compiled_array, k);
+				auto element_addr = c.insn_array_at(compiled_array, int_key);
+				c.insn_delete_temporary(k);
 				auto e = c.insn_load(element_addr);
 				return c.clone(e);
 			}
