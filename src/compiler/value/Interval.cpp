@@ -38,15 +38,20 @@ void Interval::analyse(SemanticAnalyser* analyser) {
 }
 
 Compiler::value Interval::compile(Compiler& c) const {
-	auto a = c.to_int(start->compile(c));
-	auto b = c.to_int(end->compile(c));
-	return c.insn_call(Type::tmp_interval(), {a, b}, +[](int a, int b) {
+	auto a = start->compile(c);
+	auto b = end->compile(c);
+	auto int_a = c.to_int(a);
+	auto int_b = c.to_int(b);
+	auto interval = c.insn_call(Type::tmp_interval(), {int_a, int_b}, +[](int a, int b) {
 		// TODO a better constructor?
 		LSInterval* interval = new LSInterval();
 		interval->a = a;
 		interval->b = b;
 		return interval;
 	});
+	c.insn_delete_temporary(a);
+	c.insn_delete_temporary(b);
+	return interval;
 }
 
 Value* Interval::clone() const {
