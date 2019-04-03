@@ -352,11 +352,10 @@ Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto a_addr = c.insn_address_of(args[0]);
-	// auto b_addr = c.insn_address_of(args[1]);
 	c.insn_call({}, args, +[](mpz_t a, __mpz_struct b) {
 		mpz_add(a, a, &b);
 	});
+	c.insn_delete_temporary(args[1]);
 	return c.insn_clone_mpz(c.insn_load(args[0]));
 }
 
