@@ -364,6 +364,22 @@ void Test::test_arrays() {
 	code("var x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x").equals("[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
 	code("Array.sort([3, 2, 1])").equals("[1, 2, 3]");
 
+	section("Array.sort(<callback>)");
+	code("[5, 1, 3, 2, 4].sort((a, b) => a < b)").equals("[1, 2, 3, 4, 5]");
+	code("[5, 1, 3, 2, 4].sort((a, b) => a > b)").equals("[5, 4, 3, 2, 1]");
+	code("[5, 1, 3, 2, 4].sort(<)").equals("[1, 2, 3, 4, 5]");
+	code("[5, 1, 3, 2, 4].sort(>)").equals("[5, 4, 3, 2, 1]");
+	code("['d', 'a', 'c', 'e', 'b'].sort((a, b) => a < b)").equals("['a', 'b', 'c', 'd', 'e']");
+	code("['d', 'a', 'c', 'e', 'b'].sort((a, b) => a > b)").equals("['e', 'd', 'c', 'b', 'a']");
+	code("['bonjour', 'tout', 'le', 'monde', '!'].sort((a, b) => |a| < |b|)").equals("['!', 'le', 'tout', 'monde', 'bonjour']");
+	code("['bonjour', 'tout', 'le', 'monde', '!'].sort((a, b) => |a| > |b|)").equals("['bonjour', 'monde', 'tout', 'le', '!']");
+	code("Array.sort([5, 1, 3, 2, 4], (a, b) => a < b)").equals("[1, 2, 3, 4, 5]");
+	code("Array.sort([5, 1, 3, 2, 4], >)").equals("[5, 4, 3, 2, 1]");
+	code("let f = (x, y) => x < y [5, 1, 3, 2, 4].sort(f)").equals("[1, 2, 3, 4, 5]");
+	code("let f = (x, y) => x < y ['a', 'b', 'c', 'd', 'e'].sort(f)").equals("['a', 'b', 'c', 'd', 'e']");
+	code("[{a: 5, b: 7}, {a: 12, b: 1}, {a: 9, b: 4}].sort((x, y) -> x.a < y.a)").equals("[{a: 5, b: 7}, {a: 9, b: 4}, {a: 12, b: 1}]");
+	code("[{a: 5, b: 7}, {a: 12, b: 1}, {a: 9, b: 4}].sort((x, y) -> x.b < y.b)").equals("[{a: 12, b: 1}, {a: 9, b: 4}, {a: 5, b: 7}]");
+
 	section("Array.filter()");
 	code("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("[3, 10, 'yo']");
 	code("[3, 4, 5].filter(x -> x > 6)").equals("[]");
