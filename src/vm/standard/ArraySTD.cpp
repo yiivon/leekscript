@@ -103,10 +103,13 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::tmp_array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_unique, Method::NATIVE},
 	});
 
+	auto sT = Type::template_("T");
+	template_(sT).
 	method("sort", {
 		{Type::tmp_array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_sort, Method::NATIVE},
 		{Type::tmp_array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_sort, Method::NATIVE},
 		{Type::tmp_array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_sort, Method::NATIVE},
+		{Type::tmp_array(sT), {Type::array(sT), Type::fun(Type::boolean(), {sT, sT})}, (void*) &sort}
 	});
 
 	Type map2_fun_type = Type::fun(Type::any(), {Type::any(), Type::any()});
@@ -508,6 +511,24 @@ Compiler::value ArraySTD::last(Compiler& c, std::vector<Compiler::value> args) {
 	auto e = c.insn_move(c.insn_load(c.insn_array_at(array, k)));
 	c.insn_delete_temporary(array);
 	return e;
+}
+
+Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args) {
+	const auto& array = args[0];
+	const auto& fun = args[1];
+	auto f = [&]() {
+		if (args[0].t.element().fold().is_integer()) {
+			auto f = &LSArray<int>::ls_sort_fun<LSFunction*>;
+			return (void*) f;
+		} else if (args[0].t.element().fold().is_real()) {
+			auto f = &LSArray<double>::ls_sort_fun<LSFunction*>;
+			return (void*) f;
+		} else {
+			auto f = &LSArray<LSValue*>::ls_sort_fun<LSFunction*>;
+			return (void*) f;
+		}
+	}();
+	return c.insn_call(array.t, {array, fun}, f);
 }
 
 }

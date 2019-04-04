@@ -388,6 +388,15 @@ LSArray<T>* LSArray<T>::ls_sort() {
 
 template <class T>
 template <class F>
+LSArray<T>* LSArray<T>::ls_sort_fun(F function) {
+	std::sort(this->begin(), this->end(), [&](T a, T b) {
+		return ls::call<bool>(function, a, b);
+	});
+	return this;
+}
+
+template <class T>
+template <class F>
 void LSArray<T>::ls_iter(F function) {
 	for (auto v : *this) {
 		auto r = ls::call<LSValue*>(function, v);

@@ -48,6 +48,8 @@ public:
 	LSArray<T>* ls_unique();
 	LSArray<T>* ls_sort();
 	template <class F>
+	LSArray<T>* ls_sort_fun(F function);
+	template <class F>
 	void ls_iter(F fun);
 	bool ls_contains(T val);
 	LSArray<T>* ls_push(T val);
