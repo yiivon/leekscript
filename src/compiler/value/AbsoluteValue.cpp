@@ -42,7 +42,7 @@ Compiler::value AbsoluteValue::compile(Compiler& c) const {
 
 Value* AbsoluteValue::clone() const {
 	auto abs = new AbsoluteValue();
-	abs->expression = expression;
+	abs->expression = expression->clone();
 	abs->open_pipe = open_pipe;
 	abs->close_pipe = close_pipe;
 	return abs;
