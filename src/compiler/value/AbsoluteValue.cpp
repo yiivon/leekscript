@@ -14,7 +14,7 @@ AbsoluteValue::~AbsoluteValue() {
 
 void AbsoluteValue::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << "|";
-	expression->print(os, debug);
+	expression->print(os, 0, debug);
 	os << "|";
 	if (debug) {
 		os << " " << type;
