@@ -11,7 +11,8 @@ std::vector<std::string> Test::failed_tests;
 Test::Test() : vmv1(true) {
 	total = 0;
 	success_count = 0;
-	exeTime = 0;
+	compilation_time = 0;
+	execution_time = 0;
 	disabled = 0;
 	obj_deleted = 0;
 	obj_created = 0;
@@ -30,7 +31,6 @@ int main(int, char**) {
 int Test::all() {
 
 	clock_t begin = clock();
-	exeTime = 0;
 
 	test_types();
 	test_general();
@@ -61,7 +61,7 @@ int Test::all() {
 
 	std::ostringstream line1, line2, line3, line4;
 	line1 << "Total: " << total << ", success: " << success_count << ", errors: " << errors << ", disabled: " << disabled;
-	line2 << "Total time: " << elapsed_secs * 1000 << " ms";
+	line2 << "Total time: " << elapsed_secs * 1000 << " ms (" << compilation_time << " ms + " << execution_time << " ms) (compil + exe)";
 	line3 << "Objects destroyed: " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
 	line4 << "MPZ objects destroyed: " << mpz_obj_deleted << " / " << mpz_obj_created << " (" << mpz_leaks << " leaked)";
 	unsigned w = std::max(line1.str().size(), std::max(line2.str().size(), std::max(line3.str().size(), line4.str().size())));
@@ -152,6 +152,8 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 
 	compilation_time = round((float) result.compilation_time / 1000) / 1000;
 	execution_time = round((float) result.execution_time / 1000) / 1000;
+	test->compilation_time += compilation_time;
+	test->execution_time += execution_time;
 
 	if (display_errors) {
 		for (const auto& error : result.lexical_errors) {

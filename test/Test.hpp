@@ -27,7 +27,8 @@ private:
 	int total;
 	int success_count;
 	int disabled;
-	double exeTime;
+	double compilation_time;
+	double execution_time;
 	int obj_created;
 	int obj_deleted;
 	int mpz_obj_created;
