@@ -290,9 +290,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return callable_version->compile_call(c, args);
 	}
 
-	void* ls_func;
-	std::vector<Compiler::value> args;
-
 	switch (op->type) {
 		case TokenType::EQUAL: {
 			// array[] = 12, array push
@@ -434,13 +431,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			assert(false); // LCOV_EXCL_LINE
 		}
 	}
-	if (args.size() == 0) {
-		args.push_back(c.insn_to_any(v1->compile(c)));
-		args.push_back(c.insn_to_any(v2->compile(c)));
-		v1->compile_end(c);
-		v2->compile_end(c);
-	}
-	return c.insn_invoke(type, args, ls_func);
 }
 
 Value* Expression::clone() const {
