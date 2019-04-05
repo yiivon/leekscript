@@ -21,6 +21,8 @@ public:
 	int capture_index = 0;
 	VarScope scope;
 	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;
+	bool class_method = false;
+	LSFunction* ls_function = nullptr;
 
 	VariableValue(std::shared_ptr<Token> token);
 

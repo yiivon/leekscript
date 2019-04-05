@@ -15,6 +15,9 @@ VariableValue::VariableValue(std::shared_ptr<Token> token) : token(token) {
 	this->name = token->content;
 	this->var = nullptr;
 	constant = false;
+	if (ls_function != nullptr) {
+		delete ls_function;
+	}
 }
 
 bool VariableValue::isLeftValue() const {
@@ -178,6 +181,10 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 					if (m.first == name) {
 						type = m.second.at(0).type;
 						found = true;
+						for (const auto& i : m.second) {
+							versions.insert({i.type.arguments(), i.addr});
+						}
+						class_method = true;
 						break;
 					}
 				}
@@ -279,6 +286,12 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	if (static_access_function != nullptr) {
 		return static_access_function(c);
 	}
+	if (class_method) {
+		void* fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
+		auto function = new LSFunction(fun);
+		((VariableValue*) this)->ls_function = function;
+		return c.new_pointer(ls_function, type);
+	}
 
 	Compiler::value v;
 	if (scope == VarScope::CAPTURE) {
@@ -311,6 +324,9 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 }
 
 Compiler::value VariableValue::compile_version(Compiler& c, std::vector<Type> version) const {
+	if (class_method) {
+		return c.new_function(new LSFunction(versions.at(version)), Type::fun());
+	}
 	auto f = dynamic_cast<Function*>(var->value);
 	if (f) {
 		return f->compile_version(c, version);
