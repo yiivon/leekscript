@@ -20,6 +20,7 @@ public:
 	std::shared_ptr<SemanticVar> var;
 	int capture_index = 0;
 	VarScope scope;
+	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;
 
 	VariableValue(std::shared_ptr<Token> token);
 

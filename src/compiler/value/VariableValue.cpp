@@ -181,6 +181,14 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 						break;
 					}
 				}
+				for (const auto& c : cl->static_fields) {
+					if (c.first == name) {
+						type = c.second.type;
+						static_access_function = c.second.fun;
+						found = true;
+						break;
+					}
+				}
 			}
 			if (found) break;
 		}
@@ -267,6 +275,11 @@ Type VariableValue::version_type(std::vector<Type> version) const {
 Compiler::value VariableValue::compile(Compiler& c) const {
 	// std::cout << "Compile var " << name << " " << version << std::endl;
 	// std::cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << std::endl;
+
+	if (static_access_function != nullptr) {
+		return static_access_function(c);
+	}
+
 	Compiler::value v;
 	if (scope == VarScope::CAPTURE) {
 		v = c.insn_get_capture(capture_index, type);
