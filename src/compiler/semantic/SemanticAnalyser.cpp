@@ -125,7 +125,6 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::get_var(Token* v) {
 		}
 		f--;
 	}
-	add_error({SemanticError::Type::UNDEFINED_VARIABLE, v->location, v->location, {v->content}});
 	return nullptr;
 }
 

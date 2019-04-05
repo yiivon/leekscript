@@ -6,6 +6,8 @@
 #include "../semantic/Callable.hpp"
 #include "../../vm/value/LSString.hpp"
 #include "../../vm/value/LSSet.hpp"
+#include "../../vm/value/LSClass.hpp"
+#include "../../vm/Module.hpp"
 
 namespace ls {
 
@@ -120,6 +122,28 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 			}
 			return callable;
 		}
+	} else {
+		auto callable = new Callable(name);
+		for (const auto& clazz : analyser->vm->internal_vars) {
+			if (clazz.second->type().is_class()) {
+				const auto& cl = (LSClass*) clazz.second->lsvalue;
+				for (const auto& m : cl->methods) {
+					if (m.first == name) {
+						for (const auto& i : m.second) {
+							auto t = Type::fun(i.type.return_type(), i.type.arguments(), this);
+							if (i.native) {
+								callable->add_version({ name, t, i.addr, i.mutators, i.templates, nullptr });
+							} else {
+								callable->add_version({ name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) i.addr, i.mutators, i.templates, nullptr });
+							}
+						}
+					}
+				}
+			}
+		}
+		if (callable->versions.size()) {
+			return callable;
+		}
 	}
 	return nullptr;
 }
@@ -146,7 +170,24 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 			scope = VarScope::CAPTURE;
 		}
 	} else {
-		type = Type::any();
+		bool found = false;
+		for (const auto& clazz : analyser->vm->internal_vars) {
+			if (clazz.second->type().is_class()) {
+				const auto& cl = (LSClass*) clazz.second->lsvalue;
+				for (const auto& m : cl->methods) {
+					if (m.first == name) {
+						type = m.second.at(0).type;
+						found = true;
+						break;
+					}
+				}
+			}
+			if (found) break;
+		}
+		if (!found) {
+			type = Type::any();
+			analyser->add_error({SemanticError::Type::UNDEFINED_VARIABLE, token->location, token->location, {token->content}});
+		}
 	}
 	type.temporary = false;
 
