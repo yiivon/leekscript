@@ -157,6 +157,8 @@ void Test::test_numbers() {
 	code("e").almost(2.718281828459045091);
 	code("phi").almost(1.618033988749894903);
 	code("epsilon").almost(0.000000000000000222);
+	code("let pi = 3 pi").equals("3");
+	code("{ let pi = 3 } pi").almost(3.141592653589793116);
 
 	/*
 	 * Operators
