@@ -153,6 +153,10 @@ void Test::test_numbers() {
 	code("Number.e").almost(2.718281828459045091);
 	code("Number.phi").almost(1.618033988749894903);
 	code("Number.epsilon").almost(0.000000000000000222);
+	code("pi").almost(3.141592653589793116);
+	code("e").almost(2.718281828459045091);
+	code("phi").almost(1.618033988749894903);
+	code("epsilon").almost(0.000000000000000222);
 
 	/*
 	 * Operators
