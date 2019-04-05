@@ -157,6 +157,7 @@ void Test::test_strings() {
 	code("String.size('salut')").equals("5");
 	code("'a'.size == 'b'.size").equals("true");
 	code("[1, 'salut tout le monde'][1].size()").equals("19");
+	code("size('hello')").equals("5");
 
 	section("String.toUpper()");
 	code("String.toUpper('')").equals("''");

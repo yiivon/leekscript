@@ -154,6 +154,7 @@ void Test::test_set() {
 	code("Set.size(<1, 2, 3>)").equals("3");
 	code("Set.size(<1.6, 2.1, 3.75, 12.12>)").equals("4");
 	code("Set.size(<'éééé', null>)").equals("2");
+	code("size(<1, 2, 3>)").equals("3");
 
 	section("Set clone()");
 	code("let s = <1, 2, 3> [s]").equals("[<1, 2, 3>]");

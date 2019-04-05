@@ -117,6 +117,7 @@ void Test::test_map() {
 	section("Map.size()");
 	code("let x = [1 : 1 1 : 2 1 : 3] x.size()").equals("1");
 	code("let x = [1 : 1 1 : 2 2 : '3'] x.size()").equals("2");
+	code("size([1 : 1 2 : '3'])").equals("2");
 
 	section("Map.insert()");
 	code("var x = [1 : 1] x.insert(2, 2)").equals("true");

@@ -549,6 +549,7 @@ void Test::test_numbers() {
 	code("var a = 5 Number.floor(a)").equals("5");
 	code("var a = 5.4 Number.floor(a)").equals("5");
 	code("Number.floor(['a', -14.7][1])").equals("-15");
+	code("floor(5.5)").equals("5");
 
 	section("Number.round()");
 	code("Number.round(5.7)").equals("6");
@@ -600,6 +601,7 @@ void Test::test_numbers() {
 	code("π.cos()").equals("-1");
 	code("['', π][1].cos()").equals("-1");
 	code("Number.cos(['', π][1])").equals("-1");
+	code("cos(π)").equals("-1");
 
 	section("Number.acos()");
 	code("Number.acos(1)").equals("0");
@@ -614,6 +616,7 @@ void Test::test_numbers() {
 	code("Number.sin(π / 2)").equals("1");
 	code("Number.sin(- π / 2)").equals("-1");
 	code("Number.sin(['', π / 2][1])").equals("1");
+	code("sin(π / 2)").equals("1");
 
 	section("Number.tan()");
 	code("Number.tan(0)").equals("0");
@@ -707,6 +710,7 @@ void Test::test_numbers() {
 	code("Number.sqrt(12m + 5m)").equals("4");
 	code("var n = 12; n.sqrt()").equals("3.4641016151");
 	code("let f = Number.sqrt f(5)").equals("2.2360679775");
+	code("sqrt(16)").equals("4");
 
 	section("Number.toDegrees");
 	code("π.toDegrees()").equals("180");
