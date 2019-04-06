@@ -88,7 +88,7 @@ void Test::test_loops() {
 	code("var i = 5 while (i-- > 0) { System.print(i) }").output("4\n3\n2\n1\n0\n");
 	code("while (true) { return 12 }").equals("12");
 	code("var n = 5 var a = [] while n-- { a += 1 }").equals("(void)");
-	DISABLED_code("var mp = 10, grow = [100] while mp-- { grow = [] }").equals("(void)");
+	code("var mp = 10, grow = [100] while mp-- { grow = [1] }").equals("(void)");
 
 	/*
 	 * For loops
