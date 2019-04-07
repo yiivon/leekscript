@@ -42,7 +42,7 @@ public:
 	virtual bool will_store(SemanticAnalyser*, const Type&);
 	virtual bool elements_will_store(SemanticAnalyser*, const Type&, int level);
 	virtual bool must_be_any(SemanticAnalyser*);
-	virtual void must_return(SemanticAnalyser*, const Type&);
+	virtual void must_return_any(SemanticAnalyser*);
 	virtual void will_be_in_array(SemanticAnalyser*);
 	virtual void set_version(const std::vector<Type>&, int level);
 	virtual Type version_type(std::vector<Type>) const;

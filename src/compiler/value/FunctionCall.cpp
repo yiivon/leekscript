@@ -126,7 +126,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			if (callable_version->unknown) {
 				for (const auto& arg : arguments) {
 					if (arg->type.is_function()) {
-						arg->must_return(analyser, Type::any());
+						arg->must_return_any(analyser);
 					}
 				}
 			}

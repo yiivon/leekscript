@@ -92,8 +92,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 				if (types.size() > 0) {
 					ex->will_take(analyser, types, 1);
 				}
-				// e.g. Should compile a generic version
-				ex->must_return(analyser, Type::any());
+				ex->must_return_any(analyser);
 			}
 			element_type += ex->type;
 		}

@@ -414,11 +414,8 @@ Type Function::version_type(std::vector<Type> version) const {
 	return type;
 }
 
-void Function::must_return(SemanticAnalyser*, const Type& type) {
-	// std::cout << "Function::must_return " << type << std::endl;
-	if (type == Type::any()) {
-		generate_default_version = true;
-	}
+void Function::must_return_any(SemanticAnalyser*) {
+	generate_default_version = true;
 	return_type = type;
 }
 

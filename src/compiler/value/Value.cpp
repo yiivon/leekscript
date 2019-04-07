@@ -41,7 +41,7 @@ bool Value::must_be_any(SemanticAnalyser*) {
 	return true;
 }
 
-void Value::must_return(SemanticAnalyser*, const Type&) {}
+void Value::must_return_any(SemanticAnalyser*) {}
 
 void Value::will_be_in_array(SemanticAnalyser*) {}
 

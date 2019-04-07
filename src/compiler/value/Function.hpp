@@ -71,7 +71,7 @@ public:
 	void analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version);
 	void update_function_args(SemanticAnalyser*);
 	virtual Type version_type(std::vector<Type>) const override;
-	virtual void must_return(SemanticAnalyser*, const Type&) override;
+	virtual void must_return_any(SemanticAnalyser*) override;
 	virtual Callable* get_callable(SemanticAnalyser*) const override;
 	virtual void analyse(SemanticAnalyser*) override;
 	void create_version(SemanticAnalyser* analyser, std::vector<Type> args);
