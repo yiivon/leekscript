@@ -110,7 +110,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				if (argument_type.is_function()) {
 					arguments.at(a)->will_take(analyser, argument_type.arguments(), 1);
 					arguments.at(a)->set_version(argument_type.arguments(), 1);
-					arguments.at(a)->must_return(analyser, argument_type.return_type());
 				}
 			}
 			if (callable_version->value) {
@@ -195,7 +194,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			if (argument_type.is_function()) {
 				arguments.at(a - offset)->will_take(analyser, argument_type.arguments(), 1);
 				arguments.at(a - offset)->set_version(argument_type.arguments(), 1);
-				arguments.at(a - offset)->must_return(analyser, argument_type.return_type());
 			}
 			arg_types.push_back(arguments.at(a - offset)->type);
 		} else if (function_object && function_object->defaultValues.at(a - offset) != nullptr) {

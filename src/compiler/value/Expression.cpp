@@ -188,7 +188,6 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 			if (v2_type.is_function()) {
 				v2->will_take(analyser, callable_version->type.argument(1).arguments(), 1);
 				v2->set_version(callable_version->type.argument(1).arguments(), 1);
-				v2->must_return(analyser, callable_version->type.argument(1).return_type());
 			}
 			// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
 			return;
