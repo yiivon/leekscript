@@ -110,7 +110,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 
 void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types, int level) {
 
-//	cout << "Array::elements_will_take " << type << " at " << pos << endl;
+	// std::cout << "Array::elements_will_take " << arg_types << " at " << level << std::endl;
 
 	for (size_t i = 0; i < expressions.size(); ++i) {
 		Array* arr = dynamic_cast<Array*>(expressions[i]);
@@ -131,7 +131,7 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 		}
 	}
 	this->type = Type::array(element_type);
-	// cout << "Array::elements_will_take type after " << this->type << endl;
+	// std::cout << "Array::elements_will_take type after " << this->type << std::endl;
 }
 
 bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
