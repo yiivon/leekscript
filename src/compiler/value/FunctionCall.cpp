@@ -93,7 +93,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 	// Retrieve the callable version
 	callable = function->get_callable(analyser);
-	if (/*callable == nullptr or */not function->type.can_be_callable()) {
+	if (not function->type.can_be_callable()) {
 		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 	if (callable) {
@@ -132,17 +132,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 				}
 			}
 			return;
-		} else {
-			// std::cout << "No version found!" << std::endl;
-			// analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
-			// 	function->to_string(),
-			// 	std::to_string(function->type.arguments().size()),
-			// 	std::to_string(arguments.size())
-			// }});
-			// return;
 		}
-	} else {
-		// std::cout << "No callable! " << function << std::endl;
 	}
 
 	// Find the function object
