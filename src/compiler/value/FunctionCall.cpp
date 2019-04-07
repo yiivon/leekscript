@@ -190,11 +190,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			// OK it's the object for method call
 		} else if (a < arguments_count) {
 			// OK, the argument is present in the call
-			arguments.at(a - offset)->type.reference = argument_type.reference;
-			if (argument_type.is_function()) {
-				arguments.at(a - offset)->will_take(analyser, argument_type.arguments(), 1);
-				arguments.at(a - offset)->set_version(argument_type.arguments(), 1);
-			}
 			arg_types.push_back(arguments.at(a - offset)->type);
 		} else if (function_object && function_object->defaultValues.at(a - offset) != nullptr) {
 			// OK, there's no argument in the call but a default value is set.
@@ -206,7 +201,6 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		}
 		a++;
 	}
-
 	if (function->type.is_function() and !arguments_valid) {
 		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
 			function->to_string(),
