@@ -28,9 +28,9 @@ void Test::test_loops() {
 	code("if (false) 12").equals("null");
 	code("if true then 12 end").equals("12");
 	code("if false then 12 end").equals("null");
-	DISABLED_code("if true { 5 } else { return 2 }").equals("5");
+	code("if true { 5 } else { return 2 }").equals("5");
 	code("if true { return 5 } else { 2 }").equals("5");
-	DISABLED_code("if false { 5 } else { return 2 }").equals("2");
+	code("if false { 5 } else { return 2 }").equals("2");
 	code("if false { return 5 } else { 2 }").equals("2");
 	code("let a = 5m if true { a } else { 2m }").equals("5");
 	code("let a = 5m if true { a } else { a }").equals("5");
