@@ -17,6 +17,8 @@ LSNumber* LSNumber::get(NUMBER_TYPE i) {
 }
 
 std::string LSNumber::print(double d) {
+	// We don't want to print "-0" numbers
+	if (d == -0.0) d = 0.0;
 	std::string s;
 	size_t len = snprintf(0, 0, "%.10f", d);
 	size_t oldsize = s.size();
