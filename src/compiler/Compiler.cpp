@@ -1846,6 +1846,12 @@ void Compiler::insn_return_void() const {
 }
 
 Compiler::value Compiler::insn_phi(Type type, Compiler::value v1, Compiler::label l1, Compiler::value v2, Compiler::label l2) const {
+	if (!v2.v) {
+		return v1;
+	}
+	if (!v1.v) {
+		return v2;
+	}
 	const auto folded_type = type.fold();
 	const auto llvm_type = type.llvm_type(*this);
 	auto phi = Compiler::builder.CreatePHI(llvm_type, 2, "phi");
