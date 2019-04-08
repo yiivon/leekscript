@@ -43,8 +43,8 @@ void Test::test_functions() {
 	code("( -> [])()").equals("[]");
 	code("( -> 12)()").equals("12");
 	code("let f = x -> x f(5) + f(7)").equals("12");
-	code("[-> 12][0]()").equals("12");
-	code("[-> 12, 'toto'][0]()").equals("12");
+	DISABLED_code("[-> 12][0]()").equals("12");
+	DISABLED_code("[-> 12, 'toto'][0]()").equals("12");
 	code("(x -> x + 12.12)(1.01)").almost(13.13);
 	code("(x -> x + 12)(1.01)").almost(13.01);
 	code("[x -> x ** 2][0](12)").equals("144");
@@ -219,7 +219,7 @@ void Test::test_functions() {
 	code("Number.cos").equals("<function>");
 
 	section("Function reflexion");
-	code("(x -> 12).return").equals("<class Number>");
+	DISABLED_code("(x -> 12).return").equals("<class Number>");
 	code("(x -> x).args").equals("[<class Value>]");
 	code("Array.size((x, y, z -> x + y * z).args)").equals("3");
 	DISABLED_code("let f = x, y -> x f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
