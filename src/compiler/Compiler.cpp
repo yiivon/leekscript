@@ -1137,7 +1137,7 @@ Compiler::value Compiler::insn_inc_refs(Compiler::value v) const {
 		auto new_refs = insn_add(previous, new_integer(1));
 		auto llvm_type = v.v->getType()->getPointerElementType();
 		auto r = builder.CreateStructGEP(llvm_type, v.v, 3);
-		insn_store({r, Type::integer()}, new_refs);
+		insn_store({r, Type::integer().pointer()}, new_refs);
 		return new_refs;
 	}
 	return new_integer(0);
@@ -1153,7 +1153,7 @@ Compiler::value Compiler::insn_dec_refs(Compiler::value v, Compiler::value previ
 		auto new_refs = insn_sub(previous, new_integer(1));
 		auto llvm_type = v.v->getType()->getPointerElementType();
 		auto r = builder.CreateStructGEP(llvm_type, v.v, 3);
-		insn_store({r, Type::integer()}, new_refs);
+		insn_store({r, Type::integer().pointer()}, new_refs);
 		return new_refs;
 	}
 	return new_integer(0);
