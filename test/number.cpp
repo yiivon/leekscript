@@ -346,7 +346,7 @@ void Test::test_numbers() {
 	code("13★ / true").equals("13");
 	code("14★ / 2").equals("7");
 	code("let a = 18★; a / 3").equals("6");
-	code("14★ / []").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::any().to_string(), "/", ls::Type::array(ls::Type::any()).add_temporary().to_string()});
+	code("14★ / []").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::any().to_string(), "/", ls::Type::tmp_array(ls::Type::never()).to_string()});
 	code("let a = 17, b = 5 a / b").equals("3.4");
 
 	section("Number.operator /=");

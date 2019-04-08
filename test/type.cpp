@@ -139,7 +139,7 @@ void Test::test_types() {
 	code("12").type(ls::Type::integer());
 	code("12.5").type(ls::Type::real());
 	code("'salut'").type(ls::Type::tmp_string());
-	code("[]").type(ls::Type::tmp_array(ls::Type::any()));
+	code("[]").type(ls::Type::tmp_array(ls::Type::never()));
 	code("[1]").type(ls::Type::tmp_array(ls::Type::integer()));
 	code("[1, 2.5]").type(ls::Type::tmp_array({ls::Type::integer(), ls::Type::real()}));
 	code("['a']").type(ls::Type::tmp_array(ls::Type::string()));

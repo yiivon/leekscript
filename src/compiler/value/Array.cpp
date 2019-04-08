@@ -5,7 +5,7 @@
 namespace ls {
 
 Array::Array() {
-	type = Type::array();
+	type = Type::array(Type::never());
 }
 
 Array::~Array() {
@@ -94,9 +94,6 @@ void Array::analyse(SemanticAnalyser* analyser) {
 		if (element_type == Type::boolean()) element_type = Type::any();
 		element_type.temporary = false;
 		type = Type::array(element_type);
-	}
-	if (type.element()._types.size() == 0) {
-		type = Type::array(Type::any());
 	}
 	type.temporary = true;
 	// std::cout << "Array type : " << type << std::endl;
