@@ -68,11 +68,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			supported_type = element_type;
 		} else {
 			supported_type = Type::any();
-			// If there are some functions, they types will be lost, so tell them to return pointers
-			// TODO
-			// supported_type.setReturnType(Type::any());
 		}
-
 		// Re-analyze expressions with the supported type
 		// and second computation of the array type
 		element_type = {};
@@ -80,8 +76,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			auto ex = expressions[i];
 			if (!homogeneous and ex->type.is_array()) {
 				// If the array stores other arrays of different types,
-				// force those arrays to store pointers. (To avoid having
-				// unknown array<int> inside arrays.
+				// force those arrays to store pointers. (To avoid having unknown array<int> inside arrays.
 				ex->will_store(analyser, Type::any());
 			}
 			if (ex->type.is_function()) {
