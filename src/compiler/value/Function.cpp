@@ -7,7 +7,9 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/Exception.hpp"
 #include "llvm/IR/Verifier.h"
+#include "llvm/Bitcode/BitcodeWriter.h"
 #include <string>
+#include <fstream>
 #include "../../vm/LSValue.hpp"
 #include "../../type/Placeholder_type.hpp"
 #include "../semantic/Callable.hpp"
@@ -640,6 +642,20 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	llvm::verifyFunction(*llvm_function);
 
+	if (is_main_function) {
+		// std::error_code EC;
+		// llvm::raw_fd_ostream OS("module", EC, llvm::sys::fs::F_None);
+		// llvm::WriteBitcodeToFile(*module, OS);
+		// OS.flush();
+
+		// module->print(llvm::errs(), nullptr, true, true);
+
+		std::error_code EC;
+		llvm::raw_fd_ostream ir("module.ll", EC, llvm::sys::fs::F_None);
+		module->print(ir, nullptr);
+		ir.flush();
+	}
+	
 	((Function*) this)->module_handle = c.addModule(std::unique_ptr<llvm::Module>(module));
 	((Function*) this)->handle_created = true;
 
