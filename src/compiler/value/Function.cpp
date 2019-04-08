@@ -576,7 +576,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	}
 	auto llvm_return_type = version->type.return_type().llvm_type(c);
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
-	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun_" + name + std::to_string(id), module);
+	auto fun_name = is_main_function ? "main" : "fun_" + name + std::to_string(id);
+	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, module);
 
 	auto f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", module);
 	auto Int8PtrTy = llvm::PointerType::get(llvm::Type::getInt8Ty(c.getContext()), c.DL.getAllocaAddrSpace());
@@ -641,7 +642,8 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 	((Function*) this)->module_handle = c.addModule(std::unique_ptr<llvm::Module>(module));
 	((Function*) this)->handle_created = true;
-	auto ExprSymbol = c.findSymbol("fun_" + name + std::to_string(id));
+
+	auto ExprSymbol = c.findSymbol(fun_name);
 	assert(ExprSymbol && "Function not found");
 
 	ls_fun->function = (void*) cantFail(ExprSymbol.getAddress());
