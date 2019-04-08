@@ -308,23 +308,18 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	} else {
 		version->type = Type::fun(version->body->type, arg_types, this);
 	}
-	bool recursive = false;
 	Type return_type;
 	// std::cout << "version->body->type " << version->body->type << std::endl;
 	// std::cout << "version->body->return_type " << version->body->return_type << std::endl;
 	for (const auto& t : version->body->type._types) {
 		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
 			return_type += t;
-		} else {
-			recursive = true;
 		}
 	}
 	if (version->body->type.temporary) return_type.temporary = true;
 	for (const auto& t : version->body->return_type._types) {
 		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
 			return_type += t;
-		} else {
-			recursive = true;
 		}
 	}
 	if (version->body->return_type.temporary) return_type.temporary = true;
@@ -339,7 +334,10 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	} else {
 		version->type = Type::fun(return_type, arg_types, this);
 	}
-	version->body->analyse(analyser);
+	// Re-analyse the recursive function to clean the placeholder types
+	if (recursive) {
+		version->body->analyse(analyser);
+	}
 
 	vars = analyser->get_local_vars();
 	analyser->leave_function();
@@ -371,6 +369,9 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 	}
 	var = std::make_shared<SemanticVar>(*var);
 	captures.push_back(var);
+	if (var->name == name) {
+		recursive = true;
+	}
 
 	if (var->function != parent) {
 		auto new_var = std::make_shared<SemanticVar>(*var);

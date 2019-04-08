@@ -54,6 +54,7 @@ public:
 	llvm::Module* module;
 	Compiler* compiler = nullptr;
 	int default_values_count = 0;
+	bool recursive = false;
 
 	Function();
 	virtual ~Function();
