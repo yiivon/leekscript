@@ -2007,7 +2007,9 @@ void Compiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			// std::cout << "delete variable block " << it->first << " " << it->second.t << " " << it->second.v->getType() << std::endl;
-			insn_delete(insn_load(it->second));
+			if (it->second.t.pointed().must_manage_memory() or it->second.t.pointed().is_mpz()) {
+				insn_delete(insn_load(it->second));
+			}
 		}
 	}
 }
