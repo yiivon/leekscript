@@ -121,19 +121,19 @@ Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::val
 			auto array = new LSArray<int>();
 			array->reserve(capacity);
 			return array;
-		});
+		}, "Array<int>::new");
 	} else if (folded_type == Type::real()) {
 		return insn_call(array_type, {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<double>();
 			array->reserve(capacity);
 			return array;
-		});
+		}, "Array<real>::new");
 	} else {
 		return insn_call(array_type, {new_integer(elements.size())}, +[](int capacity) {
 			auto array = new LSArray<LSValue*>();
 			array->reserve(capacity);
 			return array;
-		});
+		}, "Array<any>::new");
 	}}();
 	for (const auto& element : elements) {
 		auto v = insn_move(insn_convert(element, folded_type));
@@ -1054,16 +1054,16 @@ void Compiler::insn_push_array(Compiler::value array, Compiler::value value) con
 	if (element_type == Type::integer()) {
 		insn_call({}, {array, value}, (void*) +[](LSArray<int>* array, int value) {
 			array->push_back(value);
-		});
+		}, "Array<int>::push");
 	} else if (element_type == Type::real()) {
 		value.t = Type::real();
 		insn_call({}, {array, value}, (void*) +[](LSArray<double>* array, double value) {
 			array->push_back(value);
-		});
+		}, "Array<double>::push");
 	} else {
 		insn_call({}, {array, insn_convert(value, Type::any())}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
 			array->push_inc(value);
-		});
+		}, "Array<any>::push");
 	}
 }
 
@@ -1164,7 +1164,7 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 	if (v.t.fold().must_manage_memory() and !v.t.temporary and !v.t.reference) {
 		return insn_call(v.t.fold(), {v}, (void*) +[](LSValue* v) {
 			return v->move();
-		});
+		}, "move");
 	}
 	return v;
 }
@@ -1867,7 +1867,7 @@ Compiler::value Compiler::insn_phi(Type type, Compiler::value v1, Compiler::labe
 }
 
 // Call functions
-Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1875,14 +1875,14 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
-	auto function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
+	auto function_name = name.size() ? name + "_" + return_type.to_string() : std::string("anonymous_func_") + std::to_string(mappings.size());
 	auto i = mappings.find(function_name);
 	if (i == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
 		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
 		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	}
-	auto r = builder.CreateCall(mappings.at(function_name).function, llvm_args, function_name);
+	auto r = builder.CreateCall(mappings.at(function_name).function, llvm_args);
 	if (return_type._types.size() == 0) {
 		return {};
 	} else {

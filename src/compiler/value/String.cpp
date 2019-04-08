@@ -38,7 +38,7 @@ Compiler::value String::compile(Compiler& c) const {
 	auto base = c.new_pointer(ls_string, Type::any());
 	return c.insn_call(Type::tmp_string(), {base}, (void*) +[](LSString* s) {
 		return s->clone();
-	});
+	}, "String::new");
 }
 
 Value* String::clone() const {
