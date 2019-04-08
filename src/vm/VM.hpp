@@ -87,6 +87,7 @@ public:
 
 	/** Main execution function **/
 	Result execute(const std::string code, std::string ctx, std::string file_name, bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool log_instructions = false);
+	void execute_ir(const std::string filename);
 
 	/** Add a module **/
 	void add_module(Module* m);

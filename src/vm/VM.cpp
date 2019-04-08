@@ -32,6 +32,12 @@
 #include "../compiler/value/Expression.hpp"
 #include "../compiler/instruction/ExpressionInstruction.hpp"
 #include "../compiler/value/VariableValue.hpp"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IRReader/IRReader.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/raw_ostream.h"
 
 namespace ls {
 
@@ -242,6 +248,31 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 		std::cout << C_RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << std::endl; // LCOV_EXCL_LINE
 	}
 	return result;
+}
+
+void VM::execute_ir(const std::string filename) {
+
+	VM::current_vm = this;
+	LSNull::set_null_value(this->null_value);
+	LSBoolean::set_true_value(this->true_value);
+	LSBoolean::set_false_value(this->false_value);
+
+	llvm::SMDiagnostic Err;
+	auto Mod = llvm::parseIRFile(filename, Err, compiler.getContext());
+	compiler.addModule(std::move(Mod));
+	auto symbol = compiler.findSymbol("main");
+	void* f = (void*) cantFail(symbol.getAddress());
+	auto fun = (int (*)()) f;
+
+	auto exe_start = std::chrono::high_resolution_clock::now();
+	int res = fun();
+	auto exe_end = std::chrono::high_resolution_clock::now();
+
+	auto execution_time = std::chrono::duration_cast<std::chrono::nanoseconds>(exe_end - exe_start).count();
+	auto execution_time_ms = (((double) execution_time / 1000) / 1000);
+
+	std::cout << res << std::endl;
+	std::cout << execution_time_ms << " ms" << std::endl;
 }
 
 void VM::add_internal_var(std::string name, Type type, LSValue* value, Callable* callable) {
