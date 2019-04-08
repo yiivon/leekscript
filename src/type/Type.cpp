@@ -26,11 +26,13 @@
 #include "Struct_type.hpp"
 #include "Pointer_type.hpp"
 #include "Template_type.hpp"
+#include "Never_type.hpp"
 #include "../compiler/value/Function.hpp"
 #include "../compiler/value/Value.hpp"
 
 namespace ls {
 
+std::shared_ptr<Base_type> Type::_raw_never = nullptr;
 std::shared_ptr<Base_type> Type::_raw_null = nullptr;
 std::shared_ptr<Base_type> Type::_raw_any = nullptr;
 std::shared_ptr<Base_type> Type::_raw_boolean = nullptr;
@@ -299,6 +301,7 @@ bool Type::is_interval() const { return is_type<Interval_type>(); }
 bool Type::is_map() const { return is_type<Map_type>(); }
 bool Type::is_function() const { return is_type<Function_type>(); }
 bool Type::is_object() const { return is_type<Object_type>(); }
+bool Type::is_never() const { return is_type<Never_type>(); }
 bool Type::is_null() const { return is_type<Null_type>(); }
 bool Type::is_class() const { return is_type<Class_type>(); }
 bool Type::is_placeholder() const { return is_type<Placeholder_type>(); }
@@ -426,6 +429,9 @@ std::shared_ptr<const Base_type> Type::generate_new_placeholder_type() {
 	return type;
 }
 
+Type Type::never() {
+	return { raw_never(), false, false, false };
+}
 Type Type::null() {
 	return { raw_null(), false, false, false };
 }
@@ -553,6 +559,10 @@ bool Type::some(std::function<bool(std::shared_ptr<const Base_type>)> fun) const
 	return std::any_of(_types.begin(), _types.end(), fun);
 }
 
+const std::shared_ptr<Base_type> Type::raw_never() {
+	if (!_raw_never) _raw_never = std::make_shared<Never_type>();
+	return _raw_never;
+}
 const std::shared_ptr<Base_type> Type::raw_null() {
 	if (!_raw_null) _raw_null = std::make_shared<Null_type>();
 	return _raw_null;

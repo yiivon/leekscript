@@ -82,6 +82,7 @@ public:
 	bool is_closure() const;
 	bool is_function() const;
 	bool is_object() const;
+	bool is_never() const;
 	bool is_null() const;
 	bool is_class() const;
 	bool is_placeholder() const;
@@ -110,6 +111,7 @@ public:
 	 */
 	static unsigned int placeholder_counter;
 
+	static Type never();
 	static Type null();
 	static Type any();
 	static Type const_any();
@@ -149,6 +151,7 @@ public:
 	static Type const_class(const std::string name = "class?");
 	static Type template_(std::string name);
 
+	static std::shared_ptr<Base_type> _raw_never;
 	static std::shared_ptr<Base_type> _raw_null;
 	static std::shared_ptr<Base_type> _raw_any;
 	static std::shared_ptr<Base_type> _raw_boolean;
@@ -161,6 +164,7 @@ public:
 	static std::shared_ptr<Base_type> _raw_interval;
 	static std::shared_ptr<Base_type> _raw_object;
 	static std::map<std::string, std::shared_ptr<Base_type>> _raw_class;
+	static const std::shared_ptr<Base_type> raw_never();
 	static const std::shared_ptr<Base_type> raw_null();
 	static const std::shared_ptr<Base_type> raw_any();
 	static const std::shared_ptr<Base_type> raw_boolean();
