@@ -2153,6 +2153,7 @@ int Compiler::get_current_loop_blocks(int deepness) const {
 
 /** Operations **/
 void Compiler::inc_ops(int amount) const {
+	if (not vm->enable_operations) return;
 	inc_ops_jit(new_integer(amount));
 }
 void Compiler::inc_ops_jit(Compiler::value amount) const {
