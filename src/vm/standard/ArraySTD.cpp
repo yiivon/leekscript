@@ -63,7 +63,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("contains", {
-		{Type::boolean(), {Type::const_array(), Type::const_any()}, (void*) &ArraySTD::contains},
+		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &ArraySTD::contains},
 		{Type::boolean(), {Type::const_array(Type::real()), Type::const_real()}, (void*) &LSArray<double>::ls_contains, Method::NATIVE},
 		{Type::boolean(), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_contains, Method::NATIVE},
 	});
