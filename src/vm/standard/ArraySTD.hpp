@@ -41,6 +41,7 @@ public:
 	static Compiler::value fold_right(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value iter(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value sort(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value push(Compiler&, std::vector<Compiler::value>);
 };
 
 }

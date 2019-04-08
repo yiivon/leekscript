@@ -212,11 +212,12 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_product, Method::NATIVE}
 	});
 
+	auto pT = Type::template_("T");
+	template_(pT).
 	method("push", {
 		{Type::array(Type::any()), {Type::array(), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
-		{Type::array(Type::real()), {Type::array(Type::real()), Type::const_real()}, (void*) &LSArray<double>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
-		{Type::array(Type::real()), {Type::array(Type::integer()), Type::const_real()}, (void*) &LSArray<double>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
-		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_push, Method::NATIVE, {new WillStoreMutator()}}
+		{Type::array(pT), {Type::array(Type::never()), pT}, (void*) &push, 0, {new WillStoreMutator()}},
+		{Type::array(pT), {Type::array(pT), {}}, (void*) &push, 0, {new WillStoreMutator()}}
 	});
 
 	method("pushAll", {
@@ -529,6 +530,15 @@ Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args) {
 		}
 	}();
 	return c.insn_call(array.t, {array, fun}, f);
+}
+
+Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args) {
+	auto fun = [&]() {
+		if (args[0].t.element().fold().is_integer()) return (void*) &LSArray<int>::ls_push;
+		if (args[0].t.element().fold().is_real()) return (void*) &LSArray<double>::ls_push;
+		return (void*) &LSArray<LSValue*>::ls_push;
+	}();
+	return c.insn_call(args[0].t, args, fun);
 }
 
 }
