@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
 	bool assembly = false;
 	bool pseudo_code = false;
 	bool log_instructions = false;
+	bool execute_ir = false;
 	std::string file_or_code;
 
 	for (int i = 1; i < argc; ++i) {
@@ -62,6 +63,7 @@ int main(int argc, char* argv[]) {
 		else if (a == "-a" or a == "-A" or a == "--assembly") assembly = true;
 		else if (a == "-p" or a == "-P" or a == "--pseudo-code") pseudo_code = true;
 		else if (a == "-i" or a == "-I" or a == "--log-instructions") log_instructions = true;
+		else if (a == "-ir" or a == "-IR") execute_ir = true;
 		else file_or_code = a;
 	}
 
@@ -74,6 +76,12 @@ int main(int argc, char* argv[]) {
 	if (example) {
 		auto codes = Util::read_file_lines("src/doc/examples.txt");
 		std::cout << codes[rand() % codes.size()] << std::endl;
+		return 0;
+	}
+	/** Execute from IR file **/
+	if (execute_ir) {
+		ls::VM vm;
+		vm.execute_ir(file_or_code);
 		return 0;
 	}
 
