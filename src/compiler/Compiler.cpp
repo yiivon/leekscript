@@ -940,9 +940,9 @@ Compiler::value Compiler::insn_load_member(Compiler::value v, int pos) const {
 
 void Compiler::insn_store(Compiler::value x, Compiler::value y) const {
 	// std::cout << "insn_store " << x.t << " " << x.v->getType() << " " << y.t << std::endl;
-	assert(x.v->getType()->isPointerTy());
-	// assert(x.t.llvm_type(*this) == x.v->getType()->getPointerElementType());
+	assert(x.t.llvm_type(*this) == x.v->getType());
 	// assert(y.t.llvm_type(*this) == y.v->getType());
+	// assert(x.t.pointed().fold().not_temporary() == y.t.fold().not_temporary());
 	builder.CreateStore(y.v, x.v);
 	log_insn(4) << "store " << dump_val(x) << " " << dump_val(y) << std::endl;
 }
