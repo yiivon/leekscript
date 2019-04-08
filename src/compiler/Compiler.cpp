@@ -1875,15 +1875,13 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
-	auto function_name = name.size() ? name + "_" + return_type.to_string() : std::string("anonymous_func_") + std::to_string(mappings.size());
-	auto i = mappings.find(function_name);
-	if (i == mappings.end()) {
-		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
-		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
-	}
-	auto r = builder.CreateCall(mappings.at(function_name).function, llvm_args);
-	if (return_type._types.size() == 0) {
+	auto function_name = name + "_" + std::to_string(mappings.size());
+	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
+	auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
+	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
+	
+	auto r = builder.CreateCall(lambdaFN, llvm_args);
+	if (return_type.is_void()) {
 		return {};
 	} else {
 		value result = { r, return_type };
@@ -1901,17 +1899,14 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
 	auto function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
-	auto i = mappings.find(function_name);
-	if (i == mappings.end()) {
-		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-		auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
-		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
-	}
-	const auto lambda = mappings.at(function_name).function;
+	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
+	auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
+	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
+	
 	auto continueBlock = llvm::BasicBlock::Create(getContext(), "cont", F);
-	auto r = builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name);
+	auto r = builder.CreateInvoke(lambdaFN, continueBlock, fun->get_landing_pad(*this), llvm_args, function_name);
 	builder.SetInsertPoint(continueBlock);
-	if (return_type._types.size() == 0) {
+	if (return_type.is_void()) {
 		return {};
 	} else {
 		value result = { r, return_type };
