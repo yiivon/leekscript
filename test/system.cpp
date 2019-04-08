@@ -33,8 +33,8 @@ void Test::test_system() {
 
 	code("System.version").equals("2");
 
-	code("System.operations").equals("0");
-	code("2 + 2 System.operations").equals("1");
+	code("System.operations").ops_limit(1000).equals("0");
+	code("2 + 2 System.operations").ops_limit(1000).equals("1");
 
 	long sec_time = get_sec_time();
 	code("System.time").almost(sec_time, 1L);

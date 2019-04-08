@@ -134,14 +134,14 @@ Test::Input Test::file_v1(const std::string& file_name) {
 	return Test::Input(this, file_name, code, true, true);
 }
 
-ls::VM::Result Test::Input::run(bool display_errors) {
+ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
 	test->total++;
 
 	// std::cout << C_BLUE << "RUN " << END_COLOR << code << C_GREY << "..." << END_COLOR << std::endl;
 
 	auto vm = v1 ? &test->vmv1 : &test->vm;
-	vm->operation_limit = this->operation_limit;
-	auto result = vm->execute(code, "{}", "test", false, true);
+	vm->operation_limit = this->operation_limit > 0 ? this->operation_limit : ls::VM::DEFAULT_OPERATION_LIMIT;
+	auto result = vm->execute(code, "{}", "test", false, ops or this->operation_limit > 0);
 	vm->operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	this->result = result;
@@ -296,7 +296,7 @@ void Test::Input::type(ls::Type type) {
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	
 	test->total++;
-	auto result = vm->execute(code, "{}", name);
+	auto result = vm->execute(code, "{}", name, false, false);
 
 	std::ostringstream oss;
 	oss << type;
@@ -413,7 +413,7 @@ void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exce
 void Test::Input::operations(int expected) {
 	if (disabled) return disable();
 	
-	auto result = run();
+	auto result = run(true, true);
 
 	if (result.operations != expected) {
 		fail(std::to_string(expected) + " ops", std::to_string(result.operations) + " ops");

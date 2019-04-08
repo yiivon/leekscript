@@ -87,7 +87,7 @@ public:
 		bool disabled;
 		float compilation_time = 0;
 		float execution_time = 0;
-		long int operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
+		long int operation_limit = 0;
 		ls::VM::Result result;
 
 		Input(Test* test, const std::string& name, const std::string& code,
@@ -109,7 +109,7 @@ public:
 		Input& timeout(int ms);
 		Input& ops_limit(long int ops);
 
-		ls::VM::Result run(bool display_errors = true);
+		ls::VM::Result run(bool display_errors = true, bool ops = false);
 		void pass(std::string expected);
 		void fail(std::string expected, std::string actuel);
 		void disable();
