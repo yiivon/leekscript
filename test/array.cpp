@@ -512,6 +512,12 @@ void Test::test_arrays() {
 	code("var a = [1, 2] a.push(3.5) a").equals("[1, 2, 3.5]");
 	code("var a = [1.5, -2.9] a.push(3.5) a").equals("[1.5, -2.9, 3.5]");
 	code("var s = new Array() Array.push(s, 'a')").equals("['a']");
+	code("var a = [] a.push(1) a").equals("[1]");
+	code("var a = [] a.push(1)").equals("[1]");
+	code("var a = [] a.push('a') a").equals("['a']");
+	code("var a = [] a.push('a')").equals("['a']");
+	code("var a = [1] a.push('a') a").equals("[1, 'a']");
+	code("var a = [1] a.push('a')").equals("[1, 'a']");
 
 	section("Array.pushAll()");
 	code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
