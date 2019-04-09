@@ -12,7 +12,6 @@ class String : public Value {
 public:
 
 	std::shared_ptr<Token> token;
-	LSString* ls_string;
 
 	String(std::shared_ptr<Token> token);
 	virtual ~String();

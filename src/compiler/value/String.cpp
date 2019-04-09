@@ -8,12 +8,9 @@ String::String(std::shared_ptr<Token> token) : token(token) {
 	type = Type::string();
 	type.temporary = true;
 	constant = true;
-	ls_string = new LSString(token->content);
 }
 
-String::~String() {
-	delete ls_string;
-}
+String::~String() {}
 
 void String::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << "'" << token->content << "'";
@@ -34,10 +31,9 @@ bool String::will_store(SemanticAnalyser* analyser, const Type& type) {
 }
 
 Compiler::value String::compile(Compiler& c) const {
-	c.add_literal(ls_string, std::string("'") + *ls_string + std::string("'"));
-	auto base = c.new_pointer(ls_string, Type::any());
-	return c.insn_call(Type::tmp_string(), {base}, (void*) +[](LSString* s) {
-		return s->clone();
+	auto s = c.builder.CreateGlobalStringPtr(token->content, "str");
+	return c.insn_call(Type::tmp_string(), {{s, Type::integer().pointer()}}, (void*) +[](char* s) {
+		return new LSString(std::string(s));
 	}, "String::new");
 }
 
