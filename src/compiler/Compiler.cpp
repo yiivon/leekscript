@@ -1890,7 +1890,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	}
 }
 
-Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, void* func) const {
+Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, void* func, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1898,7 +1898,7 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
-	auto function_name = std::string("anonymous_func_") + std::to_string(mappings.size());
+	auto function_name = name + "_" + std::to_string(mappings.size());
 	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
 	auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
 	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
@@ -1915,7 +1915,7 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	}
 }
 
-Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, Compiler::value fun) const {
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, Compiler::value fun, std::string name) const {
 	if (fun.t.is_closure()) {
 		args.insert(args.begin(), fun);
 	}
@@ -1942,7 +1942,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	}
 }
 
-Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, Compiler::value func) const {
+Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, Compiler::value func, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
