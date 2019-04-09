@@ -170,7 +170,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	}
 	// Do the call
 	auto r = [&]() { if (addr) {
-		return c.insn_invoke(type.return_type(), args, addr);
+		return c.insn_invoke(type.return_type(), args, addr, name);
 	} else if (func) {
 		return func(c, args);
 	} else if (value) {
@@ -179,7 +179,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 			auto k = c.new_pointer(&oa->field->content, Type::any());
 			return c.insn_invoke(type.pointer(), {compiled_object, k}, (void*) +[](LSValue* object, std::string* key) {
 				return object->attr(*key);
-			});
+			}, "get_method(" + oa->field->content + ")");
 		} else {
 			return value->compile(c);
 		}}();
@@ -187,9 +187,9 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 			args.insert(args.begin(), fun);
 		}
 		auto r = [&]() { if (unknown) {
-			return c.insn_call(Type::any(), args, (void*) &LSFunction::call);
+			return c.insn_call(Type::any(), args, (void*) &LSFunction::call, name);
 		} else {
-			return c.insn_invoke(type.return_type(), args, fun);
+			return c.insn_invoke(type.return_type(), args, fun, name);
 		}}();
 		if (!object) {
 			value->compile_end(c);
