@@ -101,11 +101,6 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			auto val = ex->compile(c);
 			ex->compile_end(c);
 
-			// c.insn_call({}, {val}, +[](__mpz_struct mpz) {
-			// 	std::cout << "mpz store alloc = " << mpz._mp_alloc << std::endl;
-			// 	std::cout << "mpz store size = " << mpz._mp_size << std::endl;
-			// 	std::cout << "mpz store d = " << mpz._mp_d << std::endl;
-			// });
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
 			}
