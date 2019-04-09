@@ -434,7 +434,7 @@ Type Type::never() {
 	return { raw_never(), false, false, false };
 }
 Type Type::null() {
-	return { raw_null(), false, false, false };
+	return { raw_null(), true, false, false };
 }
 Type Type::any() {
 	return { raw_any(), false, false, false };
@@ -443,10 +443,10 @@ Type Type::const_any() {
 	return { raw_any(), false, false, true };
 }
 Type Type::boolean() {
-	return { raw_boolean(), false, false, false };
+	return { raw_boolean(), true, false, false };
 }
 Type Type::const_boolean() {
-	return { raw_boolean(), false, false, true };
+	return { raw_boolean(), true, false, true };
 }
 Type Type::number() {
 	return { raw_number(), false, false, false };
@@ -530,10 +530,10 @@ Type Type::tmp_interval() {
 	return { raw_interval(), false, true, false };
 }
 Type Type::fun(Type return_type, std::vector<Type> arguments, const Value* function) {
-	return { std::make_shared<Function_type>(return_type, arguments, false, function), false, false, true };
+	return { std::make_shared<Function_type>(return_type, arguments, false, function), true, false, true };
 }
 Type Type::closure(Type return_type, std::vector<Type> arguments, const Value* function) {
-	return { std::make_shared<Function_type>(return_type, arguments, true, function), false, false, true };
+	return { std::make_shared<Function_type>(return_type, arguments, true, function), true, false, true };
 }
 Type Type::structure(const std::string name, std::initializer_list<Type> types) {
 	return { std::make_shared<Struct_type>(name, types), false, false, false };
@@ -542,13 +542,13 @@ Type Type::clazz(const std::string name) {
 	if (_raw_class.find(name) == _raw_class.end()) {
 		_raw_class.insert({name, std::make_shared<Class_type>(name) });
 	}
-	return { _raw_class.at(name), false, false, false };
+	return { _raw_class.at(name), true, false, false };
 }
 Type Type::const_class(const std::string name) {
 	if (_raw_class.find(name) == _raw_class.end()) {
 		_raw_class.insert({name, std::make_shared<Class_type>(name) });
 	}
-	return { _raw_class.at(name), false, false, true };
+	return { _raw_class.at(name), true, false, true };
 }
 Type Type::template_(std::string name) {
 	return { std::make_shared<Template_type>(name), false, false, false };
