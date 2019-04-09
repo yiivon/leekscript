@@ -19,6 +19,8 @@
 #include "../colors.h"
 #include "../../lib/utf8.h"
 #include "semantic/SemanticAnalyser.hpp"
+#include "llvm/IR/GlobalVariable.h"
+#include "../type/Base_type.hpp"
 
 #define log_insn(i) log_instructions && _log_insn((i))
 
@@ -43,6 +45,9 @@ Compiler::Compiler(VM* vm) : vm(vm),
 				auto i = mappings.find(Name);
 				if (i != mappings.end()) {
 					return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+				}
+				if (Name == "null") {
+					return llvm::JITSymbol((llvm::JITTargetAddress) LSNull::get(), llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
 				if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name)) {
 					return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
@@ -80,7 +85,12 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 	return v;
 }
 Compiler::value Compiler::new_null() const {
-	return new_pointer(LSNull::get(), Type::null());
+	auto null_global = fun->module->getGlobalVariable("null");
+	if (!null_global) {
+		auto t = Type::raw_null()->llvm(*this)->getPointerElementType();
+		null_global = new llvm::GlobalVariable(*fun->module, t, true, llvm::GlobalValue::ExternalLinkage, nullptr, "null");
+	}
+	return {null_global, Type::null()};
 }
 Compiler::value Compiler::new_bool(bool b) const {
 	return {llvm::ConstantInt::get(getContext(), llvm::APInt(1, b, false)), Type::boolean()};
