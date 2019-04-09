@@ -22,6 +22,7 @@
 #include "Map_type.hpp"
 #include "Null_type.hpp"
 #include "Integer_type.hpp"
+#include "I8_type.hpp"
 #include "Placeholder_type.hpp"
 #include "Struct_type.hpp"
 #include "Pointer_type.hpp"
@@ -36,6 +37,7 @@ std::shared_ptr<Base_type> Type::_raw_never = nullptr;
 std::shared_ptr<Base_type> Type::_raw_null = nullptr;
 std::shared_ptr<Base_type> Type::_raw_any = nullptr;
 std::shared_ptr<Base_type> Type::_raw_boolean = nullptr;
+std::shared_ptr<Base_type> Type::_raw_i8 = nullptr;
 std::shared_ptr<Base_type> Type::_raw_integer = nullptr;
 std::shared_ptr<Base_type> Type::_raw_number = nullptr;
 std::shared_ptr<Base_type> Type::_raw_long = nullptr;
@@ -454,6 +456,9 @@ Type Type::number() {
 Type Type::const_number() {
 	return { raw_number(), false, false, true };
 }
+Type Type::i8() {
+	return { raw_i8(), false, false, false };
+}
 Type Type::integer() {
 	return { raw_integer(), false, false, false };
 }
@@ -579,6 +584,10 @@ const std::shared_ptr<Base_type> Type::raw_boolean() {
 const std::shared_ptr<Base_type> Type::raw_number() {
 	if (!_raw_number) _raw_number = std::make_shared<Number_type>();
 	return _raw_number;
+}
+const std::shared_ptr<Base_type> Type::raw_i8() {
+	if (!_raw_i8) _raw_i8 = std::make_shared<I8_type>();
+	return _raw_i8;
 }
 const std::shared_ptr<Base_type> Type::raw_integer() {
 	if (!_raw_integer) _raw_integer = std::make_shared<Integer_type>();

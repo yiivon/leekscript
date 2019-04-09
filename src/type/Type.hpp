@@ -119,6 +119,7 @@ public:
 	static Type const_boolean();
 	static Type number();
 	static Type const_number();
+	static Type i8();
 	static Type integer();
 	static Type const_integer();
 	static Type long_();
@@ -155,6 +156,7 @@ public:
 	static std::shared_ptr<Base_type> _raw_null;
 	static std::shared_ptr<Base_type> _raw_any;
 	static std::shared_ptr<Base_type> _raw_boolean;
+	static std::shared_ptr<Base_type> _raw_i8;
 	static std::shared_ptr<Base_type> _raw_integer;
 	static std::shared_ptr<Base_type> _raw_number;
 	static std::shared_ptr<Base_type> _raw_long;
@@ -168,6 +170,7 @@ public:
 	static const std::shared_ptr<Base_type> raw_null();
 	static const std::shared_ptr<Base_type> raw_any();
 	static const std::shared_ptr<Base_type> raw_boolean();
+	static const std::shared_ptr<Base_type> raw_i8();
 	static const std::shared_ptr<Base_type> raw_integer();
 	static const std::shared_ptr<Base_type> raw_number();
 	static const std::shared_ptr<Base_type> raw_long();
