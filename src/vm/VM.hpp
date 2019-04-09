@@ -93,6 +93,8 @@ public:
 	void add_module(Module* m);
 	void add_internal_var(std::string name, Type type, LSValue* value, Callable* callable = nullptr);
 	void add_internal_var(std::string name, Type type, Function* function);
+	
+	void* resolve_symbol(std::string name);
 };
 
 }

@@ -292,4 +292,26 @@ void VM::add_internal_var(std::string name, Type type, Function* function) {
 	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, function, nullptr, function, nullptr) });
 }
 
+void* VM::resolve_symbol(std::string name) {
+	std::cout << "VM::resolve_symbol " << name << std::endl;
+	auto p = name.find(".");
+	if (p != std::string::npos) {
+		auto module = name.substr(0, p);
+		// std::cout << "module = " << module << std::endl;
+		auto method = name.substr(p + 1);
+		auto h = method.find(".");
+		int version = 0;
+		if (h != std::string::npos) {
+			version = std::stoi(method.substr(h + 1));
+			method = method.substr(0, h);
+		}
+		// std::cout << "method = " << method << std::endl;
+		// std::cout << "version = " << version << std::endl;
+		auto clazz = (LSClass*) internal_vars.at(module)->lsvalue;
+		auto implems = clazz->methods.at(method);
+		return implems.at(version).addr;
+	}
+	return nullptr;
+}
+
 }

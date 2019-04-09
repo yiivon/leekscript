@@ -46,6 +46,10 @@ Compiler::Compiler(VM* vm) : vm(vm),
 				if (i != mappings.end()) {
 					return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
+				auto s = this->vm->resolve_symbol(Name);
+				if (s) {
+					return llvm::JITSymbol((llvm::JITTargetAddress) s, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+				}
 				if (Name == "null") {
 					return llvm::JITSymbol((llvm::JITTargetAddress) LSNull::get(), llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
