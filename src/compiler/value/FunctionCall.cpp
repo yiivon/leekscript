@@ -250,9 +250,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			else
 				args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
-			if (arguments.at(i)->type == Type::mpz()) {
-				args.back() = c.insn_clone_mpz(args.back());
-			}
 		} else if (f and f->defaultValues.at(i)) {
 			types.push_back((LSValueType) f->defaultValues.at(i)->type.id());
 			args.push_back(f->defaultValues.at(i)->compile(c));
