@@ -2083,7 +2083,7 @@ Compiler::value Compiler::add_var(const std::string& name, Compiler::value value
 
 Compiler::value Compiler::create_and_add_var(const std::string& name, Type type) {
 	// std::cout << "Compiler::create_and_add_var(" << name << ", " << type << ")" << std::endl;
-	auto var = create_entry(name, type);
+	auto var = create_entry(name, type.not_temporary());
 	variables.back()[name] = var;
 	return var;
 }
