@@ -11,12 +11,12 @@ namespace ls {
 std::map<Type, std::shared_ptr<Array_type>> Array_type::cache;
 
 std::shared_ptr<Array_type> Array_type::create(Type element) {
-	auto i = cache.find(element);
+	auto i = cache.find(element.not_temporary());
 	if (i != cache.end()) {
 		return i->second;
 	} else {
 		const auto a = std::make_shared<Array_type>(element);
-		cache.insert({element, a});
+		cache.insert({element.not_temporary(), a});
 		return a;
 	}
 }
