@@ -21,7 +21,7 @@ std::shared_ptr<Array_type> Array_type::create(Type element) {
 	}
 }
 
-Array_type::Array_type(Type element) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("array"), std::initializer_list<Type> {
+Array_type::Array_type(Type element) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("array<" + element.getJsonName() + ">"), std::initializer_list<Type> {
 	Type::integer(), // ?
 	Type::integer(), // ?
 	Type::integer(), // ?

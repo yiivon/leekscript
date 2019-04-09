@@ -13,7 +13,7 @@ class Struct_type : public Base_type {
 public:
 	Struct_type(const std::string name, std::initializer_list<Type> types);
 	virtual const std::string getName() const { return "struct"; }
-	virtual const std::string getJsonName() const { return "struct"; }
+	virtual const std::string getJsonName() const { return _name; }
 	virtual Type member(int) const override;
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;

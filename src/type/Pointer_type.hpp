@@ -13,7 +13,7 @@ public:
 	Pointer_type(Type type);
 	Type pointed() const;
 	virtual const std::string getName() const { return "pointer"; }
-	virtual const std::string getJsonName() const { return "pointer"; }
+	virtual const std::string getJsonName() const { return _type.getJsonName() + "*"; }
 	virtual bool operator == (const Base_type*) const override;
 	virtual llvm::Type* llvm(const Compiler& c) const override;
 	virtual std::ostream& print(std::ostream& os) const override;
