@@ -45,6 +45,16 @@ void Module::static_field(std::string name, Type type, void* fun) {
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 
+void Module::constructor_(std::initializer_list<MethodConstructor> methods) {
+	std::vector<Method> inst;
+	for (auto constr : methods) {
+		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.native, constr.mutators, std::vector<Type>{});
+	}
+	if (!inst.empty()) {
+		clazz->addMethod("new", inst);
+	}
+}
+
 void Module::method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methodsConstr, std::vector<Type> templates) {
 	std::vector<Method> inst;
 	for (auto constr : methodsConstr) {

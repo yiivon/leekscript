@@ -102,6 +102,8 @@ public:
 		return { this, templates... };
 	}
 
+	void constructor_(std::initializer_list<MethodConstructor> methods);
+
 	void method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methods, std::vector<Type> templates = {});
 	void method(std::string name, std::initializer_list<MethodConstructor> methods, std::vector<Type> templates = {}) { method(name, Method::Both, methods, templates); }
 
