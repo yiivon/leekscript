@@ -27,6 +27,40 @@ namespace ls {
 llvm::orc::ThreadSafeContext Compiler::Ctx(llvm::make_unique<llvm::LLVMContext>());
 llvm::IRBuilder<> Compiler::builder(*Ctx.getContext());
 
+Compiler::Compiler(VM* vm) : vm(vm),
+	TM(llvm::EngineBuilder().selectTarget()),
+	DL(TM->createDataLayout()),
+	ObjectLayer(ES, [this](llvm::orc::VModuleKey) {
+		return llvm::orc::LegacyRTDyldObjectLinkingLayer::Resources {
+			std::make_shared<llvm::SectionMemoryManager>(),
+			createLegacyLookupResolver(ES, [this](const std::string& Name) -> llvm::JITSymbol {
+				// std::cout << "Resolve symbol " << Name << std::endl;
+				if (auto Sym = CompileLayer.findSymbol(Name, false)) {
+					return Sym;
+				} else if (auto Err = Sym.takeError()) {
+					return std::move(Err);
+				}
+				auto i = mappings.find(Name);
+				if (i != mappings.end()) {
+					return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+				}
+				if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name)) {
+					return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
+				}
+				return nullptr;
+			},
+			[](llvm::Error Err) {
+				llvm::cantFail(std::move(Err), "lookupFlags failed");
+			})
+		};
+	}),
+	CompileLayer(ObjectLayer, llvm::orc::SimpleCompiler(*TM)),
+	OptimizeLayer(CompileLayer, [this](std::unique_ptr<llvm::Module> M) {
+		return optimizeModule(std::move(M));
+	}) {
+		llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
+	}
+
 void Compiler::init() {
 	mappings.clear();
 }

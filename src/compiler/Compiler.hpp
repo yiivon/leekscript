@@ -113,35 +113,7 @@ public:
 	using OptimizeFunction = std::function<std::unique_ptr<llvm::Module>(std::unique_ptr<llvm::Module>)>;
 	llvm::orc::LegacyIRTransformLayer<decltype(CompileLayer), OptimizeFunction> OptimizeLayer;
 	
-
-	Compiler(VM* vm) : vm(vm),
-		TM(llvm::EngineBuilder().selectTarget()),
-		DL(TM->createDataLayout()),
-		ObjectLayer(ES, [this](llvm::orc::VModuleKey) {
-			return llvm::orc::LegacyRTDyldObjectLinkingLayer::Resources {
-				std::make_shared<llvm::SectionMemoryManager>(),
-				createLegacyLookupResolver(ES, [this](const std::string &Name) -> llvm::JITSymbol {
-					if (auto Sym = CompileLayer.findSymbol(Name, false))
-						return Sym;
-					else if (auto Err = Sym.takeError())
-						return std::move(Err);
-					auto i = mappings.find(Name);
-					if (i != mappings.end()) {
-						return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
-					}
-					if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name))
-						return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
-					return nullptr;
-				},
-				[](llvm::Error Err) { llvm::cantFail(std::move(Err), "lookupFlags failed"); })
-			};
-		}),
-        CompileLayer(ObjectLayer, llvm::orc::SimpleCompiler(*TM)),
-        OptimizeLayer(CompileLayer, [this](std::unique_ptr<llvm::Module> M) {
-			return optimizeModule(std::move(M));
-        }) {
-			llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
-		}
+	Compiler(VM* vm);
 
 	const llvm::DataLayout& getDataLayout() const { return DL; }
 
