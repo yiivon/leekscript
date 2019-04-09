@@ -456,6 +456,7 @@ void Test::test_arrays() {
 	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft((+), 0)").equals("45");
 	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft((-), 0)").equals("-45");
 	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft(*, 1)").equals("362880");
+	code("['a', 'b', 'c'].foldLeft(=> '%', '')").equals("'%'");
 
 	section("Array.foldRight()");
 	code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");

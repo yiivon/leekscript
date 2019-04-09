@@ -407,9 +407,11 @@ Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args) {
 Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args) {
 	auto function = args[1];
 	auto result = c.create_and_add_var("r", args[2].t);
-	c.insn_store(result, c.insn_move(args[2]));
+	c.insn_store(result, c.insn_move_inc(args[2]));
 	c.insn_foreach(args[0], {}, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		c.insn_store(result, c.insn_call(function.t.return_type(), {c.insn_load(result), v}, function));
+		auto r = c.insn_call(function.t.return_type(), {c.insn_load(result), v}, function);
+		c.insn_delete(c.insn_load(result));
+		c.insn_store(result, c.insn_move_inc(r));
 		return {};
 	});
 	return c.insn_load(result);

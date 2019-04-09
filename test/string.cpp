@@ -230,6 +230,7 @@ void Test::test_strings() {
 	code("'1234567'.fold((x, y) => x + y.number(), 0.12)").equals("28.12");
 	code("'salut'.fold((x, y) => '%', '')").equals("'%'");
 	code("'salut'.fold(=> '%', '')").equals("'%'");
+	code("'salut'.fold((x, y) => y, '')").equals("'t'");
 
 	section("String.indexOf()");
 	code("'bonjour'.indexOf('jour')").equals("3");
