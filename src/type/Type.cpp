@@ -414,6 +414,7 @@ bool Type::strictCastable(Type type) const {
 int Type::distance(Type type) const {
 	if (_types.size() == 0 and type._types.size() == 0) return 0;
 	if (_types.size() == 0 or type._types.size() == 0) return -1;
+	if (not temporary and type.temporary) return -1;
 	auto t1 = fold()._types[0];
 	auto t2 = type.fold()._types[0];
 	return t1->distance(t2.get());

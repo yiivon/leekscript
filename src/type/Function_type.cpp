@@ -43,7 +43,7 @@ int Function_type::distance(const Base_type* type) const {
 		if (_arguments.size() > fun->_arguments.size()) return -1;
 		int d = 0;
 		for (size_t i = 0; i < _arguments.size(); ++i) {
-			d += _arguments.at(i).distance(fun->_arguments.at(i));
+			d += _arguments.at(i).distance(fun->_arguments.at(i).not_temporary());
 		}
 		int d2 = (_closure != fun->_closure) ? 1 : 0;
 		if (d == 0) {
