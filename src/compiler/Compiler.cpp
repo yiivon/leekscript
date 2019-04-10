@@ -1923,12 +1923,23 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
-	auto function_name = name + "_" + std::to_string(mappings.size());
-	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-	auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
-	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
-	
-	auto r = builder.CreateCall(lambdaFN, llvm_args);
+	llvm::Function* lambda;
+	if (func) {
+		auto function_name = name + "_" + std::to_string(mappings.size());
+		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
+		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
+		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambda}});
+	} else {
+		auto p = mappings.find(name + std::to_string((long) fun->current_version));
+		if (p == mappings.end()) {
+			auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
+			lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, fun->module);
+			((Compiler*) this)->mappings.insert({name + std::to_string((long) fun->current_version), {(llvm::JITTargetAddress) nullptr, lambda}});
+		} else {
+			lambda = p->second.function;
+		}
+	}
+	auto r = builder.CreateCall(lambda, llvm_args);
 	if (return_type.is_void()) {
 		return {};
 	} else {
