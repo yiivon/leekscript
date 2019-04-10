@@ -71,7 +71,7 @@ public:
 	};
 	struct function_entry {
 		llvm::JITTargetAddress addr;
-		llvm::Value* function;
+		llvm::Function* function;
 	};
 
 	static llvm::orc::ThreadSafeContext Ctx;
