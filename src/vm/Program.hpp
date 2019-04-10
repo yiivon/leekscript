@@ -15,6 +15,7 @@ private:
 public:
 
 	Function* main;
+	Type type;
 	std::vector<Function*> functions;
 	std::string file_name;
 	VM* vm;
@@ -27,7 +28,9 @@ public:
 	/*
 	 * Compile the program with a VM and a context (json)
 	 */
-	VM::Result compile(VM& vm, const std::string& context, bool assembly = false, bool pseudo_code = false, bool log_instructions = false);
+	VM::Result compile(VM& vm, const std::string& context, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool ir = false);
+
+	VM::Result compile_leekscript(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions);
 
 	/*
 	 * Execute the program and get a std::string result

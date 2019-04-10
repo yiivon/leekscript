@@ -11,6 +11,12 @@
 #include "../util/Util.hpp"
 #include "../constants.h"
 #include "../colors.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IRReader/IRReader.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/raw_ostream.h"
 
 namespace ls {
 
@@ -30,9 +36,8 @@ Program::~Program() {
 	}
 }
 
-VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions) {
+VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions) {
 
-	this->vm = &vm;
 	VM::Result result;
 
 	// Lexical analysis
@@ -84,14 +89,30 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	vm.compiler.label_map.clear();
 	main->compile(vm.compiler);
 	closure = main->default_version->function->function;
-	// vm.compiler.leave_function();
+	type = main->type.return_type().fold();
 
-	// Result
 	result.compilation_success = true;
 	result.assembly = vm.compiler.assembly.str();
 	result.pseudo_code = vm.compiler.pseudo_code.str();
 	result.instructions_log = vm.compiler.instructions_debug.str();
+
 	return result;
+}
+
+VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions, bool ir) {
+	this->vm = &vm;
+
+	if (ir) {
+		llvm::SMDiagnostic Err;
+		auto Mod = llvm::parseIRFile(file_name, Err, vm.compiler.getContext());
+		vm.compiler.addModule(std::move(Mod));
+		auto symbol = vm.compiler.findSymbol("main");
+		closure = (void*) cantFail(symbol.getAddress());
+		type = Type::integer();
+		return {};
+	} else {
+		return compile_leekscript(vm, ctx, assembly, pseudo_code, log_instructions);
+	}
 }
 
 void Program::analyse(SemanticAnalyser* analyser) {
@@ -103,29 +124,24 @@ void Program::analyse(SemanticAnalyser* analyser) {
 
 std::string Program::execute(VM& vm) {
 
-	const auto output_type = main->type.return_type().fold();
+	assert(!type.reference && "Program return type shouldn't be a reference!");
 
-	assert(!output_type.reference && "Program return type shouldn't be a reference!");
-
-	if (output_type._types.size() == 0) {
+	if (type._types.size() == 0) {
 		auto fun = (void (*)()) closure;
 		fun();
 		return "(void)";
 	}
-
-	if (output_type.not_temporary() == Type::boolean()) {
+	if (type.not_temporary() == Type::boolean()) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
 		return res ? "true" : "false";
 	}
-
-	if (output_type.not_temporary() == Type::integer()) {
+	if (type.not_temporary() == Type::integer()) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
 		return std::to_string(res);
 	}
-
-	if (output_type.not_temporary() == Type::mpz()) {
+	if (type.not_temporary() == Type::mpz()) {
 		auto fun = (__mpz_struct (*)()) closure;
 		__mpz_struct ret = fun();
 		char buff[1000000];
@@ -134,19 +150,16 @@ std::string Program::execute(VM& vm) {
 		vm.mpz_deleted++;
 		return std::string(buff);
 	}
-
-	if (output_type.not_temporary() == Type::real()) {
+	if (type.not_temporary() == Type::real()) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
 		return LSNumber::print(res);
 	}
-
-	if (output_type.not_temporary() == Type::long_()) {
+	if (type.not_temporary() == Type::long_()) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
 		return std::to_string(res);
 	}
-
 	auto fun = (LSValue* (*)()) closure;
 	auto ptr = fun();
 	std::ostringstream oss;
