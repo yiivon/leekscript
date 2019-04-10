@@ -191,9 +191,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
-			return c.insn_invoke(Type::integer(), {compiled_array, k}, +[](LSInterval* interval, int k) {
-				return interval->atv(k);
-			});
+			return c.insn_invoke(Type::integer(), {compiled_array, k}, (void*) &LSInterval::atv);
 
 		} else if (array->type.is_map()) {
 
