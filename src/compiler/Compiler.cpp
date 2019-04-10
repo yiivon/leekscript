@@ -1121,9 +1121,7 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 			insn_inc_refs(value);
 			return value;
 		} else {
-			return insn_call(value.t, {value}, (void*) +[](LSValue* v) {
-				return v->move_inc();
-			});
+			return insn_call(value.t, {value}, (void*) &LSValue::move_inc);
 		}
 	}
 	if (value.t.temporary) {
