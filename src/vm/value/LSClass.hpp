@@ -58,7 +58,7 @@ public:
 
 	virtual ~LSClass();
 
-	void addMethod(std::string&, std::vector<Method>);
+	void addMethod(std::string, std::vector<Method>);
 	void addField(std::string, Type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
 	void addField(std::string, Type, void* fun);
 	void addStaticField(ModuleStaticField f);

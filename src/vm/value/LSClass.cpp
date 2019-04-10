@@ -27,7 +27,7 @@ LSClass::~LSClass() {
 	}
 }
 
-void LSClass::addMethod(std::string& name, std::vector<Method> method) {
+void LSClass::addMethod(std::string name, std::vector<Method> method) {
 	methods.insert({name, method});
 
 	// Add first implementation as default method
