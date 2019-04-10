@@ -115,7 +115,7 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 		result.compilation_success = true;
 		std::ostringstream oss;
 		oss << llvm_type;
-		result.program = oss.str();
+		result.program = type.to_string() + " " + oss.str();
 		return result;
 	} else {
 		return compile_leekscript(vm, ctx, assembly, pseudo_code, log_instructions);
