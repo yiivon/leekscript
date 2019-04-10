@@ -293,7 +293,7 @@ void VM::add_internal_var(std::string name, Type type, Function* function) {
 }
 
 void* VM::resolve_symbol(std::string name) {
-	std::cout << "VM::resolve_symbol " << name << std::endl;
+	// std::cout << "VM::resolve_symbol " << name << std::endl;
 	auto p = name.find(".");
 	if (p != std::string::npos) {
 		auto module = name.substr(0, p);
