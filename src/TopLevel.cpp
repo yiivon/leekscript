@@ -78,12 +78,6 @@ int main(int argc, char* argv[]) {
 		std::cout << codes[rand() % codes.size()] << std::endl;
 		return 0;
 	}
-	/** Execute from IR file **/
-	if (execute_ir) {
-		ls::VM vm;
-		vm.execute_ir(file_or_code);
-		return 0;
-	}
 
 	/** Input file or code snippet? */
 	if (file_or_code.size() > 0) {
@@ -108,7 +102,7 @@ int main(int argc, char* argv[]) {
 		OutputStringStream oss;
 		if (output_json)
 			vm.output = &oss;
-		auto result = vm.execute(code, "{}", file_name, debug_mode, ops, assembly, pseudo_code, log_instructions);
+		auto result = vm.execute(code, "{}", file_name, debug_mode, ops, assembly, pseudo_code, log_instructions, execute_ir);
 		vm.output = ls::VM::default_output;
 		print_result(result, oss.str(), output_json, display_time, ops);
 		return 0;

@@ -150,7 +150,7 @@ void VM::add_module(Module* m) {
 	add_internal_var(m->name, const_class, m->clazz);
 }
 
-VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool log_instructions) {
+VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool log_instructions, bool execute_ir) {
 
 	// Reset
 	this->file_name = file_name;
@@ -173,7 +173,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 
 	// Compile
 	auto compilation_start = std::chrono::high_resolution_clock::now();
-	VM::Result result = program->compile(*this, ctx, assembly, pseudo_code, log_instructions);
+	VM::Result result = program->compile(*this, ctx, assembly, pseudo_code, log_instructions, execute_ir);
 	auto compilation_end = std::chrono::high_resolution_clock::now();
 
 	if (log_instructions) {

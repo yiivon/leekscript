@@ -86,7 +86,7 @@ public:
 	static void static_init();
 
 	/** Main execution function **/
-	Result execute(const std::string code, std::string ctx, std::string file_name, bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool log_instructions = false);
+	Result execute(const std::string code, std::string ctx, std::string file_name, bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool execute_ir = false);
 
 	/** Add a module **/
 	void add_module(Module* m);
