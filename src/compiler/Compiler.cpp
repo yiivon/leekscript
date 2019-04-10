@@ -43,7 +43,7 @@ Compiler::Compiler(VM* vm) : vm(vm),
 					return std::move(Err);
 				}
 				auto i = mappings.find(Name);
-				if (i != mappings.end()) {
+				if (i != mappings.end() && i->second.addr) {
 					return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
 				auto s = this->vm->resolve_symbol(Name);

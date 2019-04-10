@@ -47,6 +47,9 @@ bool LSString::iterator_end(LSString::iterator* it) {
 	bool end = it->buffer[it->pos] == 0;
 	return end;
 }
+LSString* LSString::constructor(char* s) {
+	return new LSString(s);
+}
 
 LSString::LSString() : LSValue(STRING) {}
 LSString::LSString(const char value) : LSValue(STRING), std::string(std::string(1, value)) {}

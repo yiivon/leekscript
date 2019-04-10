@@ -54,6 +54,13 @@ StringSTD::StringSTD() : Module("String") {
 	LSString::string_class = clazz;
 
 	/*
+	 * Constructor
+	 */
+	constructor_({
+		{Type::tmp_string(), {Type::i8().pointer()}, (void*) &LSString::constructor, Method::NATIVE}
+	});
+
+	/*
 	 * Operators
 	 */
 	operator_("+", {
