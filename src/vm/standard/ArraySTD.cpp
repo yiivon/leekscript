@@ -226,7 +226,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("push", {
 		{Type::array(Type::any()), {Type::array(), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
 		{Type::array(pT), {Type::array(Type::never()), pT}, (void*) &push, 0, {new WillStoreMutator()}},
-		{Type::array(pT), {Type::array(pT), {}}, (void*) &push, 0, {new WillStoreMutator()}}
+		{Type::array(pT), {Type::array(pT), {}}, (void*) &push, 0, {new WillStoreMutator()}},
 	});
 
 	// void (LSArray<int>::*push_int)(int&&) = &LSArray<int>::push_back;
