@@ -896,13 +896,9 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 		return v; // already any
 	}
 	if (v.t.is_long()) {
-		return insn_call(Type::any(), {v}, +[](long n) {
-			return LSNumber::get(n);
-		});
+		return insn_call(Type::any(), {to_real(v)}, nullptr, "Number.new.0");
 	} else if (v.t.is_real()) {
-		return insn_call(Type::any(), {v}, +[](double n) {
-			return LSNumber::get(n);
-		});
+		return insn_call(Type::any(), {v}, nullptr, "Number.new.0");
 	} else if (v.t.is_bool()) {
 		return insn_call(Type::any(), {v}, +[](bool n) {
 			return LSBoolean::get(n);
@@ -918,9 +914,7 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 			});
 		}
 	} else {
-		return insn_call(Type::any(), {v}, +[](int n) {
-			return LSNumber::get(n);
-		});
+		return insn_call(Type::any(), {to_real(v)}, nullptr, "Number.new.0");
 	}
 }
 

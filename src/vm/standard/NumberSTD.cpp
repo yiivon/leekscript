@@ -30,6 +30,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 	static_field("epsilon", Type::real(), [](Compiler& c) { return c.new_real(std::numeric_limits<double>::epsilon()); });
 
 	/*
+	 * Constructors
+	 */
+	constructor_({
+		{Type::any(), {Type::integer()}, (void*) &LSNumber::get, Method::NATIVE}
+	});
+
+	/*
 	 * Operators
 	 */
 	operator_("+", {
