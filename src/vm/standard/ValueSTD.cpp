@@ -154,6 +154,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("typeID", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::typeID}
 	});
+	method("move", {
+		{Type::any(), {Type::const_any()}, (void*) &LSValue::move, Method::NATIVE}
+	});
 }
 
 /*
