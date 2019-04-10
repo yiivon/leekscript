@@ -165,23 +165,11 @@ Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::val
 	auto folded_type = element_type.fold();
 	auto array_type = Type::tmp_array(element_type);
 	auto array = [&]() { if (folded_type == Type::integer()) {
-		return insn_call(array_type, {new_integer(elements.size())}, +[](int capacity) {
-			auto array = new LSArray<int>();
-			array->reserve(capacity);
-			return array;
-		}, "Array<int>::new");
+		return insn_call(array_type, {new_integer(elements.size())}, nullptr, "Array.new.0");
 	} else if (folded_type == Type::real()) {
-		return insn_call(array_type, {new_integer(elements.size())}, +[](int capacity) {
-			auto array = new LSArray<double>();
-			array->reserve(capacity);
-			return array;
-		}, "Array<real>::new");
+		return insn_call(array_type, {new_integer(elements.size())}, nullptr, "Array.new.1");
 	} else {
-		return insn_call(array_type, {new_integer(elements.size())}, +[](int capacity) {
-			auto array = new LSArray<LSValue*>();
-			array->reserve(capacity);
-			return array;
-		}, "Array<any>::new");
+		return insn_call(array_type, {new_integer(elements.size())}, nullptr, "Array.new.2");
 	}}();
 	for (const auto& element : elements) {
 		auto v = insn_move(insn_convert(element, folded_type));

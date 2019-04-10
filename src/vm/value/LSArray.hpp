@@ -15,6 +15,7 @@ class LSArray : public LSValue, public std::vector<T> {
 public:
 
 	static LSValue* clazz;
+	static LSArray<T>* constructor(int);
 
 	LSArray();
 	LSArray(std::initializer_list<T>);

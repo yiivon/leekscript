@@ -17,6 +17,13 @@ namespace ls {
 template <class T>
 LSValue* LSArray<T>::clazz;
 
+template <class T>
+LSArray<T>* LSArray<T>::constructor(int capacity) {
+	auto array = new LSArray<T>();
+	array->reserve(capacity);
+	return array;
+}
+
 template <>
 inline LSArray<LSValue*>::~LSArray() {
 	for (auto v : *this) {

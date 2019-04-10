@@ -14,6 +14,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	LSArray<double>::clazz = clazz;
 
 	/*
+	 * Constructor
+	 */
+	constructor_({
+		{Type::tmp_array(Type::integer()), {Type::integer()}, (void*) &LSArray<int>::constructor, Method::NATIVE},
+		{Type::tmp_array(Type::real()), {Type::integer()}, (void*) &LSArray<double>::constructor, Method::NATIVE},
+		{Type::tmp_array(Type::any()), {Type::integer()}, (void*) &LSArray<LSValue*>::constructor, Method::NATIVE},
+	});
+
+	/*
 	 * Operators
 	 */
 	operator_("in", {
