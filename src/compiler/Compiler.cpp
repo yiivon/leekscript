@@ -2060,7 +2060,7 @@ void Compiler::enter_function(llvm::Function* F, bool is_closure, Function* fun)
 	catchers.push_back({});
 	function_is_closure.push(is_closure);
 	auto block = builder.GetInsertBlock();
-	if (!block) block = fun->block;
+	if (!block) block = fun->current_version->block;
 	function_llvm_blocks.push(block);
 	this->F = F;
 	this->fun = fun;

@@ -586,11 +586,11 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
 	llvm_function->setPersonalityFn(personality);
 
-	((Function*) this)->block = llvm::BasicBlock::Create(c.getContext(), "entry_" + name, llvm_function);
+	version->block = llvm::BasicBlock::Create(c.getContext(), "entry_" + name, llvm_function);
 
 	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
 
-	c.builder.SetInsertPoint(block);
+	c.builder.SetInsertPoint(version->block);
 
 	// Create arguments
 	unsigned index = 0;

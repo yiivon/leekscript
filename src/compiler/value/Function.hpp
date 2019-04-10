@@ -24,6 +24,7 @@ public:
 		llvm::BasicBlock* catch_block = nullptr;
 		llvm::AllocaInst* exception_slot = nullptr;
 		llvm::AllocaInst* exception_line_slot = nullptr;
+		llvm::BasicBlock* block = nullptr;
 		bool is_compiled() const;
 	};
 
@@ -50,7 +51,6 @@ public:
 	Type return_type;
 	llvm::orc::VModuleKey module_handle;
 	bool handle_created = false;
-	llvm::BasicBlock* block = nullptr;
 	llvm::Module* module;
 	Compiler* compiler = nullptr;
 	int default_values_count = 0;
