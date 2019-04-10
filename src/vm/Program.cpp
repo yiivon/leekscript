@@ -105,11 +105,18 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	if (ir) {
 		llvm::SMDiagnostic Err;
 		auto Mod = llvm::parseIRFile(file_name, Err, vm.compiler.getContext());
+		auto llvm_type = Mod->getFunction("main")->getReturnType();
 		vm.compiler.addModule(std::move(Mod));
 		auto symbol = vm.compiler.findSymbol("main");
 		closure = (void*) cantFail(symbol.getAddress());
-		type = Type::integer();
-		return {};
+		type = llvm_type->isPointerTy() ? Type::any() : Type::integer();
+
+		VM::Result result;
+		result.compilation_success = true;
+		std::ostringstream oss;
+		oss << llvm_type;
+		result.program = oss.str();
+		return result;
 	} else {
 		return compile_leekscript(vm, ctx, assembly, pseudo_code, log_instructions);
 	}
