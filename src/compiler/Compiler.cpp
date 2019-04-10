@@ -1088,18 +1088,12 @@ void Compiler::insn_push_array(Compiler::value array, Compiler::value value) con
 	assert(value.t.llvm_type(*this) == value.v->getType());
 	auto element_type = array.t.element().fold();
 	if (element_type == Type::integer()) {
-		insn_call({}, {array, value}, (void*) +[](LSArray<int>* array, int value) {
-			array->push_back(value);
-		}, "Array<int>::push");
+		insn_call({}, {array, value}, nullptr, "Array.vpush.0");
 	} else if (element_type == Type::real()) {
 		value.t = Type::real();
-		insn_call({}, {array, value}, (void*) +[](LSArray<double>* array, double value) {
-			array->push_back(value);
-		}, "Array<double>::push");
+		insn_call({}, {array, value}, nullptr, "Array.vpush.1");
 	} else {
-		insn_call({}, {array, insn_convert(value, Type::any())}, (void*) +[](LSArray<LSValue*>* array, LSValue* value) {
-			array->push_inc(value);
-		}, "Array<any>::push");
+		insn_call({}, {array, insn_convert(value, Type::any())}, nullptr, "Array.vpush.2");
 	}
 }
 
