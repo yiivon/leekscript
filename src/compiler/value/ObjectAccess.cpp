@@ -99,13 +99,16 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 		if (std_class->methods.find(field->content) != std_class->methods.end()) {
 			auto method = std_class->methods.at(field->content);
 			std::string name = vv->name + "." + field->content;
+			int i = 0;
 			for (const auto& m : method) {
+				auto version_name = name + "." + std::to_string(i);
 				auto t = Type::fun(m.type.return_type(), m.type.arguments(), this);
 				if (m.native) {
-					callable->add_version({ name, t, m.addr, m.mutators, m.templates, nullptr });
+					callable->add_version({ version_name, t, m.addr, m.mutators, m.templates, nullptr });
 				} else {
-					callable->add_version({ name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, nullptr });
+					callable->add_version({ version_name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, nullptr });
 				}
+				i++;
 			}
 		}
 		// Value.<method>
