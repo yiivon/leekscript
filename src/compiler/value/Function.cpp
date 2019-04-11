@@ -524,7 +524,6 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 	return current_version->landing_pad;
 }
 
-void fake_ex_destru_fun(void*) {}
 void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
 	// std::cout << "Function " << name << "::compile_version_internal(" << version->type << ")" << std::endl;
 	((Function*) this)->current_version = version;
@@ -625,13 +624,9 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.delete_function_variables();
 		Compiler::value exception = {c.builder.CreateLoad(version->exception_slot), Type::long_()};
 		Compiler::value exception_line = {c.builder.CreateLoad(version->exception_line_slot), Type::long_()};
-		auto exception_function = c.new_pointer(&c.fun->name, Type::any());
-		c.insn_call({}, {exception, exception_line, exception_function}, +[](void** ex, size_t line, std::string* f) {
-			auto exception = (vm::ExceptionObj*) (ex + 4);
-			exception->frames.push_back({*f, line});
-			__cxa_throw(exception, (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
-		});
 		c.builder.CreateRetVoid();
+		Compiler::value function_name = { c.builder.CreateGlobalStringPtr(c.fun->name, "fun"), Type::i8().pointer() };
+		c.insn_call({}, {exception, function_name, exception_line}, nullptr, "System.throw.1");
 	}
 
 	if (!is_main_function) {

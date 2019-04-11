@@ -1842,7 +1842,7 @@ void Compiler::insn_throw(Compiler::value v) const {
 		delete_function_variables();
 		auto line = new_long(exception_line);
 		Compiler::value function_name = { builder.CreateGlobalStringPtr(fun->name, "fun"), Type::i8().pointer() };
-		insn_call({}, {v, function_name, line}, nullptr, "System.throw");
+		insn_call({}, {v, function_name, line}, nullptr, "System.throw.0");
 	}
 }
 
