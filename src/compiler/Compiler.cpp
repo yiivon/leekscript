@@ -89,10 +89,10 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 	return v;
 }
 Compiler::value Compiler::new_null() const {
-	auto null_global = fun->module->getGlobalVariable("null");
+	auto null_global = fun->current_version->module->getGlobalVariable("null");
 	if (!null_global) {
 		auto t = Type::raw_null()->llvm(*this)->getPointerElementType();
-		null_global = new llvm::GlobalVariable(*fun->module, t, true, llvm::GlobalValue::ExternalLinkage, nullptr, "null");
+		null_global = new llvm::GlobalVariable(*fun->current_version->module, t, true, llvm::GlobalValue::ExternalLinkage, nullptr, "null");
 	}
 	return {null_global, Type::null()};
 }
@@ -1902,13 +1902,13 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	if (func) {
 		auto function_name = name + "_" + std::to_string(mappings.size());
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
+		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->current_version->module);
 		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambda}});
 	} else {
 		auto p = mappings.find(name + std::to_string((long) fun->current_version));
 		if (p == mappings.end()) {
 			auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-			lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, fun->module);
+			lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, fun->current_version->module);
 			((Compiler*) this)->mappings.insert({name + std::to_string((long) fun->current_version), {(llvm::JITTargetAddress) nullptr, lambda}});
 		} else {
 			lambda = p->second.function;
@@ -1937,7 +1937,7 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	}
 	auto function_name = name + "_" + std::to_string(mappings.size());
 	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-	auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->module);
+	auto lambdaFN = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->current_version->module);
 	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambdaFN}});
 	
 	auto continueBlock = llvm::BasicBlock::Create(getContext(), "cont", F);
