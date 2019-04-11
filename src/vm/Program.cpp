@@ -103,15 +103,21 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	this->vm = &vm;
 
 	if (ir) {
+		VM::Result result;
 		llvm::SMDiagnostic Err;
 		auto Mod = llvm::parseIRFile(file_name, Err, vm.compiler.getContext());
+		if (!Mod) {
+			Err.print("main", llvm::errs());
+			result.compilation_success = false;
+			result.program = "<error>";
+			return result;
+		}
 		auto llvm_type = Mod->getFunction("main")->getReturnType();
 		vm.compiler.addModule(std::move(Mod));
 		auto symbol = vm.compiler.findSymbol("main");
 		closure = (void*) cantFail(symbol.getAddress());
 		type = llvm_type->isPointerTy() ? Type::any() : Type::integer();
 
-		VM::Result result;
 		result.compilation_success = true;
 		std::ostringstream oss;
 		oss << llvm_type;
