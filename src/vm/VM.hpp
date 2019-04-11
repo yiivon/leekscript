@@ -73,7 +73,7 @@ public:
 	LSBoolean* false_value;
 	unsigned int operations = 0;
 	bool enable_operations = true;
-	unsigned long int operation_limit;
+	unsigned int operation_limit;
 	OutputStream* output = default_output;
 	long mpz_created = 0;
 	long mpz_deleted = 0;

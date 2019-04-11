@@ -53,6 +53,9 @@ Compiler::Compiler(VM* vm) : vm(vm),
 				if (Name == "null") {
 					return llvm::JITSymbol((llvm::JITTargetAddress) LSNull::get(), llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
+				if (Name == "ops") {
+					return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->operations, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+				}
 				if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name)) {
 					return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
 				}
@@ -2200,14 +2203,18 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 	// Operations enabled?
 	if (not vm->enable_operations) return;
 
-	// Variable counter pointer
-	auto ops_ptr = new_pointer(&vm->operations, Type::integer().pointer());
+	// Get the operations counter global variable
+	Compiler::value ops_ptr = { fun->current_version->module->getGlobalVariable("ops"), Type::integer().pointer() };
+	if (!ops_ptr.v) {
+		auto t = Type::integer().llvm_type(*this);
+		ops_ptr.v = new llvm::GlobalVariable(*fun->current_version->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, "ops");
+	}
 
 	// Increment counter
 	auto jit_ops = insn_load(ops_ptr);
 
 	// Compare to the limit
-	auto limit = new_long(vm->operation_limit);
+	auto limit = new_integer(vm->operation_limit);
 	auto compare = insn_gt(jit_ops, limit);
 	// If greater than the limit, throw exception
 	insn_if(compare, [&]() {
