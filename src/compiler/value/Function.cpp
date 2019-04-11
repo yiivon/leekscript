@@ -505,7 +505,7 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 		current_version->landing_pad = llvm::BasicBlock::Create(c.getContext(), "lpad", c.F);
 		c.builder.SetInsertPoint(current_version->landing_pad);
 		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(c.getContext()));
-		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(c.getContext()), llvm::Type::getInt32Ty(c.getContext())), 1);
+		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt64Ty(c.getContext()), llvm::Type::getInt32Ty(c.getContext())), 1);
 		auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
 		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(c.getContext()));
 		current_version->exception_line_slot = c.CreateEntryBlockAlloca("exnline.slot", llvm::Type::getInt64Ty(c.getContext()));
