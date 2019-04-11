@@ -39,6 +39,10 @@ SystemSTD::SystemSTD() : Module("System") {
 		{{}, {Type::const_integer()}, (void*) &System_print_int, Method::NATIVE},
 		{{}, {Type::const_boolean()}, (void*) &System_print_bool, Method::NATIVE},
 	});
+
+	method("throw", {
+		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) &SystemSTD::throw_, Method::NATIVE},
+	});
 }
 
 long System_time() {
@@ -113,6 +117,13 @@ void System_print_bool(bool v) {
 void System_print_float(double v) {
 	VM::current()->output->stream() << v;
 	VM::current()->output->end();
+}
+
+void SystemSTD::throw_(int type, char* function, size_t line) {
+	// std::cout << "SystemSTD::throw " << type << " " << function << " " << line << std::endl;
+	auto ex = vm::ExceptionObj((vm::Exception) type);
+	ex.frames.push_back({function, line});
+	throw ex;
 }
 
 }

@@ -8,6 +8,8 @@ namespace ls {
 class SystemSTD : public Module {
 public:
 	SystemSTD();
+
+	static void throw_(int type, char* function, size_t line);
 };
 
 }
