@@ -170,7 +170,11 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	}
 	// Do the call
 	auto r = [&]() { if (addr) {
-		return c.insn_invoke(type.return_type(), args, addr, name);
+		if (name.find(".") != std::string::npos) {
+			return c.insn_invoke(type.return_type(), args, nullptr, name);
+		} else {
+			return c.insn_invoke(type.return_type(), args, addr, name);
+		}
 	} else if (func) {
 		return func(c, args);
 	} else if (value) {
