@@ -121,8 +121,9 @@ Compiler::value Compiler::new_pointer(const void* p, Type type) const {
 	auto longp = llvm::ConstantInt::get(getContext(), llvm::APInt(64, (long) p, false));
 	return { builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, type.llvm_type(*this)), type };
 }
-Compiler::value Compiler::new_function(const void* p, Type type) const {
-	return new_pointer(p, type);
+Compiler::value Compiler::new_function(llvm::Function* f, Type type) const {
+	Compiler::value fun = { f, type };
+	return insn_call(type, {fun}, "Function.new");
 }
 Compiler::value Compiler::new_class(const void* p) const {
 	return new_pointer(p, Type::clazz());

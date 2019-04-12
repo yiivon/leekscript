@@ -463,7 +463,7 @@ Compiler::value Function::compile(Compiler& c) const {
 		return compile_version(c, version);
 	} else {
 		// Return default version
-		return c.new_function(default_version->function, default_version->type);
+		return c.new_function(default_version->f, default_version->type);
 	}
 }
 
@@ -483,13 +483,12 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	// Compile version if needed
 	versions.at(version)->compile(c);
 
-	// assert(versions.at(version)->function->function != nullptr);
-	return c.new_function(versions.at(version)->function, versions.at(version)->type);
+	return c.new_function(versions.at(version)->f, versions.at(version)->type);
 }
 
 Compiler::value Function::compile_default_version(Compiler& c) const {
 	default_version->compile(c);
-	return c.new_function(default_version->function, default_version->type);
+	return c.new_function(default_version->f, default_version->type);
 }
 
 llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
