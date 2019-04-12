@@ -276,9 +276,11 @@ void* VM::resolve_symbol(std::string name) {
 		}
 		// std::cout << "method = " << method << std::endl;
 		// std::cout << "version = " << version << std::endl;
-		auto clazz = (LSClass*) internal_vars.at(module)->lsvalue;
-		auto implems = clazz->methods.at(method);
-		return implems.at(version).addr;
+		if (internal_vars.find(module) != internal_vars.end()) {
+			auto clazz = (LSClass*) internal_vars.at(module)->lsvalue;
+			auto implems = clazz->methods.at(method);
+			return implems.at(version).addr;
+		}
 	}
 	return nullptr;
 }
