@@ -293,6 +293,7 @@ public:
 	}
 	value insn_invoke(Type return_type, std::vector<value> args, void* func, std::string name = "") const;
 	value insn_invoke(Type return_type, std::vector<value> args, value func, std::string name = "") const;
+	value insn_invoke(Type return_type, std::vector<value> args, llvm::Function* fun) const;
 	value insn_call(Type return_type, std::vector<value> args, value fun, std::string name = "") const;
 	value insn_call(Type return_type, std::vector<value> args, llvm::Function* fun) const;
 	value insn_call(Type return_type, std::vector<value> args, std::string name) const;

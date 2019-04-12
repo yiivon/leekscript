@@ -2051,6 +2051,28 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	}
 }
 
+Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, llvm::Function* function) const {
+	// std::cout << "insn_invoke " << args << std::endl;
+	std::vector<llvm::Value*> llvm_args;
+	for (unsigned i = 0, e = args.size(); i != e; ++i) {
+		// assert(args[i].t.llvm_type(*this) == args[i].v->getType());
+		llvm_args.push_back(args[i].v);
+	}
+	auto continueBlock = llvm::BasicBlock::Create(getContext(), "cont", F);
+	auto r = builder.CreateInvoke(function, continueBlock, fun->get_landing_pad(*this), llvm_args);
+	builder.SetInsertPoint(continueBlock);
+	if (return_type.is_void()) {
+		return {};
+	} else {
+		value result = { r, return_type };
+		if (return_type.llvm_type(*this) != function->getReturnType()) {
+			result.v = builder.CreatePointerCast(r, return_type.llvm_type(*this));
+		}
+		assert_value_ok(result);
+		return result;
+	}
+}
+
 void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) const {
 	assert(fun.t.llvm_type(*this) == fun.v->getType());
 	assert(capture.t.llvm_type(*this) == capture.v->getType());
