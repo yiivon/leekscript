@@ -470,16 +470,17 @@ Compiler::value Function::compile(Compiler& c) const {
 Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) const {
 	// std::cout << "Function " << name << "::compile_version(" << args << ")" << std::endl;
 	// Fill with default arguments
-	auto version = args;
+	auto full_args = args;
 	for (size_t i = version.size(); i < arguments.size(); ++i) {
 		if (defaultValues.at(i)) {
-			version.push_back(defaultValues.at(i)->type);
+			full_args.push_back(defaultValues.at(i)->type);
 		}
 	}
-	if (versions.find(version) == versions.end()) {
+	if (versions.find(full_args) == versions.end()) {
 		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
 		return c.new_pointer(LSNull::get(), Type::null());
 	}
+	auto version = versions.at(full_args);
 	// Compile version if needed
 	versions.at(version)->compile(c);
 
