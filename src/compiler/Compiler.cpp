@@ -168,11 +168,11 @@ Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::val
 	auto folded_type = element_type.fold();
 	auto array_type = Type::tmp_array(element_type);
 	auto array = [&]() { if (folded_type == Type::integer()) {
-		return insn_call(array_type, {new_integer(elements.size())}, nullptr, "Array.new.0");
+		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.0");
 	} else if (folded_type == Type::real()) {
-		return insn_call(array_type, {new_integer(elements.size())}, nullptr, "Array.new.1");
+		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.1");
 	} else {
-		return insn_call(array_type, {new_integer(elements.size())}, nullptr, "Array.new.2");
+		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.2");
 	}}();
 	for (const auto& element : elements) {
 		auto v = insn_move(insn_convert(element, folded_type));
@@ -899,9 +899,9 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 		return v; // already any
 	}
 	if (v.t.is_long()) {
-		return insn_call(Type::any(), {to_real(v)}, nullptr, "Number.new.0");
+		return insn_call(Type::any(), {to_real(v)}, "Number.new.0");
 	} else if (v.t.is_real()) {
-		return insn_call(Type::any(), {v}, nullptr, "Number.new.0");
+		return insn_call(Type::any(), {v}, "Number.new.0");
 	} else if (v.t.is_bool()) {
 		return insn_call(Type::any(), {v}, +[](bool n) {
 			return LSBoolean::get(n);
@@ -917,7 +917,7 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 			});
 		}
 	} else {
-		return insn_call(Type::any(), {to_real(v)}, nullptr, "Number.new.0");
+		return insn_call(Type::any(), {to_real(v)}, "Number.new.0");
 	}
 }
 
@@ -1088,12 +1088,12 @@ void Compiler::insn_push_array(Compiler::value array, Compiler::value value) con
 	assert(value.t.llvm_type(*this) == value.v->getType());
 	auto element_type = array.t.element().fold();
 	if (element_type == Type::integer()) {
-		insn_call({}, {array, value}, nullptr, "Array.vpush.0");
+		insn_call({}, {array, value}, "Array.vpush.0");
 	} else if (element_type == Type::real()) {
 		value.t = Type::real();
-		insn_call({}, {array, value}, nullptr, "Array.vpush.1");
+		insn_call({}, {array, value}, "Array.vpush.1");
 	} else {
-		insn_call({}, {array, insn_convert(value, Type::any())}, nullptr, "Array.vpush.2");
+		insn_call({}, {array, insn_convert(value, Type::any())}, "Array.vpush.2");
 	}
 }
 
@@ -1188,7 +1188,7 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 	assert_value_ok(v);
 	if (v.t.fold().must_manage_memory() and !v.t.temporary and !v.t.reference) {
 		// TODO avoid conversions
-		return insn_convert(insn_call(Type::any(), {insn_convert(v, Type::any())}, nullptr, "Value.move"), v.t.fold());
+		return insn_convert(insn_call(Type::any(), {insn_convert(v, Type::any())}, "Value.move"), v.t.fold());
 	}
 	return v;
 }
@@ -1840,7 +1840,7 @@ void Compiler::insn_throw(Compiler::value v) const {
 		delete_function_variables();
 		auto line = new_long(exception_line);
 		Compiler::value function_name = { builder.CreateGlobalStringPtr(fun->name, "fun"), Type::i8().pointer() };
-		insn_call({}, {v, function_name, line}, nullptr, "System.throw.0");
+		insn_call({}, {v, function_name, line}, "System.throw.0");
 	}
 }
 
@@ -1895,22 +1895,11 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
-	llvm::Function* lambda;
-	if (func) {
-		auto function_name = name + "_" + std::to_string(mappings.size());
-		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->current_version->module);
-		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambda}});
-	} else {
-		auto p = mappings.find(name + std::to_string((long) fun->current_version));
-		if (p == mappings.end()) {
-			auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-			lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, fun->current_version->module);
-			((Compiler*) this)->mappings.insert({name + std::to_string((long) fun->current_version), {(llvm::JITTargetAddress) nullptr, lambda}});
-		} else {
-			lambda = p->second.function;
-		}
-	}
+	auto function_name = name + "_" + std::to_string(mappings.size());
+	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
+	llvm::Function* lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->current_version->module);
+	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambda}});
+	
 	auto r = builder.CreateCall(lambda, llvm_args);
 	if (return_type.is_void()) {
 		return {};
@@ -1982,6 +1971,36 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		return {};
 	} else {
 		value result = { r, return_type };
+		assert(result.t.llvm_type(*this) == result.v->getType());
+		return result;
+	}
+}
+
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, std::string name) const {
+	std::vector<llvm::Value*> llvm_args;
+	std::vector<llvm::Type*> llvm_types;
+	for (unsigned i = 0, e = args.size(); i != e; ++i) {
+		// assert(args[i].t.llvm_type(*this) == args[i].v->getType());
+		llvm_args.push_back(args[i].v);
+		llvm_types.push_back(args[i].t.llvm_type(*this));
+	}
+	llvm::Function* lambda;
+	auto p = mappings.find(name + std::to_string((long) fun->current_version));
+	if (p == mappings.end()) {
+		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
+		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, fun->current_version->module);
+		((Compiler*) this)->mappings.insert({name + std::to_string((long) fun->current_version), {(llvm::JITTargetAddress) nullptr, lambda}});
+	} else {
+		lambda = p->second.function;
+	}
+	auto r = builder.CreateCall(lambda, llvm_args);
+	if (return_type.is_void()) {
+		return {};
+	} else {
+		value result = { r, return_type };
+		if (return_type.llvm_type(*this) != lambda->getReturnType()) {
+			result.v = builder.CreatePointerCast(r, return_type.llvm_type(*this));
+		}
 		assert(result.t.llvm_type(*this) == result.v->getType());
 		return result;
 	}

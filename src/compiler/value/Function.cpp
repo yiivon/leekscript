@@ -625,7 +625,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		Compiler::value exception = {c.builder.CreateLoad(version->exception_slot), Type::long_()};
 		Compiler::value exception_line = {c.builder.CreateLoad(version->exception_line_slot), Type::long_()};
 		Compiler::value function_name = { c.builder.CreateGlobalStringPtr(c.fun->name, "fun"), Type::i8().pointer() };
-		c.insn_call({}, {exception, function_name, exception_line}, nullptr, "System.throw.1");
+		c.insn_call({}, {exception, function_name, exception_line}, "System.throw.1");
 		c.fun->compile_return(c, c.new_integer(0));
 	}
 
