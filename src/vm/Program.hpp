@@ -19,6 +19,9 @@ public:
 	std::vector<Function*> functions;
 	std::string file_name;
 	VM* vm;
+	bool handle_created = false;
+	llvm::Module* module = nullptr;
+	llvm::orc::VModuleKey module_handle;
 
 	Program(const std::string& code, const std::string& file_name);
 	virtual ~Program();

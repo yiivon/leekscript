@@ -35,9 +35,6 @@ Function::~Function() {
 		delete value;
 	}
 	if (default_version != nullptr) {
-		if (compiler != nullptr and default_version->handle_created) {
-			compiler->removeModule(default_version->module_handle);
-		}
 		if (default_version->function != nullptr) {
 			delete default_version->function;
 		}
@@ -45,9 +42,6 @@ Function::~Function() {
 		default_version = nullptr;
 	}
 	for (const auto& version : versions) {
-		if (compiler != nullptr and version.second->handle_created) {
-			compiler->removeModule(version.second->module_handle);
-		}
 		delete version.second->function;
 		delete version.second->body;
 		delete version.second;
@@ -488,7 +482,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	if (versions.at(version)->function->function == nullptr) {
 		compile_version_internal(c, args, versions.at(version));
 	}
-	assert(versions.at(version)->function->function != nullptr);
+	// assert(versions.at(version)->function->function != nullptr);
 	return c.new_function(versions.at(version)->function, versions.at(version)->type);
 }
 
@@ -569,9 +563,6 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		}
 	}
 
-	version->module = new llvm::Module(name + "$impl", c.getContext());
-	version->module->setDataLayout(c.DL);
-
 	std::vector<llvm::Type*> args;
 	if (captures.size()) {
 		args.push_back(Type::any().llvm_type(c)); // first arg is the function pointer
@@ -582,9 +573,12 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	auto llvm_return_type = version->type.return_type().llvm_type(c);
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
 	auto fun_name = is_main_function ? "main" : "fun_" + name + std::to_string(id);
-	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, version->module);
+	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
 
-	auto f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", version->module);
+	auto f = c.program->module->getFunction("__gxx_personality_v0");
+	if (!f) {
+		f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", c.program->module);
+	}
 	auto Int8PtrTy = llvm::PointerType::get(llvm::Type::getInt8Ty(c.getContext()), c.DL.getAllocaAddrSpace());
 	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
 	llvm_function->setPersonalityFn(personality);
@@ -654,15 +648,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		// version->module->print(ir, nullptr);
 		// ir.flush();
 	}
-	
-	version->module_handle = c.addModule(std::unique_ptr<llvm::Module>(version->module));
-	version->handle_created = true;
-
-	auto ExprSymbol = c.findSymbol(fun_name);
-	assert(ExprSymbol && "Function not found");
-
-	ls_fun->function = (void*) cantFail(ExprSymbol.getAddress());
-	assert(ls_fun->function != nullptr);
+	ls_fun->function = (void*) 12;
 	version->function = ls_fun;
 	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;
 }

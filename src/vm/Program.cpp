@@ -30,9 +30,9 @@ Program::Program(const std::string& code, const std::string& file_name) {
 Program::~Program() {
 	if (main != nullptr) {
 		delete main;
-		if (closure != nullptr) {
-			// vm->compiler.removeModule(main->function_handle);
-		}
+	}
+	if (handle_created) {
+		vm->compiler.removeModule(module_handle);
 	}
 }
 
@@ -87,8 +87,18 @@ VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool asse
 	vm.compiler.log_instructions = log_instructions;
 	vm.compiler.instructions_debug.str("");
 	vm.compiler.label_map.clear();
+
+	module = new llvm::Module(file_name, vm.compiler.getContext());
+	module->setDataLayout(vm.compiler.DL);
+
 	main->compile(vm.compiler);
-	closure = main->default_version->function->function;
+
+	module_handle = vm.compiler.addModule(std::unique_ptr<llvm::Module>(module));
+	handle_created = true;
+	auto ExprSymbol = vm.compiler.findSymbol("main");
+	assert(ExprSymbol && "Function not found");
+
+	closure = (void*) cantFail(ExprSymbol.getAddress());
 	type = main->type.return_type().fold();
 
 	result.compilation_success = true;

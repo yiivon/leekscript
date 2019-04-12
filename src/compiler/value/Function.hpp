@@ -26,9 +26,6 @@ public:
 		llvm::AllocaInst* exception_slot = nullptr;
 		llvm::AllocaInst* exception_line_slot = nullptr;
 		llvm::BasicBlock* block = nullptr;
-		bool handle_created = false;
-		llvm::Module* module = nullptr;
-		llvm::orc::VModuleKey module_handle;
 		bool is_compiled() const;
 	};
 

@@ -21,6 +21,7 @@
 #include "semantic/SemanticAnalyser.hpp"
 #include "llvm/IR/GlobalVariable.h"
 #include "../type/Base_type.hpp"
+#include "../vm/Program.hpp"
 
 #define log_insn(i) log_instructions && _log_insn((i))
 
@@ -92,10 +93,10 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 	return v;
 }
 Compiler::value Compiler::new_null() const {
-	auto null_global = fun->current_version->module->getGlobalVariable("null");
+	auto null_global = program->module->getGlobalVariable("null");
 	if (!null_global) {
 		auto t = Type::raw_null()->llvm(*this)->getPointerElementType();
-		null_global = new llvm::GlobalVariable(*fun->current_version->module, t, true, llvm::GlobalValue::ExternalLinkage, nullptr, "null");
+		null_global = new llvm::GlobalVariable(*program->module, t, true, llvm::GlobalValue::ExternalLinkage, nullptr, "null");
 	}
 	return {null_global, Type::null()};
 }
@@ -1897,7 +1898,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	}
 	auto function_name = name + "_" + std::to_string(mappings.size());
 	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-	llvm::Function* lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->current_version->module);
+	llvm::Function* lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, program->module);
 	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambda}});
 	
 	auto r = builder.CreateCall(lambda, llvm_args);
@@ -1925,13 +1926,13 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	if (func) {
 		auto function_name = name + "_" + std::to_string(mappings.size());
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, fun->current_version->module);
+		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, program->module);
 		((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambda}});
 	} else {
 		auto p = mappings.find(name + std::to_string((long) fun->current_version));
 		if (p == mappings.end()) {
 			auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-			lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, fun->current_version->module);
+			lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, program->module);
 			((Compiler*) this)->mappings.insert({name + std::to_string((long) fun->current_version), {(llvm::JITTargetAddress) nullptr, lambda}});
 		} else {
 			lambda = p->second.function;
@@ -2002,11 +2003,11 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
 	llvm::Function* lambda;
-	auto p = mappings.find(name + std::to_string((long) fun->current_version));
+	auto p = mappings.find(name);
 	if (p == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, fun->current_version->module);
-		((Compiler*) this)->mappings.insert({name + std::to_string((long) fun->current_version), {(llvm::JITTargetAddress) nullptr, lambda}});
+		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, program->module);
+		((Compiler*) this)->mappings.insert({name, {(llvm::JITTargetAddress) nullptr, lambda}});
 	} else {
 		lambda = p->second.function;
 	}
@@ -2245,10 +2246,10 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 	if (not vm->enable_operations) return;
 
 	// Get the operations counter global variable
-	Compiler::value ops_ptr = { fun->current_version->module->getGlobalVariable("ops"), Type::integer().pointer() };
+	Compiler::value ops_ptr = { program->module->getGlobalVariable("ops"), Type::integer().pointer() };
 	if (!ops_ptr.v) {
 		auto t = Type::integer().llvm_type(*this);
-		ops_ptr.v = new llvm::GlobalVariable(*fun->current_version->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, "ops");
+		ops_ptr.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, "ops");
 	}
 
 	// Increment counter
