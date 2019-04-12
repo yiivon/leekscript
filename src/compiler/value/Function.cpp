@@ -183,6 +183,7 @@ void Function::analyse(SemanticAnalyser* analyser) {
 
 	if (!default_version) {
 		default_version = new Function::Version();
+		default_version->parent = this;
 		current_version = default_version;
 		default_version->body = body;
 		if (captures.size()) {
@@ -214,6 +215,7 @@ void Function::create_version(SemanticAnalyser* analyser, std::vector<Type> args
 	// TODO should be ==
 	// assert(args.size() >= arguments.size());
 	auto version = new Function::Version();
+	version->parent = this;
 	version->body = (Block*) body->clone();
 	if (captures.size()) {
 		version->function = new LSClosure(nullptr);
@@ -706,6 +708,7 @@ Value* Function::clone() const {
 	f->default_values_count = default_values_count;
 	for (const auto& v : versions) {
 		auto v2 = new Version();
+		v2->parent = f;
 		if (captures.size()) {
 			v2->function = new LSClosure(nullptr);
 		} else {

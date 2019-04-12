@@ -17,6 +17,7 @@ public:
 	static int id_counter;
 
 	struct Version {
+		Function* parent;
 		Block* body;
 		LSFunction* function = nullptr;
 		Type type;
