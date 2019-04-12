@@ -1976,6 +1976,23 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	}
 }
 
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, llvm::Function* fun) const {
+	// std::cout << "insn_call " << fun->getName().str() << std::endl;
+	std::vector<llvm::Value*> llvm_args;
+	for (unsigned i = 0, e = args.size(); i != e; ++i) {
+		assert(args[i].t.llvm_type(*this) == args[i].v->getType());
+		llvm_args.push_back(args[i].v);
+	}
+	auto r = builder.CreateCall(fun, llvm_args);
+	if (return_type.is_void()) {
+		return {};
+	} else {
+		value result = { r, return_type };
+		assert(result.t.llvm_type(*this) == result.v->getType());
+		return result;
+	}
+}
+
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
