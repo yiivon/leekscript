@@ -2051,7 +2051,7 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	}
 }
 
-void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) {
+void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) const {
 	assert(fun.t.llvm_type(*this) == fun.v->getType());
 	assert(capture.t.llvm_type(*this) == capture.v->getType());
 	// std::cout << "add capture " << capture.t << std::endl;

@@ -296,7 +296,7 @@ public:
 	value insn_call(Type return_type, std::vector<value> args, value fun, std::string name = "") const;
 	value insn_call(Type return_type, std::vector<value> args, llvm::Function* fun) const;
 	value insn_call(Type return_type, std::vector<value> args, std::string name) const;
-	void function_add_capture(value fun, value capture);
+	void function_add_capture(value fun, value capture) const;
 	void log(const std::string&& str) const;
 
 	// Blocks
