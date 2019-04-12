@@ -17,7 +17,7 @@
 namespace ls {
 
 bool Function::Version::is_compiled() const {
-	return function and function->function != nullptr;
+	return f != nullptr;
 }
 
 int Function::id_counter = 0;
@@ -35,6 +35,9 @@ Function::~Function() {
 		delete value;
 	}
 	if (default_version != nullptr) {
+		// if (compiler != nullptr and default_version->handle_created) {
+		// 	compiler->removeModule(default_version->module_handle);
+		// }
 		if (default_version->function != nullptr) {
 			delete default_version->function;
 		}
@@ -42,6 +45,9 @@ Function::~Function() {
 		default_version = nullptr;
 	}
 	for (const auto& version : versions) {
+		// if (compiler != nullptr and version.second->handle_created) {
+		// 	compiler->removeModule(version.second->module_handle);
+		// }
 		delete version.second->function;
 		delete version.second->body;
 		delete version.second;
@@ -423,9 +429,9 @@ void Function::must_return_any(SemanticAnalyser*) {
 
 Callable* Function::get_callable(SemanticAnalyser*) const {
 	auto callable = new Callable("<function>");
-	callable->add_version({ "<default>", default_version->type, this });
+	callable->add_version({ "<default>", default_version->type, default_version });
 	for (const auto& version : versions) {
-		callable->add_version({ "<version>", version.second->type, this });
+		callable->add_version({ "<version>", version.second->type, version.second });
 	}
 	return callable;
 }
@@ -445,16 +451,12 @@ Compiler::value Function::compile(Compiler& c) const {
 	// Compile default version
 	// std::cout << "generate_default_version " << generate_default_version << std::endl;
 	if (is_main_function || generate_default_version) {
-		if (not default_version->is_compiled()) {
-			compile_version_internal(c, type.arguments(), default_version);
-		}
+		default_version->compile(c);
 	}
 
 	// Add captures (for sub functions only)
 	for (auto& version : ((Function*) this)->versions) {
-		if (not version.second->is_compiled()) {
-			compile_version_internal(c, version.first, version.second);
-		}
+		version.second->compile(c);
 	}
 
 	if (has_version) {
@@ -479,17 +481,14 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 		return c.new_pointer(LSNull::get(), Type::null());
 	}
 	// Compile version if needed
-	if (versions.at(version)->function->function == nullptr) {
-		compile_version_internal(c, args, versions.at(version));
-	}
+	versions.at(version)->compile(c);
+
 	// assert(versions.at(version)->function->function != nullptr);
 	return c.new_function(versions.at(version)->function, versions.at(version)->type);
 }
 
 Compiler::value Function::compile_default_version(Compiler& c) const {
-	if (not default_version->is_compiled()) {
-		compile_version_internal(c, type.arguments(), default_version);
-	}
+	default_version->compile(c);
 	return c.new_function(default_version->function, default_version->type);
 }
 
@@ -520,18 +519,21 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 	return current_version->landing_pad;
 }
 
-void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
+void Function::Version::compile(Compiler& c) {
+
+	if (is_compiled()) return;
+
 	// std::cout << "Function " << name << "::compile_version_internal(" << version->type << ")" << std::endl;
-	((Function*) this)->current_version = version;
+	this->parent->current_version = this;
 
 	const int id = id_counter++;
 
-	auto ls_fun = version->function;
+	auto ls_fun = this->function;
 
 	Compiler::value jit_fun;
-	if (!is_main_function) {
-		jit_fun = c.new_function(ls_fun, version->type);
-		for (const auto& cap : captures) {
+	if (!parent->is_main_function) {
+		jit_fun = c.new_function(ls_fun, this->type);
+		for (const auto& cap : parent->captures) {
 			Compiler::value jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
 				auto f = dynamic_cast<Function*>(cap->value);
@@ -554,7 +556,7 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	}
 
 	// System internal variables (for main function only)
-	if (is_main_function) {
+	if (parent->is_main_function) {
 		for (auto var : c.vm->internal_vars) {
 			auto name = var.first;
 			auto variable = var.second;
@@ -564,68 +566,66 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 	}
 
 	std::vector<llvm::Type*> args;
-	if (captures.size()) {
+	if (parent->captures.size()) {
 		args.push_back(Type::any().llvm_type(c)); // first arg is the function pointer
 	}
-	for (auto& t : version->type.arguments()) {
+	for (auto& t : this->type.arguments()) {
 		args.push_back(t.llvm_type(c));
 	}
-	auto llvm_return_type = version->type.return_type().llvm_type(c);
+	auto llvm_return_type = this->type.return_type().llvm_type(c);
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
-	auto fun_name = is_main_function ? "main" : "fun_" + name + std::to_string(id);
-	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
+	auto fun_name = parent->is_main_function ? "main" : "fun_" + parent->name + std::to_string(id);
+	f = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
 
-	auto f = c.program->module->getFunction("__gxx_personality_v0");
-	if (!f) {
-		f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", c.program->module);
+	auto personalityfn = c.program->module->getFunction("__gxx_personality_v0");
+	if (!personalityfn) {
+		personalityfn = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", c.program->module);
 	}
-	auto Int8PtrTy = llvm::PointerType::get(llvm::Type::getInt8Ty(c.getContext()), c.DL.getAllocaAddrSpace());
-	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
-	llvm_function->setPersonalityFn(personality);
+	f->setPersonalityFn(personalityfn);
 
-	version->block = llvm::BasicBlock::Create(c.getContext(), "entry_" + name, llvm_function);
+	block = llvm::BasicBlock::Create(c.getContext(), "entry_" + parent->name, f);
 
-	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
+	c.enter_function(f, parent->captures.size() > 0, parent);
 
-	c.builder.SetInsertPoint(version->block);
+	c.builder.SetInsertPoint(block);
 
 	// Create arguments
 	unsigned index = 0;
-	int offset = captures.size() ? -1 : 0;
-	for (auto& arg : llvm_function->args()) {
-		if (captures.size() && index == 0) {
+	int offset = parent->captures.size() ? -1 : 0;
+	for (auto& arg : f->args()) {
+		if (parent->captures.size() && index == 0) {
 			arg.setName("__fun_ptr");
 		} else {
-			if (offset + index < arguments.size()) {
-				const auto name = arguments.at(offset + index)->content;
-				const auto type = version->type.arguments().at(offset + index).not_temporary();
+			if (offset + index < parent->arguments.size()) {
+				const auto name = parent->arguments.at(offset + index)->content;
+				const auto type = this->type.arguments().at(offset + index).not_temporary();
 				arg.setName(name);
-				auto var = c.create_entry(name, type);
-				c.insn_store(var, {&arg, type});
-				c.arguments.top()[name] = var;
+				// auto var = c.create_entry(name, type);
+				// c.insn_store(var, {&arg, type});
+				c.arguments.top()[name] = {&arg, type};
 			}
 		}
 		index++;
 	}
 
 	// Compile body
-	auto res = version->body->compile(c);
-	compile_return(c, res);
+	auto res = body->compile(c);
+	parent->compile_return(c, res);
 
 	// Catch block
-	if (version->landing_pad != nullptr) {
-		c.builder.SetInsertPoint(version->catch_block);
+	if (landing_pad != nullptr) {
+		c.builder.SetInsertPoint(catch_block);
 		// TODO : here, we delete all the function variables, even some variables that may already be destroyed
 		// TODO : To fix, create a landing pad for every call that can throw
 		c.delete_function_variables();
-		Compiler::value exception = {c.builder.CreateLoad(version->exception_slot), Type::long_()};
-		Compiler::value exception_line = {c.builder.CreateLoad(version->exception_line_slot), Type::long_()};
+		Compiler::value exception = {c.builder.CreateLoad(exception_slot), Type::long_()};
+		Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_()};
 		Compiler::value function_name = { c.builder.CreateGlobalStringPtr(c.fun->name, "fun"), Type::i8().pointer() };
 		c.insn_call({}, {exception, function_name, exception_line}, "System.throw.1");
 		c.fun->compile_return(c, c.new_integer(0));
 	}
 
-	if (!is_main_function) {
+	if (!parent->is_main_function) {
 		c.leave_function();
 		// Create a function : 1 op
 		c.inc_ops(1);
@@ -633,9 +633,9 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 		c.instructions_debug << "}" << std::endl;
 	}
 
-	llvm::verifyFunction(*llvm_function);
+	llvm::verifyFunction(*f);
 
-	if (is_main_function) {
+	if (parent->is_main_function) {
 		// std::error_code EC;
 		// llvm::raw_fd_ostream OS("module", EC, llvm::sys::fs::F_None);
 		// llvm::WriteBitcodeToFile(*module, OS);
@@ -643,13 +643,12 @@ void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version*
 
 		// module->print(llvm::errs(), nullptr, true, true);
 
-		// std::error_code EC;
-		// llvm::raw_fd_ostream ir("module.ll", EC, llvm::sys::fs::F_None);
-		// version->module->print(ir, nullptr);
-		// ir.flush();
+		std::error_code EC;
+		llvm::raw_fd_ostream ir("module.ll", EC, llvm::sys::fs::F_None);
+		c.program->module->print(ir, nullptr);
+		ir.flush();
 	}
-	ls_fun->function = (void*) 12;
-	version->function = ls_fun;
+	this->function = ls_fun;
 	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;
 }
 
