@@ -169,7 +169,10 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		args.insert(args.begin(), compiled_object);
 	}
 	// Do the call
-	auto r = [&]() { if (addr) {
+	auto r = [&]() { if (user_fun) {
+		user_fun->compile(c);
+		return c.insn_call(type.return_type(), args, user_fun->f);
+	} else if (addr) {
 		if (name.find(".") != std::string::npos) {
 			return c.insn_invoke(type.return_type(), args, nullptr, name);
 		} else {
@@ -223,7 +226,9 @@ namespace std {
 		os << v.name << " ";
 		if (v.object) os << "★ " << v.object << ":" << v.object->type << " ";
 		os << v.type.arguments() << BLUE_BOLD << " => " << END_COLOR << v.type.return_type();
-		if (v.addr) {
+		if (v.user_fun) {
+			os << " (user func " << v.user_fun << ")";
+		} else if (v.addr) {
 			os << " (native " << v.addr << ")";
 		} else if (v.func) {
 			os << " (compiler func)";

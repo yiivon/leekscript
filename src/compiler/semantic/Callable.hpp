@@ -4,6 +4,7 @@
 #include "../../type/Type.hpp"
 #include "../value/Value.hpp"
 #include "../../vm/TypeMutator.hpp"
+#include "../value/Function.hpp"
 
 namespace ls {
 
@@ -15,6 +16,7 @@ public:
 	void* addr = nullptr;
 	const Value* value = nullptr;
 	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)> func = nullptr;
+	Function::Version* user_fun = nullptr;
 	std::vector<TypeMutator*> mutators;
 	std::vector<Type> templates;
 	bool unknown = false;
@@ -27,6 +29,8 @@ public:
 		: name(name), type(type), object(object), func(func), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr) {}
 	CallableVersion(std::string name, Type type, const Value* value, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false)
 		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr) {}
+	CallableVersion(std::string name, Type type, Function::Version* f, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false)
+		: name(name), type(type), object(object), user_fun(f), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr) {}
 
 	void apply_mutators(SemanticAnalyser* analyser, std::vector<Value*> arguments);
 	void resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) const;
