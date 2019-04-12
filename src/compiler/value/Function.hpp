@@ -47,7 +47,6 @@ public:
 	std::string file;
 	Version* default_version = nullptr;
 	std::map<std::vector<Type>, Version*> versions;
-	bool compiled = false;
 	bool generate_default_version = false;
 	Version* current_version = nullptr;
 	bool analyzed = false;

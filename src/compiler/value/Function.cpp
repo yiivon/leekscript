@@ -440,7 +440,6 @@ Compiler::value Function::compile(Compiler& c) const {
 
 	// std::cout << "Function::compile() " << this << " version " << version << " " << has_version << std::endl;
 	
-	((Function*) this)->compiled = true;
 	((Function*) this)->compiler = &c;
 
 	if (!is_main_function && !has_version && !generate_default_version) {
