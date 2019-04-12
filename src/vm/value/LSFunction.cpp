@@ -8,6 +8,10 @@ namespace ls {
 
 LSClass* LSFunction::clazz;
 
+LSFunction* LSFunction::constructor(void* f) {
+	return new LSFunction(f);
+}
+
 LSFunction::LSFunction(void* function) : LSValue(FUNCTION, 1, true) {
 	this->function = function;
 }
