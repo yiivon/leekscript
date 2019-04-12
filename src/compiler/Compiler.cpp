@@ -1153,9 +1153,6 @@ void Compiler::insn_delete_mpz(Compiler::value mpz) const {
 		VM::current()->mpz_deleted++;
 		mpz_clear(&mpz);
 	});
-	// Increment mpz values counter
-	// auto mpz_counter = new_pointer(&vm->mpz_deleted, Type::long_().pointer());
-	// insn_store(mpz_counter, insn_add(insn_load(mpz_counter), new_integer(1)));
 }
 
 Compiler::value Compiler::insn_inc_refs(Compiler::value v) const {
