@@ -35,9 +35,6 @@ Function::~Function() {
 		delete value;
 	}
 	if (default_version != nullptr) {
-		// if (compiler != nullptr and default_version->handle_created) {
-		// 	compiler->removeModule(default_version->module_handle);
-		// }
 		if (default_version->function != nullptr) {
 			delete default_version->function;
 		}
@@ -45,9 +42,6 @@ Function::~Function() {
 		default_version = nullptr;
 	}
 	for (const auto& version : versions) {
-		// if (compiler != nullptr and version.second->handle_created) {
-		// 	compiler->removeModule(version.second->module_handle);
-		// }
 		delete version.second->function;
 		delete version.second->body;
 		delete version.second;
