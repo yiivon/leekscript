@@ -600,9 +600,9 @@ void Function::Version::compile(Compiler& c) {
 				const auto name = parent->arguments.at(offset + index)->content;
 				const auto type = this->type.arguments().at(offset + index).not_temporary();
 				arg.setName(name);
-				// auto var = c.create_entry(name, type);
-				// c.insn_store(var, {&arg, type});
-				c.arguments.top()[name] = {&arg, type};
+				auto var = c.create_entry(name, type);
+				c.insn_store(var, {&arg, type});
+				c.arguments.top()[name] = var;
 			}
 		}
 		index++;
