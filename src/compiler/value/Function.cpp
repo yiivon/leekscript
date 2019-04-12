@@ -532,7 +532,7 @@ void Function::Version::compile(Compiler& c) {
 
 	Compiler::value jit_fun;
 	if (!parent->is_main_function) {
-		jit_fun = c.new_function(ls_fun, this->type);
+		jit_fun = c.new_pointer(ls_fun, this->type);
 		for (const auto& cap : parent->captures) {
 			Compiler::value jit_cap;
 			if (cap->scope == VarScope::LOCAL) {

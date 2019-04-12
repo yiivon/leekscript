@@ -321,7 +321,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> version) const {
 	if (class_method) {
-		return c.new_function(new LSFunction(versions.at(version)), Type::fun());
+		return c.new_pointer(new LSFunction(versions.at(version)), Type::fun());
 	}
 	assert(false && "ObjectAccess::compile_version must be on a class method.");
 }

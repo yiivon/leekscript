@@ -325,7 +325,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 
 Compiler::value VariableValue::compile_version(Compiler& c, std::vector<Type> version) const {
 	if (class_method) {
-		return c.new_function(new LSFunction(versions.at(version)), Type::fun());
+		return c.new_pointer(new LSFunction(versions.at(version)), Type::fun());
 	}
 	auto f = dynamic_cast<Function*>(var->value);
 	if (f) {
