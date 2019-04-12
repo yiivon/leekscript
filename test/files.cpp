@@ -5,7 +5,7 @@ void Test::test_files() {
 	/** Complex codes */
 	header("Files");
 	section("General");
-	file("test/code/primes.leek").ops_limit(2000000000).equals("78498");
+	file("test/code/primes.leek").equals("78498");
 	file("test/code/primes_gmp.leek").equals("9591");
 	file("test/code/gcd.leek").equals("151");
 	file("test/code/strings.leek").almost(52.0, 8.0);
