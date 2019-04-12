@@ -1190,7 +1190,8 @@ Compiler::value Compiler::insn_dec_refs(Compiler::value v, Compiler::value previ
 Compiler::value Compiler::insn_move(Compiler::value v) const {
 	assert_value_ok(v);
 	if (v.t.fold().must_manage_memory() and !v.t.temporary and !v.t.reference) {
-		return insn_call(v.t.fold(), {v}, nullptr, "Value.move");
+		// TODO avoid conversions
+		return insn_convert(insn_call(Type::any(), {insn_convert(v, Type::any())}, nullptr, "Value.move"), v.t.fold());
 	}
 	return v;
 }
