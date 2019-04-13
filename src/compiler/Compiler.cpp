@@ -1999,6 +1999,9 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		return {};
 	} else {
 		value result = { r, return_type };
+		if (return_type.llvm_type(*this) != fun->getReturnType()) {
+			result.v = builder.CreatePointerCast(r, return_type.llvm_type(*this));
+		}
 		assert(result.t.llvm_type(*this) == result.v->getType());
 		return result;
 	}
