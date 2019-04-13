@@ -65,6 +65,7 @@ public:
 
 	std::vector<Module*> modules;
 	std::vector<LSValue*> system_vars;
+	std::vector<LSFunction*> function_created;
 	std::map<std::string, std::shared_ptr<SemanticVar>> internal_vars;
 	std::map<std::string, Compiler::value> internals;
 	Compiler compiler;

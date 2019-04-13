@@ -218,7 +218,21 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	result.operations = VM::operations;
 
 	// Cleaning
+	for (const auto& v : internal_vars) {
+		if (v.second->type().is_function() && v.second->function) {
+			for (const auto& version : v.second->function->versions) {
+				if (version.second->value.v) version.second->value.v = nullptr;
+				version.second->f = nullptr;
+			}
+			if (v.second->function->default_version->value.v) v.second->function->default_version->value.v = nullptr;
+			v.second->function->default_version->f = nullptr;
+		}
+	}
 	delete program;
+	for (const auto& f : function_created) {
+		delete f;
+	}
+	function_created.clear();
 	VM::enable_operations = true;
 	Type::clear_placeholder_types();
 
