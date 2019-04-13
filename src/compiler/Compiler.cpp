@@ -123,7 +123,16 @@ Compiler::value Compiler::new_pointer(const void* p, Type type) const {
 }
 Compiler::value Compiler::new_function(llvm::Function* f, Type type) const {
 	Compiler::value fun = { f, type };
-	return insn_call(type, {fun}, "Function.new");
+	return insn_call(type, {{f, Type::i8().pointer()}}, "Function.new");
+}
+Compiler::value Compiler::new_closure(llvm::Function* f, Type type, std::vector<Compiler::value> captures) const {
+	// std::cout << "new_closure " << captures << std::endl;
+	Compiler::value fun = { f, type };
+	auto closure = insn_call(type, {{f, Type::i8().pointer()}}, "Function.new.1");
+	for (const auto& capture : captures) {
+		function_add_capture(closure, capture);
+	}
+	return closure;
 }
 Compiler::value Compiler::new_class(const void* p) const {
 	return new_pointer(p, Type::clazz());

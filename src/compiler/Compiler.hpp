@@ -164,6 +164,7 @@ public:
 	value new_long(long l) const;
 	value new_pointer(const void* p, Type type) const;
 	value new_function(llvm::Function* f, Type type) const;
+	value new_closure(llvm::Function* f, Type type, std::vector<value> captures) const;
 	value new_class(const void* p) const;
 	value new_object() const;
 	value new_object_class(value clazz) const;
