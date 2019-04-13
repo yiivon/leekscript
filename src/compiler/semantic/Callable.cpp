@@ -201,10 +201,10 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	} else if (value) {
 		auto fun = [&]() { if (object) {
 			auto oa = dynamic_cast<const ObjectAccess*>(value);
-			auto k = c.new_pointer(&oa->field->content, Type::any());
-			return c.insn_invoke(type.pointer(), {compiled_object, k}, (void*) +[](LSValue* object, std::string* key) {
-				return object->attr(*key);
-			}, "get_method(" + oa->field->content + ")");
+			auto k = c.new_const_string(oa->field->content, "field");
+			return c.insn_invoke(type.pointer(), {compiled_object, k}, (void*) +[](LSValue* object, char* key) {
+				return object->attr(key);
+			});
 		} else {
 			return value->compile(c);
 		}}();

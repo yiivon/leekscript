@@ -162,6 +162,7 @@ public:
 	value new_integer(int i) const;
 	value new_real(double r) const;
 	value new_long(long l) const;
+	value new_const_string(std::string s, std::string name) const;
 	value new_pointer(const void* p, Type type) const;
 	value new_function(llvm::Function* f, Type type) const;
 	value new_closure(llvm::Function* f, Type type, std::vector<value> captures) const;

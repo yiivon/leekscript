@@ -31,7 +31,7 @@ bool String::will_store(SemanticAnalyser* analyser, const Type& type) {
 }
 
 Compiler::value String::compile(Compiler& c) const {
-	Compiler::value s = { c.builder.CreateGlobalStringPtr(token->content, "string"), Type::i8().pointer() };
+	auto s = c.new_const_string(token->content, "string");
 	return c.insn_call(Type::tmp_string(), {s}, "String.new");
 }
 

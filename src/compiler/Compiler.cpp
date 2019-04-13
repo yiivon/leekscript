@@ -116,6 +116,10 @@ Compiler::value Compiler::new_long(long l) const {
 	return {llvm::ConstantInt::get(getContext(), llvm::APInt(64, l, true)), Type::long_()};
 }
 
+Compiler::value Compiler::new_const_string(std::string s, std::string name) const {
+	return { builder.CreateGlobalStringPtr(s, name), Type::i8().pointer() };
+}
+
 Compiler::value Compiler::new_pointer(const void* p, Type type) const {
 	assert(type.is_pointer());
 	auto longp = llvm::ConstantInt::get(getContext(), llvm::APInt(64, (long) p, false));
@@ -1850,7 +1854,7 @@ void Compiler::insn_throw(Compiler::value v) const {
 	} else {
 		delete_function_variables();
 		auto line = new_long(exception_line);
-		Compiler::value function_name = { builder.CreateGlobalStringPtr(fun->name, "fun"), Type::i8().pointer() };
+		auto function_name = new_const_string(fun->name, "fun");
 		insn_call({}, {v, function_name, line}, "System.throw.0");
 	}
 }

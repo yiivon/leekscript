@@ -47,10 +47,10 @@ Compiler::value Object::compile(Compiler& c) const {
 	auto object = c.new_object();
 
 	for (unsigned i = 0; i < keys.size(); ++i) {
-		auto k = c.new_pointer((void*) &keys.at(i)->content, Type::fun());
+		auto k = c.new_const_string(keys.at(i)->content, "field");
 		auto v = c.insn_to_any(values[i]->compile(c));
-		c.insn_call({}, {object, k, v}, +[](LSObject* o, std::string* k, LSValue* v) {
-			o->addField(*k, v);
+		c.insn_call({}, {object, k, v}, +[](LSObject* o, char* k, LSValue* v) {
+			o->addField(k, v);
 		});
 	}
 	return object;
