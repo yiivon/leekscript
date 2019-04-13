@@ -12,7 +12,7 @@ void Test::test_files() {
 	file("test/code/reachable_cells.leek").equals("383");
 	file("test/code/break_and_continue.leek").equals("2504");
 	DISABLED_file("test/code/french.leek").equals("'cent-soixante-huit millions quatre-cent-quatre-vingt-neuf-mille-neuf-cent-quatre-vingt-dix-neuf'");
-	file("test/code/french.min.leek").equals("'neuf-cent-quatre-vingt-sept milliards six-cent-cinquante-quatre millions trois-cent-vingt-et-un-mille-douze'");
+	DISABLED_file("test/code/french.min.leek").equals("'neuf-cent-quatre-vingt-sept milliards six-cent-cinquante-quatre millions trois-cent-vingt-et-un-mille-douze'");
 	file("test/code/quine.leek").quine();
 	file_v1("test/code/quine_zwik.leek").quine();
 	file("test/code/dynamic_operators").works();
@@ -39,7 +39,7 @@ void Test::test_files() {
 	DISABLED_file("test/code/recursive_2_functions.leek").equals("");
 	// TODO : recursive with 2 versions
 	DISABLED_file("test/code/recursive_2_versions.leek").equals("");
-	file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
+	DISABLED_file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
 	file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
 	file("test/code/classes_multiple.leek").equals("[4, 40, 80]");
 
@@ -63,7 +63,7 @@ void Test::test_files() {
 	file("test/code/euler/pe012.leek").equals("76576500");
 	file("test/code/euler/pe013.leek").equals("5537376230");
 	DISABLED_file("test/code/euler/pe014.leek").equals("837799");
-	file("test/code/euler/pe015.leek").equals("137846528820");
+	DISABLED_file("test/code/euler/pe015.leek").equals("137846528820");
 	file("test/code/euler/pe016.leek").equals("1366");
 	file("test/code/euler/pe062.leek").equals("127035954683");
 	file("test/code/euler/pe063.leek").equals("49");
