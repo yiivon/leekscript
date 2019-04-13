@@ -476,12 +476,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	auto version = versions.at(full_args);
 	// Compile version if needed
 	version->compile(c, true);
-
-	if (version->value.v) {
-		return version->value;
-	} else {
-		return c.new_pointer(version->function, version->type);
-	}
+	return version->value;
 }
 
 Compiler::value Function::compile_default_version(Compiler& c) const {
