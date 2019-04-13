@@ -1,6 +1,7 @@
 #include "FunctionSTD.hpp"
 #include "ValueSTD.hpp"
 #include "../value/LSFunction.hpp"
+#include "../value/LSClosure.hpp"
 
 namespace ls {
 
@@ -12,7 +13,8 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 	field("args", Type::array());
 
 	constructor_({
-		{Type::fun({}, {}), {Type::fun({}, {})}, (void*) &LSFunction::constructor, Method::NATIVE}
+		{Type::fun({}, {}), {Type::i8().pointer()}, (void*) &LSFunction::constructor, Method::NATIVE},
+		{Type::closure({}, {}), {Type::i8().pointer()}, (void*) &LSClosure::constructor, Method::NATIVE},
 	});
 
 	// method("copy", {

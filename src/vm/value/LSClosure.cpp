@@ -4,8 +4,15 @@
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
 #include "../LSValue.hpp"
+#include "../../vm/VM.hpp"
 
 namespace ls {
+
+LSClosure* LSClosure::constructor(void* f) {
+	auto c = new LSClosure(f);
+	VM::current()->function_created.push_back(c);
+	return c;
+}
 
 LSClosure::LSClosure(void* function) : LSFunction(function) {
 	type = CLOSURE;
