@@ -417,6 +417,7 @@ Type Function::version_type(std::vector<Type> version) const {
 }
 
 void Function::must_return_any(SemanticAnalyser*) {
+	// std::cout << "Function " << name << " ::must_return_any()" << std::endl;
 	generate_default_version = true;
 	return_type = type;
 }
@@ -443,20 +444,19 @@ Compiler::value Function::compile(Compiler& c) const {
 
 	// Compile default version
 	// std::cout << "generate_default_version " << generate_default_version << std::endl;
-	if (is_main_function || generate_default_version) {
+	if (generate_default_version) {
+		default_version->compile(c, true);
+		return default_version->value;
+	}
+	if (is_main_function) {
 		default_version->compile(c);
+		return default_version->value;
 	}
-
-	// Add captures (for sub functions only)
-	for (auto& version : ((Function*) this)->versions) {
-		version.second->compile(c);
-	}
-
 	if (has_version) {
 		return compile_version(c, version);
 	} else {
 		// Return default version
-		return c.new_function(default_version->f, default_version->type);
+		return c.new_pointer(default_version->function, default_version->type);
 	}
 }
 
@@ -475,14 +475,19 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	}
 	auto version = versions.at(full_args);
 	// Compile version if needed
-	versions.at(version)->compile(c);
+	version->compile(c, true);
 
-	return c.new_function(versions.at(version)->f, versions.at(version)->type);
+	if (version->value.v) {
+		return version->value;
+	} else {
+		return c.new_pointer(version->function, version->type);
+	}
 }
 
 Compiler::value Function::compile_default_version(Compiler& c) const {
-	default_version->compile(c);
-	return c.new_function(default_version->f, default_version->type);
+	// std::cout << "Function " << name << "::compile_default_version " << std::endl;
+	default_version->compile(c, true);
+	return default_version->value;
 }
 
 llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
@@ -512,20 +517,17 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 	return current_version->landing_pad;
 }
 
-void Function::Version::compile(Compiler& c) {
+void Function::Version::compile(Compiler& c, bool create_value) {
 
 	if (is_compiled()) return;
 
-	// std::cout << "Function " << name << "::compile_version_internal(" << version->type << ")" << std::endl;
+	// std::cout << "Function::Version " << parent->name << "::compile(" << type << ")" << std::endl;
 	this->parent->current_version = this;
 
 	const int id = id_counter++;
 
-	auto ls_fun = this->function;
-
-	Compiler::value jit_fun;
+	std::vector<Compiler::value> captures;
 	if (!parent->is_main_function) {
-		jit_fun = c.new_pointer(ls_fun, this->type);
 		for (const auto& cap : parent->captures) {
 			Compiler::value jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
@@ -544,7 +546,7 @@ void Function::Version::compile(Compiler& c) {
 			if (!cap->initial_type.is_polymorphic()) {
 				jit_cap = c.insn_to_any({jit_cap.v, cap->initial_type});
 			}
-			c.function_add_capture(jit_fun, jit_cap);
+			captures.push_back(jit_cap);
 		}
 	}
 
@@ -636,12 +638,19 @@ void Function::Version::compile(Compiler& c) {
 
 		// module->print(llvm::errs(), nullptr, true, true);
 
-		std::error_code EC;
-		llvm::raw_fd_ostream ir("module.ll", EC, llvm::sys::fs::F_None);
-		c.program->module->print(ir, nullptr);
-		ir.flush();
+		// std::error_code EC;
+		// llvm::raw_fd_ostream ir("module.ll", EC, llvm::sys::fs::F_None);
+		// c.program->module->print(ir, nullptr);
+		// ir.flush();
 	}
-	this->function = ls_fun;
+
+	if (create_value) {
+		if (parent->captures.size()) {
+			value = c.new_closure(f, type, captures);
+		} else {
+			value = c.new_function(f, type);
+		}
+	}
 	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;
 }
 

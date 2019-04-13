@@ -27,8 +27,9 @@ public:
 		llvm::AllocaInst* exception_line_slot = nullptr;
 		llvm::BasicBlock* block = nullptr;
 		llvm::Function* f = nullptr;
+		Compiler::value value;
 		bool is_compiled() const;
-		void compile(Compiler& c);
+		void compile(Compiler& c, bool create_value = false);
 	};
 
 	std::string name;
