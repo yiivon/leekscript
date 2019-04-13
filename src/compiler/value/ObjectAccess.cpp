@@ -303,7 +303,6 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 	// Class method : 12.abs
 	if (class_method || class_field) {
-
 		void* fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
 		auto function = new LSFunction(fun);
 		((ObjectAccess*) this)->ls_function = function;
@@ -313,9 +312,9 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	// Default : object.attr
 	auto o = object->compile(c);
 	object->compile_end(c);
-	auto k = c.new_pointer(&field->content, Type::any());
-	return c.insn_invoke(type, {o, k}, (void*) +[](LSValue* object, std::string* key) {
-		return object->attr(*key);
+	auto k = c.new_const_string(field->content, "field");
+	return c.insn_invoke(type, {o, k}, (void*) +[](LSValue* object, char* key) {
+		return object->attr(key);
 	});
 }
 
@@ -333,9 +332,9 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 		return object->compile(c);
 	}}();
 	object->compile_end(c);
-	auto k = c.new_pointer(&field->content, Type::any());
-	return c.insn_invoke(type.pointer(), {o, k}, (void*) +[](LSValue* object, std::string* key) {
-		return object->attrL(*key);
+	auto k = c.new_const_string(field->content, "field");
+	return c.insn_invoke(type.pointer(), {o, k}, (void*) +[](LSValue* object, char* key) {
+		return object->attrL(key);
 	});
 }
 
