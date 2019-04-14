@@ -179,17 +179,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 				args.insert(args.begin(), {user_fun->f, Type::any()});
 			}
 		}
-		auto r = [&]() { if (unknown) {
-			assert(false);
-			// return c.insn_call(Type::any(), args, (void*) &LSFunction::call, name);
-		} else {
-			return c.insn_invoke(type.return_type(), args, user_fun->f);
-		}}();
-		if (!object && user_fun->value.v) {
-			// c.insn_delete(user_fun->value);
-			// user_fun->value->compile_end(c);
-		}
-		return r;
+		return c.insn_invoke(type.return_type(), args, user_fun->f);
 	} else if (addr) {
 		if (name.find(".") != std::string::npos) {
 			return c.insn_invoke(type.return_type(), args, nullptr, name);
