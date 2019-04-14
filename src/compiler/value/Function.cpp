@@ -619,20 +619,6 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 
 	llvm::verifyFunction(*f);
 
-	if (parent->is_main_function) {
-		// std::error_code EC;
-		// llvm::raw_fd_ostream OS("module", EC, llvm::sys::fs::F_None);
-		// llvm::WriteBitcodeToFile(*module, OS);
-		// OS.flush();
-
-		// module->print(llvm::errs(), nullptr, true, true);
-
-		// std::error_code EC;
-		// llvm::raw_fd_ostream ir("module.ll", EC, llvm::sys::fs::F_None);
-		// c.program->module->print(ir, nullptr);
-		// ir.flush();
-	}
-
 	if (create_value) {
 		if (parent->captures.size()) {
 			value = c.new_closure(f, type, captures);

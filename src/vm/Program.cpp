@@ -96,6 +96,20 @@ VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool asse
 
 	main->compile(vm.compiler);
 
+	if (pseudo_code) {
+		// std::error_code EC;
+		// llvm::raw_fd_ostream OS("module", EC, llvm::sys::fs::F_None);
+		// llvm::WriteBitcodeToFile(*module, OS);
+		// OS.flush();
+
+		// module->print(llvm::errs(), nullptr, true, true);
+
+		std::error_code EC;
+		llvm::raw_fd_ostream ir(file_name + ".ll", EC, llvm::sys::fs::F_None);
+		module->print(ir, nullptr);
+		ir.flush();
+	}
+
 	module_handle = vm.compiler.addModule(std::unique_ptr<llvm::Module>(module));
 	handle_created = true;
 	auto ExprSymbol = vm.compiler.findSymbol("main");
