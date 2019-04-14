@@ -295,7 +295,10 @@ Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
 		return { builder.CreatePointerCast(v.v, t.llvm_type(*this)), rt };
 	}
 	if (v.t.fold().is_primitive() && t.is_polymorphic()) {
-		return insn_to_any(v);
+		auto r = insn_to_any(v);
+		// TODO
+		// r = { builder.CreatePointerCast(r.v, t.llvm_type(*this)), t };
+		return r;
 	}
 	if (v.t.not_temporary() == t.not_temporary()) return v;
 	if (t == Type::real()) {
