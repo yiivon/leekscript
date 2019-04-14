@@ -29,9 +29,6 @@
 #include "standard/JsonSTD.hpp"
 #include "legacy/Functions.hpp"
 #include "../compiler/semantic/Callable.hpp"
-#include "../compiler/value/Expression.hpp"
-#include "../compiler/instruction/ExpressionInstruction.hpp"
-#include "../compiler/value/VariableValue.hpp"
 
 namespace ls {
 
@@ -70,43 +67,7 @@ VM::VM(bool v1) : compiler(this) {
 	add_module(new IntervalSTD());
 	add_module(new JsonSTD());
 
-	// Add function operators
-	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~", ">", "<", ">=", "<="};
-	std::vector<std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)>> ops_funs = {
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_add(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_sub(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mul(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mul(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_div(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_div(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_pow(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mod(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_int_div(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_mod(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_gt(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_lt(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_ge(args[0], args[1]); },
-		[](Compiler& c, std::vector<Compiler::value> args) { return c.insn_le(args[0], args[1]); },
-	};
-	std::vector<TokenType> token_types = {TokenType::PLUS, TokenType::MINUS, TokenType::TIMES, TokenType::TIMES, TokenType::DIVIDE, TokenType::DIVIDE, TokenType::POWER, TokenType::MODULO, TokenType::INT_DIV, TokenType::TILDE, TokenType::GREATER, TokenType::LOWER, TokenType::GREATER_EQUALS, TokenType::LOWER_EQUALS};
-	
 	auto value_class = internal_vars["Value"]->lsvalue;
-
-	for (unsigned o = 0; o < ops.size(); ++o) {
-		auto name = ops[o];
-		auto f = new Function();
-		f->addArgument(new Token(TokenType::IDENT, 0, 1, 0, "x"), nullptr);
-		f->addArgument(new Token(TokenType::IDENT, 2, 1, 2, "y"), nullptr);
-		f->body = new Block();
-		auto ex = new Expression();
-		ex->v1 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 0, 1, 0, "x"));
-		ex->v2 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 2, 1, 2, "y"));
-		ex->op = std::make_shared<Operator>(new Token(token_types[o], 1, 1, 1, name));
-		f->body->instructions.push_back( new ExpressionInstruction(ex));
-		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
-		type.native = true;
-		add_internal_var(name, type, f);
-	}
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
 	auto fun = new LSFunction((void*) ptr_fun);
@@ -218,16 +179,6 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	result.operations = VM::operations;
 
 	// Cleaning
-	for (const auto& v : internal_vars) {
-		if (v.second->type().is_function() && v.second->function) {
-			for (const auto& version : v.second->function->versions) {
-				if (version.second->value.v) version.second->value.v = nullptr;
-				version.second->f = nullptr;
-			}
-			if (v.second->function->default_version->value.v) v.second->function->default_version->value.v = nullptr;
-			v.second->function->default_version->f = nullptr;
-		}
-	}
 	delete program;
 	for (const auto& f : function_created) {
 		delete f;

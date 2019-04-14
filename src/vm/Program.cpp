@@ -17,6 +17,9 @@
 #include "llvm/IRReader/IRReader.h"
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/raw_ostream.h"
+#include "../compiler/value/Expression.hpp"
+#include "../compiler/instruction/ExpressionInstruction.hpp"
+#include "../compiler/value/VariableValue.hpp"
 
 namespace ls {
 
@@ -136,6 +139,38 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 	} else {
 		return compile_leekscript(vm, ctx, assembly, pseudo_code, log_instructions);
 	}
+}
+
+std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
+	// std::cout << "Program::get_operator(" << name << ")" << std::endl;
+
+	auto op = operators.find(name);
+	if (op != operators.end()) {
+		return op->second;
+	}
+
+	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~", ">", "<", ">=", "<="};
+	std::vector<TokenType> token_types = {TokenType::PLUS, TokenType::MINUS, TokenType::TIMES, TokenType::TIMES, TokenType::DIVIDE, TokenType::DIVIDE, TokenType::POWER, TokenType::MODULO, TokenType::INT_DIV, TokenType::TILDE, TokenType::GREATER, TokenType::LOWER, TokenType::GREATER_EQUALS, TokenType::LOWER_EQUALS};
+	
+
+	auto o = std::find(ops.begin(), ops.end(), name);
+	if (o == ops.end()) return nullptr;
+
+	auto f = new Function();
+	f->addArgument(new Token(TokenType::IDENT, 0, 1, 0, "x"), nullptr);
+	f->addArgument(new Token(TokenType::IDENT, 2, 1, 2, "y"), nullptr);
+	f->body = new Block();
+	auto ex = new Expression();
+	ex->v1 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 0, 1, 0, "x"));
+	ex->v2 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 2, 1, 2, "y"));
+	ex->op = std::make_shared<Operator>(new Token(token_types.at(std::distance(ops.begin(), o)), 1, 1, 1, name));
+	f->body->instructions.push_back( new ExpressionInstruction(ex));
+	auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
+	type.native = true;
+
+	auto var = std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, f, nullptr, f, nullptr);
+	operators.insert({name, var});
+	return var;
 }
 
 void Program::analyse(SemanticAnalyser* analyser) {

@@ -22,6 +22,7 @@ public:
 	bool handle_created = false;
 	llvm::Module* module = nullptr;
 	llvm::orc::VModuleKey module_handle;
+	std::map<std::string, std::shared_ptr<SemanticVar>> operators;
 
 	Program(const std::string& code, const std::string& file_name);
 	virtual ~Program();
@@ -34,6 +35,8 @@ public:
 	VM::Result compile(VM& vm, const std::string& context, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool ir = false);
 
 	VM::Result compile_leekscript(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions);
+
+	std::shared_ptr<SemanticVar> get_operator(std::string name);
 
 	/*
 	 * Execute the program and get a std::string result

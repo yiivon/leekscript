@@ -107,6 +107,11 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::get_var(Token* v) {
 		return vm->internal_vars.at(v->content);
 	} catch (std::exception& e) {}
 
+	// Search operators
+	if (auto op = program->get_operator(v->content)) {
+		return op;
+	}
+
 	// Search recursively in the functions
 	int f = functions_stack.size() - 1;
 	while (f >= 0) {
