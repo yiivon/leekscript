@@ -481,8 +481,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 
 Compiler::value Function::compile_default_version(Compiler& c) const {
 	// std::cout << "Function " << name << "::compile_default_version " << std::endl;
-	default_version->compile(c, true);
-	return default_version->value;
+	return c.new_pointer(default_version->function, default_version->type);
 }
 
 llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
