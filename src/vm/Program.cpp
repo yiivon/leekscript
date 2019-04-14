@@ -20,6 +20,7 @@
 #include "../compiler/value/Expression.hpp"
 #include "../compiler/instruction/ExpressionInstruction.hpp"
 #include "../compiler/value/VariableValue.hpp"
+#include "llvm/Bitcode/BitcodeWriter.h"
 
 namespace ls {
 
@@ -96,16 +97,15 @@ VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool asse
 
 	main->compile(vm.compiler);
 
-	if (pseudo_code) {
-		// std::error_code EC;
-		// llvm::raw_fd_ostream OS("module", EC, llvm::sys::fs::F_None);
-		// llvm::WriteBitcodeToFile(*module, OS);
-		// OS.flush();
-
-		// module->print(llvm::errs(), nullptr, true, true);
-
+	if (assembly) {
 		std::error_code EC;
-		llvm::raw_fd_ostream ir(file_name + ".ll", EC, llvm::sys::fs::F_None);
+		llvm::raw_fd_ostream OS("module", EC, llvm::sys::fs::F_None);
+		llvm::WriteBitcodeToFile(*module, OS);
+		OS.flush();
+	}
+	if (pseudo_code) {
+		std::error_code EC2;
+		llvm::raw_fd_ostream ir(file_name + ".ll", EC2, llvm::sys::fs::F_None);
 		module->print(ir, nullptr);
 		ir.flush();
 	}

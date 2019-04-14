@@ -7,7 +7,6 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/Exception.hpp"
 #include "llvm/IR/Verifier.h"
-#include "llvm/Bitcode/BitcodeWriter.h"
 #include <string>
 #include <fstream>
 #include "../../vm/LSValue.hpp"
