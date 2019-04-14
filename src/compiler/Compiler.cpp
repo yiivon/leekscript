@@ -126,8 +126,8 @@ Compiler::value Compiler::new_pointer(const void* p, Type type) const {
 	return { builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, type.llvm_type(*this)), type };
 }
 Compiler::value Compiler::new_function(llvm::Function* f, Type type) const {
-	Compiler::value fun = { f, type };
-	return insn_call(type, {{f, Type::i8().pointer()}}, "Function.new");
+	auto fun = insn_convert({ f, type }, Type::i8().pointer());
+	return insn_call(type, {fun}, "Function.new");
 }
 Compiler::value Compiler::new_closure(llvm::Function* f, Type type, std::vector<Compiler::value> captures) const {
 	// std::cout << "new_closure " << captures << std::endl;
