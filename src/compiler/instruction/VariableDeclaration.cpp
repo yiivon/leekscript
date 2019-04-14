@@ -89,10 +89,14 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 		if (expressions[i] != nullptr) {
 
 			Value* ex = expressions[i];
-			auto var = c.create_and_add_var(name, ex->type.not_temporary());
-
 			auto val = ex->compile(c);
 			ex->compile_end(c);
+
+			if (dynamic_cast<Function*>(ex) and not val.t.is_closure()) {
+				continue;
+			}
+
+			auto var = c.create_and_add_var(name, ex->type.not_temporary());
 
 			if (!val.t.reference) {
 				val = c.insn_move_inc(val);
@@ -101,7 +105,9 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			if (not val.t.is_mpz()) {
 				c.add_function_var(var);
 			}
-			c.insn_store(var, val);
+			if (not dynamic_cast<Function*>(ex) or val.t.is_closure()) {
+				c.insn_store(var, val);
+			}
 		} else {
 			auto var = c.create_and_add_var(name, Type::null());
 			c.insn_store(var, c.new_null());

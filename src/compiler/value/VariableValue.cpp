@@ -310,7 +310,14 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		assert(var != nullptr);
 		auto f = dynamic_cast<Function*>(var->value);
 		auto vv = dynamic_cast<VariableValue*>(var->value);
-		if (has_version && (f or vv)) {
+		if (f) {
+			if (has_version) {
+				return var->value->compile_version(c, version);
+			} else {
+				return var->value->compile(c);
+			}
+		}
+		if (vv && has_version) {
 			return var->value->compile_version(c, version);
 		}
 		v = c.insn_load(c.get_var(name));

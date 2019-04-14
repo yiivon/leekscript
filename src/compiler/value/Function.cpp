@@ -521,8 +521,12 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 			Compiler::value jit_cap;
 			if (cap->scope == VarScope::LOCAL) {
 				auto f = dynamic_cast<Function*>(cap->value);
-				if (cap->has_version && f) {
-					jit_cap = f->compile_version(c, cap->version);
+				if (f) {
+					if (cap->has_version) {
+						jit_cap = f->compile_version(c, cap->version);
+					} else {
+						jit_cap = f->compile_default_version(c);
+					}
 				} else {
 					jit_cap = c.insn_load(c.get_var(cap->name));
 				}
