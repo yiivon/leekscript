@@ -323,6 +323,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		v = c.insn_load(c.get_var(name));
 	} else if (scope == VarScope::PARAMETER) {
 		v = c.insn_load(c.insn_get_argument(name));
+		// v = c.insn_get_argument(name);
 	} else {
 		assert(false);
 	}

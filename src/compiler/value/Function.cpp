@@ -590,6 +590,7 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 				auto var = c.create_entry(name, type);
 				c.insn_store(var, {&arg, type});
 				c.arguments.top()[name] = var;
+				// c.arguments.top()[name] = {&arg, type};
 			}
 		}
 		index++;
