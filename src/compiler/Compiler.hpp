@@ -285,18 +285,19 @@ public:
 
 	// Call functions
 	template <typename R, typename... A>
-	value insn_call(Type return_type, std::vector<value> args, R(*func)(A...), std::string name = "") const {
-		return insn_call(return_type, args, (void*) func, name);
+	value insn_call(Type return_type, std::vector<value> args, R(*func)(A...)) const {
+		return insn_call(return_type, args, (void*) func);
 	}
-	value insn_call(Type return_type, std::vector<value> args, void* func, std::string name = "") const;
+	value insn_call(Type return_type, std::vector<value> args, void* func) const;
 	template <typename R, typename... A>
-	value insn_invoke(Type return_type, std::vector<value> args, R(*func)(A...), std::string name = "") const {
-		return insn_invoke(return_type, args, (void*) func, name);
+	value insn_invoke(Type return_type, std::vector<value> args, R(*func)(A...)) const {
+		return insn_invoke(return_type, args, (void*) func);
 	}
-	value insn_invoke(Type return_type, std::vector<value> args, void* func, std::string name = "") const;
-	value insn_invoke(Type return_type, std::vector<value> args, value func, std::string name = "") const;
+	value insn_invoke(Type return_type, std::vector<value> args, void* func) const;
+	value insn_invoke(Type return_type, std::vector<value> args, std::string name) const;
+	value insn_invoke(Type return_type, std::vector<value> args, value func) const;
 	value insn_invoke(Type return_type, std::vector<value> args, llvm::Function* fun) const;
-	value insn_call(Type return_type, std::vector<value> args, value fun, std::string name = "") const;
+	value insn_call(Type return_type, std::vector<value> args, value fun) const;
 	value insn_call(Type return_type, std::vector<value> args, llvm::Function* fun) const;
 	value insn_call(Type return_type, std::vector<value> args, std::string name) const;
 	void function_add_capture(value fun, value capture) const;

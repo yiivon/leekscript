@@ -182,9 +182,9 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		return c.insn_invoke(type.return_type(), args, user_fun->f);
 	} else if (addr) {
 		if (name.find(".") != std::string::npos) {
-			return c.insn_invoke(type.return_type(), args, nullptr, name);
+			return c.insn_invoke(type.return_type(), args, name);
 		} else {
-			return c.insn_invoke(type.return_type(), args, addr, name);
+			return c.insn_invoke(type.return_type(), args, addr);
 		}
 	} else if (func) {
 		return func(c, args);
@@ -202,9 +202,9 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 			args.insert(args.begin(), fun);
 		}
 		auto r = [&]() { if (unknown) {
-			return c.insn_call(Type::any(), args, (void*) &LSFunction::call, name);
+			return c.insn_call(Type::any(), args, (void*) &LSFunction::call);
 		} else {
-			return c.insn_invoke(type.return_type(), args, fun, name);
+			return c.insn_invoke(type.return_type(), args, fun);
 		}}();
 		if (!object) {
 			value->compile_end(c);
