@@ -1975,6 +1975,9 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 		return {};
 	} else {
 		value result = { r, return_type };
+		if (return_type.llvm_type(*this) != lambda->getReturnType()) {
+			result.v = builder.CreatePointerCast(r, return_type.llvm_type(*this));
+		}
 		assert_value_ok(result);
 		return result;
 	}

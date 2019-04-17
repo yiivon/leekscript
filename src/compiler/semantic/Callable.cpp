@@ -192,9 +192,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		auto fun = [&]() { if (object) {
 			auto oa = dynamic_cast<const ObjectAccess*>(value);
 			auto k = c.new_const_string(oa->field->content, "field");
-			return c.insn_invoke(type.pointer(), {compiled_object, k}, (void*) +[](LSValue* object, char* key) {
-				return object->attr(key);
-			});
+			return c.insn_invoke(type.pointer(), {compiled_object, k}, "Value.attr");
 		} else {
 			return value->compile(c);
 		}}();
