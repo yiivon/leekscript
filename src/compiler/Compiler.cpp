@@ -351,9 +351,7 @@ Compiler::value Compiler::insn_add(Compiler::value a, Compiler::value b) const {
 	auto a_type = a.t.fold();
 	auto b_type = b.t.fold();
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
-		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
-			return x->add(y);
-		});
+		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, "Value.operator+");
 	} else if (a_type.is_real() or b_type.is_real()) {
 		return {builder.CreateFAdd(to_real(a).v, to_real(b).v), Type::real()};
 	} else if (a_type.is_long() or b_type.is_long()) {
@@ -369,9 +367,7 @@ Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 	auto a_type = a.t.fold();
 	auto b_type = b.t.fold();
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
-		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
-			return x->sub(y);
-		});
+		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, "Value.operator-");
 	} else if (a_type.is_real() or b_type.is_real()) {
 		return {builder.CreateFSub(to_real(a).v, to_real(b).v, "sub"), Type::real()};
 	} else {
@@ -545,9 +541,7 @@ Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	auto a_type = a.t.fold();
 	auto b_type = b.t.fold();
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
-		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
-			return x->mul(y);
-		});
+		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, "Value.operator*");
 	} else if (a_type.is_real() or b_type.is_real()) {
 		return {builder.CreateFMul(to_real(a).v, to_real(b).v), Type::real()};
 	} else if (a_type.is_long() or b_type.is_long()) {
@@ -558,9 +552,7 @@ Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 
 Compiler::value Compiler::insn_div(Compiler::value a, Compiler::value b) const {
 	if (a.t.is_string() and b.t.is_string()) {
-		return insn_call(Type::array(Type::string()), {a, b}, +[](LSValue* a, LSValue* b) {
-			return a->div(b);
-		});
+		return insn_call(Type::array(Type::string()), {a, b}, "Value.operator/");
 	}
 	auto bv = to_real(b);
 	insn_if(insn_eq(bv, new_integer(0)), [&]() {
@@ -650,9 +642,7 @@ Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
 
 Compiler::value Compiler::insn_double_mod(Compiler::value a, Compiler::value b) const {
 	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
-		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
-			return x->double_mod(y);
-		});
+		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, "Value.operator%%");
 	} else {
 		return insn_mod(insn_add(insn_mod(a, b), b), b);
 	}
@@ -1960,11 +1950,11 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
 	llvm::Function* lambda;
-	auto p = mappings.find(name + std::to_string((long) fun->current_version));
+	auto p = mappings.find(name);
 	if (p == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
 		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, program->module);
-		((Compiler*) this)->mappings.insert({name + std::to_string((long) fun->current_version), {(llvm::JITTargetAddress) nullptr, lambda}});
+		((Compiler*) this)->mappings.insert({name, {(llvm::JITTargetAddress) nullptr, lambda}});
 	} else {
 		lambda = p->second.function;
 	}

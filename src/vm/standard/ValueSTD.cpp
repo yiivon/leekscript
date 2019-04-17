@@ -61,34 +61,56 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_xor}
 	});
 	operator_("+", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_add}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_add, {}, Method::NATIVE},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_add},
+	});
+	operator_("+=", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_add_eq, {}, Method::NATIVE, true}
 	});
 	operator_("-", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_sub}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_sub, {}, Method::NATIVE},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_sub},
+	});
+	operator_("-=", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_sub_eq, {}, Method::NATIVE, true}
 	});
 	operator_("*", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mul, {}, Method::NATIVE},
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_mul}
 	});
+	operator_("*=", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mul_eq, {}, Method::NATIVE, true}
+	});
 	operator_("**", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_pow}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_pow, {}, Method::NATIVE},
+	});
+	operator_("**=", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_pow_eq, {}, Method::NATIVE, true}
 	});
 	operator_("/", {
-		{Type::const_number(), Type::const_number(), Type::real(), (void*) &ValueSTD::op_div},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_div, {}, Method::NATIVE},
+	});
+	operator_("/=", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_div_eq, {}, Method::NATIVE, true}
 	});
 	operator_("\\", {
-		{Type::const_any(), Type::const_any(), Type::long_(), (void*) &ValueSTD::op_int_div}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_int_div, {}, Method::NATIVE}
 	});
 	operator_("\\=", {
-		{Type::const_any(), Type::const_any(), Type::long_(), (void*) &ValueSTD::op_int_div_eq, {}, false, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_int_div_eq, {}, Method::NATIVE, true}
 	});
 	operator_("%", {
-		{Type::const_any(), Type::const_any(), Type::real(), (void*) &ValueSTD::op_mod},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mod, {}, Method::NATIVE}
+	});
+	operator_("%=", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mod_eq, {}, Method::NATIVE, true}
 	});
 	operator_("%%", {
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_double_mod, {}, Method::NATIVE},
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_double_mod},
 	});
 	operator_("%%=", {
-		{Type::any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_double_mod_eq, {}, false, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_double_mod_eq, {}, Method::NATIVE, true}
 	});
 	operator_("&", {
 		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_and}
@@ -324,13 +346,6 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
-}
-
-
-Compiler::value ValueSTD::op_pow(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::any(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
-		return x->pow(y);
-	});
 }
 
 Compiler::value ValueSTD::op_add(Compiler& c, std::vector<Compiler::value> args) {
@@ -646,6 +661,54 @@ LSValue* ValueSTD::ls_pre_dec(LSValue* x) {
 }
 LSValue* ValueSTD::ls_pre_tilde(LSValue* v) {
 	return v->ls_tilde();
+}
+LSValue* ValueSTD::ls_add(LSValue* x, LSValue* y) {
+	return x->add(y);
+}
+LSValue* ValueSTD::ls_add_eq(LSValue** x, LSValue* y) {
+	return (*x)->add_eq(y);
+}
+LSValue* ValueSTD::ls_sub(LSValue* x, LSValue* y) {
+	return x->sub(y);
+}
+LSValue* ValueSTD::ls_sub_eq(LSValue** x, LSValue* y) {
+	return (*x)->sub_eq(y);
+}
+LSValue* ValueSTD::ls_mul(LSValue* x, LSValue* y) {
+	return x->mul(y);
+}
+LSValue* ValueSTD::ls_mul_eq(LSValue** x, LSValue* y) {
+	return (*x)->mul_eq(y);
+}
+LSValue* ValueSTD::ls_div(LSValue* x, LSValue* y) {
+	return x->div(y);
+}
+LSValue* ValueSTD::ls_div_eq(LSValue** x, LSValue* y) {
+	return (*x)->div_eq(y);
+}
+LSValue* ValueSTD::ls_int_div(LSValue* x, LSValue* y) {
+	return x->int_div(y);
+}
+LSValue* ValueSTD::ls_int_div_eq(LSValue** x, LSValue* y) {
+	return (*x)->int_div_eq(y);
+}
+LSValue* ValueSTD::ls_mod(LSValue* x, LSValue* y) {
+	return x->mod(y);
+}
+LSValue* ValueSTD::ls_mod_eq(LSValue** x, LSValue* y) {
+	return (*x)->mod_eq(y);
+}
+LSValue* ValueSTD::ls_double_mod(LSValue* x, LSValue* y) {
+	return x->double_mod(y);
+}
+LSValue* ValueSTD::ls_double_mod_eq(LSValue** x, LSValue* y) {
+	return (*x)->double_mod_eq(y);
+}
+LSValue* ValueSTD::ls_pow(LSValue* x, LSValue* y) {
+	return x->pow(y);
+}
+LSValue* ValueSTD::ls_pow_eq(LSValue** x, LSValue* y) {
+	return (*x)->pow_eq(y);
 }
 
 }

@@ -276,12 +276,20 @@ Compiler::value Expression::compile(Compiler& c) const {
 		args.push_back([&](){ if (callable_version->v1_addr) {
 			return ((LeftValue*) v1)->compile_l(c);
 		} else {
-			return v1->compile(c);
+			auto v = v1->compile(c);
+			if (callable_version->addr and v.t.is_primitive() and callable_version->type.argument(0).is_any()) {
+				v = c.insn_to_any(v);
+			}
+			return v;
 		}}());
 		args.push_back([&](){ if (callable_version->v2_addr) {
 			return ((LeftValue*) v2)->compile_l(c);
 		} else {
-			return v2->compile(c);
+			auto v = v2->compile(c);
+			if (callable_version->addr and v.t.is_primitive() and callable_version->type.argument(1).is_any()) {
+				v = c.insn_to_any(v);
+			}
+			return v;
 		}}());
 		if (op->reversed) std::reverse(args.begin(), args.end());
 		v1->compile_end(c);
@@ -330,55 +338,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 					return y;
 				}
 			}
-		}
-		case TokenType::PLUS_EQUAL: {
-			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			v1->compile_end(c);
-			auto y = c.insn_to_any(v2->compile(c));
-			v2->compile_end(c);
-			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-				return (*x)->add_eq(y);
-			});
-		}
-		case TokenType::MINUS_EQUAL: {
-			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_any(v2->compile(c));
-			v2->compile_end(c);
-			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-				return (*x)->sub_eq(y);
-			});
-		}
-		case TokenType::TIMES_EQUAL: {
-			auto x = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_any(v2->compile(c));
-			v2->compile_end(c);
-			return c.insn_invoke(Type::any(), {x, y}, (void*) +[](LSValue** x, LSValue* y) {
-				return (*x)->mul_eq(y);
-			});
-		}
-		case TokenType::DIVIDE_EQUAL: {
-			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_any(v2->compile(c));
-			v2->compile_end(c);
-			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-				return (*x)->div_eq(y);
-			});
-		}
-		case TokenType::MODULO_EQUAL: {
-			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_any(v2->compile(c));
-			v2->compile_end(c);
-			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-				return (*x)->mod_eq(y);
-			});
-		}
-		case TokenType::POWER_EQUAL: {
-			auto x_addr = ((LeftValue*) v1)->compile_l(c);
-			auto y = c.insn_to_any(v2->compile(c));
-			v2->compile_end(c);
-			return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-				return (*x)->pow_eq(y);
-			});
 		}
 		case TokenType::DOUBLE_QUESTION_MARK: {
 			// x ?? y ==> if (x != null) { x } else { y }

@@ -75,6 +75,22 @@ public:
 	static LSValue* ls_pre_inc(LSValue* x);
 	static LSValue* ls_pre_dec(LSValue* x);
 	static LSValue* ls_pre_tilde(LSValue* v);
+	static LSValue* ls_add(LSValue*, LSValue*);
+	static LSValue* ls_add_eq(LSValue**, LSValue*);
+	static LSValue* ls_sub(LSValue*, LSValue*);
+	static LSValue* ls_sub_eq(LSValue**, LSValue*);
+	static LSValue* ls_mul(LSValue*, LSValue*);
+	static LSValue* ls_mul_eq(LSValue**, LSValue*);
+	static LSValue* ls_div(LSValue*, LSValue*);
+	static LSValue* ls_div_eq(LSValue**, LSValue*);
+	static LSValue* ls_int_div(LSValue*, LSValue*);
+	static LSValue* ls_int_div_eq(LSValue**, LSValue*);
+	static LSValue* ls_mod(LSValue*, LSValue*);
+	static LSValue* ls_mod_eq(LSValue**, LSValue*);
+	static LSValue* ls_double_mod(LSValue*, LSValue*);
+	static LSValue* ls_double_mod_eq(LSValue**, LSValue*);
+	static LSValue* ls_pow(LSValue*, LSValue*);
+	static LSValue* ls_pow_eq(LSValue**, LSValue*);
 };
 
 }
