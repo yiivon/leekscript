@@ -266,6 +266,9 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 	if (v.t.not_temporary() == Type::integer()) {
 		return {builder.CreateIntCast(v.v, Type::long_().llvm_type(*this), true), Type::long_()};
 	}
+	if (v.t.is_real()) {
+		return {builder.CreateFPToSI(v.v, Type::long_().llvm_type(*this)), Type::long_()};
+	}
 	if (v.t.is_polymorphic()) {
 		return insn_invoke(Type::long_(), {v}, +[](const LSValue* x) {
 			if (auto number = dynamic_cast<const LSNumber*>(x)) {
