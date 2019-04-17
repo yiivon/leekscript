@@ -7,37 +7,23 @@
 
 namespace ls {
 
-Compiler::value System_operations(Compiler& c);
-Compiler::value System_version(Compiler& c);
-long System_time();
-long System_millitime();
-long System_microtime();
-long System_nanotime();
-void System_print(LSValue* v);
-void System_print_int(int v);
-void System_print_mpz(__mpz_struct v);
-void System_print_mpz_tmp(__mpz_struct v);
-void System_print_long(long v);
-void System_print_bool(bool v);
-void System_print_float(double v);
-
 SystemSTD::SystemSTD() : Module("System") {
 
-	static_field("version", Type::integer(), System_version);
-	static_field("operations", Type::integer(), System_operations);
-	static_field("time", Type::long_(), (void*) &System_time);
-	static_field("milliTime", Type::long_(), (void*) &System_millitime);
-	static_field("microTime", Type::long_(), (void*) &System_microtime);
-	static_field("nanoTime", Type::long_(), (void*) &System_nanotime);
+	static_field("version", Type::integer(), SystemSTD::version);
+	static_field("operations", Type::integer(), SystemSTD::operations);
+	static_field("time", Type::long_(), (void*) &SystemSTD::time);
+	static_field("milliTime", Type::long_(), (void*) &SystemSTD::millitime);
+	static_field("microTime", Type::long_(), (void*) &SystemSTD::microtime);
+	static_field("nanoTime", Type::long_(), (void*) &SystemSTD::nanotime);
 
 	method("print", Method::Static, {
-		{{}, {Type::const_any()}, (void*) &System_print, Method::NATIVE},
-		{{}, {Type::mpz()}, (void*) &System_print_mpz, Method::NATIVE},
-		{{}, {Type::tmp_mpz()}, (void*) &System_print_mpz_tmp, Method::NATIVE},
-		{{}, {Type::const_long()}, (void*) &System_print_long, Method::NATIVE},
-		{{}, {Type::const_real()}, (void*) &System_print_float, Method::NATIVE},
-		{{}, {Type::const_integer()}, (void*) &System_print_int, Method::NATIVE},
-		{{}, {Type::const_boolean()}, (void*) &System_print_bool, Method::NATIVE},
+		{{}, {Type::const_any()}, (void*) &SystemSTD::print, Method::NATIVE},
+		{{}, {Type::mpz()}, (void*) &SystemSTD::print_mpz, Method::NATIVE},
+		{{}, {Type::tmp_mpz()}, (void*) &SystemSTD::print_mpz_tmp, Method::NATIVE},
+		{{}, {Type::const_long()}, (void*) &SystemSTD::print_long, Method::NATIVE},
+		{{}, {Type::const_real()}, (void*) &SystemSTD::print_float, Method::NATIVE},
+		{{}, {Type::const_integer()}, (void*) &SystemSTD::print_int, Method::NATIVE},
+		{{}, {Type::const_boolean()}, (void*) &SystemSTD::print_bool, Method::NATIVE},
 	});
 
 	method("throw", {
@@ -46,57 +32,57 @@ SystemSTD::SystemSTD() : Module("System") {
 	});
 }
 
-long System_time() {
+long SystemSTD::time() {
 	return std::chrono::duration_cast<std::chrono::seconds>(
 		std::chrono::system_clock::now().time_since_epoch()
 	).count();
 }
 
-long System_millitime() {
+long SystemSTD::millitime() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(
 		std::chrono::system_clock::now().time_since_epoch()
 	).count();
 }
 
-long System_microtime() {
+long SystemSTD::microtime() {
 	return std::chrono::duration_cast<std::chrono::microseconds>(
 		std::chrono::system_clock::now().time_since_epoch()
 	).count();
 }
 
-long System_nanotime() {
+long SystemSTD::nanotime() {
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(
 		std::chrono::system_clock::now().time_since_epoch()
 	).count();
 }
 
-Compiler::value System_operations(Compiler& c) {
+Compiler::value SystemSTD::operations(Compiler& c) {
 	auto ops_ptr = c.new_pointer(&c.vm->operations, Type::integer().pointer());
 	return c.insn_load(ops_ptr);
 }
 
-Compiler::value System_version(Compiler& c) {
+Compiler::value SystemSTD::version(Compiler& c) {
 	return c.new_integer(LEEKSCRIPT_VERSION);
 }
 
-void System_print(LSValue* value) {
+void SystemSTD::print(LSValue* value) {
 	value->print(VM::current()->output->stream());
 	VM::current()->output->end();
 	LSValue::delete_temporary(value);
 }
 
-void System_print_int(int v) {
+void SystemSTD::print_int(int v) {
 	VM::current()->output->stream() << v;
 	VM::current()->output->end();
 }
 
-void System_print_mpz(__mpz_struct v) {
+void SystemSTD::print_mpz(__mpz_struct v) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &v);
 	VM::current()->output->stream() << buff;
 	VM::current()->output->end();
 }
-void System_print_mpz_tmp(__mpz_struct v) {
+void SystemSTD::print_mpz_tmp(__mpz_struct v) {
 	char buff[1000];
 	mpz_get_str(buff, 10, &v);
 	VM::current()->output->stream() << buff;
@@ -105,17 +91,17 @@ void System_print_mpz_tmp(__mpz_struct v) {
 	VM::current()->mpz_deleted++;
 }
 
-void System_print_long(long v) {
+void SystemSTD::print_long(long v) {
 	VM::current()->output->stream() << v;
 	VM::current()->output->end();
 }
 
-void System_print_bool(bool v) {
+void SystemSTD::print_bool(bool v) {
 	VM::current()->output->stream() << std::boolalpha << v;
 	VM::current()->output->end();
 }
 
-void System_print_float(double v) {
+void SystemSTD::print_float(double v) {
 	VM::current()->output->stream() << v;
 	VM::current()->output->end();
 }
