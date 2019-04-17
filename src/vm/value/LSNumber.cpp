@@ -280,7 +280,7 @@ LSValue* LSNumber::div(LSValue* v) {
 		auto number = static_cast<LSNumber*>(v);
 		if (refs == 0) {
 			value /= number->value;
-			if (number->refs == 0) delete number;
+			LSValue::delete_temporary(v);
 			return this;
 		}
 		if (number->refs == 0) {
@@ -296,13 +296,12 @@ LSValue* LSNumber::div(LSValue* v) {
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (boolean->value) {
+		LSValue::delete_temporary(v);
 		return this;
 	}
-	if (refs == 0) {
-		value = NAN;
-		return this;
-	}
-	return LSNumber::get(NAN);
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(v);
+	throw vm::ExceptionObj(vm::Exception::DIVISION_BY_ZERO);
 }
 
 LSValue* LSNumber::div_eq(LSValue* v) {
@@ -442,6 +441,12 @@ LSValue* LSNumber::mod(LSValue* v) {
 		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(v);
 		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto boolean = static_cast<LSBoolean*>(v);
+	if (not boolean->value) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(v);
+		throw vm::ExceptionObj(vm::Exception::DIVISION_BY_ZERO);
 	}
 	if (refs == 0) {
 		value = 0;
