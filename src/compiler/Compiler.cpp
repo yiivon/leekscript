@@ -84,9 +84,7 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 		if (v.t.reference) {
 			v = insn_load(v);
 		}
-		auto r = insn_call(v.t.fold(), {v}, +[](LSValue* value) {
-			return value->clone();
-		});
+		auto r = insn_call(v.t.fold(), {v}, "Value.clone");
 		// log_insn(4) << "clone " << dump_val(v) << " " << dump_val(r) << std::endl;
 		return r;
 	}

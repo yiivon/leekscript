@@ -68,6 +68,7 @@ public:
 	// Hidden functions
 	static Compiler::value typeID(Compiler& c, std::vector<Compiler::value> args);
 	static int absolute(LSValue* v);
+	static LSValue* clone(LSValue* v);
 };
 
 }

@@ -3,6 +3,7 @@
 #include "../value/LSBoolean.hpp"
 #include "../value/LSString.hpp"
 #include "../value/LSNumber.hpp"
+#include "../LSValue.hpp"
 
 namespace ls {
 
@@ -159,6 +160,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	});
 	method("absolute", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::absolute}
+	});
+	method("clone", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::clone, Method::NATIVE}
 	});
 }
 
@@ -595,6 +599,9 @@ Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args)
 
 int ValueSTD::absolute(LSValue* v) {
 	return v->abso();
+}
+LSValue* ValueSTD::clone(LSValue* v) {
+	return v->clone();
 }
 
 }
