@@ -561,7 +561,7 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 	}
 	auto llvm_return_type = this->type.return_type().llvm_type(c);
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
-	auto fun_name = parent->is_main_function ? "main" : "fun_" + parent->name + std::to_string(id);
+	auto fun_name = parent->is_main_function ? "main" : parent->name + std::to_string(id);
 	f = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
 
 	auto personalityfn = c.program->module->getFunction("__gxx_personality_v0");
@@ -570,7 +570,7 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 	}
 	f->setPersonalityFn(personalityfn);
 
-	block = llvm::BasicBlock::Create(c.getContext(), "entry_" + parent->name, f);
+	block = llvm::BasicBlock::Create(c.getContext(), "start", f);
 
 	c.enter_function(f, parent->captures.size() > 0, parent);
 
