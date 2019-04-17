@@ -185,6 +185,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("pre_tilde", {
 		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_tilde, Method::NATIVE}
 	});
+	method("attr", {
+		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &ValueSTD::attr, Method::NATIVE},
+	});
 }
 
 /*
@@ -623,6 +626,9 @@ int ValueSTD::absolute(LSValue* v) {
 }
 LSValue* ValueSTD::clone(LSValue* v) {
 	return v->clone();
+}
+LSValue* ValueSTD::attr(LSValue* v, char* field) {
+	return v->attr(field);
 }
 bool ValueSTD::ls_not(LSValue* x) {
 	auto r = x->ls_not();
