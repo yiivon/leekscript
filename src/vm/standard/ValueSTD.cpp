@@ -158,6 +158,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("move", {
 		{Type::any(), {Type::const_any()}, (void*) &LSValue::move, Method::NATIVE}
 	});
+	method("ptr", {
+		{Type::any(), {Type::const_any()}, (void*) &LSValue::move, Method::NATIVE}
+	});
 	method("absolute", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::absolute}
 	});

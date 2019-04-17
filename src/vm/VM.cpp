@@ -36,10 +36,6 @@ const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
 VM* VM::current_vm = nullptr;
 OutputStream* VM::default_output = new OutputStream();
 
-LSValue* ptr_fun(LSValue* v) {
-	return v->move();
-}
-
 VM::VM(bool v1) : compiler(this) {
 
 	operation_limit = VM::DEFAULT_OPERATION_LIMIT;
@@ -67,13 +63,10 @@ VM::VM(bool v1) : compiler(this) {
 	add_module(new IntervalSTD());
 	add_module(new JsonSTD());
 
-	auto value_class = internal_vars["Value"]->lsvalue;
-
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
-	auto fun = new LSFunction((void*) ptr_fun);
-	fun->args = {value_class};
-	fun->return_type = value_class;
-	add_internal_var("ptr", ptr_type, fun);
+	add_internal_var("ptr", ptr_type, nullptr, new Callable("?", {
+		{"Value.ptr", ptr_type, (void*) 12 }
+	}));
 
 	// Add v1 functions
 	if (v1) {
