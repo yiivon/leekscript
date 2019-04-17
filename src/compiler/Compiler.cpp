@@ -1031,7 +1031,6 @@ void Compiler::insn_delete(Compiler::value v) const {
 	// std::cout << "insn_delete " << v.t << " " << v.v->getType() << std::endl;
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	if (v.t.must_manage_memory()) {
-		// insn_call({}, {v}, (void*) &LSValue::delete_ref);
 		insn_if_not(insn_native(v), [&]() {
 			auto refs = insn_refs(v);
 			insn_if(insn_refs(v), [&]() {
