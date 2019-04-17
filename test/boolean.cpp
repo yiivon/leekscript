@@ -65,8 +65,8 @@ void Test::test_booleans() {
 	code("var a = [true, ''][0] var b = [12, ''][0] a + b").equals("13");
 	code("var a = [false, ''][0] var b = [12, ''][0] a + b").equals("12");
 	code("var a = [false, ''][0] a + 12").equals("12");
-	code("true / 'hello'").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {ls::Type::boolean().to_string(), "/", ls::Type::tmp_string().to_string()});
-
+	code("true / 'hello'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	
 	section("Boolean.operator -");
 	code("true - 1").equals("0");
 	code("1 - true").equals("0");

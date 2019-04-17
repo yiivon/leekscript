@@ -80,7 +80,7 @@ void Test::test_strings() {
 	code("'abc.' / '.'").equals("['abc', '']");
 	code("'.aaaaa.bbbb.ccc.dd.e.' / '.'").equals("['', 'aaaaa', 'bbbb', 'ccc', 'dd', 'e', '']");
 	code("('hello.world.how.are.you' / '.').size()").equals("5");
-	code("'hello' / 2").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::string().add_temporary().to_string(), "/", ls::Type::integer().to_string()});
+	code("'hello' / 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\");
 	code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
