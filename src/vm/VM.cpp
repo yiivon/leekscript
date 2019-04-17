@@ -236,8 +236,14 @@ void* VM::resolve_symbol(std::string name) {
 		// std::cout << "version = " << version << std::endl;
 		if (internal_vars.find(module) != internal_vars.end()) {
 			auto clazz = (LSClass*) internal_vars.at(module)->lsvalue;
-			auto implems = clazz->methods.at(method);
-			return implems.at(version).addr;
+			if (method.substr(0, 8) == "operator") {
+				auto op = method.substr(8);
+				auto implems = clazz->operators.at(op);
+				return implems.at(version).addr;
+			} else {
+				auto implems = clazz->methods.at(method);
+				return implems.at(version).addr;
+			}
 		}
 	}
 	return nullptr;

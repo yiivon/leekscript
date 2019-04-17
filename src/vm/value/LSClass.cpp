@@ -67,24 +67,35 @@ const Callable* LSClass::getOperator(SemanticAnalyser* analyser, std::string& na
 	if (name == "÷") name = "/";
 	if (name == "×") name = "*";
 	std::vector<const Operator*> implementations;
-	std::string op_name;
+	std::vector<std::string> names;
 	if (operators.find(name) != operators.end()) {
-		for (const auto& i : operators.at(name)) implementations.push_back(&i);
-		op_name = this->name + ".operator" + name;
+		int i = 0;
+		for (const auto& impl : operators.at(name)) {
+			implementations.push_back(&impl);
+			names.push_back(this->name + ".operator" + name + "." + std::to_string(i));
+			i++;
+		}
 	}
 	auto parent = name == "Value" ? nullptr : LSValue::ValueClass;
 	if (parent && parent->operators.find(name) != parent->operators.end()) {
-		for (const auto& i : parent->operators.at(name)) implementations.push_back(&i);
-		op_name = "Value.operator" + name;
+		int i = 0;
+		for (const auto& impl : parent->operators.at(name)) {
+			implementations.push_back(&impl);
+			names.push_back("Value.operator" + name + "." + std::to_string(i));
+			i++;
+		}
 	}
-	auto callable = new Callable(op_name);
+	auto callable = new Callable(name);
+	int i = 0;
 	for (const auto& implementation : implementations) {
 		auto type = Type::fun(implementation->return_type, {implementation->object_type, implementation->operand_type});
+		auto version_name = names.at(i);
 		if (implementation->native) {
-			callable->add_version({ name, type, implementation->addr, implementation->mutators, implementation->templates, nullptr, false, implementation->v1_addr, implementation->v2_addr });
+			callable->add_version({ version_name, type, implementation->addr, implementation->mutators, implementation->templates, nullptr, false, implementation->v1_addr, implementation->v2_addr });
 		} else {
-			callable->add_version({ name, type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) implementation->addr, implementation->mutators, implementation->templates, nullptr, false,  implementation->v1_addr, implementation->v2_addr });
+			callable->add_version({ version_name, type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) implementation->addr, implementation->mutators, implementation->templates, nullptr, false,  implementation->v1_addr, implementation->v2_addr });
 		}
+		i++;
 	}
 	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
 	return callable;
