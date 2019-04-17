@@ -164,6 +164,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("clone", {
 		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::clone, Method::NATIVE}
 	});
+	method("delete", {
+		{{}, {Type::const_any()}, (void*) &LSValue::free, Method::NATIVE}
+	});
 }
 
 /*

@@ -1036,7 +1036,7 @@ void Compiler::insn_delete(Compiler::value v) const {
 			auto refs = insn_refs(v);
 			insn_if(insn_refs(v), [&]() {
 				insn_if_not(insn_dec_refs(v, refs), [&]() {
-					insn_call({}, {v}, (void*) &LSValue::free);
+					insn_call({}, {v}, "Value.delete");
 				});
 			});
 		});
