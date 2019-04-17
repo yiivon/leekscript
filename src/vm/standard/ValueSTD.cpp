@@ -157,6 +157,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("move", {
 		{Type::any(), {Type::const_any()}, (void*) &LSValue::move, Method::NATIVE}
 	});
+	method("absolute", {
+		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::absolute}
+	});
 }
 
 /*
@@ -588,6 +591,10 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 
 Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_typeof(args[0]);
+}
+
+int ValueSTD::absolute(LSValue* v) {
+	return v->abso();
 }
 
 }
