@@ -30,6 +30,10 @@ SystemSTD::SystemSTD() : Module("System") {
 		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) &SystemSTD::throw1, Method::NATIVE},
 		{{}, {Type::long_(), Type::long_(), Type::i8().pointer()}, (void*) &SystemSTD::throw2, Method::NATIVE},
 	});
+
+	method("debug", {
+		{{}, {Type::any()}, (void*) &SystemSTD::print, Method::NATIVE}
+	});
 }
 
 long SystemSTD::time() {

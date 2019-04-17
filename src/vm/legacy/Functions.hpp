@@ -33,8 +33,6 @@ public:
 	static LSValue* v1_pushAll(LSArray<LSValue*>* a, LSArray<LSValue*>* b);
 	static void v1_fill(LSArray<LSValue*>* a, LSValue* b);
 	static void v1_fill_2(LSArray<LSValue*>* a, LSValue* b, int c);
-	// Utils
-	static void v1_debug(LSValue* v);
 };
 
 }

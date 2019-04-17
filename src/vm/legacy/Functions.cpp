@@ -11,9 +11,6 @@ void Functions::add(VM* vm, std::string name, Callable callable) {
 }
 
 void Functions::create(VM* vm) {
-	add(vm, "debug", {
-		{"?", Type::fun({}, {Type::any()}), (void*) &Functions::v1_debug}
-	});
 	add(vm, "count", {
 		{"?", Type::fun(Type::integer(), {Type::any()}), (void*) &Functions::v1_count}
 	});
@@ -36,12 +33,6 @@ void Functions::create(VM* vm) {
 		{"?", Type::fun({}, {Type::array(), Type::any()}), (void*) &Functions::v1_fill},
 		{"?", Type::fun({}, {Type::array(), Type::any(), Type::integer()}), (void*) &Functions::v1_fill_2},
 	});
-}
-
-void Functions::v1_debug(LSValue* v) {
-	v->print(VM::current()->output->stream());
-	LSValue::delete_temporary(v);
-	VM::current()->output->end();
 }
 
 LSValue* Functions::v1_charAt(LSString* v, int p) {
