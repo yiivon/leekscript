@@ -167,6 +167,21 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("delete", {
 		{{}, {Type::const_any()}, (void*) &LSValue::free, Method::NATIVE}
 	});
+	method("not", {
+		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::ls_not, Method::NATIVE}
+	});
+	method("minus", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_minus, Method::NATIVE}
+	});
+	method("pre_dec", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_dec, Method::NATIVE}
+	});
+	method("pre_inc", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_inc, Method::NATIVE}
+	});
+	method("pre_tilde", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_tilde, Method::NATIVE}
+	});
 }
 
 /*
@@ -605,6 +620,23 @@ int ValueSTD::absolute(LSValue* v) {
 }
 LSValue* ValueSTD::clone(LSValue* v) {
 	return v->clone();
+}
+bool ValueSTD::ls_not(LSValue* x) {
+	auto r = x->ls_not();
+	LSValue::delete_temporary(x);
+	return r;
+}
+LSValue* ValueSTD::ls_minus(LSValue* x) {
+	return x->ls_minus();
+}
+LSValue* ValueSTD::ls_pre_inc(LSValue* x) {
+	return x->ls_preinc();
+}
+LSValue* ValueSTD::ls_pre_dec(LSValue* x) {
+	return x->ls_predec();
+}
+LSValue* ValueSTD::ls_pre_tilde(LSValue* v) {
+	return v->ls_tilde();
 }
 
 }

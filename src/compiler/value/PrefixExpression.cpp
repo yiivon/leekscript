@@ -100,33 +100,11 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 	}
 }
 
-bool jit_not(LSValue* x) {
-	auto r = x->ls_not();
-	LSValue::delete_temporary(x);
-	return r;
-}
-LSValue* jit_minus(LSValue* x) {
-	return x->ls_minus();
-}
-LSValue* jit_pre_inc(LSValue* x) {
-	return x->ls_preinc();
-}
-LSValue* jit_pre_dec(LSValue* x) {
-	return x->ls_predec();
-}
-LSValue* jit_pre_tilde(LSValue* v) {
-	return v->ls_tilde();
-}
-
 Compiler::value PrefixExpression::compile(Compiler& c) const {
 
 	c.mark_offset(location().start.line);
 
-	Compiler::value arg;
-	void* func = nullptr;
-
 	switch (operatorr->type) {
-
 		case TokenType::PLUS_PLUS: {
 			if (expression->type == Type::mpz()) {
 				auto x = ((LeftValue*) expression)->compile_l(c);
@@ -144,10 +122,9 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				c.insn_store(x_addr, sum);
 				return sum;
 			} else {
-				arg = expression->compile(c);
-				func = (void*) jit_pre_inc;
+				auto arg = expression->compile(c);
+				return c.insn_invoke(type, {arg}, "Value.pre_inc");
 			}
-			break;
 		}
 		case TokenType::MINUS_MINUS: {
 			if (expression->type.is_primitive()) {
@@ -157,10 +134,9 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				c.insn_store(x_addr, sum);
 				return sum;
 			} else {
-				arg = expression->compile(c);
-				func = (void*) jit_pre_dec;
+				auto arg = expression->compile(c);
+				return c.insn_invoke(type, {arg}, "Value.pre_dec");
 			}
-			break;
 		}
 		case TokenType::NOT: {
 			if (expression->type.is_primitive()) {
@@ -168,10 +144,9 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				assert(x.t.llvm_type(c) == x.v->getType());
 				return c.insn_not_bool(x);
 			} else {
-				arg = expression->compile(c);
-				func = (void*) jit_not;
+				auto arg = expression->compile(c);
+				return c.insn_invoke(type, {arg}, "Value.not");
 			}
-			break;
 		}
 		case TokenType::MINUS: {
 			if (expression->type.not_temporary() == Type::mpz()) {
@@ -189,20 +164,18 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 				auto x = expression->compile(c);
 				return c.insn_neg(x);
 			} else {
-				arg = expression->compile(c);
-				func = (void*) jit_minus;
+				auto arg = expression->compile(c);
+				return c.insn_invoke(type, {arg}, "Value.minus");
 			}
-			break;
 		}
 		case TokenType::TILDE: {
 			if (expression->type.is_primitive()) {
 				auto x = expression->compile(c);
 				return c.insn_not(x);
 			} else {
-				arg = expression->compile(c);
-				func = (void*) jit_pre_tilde;
+				auto arg = expression->compile(c);
+				return c.insn_invoke(type, {arg}, "Value.pre_tilde");
 			}
-			break;
 		}
 		case TokenType::NEW: {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
@@ -262,9 +235,10 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			auto clazz = expression->compile(c);
 			return c.new_object_class(clazz);
 		}
-		default: {}
+		default: {
+			assert(false);
+		}
 	}
-	return c.insn_invoke(type, {arg}, func);
 }
 
 Value* PrefixExpression::clone() const {
