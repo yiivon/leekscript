@@ -323,6 +323,17 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::boolean(), {Type::long_()}, (void*) &NumberSTD::is_prime_long},
 		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_int},
 	});
+
+	/** Internal **/
+	method("powdd", {
+		{Type::real(), {Type::real(), Type::real()}, (void*) &std::pow<double, double>, Method::NATIVE}
+	});
+	method("powli", {
+		{Type::real(), {Type::long_(), Type::integer()}, (void*) &std::pow<long, int>, Method::NATIVE}
+	});
+	method("powii", {
+		{Type::real(), {Type::integer(), Type::integer()}, (void*) &std::pow<int, int>, Method::NATIVE}
+	});
 }
 
 Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args) {

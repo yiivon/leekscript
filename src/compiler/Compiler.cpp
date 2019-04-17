@@ -823,17 +823,11 @@ Compiler::value Compiler::insn_pow(Compiler::value a, Compiler::value b) const {
 	assert(a.t.is_primitive() && b.t.is_primitive());
 	Compiler::value r;
 	if (a.t.is_real() or b.t.is_real()) {
-		r = insn_call(Type::real(), {to_real(a), to_real(b)}, +[](double a, double b) {
-			return std::pow(a, b);
-		});
+		r = insn_call(Type::real(), {to_real(a), to_real(b)}, "Number.powdd");
 	} else if (a.t.is_long()) {
-		r = insn_call(Type::long_(), {a, to_int(b)}, +[](long a, int b) {
-			return (long) std::pow(a, b);
-		});
+		r = to_long(insn_call(Type::real(), {a, to_int(b)}, "Number.powli"));
 	} else if (a.t.is_integer()) {
-		r = insn_call(Type::integer(), {a, b}, +[](int a, int b) {
-			return (int) std::pow(a, b);
-		});
+		r = to_int(insn_call(Type::real(), {a, b}, "Number.powii"));
 	}
 	log_insn(4) << "pow " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
