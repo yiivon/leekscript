@@ -263,7 +263,7 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 	if (v.t.is_bool()) {
 		return {builder.CreateIntCast(v.v, Type::long_().llvm_type(*this), false), Type::long_()};
 	}
-	if (v.t.not_temporary() == Type::integer()) {
+	if (v.t.is_integer()) {
 		return {builder.CreateIntCast(v.v, Type::long_().llvm_type(*this), true), Type::long_()};
 	}
 	if (v.t.is_real()) {
