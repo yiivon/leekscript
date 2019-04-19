@@ -186,6 +186,17 @@ void Test::test_strings() {
 
 	section("String.replace()");
 	code("String.replace('bonjour à tous', 'o', '_')").equals("'b_nj_ur à t_us'");
+	code("replace('\\\\\\\\', '\\\\', '.')").equals("'..'");
+	code("replace('hello\\\\', '\\\\\\\\', 'R')").equals("'hello\\'");
+	code("replace('hello.', '.', '\\\\\\\\\')").equals("'hello\\\\'");
+	code("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\'");
+	
+	section("v1 string replace()");
+	code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
+	code_v1("replace('hello\\\\', '\\\\\\\\', 'R')").equals("'helloR'");
+	code_v1("replace('hello.', '.', '\\\\\\\\\')").equals("'hello\\'");
+	code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
+	code_v1("replace('\\\\\\\\', '\\\\', '.')").equals("'..'");
 
 	section("String.map()");
 	code("String.map('salut', x -> '(' + x + ')')").equals("'(s)(a)(l)(u)(t)'");
@@ -288,8 +299,4 @@ void Test::test_strings() {
 
 	section("v1 string charAt");
 	code_v1("charAt('hello', 3)").equals("'l'");
-
-	section("v1 string replace()");
-	code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
-	code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
 }
