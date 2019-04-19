@@ -27,7 +27,6 @@
 #include "standard/ClassSTD.hpp"
 #include "standard/IntervalSTD.hpp"
 #include "standard/JsonSTD.hpp"
-#include "legacy/Functions.hpp"
 #include "../compiler/semantic/Callable.hpp"
 
 namespace ls {
@@ -67,11 +66,6 @@ VM::VM(bool v1) : compiler(this) {
 	add_internal_var("ptr", ptr_type, nullptr, new Callable("?", {
 		{"Value.ptr", ptr_type, (void*) 12 }
 	}));
-
-	// Add v1 functions
-	if (v1) {
-		legacy::Functions::create(this);
-	}
 }
 
 VM::~VM() {
