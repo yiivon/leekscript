@@ -120,6 +120,7 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	method("replace", {
 		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &StringSTD::replace, Method::NATIVE},
+		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &StringSTD::v1_replace, Method::NATIVE, {}, true},
 	});
 	method("reverse", {
 		{Type::string(), {Type::const_string()}, (void*) &LSString::ls_tilde, Method::NATIVE},
@@ -260,19 +261,39 @@ int string_length(LSString* string) {
 LSString* StringSTD::replace(LSString* string, LSString* from, LSString* to) {
 	std::string str(*string);
 	size_t start_pos = 0;
-	while((start_pos = str.find(*from, start_pos)) != std::string::npos) {
+	while ((start_pos = str.find(*from, start_pos)) != std::string::npos) {
 		str.replace(start_pos, from->length(), *to);
 		start_pos += to->length();
 	}
-	if (string->refs == 0) {
-		delete string;
+	if (string->refs == 0) { delete string; }
+	if (from->refs == 0) { delete from; }
+	if (to->refs == 0) { delete to; }
+	return new LSString(str);
+}
+
+LSValue* StringSTD::v1_replace(LSString* string, LSString* from, LSString* to) {
+	std::string str(*string);
+	size_t start_pos = 0;
+	// Replace \\ by \ (like Java does)
+	std::string f = *from;
+	while ((start_pos = f.find("\\\\", start_pos)) != std::string::npos) {
+		f.replace(start_pos, 2, "\\");
+		start_pos += 1;
 	}
-	if (from->refs == 0) {
-		delete from;
+	start_pos = 0;
+	std::string t = *to;
+	while ((start_pos = t.find("\\\\", start_pos)) != std::string::npos) {
+		t.replace(start_pos, 2, "\\");
+		start_pos += 1;
 	}
-	if (to->refs == 0) {
-		delete to;
+	start_pos = 0;
+	while ((start_pos = str.find(f, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from->length(), t);
+		start_pos += t.size();
 	}
+	if (string->refs == 0) { delete string; }
+	if (from->refs == 0) { delete from; }
+	if (to->refs == 0) { delete to; }
 	return new LSString(str);
 }
 
