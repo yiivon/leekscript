@@ -200,8 +200,8 @@ void Test::test_functions() {
 	code("let p = <=; p('a', 'b')").equals("true");
 	code("let p = >=; p('a', 'b')").equals("false");
 	code("+").equals("<function>");
-	// code("+.class").equals("<class Function>");
-	// code("let p = +; p.class").equals("<class Function>");
+	code("+.class").equals("<class Function>");
+	code("let p = +; p.class").equals("<class Function>");
 
 	section("Function.isTrue()");
 	code("if [x -> x, 12][0] { 'ok' } else { null }").equals("'ok'");
