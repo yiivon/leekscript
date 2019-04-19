@@ -6,6 +6,7 @@
 #include "../value/ObjectAccess.hpp"
 #include "../../type/Template_type.hpp"
 #include "../value/Function.hpp"
+#include "../semantic/SemanticAnalyser.hpp"
 
 namespace ls {
 
@@ -32,6 +33,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 	CallableVersion* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
 	for (auto& version : versions) {
+		if (version.legacy and not analyser->vm->legacy) continue;
 		std::vector<Type> version_arguments = arguments;
 		if (version.object) {
 			version_arguments.insert(version_arguments.begin(), version.object->type);

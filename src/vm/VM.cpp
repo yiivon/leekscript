@@ -35,7 +35,7 @@ const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
 VM* VM::current_vm = nullptr;
 OutputStream* VM::default_output = new OutputStream();
 
-VM::VM(bool v1) : compiler(this) {
+VM::VM(bool v1) : compiler(this), legacy(v1) {
 
 	operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 

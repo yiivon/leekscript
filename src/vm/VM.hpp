@@ -79,6 +79,7 @@ public:
 	long mpz_created = 0;
 	long mpz_deleted = 0;
 	std::string file_name;
+	bool legacy;
 
 	VM(bool v1 = false);
 	virtual ~VM();

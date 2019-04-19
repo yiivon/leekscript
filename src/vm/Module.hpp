@@ -19,12 +19,14 @@ public:
 	bool native;
 	std::vector<TypeMutator*> mutators;
 	std::vector<Type> templates;
-	Method(Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}) {
+	bool legacy;
+	Method(Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, bool legacy = false) {
 		this->addr = addr;
 		type = Type::fun(return_type, args);
 		this->native = native;
 		this->mutators = mutators;
 		this->templates = templates;
+		this->legacy = legacy;
 	}
 	enum Option {
 		Static, Instantiate, Both
@@ -40,9 +42,10 @@ public:
 	Type obj_type;
 	std::vector<Type> args;
 	std::vector<TypeMutator*> mutators;
+	bool legacy;
 
-	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false, std::initializer_list<TypeMutator*> mutators = {})
-		: return_type(return_type), addr(addr), native(native), args(args), mutators(mutators) {}
+	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false, std::initializer_list<TypeMutator*> mutators = {}, bool legacy = false)
+		: return_type(return_type), addr(addr), native(native), args(args), mutators(mutators), legacy(legacy) {}
 };
 
 class ModuleMethod {

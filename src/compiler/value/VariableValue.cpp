@@ -132,13 +132,16 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 				const auto& cl = (LSClass*) clazz.second->lsvalue;
 				for (const auto& m : cl->methods) {
 					if (m.first == name) {
+						int j = 0;
 						for (const auto& i : m.second) {
 							auto t = Type::fun(i.type.return_type(), i.type.arguments(), this);
+							auto version_name = clazz.second->name + "." + name + "." + std::to_string(j);
 							if (i.native) {
-								callable->add_version({ name, t, i.addr, i.mutators, i.templates, nullptr });
+								callable->add_version({ version_name, t, i.addr, i.mutators, i.templates, nullptr, false, false, false, i.legacy });
 							} else {
-								callable->add_version({ name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) i.addr, i.mutators, i.templates, nullptr });
+								callable->add_version({ version_name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) i.addr, i.mutators, i.templates, nullptr, false, false, false, i.legacy });
 							}
+							j++;
 						}
 					}
 				}
