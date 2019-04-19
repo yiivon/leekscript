@@ -261,7 +261,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto T = Type::template_("T");
 	template_(T).
 	method("fill", {
-		{Type::array(T), {Type::array(), T, Type::const_integer()}, (void*) &fill, false, {new WillStoreMutator()}}
+		{Type::array(T), {Type::array(), T}, (void*) &fill, false, {new WillStoreMutator()}},
+		{Type::array(T), {Type::array(), T, Type::const_integer()}, (void*) &fill2, false, {new WillStoreMutator()}},
 	});
 
 	method("insert", {
@@ -412,6 +413,14 @@ Compiler::value ArraySTD::search_int(Compiler& c, std::vector<Compiler::value> a
 }
 
 Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args) {
+	auto fun = [&]() {
+		if (args[0].t.element().fold().is_integer()) return (void*) &LSArray<int>::ls_fill;
+		if (args[0].t.element().fold().is_real()) return (void*) &LSArray<double>::ls_fill;
+		return (void*) &LSArray<LSValue*>::ls_fill;
+	}();
+	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t.element().fold()), c.insn_array_size(args[0])}, fun);
+}
+Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args) {
 	auto fun = [&]() {
 		if (args[0].t.element().fold().is_integer()) return (void*) &LSArray<int>::ls_fill;
 		if (args[0].t.element().fold().is_real()) return (void*) &LSArray<double>::ls_fill;

@@ -28,6 +28,7 @@ public:
 	static Compiler::value search_int(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value fill(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value fill2(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value remove_element_any(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value remove_element_real(Compiler&, std::vector<Compiler::value>);
