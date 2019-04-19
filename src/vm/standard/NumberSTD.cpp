@@ -182,6 +182,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::number()}, (void*) &NumberSTD::abs},
 		{Type::integer(), {Type::integer()}, (void*) &NumberSTD::abs},
 	});
+	double (*a)(double) = std::fabs;
+	method("absd", {
+		{Type::real(), {Type::real()}, (void*) a, Method::NATIVE}
+	});
 	method("acos", {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::acos_real},

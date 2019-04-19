@@ -859,9 +859,7 @@ Compiler::value Compiler::insn_abs(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	// std::cout << "abs " << x.t << std::endl;
 	if (x.t.is_polymorphic()) {
-		return insn_call(Type::real(), {to_real(x)}, +[](double x) {
-			return std::fabs(x);
-		});
+		return insn_call(Type::real(), {to_real(x)}, "Number.absd");
 	}
 	if (x.t == Type::integer()) {
 		return insn_call(Type::integer(), {x}, +[](int x) {
