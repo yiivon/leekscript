@@ -327,6 +327,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub, Method::NATIVE},
 		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub, Method::NATIVE},
 	});
+
+	/** V1 **/
+	method("count", {
+		{Type::integer(), {Type::any()}, (void*) &LSArray<LSValue*>::ls_size, Method::NATIVE}
+	});
 }
 
 Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
