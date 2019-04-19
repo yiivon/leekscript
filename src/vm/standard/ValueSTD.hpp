@@ -91,6 +91,9 @@ public:
 	static LSValue* ls_double_mod_eq(LSValue**, LSValue*);
 	static LSValue* ls_pow(LSValue*, LSValue*);
 	static LSValue* ls_pow_eq(LSValue**, LSValue*);
+	static int integer(const LSValue* x);
+	static double real(const LSValue* x);
+	static long long_(const LSValue* x);
 };
 
 }

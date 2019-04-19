@@ -204,15 +204,7 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	auto type = v.t.fold();
 	if (type.is_polymorphic()) {
-		return insn_invoke(Type::integer(), {v}, +[](const LSValue* x) {
-			if (auto number = dynamic_cast<const LSNumber*>(x)) {
-				return (int) number->value;
-			} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
-				return boolean->value ? 1 : 0;
-			}
-			LSValue::delete_temporary(x);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		});
+		return insn_invoke(Type::integer(), {v}, "Value.int");
 	}
 	if (type.is_integer()) {
 		return v;
@@ -236,15 +228,7 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 Compiler::value Compiler::to_real(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	if (x.t.is_polymorphic()) {
-		return insn_invoke(Type::real(), {x}, +[](const LSValue* x) {
-			if (auto number = dynamic_cast<const LSNumber*>(x)) {
-				return number->value;
-			} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
-				return boolean->value ? 1.0 : 0.0;
-			}
-			LSValue::delete_temporary(x);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		});
+		return insn_invoke(Type::real(), {x}, "Value.real");
 	}
 	if (x.t.is_real()) {
 		return x;
@@ -270,15 +254,7 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 		return {builder.CreateFPToSI(v.v, Type::long_().llvm_type(*this)), Type::long_()};
 	}
 	if (v.t.is_polymorphic()) {
-		return insn_invoke(Type::long_(), {v}, +[](const LSValue* x) {
-			if (auto number = dynamic_cast<const LSNumber*>(x)) {
-				return (long) number->value;
-			} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
-				return boolean->value ? 1l : 0l;
-			}
-			LSValue::delete_temporary(x);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		});
+		return insn_invoke(Type::long_(), {v}, "Value.long");
 	}
 	std::cout << v.t << std::endl;
 	assert(false && "not converted...");

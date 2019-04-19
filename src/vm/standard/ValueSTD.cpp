@@ -210,6 +210,15 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("attr", {
 		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &ValueSTD::attr, Method::NATIVE},
 	});
+	method("int", {
+		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::integer, Method::NATIVE}
+	});
+	method("real", {
+		{Type::real(), {Type::const_any()}, (void*) &ValueSTD::real, Method::NATIVE}
+	});
+	method("long", {
+		{Type::long_(), {Type::const_any()}, (void*) &ValueSTD::long_, Method::NATIVE}
+	});
 }
 
 /*
@@ -709,6 +718,34 @@ LSValue* ValueSTD::ls_pow(LSValue* x, LSValue* y) {
 }
 LSValue* ValueSTD::ls_pow_eq(LSValue** x, LSValue* y) {
 	return (*x)->pow_eq(y);
+}
+
+int ValueSTD::integer(const LSValue* x) {
+	if (auto number = dynamic_cast<const LSNumber*>(x)) {
+		return (int) number->value;
+	} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
+		return boolean->value ? 1 : 0;
+	}
+	LSValue::delete_temporary(x);
+	throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+}
+double ValueSTD::real(const LSValue* x) {
+	if (auto number = dynamic_cast<const LSNumber*>(x)) {
+		return number->value;
+	} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
+		return boolean->value ? 1.0 : 0.0;
+	}
+	LSValue::delete_temporary(x);
+	throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+}
+long ValueSTD::long_(const LSValue* x) {
+	if (auto number = dynamic_cast<const LSNumber*>(x)) {
+		return (long) number->value;
+	} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
+		return boolean->value ? 1l : 0l;
+	}
+	LSValue::delete_temporary(x);
+	throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 }
 
 }
