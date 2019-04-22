@@ -219,6 +219,15 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("long", {
 		{Type::long_(), {Type::const_any()}, (void*) &ValueSTD::long_, Method::NATIVE}
 	});
+	method("range", {
+		{Type::any(), {Type::const_any(), Type::integer(), Type::integer()}, (void*) &ValueSTD::range, Method::NATIVE}
+	});
+	method("at", {
+		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::at, Method::NATIVE}
+	});
+	method("atl", {
+		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::atl, Method::NATIVE}
+	});
 }
 
 /*
@@ -746,6 +755,16 @@ long ValueSTD::long_(const LSValue* x) {
 	}
 	LSValue::delete_temporary(x);
 	throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+}
+
+LSValue* ValueSTD::range(LSValue* a, int start, int end) {
+	return a->range(start, end);
+}
+LSValue* ValueSTD::at(LSValue* array, LSValue* key) {
+	return array->at(key);
+}
+LSValue** ValueSTD::atl(LSValue* array, LSValue* key) {
+	return array->atL(key);
 }
 
 }

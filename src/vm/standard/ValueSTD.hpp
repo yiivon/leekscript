@@ -94,6 +94,9 @@ public:
 	static int integer(const LSValue* x);
 	static double real(const LSValue* x);
 	static long long_(const LSValue* x);
+	static LSValue* range(LSValue* a, int start, int end);
+	static LSValue* at(LSValue* a, LSValue* k);
+	static LSValue** atl(LSValue* a, LSValue* k);
 };
 
 }

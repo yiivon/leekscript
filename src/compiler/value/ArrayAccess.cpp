@@ -261,9 +261,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			// Unknown type, call generic at() operator
 			auto k = c.insn_to_any(key->compile(c));
 			key->compile_end(c);
-			auto e = c.insn_invoke(Type::any(), {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
-				return array->at(key);
-			});
+			auto e = c.insn_invoke(Type::any(), {compiled_array, k}, "Value.at");
 			c.insn_delete_temporary(k);
 			return e;
 		}
@@ -272,9 +270,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		auto end = key2->compile(c);
 		key->compile_end(c);
 		key2->compile_end(c);
-		return c.insn_invoke(type, {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
-			return a->range(start, end);
-		});
+		return c.insn_invoke(type, {compiled_array, start, end}, "Value.range");
 	}
 }
 
@@ -345,9 +341,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			}
 		} else {
 			k = c.insn_to_any(k);
-			return c.insn_invoke(type.pointer(), {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
-				return array->atL(key);
-			});
+			return c.insn_invoke(type.pointer(), {compiled_array, k}, "Value.atl");
 		}
 	} else {
 		auto start = key->compile(c);
