@@ -70,6 +70,7 @@ public:
 	static int absolute(LSValue* v);
 	static LSValue* clone(LSValue* v);
 	static LSValue* attr(LSValue* v, char* field);
+	static LSValue** attrL(LSValue* v, char* field);
 	static bool ls_not(LSValue* x);
 	static LSValue* ls_minus(LSValue* x);
 	static LSValue* ls_pre_inc(LSValue* x);

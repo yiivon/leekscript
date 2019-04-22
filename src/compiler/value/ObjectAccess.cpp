@@ -313,9 +313,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	auto o = object->compile(c);
 	object->compile_end(c);
 	auto k = c.new_const_string(field->content, "field");
-	return c.insn_invoke(type, {o, k}, (void*) +[](LSValue* object, char* key) {
-		return object->attr(key);
-	});
+	return c.insn_invoke(type, {o, k}, "Value.attr");
 }
 
 Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> version) const {
@@ -333,9 +331,7 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	}}();
 	object->compile_end(c);
 	auto k = c.new_const_string(field->content, "field");
-	return c.insn_invoke(type.pointer(), {o, k}, (void*) +[](LSValue* object, char* key) {
-		return object->attrL(key);
-	});
+	return c.insn_invoke(type.pointer(), {o, k}, "Value.attrL");
 }
 
 Value* ObjectAccess::clone() const {

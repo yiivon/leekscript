@@ -210,6 +210,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("attr", {
 		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &ValueSTD::attr, Method::NATIVE},
 	});
+	method("attrL", {
+		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &ValueSTD::attrL, Method::NATIVE},
+	});
 	method("int", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::integer, Method::NATIVE}
 	});
@@ -670,6 +673,9 @@ LSValue* ValueSTD::clone(LSValue* v) {
 }
 LSValue* ValueSTD::attr(LSValue* v, char* field) {
 	return v->attr(field);
+}
+LSValue** ValueSTD::attrL(LSValue* v, char* field) {
+	return v->attrL(field);
 }
 bool ValueSTD::ls_not(LSValue* x) {
 	auto r = x->ls_not();
