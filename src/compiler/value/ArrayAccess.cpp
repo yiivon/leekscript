@@ -199,30 +199,30 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			key->compile_end(c);
 			k = c.insn_convert(k, map_key_type);
 
-			void* func = nullptr;
+			std::string func;
 			if (map_key_type == Type::integer()) {
 				if (type == Type::integer()) {
-					func = (void*) &LSMap<int, int>::at;
+					func = "Map.at.0";
 				} else if (type == Type::real()) {
-					func = (void*) &LSMap<int, double>::at;
+					func = "Map.at.1";
 				} else {
-					func = (void*) &LSMap<int, LSValue*>::at;
+					func = "Map.at.2";
 				}
 			} else if (map_key_type == Type::real()) {
 				if (type == Type::integer()) {
-					func = (void*) &LSMap<double, int>::at;
+					func = "Map.at.3";
 				} else if (type == Type::real()) {
-					func = (void*) &LSMap<double, double>::at;
+					func = "Map.at.4";
 				} else {
-					func = (void*) &LSMap<double, LSValue*>::at;
+					func = "Map.at.5";
 				}
 			} else {
 				if (type == Type::integer()) {
-					func = (void*) &LSMap<LSValue*, int>::at;
+					func = "Map.at.6";
 				} else if (type == Type::real()) {
-					func = (void*) &LSMap<LSValue*, double>::at;
+					func = "Map.at.7";
 				} else {
-					func = (void*) &LSMap<LSValue*, LSValue*>::at;
+					func = "Map.at.8";
 				}
 			}
 			auto res = c.insn_invoke(type, {compiled_array, k}, func);

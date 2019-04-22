@@ -166,6 +166,19 @@ MapSTD::MapSTD() : Module("Map") {
 	method("foldRight", {
 		{frR, {Type::const_map(frK, frT), Type::fun(frR, {frK, frT, frR}), frR}, (void*) &fold_right},
 	});
+
+	/** Internal **/
+	method("at", {
+		{Type::integer(), {Type::map(Type::integer(), Type::integer()), Type::integer()}, (void*) &LSMap<int, int>::at, Method::NATIVE},
+		{Type::real(), {Type::map(Type::integer(), Type::real()), Type::integer()}, (void*) &LSMap<int, double>::at, Method::NATIVE},
+		{Type::any(), {Type::map(Type::integer(), Type::any()), Type::integer()}, (void*) &LSMap<int, LSValue*>::at, Method::NATIVE},
+		{Type::integer(), {Type::map(Type::real(), Type::integer()), Type::real()}, (void*) &LSMap<double, int>::at, Method::NATIVE},
+		{Type::real(), {Type::map(Type::real(), Type::real()), Type::real()}, (void*) &LSMap<double, double>::at, Method::NATIVE},
+		{Type::any(), {Type::map(Type::real(), Type::any()), Type::real()}, (void*) &LSMap<double, LSValue*>::at, Method::NATIVE},
+		{Type::integer(), {Type::map(Type::any(), Type::integer()), Type::any()}, (void*) &LSMap<LSValue*, int>::at, Method::NATIVE},
+		{Type::real(), {Type::map(Type::any(), Type::real()), Type::any()}, (void*) &LSMap<LSValue*, double>::at, Method::NATIVE},
+		{Type::any(), {Type::map(Type::any(), Type::any()), Type::any()}, (void*) &LSMap<LSValue*, LSValue*>::at, Method::NATIVE},
+	});
 }
 
 Compiler::value MapSTD::insert_any_any(Compiler& c, std::vector<Compiler::value> args) {
