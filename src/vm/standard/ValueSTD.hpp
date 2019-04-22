@@ -97,6 +97,8 @@ public:
 	static LSValue* range(LSValue* a, int start, int end);
 	static LSValue* at(LSValue* a, LSValue* k);
 	static LSValue** atl(LSValue* a, LSValue* k);
+	static bool in_i(LSValue* x, int k);
+	static bool in(LSValue* x, LSValue* y);
 };
 
 }

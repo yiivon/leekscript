@@ -228,6 +228,12 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("atl", {
 		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::atl, Method::NATIVE}
 	});
+	method("in_i", {
+		{Type::boolean(), {Type::const_any(), Type::integer()}, (void*) &ValueSTD::in_i, Method::NATIVE}
+	});
+	method("in", {
+		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::in, Method::NATIVE}
+	}); 
 }
 
 /*
@@ -575,14 +581,16 @@ Compiler::value ValueSTD::bit_shift_uright_eq(Compiler& c, std::vector<Compiler:
 
 Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[1].t == Type::integer()) {
-		return c.insn_invoke(Type::boolean(), args, +[](LSValue* a, int b) {
-			return a->in_i(b);
-		});
+		return c.insn_invoke(Type::boolean(), args, "Value.in_i");
 	} else {
-		return c.insn_invoke(Type::boolean(), args, +[](LSValue* a, LSValue* b) {
-			return a->in(b);
-		});
+		return c.insn_invoke(Type::boolean(), args, "Value.in");
 	}
+}
+bool ValueSTD::in_i(LSValue* x, int k) {
+	return x->in_i(k);
+}
+bool ValueSTD::in(LSValue* x, LSValue* y) {
+	return x->in(y);
 }
 
 Compiler::value ValueSTD::op_swap_val(Compiler& c, std::vector<Compiler::value> args) {
