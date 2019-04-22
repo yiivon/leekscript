@@ -76,13 +76,9 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 			} else {
 				auto e = expression->compile_l(c);
 				if (is_void) {
-					return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
-						return (*x)->ls_preinc();
-					});
+					return c.insn_invoke(Type::any(), {e}, "Value.pre_incl");
 				} else {
-					return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
-						return (*x)->ls_inc();
-					});
+					return c.insn_invoke(Type::any(), {e}, "Value.incl");
 				}
 			}
 			break;
@@ -108,13 +104,9 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 			} else {
 				auto e = expression->compile_l(c);
 				if (is_void) {
-					return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
-						return (*x)->ls_predec();
-					});
+					return c.insn_invoke(Type::any(), {e}, "Value.pre_decl");
 				} else {
-					return c.insn_invoke(Type::any(), {e}, (void*) +[](LSValue** x) {
-						return (*x)->ls_dec();
-					});
+					return c.insn_invoke(Type::any(), {e}, "Value.decl");
 				}
 			}
 			break;

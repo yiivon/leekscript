@@ -200,11 +200,29 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("minus", {
 		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_minus, Method::NATIVE}
 	});
+	method("dec", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_dec, Method::NATIVE}
+	});
 	method("pre_dec", {
 		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_dec, Method::NATIVE}
 	});
+	method("decl", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_decl, Method::NATIVE}
+	});
+	method("pre_decl", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_decl, Method::NATIVE}
+	});
+	method("inc", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_inc, Method::NATIVE}
+	});
 	method("pre_inc", {
 		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_inc, Method::NATIVE}
+	});
+	method("incl", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_incl, Method::NATIVE}
+	});
+	method("pre_incl", {
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_incl, Method::NATIVE}
 	});
 	method("pre_tilde", {
 		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_tilde, Method::NATIVE}
@@ -650,11 +668,29 @@ bool ValueSTD::ls_not(LSValue* x) {
 LSValue* ValueSTD::ls_minus(LSValue* x) {
 	return x->ls_minus();
 }
+LSValue* ValueSTD::ls_inc(LSValue* x) {
+	return x->ls_inc();
+}
 LSValue* ValueSTD::ls_pre_inc(LSValue* x) {
 	return x->ls_preinc();
 }
+LSValue* ValueSTD::ls_incl(LSValue** x) {
+	return (*x)->ls_inc();
+}
+LSValue* ValueSTD::ls_pre_incl(LSValue** x) {
+	return (*x)->ls_preinc();
+}
+LSValue* ValueSTD::ls_dec(LSValue* x) {
+	return x->ls_dec();
+}
 LSValue* ValueSTD::ls_pre_dec(LSValue* x) {
 	return x->ls_predec();
+}
+LSValue* ValueSTD::ls_decl(LSValue** x) {
+	return (*x)->ls_dec();
+}
+LSValue* ValueSTD::ls_pre_decl(LSValue** x) {
+	return (*x)->ls_predec();
 }
 LSValue* ValueSTD::ls_pre_tilde(LSValue* v) {
 	return v->ls_tilde();

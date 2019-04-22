@@ -72,8 +72,14 @@ public:
 	static LSValue** attrL(LSValue* v, char* field);
 	static bool ls_not(LSValue* x);
 	static LSValue* ls_minus(LSValue* x);
+	static LSValue* ls_inc(LSValue* x);
 	static LSValue* ls_pre_inc(LSValue* x);
+	static LSValue* ls_incl(LSValue** x);
+	static LSValue* ls_pre_incl(LSValue** x);
+	static LSValue* ls_dec(LSValue* x);
 	static LSValue* ls_pre_dec(LSValue* x);
+	static LSValue* ls_decl(LSValue** x);
+	static LSValue* ls_pre_decl(LSValue** x);
 	static LSValue* ls_pre_tilde(LSValue* v);
 	static LSValue* ls_add(LSValue*, LSValue*);
 	static LSValue* ls_add_eq(LSValue**, LSValue*);
