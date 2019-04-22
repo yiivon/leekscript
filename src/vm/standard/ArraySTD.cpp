@@ -337,14 +337,19 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("convert_key", {
 		{Type::integer(), {Type::const_any(), Type::const_any()}, (void*) &ArraySTD::convert_key, Method::NATIVE}
 	});
+	method("in", {
+		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &LSArray<LSValue*>::in, Method::NATIVE},
+		{Type::boolean(), {Type::const_array(Type::real()), Type::const_any()}, (void*) &LSArray<double>::in, Method::NATIVE},
+		{Type::boolean(), {Type::const_array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::in_i, Method::NATIVE},
+	});
 }
 
 Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
 	const auto& type = args[0].t.element().fold();
 	auto f = [&]() {
-		if (type.is_integer()) return (void*) &LSArray<int>::in_i;
-		if (type.is_integer()) return (void*) &LSArray<double>::in;
-		return (void*) &LSArray<LSValue*>::in;
+		if (type.is_integer()) return "Array.in.2";
+		if (type.is_real()) return "Array.in.1";
+		return "Array.in.0";
 	}();
 	if (args[1].t.castable(type)) {
 		auto v = c.insn_convert(args[1], type);
