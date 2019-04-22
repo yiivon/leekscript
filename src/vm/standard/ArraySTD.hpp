@@ -43,6 +43,8 @@ public:
 	static Compiler::value iter(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value sort(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value push(Compiler&, std::vector<Compiler::value>);
+
+	static int convert_key(LSValue*, LSValue*);
 };
 
 }

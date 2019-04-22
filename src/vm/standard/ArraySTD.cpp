@@ -332,6 +332,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("count", {
 		{Type::integer(), {Type::any()}, (void*) &LSArray<LSValue*>::ls_size, Method::NATIVE}
 	});
+
+	/** Internal **/
+	method("convert_key", {
+		{Type::integer(), {Type::const_any(), Type::const_any()}, (void*) &ArraySTD::convert_key, Method::NATIVE}
+	});
 }
 
 Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
@@ -571,6 +576,18 @@ Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args) {
 		return (void*) &LSArray<LSValue*>::ls_push;
 	}();
 	return c.insn_call(args[0].t, args, fun);
+}
+
+int ArraySTD::convert_key(LSValue* array, LSValue* key_pointer) {
+	auto n = dynamic_cast<LSNumber*>(key_pointer);
+	if (!n) {
+		LSValue::delete_temporary(array);
+		LSValue::delete_temporary(key_pointer);
+		throw vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
+	}
+	int key_int = n->value;
+	LSValue::delete_temporary(key_pointer);
+	return key_int;
 }
 
 }

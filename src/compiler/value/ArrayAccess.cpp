@@ -236,17 +236,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			key->compile_end(c);
 
 			if (k.t.is_polymorphic()) {
-				k = c.insn_invoke(Type::integer(), {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
-					auto n = dynamic_cast<LSNumber*>(key_pointer);
-					if (!n) {
-						LSValue::delete_temporary(array);
-						LSValue::delete_temporary(key_pointer);
-						throw vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
-					}
-					int key_int = n->value;
-					LSValue::delete_temporary(key_pointer);
-					return key_int;
-				});
+				k = c.insn_invoke(Type::integer(), {compiled_array, k}, "Array.convert_key");
 			}
 			auto int_key = c.to_int(k);
 
