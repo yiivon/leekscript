@@ -305,9 +305,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
 				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
-				return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-					return (*x)->add_eq(y);
-				});
+				return c.insn_invoke(Type::any(), {x_addr, y}, "Value.operator+=");
 			}
 			// Normal a = b operator
 			auto vv = dynamic_cast<VariableValue*>(v1);

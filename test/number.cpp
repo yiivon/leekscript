@@ -476,8 +476,8 @@ void Test::test_numbers() {
 	code("var a = 123 a <<= 13 a").equals("1007616");
 	code("var a = [123, ''] a[0] <<= 13").equals("1007616");
 	code("var a = 123 ['', a <<= 13]").equals("['', 1007616]");
-	code("'salut' << 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "<<", ls::Type::integer().to_string()});
-
+	code("'salut' << 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	
 	section("Number.operator >>");
 	code("0 >> 0").equals("0");
 	code("1 >> 0").equals("1");

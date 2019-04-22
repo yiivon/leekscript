@@ -107,45 +107,47 @@ ValueSTD::ValueSTD() : Module("Value") {
 	});
 	operator_("%%", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_double_mod, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_double_mod},
 	});
 	operator_("%%=", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_double_mod_eq, {}, Method::NATIVE, true}
 	});
 	operator_("&", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_and}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_and, {}, Method::NATIVE}
 	});
 	operator_("&=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_and_eq, {}, false, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_and_eq, {}, Method::NATIVE, true}
 	});
 	operator_("|", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_or}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_or, {}, Method::NATIVE}
 	});
 	operator_("|=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_or_eq, {}, false, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_or_eq, {}, Method::NATIVE, true}
 	});
 	operator_("^", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_xor}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_xor, {}, Method::NATIVE}
 	});
 	operator_("^=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::op_bit_xor_eq, {}, false, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_xor_eq, {}, Method::NATIVE, true}
 	});
 	operator_("<<", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_left}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::bit_shift_left}
 	});
 	operator_("<<=", {
-		{Type::integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_left_eq, {}, false, true}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_left_eq, {}, Method::NATIVE, true},
+		{Type::integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_left_eq, {}, false, true},
 	});
 	operator_(">>", {
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_right}
 	});
 	operator_(">>=", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_right_eq, {}, false, true}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_right_eq, {}, Method::NATIVE, true},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_right_eq, {}, false, true},
 	});
 	operator_(">>>", {
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_uright}
 	});
 	operator_(">>>=", {
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_uright_eq, {}, Method::NATIVE, true},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_uright_eq, {}, false, true}
 	});
 	operator_("in", {
@@ -387,123 +389,82 @@ Compiler::value ValueSTD::op_mul(Compiler& c, std::vector<Compiler::value> args)
 Compiler::value ValueSTD::op_div(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_div(args[0], args[1]);
 }
-Compiler::value ValueSTD::op_mod(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_mod(args[0], args[1]);
-}
-Compiler::value ValueSTD::op_double_mod(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_double_mod(args[0], args[1]);
-}
-Compiler::value ValueSTD::op_double_mod_eq(Compiler& c, std::vector<Compiler::value> args) {
-	auto x_addr = args[0];
-	auto y = c.insn_to_any(args[1]);
-	return c.insn_invoke(Type::any(), {x_addr, y}, (void*) +[](LSValue** x, LSValue* y) {
-		return (*x)->double_mod_eq(y);
-	});
-}
 
-Compiler::value ValueSTD::op_int_div(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::long_(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
-		auto res = x->int_div(y);
-		long v = ((LSNumber*) res)->value;
-		LSValue::delete_temporary(res);
-		return v;
-	});
-}
-Compiler::value ValueSTD::op_int_div_eq(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::long_(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
-		auto res = (*x)->int_div_eq(y);
-		return (long) ((LSNumber*) res)->value;
-	});
-}
-
-Compiler::value ValueSTD::op_bit_and(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
-		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-			LSValue::delete_temporary(x);
-			LSValue::delete_temporary(y);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		}
-		auto res = (int) a->value & (int) b->value;
+int ValueSTD::ls_bit_and(LSValue* x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		return res;
-	});
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (int) a->value & (int) b->value;
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return res;
 }
 
-Compiler::value ValueSTD::op_bit_and_eq(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
-		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-			LSValue::delete_temporary(y);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		}
-		auto res = (int) a->value & (int) b->value;
+int ValueSTD::ls_bit_and_eq(LSValue** x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 		LSValue::delete_temporary(y);
-		((LSNumber*) *x)->value = res;
-		return res;
-	});
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (int) a->value & (int) b->value;
+	LSValue::delete_temporary(y);
+	((LSNumber*) *x)->value = res;
+	return res;
 }
 
-Compiler::value ValueSTD::op_bit_or(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::integer(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
-		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
-			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-			LSValue::delete_temporary(x);
-			LSValue::delete_temporary(y);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		}
-		auto res = (int) a->value | (int) b->value;
+int ValueSTD::ls_bit_or(LSValue* x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
+		(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		return res;
-	});
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (int) a->value | (int) b->value;
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return res;
 }
 
-Compiler::value ValueSTD::op_bit_or_eq(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
-		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-			LSValue::delete_temporary(y);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		}
-		auto res = (int) a->value | (int) b->value;
+int ValueSTD::ls_bit_or_eq(LSValue** x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 		LSValue::delete_temporary(y);
-		((LSNumber*) *x)->value = res;
-		return res;
-	});
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (int) a->value | (int) b->value;
+	LSValue::delete_temporary(y);
+	((LSNumber*) *x)->value = res;
+	return res;
 }
 
-Compiler::value ValueSTD::op_bit_xor(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])},
-	+[](LSValue* x, LSValue* y) {
-		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
-			(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-			LSValue::delete_temporary(x);
-			LSValue::delete_temporary(y);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		}
-		auto res = (int) a->value ^ (int) b->value;
+int ValueSTD::ls_bit_xor(LSValue* x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(x)) == nullptr or
+		(b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 		LSValue::delete_temporary(x);
 		LSValue::delete_temporary(y);
-		return res;
-	});
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (int) a->value ^ (int) b->value;
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return res;
 }
 
-Compiler::value ValueSTD::op_bit_xor_eq(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
-		LSNumber *a, *b;
-		if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-			LSValue::delete_temporary(y);
-			throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-		}
-		auto res = (int) a->value ^ (int) b->value;
+int ValueSTD::ls_bit_xor_eq(LSValue** x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
 		LSValue::delete_temporary(y);
-		((LSNumber*) *x)->value = res;
-		return res;
-	});
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (int) a->value ^ (int) b->value;
+	LSValue::delete_temporary(y);
+	((LSNumber*) *x)->value = res;
+	return res;
 }
 
 Compiler::value ValueSTD::bit_shift_left(Compiler& c, std::vector<Compiler::value> args) {
@@ -518,18 +479,19 @@ Compiler::value ValueSTD::bit_shift_left_eq(Compiler& c, std::vector<Compiler::v
 		c.insn_store(args[0], res);
 		return res;
 	} else {
-		return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
-			LSNumber *a, *b;
-			if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-				LSValue::delete_temporary(y);
-				throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-			}
-			auto res = (int) a->value << (int) b->value;
-			LSValue::delete_temporary(y);
-			((LSNumber*) *x)->value = res;
-			return res;
-		});
+		return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, "Value.operator<<=");
 	}
+}
+int ValueSTD::ls_bit_shift_left_eq(LSValue** x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
+		LSValue::delete_temporary(y);
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (int) a->value << (int) b->value;
+	LSValue::delete_temporary(y);
+	((LSNumber*) *x)->value = res;
+	return res;
 }
 Compiler::value ValueSTD::bit_shift_right(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = c.insn_ashr(c.to_int(args[0]), c.to_int(args[1]));
@@ -543,19 +505,21 @@ Compiler::value ValueSTD::bit_shift_right_eq(Compiler& c, std::vector<Compiler::
 		c.insn_store(args[0], res);
 		return res;
 	} else {
-		return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
-			LSNumber *a, *b;
-			if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-				LSValue::delete_temporary(y);
-				throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-			}
-			auto res = (int) a->value >> (int) b->value;
-			LSValue::delete_temporary(y);
-			((LSNumber*) *x)->value = res;
-			return res;
-		});
+		return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, "Value.operator>>=");
 	}
 }
+int ValueSTD::ls_bit_shift_right_eq(LSValue** x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
+		LSValue::delete_temporary(y);
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (int) a->value >> (int) b->value;
+	LSValue::delete_temporary(y);
+	((LSNumber*) *x)->value = res;
+	return res;
+}
+
 Compiler::value ValueSTD::bit_shift_uright(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = c.insn_lshr(c.to_int(args[0]), c.to_int(args[1]));
 	c.insn_delete_temporary(args[0]);
@@ -568,18 +532,19 @@ Compiler::value ValueSTD::bit_shift_uright_eq(Compiler& c, std::vector<Compiler:
 		c.insn_store(args[0], res);
 		return res;
 	} else {
-		return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, +[](LSValue** x, LSValue* y) {
-			LSNumber *a, *b;
-			if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
-				LSValue::delete_temporary(y);
-				throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
-			}
-			auto res = (uint32_t) ((LSNumber*) a)->value >> (uint32_t) ((LSNumber*) b)->value;
-			LSValue::delete_temporary(y);
-			((LSNumber*) *x)->value = res;
-			return res;
-		});
+		return c.insn_invoke(Type::integer(), {args[0], c.insn_to_any(args[1])}, "Value.operator>>>=");
 	}
+}
+int ValueSTD::ls_bit_shift_uright_eq(LSValue** x, LSValue* y) {
+	LSNumber *a, *b;
+	if ((a = dynamic_cast<LSNumber*>(*x)) == nullptr or (b = dynamic_cast<LSNumber*>(y)) == nullptr) {
+		LSValue::delete_temporary(y);
+		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	}
+	auto res = (uint32_t) ((LSNumber*) a)->value >> (uint32_t) ((LSNumber*) b)->value;
+	LSValue::delete_temporary(y);
+	((LSNumber*) *x)->value = res;
+	return res;
 }
 
 Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) {
