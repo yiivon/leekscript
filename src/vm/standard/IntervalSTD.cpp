@@ -48,6 +48,11 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	method("product", {
 		{Type::long_(), {Type::interval()}, (void*) &LSInterval::ls_product, Method::NATIVE},
 	});
+
+	/** Interval **/
+	method("atv", {
+		{Type::boolean(), {Type::interval(), Type::integer()}, (void*) &LSInterval::atv, Method::NATIVE}
+	});
 }
 
 IntervalSTD::~IntervalSTD() {}
