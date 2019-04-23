@@ -7,6 +7,7 @@
 #include "Real_type.hpp"
 #include "Mpz_type.hpp"
 #include "Bool_type.hpp"
+#include "Number_type.hpp"
 
 namespace ls {
 

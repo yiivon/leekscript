@@ -1,7 +1,7 @@
 #ifndef MPZ_TYPE_HPP
 #define MPZ_TYPE_HPP
 
-#include "Number_type.hpp"
+#include "Base_type.hpp"
 
 namespace ls {
 

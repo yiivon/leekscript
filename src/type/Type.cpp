@@ -15,6 +15,7 @@
 #include "Class_type.hpp"
 #include "Interval_type.hpp"
 #include "String_type.hpp"
+#include "Number_type.hpp"
 #include "Long_type.hpp"
 #include "Bool_type.hpp"
 #include "Mpz_type.hpp"
