@@ -342,6 +342,7 @@ public:
 	static void print_mpz(__mpz_struct value);
 	void assert_value_ok(value) const;
 	void increment_mpz_created() const;
+	void increment_mpz_deleted() const;
 };
 
 }

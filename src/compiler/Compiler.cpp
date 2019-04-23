@@ -2325,6 +2325,17 @@ void Compiler::increment_mpz_created() const {
 	auto v = insn_load(mpz);
 	insn_store(mpz, insn_add(v, new_integer(1)));
 }
+void Compiler::increment_mpz_deleted() const {
+	// Get the mpz_deleted counter global variable
+	Compiler::value mpz = { program->module->getGlobalVariable("mpzd"), Type::integer().pointer() };
+	if (!mpz.v) {
+		auto t = Type::integer().llvm_type(*this);
+		mpz.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, "mpzd");
+	}
+	// Increment counter
+	auto v = insn_load(mpz);
+	insn_store(mpz, insn_add(v, new_integer(1)));
+}
 
 }
 
