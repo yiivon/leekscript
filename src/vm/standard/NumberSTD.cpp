@@ -338,6 +338,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("powii", {
 		{Type::real(), {Type::integer(), Type::integer()}, (void*) &std::pow<int, int>, Method::NATIVE}
 	});
+	method("mpz_init_set", {
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_init_set, Method::NATIVE}
+	});
 }
 
 Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args) {

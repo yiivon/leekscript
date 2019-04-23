@@ -172,12 +172,13 @@ Compiler::value Compiler::new_mpz_init(const mpz_t mpz) const {
 	unsigned long p2 = (((unsigned long) mpz->_mp_size) << 32) + (unsigned long) mpz->_mp_alloc;
 	auto v = llvm::ConstantInt::get(getContext(), llvm::APInt(128, {p2, p1}));
 
-	return insn_call(Type::tmp_mpz(), {{ v, Type::mpz() }}, +[](__mpz_struct v) {
-		VM::current()->mpz_created++;
-		mpz_t mpz;
-		mpz_init_set(mpz, &v);
-		return *mpz;
-	});
+	auto vv = create_entry("mpz", Type::tmp_mpz());
+	insn_store(vv, {v, Type::mpz()});
+	auto r = create_entry("mpz", Type::tmp_mpz());
+	insn_call({}, {r, vv}, "Number.mpz_init_set");
+	
+	increment_mpz_created();
+	return insn_load(r);
 }
 
 Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {
