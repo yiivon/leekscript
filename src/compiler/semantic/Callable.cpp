@@ -183,11 +183,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		}
 		return c.insn_invoke(type.return_type(), args, user_fun->f);
 	} else if (addr) {
-		if (name.find(".") != std::string::npos) {
-			return c.insn_invoke(type.return_type(), args, name);
-		} else {
-			return c.insn_invoke(type.return_type(), args, addr);
-		}
+		return c.insn_invoke(type.return_type(), args, name);
 	} else if (func) {
 		return func(c, args);
 	} else if (value) {

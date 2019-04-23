@@ -1889,32 +1889,6 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	}
 }
 
-Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, void* func) const {
-	// assert(false);
-	std::vector<llvm::Value*> llvm_args;
-	std::vector<llvm::Type*> llvm_types;
-	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		assert_value_ok(args[i]);
-		llvm_args.push_back(args[i].v);
-		llvm_types.push_back(args[i].t.llvm_type(*this));
-	}
-	auto function_name = std::to_string(mappings.size());
-	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-	auto lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, program->module);
-	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambda}});
-	
-	auto continueBlock = llvm::BasicBlock::Create(getContext(), "cont", F);
-	auto r = builder.CreateInvoke(lambda, continueBlock, fun->get_landing_pad(*this), llvm_args);
-	builder.SetInsertPoint(continueBlock);
-	if (return_type.is_void()) {
-		return {};
-	} else {
-		value result = { r, return_type };
-		assert_value_ok(result);
-		return result;
-	}
-}
-
 Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
