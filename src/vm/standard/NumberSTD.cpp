@@ -627,19 +627,6 @@ Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_mod(args[0], args[1]);
 }
 Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	// auto r = [&]() {
-	// 	if (args[0].t.temporary) return args[0];
-	// 	if (args[1].t.temporary) return args[1];
-	// 	return c.new_mpz();
-	// }();
-	// auto r_addr = c.insn_address_of(r);
-	// auto a = c.insn_address_of(args[0]);
-	// auto b = c.insn_address_of(args[1]);
-	// c.insn_call({}, {r_addr, a, b}, &mpz_mod, "mpz_mod");
-	// if (args[1].t.temporary && args[1] != r) {
-	// 	c.insn_delete_mpz(args[1]);
-	// }
-	// return r;
 	auto r = c.insn_call(Type::tmp_mpz(), args, +[](__mpz_struct a, __mpz_struct b) {
 		mpz_t r;
 		mpz_init(r);
