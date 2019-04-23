@@ -115,7 +115,12 @@ Compiler::value Number::compile(Compiler& c) const {
 		return c.new_real(double_value);
 	}
 	if (type.is_mpz()) {
-		return c.new_mpz_init(mpz_value);
+		auto s = c.new_const_string(clean_value, "mpz");
+		auto r = c.create_entry("r", Type::tmp_mpz());
+		// Compiler::value r_addr = { c.builder.CreateStructGEP(Type::mpz().llvm_type(c), r.v, 0), Type::integer().pointer() };
+		c.insn_call({}, {r, s, c.new_integer(base)}, "Number.mpz_init_str");
+		c.increment_mpz_created();
+		return c.insn_load(r);
 	}
 	return c.new_integer(int_value);
 }

@@ -338,8 +338,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("powii", {
 		{Type::real(), {Type::integer(), Type::integer()}, (void*) &std::pow<int, int>, Method::NATIVE}
 	});
-	method("mpz_init_set", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_init_set, Method::NATIVE}
+	method("mpz_init_str", {
+		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) &mpz_init_set_str, Method::NATIVE}
 	});
 }
 

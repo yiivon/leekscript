@@ -215,7 +215,7 @@ std::string Program::execute(VM& vm) {
 	}
 	if (type.not_temporary() == Type::mpz()) {
 		auto fun = (__mpz_struct (*)()) closure;
-		__mpz_struct ret = fun();
+		auto ret = fun();
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
 		mpz_clear(&ret);
