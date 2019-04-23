@@ -57,6 +57,9 @@ Compiler::Compiler(VM* vm) : vm(vm),
 				if (Name == "ops") {
 					return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->operations, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
+				if (Name == "mpzc") return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->mpz_created, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+				if (Name == "mpzd") return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->mpz_deleted, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+
 				if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name)) {
 					return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
 				}
@@ -2332,6 +2335,18 @@ void Compiler::assert_value_ok(value v) const {
 	} else {
 		assert(v.t.llvm_type(*this) == v.v->getType());
 	}
+}
+
+void Compiler::increment_mpz_created() const {
+	// Get the mpz_created counter global variable
+	Compiler::value mpz = { program->module->getGlobalVariable("mpzc"), Type::integer().pointer() };
+	if (!mpz.v) {
+		auto t = Type::integer().llvm_type(*this);
+		mpz.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, "mpzc");
+	}
+	// Increment counter
+	auto v = insn_load(mpz);
+	insn_store(mpz, insn_add(v, new_integer(1)));
 }
 
 }
