@@ -169,7 +169,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 	// Get the object class : 12 => Number
 	object_class_name = object->type.class_name();
 	LSClass* object_class = nullptr;
-	if (analyser->vm->internal_vars.find(object_class_name) != analyser->vm->internal_vars.end()) {
+	if (object_class_name != "Value" and analyser->vm->internal_vars.find(object_class_name) != analyser->vm->internal_vars.end()) {
 		object_class = (LSClass*) analyser->vm->internal_vars[object_class_name]->lsvalue;
 	}
 

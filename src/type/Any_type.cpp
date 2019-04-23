@@ -21,6 +21,9 @@ int Any_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 0; }
 	return 100000 + type->distance(this);
 }
+std::string Any_type::clazz() const {
+	return "Value";
+}
 std::ostream& Any_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "any" << END_COLOR;
 	return os;

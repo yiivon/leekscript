@@ -962,7 +962,7 @@ Compiler::value Compiler::insn_typeof(Compiler::value v) const {
 Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	auto clazz = v.t.class_name();
-	if (clazz.size()) {
+	if (clazz.size() and clazz != "Value") {
 		return new_pointer(vm->internal_vars.at(clazz)->lsvalue, Type::clazz());
 	} else {
 		return insn_call(Type::clazz(), {v}, +[](LSValue* v) {

@@ -387,11 +387,7 @@ void Function::update_function_args(SemanticAnalyser* analyser) {
 	ls_fun->args.clear();
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		auto clazz = type.argument(i).class_name();
-		if (clazz.size()) {
-			ls_fun->args.push_back(analyser->vm->internal_vars.at(clazz)->lsvalue);
-		} else {
-			ls_fun->args.push_back(analyser->vm->internal_vars.at("Value")->lsvalue);
-		}
+		ls_fun->args.push_back(analyser->vm->internal_vars.at(clazz)->lsvalue);
 	}
 	auto return_class_name = default_version->body->type.class_name();
 	if (return_class_name.size()) {
