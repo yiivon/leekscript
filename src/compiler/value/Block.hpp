@@ -12,6 +12,7 @@ public:
 
 	std::vector<Instruction*> instructions;
 	bool temporary_mpz = false;
+	bool mpz_pointer = false;
 	bool was_reference = false;
 
 	Block();

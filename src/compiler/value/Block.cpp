@@ -85,6 +85,13 @@ void Block::analyse(SemanticAnalyser* analyser) {
 		type = Type::tmp_mpz();
 	} else if (type == Type::tmp_mpz()) {
 		temporary_mpz = true;
+	} else if (type == Type::tmp_mpz_ptr()) {
+		type = Type::tmp_mpz();
+		temporary_mpz = true;
+		mpz_pointer = true;
+	} else if (type == Type::mpz_ptr()) {
+		type = Type::tmp_mpz();
+		mpz_pointer = true;
 	}
 }
 
@@ -119,6 +126,10 @@ Compiler::value Block::compile(Compiler& c) const {
 				auto ret = c.insn_move(val);
 				c.leave_block();
 				return ret;
+			} else if (mpz_pointer) {
+				auto v = c.insn_load(temporary_mpz ? val : c.insn_clone_mpz(val));
+				c.leave_block();
+				return v;
 			} else if (type.is_mpz()) {
 				auto v = temporary_mpz ? val : c.insn_clone_mpz(val);
 				c.leave_block();
