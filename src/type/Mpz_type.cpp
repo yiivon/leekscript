@@ -40,8 +40,7 @@ std::ostream& Mpz_type::print(std::ostream& os) const {
 
 llvm::Type* Mpz_type::get_mpz_type(const Compiler& c) {
 	if (mpz_type == nullptr) {
-		// llvm::StructType::create({llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32Ty(Compiler::context), llvm::Type::getInt32PtrTy(Compiler::context)}, "mpz", true);
-		mpz_type = llvm::Type::getInt128Ty(c.getContext());
+		mpz_type = llvm::StructType::create({ llvm::Type::getInt128Ty(c.getContext()) }, "mpz");
 	}
 	return mpz_type;
 }
