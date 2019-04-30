@@ -928,6 +928,7 @@ Compiler::value Compiler::insn_load(Compiler::value v) const {
 	log_insn(4) << "load " << dump_val(v) << " " << dump_val(r) << std::endl;
 	assert(r.t == v.t.pointed());
 	assert(r.t.llvm_type(*this) == r.v->getType());
+	if (v.t.temporary) r.t.temporary = true;
 	return r;
 }
 Compiler::value Compiler::insn_load_member(Compiler::value v, int pos) const {
