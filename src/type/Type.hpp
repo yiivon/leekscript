@@ -127,6 +127,8 @@ public:
 	static Type mpz();
 	static Type tmp_mpz();
 	static Type const_mpz();
+	static Type mpz_ptr();
+	static Type tmp_mpz_ptr();
 	static Type string();
 	static Type tmp_string();
 	static Type const_string();
@@ -163,6 +165,7 @@ public:
 	static std::shared_ptr<Base_type> _raw_real;
 	static std::shared_ptr<Base_type> _raw_string;
 	static std::shared_ptr<Base_type> _raw_mpz;
+	static std::shared_ptr<Base_type> _raw_mpz_ptr;
 	static std::shared_ptr<Base_type> _raw_interval;
 	static std::shared_ptr<Base_type> _raw_object;
 	static std::map<std::string, std::shared_ptr<Base_type>> _raw_class;
@@ -176,6 +179,7 @@ public:
 	static const std::shared_ptr<Base_type> raw_long();
 	static const std::shared_ptr<Base_type> raw_real();
 	static const std::shared_ptr<Base_type> raw_mpz();
+	static const std::shared_ptr<Base_type> raw_mpz_ptr();
 	static const std::shared_ptr<Base_type> raw_string();
 	static const std::shared_ptr<Base_type> raw_interval();
 	static const std::shared_ptr<Base_type> raw_object();

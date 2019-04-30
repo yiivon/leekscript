@@ -44,6 +44,7 @@ std::shared_ptr<Base_type> Type::_raw_number = nullptr;
 std::shared_ptr<Base_type> Type::_raw_long = nullptr;
 std::shared_ptr<Base_type> Type::_raw_real = nullptr;
 std::shared_ptr<Base_type> Type::_raw_mpz = nullptr;
+std::shared_ptr<Base_type> Type::_raw_mpz_ptr = nullptr;
 std::shared_ptr<Base_type> Type::_raw_string = nullptr;
 std::shared_ptr<Base_type> Type::_raw_interval = nullptr;
 std::shared_ptr<Base_type> Type::_raw_object = nullptr;
@@ -481,6 +482,12 @@ Type Type::tmp_mpz() {
 Type Type::const_mpz() {
 	return { raw_mpz(), false, false, true };
 }
+Type Type::mpz_ptr() {
+	return { raw_mpz_ptr(), false, false, false };
+}
+Type Type::tmp_mpz_ptr() {
+	return { raw_mpz_ptr(), false, true, false };
+}
 Type Type::string() {
 	return { raw_string(), false, false, false };
 }
@@ -605,6 +612,10 @@ const std::shared_ptr<Base_type> Type::raw_real() {
 const std::shared_ptr<Base_type> Type::raw_mpz() {
 	if (!_raw_mpz) _raw_mpz = std::make_shared<Mpz_type>();
 	return _raw_mpz;
+}
+const std::shared_ptr<Base_type> Type::raw_mpz_ptr() {
+	if (!_raw_mpz_ptr) _raw_mpz_ptr = std::make_shared<Pointer_type>(mpz());
+	return _raw_mpz_ptr;
 }
 const std::shared_ptr<Base_type> Type::raw_string() {
 	if (!_raw_string) _raw_string = std::make_shared<String_type>();
