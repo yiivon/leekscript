@@ -1805,7 +1805,7 @@ void Compiler::insn_throw(Compiler::value v) const {
 		delete_function_variables();
 		auto line = new_long(exception_line);
 		auto function_name = new_const_string(fun->name, "fun");
-		insn_call({}, {v, function_name, line}, "System.throw.0");
+		insn_call({}, {v, function_name, line}, "System.throw");
 	}
 }
 
