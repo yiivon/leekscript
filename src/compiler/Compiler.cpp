@@ -184,7 +184,11 @@ Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::val
 }
 
 Compiler::value Compiler::create_entry(const std::string& name, Type type) const {
-	return { CreateEntryBlockAlloca(name, type.llvm_type((Compiler&) *this)), type.pointer() };
+	bool tmp = type.temporary;
+	// auto t = type.not_temporary().pointer();
+	auto t = type.pointer();
+	// if (tmp) t.temporary = true;
+	return { CreateEntryBlockAlloca(name, type.llvm_type((Compiler&) *this)), t };
 }
 
 Compiler::value Compiler::to_int(Compiler::value v) const {
