@@ -117,6 +117,13 @@ Compiler::value Compiler::new_long(long l) const {
 	return {llvm::ConstantInt::get(getContext(), llvm::APInt(64, l, true)), Type::long_()};
 }
 
+Compiler::value Compiler::new_mpz() const {
+	auto r = create_entry("m", Type::tmp_mpz());
+	increment_mpz_created();
+	insn_call({}, {r}, "Number.mpz_init");
+	return r;
+}
+
 Compiler::value Compiler::new_const_string(std::string s, std::string name) const {
 	return { builder.CreateGlobalStringPtr(s, name), Type::i8().pointer() };
 }
