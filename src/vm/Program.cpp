@@ -143,7 +143,8 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 		vm.compiler.addModule(std::move(Mod));
 		auto symbol = vm.compiler.findSymbol("main");
 		closure = (void*) cantFail(symbol.getAddress());
-		type = llvm_type->isPointerTy() ? Type::any() : Type::integer();
+
+		type = llvm_type->isPointerTy() ? Type::any() : (llvm_type->isStructTy() ? Type::mpz() : Type::integer());
 
 		result.compilation_success = true;
 		std::ostringstream oss;
