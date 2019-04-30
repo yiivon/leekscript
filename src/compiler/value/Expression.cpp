@@ -316,7 +316,11 @@ Compiler::value Expression::compile(Compiler& c) const {
 			y = c.insn_move_inc(y);
 			y.t = y.t.not_temporary();
 			// Delete previous variable reference
-			c.insn_delete(c.insn_load(x_addr));
+			// if (x_addr.t.is_pointer() and x_addr.t.pointed().is_mpz()) {
+				// c.insn_delete_mpz(x_addr);
+			// } else {
+				c.insn_delete(c.insn_load(x_addr));
+			// }
 			// Create the new variable
 			if (vv != nullptr && vv->scope != VarScope::PARAMETER) {
 				c.update_var(vv->name, y);
@@ -326,7 +330,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (is_void) {
 				return {};
 			} else {
-				if (y.t.is_mpz()) {
+				if (y.t.is_pointer() and y.t.pointed().is_mpz()) {
+					return c.insn_clone_mpz(y);
+				} else if (y.t.is_mpz()) {
 					return c.insn_clone_mpz(y);
 				} else {
 					return y;

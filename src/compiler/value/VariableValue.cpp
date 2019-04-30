@@ -323,7 +323,11 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		if (vv && has_version) {
 			return var->value->compile_version(c, version);
 		}
-		v = c.insn_load(c.get_var(name));
+		if (type.is_pointer() and type.pointed().is_mpz()) {
+			v = c.get_var(name);
+		} else {
+			v = c.insn_load(c.get_var(name));
+		}
 	} else if (scope == VarScope::PARAMETER) {
 		v = c.insn_load(c.insn_get_argument(name));
 		// v = c.insn_get_argument(name);
