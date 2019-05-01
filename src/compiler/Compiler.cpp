@@ -999,8 +999,9 @@ void Compiler::insn_delete(Compiler::value v) const {
 
 void Compiler::insn_delete_temporary(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
-	if (v.t.must_manage_memory()) {
-		// insn_call({}, {v}, (void*) &LSValue::delete_temporary);
+	if (v.t == Type::tmp_mpz_ptr()) {
+		insn_delete_mpz(v);
+	} else if (v.t.must_manage_memory()) {
 		insn_if_not(insn_refs(v), [&]() {
 			insn_call({}, {v}, "Value.delete");
 		});
@@ -1084,6 +1085,9 @@ Compiler::value Compiler::insn_array_end(Compiler::value array) const {
 
 Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 	assert(value.t.llvm_type(*this) == value.v->getType());
+	if (value.t.is_mpz_ptr()) {
+		return insn_clone_mpz(value);
+	}
 	if (value.t.must_manage_memory()) {
 		if (value.t.reference) {
 			insn_inc_refs(value);
@@ -1103,12 +1107,12 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 
 Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 	assert(mpz.t.llvm_type(*this) == mpz.v->getType());
-	return insn_call(Type::tmp_mpz(), {mpz}, +[](__mpz_struct x) {
-		mpz_t new_mpz;
-		mpz_init_set(new_mpz, &x);
-		VM::current()->mpz_created++;
-		return *new_mpz;
-	});
+	if (mpz.t.temporary) {
+		return mpz;
+	}
+	auto r = new_mpz();
+	insn_call({}, {r, mpz}, (void*) &mpz_init_set);
+	return r;
 }
 
 void Compiler::insn_delete_mpz(Compiler::value mpz) const {
@@ -2072,9 +2076,11 @@ void Compiler::delete_variables_block(int deepness) {
 	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
 		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
 			// std::cout << "delete variable block " << it->first << " " << it->second.t << " " << it->second.v->getType() << std::endl;
-			if (it->second.t.pointed().must_manage_memory() or it->second.t.pointed().is_mpz()) {
+			if (it->second.t.pointed().is_mpz()) {
+				insn_delete_mpz(it->second);
+			} else if (it->second.t.pointed().must_manage_memory()) {
 				insn_delete(insn_load(it->second));
-			}
+			} 
 		}
 	}
 }
@@ -2182,9 +2188,14 @@ void Compiler::update_var(std::string& name, Compiler::value v) {
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		if (variables[i].find(name) != variables[i].end()) {
 			auto& var = variables[i].at(name);
+			bool is_mpz = v.t.is_mpz_ptr();
 			if (var.t != v.t.pointer()) {
-				var.t = v.t.pointer();
-				var.v = CreateEntryBlockAlloca(name, v.t.llvm_type(*this));
+				var.t = is_mpz ? v.t : v.t.pointer();
+				auto var_type = is_mpz ? Type::mpz() : v.t;
+				var.v = CreateEntryBlockAlloca(name, var_type.llvm_type(*this));
+			}
+			if (is_mpz) {
+				v = insn_load(v);
 			}
 			insn_store(var, v);
 		}
