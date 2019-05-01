@@ -1114,10 +1114,8 @@ Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 void Compiler::insn_delete_mpz(Compiler::value mpz) const {
 	// std::cout << "delete mpz " << mpz.t << std::endl;
 	assert(mpz.t.llvm_type(*this) == mpz.v->getType());
-	insn_call({}, {mpz}, +[](__mpz_struct mpz) {
-		VM::current()->mpz_deleted++;
-		mpz_clear(&mpz);
-	});
+	insn_call({}, {mpz}, "Number.mpz_clear");
+	increment_mpz_deleted();
 }
 
 Compiler::value Compiler::insn_inc_refs(Compiler::value v) const {

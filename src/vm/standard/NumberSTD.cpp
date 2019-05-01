@@ -344,6 +344,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_init_str", {
 		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) &mpz_init_set_str, Method::NATIVE}
 	});
+	method("mpz_clear", {
+		{{}, {Type::mpz().pointer()}, (void*) &mpz_clear, Method::NATIVE}
+	});
 }
 
 Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args) {
