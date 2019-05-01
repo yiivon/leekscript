@@ -82,7 +82,7 @@ void Number::analyse(SemanticAnalyser*) {
 			long_value = mpz_get_si(mpz_value);
 			double_value = long_value;
 		} else {
-			type = Type::tmp_mpz();
+			type = Type::tmp_mpz_ptr();
 		}
 	}
 	if (pointer) {
@@ -114,13 +114,12 @@ Compiler::value Number::compile(Compiler& c) const {
 	if (type == Type::real()) {
 		return c.new_real(double_value);
 	}
-	if (type.is_mpz()) {
+	if (type.is_mpz_ptr()) {
 		auto s = c.new_const_string(clean_value, "mpz");
-		auto r = c.create_entry("r", Type::tmp_mpz());
-		// Compiler::value r_addr = { c.builder.CreateStructGEP(Type::mpz().llvm_type(c), r.v, 0), Type::integer().pointer() };
+		auto r = c.create_entry("m", Type::tmp_mpz());
 		c.insn_call({}, {r, s, c.new_integer(base)}, "Number.mpz_init_str");
 		c.increment_mpz_created();
-		return c.insn_load(r);
+		return r;
 	}
 	return c.new_integer(int_value);
 }
