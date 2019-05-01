@@ -97,7 +97,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			}
 
 			auto val_type = ex->type;
-			if (val_type == Type::tmp_mpz_ptr()) val_type = Type::mpz();
+			if (val_type.is_mpz_ptr()) val_type = Type::mpz();
 			auto var = c.create_and_add_var(name, val_type.not_temporary());
 
 			if (!val.t.reference) {
@@ -108,7 +108,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				c.add_function_var(var);
 			}
 			if (not dynamic_cast<Function*>(ex) or val.t.is_closure()) {
-				if (ex->type == Type::tmp_mpz_ptr()) {
+				if (ex->type.is_mpz_ptr()) {
 					val = c.insn_load(val);
 				}
 				c.insn_store(var, val);
