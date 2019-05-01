@@ -1002,7 +1002,7 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 	if (v.t.must_manage_memory()) {
 		// insn_call({}, {v}, (void*) &LSValue::delete_temporary);
 		insn_if_not(insn_refs(v), [&]() {
-			insn_call({}, {v}, (void*) &LSValue::free);
+			insn_call({}, {v}, "Value.delete");
 		});
 	} else if (v.t == Type::tmp_mpz()) {
 		insn_delete_mpz(v);
