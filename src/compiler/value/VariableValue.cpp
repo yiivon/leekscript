@@ -59,7 +59,7 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 		callable->add_version({ "Number", Type::fun(Type::real(), {Type::real()}), [&](Compiler& c, std::vector<Compiler::value> args) {
 			return c.to_real(args[0]);
 		}, {}, {}, nullptr });
-		callable->add_version({ "Number", Type::fun(Type::tmp_mpz(), {Type::mpz()}), [&](Compiler& c, std::vector<Compiler::value> args) {
+		callable->add_version({ "Number", Type::fun(Type::tmp_mpz_ptr(), {Type::mpz_ptr()}), [&](Compiler& c, std::vector<Compiler::value> args) {
 			return args[0];
 		}, {}, {}, nullptr });
 		return callable;
