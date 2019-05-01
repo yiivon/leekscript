@@ -74,6 +74,7 @@ public:
 	bool is_long() const;
 	bool is_real() const;
 	bool is_mpz() const;
+	bool is_mpz_ptr() const;
 	bool is_array() const;
 	bool is_string() const;
 	bool is_set() const;

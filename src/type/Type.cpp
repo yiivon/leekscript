@@ -298,6 +298,7 @@ bool Type::is_real() const { return is_type<Real_type>(); }
 bool Type::is_integer() const { return is_type<Integer_type>(); }
 bool Type::is_long() const { return is_type<Long_type>(); }
 bool Type::is_mpz() const { return is_type<Mpz_type>(); }
+bool Type::is_mpz_ptr() const { return is_pointer() and pointed().is_mpz(); }
 bool Type::is_string() const { return is_type<String_type>(); }
 bool Type::is_array() const { return is_type<Array_type>(); }
 bool Type::is_set() const { return is_type<Set_type>(); }
