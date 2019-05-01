@@ -149,16 +149,10 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			}
 		}
 		case TokenType::MINUS: {
-			if (expression->type.not_temporary() == Type::mpz()) {
+			if (expression->type.is_mpz_ptr()) {
 				auto x = expression->compile(c);
-				auto r = c.insn_call(Type::tmp_mpz(), {x}, +[](__mpz_struct x) {
-					mpz_t neg;
-					mpz_init(neg);
-					mpz_neg(neg, &x);
-					VM::current()->mpz_created++;
-					return *neg;
-				});
-				c.insn_delete_temporary(x);
+				auto r = x.t.temporary ? x : c.new_mpz();
+				c.insn_call({}, {r, x}, "Number.mpz_neg");
 				return r;
 			} else if (expression->type.is_primitive()) {
 				auto x = expression->compile(c);

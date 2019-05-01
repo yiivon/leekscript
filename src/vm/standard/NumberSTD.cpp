@@ -344,6 +344,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_init_str", {
 		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) &mpz_init_set_str, Method::NATIVE}
 	});
+	method("mpz_neg", {
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg, Method::NATIVE}
+	});
 	method("mpz_clear", {
 		{{}, {Type::mpz().pointer()}, (void*) &mpz_clear, Method::NATIVE}
 	});
