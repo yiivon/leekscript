@@ -74,7 +74,6 @@ public:
 	static Compiler::value ge(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mod_mpz_mpz_tmp(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value mod(Compiler& c, std::vector<Compiler::value>);
 
 	static Compiler::value mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
