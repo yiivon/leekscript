@@ -90,7 +90,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 
 	operator_("**=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::pow_eq_mpz_mpz},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::pow_eq_mpz_mpz},
 		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::pow_eq_real, {}, false, true},
 		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::pow_eq_real, {}, false, true}
 	});
@@ -968,8 +968,8 @@ Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	c.insn_call({}, {args[0], args[1]}, +[](__mpz_struct a, int b) {
-		return mpz_pow_ui(&a, &a, b);
+	c.insn_call({}, {args[0], args[1]}, +[](__mpz_struct* a, int b) {
+		return mpz_pow_ui(a, a, b);
 	});
 	return c.insn_clone_mpz(args[0]);
 }
