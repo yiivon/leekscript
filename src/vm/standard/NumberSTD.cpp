@@ -74,7 +74,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::mpz(), Type::integer(), Type::tmp_mpz(), (void*) &NumberSTD::mul_mpz_int},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mul_real_real},
 		{Type::const_integer(), Type::const_string(), Type::string(), (void*) &NumberSTD::mul_int_string},
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mul_mpz_mpz}
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_mpz_mpz}
 	});
 
 	operator_("**", {
@@ -347,6 +347,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_add", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_add, Method::NATIVE}
 	});
+	method("mpz_mul", {
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mul, Method::NATIVE}
+	});
 	method("mpz_neg", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg, Method::NATIVE}
 	});
@@ -509,17 +512,14 @@ Compiler::value NumberSTD::mul_int_string(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_mul(r, &a, &b);
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[0]);
-	if (args[0].v != args[1].v) {
-		c.insn_delete_temporary(args[1]);
-	}
+	std::cout << "mul " << args << std::endl;
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		if (args[1].t.temporary) return args[1];
+		return c.new_mpz();
+	}();
+	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_mul");
+	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
 
