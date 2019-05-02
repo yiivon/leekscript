@@ -79,6 +79,7 @@ void Test::test_types() {
 
 	section("Distance");
 	assert(ls::Type::number().distance(ls::Type::any()) == 1);
+	assert(ls::Type::mpz_ptr().distance(ls::Type::any()) == 2);
 
 	section("is_number");
 	assert(ls::Type::number().is_number());

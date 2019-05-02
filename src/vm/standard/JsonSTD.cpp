@@ -10,8 +10,7 @@ namespace ls {
 JsonSTD::JsonSTD() : Module("Json") {
 
 	method("encode", {
-		{Type::string(), {Type::const_any()}, (void*) &JsonSTD::encode},
-		{Type::string(), {Type::mpz()}, (void*) &JsonSTD::encode}
+		{Type::string(), {Type::const_any()}, (void*) &JsonSTD::encode}
 	});
 	method("decode", {
 		{Type::any(), {Type::const_string()}, (void*) &JsonSTD::decode},
@@ -35,10 +34,10 @@ Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) 
 		return c.insn_call(Type::string(), args, +[](bool b) {
 			return new LSString(b ? "true" : "false");
 		});
-	} else if (args[0].t.not_temporary() == Type::mpz()) {
-		auto s = c.insn_call(Type::string(), args, +[](__mpz_struct v) {
+	} else if (args[0].t.is_mpz_ptr()) {
+		auto s = c.insn_call(Type::string(), args, +[](__mpz_struct* v) {
 			char buff[10000];
-			mpz_get_str(buff, 10, &v);
+			mpz_get_str(buff, 10, v);
 			return new LSString(buff);
 		});
 		if (args[0].t.temporary) {

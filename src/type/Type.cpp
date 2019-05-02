@@ -319,12 +319,17 @@ bool Type::is_closure() const {
 	});
 }
 bool Type::is_polymorphic() const {
-	return _types.size() && some([&](std::shared_ptr<const Base_type> t) {
-		return dynamic_cast<const Integer_type*>(t.get()) == nullptr
-			and dynamic_cast<const Mpz_type*>(t.get()) == nullptr 
-			and dynamic_cast<const Long_type*>(t.get()) == nullptr 
-			and dynamic_cast<const Real_type*>(t.get()) == nullptr 
-			and dynamic_cast<const Bool_type*>(t.get()) == nullptr;
+	return _types.size() && all([&](std::shared_ptr<const Base_type> t) {
+		return dynamic_cast<const String_type*>(t.get()) != nullptr
+			or dynamic_cast<const Array_type*>(t.get()) != nullptr
+			or dynamic_cast<const Set_type*>(t.get()) != nullptr
+			or dynamic_cast<const Map_type*>(t.get()) != nullptr
+			or dynamic_cast<const Interval_type*>(t.get()) != nullptr
+			or dynamic_cast<const Any_type*>(t.get()) != nullptr
+			or dynamic_cast<const Function_type*>(t.get()) != nullptr
+			or dynamic_cast<const Class_type*>(t.get()) != nullptr
+			or dynamic_cast<const Object_type*>(t.get()) != nullptr
+			or dynamic_cast<const Null_type*>(t.get()) != nullptr;
 	});
 }
 bool Type::is_primitive() const {

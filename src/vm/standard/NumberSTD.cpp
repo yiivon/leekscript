@@ -47,27 +47,27 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("+", {
 		{Type::integer(), Type::any(), Type::any(), (void*) &NumberSTD::add_int_ptr, {}, Method::NATIVE},
 		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::add_mpz_mpz},
-		{Type::mpz(), Type::integer(), Type::tmp_mpz(), (void*) &NumberSTD::add_mpz_int},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::add_mpz_int},
 		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::add_real_real},
 		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::add_real_real},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::add_real_real},
 	});
 
 	operator_("+=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::add_eq_mpz_mpz, {new ChangeTypeMutator()}, false, true},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::add_eq_mpz_mpz, {new ChangeTypeMutator()}, false, true},
 		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::add_eq_real, {new ChangeTypeMutator()}, false, true},
 		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::add_eq_real, {new ChangeTypeMutator()}, false, true}
 	});
 
 	operator_("-", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::sub_mpz_mpz},
-		{Type::mpz(), Type::integer(), Type::tmp_mpz(), (void*) &NumberSTD::sub_mpz_int},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::sub_mpz_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::sub_mpz_int},
 		{Type::const_real(), Type::const_real(), Type::const_real(), (void*) &NumberSTD::sub_real_real},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::sub_real_real},
 	});
 
 	operator_("-=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::sub_eq_mpz_mpz},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::sub_eq_mpz_mpz},
 		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::sub_eq_real, {}, false, true},
 		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::sub_eq_real, {}, false, true}
 	});
@@ -75,8 +75,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("*", {
 		{Type::const_real(), Type::const_real(), Type::const_real(), (void*) &NumberSTD::mul_real_real},
 		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::mul_real_real},
-		{Type::const_integer(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mul_int_mpz},
-		{Type::mpz(), Type::integer(), Type::tmp_mpz(), (void*) &NumberSTD::mul_mpz_int},
+		{Type::const_integer(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_int_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_mpz_int},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mul_real_real},
 		{Type::const_integer(), Type::const_string(), Type::string(), (void*) &NumberSTD::mul_int_string},
 		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_mpz_mpz}
@@ -127,10 +127,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::number(), Type::number(), Type::boolean(), (void*) &NumberSTD::ge}
 	});
 	operator_("%", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mod_mpz_mpz},
 		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::mod},
 		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::mod},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mod},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mod_mpz_mpz},
 	});
 	operator_("%%", {
 		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::double_mod},
@@ -307,7 +307,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::sqrt_real},
 		{Type::real(), {Type::integer()}, (void*) &std::sqrt<int>, Method::NATIVE},
-		{Type::tmp_mpz(), {Type::mpz()}, (void*) NumberSTD::sqrt_mpz}
+		{Type::tmp_mpz_ptr(), {Type::mpz_ptr()}, (void*) NumberSTD::sqrt_mpz}
 	});
 	method("tan", {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
@@ -328,7 +328,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	method("isPrime", {
 		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_number<int>, Method::NATIVE},
-		{Type::integer(), {Type::mpz()}, (void*) &NumberSTD::is_prime},
+		{Type::integer(), {Type::mpz_ptr()}, (void*) &NumberSTD::is_prime},
 		{Type::boolean(), {Type::long_()}, (void*) &NumberSTD::is_prime_long},
 		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_int},
 	});
@@ -349,14 +349,29 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_init_str", {
 		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) &mpz_init_set_str, Method::NATIVE}
 	});
+	method("mpz_get_ui", {
+		{{Type::long_()}, {Type::mpz().pointer()}, (void*) &mpz_get_ui, Method::NATIVE}
+	});
+	method("mpz_get_si", {
+		{{Type::long_()}, {Type::mpz().pointer()}, (void*) &mpz_get_si, Method::NATIVE}
+	});
 	method("mpz_add", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_add, Method::NATIVE}
+	});
+	method("mpz_sub", {
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_sub, Method::NATIVE}
 	});
 	method("mpz_mul", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mul, Method::NATIVE}
 	});
+	method("mpz_mul_si", {
+		{{}, {Type::mpz().pointer(), Type::long_(), Type::mpz().pointer()}, (void*) &mpz_mul_si, Method::NATIVE}
+	});
 	method("mpz_pow_ui", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::integer()}, (void*) &mpz_pow_ui, Method::NATIVE}
+	});
+	method("mpz_mod", {
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mod, Method::NATIVE}
 	});
 	method("mpz_neg", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg, Method::NATIVE}
@@ -403,23 +418,15 @@ Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 }
 
 Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, int b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_add_ui(r, &a, b);
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[0]);
+	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
+	c.insn_call({}, {r, args[0], args[1]}, &mpz_add_ui);
 	return r;
 }
 
 Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	c.insn_call({}, args, +[](mpz_t a, __mpz_struct b) {
-		mpz_add(a, a, &b);
-	});
+	c.insn_call({}, {args[0], args[0], args[1]}, "Number.mpz_add");
 	c.insn_delete_temporary(args[1]);
-	return c.insn_clone_mpz(c.insn_load(args[0]));
+	return c.insn_clone_mpz(args[0]);
 }
 
 Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args) {
@@ -434,15 +441,13 @@ Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_sub(r, &a, &b);
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[0]);
-	c.insn_delete_temporary(args[1]);
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		if (args[1].t.temporary) return args[1];
+		return c.new_mpz();
+	}();
+	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_sub");
+	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
 
@@ -459,33 +464,23 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 
 	c.insn_label(&label_then);
 	auto neg_b = c.insn_neg(b);
-	auto v1 = c.insn_call(Type::tmp_mpz(), {a, neg_b}, +[](__mpz_struct a, int b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_add_ui(r, &a, (unsigned long) b);
-		VM::current()->mpz_created++;
-		return *r;
-	});
+	auto r1 = c.new_mpz();
+	c.insn_call({}, {r1, a, neg_b}, &mpz_add_ui);
 	c.insn_branch(&label_end);
 	label_then.block = c.builder.GetInsertBlock();
 
 	c.insn_label(&label_else);
-	auto v2 = c.insn_call(Type::tmp_mpz(), {a, b}, +[](__mpz_struct a, int b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_sub_ui(r, &a, (unsigned long) b);
-		VM::current()->mpz_created++;
-		return *r;
-	});
+	auto r2 = c.new_mpz();
+	c.insn_call({}, {r2, a, b}, &mpz_sub_ui);
 	c.insn_branch(&label_end);
 	label_else.block = c.builder.GetInsertBlock();
 	
 	c.insn_label(&label_end);
-	auto PN = c.builder.CreatePHI(Type::mpz().llvm_type(c), 2);
-	PN->addIncoming(v1.v, label_then.block);
-	PN->addIncoming(v2.v, label_else.block);
+	auto PN = c.builder.CreatePHI(Type::mpz_ptr().llvm_type(c), 2);
+	PN->addIncoming(r1.v, label_then.block);
+	PN->addIncoming(r2.v, label_else.block);
 	c.insn_delete_temporary(a);
-	return {PN, Type::tmp_mpz()};
+	return {PN, Type::tmp_mpz_ptr()};
 }
 
 Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -507,26 +502,14 @@ Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](int a, __mpz_struct b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_mul_si(r, &b, a);
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[1]);
+	auto r = args[1].t.temporary ? args[1] : c.new_mpz();
+	c.insn_call({}, {r, args[1], args[0]}, "Number.mpz_mul_si");
 	return r;
 }
 
 Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, int b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_mul_si(r, &a, b);
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[0]);
+	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
+	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_mul_si");
 	return r;
 }
 
@@ -537,7 +520,6 @@ Compiler::value NumberSTD::mul_int_string(Compiler& c, std::vector<Compiler::val
 }
 
 Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	std::cout << "mul " << args << std::endl;
 	auto r = [&]() {
 		if (args[0].t.temporary) return args[0];
 		if (args[1].t.temporary) return args[1];
@@ -599,15 +581,14 @@ Compiler::value NumberSTD::int_div_eq_val_val(Compiler& c, std::vector<Compiler:
 }
 
 Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_pow_ui(r, &a, mpz_get_ui(&b));
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[0]);
-	c.insn_delete_temporary(args[1]);
+	auto ui = c.insn_call(Type::long_(), {args[1]}, "Number.mpz_get_ui");
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		if (args[1].t.temporary) return args[1];
+		return c.new_mpz();
+	}();
+	c.insn_call({}, {r, args[0], ui}, "Number.mpz_pow_ui");
+	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
 
@@ -656,15 +637,13 @@ Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_mod(args[0], args[1]);
 }
 Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), args, +[](__mpz_struct a, __mpz_struct b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_mod(r, &a, &b);
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[0]);
-	c.insn_delete_temporary(args[1]);
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		if (args[1].t.temporary) return args[1];
+		return c.new_mpz();
+	}();
+	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_mod");
+	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
 
@@ -964,14 +943,8 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), args, +[](__mpz_struct x) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_sqrt(r, &x);
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[0]);
+	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
+	c.insn_call({}, {r, args[0]}, &mpz_sqrt);
 	return r;
 }
 
@@ -1010,12 +983,8 @@ Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value>
 
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
 	auto reps = c.new_integer(15);
-	auto res = c.insn_call(Type::integer(), {args[0], reps}, +[](__mpz_struct a, int reps) {
-		return mpz_probab_prime_p(&a, reps);
-	});
-	if (args[0].t.temporary) {
-		c.insn_delete_mpz(args[0]);
-	}
+	auto res = c.insn_call(Type::integer(), {args[0], reps}, &mpz_probab_prime_p);
+	c.insn_delete_temporary(args[0]);
 	return res;
 }
 

@@ -97,7 +97,7 @@ bool Number::is_zero() const {
 		return double_value == 0;
 	} else if (type == Type::long_()) {
 		return long_value == 0;
-	} else if (type.is_mpz()) {
+	} else if (type.is_mpz_ptr()) {
 		return mpz_cmp_ui(mpz_value, 0) == 0;
 	} else {
 		return int_value == 0;

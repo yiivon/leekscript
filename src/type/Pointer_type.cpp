@@ -16,7 +16,12 @@ bool Pointer_type::operator == (const Base_type* type) const {
 	return false;
 }
 int Pointer_type::distance(const Base_type* type) const {
-	if (auto p = dynamic_cast<const Pointer_type*>(type)) {
+	auto p = dynamic_cast<const Pointer_type*>(type);
+	if (_type.is_mpz()) {
+		if (p and p->pointed().is_mpz()) return 0;
+		return _type._types[0]->distance(type);
+	}
+	if (p) {
 		return _type.distance(p->_type);
 	}
 	return -1;

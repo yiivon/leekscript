@@ -197,10 +197,8 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 	if (type.is_integer()) {
 		return v;
 	}
-	if (type.not_temporary() == Type::mpz()) {
-		return to_int(insn_call(Type::long_(), {v}, +[](__mpz_struct a) {
-			return mpz_get_si(&a);
-		}));
+	if (type.is_mpz_ptr()) {
+		return to_int(insn_call(Type::long_(), {v}, "Number.mpz_get_si"));
 	}
 	if (type.is_bool()) {
 		return {builder.CreateIntCast(v.v, Type::integer().llvm_type(*this), false), Type::integer()};
@@ -406,16 +404,12 @@ Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 		});
 	}
 	Compiler::value r;
-	if (a.t.is_mpz() and b.t.is_integer()) {
-		auto r = insn_call(Type::boolean(), {a, b}, +[](__mpz_struct x, int i) {
-			return _mpz_cmp_si(&x, i) < 0;
-		});
+	if (a.t.is_mpz_ptr() and b.t.is_integer()) {
+		auto r = insn_lt(insn_call(Type::integer(), {a, b}, &_mpz_cmp_si), new_integer(0));
 		insn_delete_temporary(a);
 		return r;
-	} else if (a.t.is_mpz() and b.t.is_mpz()) {
-		auto res = insn_call(Type::integer(), {a, b}, +[](__mpz_struct a, __mpz_struct b) {
-			return mpz_cmp(&a, &b);
-		});
+	} else if (a.t.is_mpz_ptr() and b.t.is_mpz_ptr()) {
+		auto res = insn_call(Type::integer(), {a, b}, &mpz_cmp);
 		insn_delete_temporary(a);
 		insn_delete_temporary(b);
 		return insn_lt(res, new_integer(0));
@@ -452,16 +446,12 @@ Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 	assert(b.t.llvm_type(*this) == b.v->getType());
 	assert(a.t.is_primitive() && b.t.is_primitive());
 	Compiler::value r;
-	if (a.t.is_mpz() and b.t.is_integer()) {
-		auto res = insn_call(Type::integer(), {a, b}, +[](__mpz_struct a, int b) {
-			return _mpz_cmp_si(&a, b);
-		});
+	if (a.t.is_mpz_ptr() and b.t.is_integer()) {
+		auto res = insn_call(Type::integer(), {a, b}, &_mpz_cmp_si);
 		insn_delete_temporary(a);
 		return insn_gt(res, new_integer(0));
-	} else if (a.t.is_integer() and b.t.is_mpz()) {
-		auto res = insn_call(Type::integer(), {a, b}, +[](int a, __mpz_struct b) {
-			return _mpz_cmp_si(&b, a);
-		});
+	} else if (a.t.is_integer() and b.t.is_mpz_ptr()) {
+		auto res = insn_call(Type::integer(), {b, a}, &_mpz_cmp_si);
 		insn_delete_temporary(b);
 		return insn_lt(res, new_integer(0));
 	} else if (a.t.is_real() || b.t.is_real()) {
@@ -871,14 +861,14 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 		return insn_call(Type::any(), {v}, +[](bool n) {
 			return LSBoolean::get(n);
 		});
-	} else if (v.t.is_mpz()) {
+	} else if (v.t.is_mpz_ptr()) {
 		if (v.t.temporary) {
-			return insn_call(Type::any(), {v}, +[](__mpz_struct n) {
-				return LSMpz::get_from_tmp(n);
+			return insn_call(Type::any(), {v}, +[](__mpz_struct* n) {
+				return LSMpz::get_from_tmp(*n);
 			});
 		} else {
-			return insn_call(Type::any(), {v}, +[](__mpz_struct n) {
-				return LSMpz::get(n);
+			return insn_call(Type::any(), {v}, +[](__mpz_struct* n) {
+				return LSMpz::get(*n);
 			});
 		}
 	} else {

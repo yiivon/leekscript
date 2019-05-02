@@ -122,7 +122,10 @@ Compiler::value Block::compile(Compiler& c) const {
 				c.insn_delete_temporary(val);
 			}
 		} else {
-			if (type.must_manage_memory() and val.v != nullptr) {
+			if (not val.v) {
+				c.leave_block();
+				return val;
+			} else if (type.must_manage_memory() and val.v != nullptr) {
 				auto ret = c.insn_move(val);
 				c.leave_block();
 				return ret;

@@ -215,6 +215,7 @@ void Test::test_numbers() {
 	code("12m ** 5m == 12m ** 5m").equals("true");
 	code("12m ** 5m == (3m * 4m) ** 5m").equals("true");
 	code("12m ** 5m == 248832").equals("true");
+	code("248832 == 12m ** 5m").equals("true");
 
 	section("Number.operator +");
 	code("1m + 2m").equals("3");
