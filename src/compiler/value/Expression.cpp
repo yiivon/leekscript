@@ -333,8 +333,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 			} else {
 				if (y.t.is_mpz_ptr()) {
 					return c.insn_clone_mpz(y);
-				} else if (y.t.is_mpz()) {
-					return c.insn_clone_mpz(y);
 				} else {
 					return y;
 				}

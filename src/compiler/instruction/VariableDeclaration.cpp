@@ -104,7 +104,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				val = c.insn_move_inc(val);
 			}
 			// TODO we don't add mpz values to function vars because function vars doesn't work properly yet
-			if (not val.t.is_mpz()) {
+			if (not val.t.is_mpz_ptr()) {
 				c.add_function_var(var);
 			}
 			if (not dynamic_cast<Function*>(ex) or val.t.is_closure()) {

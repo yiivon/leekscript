@@ -130,6 +130,9 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 					}
 				}
 			}
+			if (type.is_mpz()) {
+				type = type == Type::tmp_mpz() ? Type::tmp_mpz_ptr() : Type::mpz_ptr();
+			}
 			return;
 		}
 	}
@@ -259,6 +262,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	c.insn_check_args(args, types);
 	auto r = callable_version->compile_call(c, args);
 	c.inc_ops(1);
+	if (r.t.is_mpz()) {
+		auto r2 = c.create_entry("m", r.t);
+		c.insn_store(r2, r);
+		r = r2;
+	}
 	return r;
 }
 

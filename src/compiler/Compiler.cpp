@@ -981,7 +981,7 @@ void Compiler::insn_delete(Compiler::value v) const {
 				});
 			});
 		});
-	} else if (v.t.is_mpz()) {
+	} else if (v.t.is_mpz_ptr()) {
 		insn_delete_mpz(v);
 	}
 }
@@ -1087,9 +1087,6 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 	}
 	if (value.t.temporary) {
 		return value;
-	}
-	if (value.t.is_mpz()) {
-		return insn_clone_mpz(value);
 	}
 	return value;
 }

@@ -29,6 +29,7 @@ void SemanticVar::must_be_any(SemanticAnalyser* analyser) {
 }
 Type SemanticVar::type() const {
 	if (value != nullptr) {
+		if (value->type.is_mpz()) return value->type.not_temporary().pointer();
 		return value->type;
 	}
 	return initial_type;
