@@ -444,7 +444,6 @@ Compiler::value Compiler::insn_le(Compiler::value a, Compiler::value b) const {
 Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type(*this) == a.v->getType());
 	assert(b.t.llvm_type(*this) == b.v->getType());
-	assert(a.t.is_primitive() && b.t.is_primitive());
 	Compiler::value r;
 	if (a.t.is_mpz_ptr() and b.t.is_integer()) {
 		auto res = insn_call(Type::integer(), {a, b}, &_mpz_cmp_si);
