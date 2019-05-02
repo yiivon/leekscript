@@ -51,9 +51,6 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 		or operatorr->type == TokenType::MINUS) {
 
 		type = expression->type;
-		if (type == Type::mpz() and operatorr->type == TokenType::MINUS) {
-			type = Type::tmp_mpz();
-		}
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
 				analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
@@ -106,15 +103,11 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 
 	switch (operatorr->type) {
 		case TokenType::PLUS_PLUS: {
-			if (expression->type == Type::mpz()) {
+			if (expression->type.is_mpz_ptr()) {
 				auto x = ((LeftValue*) expression)->compile_l(c);
 				auto one = c.new_integer(1);
 				c.insn_call({}, {x, x, one}, &mpz_add_ui);
-				if (is_void) {
-					return {};
-				} else {
-					return c.insn_load(x);
-				}
+				return is_void ? Compiler::value() : c.insn_clone_mpz(x);
 			} else if (expression->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);
 				auto x = c.insn_load(x_addr);
