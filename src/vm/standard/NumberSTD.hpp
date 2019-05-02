@@ -22,6 +22,8 @@ public:
 	/*
 	 * Operators
 	 */
+	static Compiler::value eq_mpz_mpz(Compiler& c, std::vector<Compiler::value>);
+
 	static Compiler::value add_real_real(Compiler& c, std::vector<Compiler::value>);
 	static LSValue* add_int_ptr(int a, LSValue* b);
 	static Compiler::value add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);

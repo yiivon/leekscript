@@ -39,6 +39,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	/*
 	 * Operators
 	 */
+	operator_("==", {
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::boolean(), (void*) &NumberSTD::eq_mpz_mpz}
+	});
 	operator_("+", {
 		{Type::integer(), Type::any(), Type::any(), (void*) &NumberSTD::add_int_ptr, {}, Method::NATIVE},
 		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::add_mpz_mpz},
@@ -359,6 +362,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_clear", {
 		{{}, {Type::mpz().pointer()}, (void*) &mpz_clear, Method::NATIVE}
 	});
+}
+
+Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+	auto r = c.insn_eq(c.insn_call(Type::integer(), args, &mpz_cmp), c.new_integer(0));
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
+	return r;
 }
 
 Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args) {
