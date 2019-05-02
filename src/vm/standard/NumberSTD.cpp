@@ -41,7 +41,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 */
 	operator_("+", {
 		{Type::integer(), Type::any(), Type::any(), (void*) &NumberSTD::add_int_ptr, {}, Method::NATIVE},
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::add_mpz_mpz},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::add_mpz_mpz},
 		{Type::mpz(), Type::integer(), Type::tmp_mpz(), (void*) &NumberSTD::add_mpz_int},
 		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::add_real_real},
 		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::add_real_real},
@@ -344,6 +344,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_init_str", {
 		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) &mpz_init_set_str, Method::NATIVE}
 	});
+	method("mpz_add", {
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_add, Method::NATIVE}
+	});
 	method("mpz_neg", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg, Method::NATIVE}
 	});
@@ -361,15 +364,13 @@ LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
 }
 
 Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_call(Type::tmp_mpz(), {args[0], args[1]}, +[](__mpz_struct a, __mpz_struct b) {
-		mpz_t r;
-		mpz_init(r);
-		mpz_add(r, &a, &b);
-		VM::current()->mpz_created++;
-		return *r;
-	});
-	c.insn_delete_temporary(args[0]);
-	c.insn_delete_temporary(args[1]);
+	auto r = [&]() {
+		if (args[0].t.temporary) return args[0];
+		if (args[1].t.temporary) return args[1];
+		return c.new_mpz();
+	}();
+	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_add");
+	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
 
