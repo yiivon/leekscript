@@ -31,20 +31,20 @@ LSString* plus_any(LSString* s, LSValue* v) {
 	return (LSString*) s->add(v);
 }
 
-LSString* plus_mpz(LSString* s, __mpz_struct mpz) {
+LSString* plus_mpz(LSString* s, __mpz_struct* mpz) {
 	char buff[1000];
-	mpz_get_str(buff, 10, &mpz);
+	mpz_get_str(buff, 10, mpz);
 	LSString* res = new LSString(*s + buff);
 	LSValue::delete_temporary(s);
 	return res;
 }
 
-LSString* plus_mpz_tmp(LSString* s, __mpz_struct mpz) {
+LSString* plus_mpz_tmp(LSString* s, __mpz_struct* mpz) {
 	char buff[1000];
-	mpz_get_str(buff, 10, &mpz);
+	mpz_get_str(buff, 10, mpz);
 	LSString* res = new LSString(*s + buff);
 	LSValue::delete_temporary(s);
-	mpz_clear(&mpz);
+	mpz_clear(mpz);
 	VM::current()->mpz_deleted++;
 	return res;
 }
@@ -65,8 +65,8 @@ StringSTD::StringSTD() : Module("String") {
 	 */
 	operator_("+", {
 		{Type::string(), Type::any(), Type::string(), (void*) &plus_any, {}, Method::NATIVE},
-		{Type::string(), Type::mpz(), Type::string(), (void*) &plus_mpz, {}, Method::NATIVE},
-		{Type::string(), Type::tmp_mpz(), Type::string(), (void*) &plus_mpz_tmp, {}, Method::NATIVE},
+		{Type::string(), Type::mpz_ptr(), Type::string(), (void*) &plus_mpz, {}, Method::NATIVE},
+		{Type::string(), Type::tmp_mpz_ptr(), Type::string(), (void*) &plus_mpz_tmp, {}, Method::NATIVE},
 		{Type::string(), Type::real(), Type::string(), (void*) &StringSTD::add_real, {}, Method::NATIVE},
 		{Type::string(), Type::integer(), Type::string(), (void*) &StringSTD::add_int, {}, Method::NATIVE},
 		{Type::string(), Type::boolean(), Type::string(), (void*) &StringSTD::add_bool, {}, Method::NATIVE},
