@@ -80,8 +80,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("**", {
 		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::pow_real_real},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::pow_real_real},
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::pow_mpz_mpz},
-		{Type::mpz(), Type::integer(), Type::tmp_mpz(), (void*) &NumberSTD::pow_mpz_int},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::pow_mpz_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::pow_mpz_int},
 	});
 
 	operator_("**=", {
@@ -350,6 +350,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_mul", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mul, Method::NATIVE}
 	});
+	method("mpz_pow_ui", {
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::integer()}, (void*) &mpz_pow_ui, Method::NATIVE}
+	});
 	method("mpz_neg", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg, Method::NATIVE}
 	});
@@ -609,14 +612,8 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	// Ops: size of the theorical result
 	c.inc_ops_jit(r_size);
 
-	auto r = c.insn_call(Type::tmp_mpz(), args, +[](__mpz_struct a, int b) {
-		mpz_t res;
-		mpz_init(res);
-		mpz_pow_ui(res, &a, b);
-		VM::current()->mpz_created++;
-		return *res;
-	});
-	c.insn_delete_temporary(args[0]);
+	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
+	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_pow_ui");
 	return r;
 }
 
