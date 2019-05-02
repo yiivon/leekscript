@@ -17,8 +17,8 @@ public:
 	static long nanotime();
 	static void print(LSValue* v);
 	static void print_int(int v);
-	static void print_mpz(__mpz_struct v);
-	static void print_mpz_tmp(__mpz_struct v);
+	static void print_mpz(__mpz_struct* v);
+	static void print_mpz_tmp(__mpz_struct* v);
 	static void print_long(long v);
 	static void print_bool(bool v);
 	static void print_float(double v);

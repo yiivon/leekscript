@@ -18,8 +18,8 @@ SystemSTD::SystemSTD() : Module("System") {
 
 	method("print", Method::Static, {
 		{{}, {Type::const_any()}, (void*) &SystemSTD::print, Method::NATIVE},
-		{{}, {Type::mpz()}, (void*) &SystemSTD::print_mpz, Method::NATIVE},
-		{{}, {Type::tmp_mpz()}, (void*) &SystemSTD::print_mpz_tmp, Method::NATIVE},
+		{{}, {Type::mpz_ptr()}, (void*) &SystemSTD::print_mpz, Method::NATIVE},
+		{{}, {Type::tmp_mpz_ptr()}, (void*) &SystemSTD::print_mpz_tmp, Method::NATIVE},
 		{{}, {Type::const_long()}, (void*) &SystemSTD::print_long, Method::NATIVE},
 		{{}, {Type::const_real()}, (void*) &SystemSTD::print_float, Method::NATIVE},
 		{{}, {Type::const_integer()}, (void*) &SystemSTD::print_int, Method::NATIVE},
@@ -80,18 +80,18 @@ void SystemSTD::print_int(int v) {
 	VM::current()->output->end();
 }
 
-void SystemSTD::print_mpz(__mpz_struct v) {
+void SystemSTD::print_mpz(__mpz_struct* v) {
 	char buff[1000];
-	mpz_get_str(buff, 10, &v);
+	mpz_get_str(buff, 10, v);
 	VM::current()->output->stream() << buff;
 	VM::current()->output->end();
 }
-void SystemSTD::print_mpz_tmp(__mpz_struct v) {
+void SystemSTD::print_mpz_tmp(__mpz_struct* v) {
 	char buff[1000];
-	mpz_get_str(buff, 10, &v);
+	mpz_get_str(buff, 10, v);
 	VM::current()->output->stream() << buff;
 	VM::current()->output->end();
-	mpz_clear(&v);
+	mpz_clear(v);
 	VM::current()->mpz_deleted++;
 }
 
