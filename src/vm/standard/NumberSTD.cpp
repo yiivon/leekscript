@@ -40,7 +40,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Operators
 	 */
 	operator_("==", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::boolean(), (void*) &NumberSTD::eq_mpz_mpz}
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::boolean(), (void*) &NumberSTD::eq_mpz_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::boolean(), (void*) &NumberSTD::eq_mpz_int},
+		{Type::integer(), Type::mpz_ptr(), Type::boolean(), (void*) &NumberSTD::eq_int_mpz},
 	});
 	operator_("+", {
 		{Type::integer(), Type::any(), Type::any(), (void*) &NumberSTD::add_int_ptr, {}, Method::NATIVE},
@@ -368,6 +370,16 @@ Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> 
 	auto r = c.insn_eq(c.insn_call(Type::integer(), args, &mpz_cmp), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
+	return r;
+}
+Compiler::value NumberSTD::eq_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
+	auto r = c.insn_eq(c.insn_call(Type::integer(), {args[1], args[0]}, &_mpz_cmp_si), c.new_integer(0));
+	c.insn_delete_temporary(args[1]);
+	return r;
+}
+Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
+	auto r = c.insn_eq(c.insn_call(Type::integer(), args, &_mpz_cmp_si), c.new_integer(0));
+	c.insn_delete_temporary(args[0]);
 	return r;
 }
 
