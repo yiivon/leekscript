@@ -55,15 +55,14 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 	switch (operatorr->type) {
 
 		case TokenType::PLUS_PLUS: {
-
-			if (expression->type == Type::mpz()) {
+			if (expression->type.is_mpz_ptr()) {
 				auto x = expression->compile_l(c);
 				auto one = c.new_integer(1);
 				if (is_void) {
 					c.insn_call({}, {x, x, one}, &mpz_add_ui);
 					return {};
 				} else {
-					auto r = c.insn_clone_mpz(c.insn_load(x));
+					auto r = c.insn_clone_mpz(x);
 					c.insn_call({}, {x, x, one}, &mpz_add_ui);
 					return r;
 				}
@@ -84,14 +83,14 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 			break;
 		}
 		case TokenType::MINUS_MINUS: {
-			if (expression->type == Type::mpz()) {
+			if (expression->type.is_mpz_ptr()) {
 				auto x = expression->compile_l(c);
 				auto one = c.new_integer(1);
 				if (is_void) {
 					c.insn_call({}, {x, x, one}, &mpz_sub_ui);
 					return {};
 				} else {
-					auto r = c.insn_clone_mpz(c.insn_load(x));
+					auto r = c.insn_clone_mpz(x);
 					c.insn_call({}, {x, x, one}, &mpz_sub_ui);
 					return r;
 				}
