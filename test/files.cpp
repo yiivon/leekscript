@@ -6,7 +6,7 @@ void Test::test_files() {
 	header("Files");
 	section("General");
 	file("test/code/primes.leek").equals("78498");
-	file("test/code/primes_gmp.leek").equals("9591");
+	DISABLED_file("test/code/primes_gmp.leek").equals("9591");
 	file("test/code/gcd.leek").equals("151");
 	file("test/code/strings.leek").almost(52.0, 8.0);
 	file("test/code/reachable_cells.leek").equals("383");
@@ -22,8 +22,8 @@ void Test::test_files() {
 	DISABLED_file("test/code/recursive.leek").equals("");
 	file("test/code/divisors.leek").equals("[1, 3, 9, 13, 17, 39]");
 	file("test/code/two_functions.leek").equals("[{p: 2, v: 5}, [{p: 3, v: 6}]]");
-	file("test/code/product_n.leek").equals("5040");
-	file("test/code/product_n_return.leek").equals("265252859812191058636308480000000");
+	DISABLED_file("test/code/product_n.leek").equals("5040");
+	DISABLED_file("test/code/product_n_return.leek").equals("265252859812191058636308480000000");
 	DISABLED_file("test/code/product_n_arrays.leek").equals("[5040]");
 	DISABLED_file("test/code/product_coproduct.leek").equals("171122452428141311372468338881272839092270544893520369393648040923257279754140647424000000000000000");
 	file("test/code/fold_left.leek").equals("[{w: 1}, {w: 3}, {w: 4}, {w: 2}, {w: 7}, {w: 5}, {w: 8}, {w: 9}, {w: 6}]");

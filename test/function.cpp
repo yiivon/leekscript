@@ -101,8 +101,8 @@ void Test::test_functions() {
 
 	section("Recursive");
 	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
-	code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
-	code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30)").equals("265252859812191058636308480000000");
+	// code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
+	// code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30)").equals("265252859812191058636308480000000");
 	code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
 	code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
 	code("let fact = x -> if x > 1 x * fact(x - 1) else x fact(5)").equals("120");

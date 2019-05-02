@@ -523,7 +523,11 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 						jit_cap = f->compile_default_version(c);
 					}
 				} else {
-					jit_cap = c.insn_load(c.get_var(cap->name));
+					if (cap->type().is_mpz_ptr()) {
+						jit_cap = c.get_var(cap->name);
+					} else {
+						jit_cap = c.insn_load(c.get_var(cap->name));
+					}
 				}
 			} else if (cap->scope == VarScope::CAPTURE) {
 				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);

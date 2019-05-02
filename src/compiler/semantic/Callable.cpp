@@ -164,7 +164,11 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	Compiler::value compiled_object;
 	if (object) {
 		compiled_object = [&]() { if (object->isLeftValue()) {
-			return c.insn_load(((LeftValue*) object)->compile_l(c));
+			if (object->type.is_mpz_ptr()) {
+				return ((LeftValue*) object)->compile_l(c);
+			} else {
+				return c.insn_load(((LeftValue*) object)->compile_l(c));
+			}
 		} else {
 			return object->compile(c);
 		}}();

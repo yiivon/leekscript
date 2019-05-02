@@ -323,13 +323,17 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		if (vv && has_version) {
 			return var->value->compile_version(c, version);
 		}
-		if (type.is_pointer() and type.pointed().is_mpz()) {
+		if (type.is_mpz_ptr()) {
 			v = c.get_var(name);
 		} else {
 			v = c.insn_load(c.get_var(name));
 		}
 	} else if (scope == VarScope::PARAMETER) {
-		v = c.insn_load(c.insn_get_argument(name));
+		if (type.is_mpz_ptr()) {
+			v = c.insn_get_argument(name);
+		} else {
+			v = c.insn_load(c.insn_get_argument(name));
+		}
 		// v = c.insn_get_argument(name);
 	} else {
 		assert(false);
@@ -346,7 +350,11 @@ Compiler::value VariableValue::compile_version(Compiler& c, std::vector<Type> ve
 	if (f) {
 		return f->compile_version(c, version);
 	}
-	return c.insn_load(c.get_var(name));
+	if (type.is_mpz_ptr()) {
+		return c.get_var(name);
+	} else {
+		return c.insn_load(c.get_var(name));
+	}
 }
 
 Compiler::value VariableValue::compile_l(Compiler& c) const {

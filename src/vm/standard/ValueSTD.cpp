@@ -626,10 +626,10 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 			return new LSString(std::to_string(v));
 		});
 	}
-	if (args[0].t.is_mpz()) {
-		auto s = c.insn_call(Type::string(), args, +[](__mpz_struct v) {
+	if (args[0].t.is_mpz_ptr()) {
+		auto s = c.insn_call(Type::string(), args, +[](__mpz_struct* v) {
 			char buff[10000];
-			mpz_get_str(buff, 10, &v);
+			mpz_get_str(buff, 10, v);
 			return new LSString(buff);
 		});
 		c.insn_delete_temporary(args[0]);
