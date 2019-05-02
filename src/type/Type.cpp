@@ -339,7 +339,8 @@ bool Type::is_primitive() const {
 			or dynamic_cast<const Mpz_type*>(t.get()) != nullptr 
 			or dynamic_cast<const Long_type*>(t.get()) != nullptr 
 			or dynamic_cast<const Real_type*>(t.get()) != nullptr 
-			or dynamic_cast<const Bool_type*>(t.get()) != nullptr;
+			or dynamic_cast<const Bool_type*>(t.get()) != nullptr
+			or (dynamic_cast<const Pointer_type*>(t.get()) != nullptr and ((Pointer_type*) t.get())->pointed().is_mpz());
 	});
 }
 bool Type::is_callable() const {
