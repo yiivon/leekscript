@@ -319,7 +319,8 @@ bool Type::is_closure() const {
 	});
 }
 bool Type::is_polymorphic() const {
-	return _types.size() && all([&](std::shared_ptr<const Base_type> t) {
+	// TODO extends all polymorphic types from Polymorphic_type (Any_type) to improve check
+	return _types.size() and fold().all([&](std::shared_ptr<const Base_type> t) {
 		return dynamic_cast<const String_type*>(t.get()) != nullptr
 			or dynamic_cast<const Array_type*>(t.get()) != nullptr
 			or dynamic_cast<const Set_type*>(t.get()) != nullptr
