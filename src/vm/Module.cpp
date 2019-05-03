@@ -58,9 +58,9 @@ void Module::constructor_(std::initializer_list<MethodConstructor> methods) {
 void Module::method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methodsConstr, std::vector<Type> templates) {
 	std::vector<Method> inst;
 	for (auto constr : methodsConstr) {
-		if (opt == Method::Instantiate || opt == Method::Both) {
-			assert(constr.args.size() > 0); // must be at least one argument to be the object used in instance
-		}
+		// if (opt == Method::Instantiate || opt == Method::Both) {
+		// 	assert(constr.args.size() > 0); // must be at least one argument to be the object used in instance
+		// }
 		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.native, constr.mutators, templates, constr.legacy);
 	}
 	if (!inst.empty()) {
