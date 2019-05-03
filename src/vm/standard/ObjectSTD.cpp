@@ -21,6 +21,13 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	});
 
 	/*
+	 * Constructor
+	 */
+	constructor_({
+		{Type::tmp_object(), {}, (void*) &LSObject::constructor, Method::NATIVE}
+	});
+
+	/*
 	 * Operators
 	 */
 	operator_("in", {
@@ -44,6 +51,11 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	});
 	method("values", {
 		{Type::array(Type::any()), {Type::object()}, (void*) &LSObject::ls_get_values, Method::NATIVE}
+	});
+
+	/** Internal **/
+	method("add_field", {
+		{{}, {Type::object(), Type::i8().pointer(), Type::any()}, (void*) &LSObject::addField, Method::NATIVE}
 	});
 }
 

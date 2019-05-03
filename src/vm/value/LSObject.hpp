@@ -10,6 +10,7 @@ class LSClass;
 class LSObject : public LSValue {
 public:
 	static LSValue* object_class;
+	static LSObject* constructor();
 
 	std::map<std::string, LSValue*> values;
 	LSClass* clazz;
@@ -20,7 +21,7 @@ public:
 	virtual ~LSObject();
 
 	/** LSObject methods **/
-	void addField(std::string name, LSValue* value);
+	void addField(const char* name, LSValue* value);
 	LSValue* getField(std::string name);
 	LSArray<LSValue*>* ls_get_keys() const;
 	LSArray<LSValue*>* ls_get_values() const;

@@ -303,7 +303,7 @@ LSValue* LSValue::get_from_json(Json& json) {
 		case Json::value_t::object: {
 			auto object = new LSObject();
 			for (Json::iterator it = json.begin(); it != json.end(); ++it) {
-				object->addField(it.key(), get_from_json(it.value()));
+				object->addField(it.key().c_str(), get_from_json(it.value()));
 			}
 			return object;
 		}

@@ -151,11 +151,7 @@ Compiler::value Compiler::new_class(const void* p) const {
 }
 
 Compiler::value Compiler::new_object() const {
-	return insn_call(Type::tmp_object(), {}, +[]() {
-		// FIXME coverage doesn't work for the one line version
-		auto o = new LSObject();
-		return o;
-	});
+	return insn_call(Type::tmp_object(), {}, "Object.new");
 }
 
 Compiler::value Compiler::new_object_class(Compiler::value clazz) const {

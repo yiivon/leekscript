@@ -8,6 +8,10 @@ namespace ls {
 
 LSValue* LSObject::object_class;
 
+LSObject* LSObject::constructor() {
+	return new LSObject();
+}
+
 LSObject::LSObject() : LSValue(OBJECT) {
 	clazz = nullptr;
 	readonly = false;
@@ -16,7 +20,7 @@ LSObject::LSObject() : LSValue(OBJECT) {
 LSObject::LSObject(LSClass* clazz) : LSObject() {
 	this->clazz = clazz;
 	for (auto f : clazz->fields) {
-		this->addField(f.first, f.second.default_value->clone());
+		this->addField(f.first.c_str(), f.second.default_value->clone());
 	}
 }
 
@@ -26,7 +30,7 @@ LSObject::~LSObject() {
 	}
 }
 
-void LSObject::addField(std::string name, LSValue* var) {
+void LSObject::addField(const char* name, LSValue* var) {
 	this->values.insert({name, var->move_inc()});
 }
 
