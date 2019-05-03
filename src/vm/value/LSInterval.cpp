@@ -9,6 +9,13 @@ namespace ls {
 
 LSValue* LSInterval::clazz;
 
+LSInterval* LSInterval::constructor(int a, int b) {
+	LSInterval* interval = new LSInterval();
+	interval->a = a;
+	interval->b = b;
+	return interval;
+}
+
 LSInterval::LSInterval() : LSValue(INTERVAL) {}
 
 LSInterval::~LSInterval() {}

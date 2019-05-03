@@ -9,6 +9,10 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 
 	LSInterval::clazz = clazz;
 
+	constructor_({
+		{Type::tmp_interval(), {Type::integer(), Type::integer()}, (void*) &LSInterval::constructor, Method::NATIVE}
+	});
+
 	/*
 	 * Operators
 	 */
