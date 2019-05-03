@@ -284,7 +284,7 @@ Compiler::value Compiler::insn_not_bool(Compiler::value v) const {
 
 Compiler::value Compiler::insn_neg(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
-	if (v.t == Type::real()) {
+	if (v.t.is_real()) {
 		return {builder.CreateFNeg(v.v), v.t};
 	} else {
 		return {builder.CreateNeg(v.v), v.t};
@@ -624,7 +624,7 @@ Compiler::value Compiler::insn_log(Compiler::value x) const {
 Compiler::value Compiler::insn_log10(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
+	if (x.t.is_integer()) {
 		return insn_call(Type::real(), {x}, +[](int x) {
 			return std::log10(x);
 		});
@@ -804,7 +804,7 @@ Compiler::value Compiler::insn_max(Compiler::value x, Compiler::value y) const {
 Compiler::value Compiler::insn_exp(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
+	if (x.t.is_integer()) {
 		return insn_call(Type::integer(), {x}, +[](int x) {
 			return std::exp(x);
 		});
