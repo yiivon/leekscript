@@ -59,11 +59,11 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto x = expression->compile_l(c);
 				auto one = c.new_integer(1);
 				if (is_void) {
-					c.insn_call({}, {x, x, one}, &mpz_add_ui);
+					c.insn_call({}, {x, x, one}, "Number.mpz_add_ui");
 					return {};
 				} else {
 					auto r = c.insn_clone_mpz(x);
-					c.insn_call({}, {x, x, one}, &mpz_add_ui);
+					c.insn_call({}, {x, x, one}, "Number.mpz_add_ui");
 					return r;
 				}
 			} else if (!expression->type.is_polymorphic()) {
@@ -87,11 +87,11 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 				auto x = expression->compile_l(c);
 				auto one = c.new_integer(1);
 				if (is_void) {
-					c.insn_call({}, {x, x, one}, &mpz_sub_ui);
+					c.insn_call({}, {x, x, one}, "Number.mpz_sub_ui");
 					return {};
 				} else {
 					auto r = c.insn_clone_mpz(x);
-					c.insn_call({}, {x, x, one}, &mpz_sub_ui);
+					c.insn_call({}, {x, x, one}, "Number.mpz_sub_ui");
 					return r;
 				}
 			} else if (expression->type.is_primitive()) {

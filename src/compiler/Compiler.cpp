@@ -401,11 +401,11 @@ Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	}
 	Compiler::value r;
 	if (a.t.is_mpz_ptr() and b.t.is_integer()) {
-		auto r = insn_lt(insn_call(Type::integer(), {a, b}, &_mpz_cmp_si), new_integer(0));
+		auto r = insn_lt(insn_call(Type::integer(), {a, b}, "Number._mpz_cmp_si"), new_integer(0));
 		insn_delete_temporary(a);
 		return r;
 	} else if (a.t.is_mpz_ptr() and b.t.is_mpz_ptr()) {
-		auto res = insn_call(Type::integer(), {a, b}, &mpz_cmp);
+		auto res = insn_call(Type::integer(), {a, b}, "Number.mpz_cmp");
 		insn_delete_temporary(a);
 		insn_delete_temporary(b);
 		return insn_lt(res, new_integer(0));
@@ -447,11 +447,11 @@ Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 	assert(b.t.llvm_type(*this) == b.v->getType());
 	Compiler::value r;
 	if (a.t.is_mpz_ptr() and b.t.is_integer()) {
-		auto res = insn_call(Type::integer(), {a, b}, &_mpz_cmp_si);
+		auto res = insn_call(Type::integer(), {a, b}, "Number._mpz_cmp_si");
 		insn_delete_temporary(a);
 		return insn_gt(res, new_integer(0));
 	} else if (a.t.is_integer() and b.t.is_mpz_ptr()) {
-		auto res = insn_call(Type::integer(), {b, a}, &_mpz_cmp_si);
+		auto res = insn_call(Type::integer(), {b, a}, "Number._mpz_cmp_si");
 		insn_delete_temporary(b);
 		return insn_lt(res, new_integer(0));
 	} else if (a.t.is_real() || b.t.is_real()) {
@@ -1100,7 +1100,7 @@ Compiler::value Compiler::insn_clone_mpz(Compiler::value mpz) const {
 		return mpz;
 	}
 	auto r = new_mpz();
-	insn_call({}, {r, mpz}, (void*) &mpz_init_set);
+	insn_call({}, {r, mpz}, "Number.mpz_init_set");
 	return r;
 }
 

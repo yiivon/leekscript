@@ -106,7 +106,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 			if (expression->type.is_mpz_ptr()) {
 				auto x = ((LeftValue*) expression)->compile_l(c);
 				auto one = c.new_integer(1);
-				c.insn_call({}, {x, x, one}, &mpz_add_ui);
+				c.insn_call({}, {x, x, one}, "Number.mpz_add_ui");
 				return is_void ? Compiler::value() : c.insn_clone_mpz(x);
 			} else if (expression->type.is_primitive()) {
 				auto x_addr = ((LeftValue*) expression)->compile_l(c);

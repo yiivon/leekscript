@@ -346,6 +346,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_init", {
 		{{}, {Type::mpz().pointer()}, (void*) &mpz_init, Method::NATIVE}
 	});
+	method("mpz_init_set", {
+		{{}, {Type::mpz().pointer()}, (void*) &mpz_init_set, Method::NATIVE}
+	});
 	method("mpz_init_str", {
 		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) &mpz_init_set_str, Method::NATIVE}
 	});
@@ -356,10 +359,16 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{{Type::long_()}, {Type::mpz().pointer()}, (void*) &mpz_get_si, Method::NATIVE}
 	});
 	method("mpz_add", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_add, Method::NATIVE}
+		{{}, {Type::mpz_ptr(), Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_add, Method::NATIVE}
+	});
+	method("mpz_add_ui", {
+		{{}, {Type::mpz_ptr(), Type::long_(), Type::mpz_ptr()}, (void*) &mpz_add_ui, Method::NATIVE}
 	});
 	method("mpz_sub", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_sub, Method::NATIVE}
+		{{}, {Type::mpz_ptr(), Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_sub, Method::NATIVE}
+	});
+	method("mpz_sub_ui", {
+		{{}, {Type::mpz_ptr(), Type::long_(), Type::mpz_ptr()}, (void*) &mpz_sub_ui, Method::NATIVE}
 	});
 	method("mpz_mul", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mul, Method::NATIVE}
@@ -376,24 +385,33 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_neg", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg, Method::NATIVE}
 	});
+	method("mpz_log", {
+		{{Type::integer()}, {Type::mpz().pointer()}, (void*) &mpz_log, Method::NATIVE}
+	});
+	method("mpz_cmp", {
+		{{Type::integer()}, {Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_cmp, Method::NATIVE}
+	});
+	method("_mpz_cmp_si", {
+		{{Type::integer()}, {Type::mpz_ptr(), Type::long_()}, (void*) &_mpz_cmp_si, Method::NATIVE}
+	});
 	method("mpz_clear", {
 		{{}, {Type::mpz().pointer()}, (void*) &mpz_clear, Method::NATIVE}
 	});
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_eq(c.insn_call(Type::integer(), args, &mpz_cmp), c.new_integer(0));
+	auto r = c.insn_eq(c.insn_call(Type::integer(), args, "Number.mpz_cmp"), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
 Compiler::value NumberSTD::eq_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_eq(c.insn_call(Type::integer(), {args[1], args[0]}, &_mpz_cmp_si), c.new_integer(0));
+	auto r = c.insn_eq(c.insn_call(Type::integer(), {args[1], args[0]}, "Number._mpz_cmp_si"), c.new_integer(0));
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
 Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
-	auto r = c.insn_eq(c.insn_call(Type::integer(), args, &_mpz_cmp_si), c.new_integer(0));
+	auto r = c.insn_eq(c.insn_call(Type::integer(), args, "Number._mpz_cmp_si"), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	return r;
 }
@@ -419,7 +437,7 @@ Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 
 Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
-	c.insn_call({}, {r, args[0], args[1]}, &mpz_add_ui);
+	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_add_ui");
 	return r;
 }
 
@@ -465,13 +483,13 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	c.insn_label(&label_then);
 	auto neg_b = c.insn_neg(b);
 	auto r1 = c.new_mpz();
-	c.insn_call({}, {r1, a, neg_b}, &mpz_add_ui);
+	c.insn_call({}, {r1, a, neg_b}, "Number.mpz_add_ui");
 	c.insn_branch(&label_end);
 	label_then.block = c.builder.GetInsertBlock();
 
 	c.insn_label(&label_else);
 	auto r2 = c.new_mpz();
-	c.insn_call({}, {r2, a, b}, &mpz_sub_ui);
+	c.insn_call({}, {r2, a, b}, "Number.mpz_sub_ui");
 	c.insn_branch(&label_end);
 	label_else.block = c.builder.GetInsertBlock();
 	
@@ -594,7 +612,7 @@ Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 
 Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
 	// Check: mpz_log(a) * b <= 10000
-	auto a_size = c.insn_call(Type::integer(), {args[0]}, (void*) &mpz_log);
+	auto a_size = c.insn_call(Type::integer(), {args[0]}, "Number.mpz_log");
 	auto r_size = c.insn_mul(a_size, args[1]);
 	auto cond = c.insn_gt(r_size, c.new_integer(10000));
 	auto label_then = c.insn_init_label("then");
