@@ -615,6 +615,14 @@ void Test::test_arrays() {
 	code("[true, 'hello', [1, 2, 3]].removeElement('hello')").equals("true");
 	code("[true, 'hello', [1, 2, 3]].removeElement('yolo')").equals("false");
 
+	section("inArray");
+	code("inArray([1, 2, 3, 4], 3)").equals("true");
+	code("inArray([1, 2, 3, 4], 5)").equals("false");
+	code("inArray([1.5, 2.2, 3.7, 4.6], 2.2)").equals("true");
+	code("inArray([1.5, 2.2, 3.7, 4.6], 2.1)").equals("false");
+	code("inArray(['a', 'b', 'c', 'd'], 'd')").equals("true");
+	code("inArray(['a', 'b', 'c', 'd'], 'e')").equals("false");
+
 	section("Postfix expressions");
 	code("let a = [10, ''] a[0]++").equals("10");
 	code("let a = [10, ''] a[0]++ a[0]").equals("11");

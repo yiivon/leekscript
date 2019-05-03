@@ -332,6 +332,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("count", {
 		{Type::integer(), {Type::any()}, (void*) &LSArray<LSValue*>::ls_size, Method::NATIVE}
 	});
+	method("inArray", {
+		{Type::boolean(), {Type::array(Type::any()), Type::any()}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
+		{Type::boolean(), {Type::array(Type::real()), Type::real()}, (void*) &LSArray<double>::ls_contains, Method::NATIVE},
+		{Type::boolean(), {Type::array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::ls_contains, Method::NATIVE}
+	});
 
 	/** Internal **/
 	method("convert_key", {
