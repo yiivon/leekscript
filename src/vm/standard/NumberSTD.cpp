@@ -423,10 +423,10 @@ Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool no_return) {
 	c.insn_call({}, {args[0], args[0], args[1]}, "Number.mpz_add");
 	c.insn_delete_temporary(args[1]);
-	return c.insn_clone_mpz(args[0]);
+	return no_return ? Compiler::value() : c.insn_clone_mpz(args[0]);
 }
 
 Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args) {

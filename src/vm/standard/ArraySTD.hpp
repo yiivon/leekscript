@@ -35,7 +35,7 @@ public:
 	static Compiler::value remove_element_int(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value partition(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value map(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value map(Compiler&, std::vector<Compiler::value>, bool);
 	static Compiler::value first(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value last(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value fold_left(Compiler&, std::vector<Compiler::value>);

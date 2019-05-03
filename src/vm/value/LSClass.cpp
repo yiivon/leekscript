@@ -93,7 +93,7 @@ const Callable* LSClass::getOperator(SemanticAnalyser* analyser, std::string& na
 		if (implementation->native) {
 			callable->add_version({ version_name, type, implementation->addr, implementation->mutators, implementation->templates, nullptr, false, implementation->v1_addr, implementation->v2_addr });
 		} else {
-			callable->add_version({ version_name, type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) implementation->addr, implementation->mutators, implementation->templates, nullptr, false,  implementation->v1_addr, implementation->v2_addr });
+			callable->add_version({ version_name, type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) implementation->addr, implementation->mutators, implementation->templates, nullptr, false,  implementation->v1_addr, implementation->v2_addr });
 		}
 		i++;
 	}

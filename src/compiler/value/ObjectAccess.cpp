@@ -106,7 +106,7 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 				if (m.native) {
 					callable->add_version({ version_name, t, m.addr, m.mutators, m.templates, nullptr });
 				} else {
-					callable->add_version({ version_name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, nullptr });
+					callable->add_version({ version_name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) m.addr, m.mutators, m.templates, nullptr });
 				}
 				i++;
 			}
@@ -119,7 +119,7 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 				if (m.native) {
 					callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, nullptr });
 				} else {
-					callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, nullptr });
+					callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) m.addr, m.mutators, m.templates, nullptr });
 				}
 			}
 		}
@@ -135,7 +135,7 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 				if (m.native) {
 					callable->add_version({ version_name, m.type, m.addr, m.mutators, m.templates, object });
 				} else {
-					callable->add_version({ version_name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, object });
+					callable->add_version({ version_name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) m.addr, m.mutators, m.templates, object });
 				}
 				i++;
 			}
@@ -148,7 +148,7 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 			if (m.native) {
 				callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, object });
 			} else {
-				callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>)) m.addr, m.mutators, m.templates, object });
+				callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) m.addr, m.mutators, m.templates, object });
 			}
 		}
 	}

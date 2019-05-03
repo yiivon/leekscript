@@ -516,19 +516,23 @@ Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> ar
 	return c.new_array(Type::array(array.t.element()), {array_true, array_false});
 }
 
-Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args, bool no_return) {
 	auto array = args[0];
 	auto function = args[1];
-	auto result = c.new_array(function.t.return_type(), {});
+	auto result = no_return ? Compiler::value() : c.new_array(function.t.return_type(), {});
 	c.insn_foreach(array, {}, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		auto x = c.clone(v);
 		c.insn_inc_refs(x);
 		auto r = c.insn_call(function.t.return_type(), {x}, function);
-		c.insn_push_array(result, r.t.is_void() ? c.new_null() : r);
+		if (no_return) {
+			c.insn_delete_temporary(r);
+		} else {
+			c.insn_push_array(result, r.t.is_void() ? c.new_null() : r);
+		}
 		c.insn_delete(x);
 		return {};
 	});
-	return result;
+	return no_return ? Compiler::value() : result;
 }
 
 

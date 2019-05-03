@@ -180,7 +180,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 				if (v1->type.is_placeholder()) { return_type = v1_type; }
 				if (v2->type.is_placeholder()) { return_type = v2_type; }
 			}
-			type = return_type;
+			type = is_void ? Type() : return_type;
 			if (v2_type.is_function()) {
 				v2->will_take(analyser, callable_version->type.argument(1).arguments(), 1);
 				v2->set_version(callable_version->type.argument(1).arguments(), 1);
@@ -264,6 +264,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 	if ((op->type == TokenType::DIVIDE or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL) and v2->is_zero()) {
 		c.mark_offset(op->token->location.start.line);
 		c.insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
+		return c.new_integer(0);
 		return {};
 		// return c.insn_convert(c.new_real(0), c.fun->getReturnType());
 	}
@@ -291,7 +292,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 		if (op->reversed) std::reverse(args.begin(), args.end());
 		v1->compile_end(c);
 		v2->compile_end(c);
-		return callable_version->compile_call(c, args);
+		return callable_version->compile_call(c, args, is_void);
 	}
 
 	switch (op->type) {

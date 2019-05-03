@@ -15,7 +15,7 @@ public:
 	Value* object = nullptr;
 	void* addr = nullptr;
 	const Value* value = nullptr;
-	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)> func = nullptr;
+	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
 	Function::Version* user_fun = nullptr;
 	std::vector<TypeMutator*> mutators;
 	std::vector<Type> templates;
@@ -28,7 +28,7 @@ public:
 		: name(name), type(type), object(object), addr(addr), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), legacy(legacy) {
 			assert(name.find(".") != std::string::npos);
 		}
-	CallableVersion(std::string name, Type type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, bool legacy = false)
+	CallableVersion(std::string name, Type type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, bool legacy = false)
 		: name(name), type(type), object(object), func(func), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), legacy(legacy) {}
 	CallableVersion(std::string name, Type type, const Value* value, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, bool legacy = false)
 		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), legacy(legacy) {}
@@ -38,7 +38,7 @@ public:
 	void apply_mutators(SemanticAnalyser* analyser, std::vector<Value*> arguments);
 	void resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) const;
 
-	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args) const;
+	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args, bool no_return) const;
 };
 
 class Callable {

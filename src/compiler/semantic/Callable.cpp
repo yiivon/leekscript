@@ -158,7 +158,7 @@ void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<
 	}
 }
 
-Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler::value> args) const {
+Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler::value> args, bool no_return) const {
 	// std::cout << "CallableVersion::compile_call(" << args << ")" << std::endl;
 	// Add the object if it's a method call
 	Compiler::value compiled_object;
@@ -189,7 +189,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	} else if (addr) {
 		return c.insn_invoke(type.return_type(), args, name);
 	} else if (func) {
-		return func(c, args);
+		return func(c, args, no_return);
 	} else if (value) {
 		auto fun = [&]() { if (object) {
 			auto oa = dynamic_cast<const ObjectAccess*>(value);
