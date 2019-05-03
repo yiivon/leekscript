@@ -7,7 +7,7 @@
 namespace ls {
 
 Set_type::Set_type(Type element) : Pointer_type(Type {
-	std::make_shared<const Struct_type>(std::string("_set"), std::initializer_list<Type> {
+	std::make_shared<const Struct_type>(std::string("set"), std::initializer_list<Type> {
 		Type::integer(), // ?
 		Type::integer(), // ?
 		Type::integer(), // ?
