@@ -321,7 +321,7 @@ void Test::test_numbers() {
 	code("(100000m * 10m) % (12m ** 3m)").equals("1216");
 	code("['salut', 123][0] % 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	// TODO should have semantic error
-	DISABLED_code("['salut', 'a'][0] % 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {});
+	// code("['salut', 'a'][0] % 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {});
 
 	section("Number.operator %=");
 	code("var a = 721★ a %= true").equals("0");
