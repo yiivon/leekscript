@@ -138,6 +138,7 @@ Compiler::value Match::construct_branch(Compiler& c, Compiler::value v, size_t i
 
 Compiler::value Match::compile(Compiler& c) const {
 	auto v = value->compile(c);
+	v.t.temporary = false;
 	c.insn_inc_refs(v);
 	auto res = construct_branch(c, v, 0);
 	c.insn_delete(v);

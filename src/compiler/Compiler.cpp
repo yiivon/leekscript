@@ -340,12 +340,12 @@ Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 	auto a_type = a.t.fold();
 	auto b_type = b.t.fold();
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
-		return insn_call(Type::boolean(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
-			bool r = *x == *y;
-			LSValue::delete_temporary(x);
-			LSValue::delete_temporary(y);
-			return r;
-		});
+		auto ap = insn_to_any(a);
+		auto bp = insn_to_any(b);
+		auto r = insn_call(Type::boolean(), {ap, bp}, "Value.eq");
+		insn_delete_temporary(ap);
+		insn_delete_temporary(bp);
+		return r;
 	}
 	if (a_type.is_mpz_ptr() and b_type.is_integer()) {
 		auto r = insn_call(Type::boolean(), {a, b}, +[](__mpz_struct* x, int i) {
@@ -392,12 +392,12 @@ Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type(*this) == a.v->getType());
 	assert(b.t.llvm_type(*this) == b.v->getType());
 	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
-		return insn_call(Type::boolean(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
-			bool r = *x < *y;
-			LSValue::delete_temporary(x);
-			LSValue::delete_temporary(y);
-			return r;
-		});
+		auto ap = insn_to_any(a);
+		auto bp = insn_to_any(b);
+		auto r = insn_call(Type::boolean(), {ap, bp}, "Value.lt");
+		insn_delete_temporary(ap);
+		insn_delete_temporary(bp);
+		return r;
 	}
 	Compiler::value r;
 	if (a.t.is_mpz_ptr() and b.t.is_integer()) {
@@ -425,7 +425,12 @@ Compiler::value Compiler::insn_le(Compiler::value a, Compiler::value b) const {
 	assert(b.t.llvm_type(*this) == b.v->getType());
 	Compiler::value r;
 	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
-		r = {builder.CreateFCmpOLE(to_real(a).v, to_real(b).v), Type::boolean()};
+		auto ap = insn_to_any(a);
+		auto bp = insn_to_any(b);
+		auto r = insn_call(Type::boolean(), {ap, bp}, "Value.le");
+		insn_delete_temporary(ap);
+		insn_delete_temporary(bp);
+		return r;
 	} else if (a.t.is_real() || b.t.is_real()) {
 		r = {builder.CreateFCmpOLE(to_real(a).v, to_real(b).v), Type::boolean()};
 	} else if (a.t.is_long() || b.t.is_long()) {
@@ -464,12 +469,12 @@ Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type(*this) == a.v->getType());
 	assert(b.t.llvm_type(*this) == b.v->getType());
 	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
-		return insn_call(Type::boolean(), {insn_to_any(a), insn_to_any(b)}, +[](LSValue* x, LSValue* y) {
-			bool r = *x >= *y;
-			LSValue::delete_temporary(x);
-			LSValue::delete_temporary(y);
-			return r;
-		});
+		auto ap = insn_to_any(a);
+		auto bp = insn_to_any(b);
+		auto r = insn_call(Type::boolean(), {ap, bp}, "Value.ge");
+		insn_delete_temporary(ap);
+		insn_delete_temporary(bp);
+		return r;
 	}
 	Compiler::value r;
 	if (a.t.is_real() || b.t.is_real()) {

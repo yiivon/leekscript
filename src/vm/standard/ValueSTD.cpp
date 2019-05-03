@@ -257,6 +257,21 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("in", {
 		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::in, Method::NATIVE}
 	}); 
+	method("eq", {
+		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::eq, Method::NATIVE}
+	});
+	method("lt", {
+		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::lt, Method::NATIVE}
+	});
+	method("le", {
+		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::le, Method::NATIVE}
+	});
+	method("gt", {
+		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::gt, Method::NATIVE}
+	});
+	method("ge", {
+		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::ge, Method::NATIVE}
+	});
 }
 
 /*
@@ -314,14 +329,11 @@ Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) 
 
 Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0	or args[1].t.id() == 0) {
-		auto res = c.insn_call(Type::boolean(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])},
-			+[](LSValue* a, LSValue* b) {
-				auto res = *a <= *b;
-				LSValue::delete_temporary(a);
-				LSValue::delete_temporary(b);
-				return res;
-			}
-		);
+		auto ap = c.insn_to_any(args[0]);
+		auto bp = c.insn_to_any(args[1]);
+		auto res = c.insn_call(Type::boolean(), {ap, bp}, "Value.le");
+		c.insn_delete_temporary(ap);
+		c.insn_delete_temporary(bp);
 		return res;
 	} else {
 		auto res = c.insn_le(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
@@ -780,6 +792,21 @@ LSValue* ValueSTD::at(LSValue* array, LSValue* key) {
 }
 LSValue** ValueSTD::atl(LSValue* array, LSValue* key) {
 	return array->atL(key);
+}
+bool ValueSTD::eq(LSValue* x, LSValue* y) {
+	return *x == *y;
+}
+bool ValueSTD::lt(LSValue* x, LSValue* y) {
+	return *x < *y;
+}
+bool ValueSTD::le(LSValue* x, LSValue* y) {
+	return *x <= *y;
+}
+bool ValueSTD::gt(LSValue* x, LSValue* y) {
+	return *x > *y;
+}
+bool ValueSTD::ge(LSValue* x, LSValue* y) {
+	return *x >= *y;
 }
 
 }

@@ -105,6 +105,11 @@ public:
 	static LSValue** atl(LSValue* a, LSValue* k);
 	static bool in_i(LSValue* x, int k);
 	static bool in(LSValue* x, LSValue* y);
+	static bool eq(LSValue* x, LSValue* y);
+	static bool lt(LSValue* x, LSValue* y);
+	static bool le(LSValue* x, LSValue* y);
+	static bool gt(LSValue* x, LSValue* y);
+	static bool ge(LSValue* x, LSValue* y);
 };
 
 }
