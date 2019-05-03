@@ -1,5 +1,3 @@
-// TODO sort function compilation by call hierarchy (make a tree)
-
 function is_good(x, y) {
 	return inc(x) == inc(y)
 }

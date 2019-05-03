@@ -33,8 +33,7 @@ void Test::test_files() {
 	file("test/code/assignments.leek").equals("15");
 	file("test/code/recursive_2_vars.leek").equals("1021");
 	file("test/code/global_functions_1.leek").equals("false");
-	// TODO : better sort
-	DISABLED_file("test/code/global_functions_2.leek").equals("");
+	file("test/code/global_functions_2.leek").equals("[false, true]");
 	// TODO : mutually recursive functions
 	DISABLED_file("test/code/recursive_2_functions.leek").equals("");
 	// TODO : recursive with 2 versions
