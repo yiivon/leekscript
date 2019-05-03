@@ -107,9 +107,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("unique", {
-		{Type::tmp_array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_unique, Method::NATIVE},
-		{Type::tmp_array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_unique, Method::NATIVE},
-		{Type::tmp_array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_unique, Method::NATIVE},
+		{Type::array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_unique, Method::NATIVE},
+		{Type::array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_unique, Method::NATIVE},
+		{Type::array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_unique, Method::NATIVE},
 	});
 
 	auto sT = Type::template_("T");

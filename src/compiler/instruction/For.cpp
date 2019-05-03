@@ -150,9 +150,6 @@ Compiler::value For::compile(Compiler& c) const {
 		// transfer the ownership of the temporary variable `body_v`
 		c.insn_push_array(output_v, body_v);
 	}
-	if (body_v.v) {
-		c.insn_delete_temporary(body_v);
-	}
 	c.leave_loop();
 	c.insn_branch(&inc_label);
 

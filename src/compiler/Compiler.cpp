@@ -990,12 +990,14 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	if (v.t == Type::tmp_mpz_ptr()) {
 		insn_delete_mpz(v);
-	} else if (v.t.must_manage_memory()) {
-		insn_if_not(insn_refs(v), [&]() {
+	} if (v.t.must_manage_memory()) {
+		if (v.t.temporary) {
 			insn_call({}, {v}, "Value.delete");
-		});
-	} else if (v.t == Type::tmp_mpz()) {
-		insn_delete_mpz(v);
+		} else {
+			insn_if_not(insn_refs(v), [&]() {
+				insn_call({}, {v}, "Value.delete");
+			});
+		}
 	}
 }
 
@@ -1716,8 +1718,9 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, Type output, c
 	if (body_v.v) {
 		if (output_v.v) {
 			insn_push_array(output_v, body_v);
+		} else {
+			insn_delete_temporary(body_v);
 		}
-		insn_delete_temporary(body_v);
 	}
 	
 	insn_branch(&it_label);
