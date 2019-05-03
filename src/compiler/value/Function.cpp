@@ -12,6 +12,7 @@
 #include "../../vm/LSValue.hpp"
 #include "../../type/Placeholder_type.hpp"
 #include "../semantic/Callable.hpp"
+#include "../instruction/VariableDeclaration.hpp"
 
 namespace ls {
 
@@ -348,6 +349,11 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 int Function::capture(std::shared_ptr<SemanticVar> var) {
 	// std::cout << "Function::capture " << var->name << std::endl;
 
+	if (var->name == name) {
+		recursive = true;
+	}
+	if (var->type().is_function() and not recursive) return captures.size() - 1;
+
 	// Function become a closure
 	if (!default_version->function->closure()) {
 		delete default_version->function;
@@ -369,9 +375,6 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 	}
 	var = std::make_shared<SemanticVar>(*var);
 	captures.push_back(var);
-	if (var->name == name) {
-		recursive = true;
-	}
 
 	if (var->function != parent) {
 		auto new_var = std::make_shared<SemanticVar>(*var);

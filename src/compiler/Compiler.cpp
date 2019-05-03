@@ -900,7 +900,7 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 	if (v.t.is_function()) {
 		return new_bool(true);
 	}
-	if (v.t.is_mpz()) {
+	if (v.t.is_mpz_ptr()) {
 		// TODO
 		return v;
 	}

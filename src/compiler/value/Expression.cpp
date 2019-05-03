@@ -181,7 +181,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 				if (v2->type.is_placeholder()) { return_type = v2_type; }
 			}
 			type = is_void ? Type() : return_type;
-			if (v2_type.is_function()) {
+			if (v2_type.is_function() and callable_version->type.argument(1).is_function()) {
 				v2->will_take(analyser, callable_version->type.argument(1).arguments(), 1);
 				v2->set_version(callable_version->type.argument(1).arguments(), 1);
 			}
@@ -264,9 +264,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 	if ((op->type == TokenType::DIVIDE or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::INT_DIV or op->type == TokenType::INT_DIV_EQUAL or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL) and v2->is_zero()) {
 		c.mark_offset(op->token->location.start.line);
 		c.insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
-		return c.new_integer(0);
-		return {};
-		// return c.insn_convert(c.new_real(0), c.fun->getReturnType());
+		return c.insn_convert(c.new_integer(0), c.fun->getReturnType());
 	}
 
 	if (callable_version) {
