@@ -22,6 +22,12 @@ inline bool lsset_less<T>::operator()(T lhs, T rhs) const {
 template <typename T>
 LSValue* LSSet<T>::clazz;
 
+
+template <typename T>
+LSSet<T>* LSSet<T>::constructor() {
+	return new LSSet<T>();
+}
+
 template <class T>
 inline LSSet<T>::LSSet() : LSValue(SET) {}
 
@@ -73,7 +79,6 @@ inline LSValue* LSSet<LSValue*>::ls_insert_ptr(LSValue* value) {
 template <typename T>
 inline bool LSSet<T>::ls_insert(T value) {
 	bool r = this->insert(value).second;
-	if (refs == 0) delete this;
 	return r;
 }
 

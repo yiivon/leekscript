@@ -15,6 +15,7 @@ template <typename T>
 class LSSet : public LSValue, public std::set<T, lsset_less<T>> {
 public:
 	static LSValue* clazz;
+	static LSSet<T>* constructor();
 
 	LSSet();
 	LSSet(const LSSet<T>& other);

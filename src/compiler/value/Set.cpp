@@ -61,38 +61,18 @@ bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
 	return false;
 }
 
-LSSet<LSValue*>* Set_create_ptr() { return new LSSet<LSValue*>(); }
-LSSet<int>* Set_create_int()      { return new LSSet<int>();      }
-LSSet<double>* Set_create_float() { return new LSSet<double>();   }
-
-void Set_insert_ptr(LSSet<LSValue*>* set, LSValue* value) {
-	auto it = set->lower_bound(value);
-	if (it == set->end() || (**it != *value)) {
-		set->insert(it, value->move_inc());
-	}
-	LSValue::delete_temporary(value);
-}
-void Set_insert_int(LSSet<int>* set, int value) {
-	set->insert(value);
-}
-void Set_insert_float(LSSet<double>* set, double value) {
-	set->insert(value);
-}
-
 Compiler::value Set::compile(Compiler& c) const {
-	void* create = type.element() == Type::integer() ? (void*) Set_create_int :
-				   type.element() == Type::real()    ? (void*) Set_create_float : (void*) Set_create_ptr;
-	void* insert = type.element() == Type::integer() ? (void*) Set_insert_int :
-				   type.element() == Type::real()    ? (void*) Set_insert_float : (void*) Set_insert_ptr;
+	auto create = type.element().is_integer() ? "Set.new.2" : type.element().is_real() ? "Set.new.1" : "Set.new";
+	auto insert = type.element().is_integer() ? "Set.vinsert.2" : type.element().is_real() ? "Set.vinsert.1" : "Set.vinsert";
 
 	unsigned ops = 1;
-	auto s = c.insn_call(type, {}, (void*) create);
+	auto s = c.insn_call(type, {}, create);
 
 	double i = 0;
 	for (Value* ex : expressions) {
 		auto v = c.insn_convert(ex->compile(c), type.element());
 		ex->compile_end(c);
-		c.insn_call({}, {s, v}, (void*) insert);
+		c.insn_call({}, {s, v}, insert);
 		ops += std::log2(++i);
 	}
 	c.inc_ops(ops);

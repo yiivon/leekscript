@@ -10,6 +10,15 @@ SetSTD::SetSTD() : Module("Set") {
 	LSSet<double>::clazz = clazz;
 
 	/*
+	 * Constructor
+	 */
+	constructor_({
+		{Type::tmp_set(Type::any()), {Type::integer()}, (void*) &LSSet<LSValue*>::constructor, Method::NATIVE},
+		{Type::tmp_set(Type::real()), {Type::integer()}, (void*) &LSSet<double>::constructor, Method::NATIVE},
+		{Type::tmp_set(Type::integer()), {Type::integer()}, (void*) &LSSet<int>::constructor, Method::NATIVE},
+	});
+
+	/*
 	 * Operators
 	 */
 	operator_("in", {
@@ -52,6 +61,13 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::boolean(), {Type::const_set(), Type::any()}, (void*) &LSSet<LSValue*>::ls_contains, Method::NATIVE},
 		{Type::boolean(), {Type::const_set(Type::real()), Type::real()}, (void*) &LSSet<double>::ls_contains, Method::NATIVE},
 		{Type::boolean(), {Type::const_set(Type::integer()), Type::integer()}, (void*) &LSSet<int>::ls_contains, Method::NATIVE},
+	});
+
+	/** Internal **/
+	method("vinsert", {
+		{{}, {Type::const_set(Type::any()), Type::any()}, (void*) &LSSet<LSValue*>::ls_insert, Method::NATIVE},
+		{{}, {Type::const_set(Type::real()), Type::real()}, (void*) &LSSet<double>::ls_insert, Method::NATIVE},
+		{{}, {Type::const_set(Type::integer()), Type::integer()}, (void*) &LSSet<int>::ls_insert, Method::NATIVE},
 	});
 }
 
