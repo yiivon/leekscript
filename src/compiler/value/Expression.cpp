@@ -345,9 +345,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			auto x = c.insn_convert(v1->compile(c), type);
 			v1->compile_end(c);
-			auto condition = c.insn_call(Type::boolean(), {x}, +[](LSValue* v) {
-				return v->type == LSValue::NULLL;
-			});
+			auto condition = c.insn_call(Type::boolean(), {x}, "Value.is_null");
 			c.insn_if_new(condition, &label_then, &label_else);
 
 			c.insn_label(&label_then);

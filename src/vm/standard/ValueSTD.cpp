@@ -256,7 +256,10 @@ ValueSTD::ValueSTD() : Module("Value") {
 	});
 	method("in", {
 		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::in, Method::NATIVE}
-	}); 
+	});
+	method("is_null", {
+		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::is_null, Method::NATIVE}
+	});
 	method("eq", {
 		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::eq, Method::NATIVE}
 	});
@@ -792,6 +795,9 @@ LSValue* ValueSTD::at(LSValue* array, LSValue* key) {
 }
 LSValue** ValueSTD::atl(LSValue* array, LSValue* key) {
 	return array->atL(key);
+}
+bool ValueSTD::is_null(LSValue* x) {
+	return x->type == LSValue::NULLL;
 }
 bool ValueSTD::eq(LSValue* x, LSValue* y) {
 	return *x == *y;
