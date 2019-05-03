@@ -20,6 +20,11 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 	// method("copy", {
 	// 	{Type::FUNCTION, {Type::CONST_FUNCTION}, (void*) &ValueSTD::copy}
 	// });
+
+	/** Internal **/
+	method("call", {
+		{Type::any(), {Type::fun({}, {})}, (void*) &LSFunction::call, Method::NATIVE}
+	});
 }
 
 }

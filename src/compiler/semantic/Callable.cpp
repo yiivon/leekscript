@@ -202,7 +202,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 			args.insert(args.begin(), fun);
 		}
 		auto r = [&]() { if (unknown) {
-			return c.insn_call(Type::any(), args, (void*) &LSFunction::call);
+			return c.insn_call(Type::any(), args, "Function.call");
 		} else {
 			return c.insn_invoke(type.return_type(), args, fun);
 		}}();
