@@ -18,8 +18,6 @@ void Test::test_files() {
 	file("test/code/dynamic_operators").works();
 	file("test/code/euler1.leek").equals("2333316668");
 	file("test/code/text_analysis.leek").equals("[3, 47, 338]");
-	// TODO crashing
-	DISABLED_file("test/code/recursive.leek").equals("");
 	file("test/code/divisors.leek").equals("[1, 3, 9, 13, 17, 39]");
 	file("test/code/two_functions.leek").equals("[{p: 2, v: 5}, [{p: 3, v: 6}]]");
 	file("test/code/product_n.leek").equals("5040");
