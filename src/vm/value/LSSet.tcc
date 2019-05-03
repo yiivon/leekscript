@@ -63,11 +63,11 @@ inline bool LSSet<LSValue*>::ls_insert(LSValue* value) {
 	auto it = lower_bound(value);
 	if (it == end() || (**it != *value)) {
 		insert(it, value->move_inc());
-		if (refs == 0) delete this;
+		LSValue::delete_temporary(this);
 		return true;
 	}
 	LSValue::delete_temporary(value);
-	if (refs == 0) delete this;
+	LSValue::delete_temporary(this);
 	return false;
 }
 
@@ -80,6 +80,20 @@ template <typename T>
 inline bool LSSet<T>::ls_insert(T value) {
 	bool r = this->insert(value).second;
 	return r;
+}
+
+template <>
+inline void LSSet<LSValue*>::vinsert(LSValue* value) {
+	auto it = lower_bound(value);
+	if (it == end() || (**it != *value)) {
+		insert(it, value->move_inc());
+	} else {
+		LSValue::delete_temporary(value);
+	}
+}
+template <typename T>
+inline void LSSet<T>::vinsert(T value) {
+	this->insert(value);
 }
 
 template <class T>

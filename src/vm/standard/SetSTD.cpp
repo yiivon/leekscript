@@ -65,9 +65,9 @@ SetSTD::SetSTD() : Module("Set") {
 
 	/** Internal **/
 	method("vinsert", {
-		{{}, {Type::const_set(Type::any()), Type::any()}, (void*) &LSSet<LSValue*>::ls_insert, Method::NATIVE},
-		{{}, {Type::const_set(Type::real()), Type::real()}, (void*) &LSSet<double>::ls_insert, Method::NATIVE},
-		{{}, {Type::const_set(Type::integer()), Type::integer()}, (void*) &LSSet<int>::ls_insert, Method::NATIVE},
+		{{}, {Type::const_set(Type::any()), Type::any()}, (void*) &LSSet<LSValue*>::vinsert, Method::NATIVE},
+		{{}, {Type::const_set(Type::real()), Type::real()}, (void*) &LSSet<double>::vinsert, Method::NATIVE},
+		{{}, {Type::const_set(Type::integer()), Type::integer()}, (void*) &LSSet<int>::vinsert, Method::NATIVE},
 	});
 }
 
