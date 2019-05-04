@@ -144,6 +144,7 @@ public:
 	static Type const_set(const Type = {});
 	static Type tmp_set(const Type = {});
 	static Type map(const Type = {}, const Type = {});
+	static Type tmp_map(const Type = {}, const Type = {});
 	static Type const_map(const Type = {}, const Type = {});
 	static Type interval();
 	static Type const_interval();

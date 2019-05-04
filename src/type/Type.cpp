@@ -538,6 +538,9 @@ Type Type::tmp_set(const Type element) {
 Type Type::map(const Type key, const Type element) {
 	return { std::make_shared<Map_type>(key, element), false, false, false };
 }
+Type Type::tmp_map(const Type key, const Type element) {
+	return { std::make_shared<Map_type>(key, element), false, true, false };
+}
 Type Type::const_map(const Type key, const Type element) {
 	return { std::make_shared<Map_type>(key, element), false, false, true };
 }
