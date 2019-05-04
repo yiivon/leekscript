@@ -835,18 +835,15 @@ Compiler::value Compiler::insn_atan2(Compiler::value x, Compiler::value y) const
 
 Compiler::value Compiler::insn_abs(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
-	// std::cout << "abs " << x.t << std::endl;
 	if (x.t.is_polymorphic()) {
-		return insn_call(Type::real(), {to_real(x)}, "Number.absd");
+		return insn_call(Type::real(), {to_real(x)}, "Number.m_abs.2");
+	} else if (x.t.is_integer()) {
+		return insn_call(Type::integer(), {x}, "Number.m_abs");
+	} else if (x.t.is_long()) {
+		return insn_call(Type::long_(), {x}, "Number.m_abs.1");
+	} else {
+		return insn_call(Type::real(), {x}, "Number.m_abs.2");
 	}
-	if (x.t == Type::integer()) {
-		return insn_call(Type::integer(), {x}, +[](int x) {
-			return std::abs(x);
-		});
-	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::fabs(x);
-	});
 }
 
 Compiler::value Compiler::insn_to_any(Compiler::value v) const {

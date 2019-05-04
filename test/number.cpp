@@ -534,6 +534,7 @@ void Test::test_numbers() {
 	section("Number.abs()");
 	code("Number.abs").equals("<function>");
 	code("Number.abs(-12)").equals("12");
+	code("Number.abs(-16436435l)").equals("16436435");
 	code("Number.abs(-12.67)").almost(12.67);
 	code("Number.abs(['a', -15][1])").equals("15");
 	code("(-17).abs()").equals("17");

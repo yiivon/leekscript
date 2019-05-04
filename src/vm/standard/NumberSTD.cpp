@@ -190,9 +190,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::number()}, (void*) &NumberSTD::abs},
 		{Type::integer(), {Type::integer()}, (void*) &NumberSTD::abs},
 	});
-	double (*a)(double) = std::fabs;
-	method("absd", {
-		{Type::real(), {Type::real()}, (void*) a, Method::NATIVE}
+	int (*abs_int)(int) = std::abs;
+	long (*abs_long)(long) = std::abs;
+	double (*abs_real)(double) = std::fabs;
+	method("m_abs", {
+		{Type::integer(), {Type::integer()}, (void*) abs_int, Method::NATIVE},
+		{Type::long_(), {Type::long_()}, (void*) abs_long, Method::NATIVE},
+		{Type::real(), {Type::real()}, (void*) abs_real, Method::NATIVE},
 	});
 	method("acos", {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
