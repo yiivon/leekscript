@@ -858,9 +858,7 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 	} else if (v.t.is_real()) {
 		return insn_call(Type::any(), {v}, "Number.new");
 	} else if (v.t.is_bool()) {
-		return insn_call(Type::any(), {v}, +[](bool n) {
-			return LSBoolean::get(n);
-		});
+		return insn_call(Type::any(), {v}, "Boolean.new");
 	} else if (v.t.is_mpz_ptr()) {
 		if (v.t.temporary) {
 			return insn_call(Type::any(), {insn_load(v)}, "Number.new.1");

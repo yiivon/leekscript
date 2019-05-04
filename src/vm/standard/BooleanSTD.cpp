@@ -9,6 +9,13 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 
 	LSBoolean::clazz = clazz;
 
+	/*
+	 * Constructors
+	 */
+	constructor_({
+		{Type::any(), {Type::boolean()}, (void*) &LSBoolean::create, Method::NATIVE}
+	});
+
 	operator_("+", {
 		{Type::const_boolean(), Type::const_string(), Type::tmp_string(), (void*) &BooleanSTD::add, {}, Method::NATIVE},
 		{Type::const_boolean(), Type::tmp_string(), Type::tmp_string(), (void*) &BooleanSTD::add_tmp, {}, Method::NATIVE},
