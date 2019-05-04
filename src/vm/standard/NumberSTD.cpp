@@ -221,9 +221,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::integer(), {Type::integer()}, (void*) &NumberSTD::ceil_int},
 	});
 	method("char", {
-		{Type::string(), {Type::const_any()}, (void*) &NumberSTD::char_ptr},
-		{Type::string(), {Type::const_real()}, (void*) &NumberSTD::char_real},
-		{Type::string(), {Type::const_integer()}, (void*) &NumberSTD::char_int},
+		{Type::tmp_string(), {Type::const_any()}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
+		{Type::tmp_string(), {Type::const_real()}, (void*) &NumberSTD::char_real, Method::NATIVE},
+		{Type::tmp_string(), {Type::const_integer()}, (void*) &NumberSTD::char_int, Method::NATIVE},
 	});
 	method("cos", {
 		{Type::any(), {Type::any()}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
@@ -799,32 +799,26 @@ Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args)
 	}
 }
 
-Compiler::value NumberSTD::char_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::string(), {c.insn_to_any(args[0])}, +[](LSNumber* x) {
-		unsigned int n = x->value;
-		LSValue::delete_temporary(x);
-		char dest[5];
-		u8_toutf8(dest, 5, &n, 1);
-		return new LSString(dest);
-	});
+LSValue* NumberSTD::char_ptr(LSNumber* x) {
+	unsigned int n = x->value;
+	LSValue::delete_temporary(x);
+	char dest[5];
+	u8_toutf8(dest, 5, &n, 1);
+	return new LSString(dest);
 }
 
-Compiler::value NumberSTD::char_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::string(), args, +[](double x) {
-		unsigned int n = x;
-		char dest[5];
-		u8_toutf8(dest, 5, &n, 1);
-		return new LSString(dest);
-	});
+LSValue* NumberSTD::char_real(double x) {
+	unsigned int n = x;
+	char dest[5];
+	u8_toutf8(dest, 5, &n, 1);
+	return new LSString(dest);
 }
 
-Compiler::value NumberSTD::char_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::string(), args, +[](int x) {
-		unsigned int n = x;
-		char dest[5];
-		u8_toutf8(dest, 5, &n, 1);
-		return new LSString(dest);
-	});
+LSValue* NumberSTD::char_int(int x) {
+	unsigned int n = x;
+	char dest[5];
+	u8_toutf8(dest, 5, &n, 1);
+	return new LSString(dest);
 }
 
 double NumberSTD::exp_ptr(LSNumber* x) {

@@ -109,9 +109,9 @@ public:
 	static LSValue* atan2_ptr_ptr(LSNumber* x, LSNumber* y);
 	static Compiler::value atan2(Compiler&, std::vector<Compiler::value>);
 
-	static Compiler::value char_ptr(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value char_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value char_int(Compiler&, std::vector<Compiler::value>);
+	static LSValue* char_ptr(LSNumber* x);
+	static LSValue* char_real(double x);
+	static LSValue* char_int(int x);
 
 	static double exp_ptr(LSNumber* x);
 	static Compiler::value exp_real(Compiler&, std::vector<Compiler::value>);
