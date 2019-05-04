@@ -81,7 +81,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::const_integer(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_int_mpz},
 		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_mpz_int},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mul_real_real},
-		{Type::const_integer(), Type::const_string(), Type::string(), (void*) &NumberSTD::mul_int_string},
+		{Type::const_integer(), Type::const_string(), Type::string(), (void*) &NumberSTD::mul_int_string, {}, Method::NATIVE},
 		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_mpz_mpz}
 	});
 
@@ -543,10 +543,8 @@ Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::mul_int_string(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::string(), {args[0], args[1]}, +[](int a, LSString* b) {
-		return b->mul(LSNumber::get(a));
-	});
+LSValue* NumberSTD::mul_int_string(int a, LSString* b) {
+	return b->mul(LSNumber::get(a));
 }
 
 Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
