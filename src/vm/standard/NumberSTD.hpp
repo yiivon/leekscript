@@ -192,6 +192,10 @@ public:
 	static Compiler::value toRadians(Compiler& c, std::vector<Compiler::value> args);
 
 	static Compiler::value fold(Compiler& c, std::vector<Compiler::value> args);
+
+	static LSValue* int_to_string(int);
+	static LSValue* long_to_string(long);
+	static LSValue* real_to_string(double);
 };
 
 }

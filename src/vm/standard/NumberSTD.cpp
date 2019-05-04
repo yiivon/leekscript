@@ -400,6 +400,15 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_clear", {
 		{{}, {Type::mpz().pointer()}, (void*) &mpz_clear, Method::NATIVE}
 	});
+	method("int_to_string", {
+		{Type::tmp_string(), {Type::integer()}, (void*) &NumberSTD::int_to_string, Method::NATIVE}
+	});
+	method("long_to_string", {
+		{Type::tmp_string(), {Type::long_()}, (void*) &NumberSTD::long_to_string, Method::NATIVE}
+	});
+	method("real_to_string", {
+		{Type::tmp_string(), {Type::real()}, (void*) &NumberSTD::real_to_string, Method::NATIVE}
+	});
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -1146,6 +1155,16 @@ Compiler::value NumberSTD::fold(Compiler& c, std::vector<Compiler::value> args) 
 	return c.insn_call(Type::any(), {c.insn_to_any(args[0]), args[1], c.insn_to_any(args[2])}, +[](LSNumber* n, LSFunction* f, LSValue* x) {
 		return n->ls_fold<LSFunction*>(f, x);
 	});
+}
+
+LSValue* NumberSTD::int_to_string(int x) {
+	return new LSString(std::to_string(x));
+}
+LSValue* NumberSTD::long_to_string(long x) {
+	return new LSString(std::to_string(x));
+}
+LSValue* NumberSTD::real_to_string(double x) {
+	return new LSString(LSNumber::print(x));
 }
 
 }
