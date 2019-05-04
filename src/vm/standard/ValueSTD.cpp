@@ -174,13 +174,17 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::string(), {Type::const_any()}, (void*) &ValueSTD::to_string}
 	});
 	method("json", {
-		{Type::string(), {Type::const_any()}, (void*) &JsonSTD::encode}
+		{Type::tmp_string(), {Type::const_any()}, (void*) &LSValue::ls_json, Method::NATIVE},
+		{Type::tmp_string(), {Type::const_any()}, (void*) &JsonSTD::encode},
 	});
 	method("typeID", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::typeID}
 	});
 	method("move", {
 		{Type::any(), {Type::const_any()}, (void*) &LSValue::move, Method::NATIVE}
+	});
+	method("move_inc", {
+		{Type::any(), {Type::const_any()}, (void*) &LSValue::move_inc, Method::NATIVE}
 	});
 	method("ptr", {
 		{Type::any(), {Type::const_any()}, (void*) &LSValue::move, Method::NATIVE}
@@ -260,6 +264,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("is_null", {
 		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::is_null, Method::NATIVE}
 	});
+	method("to_bool", {
+		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::to_bool, Method::NATIVE}
+	});
 	method("eq", {
 		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::eq, Method::NATIVE}
 	});
@@ -274,6 +281,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	});
 	method("ge", {
 		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::ge, Method::NATIVE}
+	});
+	method("type", {
+		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::type, Method::NATIVE}
 	});
 }
 
@@ -626,37 +636,26 @@ Compiler::value ValueSTD::copy(Compiler& c, std::vector<Compiler::value> args) {
 }
 
 Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> args) {
-	if (args[0].t == Type::boolean()) {
-		return c.insn_call(Type::string(), args, +[](bool b) {
-			return new LSString(b ? "true" : "false");
-		});
-	}
-	if (args[0].t.is_integer()) {
-		return c.insn_call(Type::string(), args, +[](int v) {
-			return new LSString(std::to_string(v));
-		});
-	}
-	if (args[0].t.is_long()) {
-		return c.insn_call(Type::string(), args, +[](long v) {
-			return new LSString(std::to_string(v));
-		});
-	}
-	if (args[0].t.is_mpz_ptr()) {
-		auto s = c.insn_call(Type::string(), args, +[](__mpz_struct* v) {
+	if (args[0].t.is_bool()) {
+		return c.insn_call(Type::tmp_string(), args, "Boolean.to_string");
+	} else if (args[0].t.is_integer()) {
+		return c.insn_call(Type::tmp_string(), args, "Number.int_to_string");
+	} else if (args[0].t.is_long()) {
+		return c.insn_call(Type::tmp_string(), args, "Number.long_to_string");
+	} else if (args[0].t.is_mpz_ptr()) {
+		auto s = c.insn_call(Type::tmp_string(), args, +[](__mpz_struct* v) {
 			char buff[10000];
 			mpz_get_str(buff, 10, v);
 			return new LSString(buff);
 		});
 		c.insn_delete_temporary(args[0]);
 		return s;
+	} else if (args[0].t.is_real()) {
+		return c.insn_call(Type::tmp_string(), args, "Number.real_to_string");
+	} else {
+		// Default type : pointer
+		return c.insn_call(Type::tmp_string(), args, "Value.json");
 	}
-	if (args[0].t == Type::real()) {
-		return c.insn_call(Type::string(), args, +[](double v) {
-			return new LSString(LSNumber::print(v));
-		});
-	}
-	// Default type : pointer
-	return c.insn_call(Type::string(), args, (void*) &LSValue::ls_json);
 }
 
 Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args) {
@@ -796,8 +795,14 @@ LSValue* ValueSTD::at(LSValue* array, LSValue* key) {
 LSValue** ValueSTD::atl(LSValue* array, LSValue* key) {
 	return array->atL(key);
 }
+int ValueSTD::type(LSValue* x) {
+	return x->type;
+}
 bool ValueSTD::is_null(LSValue* x) {
 	return x->type == LSValue::NULLL;
+}
+bool ValueSTD::to_bool(LSValue* x) {
+	return x->to_bool();
 }
 bool ValueSTD::eq(LSValue* x, LSValue* y) {
 	return *x == *y;

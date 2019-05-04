@@ -886,11 +886,11 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		return r;
 	}
 	if (v.t.is_string()) {
-		return insn_call(Type::boolean(), {v}, (void*) &LSString::to_bool);
+		return insn_call(Type::boolean(), {v}, "String.to_bool");
 	}
 	if (v.t.is_array()) {
 		// Always take LSArray<int>, but the array is not necessarily of this type
-		return insn_call(Type::boolean(), {v}, (void*) &LSArray<int>::to_bool);
+		return insn_call(Type::boolean(), {v}, "Array.to_bool");
 	}
 	if (v.t.is_function()) {
 		return new_bool(true);
@@ -899,9 +899,7 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		// TODO
 		return v;
 	}
-	return insn_call(Type::boolean(), {v}, +[](LSValue* v) {
-		return v->to_bool();
-	});
+	return insn_call(Type::boolean(), {v}, "Value.to_bool");
 }
 
 Compiler::value Compiler::insn_load(Compiler::value v) const {
@@ -945,9 +943,7 @@ void Compiler::insn_store_member(Compiler::value x, int pos, Compiler::value y) 
 Compiler::value Compiler::insn_typeof(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	if (v.t.fold().is_any()) {
-		return insn_call(Type::integer(), {v}, +[](LSValue* v) {
-			return v->type;
-		});
+		return insn_call(Type::integer(), {v}, "Value.type");
 	}
 	return new_integer(v.t.id());
 }
@@ -1079,7 +1075,7 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 			insn_inc_refs(value);
 			return value;
 		} else {
-			return insn_call(value.t, {value}, (void*) &LSValue::move_inc);
+			return insn_call(value.t, {value}, "Value.move_inc");
 		}
 	}
 	if (value.t.temporary) {

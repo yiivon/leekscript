@@ -165,6 +165,11 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::any(), {Type::const_string()}, (void*) &LSString::word_count_ptr, Method::NATIVE},
 		{Type::integer(), {Type::const_string()}, (void*) &LSString::word_count, Method::NATIVE},
 	});
+
+	/** Internal **/
+	method("to_bool", {
+		{Type::boolean(), {Type::const_string()}, (void*) &LSString::to_bool, Method::NATIVE}
+	});
 }
 
 StringSTD::~StringSTD() {}
