@@ -14,7 +14,7 @@ namespace ls {
 
 LSClass* LSMpz::clazz;
 
-LSMpz* LSMpz::get(__mpz_struct i) {
+LSMpz* LSMpz::get_from_mpz(__mpz_struct i) {
 	return new LSMpz(i);
 }
 LSMpz* LSMpz::get_from_tmp(__mpz_struct i) {
@@ -81,7 +81,7 @@ LSValue* LSMpz::ls_preinc() {
 }
 
 LSValue* LSMpz::ls_inc() {
-	LSValue* r = LSMpz::get(value);
+	LSValue* r = LSMpz::get_from_mpz(value);
 	mpz_add_ui(&value, &value, 1);
 	return r;
 }
@@ -92,7 +92,7 @@ LSValue* LSMpz::ls_predec() {
 }
 
 LSValue* LSMpz::ls_dec() {
-	LSValue* r = LSMpz::get(value);
+	LSValue* r = LSMpz::get_from_mpz(value);
 	mpz_sub_ui(&value, &value, 1);
 	return r;
 }
@@ -344,7 +344,7 @@ LSValue* LSMpz::int_div(LSValue* v) {
 	if (refs == 0) {
 		return this;
 	}
-	return LSMpz::get(value);
+	return LSMpz::get_from_mpz(value);
 }
 
 LSValue* LSMpz::int_div_eq(LSValue* v) {
@@ -535,7 +535,7 @@ int LSMpz::abso() const {
 }
 
 LSValue* LSMpz::clone() const {
-	return LSMpz::get(value);
+	return LSMpz::get_from_mpz(value);
 }
 
 std::string LSMpz::json() const {

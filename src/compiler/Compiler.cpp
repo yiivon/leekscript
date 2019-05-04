@@ -854,25 +854,21 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 		return v; // already any
 	}
 	if (v.t.is_long()) {
-		return insn_call(Type::any(), {to_real(v)}, "Number.new.0");
+		return insn_call(Type::any(), {to_real(v)}, "Number.new");
 	} else if (v.t.is_real()) {
-		return insn_call(Type::any(), {v}, "Number.new.0");
+		return insn_call(Type::any(), {v}, "Number.new");
 	} else if (v.t.is_bool()) {
 		return insn_call(Type::any(), {v}, +[](bool n) {
 			return LSBoolean::get(n);
 		});
 	} else if (v.t.is_mpz_ptr()) {
 		if (v.t.temporary) {
-			return insn_call(Type::any(), {v}, +[](__mpz_struct* n) {
-				return LSMpz::get_from_tmp(*n);
-			});
+			return insn_call(Type::any(), {insn_load(v)}, "Number.new.1");
 		} else {
-			return insn_call(Type::any(), {v}, +[](__mpz_struct* n) {
-				return LSMpz::get(*n);
-			});
+			return insn_call(Type::any(), {insn_load(v)}, "Number.new.2");
 		}
 	} else {
-		return insn_call(Type::any(), {to_real(v)}, "Number.new.0");
+		return insn_call(Type::any(), {to_real(v)}, "Number.new");
 	}
 }
 

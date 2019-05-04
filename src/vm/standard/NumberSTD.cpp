@@ -1,6 +1,7 @@
 #include "NumberSTD.hpp"
 #include "ValueSTD.hpp"
 #include "../value/LSNumber.hpp"
+#include "../value/LSMpz.hpp"
 #include "../value/LSString.hpp"
 #include "../value/LSBoolean.hpp"
 #include "../../../lib/utf8.h"
@@ -33,7 +34,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Constructors
 	 */
 	constructor_({
-		{Type::any(), {Type::integer()}, (void*) &LSNumber::get, Method::NATIVE}
+		{Type::any(), {Type::integer()}, (void*) &LSNumber::get, Method::NATIVE},
+		{Type::any(), {Type::tmp_mpz()}, (void*) &LSMpz::get_from_tmp, Method::NATIVE},
+		{Type::any(), {Type::mpz()}, (void*) &LSMpz::get_from_mpz, Method::NATIVE},
 	});
 
 	/*
