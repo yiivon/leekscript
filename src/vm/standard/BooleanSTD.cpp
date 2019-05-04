@@ -40,6 +40,11 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
 		{Type::integer(), {Type::const_boolean(), Type::const_any()}, (void*) &BooleanSTD::compare_val_val}
 	});
+
+	/** Internal **/
+	method("to_string", {
+		{Type::tmp_string(), {Type::boolean()}, (void*) &to_string, Method::NATIVE}
+	});
 }
 
 LSString* BooleanSTD::add(int boolean, LSString* string) {
@@ -81,6 +86,10 @@ LSValue* BooleanSTD::compare_ptr_ptr_ptr(LSBoolean* a, LSBoolean* b) {
 
 Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_cmpl(args[0], args[1]);
+}
+
+LSValue* BooleanSTD::to_string(bool b) {
+	return new LSString(b ? "true" : "false");
 }
 
 }
