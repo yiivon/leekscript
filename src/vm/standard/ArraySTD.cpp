@@ -357,7 +357,7 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
 	auto f = [&]() {
 		if (type.is_integer()) return "Array.in.2";
 		if (type.is_real()) return "Array.in.1";
-		return "Array.in.0";
+		return "Array.in";
 	}();
 	if (args[1].t.castable(type)) {
 		auto v = c.insn_convert(args[1], type);
