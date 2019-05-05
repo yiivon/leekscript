@@ -51,12 +51,8 @@ Compiler::Compiler(VM* vm) : vm(vm),
 				if (s) {
 					return llvm::JITSymbol((llvm::JITTargetAddress) s, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
-				if (Name == "null") {
-					return llvm::JITSymbol((llvm::JITTargetAddress) LSNull::get(), llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
-				}
-				if (Name == "ops") {
-					return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->operations, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
-				}
+				if (Name == "null") return llvm::JITSymbol((llvm::JITTargetAddress) LSNull::get(), llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+				if (Name == "ops") return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->operations, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				if (Name == "mpzc") return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->mpz_created, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				if (Name == "mpzd") return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->mpz_deleted, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 
