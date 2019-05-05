@@ -427,7 +427,15 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	double (*floorreal)(double) = std::floor;
 	method("m_floor", {
-		{Type::integer(), {Type::real()}, (void*) floorreal},
+		{Type::real(), {Type::real()}, (void*) floorreal},
+	});
+	double (*roundreal)(double) = std::round;
+	method("m_round", {
+		{Type::real(), {Type::real()}, (void*) roundreal},
+	});
+	double (*ceilreal)(double) = std::ceil;
+	method("m_ceil", {
+		{Type::real(), {Type::real()}, (void*) ceilreal},
 	});
 }
 

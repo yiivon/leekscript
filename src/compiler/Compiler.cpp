@@ -642,18 +642,14 @@ Compiler::value Compiler::insn_ceil(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::integer()) return x;
-	return insn_call(Type::integer(), {x}, +[](double x) {
-		return (int) std::ceil(x);
-	});
+	return to_int(insn_call(Type::real(), {x}, "Number.m_ceil"));
 }
 
 Compiler::value Compiler::insn_round(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::integer()) return x;
-	return insn_call(Type::integer(), {x}, +[](double x) {
-		return (int) std::round(x);
-	});
+	return to_int(insn_call(Type::real(), {x}, "Number.m_round"));
 }
 
 Compiler::value Compiler::insn_floor(Compiler::value x) const {
