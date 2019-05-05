@@ -176,10 +176,10 @@ public:
 	static Compiler::value hypot_ptr_ptr(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value hypot_real_real(Compiler&, std::vector<Compiler::value>);
 
-	static Compiler::value log_ptr(Compiler&, std::vector<Compiler::value>);
+	static double log_ptr(LSNumber* x);
 	static Compiler::value log_real(Compiler&, std::vector<Compiler::value>);
 
-	static Compiler::value log10_ptr(Compiler&, std::vector<Compiler::value>);
+	static double log10_ptr(LSNumber* x);
 	static Compiler::value log10_real(Compiler&, std::vector<Compiler::value>);
 
 	static double rand01();

@@ -252,11 +252,11 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::hypot_ptr_ptr},
 	});
 	method("log", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::log_ptr},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::log_ptr, Method::NATIVE},
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::log_real},
 	});
 	method("log10", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::log10_ptr},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::log10_ptr, Method::NATIVE},
 		{Type::real(), {Type::long_()}, (void*) &NumberSTD::log10_real},
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::log10_real},
 	});
@@ -414,8 +414,14 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("real_to_string", {
 		{Type::tmp_string(), {Type::real()}, (void*) &NumberSTD::real_to_string, Method::NATIVE}
 	});
+	double (*logreal)(double) = std::log;
+	method("m_log", {
+		{Type::real(), {Type::integer()}, (void*) &std::log<int>},
+		{Type::real(), {Type::long_()}, (void*) &std::log<long>},
+		{Type::real(), {Type::real()}, (void*) logreal},
+	});
 	double (*log10real)(double) = std::log10;
-	method("mlog10", {
+	method("m_log10", {
 		{Type::real(), {Type::integer()}, (void*) &std::log10<int>},
 		{Type::real(), {Type::long_()}, (void*) &std::log10<long>},
 		{Type::real(), {Type::real()}, (void*) log10real},
@@ -1121,23 +1127,19 @@ Compiler::value NumberSTD::hypot_real_real(Compiler& c, std::vector<Compiler::va
 	});
 }
 
-Compiler::value NumberSTD::log_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), args, +[](LSNumber* x) {
-		auto res = log(x->value);
-		LSValue::delete_temporary(x);
-		return res;
-	});
+double NumberSTD::log_ptr(LSNumber* x) {
+	auto res = log(x->value);
+	LSValue::delete_temporary(x);
+	return res;
 }
 Compiler::value NumberSTD::log_real(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_log(args[0]);
 }
 
-Compiler::value NumberSTD::log10_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), args, +[](LSNumber* x) {
-		auto res = log10(x->value);
-		LSValue::delete_temporary(x);
-		return res;
-	});
+double NumberSTD::log10_ptr(LSNumber* x) {
+	auto res = log10(x->value);
+	LSValue::delete_temporary(x);
+	return res;
 }
 Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_log10(args[0]);

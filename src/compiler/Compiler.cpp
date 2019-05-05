@@ -608,29 +608,23 @@ Compiler::value Compiler::insn_log(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::integer()) {
-		return insn_call(Type::real(), {x}, +[](int x) {
-			return std::log(x);
-		});
+		return insn_call(Type::real(), {x}, "Number.m_log");
 	}
 	if (x.t == Type::long_()) {
-		return insn_call(Type::real(), {x}, +[](long x) {
-			return std::log(x);
-		});
+		return insn_call(Type::real(), {x}, "Number.m_log.1");
 	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::log(x);
-	});
+	return insn_call(Type::real(), {x}, "Number.m_log.2");
 }
 
 Compiler::value Compiler::insn_log10(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t.is_integer()) {
-		return insn_call(Type::real(), {x}, "Number.mlog10");
+		return insn_call(Type::real(), {x}, "Number.m_log10");
 	} else if (x.t.is_long()) {
-		return insn_call(Type::real(), {x}, "Number.mlog10.1");
+		return insn_call(Type::real(), {x}, "Number.m_log10.1");
 	} else {
-		return insn_call(Type::real(), {x}, "Number.mlog10.2");
+		return insn_call(Type::real(), {x}, "Number.m_log10.2");
 	}
 }
 
