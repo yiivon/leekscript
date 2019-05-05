@@ -24,7 +24,8 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	 * Constructor
 	 */
 	constructor_({
-		{Type::tmp_object(), {}, (void*) &LSObject::constructor, Method::NATIVE}
+		{Type::tmp_object(), {}, (void*) &LSObject::constructor, Method::NATIVE},
+		{Type::tmp_object(), {Type::clazz()}, (void*) ObjectSTD::object_new, Method::NATIVE},
 	});
 
 	/*
@@ -63,6 +64,10 @@ Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args
 	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
 		return x->in(y);
 	});
+}
+
+LSValue* ObjectSTD::object_new(LSClass* clazz) {
+	return new LSObject(clazz);
 }
 
 }

@@ -151,9 +151,7 @@ Compiler::value Compiler::new_object() const {
 }
 
 Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
-	return insn_call(Type::any(), {clazz}, +[](LSClass* clazz) {
-		return new LSObject(clazz);
-	});
+	return insn_call(Type::any(), {clazz}, "Object.new.1");
 }
 
 Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {
