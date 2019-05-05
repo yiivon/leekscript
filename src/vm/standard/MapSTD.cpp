@@ -70,12 +70,12 @@ MapSTD::MapSTD() : Module("Map") {
 	});
 
 	method("insert", {
-		{Type::boolean(), {Type::map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &insert_any_any},
-		{Type::boolean(), {Type::map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &insert_any_real},
-		{Type::boolean(), {Type::map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &insert_any_int},
-		{Type::boolean(), {Type::map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &insert_int_any},
-		{Type::boolean(), {Type::map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &insert_int_real},
-		{Type::boolean(), {Type::map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &insert_int_int},
+		{Type::boolean(), {Type::map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &LSMap<LSValue*, LSValue*>::ls_insert, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &LSMap<LSValue*, double>::ls_insert, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &LSMap<LSValue*, int>::ls_insert, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &LSMap<int, LSValue*>::ls_insert, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int, double>::ls_insert, Method::NATIVE},
+		{Type::boolean(), {Type::map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int, int>::ls_insert, Method::NATIVE},
     });
 
 	method("clear", {
@@ -205,25 +205,6 @@ MapSTD::MapSTD() : Module("Map") {
 		{{}, {Type::map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int, double>::ls_emplace, Method::NATIVE},
 		{{}, {Type::map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int, int>::ls_emplace, Method::NATIVE},
 	});
-}
-
-Compiler::value MapSTD::insert_any_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<LSValue*, LSValue*>::ls_insert);
-}
-Compiler::value MapSTD::insert_any_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1]), c.to_real(args[2])}, (void*) &LSMap<LSValue*, double>::ls_insert);
-}
-Compiler::value MapSTD::insert_any_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSMap<LSValue*, int>::ls_insert);
-}
-Compiler::value MapSTD::insert_int_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<int, LSValue*>::ls_insert);
-}
-Compiler::value MapSTD::insert_int_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.to_real(args[2])}, (void*) &LSMap<int, double>::ls_insert);
-}
-Compiler::value MapSTD::insert_int_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSMap<int, int>::ls_insert);
 }
 
 Compiler::value MapSTD::look_any_any(Compiler& c, std::vector<Compiler::value> args) {

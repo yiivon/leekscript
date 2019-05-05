@@ -9,13 +9,6 @@ class MapSTD : public Module {
 public:
 	MapSTD();
 
-	static Compiler::value insert_any_any(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_any_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_any_int(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_int_any(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_int_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_int_int(Compiler&, std::vector<Compiler::value>);
-
 	static Compiler::value look_any_any(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value look_any_real(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value look_any_int(Compiler&, std::vector<Compiler::value>);
