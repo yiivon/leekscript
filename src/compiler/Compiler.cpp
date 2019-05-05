@@ -993,14 +993,17 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	if (v.t.is_string()) {
 		return insn_call(Type::integer(), {v}, (void*) &LSString::int_size);
-	} else if (v.t.is_array() and v.t.element() == Type::integer()) {
-		return insn_call(Type::integer(), {v}, (void*) &LSArray<int>::int_size);
-	} else if (v.t.is_array() and v.t.element() == Type::real()) {
-		return insn_call(Type::integer(), {v}, (void*) &LSArray<double>::int_size);
-	} else {
-		return insn_call(Type::integer(), {v}, (void*) &LSArray<LSValue*>::int_size);
+	} else if (v.t.is_array()) {
+		if (v.t.element().is_integer()) {
+			return insn_call(Type::integer(), {v}, "Array.isize.2");
+		} else if (v.t.element().is_real()) {
+			return insn_call(Type::integer(), {v}, "Array.isize.1");
+		} else {
+			return insn_call(Type::integer(), {v}, "Array.isize");
+		}
 	}
-	return {};
+	// TODO : default
+	return insn_call(Type::integer(), {v}, "Array.isize");
 }
 
 Compiler::value Compiler::insn_get_capture(int index, Type type) const {

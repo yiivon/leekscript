@@ -347,6 +347,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::boolean(), {Type::const_array(Type::real()), Type::const_any()}, (void*) &LSArray<double>::in, Method::NATIVE},
 		{Type::boolean(), {Type::const_array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::in_i, Method::NATIVE},
 	});
+	method("isize", {
+		{Type::integer(), {Type::array(Type::any())}, (void*) &LSArray<LSValue*>::int_size, Method::NATIVE},
+		{Type::integer(), {Type::array(Type::real())}, (void*) &LSArray<double>::int_size, Method::NATIVE},
+		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::int_size, Method::NATIVE},
+	});
 	method("to_bool", {
 		{Type::boolean(), {Type::array()}, (void*) &LSArray<int>::to_bool, Method::NATIVE}
 	});
