@@ -437,6 +437,16 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("m_ceil", {
 		{Type::real(), {Type::real()}, (void*) ceilreal},
 	});
+	method("m_max", {
+		{Type::integer(), {Type::integer(), Type::integer()}, (void*) max<int>, Method::NATIVE},
+		{Type::long_(), {Type::long_(), Type::long_()}, (void*) max<long>, Method::NATIVE},
+		{Type::real(), {Type::real(), Type::real()}, (void*) max<double>, Method::NATIVE},
+	});
+	method("m_min", {
+		{Type::integer(), {Type::integer(), Type::integer()}, (void*) min<int>, Method::NATIVE},
+		{Type::long_(), {Type::long_(), Type::long_()}, (void*) min<long>, Method::NATIVE},
+		{Type::real(), {Type::real(), Type::real()}, (void*) min<double>, Method::NATIVE},
+	});
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {

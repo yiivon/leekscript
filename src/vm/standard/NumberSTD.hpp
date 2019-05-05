@@ -137,6 +137,7 @@ public:
 	static double max_float_ptr(double x, LSNumber* y);
 	static Compiler::value max_float_float(Compiler&, std::vector<Compiler::value>);
 	static double max_int_ptr(int x, LSNumber* y);
+	template<class T> static T max(T a, T b) { return a < b ? b : a; }
 
 	static double min_ptr_ptr(LSNumber* x, LSNumber* y);
 	static double min_ptr_float(LSNumber* x, double y);
@@ -144,6 +145,7 @@ public:
 	static double min_float_ptr(double x, LSNumber* y);
 	static Compiler::value min_float_float(Compiler&, std::vector<Compiler::value>);
 	static double min_int_ptr(int x, LSNumber* y);
+	template<class T> static T min(T a, T b) { return a < b ? a : b; }
 
 	static LSValue* cos_ptr(LSNumber* x);
 	static Compiler::value cos_real(Compiler&, std::vector<Compiler::value>);

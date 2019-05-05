@@ -771,27 +771,19 @@ Compiler::value Compiler::insn_min(Compiler::value x, Compiler::value y) const {
 	assert(y.t.llvm_type(*this) == y.v->getType());
 	assert(x.t.is_primitive() && y.t.is_primitive());
 	if (x.t == Type::integer() and y.t == Type::integer()) {
-		return insn_call(Type::integer(), {x, y}, +[](int x, int y) {
-			return std::min(x, y);
-		});
+		return insn_call(Type::integer(), {x, y}, "Number.m_min");
 	}
-	return insn_call(Type::real(), {to_real(x), to_real(y)}, +[](double x, double y) {
-		return std::min(x, y);
-	});
+	return insn_call(Type::real(), {to_real(x), to_real(y)}, "Number.m_min.2");
 }
 
 Compiler::value Compiler::insn_max(Compiler::value x, Compiler::value y) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(y.t.llvm_type(*this) == y.v->getType());
 	assert(x.t.is_primitive() && y.t.is_primitive());
-	if (x.t == Type::integer() and y.t == Type::integer()) {
-		return insn_call(Type::integer(), {x, y}, +[](int x, int y) {
-			return std::max(x, y);
-		});
+	if (x.t.is_integer() and y.t.is_integer()) {
+		return insn_call(Type::integer(), {x, y}, "Number.m_max");
 	}
-	return insn_call(Type::real(), {to_real(x), to_real(y)}, +[](double x, double y) {
-		return std::max(x, y);
-	});
+	return insn_call(Type::real(), {to_real(x), to_real(y)}, "Number.m_max.2");
 }
 
 Compiler::value Compiler::insn_exp(Compiler::value x) const {
@@ -1819,6 +1811,7 @@ Compiler::value Compiler::insn_phi(Type type, Compiler::value v1, Compiler::labe
 
 // Call functions
 Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
+	assert(false);
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
