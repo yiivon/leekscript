@@ -74,69 +74,19 @@ void Map::analyse(SemanticAnalyser* analyser) {
 	type.temporary = true;
 }
 
-void LSMap_insert_ptr_ptr(LSMap<LSValue*, LSValue*>* map, LSValue* key, LSValue* value) {
-	auto it = map->lower_bound(key);
-	if (it == map->end() || *it->first != *key) {
-		map->emplace_hint(it, key->move_inc(), value->move_inc());
-	}
-}
-void LSMap_insert_ptr_int(LSMap<LSValue*, int>* map, LSValue* key, int value) {
-	auto it = map->lower_bound(key);
-	if (it == map->end() || *it->first != *key) {
-		map->emplace_hint(it, key->move_inc(), value);
-	}
-}
-void LSMap_insert_ptr_float(LSMap<LSValue*, double>* map, LSValue* key, double value) {
-	auto it = map->lower_bound(key);
-	if (it == map->end() || *it->first != *key) {
-		map->emplace_hint(it, key->move_inc(), value);
-	}
-}
-void LSMap_insert_int_ptr(LSMap<int, LSValue*>* map, int key, LSValue* value) {
-	auto it = map->lower_bound(key);
-	if (it == map->end() || it->first != key) {
-		map->emplace_hint(it, key, value->move_inc());
-	}
-}
-void LSMap_insert_int_int(LSMap<int, int>* map, int key, int value) {
-	map->emplace(key, value);
-}
-void LSMap_insert_int_float(LSMap<int, double>* map, int key, double value) {
-	map->emplace(key, value);
-}
-void LSMap_insert_real_ptr(LSMap<double, LSValue*>* map, double key, LSValue* value) {
-	auto it = map->lower_bound(key);
-	if (it == map->end() || it->first != key) {
-		map->emplace_hint(it, key, value->move_inc());
-	}
-}
-void LSMap_insert_real_int(LSMap<double, int>* map, double key, int value) {
-	map->emplace(key, value);
-}
-void LSMap_insert_real_float(LSMap<double, double>* map, double key, double value) {
-	map->emplace(key, value);
-}
-
 Compiler::value Map::compile(Compiler &c) const {
 
 	std::string create;
-	void* insert = nullptr;
-
-	if (type.key() == Type::integer()) {
+	std::string insert;
+	if (type.key().is_integer()) {
 		create = type.element().is_integer() ? "Map.new.8" : type.element().is_real() ? "Map.new.7" : "Map.new.6";
-		insert = type.element() == Type::integer() ? (void*) LSMap_insert_int_int :
-				 type.element() == Type::real()   ? (void*) LSMap_insert_int_float
-						 	 	 	 	 	 	 	    : (void*) LSMap_insert_int_ptr;
+		insert = type.element().is_integer() ? "Map.insert_fun.8" : type.element().is_real() ? "Map.insert_fun.7" : "Map.insert_fun.6";
 	} else if (type.key().is_real()) {
 		create = type.element().is_integer() ? "Map.new.5" : type.element().is_real() ? "Map.new.4" : "Map.new.3";
-		insert = type.element() == Type::integer() ? (void*) LSMap_insert_real_int :
-				 type.element() == Type::real()   ? (void*) LSMap_insert_real_float
-													    : (void*) LSMap_insert_real_ptr;
+		insert = type.element().is_integer() ? "Map.insert_fun.5" : type.element().is_real() ? "Map.insert_fun.4" : "Map.insert_fun.3";
 	} else {
 		create = type.element().is_integer() ? "Map.new.2" : type.element().is_real() ? "Map.new.1" : "Map.new";
-		insert = type.element() == Type::integer() ? (void*) LSMap_insert_ptr_int :
-				 type.element() == Type::real()   ? (void*) LSMap_insert_ptr_float
-						 	 	 	 	 	 	 	    : (void*) LSMap_insert_ptr_ptr;
+		insert = type.element().is_integer() ? "Map.insert_fun.2" : type.element().is_real() ? "Map.insert_fun.1" : "Map.insert_fun";
 	}
 
 	unsigned ops = 0;
@@ -148,7 +98,7 @@ Compiler::value Map::compile(Compiler &c) const {
 		auto v = c.insn_convert(values[i]->compile(c), type.element());
 		values[i]->compile_end(c);
 
-		c.insn_call({}, {map, k, v}, (void*) insert);
+		c.insn_call({}, {map, k, v}, insert);
 		ops += std::log2(i + 1);
 
 		c.insn_delete_temporary(k);

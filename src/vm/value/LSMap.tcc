@@ -55,6 +55,14 @@ bool LSMap<K, V>::ls_insert(K key, V value) {
 }
 
 template <class K, class V>
+void LSMap<K, V>::ls_emplace(K key, V value) {
+	auto it = this->lower_bound(key);
+	if (it == this->end() || !ls::equals(it->first, key)) {
+		this->emplace_hint(it, ls::move_inc(key), ls::move_inc(value));
+	}
+}
+
+template <class K, class V>
 LSMap<K, V>* LSMap<K, V>::ls_clear() {
 	for (auto it = this->begin(); it != this->end(); ++it) {
 		ls::unref(it->first);

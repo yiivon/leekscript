@@ -194,6 +194,17 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::real(), {Type::map(Type::any(), Type::real()), Type::any()}, (void*) &LSMap<LSValue*, double>::at, Method::NATIVE},
 		{Type::any(), {Type::map(Type::any(), Type::any()), Type::any()}, (void*) &LSMap<LSValue*, LSValue*>::at, Method::NATIVE},
 	});
+	method("insert_fun", {
+		{{}, {Type::map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &LSMap<LSValue*, LSValue*>::ls_emplace, Method::NATIVE},
+		{{}, {Type::map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &LSMap<LSValue*, double>::ls_emplace, Method::NATIVE},
+		{{}, {Type::map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &LSMap<LSValue*, int>::ls_emplace, Method::NATIVE},
+		{{}, {Type::map(Type::real(), Type::any()), Type::real(), Type::any()}, (void*) &LSMap<double, LSValue*>::ls_emplace, Method::NATIVE},
+		{{}, {Type::map(Type::real(), Type::real()), Type::real(), Type::real()}, (void*) &LSMap<double, double>::ls_emplace, Method::NATIVE},
+		{{}, {Type::map(Type::real(), Type::integer()), Type::real(), Type::integer()}, (void*) &LSMap<double, int>::ls_emplace, Method::NATIVE},
+		{{}, {Type::map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &LSMap<int, LSValue*>::ls_emplace, Method::NATIVE},
+		{{}, {Type::map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int, double>::ls_emplace, Method::NATIVE},
+		{{}, {Type::map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int, int>::ls_emplace, Method::NATIVE},
+	});
 }
 
 Compiler::value MapSTD::insert_any_any(Compiler& c, std::vector<Compiler::value> args) {
