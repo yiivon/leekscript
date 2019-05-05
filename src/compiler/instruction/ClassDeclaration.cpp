@@ -55,9 +55,7 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 			auto default_value = vd->expressions.at(i)->compile(c);
 			default_value = c.insn_to_any(default_value);
 			auto field_name = c.new_const_string(vd->variables.at(i)->content, "field");
-			c.insn_call({}, {clazz, field_name, default_value}, +[](LSClass* clazz, char* field_name, LSValue* default_value) {
-				clazz->fields.at(field_name).default_value = default_value;
-			});
+			c.insn_call({}, {clazz, field_name, default_value}, "Object.set_field_default_value");
 		}
 	}
 
