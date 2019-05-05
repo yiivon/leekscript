@@ -447,6 +447,48 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::long_(), {Type::long_(), Type::long_()}, (void*) min<long>, Method::NATIVE},
 		{Type::real(), {Type::real(), Type::real()}, (void*) min<double>, Method::NATIVE},
 	});
+	double (*cosreal)(double) = std::cos;
+	method("m_cos", {
+		{Type::real(), {Type::integer()}, (void*) std::cos<int>, Method::NATIVE},
+		{Type::real(), {Type::long_()}, (void*) std::cos<long>, Method::NATIVE},
+		{Type::real(), {Type::real()}, (void*) cosreal, Method::NATIVE},
+	});
+	double (*sinreal)(double) = std::sin;
+	method("m_sin", {
+		{Type::real(), {Type::integer()}, (void*) std::sin<int>, Method::NATIVE},
+		{Type::real(), {Type::long_()}, (void*) std::sin<long>, Method::NATIVE},
+		{Type::real(), {Type::real()}, (void*) sinreal, Method::NATIVE},
+	});
+	double (*tanreal)(double) = std::tan;
+	method("m_tan", {
+		{Type::real(), {Type::integer()}, (void*) std::tan<int>, Method::NATIVE},
+		{Type::real(), {Type::long_()}, (void*) std::tan<long>, Method::NATIVE},
+		{Type::real(), {Type::real()}, (void*) tanreal, Method::NATIVE},
+	});
+	double (*acosreal)(double) = std::acos;
+	method("m_acos", {
+		{Type::real(), {Type::integer()}, (void*) std::acos<int>, Method::NATIVE},
+		{Type::real(), {Type::long_()}, (void*) std::acos<long>, Method::NATIVE},
+		{Type::real(), {Type::real()}, (void*) acosreal, Method::NATIVE},
+	});
+	double (*asinreal)(double) = std::asin;
+	method("m_asin", {
+		{Type::real(), {Type::integer()}, (void*) std::asin<int>, Method::NATIVE},
+		{Type::real(), {Type::long_()}, (void*) std::asin<long>, Method::NATIVE},
+		{Type::real(), {Type::real()}, (void*) asinreal, Method::NATIVE},
+	});
+	double (*atanreal)(double) = std::atan;
+	method("m_atan", {
+		{Type::real(), {Type::integer()}, (void*) std::atan<int>, Method::NATIVE},
+		{Type::real(), {Type::long_()}, (void*) std::atan<long>, Method::NATIVE},
+		{Type::real(), {Type::real()}, (void*) atanreal, Method::NATIVE},
+	});
+	double (*atan2real)(double, double) = std::atan2;
+	method("m_atan2", {
+		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::atan2<int, int>, Method::NATIVE},
+		{Type::real(), {Type::long_(), Type::long_()}, (void*) std::atan2<long, long>, Method::NATIVE},
+		{Type::real(), {Type::real(), Type::real()}, (void*) atan2real, Method::NATIVE},
+	});
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -826,12 +868,10 @@ Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args)
 	if (!args[0].t.is_polymorphic() and !args[1].t.is_polymorphic()) {
 		return c.insn_atan2(args[0], args[1]);
 	} else {
-		return c.insn_call(Type::real(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSNumber* x, LSNumber* y) {
-			double a = std::atan2(x->value, y->value);
-			LSValue::delete_temporary(x);
-			LSValue::delete_temporary(y);
-			return a;
-		});
+		auto r = c.insn_call(Type::real(), {c.to_real(args[0]), c.to_real(args[1])}, "Number.m_atan2.2");
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
+		return r;
 	}
 }
 

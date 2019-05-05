@@ -662,79 +662,55 @@ Compiler::value Compiler::insn_floor(Compiler::value x) const {
 Compiler::value Compiler::insn_cos(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
-		return insn_call(Type::integer(), {x}, +[](int x) {
-			return std::cos(x);
-		});
+	if (x.t.is_integer()) {
+		return insn_call(Type::integer(), {x}, "Number.m_cos");
 	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::cos(x);
-	});
+	return insn_call(Type::real(), {x}, "Number.m_cos.2");
 }
 
 Compiler::value Compiler::insn_sin(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
-		return insn_call(Type::integer(), {x}, +[](int x) {
-			return std::sin(x);
-		});
+	if (x.t.is_integer()) {
+		return insn_call(Type::integer(), {x}, "Number.m_sin");
 	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::sin(x);
-	});
+	return insn_call(Type::real(), {x}, "Number.m_sin.2");
 }
 
 Compiler::value Compiler::insn_tan(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
-		return insn_call(Type::integer(), {x}, +[](int x) {
-			return std::tan(x);
-		});
+	if (x.t.is_integer()) {
+		return insn_call(Type::integer(), {x}, "Number.m_tan");
 	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::tan(x);
-	});
+	return insn_call(Type::real(), {x}, "Number.m_tan.2");
 }
 
 Compiler::value Compiler::insn_acos(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
-		return insn_call(Type::integer(), {x}, +[](int x) {
-			return std::acos(x);
-		});
+	if (x.t.is_integer()) {
+		return insn_call(Type::integer(), {x}, "Number.m_acos");
 	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::acos(x);
-	});
+	return insn_call(Type::real(), {x}, "Number.m_acos.2");
 }
 
 Compiler::value Compiler::insn_asin(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
-		return insn_call(Type::integer(), {x}, +[](int x) {
-			return std::asin(x);
-		});
+	if (x.t.is_integer()) {
+		return insn_call(Type::integer(), {x}, "Number.m_asin");
 	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::asin(x);
-	});
+	return insn_call(Type::real(), {x}, "Number.m_asin.2");
 }
 
 Compiler::value Compiler::insn_atan(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
-		return insn_call(Type::integer(), {x}, +[](int x) {
-			return std::atan(x);
-		});
+	if (x.t.is_integer()) {
+		return insn_call(Type::integer(), {x}, "Number.m_atan");
 	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::atan(x);
-	});
+	return insn_call(Type::real(), {x}, "Number.m_atan.2");
 }
 
 Compiler::value Compiler::insn_sqrt(Compiler::value x) const {
@@ -799,14 +775,10 @@ Compiler::value Compiler::insn_atan2(Compiler::value x, Compiler::value y) const
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(y.t.llvm_type(*this) == y.v->getType());
 	assert(x.t.is_primitive() && y.t.is_primitive());
-	if (x.t == Type::integer() && y.t == Type::integer()) {
-		return insn_call(Type::integer(), {x, y}, +[](int x, int y) {
-			return std::atan2(x, y);
-		});
+	if (x.t.is_integer() && y.t.is_integer()) {
+		return insn_call(Type::integer(), {x, y}, "Number.m_atan2");
 	}
-	return insn_call(Type::real(), {to_real(x), to_real(y)}, +[](double x, double y) {
-		return std::atan2(x, y);
-	});
+	return insn_call(Type::real(), {to_real(x), to_real(y)}, "Number.m_atan2.2");
 }
 
 Compiler::value Compiler::insn_abs(Compiler::value x) const {
