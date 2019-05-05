@@ -374,16 +374,12 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
 }
 
 Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::array(args[0].t.element()), {args[0], c.insn_to_any(args[1])}, +[](LSValue* x, LSValue* y) {
-		return x->add(y);
-	});
+	return c.insn_call(Type::array(args[0].t.element()), {args[0], c.insn_to_any(args[1])}, "Value.operator+");
 }
 
 Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args) {
 	args[1] = c.insn_to_any(args[1]);
-	return c.insn_call(Type::any(), args, (void*) +[](LSValue** x, LSValue* y) {
-		return (*x)->add_eq(y);
-	});
+	return c.insn_call(Type::any(), args, "Value.operator+=");
 }
 
 Compiler::value ArraySTD::lt(Compiler& c, std::vector<Compiler::value> args) {
