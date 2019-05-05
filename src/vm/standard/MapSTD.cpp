@@ -21,6 +21,21 @@ MapSTD::MapSTD() : Module("Map") {
 	LSMap<double, int>::clazz = clazz;
 	LSMap<double, double>::clazz = clazz;
 
+	/*
+	 * Constructor
+	 */
+	constructor_({
+		{Type::tmp_map(Type::any(), Type::any()), {}, (void*) &LSMap<LSValue*, LSValue*>::constructor, Method::NATIVE},
+		{Type::tmp_map(Type::any(), Type::real()), {}, (void*) &LSMap<LSValue*, double>::constructor, Method::NATIVE},
+		{Type::tmp_map(Type::any(), Type::integer()), {}, (void*) &LSMap<LSValue*, int>::constructor, Method::NATIVE},
+		{Type::tmp_map(Type::real(), Type::any()), {}, (void*) &LSMap<double, LSValue*>::constructor, Method::NATIVE},
+		{Type::tmp_map(Type::real(), Type::real()), {}, (void*) &LSMap<double, double>::constructor, Method::NATIVE},
+		{Type::tmp_map(Type::real(), Type::integer()), {}, (void*) &LSMap<double, int>::constructor, Method::NATIVE},
+		{Type::tmp_map(Type::integer(), Type::any()), {}, (void*) &LSMap<int, LSValue*>::constructor, Method::NATIVE},
+		{Type::tmp_map(Type::integer(), Type::real()), {}, (void*) &LSMap<int, double>::constructor, Method::NATIVE},
+		{Type::tmp_map(Type::integer(), Type::integer()), {}, (void*) &LSMap<int, int>::constructor, Method::NATIVE},
+	});
+
 	operator_("in", {
 		{Type::const_map(Type::any(), Type::any()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, LSValue*>::in, {}, Method::NATIVE},
 		{Type::const_map(Type::any(), Type::real()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, double>::in, {}, Method::NATIVE},

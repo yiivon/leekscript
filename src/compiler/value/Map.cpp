@@ -74,34 +74,6 @@ void Map::analyse(SemanticAnalyser* analyser) {
 	type.temporary = true;
 }
 
-LSMap<LSValue*, LSValue*>* LSMap_create_ptr_ptr() {
-	return new LSMap<LSValue*, LSValue*>();
-}
-LSMap<LSValue*, int>* LSMap_create_ptr_int() {
-	return new LSMap<LSValue*, int>();
-}
-LSMap<LSValue*, double>* LSMap_create_ptr_float() {
-	return new LSMap<LSValue*, double>();
-}
-LSMap<int, LSValue*>* LSMap_create_int_ptr() {
-	return new LSMap<int, LSValue*>();
-}
-LSMap<int, int>* LSMap_create_int_int() {
-	return new LSMap<int, int>();
-}
-LSMap<int, double>* LSMap_create_int_float() {
-	return new LSMap<int, double>();
-}
-LSMap<double, LSValue*>* LSMap_create_real_ptr() {
-	return new LSMap<double, LSValue*>();
-}
-LSMap<double, int>* LSMap_create_real_int() {
-	return new LSMap<double, int>();
-}
-LSMap<double, double>* LSMap_create_real_float() {
-	return new LSMap<double, double>();
-}
-
 void LSMap_insert_ptr_ptr(LSMap<LSValue*, LSValue*>* map, LSValue* key, LSValue* value) {
 	auto it = map->lower_bound(key);
 	if (it == map->end() || *it->first != *key) {
@@ -147,34 +119,28 @@ void LSMap_insert_real_float(LSMap<double, double>* map, double key, double valu
 
 Compiler::value Map::compile(Compiler &c) const {
 
-	void* create = nullptr;
+	std::string create;
 	void* insert = nullptr;
 
 	if (type.key() == Type::integer()) {
-		create = type.element() == Type::integer() ? (void*) LSMap_create_int_int :
-				 type.element() == Type::real()   ? (void*) LSMap_create_int_float
-						 	 	 	 	 	 	 	    : (void*) LSMap_create_int_ptr;
+		create = type.element().is_integer() ? "Map.new.8" : type.element().is_real() ? "Map.new.7" : "Map.new.6";
 		insert = type.element() == Type::integer() ? (void*) LSMap_insert_int_int :
 				 type.element() == Type::real()   ? (void*) LSMap_insert_int_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_insert_int_ptr;
-	} else if (type.key() == Type::real()) {
-		create = type.element() == Type::integer() ? (void*) LSMap_create_real_int :
-				 type.element() == Type::real()   ? (void*) LSMap_create_real_float
-						 	 	 	 	 	 	 	    : (void*) LSMap_create_real_ptr;
+	} else if (type.key().is_real()) {
+		create = type.element().is_integer() ? "Map.new.5" : type.element().is_real() ? "Map.new.4" : "Map.new.3";
 		insert = type.element() == Type::integer() ? (void*) LSMap_insert_real_int :
 				 type.element() == Type::real()   ? (void*) LSMap_insert_real_float
 													    : (void*) LSMap_insert_real_ptr;
 	} else {
-		create = type.element() == Type::integer() ? (void*) LSMap_create_ptr_int :
-				 type.element() == Type::real()   ? (void*) LSMap_create_ptr_float
-						 	 	 	 	 	 	 	    : (void*) LSMap_create_ptr_ptr;
+		create = type.element().is_integer() ? "Map.new.2" : type.element().is_real() ? "Map.new.1" : "Map.new";
 		insert = type.element() == Type::integer() ? (void*) LSMap_insert_ptr_int :
 				 type.element() == Type::real()   ? (void*) LSMap_insert_ptr_float
 						 	 	 	 	 	 	 	    : (void*) LSMap_insert_ptr_ptr;
 	}
 
 	unsigned ops = 0;
-	auto map = c.insn_call(type, {}, (void*) create);
+	auto map = c.insn_call(type, {}, create);
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		auto k = c.insn_convert(keys[i]->compile(c), type.key());

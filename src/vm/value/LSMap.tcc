@@ -22,6 +22,11 @@ template <class K, class T>
 LSValue* LSMap<K, T>::clazz;
 
 template <class K, class T>
+LSMap<K, T>* LSMap<K, T>::constructor() {
+	return new LSMap<K, T>();
+}
+
+template <class K, class T>
 LSMap<K, T>::LSMap() : LSValue(MAP) {}
 
 template <class K, class V>
