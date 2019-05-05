@@ -170,6 +170,9 @@ StringSTD::StringSTD() : Module("String") {
 	method("to_bool", {
 		{Type::boolean(), {Type::const_string()}, (void*) &LSString::to_bool, Method::NATIVE}
 	});
+	method("codePointAt", {
+		{Type::tmp_string(), {Type::const_string(), Type::integer()}, (void*) &LSString::codePointAt, Method::NATIVE}
+	});
 }
 
 StringSTD::~StringSTD() {}

@@ -248,7 +248,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			});
 
 			if (array->type.is_string()) {
-				auto e = c.insn_call(Type::string(), {compiled_array, int_key}, (void*) &LSString::codePointAt);
+				auto e = c.insn_call(Type::tmp_string(), {compiled_array, int_key}, "String.codePointAt");
 				c.insn_delete_temporary(k);
 				return e;
 			} else {
