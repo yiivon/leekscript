@@ -630,18 +630,12 @@ Compiler::value Compiler::insn_log10(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t.is_integer()) {
-		return insn_call(Type::real(), {x}, +[](int x) {
-			return std::log10(x);
-		});
+		return insn_call(Type::real(), {x}, "Number.mlog10");
+	} else if (x.t.is_long()) {
+		return insn_call(Type::real(), {x}, "Number.mlog10.1");
+	} else {
+		return insn_call(Type::real(), {x}, "Number.mlog10.2");
 	}
-	if (x.t == Type::long_()) {
-		return insn_call(Type::real(), {x}, +[](long x) {
-			return std::log10(x);
-		});
-	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::log10(x);
-	});
 }
 
 Compiler::value Compiler::insn_ceil(Compiler::value x) const {
@@ -666,9 +660,7 @@ Compiler::value Compiler::insn_floor(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t == Type::integer()) return x;
-	return insn_call(Type::integer(), {x}, +[](double x) {
-		return (int) std::floor(x);
-	});
+	return to_int(insn_call(Type::real(), {x}, "Number.m_floor"));
 }
 
 Compiler::value Compiler::insn_cos(Compiler::value x) const {
@@ -810,13 +802,9 @@ Compiler::value Compiler::insn_exp(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
 	if (x.t.is_integer()) {
-		return insn_call(Type::integer(), {x}, +[](int x) {
-			return std::exp(x);
-		});
+		return insn_call(Type::integer(), {x}, "Number.m_exp");
 	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::exp(x);
-	});
+	return insn_call(Type::real(), {x}, "Number.m_exp.1");
 }
 
 Compiler::value Compiler::insn_atan2(Compiler::value x, Compiler::value y) const {

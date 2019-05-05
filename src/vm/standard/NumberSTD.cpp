@@ -414,6 +414,21 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("real_to_string", {
 		{Type::tmp_string(), {Type::real()}, (void*) &NumberSTD::real_to_string, Method::NATIVE}
 	});
+	double (*log10real)(double) = std::log10;
+	method("mlog10", {
+		{Type::real(), {Type::integer()}, (void*) &std::log10<int>},
+		{Type::real(), {Type::long_()}, (void*) &std::log10<long>},
+		{Type::real(), {Type::real()}, (void*) log10real},
+	});
+	double (*expreal)(double) = std::exp;
+	method("m_exp", {
+		{Type::integer(), {Type::integer()}, (void*) &std::exp<int>},
+		{Type::real(), {Type::real()}, (void*) expreal},
+	});
+	double (*floorreal)(double) = std::floor;
+	method("m_floor", {
+		{Type::integer(), {Type::real()}, (void*) floorreal},
+	});
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
