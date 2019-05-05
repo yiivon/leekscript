@@ -187,7 +187,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::long_(), {Type::any()}, (void*) &NumberSTD::_long},
 	});
 	method("abs", {
-		{Type::real(), {Type::number()}, (void*) &NumberSTD::abs},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::abs},
+		{Type::long_(), {Type::long_()}, (void*) &NumberSTD::abs},
 		{Type::integer(), {Type::integer()}, (void*) &NumberSTD::abs},
 	});
 	int (*abs_int)(int) = std::abs;

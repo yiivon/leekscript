@@ -541,7 +541,7 @@ void Test::test_numbers() {
 	code("(-19.5).abs()").equals("19.5");
 	code("12.abs").equals("<function>");
 	code("12.abs").equals("<function>");
-	code("Number.abs([1, 'salut'][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
+	code("Number.abs([1, 'salut'][1])").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.exp()");
 	code("Number.exp(0)").equals("1");
