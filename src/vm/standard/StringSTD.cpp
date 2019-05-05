@@ -97,7 +97,7 @@ StringSTD::StringSTD() : Module("String") {
 	Type fold_clo_type = Type::closure(Type::any(), {Type::any(), Type::string()});
 	method("fold", {
 		{Type::any(), {Type::const_string(), fold_fun_type, Type::any()}, (void*) fold_fun},
-		{Type::any(), {Type::const_string(), fold_clo_type, Type::any()}, (void*) fold_clo},
+		{Type::any(), {Type::const_string(), fold_clo_type, Type::any()}, (void*) fold_fun},
 	});
 	method("indexOf", {
 		{Type::integer(), {Type::const_string(), Type::const_string()}, (void*) &string_indexOf, Method::NATIVE},
@@ -420,11 +420,6 @@ Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> ar
 		return {};
 	});
 	return c.insn_load(result);
-}
-
-Compiler::value StringSTD::fold_clo(Compiler& c, std::vector<Compiler::value> args) {
-	auto f = &LSString::ls_foldLeft<LSClosure*>;
-	return c.insn_call(Type::any(), {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
 }
 
 }

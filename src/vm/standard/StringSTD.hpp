@@ -24,7 +24,6 @@ public:
 	static LSValue* v1_replace(LSString* string, LSString* from, LSString* to);
 	
 	static Compiler::value fold_fun(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value fold_clo(Compiler& c, std::vector<Compiler::value> args);
 };
 
 }
