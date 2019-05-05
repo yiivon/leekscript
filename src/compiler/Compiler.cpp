@@ -125,6 +125,8 @@ Compiler::value Compiler::new_const_string(std::string s, std::string name) cons
 }
 
 Compiler::value Compiler::new_pointer(const void* p, Type type) const {
+	// TODO
+	// Remove this method
 	assert(type.is_pointer());
 	auto longp = llvm::ConstantInt::get(getContext(), llvm::APInt(64, (long) p, false));
 	return { builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, type.llvm_type(*this)), type };
