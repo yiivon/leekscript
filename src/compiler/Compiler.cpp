@@ -1748,6 +1748,7 @@ void Compiler::insn_branch(label* l) const {
 
 void Compiler::insn_return(Compiler::value v) const {
 	assert_value_ok(v);
+	assert(v.v != nullptr);
 	builder.CreateRet(v.v);
 }
 void Compiler::insn_return_void() const {
