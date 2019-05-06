@@ -390,6 +390,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("mpz_mod", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mod, Method::NATIVE}
 	});
+	method("mpz_probab_prime_p", {
+		{Type::integer(), {Type::mpz().pointer(), Type::integer()}, (void*) &mpz_probab_prime_p, Method::NATIVE}
+	});
 	method("mpz_neg", {
 		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg, Method::NATIVE}
 	});
@@ -1089,7 +1092,7 @@ Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value>
 
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
 	auto reps = c.new_integer(15);
-	auto res = c.insn_call(Type::integer(), {args[0], reps}, &mpz_probab_prime_p);
+	auto res = c.insn_call(Type::integer(), {args[0], reps}, "Number.mpz_probab_prime_p");
 	c.insn_delete_temporary(args[0]);
 	return res;
 }
