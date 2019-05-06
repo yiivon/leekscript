@@ -390,7 +390,7 @@ Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	if (a.t.is_polymorphic() or b.t.is_polymorphic()) {
 		auto ap = insn_to_any(a);
 		auto bp = insn_to_any(b);
-		auto r = insn_call(Type::boolean(), {ap, bp}, "Value.lt");
+		auto r = insn_call(Type::boolean(), {ap, bp}, "Value.operator<");
 		insn_delete_temporary(ap);
 		insn_delete_temporary(bp);
 		return r;
