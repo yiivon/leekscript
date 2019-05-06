@@ -173,6 +173,9 @@ StringSTD::StringSTD() : Module("String") {
 	method("codePointAt", {
 		{Type::tmp_string(), {Type::const_string(), Type::integer()}, (void*) &LSString::codePointAt, Method::NATIVE}
 	});
+	method("isize", {
+		{Type::string(), {Type::const_string()}, (void*) &LSString::int_size, Method::NATIVE}
+	});
 }
 
 StringSTD::~StringSTD() {}

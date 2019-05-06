@@ -930,7 +930,7 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	if (v.t.is_string()) {
-		return insn_call(Type::integer(), {v}, (void*) &LSString::int_size);
+		return insn_call(Type::integer(), {v}, "String.isize");
 	} else if (v.t.is_array()) {
 		if (v.t.element().is_integer()) {
 			return insn_call(Type::integer(), {v}, "Array.isize.2");
