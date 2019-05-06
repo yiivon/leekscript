@@ -303,41 +303,23 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		} else if (array->type.is_map()) {
 
 			if (array->type.not_temporary() == Type::map(Type::any(), Type::integer())) {
-				return c.insn_call(Type::integer().pointer(), {compiled_array, k}, (void*) +[](LSMap<LSValue*, int>* map, LSValue* key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::integer().pointer(), {compiled_array, k}, "Map.atL.2");
 			} else if (array->type.not_temporary() == Type::map(Type::any(), Type::real())) {
-				return c.insn_call(Type::real().pointer(), {compiled_array, k}, (void*) +[](LSMap<LSValue*, double>* map, LSValue* key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::real().pointer(), {compiled_array, k}, "Map.atL.1");
 			} else if (array->type.not_temporary() == Type::map(Type::real(), Type::any())) {
-				return c.insn_call(Type::any().pointer(), {compiled_array, k}, (void*) +[](LSMap<double, LSValue*>* map, double key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::any().pointer(), {compiled_array, k}, "Map.atL.3");
 			} else if (array->type.not_temporary() == Type::map(Type::real(), Type::integer())) {
-				return c.insn_call(Type::integer().pointer(), {compiled_array, k}, (void*) +[](LSMap<double, int>* map, double key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::integer().pointer(), {compiled_array, k}, "Map.atL.5");
 			} else if (array->type.not_temporary() == Type::map(Type::real(), Type::real())) {
-				return c.insn_call(Type::real().pointer(), {compiled_array, k}, (void*) +[](LSMap<double, double>* map, double key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::real().pointer(), {compiled_array, k}, "Map.atL.4");
 			} else if (array->type.not_temporary() == Type::map(Type::integer(), Type::any())) {
-				return c.insn_call(Type::any().pointer(), {compiled_array, k}, (void*) +[](LSMap<int, LSValue*>* map, int key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::any().pointer(), {compiled_array, k}, "Map.atL.6");
 			} else if (array->type.not_temporary() == Type::map(Type::integer(), Type::integer())) {
-				return c.insn_call(Type::integer().pointer(), {compiled_array, k}, (void*) +[](LSMap<int, int>* map, int key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::integer().pointer(), {compiled_array, k}, "Map.atL.8");
 			} else if (array->type.not_temporary() == Type::map(Type::integer(), Type::real())) {
-				return c.insn_call(Type::real().pointer(), {compiled_array, k}, (void*) +[](LSMap<int, double>* map, int key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::real().pointer(), {compiled_array, k}, "Map.atL.7");
 			} else {
-				return c.insn_call(Type::any().pointer(), {compiled_array, k}, (void*) +[](LSMap<LSValue*, LSValue*>* map, LSValue* key) {
-					return map->atL_base(key);
-				});
+				return c.insn_call(Type::any().pointer(), {compiled_array, k}, "Map.atL");
 			}
 		} else {
 			k = c.insn_to_any(k);

@@ -205,6 +205,17 @@ MapSTD::MapSTD() : Module("Map") {
 		{{}, {Type::map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int, double>::ls_emplace, Method::NATIVE},
 		{{}, {Type::map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int, int>::ls_emplace, Method::NATIVE},
 	});
+	method("atL", {
+		{{}, {Type::map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &LSMap<LSValue*, LSValue*>::atL_base, Method::NATIVE},
+		{{}, {Type::map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &LSMap<LSValue*, double>::atL_base, Method::NATIVE},
+		{{}, {Type::map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &LSMap<LSValue*, int>::atL_base, Method::NATIVE},
+		{{}, {Type::map(Type::real(), Type::any()), Type::real(), Type::any()}, (void*) &LSMap<double, LSValue*>::atL_base, Method::NATIVE},
+		{{}, {Type::map(Type::real(), Type::real()), Type::real(), Type::real()}, (void*) &LSMap<double, double>::atL_base, Method::NATIVE},
+		{{}, {Type::map(Type::real(), Type::integer()), Type::real(), Type::integer()}, (void*) &LSMap<double, int>::atL_base, Method::NATIVE},
+		{{}, {Type::map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &LSMap<int, LSValue*>::atL_base, Method::NATIVE},
+		{{}, {Type::map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int, double>::atL_base, Method::NATIVE},
+		{{}, {Type::map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int, int>::atL_base, Method::NATIVE},
+	});
 }
 
 Compiler::value MapSTD::look_any_any(Compiler& c, std::vector<Compiler::value> args) {
