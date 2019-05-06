@@ -949,9 +949,7 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	Compiler::value arg0 = {F->arg_begin(), Type::integer()};
 	auto jit_index = new_integer(index);
 	auto first_type = type.is_primitive() ? Type::any() : type;
-	auto v = insn_call(first_type, {arg0, jit_index}, +[](LSClosure* fun, int index) {
-		return fun->get_capture(index);
-	});
+	auto v = insn_call(first_type, {arg0, jit_index}, "Function.get_capture");
 	if (type == Type::integer()) {
 		v = insn_call(Type::integer(), {v}, +[](LSNumber* n) {
 			return (int) n->value;
@@ -964,9 +962,7 @@ Compiler::value Compiler::insn_get_capture_l(int index, Type type) const {
 	assert(type.is_polymorphic());
 	Compiler::value arg0 = {F->arg_begin(), Type::integer()};
 	auto jit_index = new_integer(index);
-	return insn_call(type.pointer(), {arg0, jit_index}, +[](LSClosure* fun, int index) {
-		return fun->get_capture_l(index);
-	});
+	return insn_call(type.pointer(), {arg0, jit_index}, "Function.get_capture_l");
 }
 
 void Compiler::insn_push_array(Compiler::value array, Compiler::value value) const {
@@ -1961,10 +1957,7 @@ void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture
 	assert(fun.t.llvm_type(*this) == fun.v->getType());
 	assert(capture.t.llvm_type(*this) == capture.v->getType());
 	// std::cout << "add capture " << capture.t << std::endl;
-	insn_call({}, {fun, capture}, +[](LSClosure* fun, LSValue* cap) {
-		// std::cout << "add capture value " << cap << std::endl;
-		fun->add_capture(cap); 
-	});
+	insn_call({}, {fun, capture}, "Function.add_capture");
 }
 
 void Compiler::log(const std::string&& str) const { assert(false); }

@@ -25,6 +25,15 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 	method("call", {
 		{Type::any(), {Type::fun({}, {})}, (void*) &LSFunction::call, Method::NATIVE}
 	});
+	method("get_capture", {
+		{Type::any(), {Type::closure({}, {})}, (void*) &LSClosure::get_capture, Method::NATIVE}
+	});
+	method("get_capture_l", {
+		{Type::any(), {Type::closure({}, {})}, (void*) &LSClosure::get_capture_l, Method::NATIVE}
+	});
+	method("add_capture", {
+		{{}, {Type::closure({}, {}), Type::any()}, (void*) &LSClosure::add_capture, Method::NATIVE}
+	});
 }
 
 }
