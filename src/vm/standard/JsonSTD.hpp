@@ -10,7 +10,7 @@ public:
 	JsonSTD();
 
 	static Compiler::value encode(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value decode(Compiler&, std::vector<Compiler::value>);
+	static LSValue* decode(LSString* string);
 };
 
 }

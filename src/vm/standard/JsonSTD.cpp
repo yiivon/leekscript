@@ -13,7 +13,7 @@ JsonSTD::JsonSTD() : Module("Json") {
 		{Type::string(), {Type::const_any()}, (void*) &JsonSTD::encode}
 	});
 	method("decode", {
-		{Type::any(), {Type::const_string()}, (void*) &JsonSTD::decode},
+		{Type::any(), {Type::const_string()}, (void*) &JsonSTD::decode, Method::NATIVE},
 	});
 }
 
@@ -49,17 +49,15 @@ Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) 
 	return c.insn_call(Type::string(), args, (void*) &LSValue::ls_json);
 }
 
-Compiler::value JsonSTD::decode(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::any(), args, (void*) +[](LSString* string) {
-		try {
-			Json json = Json::parse(*string);
-			LSValue::delete_temporary(string);
-			return LSValue::get_from_json(json);
-		} catch (...) {
-			LSValue::delete_temporary(string);
-			return LSNull::get();
-		}
-	});
+LSValue* JsonSTD::decode(LSString* string) {
+	try {
+		Json json = Json::parse(*string);
+		LSValue::delete_temporary(string);
+		return LSValue::get_from_json(json);
+	} catch (...) {
+		LSValue::delete_temporary(string);
+		return LSNull::get();
+	}
 }
 
 }
