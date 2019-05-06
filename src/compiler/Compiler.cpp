@@ -950,10 +950,8 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	auto jit_index = new_integer(index);
 	auto first_type = type.is_primitive() ? Type::any() : type;
 	auto v = insn_call(first_type, {arg0, jit_index}, "Function.get_capture");
-	if (type == Type::integer()) {
-		v = insn_call(Type::integer(), {v}, +[](LSNumber* n) {
-			return (int) n->value;
-		});
+	if (type.is_integer()) {
+		v = insn_call(Type::integer(), {v}, "Value.get_int");
 	}
 	return v;
 }

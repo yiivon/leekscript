@@ -285,6 +285,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("type", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::type, Method::NATIVE}
 	});
+	method("get_int", {
+		{Type::integer(), {Type::any()}, (void*) ValueSTD::get_int, Method::NATIVE}
+	});
 }
 
 /*
@@ -818,6 +821,9 @@ bool ValueSTD::gt(LSValue* x, LSValue* y) {
 }
 bool ValueSTD::ge(LSValue* x, LSValue* y) {
 	return *x >= *y;
+}
+int ValueSTD::get_int(LSNumber* x) {
+	return (int) x->value;
 }
 
 }
