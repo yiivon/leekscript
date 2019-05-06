@@ -8,6 +8,35 @@ int map_size(const LSMap<LSValue*,LSValue*>* map) {
 	if (map->refs == 0) delete map;
 	return r;
 }
+void* iterator_end(LSMap<int, int>* map) {
+	return map->end()._M_node;
+}
+LSMap<int, int>::iterator iterator_inc(LSMap<int, int>::iterator it) {
+	it++;
+	return it;
+}
+LSMap<int, int>::iterator iterator_dec(LSMap<int, int>::iterator it) {
+	it--;
+	return it;
+}
+void* iterator_rkey(std::map<void*, void*>::iterator it) {
+	return std::map<void*, void*>::reverse_iterator(it)->first;
+}
+int iterator_rget_ii(std::map<int, int>::iterator it) {
+	return std::map<int, int>::reverse_iterator(it)->second;
+}
+int iterator_rget_vi(std::map<void*, int>::iterator it) {
+	return std::map<void*, int>::reverse_iterator(it)->second;
+}
+double iterator_rget_ir(std::map<int, double>::iterator it) {
+	return std::map<int, double>::reverse_iterator(it)->second;
+}
+void* iterator_rget_vv(std::map<void*, void*>::iterator it) {
+	return std::map<void*, void*>::reverse_iterator(it)->second;
+}
+std::map<int, int>::iterator end(LSMap<int, int>* map) {
+	return map->end();
+}
 
 MapSTD::MapSTD() : Module("Map") {
 
@@ -215,6 +244,28 @@ MapSTD::MapSTD() : Module("Map") {
 		{{}, {Type::map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &LSMap<int, LSValue*>::atL_base, Method::NATIVE},
 		{{}, {Type::map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int, double>::atL_base, Method::NATIVE},
 		{{}, {Type::map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int, int>::atL_base, Method::NATIVE},
+	});
+	// std::map<int, int>::iterator (LSMap<int, int>::*mapend)() = &LSMap<int, int>::end;
+	method("end", {
+		{Type::map().iterator(), {Type::map()}, (void*) end, Method::NATIVE}
+	});
+	method("iterator_end", {
+		{Type::map().iterator(), {Type::map()}, (void*) iterator_end, Method::NATIVE}
+	});
+	method("iterator_inc", {
+		{Type::map().iterator(), {Type::map().iterator()}, (void*) iterator_inc, Method::NATIVE}
+	});
+	method("iterator_dec", {
+		{Type::map().iterator(), {Type::map().iterator()}, (void*) iterator_dec, Method::NATIVE}
+	});
+	method("iterator_rkey", {
+		{Type::i8().pointer(), {Type::map().iterator()}, (void*) iterator_rkey, Method::NATIVE}
+	});
+	method("iterator_rget", {
+		{Type::integer(), {Type::map().iterator()}, (void*) iterator_rget_ii, Method::NATIVE},
+		{Type::integer(), {Type::map().iterator()}, (void*) iterator_rget_vi, Method::NATIVE},
+		{Type::real(), {Type::map().iterator()}, (void*) iterator_rget_ir, Method::NATIVE},
+		{Type::any(), {Type::map().iterator()}, (void*) iterator_rget_vv, Method::NATIVE},
 	});
 }
 

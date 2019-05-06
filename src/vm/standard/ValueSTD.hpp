@@ -113,6 +113,7 @@ public:
 	static bool le(LSValue* x, LSValue* y);
 	static bool gt(LSValue* x, LSValue* y);
 	static bool ge(LSValue* x, LSValue* y);
+	static void delete_previous(LSValue* x);
 	static int get_int(LSNumber* x);
 };
 

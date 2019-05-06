@@ -152,6 +152,7 @@ void Test::test_map() {
 	code("['a': [55], 'c': [77]].foldLeft((r, k, v) => r + k * 10 + v, 0)").equals("'0aaaaaaaaaa[55]cccccccccc[77]'");
 
 	section("Map.foldRight()");
+	code("[:].foldRight((k, v, r) => r + k * 1000 + v, 0)").equals("0");
 	code("[1: 2, 3: 4].foldRight((k, v, r) => r + k * 1000 + v, 0)").equals("4006");
 	code("[1: 2.5, 3: 4.7].foldRight((k, v, r) => r + k * 10000 + v, 0)").equals("40007.2");
 	code("[1: 'b', 3: 'd'].foldRight((k, v, r) => r + k * 1000 + v, 0)").equals("'3000d1000b'");

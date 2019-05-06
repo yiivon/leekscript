@@ -1168,9 +1168,7 @@ Compiler::value Compiler::iterator_rbegin(Compiler::value v) const {
 	}
 	else if (v.t.is_map()) {
 		auto it = create_entry("it", v.t.iterator());
-		auto end = insn_call(it.t, {v}, +[](LSMap<int, int>* map) {
-			return map->end();
-		});
+		auto end = insn_call(it.t, {v}, "Map.end");
 		insn_store(it, end);
 		return it;
 	}
@@ -1207,7 +1205,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	}
 	else if (v.t.is_map()) {
 		auto node = insn_load(it);
-		auto end = insn_call(node.t, {v}, +[](LSMap<int,int>* map) { return map->end()._M_node; });
+		auto end = insn_call(node.t, {v}, "Map.iterator_end");
 		return { builder.CreateICmpEQ(node.v, end.v), Type::boolean() };
 	}
 	else if (v.t.is_set()) {
@@ -1290,10 +1288,7 @@ Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, 
 	}
 	if (collectionType.is_map()) {
 		if (previous.t.must_manage_memory()) {
-			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr)
-					LSValue::delete_ref(previous);
-			});
+			insn_call({}, {previous}, "Value.delete_previous");
 		}
 		auto node = insn_load(it);
 		auto e = insn_load_member(node, 5);
@@ -1356,28 +1351,17 @@ Compiler::value Compiler::iterator_rget(Type collectionType, Compiler::value it,
 	}
 	if (collectionType.is_map()) {
 		if (previous.t.must_manage_memory()) {
-			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr)
-					LSValue::delete_ref(previous);
-			});
+			insn_call({}, {previous}, "Value.delete_previous");
 		}
 		auto node = insn_load(it);
 		auto e = [&]() { if (collectionType.element().is_integer() and collectionType.key().is_integer()) {
-			return insn_call(collectionType.element(), {node}, +[](std::map<int, int>::iterator it) {
-				return std::map<int, int>::reverse_iterator(it)->second;
-			});
+			return insn_call(collectionType.element(), {node}, "Map.iterator_rget");
 		} else if (collectionType.element().is_integer()) {
-			return insn_call(collectionType.element(), {node}, +[](std::map<void*, int>::iterator it) {
-				return std::map<void*, int>::reverse_iterator(it)->second;
-			});
+			return insn_call(collectionType.element(), {node}, "Map.iterator_rget.1");
 		} else if (collectionType.element().is_real()) {
-			return insn_call(collectionType.element(), {node}, +[](std::map<int, double>::iterator it) {
-				return std::map<int, double>::reverse_iterator(it)->second;
-			});
+			return insn_call(collectionType.element(), {node}, "Map.iterator_rget.2");
 		} else {
-			return insn_call(collectionType.element(), {node}, +[](std::map<void*, void*>::iterator it) {
-				return std::map<void*, void*>::reverse_iterator(it)->second;
-			});
+			return insn_call(collectionType.element(), {node}, "Map.iterator_rget.3");
 		}}();
 		insn_inc_refs(e);
 		return e;
@@ -1424,9 +1408,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 	}
 	if (v.t.is_map()) {
 		if (previous.t.must_manage_memory()) {
-			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr) LSValue::delete_ref(previous);
-			});
+			insn_call({}, {previous}, "Value.delete_previous");
 		}
 		auto node = insn_load(it);
 		auto e = insn_load_member(node, 4);
@@ -1466,14 +1448,10 @@ Compiler::value Compiler::iterator_rkey(Compiler::value v, Compiler::value it, C
 	}
 	if (v.t.is_map()) {
 		if (previous.t.must_manage_memory()) {
-			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr) LSValue::delete_ref(previous);
-			});
+			insn_call({}, {previous}, "Value.delete_previous");
 		}
 		auto node = insn_load(it);
-		auto e = insn_call(v.t.key(), {node}, +[](std::map<void*, void*>::iterator it) {
-			return std::map<void*, void*>::reverse_iterator(it)->first;
-		});
+		auto e = insn_call(v.t.key(), {node}, "Map.iterator_rkey");
 		insn_inc_refs(e);
 		return e;
 	}
@@ -1509,10 +1487,7 @@ void Compiler::iterator_increment(Type collectionType, Compiler::value it) const
 	}
 	if (collectionType.is_map()) {
 		auto node = insn_load(it);
-		insn_store(it, insn_call(node.t, {node}, (void*) +[](LSMap<int,int>::iterator it) {
-			it++;
-			return it;
-		}));
+		insn_store(it, insn_call(node.t, {node}, "Map.iterator_inc"));
 		return;
 	}
 	if (collectionType.is_set()) {
@@ -1559,10 +1534,7 @@ void Compiler::iterator_rincrement(Type collectionType, Compiler::value it) cons
 	}
 	if (collectionType.is_map()) {
 		auto node = insn_load(it);
-		insn_store(it, insn_call(node.t, {node}, (void*) +[](LSMap<int,int>::iterator it) {
-			it--;
-			return it;
-		}));
+		insn_store(it, insn_call(node.t, {node}, "Map.iterator_dec"));
 		return;
 	}
 	if (collectionType.is_set()) {

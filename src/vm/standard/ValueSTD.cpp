@@ -275,6 +275,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("type", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::type, Method::NATIVE}
 	});
+	method("delete_previous", {
+		{{}, {Type::any()}, (void*) ValueSTD::delete_previous, Method::NATIVE}
+	});
 	method("get_int", {
 		{Type::integer(), {Type::any()}, (void*) ValueSTD::get_int, Method::NATIVE}
 	});
@@ -800,6 +803,11 @@ bool ValueSTD::gt(LSValue* x, LSValue* y) {
 }
 bool ValueSTD::ge(LSValue* x, LSValue* y) {
 	return *x >= *y;
+}
+void ValueSTD::delete_previous(LSValue* previous) {
+	if (previous != nullptr) {
+		LSValue::delete_ref(previous);
+	}
 }
 int ValueSTD::get_int(LSNumber* x) {
 	return (int) x->value;
