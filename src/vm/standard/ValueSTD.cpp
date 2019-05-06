@@ -28,21 +28,26 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::const_any(), Type::const_class(), Type::boolean(), (void*) &ValueSTD::op_instanceof}
 	});
 	operator_("==", {
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::eq, {}, Method::NATIVE},
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_equals}
 	});
 	operator_("!=", {
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_not_equals}
 	});
 	operator_("<", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_lt}
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::lt, {}, Method::NATIVE},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_lt},
 	});
 	operator_("<=", {
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::le, {}, Method::NATIVE},
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_le}
 	});
 	operator_(">", {
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::gt, {}, Method::NATIVE},
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_gt}
 	});
 	operator_(">=", {
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::ge, {}, Method::NATIVE},
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_ge}
 	});
 	operator_("and", {
@@ -267,21 +272,6 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("to_bool", {
 		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::to_bool, Method::NATIVE}
 	});
-	method("eq", {
-		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::eq, Method::NATIVE}
-	});
-	method("lt", {
-		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::lt, Method::NATIVE}
-	});
-	method("le", {
-		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::le, Method::NATIVE}
-	});
-	method("gt", {
-		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::gt, Method::NATIVE}
-	});
-	method("ge", {
-		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::ge, Method::NATIVE}
-	});
 	method("type", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::type, Method::NATIVE}
 	});
@@ -326,14 +316,11 @@ Compiler::value ValueSTD::op_not_equals(Compiler& c, std::vector<Compiler::value
 
 Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0 or args[1].t.id() == 0) {
-		auto res = c.insn_call(Type::boolean(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])},
-			+[](LSValue* a, LSValue* b) {
-				auto res = *a < *b;
-				LSValue::delete_temporary(a);
-				LSValue::delete_temporary(b);
-				return res;
-			}
-		);
+		auto ap = c.insn_to_any(args[0]);
+		auto bp = c.insn_to_any(args[1]);
+		auto res = c.insn_call(Type::boolean(), {ap, bp}, "Value.operator<");
+		c.insn_delete_temporary(ap);
+		c.insn_delete_temporary(bp);
 		return res;
 	} else {
 		auto res = c.insn_lt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
@@ -347,7 +334,7 @@ Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) 
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0	or args[1].t.id() == 0) {
 		auto ap = c.insn_to_any(args[0]);
 		auto bp = c.insn_to_any(args[1]);
-		auto res = c.insn_call(Type::boolean(), {ap, bp}, "Value.le");
+		auto res = c.insn_call(Type::boolean(), {ap, bp}, "Value.operator<");
 		c.insn_delete_temporary(ap);
 		c.insn_delete_temporary(bp);
 		return res;
@@ -361,14 +348,11 @@ Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) 
 
 Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0	or args[1].t.id() == 0) {
-		auto res = c.insn_call(Type::boolean(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])},
-			+[](LSValue* a, LSValue* b) {
-				auto res = *a > *b;
-				LSValue::delete_temporary(a);
-				LSValue::delete_temporary(b);
-				return res;
-			}
-		);
+		auto ap = c.insn_to_any(args[0]);
+		auto bp = c.insn_to_any(args[1]);
+		auto res = c.insn_call(Type::boolean(), {ap, bp}, "Value.operator>");
+		c.insn_delete_temporary(ap);
+		c.insn_delete_temporary(bp);
 		return res;
 	} else {
 		auto res = c.insn_gt(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
@@ -380,14 +364,9 @@ Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) 
 
 Compiler::value ValueSTD::op_ge(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0 or args[1].t.id() == 0) {
-		auto res = c.insn_call(Type::boolean(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])},
-			+[](LSValue* a, LSValue* b) {
-				auto res = *a >= *b;
-				LSValue::delete_temporary(a);
-				LSValue::delete_temporary(b);
-				return res;
-			}
-		);
+		auto res = c.insn_call(Type::boolean(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, "Value.operator>=");
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
 		return res;
 	} else {
 		auto res = c.insn_ge(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
