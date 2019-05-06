@@ -1101,14 +1101,7 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	}
 	else if (v.t.is_string()) {
 		auto it = create_entry("it", v.t.iterator());
-		insn_call({}, {v, it}, (void*) +[](LSString* str, LSString::iterator* it) {
-			auto i = LSString::iterator_begin(str);
-			it->buffer = i.buffer;
-			it->index = 0;
-			it->pos = 0;
-			it->next_pos = 0;
-			it->character = 0;
-		});
+		insn_call({}, {v, it}, "String.iterator_begin");
 		return it;
 	}
 	else if (v.t.is_map()) {
@@ -1201,7 +1194,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 		return insn_gt(pos, end);
 	}
 	else if (v.t.is_string()) {
-		return insn_call(Type::boolean(), {it}, &LSString::iterator_end);
+		return insn_call(Type::boolean(), {it}, "String.iterator_end");
 	}
 	else if (v.t.is_map()) {
 		auto node = insn_load(it);
@@ -1274,17 +1267,8 @@ Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, 
 		return insn_load_member(it, 1);
 	}
 	if (collectionType.is_string()) {
-		auto int_char = insn_call(Type::integer(), {it}, &LSString::iterator_get);
-		return insn_call(Type::string(), {int_char, previous}, (void*) +[](unsigned int c, LSString* previous) {
-			if (previous != nullptr) {
-				LSValue::delete_ref(previous);
-			}
-			char dest[5];
-			u8_toutf8(dest, 5, &c, 1);
-			auto s = new LSString(dest);
-			s->refs = 1;
-			return s;
-		});
+		auto int_char = insn_call(Type::integer(), {it}, "String.iterator_get");
+		return insn_call(Type::tmp_string(), {int_char, previous}, "String.iterator_get.1");
 	}
 	if (collectionType.is_map()) {
 		if (previous.t.must_manage_memory()) {
@@ -1337,17 +1321,8 @@ Compiler::value Compiler::iterator_rget(Type collectionType, Compiler::value it,
 		return insn_load_member(it, 1);
 	}
 	if (collectionType.is_string()) {
-		auto int_char = insn_call(Type::integer(), {it}, &LSString::iterator_get);
-		return insn_call(Type::string(), {int_char, previous}, (void*) +[](unsigned int c, LSString* previous) {
-			if (previous != nullptr) {
-				LSValue::delete_ref(previous);
-			}
-			char dest[5];
-			u8_toutf8(dest, 5, &c, 1);
-			auto s = new LSString(dest);
-			s->refs = 1;
-			return s;
-		});
+		auto int_char = insn_call(Type::integer(), {it}, "String.iterator_get");
+		return insn_call(Type::string(), {int_char, previous}, "String.iterator_get.1");
 	}
 	if (collectionType.is_map()) {
 		if (previous.t.must_manage_memory()) {
@@ -1404,7 +1379,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 		return insn_sub(e, start);
 	}
 	if (v.t.is_string()) {
-		return insn_call(Type::integer(), {it}, &LSString::iterator_key);
+		return insn_call(Type::integer(), {it}, "String.iterator_key");
 	}
 	if (v.t.is_map()) {
 		if (previous.t.must_manage_memory()) {
@@ -1444,7 +1419,7 @@ Compiler::value Compiler::iterator_rkey(Compiler::value v, Compiler::value it, C
 		return insn_sub(e, start);
 	}
 	if (v.t.is_string()) {
-		return insn_call(Type::integer(), {it}, &LSString::iterator_key);
+		return insn_call(Type::integer(), {it}, "String.iterator_key");
 	}
 	if (v.t.is_map()) {
 		if (previous.t.must_manage_memory()) {
@@ -1482,7 +1457,7 @@ void Compiler::iterator_increment(Type collectionType, Compiler::value it) const
 		return;
 	}
 	if (collectionType.is_string()) {
-		insn_call({}, {it}, &LSString::iterator_next);
+		insn_call({}, {it}, "String.iterator_next");
 		return;
 	}
 	if (collectionType.is_map()) {

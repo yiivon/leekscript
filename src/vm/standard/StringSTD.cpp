@@ -49,6 +49,25 @@ LSString* plus_mpz_tmp(LSString* s, __mpz_struct* mpz) {
 	return res;
 }
 
+void iterator_begin(LSString* str, LSString::iterator* it) {
+	auto i = LSString::iterator_begin(str);
+	it->buffer = i.buffer;
+	it->index = 0;
+	it->pos = 0;
+	it->next_pos = 0;
+	it->character = 0;
+}
+LSString* iterator_get(unsigned int c, LSString* previous) {
+	if (previous != nullptr) {
+		LSValue::delete_ref(previous);
+	}
+	char dest[5];
+	u8_toutf8(dest, 5, &c, 1);
+	auto s = new LSString(dest);
+	s->refs = 1;
+	return s;
+}
+
 StringSTD::StringSTD() : Module("String") {
 
 	LSString::string_class = clazz;
@@ -175,6 +194,22 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	method("isize", {
 		{Type::string(), {Type::const_string()}, (void*) &LSString::int_size, Method::NATIVE}
+	});
+	method("iterator_begin", {
+		{{}, {Type::const_string(), Type::i8().pointer()}, (void*) iterator_begin, Method::NATIVE}
+	});
+	method("iterator_end", {
+		{{}, {Type::i8().pointer()}, (void*) &LSString::iterator_end, Method::NATIVE}
+	});
+	method("iterator_get", {
+		{Type::integer(), {Type::i8().pointer()}, (void*) &LSString::iterator_get, Method::NATIVE},
+		{Type::tmp_string(), {Type::integer(), Type::const_string()}, (void*) &iterator_get, Method::NATIVE},
+	});
+	method("iterator_key", {
+		{Type::integer(), {Type::i8().pointer()}, (void*) &LSString::iterator_key, Method::NATIVE}
+	});
+	method("iterator_next", {
+		{{}, {Type::i8().pointer()}, (void*) &LSString::iterator_next, Method::NATIVE}
 	});
 }
 
