@@ -267,25 +267,33 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::real(), {Type::map().iterator()}, (void*) iterator_rget_ir, Method::NATIVE},
 		{Type::any(), {Type::map().iterator()}, (void*) iterator_rget_vv, Method::NATIVE},
 	});
+	method("look_fun", {
+		{Type::any(), {Type::const_map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &LSMap<LSValue*, LSValue*>::ls_look, Method::NATIVE},
+		{Type::real(), {Type::const_map(Type::any(), Type::real()), Type::any(), Type::real()}, (void*) &LSMap<LSValue*, double>::ls_look, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::any(), Type::integer()), Type::any(), Type::integer()}, (void*) &LSMap<LSValue*, int>::ls_look, Method::NATIVE},
+		{Type::any(), {Type::const_map(Type::integer(), Type::any()), Type::integer(), Type::any()}, (void*) &LSMap<int, LSValue*>::ls_look, Method::NATIVE},
+		{Type::real(), {Type::const_map(Type::integer(), Type::real()), Type::integer(), Type::real()}, (void*) &LSMap<int, double>::ls_look, Method::NATIVE},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, (void*) &LSMap<int, int>::ls_look, Method::NATIVE},
+	});
 }
 
 Compiler::value MapSTD::look_any_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<LSValue*, LSValue*>::ls_look);
+	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1]), c.insn_to_any(args[2])}, "Map.look_fun");
 }
 Compiler::value MapSTD::look_any_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), {args[0], c.insn_to_any(args[1]), c.to_real(args[2])}, (void*) &LSMap<LSValue*, double>::ls_look);
+	return c.insn_call(Type::real(), {args[0], c.insn_to_any(args[1]), c.to_real(args[2])}, "Map.look_fun.1");
 }
 Compiler::value MapSTD::look_any_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::integer(), {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSMap<LSValue*, int>::ls_look);
+	return c.insn_call(Type::integer(), {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, "Map.look_fun.2");
 }
 Compiler::value MapSTD::look_int_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::any(), {args[0], c.to_int(args[1]), c.insn_to_any(args[2])}, (void*) &LSMap<int, LSValue*>::ls_look);
+	return c.insn_call(Type::any(), {args[0], c.to_int(args[1]), c.insn_to_any(args[2])}, "Map.look_fun.3");
 }
 Compiler::value MapSTD::look_int_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), {args[0], c.to_int(args[1]), c.to_real(args[2])}, (void*) &LSMap<int, double>::ls_look);
+	return c.insn_call(Type::real(), {args[0], c.to_int(args[1]), c.to_real(args[2])}, "Map.look_fun.4");
 }
 Compiler::value MapSTD::look_int_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::integer(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSMap<int, int>::ls_look);
+	return c.insn_call(Type::integer(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, "Map.look_fun.5");
 }
 
 Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args) {
