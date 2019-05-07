@@ -387,15 +387,6 @@ Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value>
 	return c.insn_call(Type::any(), args, "Value.operator+=");
 }
 
-Compiler::value ArraySTD::lt(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_call(Type::boolean(), args, +[](LSValue* a, LSValue* b) {
-		return a->lt(b);
-	});
-	c.insn_delete_temporary(args[0]);
-	c.insn_delete_temporary(args[1]);
-	return res;
-}
-
 Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args) {
 	auto res = c.insn_array_size(args[0]);
 	c.insn_delete_temporary(args[0]);
