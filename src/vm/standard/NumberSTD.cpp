@@ -405,6 +405,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("_mpz_cmp_si", {
 		{{Type::integer()}, {Type::mpz_ptr(), Type::long_()}, (void*) &_mpz_cmp_si, Method::NATIVE}
 	});
+	method("mpz_sqrt", {
+		{{}, {Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_sqrt, Method::NATIVE}
+	});
 	method("mpz_clear", {
 		{{}, {Type::mpz().pointer()}, (void*) &mpz_clear, Method::NATIVE}
 	});
@@ -1053,7 +1056,7 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 
 Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args) {
 	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
-	c.insn_call({}, {r, args[0]}, &mpz_sqrt);
+	c.insn_call({}, {r, args[0]}, "Number.mpz_sqrt");
 	return r;
 }
 
