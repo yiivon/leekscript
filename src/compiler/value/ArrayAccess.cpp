@@ -331,10 +331,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		key->compile_end(c);
 		key2->compile_end(c);
 		c.mark_offset(open_bracket->location.start.line);
-		return c.insn_call(Type::any(), {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
-			// TODO
-			a->rangeL(start, end);
-		});
+		assert(false);
 	}
 }
 
