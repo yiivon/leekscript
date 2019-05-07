@@ -703,19 +703,6 @@ Compiler::value Compiler::insn_atan(Compiler::value x) const {
 	return insn_call(Type::real(), {x}, "Number.m_atan.2");
 }
 
-Compiler::value Compiler::insn_sqrt(Compiler::value x) const {
-	assert(x.t.llvm_type(*this) == x.v->getType());
-	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
-		return insn_call(Type::real(), {x}, +[](int x) {
-			return std::sqrt(x);
-		});
-	}
-	return insn_call(Type::real(), {x}, +[](double x) {
-		return std::sqrt(x);
-	});
-}
-
 Compiler::value Compiler::insn_pow(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type(*this) == a.v->getType());
 	assert(b.t.llvm_type(*this) == b.v->getType());

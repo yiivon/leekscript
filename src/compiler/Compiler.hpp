@@ -218,7 +218,6 @@ public:
 	value insn_acos(value) const;
 	value insn_asin(value) const;
 	value insn_atan(value) const;
-	value insn_sqrt(value) const;
 	value insn_pow(value, value) const;
 	value insn_min(value, value) const;
 	value insn_max(value, value) const;

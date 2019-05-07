@@ -311,11 +311,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
 		{Type::real(), {Type::real()}, (void*) &NumberSTD::sin_real},
 	});
+	double (*sqrt_real)(double) = std::sqrt;
 	method("sqrt", {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::sqrt_real},
+		{Type::tmp_mpz_ptr(), {Type::mpz_ptr()}, (void*) NumberSTD::sqrt_mpz},
+		{Type::real(), {Type::real()}, (void*) sqrt_real, Method::NATIVE},
 		{Type::real(), {Type::integer()}, (void*) &std::sqrt<int>, Method::NATIVE},
-		{Type::tmp_mpz_ptr(), {Type::mpz_ptr()}, (void*) NumberSTD::sqrt_mpz}
 	});
 	method("tan", {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
@@ -1058,10 +1059,6 @@ Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> ar
 	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
 	c.insn_call({}, {r, args[0]}, "Number.mpz_sqrt");
 	return r;
-}
-
-Compiler::value NumberSTD::sqrt_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_sqrt(args[0]);
 }
 
 LSValue* NumberSTD::cbrt_ptr(LSNumber* x) {
