@@ -64,9 +64,7 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 }
 
 Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
-		return x->in(y);
-	});
+	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, "Value.operatorin");
 }
 
 LSValue* ObjectSTD::object_new(LSClass* clazz) {
