@@ -1252,11 +1252,7 @@ Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, 
 	log_insn_code("iterator.get()");
 	if (collectionType.is_array()) {
 		if (previous.t.must_manage_memory()) {
-			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr) {
-					LSValue::delete_ref(previous);
-				}
-			});
+			insn_call({}, {previous}, "Value.delete_previous");
 		}
 		auto e = insn_load(it);
 		auto f = insn_load(e);
@@ -1303,11 +1299,7 @@ Compiler::value Compiler::iterator_rget(Type collectionType, Compiler::value it,
 	log_insn_code("iterator.get()");
 	if (collectionType.is_array()) {
 		if (previous.t.must_manage_memory()) {
-			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr) {
-					LSValue::delete_ref(previous);
-				}
-			});
+			insn_call({}, {previous}, "Value.delete_previous");
 		}
 		auto e = insn_load(it);
 		auto f = insn_load(e);
