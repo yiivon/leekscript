@@ -72,7 +72,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("contains", {
-		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &ArraySTD::contains},
+		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
 		{Type::boolean(), {Type::const_array(Type::real()), Type::const_real()}, (void*) &LSArray<double>::ls_contains, Method::NATIVE},
 		{Type::boolean(), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_contains, Method::NATIVE},
 	});
@@ -394,12 +394,6 @@ Compiler::value ArraySTD::lt(Compiler& c, std::vector<Compiler::value> args) {
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return res;
-}
-
-Compiler::value ArraySTD::contains(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1])}, +[](LSArray<LSValue*>* array, LSValue* v) {
-		return array->ls_contains(v);
-	});
 }
 
 Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args) {

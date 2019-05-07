@@ -14,7 +14,6 @@ public:
 	static Compiler::value array_add_eq(Compiler& c, std::vector<Compiler::value> args);
 	static Compiler::value lt(Compiler&, std::vector<Compiler::value>);
 
-	static Compiler::value contains(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value size(Compiler&, std::vector<Compiler::value>);
 
 	static LSArray<LSValue*>* chunk_1_ptr(LSArray<LSValue*>* array);
