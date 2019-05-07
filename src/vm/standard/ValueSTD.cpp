@@ -159,7 +159,7 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_in}
 	});
 	operator_("<=>", {
-		{Type::any(), Type::any(), Type::any(), (void*) &ValueSTD::op_swap_ptr, {}, false, true, true},
+		{Type::any(), Type::any(), Type::any(), (void*) &ValueSTD::op_swap_ptr, {}, Method::NATIVE, true, true},
 		{Type::integer(), Type::integer(), Type::integer(), (void*) &ValueSTD::op_swap_val, {}, false, true, true},
 	});
 	auto T = Type::template_("T");
@@ -599,13 +599,11 @@ Compiler::value ValueSTD::op_swap_val(Compiler& c, std::vector<Compiler::value> 
 	return y;
 }
 
-Compiler::value ValueSTD::op_swap_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::any(), args, +[](LSValue** x, LSValue** y) {
-		auto tmp = *x;
-		*x = *y;
-		*y = tmp;
-		return *x;
-	});
+LSValue* ValueSTD::op_swap_ptr(LSValue** x, LSValue** y) {
+	auto tmp = *x;
+	*x = *y;
+	*y = tmp;
+	return *x;
 }
 
 Compiler::value ValueSTD::op_call(Compiler& c, std::vector<Compiler::value> args) {
