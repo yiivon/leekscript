@@ -2,6 +2,14 @@
 #include "../value/LSSet.hpp"
 
 namespace ls {
+	
+const std::_Rb_tree_node_base* iterator_end(LSSet<int>* set) {
+	return set->end()._M_node;
+}
+LSSet<int>::iterator iterator_inc(LSSet<int>::iterator it) {
+	it++;
+	return it;
+}
 
 SetSTD::SetSTD() : Module("Set") {
 
@@ -68,6 +76,12 @@ SetSTD::SetSTD() : Module("Set") {
 		{{}, {Type::const_set(Type::any()), Type::any()}, (void*) &LSSet<LSValue*>::vinsert, Method::NATIVE},
 		{{}, {Type::const_set(Type::real()), Type::real()}, (void*) &LSSet<double>::vinsert, Method::NATIVE},
 		{{}, {Type::const_set(Type::integer()), Type::integer()}, (void*) &LSSet<int>::vinsert, Method::NATIVE},
+	});
+	method("iterator_end", {
+		{Type::set().iterator(), {Type::set()}, (void*) iterator_end, Method::NATIVE}
+	});
+	method("iterator_inc", {
+		{Type::set().iterator(), {Type::set().iterator()}, (void*) iterator_inc, Method::NATIVE}
 	});
 }
 

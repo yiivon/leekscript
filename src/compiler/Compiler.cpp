@@ -1203,7 +1203,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	}
 	else if (v.t.is_set()) {
 		auto node = insn_load_member(it, 0);
-		auto end = insn_call(node.t, {v}, +[](LSSet<int>* set) { return set->end()._M_node; });
+		auto end = insn_call(node.t, {v}, "Set.iterator_end");
 		return {builder.CreateICmpEQ(node.v, end.v), Type::boolean()};
 	}
 	else if (v.t == Type::integer()) {
@@ -1281,10 +1281,7 @@ Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, 
 	}
 	if (collectionType.is_set()) {
 		if (previous.t.must_manage_memory()) {
-			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr)
-					LSValue::delete_ref(previous);
-			});
+			insn_call({}, {previous}, "Value.delete_previous");
 		}
 		auto node = insn_load_member(it, 0);
 		auto e = insn_load_member(node, 4);
@@ -1343,10 +1340,7 @@ Compiler::value Compiler::iterator_rget(Type collectionType, Compiler::value it,
 	}
 	if (collectionType.is_set()) {
 		if (previous.t.must_manage_memory()) {
-			insn_call({}, {previous}, +[](LSValue* previous) {
-				if (previous != nullptr)
-					LSValue::delete_ref(previous);
-			});
+			insn_call({}, {previous}, "Value.delete_previous");
 		}
 		auto node = insn_load_member(it, 0);
 		auto e = insn_load_member(node, 4);
@@ -1468,10 +1462,7 @@ void Compiler::iterator_increment(Type collectionType, Compiler::value it) const
 	if (collectionType.is_set()) {
 		auto node = insn_load_member(it, 0);
 		insn_store_member(it, 1, insn_add(insn_load_member(it, 1), new_integer(1)));
-		insn_store_member(it, 0, insn_call(node.t, {node}, (void*) +[](LSSet<int>::iterator it) {
-			it++;
-			return it;
-		}));
+		insn_store_member(it, 0, insn_call(node.t, {node}, "Set.iterator_inc"));
 		return;
 	}
 	if (collectionType.is_integer()) {
