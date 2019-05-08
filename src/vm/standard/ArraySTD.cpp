@@ -355,6 +355,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	method("to_bool", {
 		{Type::boolean(), {Type::array()}, (void*) &LSArray<int>::to_bool, Method::NATIVE}
 	});
+	auto sort_fun_int = &LSArray<int>::ls_sort_fun<LSFunction*>;
+	auto sort_fun_real = &LSArray<double>::ls_sort_fun<LSFunction*>;
+	auto sort_fun_any = &LSArray<LSValue*>::ls_sort_fun<LSFunction*>;
+	method("sort_fun", {
+		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_any, Method::NATIVE},
+		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_real, Method::NATIVE},
+		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_int, Method::NATIVE},
+	});
+
 }
 
 Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
@@ -549,14 +558,11 @@ Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args) {
 	const auto& fun = args[1];
 	auto f = [&]() {
 		if (args[0].t.element().fold().is_integer()) {
-			auto f = &LSArray<int>::ls_sort_fun<LSFunction*>;
-			return (void*) f;
+			return "Array.sort_fun.2";
 		} else if (args[0].t.element().fold().is_real()) {
-			auto f = &LSArray<double>::ls_sort_fun<LSFunction*>;
-			return (void*) f;
+			return "Array.sort_fun.1";
 		} else {
-			auto f = &LSArray<LSValue*>::ls_sort_fun<LSFunction*>;
-			return (void*) f;
+			return "Array.sort_fun";
 		}
 	}();
 	return c.insn_call(array.t, {array, fun}, f);
