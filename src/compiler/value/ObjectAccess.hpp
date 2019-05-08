@@ -24,8 +24,8 @@ public:
 	void* attr_addr;
 	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;
 	std::function<Compiler::value(Compiler&, Compiler::value)> access_function = nullptr;
-	void* native_access_function = nullptr;
-	void* native_static_access_function = nullptr;
+	std::string native_access_function = "";
+	std::string native_static_access_function = "";
 	Type field_type;
 	LSFunction* ls_function = nullptr;
 

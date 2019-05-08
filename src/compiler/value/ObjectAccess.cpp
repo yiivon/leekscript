@@ -25,7 +25,7 @@ ObjectAccess::~ObjectAccess() {
 }
 
 bool ObjectAccess::isLeftValue() const {
-	if (native_access_function != nullptr) {
+	if (native_access_function.size()) {
 		return false;
 	}
 	if (auto v = dynamic_cast<VariableValue*>(object)) {
@@ -210,7 +210,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 				static_access_function = mod_field.fun;
 			}
 			if (mod_field.native_fun != nullptr) {
-				native_static_access_function = mod_field.native_fun;
+				native_static_access_function = std_class->name + std::string(".") + mod_field.name;
 			}
 			field_type = mod_field.type;
 			found = true;
@@ -229,7 +229,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 				access_function = f.fun;
 			}
 			if (f.native_fun != nullptr) {
-				native_access_function = f.native_fun;
+				native_access_function = std::string("Value.") + f.name;
 			}
 		} catch (...) {
 			// Attribute in Value?
@@ -241,7 +241,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 					access_function = f.fun;
 				}
 				if (f.native_fun != nullptr) {
-					native_access_function = f.native_fun;
+					native_access_function = "Value." + f.name;
 				}
 			} catch (...) {
 				// Method : 12.abs
@@ -285,7 +285,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	if (static_access_function != nullptr) {
 		return static_access_function(c);
 	}
-	if (native_static_access_function != nullptr) {
+	if (native_static_access_function.size()) {
 		return c.insn_call(field_type, {}, native_static_access_function);
 	}
 
@@ -295,7 +295,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		object->compile_end(c);
 		return access_function(c, obj);
 	}
-	if (native_access_function != nullptr) {
+	if (native_access_function.size()) {
 		auto obj = object->compile(c);
 		object->compile_end(c);
 		return c.insn_call(type, {obj}, native_access_function);

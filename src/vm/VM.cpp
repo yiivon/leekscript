@@ -235,8 +235,14 @@ void* VM::resolve_symbol(std::string name) {
 				auto implems = clazz->operators.at(op);
 				return implems.at(version).addr;
 			} else {
-				auto implems = clazz->methods.at(method);
-				return implems.at(version).addr;
+				if (clazz->methods.find(method) != clazz->methods.end()) {
+					auto implems = clazz->methods.at(method);
+					return implems.at(version).addr;
+				} else if (clazz->static_fields.find(method) != clazz->static_fields.end()) {
+					return clazz->static_fields.at(method).native_fun;
+				} else if (clazz->fields.find(method) != clazz->fields.end()) {
+					return clazz->fields.at(method).native_fun;
+				}
 			}
 		}
 	}
