@@ -86,9 +86,7 @@ SetSTD::SetSTD() : Module("Set") {
 }
 
 Compiler::value SetSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
-		return x->in(y);
-	});
+	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, "Value.operatorin");
 }
 
 Compiler::value SetSTD::set_add_eq(Compiler& c, std::vector<Compiler::value> args) {

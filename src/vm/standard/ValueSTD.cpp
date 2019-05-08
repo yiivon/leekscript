@@ -156,7 +156,8 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_uright_eq, {}, false, true}
 	});
 	operator_("in", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_in}
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::in, {}, Method::NATIVE},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_in},
 	});
 	operator_("<=>", {
 		{Type::any(), Type::any(), Type::any(), (void*) &ValueSTD::op_swap_ptr, {}, Method::NATIVE, true, true},
