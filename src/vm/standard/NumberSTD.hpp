@@ -161,7 +161,7 @@ public:
 
 	static LSValue* cbrt_ptr(LSNumber* x);
 
-	static Compiler::value pow_ptr(Compiler&, std::vector<Compiler::value>);
+	static double pow_ptr(LSNumber* x, LSNumber* y);
 	static Compiler::value pow_int(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value is_prime(Compiler&, std::vector<Compiler::value>);

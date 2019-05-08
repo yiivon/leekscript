@@ -290,8 +290,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::integer(), {Type::integer(), Type::integer()}, (void*) &NumberSTD::min_float_float},
 	});
 	method("pow", {
-		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::pow_ptr},
-		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::pow_ptr},
+		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::pow_ptr, Method::NATIVE},
 		{Type::long_(), {Type::long_(), Type::integer()}, (void*) &NumberSTD::pow_int},
 		{Type::real(), {Type::long_(), Type::long_()}, (void*) &NumberSTD::pow_int},
 	});
@@ -1078,9 +1077,7 @@ Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
-	c.insn_call({}, {args[0], args[1]}, +[](__mpz_struct* a, int b) {
-		return mpz_pow_ui(a, a, b);
-	});
+	c.insn_call({}, {args[0], args[0], args[1]}, "Number.mpz_pow_ui");
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -1136,13 +1133,11 @@ Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> 
 	return c.insn_log10(args[0]);
 }
 
-Compiler::value NumberSTD::pow_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSNumber* x, LSNumber* y) {
-		double r = pow(x->value, y->value);
-		LSValue::delete_temporary(x);
-		LSValue::delete_temporary(y);
-		return r;
-	});
+double NumberSTD::pow_ptr(LSNumber* x, LSNumber* y) {
+	double r = pow(x->value, y->value);
+	LSValue::delete_temporary(x);
+	LSValue::delete_temporary(y);
+	return r;
 }
 
 double NumberSTD::rand01() {
