@@ -426,6 +426,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("real_to_string", {
 		{Type::tmp_string(), {Type::real()}, (void*) &NumberSTD::real_to_string, Method::NATIVE}
 	});
+	method("mpz_to_string", {
+		{Type::tmp_string(), {Type::mpz_ptr()}, (void*) &NumberSTD::mpz_to_string, Method::NATIVE}
+	});
 	double (*logreal)(double) = std::log;
 	method("m_log", {
 		{Type::real(), {Type::integer()}, (void*) &std::log<int>},
@@ -1218,6 +1221,11 @@ LSValue* NumberSTD::long_to_string(long x) {
 }
 LSValue* NumberSTD::real_to_string(double x) {
 	return new LSString(LSNumber::print(x));
+}
+LSValue* NumberSTD::mpz_to_string(mpz_t x) {
+	char buff[10000];
+	mpz_get_str(buff, 10, x);
+	return new LSString(buff);
 }
 
 }
