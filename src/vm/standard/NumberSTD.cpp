@@ -253,6 +253,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	method("hypot", {
 		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::hypot_ptr_ptr},
+		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::hypot<int, int>, Method::NATIVE},
+		{Type::real(), {Type::real(), Type::real()}, (void*) std::hypot<double, double>, Method::NATIVE},
 	});
 	method("log", {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::log_ptr, Method::NATIVE},
@@ -1115,17 +1117,10 @@ Compiler::value NumberSTD::is_prime_long(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, +[](LSNumber* x, LSNumber* y) {
-		auto r = hypot(x->value, y->value);
-		LSValue::delete_temporary(x);
-		LSValue::delete_temporary(y);
-		return r;
-	});
-}
-Compiler::value NumberSTD::hypot_real_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), args, +[](double x, double y) {
-		return hypot(x, y);
-	});
+	auto r = c.insn_call(Type::real(), {c.to_real(args[0]), c.to_real(args[1])}, "Number.hypot.2");
+	c.insn_delete_temporary(args[0]);
+	c.insn_delete_temporary(args[1]);
+	return r;
 }
 
 double NumberSTD::log_ptr(LSNumber* x) {
