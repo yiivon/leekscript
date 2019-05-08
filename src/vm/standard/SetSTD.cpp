@@ -83,6 +83,11 @@ SetSTD::SetSTD() : Module("Set") {
 	method("iterator_inc", {
 		{Type::set().iterator(), {Type::set().iterator()}, (void*) iterator_inc, Method::NATIVE}
 	});
+	method("insert_fun", {
+		{Type::boolean(), {Type::const_set(Type::any()), Type::any()}, (void*) &LSSet<LSValue*>::ls_insert, Method::NATIVE},
+		{Type::boolean(), {Type::const_set(Type::real()), Type::real()}, (void*) &LSSet<double>::ls_insert, Method::NATIVE},
+		{Type::boolean(), {Type::const_set(Type::integer()), Type::integer()}, (void*) &LSSet<int>::ls_insert, Method::NATIVE},
+	});
 }
 
 Compiler::value SetSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
@@ -94,13 +99,13 @@ Compiler::value SetSTD::set_add_eq(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value SetSTD::insert_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1])}, (void*) &LSSet<LSValue*>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1])}, "Set.insert_fun");
 }
 Compiler::value SetSTD::insert_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.to_real(args[1])}, (void*) &LSSet<double>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.to_real(args[1])}, "Set.insert_fun.1");
 }
 Compiler::value SetSTD::insert_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1])}, (void*) &LSSet<int>::ls_insert);
+	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1])}, "Set.insert_fun.2");
 }
 
 }
