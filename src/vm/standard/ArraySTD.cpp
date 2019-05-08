@@ -364,6 +364,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_int, Method::NATIVE},
 	});
 
+	method("fill_fun", {
+		{Type::array(), {Type::array(), Type::any(), Type::integer()}, (void*) &LSArray<LSValue*>::ls_fill, Method::NATIVE},
+		{Type::array(), {Type::array(), Type::real(), Type::integer()}, (void*) &LSArray<double>::ls_fill, Method::NATIVE},
+		{Type::array(), {Type::array(), Type::integer(), Type::integer()}, (void*) &LSArray<int>::ls_fill, Method::NATIVE},
+	});
 }
 
 Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
@@ -422,17 +427,17 @@ LSValue* ArraySTD::sub(LSArray<LSValue*>* array, int begin, int end) {
 
 Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args) {
 	auto fun = [&]() {
-		if (args[0].t.element().fold().is_integer()) return (void*) &LSArray<int>::ls_fill;
-		if (args[0].t.element().fold().is_real()) return (void*) &LSArray<double>::ls_fill;
-		return (void*) &LSArray<LSValue*>::ls_fill;
+		if (args[0].t.element().fold().is_integer()) return "Array.fill_fun.2";
+		if (args[0].t.element().fold().is_real()) return "Array.fill_fun.1";
+		return "Array.fill_fun";
 	}();
 	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t.element().fold()), c.insn_array_size(args[0])}, fun);
 }
 Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args) {
 	auto fun = [&]() {
-		if (args[0].t.element().fold().is_integer()) return (void*) &LSArray<int>::ls_fill;
-		if (args[0].t.element().fold().is_real()) return (void*) &LSArray<double>::ls_fill;
-		return (void*) &LSArray<LSValue*>::ls_fill;
+		if (args[0].t.element().fold().is_integer()) return "Array.fill_fun.2";
+		if (args[0].t.element().fold().is_real()) return "Array.fill_fun.1";
+		return "Array.fill_fun";
 	}();
 	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t.element().fold()), c.to_int(args[2])}, fun);
 }
