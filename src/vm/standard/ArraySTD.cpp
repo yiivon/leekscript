@@ -304,9 +304,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("search", {
-		{Type::integer(), {Type::const_array(), Type::const_any(), Type::const_integer()}, (void*) &ArraySTD::search_any},
-		{Type::integer(), {Type::const_array(Type::real()), Type::const_real(), Type::const_integer()}, (void*) &ArraySTD::search_real},
-		{Type::integer(), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void*) &ArraySTD::search_int},
+		{Type::integer(), {Type::const_array(), Type::const_any(), Type::const_integer()}, (void*) &LSArray<LSValue*>::ls_search, Method::NATIVE},
+		{Type::integer(), {Type::const_array(Type::real()), Type::const_real(), Type::const_integer()}, (void*) &LSArray<double>::ls_search, Method::NATIVE},
+		{Type::integer(), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void*) &LSArray<int>::ls_search, Method::NATIVE},
 	});
 
 	method("size", {
@@ -409,16 +409,6 @@ LSValue* ArraySTD::sub(LSArray<LSValue*>* array, int begin, int end) {
 	LSValue* r = array->range(begin, end);
 	if (array->refs == 0) delete array;
 	return r;
-}
-
-Compiler::value ArraySTD::search_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, (void*) &LSArray<LSValue*>::ls_search);
-}
-Compiler::value ArraySTD::search_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.to_real(args[1]), c.to_int(args[2])}, (void*) &LSArray<double>::ls_search);
-}
-Compiler::value ArraySTD::search_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, (void*) &LSArray<int>::ls_search);
 }
 
 Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args) {

@@ -21,10 +21,6 @@ public:
 
 	static LSValue* sub(LSArray<LSValue*>* array, int begin, int end);
 
-	static Compiler::value search_any(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value search_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value search_int(Compiler&, std::vector<Compiler::value>);
-
 	static Compiler::value fill(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value fill2(Compiler&, std::vector<Compiler::value>);
 
