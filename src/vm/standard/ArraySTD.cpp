@@ -369,6 +369,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::array(), {Type::array(), Type::real(), Type::integer()}, (void*) &LSArray<double>::ls_fill, Method::NATIVE},
 		{Type::array(), {Type::array(), Type::integer(), Type::integer()}, (void*) &LSArray<int>::ls_fill, Method::NATIVE},
 	});
+	method("remove_element_fun", {
+		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<LSValue*>::ls_remove_element, Method::NATIVE},
+		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<double>::ls_remove_element, Method::NATIVE},
+		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<int>::ls_remove_element, Method::NATIVE},
+	});
 }
 
 Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
@@ -475,11 +480,11 @@ Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args) {
 }
 
 Compiler::value ArraySTD::remove_element_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1])}, (void*) &LSArray<LSValue*>::ls_remove_element);
+	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1])}, "Array.remove_element_fun");
 }
 Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[1].t.castable(Type::real())) {
-		return c.insn_call(Type::boolean(), {args[0], c.to_real(args[1])}, (void*) &LSArray<double>::ls_remove_element);
+		return c.insn_call(Type::boolean(), {args[0], c.to_real(args[1])}, "Array.remove_element_fun.1");
 	} else {
 		c.insn_delete_temporary(args[0]);
 		c.insn_delete_temporary(args[1]);
@@ -488,7 +493,7 @@ Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler:
 }
 Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::value> args) {
 	if (args[1].t.castable(Type::integer())) {
-		return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1])}, (void*) &LSArray<int>::ls_remove_element);
+		return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1])}, "Array.remove_element_fun.2");
 	} else {
 		c.insn_delete_temporary(args[0]);
 		c.insn_delete_temporary(args[1]);
