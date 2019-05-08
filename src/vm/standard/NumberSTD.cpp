@@ -305,10 +305,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {}, (void*) &NumberSTD::rand01, Method::NATIVE},
 	});
 	method("randInt", Method::Static, {
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) &NumberSTD::randInt, Method::NATIVE},
+		{Type::integer(), {Type::integer(), Type::integer()}, (void*) NumberSTD::rand_int, Method::NATIVE},
 	});
 	method("randFloat", Method::Static, {
-		{Type::real(), {Type::real(), Type::real()}, (void*) &randFloat},
+		{Type::real(), {Type::real(), Type::real()}, (void*) rand_real, Method::NATIVE},
 	});
 	method("signum", {
 		{Type::integer(), {Type::any()}, (void*) &NumberSTD::signum},
@@ -1149,14 +1149,11 @@ double NumberSTD::rand01() {
 	return (double) rand() / RAND_MAX;
 }
 
-Compiler::value NumberSTD::randFloat(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), {c.to_real(args[0]), c.to_real(args[1])}, (void*) +[](double min, double max) {
-		return min + ((double) rand() / RAND_MAX) * (max - min);
-	});
-}
-
-int NumberSTD::randInt(int min, int max) {
+int NumberSTD::rand_int(int min, int max) {
 	return min + floor(((double) rand() / RAND_MAX) * (max - min));
+}
+double NumberSTD::rand_real(double min, double max) {
+	return min + ((double) rand() / RAND_MAX) * (max - min);
 }
 
 Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args) {

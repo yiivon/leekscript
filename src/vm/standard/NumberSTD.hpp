@@ -177,8 +177,8 @@ public:
 	static Compiler::value log10_real(Compiler&, std::vector<Compiler::value>);
 
 	static double rand01();
-	static Compiler::value randFloat(Compiler& c, std::vector<Compiler::value> args);
-	static int randInt(int min, int max);
+	static int rand_int(int min, int max);
+	static double rand_real(double min, double max);
 
 	static Compiler::value signum(Compiler& c, std::vector<Compiler::value> args);
 
