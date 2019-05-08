@@ -216,9 +216,12 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::real(), Type::any()}, (void*) &NumberSTD::atan2},
 		{Type::real(), {Type::real(), Type::real()}, (void*) &NumberSTD::atan2},
 	});
+	double (*cbrtreal)(double) = std::cbrt;
+	double (*cbrtint)(int) = std::cbrt;
 	method("cbrt", {
 		{Type::any(), {Type::any()}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::cbrt_real},
+		{Type::real(), {Type::real()}, (void*) cbrtreal, Method::NATIVE},
+		{Type::real(), {Type::integer()}, (void*) cbrtint, Method::NATIVE},
 	});
 	method("ceil", {
 		{Type::integer(), {Type::any()}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
@@ -1065,11 +1068,6 @@ LSValue* NumberSTD::cbrt_ptr(LSNumber* x) {
 	LSValue* r = LSNumber::get(cbrt(x->value));
 	LSValue::delete_temporary(x);
 	return r;
-}
-Compiler::value NumberSTD::cbrt_real(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), {c.to_real(args[0])}, +[] (double x) {
-		return cbrt(x);
-	});
 }
 
 Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args) {
