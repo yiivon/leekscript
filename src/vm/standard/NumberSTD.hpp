@@ -167,8 +167,6 @@ public:
 	static Compiler::value is_prime(Compiler&, std::vector<Compiler::value>);
 	template<typename T>
 	static int is_prime_number(T n);
-	static Compiler::value is_prime_int(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value is_prime_long(Compiler&, std::vector<Compiler::value>);
 
 	static Compiler::value hypot_ptr_ptr(Compiler&, std::vector<Compiler::value>);
 

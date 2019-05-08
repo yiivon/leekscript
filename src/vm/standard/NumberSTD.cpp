@@ -343,8 +343,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	method("isPrime", {
 		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_number<int>, Method::NATIVE},
 		{Type::integer(), {Type::mpz_ptr()}, (void*) &NumberSTD::is_prime},
-		{Type::boolean(), {Type::long_()}, (void*) &NumberSTD::is_prime_long},
-		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_int},
+		{Type::boolean(), {Type::long_()}, (void*) &NumberSTD::is_prime_number<long>, Method::NATIVE},
 	});
 
 	/** Internal **/
@@ -1108,12 +1107,6 @@ int NumberSTD::is_prime_number(T n) {
 		}
 	}
 	return true;
-}
-Compiler::value NumberSTD::is_prime_int(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), args, &NumberSTD::is_prime_number<int>);
-}
-Compiler::value NumberSTD::is_prime_long(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::boolean(), args, &NumberSTD::is_prime_number<long>);
 }
 
 Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args) {
