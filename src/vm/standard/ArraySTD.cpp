@@ -575,11 +575,12 @@ Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args) {
 
 Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args) {
 	auto fun = [&]() {
-		if (args[0].t.element().fold().is_integer()) return (void*) &LSArray<int>::ls_push;
-		if (args[0].t.element().fold().is_real()) return (void*) &LSArray<double>::ls_push;
-		return (void*) &LSArray<LSValue*>::ls_push;
+		if (args[0].t.element().fold().is_integer()) return "Array.vpush";
+		if (args[0].t.element().fold().is_real()) return "Array.vpush.1";
+		return "Array.vpush.2";
 	}();
-	return c.insn_call(args[0].t, args, fun);
+	c.insn_call({}, args, fun);
+	return args[0];
 }
 
 int ArraySTD::convert_key(LSValue* array, LSValue* key_pointer) {
