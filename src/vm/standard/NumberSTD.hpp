@@ -181,6 +181,7 @@ public:
 	static double rand_real(double min, double max);
 
 	static Compiler::value signum(Compiler& c, std::vector<Compiler::value> args);
+	static int signum_ptr(LSNumber* x);
 
 	static double toDegrees_ptr(LSNumber* x);
 	static Compiler::value toDegrees(Compiler& c, std::vector<Compiler::value> args);

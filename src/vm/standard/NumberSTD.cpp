@@ -310,7 +310,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::real(), Type::real()}, (void*) rand_real, Method::NATIVE},
 	});
 	method("signum", {
-		{Type::integer(), {Type::any()}, (void*) &NumberSTD::signum},
+		{Type::integer(), {Type::any()}, (void*) &NumberSTD::signum_ptr, Method::NATIVE},
+		{Type::integer(), {Type::number()}, (void*) &NumberSTD::signum},
 	});
 	method("sin", {
 		{Type::real(), {Type::any()}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
@@ -1155,13 +1156,17 @@ double NumberSTD::rand_real(double min, double max) {
 }
 
 Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::integer(), {c.insn_to_any(args[0])}, +[](LSNumber* x) {
-		int s = 0;
-		if (x->value > 0) s = 1;
-		if (x->value < 0) s = -1;
-		LSValue::delete_temporary(x);
-		return s;
-	});
+	auto ap = c.insn_to_any(args[0]);
+	auto r = c.insn_call(Type::integer(), {ap}, "Number.signum");
+	c.insn_dec_refs(ap);
+	return r;
+}
+int NumberSTD::signum_ptr(LSNumber* x) {
+	int s = 0;
+	if (x->value > 0) s = 1;
+	if (x->value < 0) s = -1;
+	LSValue::delete_temporary(x);
+	return s;
 }
 
 double NumberSTD::toDegrees_ptr(LSNumber* x) {
