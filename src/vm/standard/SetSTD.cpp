@@ -36,7 +36,7 @@ SetSTD::SetSTD() : Module("Set") {
 		{Type::const_set(Type::integer()), Type::integer(), Type::boolean(), (void*) &LSSet<int>::in_v, {}, Method::NATIVE}
 	});
 	operator_("+=", {
-		{Type::set(), Type::const_any(), Type::any(), (void*) &set_add_eq, {new WillStoreMutator()}},
+		{Type::set(), Type::const_any(), Type::any(), (void*) &set_add_eq, {new WillStoreMutator()}, false, true},
 		{Type::set(Type::real()), Type::const_real(), Type::array(Type::real()), (void*) &LSSet<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
 		{Type::set(Type::integer()), Type::const_integer(), Type::array(Type::integer()), (void*) &LSSet<int>::add_eq_int, {new WillStoreMutator()}, Method::NATIVE}
 	});
@@ -92,9 +92,7 @@ Compiler::value SetSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
 }
 
 Compiler::value SetSTD::set_add_eq(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
-		return x->add_eq(y);
-	});
+	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, "Value.operator+=");
 }
 
 Compiler::value SetSTD::insert_any(Compiler& c, std::vector<Compiler::value> args) {
