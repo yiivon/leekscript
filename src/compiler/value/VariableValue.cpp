@@ -8,6 +8,7 @@
 #include "../../vm/value/LSSet.hpp"
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/Module.hpp"
+#include "../../vm/Program.hpp"
 
 namespace ls {
 
@@ -308,7 +309,12 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 				return f->compile_default_version(c);
 			}
 		}
-		v = c.vm->internals.at(name);
+		Compiler::value ops_ptr = { c.program->module->getGlobalVariable(name), type };
+		if (!ops_ptr.v) {
+			auto t = type.pointed().llvm_type(c);
+			ops_ptr.v = new llvm::GlobalVariable(*c.program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, name);
+		}
+		v = ops_ptr;
 	} else if (scope == VarScope::LOCAL) {
 		assert(var != nullptr);
 		auto f = dynamic_cast<Function*>(var->value);

@@ -245,6 +245,10 @@ void* VM::resolve_symbol(std::string name) {
 				}
 			}
 		}
+	} else {
+		if (internal_vars.find(name) != internal_vars.end()) {
+			return internal_vars.at(name)->lsvalue;
+		}
 	}
 	return nullptr;
 }

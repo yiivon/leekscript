@@ -550,8 +550,7 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 		for (auto var : c.vm->internal_vars) {
 			auto name = var.first;
 			auto variable = var.second;
-			auto val = c.new_pointer(variable->lsvalue, variable->type());
-			c.vm->internals.insert({name, val});
+			c.vm->internals.insert({name, {}});
 		}
 	}
 
