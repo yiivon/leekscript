@@ -18,35 +18,23 @@ JsonSTD::JsonSTD() : Module("Json") {
 }
 
 Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args) {
-	if (args[0].t == Type::integer()) {
-		return c.insn_call(Type::string(), args, +[](int v) {
-			return new LSString(std::to_string(v));
-		});
-	} else if (args[0].t == Type::long_()) {
-		return c.insn_call(Type::string(), args, +[](long v) {
-			return new LSString(std::to_string(v));
-		});
-	} else if (args[0].t == Type::real()) {
-		return c.insn_call(Type::string(), args, +[](double v) {
-			return new LSString(LSNumber::print(v));
-		});
-	} else if (args[0].t == Type::boolean()) {
-		return c.insn_call(Type::string(), args, +[](bool b) {
-			return new LSString(b ? "true" : "false");
-		});
+	if (args[0].t.is_integer()) {
+		return c.insn_call(Type::string(), args, "Number.int_to_string");
+	} else if (args[0].t.is_long()) {
+		return c.insn_call(Type::string(), args, "Number.long_to_string");
+	} else if (args[0].t.is_real()) {
+		return c.insn_call(Type::string(), args, "Number.real_to_string");
+	} else if (args[0].t.is_bool()) {
+		return c.insn_call(Type::string(), args, "Boolean.to_string");
 	} else if (args[0].t.is_mpz_ptr()) {
-		auto s = c.insn_call(Type::string(), args, +[](__mpz_struct* v) {
-			char buff[10000];
-			mpz_get_str(buff, 10, v);
-			return new LSString(buff);
-		});
+		auto s = c.insn_call(Type::string(), args, "Number.mpz_to_string");
 		if (args[0].t.temporary) {
 			c.insn_delete_mpz(args[0]);
 		}
 		return s;
 	}
 	// Default type : pointer
-	return c.insn_call(Type::string(), args, (void*) &LSValue::ls_json);
+	return c.insn_call(Type::string(), args, "Value.json");
 }
 
 LSValue* JsonSTD::decode(LSString* string) {
