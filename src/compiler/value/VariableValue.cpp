@@ -137,10 +137,10 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 						for (const auto& i : m.second) {
 							auto t = Type::fun(i.type.return_type(), i.type.arguments(), this);
 							auto version_name = clazz.second->name + "." + name + "." + std::to_string(j);
-							if (i.native) {
+							if (i.addr) {
 								callable->add_version({ version_name, t, i.addr, i.mutators, i.templates, nullptr, false, false, false, i.legacy });
 							} else {
-								callable->add_version({ version_name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) i.addr, i.mutators, i.templates, nullptr, false, false, false, i.legacy });
+								callable->add_version({ version_name, t, i.func, i.mutators, i.templates, nullptr, false, false, false, i.legacy });
 							}
 							j++;
 						}

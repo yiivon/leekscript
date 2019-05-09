@@ -103,10 +103,10 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 			for (const auto& m : method) {
 				auto version_name = name + "." + std::to_string(i);
 				auto t = Type::fun(m.type.return_type(), m.type.arguments(), this);
-				if (m.native) {
+				if (m.addr) {
 					callable->add_version({ version_name, t, m.addr, m.mutators, m.templates, nullptr });
 				} else {
-					callable->add_version({ version_name, t, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) m.addr, m.mutators, m.templates, nullptr });
+					callable->add_version({ version_name, t, m.func, m.mutators, m.templates, nullptr });
 				}
 				i++;
 			}
@@ -116,10 +116,10 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 			auto method = value_class->methods.at(field->content);
 			std::string name = "Value." + field->content;
 			for (const auto& m : method) {
-				if (m.native) {
+				if (m.addr) {
 					callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, nullptr });
 				} else {
-					callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) m.addr, m.mutators, m.templates, nullptr });
+					callable->add_version({ name, m.type, m.func, m.mutators, m.templates, nullptr });
 				}
 			}
 		}
@@ -132,10 +132,10 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 			int i = 0;
 			for (const auto& m : method) {
 				auto version_name = name + "." + std::to_string(i);
-				if (m.native) {
+				if (m.addr) {
 					callable->add_version({ version_name, m.type, m.addr, m.mutators, m.templates, object });
 				} else {
-					callable->add_version({ version_name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) m.addr, m.mutators, m.templates, object });
+					callable->add_version({ version_name, m.type, m.func, m.mutators, m.templates, object });
 				}
 				i++;
 			}
@@ -145,10 +145,10 @@ Callable* ObjectAccess::get_callable(SemanticAnalyser* analyser) const {
 		auto method = value_class->methods.at(field->content);
 		std::string name = "Value." + field->content;
 		for (const auto& m : method) {
-			if (m.native) {
+			if (m.addr) {
 				callable->add_version({ name, m.type, m.addr, m.mutators, m.templates, object });
 			} else {
-				callable->add_version({ name, m.type, (Compiler::value (*)(Compiler&, std::vector<Compiler::value>, bool)) m.addr, m.mutators, m.templates, object });
+				callable->add_version({ name, m.type, m.func, m.mutators, m.templates, object });
 			}
 		}
 	}
@@ -247,7 +247,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 				// Method : 12.abs
 				try {
 					for (const auto& m : object_class->methods.at(field->content)) {
-						if (!m.native) continue;
+						if (!m.addr) continue;
 						versions.insert({m.type.arguments(), m.addr});
 					}
 					type = object_class->methods.at(field->content)[0].type;
@@ -256,7 +256,7 @@ void ObjectAccess::analyse(SemanticAnalyser* analyser) {
 				} catch (...) {
 					try {
 						for (const auto& m : value_class->methods.at(field->content)) {
-							if (!m.native) continue;
+							if (!m.addr) continue;
 							versions.insert({m.type.arguments(), m.addr});
 						}
 						type = value_class->methods.at(field->content)[0].type;

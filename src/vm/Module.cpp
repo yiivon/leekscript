@@ -48,7 +48,7 @@ void Module::static_field(std::string name, Type type, void* fun) {
 void Module::constructor_(std::initializer_list<MethodConstructor> methods) {
 	std::vector<Method> inst;
 	for (auto constr : methods) {
-		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.native, constr.mutators, std::vector<Type>{});
+		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.func, constr.mutators, std::vector<Type>{});
 	}
 	if (!inst.empty()) {
 		clazz->addMethod("new", inst);
@@ -61,7 +61,7 @@ void Module::method(std::string name, Method::Option opt, std::initializer_list<
 		// if (opt == Method::Instantiate || opt == Method::Both) {
 		// 	assert(constr.args.size() > 0); // must be at least one argument to be the object used in instance
 		// }
-		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.native, constr.mutators, templates, constr.legacy);
+		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.func, constr.mutators, templates, constr.legacy);
 	}
 	if (!inst.empty()) {
 		clazz->addMethod(name, inst);

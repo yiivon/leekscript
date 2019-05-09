@@ -16,14 +16,14 @@ class Method {
 public:
 	Type type;
 	void* addr;
-	bool native;
+	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func;
 	std::vector<TypeMutator*> mutators;
 	std::vector<Type> templates;
 	bool legacy;
-	Method(Type return_type, std::vector<Type> args, void* addr, bool native = false, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, bool legacy = false) {
+	Method(Type return_type, std::vector<Type> args, void* addr, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, bool legacy = false) {
 		this->addr = addr;
 		type = Type::fun(return_type, args);
-		this->native = native;
+		this->func = func;
 		this->mutators = mutators;
 		this->templates = templates;
 		this->legacy = legacy;
@@ -37,15 +37,16 @@ public:
 class MethodConstructor {
 public:
 	Type return_type;
-	void* addr;
-	bool native;
-	Type obj_type;
+	void* addr = nullptr;
+	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
 	std::vector<Type> args;
 	std::vector<TypeMutator*> mutators;
 	bool legacy;
 
-	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, bool native = false, std::initializer_list<TypeMutator*> mutators = {}, bool legacy = false)
-		: return_type(return_type), addr(addr), native(native), args(args), mutators(mutators), legacy(legacy) {}
+	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool legacy = false)
+		: return_type(return_type), addr(addr), args(args), mutators(mutators), legacy(legacy) {}
+	MethodConstructor(Type return_type, std::initializer_list<Type> args, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::initializer_list<TypeMutator*> mutators = {}, bool legacy = false)
+		: return_type(return_type), func(func), args(args), mutators(mutators), legacy(legacy) {}
 };
 
 class ModuleMethod {
