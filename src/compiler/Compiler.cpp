@@ -344,15 +344,11 @@ Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 		return r;
 	}
 	if (a_type.is_mpz_ptr() and b_type.is_integer()) {
-		auto r = insn_call(Type::boolean(), {a, b}, +[](__mpz_struct* x, int i) {
-			return _mpz_cmp_si(x, i) == 0;
-		});
+		auto r = insn_eq(insn_call(Type::boolean(), {a, b}, "Number._mpz_cmp_si"), new_integer(0));
 		insn_delete_temporary(a);
 		return r;
 	} else if (a_type.is_mpz_ptr() and b_type.is_mpz_ptr()) {
-		auto r = insn_call(Type::boolean(), {a, b}, +[](__mpz_struct* x, __mpz_struct* y) {
-			return mpz_cmp(x, y) == 0;
-		});
+		auto r = insn_eq(insn_call(Type::boolean(), {a, b}, "Number.mpz_cmp"), new_integer(0));
 		insn_delete_temporary(a);
 		insn_delete_temporary(b);
 		return r;
