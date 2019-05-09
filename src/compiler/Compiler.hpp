@@ -282,11 +282,6 @@ public:
 	value insn_phi(Type type, value v1, label l1, value v2, label l2) const;
 
 	// Call functions
-	template <typename R, typename... A>
-	value insn_call(Type return_type, std::vector<value> args, R(*func)(A...)) const {
-		return insn_call(return_type, args, (void*) func);
-	}
-	value insn_call(Type return_type, std::vector<value> args, void* func) const;
 	value insn_invoke(Type return_type, std::vector<value> args, std::string name) const;
 	value insn_invoke(Type return_type, std::vector<value> args, value func) const;
 	value insn_invoke(Type return_type, std::vector<value> args, llvm::Function* fun) const;

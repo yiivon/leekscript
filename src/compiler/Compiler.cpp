@@ -1678,33 +1678,6 @@ Compiler::value Compiler::insn_phi(Type type, Compiler::value v1, Compiler::labe
 }
 
 // Call functions
-Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, void* func) const {
-	assert(false);
-	std::vector<llvm::Value*> llvm_args;
-	std::vector<llvm::Type*> llvm_types;
-	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		// assert(args[i].t.llvm_type(*this) == args[i].v->getType());
-		llvm_args.push_back(args[i].v);
-		llvm_types.push_back(args[i].t.llvm_type(*this));
-	}
-	auto function_name = std::to_string(mappings.size());
-	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
-	llvm::Function* lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, function_name, program->module);
-	((Compiler*) this)->mappings.insert({function_name, {(llvm::JITTargetAddress) func, lambda}});
-	
-	auto r = builder.CreateCall(lambda, llvm_args);
-	if (return_type.is_void()) {
-		return {};
-	} else {
-		value result = { r, return_type };
-		if (return_type.llvm_type(*this) != lambda->getReturnType()) {
-			result.v = builder.CreatePointerCast(r, return_type.llvm_type(*this));
-		}
-		assert(result.t.llvm_type(*this) == result.v->getType());
-		return result;
-	}
-}
-
 Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
