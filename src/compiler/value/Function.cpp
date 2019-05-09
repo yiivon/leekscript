@@ -617,7 +617,7 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 		Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_()};
 		auto function_name = c.new_const_string(c.fun->name, "fun");
 		c.insn_call({}, {exception, function_name, exception_line}, "System.throw.1");
-		c.fun->compile_return(c, c.new_integer(0));
+		c.fun->compile_return(c, {});
 	}
 
 	if (!parent->is_main_function) {
@@ -651,10 +651,15 @@ void Function::compile_return(const Compiler& c, Compiler::value v) const {
 		}
 	}
 	// Return the value
-	if (v.t.is_void()) {
+	if (current_version->type.return_type().is_void()) {
 		c.insn_return_void();
 	} else {
 		auto return_type = c.fun->getReturnType().fold();
+		if (v.t.is_void()) {
+			if (return_type.is_bool()) v = c.new_bool(false);
+			else if (return_type.is_real()) v = c.new_real(0);
+			else v = c.new_integer(0);
+		}
 		if (return_type.is_any()) {
 			v = c.insn_convert(v, return_type);
 		}
