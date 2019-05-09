@@ -61,11 +61,11 @@ public:
 	/*
 	 * Methods
 	 */
-	static Compiler::value copy(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value to_string(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value copy(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value to_string(Compiler& c, std::vector<Compiler::value> args, bool);
 
 	// Hidden functions
-	static Compiler::value typeID(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value typeID(Compiler& c, std::vector<Compiler::value> args, bool);
 	static int absolute(LSValue* v);
 	static LSValue* clone(LSValue* v);
 	static LSValue* attr(LSValue* v, char* field);

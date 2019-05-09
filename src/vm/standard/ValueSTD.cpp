@@ -174,116 +174,116 @@ ValueSTD::ValueSTD() : Module("Value") {
 	 * Methods
 	 */
 	method("copy", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::copy}
+		{Type::any(), {Type::const_any()}, ValueSTD::copy}
 	});
 	method("string", {
-		{Type::string(), {Type::const_any()}, (void*) &ValueSTD::to_string}
+		{Type::string(), {Type::const_any()}, ValueSTD::to_string}
 	});
 	method("json", {
-		{Type::tmp_string(), {Type::const_any()}, (void*) &LSValue::ls_json, Method::NATIVE},
-		{Type::tmp_string(), {Type::const_any()}, (void*) &JsonSTD::encode},
+		{Type::tmp_string(), {Type::const_any()}, (void*) &LSValue::ls_json},
+		{Type::tmp_string(), {Type::const_any()}, JsonSTD::encode},
 	});
 	method("typeID", {
-		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::typeID}
+		{Type::integer(), {Type::const_any()}, ValueSTD::typeID}
 	});
 	method("move", {
-		{Type::any(), {Type::const_any()}, (void*) &LSValue::move, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &LSValue::move}
 	});
 	method("move_inc", {
-		{Type::any(), {Type::const_any()}, (void*) &LSValue::move_inc, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &LSValue::move_inc}
 	});
 	method("ptr", {
-		{Type::any(), {Type::const_any()}, (void*) &LSValue::move, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &LSValue::move}
 	});
 	method("absolute", {
 		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::absolute}
 	});
 	method("clone", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::clone, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::clone}
 	});
 	method("delete", {
-		{{}, {Type::const_any()}, (void*) &LSValue::free, Method::NATIVE}
+		{{}, {Type::const_any()}, (void*) &LSValue::free}
 	});
 	method("not", {
-		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::ls_not, Method::NATIVE}
+		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::ls_not}
 	});
 	method("minus", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_minus, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_minus}
 	});
 	method("dec", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_dec, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_dec}
 	});
 	method("pre_dec", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_dec, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_dec}
 	});
 	method("decl", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_decl, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_decl}
 	});
 	method("pre_decl", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_decl, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_decl}
 	});
 	method("inc", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_inc, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_inc}
 	});
 	method("pre_inc", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_inc, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_inc}
 	});
 	method("incl", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_incl, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_incl}
 	});
 	method("pre_incl", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_incl, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_incl}
 	});
 	method("pre_tilde", {
-		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_tilde, Method::NATIVE}
+		{Type::any(), {Type::const_any()}, (void*) &ValueSTD::ls_pre_tilde}
 	});
 	method("attr", {
-		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &ValueSTD::attr, Method::NATIVE},
+		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &ValueSTD::attr},
 	});
 	method("attrL", {
-		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &ValueSTD::attrL, Method::NATIVE},
+		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &ValueSTD::attrL},
 	});
 	method("int", {
-		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::integer, Method::NATIVE}
+		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::integer}
 	});
 	method("real", {
-		{Type::real(), {Type::const_any()}, (void*) &ValueSTD::real, Method::NATIVE}
+		{Type::real(), {Type::const_any()}, (void*) &ValueSTD::real}
 	});
 	method("long", {
-		{Type::long_(), {Type::const_any()}, (void*) &ValueSTD::long_, Method::NATIVE}
+		{Type::long_(), {Type::const_any()}, (void*) &ValueSTD::long_}
 	});
 	method("range", {
-		{Type::any(), {Type::const_any(), Type::integer(), Type::integer()}, (void*) &ValueSTD::range, Method::NATIVE}
+		{Type::any(), {Type::const_any(), Type::integer(), Type::integer()}, (void*) &ValueSTD::range}
 	});
 	method("at", {
-		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::at, Method::NATIVE}
+		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::at}
 	});
 	method("atl", {
-		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::atl, Method::NATIVE}
+		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::atl}
 	});
 	method("in_i", {
-		{Type::boolean(), {Type::const_any(), Type::integer()}, (void*) &ValueSTD::in_i, Method::NATIVE}
+		{Type::boolean(), {Type::const_any(), Type::integer()}, (void*) &ValueSTD::in_i}
 	});
 	method("in", {
-		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::in, Method::NATIVE}
+		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &ValueSTD::in}
 	});
 	method("is_null", {
-		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::is_null, Method::NATIVE}
+		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::is_null}
 	});
 	method("to_bool", {
-		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::to_bool, Method::NATIVE}
+		{Type::boolean(), {Type::const_any()}, (void*) &ValueSTD::to_bool}
 	});
 	method("type", {
-		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::type, Method::NATIVE}
+		{Type::integer(), {Type::const_any()}, (void*) &ValueSTD::type}
 	});
 	method("delete_previous", {
-		{{}, {Type::any()}, (void*) ValueSTD::delete_previous, Method::NATIVE}
+		{{}, {Type::any()}, (void*) ValueSTD::delete_previous}
 	});
 	method("get_int", {
-		{Type::integer(), {Type::any()}, (void*) ValueSTD::get_int, Method::NATIVE}
+		{Type::integer(), {Type::any()}, (void*) ValueSTD::get_int}
 	});
 	method("get_class", {
-		{Type::clazz(), {Type::any()}, (void*) ValueSTD::get_class, Method::NATIVE}
+		{Type::clazz(), {Type::any()}, (void*) ValueSTD::get_class}
 	});
 }
 
@@ -615,14 +615,14 @@ Compiler::value ValueSTD::op_call(Compiler& c, std::vector<Compiler::value> args
 	return c.insn_call(fun.t.return_type(), {args[0]}, fun);
 }
 
-Compiler::value ValueSTD::copy(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::copy(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.temporary) {
 		return args[0];
 	}
 	return c.clone(args[0]);
 }
 
-Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.is_bool()) {
 		return c.insn_call(Type::tmp_string(), args, "Boolean.to_string");
 	} else if (args[0].t.is_integer()) {
@@ -641,7 +641,7 @@ Compiler::value ValueSTD::to_string(Compiler& c, std::vector<Compiler::value> ar
 	}
 }
 
-Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::typeID(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_typeof(args[0]);
 }
 

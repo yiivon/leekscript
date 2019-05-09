@@ -17,22 +17,22 @@ SystemSTD::SystemSTD() : Module("System") {
 	static_field("nanoTime", Type::long_(), (void*) &SystemSTD::nanotime);
 
 	method("print", Method::Static, {
-		{{}, {Type::const_any()}, (void*) &SystemSTD::print, Method::NATIVE},
-		{{}, {Type::mpz_ptr()}, (void*) &SystemSTD::print_mpz, Method::NATIVE},
-		{{}, {Type::tmp_mpz_ptr()}, (void*) &SystemSTD::print_mpz_tmp, Method::NATIVE},
-		{{}, {Type::const_long()}, (void*) &SystemSTD::print_long, Method::NATIVE},
-		{{}, {Type::const_real()}, (void*) &SystemSTD::print_float, Method::NATIVE},
-		{{}, {Type::const_integer()}, (void*) &SystemSTD::print_int, Method::NATIVE},
-		{{}, {Type::const_boolean()}, (void*) &SystemSTD::print_bool, Method::NATIVE},
+		{{}, {Type::const_any()}, (void*) &SystemSTD::print},
+		{{}, {Type::mpz_ptr()}, (void*) &SystemSTD::print_mpz},
+		{{}, {Type::tmp_mpz_ptr()}, (void*) &SystemSTD::print_mpz_tmp},
+		{{}, {Type::const_long()}, (void*) &SystemSTD::print_long},
+		{{}, {Type::const_real()}, (void*) &SystemSTD::print_float},
+		{{}, {Type::const_integer()}, (void*) &SystemSTD::print_int},
+		{{}, {Type::const_boolean()}, (void*) &SystemSTD::print_bool},
 	});
 
 	method("throw", {
-		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) &SystemSTD::throw1, Method::NATIVE},
-		{{}, {Type::long_(), Type::long_(), Type::i8().pointer()}, (void*) &SystemSTD::throw2, Method::NATIVE},
+		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) &SystemSTD::throw1},
+		{{}, {Type::long_(), Type::long_(), Type::i8().pointer()}, (void*) &SystemSTD::throw2},
 	});
 
 	method("debug", {
-		{{}, {Type::any()}, (void*) &SystemSTD::print, Method::NATIVE}
+		{{}, {Type::any()}, (void*) &SystemSTD::print}
 	});
 }
 

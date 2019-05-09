@@ -13,7 +13,7 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 	 * Constructors
 	 */
 	constructor_({
-		{Type::any(), {Type::boolean()}, (void*) &LSBoolean::create, Method::NATIVE}
+		{Type::any(), {Type::boolean()}, (void*) &LSBoolean::create}
 	});
 
 	operator_("+", {
@@ -37,13 +37,13 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 	});
 
 	method("compare", {
-		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &BooleanSTD::compare_ptr_ptr_ptr, Method::NATIVE},
-		{Type::integer(), {Type::const_boolean(), Type::const_any()}, (void*) &BooleanSTD::compare_val_val}
+		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &BooleanSTD::compare_ptr_ptr_ptr},
+		{Type::integer(), {Type::const_boolean(), Type::const_any()}, BooleanSTD::compare_val_val}
 	});
 
 	/** Internal **/
 	method("to_string", {
-		{Type::tmp_string(), {Type::boolean()}, (void*) &to_string, Method::NATIVE}
+		{Type::tmp_string(), {Type::boolean()}, (void*) &to_string}
 	});
 }
 
@@ -84,7 +84,7 @@ LSValue* BooleanSTD::compare_ptr_ptr_ptr(LSBoolean* a, LSBoolean* b) {
 	return LSNumber::get(compare_ptr_ptr(a, b));
 }
 
-Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_cmpl(args[0], args[1]);
 }
 

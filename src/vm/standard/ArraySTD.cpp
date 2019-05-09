@@ -17,9 +17,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Constructor
 	 */
 	constructor_({
-		{Type::tmp_array(Type::integer()), {Type::integer()}, (void*) &LSArray<int>::constructor, Method::NATIVE},
-		{Type::tmp_array(Type::real()), {Type::integer()}, (void*) &LSArray<double>::constructor, Method::NATIVE},
-		{Type::tmp_array(Type::any()), {Type::integer()}, (void*) &LSArray<LSValue*>::constructor, Method::NATIVE},
+		{Type::tmp_array(Type::integer()), {Type::integer()}, (void*) &LSArray<int>::constructor},
+		{Type::tmp_array(Type::real()), {Type::integer()}, (void*) &LSArray<double>::constructor},
+		{Type::tmp_array(Type::any()), {Type::integer()}, (void*) &LSArray<LSValue*>::constructor},
 	});
 
 	/*
@@ -46,55 +46,55 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Methods
 	 */
 	method("copy", {
-		{Type::tmp_array(), {Type::const_array()}, (void*) &ValueSTD::copy},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real())}, (void*) &ValueSTD::copy},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer())}, (void*) &ValueSTD::copy},
+		{Type::tmp_array(), {Type::const_array()}, ValueSTD::copy},
+		{Type::tmp_array(Type::real()), {Type::const_array(Type::real())}, ValueSTD::copy},
+		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer())}, ValueSTD::copy},
 	});
 	method("average", {
-		{Type::real(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_average, Method::NATIVE},
-		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_average, Method::NATIVE},
-		{Type::real(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_average, Method::NATIVE},
+		{Type::real(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_average},
+		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_average},
+		{Type::real(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_average},
 	});
 
 	method("chunk", {
-		{Type::array(Type::array()), {Type::const_array()}, (void*) ArraySTD::chunk_1_ptr, Method::NATIVE},
-		{Type::array(Type::array(Type::real())), {Type::const_array(Type::real())}, (void*) ArraySTD::chunk_1_float, Method::NATIVE},
-		{Type::array(Type::array(Type::integer())), {Type::const_array(Type::integer())}, (void*) ArraySTD::chunk_1_int, Method::NATIVE},
-		{Type::array(Type::array()), {Type::const_array(), Type::const_integer()}, (void*) &LSArray<LSValue*>::ls_chunk, Method::NATIVE},
-		{Type::array(Type::array(Type::real())), {Type::const_array(Type::real()), Type::const_integer()}, (void*) &LSArray<double>::ls_chunk, Method::NATIVE},
-		{Type::array(Type::array(Type::integer())), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_chunk, Method::NATIVE},
+		{Type::array(Type::array()), {Type::const_array()}, (void*) ArraySTD::chunk_1_ptr},
+		{Type::array(Type::array(Type::real())), {Type::const_array(Type::real())}, (void*) ArraySTD::chunk_1_float},
+		{Type::array(Type::array(Type::integer())), {Type::const_array(Type::integer())}, (void*) ArraySTD::chunk_1_int},
+		{Type::array(Type::array()), {Type::const_array(), Type::const_integer()}, (void*) &LSArray<LSValue*>::ls_chunk},
+		{Type::array(Type::array(Type::real())), {Type::const_array(Type::real()), Type::const_integer()}, (void*) &LSArray<double>::ls_chunk},
+		{Type::array(Type::array(Type::integer())), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_chunk},
     });
 
 	method("clear", {
-		{Type::array(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_clear, Method::NATIVE},
-		{Type::array(Type::real()), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_clear, Method::NATIVE},
-		{Type::array(Type::integer()), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_clear, Method::NATIVE},
+		{Type::array(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_clear},
+		{Type::array(Type::real()), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_clear},
+		{Type::array(Type::integer()), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_clear},
 	});
 
 	method("contains", {
-		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
-		{Type::boolean(), {Type::const_array(Type::real()), Type::const_real()}, (void*) &LSArray<double>::ls_contains, Method::NATIVE},
-		{Type::boolean(), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_contains, Method::NATIVE},
+		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_contains},
+		{Type::boolean(), {Type::const_array(Type::real()), Type::const_real()}, (void*) &LSArray<double>::ls_contains},
+		{Type::boolean(), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_contains},
 	});
 
 	auto iter_ptr = &LSArray<LSValue*>::ls_iter<LSFunction*>;
 	auto iE = Type::template_("E");
 	template_(iE).
 	method("iter", {
-		{{}, {Type::const_array(iE), Type::fun({}, {iE})}, (void*) iter_ptr, Method::NATIVE},
-		{{}, {Type::const_array(iE), Type::fun({}, {iE})}, (void*) &iter},
+		{{}, {Type::const_array(iE), Type::fun({}, {iE})}, (void*) iter_ptr},
+		{{}, {Type::const_array(iE), Type::fun({}, {iE})}, iter},
 	});
 
 	method("max", {
-		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_max, Method::NATIVE},
-		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_max, Method::NATIVE},
-		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_max, Method::NATIVE}
+		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_max},
+		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_max},
+		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_max}
 	});
 
 	method("min", {
-		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_min, Method::NATIVE},
-		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_min, Method::NATIVE},
-		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_min, Method::NATIVE}
+		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_min},
+		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_min},
+		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_min}
 	});
 
 	auto map_fun = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
@@ -102,23 +102,23 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto R = Type::template_("R");
 	template_(E, R).
 	method("map", {
-		{Type::tmp_array(R), {Type::const_array(E), Type::fun(R, {E})}, (void*) map_fun, Method::NATIVE},
-		{Type::tmp_array(R), {Type::const_array(E), Type::fun(R, {E})}, (void*) &map},
+		{Type::tmp_array(R), {Type::const_array(E), Type::fun(R, {E})}, (void*) map_fun},
+		{Type::tmp_array(R), {Type::const_array(E), Type::fun(R, {E})}, map},
 	});
 
 	method("unique", {
-		{Type::array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_unique, Method::NATIVE},
-		{Type::array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_unique, Method::NATIVE},
-		{Type::array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_unique, Method::NATIVE},
+		{Type::array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_unique},
+		{Type::array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_unique},
+		{Type::array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_unique},
 	});
 
 	auto sT = Type::template_("T");
 	template_(sT).
 	method("sort", {
-		{Type::tmp_array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_sort, Method::NATIVE},
-		{Type::tmp_array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_sort, Method::NATIVE},
-		{Type::tmp_array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_sort, Method::NATIVE},
-		{Type::tmp_array(sT), {Type::array(sT), Type::fun(Type::boolean(), {sT, sT})}, (void*) &sort}
+		{Type::tmp_array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_sort},
+		{Type::tmp_array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_sort},
+		{Type::tmp_array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_sort},
+		{Type::tmp_array(sT), {Type::array(sT), Type::fun(Type::boolean(), {sT, sT})}, sort}
 	});
 
 	Type map2_fun_type = Type::fun(Type::any(), {Type::any(), Type::any()});
@@ -126,8 +126,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto map2_ptr_ptr = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, LSValue*>;
 	auto map2_ptr_int = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, int>;
 	method("map2", {
-		{Type::tmp_array(), {Type::const_array(), Type::const_array(), map2_fun_type}, (void*) map2_ptr_ptr, Method::NATIVE},
-		{Type::tmp_array(), {Type::const_array(), Type::const_array(Type::integer()), map2_fun_type_int}, (void*) map2_ptr_int, Method::NATIVE},
+		{Type::tmp_array(), {Type::const_array(), Type::const_array(), map2_fun_type}, (void*) map2_ptr_ptr},
+		{Type::tmp_array(), {Type::const_array(), Type::const_array(Type::integer()), map2_fun_type_int}, (void*) map2_ptr_int},
 	});
 
 	Type pred_fun_type = Type::fun(Type::any(), {Type::any()});
@@ -143,18 +143,18 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto filter_clo_real = &LSArray<double>::ls_filter<LSClosure*>;
 	auto filter_clo_int = &LSArray<int>::ls_filter<LSClosure*>;
 	method("filter", {
-		{Type::tmp_array(), {Type::const_array(), pred_fun_type}, (void*) filter_ptr, Method::NATIVE},
-		{Type::tmp_array(), {Type::const_array(), pred_clo_type}, (void*) filter_clo_ptr, Method::NATIVE},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), pred_fun_type_float}, (void*) filter_real, Method::NATIVE},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), pred_clo_type_float}, (void*) filter_clo_real, Method::NATIVE},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), pred_fun_type_int}, (void*) filter_int, Method::NATIVE},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), pred_clo_type_int}, (void*) filter_clo_int, Method::NATIVE}
+		{Type::tmp_array(), {Type::const_array(), pred_fun_type}, (void*) filter_ptr},
+		{Type::tmp_array(), {Type::const_array(), pred_clo_type}, (void*) filter_clo_ptr},
+		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), pred_fun_type_float}, (void*) filter_real},
+		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), pred_clo_type_float}, (void*) filter_clo_real},
+		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), pred_fun_type_int}, (void*) filter_int},
+		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), pred_clo_type_int}, (void*) filter_clo_int}
 	});
 
 	method("isEmpty", {
-		{Type::boolean(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_empty, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_empty, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_empty, Method::NATIVE},
+		{Type::boolean(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_empty},
+		{Type::boolean(), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_empty},
+		{Type::boolean(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_empty},
 	});
 
 	auto perm_int_int = &LSArray<int>::is_permutation<int>;
@@ -167,212 +167,212 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto perm_ptr_real = &LSArray<LSValue*>::is_permutation<double>;
 	auto perm_ptr_ptr = &LSArray<LSValue*>::is_permutation<LSValue*>;
 	method("isPermutation", {
-		{Type::boolean(), {Type::array(), Type::array()}, (void*) perm_ptr_ptr, Method::NATIVE},
-		{Type::boolean(), {Type::array(), Type::array(Type::real())}, (void*) perm_ptr_real, Method::NATIVE},
-		{Type::boolean(), {Type::array(), Type::array(Type::integer())}, (void*) perm_ptr_int, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::real()), Type::array(Type::any())}, (void*) perm_real_ptr, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::real()), Type::array(Type::real())}, (void*) perm_real_real, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::real()), Type::array(Type::integer())}, (void*) perm_real_int, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::integer()), Type::array(Type::any())}, (void*) perm_int_ptr, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::integer()), Type::array(Type::real())}, (void*) perm_int_real, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::integer()), Type::array(Type::integer())}, (void*) perm_int_int, Method::NATIVE},
+		{Type::boolean(), {Type::array(), Type::array()}, (void*) perm_ptr_ptr},
+		{Type::boolean(), {Type::array(), Type::array(Type::real())}, (void*) perm_ptr_real},
+		{Type::boolean(), {Type::array(), Type::array(Type::integer())}, (void*) perm_ptr_int},
+		{Type::boolean(), {Type::array(Type::real()), Type::array(Type::any())}, (void*) perm_real_ptr},
+		{Type::boolean(), {Type::array(Type::real()), Type::array(Type::real())}, (void*) perm_real_real},
+		{Type::boolean(), {Type::array(Type::real()), Type::array(Type::integer())}, (void*) perm_real_int},
+		{Type::boolean(), {Type::array(Type::integer()), Type::array(Type::any())}, (void*) perm_int_ptr},
+		{Type::boolean(), {Type::array(Type::integer()), Type::array(Type::real())}, (void*) perm_int_real},
+		{Type::boolean(), {Type::array(Type::integer()), Type::array(Type::integer())}, (void*) perm_int_int},
 	});
 
 	method("partition", {
-		{Type::tmp_array(), {Type::array(), pred_fun_type}, (void*) partition},
-		{Type::tmp_array(), {Type::array(Type::real()), pred_fun_type_float}, (void*) partition},
-		{Type::tmp_array(), {Type::array(Type::integer()), pred_fun_type_int}, (void*) partition},
+		{Type::tmp_array(), {Type::array(), pred_fun_type}, partition},
+		{Type::tmp_array(), {Type::array(Type::real()), pred_fun_type_float}, partition},
+		{Type::tmp_array(), {Type::array(Type::integer()), pred_fun_type_int}, partition},
 	});
 
 	auto fT = Type::template_("T");
 	template_(fT).
 	method("first", {
-		{fT, {Type::const_array(fT)}, (void*) &first}
+		{fT, {Type::const_array(fT)}, first}
 	});
 
 	auto lT = Type::template_("T");
 	template_(lT).
 	method("last", {
-		{lT, {Type::const_array(lT)}, (void*) &last}
+		{lT, {Type::const_array(lT)}, last}
 	});
 
 	auto flT = Type::template_("T");
 	auto flR = Type::template_("R");
 	template_(flT, flR).
 	method("foldLeft", {
-		{flR, {Type::const_array(flT), Type::fun(flR, {flR, flT}), flR}, (void*) &fold_left},
+		{flR, {Type::const_array(flT), Type::fun(flR, {flR, flT}), flR}, fold_left},
 	});
 
 	auto frT = Type::template_("T");
 	auto frR = Type::template_("R");
 	template_(frT, frR).
 	method("foldRight", {
-		{frR, {Type::const_array(frT), Type::fun(frR, {frT, frR}), frR}, (void*) &fold_right},
+		{frR, {Type::const_array(frT), Type::fun(frR, {frT, frR}), frR}, fold_right},
 	});
 
 	method("pop", {
-		{Type::any(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_pop, Method::NATIVE},
-		{Type::real(), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_pop, Method::NATIVE},
-		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_pop, Method::NATIVE},
+		{Type::any(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_pop},
+		{Type::real(), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_pop},
+		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_pop},
 	});
 
 	method("product", {
-		{Type::real(), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_product, Method::NATIVE},
-		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_product, Method::NATIVE}
+		{Type::real(), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_product},
+		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_product}
 	});
 
 	auto pT = Type::template_("T");
 	template_(pT).
 	method("push", {
-		{Type::array(Type::any()), {Type::array(), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_push, Method::NATIVE, {new WillStoreMutator()}},
-		{Type::array(pT), {Type::array(Type::never()), pT}, (void*) &push, 0, {new WillStoreMutator()}},
-		{Type::array(pT), {Type::array(pT), {}}, (void*) &push, 0, {new WillStoreMutator()}},
+		{Type::array(Type::any()), {Type::array(), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_push, {new WillStoreMutator()}},
+		{Type::array(pT), {Type::array(Type::never()), pT}, push, {new WillStoreMutator()}},
+		{Type::array(pT), {Type::array(pT), {}}, push, {new WillStoreMutator()}},
 	});
 
 	// void (LSArray<int>::*push_int)(int&&) = &LSArray<int>::push_back;
 	method("vpush", {
-		{{}, {Type::array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::ls_push, Method::NATIVE},
-		{{}, {Type::array(Type::real()), Type::real()}, (void*) &LSArray<double>::ls_push, Method::NATIVE},
-		{{}, {Type::array(Type::any()), Type::any()}, (void*) &LSArray<LSValue*>::push_inc, Method::NATIVE},
+		{{}, {Type::array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::ls_push},
+		{{}, {Type::array(Type::real()), Type::real()}, (void*) &LSArray<double>::ls_push},
+		{{}, {Type::array(Type::any()), Type::any()}, (void*) &LSArray<LSValue*>::push_inc},
 	});
 
 	method("pushAll", {
-		{Type::array(Type::any()), {Type::array(), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, Method::NATIVE},
-		{Type::array(Type::any()), {Type::array(), Type::array(Type::real())}, (void*) &LSArray<LSValue*>::ls_push_all_flo, Method::NATIVE},
-		{Type::array(Type::any()), {Type::array(), Type::array(Type::integer())}, (void*) &LSArray<LSValue*>::ls_push_all_int, Method::NATIVE},
-		{Type::array(Type::any()), {Type::array(Type::real()), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, Method::NATIVE, {new WillStoreMutator()}},
-		{Type::array(Type::real()), {Type::array(Type::real()), Type::array(Type::real())}, (void*) &LSArray<double>::ls_push_all_flo, Method::NATIVE},
-		{Type::array(Type::real()), {Type::array(Type::real()), Type::array(Type::integer())}, (void*) &LSArray<double>::ls_push_all_int, Method::NATIVE},
-		{Type::array(Type::any()), {Type::array(Type::integer()), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, Method::NATIVE, {new WillStoreMutator()}},
-		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::array(Type::real())}, (void*) &LSArray<int>::ls_push_all_flo, Method::NATIVE},
-		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::array(Type::integer())}, (void*) &LSArray<int>::ls_push_all_int, Method::NATIVE},
+		{Type::array(Type::any()), {Type::array(), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr},
+		{Type::array(Type::any()), {Type::array(), Type::array(Type::real())}, (void*) &LSArray<LSValue*>::ls_push_all_flo},
+		{Type::array(Type::any()), {Type::array(), Type::array(Type::integer())}, (void*) &LSArray<LSValue*>::ls_push_all_int},
+		{Type::array(Type::any()), {Type::array(Type::real()), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, {new WillStoreMutator()}},
+		{Type::array(Type::real()), {Type::array(Type::real()), Type::array(Type::real())}, (void*) &LSArray<double>::ls_push_all_flo},
+		{Type::array(Type::real()), {Type::array(Type::real()), Type::array(Type::integer())}, (void*) &LSArray<double>::ls_push_all_int},
+		{Type::array(Type::any()), {Type::array(Type::integer()), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, {new WillStoreMutator()}},
+		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::array(Type::real())}, (void*) &LSArray<int>::ls_push_all_flo},
+		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::array(Type::integer())}, (void*) &LSArray<int>::ls_push_all_int},
 	});
 
 	method("join", {
-		{Type::string(), {Type::const_array(), Type::const_string()}, (void*) &LSArray<LSValue*>::ls_join, Method::NATIVE},
-		{Type::string(), {Type::const_array(Type::real()), Type::const_string()}, (void*) &LSArray<double>::ls_join, Method::NATIVE},
-		{Type::string(), {Type::const_array(Type::integer()), Type::const_string()}, (void*) &LSArray<int>::ls_join, Method::NATIVE},
+		{Type::string(), {Type::const_array(), Type::const_string()}, (void*) &LSArray<LSValue*>::ls_join},
+		{Type::string(), {Type::const_array(Type::real()), Type::const_string()}, (void*) &LSArray<double>::ls_join},
+		{Type::string(), {Type::const_array(Type::integer()), Type::const_string()}, (void*) &LSArray<int>::ls_join},
 	});
 
 	method("json", {
-		{Type::string(), {Type::array()}, (void*) &LSValue::ls_json, Method::NATIVE},
+		{Type::string(), {Type::array()}, (void*) &LSValue::ls_json},
 	});
 
 	auto T = Type::template_("T");
 	template_(T).
 	method("fill", {
-		{Type::array(T), {Type::array(), T}, (void*) &fill, false, {new WillStoreMutator()}},
-		{Type::array(T), {Type::array(), T, Type::const_integer()}, (void*) &fill2, false, {new WillStoreMutator()}},
+		{Type::array(T), {Type::array(), T}, fill, {new WillStoreMutator()}},
+		{Type::array(T), {Type::array(), T, Type::const_integer()}, fill2, {new WillStoreMutator()}},
 	});
 
 	method("insert", {
-		{Type::array(Type::any()), {Type::array(), Type::any(), Type::integer()}, (void*) &LSArray<LSValue*>::ls_insert, Method::NATIVE},
-		{Type::array(Type::real()), {Type::array(Type::real()), Type::real(), Type::integer()}, (void*) &LSArray<double>::ls_insert, Method::NATIVE},
-		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::integer(), Type::integer()}, (void*) &LSArray<int>::ls_insert, Method::NATIVE},
+		{Type::array(Type::any()), {Type::array(), Type::any(), Type::integer()}, (void*) &LSArray<LSValue*>::ls_insert},
+		{Type::array(Type::real()), {Type::array(Type::real()), Type::real(), Type::integer()}, (void*) &LSArray<double>::ls_insert},
+		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::integer(), Type::integer()}, (void*) &LSArray<int>::ls_insert},
 	});
 
 	method("random", {
-		{Type::tmp_array(), {Type::const_array(), Type::const_integer()}, (void*) &LSArray<LSValue*>::ls_random, Method::NATIVE},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), Type::const_integer()}, (void*) &LSArray<double>::ls_random, Method::NATIVE},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_random, Method::NATIVE},
+		{Type::tmp_array(), {Type::const_array(), Type::const_integer()}, (void*) &LSArray<LSValue*>::ls_random},
+		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), Type::const_integer()}, (void*) &LSArray<double>::ls_random},
+		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_random},
 	});
 
 	method("remove", {
-		{Type::any(), {Type::array(), Type::integer()}, (void*)&LSArray<LSValue*>::ls_remove, Method::NATIVE},
-		{Type::real(), {Type::array(Type::real()), Type::integer()}, (void*)&LSArray<double>::ls_remove, Method::NATIVE},
-		{Type::integer(), {Type::array(Type::integer()), Type::integer()}, (void*)&LSArray<int>::ls_remove, Method::NATIVE},
+		{Type::any(), {Type::array(), Type::integer()}, (void*)&LSArray<LSValue*>::ls_remove},
+		{Type::real(), {Type::array(Type::real()), Type::integer()}, (void*)&LSArray<double>::ls_remove},
+		{Type::integer(), {Type::array(Type::integer()), Type::integer()}, (void*)&LSArray<int>::ls_remove},
 	});
 
 	method("removeElement", {
-		{Type::boolean(), {Type::array(), Type::const_any()}, (void*) &remove_element_any},
-		{Type::boolean(), {Type::array(Type::real()), Type::const_any()}, (void*) &remove_element_real},
-		{Type::boolean(), {Type::array(Type::real()), Type::const_real()}, (void*) &remove_element_real},
-		{Type::boolean(), {Type::array(Type::integer()), Type::const_any()}, (void*) &remove_element_int},
-		{Type::boolean(), {Type::array(Type::integer()), Type::integer()}, (void*) &remove_element_int},
+		{Type::boolean(), {Type::array(), Type::const_any()}, remove_element_any},
+		{Type::boolean(), {Type::array(Type::real()), Type::const_any()}, remove_element_real},
+		{Type::boolean(), {Type::array(Type::real()), Type::const_real()}, remove_element_real},
+		{Type::boolean(), {Type::array(Type::integer()), Type::const_any()}, remove_element_int},
+		{Type::boolean(), {Type::array(Type::integer()), Type::integer()}, remove_element_int},
 	});
 
 	method("reverse", {
-		{Type::tmp_array(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_reverse, Method::NATIVE},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_reverse, Method::NATIVE},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_reverse, Method::NATIVE},
+		{Type::tmp_array(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_reverse},
+		{Type::tmp_array(Type::real()), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_reverse},
+		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_reverse},
 	});
 
 	method("shuffle", {
-		{Type::array(Type::any()), {Type::array()}, (void*) &LSArray<LSValue*>::ls_shuffle, Method::NATIVE},
-		{Type::array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_shuffle, Method::NATIVE},
-		{Type::array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_shuffle, Method::NATIVE},
+		{Type::array(Type::any()), {Type::array()}, (void*) &LSArray<LSValue*>::ls_shuffle},
+		{Type::array(Type::real()), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_shuffle},
+		{Type::array(Type::integer()), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_shuffle},
 	});
 
 	method("search", {
-		{Type::integer(), {Type::const_array(), Type::const_any(), Type::const_integer()}, (void*) &LSArray<LSValue*>::ls_search, Method::NATIVE},
-		{Type::integer(), {Type::const_array(Type::real()), Type::const_real(), Type::const_integer()}, (void*) &LSArray<double>::ls_search, Method::NATIVE},
-		{Type::integer(), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void*) &LSArray<int>::ls_search, Method::NATIVE},
+		{Type::integer(), {Type::const_array(), Type::const_any(), Type::const_integer()}, (void*) &LSArray<LSValue*>::ls_search},
+		{Type::integer(), {Type::const_array(Type::real()), Type::const_real(), Type::const_integer()}, (void*) &LSArray<double>::ls_search},
+		{Type::integer(), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void*) &LSArray<int>::ls_search},
 	});
 
 	method("size", {
-		{Type::any(), {Type::const_any()}, (void*) &LSArray<LSValue*>::ls_size_ptr, Method::NATIVE},
-		{Type::integer(), {Type::const_any()}, (void*) &ArraySTD::size},
-		{Type::integer(), {Type::const_array(Type::real())}, (void*) &ArraySTD::size},
-		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &ArraySTD::size}
+		{Type::any(), {Type::const_any()}, (void*) &LSArray<LSValue*>::ls_size_ptr},
+		{Type::integer(), {Type::const_any()}, ArraySTD::size},
+		{Type::integer(), {Type::const_array(Type::real())}, ArraySTD::size},
+		{Type::integer(), {Type::const_array(Type::integer())}, ArraySTD::size}
 	});
 
 	method("sum", {
-		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_sum, Method::NATIVE},
-		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_sum, Method::NATIVE},
-		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_sum, Method::NATIVE},
+		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_sum},
+		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_sum},
+		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_sum},
 	});
 
 	method("subArray", {
-		{Type::tmp_array(), {Type::const_array(), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub, Method::NATIVE},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub, Method::NATIVE},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub, Method::NATIVE},
+		{Type::tmp_array(), {Type::const_array(), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub},
+		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub},
+		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub},
 	});
 
 	/** V1 **/
 	method("count", {
-		{Type::integer(), {Type::any()}, (void*) &LSArray<LSValue*>::ls_size, Method::NATIVE}
+		{Type::integer(), {Type::any()}, (void*) &LSArray<LSValue*>::ls_size}
 	});
 	method("inArray", {
-		{Type::boolean(), {Type::array(Type::any()), Type::any()}, (void*) &LSArray<LSValue*>::ls_contains, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::real()), Type::real()}, (void*) &LSArray<double>::ls_contains, Method::NATIVE},
-		{Type::boolean(), {Type::array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::ls_contains, Method::NATIVE}
+		{Type::boolean(), {Type::array(Type::any()), Type::any()}, (void*) &LSArray<LSValue*>::ls_contains},
+		{Type::boolean(), {Type::array(Type::real()), Type::real()}, (void*) &LSArray<double>::ls_contains},
+		{Type::boolean(), {Type::array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::ls_contains}
 	});
 
 	/** Internal **/
 	method("convert_key", {
-		{Type::integer(), {Type::const_any(), Type::const_any()}, (void*) &ArraySTD::convert_key, Method::NATIVE}
+		{Type::integer(), {Type::const_any(), Type::const_any()}, (void*) &ArraySTD::convert_key}
 	});
 	method("in", {
-		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &LSArray<LSValue*>::in, Method::NATIVE},
-		{Type::boolean(), {Type::const_array(Type::real()), Type::const_any()}, (void*) &LSArray<double>::in, Method::NATIVE},
-		{Type::boolean(), {Type::const_array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::in_i, Method::NATIVE},
+		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &LSArray<LSValue*>::in},
+		{Type::boolean(), {Type::const_array(Type::real()), Type::const_any()}, (void*) &LSArray<double>::in},
+		{Type::boolean(), {Type::const_array(Type::integer()), Type::integer()}, (void*) &LSArray<int>::in_i},
 	});
 	method("isize", {
-		{Type::integer(), {Type::array(Type::any())}, (void*) &LSArray<LSValue*>::int_size, Method::NATIVE},
-		{Type::integer(), {Type::array(Type::real())}, (void*) &LSArray<double>::int_size, Method::NATIVE},
-		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::int_size, Method::NATIVE},
+		{Type::integer(), {Type::array(Type::any())}, (void*) &LSArray<LSValue*>::int_size},
+		{Type::integer(), {Type::array(Type::real())}, (void*) &LSArray<double>::int_size},
+		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::int_size},
 	});
 	method("to_bool", {
-		{Type::boolean(), {Type::array()}, (void*) &LSArray<int>::to_bool, Method::NATIVE}
+		{Type::boolean(), {Type::array()}, (void*) &LSArray<int>::to_bool}
 	});
 	auto sort_fun_int = &LSArray<int>::ls_sort_fun<LSFunction*>;
 	auto sort_fun_real = &LSArray<double>::ls_sort_fun<LSFunction*>;
 	auto sort_fun_any = &LSArray<LSValue*>::ls_sort_fun<LSFunction*>;
 	method("sort_fun", {
-		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_any, Method::NATIVE},
-		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_real, Method::NATIVE},
-		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_int, Method::NATIVE},
+		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_any},
+		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_real},
+		{Type::array(), {Type::array(), Type::fun({}, {})}, (void*) sort_fun_int},
 	});
 
 	method("fill_fun", {
-		{Type::array(), {Type::array(), Type::any(), Type::integer()}, (void*) &LSArray<LSValue*>::ls_fill, Method::NATIVE},
-		{Type::array(), {Type::array(), Type::real(), Type::integer()}, (void*) &LSArray<double>::ls_fill, Method::NATIVE},
-		{Type::array(), {Type::array(), Type::integer(), Type::integer()}, (void*) &LSArray<int>::ls_fill, Method::NATIVE},
+		{Type::array(), {Type::array(), Type::any(), Type::integer()}, (void*) &LSArray<LSValue*>::ls_fill},
+		{Type::array(), {Type::array(), Type::real(), Type::integer()}, (void*) &LSArray<double>::ls_fill},
+		{Type::array(), {Type::array(), Type::integer(), Type::integer()}, (void*) &LSArray<int>::ls_fill},
 	});
 	method("remove_element_fun", {
-		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<LSValue*>::ls_remove_element, Method::NATIVE},
-		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<double>::ls_remove_element, Method::NATIVE},
-		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<int>::ls_remove_element, Method::NATIVE},
+		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<LSValue*>::ls_remove_element},
+		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<double>::ls_remove_element},
+		{Type::boolean(), {Type::array(), Type::any()}, (void*) &LSArray<int>::ls_remove_element},
 	});
 }
 
@@ -406,7 +406,7 @@ Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value>
 	return c.insn_call(Type::any(), args, "Value.operator+=");
 }
 
-Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto res = c.insn_array_size(args[0]);
 	c.insn_delete_temporary(args[0]);
 	return res;
@@ -430,7 +430,7 @@ LSValue* ArraySTD::sub(LSArray<LSValue*>* array, int begin, int end) {
 	return r;
 }
 
-Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto fun = [&]() {
 		if (args[0].t.element().fold().is_integer()) return "Array.fill_fun.2";
 		if (args[0].t.element().fold().is_real()) return "Array.fill_fun.1";
@@ -438,7 +438,7 @@ Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args) {
 	}();
 	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t.element().fold()), c.insn_array_size(args[0])}, fun);
 }
-Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto fun = [&]() {
 		if (args[0].t.element().fold().is_integer()) return "Array.fill_fun.2";
 		if (args[0].t.element().fold().is_real()) return "Array.fill_fun.1";
@@ -447,7 +447,7 @@ Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args) 
 	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t.element().fold()), c.to_int(args[2])}, fun);
 }
 
-Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
 	auto result = c.create_and_add_var("r", args[2].t);
 	c.insn_store(result, c.insn_move_inc(args[2]));
@@ -460,7 +460,7 @@ Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> ar
 	return c.insn_load(result);
 }
 
-Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
 	auto result = c.create_and_add_var("r", args[2].t);
 	c.insn_store(result, c.insn_move(args[2]));
@@ -471,7 +471,7 @@ Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> a
 	return c.insn_load(result);
 }
 
-Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
 	c.insn_foreach(args[0], {}, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		return c.insn_call(function.t.return_type(), {v}, function);
@@ -479,10 +479,10 @@ Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args) {
 	return {};
 }
 
-Compiler::value ArraySTD::remove_element_any(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::remove_element_any(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_call(Type::boolean(), {args[0], c.insn_to_any(args[1])}, "Array.remove_element_fun");
 }
-Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[1].t.castable(Type::real())) {
 		return c.insn_call(Type::boolean(), {args[0], c.to_real(args[1])}, "Array.remove_element_fun.1");
 	} else {
@@ -491,7 +491,7 @@ Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler:
 		return c.new_bool(false);
 	}
 }
-Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[1].t.castable(Type::integer())) {
 		return c.insn_call(Type::boolean(), {args[0], c.to_int(args[1])}, "Array.remove_element_fun.2");
 	} else {
@@ -501,7 +501,7 @@ Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::
 	}
 }
 
-Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto array = args[0];
 	auto function = args[1];
 	auto array_true = c.new_array(array.t.element(), {});
@@ -539,7 +539,7 @@ Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args, bo
 }
 
 
-Compiler::value ArraySTD::first(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::first(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto array = args[0];
 	auto array_size = c.insn_array_size(array);
 	c.insn_if(c.insn_ge(c.new_integer(0), array_size), [&]() {
@@ -550,7 +550,7 @@ Compiler::value ArraySTD::first(Compiler& c, std::vector<Compiler::value> args) 
 	c.insn_delete_temporary(array);
 	return e;
 }
-Compiler::value ArraySTD::last(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::last(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto array = args[0];
 	auto array_size = c.insn_array_size(array);
 	c.insn_if(c.insn_ge(c.new_integer(0), array_size), [&]() {
@@ -563,7 +563,7 @@ Compiler::value ArraySTD::last(Compiler& c, std::vector<Compiler::value> args) {
 	return e;
 }
 
-Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args, bool) {
 	const auto& array = args[0];
 	const auto& fun = args[1];
 	auto f = [&]() {
@@ -578,7 +578,7 @@ Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args) {
 	return c.insn_call(array.t, {array, fun}, f);
 }
 
-Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, bool no_return) {
 	auto fun = [&]() {
 		if (args[0].t.element().fold().is_integer()) return "Array.vpush";
 		if (args[0].t.element().fold().is_real()) return "Array.vpush.1";

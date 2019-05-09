@@ -92,50 +92,50 @@ public:
 	/*
 	 * Methods
 	 */
-	static Compiler::value _int(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value _long(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value _int(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value _long(Compiler&, std::vector<Compiler::value>, bool);
 
-	static Compiler::value abs(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value abs(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double acos_ptr(LSNumber* x);
-	static Compiler::value acos_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value acos_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double asin_ptr(LSNumber* x);
-	static Compiler::value asin_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value asin_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double atan_ptr(LSNumber* x);
-	static Compiler::value atan_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value atan_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static LSValue* atan2_ptr_ptr(LSNumber* x, LSNumber* y);
-	static Compiler::value atan2(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value atan2(Compiler&, std::vector<Compiler::value>, bool);
 
 	static LSValue* char_ptr(LSNumber* x);
 	static LSValue* char_real(double x);
 	static LSValue* char_int(int x);
 
 	static double exp_ptr(LSNumber* x);
-	static Compiler::value exp_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value exp_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static int floor_ptr(LSNumber* x);
-	static Compiler::value floor_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value floor_int(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value floor_real(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value floor_int(Compiler&, std::vector<Compiler::value>, bool);
 
 	static int round_ptr(LSNumber* x);
-	static Compiler::value round_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value round_int(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value round_real(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value round_int(Compiler&, std::vector<Compiler::value>, bool);
 
 	static int ceil_ptr(LSNumber* x);
-	static Compiler::value ceil_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value ceil_int(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value ceil_real(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value ceil_int(Compiler&, std::vector<Compiler::value>, bool);
 
 	static LSValue* isInteger_ptr(LSNumber* x);
-	static Compiler::value isInteger(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value isInteger(Compiler&, std::vector<Compiler::value>, bool);
 
 	static LSValue* max_ptr_ptr(LSNumber* x, LSNumber* y);
 	static double max_ptr_float(LSNumber* x, double y);
 	static double max_ptr_int(LSNumber* x, int y);
 	static double max_float_ptr(double x, LSNumber* y);
-	static Compiler::value max_float_float(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value max_float_float(Compiler&, std::vector<Compiler::value>, bool);
 	static double max_int_ptr(int x, LSNumber* y);
 	template<class T> static T max(T a, T b) { return a < b ? b : a; }
 
@@ -143,52 +143,52 @@ public:
 	static double min_ptr_float(LSNumber* x, double y);
 	static double min_ptr_int(LSNumber* x, int y);
 	static double min_float_ptr(double x, LSNumber* y);
-	static Compiler::value min_float_float(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value min_float_float(Compiler&, std::vector<Compiler::value>, bool);
 	static double min_int_ptr(int x, LSNumber* y);
 	template<class T> static T min(T a, T b) { return a < b ? a : b; }
 
 	static LSValue* cos_ptr(LSNumber* x);
-	static Compiler::value cos_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value cos_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double sin_ptr(LSNumber* x);
-	static Compiler::value sin_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value sin_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double tan_ptr(LSNumber* x);
-	static Compiler::value tan_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value tan_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double sqrt_ptr(LSNumber* x);
-	static Compiler::value sqrt_mpz(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value sqrt_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
 
 	static LSValue* cbrt_ptr(LSNumber* x);
 
 	static double pow_ptr(LSNumber* x, LSNumber* y);
-	static Compiler::value pow_int(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value pow_int(Compiler&, std::vector<Compiler::value>, bool);
 
-	static Compiler::value is_prime(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value is_prime(Compiler&, std::vector<Compiler::value>, bool);
 	template<typename T>
 	static int is_prime_number(T n);
 
-	static Compiler::value hypot_ptr_ptr(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value hypot_ptr_ptr(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double log_ptr(LSNumber* x);
-	static Compiler::value log_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value log_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double log10_ptr(LSNumber* x);
-	static Compiler::value log10_real(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value log10_real(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double rand01();
 	static int rand_int(int min, int max);
 	static double rand_real(double min, double max);
 
-	static Compiler::value signum(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value signum(Compiler& c, std::vector<Compiler::value> args, bool);
 	static int signum_ptr(LSNumber* x);
 
 	static double toDegrees_ptr(LSNumber* x);
-	static Compiler::value toDegrees(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value toDegrees(Compiler& c, std::vector<Compiler::value> args, bool);
 	static double toRadians_ptr(LSNumber* x);
-	static Compiler::value toRadians(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value toRadians(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value fold(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value fold(Compiler& c, std::vector<Compiler::value> args, bool);
 
 	static LSValue* int_to_string(int);
 	static LSValue* long_to_string(long);

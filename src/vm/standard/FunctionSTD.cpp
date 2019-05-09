@@ -13,8 +13,8 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 	field("args", Type::array());
 
 	constructor_({
-		{Type::fun({}, {}), {Type::i8().pointer()}, (void*) &LSFunction::constructor, Method::NATIVE},
-		{Type::closure({}, {}), {Type::i8().pointer()}, (void*) &LSClosure::constructor, Method::NATIVE},
+		{Type::fun({}, {}), {Type::i8().pointer()}, (void*) &LSFunction::constructor},
+		{Type::closure({}, {}), {Type::i8().pointer()}, (void*) &LSClosure::constructor},
 	});
 
 	// method("copy", {
@@ -23,16 +23,16 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 
 	/** Internal **/
 	method("call", {
-		{Type::any(), {Type::fun({}, {})}, (void*) &LSFunction::call, Method::NATIVE}
+		{Type::any(), {Type::fun({}, {})}, (void*) &LSFunction::call}
 	});
 	method("get_capture", {
-		{Type::any(), {Type::closure({}, {})}, (void*) &LSClosure::get_capture, Method::NATIVE}
+		{Type::any(), {Type::closure({}, {})}, (void*) &LSClosure::get_capture}
 	});
 	method("get_capture_l", {
-		{Type::any(), {Type::closure({}, {})}, (void*) &LSClosure::get_capture_l, Method::NATIVE}
+		{Type::any(), {Type::closure({}, {})}, (void*) &LSClosure::get_capture_l}
 	});
 	method("add_capture", {
-		{{}, {Type::closure({}, {}), Type::any()}, (void*) &LSClosure::add_capture, Method::NATIVE}
+		{{}, {Type::closure({}, {}), Type::any()}, (void*) &LSClosure::add_capture}
 	});
 }
 

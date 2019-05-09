@@ -19,7 +19,7 @@ public:
 
 	static int compare_ptr_ptr(LSBoolean* a, LSBoolean* b);
 	static LSValue* compare_ptr_ptr_ptr(LSBoolean* a, LSBoolean* b);
-	static Compiler::value compare_val_val(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value compare_val_val(Compiler&, std::vector<Compiler::value>, bool);
 
 	static LSValue* to_string(bool b);
 };

@@ -34,9 +34,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Constructors
 	 */
 	constructor_({
-		{Type::any(), {Type::integer()}, (void*) &LSNumber::get, Method::NATIVE},
-		{Type::any(), {Type::tmp_mpz()}, (void*) &LSMpz::get_from_tmp, Method::NATIVE},
-		{Type::any(), {Type::mpz()}, (void*) &LSMpz::get_from_mpz, Method::NATIVE},
+		{Type::any(), {Type::integer()}, (void*) &LSNumber::get},
+		{Type::any(), {Type::tmp_mpz()}, (void*) &LSMpz::get_from_tmp},
+		{Type::any(), {Type::mpz()}, (void*) &LSMpz::get_from_mpz},
 	});
 
 	/*
@@ -174,261 +174,261 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Methods
 	 */
 	method("copy", {
-		{Type::real(), {Type::const_real()}, (void*) &ValueSTD::copy},
-		{Type::long_(), {Type::const_long()}, (void*) &ValueSTD::copy},
-		{Type::integer(), {Type::const_integer()}, (void*) &ValueSTD::copy},
-		{Type::mpz(), {Type::mpz()}, (void*) &ValueSTD::copy},
+		{Type::real(), {Type::const_real()}, ValueSTD::copy},
+		{Type::long_(), {Type::const_long()}, ValueSTD::copy},
+		{Type::integer(), {Type::const_integer()}, ValueSTD::copy},
+		{Type::mpz(), {Type::mpz()}, ValueSTD::copy},
 	});
 	method("int", Method::Static, {
-		{Type::integer(), {Type::any()}, (void*) &NumberSTD::_int},
-		{Type::integer(), {Type::real()}, (void*) &NumberSTD::_int}
+		{Type::integer(), {Type::any()}, NumberSTD::_int},
+		{Type::integer(), {Type::real()}, NumberSTD::_int}
 	});
 	method("long", Method::Static, {
-		{Type::long_(), {Type::any()}, (void*) &NumberSTD::_long},
+		{Type::long_(), {Type::any()}, NumberSTD::_long},
 	});
 	method("abs", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::abs},
-		{Type::long_(), {Type::long_()}, (void*) &NumberSTD::abs},
-		{Type::integer(), {Type::integer()}, (void*) &NumberSTD::abs},
+		{Type::real(), {Type::any()}, NumberSTD::abs},
+		{Type::long_(), {Type::long_()}, NumberSTD::abs},
+		{Type::integer(), {Type::integer()}, NumberSTD::abs},
 	});
 	int (*abs_int)(int) = std::abs;
 	long (*abs_long)(long) = std::abs;
 	double (*abs_real)(double) = std::fabs;
 	method("m_abs", {
-		{Type::integer(), {Type::integer()}, (void*) abs_int, Method::NATIVE},
-		{Type::long_(), {Type::long_()}, (void*) abs_long, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) abs_real, Method::NATIVE},
+		{Type::integer(), {Type::integer()}, (void*) abs_int},
+		{Type::long_(), {Type::long_()}, (void*) abs_long},
+		{Type::real(), {Type::real()}, (void*) abs_real},
 	});
 	method("acos", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::acos_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::acos_real},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::acos_ptr},
+		{Type::real(), {Type::real()}, NumberSTD::acos_real},
 	});
 	method("asin", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::asin_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::asin_real},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::asin_ptr},
+		{Type::real(), {Type::real()}, NumberSTD::asin_real},
 	});
 	method("atan", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::atan_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::atan_real},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::atan_ptr},
+		{Type::real(), {Type::real()}, NumberSTD::atan_real},
 	});
 	method("atan2", {
-		{Type::any(), {Type::any(), Type::any()}, (void*) &NumberSTD::atan2_ptr_ptr, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::any()}, (void*) &NumberSTD::atan2},
-		{Type::real(), {Type::real(), Type::real()}, (void*) &NumberSTD::atan2},
+		{Type::any(), {Type::any(), Type::any()}, (void*) &NumberSTD::atan2_ptr_ptr},
+		{Type::real(), {Type::real(), Type::any()}, NumberSTD::atan2},
+		{Type::real(), {Type::real(), Type::real()}, NumberSTD::atan2},
 	});
 	double (*cbrtreal)(double) = std::cbrt;
 	double (*cbrtint)(int) = std::cbrt;
 	method("cbrt", {
-		{Type::any(), {Type::any()}, (void*) &NumberSTD::cbrt_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) cbrtreal, Method::NATIVE},
-		{Type::real(), {Type::integer()}, (void*) cbrtint, Method::NATIVE},
+		{Type::any(), {Type::any()}, (void*) &NumberSTD::cbrt_ptr},
+		{Type::real(), {Type::real()}, (void*) cbrtreal},
+		{Type::real(), {Type::integer()}, (void*) cbrtint},
 	});
 	method("ceil", {
-		{Type::integer(), {Type::any()}, (void*) &NumberSTD::ceil_ptr, Method::NATIVE},
-		{Type::integer(), {Type::real()}, (void*) &NumberSTD::ceil_real},
-		{Type::integer(), {Type::integer()}, (void*) &NumberSTD::ceil_int},
+		{Type::integer(), {Type::any()}, (void*) &NumberSTD::ceil_ptr},
+		{Type::integer(), {Type::real()}, NumberSTD::ceil_real},
+		{Type::integer(), {Type::integer()}, NumberSTD::ceil_int},
 	});
 	method("char", {
-		{Type::tmp_string(), {Type::const_any()}, (void*) &NumberSTD::char_ptr, Method::NATIVE},
-		{Type::tmp_string(), {Type::const_real()}, (void*) &NumberSTD::char_real, Method::NATIVE},
-		{Type::tmp_string(), {Type::const_integer()}, (void*) &NumberSTD::char_int, Method::NATIVE},
+		{Type::tmp_string(), {Type::const_any()}, (void*) &NumberSTD::char_ptr},
+		{Type::tmp_string(), {Type::const_real()}, (void*) &NumberSTD::char_real},
+		{Type::tmp_string(), {Type::const_integer()}, (void*) &NumberSTD::char_int},
 	});
 	method("cos", {
-		{Type::any(), {Type::any()}, (void*) &NumberSTD::cos_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::cos_real},
+		{Type::any(), {Type::any()}, (void*) &NumberSTD::cos_ptr},
+		{Type::real(), {Type::real()}, NumberSTD::cos_real},
 	});
 	method("exp", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::exp_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::exp_real},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::exp_ptr},
+		{Type::real(), {Type::real()}, NumberSTD::exp_real},
 	});
 	Type fold_fun_type = Type::fun(Type::any(), {Type::any(), Type::integer()});
 	auto fold_fun = &LSNumber::ls_fold<LSFunction*>;
 	method("fold", {
-		{Type::any(), {Type::any(), fold_fun_type, Type::any()}, (void*) fold_fun, Method::NATIVE},
-		{Type::any(), {Type::any(), fold_fun_type, Type::any()}, (void*) fold}
+		{Type::any(), {Type::any(), fold_fun_type, Type::any()}, (void*) fold_fun},
+		{Type::any(), {Type::any(), fold_fun_type, Type::any()}, fold}
 	});
 	method("floor", {
-		{Type::integer(), {Type::any()}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
-		{Type::integer(), {Type::any()}, (void*) &NumberSTD::floor_ptr, Method::NATIVE},
-		{Type::integer(), {Type::real()}, (void*) &NumberSTD::floor_real},
-		{Type::integer(), {Type::integer()}, (void*) &NumberSTD::floor_int},
+		{Type::integer(), {Type::any()}, (void*) &NumberSTD::floor_ptr},
+		{Type::integer(), {Type::any()}, (void*) &NumberSTD::floor_ptr},
+		{Type::integer(), {Type::real()}, NumberSTD::floor_real},
+		{Type::integer(), {Type::integer()}, NumberSTD::floor_int},
 	});
 	method("hypot", {
-		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::hypot_ptr_ptr},
-		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::hypot<int, int>, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::real()}, (void*) std::hypot<double, double>, Method::NATIVE},
+		{Type::real(), {Type::any(), Type::any()}, NumberSTD::hypot_ptr_ptr},
+		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::hypot<int, int>},
+		{Type::real(), {Type::real(), Type::real()}, (void*) std::hypot<double, double>},
 	});
 	method("log", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::log_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::log_real},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::log_ptr},
+		{Type::real(), {Type::real()}, NumberSTD::log_real},
 	});
 	method("log10", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::log10_ptr, Method::NATIVE},
-		{Type::real(), {Type::long_()}, (void*) &NumberSTD::log10_real},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::log10_real},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::log10_ptr},
+		{Type::real(), {Type::long_()}, NumberSTD::log10_real},
+		{Type::real(), {Type::real()}, NumberSTD::log10_real},
 	});
 	method("max", {
-		{Type::any(), {Type::any(), Type::any()}, (void*) &NumberSTD::max_ptr_ptr, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::any()}, (void*) &NumberSTD::max_float_ptr, Method::NATIVE},
-		{Type::real(), {Type::integer(), Type::any()}, (void*) &NumberSTD::max_int_ptr, Method::NATIVE},
-		{Type::real(), {Type::any(), Type::real()}, (void*) &NumberSTD::max_ptr_float, Method::NATIVE},
-		{Type::real(), {Type::any(), Type::integer()}, (void*) &NumberSTD::max_ptr_int, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::real()}, (void*) &NumberSTD::max_float_float},
-		{Type::real(), {Type::real(), Type::integer()}, (void*) &NumberSTD::max_float_float},
-		{Type::real(), {Type::integer(), Type::real()}, (void*) &NumberSTD::max_float_float},
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) &NumberSTD::max_float_float}
+		{Type::any(), {Type::any(), Type::any()}, (void*) &NumberSTD::max_ptr_ptr},
+		{Type::real(), {Type::real(), Type::any()}, (void*) &NumberSTD::max_float_ptr},
+		{Type::real(), {Type::integer(), Type::any()}, (void*) &NumberSTD::max_int_ptr},
+		{Type::real(), {Type::any(), Type::real()}, (void*) &NumberSTD::max_ptr_float},
+		{Type::real(), {Type::any(), Type::integer()}, (void*) &NumberSTD::max_ptr_int},
+		{Type::real(), {Type::real(), Type::real()}, NumberSTD::max_float_float},
+		{Type::real(), {Type::real(), Type::integer()}, NumberSTD::max_float_float},
+		{Type::real(), {Type::integer(), Type::real()}, NumberSTD::max_float_float},
+		{Type::integer(), {Type::integer(), Type::integer()}, NumberSTD::max_float_float}
 	});
 	method("min", {
-		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::min_ptr_ptr, Method::NATIVE},
-		{Type::real(), {Type::any(), Type::real()}, (void*) &NumberSTD::min_ptr_float, Method::NATIVE},
-		{Type::real(), {Type::any(), Type::integer()}, (void*) &NumberSTD::min_ptr_int, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::any()}, (void*) &NumberSTD::min_float_ptr, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::real()}, (void*) &NumberSTD::min_float_float},
-		{Type::real(), {Type::real(), Type::integer()}, (void*) &NumberSTD::min_float_float},
-		{Type::real(), {Type::integer(), Type::any()}, (void*) &NumberSTD::min_int_ptr, Method::NATIVE},
-		{Type::real(), {Type::integer(), Type::real()}, (void*) &NumberSTD::min_float_float},
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) &NumberSTD::min_float_float},
+		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::min_ptr_ptr},
+		{Type::real(), {Type::any(), Type::real()}, (void*) &NumberSTD::min_ptr_float},
+		{Type::real(), {Type::any(), Type::integer()}, (void*) &NumberSTD::min_ptr_int},
+		{Type::real(), {Type::real(), Type::any()}, (void*) &NumberSTD::min_float_ptr},
+		{Type::real(), {Type::real(), Type::real()}, NumberSTD::min_float_float},
+		{Type::real(), {Type::real(), Type::integer()}, NumberSTD::min_float_float},
+		{Type::real(), {Type::integer(), Type::any()}, (void*) NumberSTD::min_int_ptr},
+		{Type::real(), {Type::integer(), Type::real()}, NumberSTD::min_float_float},
+		{Type::integer(), {Type::integer(), Type::integer()}, NumberSTD::min_float_float},
 	});
 	method("pow", {
-		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::pow_ptr, Method::NATIVE},
-		{Type::long_(), {Type::long_(), Type::integer()}, (void*) &NumberSTD::pow_int},
-		{Type::real(), {Type::long_(), Type::long_()}, (void*) &NumberSTD::pow_int},
+		{Type::real(), {Type::any(), Type::any()}, (void*) &NumberSTD::pow_ptr},
+		{Type::long_(), {Type::long_(), Type::integer()}, NumberSTD::pow_int},
+		{Type::real(), {Type::long_(), Type::long_()}, NumberSTD::pow_int},
 	});
 	method("round", {
-		{Type::integer(), {Type::any()}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
-		{Type::integer(), {Type::any()}, (void*) &NumberSTD::round_ptr, Method::NATIVE},
-		{Type::integer(), {Type::real()}, (void*) &NumberSTD::round_real},
-		{Type::integer(), {Type::integer()}, (void*) &NumberSTD::round_int}
+		{Type::integer(), {Type::any()}, (void*) &NumberSTD::round_ptr},
+		{Type::integer(), {Type::any()}, (void*) &NumberSTD::round_ptr},
+		{Type::integer(), {Type::real()}, NumberSTD::round_real},
+		{Type::integer(), {Type::integer()}, NumberSTD::round_int}
 	});
 	method("rand", Method::Static, {
-		{Type::real(), {}, (void*) &NumberSTD::rand01, Method::NATIVE},
+		{Type::real(), {}, (void*) &NumberSTD::rand01},
 	});
 	method("randInt", Method::Static, {
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) NumberSTD::rand_int, Method::NATIVE},
+		{Type::integer(), {Type::integer(), Type::integer()}, (void*) NumberSTD::rand_int},
 	});
 	method("randFloat", Method::Static, {
-		{Type::real(), {Type::real(), Type::real()}, (void*) rand_real, Method::NATIVE},
+		{Type::real(), {Type::real(), Type::real()}, (void*) rand_real},
 	});
 	method("signum", {
-		{Type::integer(), {Type::any()}, (void*) &NumberSTD::signum_ptr, Method::NATIVE},
-		{Type::integer(), {Type::number()}, (void*) &NumberSTD::signum},
+		{Type::integer(), {Type::any()}, (void*) &NumberSTD::signum_ptr},
+		{Type::integer(), {Type::number()}, NumberSTD::signum},
 	});
 	method("sin", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::sin_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::sin_real},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::sin_ptr},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::sin_ptr},
+		{Type::real(), {Type::real()}, NumberSTD::sin_real},
 	});
 	double (*sqrt_real)(double) = std::sqrt;
 	method("sqrt", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::sqrt_ptr, Method::NATIVE},
-		{Type::tmp_mpz_ptr(), {Type::mpz_ptr()}, (void*) NumberSTD::sqrt_mpz},
-		{Type::real(), {Type::real()}, (void*) sqrt_real, Method::NATIVE},
-		{Type::real(), {Type::integer()}, (void*) &std::sqrt<int>, Method::NATIVE},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::sqrt_ptr},
+		{Type::tmp_mpz_ptr(), {Type::mpz_ptr()}, NumberSTD::sqrt_mpz},
+		{Type::real(), {Type::real()}, (void*) sqrt_real},
+		{Type::real(), {Type::integer()}, (void*) &std::sqrt<int>},
 	});
 	method("tan", {
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::tan_ptr, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) &NumberSTD::tan_real},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::tan_ptr},
+		{Type::real(), {Type::any()}, (void*) &NumberSTD::tan_ptr},
+		{Type::real(), {Type::real()}, NumberSTD::tan_real},
 	});
 	method("toDegrees", {
-		{Type::any(), {Type::any()}, (void*) &NumberSTD::toDegrees_ptr, Method::NATIVE},
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::toDegrees},
+		{Type::any(), {Type::any()}, (void*) &NumberSTD::toDegrees_ptr},
+		{Type::real(), {Type::any()}, NumberSTD::toDegrees},
 	});
 	method("toRadians", {
-		{Type::any(), {Type::any()}, (void*) &NumberSTD::toRadians_ptr, Method::NATIVE},
-		{Type::real(), {Type::any()}, (void*) &NumberSTD::toRadians},
+		{Type::any(), {Type::any()}, (void*) &NumberSTD::toRadians_ptr},
+		{Type::real(), {Type::any()}, NumberSTD::toRadians},
 	});
 	method("isInteger", {
-		{Type::any(), {Type::any()}, (void*) &NumberSTD::isInteger_ptr, Method::NATIVE},
-		{Type::boolean(), {Type::any()}, (void*) &NumberSTD::isInteger},
+		{Type::any(), {Type::any()}, (void*) &NumberSTD::isInteger_ptr},
+		{Type::boolean(), {Type::any()}, NumberSTD::isInteger},
 	});
 	method("isPrime", {
-		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_number<int>, Method::NATIVE},
-		{Type::integer(), {Type::mpz_ptr()}, (void*) &NumberSTD::is_prime},
-		{Type::boolean(), {Type::long_()}, (void*) &NumberSTD::is_prime_number<long>, Method::NATIVE},
+		{Type::boolean(), {Type::integer()}, (void*) &NumberSTD::is_prime_number<int>},
+		{Type::integer(), {Type::mpz_ptr()}, NumberSTD::is_prime},
+		{Type::boolean(), {Type::long_()}, (void*) &NumberSTD::is_prime_number<long>},
 	});
 
 	/** Internal **/
 	method("powdd", {
-		{Type::real(), {Type::real(), Type::real()}, (void*) &std::pow<double, double>, Method::NATIVE}
+		{Type::real(), {Type::real(), Type::real()}, (void*) &std::pow<double, double>}
 	});
 	method("powli", {
-		{Type::real(), {Type::long_(), Type::integer()}, (void*) &std::pow<long, int>, Method::NATIVE}
+		{Type::real(), {Type::long_(), Type::integer()}, (void*) &std::pow<long, int>}
 	});
 	method("powii", {
-		{Type::real(), {Type::integer(), Type::integer()}, (void*) &std::pow<int, int>, Method::NATIVE}
+		{Type::real(), {Type::integer(), Type::integer()}, (void*) &std::pow<int, int>}
 	});
 	method("mpz_init", {
-		{{}, {Type::mpz().pointer()}, (void*) &mpz_init, Method::NATIVE}
+		{{}, {Type::mpz().pointer()}, (void*) &mpz_init}
 	});
 	method("mpz_init_set", {
-		{{}, {Type::mpz().pointer()}, (void*) &mpz_init_set, Method::NATIVE}
+		{{}, {Type::mpz().pointer()}, (void*) &mpz_init_set}
 	});
 	method("mpz_init_str", {
-		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) &mpz_init_set_str, Method::NATIVE}
+		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) &mpz_init_set_str}
 	});
 	method("mpz_get_ui", {
-		{{Type::long_()}, {Type::mpz().pointer()}, (void*) &mpz_get_ui, Method::NATIVE}
+		{{Type::long_()}, {Type::mpz().pointer()}, (void*) &mpz_get_ui}
 	});
 	method("mpz_get_si", {
-		{{Type::long_()}, {Type::mpz().pointer()}, (void*) &mpz_get_si, Method::NATIVE}
+		{{Type::long_()}, {Type::mpz().pointer()}, (void*) &mpz_get_si}
 	});
 	method("mpz_add", {
-		{{}, {Type::mpz_ptr(), Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_add, Method::NATIVE}
+		{{}, {Type::mpz_ptr(), Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_add}
 	});
 	method("mpz_add_ui", {
-		{{}, {Type::mpz_ptr(), Type::long_(), Type::mpz_ptr()}, (void*) &mpz_add_ui, Method::NATIVE}
+		{{}, {Type::mpz_ptr(), Type::long_(), Type::mpz_ptr()}, (void*) &mpz_add_ui}
 	});
 	method("mpz_sub", {
-		{{}, {Type::mpz_ptr(), Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_sub, Method::NATIVE}
+		{{}, {Type::mpz_ptr(), Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_sub}
 	});
 	method("mpz_sub_ui", {
-		{{}, {Type::mpz_ptr(), Type::long_(), Type::mpz_ptr()}, (void*) &mpz_sub_ui, Method::NATIVE}
+		{{}, {Type::mpz_ptr(), Type::long_(), Type::mpz_ptr()}, (void*) &mpz_sub_ui}
 	});
 	method("mpz_mul", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mul, Method::NATIVE}
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mul}
 	});
 	method("mpz_mul_si", {
-		{{}, {Type::mpz().pointer(), Type::long_(), Type::mpz().pointer()}, (void*) &mpz_mul_si, Method::NATIVE}
+		{{}, {Type::mpz().pointer(), Type::long_(), Type::mpz().pointer()}, (void*) &mpz_mul_si}
 	});
 	method("mpz_pow_ui", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::integer()}, (void*) &mpz_pow_ui, Method::NATIVE}
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::integer()}, (void*) &mpz_pow_ui}
 	});
 	method("mpz_mod", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mod, Method::NATIVE}
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_mod}
 	});
 	method("mpz_probab_prime_p", {
-		{Type::integer(), {Type::mpz().pointer(), Type::integer()}, (void*) &mpz_probab_prime_p, Method::NATIVE}
+		{Type::integer(), {Type::mpz().pointer(), Type::integer()}, (void*) &mpz_probab_prime_p}
 	});
 	method("mpz_neg", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg, Method::NATIVE}
+		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) &mpz_neg}
 	});
 	method("mpz_log", {
-		{{Type::integer()}, {Type::mpz().pointer()}, (void*) &mpz_log, Method::NATIVE}
+		{{Type::integer()}, {Type::mpz().pointer()}, (void*) &mpz_log}
 	});
 	method("mpz_cmp", {
-		{{Type::integer()}, {Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_cmp, Method::NATIVE}
+		{{Type::integer()}, {Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_cmp}
 	});
 	method("_mpz_cmp_si", {
-		{{Type::integer()}, {Type::mpz_ptr(), Type::long_()}, (void*) &_mpz_cmp_si, Method::NATIVE}
+		{{Type::integer()}, {Type::mpz_ptr(), Type::long_()}, (void*) &_mpz_cmp_si}
 	});
 	method("mpz_sqrt", {
-		{{}, {Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_sqrt, Method::NATIVE}
+		{{}, {Type::mpz_ptr(), Type::mpz_ptr()}, (void*) &mpz_sqrt}
 	});
 	method("mpz_clear", {
-		{{}, {Type::mpz().pointer()}, (void*) &mpz_clear, Method::NATIVE}
+		{{}, {Type::mpz().pointer()}, (void*) &mpz_clear}
 	});
 	method("int_to_string", {
-		{Type::tmp_string(), {Type::integer()}, (void*) &NumberSTD::int_to_string, Method::NATIVE}
+		{Type::tmp_string(), {Type::integer()}, (void*) &NumberSTD::int_to_string}
 	});
 	method("long_to_string", {
-		{Type::tmp_string(), {Type::long_()}, (void*) &NumberSTD::long_to_string, Method::NATIVE}
+		{Type::tmp_string(), {Type::long_()}, (void*) &NumberSTD::long_to_string}
 	});
 	method("real_to_string", {
-		{Type::tmp_string(), {Type::real()}, (void*) &NumberSTD::real_to_string, Method::NATIVE}
+		{Type::tmp_string(), {Type::real()}, (void*) &NumberSTD::real_to_string}
 	});
 	method("mpz_to_string", {
-		{Type::tmp_string(), {Type::mpz_ptr()}, (void*) &NumberSTD::mpz_to_string, Method::NATIVE}
+		{Type::tmp_string(), {Type::mpz_ptr()}, (void*) &NumberSTD::mpz_to_string}
 	});
 	double (*logreal)(double) = std::log;
 	method("m_log", {
@@ -460,59 +460,59 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::real()}, (void*) ceilreal},
 	});
 	method("m_max", {
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) max<int>, Method::NATIVE},
-		{Type::long_(), {Type::long_(), Type::long_()}, (void*) max<long>, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::real()}, (void*) max<double>, Method::NATIVE},
+		{Type::integer(), {Type::integer(), Type::integer()}, (void*) max<int>},
+		{Type::long_(), {Type::long_(), Type::long_()}, (void*) max<long>},
+		{Type::real(), {Type::real(), Type::real()}, (void*) max<double>},
 	});
 	method("m_min", {
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) min<int>, Method::NATIVE},
-		{Type::long_(), {Type::long_(), Type::long_()}, (void*) min<long>, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::real()}, (void*) min<double>, Method::NATIVE},
+		{Type::integer(), {Type::integer(), Type::integer()}, (void*) min<int>},
+		{Type::long_(), {Type::long_(), Type::long_()}, (void*) min<long>},
+		{Type::real(), {Type::real(), Type::real()}, (void*) min<double>},
 	});
 	double (*cosreal)(double) = std::cos;
 	method("m_cos", {
-		{Type::real(), {Type::integer()}, (void*) std::cos<int>, Method::NATIVE},
-		{Type::real(), {Type::long_()}, (void*) std::cos<long>, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) cosreal, Method::NATIVE},
+		{Type::real(), {Type::integer()}, (void*) std::cos<int>},
+		{Type::real(), {Type::long_()}, (void*) std::cos<long>},
+		{Type::real(), {Type::real()}, (void*) cosreal},
 	});
 	double (*sinreal)(double) = std::sin;
 	method("m_sin", {
-		{Type::real(), {Type::integer()}, (void*) std::sin<int>, Method::NATIVE},
-		{Type::real(), {Type::long_()}, (void*) std::sin<long>, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) sinreal, Method::NATIVE},
+		{Type::real(), {Type::integer()}, (void*) std::sin<int>},
+		{Type::real(), {Type::long_()}, (void*) std::sin<long>},
+		{Type::real(), {Type::real()}, (void*) sinreal},
 	});
 	double (*tanreal)(double) = std::tan;
 	method("m_tan", {
-		{Type::real(), {Type::integer()}, (void*) std::tan<int>, Method::NATIVE},
-		{Type::real(), {Type::long_()}, (void*) std::tan<long>, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) tanreal, Method::NATIVE},
+		{Type::real(), {Type::integer()}, (void*) std::tan<int>},
+		{Type::real(), {Type::long_()}, (void*) std::tan<long>},
+		{Type::real(), {Type::real()}, (void*) tanreal},
 	});
 	double (*acosreal)(double) = std::acos;
 	method("m_acos", {
-		{Type::real(), {Type::integer()}, (void*) std::acos<int>, Method::NATIVE},
-		{Type::real(), {Type::long_()}, (void*) std::acos<long>, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) acosreal, Method::NATIVE},
+		{Type::real(), {Type::integer()}, (void*) std::acos<int>},
+		{Type::real(), {Type::long_()}, (void*) std::acos<long>},
+		{Type::real(), {Type::real()}, (void*) acosreal},
 	});
 	double (*asinreal)(double) = std::asin;
 	method("m_asin", {
-		{Type::real(), {Type::integer()}, (void*) std::asin<int>, Method::NATIVE},
-		{Type::real(), {Type::long_()}, (void*) std::asin<long>, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) asinreal, Method::NATIVE},
+		{Type::real(), {Type::integer()}, (void*) std::asin<int>},
+		{Type::real(), {Type::long_()}, (void*) std::asin<long>},
+		{Type::real(), {Type::real()}, (void*) asinreal},
 	});
 	double (*atanreal)(double) = std::atan;
 	method("m_atan", {
-		{Type::real(), {Type::integer()}, (void*) std::atan<int>, Method::NATIVE},
-		{Type::real(), {Type::long_()}, (void*) std::atan<long>, Method::NATIVE},
-		{Type::real(), {Type::real()}, (void*) atanreal, Method::NATIVE},
+		{Type::real(), {Type::integer()}, (void*) std::atan<int>},
+		{Type::real(), {Type::long_()}, (void*) std::atan<long>},
+		{Type::real(), {Type::real()}, (void*) atanreal},
 	});
 	double (*atan2real)(double, double) = std::atan2;
 	method("m_atan2", {
-		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::atan2<int, int>, Method::NATIVE},
-		{Type::real(), {Type::long_(), Type::long_()}, (void*) std::atan2<long, long>, Method::NATIVE},
-		{Type::real(), {Type::real(), Type::real()}, (void*) atan2real, Method::NATIVE},
+		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::atan2<int, int>},
+		{Type::real(), {Type::long_(), Type::long_()}, (void*) std::atan2<long, long>},
+		{Type::real(), {Type::real(), Type::real()}, (void*) atan2real},
 	});
 	method("m_isint", {
-		{Type::boolean(), {Type::any()}, (void*) isint, Method::NATIVE},
+		{Type::boolean(), {Type::any()}, (void*) isint},
 	});
 }
 
@@ -840,14 +840,14 @@ Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> 
  * Methods
  */
 
-Compiler::value NumberSTD::_int(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.to_int(args[0]);
 }
-Compiler::value NumberSTD::_long(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::_long(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.to_long(args[0]);
 }
 
-Compiler::value NumberSTD::abs(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::abs(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_abs(args[0]);
 	c.insn_delete_temporary(args[0]);
 	return r;
@@ -859,7 +859,7 @@ double NumberSTD::acos_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::acos_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::acos_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_acos(args[0]);
 }
 
@@ -869,7 +869,7 @@ double NumberSTD::asin_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::asin_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::asin_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_asin(args[0]);
 }
 
@@ -879,7 +879,7 @@ double NumberSTD::atan_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::atan_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::atan_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_atan(args[0]);
 }
 
@@ -889,7 +889,7 @@ LSValue* NumberSTD::atan2_ptr_ptr(LSNumber* x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return r;
 }
-Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (!args[0].t.is_polymorphic() and !args[1].t.is_polymorphic()) {
 		return c.insn_atan2(args[0], args[1]);
 	} else {
@@ -928,7 +928,7 @@ double NumberSTD::exp_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::exp_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::exp_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_exp(args[0]);
 }
 
@@ -938,11 +938,11 @@ int NumberSTD::floor_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::floor_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::floor_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_floor(args[0]);
 }
 
-Compiler::value NumberSTD::floor_int(Compiler&, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::floor_int(Compiler&, std::vector<Compiler::value> args, bool) {
 	return args[0]; // Nothing to do
 }
 
@@ -952,11 +952,11 @@ int NumberSTD::round_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::round_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::round_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_round(args[0]);
 }
 
-Compiler::value NumberSTD::round_int(Compiler&, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::round_int(Compiler&, std::vector<Compiler::value> args, bool) {
 	return args[0]; // Nothing to do
 }
 
@@ -966,11 +966,11 @@ int NumberSTD::ceil_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::ceil_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::ceil_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_ceil(args[0]);
 }
 
-Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args, bool) {
 	return args[0]; // Nothing to do
 }
 
@@ -1000,7 +1000,7 @@ double NumberSTD::max_int_ptr(int x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return max;
 }
-Compiler::value NumberSTD::max_float_float(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::max_float_float(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_max(args[0], args[1]);
 }
 
@@ -1030,7 +1030,7 @@ double NumberSTD::min_int_ptr(int x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return min;
 }
-Compiler::value NumberSTD::min_float_float(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::min_float_float(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_min(args[0], args[1]);
 }
 
@@ -1039,7 +1039,7 @@ LSValue* NumberSTD::cos_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return r;
 }
-Compiler::value NumberSTD::cos_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::cos_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_cos(args[0]);
 }
 
@@ -1048,7 +1048,7 @@ double NumberSTD::sin_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return s;
 }
-Compiler::value NumberSTD::sin_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::sin_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_sin(args[0]);
 }
 
@@ -1057,7 +1057,7 @@ double NumberSTD::tan_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return c;
 }
-Compiler::value NumberSTD::tan_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::tan_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_tan(args[0]);
 }
 
@@ -1067,7 +1067,7 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 	return s;
 }
 
-Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
 	c.insn_call({}, {r, args[0]}, "Number.mpz_sqrt");
 	return r;
@@ -1079,7 +1079,7 @@ LSValue* NumberSTD::cbrt_ptr(LSNumber* x) {
 	return r;
 }
 
-Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_pow(args[0], args[1]);
 }
 
@@ -1095,7 +1095,7 @@ Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value>
 	return sum;
 }
 
-Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto reps = c.new_integer(15);
 	auto res = c.insn_call(Type::integer(), {args[0], reps}, "Number.mpz_probab_prime_p");
 	c.insn_delete_temporary(args[0]);
@@ -1115,7 +1115,7 @@ int NumberSTD::is_prime_number(T n) {
 	return true;
 }
 
-Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_call(Type::real(), {c.to_real(args[0]), c.to_real(args[1])}, "Number.hypot.2");
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
@@ -1127,7 +1127,7 @@ double NumberSTD::log_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return res;
 }
-Compiler::value NumberSTD::log_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::log_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_log(args[0]);
 }
 
@@ -1136,7 +1136,7 @@ double NumberSTD::log10_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return res;
 }
-Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_log10(args[0]);
 }
 
@@ -1158,7 +1158,7 @@ double NumberSTD::rand_real(double min, double max) {
 	return min + ((double) rand() / RAND_MAX) * (max - min);
 }
 
-Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto ap = c.insn_to_any(args[0]);
 	auto r = c.insn_call(Type::integer(), {ap}, "Number.signum");
 	c.insn_dec_refs(ap);
@@ -1177,7 +1177,7 @@ double NumberSTD::toDegrees_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return d;
 }
-Compiler::value NumberSTD::toDegrees(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::toDegrees(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_call(Type::real(), {c.insn_to_any(args[0])}, "Number.toDegrees");
 }
 double NumberSTD::toRadians_ptr(LSNumber* x) {
@@ -1185,7 +1185,7 @@ double NumberSTD::toRadians_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return r;
 }
-Compiler::value NumberSTD::toRadians(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::toRadians(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_call(Type::real(), {c.insn_to_any(args[0])}, "Number.toRadians");
 }
 
@@ -1194,7 +1194,7 @@ LSValue* NumberSTD::isInteger_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return is;
 }
-Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto type = args[0].t.fold();
 	if (type.is_integer() or type.is_long()) {
 		return c.new_bool(true);
@@ -1205,7 +1205,7 @@ Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> a
 	}
 }
 
-Compiler::value NumberSTD::fold(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::fold(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_call(Type::any(), {c.insn_to_any(args[0]), args[1], c.insn_to_any(args[2])}, "Number.fold");
 }
 

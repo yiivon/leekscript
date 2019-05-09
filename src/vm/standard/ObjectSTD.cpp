@@ -24,8 +24,8 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	 * Constructor
 	 */
 	constructor_({
-		{Type::tmp_object(), {}, (void*) &LSObject::constructor, Method::NATIVE},
-		{Type::tmp_object(), {Type::clazz()}, (void*) ObjectSTD::object_new, Method::NATIVE},
+		{Type::tmp_object(), {}, (void*) &LSObject::constructor},
+		{Type::tmp_object(), {Type::clazz()}, (void*) ObjectSTD::object_new},
 	});
 
 	/*
@@ -40,26 +40,26 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	 * Methods
 	 */
 	method("copy", {
-		{Type::object(), {Type::object()}, (void*) &ValueSTD::copy}
+		{Type::object(), {Type::object()}, ValueSTD::copy}
 	});
 	Type map_fun_type = Type::fun(Type::any(), {Type::any()});
 	auto map_fun = &LSObject::ls_map<LSFunction*>;
 	method("map", {
-		{Type::object(), {Type::object(), map_fun_type}, (void*) map_fun, Method::NATIVE}
+		{Type::object(), {Type::object(), map_fun_type}, (void*) map_fun}
 	});
 	method("keys", {
-		{Type::array(Type::string()), {Type::object()}, (void*) &LSObject::ls_get_keys, Method::NATIVE}
+		{Type::array(Type::string()), {Type::object()}, (void*) &LSObject::ls_get_keys}
 	});
 	method("values", {
-		{Type::array(Type::any()), {Type::object()}, (void*) &LSObject::ls_get_values, Method::NATIVE}
+		{Type::array(Type::any()), {Type::object()}, (void*) &LSObject::ls_get_values}
 	});
 
 	/** Internal **/
 	method("add_field", {
-		{{}, {Type::object(), Type::i8().pointer(), Type::any()}, (void*) &LSObject::addField, Method::NATIVE}
+		{{}, {Type::object(), Type::i8().pointer(), Type::any()}, (void*) &LSObject::addField}
 	});
 	method("set_field_default_value", {
-		{{}, {Type::clazz(), Type::i8().pointer(), Type::any()}, (void*) ObjectSTD::set_field_default_value, Method::NATIVE}
+		{{}, {Type::clazz(), Type::i8().pointer(), Type::any()}, (void*) ObjectSTD::set_field_default_value}
 	});
 }
 

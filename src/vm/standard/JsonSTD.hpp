@@ -9,7 +9,7 @@ class JsonSTD : public Module {
 public:
 	JsonSTD();
 
-	static Compiler::value encode(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value encode(Compiler&, std::vector<Compiler::value>, bool);
 	static LSValue* decode(LSString* string);
 };
 

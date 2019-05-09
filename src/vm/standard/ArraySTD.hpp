@@ -13,7 +13,7 @@ public:
 	static Compiler::value op_add(Compiler&, std::vector<Compiler::value>);
 	static Compiler::value array_add_eq(Compiler& c, std::vector<Compiler::value> args);
 
-	static Compiler::value size(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value size(Compiler&, std::vector<Compiler::value>, bool);
 
 	static LSArray<LSValue*>* chunk_1_ptr(LSArray<LSValue*>* array);
 	static LSArray<LSValue*>* chunk_1_int(LSArray<int>* array);
@@ -21,22 +21,22 @@ public:
 
 	static LSValue* sub(LSArray<LSValue*>* array, int begin, int end);
 
-	static Compiler::value fill(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fill2(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value fill(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value fill2(Compiler&, std::vector<Compiler::value>, bool);
 
-	static Compiler::value remove_element_any(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value remove_element_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value remove_element_int(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value remove_element_any(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value remove_element_real(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value remove_element_int(Compiler&, std::vector<Compiler::value>, bool);
 
-	static Compiler::value partition(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value partition(Compiler&, std::vector<Compiler::value>, bool);
 	static Compiler::value map(Compiler&, std::vector<Compiler::value>, bool);
-	static Compiler::value first(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value last(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fold_left(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value fold_right(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value iter(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value sort(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value push(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value first(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value last(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value fold_left(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value fold_right(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value iter(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value sort(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value push(Compiler&, std::vector<Compiler::value>, bool);
 
 	static int convert_key(LSValue*, LSValue*);
 };
