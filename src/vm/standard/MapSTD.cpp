@@ -137,39 +137,39 @@ MapSTD::MapSTD() : Module("Map") {
 	});
 
 	method("min", {
-		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_min},
-		{Type::real(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_min},
-		{Type::integer(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_min},
-		{Type::any(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_min},
-		{Type::real(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_min},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_min},
+		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_min, THROWS},
+		{Type::real(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_min, THROWS},
+		{Type::integer(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_min, THROWS},
+		{Type::any(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_min, THROWS},
+		{Type::real(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_min, THROWS},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_min, THROWS},
 	});
 
 	method("minKey", {
-		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_minKey},
-		{Type::any(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_minKey},
-		{Type::any(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_minKey},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_minKey},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_minKey},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_minKey},
+		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_minKey, THROWS},
+		{Type::any(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_minKey, THROWS},
+		{Type::any(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_minKey, THROWS},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_minKey, THROWS},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_minKey, THROWS},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_minKey, THROWS},
 	});
 
 	method("max", {
-		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_max},
-		{Type::real(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_max},
-		{Type::integer(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_max},
-		{Type::any(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_max},
-		{Type::real(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_max},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_max},
+		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_max, THROWS},
+		{Type::real(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_max, THROWS},
+		{Type::integer(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_max, THROWS},
+		{Type::any(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_max, THROWS},
+		{Type::real(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_max, THROWS},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_max, THROWS},
 	});
 
 	method("maxKey", {
-		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_maxKey},
-		{Type::any(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_maxKey},
-		{Type::any(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_maxKey},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_maxKey},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_maxKey},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_maxKey},
+		{Type::any(), {Type::const_map(Type::any(), Type::any())}, (void*) &LSMap<LSValue*,LSValue*>::ls_maxKey, THROWS},
+		{Type::any(), {Type::const_map(Type::any(), Type::real())}, (void*) &LSMap<LSValue*,double>::ls_maxKey, THROWS},
+		{Type::any(), {Type::const_map(Type::any(), Type::integer())}, (void*) &LSMap<LSValue*,int>::ls_maxKey, THROWS},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::any())}, (void*) &LSMap<int,LSValue*>::ls_maxKey, THROWS},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::real())}, (void*) &LSMap<int,double>::ls_maxKey, THROWS},
+		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_maxKey, THROWS},
 	});
 
 	auto iter_ptr_ptr = Type::fun({}, {Type::any(), Type::any()});

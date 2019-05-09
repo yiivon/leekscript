@@ -86,15 +86,15 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("max", {
-		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_max},
-		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_max},
-		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_max}
+		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_max, THROWS},
+		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_max, THROWS},
+		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_max, THROWS}
 	});
 
 	method("min", {
-		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_min},
-		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_min},
-		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_min}
+		{Type::any(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_min, THROWS},
+		{Type::real(), {Type::const_array(Type::real())}, (void*) &LSArray<double>::ls_min, THROWS},
+		{Type::integer(), {Type::const_array(Type::integer())}, (void*) &LSArray<int>::ls_min, THROWS}
 	});
 
 	auto map_fun = &LSArray<LSValue*>::ls_map<LSFunction*, LSValue*>;
@@ -211,9 +211,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("pop", {
-		{Type::any(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_pop},
-		{Type::real(), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_pop},
-		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_pop},
+		{Type::any(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_pop, THROWS},
+		{Type::real(), {Type::array(Type::real())}, (void*) &LSArray<double>::ls_pop, THROWS},
+		{Type::integer(), {Type::array(Type::integer())}, (void*) &LSArray<int>::ls_pop, THROWS},
 	});
 
 	method("product", {
@@ -224,9 +224,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto pT = Type::template_("T");
 	template_(pT).
 	method("push", {
-		{Type::array(Type::any()), {Type::array(), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_push, {new WillStoreMutator()}},
-		{Type::array(pT), {Type::array(Type::never()), pT}, push, {new WillStoreMutator()}},
-		{Type::array(pT), {Type::array(pT), {}}, push, {new WillStoreMutator()}},
+		{Type::array(Type::any()), {Type::array(), Type::const_any()}, (void*) &LSArray<LSValue*>::ls_push, 0, {new WillStoreMutator()}},
+		{Type::array(pT), {Type::array(Type::never()), pT}, push, 0, {new WillStoreMutator()}},
+		{Type::array(pT), {Type::array(pT), {}}, push, 0, {new WillStoreMutator()}},
 	});
 
 	// void (LSArray<int>::*push_int)(int&&) = &LSArray<int>::push_back;
@@ -240,10 +240,10 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::array(Type::any()), {Type::array(), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr},
 		{Type::array(Type::any()), {Type::array(), Type::array(Type::real())}, (void*) &LSArray<LSValue*>::ls_push_all_flo},
 		{Type::array(Type::any()), {Type::array(), Type::array(Type::integer())}, (void*) &LSArray<LSValue*>::ls_push_all_int},
-		{Type::array(Type::any()), {Type::array(Type::real()), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, {new WillStoreMutator()}},
+		{Type::array(Type::any()), {Type::array(Type::real()), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, 0, {new WillStoreMutator()}},
 		{Type::array(Type::real()), {Type::array(Type::real()), Type::array(Type::real())}, (void*) &LSArray<double>::ls_push_all_flo},
 		{Type::array(Type::real()), {Type::array(Type::real()), Type::array(Type::integer())}, (void*) &LSArray<double>::ls_push_all_int},
-		{Type::array(Type::any()), {Type::array(Type::integer()), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, {new WillStoreMutator()}},
+		{Type::array(Type::any()), {Type::array(Type::integer()), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, 0, {new WillStoreMutator()}},
 		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::array(Type::real())}, (void*) &LSArray<int>::ls_push_all_flo},
 		{Type::array(Type::integer()), {Type::array(Type::integer()), Type::array(Type::integer())}, (void*) &LSArray<int>::ls_push_all_int},
 	});
@@ -261,8 +261,8 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto T = Type::template_("T");
 	template_(T).
 	method("fill", {
-		{Type::array(T), {Type::array(), T}, fill, {new WillStoreMutator()}},
-		{Type::array(T), {Type::array(), T, Type::const_integer()}, fill2, {new WillStoreMutator()}},
+		{Type::array(T), {Type::array(), T}, fill, 0, {new WillStoreMutator()}},
+		{Type::array(T), {Type::array(), T, Type::const_integer()}, fill2, 0, {new WillStoreMutator()}},
 	});
 
 	method("insert", {

@@ -139,7 +139,7 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	method("replace", {
 		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &StringSTD::replace},
-		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &StringSTD::v1_replace, {}, true},
+		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &StringSTD::v1_replace, LEGACY},
 	});
 	method("reverse", {
 		{Type::string(), {Type::const_string()}, (void*) &LSString::ls_tilde},
