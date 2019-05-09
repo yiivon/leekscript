@@ -138,9 +138,9 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 							auto t = Type::fun(i.type.return_type(), i.type.arguments(), this);
 							auto version_name = clazz.second->name + "." + name + "." + std::to_string(j);
 							if (i.addr) {
-								callable->add_version({ version_name, t, i.addr, i.mutators, i.templates, nullptr, false, false, false, i.legacy });
+								callable->add_version({ version_name, t, i.addr, i.mutators, i.templates, nullptr, false, false, false, i.flags });
 							} else {
-								callable->add_version({ version_name, t, i.func, i.mutators, i.templates, nullptr, false, false, false, i.legacy });
+								callable->add_version({ version_name, t, i.func, i.mutators, i.templates, nullptr, false, false, false, i.flags });
 							}
 							j++;
 						}

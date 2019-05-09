@@ -33,7 +33,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 	CallableVersion* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
 	for (auto& version : versions) {
-		if (version.legacy and not analyser->vm->legacy) continue;
+		if (version.flags == Module::LEGACY and not analyser->vm->legacy) continue;
 		std::vector<Type> version_arguments = arguments;
 		if (version.object) {
 			version_arguments.insert(version_arguments.begin(), version.object->type);
@@ -187,7 +187,11 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		}
 		return c.insn_invoke(type.return_type(), args, user_fun->f);
 	} else if (addr) {
-		return c.insn_invoke(type.return_type(), args, name);
+		if (flags & Module::THROWS) {
+			return c.insn_invoke(type.return_type(), args, name);
+		} else {
+			return c.insn_call(type.return_type(), args, name);
+		}
 	} else if (func) {
 		return func(c, args, no_return);
 	} else if (value) {

@@ -19,14 +19,14 @@ public:
 	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func;
 	std::vector<TypeMutator*> mutators;
 	std::vector<Type> templates;
-	bool legacy;
-	Method(Type return_type, std::vector<Type> args, void* addr, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, bool legacy = false) {
+	int flags;
+	Method(Type return_type, std::vector<Type> args, void* addr, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, int flags = 0) {
 		this->addr = addr;
 		type = Type::fun(return_type, args);
 		this->func = func;
 		this->mutators = mutators;
 		this->templates = templates;
-		this->legacy = legacy;
+		this->flags = flags;
 	}
 	enum Option {
 		Static, Instantiate, Both
@@ -40,21 +40,12 @@ public:
 	void* addr = nullptr;
 	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
 	std::vector<Type> args;
+	int flags;
 	std::vector<TypeMutator*> mutators;
-	bool legacy;
-
-	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool legacy = false)
-		: return_type(return_type), addr(addr), args(args), mutators(mutators), legacy(legacy) {}
-	MethodConstructor(Type return_type, std::initializer_list<Type> args, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::initializer_list<TypeMutator*> mutators = {}, bool legacy = false)
-		: return_type(return_type), func(func), args(args), mutators(mutators), legacy(legacy) {}
-};
-
-class ModuleMethod {
-public:
-	std::string name;
-	std::vector<Method> impl;
-	ModuleMethod(std::string name, std::vector<Method> impl)
-	: name(name), impl(impl) {}
+	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, int flags = 0, std::initializer_list<TypeMutator*> mutators = {})
+		: return_type(return_type), addr(addr), args(args), flags(flags), mutators(mutators) {}
+	MethodConstructor(Type return_type, std::initializer_list<Type> args, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::initializer_list<TypeMutator*> mutators = {})
+		: return_type(return_type), func(func), args(args), flags(flags), mutators(mutators) {}
 };
 
 class ModuleStaticField {
@@ -92,6 +83,8 @@ public:
 
 class Module {
 public:
+	static int THROWS;
+	static int LEGACY;
 
 	std::string name;
 	LSClass* clazz;
