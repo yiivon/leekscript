@@ -115,6 +115,7 @@ public:
 	static bool ge(LSValue* x, LSValue* y);
 	static void delete_previous(LSValue* x);
 	static int get_int(LSNumber* x);
+	static LSValue* get_class(LSValue* x);
 };
 
 }

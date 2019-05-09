@@ -282,6 +282,9 @@ ValueSTD::ValueSTD() : Module("Value") {
 	method("get_int", {
 		{Type::integer(), {Type::any()}, (void*) ValueSTD::get_int, Method::NATIVE}
 	});
+	method("get_class", {
+		{Type::clazz(), {Type::any()}, (void*) ValueSTD::get_class, Method::NATIVE}
+	});
 }
 
 /*
@@ -806,6 +809,9 @@ void ValueSTD::delete_previous(LSValue* previous) {
 }
 int ValueSTD::get_int(LSNumber* x) {
 	return (int) x->value;
+}
+LSValue* ValueSTD::get_class(LSValue* x) {
+	return x->getClass();
 }
 
 }

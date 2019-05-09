@@ -872,9 +872,7 @@ Compiler::value Compiler::insn_class_of(Compiler::value v) const {
 	if (clazz.size() and clazz != "Value") {
 		return new_pointer(vm->internal_vars.at(clazz)->lsvalue, Type::clazz());
 	} else {
-		return insn_call(Type::clazz(), {v}, +[](LSValue* v) {
-			return v->getClass();
-		});
+		return insn_call(Type::clazz(), {v}, "Value.get_class");
 	}
 }
 
