@@ -1178,11 +1178,7 @@ double NumberSTD::toDegrees_ptr(LSNumber* x) {
 	return d;
 }
 Compiler::value NumberSTD::toDegrees(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), {c.insn_to_any(args[0])}, +[](LSNumber* x) {
-		double d = (x->value * 180) / M_PI;
-		LSValue::delete_temporary(x);
-		return d;
-	});
+	return c.insn_call(Type::real(), {c.insn_to_any(args[0])}, "Number.toDegrees");
 }
 double NumberSTD::toRadians_ptr(LSNumber* x) {
 	double r = (x->value * M_PI) / 180;
@@ -1190,11 +1186,7 @@ double NumberSTD::toRadians_ptr(LSNumber* x) {
 	return r;
 }
 Compiler::value NumberSTD::toRadians(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::real(), {c.insn_to_any(args[0])}, +[](LSNumber* x) {
-		double r = (x->value * M_PI) / 180;
-		LSValue::delete_temporary(x);
-		return r;
-	});
+	return c.insn_call(Type::real(), {c.insn_to_any(args[0])}, "Number.toRadians");
 }
 
 LSValue* NumberSTD::isInteger_ptr(LSNumber* x) {
