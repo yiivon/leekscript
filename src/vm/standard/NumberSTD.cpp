@@ -511,6 +511,9 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::real(), {Type::long_(), Type::long_()}, (void*) std::atan2<long, long>, Method::NATIVE},
 		{Type::real(), {Type::real(), Type::real()}, (void*) atan2real, Method::NATIVE},
 	});
+	method("m_isint", {
+		{Type::boolean(), {Type::any()}, (void*) isint, Method::NATIVE},
+	});
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
@@ -1206,11 +1209,7 @@ Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> a
 	} else if (type.is_primitive()) {
 		return c.insn_eq(c.to_int(args[0]), args[0]);
 	} else {
-		return c.insn_call(Type::boolean(), args, +[](LSNumber* x) {
-			auto is = x->value == (int) x->value;
-			LSValue::delete_temporary(x);
-			return is;
-		});
+		return c.insn_call(Type::boolean(), args, "Number.m_isint");
 	}
 }
 
@@ -1231,6 +1230,11 @@ LSValue* NumberSTD::mpz_to_string(mpz_t x) {
 	char buff[10000];
 	mpz_get_str(buff, 10, x);
 	return new LSString(buff);
+}
+bool NumberSTD::isint(LSNumber* x) {
+	auto is = x->value == (int) x->value;
+	LSValue::delete_temporary(x);
+	return is;
 }
 
 }

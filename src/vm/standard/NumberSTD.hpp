@@ -195,6 +195,7 @@ public:
 	static LSValue* real_to_string(double);
 	static LSValue* mpz_to_string(mpz_t x);
 
+	static bool isint(LSNumber* x);
 };
 
 }
