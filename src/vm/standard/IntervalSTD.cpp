@@ -17,13 +17,13 @@ IntervalSTD::IntervalSTD() : Module("Interval") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::interval(), Type::integer(), Type::boolean(), (void*) &LSInterval::in_i, {}, Method::NATIVE}
+		{Type::interval(), Type::integer(), Type::boolean(), (void*) &LSInterval::in_i}
 	});
 	operator_("~~", {
-		{Type::const_interval(), Type::fun(Type::any(), {Type::integer()}), Type::array(Type::any()), (void*) &map},
-		{Type::const_interval(), Type::fun(Type::real(), {Type::integer()}), Type::array(Type::real()), (void*) &map},
-		{Type::const_interval(), Type::fun(Type::integer(), {Type::integer()}), Type::array(Type::integer()), (void*) &map},
-		{Type::const_interval(), Type::fun(Type::boolean(), {Type::integer()}), Type::array(Type::boolean()), (void*) &map}
+		{Type::const_interval(), Type::fun(Type::any(), {Type::integer()}), Type::array(Type::any()), map},
+		{Type::const_interval(), Type::fun(Type::real(), {Type::integer()}), Type::array(Type::real()), map},
+		{Type::const_interval(), Type::fun(Type::integer(), {Type::integer()}), Type::array(Type::integer()), map},
+		{Type::const_interval(), Type::fun(Type::boolean(), {Type::integer()}), Type::array(Type::boolean()), map}
 	});
 
 	/*

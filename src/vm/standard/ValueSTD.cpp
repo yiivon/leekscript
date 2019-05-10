@@ -25,149 +25,149 @@ ValueSTD::ValueSTD() : Module("Value") {
 	 * Operators
 	 */
 	operator_("is", {
-		{Type::const_any(), Type::const_class(), Type::boolean(), (void*) &ValueSTD::op_instanceof}
+		{Type::const_any(), Type::const_class(), Type::boolean(), ValueSTD::op_instanceof}
 	});
 	operator_("==", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::eq, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_equals}
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::eq},
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_equals}
 	});
 	operator_("!=", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_not_equals}
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_not_equals}
 	});
 	operator_("<", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::lt, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_lt},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::lt},
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_lt},
 	});
 	operator_("<=", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::le, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_le}
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::le},
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_le}
 	});
 	operator_(">", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::gt, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_gt}
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::gt},
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_gt}
 	});
 	operator_(">=", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::ge, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_ge}
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::ge},
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_ge}
 	});
 	operator_("and", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_and}
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_and}
 	});
 	operator_("&&", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_and}
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_and}
 	});
 	operator_("or", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_or}
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_or}
 	});
 	operator_("||", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_or}
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_or}
 	});
 	operator_("xor", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_xor}
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_xor}
 	});
 	operator_("+", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_add, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_add},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_add, THROWS},
+		{Type::const_any(), Type::const_any(), Type::any(), ValueSTD::op_add},
 	});
 	operator_("+=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_add_eq, {}, Method::NATIVE, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_add_eq, THROWS, {}, true}
 	});
 	operator_("-", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_sub, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_sub},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_sub},
+		{Type::const_any(), Type::const_any(), Type::any(), ValueSTD::op_sub},
 	});
 	operator_("-=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_sub_eq, {}, Method::NATIVE, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_sub_eq, THROWS, {}, true}
 	});
 	operator_("*", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mul, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::op_mul}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mul},
+		{Type::const_any(), Type::const_any(), Type::any(), ValueSTD::op_mul}
 	});
 	operator_("*=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mul_eq, {}, Method::NATIVE, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mul_eq, THROWS, {}, true}
 	});
 	operator_("**", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_pow, {}, Method::NATIVE},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_pow, THROWS},
 	});
 	operator_("**=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_pow_eq, {}, Method::NATIVE, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_pow_eq, THROWS, {}, true}
 	});
 	operator_("/", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_div, {}, Method::NATIVE},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_div, THROWS},
 	});
 	operator_("/=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_div_eq, {}, Method::NATIVE, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_div_eq, THROWS, {}, true}
 	});
 	operator_("\\", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_int_div, {}, Method::NATIVE}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_int_div, THROWS}
 	});
 	operator_("\\=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_int_div_eq, {}, Method::NATIVE, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_int_div_eq, THROWS, {}, true}
 	});
 	operator_("%", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mod, {}, Method::NATIVE}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mod, THROWS}
 	});
 	operator_("%=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mod_eq, {}, Method::NATIVE, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_mod_eq, THROWS, {}, true}
 	});
 	operator_("%%", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_double_mod, {}, Method::NATIVE},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_double_mod},
 	});
 	operator_("%%=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_double_mod_eq, {}, Method::NATIVE, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ValueSTD::ls_double_mod_eq, THROWS, {}, true}
 	});
 	operator_("&", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_and, {}, Method::NATIVE}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_and, THROWS}
 	});
 	operator_("&=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_and_eq, {}, Method::NATIVE, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_and_eq, THROWS, {}, true}
 	});
 	operator_("|", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_or, {}, Method::NATIVE}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_or, THROWS}
 	});
 	operator_("|=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_or_eq, {}, Method::NATIVE, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_or_eq, THROWS, {}, true}
 	});
 	operator_("^", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_xor, {}, Method::NATIVE}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_xor, THROWS}
 	});
 	operator_("^=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_xor_eq, {}, Method::NATIVE, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_xor_eq, THROWS, {}, true}
 	});
 	operator_("<<", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::bit_shift_left}
+		{Type::const_any(), Type::const_any(), Type::integer(), ValueSTD::bit_shift_left}
 	});
 	operator_("<<=", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_left_eq, {}, Method::NATIVE, true},
-		{Type::integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_left_eq, {}, false, true},
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_left_eq, 0, {}, true},
+		{Type::integer(), Type::const_integer(), Type::integer(), ValueSTD::bit_shift_left_eq, 0, {}, true},
 	});
 	operator_(">>", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_right}
+		{Type::const_integer(), Type::const_integer(), Type::integer(), ValueSTD::bit_shift_right}
 	});
 	operator_(">>=", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_right_eq, {}, Method::NATIVE, true},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_right_eq, {}, false, true},
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_right_eq, 0, {}, true},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), ValueSTD::bit_shift_right_eq, 0, {}, true},
 	});
 	operator_(">>>", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_uright}
+		{Type::const_integer(), Type::const_integer(), Type::integer(), ValueSTD::bit_shift_uright}
 	});
 	operator_(">>>=", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_uright_eq, {}, Method::NATIVE, true},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &ValueSTD::bit_shift_uright_eq, {}, false, true}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ValueSTD::ls_bit_shift_uright_eq, 0, {}, true},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), ValueSTD::bit_shift_uright_eq, 0, {}, true}
 	});
 	operator_("in", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::in, {}, Method::NATIVE},
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::op_in},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ValueSTD::in},
+		{Type::const_any(), Type::const_any(), Type::boolean(), ValueSTD::op_in},
 	});
 	operator_("<=>", {
-		{Type::any(), Type::any(), Type::any(), (void*) &ValueSTD::op_swap_ptr, {}, Method::NATIVE, true, true},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &ValueSTD::op_swap_val, {}, false, true, true},
+		{Type::any(), Type::any(), Type::any(), (void*) &ValueSTD::op_swap_ptr, 0, {}, true, true},
+		{Type::integer(), Type::integer(), Type::integer(), ValueSTD::op_swap_val, 0, {}, true, true},
 	});
 	auto T = Type::template_("T");
 	auto R = Type::template_("R");
 	template_(T, R).
 	operator_("~", {
-		{T, Type::fun(R, {T}), R, (void*) &op_call},
+		{T, Type::fun(R, {T}), R, op_call},
 	});
 
 	/*
@@ -306,22 +306,22 @@ Compiler::value ValueSTD::attr_class(Compiler& c, Compiler::value a) {
 /*
  * Operators
  */
-Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_eq(c.insn_class_of(args[0]), args[1]);
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
 
-Compiler::value ValueSTD::op_equals(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_equals(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_eq(args[0], args[1]);
 }
 
-Compiler::value ValueSTD::op_not_equals(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_not_equals(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_ne(args[0], args[1]);
 }
 
-Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0 or args[1].t.id() == 0) {
 		auto ap = c.insn_to_any(args[0]);
 		auto bp = c.insn_to_any(args[1]);
@@ -337,7 +337,7 @@ Compiler::value ValueSTD::op_lt(Compiler& c, std::vector<Compiler::value> args) 
 	}
 }
 
-Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0	or args[1].t.id() == 0) {
 		auto ap = c.insn_to_any(args[0]);
 		auto bp = c.insn_to_any(args[1]);
@@ -353,7 +353,7 @@ Compiler::value ValueSTD::op_le(Compiler& c, std::vector<Compiler::value> args) 
 	}
 }
 
-Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0	or args[1].t.id() == 0) {
 		auto ap = c.insn_to_any(args[0]);
 		auto bp = c.insn_to_any(args[1]);
@@ -369,7 +369,7 @@ Compiler::value ValueSTD::op_gt(Compiler& c, std::vector<Compiler::value> args) 
 	}
 }
 
-Compiler::value ValueSTD::op_ge(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_ge(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.id() == args[1].t.id() or args[0].t.id() == 0 or args[1].t.id() == 0) {
 		auto res = c.insn_call(Type::boolean(), {c.insn_to_any(args[0]), c.insn_to_any(args[1])}, "Value.operator>=");
 		c.insn_delete_temporary(args[0]);
@@ -383,21 +383,21 @@ Compiler::value ValueSTD::op_ge(Compiler& c, std::vector<Compiler::value> args) 
 	}
 }
 
-Compiler::value ValueSTD::op_and(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_and(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto res = c.insn_and(c.insn_to_bool(args[0]), c.insn_to_bool(args[1]));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return res;
 }
 
-Compiler::value ValueSTD::op_or(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_or(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto res = c.insn_or(c.insn_to_bool(args[0]), c.insn_to_bool(args[1]));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return res;
 }
 
-Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto a = c.insn_to_bool(args[0]);
 	auto b = c.insn_to_bool(args[1]);
 	auto r = c.insn_or(
@@ -409,16 +409,16 @@ Compiler::value ValueSTD::op_xor(Compiler& c, std::vector<Compiler::value> args)
 	return r;
 }
 
-Compiler::value ValueSTD::op_add(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_add(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_add(args[0], args[1]);
 }
-Compiler::value ValueSTD::op_sub(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_sub(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_sub(args[0], args[1]);
 }
-Compiler::value ValueSTD::op_mul(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_mul(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_mul(args[0], args[1]);
 }
-Compiler::value ValueSTD::op_div(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_div(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_div(args[0], args[1]);
 }
 
@@ -499,13 +499,13 @@ int ValueSTD::ls_bit_xor_eq(LSValue** x, LSValue* y) {
 	return res;
 }
 
-Compiler::value ValueSTD::bit_shift_left(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::bit_shift_left(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_shl(c.to_int(args[0]), c.to_int(args[1]));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
-Compiler::value ValueSTD::bit_shift_left_eq(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::bit_shift_left_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.pointed().is_primitive() && args[1].t.is_primitive()) {
 		auto res = c.insn_shl(c.insn_load(args[0]), args[1]);
 		c.insn_store(args[0], res);
@@ -525,13 +525,13 @@ int ValueSTD::ls_bit_shift_left_eq(LSValue** x, LSValue* y) {
 	((LSNumber*) *x)->value = res;
 	return res;
 }
-Compiler::value ValueSTD::bit_shift_right(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::bit_shift_right(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_ashr(c.to_int(args[0]), c.to_int(args[1]));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
-Compiler::value ValueSTD::bit_shift_right_eq(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::bit_shift_right_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.pointed().is_primitive() && args[1].t.is_primitive()) {
 		auto res = c.insn_ashr(c.insn_load(args[0]), args[1]);
 		c.insn_store(args[0], res);
@@ -552,13 +552,13 @@ int ValueSTD::ls_bit_shift_right_eq(LSValue** x, LSValue* y) {
 	return res;
 }
 
-Compiler::value ValueSTD::bit_shift_uright(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::bit_shift_uright(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_lshr(c.to_int(args[0]), c.to_int(args[1]));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
-Compiler::value ValueSTD::bit_shift_uright_eq(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::bit_shift_uright_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t.pointed().is_primitive() && args[1].t.is_primitive()) {
 		auto res = c.insn_lshr(c.insn_load(args[0]), args[1]);
 		c.insn_store(args[0], res);
@@ -579,7 +579,7 @@ int ValueSTD::ls_bit_shift_uright_eq(LSValue** x, LSValue* y) {
 	return res;
 }
 
-Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[1].t == Type::integer()) {
 		return c.insn_invoke(Type::boolean(), args, "Value.in_i");
 	} else {
@@ -593,7 +593,7 @@ bool ValueSTD::in(LSValue* x, LSValue* y) {
 	return x->in(y);
 }
 
-Compiler::value ValueSTD::op_swap_val(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_swap_val(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x_addr = args[0];
 	auto y_addr = args[1];
 	auto x = c.insn_load(x_addr);
@@ -610,7 +610,7 @@ LSValue* ValueSTD::op_swap_ptr(LSValue** x, LSValue** y) {
 	return *x;
 }
 
-Compiler::value ValueSTD::op_call(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ValueSTD::op_call(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto fun = args[1];
 	return c.insn_call(fun.t.return_type(), {args[0]}, fun);
 }

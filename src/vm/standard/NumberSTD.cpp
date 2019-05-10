@@ -43,131 +43,124 @@ NumberSTD::NumberSTD() : Module("Number") {
 	 * Operators
 	 */
 	operator_("==", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::boolean(), (void*) &NumberSTD::eq_mpz_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::boolean(), (void*) &NumberSTD::eq_mpz_int},
-		{Type::integer(), Type::mpz_ptr(), Type::boolean(), (void*) &NumberSTD::eq_int_mpz},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::boolean(), NumberSTD::eq_mpz_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::boolean(), NumberSTD::eq_mpz_int},
+		{Type::integer(), Type::mpz_ptr(), Type::boolean(), NumberSTD::eq_int_mpz},
 	});
 	operator_("+", {
-		{Type::integer(), Type::any(), Type::any(), (void*) &NumberSTD::add_int_ptr, {}, Method::NATIVE},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::add_mpz_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::add_mpz_int},
-		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::add_real_real},
-		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::add_real_real},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::add_real_real},
+		// {Type::integer(), Type::any(), Type::any(), (void*) &NumberSTD::add_int_ptr},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::add_mpz_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), NumberSTD::add_mpz_int},
+		{Type::real(), Type::real(), Type::real(), NumberSTD::add_real_real},
+		{Type::const_long(), Type::const_long(), Type::long_(), NumberSTD::add_real_real},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::add_real_real},
 	});
-
 	operator_("+=", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::add_eq_mpz_mpz, {new ChangeTypeMutator()}, false, true},
-		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::add_eq_real, {new ChangeTypeMutator()}, false, true},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::add_eq_real, {new ChangeTypeMutator()}, false, true}
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::add_eq_mpz_mpz, 0, {new ChangeTypeMutator()}, true},
+		{Type::real(), Type::real(), Type::real(), NumberSTD::add_eq_real, 0, {new ChangeTypeMutator()}, true},
+		{Type::integer(), Type::integer(), Type::integer(), NumberSTD::add_eq_real, 0, {new ChangeTypeMutator()}, true}
 	});
-
 	operator_("-", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::sub_mpz_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::sub_mpz_int},
-		{Type::const_real(), Type::const_real(), Type::const_real(), (void*) &NumberSTD::sub_real_real},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::sub_real_real},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::sub_mpz_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), NumberSTD::sub_mpz_int},
+		{Type::const_real(), Type::const_real(), Type::const_real(), NumberSTD::sub_real_real},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::sub_real_real},
 	});
-
 	operator_("-=", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::sub_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::sub_eq_real, {}, false, true},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::sub_eq_real, {}, false, true}
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::sub_eq_mpz_mpz},
+		{Type::real(), Type::real(), Type::real(), NumberSTD::sub_eq_real, 0, {}, true},
+		{Type::integer(), Type::integer(), Type::integer(), NumberSTD::sub_eq_real, 0, {}, true}
 	});
-
 	operator_("*", {
-		{Type::const_real(), Type::const_real(), Type::const_real(), (void*) &NumberSTD::mul_real_real},
-		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::mul_real_real},
-		{Type::const_integer(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_int_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_mpz_int},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mul_real_real},
-		{Type::const_integer(), Type::const_string(), Type::string(), (void*) &NumberSTD::mul_int_string, {}, Method::NATIVE},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mul_mpz_mpz}
+		{Type::const_real(), Type::const_real(), Type::const_real(), NumberSTD::mul_real_real},
+		{Type::const_long(), Type::const_long(), Type::long_(), NumberSTD::mul_real_real},
+		{Type::const_integer(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::mul_int_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), NumberSTD::mul_mpz_int},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::mul_real_real},
+		{Type::const_integer(), Type::const_string(), Type::string(), (void*) &NumberSTD::mul_int_string},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::mul_mpz_mpz}
 	});
-
 	operator_("**", {
-		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::pow_real_real},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::pow_real_real},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::pow_mpz_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::pow_mpz_int},
+		{Type::const_real(), Type::const_real(), Type::real(), NumberSTD::pow_real_real},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::pow_real_real},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::pow_mpz_mpz},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), NumberSTD::pow_mpz_int},
 	});
-
 	operator_("**=", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::pow_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::pow_eq_real, {}, false, true},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::pow_eq_real, {}, false, true}
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::pow_eq_mpz_mpz},
+		{Type::real(), Type::real(), Type::real(), NumberSTD::pow_eq_real, 0, {}, true},
+		{Type::integer(), Type::integer(), Type::integer(), NumberSTD::pow_eq_real, 0, {}, true}
 	});
-
 	operator_("*=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mul_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::mul_eq_real, {}, false, true},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::mul_eq_real, {}, false, true}
+		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), NumberSTD::mul_eq_mpz_mpz},
+		{Type::real(), Type::real(), Type::real(), NumberSTD::mul_eq_real, 0, {}, true},
+		{Type::integer(), Type::integer(), Type::integer(), NumberSTD::mul_eq_real, 0, {}, true}
 	});
 	operator_("/", {
-		{Type::const_number(), Type::const_number(), Type::real(), (void*) &NumberSTD::div_val_val}
+		{Type::const_number(), Type::const_number(), Type::real(), NumberSTD::div_val_val}
 	});
 	operator_("/=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::div_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::div_eq_real, {}, false, true}
+		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), NumberSTD::div_eq_mpz_mpz},
+		{Type::real(), Type::real(), Type::real(), NumberSTD::div_eq_real, 0, {}, true}
 	});
 	operator_("\\", {
-		{Type::const_number(), Type::const_number(), Type::long_(), (void*) &NumberSTD::int_div_val_val},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::int_div_val_val},
+		{Type::const_number(), Type::const_number(), Type::long_(), NumberSTD::int_div_val_val},
+		{Type::integer(), Type::integer(), Type::integer(), NumberSTD::int_div_val_val},
 	});
 	operator_("\\=", {
-		{Type::const_number(), Type::const_number(), Type::integer(), (void*) &NumberSTD::int_div_eq_val_val, {}, false, true}
+		{Type::const_number(), Type::const_number(), Type::integer(), NumberSTD::int_div_eq_val_val, 0, {}, true}
 	});
 	operator_("<", {
-		{Type::number(), Type::number(), Type::boolean(), (void*) &NumberSTD::lt}
+		{Type::number(), Type::number(), Type::boolean(), NumberSTD::lt}
 	});
 	operator_("<=", {
-		{Type::number(), Type::number(), Type::boolean(), (void*) &NumberSTD::le}
+		{Type::number(), Type::number(), Type::boolean(), NumberSTD::le}
 	});
 	operator_(">", {
-		{Type::number(), Type::number(), Type::boolean(), (void*) &NumberSTD::gt}
+		{Type::number(), Type::number(), Type::boolean(), NumberSTD::gt}
 	});
 	operator_(">=", {
-		{Type::number(), Type::number(), Type::boolean(), (void*) &NumberSTD::ge}
+		{Type::number(), Type::number(), Type::boolean(), NumberSTD::ge}
 	});
 	operator_("%", {
-		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::mod},
-		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::mod},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::mod},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), (void*) &NumberSTD::mod_mpz_mpz},
+		{Type::const_real(), Type::const_real(), Type::real(), NumberSTD::mod},
+		{Type::const_long(), Type::const_long(), Type::long_(), NumberSTD::mod},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::mod},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), NumberSTD::mod_mpz_mpz},
 	});
 	operator_("%%", {
-		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::double_mod},
-		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::double_mod},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::double_mod},
+		{Type::const_real(), Type::const_real(), Type::real(), NumberSTD::double_mod},
+		{Type::const_long(), Type::const_long(), Type::long_(), NumberSTD::double_mod},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::double_mod},
 	});
 	operator_("%%=", {
-		{Type::const_real(), Type::const_real(), Type::real(), (void*) &NumberSTD::double_mod_eq, {}, false, true},
-		{Type::const_long(), Type::const_long(), Type::long_(), (void*) &NumberSTD::double_mod_eq, {}, false, true},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::double_mod_eq, {}, false, true},
+		{Type::const_real(), Type::const_real(), Type::real(), NumberSTD::double_mod_eq, 0, {}, true},
+		{Type::const_long(), Type::const_long(), Type::long_(), NumberSTD::double_mod_eq, 0, {}, true},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::double_mod_eq, 0, {}, true},
 	});
 	operator_("%=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), (void*) &NumberSTD::mod_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
-		{Type::integer(), Type::integer(), Type::integer(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
-		{Type::integer(), Type::long_(), Type::integer(), (void*) &NumberSTD::mod_eq_real, {}, false, true},
+		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), NumberSTD::mod_eq_mpz_mpz, THROWS},
+		{Type::real(), Type::real(), Type::real(), NumberSTD::mod_eq_real, THROWS, {}, true},
+		{Type::integer(), Type::integer(), Type::integer(), NumberSTD::mod_eq_real, THROWS, {}, true},
+		{Type::integer(), Type::long_(), Type::integer(), NumberSTD::mod_eq_real, THROWS, {}, true},
 	});
 	operator_("&", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::bit_and}
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::bit_and}
 	});
 	operator_("&=", {
-		{Type::integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::bit_and_eq, {}, false, true}
+		{Type::integer(), Type::const_integer(), Type::integer(), NumberSTD::bit_and_eq, 0, {}, true}
 	});
 	operator_("|", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::bit_or}
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::bit_or}
 	});
 	operator_("|=", {
-		{Type::integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::bit_or_eq, {}, false, true}
+		{Type::integer(), Type::const_integer(), Type::integer(), NumberSTD::bit_or_eq, 0, {}, true}
 	});
 	operator_("^", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::bit_xor}
+		{Type::const_integer(), Type::const_integer(), Type::integer(), NumberSTD::bit_xor}
 	});
 	operator_("^=", {
-		{Type::integer(), Type::const_integer(), Type::integer(), (void*) &NumberSTD::bit_xor_eq, {}, false, true}
+		{Type::integer(), Type::const_integer(), Type::integer(), NumberSTD::bit_xor_eq, 0, {}, true}
 	});
 
 	/*
@@ -516,24 +509,24 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 }
 
-Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_eq(c.insn_call(Type::integer(), args, "Number.mpz_cmp"), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
-Compiler::value NumberSTD::eq_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::eq_int_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_eq(c.insn_call(Type::integer(), {args[1], args[0]}, "Number._mpz_cmp_si"), c.new_integer(0));
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
-Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_eq(c.insn_call(Type::integer(), args, "Number._mpz_cmp_si"), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	return r;
 }
 
-Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_add(args[0], args[1]);
 }
 
@@ -541,7 +534,7 @@ LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
 	return LSNumber::get(a)->add(b);
 }
 
-Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = [&]() {
 		if (args[0].t.temporary) return args[0];
 		if (args[1].t.temporary) return args[1];
@@ -552,7 +545,7 @@ Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
 	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_add_ui");
 	return r;
@@ -564,18 +557,18 @@ Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 	return no_return ? Compiler::value() : c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_add(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
 }
 
-Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_sub(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = [&]() {
 		if (args[0].t.temporary) return args[0];
 		if (args[1].t.temporary) return args[1];
@@ -586,7 +579,7 @@ Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto a = args[0];
 	auto b = args[1];
 
@@ -618,31 +611,31 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	return {PN, Type::tmp_mpz_ptr()};
 }
 
-Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
 	// c.insn_call({}, {a_addr, a_addr, b_addr}, &mpz_sub);
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::sub_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::sub_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_sub(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
 }
 
-Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_mul(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = args[1].t.temporary ? args[1] : c.new_mpz();
 	c.insn_call({}, {r, args[1], args[0]}, "Number.mpz_mul_si");
 	return r;
 }
 
-Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
 	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_mul_si");
 	return r;
@@ -652,7 +645,7 @@ LSValue* NumberSTD::mul_int_string(int a, LSString* b) {
 	return b->mul(LSNumber::get(a));
 }
 
-Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = [&]() {
 		if (args[0].t.temporary) return args[0];
 		if (args[1].t.temporary) return args[1];
@@ -663,25 +656,25 @@ Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
 	// c.insn_call({}, {a_addr, a_addr, b_addr}, &mpz_mul);
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::mul_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mul_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_mul(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
 }
 
-Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_div(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_pow(args[0], args[1]);
 	if (args[0].t.is_integer() && args[1].t.is_integer()) {
 		r = c.to_int(r);
@@ -689,31 +682,31 @@ Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::valu
 	return r;
 }
 
-Compiler::value NumberSTD::div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
 	// c.insn_call({}, {a_addr, a_addr, b_addr}, &mpz_div);
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::div_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::div_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_div(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
 }
 
-Compiler::value NumberSTD::int_div_val_val(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::int_div_val_val(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_int_div(args[0], args[1]);
 }
-Compiler::value NumberSTD::int_div_eq_val_val(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::int_div_eq_val_val(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x = c.insn_load(args[0]);
 	auto r = c.insn_int_div(x, args[1]);
 	c.insn_store(args[0], r);
 	return r;
 }
 
-Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto ui = c.insn_call(Type::long_(), {args[1]}, "Number.mpz_get_ui");
 	auto r = [&]() {
 		if (args[0].t.temporary) return args[0];
@@ -725,7 +718,7 @@ Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// Check: mpz_log(a) * b <= 10000
 	auto a_size = c.insn_call(Type::integer(), {args[0]}, "Number.mpz_log");
 	auto r_size = c.insn_mul(a_size, args[1]);
@@ -753,23 +746,23 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_lt(args[0], args[1]);
 }
-Compiler::value NumberSTD::le(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::le(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_le(args[0], args[1]);
 }
-Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_gt(args[0], args[1]);
 }
-Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_ge(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_mod(args[0], args[1]);
 }
-Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = [&]() {
 		if (args[0].t.temporary) return args[0];
 		if (args[1].t.temporary) return args[1];
@@ -780,14 +773,14 @@ Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
 	// c.insn_call({}, {a_addr, a_addr, b_addr}, &mpz_mod);
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// std::cout << "mod " << args[0].t << " " << args[1].t << std::endl;
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_mod(x, args[1]);
@@ -795,10 +788,10 @@ Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value>
 	return sum;
 }
 
-Compiler::value NumberSTD::double_mod(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::double_mod(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_double_mod(args[0], args[1]);
 }
-Compiler::value NumberSTD::double_mod_eq(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::double_mod_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x = c.insn_load(args[0]);
 	auto y = args[1];
 	auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
@@ -806,31 +799,31 @@ Compiler::value NumberSTD::double_mod_eq(Compiler& c, std::vector<Compiler::valu
 	return r;
 }
 
-Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_bit_and(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::bit_and_eq(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::bit_and_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto res = c.insn_bit_and(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
 
-Compiler::value NumberSTD::bit_or(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::bit_or(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_bit_or(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::bit_or_eq(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::bit_or_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto res = c.insn_bit_or(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
 
-Compiler::value NumberSTD::bit_xor(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::bit_xor(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_bit_xor(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto res = c.insn_bit_xor(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
@@ -1083,12 +1076,12 @@ Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> arg
 	return c.insn_pow(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	c.insn_call({}, {args[0], args[0], args[1]}, "Number.mpz_pow_ui");
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_pow(x, args[1]);
 	c.insn_store(args[0], sum);

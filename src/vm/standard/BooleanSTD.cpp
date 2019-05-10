@@ -17,23 +17,23 @@ BooleanSTD::BooleanSTD() : Module("Boolean") {
 	});
 
 	operator_("+", {
-		{Type::const_boolean(), Type::const_string(), Type::tmp_string(), (void*) &BooleanSTD::add, {}, Method::NATIVE},
-		{Type::const_boolean(), Type::tmp_string(), Type::tmp_string(), (void*) &BooleanSTD::add_tmp, {}, Method::NATIVE},
-		{Type::const_boolean(), Type::const_boolean(), Type::integer(), (void*) &BooleanSTD::add_bool},
-		{Type::const_boolean(), Type::const_real(), Type::real(), (void*) &BooleanSTD::add_bool},
-		{Type::const_boolean(), Type::const_integer(), Type::integer(), (void*) &BooleanSTD::add_bool}
+		{Type::const_boolean(), Type::const_string(), Type::tmp_string(), (void*) &BooleanSTD::add},
+		{Type::const_boolean(), Type::tmp_string(), Type::tmp_string(), (void*) &BooleanSTD::add_tmp},
+		{Type::const_boolean(), Type::const_boolean(), Type::integer(), BooleanSTD::add_bool},
+		{Type::const_boolean(), Type::const_real(), Type::real(), BooleanSTD::add_bool},
+		{Type::const_boolean(), Type::const_integer(), Type::integer(), BooleanSTD::add_bool}
 	});
 
 	operator_("-", {
-		{Type::const_boolean(), Type::const_boolean(), Type::integer(), (void*) &BooleanSTD::sub_bool},
-		{Type::const_boolean(), Type::const_real(), Type::real(), (void*) &BooleanSTD::sub_bool},
-		{Type::const_boolean(), Type::const_integer(), Type::integer(), (void*) &BooleanSTD::sub_bool}
+		{Type::const_boolean(), Type::const_boolean(), Type::integer(), BooleanSTD::sub_bool},
+		{Type::const_boolean(), Type::const_real(), Type::real(), BooleanSTD::sub_bool},
+		{Type::const_boolean(), Type::const_integer(), Type::integer(), BooleanSTD::sub_bool}
 	});
 
 	operator_("*", {
-		{Type::const_boolean(), Type::const_boolean(), Type::integer(), (void*) &BooleanSTD::mul_bool},
-		{Type::const_boolean(), Type::const_real(), Type::real(), (void*) &BooleanSTD::mul_bool},
-		{Type::const_boolean(), Type::const_integer(), Type::integer(), (void*) &BooleanSTD::mul_bool}
+		{Type::const_boolean(), Type::const_boolean(), Type::integer(), BooleanSTD::mul_bool},
+		{Type::const_boolean(), Type::const_real(), Type::real(), BooleanSTD::mul_bool},
+		{Type::const_boolean(), Type::const_integer(), Type::integer(), BooleanSTD::mul_bool}
 	});
 
 	method("compare", {
@@ -56,15 +56,15 @@ LSString* BooleanSTD::add_tmp(int boolean, LSString* string) {
 	return string;
 }
 
-Compiler::value BooleanSTD::add_bool(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value BooleanSTD::add_bool(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_add(args[0], args[1]);
 }
 
-Compiler::value BooleanSTD::sub_bool(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value BooleanSTD::sub_bool(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_sub(args[0], args[1]);
 }
 
-Compiler::value BooleanSTD::mul_bool(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value BooleanSTD::mul_bool(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_mul(args[0], args[1]);
 }
 

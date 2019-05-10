@@ -22,72 +22,72 @@ public:
 	/*
 	 * Operators
 	 */
-	static Compiler::value eq_mpz_mpz(Compiler& c, std::vector<Compiler::value>);
-	static Compiler::value eq_int_mpz(Compiler& c, std::vector<Compiler::value>);
-	static Compiler::value eq_mpz_int(Compiler& c, std::vector<Compiler::value>);
+	static Compiler::value eq_mpz_mpz(Compiler& c, std::vector<Compiler::value>, bool);
+	static Compiler::value eq_int_mpz(Compiler& c, std::vector<Compiler::value>, bool);
+	static Compiler::value eq_mpz_int(Compiler& c, std::vector<Compiler::value>, bool);
 
-	static Compiler::value add_real_real(Compiler& c, std::vector<Compiler::value>);
+	static Compiler::value add_real_real(Compiler& c, std::vector<Compiler::value>, bool);
 	static LSValue* add_int_ptr(int a, LSValue* b);
-	static Compiler::value add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value add_mpz_int(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value add_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool);
 
 	static Compiler::value add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool no_return);
-	static Compiler::value add_eq_real(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value add_eq_real(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value sub_mpz_int(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value sub_real_real(Compiler& c, std::vector<Compiler::value>);
+	static Compiler::value sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value sub_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value sub_real_real(Compiler& c, std::vector<Compiler::value>, bool);
 
-	static Compiler::value sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value sub_eq_real(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value sub_eq_real(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value mul_real_real(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mul_int_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mul_mpz_int(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value mul_real_real(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value mul_int_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value mul_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
 	static LSValue* mul_int_string(int a, LSString* b);
 
-	static Compiler::value mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mul_eq_real(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value mul_eq_real(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value div_val_val(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value div_eq_real(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value div_val_val(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value div_eq_real(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value int_div_val_val(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value int_div_eq_val_val(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value int_div_val_val(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value int_div_eq_val_val(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value pow_real_real(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value pow_mpz_int(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value pow_real_real(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value pow_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value pow_eq_real(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value pow_eq_real(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value lt(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value le(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value le(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value gt(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value gt_int_mpz(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value gt(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value gt_int_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value ge(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value ge(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mod(Compiler& c, std::vector<Compiler::value>);
+	static Compiler::value mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value mod(Compiler& c, std::vector<Compiler::value>, bool);
 
-	static Compiler::value mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value mod_eq_real(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value mod_eq_real(Compiler& c, std::vector<Compiler::value> args, bool);
 
-	static Compiler::value double_mod(Compiler& c, std::vector<Compiler::value>);
-	static Compiler::value double_mod_eq(Compiler& c, std::vector<Compiler::value>);
+	static Compiler::value double_mod(Compiler& c, std::vector<Compiler::value>, bool);
+	static Compiler::value double_mod_eq(Compiler& c, std::vector<Compiler::value>, bool);
 
-	static Compiler::value bit_and(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value bit_and_eq(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value bit_or(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value bit_or_eq(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value bit_xor(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value bit_xor_eq(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value bit_and(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value bit_and_eq(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value bit_or(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value bit_or_eq(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value bit_xor(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value bit_xor_eq(Compiler&, std::vector<Compiler::value>, bool);
 
 	/*
 	 * Methods

@@ -66,15 +66,15 @@ MapSTD::MapSTD() : Module("Map") {
 	});
 
 	operator_("in", {
-		{Type::const_map(Type::any(), Type::any()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, LSValue*>::in, {}, Method::NATIVE},
-		{Type::const_map(Type::any(), Type::real()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, double>::in, {}, Method::NATIVE},
-		{Type::const_map(Type::any(), Type::integer()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, int>::in, {}, Method::NATIVE},
-		{Type::const_map(Type::real(), Type::any()), Type::real(), Type::boolean(), (void*) &LSMap<double, LSValue*>::in, {}, Method::NATIVE},
-		{Type::const_map(Type::real(), Type::real()), Type::real(), Type::boolean(), (void*) &LSMap<double, double>::in, {}, Method::NATIVE},
-		{Type::const_map(Type::real(), Type::integer()), Type::real(), Type::boolean(), (void*) &LSMap<double, int>::in, {}, Method::NATIVE},
-		{Type::const_map(Type::integer(), Type::any()), Type::integer(), Type::boolean(), (void*) &LSMap<int, LSValue*>::in, {}, Method::NATIVE},
-		{Type::const_map(Type::integer(), Type::real()), Type::integer(), Type::boolean(), (void*) &LSMap<int, double>::in, {}, Method::NATIVE},
-		{Type::const_map(Type::integer(), Type::integer()), Type::long_(), Type::boolean(), (void*) &LSMap<int, int>::in, {}, Method::NATIVE},
+		{Type::const_map(Type::any(), Type::any()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, LSValue*>::in},
+		{Type::const_map(Type::any(), Type::real()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, double>::in},
+		{Type::const_map(Type::any(), Type::integer()), Type::any(), Type::boolean(), (void*) &LSMap<LSValue*, int>::in},
+		{Type::const_map(Type::real(), Type::any()), Type::real(), Type::boolean(), (void*) &LSMap<double, LSValue*>::in},
+		{Type::const_map(Type::real(), Type::real()), Type::real(), Type::boolean(), (void*) &LSMap<double, double>::in},
+		{Type::const_map(Type::real(), Type::integer()), Type::real(), Type::boolean(), (void*) &LSMap<double, int>::in},
+		{Type::const_map(Type::integer(), Type::any()), Type::integer(), Type::boolean(), (void*) &LSMap<int, LSValue*>::in},
+		{Type::const_map(Type::integer(), Type::real()), Type::integer(), Type::boolean(), (void*) &LSMap<int, double>::in},
+		{Type::const_map(Type::integer(), Type::integer()), Type::long_(), Type::boolean(), (void*) &LSMap<int, int>::in},
 	});
 
 	method("size", {

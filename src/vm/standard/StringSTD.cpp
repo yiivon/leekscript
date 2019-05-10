@@ -83,18 +83,18 @@ StringSTD::StringSTD() : Module("String") {
 	 * Operators
 	 */
 	operator_("+", {
-		{Type::string(), Type::any(), Type::string(), (void*) &plus_any, {}, Method::NATIVE},
-		{Type::string(), Type::mpz_ptr(), Type::string(), (void*) &plus_mpz, {}, Method::NATIVE},
-		{Type::string(), Type::tmp_mpz_ptr(), Type::string(), (void*) &plus_mpz_tmp, {}, Method::NATIVE},
-		{Type::string(), Type::real(), Type::string(), (void*) &StringSTD::add_real, {}, Method::NATIVE},
-		{Type::string(), Type::integer(), Type::string(), (void*) &StringSTD::add_int, {}, Method::NATIVE},
-		{Type::string(), Type::boolean(), Type::string(), (void*) &StringSTD::add_bool, {}, Method::NATIVE},
+		{Type::string(), Type::any(), Type::string(), (void*) &plus_any},
+		{Type::string(), Type::mpz_ptr(), Type::string(), (void*) &plus_mpz},
+		{Type::string(), Type::tmp_mpz_ptr(), Type::string(), (void*) &plus_mpz_tmp},
+		{Type::string(), Type::real(), Type::string(), (void*) &StringSTD::add_real},
+		{Type::string(), Type::integer(), Type::string(), (void*) &StringSTD::add_int},
+		{Type::string(), Type::boolean(), Type::string(), (void*) &StringSTD::add_bool},
 	});
 	operator_("<", {
-		{Type::string(), Type::string(), Type::boolean(), (void*) &StringSTD::lt}
+		{Type::string(), Type::string(), Type::boolean(), StringSTD::lt}
 	});
 	operator_("/", {
-		{Type::string(), Type::string(), Type::array(Type::string()), (void*) &StringSTD::div}
+		{Type::string(), Type::string(), Type::array(Type::string()), StringSTD::div}
 	});
 
 	/*
@@ -245,14 +245,14 @@ LSString* StringSTD::add_real(LSString* s, double i) {
 	}
 }
 
-Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto res = c.insn_call(Type::boolean(), args, "Value.operator<");
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return res;
 }
 
-Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_call(Type::array(Type::string()), args, "Value.operator/");
 }
 

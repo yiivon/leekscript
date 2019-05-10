@@ -30,15 +30,15 @@ SetSTD::SetSTD() : Module("Set") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::const_set(), Type::any(), Type::boolean(), (void*) &LSSet<LSValue*>::in_v, {}, Method::NATIVE},
-		{Type::const_set(), Type::integer(), Type::boolean(), (void*) &in_any},
-		{Type::const_set(Type::real()), Type::real(), Type::boolean(), (void*) &LSSet<double>::in_v, {}, Method::NATIVE},
-		{Type::const_set(Type::integer()), Type::integer(), Type::boolean(), (void*) &LSSet<int>::in_v, {}, Method::NATIVE}
+		{Type::const_set(), Type::any(), Type::boolean(), (void*) &LSSet<LSValue*>::in_v},
+		{Type::const_set(), Type::integer(), Type::boolean(), in_any},
+		{Type::const_set(Type::real()), Type::real(), Type::boolean(), (void*) &LSSet<double>::in_v},
+		{Type::const_set(Type::integer()), Type::integer(), Type::boolean(), (void*) &LSSet<int>::in_v}
 	});
 	operator_("+=", {
-		{Type::set(), Type::const_any(), Type::any(), (void*) &set_add_eq, {new WillStoreMutator()}, false, true},
-		{Type::set(Type::real()), Type::const_real(), Type::array(Type::real()), (void*) &LSSet<double>::add_eq_double, {new WillStoreMutator()}, Method::NATIVE},
-		{Type::set(Type::integer()), Type::const_integer(), Type::array(Type::integer()), (void*) &LSSet<int>::add_eq_int, {new WillStoreMutator()}, Method::NATIVE}
+		{Type::set(), Type::const_any(), Type::any(), set_add_eq, 0, {new WillStoreMutator()}, true},
+		{Type::set(Type::real()), Type::const_real(), Type::array(Type::real()), (void*) &LSSet<double>::add_eq_double, 0, {new WillStoreMutator()}},
+		{Type::set(Type::integer()), Type::const_integer(), Type::array(Type::integer()), (void*) &LSSet<int>::add_eq_int, 0, {new WillStoreMutator()}}
 	});
 
 	/*

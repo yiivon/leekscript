@@ -26,20 +26,20 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::const_array(), Type::const_any(), Type::boolean(), (void*) &in},
+		{Type::const_array(), Type::const_any(), Type::boolean(), in},
 	});
 	operator_("+", {
-		{Type::const_array(), Type::const_any(), Type::array(Type::any()), (void*) &ArraySTD::op_add},
+		{Type::const_array(), Type::const_any(), Type::array(Type::any()), ArraySTD::op_add},
 	});
 	operator_("+=", {
-		{Type::array(), Type::const_any(), Type::array(), (void*) &array_add_eq, {new WillStoreMutator()}, false, true},
+		{Type::array(), Type::const_any(), Type::array(), array_add_eq, 0, {new WillStoreMutator()}, true},
 	});
 
 	auto ttE = Type::template_("E");
 	auto ttR = Type::template_("R");
 	template_(ttE, ttR).
 	operator_("~~", {
-		{Type::const_array(ttE), Type::fun(ttR, {ttE}), Type::tmp_array(ttR), (void*) &map},
+		{Type::const_array(ttE), Type::fun(ttR, {ttE}), Type::tmp_array(ttR), map},
 	});
 
 	/*
@@ -376,7 +376,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 }
 
-Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, bool) {
 	const auto& type = args[0].t.element().fold();
 	auto f = [&]() {
 		if (type.is_integer()) return "Array.in.2";
@@ -397,11 +397,11 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args) {
 	}
 }
 
-Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_call(Type::array(args[0].t.element()), {args[0], c.insn_to_any(args[1])}, "Value.operator+");
 }
 
-Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
 	args[1] = c.insn_to_any(args[1]);
 	return c.insn_call(Type::any(), args, "Value.operator+=");
 }

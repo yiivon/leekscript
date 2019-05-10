@@ -22,41 +22,41 @@ public:
 	/*
 	 * Operators
 	 */
-	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value op_equals(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value op_not_equals(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value op_lt(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value op_le(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value op_gt(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value op_ge(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value op_and(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_or(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_xor(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_add(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_sub(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_mul(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_div(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_pow(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_int_div(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value op_equals(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value op_not_equals(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value op_lt(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value op_le(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value op_gt(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value op_ge(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value op_and(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_or(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_xor(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_add(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_sub(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_mul(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_div(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_pow(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_int_div(Compiler& c, std::vector<Compiler::value> args, bool);
 	static int ls_bit_and(LSValue*, LSValue*);
 	static int ls_bit_and_eq(LSValue**, LSValue*);
 	static int ls_bit_or(LSValue*, LSValue*);
 	static int ls_bit_or_eq(LSValue**, LSValue*);
 	static int ls_bit_xor(LSValue*, LSValue*);
 	static int ls_bit_xor_eq(LSValue**, LSValue*);
-	static Compiler::value bit_shift_left(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value bit_shift_left_eq(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value bit_shift_left(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value bit_shift_left_eq(Compiler& c, std::vector<Compiler::value> args, bool);
 	static int ls_bit_shift_left_eq(LSValue** x, LSValue* y);
-	static Compiler::value bit_shift_right(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value bit_shift_right_eq(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value bit_shift_right(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value bit_shift_right_eq(Compiler& c, std::vector<Compiler::value> args, bool);
 	static int ls_bit_shift_right_eq(LSValue** x, LSValue* y);
-	static Compiler::value bit_shift_uright(Compiler& c, std::vector<Compiler::value> args);
-	static Compiler::value bit_shift_uright_eq(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value bit_shift_uright(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value bit_shift_uright_eq(Compiler& c, std::vector<Compiler::value> args, bool);
 	static int ls_bit_shift_uright_eq(LSValue**, LSValue*);
-	static Compiler::value op_in(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value op_swap_val(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_in(Compiler&, std::vector<Compiler::value>, bool);
+	static Compiler::value op_swap_val(Compiler&, std::vector<Compiler::value>, bool);
 	static LSValue* op_swap_ptr(LSValue** x, LSValue** y);
-	static Compiler::value op_call(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value op_call(Compiler&, std::vector<Compiler::value>, bool);
 
 	/*
 	 * Methods

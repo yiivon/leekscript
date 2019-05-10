@@ -32,8 +32,8 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::object(), Type::any(), Type::boolean(), (void*) &LSObject::in, {}, Method::NATIVE},
-		{Type::object(), Type::number(), Type::boolean(), (void*) &in_any}
+		{Type::object(), Type::any(), Type::boolean(), (void*) &LSObject::in},
+		{Type::object(), Type::number(), Type::boolean(), in_any}
 	});
 
 	/*
@@ -63,7 +63,7 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	});
 }
 
-Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
+Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1])}, "Value.operatorin");
 }
 
