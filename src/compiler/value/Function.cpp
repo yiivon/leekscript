@@ -13,6 +13,7 @@
 #include "../../type/Placeholder_type.hpp"
 #include "../semantic/Callable.hpp"
 #include "../instruction/VariableDeclaration.hpp"
+#include "../../colors.h"
 
 namespace ls {
 
@@ -94,6 +95,9 @@ void Function::print_version(std::ostream& os, int indent, bool debug, bool cond
 	}
 	if (arguments.size() != 1) {
 		os << ")";
+	}
+	if (version->body->throws) {
+		os << BLUE_BOLD << " throws" << END_COLOR;
 	}
 	os << " => ";
 	version->body->print(os, indent, debug, condensed);

@@ -248,6 +248,7 @@ namespace std {
 			os << " (user function)";
 		}
 		if (v.unknown) os << " (unknown)";
+		if (v.flags) os << " " << v.flags;
 		return os;
 	}
 	std::ostream& operator << (std::ostream& os, const ls::CallableVersion* v) {
