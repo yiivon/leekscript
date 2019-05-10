@@ -25,6 +25,7 @@ public:
 	void* default_version_fun = nullptr;
 	std::map<std::vector<Type>, void*> versions;
 	bool is_void = false;
+	bool throws = false;
 
 	Value();
 	virtual ~Value();

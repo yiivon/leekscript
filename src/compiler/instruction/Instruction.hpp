@@ -18,6 +18,7 @@ public:
 	bool returning = false;
 	bool may_return = false;
 	bool is_void = false;
+	bool throws = false;
 
 	virtual ~Instruction() = 0;
 

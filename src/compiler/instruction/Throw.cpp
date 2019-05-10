@@ -7,6 +7,7 @@ namespace ls {
 
 Throw::Throw(std::shared_ptr<Token> token, Value* v) : token(token) {
 	expression = v;
+	throws = true;
 }
 
 Throw::~Throw() {

@@ -32,6 +32,7 @@ void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_
 	returning = value->returning;
 	may_return = value->may_return;
 	return_type = value->return_type;
+	throws = value->throws;
 }
 
 Compiler::value ExpressionInstruction::compile(Compiler& c) const {

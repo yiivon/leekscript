@@ -15,6 +15,7 @@ ArrayAccess::ArrayAccess() {
 	key = nullptr;
 	key2 = nullptr;
 	type = Type::any();
+	throws = true;
 }
 
 ArrayAccess::~ArrayAccess() {
