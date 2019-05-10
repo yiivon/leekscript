@@ -21,15 +21,18 @@ public:
 		Type object_type;
 		Type operand_type;
 		Type return_type;
-		void* addr;
+		void* addr = nullptr;
+		std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
+		int flags;
 		std::vector<TypeMutator*> mutators;
-		bool native;
 		bool v1_addr;
 		bool v2_addr;
 		std::vector<Type> templates;
 
-		Operator(Type object_type, Type operand, Type return_type, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool native = false, bool v1_addr = false, bool v2_addr = false, std::vector<Type> templates = {})
-		: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), mutators(mutators), native(native), v1_addr(v1_addr), v2_addr(v2_addr), templates(templates) {}
+		Operator(Type object_type, Type operand, Type return_type, void* addr, int flags = 0, std::initializer_list<TypeMutator*> mutators = {}, bool v1_addr = false, bool v2_addr = false, std::vector<Type> templates = {})
+			: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), flags(flags), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), templates(templates) {}
+		Operator(Type object_type, Type operand, Type return_type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::initializer_list<TypeMutator*> mutators = {}, bool v1_addr = false, bool v2_addr = false, std::vector<Type> templates = {})
+			: object_type(object_type), operand_type(operand), return_type(return_type), func(func), flags(flags), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), templates(templates) {}
 	};
 
 	class field {
