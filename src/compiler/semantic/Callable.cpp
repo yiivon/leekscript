@@ -185,7 +185,11 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 				args.insert(args.begin(), {user_fun->f, Type::any()});
 			}
 		}
-		return c.insn_invoke(type.return_type(), args, user_fun->f);
+		if (flags & Module::THROWS) {
+			return c.insn_invoke(type.return_type(), args, user_fun->f);
+		} else {
+			return c.insn_call(type.return_type(), args, user_fun->f);
+		}
 	} else if (addr) {
 		if (flags & Module::THROWS) {
 			return c.insn_invoke(type.return_type(), args, name);
