@@ -172,9 +172,15 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 		scope = var->scope;
 		attr_types = var->attr_types;
 		if (scope != VarScope::INTERNAL and var->function != analyser->current_function()) {
-			capture_index = analyser->current_function()->capture(var);
-			var->index = capture_index;
-			scope = VarScope::CAPTURE;
+			if (var->type().is_function()) {
+				if (var->name == analyser->current_function()->name) {
+					analyser->current_function()->recursive = true;
+				}
+			} else {
+				capture_index = analyser->current_function()->capture(var);
+				var->index = capture_index;
+				scope = VarScope::CAPTURE;
+			}
 		}
 	} else {
 		bool found = false;

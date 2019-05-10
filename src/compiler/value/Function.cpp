@@ -297,6 +297,13 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	analyser->enter_function(this);
 	current_version = version;
 
+	// Prepare the placeholder return type for recursive functions
+	if (captures.size()) {
+		version->type = Type::closure(getReturnType(), args, this);
+	} else {
+		version->type = Type::fun(getReturnType(), args, this);
+	}
+
 	std::vector<Type> arg_types;
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() && defaultValues.at(i) != nullptr ? defaultValues.at(i)->type : Type::any());
@@ -348,11 +355,6 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 
 int Function::capture(std::shared_ptr<SemanticVar> var) {
 	// std::cout << "Function::capture " << var->name << std::endl;
-
-	if (var->name == name) {
-		recursive = true;
-	}
-	if (var->type().is_function() and not recursive) return captures.size() - 1;
 
 	// Function become a closure
 	if (!default_version->function->closure()) {
@@ -696,6 +698,7 @@ Value* Function::clone() const {
 	f->lambda = lambda;
 	f->name = name;
 	f->body = (Block*) body->clone();
+	f->recursive = recursive;
 	for (const auto& a : arguments) {
 		f->arguments.push_back(a);
 	}
