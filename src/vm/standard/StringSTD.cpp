@@ -83,12 +83,12 @@ StringSTD::StringSTD() : Module("String") {
 	 * Operators
 	 */
 	operator_("+", {
-		{Type::string(), Type::any(), Type::string(), (void*) &plus_any},
-		{Type::string(), Type::mpz_ptr(), Type::string(), (void*) &plus_mpz},
-		{Type::string(), Type::tmp_mpz_ptr(), Type::string(), (void*) &plus_mpz_tmp},
-		{Type::string(), Type::real(), Type::string(), (void*) &add_real},
-		{Type::string(), Type::integer(), Type::string(), (void*) &add_int},
-		{Type::string(), Type::boolean(), Type::string(), (void*) &add_bool},
+		{Type::string(), Type::any(), Type::string(), (void*) plus_any},
+		{Type::string(), Type::mpz_ptr(), Type::string(), (void*) plus_mpz},
+		{Type::string(), Type::tmp_mpz_ptr(), Type::string(), (void*) plus_mpz_tmp},
+		{Type::string(), Type::real(), Type::string(), (void*) add_real},
+		{Type::string(), Type::integer(), Type::string(), (void*) add_int},
+		{Type::string(), Type::boolean(), Type::string(), (void*) add_bool},
 	});
 	operator_("<", {
 		{Type::string(), Type::string(), Type::boolean(), lt}
@@ -104,13 +104,13 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::string(), {Type::const_string()}, ValueSTD::copy}
 	});
 	method("charAt", {
-		{Type::string(), {Type::const_string(), Type::const_integer()}, (void*) &string_charAt},
+		{Type::string(), {Type::const_string(), Type::const_integer()}, (void*) string_charAt},
 	});
 	method("contains", {
-		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) &string_contains},
+		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) string_contains},
 	});
 	method("endsWith", {
-		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) &string_endsWith},
+		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) string_endsWith},
 	});
 	Type fold_fun_type = Type::fun(Type::any(), {Type::any(), Type::string()});
 	Type fold_clo_type = Type::closure(Type::any(), {Type::any(), Type::string()});
@@ -119,7 +119,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::any(), {Type::const_string(), fold_clo_type, Type::any()}, fold_fun},
 	});
 	method("indexOf", {
-		{Type::integer(), {Type::const_string(), Type::const_string()}, (void*) &string_indexOf},
+		{Type::integer(), {Type::const_string(), Type::const_string()}, (void*) string_indexOf},
 	});
 	method("isPermutation", {
 		{Type::boolean(), {Type::const_string(), Type::const_any()}, (void*) &LSString::is_permutation},
@@ -128,7 +128,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::boolean(), {Type::const_string()}, (void*) &LSString::is_palindrome},
 	});
 	method("length", {
-		{Type::integer(), {Type::const_string()}, (void*) &string_length},
+		{Type::integer(), {Type::const_string()}, (void*) string_length},
 	});
 	method("lines", {
 		{Type::tmp_array(Type::string()), {Type::const_string()}, (void*) &LSString::ls_lines},
@@ -138,40 +138,40 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::integer(), {Type::const_string()}, (void*) &LSString::ls_size},
 	});
 	method("replace", {
-		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &replace},
-		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &v1_replace, LEGACY},
+		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) replace},
+		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) v1_replace, LEGACY},
 	});
 	method("reverse", {
 		{Type::string(), {Type::const_string()}, (void*) &LSString::ls_tilde},
 	});
 	method("substring", {
-		{Type::string(), {Type::const_string(), Type::const_integer(), Type::const_integer()}, (void*) &string_substring},
+		{Type::string(), {Type::const_string(), Type::const_integer(), Type::const_integer()}, (void*) string_substring},
 	});
 	method("toArray", {
-		{Type::array(Type::any()), {Type::const_string()}, (void*) &string_toArray},
+		{Type::array(Type::any()), {Type::const_string()}, (void*) string_toArray},
 	});
 	method("toLower", {
-		{Type::string(), {Type::const_string()}, (void*) &string_toLower},
+		{Type::string(), {Type::const_string()}, (void*) string_toLower},
 	});
 	method("toUpper", {
-		{Type::string(), {Type::const_string()}, (void*) &string_toUpper},
+		{Type::string(), {Type::const_string()}, (void*) string_toUpper},
 	});
 	method("split", {
-		{Type::tmp_array(Type::string()), {Type::const_string(), Type::const_string()}, (void*) &string_split},
-		{Type::tmp_array(Type::string()), {Type::const_any(), Type::const_any()}, (void*) &string_split},
+		{Type::tmp_array(Type::string()), {Type::const_string(), Type::const_string()}, (void*) string_split},
+		{Type::tmp_array(Type::string()), {Type::const_any(), Type::const_any()}, (void*) string_split},
 	});
 	method("startsWith", {
-		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) &string_startsWith},
+		{Type::boolean(), {Type::const_string(), Type::const_string()}, (void*) string_startsWith},
 	});
 	method("code", {
-		{Type::any(), {Type::const_any()}, (void*) &string_begin_code_ptr},
-		{Type::integer(), {Type::const_string()}, (void*) &string_begin_code},
-		{Type::integer(), {Type::const_any()}, (void*) &string_begin_code},
-		{Type::integer(), {Type::const_string(), Type::const_integer()}, (void*) &string_code},
+		{Type::any(), {Type::const_any()}, (void*) string_begin_code_ptr},
+		{Type::integer(), {Type::const_string()}, (void*) string_begin_code},
+		{Type::integer(), {Type::const_any()}, (void*) string_begin_code},
+		{Type::integer(), {Type::const_string(), Type::const_integer()}, (void*) string_code},
 	});
 	method("number", {
-		{Type::long_(), {Type::const_string()}, (void*) &string_number},
-		{Type::long_(), {Type::const_any()}, (void*) &string_number},
+		{Type::long_(), {Type::const_string()}, (void*) string_number},
+		{Type::long_(), {Type::const_any()}, (void*) string_number},
 	});
 	auto map_fun = &LSString::ls_map<LSFunction*>;
 	method("map", {
@@ -203,7 +203,7 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	method("iterator_get", {
 		{Type::integer(), {Type::i8().pointer()}, (void*) &LSString::iterator_get},
-		{Type::tmp_string(), {Type::integer(), Type::const_string()}, (void*) &iterator_get},
+		{Type::tmp_string(), {Type::integer(), Type::const_string()}, (void*) iterator_get},
 	});
 	method("iterator_key", {
 		{Type::integer(), {Type::i8().pointer()}, (void*) &LSString::iterator_key}

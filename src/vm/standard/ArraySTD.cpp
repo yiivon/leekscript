@@ -17,9 +17,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Constructor
 	 */
 	constructor_({
-		{Type::tmp_array(Type::integer()), {Type::integer()}, (void*) &LSArray<int>::constructor},
-		{Type::tmp_array(Type::real()), {Type::integer()}, (void*) &LSArray<double>::constructor},
-		{Type::tmp_array(Type::any()), {Type::integer()}, (void*) &LSArray<LSValue*>::constructor},
+		{Type::tmp_array(Type::integer()), {Type::integer()}, (void*) LSArray<int>::constructor},
+		{Type::tmp_array(Type::real()), {Type::integer()}, (void*) LSArray<double>::constructor},
+		{Type::tmp_array(Type::any()), {Type::integer()}, (void*) LSArray<LSValue*>::constructor},
 	});
 
 	/*

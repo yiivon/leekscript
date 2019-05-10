@@ -13,12 +13,12 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 	field("args", Type::array());
 
 	constructor_({
-		{Type::fun({}, {}), {Type::i8().pointer()}, (void*) &LSFunction::constructor},
-		{Type::closure({}, {}), {Type::i8().pointer()}, (void*) &LSClosure::constructor},
+		{Type::fun({}, {}), {Type::i8().pointer()}, (void*) LSFunction::constructor},
+		{Type::closure({}, {}), {Type::i8().pointer()}, (void*) LSClosure::constructor},
 	});
 
 	// method("copy", {
-	// 	{Type::FUNCTION, {Type::CONST_FUNCTION}, (void*) &ValueSTD::copy}
+	// 	{Type::FUNCTION, {Type::CONST_FUNCTION}, (void*) ValueSTD::copy}
 	// });
 
 	/** Internal **/

@@ -28,26 +28,26 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::const_any(), Type::const_class(), Type::boolean(), op_instanceof}
 	});
 	operator_("==", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &eq},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) eq},
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_equals}
 	});
 	operator_("!=", {
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_not_equals}
 	});
 	operator_("<", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &lt},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) lt},
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_lt},
 	});
 	operator_("<=", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &le},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) le},
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_le}
 	});
 	operator_(">", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &gt},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) gt},
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_gt}
 	});
 	operator_(">=", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &ge},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) ge},
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_ge}
 	});
 	operator_("and", {
@@ -66,97 +66,97 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_xor}
 	});
 	operator_("+", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_add, THROWS},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_add, THROWS},
 		{Type::const_any(), Type::const_any(), Type::any(), op_add},
 	});
 	operator_("+=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_add_eq, THROWS, {}, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_add_eq, THROWS, {}, true}
 	});
 	operator_("-", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_sub},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_sub},
 		{Type::const_any(), Type::const_any(), Type::any(), op_sub},
 	});
 	operator_("-=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_sub_eq, THROWS, {}, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_sub_eq, THROWS, {}, true}
 	});
 	operator_("*", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_mul},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_mul},
 		{Type::const_any(), Type::const_any(), Type::any(), op_mul}
 	});
 	operator_("*=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_mul_eq, THROWS, {}, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_mul_eq, THROWS, {}, true}
 	});
 	operator_("**", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_pow, THROWS},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_pow, THROWS},
 	});
 	operator_("**=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_pow_eq, THROWS, {}, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_pow_eq, THROWS, {}, true}
 	});
 	operator_("/", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_div, THROWS},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_div, THROWS},
 	});
 	operator_("/=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_div_eq, THROWS, {}, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_div_eq, THROWS, {}, true}
 	});
 	operator_("\\", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_int_div, THROWS}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_int_div, THROWS}
 	});
 	operator_("\\=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_int_div_eq, THROWS, {}, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_int_div_eq, THROWS, {}, true}
 	});
 	operator_("%", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_mod, THROWS}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_mod, THROWS}
 	});
 	operator_("%=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_mod_eq, THROWS, {}, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_mod_eq, THROWS, {}, true}
 	});
 	operator_("%%", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_double_mod},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_double_mod},
 	});
 	operator_("%%=", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) &ls_double_mod_eq, THROWS, {}, true}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_double_mod_eq, THROWS, {}, true}
 	});
 	operator_("&", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ls_bit_and, THROWS}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_and, THROWS}
 	});
 	operator_("&=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ls_bit_and_eq, THROWS, {}, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) ls_bit_and_eq, THROWS, {}, true}
 	});
 	operator_("|", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ls_bit_or, THROWS}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_or, THROWS}
 	});
 	operator_("|=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ls_bit_or_eq, THROWS, {}, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) ls_bit_or_eq, THROWS, {}, true}
 	});
 	operator_("^", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ls_bit_xor, THROWS}
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_xor, THROWS}
 	});
 	operator_("^=", {
-		{Type::any(), Type::const_any(), Type::integer(), (void*) &ls_bit_xor_eq, THROWS, {}, true}
+		{Type::any(), Type::const_any(), Type::integer(), (void*) ls_bit_xor_eq, THROWS, {}, true}
 	});
 	operator_("<<", {
 		{Type::const_any(), Type::const_any(), Type::integer(), bit_shift_left}
 	});
 	operator_("<<=", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ls_bit_shift_left_eq, 0, {}, true},
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_shift_left_eq, 0, {}, true},
 		{Type::integer(), Type::const_integer(), Type::integer(), bit_shift_left_eq, 0, {}, true},
 	});
 	operator_(">>", {
 		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_right}
 	});
 	operator_(">>=", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ls_bit_shift_right_eq, 0, {}, true},
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_shift_right_eq, 0, {}, true},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_right_eq, 0, {}, true},
 	});
 	operator_(">>>", {
 		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_uright}
 	});
 	operator_(">>>=", {
-		{Type::const_any(), Type::const_any(), Type::integer(), (void*) &ls_bit_shift_uright_eq, 0, {}, true},
+		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_shift_uright_eq, 0, {}, true},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_uright_eq, 0, {}, true}
 	});
 	operator_("in", {
-		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) &in},
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) in},
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_in},
 	});
 	operator_("<=>", {
@@ -196,85 +196,85 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::any(), {Type::const_any()}, (void*) &LSValue::move}
 	});
 	method("absolute", {
-		{Type::integer(), {Type::const_any()}, (void*) &absolute}
+		{Type::integer(), {Type::const_any()}, (void*) absolute}
 	});
 	method("clone", {
-		{Type::any(), {Type::const_any()}, (void*) &clone}
+		{Type::any(), {Type::const_any()}, (void*) clone}
 	});
 	method("delete", {
 		{{}, {Type::const_any()}, (void*) &LSValue::free}
 	});
 	method("not", {
-		{Type::boolean(), {Type::const_any()}, (void*) &ls_not}
+		{Type::boolean(), {Type::const_any()}, (void*) ls_not}
 	});
 	method("minus", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_minus}
+		{Type::any(), {Type::const_any()}, (void*) ls_minus}
 	});
 	method("dec", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_dec}
+		{Type::any(), {Type::const_any()}, (void*) ls_dec}
 	});
 	method("pre_dec", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_pre_dec}
+		{Type::any(), {Type::const_any()}, (void*) ls_pre_dec}
 	});
 	method("decl", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_decl}
+		{Type::any(), {Type::const_any()}, (void*) ls_decl}
 	});
 	method("pre_decl", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_pre_decl}
+		{Type::any(), {Type::const_any()}, (void*) ls_pre_decl}
 	});
 	method("inc", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_inc}
+		{Type::any(), {Type::const_any()}, (void*) ls_inc}
 	});
 	method("pre_inc", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_pre_inc}
+		{Type::any(), {Type::const_any()}, (void*) ls_pre_inc}
 	});
 	method("incl", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_incl}
+		{Type::any(), {Type::const_any()}, (void*) ls_incl}
 	});
 	method("pre_incl", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_pre_incl}
+		{Type::any(), {Type::const_any()}, (void*) ls_pre_incl}
 	});
 	method("pre_tilde", {
-		{Type::any(), {Type::const_any()}, (void*) &ls_pre_tilde}
+		{Type::any(), {Type::const_any()}, (void*) ls_pre_tilde}
 	});
 	method("attr", {
-		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &attr},
+		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) attr},
 	});
 	method("attrL", {
-		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) &attrL},
+		{Type::any(), {Type::any(), Type::i8().pointer()}, (void*) attrL},
 	});
 	method("int", {
-		{Type::integer(), {Type::const_any()}, (void*) &integer}
+		{Type::integer(), {Type::const_any()}, (void*) integer}
 	});
 	method("real", {
-		{Type::real(), {Type::const_any()}, (void*) &real}
+		{Type::real(), {Type::const_any()}, (void*) real}
 	});
 	method("long", {
-		{Type::long_(), {Type::const_any()}, (void*) &long_}
+		{Type::long_(), {Type::const_any()}, (void*) long_}
 	});
 	method("range", {
-		{Type::any(), {Type::const_any(), Type::integer(), Type::integer()}, (void*) &range}
+		{Type::any(), {Type::const_any(), Type::integer(), Type::integer()}, (void*) range}
 	});
 	method("at", {
-		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &at}
+		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) at}
 	});
 	method("atl", {
-		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) &atl}
+		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) atl}
 	});
 	method("in_i", {
-		{Type::boolean(), {Type::const_any(), Type::integer()}, (void*) &in_i}
+		{Type::boolean(), {Type::const_any(), Type::integer()}, (void*) in_i}
 	});
 	method("in", {
-		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) &in}
+		{Type::boolean(), {Type::const_any(), Type::const_any()}, (void*) in}
 	});
 	method("is_null", {
-		{Type::boolean(), {Type::const_any()}, (void*) &is_null}
+		{Type::boolean(), {Type::const_any()}, (void*) is_null}
 	});
 	method("to_bool", {
-		{Type::boolean(), {Type::const_any()}, (void*) &to_bool}
+		{Type::boolean(), {Type::const_any()}, (void*) to_bool}
 	});
 	method("type", {
-		{Type::integer(), {Type::const_any()}, (void*) &type}
+		{Type::integer(), {Type::const_any()}, (void*) type}
 	});
 	method("delete_previous", {
 		{{}, {Type::any()}, (void*) delete_previous}

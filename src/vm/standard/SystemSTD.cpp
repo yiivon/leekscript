@@ -11,28 +11,28 @@ SystemSTD::SystemSTD() : Module("System") {
 
 	static_field("version", Type::integer(), version);
 	static_field("operations", Type::integer(), operations);
-	static_field("time", Type::long_(), (void*) &time);
-	static_field("milliTime", Type::long_(), (void*) &millitime);
-	static_field("microTime", Type::long_(), (void*) &microtime);
-	static_field("nanoTime", Type::long_(), (void*) &nanotime);
+	static_field("time", Type::long_(), (void*) time);
+	static_field("milliTime", Type::long_(), (void*) millitime);
+	static_field("microTime", Type::long_(), (void*) microtime);
+	static_field("nanoTime", Type::long_(), (void*) nanotime);
 
 	method("print", Method::Static, {
-		{{}, {Type::const_any()}, (void*) &print},
-		{{}, {Type::mpz_ptr()}, (void*) &print_mpz},
-		{{}, {Type::tmp_mpz_ptr()}, (void*) &print_mpz_tmp},
-		{{}, {Type::const_long()}, (void*) &print_long},
-		{{}, {Type::const_real()}, (void*) &print_float},
-		{{}, {Type::const_integer()}, (void*) &print_int},
-		{{}, {Type::const_boolean()}, (void*) &print_bool},
+		{{}, {Type::const_any()}, (void*) print},
+		{{}, {Type::mpz_ptr()}, (void*) print_mpz},
+		{{}, {Type::tmp_mpz_ptr()}, (void*) print_mpz_tmp},
+		{{}, {Type::const_long()}, (void*) print_long},
+		{{}, {Type::const_real()}, (void*) print_float},
+		{{}, {Type::const_integer()}, (void*) print_int},
+		{{}, {Type::const_boolean()}, (void*) print_bool},
 	});
 
 	method("throw", {
-		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) &throw1},
-		{{}, {Type::long_(), Type::long_(), Type::i8().pointer()}, (void*) &throw2},
+		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) throw1},
+		{{}, {Type::long_(), Type::long_(), Type::i8().pointer()}, (void*) throw2},
 	});
 
 	method("debug", {
-		{{}, {Type::any()}, (void*) &print}
+		{{}, {Type::any()}, (void*) print}
 	});
 }
 
