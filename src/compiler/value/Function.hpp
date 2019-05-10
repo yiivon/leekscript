@@ -29,6 +29,7 @@ public:
 		llvm::Function* f = nullptr;
 		Compiler::value value;
 		bool is_compiled() const;
+		void create_function(Compiler& c);
 		void compile(Compiler& c, bool create_value = false);
 	};
 

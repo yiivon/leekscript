@@ -450,6 +450,15 @@ Compiler::value Function::compile(Compiler& c) const {
 		return compile_version(c, version);
 	} else {
 		return c.new_pointer(default_version->function, default_version->type);
+		// default_version->compile(c, true);
+		// return default_version->value;
+		// Create only the llvm function
+		// default_version->create_function(c);
+		// if (parent->captures.size()) {
+		// 	return c.new_closure(default_version->f, default_version->type, {}); // TODO captures
+		// } else {
+		// 	return c.new_function(default_version->f, default_version->type);
+		// }
 	}
 }
 
@@ -504,14 +513,38 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 	return current_version->landing_pad;
 }
 
+void Function::Version::create_function(Compiler& c) {
+	if (f) return;
+
+	std::vector<llvm::Type*> args;
+	if (parent->captures.size()) {
+		args.push_back(Type::any().llvm_type(c)); // first arg is the function pointer
+	}
+	for (auto& t : this->type.arguments()) {
+		args.push_back(t.llvm_type(c));
+	}
+
+	// const int id = id_counter++;
+	auto llvm_return_type = this->type.return_type().llvm_type(c);
+	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
+	auto fun_name = parent->is_main_function ? "main" : parent->name;
+	f = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
+
+	auto personalityfn = c.program->module->getFunction("__gxx_personality_v0");
+	if (!personalityfn) {
+		personalityfn = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", c.program->module);
+	}
+	f->setPersonalityFn(personalityfn);
+
+	block = llvm::BasicBlock::Create(c.getContext(), "start", f);
+}
+
 void Function::Version::compile(Compiler& c, bool create_value) {
 
 	if (is_compiled()) return;
 
 	// std::cout << "Function::Version " << parent->name << "::compile(" << type << ")" << std::endl;
 	this->parent->current_version = this;
-
-	const int id = id_counter++;
 
 	std::vector<Compiler::value> captures;
 	if (!parent->is_main_function) {
@@ -561,18 +594,8 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 	for (auto& t : this->type.arguments()) {
 		args.push_back(t.llvm_type(c));
 	}
-	auto llvm_return_type = this->type.return_type().llvm_type(c);
-	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
-	auto fun_name = parent->is_main_function ? "main" : parent->name + std::to_string(id);
-	f = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
-
-	auto personalityfn = c.program->module->getFunction("__gxx_personality_v0");
-	if (!personalityfn) {
-		personalityfn = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", c.program->module);
-	}
-	f->setPersonalityFn(personalityfn);
-
-	block = llvm::BasicBlock::Create(c.getContext(), "start", f);
+	// Create the llvm function
+	create_function(c);
 
 	c.enter_function(f, parent->captures.size() > 0, parent);
 
