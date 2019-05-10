@@ -29,7 +29,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 		{Type::const_array(), Type::const_any(), Type::boolean(), in},
 	});
 	operator_("+", {
-		{Type::const_array(), Type::const_any(), Type::array(Type::any()), ArraySTD::op_add},
+		{Type::const_array(), Type::const_any(), Type::array(Type::any()), op_add},
 	});
 	operator_("+=", {
 		{Type::array(), Type::const_any(), Type::array(), array_add_eq, 0, {new WillStoreMutator()}, true},
@@ -57,9 +57,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("chunk", {
-		{Type::array(Type::array()), {Type::const_array()}, (void*) ArraySTD::chunk_1_ptr},
-		{Type::array(Type::array(Type::real())), {Type::const_array(Type::real())}, (void*) ArraySTD::chunk_1_float},
-		{Type::array(Type::array(Type::integer())), {Type::const_array(Type::integer())}, (void*) ArraySTD::chunk_1_int},
+		{Type::array(Type::array()), {Type::const_array()}, (void*) chunk_1_ptr},
+		{Type::array(Type::array(Type::real())), {Type::const_array(Type::real())}, (void*) chunk_1_float},
+		{Type::array(Type::array(Type::integer())), {Type::const_array(Type::integer())}, (void*) chunk_1_int},
 		{Type::array(Type::array()), {Type::const_array(), Type::const_integer()}, (void*) &LSArray<LSValue*>::ls_chunk},
 		{Type::array(Type::array(Type::real())), {Type::const_array(Type::real()), Type::const_integer()}, (void*) &LSArray<double>::ls_chunk},
 		{Type::array(Type::array(Type::integer())), {Type::const_array(Type::integer()), Type::const_integer()}, (void*) &LSArray<int>::ls_chunk},
@@ -311,9 +311,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	method("size", {
 		{Type::any(), {Type::const_any()}, (void*) &LSArray<LSValue*>::ls_size_ptr},
-		{Type::integer(), {Type::const_any()}, ArraySTD::size},
-		{Type::integer(), {Type::const_array(Type::real())}, ArraySTD::size},
-		{Type::integer(), {Type::const_array(Type::integer())}, ArraySTD::size}
+		{Type::integer(), {Type::const_any()}, size},
+		{Type::integer(), {Type::const_array(Type::real())}, size},
+		{Type::integer(), {Type::const_array(Type::integer())}, size}
 	});
 
 	method("sum", {
@@ -323,9 +323,9 @@ ArraySTD::ArraySTD() : Module("Array") {
 	});
 
 	method("subArray", {
-		{Type::tmp_array(), {Type::const_array(), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void* ) &ArraySTD::sub},
+		{Type::tmp_array(), {Type::const_array(), Type::const_integer(), Type::const_integer()}, (void*) &sub},
+		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), Type::const_integer(), Type::const_integer()}, (void*) &sub},
+		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), Type::const_integer(), Type::const_integer()}, (void*) &sub},
 	});
 
 	/** V1 **/
@@ -340,7 +340,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 
 	/** Internal **/
 	method("convert_key", {
-		{Type::integer(), {Type::const_any(), Type::const_any()}, (void*) &ArraySTD::convert_key}
+		{Type::integer(), {Type::const_any(), Type::const_any()}, (void*) &convert_key}
 	});
 	method("in", {
 		{Type::boolean(), {Type::const_array(Type::any()), Type::const_any()}, (void*) &LSArray<LSValue*>::in},

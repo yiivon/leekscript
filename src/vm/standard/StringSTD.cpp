@@ -86,15 +86,15 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::string(), Type::any(), Type::string(), (void*) &plus_any},
 		{Type::string(), Type::mpz_ptr(), Type::string(), (void*) &plus_mpz},
 		{Type::string(), Type::tmp_mpz_ptr(), Type::string(), (void*) &plus_mpz_tmp},
-		{Type::string(), Type::real(), Type::string(), (void*) &StringSTD::add_real},
-		{Type::string(), Type::integer(), Type::string(), (void*) &StringSTD::add_int},
-		{Type::string(), Type::boolean(), Type::string(), (void*) &StringSTD::add_bool},
+		{Type::string(), Type::real(), Type::string(), (void*) &add_real},
+		{Type::string(), Type::integer(), Type::string(), (void*) &add_int},
+		{Type::string(), Type::boolean(), Type::string(), (void*) &add_bool},
 	});
 	operator_("<", {
-		{Type::string(), Type::string(), Type::boolean(), StringSTD::lt}
+		{Type::string(), Type::string(), Type::boolean(), lt}
 	});
 	operator_("/", {
-		{Type::string(), Type::string(), Type::array(Type::string()), StringSTD::div}
+		{Type::string(), Type::string(), Type::array(Type::string()), div}
 	});
 
 	/*
@@ -138,8 +138,8 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::integer(), {Type::const_string()}, (void*) &LSString::ls_size},
 	});
 	method("replace", {
-		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &StringSTD::replace},
-		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &StringSTD::v1_replace, LEGACY},
+		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &replace},
+		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) &v1_replace, LEGACY},
 	});
 	method("reverse", {
 		{Type::string(), {Type::const_string()}, (void*) &LSString::ls_tilde},

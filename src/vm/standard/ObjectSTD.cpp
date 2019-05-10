@@ -25,7 +25,7 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	 */
 	constructor_({
 		{Type::tmp_object(), {}, (void*) &LSObject::constructor},
-		{Type::tmp_object(), {Type::clazz()}, (void*) ObjectSTD::object_new},
+		{Type::tmp_object(), {Type::clazz()}, (void*) object_new},
 	});
 
 	/*

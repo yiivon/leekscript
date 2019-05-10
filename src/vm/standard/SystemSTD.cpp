@@ -9,30 +9,30 @@ namespace ls {
 
 SystemSTD::SystemSTD() : Module("System") {
 
-	static_field("version", Type::integer(), SystemSTD::version);
-	static_field("operations", Type::integer(), SystemSTD::operations);
-	static_field("time", Type::long_(), (void*) &SystemSTD::time);
-	static_field("milliTime", Type::long_(), (void*) &SystemSTD::millitime);
-	static_field("microTime", Type::long_(), (void*) &SystemSTD::microtime);
-	static_field("nanoTime", Type::long_(), (void*) &SystemSTD::nanotime);
+	static_field("version", Type::integer(), version);
+	static_field("operations", Type::integer(), operations);
+	static_field("time", Type::long_(), (void*) &time);
+	static_field("milliTime", Type::long_(), (void*) &millitime);
+	static_field("microTime", Type::long_(), (void*) &microtime);
+	static_field("nanoTime", Type::long_(), (void*) &nanotime);
 
 	method("print", Method::Static, {
-		{{}, {Type::const_any()}, (void*) &SystemSTD::print},
-		{{}, {Type::mpz_ptr()}, (void*) &SystemSTD::print_mpz},
-		{{}, {Type::tmp_mpz_ptr()}, (void*) &SystemSTD::print_mpz_tmp},
-		{{}, {Type::const_long()}, (void*) &SystemSTD::print_long},
-		{{}, {Type::const_real()}, (void*) &SystemSTD::print_float},
-		{{}, {Type::const_integer()}, (void*) &SystemSTD::print_int},
-		{{}, {Type::const_boolean()}, (void*) &SystemSTD::print_bool},
+		{{}, {Type::const_any()}, (void*) &print},
+		{{}, {Type::mpz_ptr()}, (void*) &print_mpz},
+		{{}, {Type::tmp_mpz_ptr()}, (void*) &print_mpz_tmp},
+		{{}, {Type::const_long()}, (void*) &print_long},
+		{{}, {Type::const_real()}, (void*) &print_float},
+		{{}, {Type::const_integer()}, (void*) &print_int},
+		{{}, {Type::const_boolean()}, (void*) &print_bool},
 	});
 
 	method("throw", {
-		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) &SystemSTD::throw1},
-		{{}, {Type::long_(), Type::long_(), Type::i8().pointer()}, (void*) &SystemSTD::throw2},
+		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) &throw1},
+		{{}, {Type::long_(), Type::long_(), Type::i8().pointer()}, (void*) &throw2},
 	});
 
 	method("debug", {
-		{{}, {Type::any()}, (void*) &SystemSTD::print}
+		{{}, {Type::any()}, (void*) &print}
 	});
 }
 
