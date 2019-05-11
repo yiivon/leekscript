@@ -26,7 +26,7 @@ ArraySTD::ArraySTD() : Module("Array") {
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::const_array(), Type::const_any(), Type::boolean(), in},
+		{Type::const_array(), Type::const_any(), Type::boolean(), in, THROWS},
 	});
 	operator_("+", {
 		{Type::const_array(), Type::const_any(), Type::array(Type::any()), op_add},
@@ -385,7 +385,7 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, boo
 	}();
 	if (args[1].t.castable(type)) {
 		auto v = c.insn_convert(args[1], type);
-		auto r = c.insn_invoke(Type::boolean(), {args[0], v}, f);
+		auto r = c.insn_call(Type::boolean(), {args[0], v}, f);
 		if (args[1].t.is_polymorphic() and type.is_primitive()) {
 			c.insn_delete_temporary(args[1]);
 		}
