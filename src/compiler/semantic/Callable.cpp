@@ -212,7 +212,11 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		auto r = [&]() { if (unknown) {
 			return c.insn_call(Type::any(), args, "Function.call");
 		} else {
-			return c.insn_invoke(type.return_type(), args, fun);
+			if (flags & Module::THROWS) {
+				return c.insn_invoke(type.return_type(), args, fun);
+			} else {
+				return c.insn_call(type.return_type(), args, fun);
+			}
 		}}();
 		if (!object) {
 			value->compile_end(c);
