@@ -122,10 +122,10 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::number(), Type::number(), Type::boolean(), ge}
 	});
 	operator_("%", {
-		{Type::const_real(), Type::const_real(), Type::real(), mod},
-		{Type::const_long(), Type::const_long(), Type::long_(), mod},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), mod},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), mod_mpz_mpz},
+		{Type::const_real(), Type::const_real(), Type::real(), mod, THROWS},
+		{Type::const_long(), Type::const_long(), Type::long_(), mod, THROWS},
+		{Type::const_integer(), Type::const_integer(), Type::integer(), mod, THROWS},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), mod_mpz_mpz, THROWS},
 	});
 	operator_("%%", {
 		{Type::const_real(), Type::const_real(), Type::real(), double_mod},
