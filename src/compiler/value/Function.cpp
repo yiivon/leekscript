@@ -538,11 +538,13 @@ void Function::Version::create_function(Compiler& c) {
 	auto fun_name = parent->is_main_function ? "main" : parent->name;
 	f = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
 
-	auto personalityfn = c.program->module->getFunction("__gxx_personality_v0");
-	if (!personalityfn) {
-		personalityfn = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", c.program->module);
+	if (body->throws) {
+		auto personalityfn = c.program->module->getFunction("__gxx_personality_v0");
+		if (!personalityfn) {
+			personalityfn = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.getContext()), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", c.program->module);
+		}
+		f->setPersonalityFn(personalityfn);
 	}
-	f->setPersonalityFn(personalityfn);
 
 	block = llvm::BasicBlock::Create(c.getContext(), "start", f);
 }
