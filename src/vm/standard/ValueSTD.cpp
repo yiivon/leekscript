@@ -67,21 +67,21 @@ ValueSTD::ValueSTD() : Module("Value") {
 	});
 	operator_("+", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_add, THROWS},
-		{Type::const_any(), Type::const_any(), Type::any(), op_add},
+		{Type::const_any(), Type::const_any(), Type::any(), op_add, THROWS},
 	});
 	operator_("+=", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_add_eq, THROWS, {}, true}
 	});
 	operator_("-", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_sub},
-		{Type::const_any(), Type::const_any(), Type::any(), op_sub},
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_sub, THROWS},
+		{Type::const_any(), Type::const_any(), Type::any(), op_sub, THROWS},
 	});
 	operator_("-=", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_sub_eq, THROWS, {}, true}
 	});
 	operator_("*", {
-		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_mul},
-		{Type::const_any(), Type::const_any(), Type::any(), op_mul}
+		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_mul, THROWS},
+		{Type::const_any(), Type::const_any(), Type::any(), op_mul, THROWS}
 	});
 	operator_("*=", {
 		{Type::const_any(), Type::const_any(), Type::any(), (void*) ls_mul_eq, THROWS, {}, true}
@@ -135,21 +135,21 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::any(), Type::const_any(), Type::integer(), (void*) ls_bit_xor_eq, THROWS, {}, true}
 	});
 	operator_("<<", {
-		{Type::const_any(), Type::const_any(), Type::integer(), bit_shift_left}
+		{Type::const_any(), Type::const_any(), Type::integer(), bit_shift_left, THROWS}
 	});
 	operator_("<<=", {
 		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_shift_left_eq, 0, {}, true},
 		{Type::integer(), Type::const_integer(), Type::integer(), bit_shift_left_eq, 0, {}, true},
 	});
 	operator_(">>", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_right}
+		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_right, THROWS}
 	});
 	operator_(">>=", {
 		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_shift_right_eq, 0, {}, true},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_right_eq, 0, {}, true},
 	});
 	operator_(">>>", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_uright}
+		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_shift_uright, THROWS}
 	});
 	operator_(">>>=", {
 		{Type::const_any(), Type::const_any(), Type::integer(), (void*) ls_bit_shift_uright_eq, 0, {}, true},
@@ -196,7 +196,7 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::any(), {Type::const_any()}, (void*) &LSValue::move}
 	});
 	method("absolute", {
-		{Type::integer(), {Type::const_any()}, (void*) absolute}
+		{Type::integer(), {Type::const_any()}, (void*) absolute, THROWS}
 	});
 	method("clone", {
 		{Type::any(), {Type::const_any()}, (void*) clone}

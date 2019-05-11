@@ -82,8 +82,8 @@ NumberSTD::NumberSTD() : Module("Number") {
 	operator_("**", {
 		{Type::const_real(), Type::const_real(), Type::real(), pow_real_real},
 		{Type::const_integer(), Type::const_integer(), Type::integer(), pow_real_real},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), pow_mpz_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), pow_mpz_int},
+		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), pow_mpz_mpz, THROWS},
+		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), pow_mpz_int, THROWS},
 	});
 	operator_("**=", {
 		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), pow_eq_mpz_mpz},
