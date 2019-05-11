@@ -49,9 +49,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			ex->will_be_in_array(analyser);
 			ex->analyse(analyser);
 
-			if (ex->constant == false) {
-				constant = false;
-			}
+			constant &= ex->constant;
 			if (element_type._types.size() and element_type != ex->type) {
 				homogeneous = false;
 			}
