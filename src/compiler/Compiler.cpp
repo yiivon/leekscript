@@ -1710,14 +1710,10 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 	}
 }
 
-Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, Compiler::value fun) const {
-	if (fun.t.is_closure()) {
-		args.insert(args.begin(), fun);
+Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::value> args, Compiler::value func) const {
+	if (func.t.is_closure()) {
+		args.insert(args.begin(), func);
 	}
-	auto convert_type = Type::fun();
-	auto fun_to_ptr = Compiler::builder.CreatePointerCast(fun.v, convert_type.llvm_type(*this));
-	auto f = Compiler::builder.CreateStructGEP(convert_type.llvm_type(*this)->getPointerElementType(), fun_to_ptr, 5);
-	value function = { Compiler::builder.CreateLoad(f), convert_type };
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
@@ -1725,7 +1721,11 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
+	auto convert_type = Type::fun(return_type, {});
+	auto fun_to_ptr = builder.CreatePointerCast(func.v, convert_type.llvm_type(*this));
+	auto f = builder.CreateStructGEP(convert_type.llvm_type(*this)->getPointerElementType(), fun_to_ptr, 5);
 	auto fun_type = llvm::FunctionType::get(return_type.llvm_type(*this), llvm_types, false);
+	value function = { builder.CreateLoad(f), convert_type };
 	auto fun_conv = builder.CreatePointerCast(function.v, fun_type->getPointerTo());
 	auto r = builder.CreateCall(fun_type, fun_conv, llvm_args);
 	if (return_type._types.size() == 0) {
@@ -1788,6 +1788,9 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 }
 
 Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, Compiler::value func) const {
+	if (func.t.is_closure()) {
+		args.insert(args.begin(), func);
+	}
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {

@@ -206,10 +206,13 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		} else {
 			return value->compile(c);
 		}}();
-		if (fun.t.is_closure() or unknown) {
+		if (unknown) {
 			args.insert(args.begin(), fun);
 		}
 		auto r = [&]() { if (unknown) {
+			if (fun.t.is_closure()) {
+				args.insert(args.begin(), fun);
+			}
 			return c.insn_call(Type::any(), args, "Function.call");
 		} else {
 			if (flags & Module::THROWS) {
