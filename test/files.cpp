@@ -36,7 +36,7 @@ void Test::test_files() {
 	DISABLED_file("test/code/recursive_2_functions.leek").equals("");
 	// TODO : recursive with 2 versions
 	DISABLED_file("test/code/recursive_2_versions.leek").equals("");
-	DISABLED_file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
+	file("test/code/swap.leek").equals("[{p: 1}, {p: 3}, {p: 4}, {p: 12}, {p: 5}]");
 	file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
 	file("test/code/classes_multiple.leek").equals("[4, 40, 80]");
 
