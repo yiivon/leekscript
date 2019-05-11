@@ -67,7 +67,6 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 		}
 	}
 	if (any_pointer) {
-		value->analyse(analyser);
 		for (auto& ps : pattern_list) {
 			for (Pattern& p : ps) {
 				if (p.begin) {
@@ -90,9 +89,6 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 		for (Value* ret : returns) {
 			ret->analyse(analyser);
 			type = type * ret->type;
-		}
-		for (Value* ret : returns) {
-			ret->analyse(analyser);
 		}
 	}
 }
