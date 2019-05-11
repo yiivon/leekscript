@@ -56,6 +56,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Init
 	for (Instruction* ins : inits) {
 		ins->analyse(analyser);
+		throws |= ins->throws;
 		if (ins->may_return) {
 			returning = ins->returning;
 			may_return = ins->may_return;
@@ -70,11 +71,13 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	// Condition
 	if (condition != nullptr) {
 		condition->analyse(analyser);
+		throws |= condition->throws;
 	}
 
 	// Body
 	analyser->enter_loop();
 	body->analyse(analyser);
+	throws |= body->throws;
 	if (body->returning) returning = true;
 	if (body->may_return) may_return = true;
 	return_type += body->return_type;
@@ -88,6 +91,7 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	for (Instruction* ins : increments) {
 		ins->is_void = true;
 		ins->analyse(analyser, {});
+		throws |= ins->throws;
 		if (ins->may_return) {
 			returning = ins->returning;
 			may_return = ins->may_return;

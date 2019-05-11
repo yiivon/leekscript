@@ -31,6 +31,7 @@ Location PostfixExpression::location() const {
 void PostfixExpression::analyse(SemanticAnalyser* analyser) {
 
 	expression->analyse(analyser);
+	throws |= expression->throws;
 
 	if (expression->type.constant) {
 		analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
@@ -39,6 +40,7 @@ void PostfixExpression::analyse(SemanticAnalyser* analyser) {
 		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
 	}
 	type = expression->type;
+	throws |= expression->type.fold().is_polymorphic();
 	if (type == Type::mpz()) {
 		type.temporary = true;
 	}

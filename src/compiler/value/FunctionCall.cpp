@@ -75,6 +75,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 
 	// Analyse the function (can be anything here)
 	function->analyse(analyser);
+	throws = function->throws;
 
 	// Analyse arguments
 	for (const auto& argument : arguments) {
@@ -102,7 +103,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		if (callable_version) {
 			// std::cout << "Version: " << callable_version << std::endl;
 			type = callable_version->type.return_type();
-			throws = callable_version->flags & Module::THROWS;
+			throws |= callable_version->flags & Module::THROWS;
 			callable_version->apply_mutators(analyser, arguments);
 			
 			int offset = callable_version->object ? 1 : 0;

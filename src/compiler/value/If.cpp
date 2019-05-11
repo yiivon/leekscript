@@ -56,6 +56,8 @@ void If::analyse(SemanticAnalyser* analyser) {
 	// std::cout << "If " << is_void << std::endl;
 	
 	condition->analyse(analyser);
+	throws |= condition->throws;
+
 	then->is_void = is_void;
 	then->analyse(analyser);
 
@@ -72,6 +74,7 @@ void If::analyse(SemanticAnalyser* analyser) {
 		type += Type::null();
 	}
 	if (is_void) type = {};
+	throws |= then->throws or (elze != nullptr and elze->throws);
 	returning = then->returning and (elze != nullptr and elze->returning);
 	may_return = then->may_return or (elze != nullptr and elze->may_return);
 	return_type += then->return_type;

@@ -68,6 +68,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 			}
 			expressions[i]->analyse(analyser);
 			v->value = expressions[i];
+			throws |= expressions[i]->throws;
 		} else {
 			v->value = new Nulll(std::shared_ptr<Token>(nullptr));
 		}

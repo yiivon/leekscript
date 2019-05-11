@@ -6,6 +6,7 @@ namespace ls {
 AbsoluteValue::AbsoluteValue() {
 	expression = nullptr;
 	type = Type::integer();
+	throws = true;
 }
 
 AbsoluteValue::~AbsoluteValue() {

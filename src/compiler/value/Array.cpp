@@ -50,6 +50,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			ex->analyse(analyser);
 
 			constant &= ex->constant;
+			throws |= ex->throws;
 			if (element_type._types.size() and element_type != ex->type) {
 				homogeneous = false;
 			}

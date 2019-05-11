@@ -15,6 +15,7 @@ namespace ls {
 ObjectAccess::ObjectAccess(std::shared_ptr<Token> token) : field(token) {
 	object = nullptr;
 	attr_addr = nullptr;
+	throws = true; // TODO doesn't always throw
 }
 
 ObjectAccess::~ObjectAccess() {

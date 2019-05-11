@@ -54,14 +54,17 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 	bool has_default = false;
 
 	value->analyse(analyser);
+	throws |= value->throws;
 
 	for (auto& ps : pattern_list) {
 		for (Pattern& p : ps) {
 			if (p.begin) {
 				p.begin->analyse(analyser);
+				throws |= p.begin->throws;
 			}
 			if (p.end) {
 				p.end->analyse(analyser);
+				throws |= p.end->throws;
 			}
 			has_default = has_default || p.is_default();
 		}
@@ -71,9 +74,11 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 			for (Pattern& p : ps) {
 				if (p.begin) {
 					p.begin->analyse(analyser);
+					throws |= p.begin->throws;
 				}
 				if (p.end) {
 					p.end->analyse(analyser);
+					throws |= p.end->throws;
 				}
 			}
 		}
@@ -83,11 +88,13 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 		type = Type::any();
 		for (Value* r : returns) {
 			r->analyse(analyser);
+			throws |= r->throws;
 		}
 	} else {
 		type = {};
 		for (Value* ret : returns) {
 			ret->analyse(analyser);
+			throws |= ret->throws;
 			type = type * ret->type;
 		}
 	}

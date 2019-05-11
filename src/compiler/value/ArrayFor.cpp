@@ -23,6 +23,7 @@ Location ArrayFor::location() const {
 void ArrayFor::analyse(SemanticAnalyser* analyser) {
 	forr->analyse(analyser, Type::array());
 	type = forr->type;
+	throws = forr->throws;
 }
 
 Compiler::value ArrayFor::compile(Compiler& c) const {

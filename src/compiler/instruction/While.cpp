@@ -29,10 +29,14 @@ Location While::location() const {
 
 void While::analyse(SemanticAnalyser* analyser, const Type&) {
 	condition->analyse(analyser);
+	throws |= condition->throws;
+
 	analyser->enter_loop();
 	body->is_void = true;
 	body->analyse(analyser);
 	analyser->leave_loop();
+	
+	throws |= body->throws;
 	if (body->may_return) {
 		may_return = body->may_return;
 		returning = body->returning;

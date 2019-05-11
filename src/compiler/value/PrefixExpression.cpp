@@ -38,9 +38,11 @@ Location PrefixExpression::location() const {
 void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 
 	expression->analyse(analyser);
+	throws |= expression->throws;
 
 	if (operatorr->type == TokenType::TILDE) {
 		type = expression->type;
+		throws |= expression->type.is_polymorphic();
 		if (type == Type::boolean()) {
 			type = Type::integer();
 		}
@@ -51,6 +53,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 		or operatorr->type == TokenType::MINUS) {
 
 		type = expression->type;
+		throws |= expression->type.fold().is_polymorphic();
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
 				analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
@@ -63,6 +66,7 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 	} else if (operatorr->type == TokenType::NOT) {
 
 		type = Type::boolean();
+		throws |= expression->type.is_polymorphic();
 
 	} else if (operatorr->type == TokenType::NEW) {
 

@@ -108,11 +108,14 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		v1->is_void = is_void;
 		v1->analyse(analyser);
 		type = v1->type;
+		throws = v1->throws;
 		return;
 	}
 
 	v1->analyse(analyser);
 	v2->analyse(analyser);
+
+	throws = v1->throws or v2->throws;
 
 	// in operator : v1 must be a container
 	if (op->type == TokenType::IN and not v2->type.can_be_container()) {
@@ -173,7 +176,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		callable_version = callable->resolve(analyser, {v1_type, v2_type});
 		if (callable_version) {
 			// std::cout << "Callable version : " << callable_version << std::endl;
-			throws = callable_version->flags & Module::THROWS;
+			throws |= callable_version->flags & Module::THROWS;
 			callable_version->apply_mutators(analyser, {v1, v2});
 			// For placeholder types, keep them no matter the operator
 			auto return_type = callable_version->type.return_type();
