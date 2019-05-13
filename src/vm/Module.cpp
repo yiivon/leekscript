@@ -9,8 +9,6 @@
 
 namespace ls {
 
-bool Method::NATIVE = true;
-
 int Module::THROWS = 1;
 int Module::LEGACY = 2;
 

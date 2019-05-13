@@ -31,7 +31,6 @@ public:
 	enum Option {
 		Static, Instantiate, Both
 	};
-	static bool NATIVE;
 };
 
 class MethodConstructor {
