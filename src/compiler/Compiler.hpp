@@ -168,7 +168,7 @@ public:
 	value new_function(Type type) const;
 	value new_function(llvm::Function* f, Type type) const;
 	value new_closure(llvm::Function* f, Type type, std::vector<value> captures) const;
-	value new_class(const void* p) const;
+	value new_class(std::string name) const;
 	value new_object() const;
 	value new_object_class(value clazz) const;
 	value create_entry(const std::string& name, Type type) const;

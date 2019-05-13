@@ -9,6 +9,9 @@ ClassSTD::ClassSTD() : Module("Class") {
 
 	field("name", Type::string());
 
+	constructor_({
+		{Type::clazz(), {Type::i8().pointer()}, (void*) LSClass::constructor},
+	});
 
 }
 

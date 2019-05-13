@@ -5,11 +5,17 @@
 #include "../Module.hpp"
 #include "../../type/Function_type.hpp"
 #include "../../compiler/semantic/Callable.hpp"
+#include "../../vm/VM.hpp"
 
 namespace ls {
 
 LSValue* LSClass::clazz;
 
+LSClass* LSClass::constructor(char* name) {
+	auto clazz = new LSClass(name);
+	VM::current()->function_created.push_back(clazz);
+	return clazz;
+}
 LSClass::LSClass(std::string name) : LSValue(CLASS, 1, true), name(name) {
 	parent = nullptr;
 }

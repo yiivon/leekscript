@@ -142,8 +142,8 @@ Compiler::value Compiler::new_closure(llvm::Function* f, Type type, std::vector<
 	}
 	return closure;
 }
-Compiler::value Compiler::new_class(const void* p) const {
-	return new_pointer(p, Type::clazz());
+Compiler::value Compiler::new_class(std::string name) const {
+	return insn_call(Type::clazz(), {new_const_string(name, "class")}, "Class.new");
 }
 
 Compiler::value Compiler::new_object() const {

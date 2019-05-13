@@ -56,6 +56,7 @@ public:
 	std::map<std::string, std::vector<Operator>> operators;
 
 	static LSValue* clazz;
+	static LSClass* constructor(char* name);
 
 	LSClass(std::string);
 
