@@ -172,6 +172,7 @@ public:
 	value new_object() const;
 	value new_object_class(value clazz) const;
 	value create_entry(const std::string& name, Type type) const;
+	value get_symbol(const std::string& name, Type type) const;
 
 	// Conversions
 	value to_int(value) const;

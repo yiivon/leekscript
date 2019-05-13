@@ -315,12 +315,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 				return f->compile_default_version(c);
 			}
 		}
-		Compiler::value ops_ptr = { c.program->module->getGlobalVariable(name), type };
-		if (!ops_ptr.v) {
-			auto t = type.pointed().llvm_type(c);
-			ops_ptr.v = new llvm::GlobalVariable(*c.program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, name);
-		}
-		v = ops_ptr;
+		v = c.get_symbol(name, type);
 	} else if (scope == VarScope::LOCAL) {
 		assert(var != nullptr);
 		auto f = dynamic_cast<Function*>(var->value);

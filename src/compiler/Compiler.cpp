@@ -90,12 +90,7 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 	return v;
 }
 Compiler::value Compiler::new_null() const {
-	auto null_global = program->module->getGlobalVariable("null");
-	if (!null_global) {
-		auto t = Type::raw_null()->llvm(*this)->getPointerElementType();
-		null_global = new llvm::GlobalVariable(*program->module, t, true, llvm::GlobalValue::ExternalLinkage, nullptr, "null");
-	}
-	return {null_global, Type::null()};
+	return get_symbol("null", Type::null());
 }
 Compiler::value Compiler::new_bool(bool b) const {
 	return {llvm::ConstantInt::get(getContext(), llvm::APInt(1, b, false)), Type::boolean()};
@@ -181,6 +176,16 @@ Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::val
 Compiler::value Compiler::create_entry(const std::string& name, Type type) const {
 	auto t = type == Type::tmp_mpz() ? Type::tmp_mpz_ptr() : type.pointer();
 	return { CreateEntryBlockAlloca(name, type.llvm_type((Compiler&) *this)), t };
+}
+
+Compiler::value Compiler::get_symbol(const std::string& name, Type type) const {
+	Compiler::value ptr = { program->module->getGlobalVariable(name), type };
+	if (!ptr.v) {
+		auto t = type.llvm_type(*this)->getPointerElementType();
+		ptr.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, name);
+	}
+	assert(ptr.v->getType() == type.llvm_type(*this));
+	return ptr;
 }
 
 Compiler::value Compiler::to_int(Compiler::value v) const {
@@ -2041,11 +2046,7 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 	if (not vm->enable_operations) return;
 
 	// Get the operations counter global variable
-	Compiler::value ops_ptr = { program->module->getGlobalVariable("ops"), Type::integer().pointer() };
-	if (!ops_ptr.v) {
-		auto t = Type::integer().llvm_type(*this);
-		ops_ptr.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, "ops");
-	}
+	auto ops_ptr = get_symbol("ops", Type::integer().pointer());
 
 	// Increment counter
 	auto jit_ops = insn_load(ops_ptr);
@@ -2135,22 +2136,14 @@ void Compiler::assert_value_ok(value v) const {
 
 void Compiler::increment_mpz_created() const {
 	// Get the mpz_created counter global variable
-	Compiler::value mpz = { program->module->getGlobalVariable("mpzc"), Type::integer().pointer() };
-	if (!mpz.v) {
-		auto t = Type::integer().llvm_type(*this);
-		mpz.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, "mpzc");
-	}
+	auto mpz = get_symbol("mpzc", Type::integer().pointer());
 	// Increment counter
 	auto v = insn_load(mpz);
 	insn_store(mpz, insn_add(v, new_integer(1)));
 }
 void Compiler::increment_mpz_deleted() const {
 	// Get the mpz_deleted counter global variable
-	Compiler::value mpz = { program->module->getGlobalVariable("mpzd"), Type::integer().pointer() };
-	if (!mpz.v) {
-		auto t = Type::integer().llvm_type(*this);
-		mpz.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, "mpzd");
-	}
+	auto mpz = get_symbol("mpzd", Type::integer().pointer());
 	// Increment counter
 	auto v = insn_load(mpz);
 	insn_store(mpz, insn_add(v, new_integer(1)));
