@@ -8,6 +8,8 @@ namespace ls {
 class ClassSTD : public Module {
 public:
 	ClassSTD();
+
+	static void add_field(LSClass* clazz, char* field_name, LSValue* default_value);
 };
 
 }

@@ -16,7 +16,6 @@ public:
 
 	static Compiler::value in_any(Compiler& c, std::vector<Compiler::value> args, bool);
 	static LSValue* object_new(LSClass* clazz);
-	static void set_field_default_value(LSClass* clazz, char* field_name, LSValue* default_value);
 };
 
 }

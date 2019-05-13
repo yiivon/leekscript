@@ -58,9 +58,6 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	method("add_field", {
 		{{}, {Type::object(), Type::i8().pointer(), Type::any()}, (void*) &LSObject::addField}
 	});
-	method("set_field_default_value", {
-		{{}, {Type::clazz(), Type::i8().pointer(), Type::any()}, (void*) ObjectSTD::set_field_default_value}
-	});
 }
 
 Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args, bool) {
@@ -69,9 +66,6 @@ Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args
 
 LSValue* ObjectSTD::object_new(LSClass* clazz) {
 	return new LSObject(clazz);
-}
-void ObjectSTD::set_field_default_value(LSClass* clazz, char* field_name, LSValue* default_value) {
-	clazz->fields.at(field_name).default_value = default_value;
 }
 
 }
