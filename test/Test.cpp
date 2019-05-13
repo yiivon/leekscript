@@ -30,8 +30,6 @@ int main(int, char**) {
 
 int Test::all() {
 
-	clock_t begin = clock();
-
 	test_types();
 	test_general();
 	test_booleans();
@@ -54,14 +52,14 @@ int Test::all() {
 	test_doc();
 	test_utils();
 
-	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
+	double total_time = compilation_time + execution_time;
 	int errors = (total - success_count - disabled);
 	int leaks = (obj_created - obj_deleted);
 	int mpz_leaks = (mpz_obj_created - mpz_obj_deleted);
 
 	std::ostringstream line1, line2, line3, line4;
 	line1 << "Total: " << total << ", success: " << success_count << ", errors: " << errors << ", disabled: " << disabled;
-	line2 << "Total time: " << elapsed_secs * 1000 << " ms (" << compilation_time << " ms + " << execution_time << " ms) (compil + exe)";
+	line2 << "Total time: " << total_time << " ms (" << compilation_time << " ms + " << execution_time << " ms) (compil + exe)";
 	line3 << "Objects destroyed: " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
 	line4 << "MPZ objects destroyed: " << mpz_obj_deleted << " / " << mpz_obj_created << " (" << mpz_leaks << " leaked)";
 	unsigned w = std::max(line1.str().size(), std::max(line2.str().size(), std::max(line3.str().size(), line4.str().size())));
