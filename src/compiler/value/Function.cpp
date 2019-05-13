@@ -456,18 +456,9 @@ Compiler::value Function::compile(Compiler& c) const {
 	}
 	if (has_version) {
 		return compile_version(c, version);
-	} else {
-		return c.new_pointer(default_version->function, default_version->type);
-		// default_version->compile(c, true);
-		// return default_version->value;
-		// Create only the llvm function
-		// default_version->create_function(c);
-		// if (parent->captures.size()) {
-		// 	return c.new_closure(default_version->f, default_version->type, {}); // TODO captures
-		// } else {
-		// 	return c.new_function(default_version->f, default_version->type);
-		// }
 	}
+	// Returns a default function value
+	return c.new_function(default_version->type);
 }
 
 Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) const {
