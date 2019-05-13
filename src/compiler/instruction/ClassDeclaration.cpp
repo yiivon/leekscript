@@ -7,14 +7,12 @@ namespace ls {
 ClassDeclaration::ClassDeclaration(std::shared_ptr<Token> token) : token(token) {
 	name = token->content;
 	var = nullptr;
-	ls_class = new LSClass(name);
 }
 
 ClassDeclaration::~ClassDeclaration() {
 	for (const auto& vd : fields) {
 		delete vd;
 	}
-	delete ls_class;
 }
 
 void ClassDeclaration::print(std::ostream& os, int indent, bool debug, bool condensed) const {
@@ -37,11 +35,6 @@ void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
 	for (auto vd : fields) {
 		vd->analyze(analyzer, Type::any());
-		for (size_t i = 0; i < vd->variables.size(); ++i) {
-			// std::cout << "Add class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
-			auto t = i < vd->expressions.size() ? vd->expressions.at(i)->type : Type::any();
-			ls_class->addField(vd->variables.at(i)->content, t, nullptr);
-		}
 	}
 }
 
