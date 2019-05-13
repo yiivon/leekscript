@@ -438,14 +438,9 @@ Callable* Function::get_callable(SemanticAnalyzer*) const {
 }
 
 Compiler::value Function::compile(Compiler& c) const {
-
 	// std::cout << "Function::compile() " << this << " version " << version << " " << has_version << std::endl;
 	((Function*) this)->compiler = &c;
 
-	if (!is_main_function && !has_version && !generate_default_version) {
-		// std::cout << "/!\\ No version! (no custom version + no default version generated)" << std::endl;
-		// std::cout << "versions = " << versions.size() << std::endl;
-	}
 	if (generate_default_version) {
 		default_version->compile(c, true);
 		return default_version->value;
