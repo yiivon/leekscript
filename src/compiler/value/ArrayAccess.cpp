@@ -4,7 +4,7 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSInterval.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../semantic/SemanticError.hpp"
 #include "../semantic/Callable.hpp"
 
@@ -50,7 +50,7 @@ Location ArrayAccess::location() const {
 	return {array->location().start, close_bracket->location.end};
 }
 
-Callable* ArrayAccess::get_callable(SemanticAnalyser*) const {
+Callable* ArrayAccess::get_callable(SemanticAnalyzer*) const {
 	auto callable = new Callable("<aa>");
 	// std::cout << "Array access get callable " << type << std::endl;
 	if (type.is_function()) {
@@ -62,21 +62,21 @@ Callable* ArrayAccess::get_callable(SemanticAnalyser*) const {
 	return callable;
 }
 
-void ArrayAccess::analyse(SemanticAnalyser* analyser) {
+void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 
-	// std::cout << "Analyse AA " << this << " : " << req_type << std::endl;
+	// std::cout << "Analyze AA " << this << " : " << req_type << std::endl;
 
-	array->analyse(analyser);
+	array->analyze(analyzer);
 
 	if (not array->type.can_be_container()) {
-		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
+		analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
 		return;
 	}
 	if (key == nullptr) {
 		return;
 	}
 
-	key->analyse(analyser);
+	key->analyze(analyzer);
 	constant = array->constant && key->constant;
 
 	if (array->type.is_array() || array->type.is_interval() || array->type.is_map()) {
@@ -91,15 +91,15 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 	// Range array access : array[4:12], check if the values are numbers
 	if (key != nullptr and key2 != nullptr) {
 
-		key2->analyse(analyser);
+		key2->analyze(analyzer);
 
 		if (!key->type.is_any() and not key->type.is_number()) {
 			std::string k = "<key 1>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
+			analyzer->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
 		}
 		if (!key2->type.is_any() and not key2->type.is_number()) {
 			std::string k = "<key 2>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
+			analyzer->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
 		}
 		type = array->type.add_temporary();
 
@@ -108,7 +108,7 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
+			analyzer->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
 		}
 		if (array->type.is_string()) {
 			type = Type::string();
@@ -118,35 +118,35 @@ void ArrayAccess::analyse(SemanticAnalyser* analyser) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
-			analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
+			analyzer->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
 		}
 	}
 	// TODO should be temporary
 	// type.temporary = true;
 }
 
-bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int) {
+bool ArrayAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& args, int) {
 
 	// std::cout << "ArrayAccess::will_take(" << args << ", " << level << ")" << std::endl;
 
 	if (Array* arr = dynamic_cast<Array*>(array)) {
-		arr->elements_will_take(analyser, args, 1);
+		arr->elements_will_take(analyzer, args, 1);
 	}
 	if (ArrayAccess* arr = dynamic_cast<ArrayAccess*>(array)) {
-		arr->array_access_will_take(analyser, args, 1);
+		arr->array_access_will_take(analyzer, args, 1);
 	}
 	
 	type = array->type.element();
 	return false;
 }
 
-bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types, int level) {
+bool ArrayAccess::array_access_will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& arg_types, int level) {
 
 	if (auto arr = dynamic_cast<Array*>(array)) {
-		arr->elements_will_take(analyser, arg_types, level);
+		arr->elements_will_take(analyzer, arg_types, level);
 	}
 	if (auto arr = dynamic_cast<ArrayAccess*>(array)) {
-		arr->array_access_will_take(analyser, arg_types, level + 1);
+		arr->array_access_will_take(analyzer, arg_types, level + 1);
 	}
 
 	type = array->type.element();
@@ -154,14 +154,14 @@ bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::
 	return false;
 }
 
-bool ArrayAccess::will_store(SemanticAnalyser* analyser, const Type& type) {
-	array->elements_will_store(analyser, type, 1);
+bool ArrayAccess::will_store(SemanticAnalyzer* analyzer, const Type& type) {
+	array->elements_will_store(analyzer, type, 1);
 	this->type = array->type.element();
 	return false;
 }
 
-void ArrayAccess::change_value(SemanticAnalyser* analyser, Value* value) {
-	array->will_store(analyser, value->type);
+void ArrayAccess::change_value(SemanticAnalyzer* analyzer, Value* value) {
+	array->will_store(analyzer, value->type);
 	if (!type.is_any()) {
 		this->type = array->type.element();
 	}

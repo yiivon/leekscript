@@ -1,6 +1,6 @@
 #include "Continue.hpp"
 #include "../../vm/value/LSNull.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../semantic/SemanticError.hpp"
 
 namespace ls {
@@ -22,11 +22,11 @@ Location Continue::location() const {
 	return {{0, 0, 0}, {0, 0, 0}};
 }
 
-void Continue::analyse(SemanticAnalyser* analyser, const Type&) {
+void Continue::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
 	// continue must be in a loop
-	if (!analyser->in_loop(deepness)) {
-		analyser->add_error({SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}}); // TODO location
+	if (!analyzer->in_loop(deepness)) {
+		analyzer->add_error({SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}}); // TODO location
 	}
 }
 

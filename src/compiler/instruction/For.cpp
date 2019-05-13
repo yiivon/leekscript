@@ -1,7 +1,7 @@
 #include "For.hpp"
 #include "../instruction/Return.hpp"
 #include "../../vm/LSValue.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 
 namespace ls {
 
@@ -41,8 +41,8 @@ Location For::location() const {
 	return {{0, 0, 0}, {0, 0, 0}};
 }
 
-void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-	// std::cout << "For::analyse() " << is_void << std::endl;
+void For::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
+	// std::cout << "For::analyze() " << is_void << std::endl;
 
 	if (req_type.is_array()) {
 		type = req_type;
@@ -51,11 +51,11 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		body->is_void = true;
 	}
 
-	analyser->enter_block();
+	analyzer->enter_block();
 
 	// Init
 	for (Instruction* ins : inits) {
-		ins->analyse(analyser);
+		ins->analyze(analyzer);
 		throws |= ins->throws;
 		if (ins->may_return) {
 			returning = ins->returning;
@@ -63,20 +63,20 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			return_type += ins->return_type;
 		}
 		if (ins->returning) {
-			analyser->leave_block();
+			analyzer->leave_block();
 			return;
 		}
 	}
 
 	// Condition
 	if (condition != nullptr) {
-		condition->analyse(analyser);
+		condition->analyze(analyzer);
 		throws |= condition->throws;
 	}
 
 	// Body
-	analyser->enter_loop();
-	body->analyse(analyser);
+	analyzer->enter_loop();
+	body->analyze(analyzer);
 	throws |= body->throws;
 	if (body->returning) returning = true;
 	if (body->may_return) may_return = true;
@@ -84,13 +84,13 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 	if (req_type.is_array()) {
 		type = Type::array(body->type);
 	}
-	analyser->leave_loop();
+	analyzer->leave_loop();
 
 	// Increment
-	analyser->enter_block();
+	analyzer->enter_block();
 	for (Instruction* ins : increments) {
 		ins->is_void = true;
-		ins->analyse(analyser, {});
+		ins->analyze(analyzer, {});
 		throws |= ins->throws;
 		if (ins->may_return) {
 			returning = ins->returning;
@@ -101,9 +101,9 @@ void For::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 			break;
 		}
 	}
-	analyser->leave_block();
+	analyzer->leave_block();
 
-	analyser->leave_block();
+	analyzer->leave_block();
 }
 
 Compiler::value For::compile(Compiler& c) const {

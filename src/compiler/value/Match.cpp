@@ -48,22 +48,22 @@ Location Match::location() const {
 	return {{0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void Match::analyse(ls::SemanticAnalyser* analyser) {
+void Match::analyze(ls::SemanticAnalyzer* analyzer) {
 
 	bool any_pointer = false;
 	bool has_default = false;
 
-	value->analyse(analyser);
+	value->analyze(analyzer);
 	throws |= value->throws;
 
 	for (auto& ps : pattern_list) {
 		for (Pattern& p : ps) {
 			if (p.begin) {
-				p.begin->analyse(analyser);
+				p.begin->analyze(analyzer);
 				throws |= p.begin->throws;
 			}
 			if (p.end) {
-				p.end->analyse(analyser);
+				p.end->analyze(analyzer);
 				throws |= p.end->throws;
 			}
 			has_default = has_default || p.is_default();
@@ -73,11 +73,11 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 		for (auto& ps : pattern_list) {
 			for (Pattern& p : ps) {
 				if (p.begin) {
-					p.begin->analyse(analyser);
+					p.begin->analyze(analyzer);
 					throws |= p.begin->throws;
 				}
 				if (p.end) {
-					p.end->analyse(analyser);
+					p.end->analyze(analyzer);
 					throws |= p.end->throws;
 				}
 			}
@@ -87,13 +87,13 @@ void Match::analyse(ls::SemanticAnalyser* analyser) {
 		// Return type is always pointer because in the default case, null is return
 		type = Type::any();
 		for (Value* r : returns) {
-			r->analyse(analyser);
+			r->analyze(analyzer);
 			throws |= r->throws;
 		}
 	} else {
 		type = {};
 		for (Value* ret : returns) {
-			ret->analyse(analyser);
+			ret->analyze(analyzer);
 			throws |= ret->throws;
 			type = type * ret->type;
 		}

@@ -18,7 +18,7 @@
 #include "../vm/value/LSClosure.hpp"
 #include "../colors.h"
 #include "../../lib/utf8.h"
-#include "semantic/SemanticAnalyser.hpp"
+#include "semantic/SemanticAnalyzer.hpp"
 #include "llvm/IR/GlobalVariable.h"
 #include "../type/Base_type.hpp"
 #include "../vm/Program.hpp"

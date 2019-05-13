@@ -1,4 +1,4 @@
-#include "LexicalAnalyser.hpp"
+#include "LexicalAnalyzer.hpp"
 #include <iostream>
 #include "../../../lib/utf8.h"
 #include <string.h>
@@ -76,9 +76,9 @@ static std::vector<std::vector<std::string>> type_literals = {
 	{ "%%" }, { "%%=" }
 };
 
-LexicalAnalyser::LexicalAnalyser() {}
+Lexicalanalyzer::Lexicalanalyzer() {}
 
-LetterType LexicalAnalyser::getLetterType(char32_t c) {
+LetterType Lexicalanalyzer::getLetterType(char32_t c) {
 
 	if (c == '\'') {
 		return LetterType::QUOTE;
@@ -99,7 +99,7 @@ LetterType LexicalAnalyser::getLetterType(char32_t c) {
 	return LetterType::OTHER;
 }
 
-TokenType LexicalAnalyser::getTokenType(std::string word, TokenType by_default) {
+TokenType Lexicalanalyzer::getTokenType(std::string word, TokenType by_default) {
 	for (size_t j = 0; j < type_literals.size(); ++j) {
 		for (const auto& text : type_literals[j]) {
 			if (word == text) return (TokenType) j;
@@ -108,9 +108,9 @@ TokenType LexicalAnalyser::getTokenType(std::string word, TokenType by_default) 
 	return by_default;
 }
 
-std::vector<Token*> LexicalAnalyser::analyse(std::string code) {
+std::vector<Token*> Lexicalanalyzer::analyze(std::string code) {
 
-	std::vector<Token*> tokens = LexicalAnalyser::parseTokens(code + " ");
+	std::vector<Token*> tokens = Lexicalanalyzer::parseTokens(code + " ");
 
 	tokens.push_back(new Token(TokenType::FINISHED, 0, 0, 1, ""));
 
@@ -125,7 +125,7 @@ std::vector<Token*> LexicalAnalyser::analyse(std::string code) {
 	return tokens;
 }
 
-std::vector<Token*> LexicalAnalyser::parseTokens(std::string code) {
+std::vector<Token*> Lexicalanalyzer::parseTokens(std::string code) {
 
 	char buff[5];
 	const char* string_chars = code.c_str();

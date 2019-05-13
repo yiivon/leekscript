@@ -3,9 +3,9 @@
 #include <sstream>
 #include "Test.hpp"
 #include "../src/vm/Context.hpp"
-#include "../src/compiler/lexical/LexicalAnalyser.hpp"
-#include "../src/compiler/syntaxic/SyntaxicAnalyser.hpp"
-#include "../src/compiler/semantic/SemanticAnalyser.hpp"
+#include "../src/compiler/lexical/LexicalAnalyzer.hpp"
+#include "../src/compiler/syntaxic/SyntaxicAnalyzer.hpp"
+#include "../src/compiler/semantic/SemanticAnalyzer.hpp"
 #include "../src/compiler/semantic/SemanticError.hpp"
 #include "../src/vm/Program.hpp"
 #include "../src/vm/value/LSNumber.hpp"

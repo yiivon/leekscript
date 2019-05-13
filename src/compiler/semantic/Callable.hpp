@@ -36,8 +36,8 @@ public:
 	CallableVersion(std::string name, Type type, Function::Version* f, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
 		: name(name), type(type), object(object), user_fun(f), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
 
-	void apply_mutators(SemanticAnalyser* analyser, std::vector<Value*> arguments);
-	void resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) const;
+	void apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments);
+	void resolve_templates(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 
 	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args, bool no_return) const;
 };
@@ -51,7 +51,7 @@ public:
 	Callable(std::string name, std::initializer_list<CallableVersion> versions) : name(name), versions(versions) {}
 	Callable(std::initializer_list<CallableVersion> versions) : name("?"), versions(versions) {}
 	void add_version(CallableVersion v);
-	CallableVersion* resolve(SemanticAnalyser* analyser, std::vector<Type> arguments) const;
+	CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 };
 
 }

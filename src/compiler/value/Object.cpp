@@ -36,9 +36,9 @@ Location Object::location() const {
 	return {{0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void Object::analyse(SemanticAnalyser* analyser) {
+void Object::analyze(SemanticAnalyzer* analyzer) {
 	for (auto& value : values) {
-		value->analyse(analyser);
+		value->analyze(analyzer);
 	}
 }
 

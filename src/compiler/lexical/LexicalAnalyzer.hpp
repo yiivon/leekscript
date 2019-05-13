@@ -1,5 +1,5 @@
-#ifndef LEXICALANALYSER_H_
-#define LEXICALANALYSER_H_
+#ifndef LEXICALanalyzer_H_
+#define LEXICALanalyzer_H_
 
 #include <vector>
 #include <string>
@@ -12,7 +12,7 @@ enum class LetterType {
 	LETTER, NUMBER, QUOTE, DOUBLE_QUOTE, WHITE, OTHER
 };
 
-class LexicalAnalyser {
+class Lexicalanalyzer {
 public:
 
 	std::vector<LexicalError> errors;
@@ -21,8 +21,8 @@ public:
 	TokenType getTokenType(std::string word, TokenType by_default);
 	std::vector<Token*> parseTokens(std::string code);
 
-	LexicalAnalyser();
-	std::vector<Token*> analyse(std::string code);
+	Lexicalanalyzer();
+	std::vector<Token*> analyze(std::string code);
 };
 
 }

@@ -41,7 +41,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyse(SemanticAnalyser*) override;
+	virtual void analyze(SemanticAnalyzer*) override;
 	Compiler::value construct_branch(Compiler& c, Compiler::value v, size_t i) const;
 	Compiler::value get_pattern_condition(Compiler& c, Compiler::value v, std::vector<Pattern>) const;
 	virtual Compiler::value compile(Compiler&) const override;

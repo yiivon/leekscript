@@ -8,7 +8,7 @@
 
 namespace ls {
 
-class SemanticAnalyser;
+class SemanticAnalyzer;
 class Callable;
 
 class Value {
@@ -39,16 +39,16 @@ public:
 
 	virtual Location location() const = 0;
 
-	virtual bool will_take(SemanticAnalyser*, const std::vector<Type>& args_type, int level);
-	virtual bool will_store(SemanticAnalyser*, const Type&);
-	virtual bool elements_will_store(SemanticAnalyser*, const Type&, int level);
-	virtual bool must_be_any(SemanticAnalyser*);
-	virtual void must_return_any(SemanticAnalyser*);
-	virtual void will_be_in_array(SemanticAnalyser*);
+	virtual bool will_take(SemanticAnalyzer*, const std::vector<Type>& args_type, int level);
+	virtual bool will_store(SemanticAnalyzer*, const Type&);
+	virtual bool elements_will_store(SemanticAnalyzer*, const Type&, int level);
+	virtual bool must_be_any(SemanticAnalyzer*);
+	virtual void must_return_any(SemanticAnalyzer*);
+	virtual void will_be_in_array(SemanticAnalyzer*);
 	virtual void set_version(const std::vector<Type>&, int level);
 	virtual Type version_type(std::vector<Type>) const;
-	virtual Callable* get_callable(SemanticAnalyser*) const;
-	virtual void analyse(SemanticAnalyser*);
+	virtual Callable* get_callable(SemanticAnalyzer*) const;
+	virtual void analyze(SemanticAnalyzer*);
 
 	virtual Compiler::value compile(Compiler&) const = 0;
 	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const;

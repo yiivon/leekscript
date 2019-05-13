@@ -8,7 +8,7 @@
 namespace ls {
 
 class Value;
-class SemanticAnalyser;
+class SemanticAnalyzer;
 
 class Instruction {
 public:
@@ -25,7 +25,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const = 0;
 	virtual Location location() const = 0;
 
-	virtual void analyse(SemanticAnalyser* analyser, const Type& type = Type::any()) = 0;
+	virtual void analyze(SemanticAnalyzer* analyzer, const Type& type = Type::any()) = 0;
 
 	virtual Compiler::value compile(Compiler&) const;
 

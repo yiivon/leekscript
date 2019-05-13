@@ -6,7 +6,7 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSObject.hpp"
 #include "../../vm/value/LSSet.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../semantic/SemanticError.hpp"
 
 namespace ls {
@@ -35,9 +35,9 @@ Location PrefixExpression::location() const {
 	return {operatorr->token->location.start, expression->location().end};
 }
 
-void PrefixExpression::analyse(SemanticAnalyser* analyser) {
+void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 
-	expression->analyse(analyser);
+	expression->analyze(analyzer);
 	throws |= expression->throws;
 
 	if (operatorr->type == TokenType::TILDE) {
@@ -56,10 +56,10 @@ void PrefixExpression::analyse(SemanticAnalyser* analyser) {
 		throws |= expression->type.fold().is_polymorphic();
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
-				analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
+				analyzer->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
 			}
 			if (not expression->isLeftValue()) {
-				analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
+				analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
 			}
 		}
 

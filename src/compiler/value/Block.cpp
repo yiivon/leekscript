@@ -41,7 +41,7 @@ Location Block::location() const {
 	return {start, end};
 }
 
-void Block::analyse_global_functions(SemanticAnalyser* analyser) {
+void Block::analyze_global_functions(SemanticAnalyzer* analyzer) {
 	int global_count = 0;
 	for (size_t i = 0; i < instructions.size(); ++i) {
 		if (auto vd = dynamic_cast<VariableDeclaration*>(instructions.at(i))) {
@@ -49,16 +49,16 @@ void Block::analyse_global_functions(SemanticAnalyser* analyser) {
 				instructions.erase(instructions.begin() + i);
 				instructions.insert(instructions.begin() + global_count, vd);
 				global_count++;
-				vd->analyse_global_functions(analyser);
+				vd->analyze_global_functions(analyzer);
 			}
 		}
 	}
 }
 
-void Block::analyse(SemanticAnalyser* analyser) {
-	// std::cout << "Block::analyse() " << is_void << std::endl;
+void Block::analyze(SemanticAnalyzer* analyzer) {
+	// std::cout << "Block::analyze() " << is_void << std::endl;
 
-	analyser->enter_block();
+	analyzer->enter_block();
 
 	type = {};
 
@@ -67,7 +67,7 @@ void Block::analyse(SemanticAnalyser* analyser) {
 		if (i < instructions.size() - 1 or is_void) { // Not the last instruction
 			instruction->is_void = true;
 		}
-		instruction->analyse(analyser);
+		instruction->analyze(analyzer);
 		if (i == instructions.size() - 1 and not is_void) { // Last instruction
 			type = instruction->type;
 		}
@@ -76,11 +76,11 @@ void Block::analyse(SemanticAnalyser* analyser) {
 		return_type += instruction->return_type;
 		if (instruction->returning) {
 			returning = true;
-			break; // no need to analyse after a return
+			break; // no need to analyze after a return
 		}
 	}
 
-	analyser->leave_block();
+	analyzer->leave_block();
 
 	if (type == Type::mpz()) {
 		type = Type::tmp_mpz();

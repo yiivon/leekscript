@@ -1,6 +1,6 @@
 #include "VariableValue.hpp"
 #include "math.h"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../value/Function.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../semantic/Callable.hpp"
@@ -40,7 +40,7 @@ Location VariableValue::location() const {
 	return token->location;
 }
 
-Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
+Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 	if (name == "~") {
 		auto callable = new Callable(name);
 		auto T = Type::template_("T");
@@ -117,7 +117,7 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 		if (var->callable) return var->callable;
 		if (var->value) {
 			auto callable = new Callable(var->name);
-			auto c = var->value->get_callable(analyser);
+			auto c = var->value->get_callable(analyzer);
 			for (const auto& v : c->versions) {
 				auto v2 = v;
 				v2.value = this;
@@ -128,7 +128,7 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 		}
 	} else {
 		auto callable = new Callable(name);
-		for (const auto& clazz : analyser->vm->internal_vars) {
+		for (const auto& clazz : analyzer->vm->internal_vars) {
 			if (clazz.second->type().is_class()) {
 				const auto& cl = (LSClass*) clazz.second->lsvalue;
 				for (const auto& m : cl->methods) {
@@ -155,36 +155,36 @@ Callable* VariableValue::get_callable(SemanticAnalyser* analyser) const {
 	return nullptr;
 }
 
-void VariableValue::analyse(SemanticAnalyser* analyser) {
+void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 
-	var = analyser->get_var(token.get());
+	var = analyzer->get_var(token.get());
 
 	if (var != nullptr) {
 		auto function_object = dynamic_cast<Function*>(var->value);
 		if (var->value && function_object) {
 			// Analyse the real function (if the function is defined below its call for example)
 			if (!function_object->analyzed) {
-				function_object->analyse(analyser);
+				function_object->analyze(analyzer);
 			}
 		}
 		type = var->type();
 		var->initial_type = type;
 		scope = var->scope;
 		attr_types = var->attr_types;
-		if (scope != VarScope::INTERNAL and var->function != analyser->current_function()) {
+		if (scope != VarScope::INTERNAL and var->function != analyzer->current_function()) {
 			if (var->type().is_function()) {
-				if (var->name == analyser->current_function()->name) {
-					analyser->current_function()->recursive = true;
+				if (var->name == analyzer->current_function()->name) {
+					analyzer->current_function()->recursive = true;
 				}
 			} else {
-				capture_index = analyser->current_function()->capture(var);
+				capture_index = analyzer->current_function()->capture(var);
 				var->index = capture_index;
 				scope = VarScope::CAPTURE;
 			}
 		}
 	} else {
 		bool found = false;
-		for (const auto& clazz : analyser->vm->internal_vars) {
+		for (const auto& clazz : analyzer->vm->internal_vars) {
 			if (clazz.second->type().is_class()) {
 				const auto& cl = (LSClass*) clazz.second->lsvalue;
 				for (const auto& m : cl->methods) {
@@ -211,7 +211,7 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 		}
 		if (!found) {
 			type = Type::any();
-			analyser->add_error({SemanticError::Type::UNDEFINED_VARIABLE, token->location, token->location, {token->content}});
+			analyzer->add_error({SemanticError::Type::UNDEFINED_VARIABLE, token->location, token->location, {token->content}});
 		}
 	}
 	type.temporary = false;
@@ -222,10 +222,10 @@ void VariableValue::analyse(SemanticAnalyser* analyser) {
 	//	cout << t.first << " : " << t.second << endl;
 }
 
-bool VariableValue::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
+bool VariableValue::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& args, int level) {
 	// std::cout << "VV will take " << args << " type " << type << std::endl;
 	if (var != nullptr and var->value != nullptr) {
-		var->value->will_take(analyser, args, level);
+		var->value->will_take(analyzer, args, level);
 		if (auto f = dynamic_cast<Function*>(var->value)) {
 			if (f->versions.find(args) != f->versions.end()) {
 				var->version = args;
@@ -249,24 +249,24 @@ void VariableValue::set_version(const std::vector<Type>& args, int level) {
 	}
 }
 
-bool VariableValue::will_store(SemanticAnalyser* analyser, const Type& type) {
+bool VariableValue::will_store(SemanticAnalyzer* analyzer, const Type& type) {
 	// std::cout << "VV will_store " << type << std::endl;
 	if (var != nullptr and var->value != nullptr) {
-		var->value->will_store(analyser, type);
+		var->value->will_store(analyzer, type);
 		this->type = var->type();
 	}
 	return false;
 }
 
-bool VariableValue::elements_will_store(SemanticAnalyser* analyser, const Type& type, int level) {
+bool VariableValue::elements_will_store(SemanticAnalyzer* analyzer, const Type& type, int level) {
 	if (var != nullptr and var->value != nullptr) {
-		var->value->elements_will_store(analyser, type, level);
+		var->value->elements_will_store(analyzer, type, level);
 		this->type = var->value->type.not_temporary();
 	}
 	return false;
 }
 
-void VariableValue::change_value(SemanticAnalyser*, Value* value) {
+void VariableValue::change_value(SemanticAnalyzer*, Value* value) {
 	if (var != nullptr) {
 		var->value = value;
 		var->value->type.constant = false;

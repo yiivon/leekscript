@@ -3,7 +3,7 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSSet.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 
 namespace ls {
 
@@ -41,7 +41,7 @@ Location Foreach::location() const {
 	return {{0, 0, 0}, {0, 0, 0}};
 }
 
-void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
+void Foreach::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 
 	if (req_type.is_array()) {
 		type = req_type;
@@ -49,31 +49,31 @@ void Foreach::analyse(SemanticAnalyser* analyser, const Type& req_type) {
 		type = {};
 		body->is_void = true;
 	}
-	analyser->enter_block();
+	analyzer->enter_block();
 
-	container->analyse(analyser);
+	container->analyze(analyzer);
 	throws |= container->throws;
 
 	if (container->type._types.size() != 0 and not container->type.iterable() and not container->type.is_any()) {
-		analyser->add_error({SemanticError::Type::VALUE_NOT_ITERABLE, container->location(), container->location(), {container->to_string(), container->type.to_string()}});
+		analyzer->add_error({SemanticError::Type::VALUE_NOT_ITERABLE, container->location(), container->location(), {container->to_string(), container->type.to_string()}});
 		return;
 	}
 
 	key_type = container->type.key();
 	value_type = container->type.element();
 	if (key != nullptr) {
-		key_var = analyser->add_var(key.get(), key_type, nullptr, nullptr);
+		key_var = analyzer->add_var(key.get(), key_type, nullptr, nullptr);
 	}
-	value_var = analyser->add_var(value.get(), value_type, nullptr, nullptr);
+	value_var = analyzer->add_var(value.get(), value_type, nullptr, nullptr);
 
-	analyser->enter_loop();
-	body->analyse(analyser);
+	analyzer->enter_loop();
+	body->analyze(analyzer);
 	throws |= body->throws;
 	if (req_type.is_array()) {
 		type = Type::tmp_array(body->type);
 	}
-	analyser->leave_loop();
-	analyser->leave_block();
+	analyzer->leave_loop();
+	analyzer->leave_block();
 }
 
 Compiler::value Foreach::compile(Compiler& c) const {

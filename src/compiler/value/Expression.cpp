@@ -97,29 +97,29 @@ Location Expression::location() const {
 	return {start, end};
 }
 
-void Expression::analyse(SemanticAnalyser* analyser) {
-	// std::cout << "Expression::analyse()" << std::endl;
+void Expression::analyze(SemanticAnalyzer* analyzer) {
+	// std::cout << "Expression::analyze()" << std::endl;
 
 	operations = 1;
 	type = Type::any();
 
-	// No operator : just analyse v1 and return
+	// No operator : just analyze v1 and return
 	if (op == nullptr) {
 		v1->is_void = is_void;
-		v1->analyse(analyser);
+		v1->analyze(analyzer);
 		type = v1->type;
 		throws = v1->throws;
 		return;
 	}
 
-	v1->analyse(analyser);
-	v2->analyse(analyser);
+	v1->analyze(analyzer);
+	v2->analyze(analyzer);
 
 	throws = v1->throws or v2->throws;
 
 	// in operator : v1 must be a container
 	if (op->type == TokenType::IN and not v2->type.can_be_container()) {
-		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
+		analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
 		return;
 	}
 
@@ -131,21 +131,21 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::POWER_EQUAL or op->type == TokenType::INT_DIV_EQUAL) {
 		// TODO other operators like |= ^= &=
 		if (v1->type.constant) {
-			analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), op->token->location, {v1->to_string()}});
-			return; // don't analyse more
+			analyzer->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), op->token->location, {v1->to_string()}});
+			return; // don't analyze more
 		}
 		// Check if A is a l-value
 		if (not v1->isLeftValue()) {
-			analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), v1->location(), {v1->to_string()}});
-			return; // don't analyse more
+			analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), v1->location(), {v1->to_string()}});
+			return; // don't analyze more
 		}
 		// Change the type of x for operator =
 		if (op->type == TokenType::EQUAL) {
 			if (v2->type._types.size() == 0) {
-				analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
+				analyzer->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
 			if (v1->type.not_temporary() != v2->type.not_temporary()) {
-				((LeftValue*) v1)->change_value(analyser, v2);
+				((LeftValue*) v1)->change_value(analyzer, v2);
 			}
 		}
 	}
@@ -168,16 +168,16 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 
 	const Callable* callable = nullptr;
 	if (v1_type.class_name().size()) {
-		auto object_class = (LSClass*) analyser->vm->internal_vars.at(v1_type.class_name())->lsvalue;
-		callable = object_class->getOperator(analyser, op->character, v1_type, v2_type);
+		auto object_class = (LSClass*) analyzer->vm->internal_vars.at(v1_type.class_name())->lsvalue;
+		callable = object_class->getOperator(analyzer, op->character, v1_type, v2_type);
 	}
 	if (callable) {
 		// std::cout << "Callable : " << callable << std::endl;
-		callable_version = callable->resolve(analyser, {v1_type, v2_type});
+		callable_version = callable->resolve(analyzer, {v1_type, v2_type});
 		if (callable_version) {
 			// std::cout << "Callable version : " << callable_version << std::endl;
 			throws |= callable_version->flags & Module::THROWS;
-			callable_version->apply_mutators(analyser, {v1, v2});
+			callable_version->apply_mutators(analyzer, {v1, v2});
 			// For placeholder types, keep them no matter the operator
 			auto return_type = callable_version->type.return_type();
 			if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES or op->type == TokenType::MODULO) {
@@ -186,7 +186,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 			}
 			type = is_void ? Type() : return_type;
 			if (v2_type.is_function() and callable_version->type.argument(1).is_function()) {
-				v2->will_take(analyser, callable_version->type.argument(1).arguments(), 1);
+				v2->will_take(analyzer, callable_version->type.argument(1).arguments(), 1);
 				v2->set_version(callable_version->type.argument(1).arguments(), 1);
 			}
 			// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
@@ -203,7 +203,7 @@ void Expression::analyse(SemanticAnalyser* analyser) {
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
-		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
+		analyzer->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}
 

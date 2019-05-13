@@ -32,9 +32,9 @@ Location Array::location() const {
 	return {opening_bracket->location.start, closing_bracket->location.end};
 }
 
-void Array::analyse(SemanticAnalyser* analyser) {
+void Array::analyze(SemanticAnalyzer* analyzer) {
 
-	// std::cout << "Array::analyse " << req_type << std::endl;
+	// std::cout << "Array::analyze " << req_type << std::endl;
 	constant = true;
 
 	if (expressions.size() > 0) {
@@ -42,12 +42,12 @@ void Array::analyse(SemanticAnalyser* analyser) {
 		Type element_type = {};
 		auto homogeneous = true;
 
-		// First analyse pass
+		// First analyze pass
 		for (size_t i = 0; i < expressions.size(); ++i) {
 
 			Value* ex = expressions[i];
-			ex->will_be_in_array(analyser);
-			ex->analyse(analyser);
+			ex->will_be_in_array(analyzer);
+			ex->analyze(analyzer);
 
 			constant &= ex->constant;
 			throws |= ex->throws;
@@ -76,7 +76,7 @@ void Array::analyse(SemanticAnalyser* analyser) {
 			if (!homogeneous and ex->type.is_array()) {
 				// If the array stores other arrays of different types,
 				// force those arrays to store pointers. (To avoid having unknown array<int> inside arrays.
-				ex->will_store(analyser, Type::any());
+				ex->will_store(analyzer, Type::any());
 			}
 			if (ex->type.is_function()) {
 				std::vector<Type> types;
@@ -84,9 +84,9 @@ void Array::analyse(SemanticAnalyser* analyser) {
 					types.push_back(Type::any());
 				}
 				if (types.size() > 0) {
-					ex->will_take(analyser, types, 1);
+					ex->will_take(analyzer, types, 1);
 				}
-				ex->must_return_any(analyser);
+				ex->must_return_any(analyzer);
 			}
 			element_type += ex->type;
 		}
@@ -98,16 +98,16 @@ void Array::analyse(SemanticAnalyser* analyser) {
 	// std::cout << "Array type : " << type << std::endl;
 }
 
-void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types, int level) {
+void Array::elements_will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& arg_types, int level) {
 
 	// std::cout << "Array::elements_will_take " << arg_types << " at " << level << std::endl;
 
 	for (size_t i = 0; i < expressions.size(); ++i) {
 		Array* arr = dynamic_cast<Array*>(expressions[i]);
 		if (arr != nullptr && level > 0) {
-			arr->elements_will_take(analyser, arg_types, level - 1);
+			arr->elements_will_take(analyzer, arg_types, level - 1);
 		} else {
-			expressions[i]->will_take(analyser, arg_types, 1);
+			expressions[i]->will_take(analyzer, arg_types, 1);
 		}
 	}
 	// Computation of the new array type
@@ -124,7 +124,7 @@ void Array::elements_will_take(SemanticAnalyser* analyser, const std::vector<Typ
 	// std::cout << "Array::elements_will_take type after " << this->type << std::endl;
 }
 
-bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
+bool Array::will_store(SemanticAnalyzer* analyzer, const Type& type) {
 
 	// std::cout << "Array::will_store " << this->type << " " << type << std::endl;
 
@@ -142,9 +142,9 @@ bool Array::will_store(SemanticAnalyser* analyser, const Type& type) {
 	return false;
 }
 
-bool Array::elements_will_store(SemanticAnalyser* analyser, const Type& type, int level) {
+bool Array::elements_will_store(SemanticAnalyzer* analyzer, const Type& type, int level) {
 	for (auto& element : expressions) {
-		element->will_store(analyser, type);
+		element->will_store(analyzer, type);
 	}
 	// Computation of the new array type
 	Type element_type;

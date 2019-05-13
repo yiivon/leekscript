@@ -20,10 +20,10 @@ Location ExpressionInstruction::location() const {
 	return value->location();
 }
 
-void ExpressionInstruction::analyse(SemanticAnalyser* analyser, const Type& req_type) {
-	// std::cout << "ExpressionInstruction::analyse() " << is_void << std::endl;
+void ExpressionInstruction::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
+	// std::cout << "ExpressionInstruction::analyze() " << is_void << std::endl;
 	value->is_void = is_void;
-	value->analyse(analyser);
+	value->analyze(analyzer);
 	if (req_type.is_void()) {
 		type = {};
 	} else {

@@ -6,7 +6,7 @@
 #include "../value/ObjectAccess.hpp"
 #include "../../type/Template_type.hpp"
 #include "../value/Function.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 
 namespace ls {
 
@@ -28,12 +28,12 @@ Type build(const Type& type) {
 	return type;
 }
 
-CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type> arguments) const {
+CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const {
 	// std::cout << "Callable::resolve(" << arguments << ")" << std::endl;
 	CallableVersion* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
 	for (auto& version : versions) {
-		if (version.flags == Module::LEGACY and not analyser->vm->legacy) continue;
+		if (version.flags == Module::LEGACY and not analyzer->vm->legacy) continue;
 		std::vector<Type> version_arguments = arguments;
 		if (version.object) {
 			version_arguments.insert(version_arguments.begin(), version.object->type);
@@ -44,7 +44,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 		// Template resolution
 		auto version_type = version.type;
 		if (version.templates.size()) {
-			version.resolve_templates(analyser, version_arguments);
+			version.resolve_templates(analyzer, version_arguments);
 			version_type = build(version.type);
 			// Reset template implementations
 			for (size_t i = 0; i < version.templates.size(); ++i) {
@@ -63,7 +63,7 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 				if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
 					if (fun->function() and implem_arg.is_function()) {
 						auto version = implem_arg.arguments();
-						((Value*) fun->function())->will_take(analyser, version, 1);
+						((Value*) fun->function())->will_take(analyzer, version, 1);
 						version_arguments.at(i) = fun->function()->version_type(version);
 					}
 				}
@@ -102,27 +102,27 @@ CallableVersion* Callable::resolve(SemanticAnalyser* analyser, std::vector<Type>
 	return best;
 }
 
-void CallableVersion::apply_mutators(SemanticAnalyser* analyser, std::vector<Value*> arguments) {
+void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments) {
 	std::vector<Value*> values;
 	if (object) values.push_back(object);
 	values.insert(values.end(), arguments.begin(), arguments.end());
 	// std::cout << "mutators : " << mutators.size() << std::endl;
 	for (const auto& mutator : mutators) {
-		mutator->apply(analyser, values);
+		mutator->apply(analyzer, values);
 	}
 }
 
-void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
+void solve(SemanticAnalyzer* analyzer, const Type& t1, const Type& t2) {
 	// std::cout << "Solve " << t1 << " ||| " << t2 << std::endl;
 	if (t1.is_template()) {
 		t1.implement(t2);
 	}
 	else if (t1.is_array() and t2.is_array()) {
-		solve(analyser, t1.element(), t2.element());
+		solve(analyzer, t1.element(), t2.element());
 	}
 	else if (t1.is_map() and t2.is_map()) {
-		solve(analyser, t1.key(), t2.key());
-		solve(analyser, t1.element(), t2.element());
+		solve(analyzer, t1.key(), t2.key());
+		solve(analyzer, t1.element(), t2.element());
 	}
 	else if (t1.is_function() and t2.is_function()) {
 		auto fun = dynamic_cast<const Function_type*>(t2._types[0].get());
@@ -130,14 +130,14 @@ void solve(SemanticAnalyser* analyser, const Type& t1, const Type& t2) {
 			auto f = (Value*) fun->function();
 			if (f) {
 				auto t1_args = build(t1).arguments();
-				f->will_take(analyser, t1_args, 1);
-				solve(analyser, t1.return_type(), fun->function()->version_type(t1_args).return_type());
+				f->will_take(analyzer, t1_args, 1);
+				solve(analyzer, t1.return_type(), fun->function()->version_type(t1_args).return_type());
 			}
 		}
 	}
 }
 
-void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<Type> arguments) const {
+void CallableVersion::resolve_templates(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const {
 	// std::cout << "CallableVersion::resolve_templates(" << arguments << ")" << std::endl;
 	// First passage to solve easy types
 	for (size_t i = 0; i < arguments.size(); ++i) {
@@ -145,7 +145,7 @@ void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<
 		if (t1.is_template()) {
 			const auto& t2 = arguments.at(i);
 			// std::cout << t1 << " <=> " << t2 << std::endl;
-			solve(analyser, t1, t2);
+			solve(analyzer, t1, t2);
 		}
 	}
 	for (size_t i = 0; i < arguments.size(); ++i) {
@@ -153,7 +153,7 @@ void CallableVersion::resolve_templates(SemanticAnalyser* analyser, std::vector<
 		if (not t1.is_template()) {
 			const auto& t2 = arguments.at(i);
 			// std::cout << t1 << " <=> " << t2 << std::endl;
-			solve(analyser, t1, t2);
+			solve(analyzer, t1, t2);
 		}
 	}
 }

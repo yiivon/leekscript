@@ -31,12 +31,12 @@ Location ClassDeclaration::location() const {
 	return token->location;
 }
 
-void ClassDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
+void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
-	var = analyser->add_var(token.get(), Type::clazz(), nullptr, nullptr);
+	var = analyzer->add_var(token.get(), Type::clazz(), nullptr, nullptr);
 
 	for (auto vd : fields) {
-		vd->analyse(analyser, Type::any());
+		vd->analyze(analyzer, Type::any());
 		for (size_t i = 0; i < vd->variables.size(); ++i) {
 			// std::cout << "Add class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
 			auto t = i < vd->expressions.size() ? vd->expressions.at(i)->type : Type::any();

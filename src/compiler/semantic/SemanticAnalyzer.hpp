@@ -1,5 +1,5 @@
-#ifndef SEMANTICANALYSER_H_
-#define SEMANTICANALYSER_H_
+#ifndef SEMANTIC_ANALYZER_H_
+#define SEMANTIC_ANALYZER_H_
 
 #include <stack>
 #include <vector>
@@ -17,7 +17,7 @@ class Function;
 class VariableValue;
 class Context;
 class Value;
-class SemanticAnalyser;
+class SemanticAnalyzer;
 class Token;
 class VariableDeclaration;
 class Callable;
@@ -48,10 +48,10 @@ public:
 	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), initial_type(o.type()), lsvalue(o.lsvalue), callable(o.callable) {}
 
 	Type type() const;
-	void must_be_any(SemanticAnalyser*);
+	void must_be_any(SemanticAnalyzer*);
 };
 
-class SemanticAnalyser {
+class SemanticAnalyzer {
 public:
 
 	Program* program;
@@ -66,10 +66,10 @@ public:
 
 	std::vector<SemanticError> errors;
 
-	SemanticAnalyser();
-	virtual ~SemanticAnalyser();
+	SemanticAnalyzer();
+	virtual ~SemanticAnalyzer();
 
-	void analyse(Program*, Context*);
+	void analyze(Program*, Context*);
 
 	void enter_function(Function*);
 	void leave_function();

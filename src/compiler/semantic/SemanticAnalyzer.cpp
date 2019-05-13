@@ -1,4 +1,4 @@
-#include "SemanticAnalyser.hpp"
+#include "SemanticAnalyzer.hpp"
 #include "../../compiler/instruction/ExpressionInstruction.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Context.hpp"
@@ -12,7 +12,7 @@
 
 namespace ls {
 
-SemanticAnalyser::SemanticAnalyser() {
+SemanticAnalyzer::SemanticAnalyzer() {
 	program = nullptr;
 //	loops.push(0);
 //	variables.push_back(vector<map<std::string, SemanticVar*>> {});
@@ -20,11 +20,11 @@ SemanticAnalyser::SemanticAnalyser() {
 //	parameters.push_back(map<std::string, SemanticVar*> {});
 }
 
-SemanticAnalyser::~SemanticAnalyser() {}
+SemanticAnalyzer::~SemanticAnalyzer() {}
 
-void SemanticVar::must_be_any(SemanticAnalyser* analyser) {
+void SemanticVar::must_be_any(SemanticAnalyzer* analyzer) {
 	if (value != nullptr) {
-		value->must_be_any(analyser);
+		value->must_be_any(analyzer);
 	}
 }
 Type SemanticVar::type() const {
@@ -35,7 +35,7 @@ Type SemanticVar::type() const {
 	return initial_type;
 }
 
-void SemanticAnalyser::analyse(Program* program, Context*) {
+void SemanticAnalyzer::analyze(Program* program, Context*) {
 
 	this->program = program;
 
@@ -47,11 +47,11 @@ void SemanticAnalyser::analyse(Program* program, Context*) {
 		add_var(new Token(var.first), Type(var.second->getRawType(), ), nullptr, nullptr);
 	}
 	*/
-	program->analyse(this);
+	program->analyze(this);
 	program->functions = functions;
 }
 
-void SemanticAnalyser::enter_function(Function* f) {
+void SemanticAnalyzer::enter_function(Function* f) {
 
 	// Create function scope
 	variables.push_back(std::vector<std::map<std::string, std::shared_ptr<SemanticVar>>> {});
@@ -64,44 +64,44 @@ void SemanticAnalyser::enter_function(Function* f) {
 	functions_stack.push(f);
 }
 
-void SemanticAnalyser::leave_function() {
+void SemanticAnalyzer::leave_function() {
 	variables.pop_back();
 	parameters.pop_back();
 	functions_stack.pop();
 	loops.pop();
 }
 
-void SemanticAnalyser::enter_block() {
+void SemanticAnalyzer::enter_block() {
 	variables.back().push_back(std::map<std::string, std::shared_ptr<SemanticVar>> {});
 }
 
-void SemanticAnalyser::leave_block() {
+void SemanticAnalyzer::leave_block() {
 	variables.back().pop_back();
 }
 
-Function* SemanticAnalyser::current_function() const {
+Function* SemanticAnalyzer::current_function() const {
 	return functions_stack.top();
 }
 
-void SemanticAnalyser::enter_loop() {
+void SemanticAnalyzer::enter_loop() {
 	loops.top()++;
 }
 
-void SemanticAnalyser::leave_loop() {
+void SemanticAnalyzer::leave_loop() {
 	loops.top()--;
 }
 
-bool SemanticAnalyser::in_loop(int deepness) const {
+bool SemanticAnalyzer::in_loop(int deepness) const {
 	return loops.top() >= deepness;
 }
 
-std::shared_ptr<SemanticVar> SemanticAnalyser::add_parameter(Token* v, Type type) {
+std::shared_ptr<SemanticVar> SemanticAnalyzer::add_parameter(Token* v, Type type) {
 	auto arg = std::make_shared<SemanticVar>(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function(), nullptr);
 	parameters.back().insert({v->content, arg});
 	return arg;
 }
 
-std::shared_ptr<SemanticVar> SemanticAnalyser::get_var(Token* v) {
+std::shared_ptr<SemanticVar> SemanticAnalyzer::get_var(Token* v) {
 
 	// Search in interval variables : global for the program
 	try {
@@ -134,7 +134,7 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::get_var(Token* v) {
 	return nullptr;
 }
 
-std::shared_ptr<SemanticVar> SemanticAnalyser::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
+std::shared_ptr<SemanticVar> SemanticAnalyzer::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
 
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
 		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
@@ -151,15 +151,15 @@ std::shared_ptr<SemanticVar> SemanticAnalyser::add_var(Token* v, Type type, Valu
 	return variables.back().back().at(v->content);
 }
 
-void SemanticAnalyser::add_function(Function* l) {
+void SemanticAnalyzer::add_function(Function* l) {
 	functions.push_back(l);
 }
 
-std::map<std::string, std::shared_ptr<SemanticVar>>& SemanticAnalyser::get_local_vars() {
+std::map<std::string, std::shared_ptr<SemanticVar>>& SemanticAnalyzer::get_local_vars() {
 	return variables.back().back();
 }
 
-void SemanticAnalyser::add_error(SemanticError ex) {
+void SemanticAnalyzer::add_error(SemanticError ex) {
 	ex.underline_code = program->underline_code(ex.location, ex.focus);
 	ex.file = program->file_name;
 	errors.push_back(ex);

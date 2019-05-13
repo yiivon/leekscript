@@ -29,12 +29,12 @@ Location Interval::location() const {
 	return {opening_bracket->location.start, closing_bracket->location.end};
 }
 
-void Interval::analyse(SemanticAnalyser* analyser) {
+void Interval::analyze(SemanticAnalyzer* analyzer) {
 	constant = true;
 	type = Type::interval();
 	type.temporary = true;
-	start->analyse(analyser);
-	end->analyse(analyser);
+	start->analyze(analyzer);
+	end->analyze(analyzer);
 }
 
 Compiler::value Interval::compile(Compiler& c) const {

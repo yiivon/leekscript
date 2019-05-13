@@ -27,12 +27,12 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual Callable* get_callable(SemanticAnalyser*) const override;
-	virtual void analyse(SemanticAnalyser*) override;
-	virtual bool will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level);
-	bool array_access_will_take(SemanticAnalyser* analyser, const std::vector<Type>&, int level);
-	virtual bool will_store(SemanticAnalyser* analyser, const Type& type) override;
-	virtual void change_value(SemanticAnalyser*, Value*) override;
+	virtual Callable* get_callable(SemanticAnalyzer*) const override;
+	virtual void analyze(SemanticAnalyzer*) override;
+	virtual bool will_take(SemanticAnalyzer* analyzer, const std::vector<Type>&, int level);
+	bool array_access_will_take(SemanticAnalyzer* analyzer, const std::vector<Type>&, int level);
+	virtual bool will_store(SemanticAnalyzer* analyzer, const Type& type) override;
+	virtual void change_value(SemanticAnalyzer*, Value*) override;
 	virtual Type version_type(std::vector<Type>) const override;
 
 	virtual Compiler::value compile(Compiler&) const override;

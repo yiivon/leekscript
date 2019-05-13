@@ -21,8 +21,8 @@ public:
 	virtual void print(std::ostream&, int indent = 0, bool debug = false, bool condensed = false) const override;
 	virtual Location location() const override;
 
-	void analyse_global_functions(SemanticAnalyser* analyser);
-	virtual void analyse(SemanticAnalyser* analyser) override;
+	void analyze_global_functions(SemanticAnalyzer* analyzer);
+	virtual void analyze(SemanticAnalyzer* analyzer) override;
 
 	Compiler::value compile(Compiler&) const override;
 

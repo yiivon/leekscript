@@ -1,7 +1,7 @@
 #include "PostfixExpression.hpp"
 #include "LeftValue.hpp"
 #include "../../vm/LSValue.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../semantic/SemanticError.hpp"
 
 namespace ls {
@@ -28,16 +28,16 @@ Location PostfixExpression::location() const {
 	return expression->location(); // TODO add the op
 }
 
-void PostfixExpression::analyse(SemanticAnalyser* analyser) {
+void PostfixExpression::analyze(SemanticAnalyzer* analyzer) {
 
-	expression->analyse(analyser);
+	expression->analyze(analyzer);
 	throws |= expression->throws;
 
 	if (expression->type.constant) {
-		analyser->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
+		analyzer->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
 	}
 	if (!expression->isLeftValue()) {
-		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
+		analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
 	}
 	type = expression->type;
 	throws |= expression->type.fold().is_polymorphic();

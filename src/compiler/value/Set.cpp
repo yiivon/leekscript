@@ -23,13 +23,13 @@ Location Set::location() const {
 	return {{0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void Set::analyse(SemanticAnalyser* analyser) {
+void Set::analyze(SemanticAnalyzer* analyzer) {
 
 	Type element_type = {};
 
 	constant = true;
 	for (auto& ex : expressions) {
-		ex->analyse(analyser);
+		ex->analyze(analyzer);
 		element_type = element_type * ex->type;
 		constant = constant && ex->constant;
 	}
@@ -46,7 +46,7 @@ void Set::analyse(SemanticAnalyser* analyser) {
 	type = Type::tmp_set(element_type);
 }
 
-bool Set::will_store(SemanticAnalyser* analyser, const Type& type) {
+bool Set::will_store(SemanticAnalyzer* analyzer, const Type& type) {
 
 	Type added_type = type;
 	if (added_type.is_array() or added_type.is_set()) {

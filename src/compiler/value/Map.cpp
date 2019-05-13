@@ -39,14 +39,14 @@ Location Map::location() const {
 	return {opening_bracket->location.start, closing_bracket->location.end};
 }
 
-void Map::analyse(SemanticAnalyser* analyser) {
+void Map::analyze(SemanticAnalyzer* analyzer) {
 
 	Type key_type = {};
 	Type value_type = {};
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		Value* ex = keys[i];
-		ex->analyse(analyser);
+		ex->analyze(analyzer);
 		key_type = key_type * ex->type;
 		if (ex->constant == false) constant = false;
 	}
@@ -54,7 +54,7 @@ void Map::analyse(SemanticAnalyser* analyser) {
 
 	for (size_t i = 0; i < values.size(); ++i) {
 		Value* ex = values[i];
-		ex->analyse(analyser);
+		ex->analyze(analyzer);
 		value_type = value_type * ex->type;
 		if (ex->constant == false) constant = false;
 	}

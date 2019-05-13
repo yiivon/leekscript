@@ -3,10 +3,10 @@
 #include "Context.hpp"
 #include "value/LSNull.hpp"
 #include "value/LSArray.hpp"
-#include "../compiler/lexical/LexicalAnalyser.hpp"
-#include "../compiler/syntaxic/SyntaxicAnalyser.hpp"
+#include "../compiler/lexical/LexicalAnalyzer.hpp"
+#include "../compiler/syntaxic/SyntaxicAnalyzer.hpp"
 #include "Context.hpp"
-#include "../compiler/semantic/SemanticAnalyser.hpp"
+#include "../compiler/semantic/SemanticAnalyzer.hpp"
 #include "../compiler/semantic/SemanticError.hpp"
 #include "../util/Util.hpp"
 #include "../constants.h"
@@ -45,8 +45,8 @@ VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool asse
 	VM::Result result;
 
 	// Lexical analysis
-	LexicalAnalyser lex;
-	auto tokens = lex.analyse(code);
+	Lexicalanalyzer lex;
+	auto tokens = lex.analyze(code);
 
 	if (lex.errors.size()) {
 		result.compilation_success = false;
@@ -56,8 +56,8 @@ VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool asse
 	}
 
 	// Syntaxical analysis
-	SyntaxicAnalyser syn;
-	this->main = syn.analyse(tokens);
+	SyntaxicAnalyzer syn;
+	this->main = syn.analyze(tokens);
 	this->main->is_main_function = true;
 
 	if (syn.getErrors().size() > 0) {
@@ -68,9 +68,9 @@ VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool asse
 
 	// Semantical analysis
 	Context context { ctx };
-	SemanticAnalyser sem;
+	SemanticAnalyzer sem;
 	sem.vm = &vm;
-	sem.analyse(this, &context);
+	sem.analyze(this, &context);
 
 	std::ostringstream oss;
 	print(oss, true);
@@ -188,11 +188,11 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 	return var;
 }
 
-void Program::analyse(SemanticAnalyser* analyser) {
+void Program::analyze(SemanticAnalyzer* analyzer) {
 	main->name = "main";
 	main->file = file_name;
-	main->body->analyse_global_functions(analyser);
-	main->analyse(analyser);
+	main->body->analyze_global_functions(analyzer);
+	main->analyze(analyzer);
 }
 
 std::string Program::execute(VM& vm) {

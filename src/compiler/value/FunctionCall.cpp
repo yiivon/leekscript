@@ -11,7 +11,7 @@
 #include "../../vm/value/LSString.hpp"
 #include "../Compiler.hpp"
 #include "../lexical/Token.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../semantic/SemanticError.hpp"
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
@@ -58,7 +58,7 @@ Location FunctionCall::location() const {
 	return {function->location().start, closing_parenthesis->location.end};
 }
 
-Callable* FunctionCall::get_callable(SemanticAnalyser*) const {
+Callable* FunctionCall::get_callable(SemanticAnalyzer*) const {
 	auto callable = new Callable("<fc>");
 	std::vector<Type> arguments_types;
 	for (const auto& argument : arguments) {
@@ -69,17 +69,17 @@ Callable* FunctionCall::get_callable(SemanticAnalyser*) const {
 	return callable;
 }
 
-void FunctionCall::analyse(SemanticAnalyser* analyser) {
+void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 
 	// std::cout << "FC analyse " << std::endl;
 
 	// Analyse the function (can be anything here)
-	function->analyse(analyser);
+	function->analyze(analyzer);
 	throws = function->throws;
 
 	// Analyse arguments
 	for (const auto& argument : arguments) {
-		argument->analyse(analyser);
+		argument->analyze(analyzer);
 	}
 
 	// Perform a will_take to prepare eventual versions
@@ -87,40 +87,40 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	for (const auto& argument : arguments) {
 		arguments_types.push_back(argument->type);
 	}
-	function->will_take(analyser, arguments_types, 1);
+	function->will_take(analyzer, arguments_types, 1);
 	function->set_version(arguments_types, 1);
 
 	// std::cout << "FC function " << function->version_type(arguments_types) << std::endl;
 
 	// Retrieve the callable version
-	callable = function->get_callable(analyser);
+	callable = function->get_callable(analyzer);
 	if (not function->type.can_be_callable()) {
-		analyser->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
+		analyzer->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 	if (callable) {
 		// std::cout << "Callable: " << callable << std::endl;
-		callable_version = callable->resolve(analyser, arguments_types);
+		callable_version = callable->resolve(analyzer, arguments_types);
 		if (callable_version) {
 			// std::cout << "Version: " << callable_version << std::endl;
 			type = callable_version->type.return_type();
 			throws |= callable_version->flags & Module::THROWS;
-			callable_version->apply_mutators(analyser, arguments);
+			callable_version->apply_mutators(analyzer, arguments);
 			
 			int offset = callable_version->object ? 1 : 0;
 			for (size_t a = 0; a < arguments.size(); ++a) {
 				auto argument_type = callable_version->type.argument(a + offset);
 				if (argument_type.is_function()) {
-					arguments.at(a)->will_take(analyser, argument_type.arguments(), 1);
+					arguments.at(a)->will_take(analyzer, argument_type.arguments(), 1);
 					arguments.at(a)->set_version(argument_type.arguments(), 1);
 				}
 			}
 			if (callable_version->value) {
-				function->will_take(analyser, arguments_types, 1);
+				function->will_take(analyzer, arguments_types, 1);
 				function->set_version(arguments_types, 1);
 				function_type = function->version_type(arguments_types);
 				auto vv = dynamic_cast<VariableValue*>(function);
-				if (vv and vv->var and vv->var->value and vv->var->name == analyser->current_function()->name) {
-					type = analyser->current_function()->getReturnType();
+				if (vv and vv->var and vv->var->value and vv->var->name == analyzer->current_function()->name) {
+					type = analyzer->current_function()->getReturnType();
 				} else {
 					type = function_type.return_type();
 				}
@@ -128,7 +128,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 			if (callable_version->unknown) {
 				for (const auto& arg : arguments) {
 					if (arg->type.is_function()) {
-						arg->must_return_any(analyser);
+						arg->must_return_any(analyzer);
 					}
 				}
 			}
@@ -168,13 +168,13 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		}
 		if (object_type.is_class()) { // String.size("salut")
 			std::string clazz = ((VariableValue*) oa->object)->name;
-			analyser->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
+			analyzer->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
 		} else {  // "salut".size()
 			bool has_unknown_argument = false;
 			if (!object_type.fold().is_any() && !has_unknown_argument) {
 				std::ostringstream obj_type_ss;
 				obj_type_ss << object_type;
-				analyser->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
+				analyzer->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
 			} else {
 				is_unknown_method = true;
 				object = oa->object;
@@ -207,7 +207,7 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 		a++;
 	}
 	if (function->type.is_function() and !arguments_valid) {
-		analyser->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
+		analyzer->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
 			function->to_string(),
 			std::to_string(function->type.arguments().size()),
 			std::to_string(total_arguments_passed)
@@ -216,9 +216,9 @@ void FunctionCall::analyse(SemanticAnalyser* analyser) {
 	}
 }
 
-bool FunctionCall::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
+bool FunctionCall::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& args, int level) {
 	// std::cout << "FC " << this << " will_take " << args << std::endl;
-	function->will_take(analyser, args, level + 1);
+	function->will_take(analyzer, args, level + 1);
 	return false;
 }
 

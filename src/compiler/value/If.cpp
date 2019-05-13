@@ -1,5 +1,5 @@
 #include "If.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "Number.hpp"
 #include "../instruction/Return.hpp"
 #include "../instruction/Break.hpp"
@@ -52,20 +52,20 @@ Location If::location() const {
 	return condition->location(); // TODO better
 }
 
-void If::analyse(SemanticAnalyser* analyser) {
+void If::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "If " << is_void << std::endl;
 	
-	condition->analyse(analyser);
+	condition->analyze(analyzer);
 	throws |= condition->throws;
 
 	then->is_void = is_void;
-	then->analyse(analyser);
+	then->analyze(analyzer);
 
 	type = then->type;
 
 	if (elze != nullptr) {
 		elze->is_void = is_void;
-		elze->analyse(analyser);
+		elze->analyze(analyzer);
 		if (type.is_void() and not elze->type.is_void() and not then->returning) {
 			type = Type::null();
 		}

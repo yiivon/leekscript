@@ -1,5 +1,5 @@
 #include "Function.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../instruction/ExpressionInstruction.hpp"
 #include "../../vm/value/LSFunction.hpp"
 #include "../../vm/value/LSClosure.hpp"
@@ -159,18 +159,18 @@ let r2 = f(12)			// version with number, recompiler f with a [a = int] version, 
 r2(12)
 r2('hello')
  */
-void Function::analyse(SemanticAnalyser* analyser) {
+void Function::analyze(SemanticAnalyzer* analyzer) {
 
-	parent = analyser->current_function();
+	parent = analyzer->current_function();
 
 	if (!function_added) {
-		analyser->add_function(this);
+		analyzer->add_function(this);
 		function_added = true;
 	}
 	std::vector<Type> args;
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		if (defaultValues[i] != nullptr) {
-			defaultValues[i]->analyse(analyser);
+			defaultValues[i]->analyze(analyzer);
 		}
 		if (!placeholder_type) {
 			placeholder_type = Type::generate_new_placeholder_type();
@@ -194,21 +194,21 @@ void Function::analyse(SemanticAnalyser* analyser) {
 	}
 	analyzed = true;
 
-	analyse_body(analyser, type.arguments(), default_version);
+	analyze_body(analyzer, type.arguments(), default_version);
 
-	// Re-analyse each version
+	// Re-analyze each version
 	for (auto v : versions) {
-		analyse_body(analyser, v.first, v.second);
+		analyze_body(analyzer, v.first, v.second);
 	}
 
 	type = default_version->type;
 
-	update_function_args(analyser);
+	update_function_args(analyzer);
 
 	// std::cout << "Function type: " << type << std::endl;
 }
 
-void Function::create_version(SemanticAnalyser* analyser, std::vector<Type> args) {
+void Function::create_version(SemanticAnalyzer* analyzer, std::vector<Type> args) {
 	// std::cout << "Function::create_version(" << args << ")" << std::endl;
 	// TODO should be ==
 	// assert(args.size() >= arguments.size());
@@ -222,15 +222,15 @@ void Function::create_version(SemanticAnalyser* analyser, std::vector<Type> args
 	}
 	versions.insert({args, version});
 
-	analyse_body(analyser, args, version);
+	analyze_body(analyzer, args, version);
 
-	update_function_args(analyser);
+	update_function_args(analyzer);
 }
 
-bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
+bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& args, int level) {
 	// std::cout << "Function " << " ::will_take " << args << " level " << level << std::endl;
 	if (!analyzed) {
-		analyse(analyser);
+		analyze(analyzer);
 	}
 	if (level == 1) {
 		auto version = args;
@@ -244,7 +244,7 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 			for (const auto& t : version) {
 				if (t.is_placeholder()) return false;
 			}
-			create_version(analyser, version);
+			create_version(analyzer, version);
 			return true;
 		}
 		return false;
@@ -253,13 +253,13 @@ bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& ar
 		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
 			if (auto f = dynamic_cast<Function*>(ei->value)) {
 
-				analyser->enter_function(this);
+				analyzer->enter_function(this);
 				for (unsigned i = 0; i < arguments.size(); ++i) {
-					analyser->add_parameter(arguments[i].get(), v->type.argument(i));
+					analyzer->add_parameter(arguments[i].get(), v->type.argument(i));
 				}
-				f->will_take(analyser, args, level - 1);
+				f->will_take(analyzer, args, level - 1);
 
-				analyser->leave_function();
+				analyzer->leave_function();
 
 				if (captures.size()) {
 					v->type = Type::closure(f->version_type(args), v->type.arguments(), this);
@@ -293,12 +293,12 @@ void Function::set_version(const std::vector<Type>& args, int level) {
 	}
 }
 
-void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version) {
+void Function::analyze_body(SemanticAnalyzer* analyzer, std::vector<Type> args, Version* version) {
 
 	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
 
 	captures.clear();
-	analyser->enter_function(this);
+	analyzer->enter_function(this);
 	current_version = version;
 
 	// Prepare the placeholder return type for recursive functions
@@ -311,10 +311,10 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	std::vector<Type> arg_types;
 	for (unsigned i = 0; i < arguments.size(); ++i) {
 		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() && defaultValues.at(i) != nullptr ? defaultValues.at(i)->type : Type::any());
-		analyser->add_parameter(arguments.at(i).get(), type);
+		analyzer->add_parameter(arguments.at(i).get(), type);
 		arg_types.push_back(type);
 	}
-	version->body->analyse(analyser);
+	version->body->analyze(analyzer);
 	if (captures.size()) {
 		version->type = Type::closure(version->body->type, arg_types, this);
 	} else {
@@ -348,11 +348,11 @@ void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, 
 	}
 	// Re-analyse the recursive function to clean the placeholder types
 	if (recursive) {
-		version->body->analyse(analyser);
+		version->body->analyze(analyzer);
 	}
 
-	vars = analyser->get_local_vars();
-	analyser->leave_function();
+	vars = analyzer->get_local_vars();
+	analyzer->leave_function();
 
 	// std::cout << "function analysed body : " << version->type << std::endl;
 }
@@ -391,18 +391,18 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 	return captures.size() - 1;
 }
 
-void Function::update_function_args(SemanticAnalyser* analyser) {
+void Function::update_function_args(SemanticAnalyzer* analyzer) {
 	auto ls_fun = default_version->function;
 	ls_fun->args.clear();
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		auto clazz = type.argument(i).class_name();
-		ls_fun->args.push_back(analyser->vm->internal_vars.at(clazz)->lsvalue);
+		ls_fun->args.push_back(analyzer->vm->internal_vars.at(clazz)->lsvalue);
 	}
 	auto return_class_name = default_version->body->type.class_name();
 	if (return_class_name.size()) {
-		ls_fun->return_type = analyser->vm->internal_vars.at(return_class_name)->lsvalue;
+		ls_fun->return_type = analyzer->vm->internal_vars.at(return_class_name)->lsvalue;
 	} else {
-		ls_fun->return_type = analyser->vm->internal_vars.at("Value")->lsvalue;
+		ls_fun->return_type = analyzer->vm->internal_vars.at("Value")->lsvalue;
 	}
 }
 
@@ -420,13 +420,13 @@ Type Function::version_type(std::vector<Type> version) const {
 	return type;
 }
 
-void Function::must_return_any(SemanticAnalyser*) {
+void Function::must_return_any(SemanticAnalyzer*) {
 	// std::cout << "Function " << name << " ::must_return_any()" << std::endl;
 	generate_default_version = true;
 	return_type = type;
 }
 
-Callable* Function::get_callable(SemanticAnalyser*) const {
+Callable* Function::get_callable(SemanticAnalyzer*) const {
 	auto callable = new Callable("<function>");
 	int flags = default_version->body->throws ? Module::THROWS : 0;
 	callable->add_version({ "<default>", default_version->type, default_version, {}, {}, nullptr, false, false, false, flags });

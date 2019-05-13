@@ -1,5 +1,5 @@
-#ifndef SYNTAXICANALYSER_HPP
-#define SYNTAXICANALYSER_HPP
+#ifndef SYNTAXIC_ANALYZER_HPP
+#define SYNTAXIC_ANALYZER_HPP
 
 #include <vector>
 
@@ -27,7 +27,7 @@ class Function;
 class Break;
 class Continue;
 
-class SyntaxicAnalyser {
+class SyntaxicAnalyzer {
 
 	std::vector<Token*> tokens;
 	Token* t;
@@ -43,10 +43,10 @@ class SyntaxicAnalyser {
 
 public:
 
-	SyntaxicAnalyser();
-	~SyntaxicAnalyser();
+	SyntaxicAnalyzer();
+	~SyntaxicAnalyzer();
 
-	Function* analyse(std::vector<Token*>&);
+	Function* analyze(std::vector<Token*>&);
 
 	Block* eatMain();
 	Token* eatIdent();

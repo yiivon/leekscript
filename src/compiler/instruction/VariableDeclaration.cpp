@@ -1,7 +1,7 @@
 #include "VariableDeclaration.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../semantic/SemanticError.hpp"
 #include "../value/Function.hpp"
 #include "../value/Nulll.hpp"
@@ -41,23 +41,23 @@ Location VariableDeclaration::location() const {
 	return {keyword->location.start, end};
 }
 
-void VariableDeclaration::analyse_global_functions(SemanticAnalyser* analyser) {
+void VariableDeclaration::analyze_global_functions(SemanticAnalyzer* analyzer) {
 	if (global && function) {
 		auto var = variables.at(0);
 		auto expr = expressions.at(0);
-		auto v = analyser->add_var(var.get(), Type::fun(), expr, this);
+		auto v = analyzer->add_var(var.get(), Type::fun(), expr, this);
 		vars.insert({var->content, v});
 	}
 }
 
-void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
+void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
 	type = {};
 
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto& var = variables.at(i);
-		auto v = analyser->add_var(var.get(), Type::any(), expressions.at(i), this);
+		auto v = analyzer->add_var(var.get(), Type::any(), expressions.at(i), this);
 		if (v == nullptr) {
 			continue;
 		}
@@ -66,7 +66,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 				f->name = var->content;
 				f->file = VM::current()->file_name;
 			}
-			expressions[i]->analyse(analyser);
+			expressions[i]->analyze(analyzer);
 			v->value = expressions[i];
 			throws |= expressions[i]->throws;
 		} else {
@@ -74,7 +74,7 @@ void VariableDeclaration::analyse(SemanticAnalyser* analyser, const Type&) {
 		}
 		v->value->type.constant = constant;
 		if (v->type()._types.size() == 0) {
-			analyser->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
+			analyzer->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
 		}
 		vars.insert({var->content, v});
 	}

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Instruction.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 
 namespace ls {
 
@@ -26,8 +26,8 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	void analyse_global_functions(SemanticAnalyser* analyser);
-	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
+	void analyze_global_functions(SemanticAnalyzer* analyzer);
+	virtual void analyze(SemanticAnalyzer*, const Type& req_type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 

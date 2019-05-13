@@ -38,10 +38,10 @@ public:
 	virtual Location location() const override;
 
 	void set_version(const std::vector<Type>& args, int level) override;
-	bool will_take(SemanticAnalyser*, const std::vector<Type>&, int level) override;
-	virtual Callable* get_callable(SemanticAnalyser*) const;
+	bool will_take(SemanticAnalyzer*, const std::vector<Type>&, int level) override;
+	virtual Callable* get_callable(SemanticAnalyzer*) const;
 	virtual Type version_type(std::vector<Type>) const override;
-	virtual void analyse(SemanticAnalyser*) override;
+	virtual void analyze(SemanticAnalyzer*) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler& c, std::vector<Type> version) const;

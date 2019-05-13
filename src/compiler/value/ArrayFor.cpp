@@ -20,8 +20,8 @@ Location ArrayFor::location() const {
 	return {{0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void ArrayFor::analyse(SemanticAnalyser* analyser) {
-	forr->analyse(analyser, Type::array());
+void ArrayFor::analyze(SemanticAnalyzer* analyzer) {
+	forr->analyze(analyzer, Type::array());
 	type = forr->type;
 	throws = forr->throws;
 }

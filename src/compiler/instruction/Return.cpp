@@ -1,5 +1,5 @@
 #include "Return.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../value/Function.hpp"
 
 namespace ls {
@@ -21,9 +21,9 @@ void Return::print(std::ostream& os, int indent, bool debug, bool condensed) con
 	}
 }
 
-void Return::analyse(SemanticAnalyser* analyser, const Type&) {
+void Return::analyze(SemanticAnalyzer* analyzer, const Type&) {
 	if (expression != nullptr) {
-		expression->analyse(analyser);
+		expression->analyze(analyzer);
 		return_type = expression->type;
 	}
 }

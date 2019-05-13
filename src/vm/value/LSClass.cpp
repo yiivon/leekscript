@@ -61,7 +61,7 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	}
 }
 
-const Callable* LSClass::getOperator(SemanticAnalyser* analyser, std::string& name, Type& obj_type, Type& operand_type) {
+const Callable* LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& name, Type& obj_type, Type& operand_type) {
 	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
 	if (name == "is not") name = "!=";
 	if (name == "÷") name = "/";

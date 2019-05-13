@@ -2,7 +2,7 @@
 #include "../../compiler/value/Number.hpp"
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 
 namespace ls {
 
@@ -27,14 +27,14 @@ Location While::location() const {
 	return token->location;
 }
 
-void While::analyse(SemanticAnalyser* analyser, const Type&) {
-	condition->analyse(analyser);
+void While::analyze(SemanticAnalyzer* analyzer, const Type&) {
+	condition->analyze(analyzer);
 	throws |= condition->throws;
 
-	analyser->enter_loop();
+	analyzer->enter_loop();
 	body->is_void = true;
-	body->analyse(analyser);
-	analyser->leave_loop();
+	body->analyze(analyzer);
+	analyzer->leave_loop();
 	
 	throws |= body->throws;
 	if (body->may_return) {

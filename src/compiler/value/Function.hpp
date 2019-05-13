@@ -9,7 +9,7 @@
 namespace ls {
 
 class SemanticVar;
-class SemanticAnalyser;
+class SemanticAnalyzer;
 
 class Function : public Value {
 public:
@@ -68,15 +68,15 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	bool will_take(SemanticAnalyser*, const std::vector<Type>&, int level) override;
+	bool will_take(SemanticAnalyzer*, const std::vector<Type>&, int level) override;
 	void set_version(const std::vector<Type>& args, int level) override;
-	void analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version);
-	void update_function_args(SemanticAnalyser*);
+	void analyze_body(SemanticAnalyzer* analyzer, std::vector<Type> args, Version* version);
+	void update_function_args(SemanticAnalyzer*);
 	virtual Type version_type(std::vector<Type>) const override;
-	virtual void must_return_any(SemanticAnalyser*) override;
-	virtual Callable* get_callable(SemanticAnalyser*) const override;
-	virtual void analyse(SemanticAnalyser*) override;
-	void create_version(SemanticAnalyser* analyser, std::vector<Type> args);
+	virtual void must_return_any(SemanticAnalyzer*) override;
+	virtual Callable* get_callable(SemanticAnalyzer*) const override;
+	virtual void analyze(SemanticAnalyzer*) override;
+	void create_version(SemanticAnalyzer* analyzer, std::vector<Type> args);
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const override;

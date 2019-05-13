@@ -1,6 +1,6 @@
 #include "String.hpp"
 #include "../../vm/value/LSString.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 
 namespace ls {
 
@@ -23,9 +23,9 @@ Location String::location() const {
 	return token->location;
 }
 
-bool String::will_store(SemanticAnalyser* analyser, const Type& type) {
+bool String::will_store(SemanticAnalyzer* analyzer, const Type& type) {
 	if (!type.is_string()) {
-		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), location(), {this->type.to_string(), "=", type.to_string()}});
+		analyzer->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), location(), {this->type.to_string(), "=", type.to_string()}});
 	}
 	return false;
 }

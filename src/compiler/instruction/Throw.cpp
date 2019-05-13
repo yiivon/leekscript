@@ -1,5 +1,5 @@
 #include "Throw.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../value/Function.hpp"
 #include "../../vm/value/LSNull.hpp"
 
@@ -30,9 +30,9 @@ Location Throw::location() const {
 	}
 }
 
-void Throw::analyse(SemanticAnalyser* analyser, const Type&) {
+void Throw::analyze(SemanticAnalyzer* analyzer, const Type&) {
 	if (expression != nullptr) {
-		expression->analyse(analyser);
+		expression->analyze(analyzer);
 	}
 }
 

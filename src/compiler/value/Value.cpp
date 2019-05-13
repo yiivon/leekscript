@@ -12,28 +12,28 @@ Value::Value() {
 
 Value::~Value() {}
 
-Callable* Value::get_callable(SemanticAnalyser*) const {
+Callable* Value::get_callable(SemanticAnalyzer*) const {
 	auto callable = new Callable("?");
 	callable->add_version({ "?", type, this, {}, {}, nullptr, true });
 	return callable;
 }
 
-void Value::analyse(SemanticAnalyser*) {}
+void Value::analyze(SemanticAnalyzer*) {}
 
-bool Value::will_take(SemanticAnalyser*, const std::vector<Type>& args, int) {
+bool Value::will_take(SemanticAnalyzer*, const std::vector<Type>& args, int) {
 	set_version(args, 1);
 	return false;
 }
 
-bool Value::will_store(SemanticAnalyser*, const Type&) {
+bool Value::will_store(SemanticAnalyzer*, const Type&) {
 	return false;
 }
 
-bool Value::elements_will_store(SemanticAnalyser*, const Type&, int level) {
+bool Value::elements_will_store(SemanticAnalyzer*, const Type&, int level) {
 	return false;
 }
 
-bool Value::must_be_any(SemanticAnalyser*) {
+bool Value::must_be_any(SemanticAnalyzer*) {
 	if (type == Type::any()) {
 		return false;
 	}
@@ -41,9 +41,9 @@ bool Value::must_be_any(SemanticAnalyser*) {
 	return true;
 }
 
-void Value::must_return_any(SemanticAnalyser*) {}
+void Value::must_return_any(SemanticAnalyzer*) {}
 
-void Value::will_be_in_array(SemanticAnalyser*) {}
+void Value::will_be_in_array(SemanticAnalyzer*) {}
 
 void Value::set_version(const std::vector<Type>& args, int) {
 	version = args;

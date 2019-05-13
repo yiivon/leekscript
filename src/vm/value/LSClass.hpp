@@ -68,7 +68,7 @@ public:
 	void addOperator(std::string name, std::vector<Operator>);
 
 	LSFunction* getDefaultMethod(const std::string& name);
-	const Callable* getOperator(SemanticAnalyser* analyser, std::string& name, Type& object_type, Type& operand_type);
+	const Callable* getOperator(SemanticAnalyzer* analyzer, std::string& name, Type& object_type, Type& operand_type);
 
 	bool to_bool() const override;
 	virtual bool ls_not() const override;

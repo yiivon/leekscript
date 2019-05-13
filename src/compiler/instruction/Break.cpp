@@ -1,5 +1,5 @@
 #include "../../compiler/instruction/Break.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../semantic/SemanticError.hpp"
 
 namespace ls {
@@ -21,11 +21,11 @@ Location Break::location() const {
 	return token->location;
 }
 
-void Break::analyse(SemanticAnalyser* analyser, const Type&) {
+void Break::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
 	// break must be in a loop
-	if (!analyser->in_loop(deepness)) {
-		analyser->add_error({SemanticError::Type::BREAK_MUST_BE_IN_LOOP, token->location, token->location});
+	if (!analyzer->in_loop(deepness)) {
+		analyzer->add_error({SemanticError::Type::BREAK_MUST_BE_IN_LOOP, token->location, token->location});
 	}
 }
 

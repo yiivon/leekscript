@@ -27,7 +27,7 @@ public:
 	Program(const std::string& code, const std::string& file_name);
 	virtual ~Program();
 
-	void analyse(SemanticAnalyser* analyser);
+	void analyze(SemanticAnalyzer* analyzer);
 
 	/*
 	 * Compile the program with a VM and a context (json)
