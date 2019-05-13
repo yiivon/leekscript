@@ -334,8 +334,8 @@ Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 
 Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 	// std::cout << "insn_eq " << a.t << " == " << b.t << std::endl;
-	// assert(a.t.llvm_type(*this) == a.v->getType());
-	// assert(b.t.llvm_type(*this) == b.v->getType());
+	assert(a.t.llvm_type(*this) == a.v->getType());
+	assert(b.t.llvm_type(*this) == b.v->getType());
 	auto a_type = a.t.fold();
 	auto b_type = b.t.fold();
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
