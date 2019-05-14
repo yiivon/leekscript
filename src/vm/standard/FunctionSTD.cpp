@@ -9,8 +9,8 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 
 	LSFunction::clazz = clazz;
 
-	field("return", Type::clazz());
-	field("args", Type::array());
+	field("return", Type::clazz(), field_return);
+	field("args", Type::array(Type::clazz()), field_args);
 
 	constructor_({
 		{Type::fun({}, {}), {Type::i8().pointer()}, (void*) LSFunction::constructor},
@@ -34,6 +34,22 @@ FunctionSTD::FunctionSTD() : Module("Function") {
 	method("add_capture", {
 		{{}, {Type::closure({}, {}), Type::any()}, (void*) &LSClosure::add_capture}
 	});
+}
+
+Compiler::value FunctionSTD::field_return(Compiler& c, Compiler::value function) {
+	auto class_name = function.t.return_type().class_name();
+	if (!class_name.size()) class_name = "Value";
+	return c.get_symbol(class_name, Type::clazz(class_name));
+}
+
+Compiler::value FunctionSTD::field_args(Compiler& c, Compiler::value function) {
+	std::vector<Compiler::value> args;
+	for (const auto& arg : function.t.arguments()) {
+		auto class_name = arg.class_name();
+		if (!class_name.size()) class_name = "Value";
+		args.push_back(c.get_symbol(class_name, Type::clazz(class_name)));
+	}
+	return c.new_array(Type::array(Type::clazz()), args);
 }
 
 }

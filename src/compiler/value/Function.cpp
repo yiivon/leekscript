@@ -36,14 +36,10 @@ Function::~Function() {
 		delete value;
 	}
 	if (default_version != nullptr) {
-		if (default_version->function != nullptr) {
-			delete default_version->function;
-		}
 		delete default_version;
 		default_version = nullptr;
 	}
 	for (const auto& version : versions) {
-		delete version.second->function;
 		delete version.second->body;
 		delete version.second;
 	}
@@ -185,10 +181,8 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 		current_version = default_version;
 		default_version->body = body;
 		if (captures.size()) {
-			default_version->function = new LSClosure(nullptr);
 			default_version->type = Type::closure(getReturnType(), args, this);
 		} else {
-			default_version->function = new LSFunction(nullptr);
 			default_version->type = Type::fun(getReturnType(), args, this);
 		}
 	}
@@ -203,8 +197,6 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 
 	type = default_version->type;
 
-	update_function_args(analyzer);
-
 	// std::cout << "Function type: " << type << std::endl;
 }
 
@@ -215,16 +207,9 @@ void Function::create_version(SemanticAnalyzer* analyzer, std::vector<Type> args
 	auto version = new Function::Version();
 	version->parent = this;
 	version->body = (Block*) body->clone();
-	if (captures.size()) {
-		version->function = new LSClosure(nullptr);
-	} else {
-		version->function = new LSFunction(nullptr);
-	}
 	versions.insert({args, version});
 
 	analyze_body(analyzer, args, version);
-
-	update_function_args(analyzer);
 }
 
 bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& args, int level) {
@@ -361,16 +346,8 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 	// std::cout << "Function::capture " << var->name << std::endl;
 
 	// Function become a closure
-	if (!default_version->function->closure()) {
-		delete default_version->function;
-		default_version->function = new LSClosure(nullptr);
-	}
 	default_version->type = Type::closure(default_version->type.return_type(), default_version->type.arguments(), this);
 	for (auto& version : versions) {
-		if (!version.second->function->closure()) {
-			delete version.second->function;
-			version.second->function = new LSClosure(nullptr);
-		}
 		version.second->type = Type::closure(version.second->type.return_type(), version.second->type.arguments(), this);
 	}
 	type = Type::closure(type.return_type(), type.arguments(), this);
@@ -389,21 +366,6 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 		var->parent_index = new_var->index;
 	}
 	return captures.size() - 1;
-}
-
-void Function::update_function_args(SemanticAnalyzer* analyzer) {
-	auto ls_fun = default_version->function;
-	ls_fun->args.clear();
-	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		auto clazz = type.argument(i).class_name();
-		ls_fun->args.push_back(analyzer->vm->internal_vars.at(clazz)->lsvalue);
-	}
-	auto return_class_name = default_version->body->type.class_name();
-	if (return_class_name.size()) {
-		ls_fun->return_type = analyzer->vm->internal_vars.at(return_class_name)->lsvalue;
-	} else {
-		ls_fun->return_type = analyzer->vm->internal_vars.at("Value")->lsvalue;
-	}
 }
 
 Type Function::version_type(std::vector<Type> version) const {
@@ -711,11 +673,6 @@ Value* Function::clone() const {
 	for (const auto& v : versions) {
 		auto v2 = new Version();
 		v2->parent = f;
-		if (captures.size()) {
-			v2->function = new LSClosure(nullptr);
-		} else {
-			v2->function = new LSFunction(nullptr);
-		}
 		v2->body = (Block*) v.second->body->clone();
 		v2->type = v.second->type;
 		f->versions.insert({v.first, v2});
