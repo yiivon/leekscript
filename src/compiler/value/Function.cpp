@@ -476,7 +476,8 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 
 Compiler::value Function::compile_default_version(Compiler& c) const {
 	// std::cout << "Function " << name << "::compile_default_version " << std::endl;
-	return c.new_pointer(default_version->function, default_version->type);
+	default_version->compile(c, true, false);
+	return default_version->value;
 }
 
 llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
@@ -534,7 +535,7 @@ void Function::Version::create_function(Compiler& c) {
 	block = llvm::BasicBlock::Create(c.getContext(), "start", f);
 }
 
-void Function::Version::compile(Compiler& c, bool create_value) {
+void Function::Version::compile(Compiler& c, bool create_value, bool compile_body) {
 
 	if (is_compiled()) return;
 
@@ -621,9 +622,13 @@ void Function::Version::compile(Compiler& c, bool create_value) {
 		index++;
 	}
 
-	// Compile body
-	auto res = body->compile(c);
-	parent->compile_return(c, res);
+	if (compile_body) {
+		// Compile body
+		auto res = body->compile(c);
+		parent->compile_return(c, res);
+	} else {
+		parent->compile_return(c, {});
+	}
 
 	// Catch block
 	if (landing_pad != nullptr) {
