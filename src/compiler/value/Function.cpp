@@ -498,131 +498,121 @@ void Function::Version::create_function(Compiler& c) {
 }
 
 void Function::Version::compile(Compiler& c, bool create_value, bool compile_body) {
+	// std::cout << "Function::Version " << parent->name << "::compile(" << type << ", create_value=" << create_value << ")" << std::endl;
 
-	if (is_compiled()) return;
+	if (not is_compiled()) {
+		
+		this->parent->current_version = this;
 
-	// std::cout << "Function::Version " << parent->name << "::compile(" << type << ")" << std::endl;
-	this->parent->current_version = this;
+		std::vector<llvm::Type*> args;
+		if (parent->captures.size()) {
+			args.push_back(Type::any().llvm_type(c)); // first arg is the function pointer
+		}
+		for (auto& t : this->type.arguments()) {
+			args.push_back(t.llvm_type(c));
+		}
+		// Create the llvm function
+		create_function(c);
 
-	std::vector<Compiler::value> captures;
-	if (!parent->is_main_function) {
-		for (const auto& cap : parent->captures) {
-			Compiler::value jit_cap;
-			if (cap->scope == VarScope::LOCAL) {
-				auto f = dynamic_cast<Function*>(cap->value);
-				if (f) {
-					if (cap->has_version) {
-						jit_cap = f->compile_version(c, cap->version);
-					} else {
-						jit_cap = f->compile_default_version(c);
-					}
-				} else {
-					if (cap->type().is_mpz_ptr()) {
-						jit_cap = c.get_var(cap->name);
-					} else {
-						jit_cap = c.insn_load(c.get_var(cap->name));
-					}
-				}
-			} else if (cap->scope == VarScope::CAPTURE) {
-				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);
+		c.enter_function(f, parent->captures.size() > 0, parent);
+
+		c.builder.SetInsertPoint(block);
+
+		// Create arguments
+		unsigned index = 0;
+		int offset = parent->captures.size() ? -1 : 0;
+		for (auto& arg : f->args()) {
+			if (parent->captures.size() && index == 0) {
+				arg.setName("__fun_ptr");
 			} else {
-				int offset = c.is_current_function_closure() ? 1 : 0;
-				jit_cap = {c.F->arg_begin() + offset + cap->index, cap->initial_type};
-			}
-			if (!cap->initial_type.is_polymorphic()) {
-				jit_cap = c.insn_to_any({jit_cap.v, cap->initial_type});
-			}
-			captures.push_back(jit_cap);
-		}
-	}
-
-	// System internal variables (for main function only)
-	if (parent->is_main_function) {
-		for (auto var : c.vm->internal_vars) {
-			auto name = var.first;
-			auto variable = var.second;
-			c.vm->internals.insert({name, {}});
-		}
-	}
-
-	std::vector<llvm::Type*> args;
-	if (parent->captures.size()) {
-		args.push_back(Type::any().llvm_type(c)); // first arg is the function pointer
-	}
-	for (auto& t : this->type.arguments()) {
-		args.push_back(t.llvm_type(c));
-	}
-	// Create the llvm function
-	create_function(c);
-
-	c.enter_function(f, parent->captures.size() > 0, parent);
-
-	c.builder.SetInsertPoint(block);
-
-	// Create arguments
-	unsigned index = 0;
-	int offset = parent->captures.size() ? -1 : 0;
-	for (auto& arg : f->args()) {
-		if (parent->captures.size() && index == 0) {
-			arg.setName("__fun_ptr");
-		} else {
-			if (offset + index < parent->arguments.size()) {
-				const auto name = parent->arguments.at(offset + index)->content;
-				const auto type = this->type.arguments().at(offset + index).not_temporary();
-				arg.setName(name);
-				auto var_type = type.is_mpz_ptr() ? Type::mpz() : type;
-				auto var = c.create_entry(name, var_type);
-				if (type.is_mpz_ptr()) {
-					c.insn_store(var, c.insn_load({&arg, type}));
-				} else {
-					c.insn_store(var, {&arg, type});
+				if (offset + index < parent->arguments.size()) {
+					const auto name = parent->arguments.at(offset + index)->content;
+					const auto type = this->type.arguments().at(offset + index).not_temporary();
+					arg.setName(name);
+					auto var_type = type.is_mpz_ptr() ? Type::mpz() : type;
+					auto var = c.create_entry(name, var_type);
+					if (type.is_mpz_ptr()) {
+						c.insn_store(var, c.insn_load({&arg, type}));
+					} else {
+						c.insn_store(var, {&arg, type});
+					}
+					c.arguments.top()[name] = var;
+					// c.arguments.top()[name] = {&arg, type};
 				}
-				c.arguments.top()[name] = var;
-				// c.arguments.top()[name] = {&arg, type};
 			}
+			index++;
 		}
-		index++;
-	}
 
-	if (compile_body) {
-		// Compile body
-		auto res = body->compile(c);
-		parent->compile_return(c, res);
-	} else {
-		parent->compile_return(c, {});
-	}
+		if (compile_body) {
+			// Compile body
+			auto res = body->compile(c);
+			parent->compile_return(c, res);
+		} else {
+			parent->compile_return(c, {});
+		}
 
-	// Catch block
-	if (landing_pad != nullptr) {
-		c.builder.SetInsertPoint(catch_block);
-		// TODO : here, we delete all the function variables, even some variables that may already be destroyed
-		// TODO : To fix, create a landing pad for every call that can throw
-		c.delete_function_variables();
-		Compiler::value exception = {c.builder.CreateLoad(exception_slot), Type::long_()};
-		Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_()};
-		auto function_name = c.new_const_string(c.fun->name, "fun");
-		c.insn_call({}, {exception, function_name, exception_line}, "System.throw.1");
-		c.fun->compile_return(c, {});
-	}
+		// Catch block
+		if (landing_pad != nullptr) {
+			c.builder.SetInsertPoint(catch_block);
+			// TODO : here, we delete all the function variables, even some variables that may already be destroyed
+			// TODO : To fix, create a landing pad for every call that can throw
+			c.delete_function_variables();
+			Compiler::value exception = {c.builder.CreateLoad(exception_slot), Type::long_()};
+			Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_()};
+			auto function_name = c.new_const_string(c.fun->name, "fun");
+			c.insn_call({}, {exception, function_name, exception_line}, "System.throw.1");
+			c.fun->compile_return(c, {});
+		}
 
-	if (!parent->is_main_function) {
-		c.leave_function();
-		// Create a function : 1 op
-		c.inc_ops(1);
-	} else {
-		c.instructions_debug << "}" << std::endl;
+		if (!parent->is_main_function) {
+			c.leave_function();
+			// Create a function : 1 op
+			c.inc_ops(1);
+		} else {
+			c.instructions_debug << "}" << std::endl;
+		}
+		llvm::verifyFunction(*f);
 	}
-
-	llvm::verifyFunction(*f);
 
 	if (create_value) {
 		if (parent->captures.size()) {
+			std::vector<Compiler::value> captures;
+			if (!parent->is_main_function) {
+				for (const auto& cap : parent->captures) {
+					Compiler::value jit_cap;
+					if (cap->scope == VarScope::LOCAL) {
+						auto f = dynamic_cast<Function*>(cap->value);
+						if (f) {
+							if (cap->has_version) {
+								jit_cap = f->compile_version(c, cap->version);
+							} else {
+								jit_cap = f->compile_default_version(c);
+							}
+						} else {
+							if (cap->type().is_mpz_ptr()) {
+								jit_cap = c.get_var(cap->name);
+							} else {
+								jit_cap = c.insn_load(c.get_var(cap->name));
+							}
+						}
+					} else if (cap->scope == VarScope::CAPTURE) {
+						jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);
+					} else {
+						int offset = c.is_current_function_closure() ? 1 : 0;
+						jit_cap = {c.F->arg_begin() + offset + cap->index, cap->initial_type};
+					}
+					if (!cap->initial_type.is_polymorphic()) {
+						jit_cap = c.insn_to_any({jit_cap.v, cap->initial_type});
+					}
+					captures.push_back(jit_cap);
+				}
+			}
 			value = c.new_closure(f, type, captures);
 		} else {
 			value = c.new_function(f, type);
 		}
 	}
-	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;
+	// std::cout << "Function '" << parent->name << "' compiled: " << value.v << std::endl;
 }
 
 void Function::compile_return(const Compiler& c, Compiler::value v) const {
