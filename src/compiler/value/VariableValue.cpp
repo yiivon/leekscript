@@ -322,9 +322,11 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		auto vv = dynamic_cast<VariableValue*>(var->value);
 		if (f) {
 			if (has_version) {
-				return var->value->compile_version(c, version);
+				return f->compile_version(c, version);
+			} else if (f->versions.size() == 1) {
+				return f->compile(c);
 			} else {
-				return var->value->compile(c);
+				return f->compile_default_version(c);
 			}
 		}
 		if (vv && has_version) {

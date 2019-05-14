@@ -226,6 +226,7 @@ void Test::test_functions() {
 	code("(x -> x).args").equals("[<class Value>]");
 	code("Array.size((x, y, z -> x + y * z).args)").equals("3");
 	code("let f = x, y -> x + y f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
+	code("let f = x, y -> x + y f([], <>) f.args").equals("[<class Array>, <class Set>]");
 	code("+.args").equals("[<class Value>, <class Value>]");
 	code("+.return").equals("<class Value>");
 	code("-.args").equals("[<class Value>, <class Value>]");
@@ -239,8 +240,7 @@ void Test::test_functions() {
 	code("<.args").equals("[<class Value>, <class Value>]");
 	code(">=.args").equals("[<class Value>, <class Value>]");
 	code("<=.args").equals("[<class Value>, <class Value>]");
-	// TODO manage multiple versions of functions
-	DISABLED_code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
+	code("let f = x -> x f(12) f('salut') f.args").equals("[<class Value>]");
 
 	section("Check argument count");
 	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"x => x", "1", "0"});
