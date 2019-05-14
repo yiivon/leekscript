@@ -178,7 +178,6 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	auto r = [&]() { if (user_fun) {
 		user_fun->compile(c);
 		if (user_fun->type.is_closure() or unknown) {
-			// std::cout << "closure add fun as first arg: " << user_fun->value.v << std::endl;
 			if (user_fun->value.v) {
 				args.insert(args.begin(), user_fun->value);
 			} else {
