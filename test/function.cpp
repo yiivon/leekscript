@@ -220,10 +220,12 @@ void Test::test_functions() {
 	code("Number.cos").equals("<function>");
 
 	section("Function reflexion");
-	DISABLED_code("(x -> 12).return").equals("<class Number>");
+	code("(x -> 12).return").equals("<class Number>");
+	code("(x -> true).return").equals("<class Boolean>");
+	code("(x -> 'salut').return").equals("<class String>");
 	code("(x -> x).args").equals("[<class Value>]");
 	code("Array.size((x, y, z -> x + y * z).args)").equals("3");
-	DISABLED_code("let f = x, y -> x f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
+	code("let f = x, y -> x + y f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
 	code("+.args").equals("[<class Value>, <class Value>]");
 	code("+.return").equals("<class Value>");
 	code("-.args").equals("[<class Value>, <class Value>]");
