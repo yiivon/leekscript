@@ -46,6 +46,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 		for (size_t i = 0; i < expressions.size(); ++i) {
 
 			Value* ex = expressions[i];
+			ex->must_return_any(analyzer);
 			ex->analyze(analyzer);
 
 			constant &= ex->constant;
@@ -85,7 +86,6 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 				if (types.size() > 0) {
 					ex->will_take(analyzer, types, 1);
 				}
-				ex->must_return_any(analyzer);
 			}
 			element_type += ex->type;
 		}

@@ -336,7 +336,7 @@ void Function::analyze_body(SemanticAnalyzer* analyzer, std::vector<Type> args, 
 	}
 	if (version->body->return_type.temporary) return_type.temporary = true;
 	// Default version of the function, the return type must be any
-	if (not return_type.is_void() and not is_main_function and version == default_version) {
+	if (not return_type.is_void() and not is_main_function and version == default_version and generate_default_version) {
 		return_type = Type::any();
 	}
 	// std::cout << "return_type " << return_type << std::endl;
@@ -423,7 +423,6 @@ Type Function::version_type(std::vector<Type> version) const {
 void Function::must_return_any(SemanticAnalyzer*) {
 	// std::cout << "Function " << name << " ::must_return_any()" << std::endl;
 	generate_default_version = true;
-	return_type = type;
 }
 
 Callable* Function::get_callable(SemanticAnalyzer*) const {
