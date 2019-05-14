@@ -46,7 +46,6 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 		for (size_t i = 0; i < expressions.size(); ++i) {
 
 			Value* ex = expressions[i];
-			ex->will_be_in_array(analyzer);
 			ex->analyze(analyzer);
 
 			constant &= ex->constant;

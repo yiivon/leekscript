@@ -44,7 +44,6 @@ public:
 	virtual bool elements_will_store(SemanticAnalyzer*, const Type&, int level);
 	virtual bool must_be_any(SemanticAnalyzer*);
 	virtual void must_return_any(SemanticAnalyzer*);
-	virtual void will_be_in_array(SemanticAnalyzer*);
 	virtual void set_version(const std::vector<Type>&, int level);
 	virtual Type version_type(std::vector<Type>) const;
 	virtual Callable* get_callable(SemanticAnalyzer*) const;

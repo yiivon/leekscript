@@ -43,8 +43,6 @@ bool Value::must_be_any(SemanticAnalyzer*) {
 
 void Value::must_return_any(SemanticAnalyzer*) {}
 
-void Value::will_be_in_array(SemanticAnalyzer*) {}
-
 void Value::set_version(const std::vector<Type>& args, int) {
 	version = args;
 	has_version = true;
