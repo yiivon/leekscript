@@ -52,6 +52,7 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 	}
 
 	analyzer->enter_block();
+	throws = false;
 
 	// Init
 	for (Instruction* ins : inits) {

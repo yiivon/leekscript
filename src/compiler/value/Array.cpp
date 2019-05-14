@@ -36,6 +36,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 
 	// std::cout << "Array::analyze " << req_type << std::endl;
 	constant = true;
+	throws = false;
 
 	if (expressions.size() > 0) {
 

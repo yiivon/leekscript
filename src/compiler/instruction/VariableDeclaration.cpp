@@ -53,6 +53,7 @@ void VariableDeclaration::analyze_global_functions(SemanticAnalyzer* analyzer) {
 void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
 	type = {};
+	throws = false;
 
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {

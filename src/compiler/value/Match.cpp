@@ -54,7 +54,7 @@ void Match::analyze(ls::SemanticAnalyzer* analyzer) {
 	bool has_default = false;
 
 	value->analyze(analyzer);
-	throws |= value->throws;
+	throws = value->throws;
 
 	for (auto& ps : pattern_list) {
 		for (Pattern& p : ps) {

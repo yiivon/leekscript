@@ -56,7 +56,7 @@ void If::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "If " << is_void << std::endl;
 	
 	condition->analyze(analyzer);
-	throws |= condition->throws;
+	throws = condition->throws;
 
 	then->is_void = is_void;
 	then->analyze(analyzer);

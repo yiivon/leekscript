@@ -38,7 +38,7 @@ Location PrefixExpression::location() const {
 void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 
 	expression->analyze(analyzer);
-	throws |= expression->throws;
+	throws = expression->throws;
 
 	if (operatorr->type == TokenType::TILDE) {
 		type = expression->type;

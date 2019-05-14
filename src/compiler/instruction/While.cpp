@@ -29,7 +29,7 @@ Location While::location() const {
 
 void While::analyze(SemanticAnalyzer* analyzer, const Type&) {
 	condition->analyze(analyzer);
-	throws |= condition->throws;
+	throws = condition->throws;
 
 	analyzer->enter_loop();
 	body->is_void = true;

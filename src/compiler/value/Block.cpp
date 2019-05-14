@@ -59,6 +59,7 @@ void Block::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "Block::analyze() " << is_void << std::endl;
 
 	analyzer->enter_block();
+	throws = false;
 
 	type = {};
 
