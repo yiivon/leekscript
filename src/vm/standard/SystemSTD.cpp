@@ -61,7 +61,7 @@ long SystemSTD::nanotime() {
 }
 
 Compiler::value SystemSTD::operations(Compiler& c) {
-	auto ops_ptr = c.new_pointer(&c.vm->operations, Type::integer().pointer());
+	auto ops_ptr = c.get_symbol("ops", Type::integer().pointer());
 	return c.insn_load(ops_ptr);
 }
 
