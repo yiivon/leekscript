@@ -522,23 +522,19 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 		unsigned index = 0;
 		int offset = parent->captures.size() ? -1 : 0;
 		for (auto& arg : f->args()) {
-			if (parent->captures.size() && index == 0) {
-				arg.setName("__fun_ptr");
-			} else {
-				if (offset + index < parent->arguments.size()) {
-					const auto name = parent->arguments.at(offset + index)->content;
-					const auto type = this->type.arguments().at(offset + index).not_temporary();
-					arg.setName(name);
-					auto var_type = type.is_mpz_ptr() ? Type::mpz() : type;
-					auto var = c.create_entry(name, var_type);
-					if (type.is_mpz_ptr()) {
-						c.insn_store(var, c.insn_load({&arg, type}));
-					} else {
-						c.insn_store(var, {&arg, type});
-					}
-					c.arguments.top()[name] = var;
-					// c.arguments.top()[name] = {&arg, type};
+			if (offset + index < parent->arguments.size()) {
+				const auto name = parent->arguments.at(offset + index)->content;
+				const auto type = this->type.arguments().at(offset + index).not_temporary();
+				arg.setName(name);
+				auto var_type = type.is_mpz_ptr() ? Type::mpz() : type;
+				auto var = c.create_entry(name, var_type);
+				if (type.is_mpz_ptr()) {
+					c.insn_store(var, c.insn_load({&arg, type}));
+				} else {
+					c.insn_store(var, {&arg, type});
 				}
+				c.arguments.top()[name] = var;
+				// c.arguments.top()[name] = {&arg, type};
 			}
 			index++;
 		}
