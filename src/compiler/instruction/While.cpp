@@ -45,6 +45,7 @@ void While::analyze(SemanticAnalyzer* analyzer, const Type&) {
 }
 
 Compiler::value While::compile(Compiler& c) const {
+	c.mark_offset(token->location.start.line);
 	auto cond_label = c.insn_init_label("cond");
 	auto end_label = c.insn_init_label("afterloop");
 	auto loop_label = c.insn_init_label("loop");

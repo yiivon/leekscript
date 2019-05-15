@@ -110,6 +110,7 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 Compiler::value For::compile(Compiler& c) const {
 
 	c.enter_block(); // { for init ; cond ; inc { body } }<-- this block
+	c.mark_offset(token->location.start.line);
 
 	Compiler::value output_v;
 	if (type.is_array()) {

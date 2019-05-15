@@ -53,6 +53,7 @@ void PostfixExpression::analyze(SemanticAnalyzer* analyzer) {
 Compiler::value PostfixExpression::compile(Compiler& c) const {
 
 	c.inc_ops(1);
+	c.mark_offset(operatorr->token->location.start.line);
 
 	switch (operatorr->type) {
 
