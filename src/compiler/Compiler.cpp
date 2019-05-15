@@ -135,8 +135,8 @@ Compiler::value Compiler::new_function(llvm::Function* f, Type type) const {
 }
 Compiler::value Compiler::new_closure(llvm::Function* f, Type type, std::vector<Compiler::value> captures) const {
 	// std::cout << "new_closure " << captures << std::endl;
-	Compiler::value fun = { f, type };
-	auto closure = insn_call(type, {{f, Type::i8().pointer()}}, "Function.new.1");
+	auto fun = insn_convert({ f, type }, Type::i8().pointer());
+	auto closure = insn_call(type, {fun}, "Function.new.1");
 	for (const auto& capture : captures) {
 		function_add_capture(closure, capture);
 	}
@@ -935,7 +935,7 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 
 Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	// std::cout << "get_capture " << fun << " " << F->arg_size() << " " << type << " " << F->arg_begin()->getType() << " " << index << std::endl;
-	Compiler::value arg0 = {F->arg_begin(), Type::integer()};
+	Compiler::value arg0 = {F->arg_begin(), Type::any()};
 	auto jit_index = new_integer(index);
 	auto first_type = type.is_primitive() ? Type::any() : type;
 	auto v = insn_call(first_type, {arg0, jit_index}, "Function.get_capture");
@@ -947,7 +947,7 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 
 Compiler::value Compiler::insn_get_capture_l(int index, Type type) const {
 	assert(type.is_polymorphic());
-	Compiler::value arg0 = {F->arg_begin(), Type::integer()};
+	Compiler::value arg0 = {F->arg_begin(), Type::any()};
 	auto jit_index = new_integer(index);
 	return insn_call(type.pointer(), {arg0, jit_index}, "Function.get_capture_l");
 }
@@ -1769,7 +1769,7 @@ Compiler::value Compiler::insn_call(Type return_type, std::vector<Compiler::valu
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		// assert(args[i].t.llvm_type(*this) == args[i].v->getType());
+		assert(args[i].t.llvm_type(*this) == args[i].v->getType());
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t.llvm_type(*this));
 	}
