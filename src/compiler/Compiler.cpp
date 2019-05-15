@@ -331,9 +331,9 @@ Compiler::value Compiler::insn_sub(Compiler::value a, Compiler::value b) const {
 	if (a_type.is_polymorphic() or b_type.is_polymorphic()) {
 		return insn_invoke(Type::any(), {insn_to_any(a), insn_to_any(b)}, "Value.operator-");
 	} else if (a_type.is_real() or b_type.is_real()) {
-		return {builder.CreateFSub(to_real(a).v, to_real(b).v, "sub"), Type::real()};
+		return {builder.CreateFSub(to_real(a).v, to_real(b).v), Type::real()};
 	} else {
-		return {builder.CreateSub(to_int(a).v, to_int(b).v, "sub"), Type::integer()};
+		return {builder.CreateSub(to_int(a).v, to_int(b).v), Type::integer()};
 	}
 }
 
