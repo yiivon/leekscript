@@ -1636,7 +1636,7 @@ void Compiler::insn_throw(Compiler::value v) const {
 		insert_new_generation_block();
 	} else {
 		delete_function_variables();
-		auto line = new_long(exception_line);
+		auto line = new_long(exception_line.top());
 		auto function_name = new_const_string(fun->name, "fun");
 		insn_call({}, {v, function_name, line}, "System.throw");
 	}
@@ -1902,6 +1902,7 @@ void Compiler::enter_function(llvm::Function* F, bool is_closure, Function* fun)
 	auto block = builder.GetInsertBlock();
 	if (!block) block = fun->current_version->block;
 	function_llvm_blocks.push(block);
+	exception_line.push(-1);
 	this->F = F;
 	this->fun = fun;
 	std::vector<std::string> args;
@@ -1924,6 +1925,7 @@ void Compiler::leave_function() {
 	catchers.pop_back();
 	function_is_closure.pop();
 	arguments.pop();
+	exception_line.pop();
 	this->F = functions.top();
 	this->fun = functions2.top();
 	builder.SetInsertPoint(function_llvm_blocks.top());
@@ -2063,7 +2065,7 @@ void Compiler::inc_ops_jit(Compiler::value amount) const {
 
 /** Exceptions **/
 void Compiler::mark_offset(int line) {
-	exception_line = line;
+	exception_line.top() = line;
 }
 void Compiler::insn_try_catch(std::function<void()> try_, std::function<void()> catch_) {
 	auto handler = llvm::BasicBlock::Create(getContext(), "catch", F);

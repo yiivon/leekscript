@@ -100,7 +100,7 @@ public:
 	std::map<label*, std::string> label_map;
 	std::map<void*, std::string> literals;
 	std::map<std::string, function_entry> mappings;
-	int exception_line = -1;
+	std::stack<int> exception_line;
 
 	VM* vm;
 	Program* program;

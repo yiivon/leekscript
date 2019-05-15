@@ -455,7 +455,7 @@ llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
 		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(c.getContext()));
 		current_version->exception_line_slot = c.CreateEntryBlockAlloca("exnline.slot", llvm::Type::getInt64Ty(c.getContext()));
 		c.builder.CreateStore(LPadExn, current_version->exception_slot);
-		c.builder.CreateStore(c.new_long(c.exception_line).v, current_version->exception_line_slot);
+		c.builder.CreateStore(c.new_long(c.exception_line.top()).v, current_version->exception_line_slot);
 		landingPadInst->addClause(catchAllSelector);
 		auto catcher = c.find_catcher();
 		if (catcher) {
