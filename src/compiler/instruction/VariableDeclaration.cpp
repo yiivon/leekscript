@@ -91,12 +91,12 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 		if (expressions[i] != nullptr) {
 
 			Value* ex = expressions[i];
-			auto val = ex->compile(c);
-			ex->compile_end(c);
 
-			if (dynamic_cast<Function*>(ex) and not val.t.is_closure()) {
+			if (dynamic_cast<Function*>(ex) and not ex->type.is_closure()) {
 				continue;
 			}
+			auto val = ex->compile(c);
+			ex->compile_end(c);
 
 			auto val_type = ex->type;
 			if (val_type.is_mpz_ptr()) val_type = Type::mpz();
@@ -109,12 +109,10 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			if (not val.t.is_mpz_ptr()) {
 				c.add_function_var(var);
 			}
-			if (not dynamic_cast<Function*>(ex) or val.t.is_closure()) {
-				if (ex->type.is_mpz_ptr()) {
-					val = c.insn_load(val);
-				}
-				c.insn_store(var, val);
+			if (ex->type.is_mpz_ptr()) {
+				val = c.insn_load(val);
 			}
+			c.insn_store(var, val);
 		} else {
 			auto var = c.create_and_add_var(name, Type::null());
 			c.insn_store(var, c.new_null());
