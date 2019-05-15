@@ -279,8 +279,8 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 
 	// Compile the array
 	((ArrayAccess*) this)->compiled_array = [&]() {
-		if (auto la = dynamic_cast<LeftValue*>(array)) {
-			return c.insn_load(la->compile_l(c));
+		if (array->isLeftValue()) {
+			return c.insn_load(static_cast<LeftValue*>(array)->compile_l(c));
 		} else {
 			return array->compile(c);
 		}
