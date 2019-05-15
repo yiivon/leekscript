@@ -179,6 +179,7 @@ Compiler::value For::compile(Compiler& c) const {
 
 Instruction* For::clone() const {
 	auto f = new For();
+	f->token = token;
 	for (const auto& i : inits) {
 		f->inits.push_back(i->clone());
 	}

@@ -14,6 +14,7 @@ class SemanticVar;
 class For : public Instruction {
 public:
 
+	std::shared_ptr<Token> token;
 	std::vector<Instruction*> inits;
 	Value* condition;
 	std::vector<Instruction*> increments;

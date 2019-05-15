@@ -1110,7 +1110,7 @@ Match::Pattern SyntaxicAnalyzer::eatMatchPattern() {
 
 Instruction* SyntaxicAnalyzer::eatFor() {
 
-	eat(TokenType::FOR);
+	auto for_token = eat_get(TokenType::FOR);
 
 	bool parenthesis = false;
 	if (t->type == TokenType::OPEN_PARENTHESIS) {
@@ -1143,6 +1143,7 @@ Instruction* SyntaxicAnalyzer::eatFor() {
 
 		// for inits; condition; increments { body }
 		auto f = new For();
+		f->token.reset(for_token);
 
 		// init
 		f->inits = inits;
