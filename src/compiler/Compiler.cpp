@@ -1825,10 +1825,9 @@ Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::va
 }
 
 Compiler::value Compiler::insn_invoke(Type return_type, std::vector<Compiler::value> args, llvm::Function* function) const {
-	// std::cout << "insn_invoke " << args << std::endl;
 	std::vector<llvm::Value*> llvm_args;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		// assert(args[i].t.llvm_type(*this) == args[i].v->getType());
+		assert(args[i].t.llvm_type(*this) == args[i].v->getType());
 		llvm_args.push_back(args[i].v);
 	}
 	auto continueBlock = llvm::BasicBlock::Create(getContext(), "cont", F);
