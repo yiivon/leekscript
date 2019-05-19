@@ -118,14 +118,6 @@ Compiler::value Compiler::new_mpz() const {
 Compiler::value Compiler::new_const_string(std::string s, std::string name) const {
 	return { builder.CreateGlobalStringPtr(s, name), Type::i8().pointer() };
 }
-
-Compiler::value Compiler::new_pointer(const void* p, Type type) const {
-	// TODO
-	// Remove this method
-	assert(type.is_pointer());
-	auto longp = llvm::ConstantInt::get(getContext(), llvm::APInt(64, (long) p, false));
-	return { builder.CreateCast(llvm::Instruction::CastOps::PtrToInt, longp, type.llvm_type(*this)), type };
-}
 Compiler::value Compiler::new_null_pointer() const {
 	return { llvm::ConstantPointerNull::get((llvm::PointerType*) Type::any().llvm_type(*this)), Type::any() };
 }

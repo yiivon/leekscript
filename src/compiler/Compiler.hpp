@@ -164,7 +164,6 @@ public:
 	value new_long(long l) const;
 	value new_mpz() const;
 	value new_const_string(std::string s, std::string name) const;
-	value new_pointer(const void* p, Type type) const;
 	value new_null_pointer() const;
 	value new_function(Type type) const;
 	value new_function(llvm::Function* f, Type type) const;
