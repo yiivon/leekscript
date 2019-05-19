@@ -168,6 +168,7 @@ public:
 	value new_null_pointer() const;
 	value new_function(Type type) const;
 	value new_function(llvm::Function* f, Type type) const;
+	value new_function(std::string name, Type type) const;
 	value new_closure(llvm::Function* f, Type type, std::vector<value> captures) const;
 	value new_class(std::string name) const;
 	value new_object() const;

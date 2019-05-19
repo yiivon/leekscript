@@ -136,6 +136,11 @@ Compiler::value Compiler::new_function(llvm::Function* f, Type type) const {
 	auto fun = insn_convert({ f, type }, Type::i8().pointer());
 	return insn_call(type, {fun}, "Function.new");
 }
+Compiler::value Compiler::new_function(std::string name, Type type) const {
+	auto ptr = get_symbol(name, type);
+	auto fun = insn_convert(ptr, Type::i8().pointer());
+	return insn_call(type, {fun}, "Function.new");
+}
 Compiler::value Compiler::new_closure(llvm::Function* f, Type type, std::vector<Compiler::value> captures) const {
 	// std::cout << "new_closure " << captures << std::endl;
 	auto fun = insn_convert({ f, type }, Type::i8().pointer());
