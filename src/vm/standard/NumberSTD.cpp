@@ -179,6 +179,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::long_(), {Type::any()}, _long},
 	});
 	method("abs", {
+		{Type::any(), {Type::any()}, (void*) abs_ptr},
 		{Type::real(), {Type::any()}, abs},
 		{Type::long_(), {Type::long_()}, abs},
 		{Type::integer(), {Type::integer()}, abs},
@@ -839,6 +840,9 @@ Compiler::value NumberSTD::_long(Compiler& c, std::vector<Compiler::value> args,
 	return c.to_long(args[0]);
 }
 
+LSValue* NumberSTD::abs_ptr(LSValue* x) {
+	return LSNumber::get(std::abs(((LSNumber*) x)->value));
+}
 Compiler::value NumberSTD::abs(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_abs(args[0]);
 	c.insn_delete_temporary(args[0]);
