@@ -6,7 +6,7 @@
 namespace ls {
 
 Object::Object() {
-	type = Type::object();
+	type = Type::tmp_object();
 	type.temporary = true;
 }
 

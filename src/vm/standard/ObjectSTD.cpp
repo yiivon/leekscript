@@ -45,7 +45,7 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	Type map_fun_type = Type::fun(Type::any(), {Type::any()});
 	auto map_fun = &LSObject::ls_map<LSFunction*>;
 	method("map", {
-		{Type::object(), {Type::object(), map_fun_type}, (void*) map_fun}
+		{Type::tmp_object(), {Type::object(), map_fun_type}, (void*) map_fun}
 	});
 	method("keys", {
 		{Type::array(Type::string()), {Type::object()}, (void*) &LSObject::ls_get_keys}

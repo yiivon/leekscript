@@ -90,7 +90,7 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 	}
 	if (name == "Object") {
 		auto callable = new Callable(name);
-		callable->add_version({ "Object", Type::fun(Type::array(Type::any()), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
+		callable->add_version({ "Object", Type::fun(Type::tmp_object(), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
 			return c.new_object();
 		}, {}, {}, nullptr });
 		return callable;
