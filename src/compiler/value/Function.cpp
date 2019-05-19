@@ -428,7 +428,7 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 	}
 	if (versions.find(full_args) == versions.end()) {
 		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
-		return c.new_pointer(LSNull::get(), Type::null());
+		return c.new_null_pointer();
 	}
 	auto version = versions.at(full_args);
 	// Compile version if needed
