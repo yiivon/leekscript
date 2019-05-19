@@ -128,6 +128,10 @@ StringSTD::StringSTD() : Module("String") {
 	method("isPalindrome", {
 		{Type::boolean(), {Type::const_string()}, (void*) &LSString::is_palindrome},
 	});
+	method("left", {
+		{Type::tmp_string(), {Type::const_string(), Type::integer()}, (void*) string_left},
+		{Type::tmp_string(), {Type::tmp_string(), Type::integer()}, (void*) string_left_tmp},
+	});
 	method("length", {
 		{Type::integer(), {Type::const_string()}, (void*) string_length},
 	});
@@ -144,6 +148,10 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	method("reverse", {
 		{Type::string(), {Type::const_string()}, (void*) &LSString::ls_tilde},
+	});
+	method("right", {
+		{Type::tmp_string(), {Type::const_string(), Type::integer()}, (void*) string_right},
+		{Type::tmp_string(), {Type::tmp_string(), Type::integer()}, (void*) string_right_tmp},
 	});
 	method("substring", {
 		{Type::string(), {Type::const_string(), Type::const_integer(), Type::const_integer()}, (void*) string_substring},
@@ -455,6 +463,24 @@ Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> ar
 		return {};
 	});
 	return c.insn_load(result);
+}
+
+LSValue* StringSTD::string_right(LSString* string, int pos) {
+	auto r = new LSString(string->substr(string->size() - std::min(string->size(), (size_t) std::max(0, pos))));
+	LSValue::delete_temporary(string);
+	return r;
+}
+LSValue* StringSTD::string_right_tmp(LSString* string, int pos) {
+	return &string->operator = (string->substr(string->size() - std::min(string->size(), (size_t) std::max(0, pos))));
+}
+
+LSValue* StringSTD::string_left(LSString* string, int pos) {
+	auto r = new LSString(string->substr(0, std::max(0, pos)));
+	LSValue::delete_temporary(string);
+	return r;
+}
+LSValue* StringSTD::string_left_tmp(LSString* string, int pos) {
+	return &string->operator = (string->substr(0, std::max(0, pos)));
 }
 
 }

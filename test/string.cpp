@@ -299,4 +299,18 @@ void Test::test_strings() {
 
 	section("v1 string charAt");
 	code_v1("charAt('hello', 3)").equals("'l'");
+
+	section("String.left()");
+	code("'bonjour'.left(0)").equals("''");
+	code("'bonjour'.left(2)").equals("'bo'");
+	code("'bonjour'.left(4)").equals("'bonj'");
+	code("'bonjour'.left(1000)").equals("'bonjour'");
+	code("'bonjour'.left(-1)").equals("''");
+
+	section("String.right()");
+	code("'bonjour'.right(0)").equals("''");
+	code("'bonjour'.right(2)").equals("'ur'");
+	code("'bonjour'.right(4)").equals("'jour'");
+	code("'bonjour'.right(1000)").equals("'bonjour'");
+	code("'bonjour'.right(-1)").equals("''");
 }
