@@ -47,7 +47,10 @@ bool LSString::iterator_end(LSString::iterator* it) {
 	bool end = it->buffer[it->pos] == 0;
 	return end;
 }
-LSString* LSString::constructor(char* s) {
+LSString* LSString::constructor_1() {
+	return new LSString();
+}
+LSString* LSString::constructor_2(char* s) {
 	return new LSString(s);
 }
 

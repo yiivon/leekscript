@@ -76,7 +76,8 @@ StringSTD::StringSTD() : Module("String") {
 	 * Constructor
 	 */
 	constructor_({
-		{Type::tmp_string(), {Type::i8().pointer()}, (void*) &LSString::constructor}
+		{Type::tmp_string(), {}, (void*) &LSString::constructor_1},
+		{Type::tmp_string(), {Type::i8().pointer()}, (void*) &LSString::constructor_2},
 	});
 
 	/*

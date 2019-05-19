@@ -177,7 +177,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return c.new_bool(0);
 				}
 				else if (vv->name == "String") {
-					return c.new_pointer(new LSString(""), type);
+					return c.insn_call(Type::tmp_string(), {}, "String.new");
 				}
 				else if (vv->name == "Array") {
 					return c.new_array({}, {});
@@ -205,7 +205,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						if (fc->arguments.size() > 0) {
 							return fc->arguments[0]->compile(c);
 						}
-						return c.new_pointer(new LSString(""), type);
+						return c.insn_call(Type::tmp_string(), {}, "String.new");
 					}
 					if (vv->name == "Array") {
 						return c.new_array({}, {});

@@ -25,7 +25,8 @@ public:
 	static u_int32_t iterator_get(iterator* it);
 	static int iterator_key(LSString::iterator* it);
 	static bool iterator_end(iterator* it);
-	static LSString* constructor(char* s);
+	static LSString* constructor_1();
+	static LSString* constructor_2(char* s);
 
 	LSString();
 	LSString(char);
