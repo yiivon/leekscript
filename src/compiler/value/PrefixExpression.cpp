@@ -77,7 +77,7 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 			else if (vv->name == "String") type = Type::tmp_string();
 			else if (vv->name == "Array") type = Type::array();
 			else if (vv->name == "Object") type = Type::tmp_object();
-			else if (vv->name == "Set") type = Type::set(Type::any());
+			else if (vv->name == "Set") type = Type::tmp_set(Type::any());
 		}
 		else if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
 			if (VariableValue* vv = dynamic_cast<VariableValue*>(fc->function)) {
@@ -92,7 +92,7 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 				else if (vv->name == "String") type = Type::tmp_string();
 				else if (vv->name == "Array") type = Type::array();
 				else if (vv->name == "Object") type = Type::tmp_object();
-				else if (vv->name == "Set") type = Type::set(Type::any());
+				else if (vv->name == "Set") type = Type::tmp_set(Type::any());
 			}
 		}
 	}
@@ -186,7 +186,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 					return c.new_object();
 				}
 				else if (vv->name == "Set") {
-					return c.new_pointer(new LSSet<LSValue*>(), type);
+					return c.new_set();
 				}
 			}
 			if (FunctionCall* fc = dynamic_cast<FunctionCall*>(expression)) {
@@ -214,7 +214,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 						return c.new_object();
 					}
 					if (vv->name == "Set") {
-						return c.new_pointer(new LSSet<LSValue*>(), type);
+						return c.new_set();
 					}
 				}
 				// new A(), convert to new A

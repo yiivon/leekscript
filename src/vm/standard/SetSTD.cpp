@@ -21,9 +21,9 @@ SetSTD::SetSTD() : Module("Set") {
 	 * Constructor
 	 */
 	constructor_({
-		{Type::tmp_set(Type::any()), {Type::integer()}, (void*) &LSSet<LSValue*>::constructor},
-		{Type::tmp_set(Type::real()), {Type::integer()}, (void*) &LSSet<double>::constructor},
-		{Type::tmp_set(Type::integer()), {Type::integer()}, (void*) &LSSet<int>::constructor},
+		{Type::tmp_set(Type::any()), {}, (void*) &LSSet<LSValue*>::constructor},
+		{Type::tmp_set(Type::real()), {}, (void*) &LSSet<double>::constructor},
+		{Type::tmp_set(Type::integer()), {}, (void*) &LSSet<int>::constructor},
 	});
 
 	/*

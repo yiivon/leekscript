@@ -97,10 +97,7 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 	}
 	if (name == "Set") {
 		auto callable = new Callable(name);
-		auto type = Type::fun(Type::set(Type::any()), {});
-		callable->add_version({ "Set", type, [&](Compiler& c, std::vector<Compiler::value>, bool) {
-			return c.new_pointer(new LSSet<LSValue*>(), Type::set(Type::any()));
-		}, {}, {}, nullptr });
+		callable->add_version({ "Set.new", Type::fun(Type::tmp_set(Type::any()), {}), (void*) 12 });
 		return callable;
 	}
 	if (type == Type::clazz()) {

@@ -154,6 +154,10 @@ Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
 	return insn_call(Type::any(), {clazz}, "Object.new.1");
 }
 
+Compiler::value Compiler::new_set() const {
+	return insn_call(Type::tmp_set(), {}, "Set.new");
+}
+
 Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {
 	auto folded_type = element_type.fold();
 	auto array_type = Type::tmp_array(element_type);
