@@ -16,9 +16,7 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	readonly.readonly = true;
 	readonly.native = true;
 
-	static_field("readonly", Type::object(), [&](Compiler& c) {
-		return c.new_pointer(&ObjectSTD::readonly, Type::object());
-	});
+	static_field("readonly", Type::object(), (void*) get_readonly);
 
 	/*
 	 * Constructor
@@ -58,6 +56,10 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	method("add_field", {
 		{{}, {Type::object(), Type::i8().pointer(), Type::any()}, (void*) &LSObject::addField}
 	});
+}
+
+LSValue* ObjectSTD::get_readonly() {
+	return &ObjectSTD::readonly;
 }
 
 Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args, bool) {
