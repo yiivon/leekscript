@@ -230,7 +230,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 				access_function = f.fun;
 			}
 			if (f.native_fun != nullptr) {
-				native_access_function = std::string("Value.") + f.name;
+				native_access_function = object_class->name + "." + f.name;
 			}
 		} catch (...) {
 			// Attribute in Value?
