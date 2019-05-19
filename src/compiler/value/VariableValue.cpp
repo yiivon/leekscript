@@ -187,7 +187,7 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 						type = m.second.at(0).type;
 						found = true;
 						for (const auto& i : m.second) {
-							versions.insert({i.type.arguments(), i.addr});
+							versions.insert({i.type.arguments(), clazz.first + "." + name});
 						}
 						class_method = true;
 						break;
@@ -292,10 +292,8 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		return static_access_function(c);
 	}
 	if (class_method) {
-		void* fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
-		auto function = new LSFunction(fun);
-		((VariableValue*) this)->ls_function = function;
-		return c.new_pointer(ls_function, type);
+		const auto& fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
+		return c.new_function(fun, type);
 	}
 
 	Compiler::value v;
@@ -348,7 +346,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 
 Compiler::value VariableValue::compile_version(Compiler& c, std::vector<Type> version) const {
 	if (class_method) {
-		return c.new_pointer(new LSFunction(versions.at(version)), Type::fun());
+		return c.new_function(versions.at(version), Type::fun());
 	}
 	auto f = dynamic_cast<Function*>(var->value);
 	if (f) {

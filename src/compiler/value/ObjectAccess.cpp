@@ -185,14 +185,13 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 		if (std_class->methods.find(field->content) != std_class->methods.end()) {
 
 			auto method = std_class->methods.at(field->content);
+			int i = 0;
 			for (const auto& m : method) {
-				// if (!m.native) continue;
-				// auto args = m.type.arguments();
-				// args.insert(args.begin(), m.obj_type);
-				versions.insert({m.type.arguments(), m.addr});
+				versions.insert({m.type.arguments(), std_class->name + "." + field->content + "." + std::to_string(i)});
+				i++;
 			}
 			type = Type::fun(method[0].type.return_type(), method[0].type.arguments(), (ObjectAccess*) this);
-			default_version_fun = method[0].addr;
+			default_version_fun = std_class->name + "." + field->content;
 			class_method = true;
 			methods = method;
 			found = true;
@@ -249,19 +248,19 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 				try {
 					for (const auto& m : object_class->methods.at(field->content)) {
 						if (!m.addr) continue;
-						versions.insert({m.type.arguments(), m.addr});
+						versions.insert({m.type.arguments(), object_class->name + "." + field->content});
 					}
 					type = object_class->methods.at(field->content)[0].type;
-					default_version_fun = object_class->methods.at(field->content)[0].addr;
+					default_version_fun = object_class->name + "." + field->content;
 					class_method = true;
 				} catch (...) {
 					try {
 						for (const auto& m : value_class->methods.at(field->content)) {
 							if (!m.addr) continue;
-							versions.insert({m.type.arguments(), m.addr});
+							versions.insert({m.type.arguments(), "Value." + field->content});
 						}
 						type = value_class->methods.at(field->content)[0].type;
-						default_version_fun = value_class->methods.at(field->content)[0].addr;
+						default_version_fun = "Value." + field->content;
 						class_field = true;
 					} catch (...) {
 						if (object_class->name != "Object") {
@@ -304,10 +303,8 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 	// Class method : 12.abs
 	if (class_method || class_field) {
-		void* fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
-		auto function = new LSFunction(fun);
-		((ObjectAccess*) this)->ls_function = function;
-		return c.new_pointer(ls_function, type);
+		const auto& fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
+		return c.new_function(fun, type);
 	}
 
 	// Default : object.attr
@@ -319,7 +316,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> version) const {
 	if (class_method) {
-		return c.new_pointer(new LSFunction(versions.at(version)), Type::fun());
+		return c.new_function(versions.at(version), Type::fun());
 	}
 	assert(false && "ObjectAccess::compile_version must be on a class method.");
 }

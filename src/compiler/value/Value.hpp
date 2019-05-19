@@ -22,8 +22,8 @@ public:
 	std::map<std::string, Type> attr_types;
 	bool constant;
 	bool parenthesis = false;
-	void* default_version_fun = nullptr;
-	std::map<std::vector<Type>, void*> versions;
+	std::string default_version_fun;
+	std::map<std::vector<Type>, std::string> versions;
 	bool is_void = false;
 	bool throws = false;
 
