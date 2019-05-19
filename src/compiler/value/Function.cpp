@@ -260,6 +260,9 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& ar
 void Function::set_version(const std::vector<Type>& args, int level) {
 	// std::cout << "Function::set_version " << args << " " << level << std::endl;
 	if (level == 1) {
+		for (const auto& t : args) {
+			if (t.is_placeholder()) return;
+		}
 		version = args;
 		// Fill with defaultValues
 		for (size_t i = version.size(); i < arguments.size(); ++i) {
@@ -427,8 +430,8 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) c
 		}
 	}
 	if (versions.find(full_args) == versions.end()) {
-		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
-		return c.new_null_pointer();
+		std::cout << "/!\\ Version " << args << " not found!" << std::endl;
+		assert(false);
 	}
 	auto version = versions.at(full_args);
 	// Compile version if needed
