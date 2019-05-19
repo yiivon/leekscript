@@ -143,27 +143,27 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::integer(), {Type::const_string()}, (void*) &LSString::ls_size},
 	});
 	method("replace", {
-		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) replace},
-		{Type::string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) v1_replace, LEGACY},
+		{Type::tmp_string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) replace},
+		{Type::tmp_string(), {Type::const_string(), Type::const_string(), Type::const_string()}, (void*) v1_replace, LEGACY},
 	});
 	method("reverse", {
-		{Type::string(), {Type::const_string()}, (void*) &LSString::ls_tilde},
+		{Type::tmp_string(), {Type::const_string()}, (void*) &LSString::ls_tilde},
 	});
 	method("right", {
 		{Type::tmp_string(), {Type::const_string(), Type::integer()}, (void*) string_right},
 		{Type::tmp_string(), {Type::tmp_string(), Type::integer()}, (void*) string_right_tmp},
 	});
 	method("substring", {
-		{Type::string(), {Type::const_string(), Type::const_integer(), Type::const_integer()}, (void*) string_substring},
+		{Type::tmp_string(), {Type::const_string(), Type::const_integer(), Type::const_integer()}, (void*) string_substring},
 	});
 	method("toArray", {
-		{Type::array(Type::any()), {Type::const_string()}, (void*) string_toArray},
+		{Type::tmp_array(Type::any()), {Type::const_string()}, (void*) string_toArray},
 	});
 	method("toLower", {
-		{Type::string(), {Type::const_string()}, (void*) string_toLower},
+		{Type::tmp_string(), {Type::const_string()}, (void*) string_toLower},
 	});
 	method("toUpper", {
-		{Type::string(), {Type::const_string()}, (void*) string_toUpper},
+		{Type::tmp_string(), {Type::const_string()}, (void*) string_toUpper},
 	});
 	method("split", {
 		{Type::tmp_array(Type::string()), {Type::const_string(), Type::const_string()}, (void*) string_split},
@@ -184,10 +184,10 @@ StringSTD::StringSTD() : Module("String") {
 	});
 	auto map_fun = &LSString::ls_map<LSFunction*>;
 	method("map", {
-		{Type::string(), {Type::const_string(), Type::fun(Type::string(), {Type::string()})}, (void*) map_fun},
+		{Type::tmp_string(), {Type::const_string(), Type::fun(Type::string(), {Type::string()})}, (void*) map_fun},
 	});
 	method("sort", {
-		{Type::string(), {Type::const_string()}, (void*) &LSString::sort},
+		{Type::tmp_string(), {Type::const_string()}, (void*) &LSString::sort},
 	});
 	method("wordCount", {
 		{Type::any(), {Type::const_string()}, (void*) &LSString::word_count_ptr},
@@ -202,7 +202,7 @@ StringSTD::StringSTD() : Module("String") {
 		{Type::tmp_string(), {Type::const_string(), Type::integer()}, (void*) &LSString::codePointAt}
 	});
 	method("isize", {
-		{Type::string(), {Type::const_string()}, (void*) &LSString::int_size}
+		{Type::integer(), {Type::const_string()}, (void*) &LSString::int_size}
 	});
 	method("iterator_begin", {
 		{{}, {Type::const_string(), Type::i8().pointer()}, (void*) iterator_begin}
