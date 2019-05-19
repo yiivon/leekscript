@@ -75,8 +75,8 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 	}
 	if (name == "String") {
 		auto callable = new Callable(name);
-		callable->add_version({ "String.new", Type::fun(Type::string(), {}), (void*) 12 });
-		callable->add_version({ "String", Type::fun(Type::string(), {Type::string()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
+		callable->add_version({ "String.new", Type::fun(Type::tmp_string(), {}), (void*) 12 });
+		callable->add_version({ "String", Type::fun(Type::tmp_string(), {Type::string()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
 			return args[0];
 		}, {}, {}, nullptr });
 		return callable;

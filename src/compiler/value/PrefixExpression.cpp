@@ -74,7 +74,7 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 		if (VariableValue* vv = dynamic_cast<VariableValue*>(expression)) {
 			if (vv->name == "Number") type = Type::integer();
 			else if (vv->name == "Boolean") type = Type::boolean();
-			else if (vv->name == "String") type = Type::string();
+			else if (vv->name == "String") type = Type::tmp_string();
 			else if (vv->name == "Array") type = Type::array();
 			else if (vv->name == "Object") type = Type::object();
 			else if (vv->name == "Set") type = Type::set(Type::any());
@@ -89,7 +89,7 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 					}
 				}
 				else if (vv->name == "Boolean") type = Type::boolean();
-				else if (vv->name == "String") type = Type::string();
+				else if (vv->name == "String") type = Type::tmp_string();
 				else if (vv->name == "Array") type = Type::array();
 				else if (vv->name == "Object") type = Type::object();
 				else if (vv->name == "Set") type = Type::set(Type::any());
