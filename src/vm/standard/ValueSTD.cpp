@@ -31,6 +31,10 @@ ValueSTD::ValueSTD() : Module("Value") {
 		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) eq},
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_equals}
 	});
+	operator_("===", {
+		{Type::const_any(), Type::const_any(), Type::boolean(), (void*) triple_eq, LEGACY},
+		{Type::const_any(), Type::const_any(), Type::boolean(), op_triple_equals, LEGACY}
+	});
 	operator_("!=", {
 		{Type::const_any(), Type::const_any(), Type::boolean(), op_not_equals}
 	});
@@ -315,6 +319,16 @@ Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value
 
 Compiler::value ValueSTD::op_equals(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_eq(args[0], args[1]);
+}
+Compiler::value ValueSTD::op_triple_equals(Compiler& c, std::vector<Compiler::value> args, bool) {
+	if (args[0].t.id() > 0 and args[1].t.id() > 0 and args[0].t.id() != args[1].t.id()) {
+		c.insn_delete_temporary(args[0]);
+		c.insn_delete_temporary(args[1]);
+		return c.new_bool(false);
+	}
+	auto a = c.insn_eq(c.insn_typeof(args[0]), c.insn_typeof(args[1]));
+	auto b = c.insn_eq(args[0], args[1]);
+	return c.insn_and(a, b);
 }
 
 Compiler::value ValueSTD::op_not_equals(Compiler& c, std::vector<Compiler::value> args, bool) {
@@ -789,6 +803,9 @@ bool ValueSTD::to_bool(LSValue* x) {
 }
 bool ValueSTD::eq(LSValue* x, LSValue* y) {
 	return *x == *y;
+}
+bool ValueSTD::triple_eq(LSValue* x, LSValue* y) {
+	return x->type == y->type and *x == *y ;
 }
 bool ValueSTD::lt(LSValue* x, LSValue* y) {
 	return *x < *y;

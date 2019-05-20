@@ -195,6 +195,19 @@ void Test::test_operators() {
 	code("[true, ''][0] == 1").equals("true");
 	code("[false, ''][0] == 0").equals("true");
 
+	header("Triple equals ===");
+	code_v1("1 === 1").equals("true");
+	code_v1("1 === '1'").equals("false");
+	code_v1("1 === true").equals("false");
+	code_v1("0 === 0").equals("true");
+	code_v1("0 === '0'").equals("false");
+	code_v1("0 === false").equals("false");
+	code_v1("[1, ''][0] === 1").equals("true");
+	code_v1("[0, ''][0] === 0").equals("true");
+	code_v1("[1, ''][0] === true").equals("false");
+	code_v1("[0, ''][0] === false").equals("false");
+	code("1 === 1").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::integer().to_string(), "===", ls::Type::integer().to_string()});
+
 	/*
 	 * Random operators
 	 */

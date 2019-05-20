@@ -24,6 +24,7 @@ public:
 	 */
 	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args, bool);
 	static Compiler::value op_equals(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value op_triple_equals(Compiler& c, std::vector<Compiler::value> args, bool);
 	static Compiler::value op_not_equals(Compiler& c, std::vector<Compiler::value> args, bool);
 	static Compiler::value op_lt(Compiler& c, std::vector<Compiler::value> args, bool);
 	static Compiler::value op_le(Compiler& c, std::vector<Compiler::value> args, bool);
@@ -109,6 +110,7 @@ public:
 	static bool is_null(LSValue* x);
 	static bool to_bool(LSValue* x);
 	static bool eq(LSValue* x, LSValue* y);
+	static bool triple_eq(LSValue* x, LSValue* y);
 	static bool lt(LSValue* x, LSValue* y);
 	static bool le(LSValue* x, LSValue* y);
 	static bool gt(LSValue* x, LSValue* y);

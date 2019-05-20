@@ -197,6 +197,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 
 	// Don't use old stuff for boolean, /, and bit operators
 	if ((v1->type == Type::boolean() and op->type != TokenType::EQUAL) 
+		or op->type == TokenType::TRIPLE_EQUAL
 		or op->type == TokenType::PLUS or op->type == TokenType::MINUS 
 		or op->type == TokenType::TIMES or op->type == TokenType::DIVIDE 
 		or op->type == TokenType::BIT_AND or op->type == TokenType::PIPE or op->type == TokenType::BIT_XOR
