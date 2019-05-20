@@ -306,6 +306,7 @@ void Test::test_strings() {
 	code("'bonjour'.left(4)").equals("'bonj'");
 	code("'bonjour'.left(1000)").equals("'bonjour'");
 	code("'bonjour'.left(-1)").equals("''");
+	code("String.left('hello how are you?', 5)").equals("'hello'");
 
 	section("String.right()");
 	code("'bonjour'.right(0)").equals("''");
@@ -313,4 +314,5 @@ void Test::test_strings() {
 	code("'bonjour'.right(4)").equals("'jour'");
 	code("'bonjour'.right(1000)").equals("'bonjour'");
 	code("'bonjour'.right(-1)").equals("''");
+	code("String.right('hello how are you?', 8)").equals("'are you?'");
 }
