@@ -40,7 +40,7 @@ Program::~Program() {
 	}
 }
 
-VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions) {
+VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool assembly, bool pseudo_code, bool log_instructions) {
 
 	VM::Result result;
 
@@ -67,10 +67,9 @@ VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool asse
 	}
 
 	// Semantical analysis
-	Context context { ctx };
 	SemanticAnalyzer sem;
 	sem.vm = &vm;
-	sem.analyze(this, &context);
+	sem.analyze(this, ctx);
 
 	std::ostringstream oss;
 	print(oss, true);
@@ -126,7 +125,7 @@ VM::Result Program::compile_leekscript(VM& vm, const std::string& ctx, bool asse
 	return result;
 }
 
-VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions, bool ir) {
+VM::Result Program::compile(VM& vm, Context* ctx, bool assembly, bool pseudo_code, bool log_instructions, bool ir) {
 	this->vm = &vm;
 
 	if (ir) {
@@ -167,7 +166,6 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~", ">", "<", ">=", "<="};
 	std::vector<TokenType> token_types = {TokenType::PLUS, TokenType::MINUS, TokenType::TIMES, TokenType::TIMES, TokenType::DIVIDE, TokenType::DIVIDE, TokenType::POWER, TokenType::MODULO, TokenType::INT_DIV, TokenType::TILDE, TokenType::GREATER, TokenType::LOWER, TokenType::GREATER_EQUALS, TokenType::LOWER_EQUALS};
 	
-
 	auto o = std::find(ops.begin(), ops.end(), name);
 	if (o == ops.end()) return nullptr;
 
@@ -291,99 +289,5 @@ std::string Program::underline_code(Location location, Location focus) const {
 		+ before + UNDERLINE + underlined + END_STYLE + after
 		+ (ellipsis_right ? (C_GREY "[...]" END_COLOR) : "");
 }
-
-// void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
-
-	// User context variables
-	/*
-	if (toplevel) {
-		for (auto var : context.vars) {
-
-			string name = var.first;
-			LSValue* value = var.second;
-
-			jit_value_t jit_var = jit_value_create(c.F, LS_POINTER);
-			jit_value_t jit_val = LS_CREATE_POINTER(c.F, value);
-			jit_insn_store(c.F, jit_var, jit_val);
-
-			c.add_var(name, jit_var, Type(value->getRawType(), POINTER), false);
-
-			value->refs++;
-		}
-	}
-	*/
-
-	// jit_value_t res = main->body->compile(c).v;
-	// jit_insn_return(c.F, res);
-
-	/*
-	if (toplevel) {
-
-		// Push program res
-		jit_type_t array_sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
-		jit_value_t array = jit_insn_call_native(F, "new", (void*) &Program_create_array, array_sig, {}, 0, JIT_CALL_NOTHROW);
-
-		jit_type_t push_args_types[2] = {JIT_POINTER, JIT_POINTER};
-		jit_type_t push_sig_pointer = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
-
-		jit_value_t push_args[2] = {array, res};
-		jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, push_args, 2, 0);
-
-		VM::delete_obj(F, res);
-
-//		cout << "GLOBALS : " << globals.size() << endl;
-
-		for (auto g : c.get_vars()) {
-
-			string name = g.first;
-			Type type = globals_types[name];
-
-			if (globals_ref[name] == true) {
-//				cout << name << " is ref, continue" << endl;
-				continue;
-			}
-
-//			cout << "save in context : " << name << ", type: " << type << endl;
-//			cout << "jit_val: " << g.second << endl;
-
-			jit_value_t var_args[2] = {array, g.second};
-
-			if (type.nature == POINTER) {
-
-//				cout << "save pointer" << endl;
-				jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, var_args, 2, 0);
-
-//				cout << "delete global " << g.first << endl;
-				if (type.must_manage_memory()) {
-					VM::delete_obj(F, g.second);
-				}
-
-			} else {
-//				cout << "save value" << endl;
-				if (type.raw_type == RawType::NULLL) {
-					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
-					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
-					jit_insn_call_native(F, "push", (void*) &Program_push_null, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::boolean()) {
-					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
-					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
-					jit_insn_call_native(F, "push", (void*) &Program_push_boolean, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::INTEGER) {
-					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
-					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
-					jit_insn_call_native(F, "push", (void*) &Program_push_integer, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::real()) {
-					jit_type_t args_float[2] = {JIT_POINTER, JIT_REAL};
-					jit_type_t sig_push_float = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args_float, 2, 0);
-					jit_insn_call_native(F, "push", (void*) &Program_push_float, sig_push_float, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.is_function()) {
-					jit_insn_call_native(F, "push", (void*) &Program_push_function, push_sig_pointer, var_args, 2, JIT_CALL_NOTHROW);
-				}
-			}
-		}
-		jit_insn_return(F, array);
-	}
-	*/
-// }
 
 }

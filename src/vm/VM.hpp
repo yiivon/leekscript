@@ -47,7 +47,7 @@ public:
 		vm::ExceptionObj exception;
 		std::string program = "";
 		std::string value = "";
-		std::string context = "";
+		Context* context = nullptr;
 		long compilation_time = 0;
 		long compilation_time_ms = 0;
 		long execution_time = 0;
@@ -80,6 +80,7 @@ public:
 	long mpz_deleted = 0;
 	std::string file_name;
 	bool legacy;
+	Context* context = nullptr;
 
 	VM(bool v1 = false);
 	virtual ~VM();
@@ -88,7 +89,7 @@ public:
 	static void static_init();
 
 	/** Main execution function **/
-	Result execute(const std::string code, std::string ctx, std::string file_name, bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool execute_ir = false);
+	Result execute(const std::string code, Context* ctx, std::string file_name, bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool execute_ir = false);
 
 	/** Add a module **/
 	void add_module(Module* m);

@@ -7,15 +7,28 @@
 
 namespace ls {
 
+class ContextVar {
+public:
+	void* value;
+	Type type;
+};
+
 class Context {
 public:
 
+	Context();
 	Context(std::string ctx);
 	virtual ~Context();
 
-	std::map<std::string, ls::LSValue*> vars;
+	std::map<std::string, ContextVar> vars;
+
+	void add_variable(char* name, void* v, Type type);
 };
 
+}
+
+namespace std {
+	std::ostream& operator << (std::ostream&, const ls::Context*);
 }
 
 #endif

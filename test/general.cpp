@@ -26,7 +26,7 @@ void Test::test_general() {
 	delete semError;
 	// Print a program
 	auto program = new ls::Program("2 + 2", "test");
-	program->compile(vm, "{}");
+	program->compile(vm, nullptr);
 	std::cout << program << std::endl;
 	delete program;
 	// LSObject getField

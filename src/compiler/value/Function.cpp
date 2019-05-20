@@ -14,6 +14,7 @@
 #include "../semantic/Callable.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../../colors.h"
+#include "../../vm/Context.hpp"
 
 namespace ls {
 
@@ -521,6 +522,14 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 
 		c.builder.SetInsertPoint(block);
 
+		// Declare context vars
+		if (parent->is_main_function and c.vm->context) {
+			for (const auto& var : c.vm->context->vars) {
+				// std::cout << "Main function compile context var " << var.first << std::endl;
+				c.add_external_var(var.first, var.second.type);
+			}
+		}
+
 		// Create arguments
 		unsigned index = 0;
 		int offset = parent->captures.size() ? -1 : 0;
@@ -641,6 +650,13 @@ void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_
 		}
 		c.assert_value_ok(v);
 		c.insn_return(v);
+	}
+}
+
+void Function::export_context(const Compiler& c) const {
+	for (const auto& v : c.function_variables.back()) {
+		// std::cout << "var " << v.first << " " << v.second.t << std::endl;
+		c.export_context_variable(v.first, c.insn_load(v.second));
 	}
 }
 

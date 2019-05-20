@@ -82,6 +82,7 @@ public:
 	void compile_version_internal(Compiler& c, std::vector<Type> args, Version* version) const;
 	llvm::BasicBlock* get_landing_pad(const Compiler& c);
 	void compile_return(const Compiler& c, Compiler::value v, bool delete_variables = false) const;
+	void export_context(const Compiler& c) const;
 
 	virtual Value* clone() const override;
 };

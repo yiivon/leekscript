@@ -17,6 +17,7 @@
 #include "vm/LSValue.hpp"
 #include "util/Util.hpp"
 #include "../test/Test.hpp"
+#include "vm/Context.hpp"
 
 void print_errors(ls::VM::Result& result, std::ostream& os, bool json);
 void print_result(ls::VM::Result& result, const std::string& output, bool json, bool display_time, bool ops);
@@ -102,7 +103,7 @@ int main(int argc, char* argv[]) {
 		OutputStringStream oss;
 		if (output_json)
 			vm.output = &oss;
-		auto result = vm.execute(code, "{}", file_name, debug_mode, ops, assembly, pseudo_code, log_instructions, execute_ir);
+		auto result = vm.execute(code, nullptr, file_name, debug_mode, ops, assembly, pseudo_code, log_instructions, execute_ir);
 		vm.output = ls::VM::default_output;
 		print_result(result, oss.str(), output_json, display_time, ops);
 		return 0;
@@ -110,7 +111,8 @@ int main(int argc, char* argv[]) {
 
 	/** Interactive console mode */
 	std::cout << "~~~ LeekScript v2.0 ~~~" << std::endl;
-	std::string code, ctx = "{}";
+	std::string code;
+	ls::Context ctx;
 	ls::VM vm(v1);
 
 	while (!std::cin.eof()) {
@@ -118,10 +120,9 @@ int main(int argc, char* argv[]) {
 		std::cout << ">> ";
 		std::getline(std::cin, code);
 		// Execute
-		auto result = vm.execute(code, ctx, "(top-level)", debug_mode, ops);
+		auto result = vm.execute(code, &ctx, "(top-level)", debug_mode, ops, assembly, pseudo_code, log_instructions);
 		print_result(result, "", output_json, display_time, ops);
-		// Set new context
-		ctx = result.context;
+		// std::cout << &ctx << std::endl;
 	}
 	return 0;
 }

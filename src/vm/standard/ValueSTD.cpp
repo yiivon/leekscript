@@ -4,6 +4,8 @@
 #include "../value/LSString.hpp"
 #include "../value/LSNumber.hpp"
 #include "../LSValue.hpp"
+#include "../VM.hpp"
+#include "../Context.hpp"
 
 namespace ls {
 
@@ -288,6 +290,12 @@ ValueSTD::ValueSTD() : Module("Value") {
 	});
 	method("get_class", {
 		{Type::clazz(), {Type::any()}, (void*) get_class}
+	});
+	method("export_ctx_var", {
+		{{}, {Type::i8().pointer(), Type::any()}, (void*) export_context_variable},
+		{{}, {Type::i8().pointer(), Type::integer()}, (void*) export_context_variable_int},
+		{{}, {Type::i8().pointer(), Type::long_()}, (void*) export_context_variable_long},
+		{{}, {Type::i8().pointer(), Type::real()}, (void*) export_context_variable_real},
 	});
 }
 
@@ -829,6 +837,24 @@ int ValueSTD::get_int(LSNumber* x) {
 }
 LSValue* ValueSTD::get_class(LSValue* x) {
 	return x->getClass();
+}
+void ValueSTD::export_context_variable_int(char* name, int v) {
+	VM::current()->context->add_variable(name, (void*) v, Type::integer());
+}
+void ValueSTD::export_context_variable_long(char* name, long v) {
+	VM::current()->context->add_variable(name, (void*) v, Type::long_());
+}
+void ValueSTD::export_context_variable_real(char* name, double v) {
+	VM::current()->context->add_variable(name, reinterpret_cast<void*&>(v), Type::real());
+}
+void ValueSTD::export_context_variable(char* name, LSValue* v) {
+	auto n = LSValue::obj_count;
+	v = v->move_inc();
+	// Don't count the object cloned
+	if (LSValue::obj_count > n) {
+		LSValue::obj_count = n;
+	}
+	VM::current()->context->add_variable(name, v, Type::any());
 }
 
 }

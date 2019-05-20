@@ -35,18 +35,19 @@ Type SemanticVar::type() const {
 	return initial_type;
 }
 
-void SemanticAnalyzer::analyze(Program* program, Context*) {
+void SemanticAnalyzer::analyze(Program* program, Context* context) {
 
 	this->program = program;
 
 	enter_function(program->main);
 
 	// Add context variables
-	/*
-	for (auto var : context->vars) {
-		add_var(new Token(var.first), Type(var.second->getRawType(), ), nullptr, nullptr);
+	if (context) {
+		for (auto var : context->vars) {
+			// std::cout << "Add context var " << var.first << std::endl;
+			add_var(new Token(TokenType::IDENT, 0, 0, 0, var.first), var.second.type, nullptr, nullptr);
+		}
 	}
-	*/
 	program->analyze(this);
 	program->functions = functions;
 }

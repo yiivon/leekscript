@@ -98,7 +98,7 @@ void VM::add_module(Module* m) {
 	add_internal_var(m->name, const_class, m->clazz);
 }
 
-VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool log_instructions, bool execute_ir) {
+VM::Result VM::execute(const std::string code, Context* ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool log_instructions, bool execute_ir) {
 
 	// Reset
 	this->file_name = file_name;
@@ -116,6 +116,7 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	#if DEBUG_LEAKS
 		LSValue::objs().clear();
 	#endif
+	this->context = ctx;
 
 	auto program = new Program(code, file_name);
 
@@ -141,9 +142,8 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	}
 
 	// Execute
-	std::string value = "";
 	if (result.compilation_success) {
-
+		std::string value = "";
 		auto exe_start = std::chrono::high_resolution_clock::now();
 		try {
 			value = program->execute(*this);
@@ -228,7 +228,9 @@ void* VM::resolve_symbol(std::string name) {
 		}
 		// std::cout << "method = " << method << std::endl;
 		// std::cout << "version = " << version << std::endl;
-		if (internal_vars.find(module) != internal_vars.end()) {
+		if (module == "ctx") {
+			return &context->vars.at(method).value;
+		} else if (internal_vars.find(module) != internal_vars.end()) {
 			auto clazz = (LSClass*) internal_vars.at(module)->lsvalue;
 			if (method.substr(0, 8) == "operator") {
 				auto op = method.substr(8);

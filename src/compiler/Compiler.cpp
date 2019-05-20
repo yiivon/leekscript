@@ -1963,6 +1963,12 @@ Compiler::value Compiler::add_var(const std::string& name, Compiler::value value
 	return var;
 }
 
+Compiler::value Compiler::add_external_var(const std::string& name, Type type) {
+	auto var = get_symbol("ctx." + name, type.pointer());
+	variables.back()[name] = var;
+	return var;
+}
+
 Compiler::value Compiler::create_and_add_var(const std::string& name, Type type) {
 	// std::cout << "Compiler::create_and_add_var(" << name << ", " << type << ")" << std::endl;
 	auto var = create_entry(name, type.not_temporary());
@@ -1984,6 +1990,16 @@ void Compiler::remove_function_var(Compiler::value value) {
 			return;
 		}
 	}
+}
+
+void Compiler::export_context_variable(const std::string& name, Compiler::value v) const {
+	auto f = [&]() {
+		if (v.t.is_integer()) return "Value.export_ctx_var.1";
+		if (v.t.is_long()) return "Value.export_ctx_var.2";
+		if (v.t.is_real()) return "Value.export_ctx_var.3";
+		return "Value.export_ctx_var";
+	}();
+	insn_call({}, {new_const_string(name, "var"), v}, f);
 }
 
 Compiler::value Compiler::get_var(const std::string& name) {

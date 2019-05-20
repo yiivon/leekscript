@@ -366,6 +366,8 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 		v = c.get_var(name);
 	} else if (scope == VarScope::CAPTURE) {
 		v = c.insn_get_capture_l(capture_index, type);
+	} else if (scope == VarScope::INTERNAL) {
+		v = c.get_symbol(name, type);
 	} else { /* if (scope == VarScope::PARAMETER) */
 		v = c.insn_get_argument(name);
 	}

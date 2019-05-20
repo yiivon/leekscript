@@ -308,9 +308,11 @@ public:
 
 	// Variables
 	value add_var(const std::string& name, value value);
+	value add_external_var(const std::string& name, Type type);
 	value create_and_add_var(const std::string& name, Type type);
 	void add_function_var(const std::string& name, value value);
 	void remove_function_var(value value);
+	void export_context_variable(const std::string& name, Compiler::value v) const;
 
 	value get_var(const std::string& name);
 	void update_var(std::string& name, value value);

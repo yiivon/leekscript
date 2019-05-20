@@ -6,6 +6,8 @@
 
 namespace ls {
 
+Context::Context() {}
+
 Context::Context(std::string ctx) {
 
 	Json value = Json::parse(ctx);
@@ -17,4 +19,21 @@ Context::Context(std::string ctx) {
 
 Context::~Context() {}
 
+void Context::add_variable(char* name, void* v, Type type) {
+	vars.insert({ name, { v, type } });
+}
+
+}
+
+namespace std {
+	std::ostream& operator << (std::ostream& os, const ls::Context* context) {
+		os << "{";
+		int i = 0;
+		for (const auto& v : context->vars) {
+			if (i++ > 0) os << ", ";
+			os << v.first << ": " << v.second.value << " " << v.second.type;
+		}
+		os << "}";
+		return os;
+	}
 }

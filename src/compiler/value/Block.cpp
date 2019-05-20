@@ -141,6 +141,9 @@ Compiler::value Block::compile(Compiler& c) const {
 					return val;
 				}
 			}();
+			if (is_function_block and c.vm->context) {
+				c.fun->export_context(c);
+			}
 			c.leave_block();
 			if (is_function_block) {
 				c.fun->compile_return(c, return_value);
