@@ -532,7 +532,7 @@ bool LSNumber::eq(const LSValue* v) const {
 		auto number = static_cast<const LSNumber*>(v);
 		return this->value == number->value;
 	}
-	return false;
+	return v->type == BOOLEAN and static_cast<const LSBoolean*>(v)->value == this->value;
 }
 
 bool LSNumber::lt(const LSValue* v) const {

@@ -88,7 +88,7 @@ bool LSBoolean::eq(const LSValue* v) const {
 		auto boolean = static_cast<const LSBoolean*>(v);
 		return boolean->value == this->value;
 	}
-	return false;
+	return v->type == NUMBER and static_cast<const LSNumber*>(v)->value == this->value;
 }
 
 bool LSBoolean::lt(const LSValue* v) const {

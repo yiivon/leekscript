@@ -187,6 +187,14 @@ void Test::test_operators() {
 	code("{} >= []").equals("true");
 	code("{} >= {}").equals("true");
 
+	header("Equals ==");
+	code("1 == true").equals("true");
+	code("0 == false").equals("true");
+	code("[1, ''][0] == true").equals("true");
+	code("[0, ''][0] == false").equals("true");
+	code("[true, ''][0] == 1").equals("true");
+	code("[false, ''][0] == 0").equals("true");
+
 	/*
 	 * Random operators
 	 */
