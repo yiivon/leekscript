@@ -25,6 +25,7 @@ void Return::analyze(SemanticAnalyzer* analyzer, const Type&) {
 	if (expression != nullptr) {
 		expression->analyze(analyzer);
 		return_type = expression->type;
+		throws = expression->throws;
 	}
 }
 
