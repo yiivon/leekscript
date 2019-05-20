@@ -136,7 +136,6 @@ void print_result(ls::VM::Result& result, const std::string& output, bool json, 
 		res = Util::replace_all(res, "\n", "");
 		std::cout << "{\"success\":true,\"ops\":" << result.operations
 			<< ",\"time\":" << result.execution_time
-			<< ",\"ctx\":" << result.context
 			<< ",\"res\":\"" << res << "\""
 			<< ",\"output\":" << Json(output)
 			<< "}" << std::endl;

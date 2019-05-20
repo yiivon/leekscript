@@ -160,7 +160,6 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 	}
 
 	// Set results
-	result.context = ctx;
 	result.compilation_time = std::chrono::duration_cast<std::chrono::nanoseconds>(compilation_end - compilation_start).count();
 	result.compilation_time_ms = (((double) result.compilation_time / 1000) / 1000);
 	result.operations = VM::operations;

@@ -47,7 +47,6 @@ public:
 		vm::ExceptionObj exception;
 		std::string program = "";
 		std::string value = "";
-		Context* context = nullptr;
 		long compilation_time = 0;
 		long compilation_time_ms = 0;
 		long execution_time = 0;
