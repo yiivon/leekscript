@@ -124,25 +124,21 @@ Compiler::value Block::compile(Compiler& c) const {
 				c.insn_delete_temporary(val);
 			}
 		} else {
-			if (not val.v) {
-				c.leave_block();
-				return val;
-			} else if (type.must_manage_memory() and val.v != nullptr) {
-				auto ret = c.insn_move(val);
-				c.leave_block();
-				return ret;
-			} else if (mpz_pointer) {
-				auto v = c.insn_load(temporary_mpz ? val : c.insn_clone_mpz(val));
-				c.leave_block();
-				return v;
-			} else if (type.is_mpz()) {
-				auto v = temporary_mpz ? val : c.insn_clone_mpz(val);
-				c.leave_block();
-				return v;
-			} else {
-				c.leave_block();
-				return val;
-			}
+			auto return_value = [&]() {
+				if (not val.v) {
+					return val;
+				} else if (type.must_manage_memory() and val.v != nullptr) {
+					return c.insn_move(val);
+				} else if (mpz_pointer) {
+					return c.insn_load(temporary_mpz ? val : c.insn_clone_mpz(val));
+				} else if (type.is_mpz()) {
+					return temporary_mpz ? val : c.insn_clone_mpz(val);
+				} else {
+					return val;
+				}
+			}();
+			c.leave_block();
+			return return_value;
 		}
 	}
 	c.leave_block();
