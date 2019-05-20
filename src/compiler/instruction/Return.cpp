@@ -36,11 +36,9 @@ Compiler::value Return::compile(Compiler& c) const {
 	if (expression != nullptr) {
 		auto r = expression->compile(c);
 		r = c.insn_move(r);
-		c.delete_function_variables();
-		c.fun->compile_return(c, r);
+		c.fun->compile_return(c, r, true);
 	} else {
-		c.delete_function_variables();
-		c.fun->compile_return(c, {});
+		c.fun->compile_return(c, {}, true);
 	}
 	c.insert_new_generation_block();
 	return {};

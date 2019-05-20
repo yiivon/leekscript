@@ -55,7 +55,7 @@ public:
 	Value* eatValue(bool comma_list = false);
 	bool isObject();
 	Value* eatBlockOrObject();
-	Block* eatBlock();
+	Block* eatBlock(bool is_function_block = false);
 	Object* eatObject();
 	Value* eatArrayOrMap();
 	Value* eatSetOrLowerOperator();

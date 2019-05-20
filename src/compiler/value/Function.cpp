@@ -543,9 +543,7 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 		}
 
 		if (compile_body) {
-			// Compile body
-			auto res = body->compile(c);
-			parent->compile_return(c, res);
+			body->compile(c);
 		} else {
 			parent->compile_return(c, {});
 		}
@@ -614,7 +612,7 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 	// std::cout << "Function '" << parent->name << "' compiled: " << value.v << std::endl;
 }
 
-void Function::compile_return(const Compiler& c, Compiler::value v) const {
+void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_variables) const {
 	c.assert_value_ok(v);
 	// Delete temporary mpz arguments
 	for (size_t i = 0; i < current_version->type.arguments().size(); ++i) {
@@ -623,6 +621,10 @@ void Function::compile_return(const Compiler& c, Compiler::value v) const {
 		if (current_version->type.argument(i) == Type::tmp_mpz_ptr()) {
 			c.insn_delete_mpz(arg);
 		}
+	}
+	// Delete function variables if needed
+	if (delete_variables) {
+		c.delete_function_variables();
 	}
 	// Return the value
 	if (current_version->type.return_type().is_void()) {

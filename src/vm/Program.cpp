@@ -174,7 +174,7 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 	auto f = new Function();
 	f->addArgument(new Token(TokenType::IDENT, 0, 1, 0, "x"), nullptr);
 	f->addArgument(new Token(TokenType::IDENT, 2, 1, 2, "y"), nullptr);
-	f->body = new Block();
+	f->body = new Block(true);
 	auto ex = new Expression();
 	ex->v1 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 0, 1, 0, "x"));
 	ex->v2 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 2, 1, 2, "y"));

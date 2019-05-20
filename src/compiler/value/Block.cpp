@@ -4,10 +4,11 @@
 #include "../instruction/Return.hpp"
 #include "../instruction/Throw.hpp"
 #include "../instruction/VariableDeclaration.hpp"
+#include "Function.hpp"
 
 namespace ls {
 
-Block::Block() {
+Block::Block(bool is_function_block) : is_function_block(is_function_block) {
 	type = {};
 }
 
@@ -117,6 +118,9 @@ Compiler::value Block::compile(Compiler& c) const {
 		if (instructions[i]->returning) {
 			// no need to compile after a return
 			c.leave_block(false); // Variables already deleted by the return instruction
+			if (is_function_block) {
+				c.fun->compile_return(c, {});
+			}
 			return {};
 		}
 		if (i < instructions.size() - 1) {
@@ -138,15 +142,22 @@ Compiler::value Block::compile(Compiler& c) const {
 				}
 			}();
 			c.leave_block();
+			if (is_function_block) {
+				c.fun->compile_return(c, return_value);
+			}
 			return return_value;
 		}
 	}
 	c.leave_block();
-	return {nullptr, {}};
+	if (is_function_block) {
+		c.fun->compile_return(c, {});
+	}
+	return {};
 }
 
 Value* Block::clone() const {
 	auto b = new Block();
+	b->is_function_block = is_function_block;
 	for (const auto& i : instructions) {
 		b->instructions.push_back(i->clone());
 	}

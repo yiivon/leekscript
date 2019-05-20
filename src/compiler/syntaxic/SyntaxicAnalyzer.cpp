@@ -64,7 +64,7 @@ Function* SyntaxicAnalyzer::analyze(std::vector<Token*>& tokens) {
 
 Block* SyntaxicAnalyzer::eatMain() {
 
-	auto block = new Block();
+	auto block = new Block(true);
 
 	while (true) {
 		if (t->type == TokenType::FINISHED) {
@@ -112,9 +112,9 @@ Value* SyntaxicAnalyzer::eatBlockOrObject() {
 	}
 }
 
-Block* SyntaxicAnalyzer::eatBlock() {
+Block* SyntaxicAnalyzer::eatBlock(bool is_function_block) {
 
-	Block* block = new Block();
+	Block* block = new Block(is_function_block);
 
 	bool brace = false;
 	if (t->type == TokenType::OPEN_BRACE) {
@@ -322,7 +322,7 @@ Function* SyntaxicAnalyzer::eatFunction() {
 		braces = true;
 	}
 
-	f->body = eatBlock();
+	f->body = eatBlock(true);
 
 	if (!braces) {
 		eat(TokenType::END);
@@ -732,7 +732,7 @@ Value* SyntaxicAnalyzer::eatValue(bool comma_list) {
 			Function* l = new Function();
 			l->lambda = true;
 			eat(TokenType::ARROW);
-			l->body = new Block();
+			l->body = new Block(true);
 			l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
 			return l;
 		}
@@ -867,7 +867,7 @@ Value* SyntaxicAnalyzer::eatLambdaContinue(bool parenthesis, Ident ident, Value*
 		parenthesis = false;
 	}
 	eat(TokenType::ARROW);
-	l->body = new Block();
+	l->body = new Block(true);
 	l->body->instructions.push_back(new ExpressionInstruction(eatExpression(false, false, nullptr, comma_list)));
 	if (parenthesis) {
 		eat(TokenType::CLOSING_PARENTHESIS);

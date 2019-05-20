@@ -10,12 +10,13 @@ namespace ls {
 class Block : public Value {
 public:
 
+	bool is_function_block = false;
 	std::vector<Instruction*> instructions;
 	bool temporary_mpz = false;
 	bool mpz_pointer = false;
 	bool was_reference = false;
 
-	Block();
+	Block(bool is_function_block = false);
 	virtual ~Block();
 
 	virtual void print(std::ostream&, int indent = 0, bool debug = false, bool condensed = false) const override;

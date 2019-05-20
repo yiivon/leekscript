@@ -81,7 +81,7 @@ public:
 	Compiler::value compile_default_version(Compiler&) const;
 	void compile_version_internal(Compiler& c, std::vector<Type> args, Version* version) const;
 	llvm::BasicBlock* get_landing_pad(const Compiler& c);
-	void compile_return(const Compiler& c, Compiler::value v) const;
+	void compile_return(const Compiler& c, Compiler::value v, bool delete_variables = false) const;
 
 	virtual Value* clone() const override;
 };
