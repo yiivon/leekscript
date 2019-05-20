@@ -107,7 +107,7 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 			}
 			// TODO we don't add mpz values to function vars because function vars doesn't work properly yet
 			if (not val.t.is_mpz_ptr()) {
-				c.add_function_var(var);
+				c.add_function_var(name, var);
 			}
 			if (ex->type.is_mpz_ptr()) {
 				val = c.insn_load(val);

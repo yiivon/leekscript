@@ -1896,7 +1896,7 @@ void Compiler::delete_variables_block(int deepness) {
 
 void Compiler::enter_function(llvm::Function* F, bool is_closure, Function* fun) {
 	variables.push_back(std::map<std::string, value> {});
-	function_variables.push_back(std::vector<value> {});
+	function_variables.push_back(std::map<std::string, value> {});
 	functions.push(F);
 	functions2.push(fun);
 	functions_blocks.push_back(0);
@@ -1942,7 +1942,7 @@ int Compiler::get_current_function_blocks() const {
 void Compiler::delete_function_variables() const {
 	for (const auto& v : function_variables.back()) {
 		// std::cout << "delete function variable " << v.t << std::endl;
-		insn_delete(insn_load(v));
+		insn_delete(insn_load(v.second));
 	}
 }
 bool Compiler::is_current_function_closure() const {
@@ -1970,17 +1970,20 @@ Compiler::value Compiler::create_and_add_var(const std::string& name, Type type)
 	return var;
 }
 
-void Compiler::add_function_var(Compiler::value value) {
+void Compiler::add_function_var(const std::string& name, Compiler::value value) {
 	assert(value.t.llvm_type(*this) == value.v->getType());
-	function_variables.back().push_back(value);
+	function_variables.back().insert({name, value});
 }
 
 void Compiler::remove_function_var(Compiler::value value) {
 	assert(value.t.llvm_type(*this) == value.v->getType());
 	auto& vars = function_variables.back();
-	auto position = std::find(vars.begin(), vars.end(), value);
-	if (position != vars.end())
-		vars.erase(position);
+	for (const auto& k : vars) {
+		if (k.second == value) {
+			vars.erase(k.first);
+			return;
+		}
+	}
 }
 
 Compiler::value Compiler::get_var(const std::string& name) {

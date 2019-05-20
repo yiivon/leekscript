@@ -88,7 +88,7 @@ public:
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<label*> loops_end_labels;
 	std::vector<label*> loops_cond_labels;
-	std::vector<std::vector<value>> function_variables;
+	std::vector<std::map<std::string, value>> function_variables;
 	std::vector<std::map<std::string, value>> variables;
 	std::vector<std::vector<std::vector<catcher>>> catchers;
 	bool output_assembly = false;
@@ -309,7 +309,7 @@ public:
 	// Variables
 	value add_var(const std::string& name, value value);
 	value create_and_add_var(const std::string& name, Type type);
-	void add_function_var(value value);
+	void add_function_var(const std::string& name, value value);
 	void remove_function_var(value value);
 
 	value get_var(const std::string& name);
