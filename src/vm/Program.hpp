@@ -32,7 +32,7 @@ public:
 	/*
 	 * Compile the program with a VM and a context (json)
 	 */
-	VM::Result compile(VM& vm, Context* context, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool ir = false);
+	VM::Result compile(VM& vm, Context* context = nullptr, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool ir = false);
 
 	VM::Result compile_leekscript(VM& vm, Context* ctx, bool assembly, bool pseudo_code, bool log_instructions);
 
