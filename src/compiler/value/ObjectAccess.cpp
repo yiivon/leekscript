@@ -189,7 +189,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 
 		if (std_class->static_fields.find(field->content) != std_class->static_fields.end()) {
 
-			auto mod_field = std_class->static_fields.at(field->content);
+			const auto& mod_field = std_class->static_fields.at(field->content);
 			type = mod_field.type;
 
 			if (mod_field.fun != nullptr) {
@@ -209,7 +209,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 	if (!found and object_class != nullptr) {
 		// Attribute : (x -> x).return
 		try {
-			auto f = object_class->fields.at(field->content);
+			const auto& f = object_class->fields.at(field->content);
 			type = f.type;
 			if (f.fun != nullptr) {
 				access_function = f.fun;
