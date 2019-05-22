@@ -195,6 +195,9 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 			if (mod_field.fun != nullptr) {
 				static_access_function = mod_field.fun;
 			}
+			if (mod_field.addr != nullptr) {
+				attr_addr = mod_field.addr;
+			}
 			if (mod_field.native_fun != nullptr) {
 				native_static_access_function = std_class->name + std::string(".") + mod_field.name;
 			}
@@ -285,6 +288,9 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		auto obj = object->compile(c);
 		object->compile_end(c);
 		return c.insn_call(type, {obj}, native_access_function);
+	}
+	if (attr_addr) {
+		return c.insn_load(c.get_symbol(object->to_string() + "." + field->content, type.pointer()));
 	}
 
 	// Class method : 12.abs

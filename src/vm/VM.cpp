@@ -58,7 +58,7 @@ VM::VM(bool v1) : compiler(this), legacy(v1) {
 	add_module(new ObjectSTD());
 	add_module(new FunctionSTD());
 	add_module(new ClassSTD());
-	add_module(new SystemSTD());
+	add_module(new SystemSTD(this));
 	add_module(new IntervalSTD());
 	add_module(new JsonSTD());
 
@@ -240,7 +240,11 @@ void* VM::resolve_symbol(std::string name) {
 					const auto& implems = clazz->methods.at(method);
 					return implems.versions.at(version).addr;
 				} else if (clazz->static_fields.find(method) != clazz->static_fields.end()) {
-					return clazz->static_fields.at(method).native_fun;
+					if (clazz->static_fields.at(method).native_fun) {
+						return clazz->static_fields.at(method).native_fun;
+					} else {
+						return clazz->static_fields.at(method).addr;
+					}
 				} else if (clazz->fields.find(method) != clazz->fields.end()) {
 					return clazz->fields.at(method).native_fun;
 				}
