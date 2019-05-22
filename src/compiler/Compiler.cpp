@@ -183,6 +183,7 @@ Compiler::value Compiler::create_entry(const std::string& name, Type type) const
 }
 
 Compiler::value Compiler::get_symbol(const std::string& name, Type type) const {
+	// std::cout << "get_symbol(" << name << ", " << type << ")" << std::endl;
 	Compiler::value ptr = { program->module->getGlobalVariable(name), type };
 	if (!ptr.v) {
 		auto t = type.llvm_type(*this)->getPointerElementType();
