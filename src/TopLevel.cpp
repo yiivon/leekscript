@@ -34,7 +34,8 @@ int main(int argc, char* argv[]) {
 
 	/** Generate the standard functions documentation */
 	if (argc > 1 && std::string(argv[1]) == "-doc") {
-		ls::Documentation().generate(std::cout);
+		ls::VM vm {};
+		ls::Documentation().generate(&vm, std::cout);
 		return 0;
 	}
 

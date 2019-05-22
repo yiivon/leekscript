@@ -7,9 +7,8 @@ namespace ls {
 
 class SystemSTD : public Module {
 public:
-	SystemSTD();
+	SystemSTD(const VM* vm);
 
-	static Compiler::value operations(Compiler& c);
 	static Compiler::value version(Compiler& c);
 	static long time();
 	static long millitime();

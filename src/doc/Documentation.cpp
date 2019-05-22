@@ -25,7 +25,7 @@ Documentation::Documentation() {}
 
 Documentation::~Documentation() {}
 
-void Documentation::generate(std::ostream& os, std::string lang) {
+void Documentation::generate(VM* vm, std::ostream& os, std::string lang) {
 
 	std::vector<Module*> modules;
 
@@ -38,7 +38,7 @@ void Documentation::generate(std::ostream& os, std::string lang) {
 	modules.push_back(new StringSTD());
 	modules.push_back(new IntervalSTD());
 	modules.push_back(new SetSTD());
-	modules.push_back(new SystemSTD());
+	modules.push_back(new SystemSTD(vm));
 	modules.push_back(new ClassSTD());
 	modules.push_back(new FunctionSTD());
 	modules.push_back(new JsonSTD());

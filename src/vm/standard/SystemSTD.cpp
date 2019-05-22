@@ -7,14 +7,14 @@
 
 namespace ls {
 
-SystemSTD::SystemSTD() : Module("System") {
+SystemSTD::SystemSTD(const VM* vm) : Module("System") {
 
 	static_field("version", Type::integer(), version);
-	static_field("operations", Type::integer(), operations);
-	static_field("time", Type::long_(), (void*) time);
-	static_field("milliTime", Type::long_(), (void*) millitime);
-	static_field("microTime", Type::long_(), (void*) microtime);
-	static_field("nanoTime", Type::long_(), (void*) nanotime);
+	static_field("operations", Type::integer(), (void*) &vm->operations);
+	static_field_fun("time", Type::long_(), (void*) time);
+	static_field_fun("milliTime", Type::long_(), (void*) millitime);
+	static_field_fun("microTime", Type::long_(), (void*) microtime);
+	static_field_fun("nanoTime", Type::long_(), (void*) nanotime);
 
 	method("print", {
 		{{}, {Type::const_any()}, (void*) print},
@@ -58,11 +58,6 @@ long SystemSTD::nanotime() {
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(
 		std::chrono::system_clock::now().time_since_epoch()
 	).count();
-}
-
-Compiler::value SystemSTD::operations(Compiler& c) {
-	auto ops_ptr = c.get_symbol("ops", Type::integer().pointer());
-	return c.insn_load(ops_ptr);
 }
 
 Compiler::value SystemSTD::version(Compiler& c) {
