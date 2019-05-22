@@ -17,25 +17,6 @@ class ModuleStaticField;
 class LSClass : public LSValue {
 public:
 
-	class Operator {
-	public:
-		Type object_type;
-		Type operand_type;
-		Type return_type;
-		void* addr = nullptr;
-		std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
-		int flags;
-		std::vector<TypeMutator*> mutators;
-		bool v1_addr;
-		bool v2_addr;
-		std::vector<Type> templates;
-
-		Operator(Type object_type, Type operand, Type return_type, void* addr, int flags = 0, std::initializer_list<TypeMutator*> mutators = {}, bool v1_addr = false, bool v2_addr = false, std::vector<Type> templates = {})
-			: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), flags(flags), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), templates(templates) {}
-		Operator(Type object_type, Type operand, Type return_type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::initializer_list<TypeMutator*> mutators = {}, bool v1_addr = false, bool v2_addr = false, std::vector<Type> templates = {})
-			: object_type(object_type), operand_type(operand), return_type(return_type), func(func), flags(flags), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), templates(templates) {}
-	};
-
 	class field {
 	public:
 		std::string name;
@@ -54,7 +35,7 @@ public:
 	std::map<std::string, field> fields;
 	std::map<std::string, Callable> methods;
 	std::map<std::string, ModuleStaticField> static_fields;
-	std::map<std::string, std::vector<Operator>> operators;
+	std::map<std::string, Callable> operators;
 
 	static LSValue* clazz;
 	static LSClass* constructor(char* name);
@@ -67,7 +48,7 @@ public:
 	void addField(std::string, Type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
 	void addField(std::string, Type, void* fun);
 	void addStaticField(ModuleStaticField f);
-	void addOperator(std::string name, std::vector<Operator>);
+	void addOperator(std::string name, std::initializer_list<CallableVersion>, std::vector<Type> templates = {});
 
 	LSFunction* getDefaultMethod(const std::string& name);
 	const Callable* getOperator(SemanticAnalyzer* analyzer, std::string& name, Type& object_type, Type& operand_type);

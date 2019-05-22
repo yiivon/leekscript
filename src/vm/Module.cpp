@@ -24,45 +24,33 @@ Module::~Module() {
 	//delete clazz;
 }
 
-void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl, std::vector<Type> templates) {
-	std::vector<LSClass::Operator> operators = impl;
-	clazz->addOperator(name, operators);
+void Module::operator_(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
+	clazz->addOperator(name, impl, templates);
 }
-
 void Module::field(std::string name, Type type) {
 	clazz->addField(name, type, nullptr);
 }
-
 void Module::field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
 	clazz->addField(name, type, fun);
 }
 void Module::field(std::string name, Type type, void* fun) {
 	clazz->addField(name, type, fun);
 }
-
 void Module::static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun) {
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 void Module::static_field(std::string name, Type type, void* fun) {
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
-
 void Module::constructor_(std::initializer_list<CallableVersion> methods) {
 	clazz->addMethod("new", methods);
 }
-
 void Module::method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<Type> templates) {
 	clazz->addMethod(name, methods, templates);
 }
-
-void Template::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
-	std::vector<LSClass::Operator> operators = impl;
-	for (auto& i : operators) {
-		i.templates = templates;
-	}
-	module->clazz->addOperator(name, operators);
+void Template::operator_(std::string name, std::initializer_list<CallableVersion> impl) {
+	module->clazz->addOperator(name, impl, templates);
 }
-
 void Template::method(std::string name, std::initializer_list<CallableVersion> methods) {
 	module->method(name, methods, templates);
 }

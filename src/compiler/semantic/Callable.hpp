@@ -41,6 +41,11 @@ public:
 	CallableVersion(Type return_type, std::initializer_list<Type> arguments, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::vector<TypeMutator*> mutators = {})
 		: type(Type::fun(return_type, arguments)), func(func), mutators(mutators), flags(flags) {}
 
+	CallableVersion(Type v1_type, Type v2_type, Type return_type, void* addr, int flags = 0, std::vector<TypeMutator*> mutators = {}, bool v1_addr = false, bool v2_addr = false)
+		: type(Type::fun(return_type, {v1_type, v2_type})), symbol(true), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags), addr(addr) {}
+	CallableVersion(Type v1_type, Type v2_type, Type return_type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::vector<TypeMutator*> mutators = {}, bool v1_addr = false, bool v2_addr = false)
+		: type(Type::fun(return_type, {v1_type, v2_type})), func(func), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
+
 	void apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments);
 	void resolve_templates(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 

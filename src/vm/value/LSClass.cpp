@@ -60,8 +60,15 @@ void LSClass::addStaticField(ModuleStaticField f) {
 	static_fields.insert({f.name, f});
 }
 
-void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
+void LSClass::addOperator(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
 	operators.insert({name, impl});
+	int i = 0;
+	for (auto& m : operators.at(name).versions) {
+		m.name = this->name + ".operator" + name + "." + std::to_string(i++);
+		if (templates.size()) {
+			m.templates = templates;
+		}
+	}
 }
 
 LSFunction* LSClass::getDefaultMethod(const std::string& name) {
@@ -79,36 +86,17 @@ const Callable* LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& na
 	if (name == "is not") name = "!=";
 	if (name == "÷") name = "/";
 	if (name == "×") name = "*";
-	std::vector<const Operator*> implementations;
-	std::vector<std::string> names;
+	auto callable = new Callable(name);
 	if (operators.find(name) != operators.end()) {
-		int i = 0;
-		for (const auto& impl : operators.at(name)) {
-			implementations.push_back(&impl);
-			names.push_back(this->name + ".operator" + name + "." + std::to_string(i));
-			i++;
+		for (const auto& impl : operators.at(name).versions) {
+			callable->add_version(impl);
 		}
 	}
 	auto parent = name == "Value" ? nullptr : LSValue::ValueClass;
 	if (parent && parent->operators.find(name) != parent->operators.end()) {
-		int i = 0;
-		for (const auto& impl : parent->operators.at(name)) {
-			implementations.push_back(&impl);
-			names.push_back("Value.operator" + name + "." + std::to_string(i));
-			i++;
+		for (const auto& impl : parent->operators.at(name).versions) {
+			callable->add_version(impl);
 		}
-	}
-	auto callable = new Callable(name);
-	int i = 0;
-	for (const auto& implementation : implementations) {
-		auto type = Type::fun(implementation->return_type, {implementation->object_type, implementation->operand_type});
-		auto version_name = names.at(i);
-		if (implementation->addr) {
-			callable->add_version({ version_name, type, implementation->mutators, implementation->templates, nullptr, false, implementation->v1_addr, implementation->v2_addr, implementation->flags });
-		} else {
-			callable->add_version({ version_name, type, implementation->func, implementation->mutators, implementation->templates, nullptr, false,  implementation->v1_addr, implementation->v2_addr, implementation->flags });
-		}
-		i++;
 	}
 	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
 	return callable;

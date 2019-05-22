@@ -40,7 +40,7 @@ public:
 	template<class... Args>
 	Template(Module* module, Args... templates) : module(module), templates({templates...}) {}
 
-	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
+	void operator_(std::string name, std::initializer_list<CallableVersion>);
 
 	void method(std::string name, std::initializer_list<CallableVersion> methods);
 };
@@ -56,7 +56,7 @@ public:
 	Module(std::string name);
 	virtual ~Module();
 
-	void operator_(std::string name, std::initializer_list<LSClass::Operator>, std::vector<Type> templates = {});
+	void operator_(std::string name, std::initializer_list<CallableVersion>, std::vector<Type> templates = {});
 
 	template<class... Args>
 	Template template_(Args... templates) {

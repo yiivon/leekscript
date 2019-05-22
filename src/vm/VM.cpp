@@ -234,7 +234,7 @@ void* VM::resolve_symbol(std::string name) {
 			if (method.substr(0, 8) == "operator") {
 				auto op = method.substr(8);
 				auto implems = clazz->operators.at(op);
-				return implems.at(version).addr;
+				return implems.versions.at(version).addr;
 			} else {
 				if (clazz->methods.find(method) != clazz->methods.end()) {
 					auto implems = clazz->methods.at(method);
