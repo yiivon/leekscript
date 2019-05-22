@@ -46,24 +46,12 @@ void Module::static_field(std::string name, Type type, void* fun) {
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 
-void Module::constructor_(std::initializer_list<MethodConstructor> methods) {
-	std::vector<Method> inst;
-	for (auto constr : methods) {
-		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.func, constr.mutators, std::vector<Type>{}, constr.flags);
-	}
-	if (!inst.empty()) {
-		clazz->addMethod("new", inst);
-	}
+void Module::constructor_(std::initializer_list<Method> methods) {
+	clazz->addMethod("new", methods);
 }
 
-void Module::method(std::string name, std::initializer_list<MethodConstructor> methodsConstr, std::vector<Type> templates) {
-	std::vector<Method> inst;
-	for (auto constr : methodsConstr) {
-		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.func, constr.mutators, templates, constr.flags);
-	}
-	if (!inst.empty()) {
-		clazz->addMethod(name, inst);
-	}
+void Module::method(std::string name, std::initializer_list<Method> methods, std::vector<Type> templates) {
+	clazz->addMethod(name, methods, templates);
 }
 
 void Template::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
@@ -74,8 +62,8 @@ void Template::operator_(std::string name, std::initializer_list<LSClass::Operat
 	module->clazz->addOperator(name, operators);
 }
 
-void Template::method(std::string name, std::initializer_list<MethodConstructor> methodsConstr) {
-	module->method(name, methodsConstr, templates);
+void Template::method(std::string name, std::initializer_list<Method> methods) {
+	module->method(name, methods, templates);
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {

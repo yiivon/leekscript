@@ -33,12 +33,17 @@ LSClass::~LSClass() {
 	}
 }
 
-void LSClass::addMethod(std::string name, std::vector<Method> method) {
-	methods.insert({name, method});
+void LSClass::addMethod(std::string name, std::initializer_list<Method> impl, std::vector<Type> templates) {
+	methods.insert({name, impl});
+	if (templates.size()) {
+		for (auto& m : methods.at(name)) {
+			m.templates = templates;
+		}
+	}
 
 	// Add first implementation as default method
-	auto fun = new LSFunction(method[0].addr);
-	Type type = method[0].type;
+	auto fun = new LSFunction(impl.begin()->addr);
+	Type type = impl.begin()->type;
 	static_fields.insert({name, ModuleStaticField(name, type, fun)});
 }
 

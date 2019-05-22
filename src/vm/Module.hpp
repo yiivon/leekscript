@@ -15,33 +15,26 @@ class LSValue;
 class Method {
 public:
 	Type type;
-	void* addr;
-	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func;
+	void* addr = nullptr;
+	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
 	std::vector<TypeMutator*> mutators;
 	std::vector<Type> templates;
 	int flags;
-	Method(Type return_type, std::vector<Type> args, void* addr, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, int flags = 0) {
+
+	Method(Type return_type, std::vector<Type> args, void* addr, int flags = 0, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}) {
 		this->addr = addr;
+		type = Type::fun(return_type, args);
+		this->mutators = mutators;
+		this->templates = templates;
+		this->flags = flags;
+	}
+	Method(Type return_type, std::vector<Type> args, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}) {
 		type = Type::fun(return_type, args);
 		this->func = func;
 		this->mutators = mutators;
 		this->templates = templates;
 		this->flags = flags;
 	}
-};
-
-class MethodConstructor {
-public:
-	Type return_type;
-	void* addr = nullptr;
-	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
-	std::vector<Type> args;
-	int flags;
-	std::vector<TypeMutator*> mutators;
-	MethodConstructor(Type return_type, std::initializer_list<Type> args, void* addr, int flags = 0, std::initializer_list<TypeMutator*> mutators = {})
-		: return_type(return_type), addr(addr), args(args), flags(flags), mutators(mutators) {}
-	MethodConstructor(Type return_type, std::initializer_list<Type> args, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::initializer_list<TypeMutator*> mutators = {})
-		: return_type(return_type), func(func), args(args), flags(flags), mutators(mutators) {}
 };
 
 class ModuleStaticField {
@@ -73,7 +66,7 @@ public:
 
 	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
 
-	void method(std::string name, std::initializer_list<MethodConstructor> methods);
+	void method(std::string name, std::initializer_list<Method> methods);
 };
 
 class Module {
@@ -94,9 +87,9 @@ public:
 		return { this, templates... };
 	}
 
-	void constructor_(std::initializer_list<MethodConstructor> methods);
+	void constructor_(std::initializer_list<Method> methods);
 
-	void method(std::string name, std::initializer_list<MethodConstructor> methods, std::vector<Type> templates = {});
+	void method(std::string name, std::initializer_list<Method> methods, std::vector<Type> templates = {});
 
 	void field(std::string name, Type type);
 	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
