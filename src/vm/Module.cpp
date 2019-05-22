@@ -6,6 +6,7 @@
 #include "LSValue.hpp"
 #include "value/LSClass.hpp"
 #include "value/LSNumber.hpp"
+#include "../compiler/semantic/Callable.hpp"
 
 namespace ls {
 
@@ -46,11 +47,11 @@ void Module::static_field(std::string name, Type type, void* fun) {
 	clazz->addStaticField(ModuleStaticField(name, type, fun));
 }
 
-void Module::constructor_(std::initializer_list<Method> methods) {
+void Module::constructor_(std::initializer_list<CallableVersion> methods) {
 	clazz->addMethod("new", methods);
 }
 
-void Module::method(std::string name, std::initializer_list<Method> methods, std::vector<Type> templates) {
+void Module::method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<Type> templates) {
 	clazz->addMethod(name, methods, templates);
 }
 
@@ -62,7 +63,7 @@ void Template::operator_(std::string name, std::initializer_list<LSClass::Operat
 	module->clazz->addOperator(name, operators);
 }
 
-void Template::method(std::string name, std::initializer_list<Method> methods) {
+void Template::method(std::string name, std::initializer_list<CallableVersion> methods) {
 	module->method(name, methods, templates);
 }
 
@@ -117,10 +118,10 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 	os << "},\"methods\":{";
 	e = 0;
 	for (auto& m : clazz->methods) {
-		std::vector<Method>& impl = m.second;
+		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";
-		impl[0].type.toJson(os);
+		impl.versions[0].type.toJson(os);
 
 		if (translation_map.find(m.first) != translation_map.end()) {
 			Json json = translation_map[m.first];
@@ -140,7 +141,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";
-		impl[0].type.toJson(os);
+		impl.versions[0].type.toJson(os);
 
 		if (translation_map.find(m.first) != translation_map.end()) {
 			Json json = translation_map[m.first];

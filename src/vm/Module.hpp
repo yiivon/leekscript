@@ -11,31 +11,7 @@
 namespace ls {
 
 class LSValue;
-
-class Method {
-public:
-	Type type;
-	void* addr = nullptr;
-	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
-	std::vector<TypeMutator*> mutators;
-	std::vector<Type> templates;
-	int flags;
-
-	Method(Type return_type, std::vector<Type> args, void* addr, int flags = 0, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}) {
-		this->addr = addr;
-		type = Type::fun(return_type, args);
-		this->mutators = mutators;
-		this->templates = templates;
-		this->flags = flags;
-	}
-	Method(Type return_type, std::vector<Type> args, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}) {
-		type = Type::fun(return_type, args);
-		this->func = func;
-		this->mutators = mutators;
-		this->templates = templates;
-		this->flags = flags;
-	}
-};
+class CallableVersion;
 
 class ModuleStaticField {
 public:
@@ -66,7 +42,7 @@ public:
 
 	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
 
-	void method(std::string name, std::initializer_list<Method> methods);
+	void method(std::string name, std::initializer_list<CallableVersion> methods);
 };
 
 class Module {
@@ -87,9 +63,9 @@ public:
 		return { this, templates... };
 	}
 
-	void constructor_(std::initializer_list<Method> methods);
+	void constructor_(std::initializer_list<CallableVersion> methods);
 
-	void method(std::string name, std::initializer_list<Method> methods, std::vector<Type> templates = {});
+	void method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<Type> templates = {});
 
 	void field(std::string name, Type type);
 	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);

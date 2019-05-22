@@ -7,6 +7,7 @@
 #include "../../type/Template_type.hpp"
 #include "../value/Function.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
+#include "../../vm/Module.hpp"
 
 namespace ls {
 
@@ -100,6 +101,13 @@ CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type>
 		}
 	}
 	return best;
+}
+
+bool Callable::is_compatible(int argument_count) const {
+	for (const auto& version : versions) {
+		if (version.type.arguments().size() == (size_t) argument_count) return true;
+	}
+	return false;
 }
 
 void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments) {

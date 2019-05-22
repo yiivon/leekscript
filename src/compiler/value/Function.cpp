@@ -15,6 +15,7 @@
 #include "../instruction/VariableDeclaration.hpp"
 #include "../../colors.h"
 #include "../../vm/Context.hpp"
+#include "../../vm/Module.hpp"
 
 namespace ls {
 
@@ -391,7 +392,7 @@ void Function::must_return_any(SemanticAnalyzer*) {
 	generate_default_version = true;
 }
 
-Callable* Function::get_callable(SemanticAnalyzer*) const {
+Callable* Function::get_callable(SemanticAnalyzer*, int argument_count) const {
 	auto callable = new Callable("<function>");
 	int flags = default_version->body->throws ? Module::THROWS : 0;
 	callable->add_version({ "<default>", default_version->type, default_version, {}, {}, nullptr, false, false, false, flags });

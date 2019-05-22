@@ -33,14 +33,16 @@ LSClass::~LSClass() {
 	}
 }
 
-void LSClass::addMethod(std::string name, std::initializer_list<Method> impl, std::vector<Type> templates) {
+void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
 	methods.insert({name, impl});
-	if (templates.size()) {
-		for (auto& m : methods.at(name)) {
+	methods.at(name).name = this->name + "." + name;
+	int i = 0;
+	for (auto& m : methods.at(name).versions) {
+		m.name = this->name + "." + name + "." + std::to_string(i++);
+		if (templates.size()) {
 			m.templates = templates;
 		}
 	}
-
 	// Add first implementation as default method
 	auto fun = new LSFunction(impl.begin()->addr);
 	Type type = impl.begin()->type;

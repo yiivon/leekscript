@@ -50,7 +50,7 @@ Location ArrayAccess::location() const {
 	return {array->location().start, close_bracket->location.end};
 }
 
-Callable* ArrayAccess::get_callable(SemanticAnalyzer*) const {
+Callable* ArrayAccess::get_callable(SemanticAnalyzer*, int argument_count) const {
 	auto callable = new Callable("<aa>");
 	// std::cout << "Array access get callable " << type << std::endl;
 	if (type.is_function()) {

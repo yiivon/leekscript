@@ -58,7 +58,7 @@ Location FunctionCall::location() const {
 	return {function->location().start, closing_parenthesis->location.end};
 }
 
-Callable* FunctionCall::get_callable(SemanticAnalyzer*) const {
+Callable* FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
 	auto callable = new Callable("<fc>");
 	std::vector<Type> arguments_types;
 	for (const auto& argument : arguments) {
@@ -93,7 +93,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "FC function " << function->version_type(arguments_types) << std::endl;
 
 	// Retrieve the callable version
-	callable = function->get_callable(analyzer);
+	callable = function->get_callable(analyzer, arguments_types.size());
 	if (not function->type.can_be_callable()) {
 		analyzer->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}

@@ -5,7 +5,6 @@
 #include "../value/Value.hpp"
 #include "../../vm/TypeMutator.hpp"
 #include "../value/Function.hpp"
-#include "../../vm/Module.hpp"
 
 namespace ls {
 
@@ -24,6 +23,7 @@ public:
 	bool v1_addr = false;
 	bool v2_addr = false;
 	int flags = 0;
+	void* addr = nullptr;
 
 	CallableVersion(std::string name, Type type, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
 		: name(name), type(type), object(object), symbol(true), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {
@@ -35,6 +35,11 @@ public:
 		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
 	CallableVersion(std::string name, Type type, Function::Version* f, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
 		: name(name), type(type), object(object), user_fun(f), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
+	
+	CallableVersion(Type return_type, std::initializer_list<Type> arguments, void* addr, int flags = 0, std::vector<TypeMutator*> mutators = {})
+		: type(Type::fun(return_type, arguments)), symbol(true), mutators(mutators), flags(flags), addr(addr) {}
+	CallableVersion(Type return_type, std::initializer_list<Type> arguments, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::vector<TypeMutator*> mutators = {})
+		: type(Type::fun(return_type, arguments)), func(func), mutators(mutators), flags(flags) {}
 
 	void apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments);
 	void resolve_templates(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
@@ -52,6 +57,7 @@ public:
 	Callable(std::initializer_list<CallableVersion> versions) : name("?"), versions(versions) {}
 	void add_version(CallableVersion v);
 	CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
+	bool is_compatible(int argument_count) const;
 };
 
 }

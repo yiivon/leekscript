@@ -7,6 +7,7 @@
 #include "../../type/Type.hpp"
 #include "../../compiler/Compiler.hpp"
 #include "../TypeMutator.hpp"
+#include "../../compiler/semantic/Callable.hpp"
 
 namespace ls {
 
@@ -51,7 +52,7 @@ public:
 	std::string name;
 
 	std::map<std::string, field> fields;
-	std::map<std::string, std::vector<Method>> methods;
+	std::map<std::string, Callable> methods;
 	std::map<std::string, ModuleStaticField> static_fields;
 	std::map<std::string, std::vector<Operator>> operators;
 
@@ -62,7 +63,7 @@ public:
 
 	virtual ~LSClass();
 
-	void addMethod(std::string, std::initializer_list<Method>, std::vector<Type> templates = {});
+	void addMethod(std::string, std::initializer_list<CallableVersion>, std::vector<Type> templates = {});
 	void addField(std::string, Type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
 	void addField(std::string, Type, void* fun);
 	void addStaticField(ModuleStaticField f);

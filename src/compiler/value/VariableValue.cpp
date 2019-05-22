@@ -40,7 +40,7 @@ Location VariableValue::location() const {
 	return token->location;
 }
 
-Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
+Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count) const {
 	if (name == "~") {
 		auto callable = new Callable(name);
 		auto T = Type::template_("T");
@@ -112,7 +112,7 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 		if (var->callable) return var->callable;
 		if (var->value) {
 			auto callable = new Callable(var->name);
-			auto c = var->value->get_callable(analyzer);
+			auto c = var->value->get_callable(analyzer, argument_count);
 			for (const auto& v : c->versions) {
 				auto v2 = v;
 				v2.value = this;
@@ -129,7 +129,7 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 				for (const auto& m : cl->methods) {
 					if (m.first == name) {
 						int j = 0;
-						for (const auto& i : m.second) {
+						for (const auto& i : m.second.versions) {
 							auto t = Type::fun(i.type.return_type(), i.type.arguments(), this);
 							auto version_name = clazz.second->name + "." + name + "." + std::to_string(j);
 							if (i.addr) {
@@ -184,9 +184,9 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 				const auto& cl = (LSClass*) clazz.second->lsvalue;
 				for (const auto& m : cl->methods) {
 					if (m.first == name) {
-						type = m.second.at(0).type;
+						type = m.second.versions.at(0).type;
 						found = true;
-						for (const auto& i : m.second) {
+						for (const auto& i : m.second.versions) {
 							versions.insert({i.type.arguments(), clazz.first + "." + name});
 						}
 						class_method = true;

@@ -19,7 +19,7 @@ public:
 	std::string object_class_name;
 	std::string class_name;
 	bool class_method = false;
-	std::vector<Method> methods;
+	Callable* callable = nullptr;
 	bool class_field = false;
 	void* attr_addr;
 	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;
@@ -39,7 +39,7 @@ public:
 
 	void set_version(const std::vector<Type>& args, int level) override;
 	bool will_take(SemanticAnalyzer*, const std::vector<Type>&, int level) override;
-	virtual Callable* get_callable(SemanticAnalyzer*) const;
+	virtual Callable* get_callable(SemanticAnalyzer*, int argument_count) const;
 	virtual Type version_type(std::vector<Type>) const override;
 	virtual void analyze(SemanticAnalyzer*) override;
 
