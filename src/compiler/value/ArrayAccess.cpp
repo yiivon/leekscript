@@ -101,7 +101,8 @@ void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 			std::string k = "<key 2>";
 			analyzer->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
 		}
-		type = array->type.add_temporary();
+		type = array->type;
+		type.temporary = true;
 
 	} else if (array->type.is_array() or array->type.is_string() or array->type.is_interval()) {
 		if (not key->type.can_be_numeric()) {
