@@ -87,15 +87,18 @@ const Callable* LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& na
 	if (name == "÷") name = "/";
 	if (name == "×") name = "*";
 	auto callable = new Callable(name);
-	if (operators.find(name) != operators.end()) {
-		for (const auto& impl : operators.at(name).versions) {
+	auto i = operators.find(name);
+	if (i != operators.end()) {
+		for (const auto& impl : i->second.versions) {
 			callable->add_version(impl);
 		}
 	}
-	auto parent = name == "Value" ? nullptr : LSValue::ValueClass;
-	if (parent && parent->operators.find(name) != parent->operators.end()) {
-		for (const auto& impl : parent->operators.at(name).versions) {
-			callable->add_version(impl);
+	if (name != "Value") {
+		auto i = LSValue::ValueClass->operators.find(name);
+		if (i != LSValue::ValueClass->operators.end()) {
+			for (const auto& impl : i->second.versions) {
+				callable->add_version(impl);
+			}
 		}
 	}
 	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
