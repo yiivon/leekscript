@@ -11,9 +11,8 @@ class ObjectSTD : public Module {
 public:
 	ObjectSTD();
 
-	static LSObject readonly;
+	static LSObject* readonly;
 	static LSNumber* readonly_value;
-	static LSValue* get_readonly();
 
 	static Compiler::value in_any(Compiler& c, std::vector<Compiler::value> args, bool);
 	static LSValue* object_new(LSClass* clazz);

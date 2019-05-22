@@ -5,18 +5,18 @@
 
 namespace ls {
 
-LSObject ObjectSTD::readonly;
+LSObject* ObjectSTD::readonly = new LSObject();
 LSNumber* ObjectSTD::readonly_value = LSNumber::get(12);
 
 ObjectSTD::ObjectSTD() : Module("Object") {
 
 	LSObject::object_class = clazz;
 
-	readonly.addField("v", readonly_value);
-	readonly.readonly = true;
-	readonly.native = true;
+	readonly->addField("v", readonly_value);
+	readonly->readonly = true;
+	readonly->native = true;
 
-	static_field("readonly", Type::object(), (void*) get_readonly);
+	static_field("readonly", Type::object(), (void*) &readonly);
 
 	/*
 	 * Constructor
@@ -56,10 +56,6 @@ ObjectSTD::ObjectSTD() : Module("Object") {
 	method("add_field", {
 		{{}, {Type::object(), Type::i8().pointer(), Type::any()}, (void*) &LSObject::addField}
 	});
-}
-
-LSValue* ObjectSTD::get_readonly() {
-	return &ObjectSTD::readonly;
 }
 
 Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args, bool) {
