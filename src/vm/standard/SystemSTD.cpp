@@ -16,7 +16,7 @@ SystemSTD::SystemSTD() : Module("System") {
 	static_field("microTime", Type::long_(), (void*) microtime);
 	static_field("nanoTime", Type::long_(), (void*) nanotime);
 
-	method("print", Method::Static, {
+	method("print", {
 		{{}, {Type::const_any()}, (void*) print},
 		{{}, {Type::mpz_ptr()}, (void*) print_mpz},
 		{{}, {Type::tmp_mpz_ptr()}, (void*) print_mpz_tmp},

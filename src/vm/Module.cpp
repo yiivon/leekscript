@@ -56,12 +56,9 @@ void Module::constructor_(std::initializer_list<MethodConstructor> methods) {
 	}
 }
 
-void Module::method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methodsConstr, std::vector<Type> templates) {
+void Module::method(std::string name, std::initializer_list<MethodConstructor> methodsConstr, std::vector<Type> templates) {
 	std::vector<Method> inst;
 	for (auto constr : methodsConstr) {
-		// if (opt == Method::Instantiate || opt == Method::Both) {
-		// 	assert(constr.args.size() > 0); // must be at least one argument to be the object used in instance
-		// }
 		inst.emplace_back(constr.return_type, constr.args, constr.addr, constr.func, constr.mutators, templates, constr.flags);
 	}
 	if (!inst.empty()) {
@@ -77,8 +74,8 @@ void Template::operator_(std::string name, std::initializer_list<LSClass::Operat
 	module->clazz->addOperator(name, operators);
 }
 
-void Template::method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methodsConstr) {
-	module->method(name, opt, methodsConstr, templates);
+void Template::method(std::string name, std::initializer_list<MethodConstructor> methodsConstr) {
+	module->method(name, methodsConstr, templates);
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {

@@ -28,9 +28,6 @@ public:
 		this->templates = templates;
 		this->flags = flags;
 	}
-	enum Option {
-		Static, Instantiate, Both
-	};
 };
 
 class MethodConstructor {
@@ -76,8 +73,7 @@ public:
 
 	void operator_(std::string name, std::initializer_list<LSClass::Operator>);
 
-	void method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methods);
-	void method(std::string name, std::initializer_list<MethodConstructor> methods) { method(name, Method::Both, methods); }
+	void method(std::string name, std::initializer_list<MethodConstructor> methods);
 };
 
 class Module {
@@ -100,8 +96,7 @@ public:
 
 	void constructor_(std::initializer_list<MethodConstructor> methods);
 
-	void method(std::string name, Method::Option opt, std::initializer_list<MethodConstructor> methods, std::vector<Type> templates = {});
-	void method(std::string name, std::initializer_list<MethodConstructor> methods, std::vector<Type> templates = {}) { method(name, Method::Both, methods, templates); }
+	void method(std::string name, std::initializer_list<MethodConstructor> methods, std::vector<Type> templates = {});
 
 	void field(std::string name, Type type);
 	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);

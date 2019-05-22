@@ -171,11 +171,11 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::integer(), {Type::const_integer()}, ValueSTD::copy},
 		{Type::mpz(), {Type::mpz()}, ValueSTD::copy},
 	});
-	method("int", Method::Static, {
+	method("int", {
 		{Type::integer(), {Type::any()}, _int},
 		{Type::integer(), {Type::real()}, _int}
 	});
-	method("long", Method::Static, {
+	method("long", {
 		{Type::long_(), {Type::any()}, _long},
 	});
 	method("abs", {
@@ -293,13 +293,13 @@ NumberSTD::NumberSTD() : Module("Number") {
 		{Type::integer(), {Type::real()}, round_real},
 		{Type::integer(), {Type::integer()}, round_int}
 	});
-	method("rand", Method::Static, {
+	method("rand", {
 		{Type::real(), {}, (void*) rand01},
 	});
-	method("randInt", Method::Static, {
+	method("randInt", {
 		{Type::integer(), {Type::integer(), Type::integer()}, (void*) rand_int},
 	});
-	method("randFloat", Method::Static, {
+	method("randFloat", {
 		{Type::real(), {Type::real(), Type::real()}, (void*) rand_real},
 	});
 	method("signum", {
