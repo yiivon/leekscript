@@ -46,17 +46,17 @@ void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion>
 	// Add first implementation as default method
 	auto fun = new LSFunction(impl.begin()->addr);
 	Type type = impl.begin()->type;
-	static_fields.insert({name, ModuleStaticField(name, type, fun)});
+	static_fields.insert({name, {name, type, fun}});
 }
 
 void LSClass::addField(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
-	fields.insert({name, field(name, type, fun, nullptr)});
+	fields.insert({name, {name, type, fun, nullptr}});
 }
 void LSClass::addField(std::string name, Type type, void* fun) {
-	fields.insert({name, field(name, type, fun, nullptr)});
+	fields.insert({name, {name, type, fun, nullptr}});
 }
 
-void LSClass::addStaticField(ModuleStaticField f) {
+void LSClass::addStaticField(field f) {
 	static_fields.insert({f.name, f});
 }
 

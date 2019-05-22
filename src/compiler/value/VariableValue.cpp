@@ -189,7 +189,7 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 				for (const auto& c : cl->static_fields) {
 					if (c.first == name) {
 						type = c.second.type;
-						static_access_function = c.second.fun;
+						static_access_function = c.second.static_fun;
 						found = true;
 						break;
 					}

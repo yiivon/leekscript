@@ -37,13 +37,13 @@ void Module::field(std::string name, Type type, void* fun) {
 	clazz->addField(name, type, fun);
 }
 void Module::static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun) {
-	clazz->addStaticField(ModuleStaticField(name, type, fun));
+	clazz->addStaticField({name, type, fun});
 }
 void Module::static_field(std::string name, Type type, void* addr) {
-	clazz->addStaticField(ModuleStaticField(name, type, addr, true));
+	clazz->addStaticField({name, type, addr, true});
 }
 void Module::static_field_fun(std::string name, Type type, void* fun) {
-	clazz->addStaticField(ModuleStaticField(name, type, fun));
+	clazz->addStaticField({name, type, fun, nullptr});
 }
 void Module::constructor_(std::initializer_list<CallableVersion> methods) {
 	clazz->addMethod("new", methods);

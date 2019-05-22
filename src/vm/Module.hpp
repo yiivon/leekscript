@@ -12,22 +12,6 @@ namespace ls {
 
 class LSValue;
 class CallableVersion;
-
-class ModuleStaticField {
-public:
-	std::string name;
-	Type type;
-	std::function<Compiler::value(Compiler&)> fun = nullptr;
-	void* native_fun = nullptr;
-	void* addr = nullptr;
-	LSValue* value = nullptr;
-
-	ModuleStaticField(std::string name, Type type, LSValue* value) : name(name), type(type), value(value) {}
-	ModuleStaticField(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun) : name(name), type(type), fun(fun) {}
-	ModuleStaticField(std::string name, Type type, void* fun) : name(name), type(type), native_fun(fun) {}
-	ModuleStaticField(std::string name, Type type, void* addr, bool) : name(name), type(type), addr(addr) {}
-};
-
 class Module;
 
 class Template {
@@ -38,7 +22,6 @@ public:
 	Template(Module* module, Args... templates) : module(module), templates({templates...}) {}
 
 	void operator_(std::string name, std::initializer_list<CallableVersion>);
-
 	void method(std::string name, std::initializer_list<CallableVersion> methods);
 };
 

@@ -192,8 +192,8 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 			const auto& mod_field = std_class->static_fields.at(field->content);
 			type = mod_field.type;
 
-			if (mod_field.fun != nullptr) {
-				static_access_function = mod_field.fun;
+			if (mod_field.static_fun != nullptr) {
+				static_access_function = mod_field.static_fun;
 			}
 			if (mod_field.addr != nullptr) {
 				attr_addr = mod_field.addr;
