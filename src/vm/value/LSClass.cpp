@@ -73,7 +73,7 @@ void LSClass::addOperator(std::string name, std::initializer_list<CallableVersio
 
 LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	try {
-		auto f = static_fields.at(name);
+		auto& f = static_fields.at(name);
 		f.value->refs++;
 		return (LSFunction*) f.value;
 	} catch (...) {
