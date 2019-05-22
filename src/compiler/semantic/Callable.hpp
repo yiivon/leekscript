@@ -14,7 +14,7 @@ public:
 	std::string name;
 	Type type;
 	Value* object = nullptr;
-	void* addr = nullptr;
+	bool symbol = false;
 	const Value* value = nullptr;
 	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
 	Function::Version* user_fun = nullptr;
@@ -25,8 +25,8 @@ public:
 	bool v2_addr = false;
 	int flags = 0;
 
-	CallableVersion(std::string name, Type type, void* addr, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
-		: name(name), type(type), object(object), addr(addr), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {
+	CallableVersion(std::string name, Type type, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
+		: name(name), type(type), object(object), symbol(true), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {
 			assert(name.find(".") != std::string::npos);
 		}
 	CallableVersion(std::string name, Type type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)

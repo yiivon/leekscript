@@ -64,7 +64,7 @@ VM::VM(bool v1) : compiler(this), legacy(v1) {
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
 	add_internal_var("ptr", ptr_type, nullptr, new Callable("?", {
-		{"Value.ptr", ptr_type, (void*) 12 }
+		{"Value.ptr", ptr_type }
 	}));
 }
 
@@ -198,10 +198,10 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 void VM::add_internal_var(std::string name, Type type, LSValue* value, Callable* callable) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
 	if (auto f = dynamic_cast<LSFunction*>(value)) {
-		if (callable == nullptr) {
-			callable = new Callable(name);
-			callable->add_version({ name, type, f->function });
-		}
+		// if (callable == nullptr) {
+		// 	callable = new Callable(name);
+		// 	callable->add_version({ name, type, f->function });
+		// }
 	}
 	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr, value, callable) });
 	system_vars.push_back(value);

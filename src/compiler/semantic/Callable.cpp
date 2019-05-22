@@ -189,7 +189,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		} else {
 			return c.insn_call(type.return_type(), args, user_fun->f);
 		}
-	} else if (addr) {
+	} else if (symbol) {
 		if (flags & Module::THROWS) {
 			return c.insn_invoke(type.return_type(), args, name);
 		} else {
@@ -250,8 +250,8 @@ namespace std {
 		os << v.type.arguments() << BLUE_BOLD << " => " << END_COLOR << v.type.return_type();
 		if (v.user_fun) {
 			os << " (user func " << v.user_fun << ")";
-		} else if (v.addr) {
-			os << " (native " << v.addr << ")";
+		} else if (v.symbol) {
+			os << " (symbol " << v.name << ")";
 		} else if (v.func) {
 			os << " (compiler func)";
 		} else {

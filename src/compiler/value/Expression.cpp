@@ -278,7 +278,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return ((LeftValue*) v1)->compile_l(c);
 		} else {
 			auto v = v1->compile(c);
-			if (callable_version->addr and v.t.is_primitive() and callable_version->type.argument(0).is_any()) {
+			if (callable_version->symbol and v.t.is_primitive() and callable_version->type.argument(0).is_any()) {
 				v = c.insn_to_any(v);
 			}
 			return v;
@@ -287,7 +287,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return ((LeftValue*) v2)->compile_l(c);
 		} else {
 			auto v = v2->compile(c);
-			if (callable_version->addr and v.t.is_primitive() and callable_version->type.argument(1).is_any()) {
+			if (callable_version->symbol and v.t.is_primitive() and callable_version->type.argument(1).is_any()) {
 				v = c.insn_to_any(v);
 			}
 			return v;

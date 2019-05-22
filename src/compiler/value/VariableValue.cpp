@@ -75,7 +75,7 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 	}
 	if (name == "String") {
 		auto callable = new Callable(name);
-		callable->add_version({ "String.new", Type::fun(Type::tmp_string(), {}), (void*) 12 });
+		callable->add_version({ "String.new", Type::fun(Type::tmp_string(), {}) });
 		callable->add_version({ "String", Type::fun(Type::tmp_string(), {Type::string()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
 			return args[0];
 		}, {}, {}, nullptr });
@@ -97,7 +97,7 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 	}
 	if (name == "Set") {
 		auto callable = new Callable(name);
-		callable->add_version({ "Set.new", Type::fun(Type::tmp_set(Type::any()), {}), (void*) 12 });
+		callable->add_version({ "Set.new", Type::fun(Type::tmp_set(Type::any()), {}) });
 		return callable;
 	}
 	if (type == Type::clazz()) {
@@ -133,7 +133,7 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer) const {
 							auto t = Type::fun(i.type.return_type(), i.type.arguments(), this);
 							auto version_name = clazz.second->name + "." + name + "." + std::to_string(j);
 							if (i.addr) {
-								callable->add_version({ version_name, t, i.addr, i.mutators, i.templates, nullptr, false, false, false, i.flags });
+								callable->add_version({ version_name, t, i.mutators, i.templates, nullptr, false, false, false, i.flags });
 							} else {
 								callable->add_version({ version_name, t, i.func, i.mutators, i.templates, nullptr, false, false, false, i.flags });
 							}
