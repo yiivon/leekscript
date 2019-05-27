@@ -49,6 +49,7 @@ int Test::all() {
 	test_system();
 	test_json();
 	test_files();
+	test_toplevel();
 	test_doc();
 	test_utils();
 
