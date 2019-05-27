@@ -18,6 +18,8 @@ public:
 
 	static Compiler::value fold_left(Compiler&, std::vector<Compiler::value>, bool);
 	static Compiler::value fold_right(Compiler&, std::vector<Compiler::value>, bool);
+	
+	static Compiler::value iter(Compiler& c, std::vector<Compiler::value>, bool);
 };
 
 }

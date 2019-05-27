@@ -189,8 +189,7 @@ void Test::test_map() {
 	code("['a': 2, 'b': 4].iter((k, v) -> System.print(k + ' ' + v))").output("a 2\nb 4\n");
 	code("['a': 2.5, 'b': 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("a 2.5\nb 4.5\n");
 	code("['a': 'b', 'c': 'd'].iter((k, v) -> System.print(k + ' ' + v))").output("a b\nc d\n");
-	// TODO improve iter
-	// code("var s = 0 [1: 2, 3: 4, 5: 6].iter((k, v) -> s += k) s").equals("9");
+	code("var s = 0 [1: 2, 3: 4, 5: 6].iter((k, v) -> s += k) s").equals("9");
 	code("var s = 0 [:].iter((k, v) -> s += v) s").equals("0");
 
 	section("Map.max()");

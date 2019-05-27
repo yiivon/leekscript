@@ -172,27 +172,13 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::integer(), {Type::const_map(Type::integer(), Type::integer())}, (void*) &LSMap<int,int>::ls_maxKey, THROWS},
 	});
 
-	auto iter_ptr_ptr = Type::fun({}, {Type::any(), Type::any()});
-	auto iter_ptr_real = Type::fun({}, {Type::any(), Type::real()});
-	auto iter_ptr_int = Type::fun({}, {Type::any(), Type::integer()});
-	auto iter_int_ptr = Type::fun({}, {Type::integer(), Type::any()});
-	auto iter_int_real = Type::fun({}, {Type::integer(), Type::real()});
-	auto iter_int_int = Type::fun({}, {Type::integer(), Type::integer()});
-
-	auto iter_ptr_ptr_fun = &LSMap<LSValue*, LSValue*>::ls_iter<LSFunction*>;
-	auto iter_ptr_real_fun = &LSMap<LSValue*, double>::ls_iter<LSFunction*>;
-	auto iter_ptr_int_fun = &LSMap<LSValue*, int>::ls_iter<LSFunction*>;
-	auto iter_int_ptr_fun = &LSMap<int, LSValue*>::ls_iter<LSFunction*>;
-	auto iter_int_real_fun = &LSMap<int, double>::ls_iter<LSFunction*>;
-	auto iter_int_int_fun = &LSMap<int, int>::ls_iter<LSFunction*>;
-
+	auto iter_ptr = &LSMap<LSValue*, LSValue*>::ls_iter<LSFunction*>;
+	auto iK = Type::template_("K");
+	auto iV = Type::template_("V");
+	template_(iK, iV).
 	method("iter", {
-		{{}, {Type::const_map(Type::any(), Type::any()), iter_ptr_ptr}, (void*) iter_ptr_ptr_fun},
-		{{}, {Type::const_map(Type::any(), Type::real()), iter_ptr_real}, (void*) iter_ptr_real_fun},
-		{{}, {Type::const_map(Type::any(), Type::integer()), iter_ptr_int}, (void*) iter_ptr_int_fun},
-		{{}, {Type::const_map(Type::integer(), Type::any()), iter_int_ptr}, (void*) iter_int_ptr_fun},
-		{{}, {Type::const_map(Type::integer(), Type::real()), iter_int_real}, (void*) iter_int_real_fun},
-		{{}, {Type::const_map(Type::integer(), Type::integer()), iter_int_int}, (void*) iter_int_int_fun},
+		{{}, {Type::const_map(Type::any(), Type::any()), Type::fun({}, {Type::any(), Type::any()})}, (void*) iter_ptr, THROWS},
+		{{}, {Type::const_map(iK, iV), Type::fun({}, {iK, iV})}, iter, THROWS},
 	});
 
 	auto flT = Type::template_("T");
@@ -316,6 +302,14 @@ Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> arg
 		return {};
 	}, true);
 	return c.insn_load(result);
+}
+
+Compiler::value MapSTD::iter(Compiler& c, std::vector<Compiler::value> args, bool) {
+	auto function = args[1];
+	c.insn_foreach(args[0], {}, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		return c.insn_call(function.t.return_type(), {k, v}, function);
+	});
+	return {};
 }
 
 }
