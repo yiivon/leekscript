@@ -166,10 +166,7 @@ void CallableVersion::resolve_templates(SemanticAnalyzer* analyzer, std::vector<
 	}
 }
 
-Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler::value> args, bool no_return) const {
-	// std::cout << "CallableVersion::compile_call(" << args << ")" << std::endl;
-	// Add the object if it's a method call
-	Compiler::value compiled_object;
+void CallableVersion::pre_compile_call(Compiler& c) {
 	if (object) {
 		compiled_object = [&]() { if (object->isLeftValue()) {
 			if (object->type.is_mpz_ptr()) {
@@ -180,6 +177,13 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 		} else {
 			return object->compile(c);
 		}}();
+	}
+}
+
+Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler::value> args, bool no_return) const {
+	// std::cout << "CallableVersion::compile_call(" << args << ")" << std::endl;
+	// Add the object if it's a method call
+	if (object) {
 		args.insert(args.begin(), compiled_object);
 	}
 	// Do the call

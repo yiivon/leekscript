@@ -241,6 +241,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
 	assert(callable && callable_version);
 
+	// Pre-compile the call (compile the potential object first)
+	callable_version->pre_compile_call(c);
+
 	std::vector<LSValueType> types;
 	std::vector<Compiler::value> args;
 	int offset = callable_version->object ? 1 : 0;

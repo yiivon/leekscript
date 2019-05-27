@@ -24,6 +24,7 @@ public:
 	bool v2_addr = false;
 	int flags = 0;
 	void* addr = nullptr;
+	Compiler::value compiled_object;
 
 	CallableVersion(std::string name, Type type, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
 		: name(name), type(type), object(object), symbol(true), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {
@@ -49,6 +50,7 @@ public:
 	void apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments);
 	void resolve_templates(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 
+	void pre_compile_call(Compiler& c);
 	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args, bool no_return) const;
 };
 
