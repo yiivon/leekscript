@@ -21,6 +21,7 @@
 #include "../compiler/instruction/ExpressionInstruction.hpp"
 #include "../compiler/value/VariableValue.hpp"
 #include "llvm/Bitcode/BitcodeWriter.h"
+#include "llvm/Bitcode/BitcodeReader.h"
 
 namespace ls {
 
@@ -98,7 +99,7 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool assembly, bool
 
 	if (assembly) {
 		std::error_code EC;
-		llvm::raw_fd_ostream OS("module", EC, llvm::sys::fs::F_None);
+		llvm::raw_fd_ostream OS(file_name + ".bc", EC, llvm::sys::fs::F_None);
 		llvm::WriteBitcodeToFile(*module, OS);
 		OS.flush();
 	}
@@ -125,31 +126,61 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool assembly, bool
 	return result;
 }
 
-VM::Result Program::compile(VM& vm, Context* ctx, bool assembly, bool pseudo_code, bool log_instructions, bool ir) {
+VM::Result Program::compile_ir_file(VM& vm) {
+	VM::Result result;
+	llvm::SMDiagnostic Err;
+	auto Mod = llvm::parseIRFile(file_name, Err, vm.compiler.getContext());
+	if (!Mod) {
+		Err.print("main", llvm::errs());
+		result.compilation_success = false;
+		result.program = "<error>";
+		return result;
+	}
+	auto llvm_type = Mod->getFunction("main")->getReturnType();
+	vm.compiler.addModule(std::move(Mod));
+	auto symbol = vm.compiler.findSymbol("main");
+	closure = (void*) cantFail(symbol.getAddress());
+
+	type = llvm_type->isPointerTy() ? Type::any() : (llvm_type->isStructTy() ? Type::mpz() : Type::integer());
+
+	result.compilation_success = true;
+	std::ostringstream oss;
+	oss << llvm_type;
+	result.program = type.to_string() + " " + oss.str();
+	return result;
+}
+
+VM::Result Program::compile_bitcode_file(VM& vm) {
+	VM::Result result;
+	auto EMod = llvm::parseBitcodeFile(llvm::MemoryBufferRef { *llvm::MemoryBuffer::getFile(file_name).get() }, vm.compiler.getContext());
+	if (!EMod) {
+		llvm::errs() << EMod.takeError() << '\n';
+		result.compilation_success = false;
+		result.program = "<error>";
+		return result;
+	}
+	auto Mod = std::move(EMod.get());
+	auto llvm_type = Mod->getFunction("main")->getReturnType();
+	vm.compiler.addModule(std::move(Mod));
+	auto symbol = vm.compiler.findSymbol("main");
+	closure = (void*) cantFail(symbol.getAddress());
+
+	type = llvm_type->isPointerTy() ? Type::any() : (llvm_type->isStructTy() ? Type::mpz() : Type::integer());
+
+	result.compilation_success = true;
+	std::ostringstream oss;
+	oss << llvm_type;
+	result.program = type.to_string() + " " + oss.str();
+	return result;
+}
+
+VM::Result Program::compile(VM& vm, Context* ctx, bool assembly, bool pseudo_code, bool log_instructions, bool ir, bool bitcode) {
 	this->vm = &vm;
 
 	if (ir) {
-		VM::Result result;
-		llvm::SMDiagnostic Err;
-		auto Mod = llvm::parseIRFile(file_name, Err, vm.compiler.getContext());
-		if (!Mod) {
-			Err.print("main", llvm::errs());
-			result.compilation_success = false;
-			result.program = "<error>";
-			return result;
-		}
-		auto llvm_type = Mod->getFunction("main")->getReturnType();
-		vm.compiler.addModule(std::move(Mod));
-		auto symbol = vm.compiler.findSymbol("main");
-		closure = (void*) cantFail(symbol.getAddress());
-
-		type = llvm_type->isPointerTy() ? Type::any() : (llvm_type->isStructTy() ? Type::mpz() : Type::integer());
-
-		result.compilation_success = true;
-		std::ostringstream oss;
-		oss << llvm_type;
-		result.program = type.to_string() + " " + oss.str();
-		return result;
+		return compile_ir_file(vm);
+	} else if (bitcode) {
+		return compile_bitcode_file(vm);
 	} else {
 		return compile_leekscript(vm, ctx, assembly, pseudo_code, log_instructions);
 	}

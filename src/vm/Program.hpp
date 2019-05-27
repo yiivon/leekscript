@@ -32,9 +32,10 @@ public:
 	/*
 	 * Compile the program with a VM and a context (json)
 	 */
-	VM::Result compile(VM& vm, Context* context = nullptr, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool ir = false);
-
+	VM::Result compile(VM& vm, Context* context = nullptr, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool ir = false, bool bitcode = false);
 	VM::Result compile_leekscript(VM& vm, Context* ctx, bool assembly, bool pseudo_code, bool log_instructions);
+	VM::Result compile_ir_file(VM& vm);
+	VM::Result compile_bitcode_file(VM& vm);
 
 	std::shared_ptr<SemanticVar> get_operator(std::string name);
 

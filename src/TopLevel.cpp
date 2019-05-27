@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
 	bool pseudo_code = false;
 	bool log_instructions = false;
 	bool execute_ir = false;
+	bool execute_bitcode = false;
 	std::string file_or_code;
 
 	for (int i = 1; i < argc; ++i) {
@@ -66,6 +67,7 @@ int main(int argc, char* argv[]) {
 		else if (a == "-p" or a == "-P" or a == "--pseudo-code") pseudo_code = true;
 		else if (a == "-i" or a == "-I" or a == "--log-instructions") log_instructions = true;
 		else if (a == "-ir" or a == "-IR") execute_ir = true;
+		else if (a == "-bc" or a == "-BC") execute_bitcode = true;
 		else file_or_code = a;
 	}
 
@@ -104,7 +106,7 @@ int main(int argc, char* argv[]) {
 		OutputStringStream oss;
 		if (output_json)
 			vm.output = &oss;
-		auto result = vm.execute(code, nullptr, file_name, debug_mode, ops, assembly, pseudo_code, log_instructions, execute_ir);
+		auto result = vm.execute(code, nullptr, file_name, debug_mode, ops, assembly, pseudo_code, log_instructions, execute_ir, execute_bitcode);
 		vm.output = ls::VM::default_output;
 		print_result(result, oss.str(), output_json, display_time, ops);
 		return 0;
