@@ -956,12 +956,7 @@ Compiler::value Compiler::insn_get_capture(int index, Type type) const {
 	// std::cout << "get_capture " << fun << " " << F->arg_size() << " " << type << " " << F->arg_begin()->getType() << " " << index << std::endl;
 	Compiler::value arg0 = {F->arg_begin(), Type::any()};
 	auto jit_index = new_integer(index);
-	auto first_type = type.is_primitive() ? Type::any() : type;
-	auto v = insn_call(first_type, {arg0, jit_index}, "Function.get_capture");
-	if (type.is_integer()) {
-		v = insn_call(Type::integer(), {v}, "Value.get_int");
-	}
-	return v;
+	return insn_call(Type::any(), {arg0, jit_index}, "Function.get_capture");
 }
 
 Compiler::value Compiler::insn_get_capture_l(int index, Type type) const {
@@ -2020,16 +2015,29 @@ void Compiler::export_context_variable(const std::string& name, Compiler::value 
 }
 
 void Compiler::convert_var_to_poly(const std::string& name) {
-	std::cout << "Compiler::convert_var_to_any(" << name << ")" << std::endl;
-	for (int i = variables.size() - 1; i >= 0; --i) {
-		if (variables[i].find(name) != variables[i].end()) {
-			auto& var = variables[i].at(name);
-			auto new_var = CreateEntryBlockAlloca(name, Type::any().llvm_type(*this));
-			insn_store({new_var, Type::any().pointer()}, insn_to_any(insn_load(var)));
-			var.v = new_var;
-			var.t = Type::any().pointer();
+	// std::cout << "Compiler::convert_var_to_any(" << name << ")" << std::endl;
+	bool is_argument = false;
+	auto& var = [&]() -> Compiler::value& {
+		if (arguments.top().find(name) != arguments.top().end()) {
+			is_argument = true;
+			return arguments.top().at(name);
 		}
+		for (int i = variables.size() - 1; i >= 0; --i) {
+			if (variables[i].find(name) != variables[i].end()) {
+				return variables[i].at(name);
+			}
+		}
+		assert(false);
+	}();
+	if (var.t.pointed().is_polymorphic()) return;
+	auto new_var = CreateEntryBlockAlloca(name, Type::any().llvm_type(*this));
+	auto new_val = insn_to_any(insn_load(var));
+	if (!is_argument) {
+		insn_inc_refs(new_val);
 	}
+	insn_store({new_var, Type::any().pointer()}, new_val);
+	var.v = new_var;
+	var.t = Type::any().pointer();
 }
 
 Compiler::value Compiler::get_var(const std::string& name) {

@@ -165,6 +165,11 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 					analyzer->current_function()->recursive = true;
 				}
 			} else {
+				if (var->scope == VarScope::LOCAL or var->scope == VarScope::PARAMETER) {
+					var = analyzer->convert_var_to_any(var);
+					type = var->type();
+					var->initial_type = type;
+				}
 				capture_index = analyzer->current_function()->capture(var);
 				var->index = capture_index;
 				scope = VarScope::CAPTURE;

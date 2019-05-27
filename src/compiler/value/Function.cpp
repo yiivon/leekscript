@@ -407,6 +407,12 @@ Compiler::value Function::compile(Compiler& c) const {
 	// std::cout << "Function::compile() " << this << " version " << version << " " << has_version << std::endl;
 	((Function*) this)->compiler = &c;
 
+	for (const auto& cap : captures) {
+		if (cap->scope == VarScope::LOCAL or cap->scope == VarScope::PARAMETER) {
+			c.convert_var_to_poly(cap->name);
+		}
+	}
+
 	if (generate_default_version) {
 		default_version->compile(c, true);
 		return default_version->value;
@@ -424,6 +430,7 @@ Compiler::value Function::compile(Compiler& c) const {
 
 Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) const {
 	// std::cout << "Function " << name << "::compile_version(" << args << ")" << std::endl;
+
 	// Fill with default arguments
 	auto full_args = args;
 	for (size_t i = version.size(); i < arguments.size(); ++i) {
@@ -605,12 +612,9 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 					} else if (cap->scope == VarScope::CAPTURE) {
 						jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);
 					} else {
-						int offset = c.is_current_function_closure() ? 1 : 0;
-						jit_cap = {c.F->arg_begin() + offset + cap->index, cap->initial_type};
+						jit_cap = c.insn_load(c.insn_get_argument(cap->name));
 					}
-					if (!cap->initial_type.is_polymorphic()) {
-						jit_cap = c.insn_to_any({jit_cap.v, cap->initial_type});
-					}
+					assert(jit_cap.t.is_polymorphic());
 					captures.push_back(jit_cap);
 				}
 			}
