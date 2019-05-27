@@ -41,7 +41,7 @@ Program::~Program() {
 	}
 }
 
-VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool assembly, bool pseudo_code, bool log_instructions) {
+VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool pseudo_code, bool log_instructions) {
 
 	VM::Result result;
 
@@ -86,8 +86,6 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool assembly, bool
 	vm.internals.clear();
 	vm.compiler.program = this;
 	vm.compiler.init();
-	vm.compiler.output_assembly = assembly;
-	vm.compiler.output_pseudo_code = pseudo_code;
 	vm.compiler.log_instructions = log_instructions;
 	vm.compiler.instructions_debug.str("");
 	vm.compiler.label_map.clear();
@@ -97,12 +95,6 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool assembly, bool
 
 	main->compile(vm.compiler);
 
-	if (assembly) {
-		std::error_code EC;
-		llvm::raw_fd_ostream OS(file_name + ".bc", EC, llvm::sys::fs::F_None);
-		llvm::WriteBitcodeToFile(*module, OS);
-		OS.flush();
-	}
 	if (pseudo_code) {
 		std::error_code EC2;
 		llvm::raw_fd_ostream ir(file_name + ".ll", EC2, llvm::sys::fs::F_None);
@@ -110,7 +102,7 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool assembly, bool
 		ir.flush();
 	}
 
-	module_handle = vm.compiler.addModule(std::unique_ptr<llvm::Module>(module));
+	module_handle = vm.compiler.addModule(std::unique_ptr<llvm::Module>(module), true, bitcode);
 	handle_created = true;
 	auto ExprSymbol = vm.compiler.findSymbol("main");
 	assert(ExprSymbol && "Function not found");
@@ -119,8 +111,6 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool assembly, bool
 	type = main->type.return_type().fold();
 
 	result.compilation_success = true;
-	result.assembly = vm.compiler.assembly.str();
-	result.pseudo_code = vm.compiler.pseudo_code.str();
 	result.instructions_log = vm.compiler.instructions_debug.str();
 
 	return result;
@@ -137,7 +127,7 @@ VM::Result Program::compile_ir_file(VM& vm) {
 		return result;
 	}
 	auto llvm_type = Mod->getFunction("main")->getReturnType();
-	vm.compiler.addModule(std::move(Mod));
+	vm.compiler.addModule(std::move(Mod), true);
 	auto symbol = vm.compiler.findSymbol("main");
 	closure = (void*) cantFail(symbol.getAddress());
 
@@ -161,7 +151,7 @@ VM::Result Program::compile_bitcode_file(VM& vm) {
 	}
 	auto Mod = std::move(EMod.get());
 	auto llvm_type = Mod->getFunction("main")->getReturnType();
-	vm.compiler.addModule(std::move(Mod));
+	vm.compiler.addModule(std::move(Mod), false); // Already optimized
 	auto symbol = vm.compiler.findSymbol("main");
 	closure = (void*) cantFail(symbol.getAddress());
 
@@ -174,7 +164,7 @@ VM::Result Program::compile_bitcode_file(VM& vm) {
 	return result;
 }
 
-VM::Result Program::compile(VM& vm, Context* ctx, bool assembly, bool pseudo_code, bool log_instructions, bool ir, bool bitcode) {
+VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseudo_code, bool log_instructions, bool ir, bool bitcode) {
 	this->vm = &vm;
 
 	if (ir) {
@@ -182,7 +172,7 @@ VM::Result Program::compile(VM& vm, Context* ctx, bool assembly, bool pseudo_cod
 	} else if (bitcode) {
 		return compile_bitcode_file(vm);
 	} else {
-		return compile_leekscript(vm, ctx, assembly, pseudo_code, log_instructions);
+		return compile_leekscript(vm, ctx, export_bitcode, pseudo_code, log_instructions);
 	}
 }
 

@@ -91,16 +91,13 @@ public:
 	std::vector<std::map<std::string, value>> function_variables;
 	std::vector<std::map<std::string, value>> variables;
 	std::vector<std::vector<std::vector<catcher>>> catchers;
-	bool output_assembly = false;
-	std::ostringstream assembly;
-	bool output_pseudo_code = false;
-	std::ostringstream pseudo_code;
 	bool log_instructions = false;
 	std::ostringstream instructions_debug;
 	std::map<label*, std::string> label_map;
 	std::map<void*, std::string> literals;
 	std::map<std::string, function_entry> mappings;
 	std::stack<int> exception_line;
+	bool export_bitcode = false;
 
 	VM* vm;
 	Program* program;
@@ -133,11 +130,8 @@ public:
 			FPM->run(F);
 		return M;
 	}
-	llvm::orc::VModuleKey addModule(std::unique_ptr<llvm::Module> M) {
-		llvm::orc::VModuleKey K = ES.allocateVModule();
-		cantFail(OptimizeLayer.addModule(K, std::move(M)));
-		return K;
-	}
+	llvm::orc::VModuleKey addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode = false);
+
 	llvm::JITSymbol findSymbol(const std::string Name) {
 		return OptimizeLayer.findSymbol(Name, false);
 	}

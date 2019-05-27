@@ -22,6 +22,7 @@
 #include "llvm/IR/GlobalVariable.h"
 #include "../type/Base_type.hpp"
 #include "../vm/Program.hpp"
+#include "llvm/Bitcode/BitcodeWriter.h"
 
 #define log_insn(i) log_instructions && _log_insn((i))
 
@@ -67,10 +68,24 @@ Compiler::Compiler(VM* vm) : vm(vm),
 	}),
 	CompileLayer(ObjectLayer, llvm::orc::SimpleCompiler(*TM)),
 	OptimizeLayer(CompileLayer, [this](std::unique_ptr<llvm::Module> M) {
-		return optimizeModule(std::move(M));
+		auto m = optimizeModule(std::move(M));
+		if (this->export_bitcode) {
+			std::error_code EC;
+			llvm::raw_fd_ostream bitcode(m->getName().str() + ".bc", EC, llvm::sys::fs::F_None);
+			llvm::WriteBitcodeToFile(*m, bitcode);
+			bitcode.flush();
+		}
+		return m;
 	}) {
 		llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
 	}
+
+llvm::orc::VModuleKey Compiler::addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode) {
+	auto K = ES.allocateVModule();
+	this->export_bitcode = export_bitcode;
+	cantFail(OptimizeLayer.addModule(K, std::move(M)));
+	return K;
+}
 
 void Compiler::init() {
 	mappings.clear();
