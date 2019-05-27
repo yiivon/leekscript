@@ -35,11 +35,11 @@
 #include "../value/ArrayFor.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/value/LSNumber.hpp"
-#include "SyntaxicalError.hpp"
 #include "../lexical/Token.hpp"
 #include "../../util/Util.hpp"
 #include "../lexical/LexicalAnalyzer.hpp"
 #include "../resolver/Resolver.hpp"
+#include "../error/Error.hpp"
 
 namespace ls {
 
@@ -51,9 +51,10 @@ SyntaxicAnalyzer::SyntaxicAnalyzer(Resolver* resolver) : resolver(resolver) {
 }
 
 Block* SyntaxicAnalyzer::analyze(File* file) {
+	this->file = file;
 
 	// Call the lexical analyzer to parse tokens
-	auto tokens = LexicalAnalyzer().analyze(file->code);
+	auto tokens = LexicalAnalyzer().analyze(file);
 
 	this->tokens = tokens;
 	this->t = tokens.at(0);
@@ -147,7 +148,7 @@ Block* SyntaxicAnalyzer::eatBlock(bool is_function_block) {
 			break;
 		} else if (t->type == TokenType::FINISHED || t->type == TokenType::ELSE || t->type == TokenType::END || t->type == TokenType::IN) {
 			if (brace) {
-				errors.push_back(SyntaxicalError(t, SyntaxicalError::Type::BLOCK_NOT_CLOSED, {}));
+				file->errors.push_back(Error(Error::Type::BLOCK_NOT_CLOSED, t, {}));
 			}
 			break;
 		} else if (t->type == TokenType::SEMICOLON) {
@@ -265,7 +266,7 @@ Instruction* SyntaxicAnalyzer::eatInstruction() {
 
 		default:
 			// std::cout << "Unexpected token : " << (int)t->type << " (" << t->content << ")" << std::endl;
-			errors.push_back(SyntaxicalError(t, SyntaxicalError::Type::UNEXPECTED_TOKEN, {t->content}));
+			file->errors.push_back(Error(Error::Type::UNEXPECTED_TOKEN, t, {t->content}));
 			eat();
 			return nullptr;
 	}
@@ -760,7 +761,7 @@ Value* SyntaxicAnalyzer::eatValue(bool comma_list) {
 			break;
 	}
 
-	errors.push_back(SyntaxicalError(t, SyntaxicalError::EXPECTED_VALUE, {t->content}));
+	file->errors.push_back(Error(Error::EXPECTED_VALUE, t, {t->content}));
 	eat();
 	return nullptr;
 }
@@ -1284,7 +1285,7 @@ Break* SyntaxicAnalyzer::eatBreak() {
 	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
 		int deepness = std::stoi(t->content);
 		if (deepness <= 0) {
-			errors.push_back(SyntaxicalError(t, SyntaxicalError::Type::BREAK_LEVEL_ZERO, std::vector<std::string>()));
+			file->errors.push_back(Error(Error::Type::BREAK_LEVEL_ZERO, t, {}));
 		} else {
 			b->deepness = deepness;
 			eat();
@@ -1301,7 +1302,7 @@ Continue* SyntaxicAnalyzer::eatContinue() {
 	if (t->type == TokenType::NUMBER /*&& t->line == lt->line*/) {
 		int deepness = std::stoi(t->content);
 		if (deepness <= 0) {
-			errors.push_back(SyntaxicalError(t, SyntaxicalError::Type::CONTINUE_LEVEL_ZERO, std::vector<std::string>()));
+			file->errors.push_back(Error(Error::Type::CONTINUE_LEVEL_ZERO, t, {}));
 		} else {
 			c->deepness = deepness;
 			eat();
@@ -1364,7 +1365,7 @@ Token* SyntaxicAnalyzer::eat_get(TokenType type) {
 	nt = i < tokens.size() - 1 ? tokens[i + 1] : nullptr;
 
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
-		errors.push_back(SyntaxicalError(eaten, SyntaxicalError::Type::UNEXPECTED_TOKEN, {eaten->content}));
+		file->errors.push_back(Error(Error::Type::UNEXPECTED_TOKEN, eaten, {eaten->content}));
 		// std::cout << "unexpected token : " << to_string((int) type) << " != " << to_string((int) eaten->type) << " (" << eaten->content << ") char " << eaten->location.start.column << std::endl;
 		return new Token(TokenType::FINISHED, 0, 0, 0, "");
 	}
@@ -1376,10 +1377,6 @@ Token* SyntaxicAnalyzer::nextTokenAt(int pos) {
 		return tokens[i + pos];
 	else
 		return new Token(TokenType::FINISHED, 0, 0, 0, "");
-}
-
-std::vector<SyntaxicalError> SyntaxicAnalyzer::getErrors() {
-	return errors;
 }
 
 }

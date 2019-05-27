@@ -7,7 +7,7 @@
 #include "../compiler/syntaxic/SyntaxicAnalyzer.hpp"
 #include "Context.hpp"
 #include "../compiler/semantic/SemanticAnalyzer.hpp"
-#include "../compiler/semantic/SemanticError.hpp"
+#include "../compiler/error/Error.hpp"
 #include "../util/Util.hpp"
 #include "../constants.h"
 #include "../colors.h"
@@ -45,21 +45,14 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 
 	auto resolver = new Resolver();
 
-	// if (lex.errors.size()) {
-	// 	result.compilation_success = false;
-	// 	result.lexical_errors = lex.errors;
-	// 	for (auto& t : tokens) delete t;
-	// 	return nullptr;
-	// }
-
 	VM::Result result;
 	auto file = new File(file_name, code, new FileContext());
 	SyntaxicAnalyzer syn { resolver };
 	auto block = syn.analyze(file);
 
-	if (syn.getErrors().size() > 0) {
+	if (file->errors.size() > 0) {
 		result.compilation_success = false;
-		result.syntaxical_errors = syn.getErrors();
+		result.errors = file->errors;
 		return result;
 	}
 
@@ -78,7 +71,7 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 
 	if (sem.errors.size()) {
 		result.compilation_success = false;
-		result.semantical_errors = sem.errors;
+		result.errors = sem.errors;
 		return result;
 	}
 
@@ -303,7 +296,7 @@ std::string Program::underline_code(Location location, Location focus) const {
 	auto focus_start = focus.start.raw - location.start.raw;
 	auto focus_size = focus.end.raw - focus.start.raw;
 	underlined = underlined.substr(0, focus_start)
-		+ C_YELLOW + underlined.substr(focus_start, focus_size) + END_COLOR
+		+ C_RED + underlined.substr(focus_start, focus_size) + END_COLOR
 		+ UNDERLINE + underlined.substr(focus_size + focus_start);
 
 	if (before.size() and before.front() != ' ')

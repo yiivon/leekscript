@@ -2,7 +2,7 @@
 #include "../../compiler/instruction/ExpressionInstruction.hpp"
 #include "../../vm/Program.hpp"
 #include "../../vm/Context.hpp"
-#include "SemanticError.hpp"
+#include "../error/Error.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../../vm/value/LSNumber.hpp"
 #include "../../vm/value/LSArray.hpp"
@@ -138,11 +138,11 @@ std::shared_ptr<SemanticVar> SemanticAnalyzer::get_var(Token* v) {
 std::shared_ptr<SemanticVar> SemanticAnalyzer::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
 
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
-		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
+		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
 	if (variables.back().back().find(v->content) != variables.back().back().end()) {
-		add_error({SemanticError::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
+		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
 	variables.back().back().insert(std::pair<std::string, std::shared_ptr<SemanticVar>>(
@@ -187,7 +187,7 @@ std::shared_ptr<SemanticVar> SemanticAnalyzer::convert_var_to_any(std::shared_pt
 	return new_var;
 }
 
-void SemanticAnalyzer::add_error(SemanticError ex) {
+void SemanticAnalyzer::add_error(Error ex) {
 	ex.underline_code = program->underline_code(ex.location, ex.focus);
 	ex.file = program->file_name;
 	errors.push_back(ex);

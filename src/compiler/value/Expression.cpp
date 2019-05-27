@@ -119,7 +119,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 
 	// in operator : v1 must be a container
 	if (op->type == TokenType::IN and not v2->type.can_be_container()) {
-		analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
+		analyzer->add_error({Error::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
 		return;
 	}
 
@@ -131,18 +131,18 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		or op->type == TokenType::POWER_EQUAL or op->type == TokenType::INT_DIV_EQUAL) {
 		// TODO other operators like |= ^= &=
 		if (v1->type.constant) {
-			analyzer->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), op->token->location, {v1->to_string()}});
+			analyzer->add_error({Error::Type::CANT_MODIFY_CONSTANT_VALUE, location(), op->token->location, {v1->to_string()}});
 			return; // don't analyze more
 		}
 		// Check if A is a l-value
 		if (not v1->isLeftValue()) {
-			analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), v1->location(), {v1->to_string()}});
+			analyzer->add_error({Error::Type::VALUE_MUST_BE_A_LVALUE, location(), v1->location(), {v1->to_string()}});
 			return; // don't analyze more
 		}
 		// Change the type of x for operator =
 		if (op->type == TokenType::EQUAL) {
 			if (v2->type._types.size() == 0) {
-				analyzer->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
+				analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
 			if (v1->type.not_temporary() != v2->type.not_temporary()) {
 				((LeftValue*) v1)->change_value(analyzer, v2);
@@ -204,7 +204,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
-		analyzer->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
+		analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
 		return;
 	}
 

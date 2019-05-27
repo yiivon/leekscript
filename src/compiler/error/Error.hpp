@@ -1,5 +1,5 @@
-#ifndef SEMANTICERROR_HPP_
-#define SEMANTICERROR_HPP_
+#ifndef ERROR_HPP
+#define ERROR_HPP
 
 #include <string>
 #include "../lexical/Token.hpp"
@@ -7,10 +7,21 @@
 
 namespace ls {
 
-class SemanticError {
+class Error {
 public:
 
 	enum Type {
+		// Lexical
+		UNTERMINATED_STRING,
+		UNKNOWN_ESCAPE_SEQUENCE,
+		NUMBER_INVALID_REPRESENTATION,
+		// Syntaxic
+		BLOCK_NOT_CLOSED,
+		BREAK_LEVEL_ZERO,
+		CONTINUE_LEVEL_ZERO,
+		EXPECTED_VALUE,
+		UNEXPECTED_TOKEN,
+		// Semantic
 		UNDEFINED_VARIABLE,
 		VARIABLE_ALREADY_DEFINED,
 		METHOD_NOT_FOUND,
@@ -28,7 +39,7 @@ public:
 		CANT_MODIFY_CONSTANT_VALUE,
 		VALUE_NOT_ITERABLE,
 		NO_SUCH_ATTRIBUTE,
-		VALUE_MUST_BE_A_CONTAINER
+		VALUE_MUST_BE_A_CONTAINER,
 	};
 
 	static bool translation_loaded;
@@ -43,9 +54,11 @@ public:
 	std::string underline_code;
 	std::string file;
 
-	SemanticError(Type type, Location location, Location focus);
-	SemanticError(Type type, Location location, Location focus, std::vector<std::string> parameters);
-	virtual ~SemanticError();
+	Error(Type type, int line, int character);
+	Error(Type type, Token* token, std::vector<std::string> parameters);
+	Error(Type type, Location location, Location focus);
+	Error(Type type, Location location, Location focus, std::vector<std::string> parameters);
+	virtual ~Error();
 
 	std::string message() const;
 	Json json() const;

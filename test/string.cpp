@@ -3,9 +3,9 @@
 void Test::test_strings() {
 
 	header("Strings");
-	code("'").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
-	code("\"").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
-	code("'hello world").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
+	code("'").error(ls::Error::Type::UNTERMINATED_STRING);
+	code("\"").error(ls::Error::Type::UNTERMINATED_STRING);
+	code("'hello world").error(ls::Error::Type::UNTERMINATED_STRING);
 
 	section("Escape sequences");
 	code("'\\\\'").equals("'\\'");
@@ -31,14 +31,14 @@ void Test::test_strings() {
 	code("'\\r'").equals("''");
 	code("\"\\r\"").equals("''");
 	code("'salut\\rhello'").equals("'saluthello'");
-	code("'\\y'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\A'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\ '").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\	'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\2'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\-'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\*'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\#'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\y'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\A'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\ '").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\	'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\2'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\-'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\*'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\#'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
 
 	/*
 	 * Operators
@@ -50,7 +50,7 @@ void Test::test_strings() {
 	code("-'hello'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator x++");
-	code("'hello'++").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
+	code("'hello'++").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
 	code("var a = 'hello' a++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator x--");
@@ -93,12 +93,12 @@ void Test::test_strings() {
 
 	section("String.operator []");
 	code("'bonjour'[3]").equals("'j'");
-	code("'bonjour'['hello']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "'bonjour'", ls::Type::tmp_string().to_string()});
+	code("'bonjour'['hello']").error(ls::Error::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "'bonjour'", ls::Type::tmp_string().to_string()});
 	code("~('salut' + ' ca va ?')").equals("'? av ac tulas'");
 	code("'bonjour'[2:5]").equals("'njou'");
-	code("'bonjour'['a':5]").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
-	code("'bonjour'[2:'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 2>"});
-	code("'bonjour'['a':'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
+	code("'bonjour'['a':5]").error(ls::Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
+	code("'bonjour'[2:'b']").error(ls::Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 2>"});
+	code("'bonjour'['a':'b']").error(ls::Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
 	code("let a = ['bonjour', 2][0] a[3]").equals("'j'");
 	code("'hello'[-1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("''[0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);

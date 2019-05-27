@@ -1,7 +1,7 @@
 #include "Continue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
-#include "../semantic/SemanticError.hpp"
+#include "../error/Error.hpp"
 
 namespace ls {
 
@@ -26,7 +26,7 @@ void Continue::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
 	// continue must be in a loop
 	if (!analyzer->in_loop(deepness)) {
-		analyzer->add_error({SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}}); // TODO location
+		analyzer->add_error({Error::Type::CONTINUE_MUST_BE_IN_LOOP, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}}); // TODO location
 	}
 }
 

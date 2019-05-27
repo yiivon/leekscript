@@ -10,9 +10,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "../compiler/lexical/LexicalError.hpp"
-#include "../compiler/syntaxic/SyntaxicalError.hpp"
-#include "../compiler/semantic/SemanticError.hpp"
+#include "../compiler/error/Error.hpp"
 #include "../compiler/Compiler.hpp"
 #include "Exception.hpp"
 #include "OutputStream.hpp"
@@ -41,9 +39,7 @@ public:
 	struct Result {
 		bool compilation_success = false;
 		bool execution_success = false;
-		std::vector<LexicalError> lexical_errors;
-		std::vector<SyntaxicalError> syntaxical_errors;
-		std::vector<SemanticError> semantical_errors;
+		std::vector<Error> errors;
 		vm::ExceptionObj exception;
 		std::string program = "";
 		std::string value = "";

@@ -1,7 +1,7 @@
 #include "Test.hpp"
 
 #include <chrono>
-#include "../src/compiler/semantic/SemanticError.hpp"
+#include "../src/compiler/error/Error.hpp"
 
 long get_sec_time() {
 	return std::chrono::duration_cast<std::chrono::seconds>(
@@ -48,8 +48,8 @@ void Test::test_system() {
 	long nano_time = get_nano_time();
 	code("System.nanoTime").almost(nano_time, 100000000L);
 
-	code("let a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, {"a"});
-	code("var a = 2 a = System.print(12)").semantic_error(ls::SemanticError::Type::CANT_ASSIGN_VOID, {"a"});
+	code("let a = System.print(12)").error(ls::Error::Type::CANT_ASSIGN_VOID, {"a"});
+	code("var a = 2 a = System.print(12)").error(ls::Error::Type::CANT_ASSIGN_VOID, {"a"});
 	code("let p = System.print p('salut')").output("salut\n");
 	code("let p = System.print p(12)").output("12\n");
 

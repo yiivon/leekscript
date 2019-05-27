@@ -19,7 +19,7 @@ void Test::test_objects() {
 	section("Objects with functions");
 	code("var f = obj -> obj.a f({a: 'foo'})").equals("'foo'");
 	code("var f = obj -> obj.a [f({a: 'foo'}), f({a: 'bar'})]").equals("['foo', 'bar']");
-	code("var f = obj -> obj.a [f(12), f({a: 'bar'})]").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"a", "Number"});
+	code("var f = obj -> obj.a [f(12), f({a: 'bar'})]").error(ls::Error::NO_SUCH_ATTRIBUTE, {"a", "Number"});
 
 	section("No commas");
 	code("{a: 12 b: 5}").equals("{a: 12, b: 5}");
@@ -86,7 +86,7 @@ void Test::test_objects() {
 	/*
 	 * Iteration
 	 */
-	code("var s = '' for v in {a: 5, b: 'hello'} { s += v } s").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"{a: 5, b: 'hello'}", ls::Type::tmp_object().to_string()}); // TODO .equals("'5hello'");
+	code("var s = '' for v in {a: 5, b: 'hello'} { s += v } s").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"{a: 5, b: 'hello'}", ls::Type::tmp_object().to_string()}); // TODO .equals("'5hello'");
 
 	/*
 	 * Methods

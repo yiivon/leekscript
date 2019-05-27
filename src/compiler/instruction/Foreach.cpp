@@ -55,7 +55,7 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 	throws = container->throws;
 
 	if (container->type._types.size() != 0 and not container->type.iterable() and not container->type.is_any()) {
-		analyzer->add_error({SemanticError::Type::VALUE_NOT_ITERABLE, container->location(), container->location(), {container->to_string(), container->type.to_string()}});
+		analyzer->add_error({Error::Type::VALUE_NOT_ITERABLE, container->location(), container->location(), {container->to_string(), container->type.to_string()}});
 		return;
 	}
 

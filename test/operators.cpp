@@ -6,12 +6,12 @@ void Test::test_operators() {
 
 	code("var a a = 2").equals("2");
 	code("var a a = 2 a").equals("2");
-	code("2 = 2").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"2"});
-	code("'hello' = 2").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
-	code("[] = 2").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"[]"});
-	code("true = []").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"true"});
-	code("null = x -> x").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"null"});
-	code("{} = 2.class").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"{}"});
+	code("2 = 2").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"2"});
+	code("'hello' = 2").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
+	code("[] = 2").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"[]"});
+	code("true = []").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"true"});
+	code("null = x -> x").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"null"});
+	code("{} = 2.class").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"{}"});
 
 	header("Operator xor");
 
@@ -59,20 +59,20 @@ void Test::test_operators() {
 	code("var a = null a /= 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = null a **= 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = null a %= 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("let a = null a[0]").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"a"});
+	code("let a = null a[0]").error(ls::Error::Type::VALUE_MUST_BE_A_CONTAINER, {"a"});
 	code("let a = null !a").equals("true");
 	code("|null|").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("null[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
+	code("null[2] = 5").error(ls::Error::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
 	code("let a = [null, ''][0] a[2]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("let a = [null, ''][0] a[2] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "=", ls::Type::integer().to_string()});
-	code("null[2:5]").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
-	code("null[2:5] = 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
-	code("(5 + 2) += 4").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5 + 2"});
-	code("2[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"2"});
-	code("'hello'[2] = 5").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "=", ls::Type::integer().to_string()});
-	code("'hello'[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'[2:5]"});
+	code("let a = [null, ''][0] a[2] = 5").error(ls::Error::Type::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "=", ls::Type::integer().to_string()});
+	code("null[2:5]").error(ls::Error::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
+	code("null[2:5] = 4").error(ls::Error::Type::VALUE_MUST_BE_A_CONTAINER, {"null"});
+	code("(5 + 2) += 4").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"5 + 2"});
+	code("2[2:5] = 5").error(ls::Error::Type::VALUE_MUST_BE_A_CONTAINER, {"2"});
+	code("'hello'[2] = 5").error(ls::Error::Type::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), "=", ls::Type::integer().to_string()});
+	code("'hello'[2:5] = 5").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'[2:5]"});
 	code("let a = [null, ''][0] a[2:5]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("var a = [null, ''][0] a[2:5] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"a[2:5]"});
+	code("var a = [null, ''][0] a[2:5] = 5").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"a[2:5]"});
 	// TODO class of a is (Null | String) actually
 	code("var a = [null, ''][0] a.toto = 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("12 in [12, ''][0]").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -206,7 +206,7 @@ void Test::test_operators() {
 	code_v1("[0, ''][0] === 0").equals("true");
 	code_v1("[1, ''][0] === true").equals("false");
 	code_v1("[0, ''][0] === false").equals("false");
-	code("1 === 1").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::integer().to_string(), "===", ls::Type::integer().to_string()});
+	code("1 === 1").error(ls::Error::NO_SUCH_OPERATOR, {ls::Type::integer().to_string(), "===", ls::Type::integer().to_string()});
 
 	/*
 	 * Random operators

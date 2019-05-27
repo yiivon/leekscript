@@ -2,7 +2,7 @@
 #include "../../vm/LSValue.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
-#include "../semantic/SemanticError.hpp"
+#include "../error/Error.hpp"
 #include "../value/Function.hpp"
 #include "../value/Nulll.hpp"
 
@@ -75,7 +75,7 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
 		}
 		v->value->type.constant = constant;
 		if (v->type()._types.size() == 0) {
-			analyzer->add_error({SemanticError::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
+			analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
 		}
 		vars.insert({var->content, v});
 	}

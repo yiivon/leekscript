@@ -7,7 +7,7 @@
 #include "../../vm/value/LSObject.hpp"
 #include "../../vm/value/LSSet.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
-#include "../semantic/SemanticError.hpp"
+#include "../error/Error.hpp"
 
 namespace ls {
 
@@ -56,10 +56,10 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 		throws |= expression->type.fold().is_polymorphic();
 		if (operatorr->type == TokenType::PLUS_PLUS or operatorr->type == TokenType::MINUS_MINUS) {
 			if (expression->type.constant) {
-				analyzer->add_error({SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
+				analyzer->add_error({Error::Type::CANT_MODIFY_CONSTANT_VALUE, location(), expression->location(), {expression->to_string()}});
 			}
 			if (not expression->isLeftValue()) {
-				analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
+				analyzer->add_error({Error::Type::VALUE_MUST_BE_A_LVALUE, location(), expression->location(), {expression->to_string()}});
 			}
 		}
 

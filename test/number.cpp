@@ -11,14 +11,14 @@ void Test::test_numbers() {
 	code("π").almost(3.141592653589793116);
 
 	section("Lexical errors");
-	code("12345r").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
-	code("0b011001711").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
-	code("0b").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
-	code("0x").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
-	code("0x+").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
-	code("0b#").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
-	code("0b'").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
-	code("0b\"").lexical_error(ls::LexicalError::Type::NUMBER_INVALID_REPRESENTATION);
+	code("12345r").error(ls::Error::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b011001711").error(ls::Error::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b").error(ls::Error::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0x").error(ls::Error::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0x+").error(ls::Error::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b#").error(ls::Error::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b'").error(ls::Error::Type::NUMBER_INVALID_REPRESENTATION);
+	code("0b\"").error(ls::Error::Type::NUMBER_INVALID_REPRESENTATION);
 
 	section("Basic operations");
 	code("0 + 5").equals("5");
@@ -185,30 +185,30 @@ void Test::test_numbers() {
 	code("var a = 20m; ++a").equals("21");
 	code("var a = 20m; ++a a").equals("21");
 	code("var a = 20m; let b = ++a b").equals("21");
-	code("++5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
+	code("++5").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 	code("var a = 5 ['', ++a]").equals("['', 6]");
 
 	section("Number.operator --x");
 	code("var a = 20★; --a").equals("19");
 	code("var a = 30★; --a a").equals("29");
-	code("--5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
+	code("--5").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 	code("var a = 5 ['', --a]").equals("['', 4]");
 
 	section("Number.operator x++");
 	code("var a = 20m; a++").equals("20");
 	code("var a = 20m; a++ a").equals("21");
 	code("var a = 20m; let b = a++ b").equals("20");
-	code("5++").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
+	code("5++").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 
 	section("Number.operator x--");
 	code("var a = 20m; a--").equals("20");
 	code("var a = 20m; a-- a").equals("19");
 	code("var a = 20m; let b = a-- b").equals("20");
-	code("5--").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
+	code("5--").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 
 	section("Number.operator in");
 	// TODO idea : a in b returns true if a is a divisor of b
-	code("2 in 12").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"12"});
+	code("2 in 12").error(ls::Error::Type::VALUE_MUST_BE_A_CONTAINER, {"12"});
 
 	section("Number.operator =");
 	code("var a = 1m, b = 4m; a = b").equals("4");
@@ -321,7 +321,7 @@ void Test::test_numbers() {
 	code("(100000m * 10m) % (12m ** 3m)").equals("1216");
 	code("['salut', 123][0] % 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	// TODO should have semantic error
-	// code("['salut', 'a'][0] % 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {});
+	// code("['salut', 'a'][0] % 5").error(ls::Error::NO_SUCH_OPERATOR, {});
 
 	section("Number.operator %=");
 	code("var a = 721★ a %= true").equals("0");
@@ -434,7 +434,7 @@ void Test::test_numbers() {
 	code("var a = 87619 a &= 18431").equals("17987");
 	code("var a = 87619 a &= 18431 a").equals("17987");
 	code("87619★ & 18431").equals("17987");
-	code("87619★ &= 18431").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("87619★ &= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
 	code("var a = 87619★ a &= 18431 a").equals("17987");
 	code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = [12, 'hello'][1] a &= 18431 a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -449,7 +449,7 @@ void Test::test_numbers() {
 	code("var a = 87619 a |= 18431").equals("88063");
 	code("var a = 87619 a |= 18431 a").equals("88063");
 	code("[87619, ''][0] | 18431").equals("88063");
-	code("87619★ |= 18431").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("87619★ |= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
 	code("var a = 87619★ a |= 18431 a").equals("88063");
 	code("[12, 'hello'][1] | 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
@@ -463,7 +463,7 @@ void Test::test_numbers() {
 	code("var a = 87619 a ^= 18431").equals("70076");
 	code("var a = 87619 a ^= 18431 a").equals("70076");
 	code("[87619, ''][0] ^ 18431").equals("70076");
-	code("87619★ ^= 18431").semantic_error(ls::SemanticError::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("87619★ ^= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
 	code("var a = 87619★ a ^= 18431 a").equals("70076");
 	code("[12, 'hello'][1] ^ 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
@@ -497,7 +497,7 @@ void Test::test_numbers() {
 	code("var a = 123123123 a >>= 7 a").equals("961899");
 	code("var a = [123123123, ''] a[0] >>= 7").equals("961899");
 	code("var a = 12345 ['', a >>= 8]").equals("['', 48]");
-	code("'salut' >> 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), ">>", ls::Type::integer().to_string()});
+	code("'salut' >> 5").error(ls::Error::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), ">>", ls::Type::integer().to_string()});
 
 	section("Number.operator >>>");
 	code("155 >>> 3").equals("19");
@@ -507,7 +507,7 @@ void Test::test_numbers() {
 	code("var a = -155 a >>>= 5 a").equals("134217723");
 	code("var a = [-155, ''] a[0] >>>= 5").equals("134217723");
 	code("var a = -155 ['', a >>>= 5]").equals("['', 134217723]");
-	code("'salut' >>> 5").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), ">>>", ls::Type::integer().to_string()});
+	code("'salut' >>> 5").error(ls::Error::NO_SUCH_OPERATOR, {ls::Type::tmp_string().to_string(), ">>>", ls::Type::integer().to_string()});
 
 	section("Number.operator |x|");
 	code("var a = -12 [] + |a|").equals("[12]");

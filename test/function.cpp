@@ -19,10 +19,10 @@ void Test::test_functions() {
 	code("let v = global_fun(5) function global_fun(x) { return x + 12 } v").equals("17");
 
 	section("Can't call a value");
-	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"null"});
-	code("12()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"12"});
-	code("'hello'()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"'hello'"});
-	code("[1, 2, 3]()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"[1, 2, 3]"});
+	code("null()").error(ls::Error::Type::CANNOT_CALL_VALUE, {"null"});
+	code("12()").error(ls::Error::Type::CANNOT_CALL_VALUE, {"12"});
+	code("'hello'()").error(ls::Error::Type::CANNOT_CALL_VALUE, {"'hello'"});
+	code("[1, 2, 3]()").error(ls::Error::Type::CANNOT_CALL_VALUE, {"[1, 2, 3]"});
 
 	section("Simple returns");
 	code("1; 2").equals("2");
@@ -137,16 +137,16 @@ void Test::test_functions() {
 	code("~(x -> x)").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Function.operator ++x");
-	code("++(x -> x)").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
+	code("++(x -> x)").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
 
 	section("Function.operator --x");
-	code("--(x -> x)").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
+	code("--(x -> x)").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
 
 	section("Function.operator x++");
-	code("(x -> x)++").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
+	code("(x -> x)++").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
 
 	section("Function.operator x--");
-	code("(x -> x)--").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
+	code("(x -> x)--").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
 
 	section("Operator ~ ");
 	code("let a = 10 a ~ x -> x ** 2").equals("100");
@@ -164,7 +164,7 @@ void Test::test_functions() {
 	code("let f = x => x.cos(); (~)(Number.pi, f)").equals("-1");
 
 	section("Operator []");
-	code("let f = x -> x f[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
+	code("let f = x -> x f[2] = 5").error(ls::Error::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
 
 	section("Function operators");
 	code("(+)(1, 2)").equals("3");
@@ -250,12 +250,12 @@ void Test::test_functions() {
 	code("let f = x -> x f(12) f('salut') f.args").equals("[<class Value>]");
 
 	section("Check argument count");
-	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"x => x", "1", "0"});
-	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
-	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
+	code("(x -> x)()").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"x => x", "1", "0"});
+	code("let f = x, y -> x + y f(5)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
+	code("let add = +; add(5, 12, 13)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
 	// TODO not the expected error
-	DISABLED_code("Number.abs(12, 12)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "12", "12"});
-	code("let siftUp = (c, pq) -> pq; let pqInsert = (p, v, pq) -> siftUp(0, pq); pqInsert(1, 2)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"pqInsert", "3", "2"});
+	DISABLED_code("Number.abs(12, 12)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "12", "12"});
+	code("let siftUp = (c, pq) -> pq; let pqInsert = (p, v, pq) -> siftUp(0, pq); pqInsert(1, 2)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"pqInsert", "3", "2"});
 
 	section("Void functions");
 	code("(x -> System.print(x))(43)").equals("(void)");
@@ -275,7 +275,7 @@ void Test::test_functions() {
 	code("function f(x = 10) { x } f()").equals("10");
 	code("let add = (x, y = 1) -> x + y add(5)").equals("6");
 	code("let add = (x, y = 1) -> x + y add(5, 3)").equals("8");
-	code("let add = (x, y = 1) -> x + y add()").semantic_error(ls::SemanticError::WRONG_ARGUMENT_COUNT, {"add", "2", "1"});
+	code("let add = (x, y = 1) -> x + y add()").error(ls::Error::WRONG_ARGUMENT_COUNT, {"add", "2", "1"});
 	code("let f = (x = 'a', y = 'b') -> x + y f()").equals("'ab'");
 	code("let f = (x = 'a', y = 'b') -> x + y f(100, 12)").equals("112");
 	code("let f = (x = 'a', y = 'b') -> x + y f(100)").equals("'100b'");

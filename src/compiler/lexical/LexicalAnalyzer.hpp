@@ -5,6 +5,7 @@
 #include <string>
 #include "Token.hpp"
 #include "LexicalError.hpp"
+#include "../resolver/File.hpp"
 
 namespace ls {
 
@@ -15,14 +16,14 @@ enum class LetterType {
 class LexicalAnalyzer {
 public:
 
-	std::vector<LexicalError> errors;
+	File* file;
 
 	LetterType getLetterType(char32_t c);
 	TokenType getTokenType(std::string word, TokenType by_default);
 	std::vector<Token*> parseTokens(std::string code);
 
 	LexicalAnalyzer();
-	std::vector<Token*> analyze(std::string code);
+	std::vector<Token*> analyze(File* file);
 };
 
 }

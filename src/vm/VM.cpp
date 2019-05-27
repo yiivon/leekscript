@@ -7,7 +7,7 @@
 #include "../compiler/syntaxic/SyntaxicAnalyzer.hpp"
 #include "Context.hpp"
 #include "../compiler/semantic/SemanticAnalyzer.hpp"
-#include "../compiler/semantic/SemanticError.hpp"
+#include "../compiler/error/Error.hpp"
 #include "value/LSNumber.hpp"
 #include "value/LSArray.hpp"
 #include "Program.hpp"

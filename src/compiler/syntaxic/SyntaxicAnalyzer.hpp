@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "SyntaxicalError.hpp"
 #include "../value/Match.hpp"
 #include "../resolver/Resolver.hpp"
 
@@ -38,10 +37,10 @@ class SyntaxicAnalyzer {
 	size_t last_size = 0;
 	Token* nt;
 	unsigned i;
-	std::vector<SyntaxicalError> errors;
 	long time;
 	std::vector<std::pair<unsigned,size_t>> stack;
 	Token* finished_token;
+	File* file;
 
 public:
 
@@ -87,8 +86,6 @@ public:
 	Token* eat_get(TokenType type);
 	void eat(TokenType type);
 	Token* nextTokenAt(int pos);
-
-	std::vector<SyntaxicalError> getErrors();
 };
 
 }

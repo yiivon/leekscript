@@ -12,7 +12,7 @@ void Test::test_toplevel() {
 	test("Size of context", ctx.vars.size(), 1);
 	code("a * 7").context(&ctx).equals("14");
 	code("a + 'salut'").context(&ctx).equals("'2salut'");
-	code("a").semantic_error(ls::SemanticError::UNDEFINED_VARIABLE, {"a"});
+	code("a").error(ls::Error::UNDEFINED_VARIABLE, {"a"});
 
 	code("var b = 3.14").context(&ctx).works();
 	test("Size of context", ctx.vars.size(), 2);

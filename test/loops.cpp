@@ -18,8 +18,8 @@ void Test::test_loops() {
 	code("if (true) {;} else {}").equals("null");
 	code("if (true) { {} } else {}").equals("{}");
 	code("if (true) null else {}").equals("null");
-	code("if true").syntaxic_error(ls::SyntaxicalError::UNEXPECTED_TOKEN, {""});
-	code("if true else").syntaxic_error(ls::SyntaxicalError::UNEXPECTED_TOKEN, {"else"});
+	code("if true").error(ls::Error::UNEXPECTED_TOKEN, {""});
+	code("if true else").error(ls::Error::UNEXPECTED_TOKEN, {"else"});
 	code("if (true) {a: 12} else {b: 5}").equals("{a: 12}");
 	code("if (true) { {a: 12} } else { {b: 5} }").equals("{a: 12}");
 	code("if (true) 12 else 5").equals("12");
@@ -158,9 +158,9 @@ void Test::test_loops() {
 	// code("for x in ['hello', 12345][0] { print(x) }").equals("h\ne\nl\nl\no\n");
 
 	header("Foreach - not iterable");
-	code("for x in null {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::null().to_string()});
-	code("for x in true {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::boolean().to_string()});
-	code("for x in Number {}").semantic_error(ls::SemanticError::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::const_class().to_string()});
+	code("for x in null {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::null().to_string()});
+	code("for x in true {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::boolean().to_string()});
+	code("for x in Number {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::const_class().to_string()});
 
 	/*
 	 * Array For
@@ -181,12 +181,12 @@ void Test::test_loops() {
 	 * Break & continue
 	 */
 	header("Breaks and Continues");
-	code("break").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, {});
-	code("continue").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
-	code("while (true) { x -> {x break} }").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, {});
-	code("while (true) { x -> {x continue} }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
-	code("while (true) { break 2 }").semantic_error(ls::SemanticError::Type::BREAK_MUST_BE_IN_LOOP, {});
-	code("while (true) { continue 2 }").semantic_error(ls::SemanticError::Type::CONTINUE_MUST_BE_IN_LOOP, {});
+	code("break").error(ls::Error::Type::BREAK_MUST_BE_IN_LOOP, {});
+	code("continue").error(ls::Error::Type::CONTINUE_MUST_BE_IN_LOOP, {});
+	code("while (true) { x -> {x break} }").error(ls::Error::Type::BREAK_MUST_BE_IN_LOOP, {});
+	code("while (true) { x -> {x continue} }").error(ls::Error::Type::CONTINUE_MUST_BE_IN_LOOP, {});
+	code("while (true) { break 2 }").error(ls::Error::Type::BREAK_MUST_BE_IN_LOOP, {});
+	code("while (true) { continue 2 }").error(ls::Error::Type::CONTINUE_MUST_BE_IN_LOOP, {});
 	code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r").equals("14");
 	code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y continue 2 } r = 0 } r").equals("23");
 	code("for x in ['a'] { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
@@ -195,8 +195,8 @@ void Test::test_loops() {
 	code("for var x = 0; x < 2; ++x { let a = 'a' { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
 	code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break let c = 'c' } let d = 'd' } 0").equals("0");
 	code("for var x = 0; x < 2; ++x { let a = 'a' for var y = 0; y < 2; ++y { let b = 'b' break 2 let c = 'c' } let d = 'd' } 0").equals("0");
-	code("while (true) { break 0 }").syntaxic_error(ls::SyntaxicalError::Type::BREAK_LEVEL_ZERO, {});
-	code("while (true) { continue 0 }").syntaxic_error(ls::SyntaxicalError::Type::CONTINUE_LEVEL_ZERO, {});
+	code("while (true) { break 0 }").error(ls::Error::Type::BREAK_LEVEL_ZERO, {});
+	code("while (true) { continue 0 }").error(ls::Error::Type::CONTINUE_LEVEL_ZERO, {});
 
 	/*
 	 * Match

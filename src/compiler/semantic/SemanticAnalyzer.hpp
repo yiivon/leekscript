@@ -7,7 +7,7 @@
 
 #include "../../vm/VM.hpp"
 #include "../../type/Type.hpp"
-#include "SemanticError.hpp"
+#include "../error/Error.hpp"
 
 namespace ls {
 
@@ -64,7 +64,7 @@ public:
 	std::stack<Function*> functions_stack;
 	std::stack<int> loops;
 
-	std::vector<SemanticError> errors;
+	std::vector<Error> errors;
 
 	SemanticAnalyzer();
 	virtual ~SemanticAnalyzer();
@@ -89,7 +89,7 @@ public:
 	std::map<std::string, std::shared_ptr<SemanticVar>>& get_local_vars();
 	std::shared_ptr<SemanticVar> convert_var_to_any(std::shared_ptr<SemanticVar> var);
 
-	void add_error(SemanticError ex);
+	void add_error(Error ex);
 
 };
 

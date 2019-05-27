@@ -6,7 +6,7 @@
 #include "../src/compiler/lexical/LexicalAnalyzer.hpp"
 #include "../src/compiler/syntaxic/SyntaxicAnalyzer.hpp"
 #include "../src/compiler/semantic/SemanticAnalyzer.hpp"
-#include "../src/compiler/semantic/SemanticError.hpp"
+#include "../src/compiler/error/Error.hpp"
 #include "../src/vm/Program.hpp"
 #include "../src/vm/value/LSNumber.hpp"
 #include "../src/vm/value/LSObject.hpp"
@@ -15,15 +15,9 @@ void Test::test_general() {
 
 	header("General");
 	// Print a syntaxical error
-	auto lexError = new ls::LexicalError(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, 0, 0);
-	auto synError = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"truc"});
-	auto semError = new ls::SemanticError(ls::SemanticError::Type::NO_SUCH_ATTRIBUTE, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}, {"key", "obj_fake"});
-	std::cout << lexError->message() << std::endl;
-	std::cout << synError->message() << std::endl;
-	std::cout << semError->message() << std::endl;
-	delete lexError;
-	delete synError;
-	delete semError;
+	auto error = new ls::Error(ls::Error::Type::NO_SUCH_ATTRIBUTE, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}, {"key", "obj_fake"});
+	std::cout << error->message() << std::endl;
+	delete error;
 	// Print a program
 	auto program = new ls::Program("2 + 2", "test");
 	program->compile(vm, nullptr);
@@ -40,7 +34,7 @@ void Test::test_general() {
 	code(" ").equals("(void)"); // unbreakable space
 	code("	").equals("(void)"); // tab
 	code("null").equals("null");
-	code("()").syntaxic_error(ls::SyntaxicalError::Type::EXPECTED_VALUE, {")"});
+	code("()").error(ls::Error::Type::EXPECTED_VALUE, {")"});
 	code("12").equals("12");
 	code("1212m").equals("1212");
 	code("true").equals("true");
@@ -91,21 +85,21 @@ void Test::test_general() {
 	code("global a = 2, b = 'a'").equals("(void)");
 
 	section("Variable already defined");
-	code("a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
-	code("let a = 2 let a = 5").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, {"a"});
-	code("let Number = 2").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, {"Number"});
+	code("a").error(ls::Error::Type::UNDEFINED_VARIABLE, {"a"});
+	code("let a = 2 let a = 5").error(ls::Error::Type::VARIABLE_ALREADY_DEFINED, {"a"});
+	code("let Number = 2").error(ls::Error::Type::VARIABLE_ALREADY_DEFINED, {"Number"});
 
 	code("let a = 12 a").equals("12");
 	code("let a = 12 { let a = 5 } a").equals("12");
 	code("let a = 12 var b = 0 { let a = 5 b = a } b").equals("5");
-	code("{let a = 5} a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
+	code("{let a = 5} a").error(ls::Error::Type::UNDEFINED_VARIABLE, {"a"});
 
 	section("Syntaxic errors");
-	code("{").syntaxic_error(ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
-	code("2 + ()").syntaxic_error(ls::SyntaxicalError::Type::EXPECTED_VALUE, {")"});
-	code("let 2 = 5").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
-	code("(654321").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {""});
-	code("fun(1234").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {""});
+	code("{").error(ls::Error::Type::BLOCK_NOT_CLOSED, {});
+	code("2 + ()").error(ls::Error::Type::EXPECTED_VALUE, {")"});
+	code("let 2 = 5").error(ls::Error::Type::UNEXPECTED_TOKEN, {"2"});
+	code("(654321").error(ls::Error::Type::UNEXPECTED_TOKEN, {""});
+	code("fun(1234").error(ls::Error::Type::UNEXPECTED_TOKEN, {""});
 
 	section("Syntaxic edge cases");
 	code("let toto = 2; toto'salut'").equals("'salut'"); // string just after a ident
@@ -150,10 +144,10 @@ void Test::test_general() {
 
 	section("Const values");
 	code("var c = 2 c++").equals("2");
-	code("let c = 2 c++").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
-	code("let c = 2; ++c").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
-	code("let c = 2; c = 5").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
-	code("let c = 2; c += 5").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2 c++").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; ++c").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; c = 5").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; c += 5").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
 
 	section("Type changes");
 	code("var a a = 12").equals("12");

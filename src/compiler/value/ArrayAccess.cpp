@@ -5,7 +5,7 @@
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSInterval.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
-#include "../semantic/SemanticError.hpp"
+#include "../error/Error.hpp"
 #include "../semantic/Callable.hpp"
 
 namespace ls {
@@ -69,7 +69,7 @@ void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 	array->analyze(analyzer);
 
 	if (not array->type.can_be_container()) {
-		analyzer->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
+		analyzer->add_error({Error::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
 		return;
 	}
 	if (key == nullptr) {
@@ -95,11 +95,11 @@ void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 
 		if (!key->type.is_any() and not key->type.is_number()) {
 			std::string k = "<key 1>";
-			analyzer->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
+			analyzer->add_error({Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
 		}
 		if (!key2->type.is_any() and not key2->type.is_number()) {
 			std::string k = "<key 2>";
-			analyzer->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
+			analyzer->add_error({Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
 		}
 		type = array->type;
 		type.temporary = true;
@@ -109,7 +109,7 @@ void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
-			analyzer->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
+			analyzer->add_error({Error::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
 		}
 		if (array->type.is_string()) {
 			type = Type::string();
@@ -119,7 +119,7 @@ void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
 			std::string kt = key->type.to_string();
-			analyzer->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
+			analyzer->add_error({Error::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
 		}
 	}
 	// TODO should be temporary

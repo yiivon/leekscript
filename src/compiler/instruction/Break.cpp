@@ -1,6 +1,6 @@
 #include "../../compiler/instruction/Break.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
-#include "../semantic/SemanticError.hpp"
+#include "../error/Error.hpp"
 
 namespace ls {
 
@@ -25,7 +25,7 @@ void Break::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
 	// break must be in a loop
 	if (!analyzer->in_loop(deepness)) {
-		analyzer->add_error({SemanticError::Type::BREAK_MUST_BE_IN_LOOP, token->location, token->location});
+		analyzer->add_error({Error::Type::BREAK_MUST_BE_IN_LOOP, token->location, token->location});
 	}
 }
 

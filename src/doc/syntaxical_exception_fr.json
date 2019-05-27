@@ -1,8 +1,0 @@
-{
-    "UNKNOWN_ERROR": "Erreur inconnue",
-    "BLOCK_NOT_CLOSED": "Un bloc n'est pas fermé",
-    "BREAK_LEVEL_ZERO": "L'instruction « break » doit se trouver dans une boucle",
-    "CONTINUE_LEVEL_ZERO": "L'instruction « continue » doit se trouver dans une boucle",
-    "EXPECTED_VALUE": "Une valeur est attendue",
-    "UNEXPECTED_TOKEN": "Caractères inattendus « %s »"
-}

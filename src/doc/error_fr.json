@@ -1,5 +1,16 @@
 {
-	"UNKNOWN_ERROR" : "Erreur inconnue",
+	"UNKNOWN_ERROR": "Erreur inconnue",
+
+	"UNTERMINATED_STRING": "Chaîne de caractère non terminée",
+    "UNKNOWN_ESCAPE_SEQUENCE": "Séquence d'échappement inconnue",
+    "NUMBER_INVALID_REPRESENTATION": "Représentation invalide de nombre",
+
+    "BLOCK_NOT_CLOSED": "Un bloc n'est pas fermé",
+    "BREAK_LEVEL_ZERO": "L'instruction « break » doit se trouver dans une boucle",
+    "CONTINUE_LEVEL_ZERO": "L'instruction « continue » doit se trouver dans une boucle",
+    "EXPECTED_VALUE": "Une valeur est attendue",
+	"UNEXPECTED_TOKEN": "Caractères inattendus « %s »",
+	
 	"UNDEFINED_VARIABLE" : "Variable « %s » non déclarée",
 	"VARIABLE_ALREADY_DEFINED" : "Variable « %s » déjà définie",
 	"METHOD_NOT_FOUND" : "Cette méthode « %s » n'existe pas",

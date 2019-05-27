@@ -155,13 +155,7 @@ ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
 	test->execution_time += execution_time;
 
 	if (display_errors) {
-		for (const auto& error : result.lexical_errors) {
-			std::cout << "Line " << error.line << ": " << error.message() << std::endl;
-		}
-		for (const auto& error : result.syntaxical_errors) {
-			std::cout << "Line " << error.token->location.start.line << ": " << error.message() << std::endl;
-		}
-		for (const auto& error : result.semantical_errors) {
+		for (const auto& error : result.errors) {
 			std::cout << "Line " << error.location.start.line << ": " << error.message() << std::endl;
 		}
 	}
@@ -226,23 +220,9 @@ void Test::Input::equals(std::string expected) {
 	auto result = run();
 
 	std::string errors;
-	if (result.lexical_errors.size()) {
-		for (const auto& error : result.lexical_errors) {
-			std::cout << "Lexical error: " << error.message() << std::endl;
-			errors += error.message();
-		}
-	}
-	if (result.syntaxical_errors.size()) {
-		for (const auto& error : result.syntaxical_errors) {
-			std::cout << "Syntaxical error: " << error.message() << std::endl;
-			errors += error.message();
-		}
-	}
-	if (result.semantical_errors.size()) {
-		for (const auto& error : result.semantical_errors) {
-			std::cout << "Semantic error: " << error.message() << std::endl;
-			errors += error.message();
-		}
+	for (const auto& error : result.errors) {
+		std::cout << "Error: " << error.message() << std::endl;
+		errors += error.message();
 	}
 	if (result.value == expected) {
 		pass(expected);
@@ -330,60 +310,22 @@ void Test::Input::between(T a, T b) {
 
 }
 
-void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::vector<std::string> parameters) {
+void Test::Input::error(ls::Error::Type expected_type, std::vector<std::string> parameters) {
 	if (disabled) return disable();
 	
 	auto result = run(false);
 
-	std::string expected_message = ls::SemanticError::build_message(expected_type, parameters);
+	auto expected_message = ls::Error::build_message(expected_type, parameters);
 
-	if (result.semantical_errors.size()) {
-		ls::SemanticError e = result.semantical_errors[0];
+	if (result.errors.size()) {
+		ls::Error e = result.errors[0];
 		if (expected_type != e.type or parameters != e.parameters) {
 			fail(expected_message, e.message());
 		} else {
 			pass(e.message());
 		}
 	} else {
-		fail(expected_message, "(no semantical error)");
-	}
-}
-
-void Test::Input::syntaxic_error(ls::SyntaxicalError::Type expected_type, std::vector<std::string> parameters) {
-	if (disabled) return disable();
-
-	auto result = run(false);
-
-	std::string expected_message = ls::SyntaxicalError::build_message(expected_type, parameters);
-
-	if (result.syntaxical_errors.size()) {
-		ls::SyntaxicalError e = result.syntaxical_errors[0];
-		if (expected_type != e.type or parameters != e.parameters) {
-			fail(expected_message, e.message());
-		} else {
-			pass(e.message());
-		}
-	} else {
-		fail(std::to_string(expected_type), "(no syntaxical error)");
-	}
-}
-
-void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
-	if (disabled) return disable();
-
-	auto result = run(false);
-
-	std::string expected_message = ls::LexicalError::build_message(expected_type);
-
-	if (result.lexical_errors.size()) {
-		ls::LexicalError e = result.lexical_errors[0];
-		if (expected_type != e.type) {
-			fail(expected_message, e.message());
-		} else {
-			pass(e.message());
-		}
-	} else {
-		fail(expected_message, "(no lexical error)");
+		fail(expected_message, "(no error)");
 	}
 }
 

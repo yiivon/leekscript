@@ -160,16 +160,11 @@ void print_result(ls::VM::Result& result, const std::string& output, bool json, 
 }
 
 void print_errors(ls::VM::Result& result, std::ostream& os, bool json) {
-	for (const auto& e : result.lexical_errors) {
-		os << "Line " << e.line << ": " << e.message() << std::endl;
-	}
-	for (const auto& e : result.syntaxical_errors) {
-		os << "Line " << e.token->location.start.line << ": " << e.message() << std::endl;
-	}
 	bool first = true;
-	for (const auto& e : result.semantical_errors) {
+	for (const auto& e : result.errors) {
 		if (!first) std::cout << std::endl;
-		os << BOLD << e.file << ":" << e.location.start.line << END_COLOR << ": " << e.underline_code << std::endl << "   ▶ " << e.message() << std::endl;
+		os << C_RED << "❌ " << END_COLOR << e.message() << std::endl;
+		os << "    " << BOLD << "> " << e.file << ":" << e.location.start.line << END_COLOR << ": " << e.underline_code << std::endl;
 		first = false;
 	}
 	if (result.exception.type != ls::vm::Exception::NO_EXCEPTION) {

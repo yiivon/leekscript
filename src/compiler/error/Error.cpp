@@ -1,30 +1,34 @@
-#include "SemanticError.hpp"
+#include "Error.hpp"
 #include "../../util/Util.hpp"
 
 namespace ls {
 
-bool SemanticError::translation_loaded = false;
-Json SemanticError::translation;
+bool Error::translation_loaded = false;
+Json Error::translation;
 
-SemanticError::SemanticError(Type type, Location location, Location focus) : type(type), location(location), focus(focus) {}
+Error::Error(Type type, int line, int character) : type(type), location(Position(line, character, 0), Position(line, character + 1, 0)), focus(Position(line, character, 0), Position(line, character + 1, 0)) {}
 
-SemanticError::SemanticError(Type type, Location location, Location focus, std::vector<std::string> parameters) : type(type), location(location), focus(focus), parameters(parameters) {}
+Error::Error(Type type, Token* token, std::vector<std::string> parameters) : type(type), location(token->location), focus(token->location), parameters(parameters) {}
 
-SemanticError::~SemanticError() {}
+Error::Error(Type type, Location location, Location focus) : type(type), location(location), focus(focus) {}
 
-std::string SemanticError::message() const {
+Error::Error(Type type, Location location, Location focus, std::vector<std::string> parameters) : type(type), location(location), focus(focus), parameters(parameters) {}
+
+Error::~Error() {}
+
+std::string Error::message() const {
 	return build_message(type, parameters);
 }
 
-Json SemanticError::json() const {
+Json Error::json() const {
 	return {focus.start.line, focus.start.column, focus.end.line, focus.end.column, build_message(type, parameters)};
 }
 
-std::string SemanticError::build_message(Type type, std::vector<std::string> parameters) {
+std::string Error::build_message(Type type, std::vector<std::string> parameters) {
 
 	if (!translation_loaded) {
 		try {
-			translation = Json::parse(Util::read_file("src/doc/semantic_exception_fr.json"));
+			translation = Json::parse(Util::read_file("src/doc/error_fr.json"));
 		} catch (std::exception&) {} // LCOV_EXCL_LINE
 		translation_loaded = true;
 	}
@@ -45,8 +49,19 @@ std::string SemanticError::build_message(Type type, std::vector<std::string> par
 	}
 }
 
-std::string SemanticError::type_to_string(Type type) {
+std::string Error::type_to_string(Type type) {
 	switch (type) {
+		// Lexical
+		case Type::UNTERMINATED_STRING: return "UNTERMINATED_STRING";
+		case Type::UNKNOWN_ESCAPE_SEQUENCE: return "UNKNOWN_ESCAPE_SEQUENCE";
+		case Type::NUMBER_INVALID_REPRESENTATION: return "NUMBER_INVALID_REPRESENTATION";
+		// Syntaxic
+		case Type::BLOCK_NOT_CLOSED: return "BLOCK_NOT_CLOSED";
+		case Type::BREAK_LEVEL_ZERO: return "BREAK_LEVEL_ZERO";
+		case Type::CONTINUE_LEVEL_ZERO: return "CONTINUE_LEVEL_ZERO";
+		case Type::EXPECTED_VALUE: return "EXPECTED_VALUE";
+		case Type::UNEXPECTED_TOKEN: return "UNEXPECTED_TOKEN";
+		// Semantic
 		case Type::UNDEFINED_VARIABLE: return "UNDEFINED_VARIABLE";
 		case Type::VARIABLE_ALREADY_DEFINED: return "VARIABLE_ALREADY_DEFINED";
 		case Type::METHOD_NOT_FOUND: return "METHOD_NOT_FOUND";

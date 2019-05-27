@@ -204,7 +204,7 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 		}
 		if (!found) {
 			type = Type::any();
-			analyzer->add_error({SemanticError::Type::UNDEFINED_VARIABLE, token->location, token->location, {token->content}});
+			analyzer->add_error({Error::Type::UNDEFINED_VARIABLE, token->location, token->location, {token->content}});
 		}
 	}
 	type.temporary = false;

@@ -12,7 +12,7 @@
 #include "../Compiler.hpp"
 #include "../lexical/Token.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
-#include "../semantic/SemanticError.hpp"
+#include "../error/Error.hpp"
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
 #include "../semantic/Callable.hpp"
@@ -96,7 +96,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	// Retrieve the callable version
 	callable = function->get_callable(analyzer, arguments_types.size());
 	if (not function->type.can_be_callable()) {
-		analyzer->add_error({SemanticError::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
+		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 	if (callable) {
 		// std::cout << "Callable: " << callable << std::endl;
@@ -169,13 +169,13 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 		}
 		if (object_type.is_class()) { // String.size("salut")
 			std::string clazz = ((VariableValue*) oa->object)->name;
-			analyzer->add_error({SemanticError::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
+			analyzer->add_error({Error::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
 		} else {  // "salut".size()
 			bool has_unknown_argument = false;
 			if (!object_type.fold().is_any() && !has_unknown_argument) {
 				std::ostringstream obj_type_ss;
 				obj_type_ss << object_type;
-				analyzer->add_error({SemanticError::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
+				analyzer->add_error({Error::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
 			} else {
 				is_unknown_method = true;
 				object = oa->object;
@@ -208,7 +208,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 		a++;
 	}
 	if (function->type.is_function() and !arguments_valid) {
-		analyzer->add_error({SemanticError::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
+		analyzer->add_error({Error::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
 			function->to_string(),
 			std::to_string(function->type.arguments().size()),
 			std::to_string(total_arguments_passed)

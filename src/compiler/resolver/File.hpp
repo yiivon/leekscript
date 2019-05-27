@@ -2,6 +2,7 @@
 #define FILE_HPP
 
 #include "FileContext.hpp"
+#include "../error/Error.hpp"
 
 namespace ls {
 
@@ -10,6 +11,7 @@ public:
 	std::string path;
 	std::string code;
 	FileContext* context;
+	std::vector<Error> errors;
 
 	File(std::string path, std::string code, FileContext* context) {
 		this->path = path;

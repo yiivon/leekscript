@@ -254,9 +254,9 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 					} catch (...) {
 						if (object_class->name != "Object") {
 							if (object->type.is_class() and vv != nullptr) {
-								analyzer->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, vv->name}});
+								analyzer->add_error({Error::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, vv->name}});
 							} else {
-								analyzer->add_error({SemanticError::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, object_class->name}});
+								analyzer->add_error({Error::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, object_class->name}});
 							}
 							return;
 						}

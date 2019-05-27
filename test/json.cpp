@@ -5,7 +5,7 @@ void Test::test_json() {
 	header("Json");
 
 	section("Json.encode()");
-	code("Json.encode()").semantic_error(ls::SemanticError::Type::STATIC_METHOD_NOT_FOUND, {"Json::encode()"});
+	code("Json.encode()").error(ls::Error::Type::STATIC_METHOD_NOT_FOUND, {"Json::encode()"});
 	// integer
 	code("Json.encode(0)").equals("'0'");
 	code("Json.encode(12)").equals("'12'");
