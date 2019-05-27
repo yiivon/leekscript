@@ -80,6 +80,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	// Analyse arguments
 	for (const auto& argument : arguments) {
 		argument->analyze(analyzer);
+		throws |= argument->throws;
 	}
 
 	// Perform a will_take to prepare eventual versions
