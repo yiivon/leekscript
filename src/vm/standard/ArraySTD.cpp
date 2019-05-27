@@ -133,15 +133,6 @@ ArraySTD::ArraySTD() : Module("Array") {
 	Type pred_fun_type = Type::fun(Type::any(), {Type::any()});
 	Type pred_fun_type_float = Type::fun(Type::any(), {Type::real()});
 	Type pred_fun_type_int = Type::fun(Type::any(), {Type::integer()});
-	Type pred_clo_type = Type::closure(Type::any(), {Type::any()});
-	Type pred_clo_type_float = Type::closure(Type::any(), {Type::real()});
-	Type pred_clo_type_int = Type::closure(Type::any(), {Type::integer()});
-	auto filter_ptr = &LSArray<LSValue*>::ls_filter<LSFunction*>;
-	auto filter_real = &LSArray<double>::ls_filter<LSFunction*>;
-	auto filter_int = &LSArray<int>::ls_filter<LSFunction*>;
-	auto filter_clo_ptr = &LSArray<LSValue*>::ls_filter<LSClosure*>;
-	auto filter_clo_real = &LSArray<double>::ls_filter<LSClosure*>;
-	auto filter_clo_int = &LSArray<int>::ls_filter<LSClosure*>;
 
 	auto fiT = Type::template_("T");
 	template_(fiT).
