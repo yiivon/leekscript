@@ -307,6 +307,7 @@ public:
 	void add_function_var(const std::string& name, value value);
 	void remove_function_var(value value);
 	void export_context_variable(const std::string& name, Compiler::value v) const;
+	void convert_var_to_poly(const std::string& name);
 
 	value get_var(const std::string& name);
 	void update_var(std::string& name, value value);

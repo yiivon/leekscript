@@ -87,6 +87,7 @@ public:
 
 	std::shared_ptr<SemanticVar> get_var(Token* name);
 	std::map<std::string, std::shared_ptr<SemanticVar>>& get_local_vars();
+	std::shared_ptr<SemanticVar> convert_var_to_any(std::shared_ptr<SemanticVar> var);
 
 	void add_error(SemanticError ex);
 

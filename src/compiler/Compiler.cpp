@@ -2019,6 +2019,19 @@ void Compiler::export_context_variable(const std::string& name, Compiler::value 
 	insn_call({}, {new_const_string(name, "var"), v}, f);
 }
 
+void Compiler::convert_var_to_poly(const std::string& name) {
+	std::cout << "Compiler::convert_var_to_any(" << name << ")" << std::endl;
+	for (int i = variables.size() - 1; i >= 0; --i) {
+		if (variables[i].find(name) != variables[i].end()) {
+			auto& var = variables[i].at(name);
+			auto new_var = CreateEntryBlockAlloca(name, Type::any().llvm_type(*this));
+			insn_store({new_var, Type::any().pointer()}, insn_to_any(insn_load(var)));
+			var.v = new_var;
+			var.t = Type::any().pointer();
+		}
+	}
+}
+
 Compiler::value Compiler::get_var(const std::string& name) {
 	for (int i = variables.size() - 1; i >= 0; --i) {
 		auto it = variables[i].find(name);

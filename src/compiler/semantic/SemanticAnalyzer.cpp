@@ -160,6 +160,26 @@ std::map<std::string, std::shared_ptr<SemanticVar>>& SemanticAnalyzer::get_local
 	return variables.back().back();
 }
 
+std::shared_ptr<SemanticVar> SemanticAnalyzer::convert_var_to_any(std::shared_ptr<SemanticVar> var) {
+	std::cout << "SemanticAnalyser::convert_var_to_any(" << var->name << ")" << std::endl;
+	auto new_var = std::make_shared<SemanticVar>(var->name, VarScope::LOCAL, Type::any(), 0, nullptr, nullptr, current_function(), nullptr);
+	// Search recursively in the functions
+	int f = functions_stack.size() - 1;
+	while (f >= 0) {
+		// Search in the local variables of the function
+		int b = variables.at(f).size() - 1;
+		while (b >= 0) {
+			auto& vars = variables.at(f).at(b);
+			if (vars.find(var->name) != vars.end()) {
+				vars.at(var->name) = new_var;
+			}
+			b--;
+		}
+		f--;
+	}
+	return new_var;
+}
+
 void SemanticAnalyzer::add_error(SemanticError ex) {
 	ex.underline_code = program->underline_code(ex.location, ex.focus);
 	ex.file = program->file_name;
