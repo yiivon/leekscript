@@ -5,6 +5,7 @@
 #include <string>
 #include "../src/vm/VM.hpp"
 #include "../src/vm/value/LSNumber.hpp"
+#include "../src/colors.h"
 
 class OutputStringStream : public ls::OutputStream {
 	std::ostringstream oss;
@@ -53,6 +54,23 @@ public:
 	Input file(const std::string& file_name);
 	Input DISABLED_file(const std::string& _code);
 	Input file_v1(const std::string& file_name);
+
+	template <class T1, class T2>
+	void test(std::string label, T1 value, T2 expected) {
+		total++;
+		std::ostringstream oss;
+		if (value == expected) {
+			success_count++;
+			oss << C_GREEN << "OK   " << END_COLOR << ": " << label;
+			oss <<  "  ===>  " << expected << std::endl;
+			std::cout << oss.str();
+		} else {
+			oss << C_RED << "FAIL " << END_COLOR << ": " << label;
+			oss << "  =/=>  " << expected << "  got  " << value << std::endl;
+			std::cout << oss.str();
+			failed_tests.push_back(oss.str());
+		}
+	}
 
 	void test_general();
 	void test_types();
