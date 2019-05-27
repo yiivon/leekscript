@@ -1942,7 +1942,9 @@ int Compiler::get_current_function_blocks() const {
 void Compiler::delete_function_variables() const {
 	for (const auto& v : function_variables.back()) {
 		// std::cout << "delete function variable " << v.t << std::endl;
-		insn_delete(insn_load(v.second));
+		if (v.second.t.pointed().must_manage_memory()) {
+			insn_delete(insn_load(v.second));
+		}
 	}
 }
 bool Compiler::is_current_function_closure() const {
