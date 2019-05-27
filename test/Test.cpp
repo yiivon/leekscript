@@ -209,7 +209,7 @@ void Test::Input::disable() {
 
 void Test::Input::works() {
 	if (disabled) return disable();
-	std::cout << "Try " << code << " ..." << std::endl;
+	// std::cout << "Try " << code << " ..." << std::endl;
 	try {
 		run();
 	} catch (...) {
