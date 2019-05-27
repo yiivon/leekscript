@@ -11,7 +11,7 @@ void Test::test_files() {
 	file("test/code/strings.leek").almost(52.0, 8.0);
 	file("test/code/reachable_cells.leek").equals("383");
 	file("test/code/break_and_continue.leek").equals("2504");
-	file("test/code/french.leek").ops_limit(10000).equals("'cent-soixante-huit millions quatre-cent-quatre-vingt-neuf-mille-neuf-cent-quatre-vingt-dix-neuf'");
+	DISABLED_file("test/code/french.leek").ops_limit(10000).equals("'cent-soixante-huit millions quatre-cent-quatre-vingt-neuf-mille-neuf-cent-quatre-vingt-dix-neuf'");
 	DISABLED_file("test/code/french.min.leek").equals("'neuf-cent-quatre-vingt-sept milliards six-cent-cinquante-quatre millions trois-cent-vingt-et-un-mille-douze'");
 	file("test/code/quine.leek").quine();
 	file_v1("test/code/quine_zwik.leek").quine();
@@ -62,7 +62,7 @@ void Test::test_files() {
 	DISABLED_file("test/code/euler/pe014.leek").equals("837799");
 	DISABLED_file("test/code/euler/pe015.leek").equals("137846528820");
 	file("test/code/euler/pe016.leek").equals("1366");
-	file("test/code/euler/pe062.leek").equals("127035954683");
+	DISABLED_file("test/code/euler/pe062.leek").equals("127035954683");
 	file("test/code/euler/pe063.leek").equals("49");
 	DISABLED_file("test/code/euler/pe206.leek").equals("1389019170");
 }

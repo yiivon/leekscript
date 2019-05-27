@@ -135,14 +135,14 @@ public:
 	}
 	llvm::orc::VModuleKey addModule(std::unique_ptr<llvm::Module> M) {
 		llvm::orc::VModuleKey K = ES.allocateVModule();
-		cantFail(CompileLayer.addModule(K, std::move(M)));
+		cantFail(OptimizeLayer.addModule(K, std::move(M)));
 		return K;
 	}
 	llvm::JITSymbol findSymbol(const std::string Name) {
-		return CompileLayer.findSymbol(Name, false);
+		return OptimizeLayer.findSymbol(Name, false);
 	}
 	void removeModule(llvm::orc::VModuleKey K) {
-		cantFail(CompileLayer.removeModule(K));
+		cantFail(OptimizeLayer.removeModule(K));
 	}
 
 	/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of the function.  This is used for mutable variables etc.
