@@ -359,8 +359,7 @@ void Test::test_numbers() {
 	code("var a = 12★ a /= false a").equals("nan");
 	code("var a = 12★ a /= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = 12★ a /= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	// TODO result is 7.5000009554
-	DISABLED_code("var a = 15; ['', a /= 2]").equals("['', 7.5]");
+	code("var a = 15; ['', a /= 2]").equals("['', 7.5]");
 
 	section("Number.operator <");
 	code("5 < 2").equals("false");
