@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 			file_name = Util::file_short_name(file_or_code);
 		} else {
 			code = file_or_code;
-			file_name = "(snippet)";
+			file_name = "snippet";
 		}
 		/** Execute **/
 		ls::VM vm {v1};
