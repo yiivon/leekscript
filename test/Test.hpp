@@ -89,6 +89,7 @@ public:
 		float execution_time = 0;
 		long int operation_limit = 0;
 		ls::VM::Result result;
+		ls::Context* ctx = nullptr;
 
 		Input(Test* test, const std::string& name, const std::string& code,
 			bool file = false, bool v1 = false, bool disabled = false) : test(test), name(name), code(code), file(file), v1(v1), disabled(disabled) {};
@@ -108,6 +109,7 @@ public:
 		void type(ls::Type);
 		Input& timeout(int ms);
 		Input& ops_limit(long int ops);
+		Input& context(ls::Context* ctx);
 
 		ls::VM::Result run(bool display_errors = true, bool ops = false);
 		void pass(std::string expected);

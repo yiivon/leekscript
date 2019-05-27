@@ -139,7 +139,7 @@ ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
 
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->operation_limit = this->operation_limit > 0 ? this->operation_limit : ls::VM::DEFAULT_OPERATION_LIMIT;
-	auto result = vm->execute(code, nullptr, "test", false, ops or this->operation_limit > 0);
+	auto result = vm->execute(code, ctx, "test", false, ops or this->operation_limit > 0);
 	vm->operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	this->result = result;
@@ -294,7 +294,7 @@ void Test::Input::type(ls::Type type) {
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	
 	test->total++;
-	auto result = vm->execute(code, nullptr, name, false, false);
+	auto result = vm->execute(code, ctx, name, false, false);
 
 	std::ostringstream oss;
 	oss << type;
@@ -422,8 +422,12 @@ void Test::Input::operations(int expected) {
 Test::Input& Test::Input::timeout(int) {
 	return *this;
 }
-Test::Input&  Test::Input::ops_limit(long int ops) {
+Test::Input& Test::Input::ops_limit(long int ops) {
 	this->operation_limit = ops;
+	return *this;
+}
+Test::Input& Test::Input::context(ls::Context* ctx) {
+	this->ctx = ctx;
 	return *this;
 }
 
