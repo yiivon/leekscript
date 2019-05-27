@@ -1,5 +1,5 @@
 SRC_DIR := src/vm src/vm/value src/vm/standard src/doc \
-src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic \
+src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic src/compiler/resolver \
 src/compiler/value src/compiler/instruction src/type src/util lib
 TEST_DIR := test
 
@@ -30,7 +30,7 @@ COMPILER := g++
 OPTIM := -O0
 FLAGS := -std=c++17 -g3 -Wall -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
-LIBS := -lm -lgmp `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native`
+LIBS := -lm -lgmp -lstdc++fs `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native`
 MAKEFLAGS += --jobs=$(shell nproc)
 
 CLOC_EXCLUDED := .git,lib,build,doxygen

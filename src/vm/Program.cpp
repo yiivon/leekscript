@@ -43,29 +43,29 @@ Program::~Program() {
 
 VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool pseudo_code, bool log_instructions) {
 
+	auto resolver = new Resolver();
+
+	// if (lex.errors.size()) {
+	// 	result.compilation_success = false;
+	// 	result.lexical_errors = lex.errors;
+	// 	for (auto& t : tokens) delete t;
+	// 	return nullptr;
+	// }
+
 	VM::Result result;
-
-	// Lexical analysis
-	LexicalAnalyzer lex;
-	auto tokens = lex.analyze(code);
-
-	if (lex.errors.size()) {
-		result.compilation_success = false;
-		result.lexical_errors = lex.errors;
-		for (auto& t : tokens) delete t;
-		return result;
-	}
-
-	// Syntaxical analysis
-	SyntaxicAnalyzer syn;
-	this->main = syn.analyze(tokens);
-	this->main->is_main_function = true;
+	auto file = new File(file_name, code, new FileContext());
+	SyntaxicAnalyzer syn { resolver };
+	auto block = syn.analyze(file);
 
 	if (syn.getErrors().size() > 0) {
 		result.compilation_success = false;
 		result.syntaxical_errors = syn.getErrors();
 		return result;
 	}
+
+	this->main = new Function();
+	this->main->body = block;
+	this->main->is_main_function = true;
 
 	// Semantical analysis
 	SemanticAnalyzer sem;
@@ -211,6 +211,7 @@ void Program::analyze(SemanticAnalyzer* analyzer) {
 	main->name = "main";
 	main->file = file_name;
 	main->body->analyze_global_functions(analyzer);
+
 	main->analyze(analyzer);
 }
 

@@ -5,6 +5,7 @@
 
 #include "SyntaxicalError.hpp"
 #include "../value/Match.hpp"
+#include "../resolver/Resolver.hpp"
 
 namespace ls {
 
@@ -29,6 +30,7 @@ class Continue;
 
 class SyntaxicAnalyzer {
 
+	Resolver* resolver;
 	std::vector<Token*> tokens;
 	Token* t;
 	int last_character = 0;
@@ -43,12 +45,11 @@ class SyntaxicAnalyzer {
 
 public:
 
-	SyntaxicAnalyzer();
-	~SyntaxicAnalyzer();
+	SyntaxicAnalyzer(Resolver* resolver);
 
-	Function* analyze(std::vector<Token*>&);
+	Block* analyze(File* file);
 
-	Block* eatMain();
+	Block* eatMain(File* file);
 	Token* eatIdent();
 	Value* eatExpression(bool pipe_opened = false, bool set_opened = false, Value* initial = nullptr, bool comma_list = false);
 	Value* eatSimpleExpression(bool pipe_opened = false, bool set_opened = false, bool comma_list = false, Value* initial = nullptr);

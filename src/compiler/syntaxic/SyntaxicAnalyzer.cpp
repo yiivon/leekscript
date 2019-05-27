@@ -37,32 +37,33 @@
 #include "../../vm/value/LSNumber.hpp"
 #include "SyntaxicalError.hpp"
 #include "../lexical/Token.hpp"
+#include "../../util/Util.hpp"
+#include "../lexical/LexicalAnalyzer.hpp"
+#include "../resolver/Resolver.hpp"
 
 namespace ls {
 
-SyntaxicAnalyzer::SyntaxicAnalyzer() {
+SyntaxicAnalyzer::SyntaxicAnalyzer(Resolver* resolver) : resolver(resolver) {
 	time = 0;
 	nt = nullptr;
 	t = nullptr;
 	i = 0;
 }
 
-SyntaxicAnalyzer::~SyntaxicAnalyzer() {}
+Block* SyntaxicAnalyzer::analyze(File* file) {
 
-Function* SyntaxicAnalyzer::analyze(std::vector<Token*>& tokens) {
+	// Call the lexical analyzer to parse tokens
+	auto tokens = LexicalAnalyzer().analyze(file->code);
 
 	this->tokens = tokens;
 	this->t = tokens.at(0);
 	this->nt = tokens.size() > 1 ? tokens.at(1) : nullptr;
 	this->i = 0;
 
-	Function* function = new Function();
-	function->body = eatMain();
-
-	return function;
+	return eatMain(file);
 }
 
-Block* SyntaxicAnalyzer::eatMain() {
+Block* SyntaxicAnalyzer::eatMain(File* file) {
 
 	auto block = new Block(true);
 
@@ -75,6 +76,24 @@ Block* SyntaxicAnalyzer::eatMain() {
 			eat();
 		} else {
 			auto ins = eatInstruction();
+			// Include instruction
+			if (auto ei = dynamic_cast<ExpressionInstruction*>(ins)) {
+				if (auto fc = dynamic_cast<FunctionCall*>(ei->value)) {
+					if (auto vv = dynamic_cast<VariableValue*>(fc->function)) {
+						if (fc->arguments.size() == 1) {
+							auto str = dynamic_cast<String*>(fc->arguments.at(0));
+							if (vv->name == "include" and str) {
+								auto included_file = resolver->resolve(str->token->content, file->context);
+								auto included_block = SyntaxicAnalyzer(resolver).analyze(included_file);
+								for (const auto& ins : included_block->instructions) {
+									block->instructions.push_back(ins);
+								}
+								continue;
+							}
+						}
+					}
+				}
+			}
 			if (ins) {
 				block->instructions.push_back(ins);
 			}
