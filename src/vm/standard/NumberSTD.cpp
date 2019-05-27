@@ -100,7 +100,7 @@ NumberSTD::NumberSTD() : Module("Number") {
 	});
 	operator_("/=", {
 		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), div_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), div_eq_real, 0, {}, true}
+		{Type::real(), Type::real(), Type::real(), div_eq_real, THROWS, {}, true}
 	});
 	operator_("\\", {
 		{Type::const_number(), Type::const_number(), Type::long_(), int_div_val_val},
@@ -692,7 +692,7 @@ Compiler::value NumberSTD::div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 Compiler::value NumberSTD::div_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_div(x, args[1]);
-	c.insn_store(args[0], sum);
+	c.insn_store(args[0], c.insn_convert(sum, x.t));
 	return sum;
 }
 
