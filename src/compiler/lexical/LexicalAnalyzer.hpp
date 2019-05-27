@@ -12,7 +12,7 @@ enum class LetterType {
 	LETTER, NUMBER, QUOTE, DOUBLE_QUOTE, WHITE, OTHER
 };
 
-class Lexicalanalyzer {
+class LexicalAnalyzer {
 public:
 
 	std::vector<LexicalError> errors;
@@ -21,7 +21,7 @@ public:
 	TokenType getTokenType(std::string word, TokenType by_default);
 	std::vector<Token*> parseTokens(std::string code);
 
-	Lexicalanalyzer();
+	LexicalAnalyzer();
 	std::vector<Token*> analyze(std::string code);
 };
 

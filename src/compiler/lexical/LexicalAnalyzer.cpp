@@ -76,9 +76,9 @@ static std::vector<std::vector<std::string>> type_literals = {
 	{ "%%" }, { "%%=" }
 };
 
-Lexicalanalyzer::Lexicalanalyzer() {}
+LexicalAnalyzer::LexicalAnalyzer() {}
 
-LetterType Lexicalanalyzer::getLetterType(char32_t c) {
+LetterType LexicalAnalyzer::getLetterType(char32_t c) {
 
 	if (c == '\'') {
 		return LetterType::QUOTE;
@@ -99,7 +99,7 @@ LetterType Lexicalanalyzer::getLetterType(char32_t c) {
 	return LetterType::OTHER;
 }
 
-TokenType Lexicalanalyzer::getTokenType(std::string word, TokenType by_default) {
+TokenType LexicalAnalyzer::getTokenType(std::string word, TokenType by_default) {
 	for (size_t j = 0; j < type_literals.size(); ++j) {
 		for (const auto& text : type_literals[j]) {
 			if (word == text) return (TokenType) j;
@@ -108,9 +108,9 @@ TokenType Lexicalanalyzer::getTokenType(std::string word, TokenType by_default) 
 	return by_default;
 }
 
-std::vector<Token*> Lexicalanalyzer::analyze(std::string code) {
+std::vector<Token*> LexicalAnalyzer::analyze(std::string code) {
 
-	std::vector<Token*> tokens = Lexicalanalyzer::parseTokens(code + " ");
+	std::vector<Token*> tokens = LexicalAnalyzer::parseTokens(code + " ");
 
 	tokens.push_back(new Token(TokenType::FINISHED, 0, 0, 1, ""));
 
@@ -125,7 +125,7 @@ std::vector<Token*> Lexicalanalyzer::analyze(std::string code) {
 	return tokens;
 }
 
-std::vector<Token*> Lexicalanalyzer::parseTokens(std::string code) {
+std::vector<Token*> LexicalAnalyzer::parseTokens(std::string code) {
 
 	char buff[5];
 	const char* string_chars = code.c_str();

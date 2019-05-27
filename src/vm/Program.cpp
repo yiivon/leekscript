@@ -46,7 +46,7 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 	VM::Result result;
 
 	// Lexical analysis
-	Lexicalanalyzer lex;
+	LexicalAnalyzer lex;
 	auto tokens = lex.analyze(code);
 
 	if (lex.errors.size()) {
