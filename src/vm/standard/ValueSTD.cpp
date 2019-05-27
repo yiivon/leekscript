@@ -839,7 +839,7 @@ LSValue* ValueSTD::get_class(LSValue* x) {
 	return x->getClass();
 }
 void ValueSTD::export_context_variable_int(char* name, int v) {
-	VM::current()->context->add_variable(name, (void*) v, Type::integer());
+	VM::current()->context->add_variable(name, reinterpret_cast<void*&>(v), Type::integer());
 }
 void ValueSTD::export_context_variable_long(char* name, long v) {
 	VM::current()->context->add_variable(name, (void*) v, Type::long_());
