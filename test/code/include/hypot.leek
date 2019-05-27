@@ -1,0 +1,5 @@
+include("squared.leek")
+
+function hypot(a, b) {
+	return (squared(a) + squared(b)).sqrt()
+}

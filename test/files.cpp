@@ -65,4 +65,13 @@ void Test::test_files() {
 	DISABLED_file("test/code/euler/pe062.leek").equals("127035954683");
 	file("test/code/euler/pe063.leek").equals("49");
 	DISABLED_file("test/code/euler/pe206.leek").equals("1389019170");
+
+	section("include()");
+	code("include('test/code/include/basic.leek')").equals("'basic'");
+	code("include('./test/code/include/basic.leek')").equals("'basic'");
+	code("include('./test/../test/code/../code/./include/basic.leek')").equals("'basic'");
+	code("include('test/code/include/squared.leek') squared(12)").equals("144");
+	code("include('test/code/include/car.class.leek') let ferrari = new Car() ferrari.price").equals("300000");
+	code("include('test/code/include/hypot.leek') hypot(3, 4)").equals("5");
+	code("include('test/code/include/folder/fact.leek')").equals("3628800");
 }

@@ -1,0 +1,3 @@
+include("../hypot.leek")
+let fact = x => x == 1 ? 1 : fact(x - 1) * x
+fact(hypot(3, 10).int())

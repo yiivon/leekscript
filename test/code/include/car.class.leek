@@ -1,0 +1,3 @@
+class Car {
+	let price = 300000
+}
