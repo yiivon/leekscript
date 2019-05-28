@@ -142,13 +142,11 @@ ArraySTD::ArraySTD() : Module("Array") {
 	auto filter_clo_ptr = &LSArray<LSValue*>::ls_filter<LSClosure*>;
 	auto filter_clo_real = &LSArray<double>::ls_filter<LSClosure*>;
 	auto filter_clo_int = &LSArray<int>::ls_filter<LSClosure*>;
+
+	auto fiT = Type::template_("T");
+	template_(fiT).
 	method("filter", {
-		{Type::tmp_array(), {Type::const_array(), pred_fun_type}, (void*) filter_ptr},
-		{Type::tmp_array(), {Type::const_array(), pred_clo_type}, (void*) filter_clo_ptr},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), pred_fun_type_float}, (void*) filter_real},
-		{Type::tmp_array(Type::real()), {Type::const_array(Type::real()), pred_clo_type_float}, (void*) filter_clo_real},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), pred_fun_type_int}, (void*) filter_int},
-		{Type::tmp_array(Type::integer()), {Type::const_array(Type::integer()), pred_clo_type_int}, (void*) filter_clo_int}
+		{Type::tmp_array(fiT), {Type::const_array(fiT), Type::fun(Type::boolean(), {fiT})}, filter },
 	});
 
 	method("isEmpty", {
@@ -586,6 +584,19 @@ Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, b
 	}();
 	c.insn_call({}, args, fun);
 	return args[0];
+}
+
+Compiler::value ArraySTD::filter(Compiler& c, std::vector<Compiler::value> args, bool) {
+	auto function = args[1];
+	auto result = c.new_array(args[0].t.element(), {});
+	c.insn_foreach(args[0], {}, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		auto r = c.insn_call(function.t.return_type(), {v}, function);
+		c.insn_if(r, [&]() {
+			c.insn_push_array(result, c.clone(v));
+		});
+		return {};
+	});
+	return result;
 }
 
 int ArraySTD::convert_key(LSValue* array, LSValue* key_pointer) {
