@@ -125,15 +125,11 @@ MapSTD::MapSTD() : Module("Map") {
 		{Type::boolean(), {Type::map(Type::integer(), Type::integer()), Type::integer()}, (void*) &LSMap<int,int>::ls_erase},
 	});
 
-	// V Map<K, V>::look(K, V)
+	auto lK = Type::template_("K");
+	auto lV = Type::template_("V");
+	template_(lK, lV).
 	method("look", {
-		{Type::any(), {Type::const_map(Type::any(), Type::any()), Type::any(), Type::any()}, (void*) &LSMap<LSValue*,LSValue*>::ls_look},
-		{Type::any(), {Type::const_map(Type::any(), Type::any()), Type::any(), Type::any()}, look_any_any},
-		{Type::real(), {Type::const_map(Type::any(), Type::real()), Type::any(), Type::real()}, look_any_real},
-		{Type::integer(), {Type::const_map(Type::any(), Type::integer()), Type::any(), Type::integer()}, look_any_int},
-		{Type::any(), {Type::const_map(Type::integer(), Type::any()), Type::integer(), Type::any()}, look_int_any},
-		{Type::real(), {Type::const_map(Type::integer(), Type::real()), Type::integer(), Type::real()}, look_int_real},
-		{Type::integer(), {Type::const_map(Type::integer(), Type::integer()), Type::integer(), Type::integer()}, look_int_int},
+		{lV, {Type::const_map(lK, lV), lK, lV}, look},
 	});
 
 	method("min", {
@@ -263,23 +259,19 @@ MapSTD::MapSTD() : Module("Map") {
 	});
 }
 
-Compiler::value MapSTD::look_any_any(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::any(), {args[0], c.insn_to_any(args[1]), c.insn_to_any(args[2])}, "Map.look_fun");
-}
-Compiler::value MapSTD::look_any_real(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::real(), {args[0], c.insn_to_any(args[1]), c.to_real(args[2])}, "Map.look_fun.1");
-}
-Compiler::value MapSTD::look_any_int(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::integer(), {args[0], c.insn_to_any(args[1]), c.to_int(args[2])}, "Map.look_fun.2");
-}
-Compiler::value MapSTD::look_int_any(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::any(), {args[0], c.to_int(args[1]), c.insn_to_any(args[2])}, "Map.look_fun.3");
-}
-Compiler::value MapSTD::look_int_real(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::real(), {args[0], c.to_int(args[1]), c.to_real(args[2])}, "Map.look_fun.4");
-}
-Compiler::value MapSTD::look_int_int(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::integer(), {args[0], c.to_int(args[1]), c.to_int(args[2])}, "Map.look_fun.5");
+Compiler::value MapSTD::look(Compiler& c, std::vector<Compiler::value> args, bool) {
+	auto map = args[0];
+	auto f = [&]() {
+		if (map.t.key().is_integer()) {
+			if (map.t.element().is_integer()) return "Map.look_fun.5";
+			if (map.t.element().is_real()) return "Map.look_fun.4";
+			return "Map.look_fun.3";
+		}
+		if (map.t.element().is_integer()) return "Map.look_fun.2";
+		if (map.t.element().is_real()) return "Map.look_fun.1";
+		return "Map.look_fun";
+	}();
+	return c.insn_call(map.t.element(), {args[0], args[1], args[2]}, f);
 }
 
 Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args, bool) {

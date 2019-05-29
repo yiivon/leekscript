@@ -164,8 +164,7 @@ void Test::test_map() {
 	code("let x = [1: 1] x.look(1, 0)").equals("1");
 	code("let x = ['a': 'a'] x.look('a', 'b')").equals("'a'");
 	code("let x = ['a': 'a'] x.look('b', 'b')").equals("'b'");
-	// Need to work with template for method definition
-	DISABLED_code("let x = ['a': 1] x.look(3.14, 'a')").error(ls::Error::METHOD_NOT_FOUND, {ls::Type::const_map(ls::Type::any(), ls::Type::integer()).to_string() + ".look(" + ls::Type::real().to_string() + ", " + ls::Type::tmp_string().to_string() + ")"});
+	code("let x = ['a': 1] x.look(3.14, 'a')").error(ls::Error::METHOD_NOT_FOUND, {ls::Type::const_map(ls::Type::any(), ls::Type::integer()).to_string() + ".look(" + ls::Type::real().to_string() + ", " + ls::Type::tmp_string().to_string() + ")"});
 	code("[1 : 1].look(1, 0)").equals("1");
 	code("[1 : 'a'].look(2, 10)").equals("10");
 	code("[1 : 'a'].look(2, 5.5)").equals("5.5");
