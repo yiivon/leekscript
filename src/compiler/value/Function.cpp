@@ -582,8 +582,6 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 			c.leave_function();
 			// Create a function : 1 op
 			c.inc_ops(1);
-		} else {
-			c.instructions_debug << "}" << std::endl;
 		}
 		llvm::verifyFunction(*f);
 	}

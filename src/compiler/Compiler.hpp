@@ -91,9 +91,6 @@ public:
 	std::vector<std::map<std::string, value>> function_variables;
 	std::vector<std::map<std::string, value>> variables;
 	std::vector<std::vector<std::vector<catcher>>> catchers;
-	bool log_instructions = false;
-	std::ostringstream instructions_debug;
-	std::map<label*, std::string> label_map;
 	std::map<void*, std::string> literals;
 	std::map<std::string, function_entry> mappings;
 	std::stack<int> exception_line;
@@ -330,11 +327,6 @@ public:
 	const catcher* find_catcher() const;
 
 	// Utils
-	std::ostringstream& _log_insn(int indent) const;
-	std::string dump_val(value v) const;
-	void register_label(label* v) const;
-	void log_insn_code(std::string instruction) const;
-	void add_literal(void* ptr, std::string value) const;
 	static void print_mpz(__mpz_struct value);
 	void assert_value_ok(value) const;
 	void increment_mpz_created() const;

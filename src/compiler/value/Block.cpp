@@ -106,13 +106,6 @@ Compiler::value Block::compile(Compiler& c) const {
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 
-		std::ostringstream oss;
-		instructions[i]->print(oss, 0, false, false);
-		auto str = oss.str();
-		auto pos = str.find('\n');
-		if (pos != std::string::npos) str = str.substr(0, pos);
-		c.log_insn_code(str);
-
 		auto val = instructions[i]->compile(c);
 
 		if (instructions[i]->returning) {

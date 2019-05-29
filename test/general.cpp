@@ -20,7 +20,7 @@ void Test::test_general() {
 	delete error;
 	// Print a program
 	auto program = new ls::Program("2 + 2", "test");
-	program->compile(vm, nullptr);
+	program->compile(vm);
 	std::cout << program << std::endl;
 	delete program;
 	// LSObject getField

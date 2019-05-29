@@ -24,8 +24,6 @@
 #include "../vm/Program.hpp"
 #include "llvm/Bitcode/BitcodeWriter.h"
 
-#define log_insn(i) log_instructions && _log_insn((i))
-
 namespace ls {
 
 llvm::orc::ThreadSafeContext Compiler::Ctx(llvm::make_unique<llvm::LLVMContext>());
@@ -225,9 +223,7 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 	if (type.is_real()) {
 		return {builder.CreateFPToSI(v.v, Type::integer().llvm_type(*this)), Type::integer()};
 	}
-	Compiler::value r {builder.CreateIntCast(v.v, Type::integer().llvm_type(*this), true), Type::integer()};
-	log_insn(4) << "to_int " << dump_val(v) << " " << dump_val(r) << std::endl;
-	return r;
+	return { builder.CreateIntCast(v.v, Type::integer().llvm_type(*this), true), Type::integer() };
 }
 
 Compiler::value Compiler::to_real(Compiler::value x) const {
@@ -300,9 +296,7 @@ Compiler::value Compiler::insn_not(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_not_bool(Compiler::value v) const {
-	Compiler::value r {builder.CreateNot(insn_to_bool(v).v), Type::boolean()};
-	log_insn(4) << "not_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
-	return r;
+	return { builder.CreateNot(insn_to_bool(v).v), Type::boolean() };
 }
 
 Compiler::value Compiler::insn_neg(Compiler::value v) const {
@@ -401,9 +395,7 @@ Compiler::value Compiler::insn_pointer_eq(Compiler::value a, Compiler::value b) 
 Compiler::value Compiler::insn_ne(Compiler::value a, Compiler::value b) const {
 	assert(a.t.llvm_type(*this) == a.v->getType());
 	assert(b.t.llvm_type(*this) == b.v->getType());
-	Compiler::value r {builder.CreateICmpNE(a.v, b.v), Type::boolean()};
-	log_insn(4) << "ne " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
-	return r;
+	return { builder.CreateICmpNE(a.v, b.v), Type::boolean() };
 }
 
 Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
@@ -435,7 +427,6 @@ Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 	} else {
 		r = {builder.CreateICmpSLT(a.v, b.v), Type::boolean()};
 	}
-	log_insn(4) << "lt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
@@ -457,7 +448,6 @@ Compiler::value Compiler::insn_le(Compiler::value a, Compiler::value b) const {
 	} else {
 		r = {builder.CreateICmpSLE(a.v, b.v), Type::boolean()};
 	}
-	log_insn(4) << "le " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
@@ -480,7 +470,6 @@ Compiler::value Compiler::insn_gt(Compiler::value a, Compiler::value b) const {
 	} else {
 		r = {builder.CreateICmpSGT(a.v, b.v), Type::boolean()};
 	}
-	log_insn(4) << "gt " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
@@ -503,7 +492,6 @@ Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
 	} else {
 		r = {builder.CreateICmpSGE(a.v, b.v), Type::boolean()};
 	}
-	log_insn(4) << "ge " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
@@ -738,7 +726,6 @@ Compiler::value Compiler::insn_pow(Compiler::value a, Compiler::value b) const {
 	} else if (a.t.is_integer()) {
 		r = to_int(insn_call(Type::real(), {a, b}, "Number.powii"));
 	}
-	log_insn(4) << "pow " << dump_val(a) << " " << dump_val(b) << " " << dump_val(r) << std::endl;
 	return r;
 }
 
@@ -821,14 +808,10 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		return v;
 	}
 	if (v.t.is_integer() or v.t.is_long()) {
-		Compiler::value r {builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::boolean()};
-		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
-		return r;
+		return { builder.CreateICmpNE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::boolean() };
 	}
 	if (v.t.is_real()) {
-		Compiler::value r {builder.CreateFCmpONE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::boolean()};
-		log_insn(4) << "to_bool " << dump_val(v) << " " << dump_val(r) << std::endl;
-		return r;
+		return { builder.CreateFCmpONE(v.v, llvm::Constant::getNullValue(v.v->getType())), Type::boolean() };
 	}
 	if (v.t.is_string()) {
 		return insn_call(Type::boolean(), {v}, "String.to_bool");
@@ -852,7 +835,6 @@ Compiler::value Compiler::insn_load(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	assert(v.t.is_pointer());
 	Compiler::value r { builder.CreateLoad(v.v), v.t.pointed() };
-	log_insn(4) << "load " << dump_val(v) << " " << dump_val(r) << std::endl;
 	assert(r.t == v.t.pointed());
 	assert(r.t.llvm_type(*this) == r.v->getType());
 	if (v.t.temporary) r.t.temporary = true;
@@ -873,7 +855,6 @@ void Compiler::insn_store(Compiler::value x, Compiler::value y) const {
 	// assert(y.t.llvm_type(*this) == y.v->getType());
 	// assert(x.t.pointed().fold().not_temporary() == y.t.fold().not_temporary());
 	builder.CreateStore(y.v, x.v);
-	log_insn(4) << "store " << dump_val(x) << " " << dump_val(y) << std::endl;
 }
 void Compiler::insn_store_member(Compiler::value x, int pos, Compiler::value y) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
@@ -1090,7 +1071,6 @@ Compiler::value Compiler::insn_get_argument(const std::string& name) const {
 
 Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
-	log_insn_code("iterator.begin()");
 	if (v.t.is_array()) {
 		auto it = create_entry("it", v.t.iterator());
 		insn_store(it, insn_load_member(v, 5));
@@ -1148,7 +1128,6 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 
 Compiler::value Compiler::iterator_rbegin(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
-	log_insn_code("iterator.rbegin()");
 	if (v.t.is_array()) {
 		auto it = create_entry("it", v.t.iterator());
 		auto end = insn_load_member(v, 6);
@@ -1186,7 +1165,6 @@ Compiler::value Compiler::iterator_rbegin(Compiler::value v) const {
 Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	assert(it.t.llvm_type(*this) == it.v->getType());
-	log_insn_code("iterator.end()");
 	if (v.t.is_array()) {
 		return insn_pointer_eq(insn_load(it), insn_array_end(v));
 	}
@@ -1221,7 +1199,6 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 Compiler::value Compiler::iterator_rend(Compiler::value v, Compiler::value it) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	assert(it.t.llvm_type(*this) == it.v->getType());
-	log_insn_code("iterator.rend()");
 	if (v.t.is_array()) {
 		auto before_first = builder.CreateGEP(insn_load_member(v, 5).v, new_integer(-1).v);
 		return insn_pointer_eq(insn_load(it), {before_first, v.t.element().pointer()});
@@ -1252,7 +1229,6 @@ Compiler::value Compiler::iterator_rend(Compiler::value v, Compiler::value it) c
 Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, Compiler::value previous) const {
 	assert(it.t.llvm_type(*this) == it.v->getType());
 	assert(previous.t.llvm_type(*this) == previous.v->getType());
-	log_insn_code("iterator.get()");
 	if (collectionType.is_array()) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, "Value.delete_previous");
@@ -1299,7 +1275,6 @@ Compiler::value Compiler::iterator_get(Type collectionType, Compiler::value it, 
 Compiler::value Compiler::iterator_rget(Type collectionType, Compiler::value it, Compiler::value previous) const {
 	assert(it.t.llvm_type(*this) == it.v->getType());
 	assert(previous.t.llvm_type(*this) == previous.v->getType());
-	log_insn_code("iterator.get()");
 	if (collectionType.is_array()) {
 		if (previous.t.must_manage_memory()) {
 			insn_call({}, {previous}, "Value.delete_previous");
@@ -1355,7 +1330,6 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	assert(it.t.llvm_type(*this) == it.v->getType());
 	// assert(previous.t.llvm_type(*this) == previous.v->getType());
-	log_insn_code("iterator.key()");
 	if (v.t.is_array()) {
 		auto array_begin = insn_array_at(v, new_integer(0));
 		if (v.t.element().is_polymorphic()) array_begin = { builder.CreatePointerCast(array_begin.v, Type::any().pointer().llvm_type(*this)), Type::any().pointer() };
@@ -1395,7 +1369,6 @@ Compiler::value Compiler::iterator_rkey(Compiler::value v, Compiler::value it, C
 	assert(v.t.llvm_type(*this) == v.v->getType());
 	assert(it.t.llvm_type(*this) == it.v->getType());
 	// assert(previous.t.llvm_type(*this) == previous.v->getType());
-	log_insn_code("iterator.key()");
 	if (v.t.is_array()) {
 		auto array_begin = insn_array_at(v, new_integer(0));
 		if (v.t.element().is_polymorphic()) array_begin = { builder.CreatePointerCast(array_begin.v, Type::any().pointer().llvm_type(*this)), Type::any().pointer() };
@@ -1433,7 +1406,6 @@ Compiler::value Compiler::iterator_rkey(Compiler::value v, Compiler::value it, C
 
 void Compiler::iterator_increment(Type collectionType, Compiler::value it) const {
 	assert(it.t.llvm_type(*this) == it.v->getType());
-	log_insn_code("iterator.increment()");
 	if (collectionType.is_array()) {
 		auto it2 = insn_load(it);
 		auto next_element = builder.CreateGEP(it2.v, new_integer(1).v);
@@ -1480,7 +1452,6 @@ void Compiler::iterator_increment(Type collectionType, Compiler::value it) const
 
 void Compiler::iterator_rincrement(Type collectionType, Compiler::value it) const {
 	assert(it.t.llvm_type(*this) == it.v->getType());
-	log_insn_code("iterator.rincrement()");
 	if (collectionType.is_array()) {
 		auto it2 = insn_load(it);
 		auto next_element = builder.CreateGEP(it2.v, new_integer(-1).v);
@@ -1919,14 +1890,10 @@ void Compiler::enter_function(llvm::Function* F, bool is_closure, Function* fun)
 	this->F = F;
 	this->fun = fun;
 	std::vector<std::string> args;
-	log_insn(0) << "function " << fun->name << "(";
 	for (unsigned i = 0; i < fun->arguments.size(); ++i) {
-		log_insn(0) << fun->arguments.at(i)->content;
-		if (i < fun->arguments.size() - 1) log_insn(0) << ", ";
 		args.push_back(fun->arguments.at(i)->content);
 	}
 	arguments.push({});
-	log_insn(0) << ") {" << std::endl;
 }
 
 void Compiler::leave_function() {
@@ -1943,7 +1910,6 @@ void Compiler::leave_function() {
 	this->fun = functions2.top();
 	builder.SetInsertPoint(function_llvm_blocks.top());
 	function_llvm_blocks.pop();
-	log_insn(0) << "}" << std::endl;
 }
 
 int Compiler::get_current_function_blocks() const {
@@ -2166,20 +2132,6 @@ const Compiler::catcher* Compiler::find_catcher() const {
 		}
 	}
 	return nullptr;
-}
-
-// Utils
-std::ostringstream& Compiler::_log_insn(int indent) const { assert(false); }
-
-std::string Compiler::dump_val(Compiler::value v) const { assert(false); }
-
-void Compiler::register_label(label* v) const { assert(false); }
-
-void Compiler::log_insn_code(std::string instruction) const {
-	log_insn(0) << C_BLUE << instruction << END_COLOR << std::endl;
-}
-void Compiler::add_literal(void* ptr, std::string value) const {
-	((Compiler*) this)->literals.insert({ptr, value});
 }
 
 void Compiler::print_mpz(__mpz_struct value) {

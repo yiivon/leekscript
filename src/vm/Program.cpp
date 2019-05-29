@@ -41,7 +41,7 @@ Program::~Program() {
 	}
 }
 
-VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool pseudo_code, bool log_instructions) {
+VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool pseudo_code) {
 
 	auto resolver = new Resolver();
 
@@ -79,9 +79,6 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 	vm.internals.clear();
 	vm.compiler.program = this;
 	vm.compiler.init();
-	vm.compiler.log_instructions = log_instructions;
-	vm.compiler.instructions_debug.str("");
-	vm.compiler.label_map.clear();
 
 	module = new llvm::Module(file_name, vm.compiler.getContext());
 	module->setDataLayout(vm.compiler.DL);
@@ -104,7 +101,6 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 	type = main->type.return_type().fold();
 
 	result.compilation_success = true;
-	result.instructions_log = vm.compiler.instructions_debug.str();
 
 	return result;
 }
@@ -157,7 +153,7 @@ VM::Result Program::compile_bitcode_file(VM& vm) {
 	return result;
 }
 
-VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseudo_code, bool log_instructions, bool ir, bool bitcode) {
+VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseudo_code, bool ir, bool bitcode) {
 	this->vm = &vm;
 
 	if (ir) {
@@ -165,7 +161,7 @@ VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseu
 	} else if (bitcode) {
 		return compile_bitcode_file(vm);
 	} else {
-		return compile_leekscript(vm, ctx, export_bitcode, pseudo_code, log_instructions);
+		return compile_leekscript(vm, ctx, export_bitcode, pseudo_code);
 	}
 }
 

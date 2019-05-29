@@ -54,7 +54,6 @@ public:
 		int mpz_objects_deleted = 0;
 		std::string assembly;
 		std::string pseudo_code;
-		std::string instructions_log;
 		Type type;
 	};
 
@@ -84,7 +83,7 @@ public:
 	static void static_init();
 
 	/** Main execution function **/
-	Result execute(const std::string code, Context* ctx, std::string file_name = "unamed", bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool log_instructions = false, bool execute_ir = false, bool execute_bitcode = false);
+	Result execute(const std::string code, Context* ctx, std::string file_name = "unamed", bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool execute_ir = false, bool execute_bitcode = false);
 
 	/** Add a module **/
 	void add_module(Module* m);

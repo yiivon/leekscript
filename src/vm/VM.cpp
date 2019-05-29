@@ -98,7 +98,7 @@ void VM::add_module(Module* m) {
 	add_internal_var(m->name, const_class, m->clazz);
 }
 
-VM::Result VM::execute(const std::string code, Context* ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool log_instructions, bool execute_ir, bool execute_bitcode) {
+VM::Result VM::execute(const std::string code, Context* ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool execute_ir, bool execute_bitcode) {
 
 	// Reset
 	this->file_name = file_name;
@@ -122,12 +122,8 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 
 	// Compile
 	auto compilation_start = std::chrono::high_resolution_clock::now();
-	VM::Result result = program->compile(*this, ctx, assembly, pseudo_code, log_instructions, execute_ir, execute_bitcode);
+	VM::Result result = program->compile(*this, ctx, assembly, pseudo_code, execute_ir, execute_bitcode);
 	auto compilation_end = std::chrono::high_resolution_clock::now();
-
-	if (log_instructions) {
-		std::cout << result.instructions_log;
-	}
 
 	if (debug) {
 		std::cout << "main() " << result.program << std::endl; // LCOV_EXCL_LINE

@@ -48,7 +48,6 @@ Option | Effect
 -a -A --assembly  | Print assembly of LeekScript code
 -p -P --pseudo-code  | Print JIT pseudo code
 -l -L --legacy | Use legacy mode  (LeekScript v1)
--i -I --log-instructions | Display clear low-level instructions
 
 Tests, coverage, Valgrind, benchmark, doc
 ------------------
