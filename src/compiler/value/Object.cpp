@@ -45,7 +45,7 @@ void Object::analyze(SemanticAnalyzer* analyzer) {
 Compiler::value Object::compile(Compiler& c) const {
 	auto object = c.new_object();
 	for (unsigned i = 0; i < keys.size(); ++i) {
-		auto k = c.new_const_string(keys.at(i)->content, "field");
+		auto k = c.new_const_string(keys.at(i)->content);
 		auto v = c.insn_to_any(values[i]->compile(c));
 		c.insn_call({}, {object, k, v}, "Object.add_field");
 	}

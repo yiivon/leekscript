@@ -302,7 +302,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	// Default : object.attr
 	auto o = object->compile(c);
 	object->compile_end(c);
-	auto k = c.new_const_string(field->content, "field");
+	auto k = c.new_const_string(field->content);
 	return c.insn_invoke(type, {o, k}, "Value.attr");
 }
 
@@ -320,7 +320,7 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 		return object->compile(c);
 	}}();
 	object->compile_end(c);
-	auto k = c.new_const_string(field->content, "field");
+	auto k = c.new_const_string(field->content);
 	return c.insn_invoke(type.pointer(), {o, k}, "Value.attrL");
 }
 

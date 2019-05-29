@@ -94,6 +94,7 @@ public:
 	std::map<std::string, function_entry> mappings;
 	std::stack<int> exception_line;
 	bool export_bitcode = false;
+	std::map<std::string, Compiler::value> global_strings;
 
 	VM* vm;
 	Program* program;
@@ -153,7 +154,7 @@ public:
 	value new_real(double r) const;
 	value new_long(long l) const;
 	value new_mpz() const;
-	value new_const_string(std::string s, std::string name) const;
+	value new_const_string(std::string s) const;
 	value new_null_pointer() const;
 	value new_function(Type type) const;
 	value new_function(llvm::Function* f, Type type) const;

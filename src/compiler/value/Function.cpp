@@ -574,8 +574,8 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 			c.delete_function_variables();
 			Compiler::value exception = {c.builder.CreateLoad(exception_slot), Type::long_()};
 			Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_()};
-			auto file = c.new_const_string(c.fun->token->location.file->path, "file");
-			auto function_name = c.new_const_string(c.fun->name, "fun");
+			auto file = c.new_const_string(c.fun->token->location.file->path);
+			auto function_name = c.new_const_string(c.fun->name);
 			c.insn_call({}, {exception, file, function_name, exception_line}, "System.throw.1");
 			c.fun->compile_return(c, {});
 		}

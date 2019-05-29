@@ -31,7 +31,7 @@ bool String::will_store(SemanticAnalyzer* analyzer, const Type& type) {
 }
 
 Compiler::value String::compile(Compiler& c) const {
-	auto s = c.new_const_string(token->content, "string");
+	auto s = c.new_const_string(token->content);
 	return c.insn_call(Type::tmp_string(), {s}, "String.new.1");
 }
 

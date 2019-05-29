@@ -47,7 +47,7 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 			// std::cout << "Compile class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
 			auto default_value = vd->expressions.at(i)->compile(c);
 			default_value = c.insn_to_any(default_value);
-			auto field_name = c.new_const_string(vd->variables.at(i)->content, "field");
+			auto field_name = c.new_const_string(vd->variables.at(i)->content);
 			c.insn_call({}, {clazz, field_name, default_value}, "Class.add_field");
 		}
 	}

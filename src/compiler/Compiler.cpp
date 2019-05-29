@@ -84,6 +84,7 @@ llvm::orc::VModuleKey Compiler::addModule(std::unique_ptr<llvm::Module> M, bool 
 
 void Compiler::init() {
 	mappings.clear();
+	global_strings.clear();
 }
 void Compiler::end() {}
 
@@ -122,8 +123,14 @@ Compiler::value Compiler::new_mpz() const {
 	return r;
 }
 
-Compiler::value Compiler::new_const_string(std::string s, std::string name) const {
-	return { builder.CreateGlobalStringPtr(s, name), Type::i8().pointer() };
+Compiler::value Compiler::new_const_string(std::string s) const {
+	auto i = global_strings.find(s);
+	if (i != global_strings.end()) {
+		return i->second;
+	}
+	Compiler::value str { builder.CreateGlobalStringPtr(s, "s"), Type::i8().pointer() };
+	((Compiler*) this)->global_strings.insert({ s, str });
+	return str;
 }
 Compiler::value Compiler::new_null_pointer() const {
 	return { llvm::ConstantPointerNull::get((llvm::PointerType*) Type::any().llvm_type(*this)), Type::any() };
@@ -150,7 +157,7 @@ Compiler::value Compiler::new_closure(llvm::Function* f, Type type, std::vector<
 	return closure;
 }
 Compiler::value Compiler::new_class(std::string name) const {
-	return insn_call(Type::clazz(), {new_const_string(name, "class")}, "Class.new");
+	return insn_call(Type::clazz(), {new_const_string(name)}, "Class.new");
 }
 
 Compiler::value Compiler::new_object() const {
@@ -1617,8 +1624,8 @@ void Compiler::insn_throw(Compiler::value v) const {
 	} else {
 		delete_function_variables();
 		auto line = new_long(exception_line.top());
-		auto file = new_const_string(fun->token->location.file->path, "file");
-		auto function_name = new_const_string(fun->name, "fun");
+		auto file = new_const_string(fun->token->location.file->path);
+		auto function_name = new_const_string(fun->name);
 		insn_call({}, {v, file, function_name, line}, "System.throw");
 	}
 }
@@ -1973,7 +1980,7 @@ void Compiler::export_context_variable(const std::string& name, Compiler::value 
 		if (v.t.is_real()) return "Value.export_ctx_var.3";
 		return "Value.export_ctx_var";
 	}();
-	insn_call({}, {new_const_string(name, "var"), v}, f);
+	insn_call({}, {new_const_string(name), v}, f);
 }
 
 void Compiler::convert_var_to_poly(const std::string& name) {

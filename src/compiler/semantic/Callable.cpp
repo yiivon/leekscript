@@ -212,7 +212,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	} else if (value) {
 		auto fun = [&]() { if (object) {
 			auto oa = dynamic_cast<const ObjectAccess*>(value);
-			auto k = c.new_const_string(oa->field->content, "field");
+			auto k = c.new_const_string(oa->field->content);
 			return c.insn_invoke(type.pointer(), {compiled_object, k}, "Value.attr");
 		} else {
 			return value->compile(c);
