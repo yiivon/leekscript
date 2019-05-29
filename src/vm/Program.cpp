@@ -56,7 +56,8 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 		return result;
 	}
 
-	this->main = new Function();
+	auto token = std::make_shared<Token>(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
+	this->main = new Function(token);
 	this->main->body = block;
 	this->main->is_main_function = true;
 
@@ -179,7 +180,8 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 	auto o = std::find(ops.begin(), ops.end(), name);
 	if (o == ops.end()) return nullptr;
 
-	auto f = new Function();
+	auto token = std::make_shared<Token>(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
+	auto f = new Function(token);
 	f->addArgument(new Token(TokenType::IDENT, 0, 1, 0, "x"), nullptr);
 	f->addArgument(new Token(TokenType::IDENT, 2, 1, 2, "y"), nullptr);
 	f->body = new Block(true);

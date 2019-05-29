@@ -35,6 +35,7 @@ public:
 	std::string name;
 	std::string internal_name;
 	bool lambda = false;
+	std::shared_ptr<Token> token;
 	std::vector<std::shared_ptr<Token>> arguments;
 	std::vector<Value*> defaultValues;
 	Block* body;
@@ -56,7 +57,7 @@ public:
 	int default_values_count = 0;
 	bool recursive = false;
 
-	Function();
+	Function(std::shared_ptr<Token> token);
 	virtual ~Function();
 
 	void addArgument(Token* token, Value* defaultValue);

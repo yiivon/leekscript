@@ -309,13 +309,13 @@ VariableDeclaration* SyntaxicAnalyzer::eatVariableDeclaration() {
 	return vd;
 }
 
-Function* SyntaxicAnalyzer::eatFunction() {
+Function* SyntaxicAnalyzer::eatFunction(Token* token) {
 
 	if (t->type == TokenType::FUNCTION) {
-		eat();
+		token = eat_get();
 	}
 
-	auto f = new Function();
+	auto f = new Function(std::shared_ptr<Token>(token));
 
 	eat(TokenType::OPEN_PARENTHESIS);
 
@@ -353,14 +353,14 @@ Function* SyntaxicAnalyzer::eatFunction() {
 
 VariableDeclaration* SyntaxicAnalyzer::eatFunctionDeclaration() {
 
-	eat(TokenType::FUNCTION);
+	auto token = eat_get(TokenType::FUNCTION);
 
 	auto vd = new VariableDeclaration();
 	vd->global = true;
 	vd->function = true;
 
 	vd->variables.push_back(std::unique_ptr<Token> { eatIdent() });
-	vd->expressions.push_back(eatFunction());
+	vd->expressions.push_back(eatFunction(token));
 
 	return vd;
 }
@@ -745,13 +745,13 @@ Value* SyntaxicAnalyzer::eatValue(bool comma_list) {
 			return eatMatch(true);
 
 		case TokenType::FUNCTION:
-			return eatFunction();
+			return eatFunction(nullptr);
 
 		case TokenType::ARROW:
-		{
-			Function* l = new Function();
+		{	
+			auto token = eat_get(TokenType::ARROW);
+			Function* l = new Function(std::shared_ptr<Token>(token));
 			l->lambda = true;
-			eat(TokenType::ARROW);
 			l->body = new Block(true);
 			l->body->instructions.push_back(new ExpressionInstruction(eatExpression()));
 			return l;
@@ -867,7 +867,7 @@ Value* SyntaxicAnalyzer::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
  * Continue to eat a lambda starting from a comma or the arrow
  */
 Value* SyntaxicAnalyzer::eatLambdaContinue(bool parenthesis, Ident ident, Value* expression, bool comma_list) {
-	auto l = new Function();
+	auto l = new Function(nullptr);
 	l->lambda = true;
 	// Add first argument
 	l->addArgument(ident.token, expression);
@@ -886,7 +886,8 @@ Value* SyntaxicAnalyzer::eatLambdaContinue(bool parenthesis, Ident ident, Value*
 		eat();
 		parenthesis = false;
 	}
-	eat(TokenType::ARROW);
+	auto token = eat_get(TokenType::ARROW);
+	l->token = std::shared_ptr<Token>(token);
 	l->body = new Block(true);
 	l->body->instructions.push_back(new ExpressionInstruction(eatExpression(false, false, nullptr, comma_list)));
 	if (parenthesis) {

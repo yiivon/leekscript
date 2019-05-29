@@ -25,7 +25,7 @@ bool Function::Version::is_compiled() const {
 
 int Function::id_counter = 0;
 
-Function::Function() {
+Function::Function(std::shared_ptr<Token> token) : token(token) {
 	body = nullptr;
 	parent = nullptr;
 	constant = true;
@@ -664,7 +664,7 @@ void Function::export_context(const Compiler& c) const {
 }
 
 Value* Function::clone() const {
-	auto f = new Function();
+	auto f = new Function(token);
 	f->lambda = lambda;
 	f->name = name;
 	f->body = (Block*) body->clone();

@@ -68,7 +68,7 @@ public:
 	Continue* eatContinue();
 	ClassDeclaration* eatClassDeclaration();
 	VariableDeclaration* eatVariableDeclaration();
-	Function* eatFunction();
+	Function* eatFunction(Token* token);
 	VariableDeclaration* eatFunctionDeclaration();
 	Instruction* eatInstruction();
 	Value* eatLambdaContinue(bool parenthesis, Ident ident, Value* expression, bool comma_list = false);
