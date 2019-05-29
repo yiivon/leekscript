@@ -6,6 +6,8 @@
 
 namespace ls {
 
+class File;
+
 class Program {
 private:
 
@@ -23,6 +25,7 @@ public:
 	llvm::Module* module = nullptr;
 	llvm::orc::VModuleKey module_handle;
 	std::map<std::string, std::shared_ptr<SemanticVar>> operators;
+	File* main_file;
 
 	Program(const std::string& code, const std::string& file_name);
 	virtual ~Program();

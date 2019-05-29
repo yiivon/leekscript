@@ -46,13 +46,13 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 	auto resolver = new Resolver();
 
 	VM::Result result;
-	auto file = new File(file_name, code, new FileContext());
+	main_file = new File(file_name, code, new FileContext());
 	SyntaxicAnalyzer syn { resolver };
-	auto block = syn.analyze(file);
+	auto block = syn.analyze(main_file);
 
-	if (file->errors.size() > 0) {
+	if (main_file->errors.size() > 0) {
 		result.compilation_success = false;
-		result.errors = file->errors;
+		result.errors = main_file->errors;
 		return result;
 	}
 
