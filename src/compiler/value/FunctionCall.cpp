@@ -55,7 +55,7 @@ void FunctionCall::print(std::ostream& os, int indent, bool debug, bool condense
 }
 
 Location FunctionCall::location() const {
-	return {function->location().start, closing_parenthesis->location.end};
+	return {closing_parenthesis->location.file, function->location().start, closing_parenthesis->location.end};
 }
 
 Callable* FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {

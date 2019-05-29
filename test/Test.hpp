@@ -99,7 +99,8 @@ public:
 	class Input {
 	public:
 		Test* test;
-		std::string name;
+		std::string label;
+		std::string file_name;
 		std::string code;
 		bool file;
 		bool v1;
@@ -110,8 +111,7 @@ public:
 		ls::VM::Result result;
 		ls::Context* ctx = nullptr;
 
-		Input(Test* test, const std::string& name, const std::string& code,
-			bool file = false, bool v1 = false, bool disabled = false) : test(test), name(name), code(code), file(file), v1(v1), disabled(disabled) {};
+		Input(Test* test, const std::string& label, const std::string& file_name, const std::string& code,	bool file = false, bool v1 = false, bool disabled = false) : test(test), label(label), file_name(file_name), code(code), file(file), v1(v1), disabled(disabled) {};
 		void works();
 		void equals(std::string expected);
 		template <typename T>
@@ -120,7 +120,7 @@ public:
 		void between(T a, T b);
 		void error(ls::Error::Type error, std::vector<std::string> params = {});
 		void operations(int ops);
-		void exception(ls::vm::Exception, std::vector<ls::vm::exception_frame> frames = {{"main", 1}});
+		void exception(ls::vm::Exception, std::vector<ls::vm::exception_frame> frames = {{"test", "main", 1}});
 		void output(std::string expected);
 		void quine();
 		void type(ls::Type);

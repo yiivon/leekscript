@@ -45,7 +45,7 @@ void Match::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 }
 
 Location Match::location() const {
-	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
 void Match::analyze(ls::SemanticAnalyzer* analyzer) {

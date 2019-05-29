@@ -3,6 +3,8 @@
 
 namespace ls {
 
+class File;
+
 struct Position {
 	size_t line;
 	size_t column;
@@ -12,9 +14,10 @@ struct Position {
 };
 
 struct Location {
+	File* file;
 	Position start;
 	Position end;
-	Location(Position start, Position end) : start(start), end(end) {}
+	Location(File* file, Position start, Position end) : file(file), start(start), end(end) {}
 };
 
 }

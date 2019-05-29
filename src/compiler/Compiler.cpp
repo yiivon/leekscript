@@ -23,6 +23,7 @@
 #include "../type/Base_type.hpp"
 #include "../vm/Program.hpp"
 #include "llvm/Bitcode/BitcodeWriter.h"
+#include "resolver/File.hpp"
 
 namespace ls {
 
@@ -1616,8 +1617,9 @@ void Compiler::insn_throw(Compiler::value v) const {
 	} else {
 		delete_function_variables();
 		auto line = new_long(exception_line.top());
+		auto file = new_const_string(fun->token->location.file->path, "file");
 		auto function_name = new_const_string(fun->name, "fun");
-		insn_call({}, {v, function_name, line}, "System.throw");
+		insn_call({}, {v, file, function_name, line}, "System.throw");
 	}
 }
 

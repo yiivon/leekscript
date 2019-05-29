@@ -408,8 +408,8 @@ int SyntaxicAnalyzer::findNextColon() {
 
 void SyntaxicAnalyzer::splitCurrentOrInTwoPipes() {
 	tokens.erase(tokens.begin() + i);
-	tokens.insert(tokens.begin() + i, new Token(TokenType::PIPE, t->location.end.raw, t->location.start.line, t->location.end.column, "|"));
-	tokens.insert(tokens.begin() + i + 1, new Token(TokenType::PIPE, t->location.end.raw + 1, t->location.start.line, t->location.end.column + 1, "|"));
+	tokens.insert(tokens.begin() + i, new Token(TokenType::PIPE, file, t->location.end.raw, t->location.start.line, t->location.end.column, "|"));
+	tokens.insert(tokens.begin() + i + 1, new Token(TokenType::PIPE, file, t->location.end.raw + 1, t->location.start.line, t->location.end.column + 1, "|"));
 	t = tokens.at(i);
 	nt = tokens.at(i + 1);
 }
@@ -1361,14 +1361,14 @@ Token* SyntaxicAnalyzer::eat_get(TokenType type) {
 	if (i < tokens.size() - 1) {
 		t = tokens[++i];
 	} else {
-		t = new Token(TokenType::FINISHED, 0, 0, 0, "");
+		t = new Token(TokenType::FINISHED, file, 0, 0, 0, "");
 	}
 	nt = i < tokens.size() - 1 ? tokens[i + 1] : nullptr;
 
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
 		file->errors.push_back(Error(Error::Type::UNEXPECTED_TOKEN, eaten, {eaten->content}));
 		// std::cout << "unexpected token : " << to_string((int) type) << " != " << to_string((int) eaten->type) << " (" << eaten->content << ") char " << eaten->location.start.column << std::endl;
-		return new Token(TokenType::FINISHED, 0, 0, 0, "");
+		return new Token(TokenType::FINISHED, file, 0, 0, 0, "");
 	}
 	return eaten;
 }
@@ -1377,7 +1377,7 @@ Token* SyntaxicAnalyzer::nextTokenAt(int pos) {
 	if (i + pos < tokens.size())
 		return tokens[i + pos];
 	else
-		return new Token(TokenType::FINISHED, 0, 0, 0, "");
+		return new Token(TokenType::FINISHED, file, 0, 0, 0, "");
 }
 
 }

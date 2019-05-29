@@ -102,35 +102,35 @@ int Test::all() {
 }
 
 Test::Input Test::code(const std::string& code) {
-	return Test::Input(this, code, code);
+	return Test::Input(this, code, "test", code);
 }
 Test::Input Test::DISABLED_code(const std::string& code) {
-	return Test::Input(this, code, code, false, false, true);
+	return Test::Input(this, code, "test", code, false, false, true);
 }
 Test::Input Test::code_v1(const std::string& code) {
-	return Test::Input(this, code, code, false, true);
+	return Test::Input(this, code, "test", code, false, true);
 }
 Test::Input Test::DISABLED_code_v1(const std::string& code) {
-	return Test::Input(this, code, code, false, true, true);
+	return Test::Input(this, code, "test", code, false, true, true);
 }
 Test::Input Test::file(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
-	return Test::Input(this, file_name, code, true);
+	return Test::Input(this, file_name, file_name, code, true);
 }
 Test::Input Test::DISABLED_file(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
-	return Test::Input(this, file_name, code, true, false, true);
+	return Test::Input(this, file_name, file_name, code, true, false, true);
 }
 
 Test::Input Test::file_v1(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
-	return Test::Input(this, file_name, code, true, true);
+	return Test::Input(this, file_name, file_name, code, true, true);
 }
 
 ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
@@ -140,7 +140,7 @@ ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
 
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->operation_limit = this->operation_limit > 0 ? this->operation_limit : ls::VM::DEFAULT_OPERATION_LIMIT;
-	auto result = vm->execute(code, ctx, "test", false, ops or this->operation_limit > 0);
+	auto result = vm->execute(code, ctx, file_name, false, ops or this->operation_limit > 0);
 	vm->operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	this->result = result;
@@ -167,7 +167,7 @@ ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
 
 void Test::Input::pass(std::string expected) {
 	std::ostringstream oss;
-	oss << C_GREEN << "OK   " << END_COLOR << ": " << name;
+	oss << C_GREEN << "OK   " << END_COLOR << ": " << label;
 	if (v1) oss << C_BLUE << " [V1]" << END_COLOR;
 	oss <<  "  ===>  " << expected;
 	std::cout << oss.str();
@@ -185,7 +185,7 @@ void Test::Input::pass(std::string expected) {
 
 void Test::Input::fail(std::string expected, std::string actual) {
 	std::ostringstream oss;
-	oss << C_RED << "FAIL " << END_COLOR << ": " << name;
+	oss << C_RED << "FAIL " << END_COLOR << ": " << label;
 	if (v1) std::cout << C_BLUE << " [V1]" << END_COLOR;
 	oss << "  =/=>  " << expected << "  got  " << actual;
 	std::cout << oss.str();
@@ -199,7 +199,7 @@ void Test::Input::fail(std::string expected, std::string actual) {
 void Test::Input::disable() {
 	test->total++;
 	test->disabled++;
-	std::cout << C_PURPLE << "DISA" << END_COLOR << " : " << name << std::endl;
+	std::cout << C_PURPLE << "DISA" << END_COLOR << " : " << label << std::endl;
 }
 
 void Test::Input::works() {
@@ -275,7 +275,7 @@ void Test::Input::type(ls::Type type) {
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	
 	test->total++;
-	auto result = vm->execute(code, ctx, name, false, false);
+	auto result = vm->execute(code, ctx, file_name, false, false);
 
 	std::ostringstream oss;
 	oss << type;

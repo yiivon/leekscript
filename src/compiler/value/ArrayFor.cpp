@@ -17,7 +17,7 @@ void ArrayFor::print(std::ostream& os, int indent, bool debug, bool condensed) c
 }
 
 Location ArrayFor::location() const {
-	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
 void ArrayFor::analyze(SemanticAnalyzer* analyzer) {

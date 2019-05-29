@@ -52,9 +52,8 @@ public:
 	Location focus;
 	std::vector<std::string> parameters;
 	std::string underline_code;
-	std::string file;
 
-	Error(Type type, int line, int character);
+	Error(Type type, File* file, int line, int character);
 	Error(Type type, Token* token, std::vector<std::string> parameters);
 	Error(Type type, Location location, Location focus);
 	Error(Type type, Location location, Location focus, std::vector<std::string> parameters);

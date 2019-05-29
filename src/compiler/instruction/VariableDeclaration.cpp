@@ -38,7 +38,7 @@ void VariableDeclaration::print(std::ostream& os, int indent, bool debug, bool c
 
 Location VariableDeclaration::location() const {
 	auto end = variables.size() > expressions.size() ? variables.back()->location.end : expressions.back()->location().end;
-	return {keyword->location.start, end};
+	return {keyword->location.file, keyword->location.start, end};
 }
 
 void VariableDeclaration::analyze_global_functions(SemanticAnalyzer* analyzer) {
@@ -65,7 +65,6 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
 		if (expressions[i] != nullptr) {
 			if (Function* f = dynamic_cast<Function*>(expressions[i])) {
 				f->name = var->content;
-				f->file = VM::current()->file_name;
 			}
 			expressions[i]->analyze(analyzer);
 			v->value = expressions[i];

@@ -22,8 +22,8 @@ public:
 	static void print_bool(bool v);
 	static void print_float(double v);
 
-	static void throw1(int type, char* function, size_t line);
-	static void throw2(void** ex, char* function, size_t line);
+	static void throw1(int type, char* file, char* function, size_t line);
+	static void throw2(void** ex, char* file, char* function, size_t line);
 
 	static void v1_debug(LSValue* v);
 };

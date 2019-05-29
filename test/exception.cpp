@@ -14,10 +14,10 @@ void Test::test_exceptions() {
 	code("var x = 'hello' [][0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("var x = 'hello' throw").exception(ls::vm::Exception::EXCEPTION);
 	code("let f = -> { var x = 'hello' [][0] } f()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
-		{"f", 1}, {"main", 1}
+		{"test", "f", 1}, {"test", "main", 1}
 	});
 	code("let f = -> { var x = 'hello' throw } f()").exception(ls::vm::Exception::EXCEPTION, {
-		{"f", 1}, {"main", 1}
+		{"test", "f", 1}, {"test", "main", 1}
 	});
 
 	section("Catch-else operator");
@@ -35,22 +35,28 @@ void Test::test_exceptions() {
 	code("let a = [12][0] !? 'a' null - 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Stacktraces");
-	file("test/code/exception/exception.leek").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
-		{"main", 3},
+	std::string f = "test/code/exception/exception.leek";
+	file(f).exception(ls::vm::Exception::DIVISION_BY_ZERO, {
+		{f, "main", 3},
 	});
+	std::string f1 = "test/code/exception/exception_1.leek";
 	file("test/code/exception/exception_1.leek").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
-		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+		{f1, "crash", 2}, {f1, "power", 7}, {f1, "will_crash", 12}, {f1, "do_something", 17}, {f1, "main", 20}
 	});
+	std::string f2 = "test/code/exception/exception_2.leek";
 	file("test/code/exception/exception_2.leek").exception(ls::vm::Exception::NO_SUCH_OPERATOR, {
-		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+		{f2, "crash", 2}, {f2, "power", 7}, {f2, "will_crash", 12}, {f2, "do_something", 17}, {f2, "main", 20}
 	});
+	std::string f3 = "test/code/exception/exception_3.leek";
 	file("test/code/exception/exception_3.leek").exception(ls::vm::Exception::EXCEPTION, {
-		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+		{f3, "crash", 2}, {f3, "power", 7}, {f3, "will_crash", 12}, {f3, "do_something", 17}, {f3, "main", 20}
 	});
+	std::string f4 = "test/code/exception/exception_4.leek";
 	file("test/code/exception/exception_4.leek").exception(ls::vm::Exception::NUMBER_OVERFLOW, {
-		{"crash", 2}, {"power", 7}, {"will_crash", 12}, {"do_something", 17}, {"main", 20}
+		{f4, "crash", 2}, {f4, "power", 7}, {f4, "will_crash", 12}, {f4, "do_something", 17}, {f4, "main", 20}
 	});
+	std::string f5 = "test/code/exception/exception_5.leek";
 	file("test/code/exception/exception_5.leek").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
-		{"crash", 3}, {"power", 8}, {"will_crash", 13}, {"do_something", 18}, {"main", 21}
+		{f5, "crash", 3}, {f5, "power", 8}, {f5, "will_crash", 13}, {f5, "do_something", 18}, {f5, "main", 21}
 	});
 }

@@ -36,7 +36,7 @@ void Map::print(std::ostream& os, int indent, bool debug, bool condensed) const 
 }
 
 Location Map::location() const {
-	return {opening_bracket->location.start, closing_bracket->location.end};
+	return {opening_bracket->location.file, opening_bracket->location.start, closing_bracket->location.end};
 }
 
 void Map::analyze(SemanticAnalyzer* analyzer) {

@@ -20,7 +20,7 @@ void Set::print(std::ostream& os, int indent, bool debug, bool condensed) const 
 }
 
 Location Set::location() const {
-	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
 void Set::analyze(SemanticAnalyzer* analyzer) {

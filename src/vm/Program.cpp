@@ -182,13 +182,13 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 
 	auto token = std::make_shared<Token>(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
 	auto f = new Function(token);
-	f->addArgument(new Token(TokenType::IDENT, 0, 1, 0, "x"), nullptr);
-	f->addArgument(new Token(TokenType::IDENT, 2, 1, 2, "y"), nullptr);
+	f->addArgument(new Token(TokenType::IDENT, main_file, 0, 1, 0, "x"), nullptr);
+	f->addArgument(new Token(TokenType::IDENT, main_file,2, 1, 2, "y"), nullptr);
 	f->body = new Block(true);
 	auto ex = new Expression();
-	ex->v1 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 0, 1, 0, "x"));
-	ex->v2 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, 2, 1, 2, "y"));
-	ex->op = std::make_shared<Operator>(new Token(token_types.at(std::distance(ops.begin(), o)), 1, 1, 1, name));
+	ex->v1 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, main_file, 0, 1, 0, "x"));
+	ex->v2 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, main_file, 2, 1, 2, "y"));
+	ex->op = std::make_shared<Operator>(new Token(token_types.at(std::distance(ops.begin(), o)), main_file, 1, 1, 1, name));
 	f->body->instructions.push_back( new ExpressionInstruction(ex));
 	auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
 	type.native = true;
@@ -200,7 +200,6 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 
 void Program::analyze(SemanticAnalyzer* analyzer) {
 	main->name = "main";
-	main->file = file_name;
 	main->body->analyze_global_functions(analyzer);
 
 	main->analyze(analyzer);

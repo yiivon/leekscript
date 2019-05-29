@@ -23,7 +23,7 @@ void AbsoluteValue::print(std::ostream& os, int, bool debug, bool condensed) con
 }
 
 Location AbsoluteValue::location() const {
-	return {open_pipe->location.start, close_pipe->location.end};
+	return {open_pipe->location.file, open_pipe->location.start, close_pipe->location.end};
 }
 
 void AbsoluteValue::analyze(SemanticAnalyzer* analyzer) {

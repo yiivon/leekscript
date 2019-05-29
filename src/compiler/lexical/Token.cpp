@@ -3,7 +3,7 @@
 
 namespace ls {
 
-Token::Token(TokenType type, size_t raw, size_t line, size_t character, std::string content) : location({line, character - content.size() - 1, raw - content.size() - 1}, {line, character, raw - 1}) {
+Token::Token(TokenType type, File* file, size_t raw, size_t line, size_t character, std::string content) : location(file, {line, character - content.size() - 1, raw - content.size() - 1}, {line, character, raw - 1}) {
 
 	this->type = type;
 	this->content = std::string(content);

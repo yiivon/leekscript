@@ -46,7 +46,6 @@ public:
 	Function* parent;
 	std::shared_ptr<const Base_type> placeholder_type;
 	bool is_main_function = false;
-	std::string file;
 	Version* default_version = nullptr;
 	std::map<std::vector<Type>, Version*> versions;
 	bool generate_default_version = false;

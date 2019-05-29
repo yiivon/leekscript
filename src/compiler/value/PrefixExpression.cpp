@@ -32,7 +32,7 @@ void PrefixExpression::print(std::ostream& os, int indent, bool debug, bool cond
 }
 
 Location PrefixExpression::location() const {
-	return {operatorr->token->location.start, expression->location().end};
+	return {operatorr->token->location.file, operatorr->token->location.start, expression->location().end};
 }
 
 void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {

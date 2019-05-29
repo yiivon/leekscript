@@ -47,7 +47,7 @@ void ArrayAccess::print(std::ostream& os, int indent, bool debug, bool condensed
 }
 
 Location ArrayAccess::location() const {
-	return {array->location().start, close_bracket->location.end};
+	return {close_bracket->location.file, array->location().start, close_bracket->location.end};
 }
 
 Callable* ArrayAccess::get_callable(SemanticAnalyzer*, int argument_count) const {

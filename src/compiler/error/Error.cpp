@@ -6,7 +6,7 @@ namespace ls {
 bool Error::translation_loaded = false;
 Json Error::translation;
 
-Error::Error(Type type, int line, int character) : type(type), location(Position(line, character, 0), Position(line, character + 1, 0)), focus(Position(line, character, 0), Position(line, character + 1, 0)) {}
+Error::Error(Type type, File* file, int line, int character) : type(type), location(file, Position(line, character, 0), Position(line, character + 1, 0)), focus(file, Position(line, character, 0), Position(line, character + 1, 0)) {}
 
 Error::Error(Type type, Token* token, std::vector<std::string> parameters) : type(type), location(token->location), focus(token->location), parameters(parameters) {}
 

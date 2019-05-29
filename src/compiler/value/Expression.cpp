@@ -92,9 +92,10 @@ void Expression::print(std::ostream& os, int indent, bool debug, bool condensed)
 }
 
 Location Expression::location() const {
-	auto start = v1->location().start;
+	auto v1_location = v1->location();
+	auto start = v1_location.start;
 	auto end = op == nullptr ? v1->location().end : v2->location().end;
-	return {start, end};
+	return {v1_location.file, start, end};
 }
 
 void Expression::analyze(SemanticAnalyzer* analyzer) {

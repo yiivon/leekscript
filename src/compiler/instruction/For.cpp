@@ -38,7 +38,7 @@ void For::print(std::ostream& os, int indent, bool debug, bool condensed) const 
 }
 
 Location For::location() const {
-	return {{0, 0, 0}, {0, 0, 0}};
+	return {nullptr, {0, 0, 0}, {0, 0, 0}};
 }
 
 void For::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {

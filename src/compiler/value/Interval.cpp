@@ -26,7 +26,7 @@ void Interval::print(std::ostream& os, int indent, bool debug, bool condensed) c
 }
 
 Location Interval::location() const {
-	return {opening_bracket->location.start, closing_bracket->location.end};
+	return {opening_bracket->location.file, opening_bracket->location.start, closing_bracket->location.end};
 }
 
 void Interval::analyze(SemanticAnalyzer* analyzer) {

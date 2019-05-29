@@ -7,6 +7,8 @@
 
 namespace ls {
 
+class File;
+
 class Token {
 
 public:
@@ -16,7 +18,7 @@ public:
 	Location location;
 	unsigned size;
 
-	Token(TokenType type, size_t raw, size_t line, size_t character, std::string content);
+	Token(TokenType type, File* file, size_t raw, size_t line, size_t character, std::string content);
 };
 
 std::ostream& operator << (std::ostream& os, Token& var);

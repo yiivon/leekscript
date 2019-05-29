@@ -27,8 +27,8 @@ SystemSTD::SystemSTD(const VM* vm) : Module("System") {
 	});
 
 	method("throw", {
-		{{}, {Type::integer(), Type::i8().pointer(), Type::long_()}, (void*) throw1},
-		{{}, {Type::long_(), Type::long_(), Type::i8().pointer()}, (void*) throw2},
+		{{}, {Type::integer(), Type::i8().pointer(), Type::i8().pointer(), Type::long_()}, (void*) throw1},
+		{{}, {Type::long_(), Type::long_(), Type::i8().pointer(), Type::i8().pointer()}, (void*) throw2},
 	});
 
 	method("debug", {
@@ -105,17 +105,17 @@ void SystemSTD::print_float(double v) {
 	VM::current()->output->end();
 }
 
-void SystemSTD::throw1(int type, char* function, size_t line) {
+void SystemSTD::throw1(int type, char* file, char* function, size_t line) {
 	// std::cout << "SystemSTD::throw " << type << " " << function << " " << line << std::endl;
 	auto ex = vm::ExceptionObj((vm::Exception) type);
-	ex.frames.push_back({function, line});
+	ex.frames.push_back({file, function, line});
 	throw ex;
 }
 
 void fake_ex_destru_fun(void*) {}
-void SystemSTD::throw2(void** ex, char* function, size_t line) {
+void SystemSTD::throw2(void** ex, char* file, char* function, size_t line) {
 	auto exception = (vm::ExceptionObj*) (ex + 4);
-	exception->frames.push_back({function, line});
+	exception->frames.push_back({file, function, line});
 	__cxa_throw(exception, (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
 }
 

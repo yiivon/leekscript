@@ -33,7 +33,7 @@ void Object::print(std::ostream& os, int indent, bool debug, bool condensed) con
 }
 
 Location Object::location() const {
-	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
 void Object::analyze(SemanticAnalyzer* analyzer) {

@@ -45,7 +45,7 @@ void ObjectAccess::print(std::ostream& os, int indent, bool debug, bool condense
 }
 
 Location ObjectAccess::location() const {
-	return {object->location().start, field->location.end};
+	return {field->location.file, object->location().start, field->location.end};
 }
 
 void ObjectAccess::set_version(const std::vector<Type>& args, int level) {

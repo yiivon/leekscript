@@ -29,7 +29,7 @@ void Array::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 }
 
 Location Array::location() const {
-	return {opening_bracket->location.start, closing_bracket->location.end};
+	return {opening_bracket->location.file, opening_bracket->location.start, closing_bracket->location.end};
 }
 
 void Array::analyze(SemanticAnalyzer* analyzer) {

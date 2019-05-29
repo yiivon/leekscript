@@ -45,7 +45,7 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 	if (context) {
 		for (auto var : context->vars) {
 			// std::cout << "Add context var " << var.first << std::endl;
-			add_var(new Token(TokenType::IDENT, 0, 0, 0, var.first), var.second.type, nullptr, nullptr);
+			add_var(new Token(TokenType::IDENT, program->main_file, 0, 0, 0, var.first), var.second.type, nullptr, nullptr);
 		}
 	}
 	program->analyze(this);
@@ -189,7 +189,6 @@ std::shared_ptr<SemanticVar> SemanticAnalyzer::convert_var_to_any(std::shared_pt
 
 void SemanticAnalyzer::add_error(Error ex) {
 	ex.underline_code = program->underline_code(ex.location, ex.focus);
-	ex.file = program->file_name;
 	errors.push_back(ex);
 }
 

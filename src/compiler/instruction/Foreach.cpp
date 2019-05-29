@@ -38,7 +38,7 @@ void Foreach::print(std::ostream& os, int indent, bool debug, bool condensed) co
 }
 
 Location Foreach::location() const {
-	return {{0, 0, 0}, {0, 0, 0}};
+	return {nullptr, {0, 0, 0}, {0, 0, 0}};
 }
 
 void Foreach::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {

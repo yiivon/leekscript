@@ -19,14 +19,14 @@ void Continue::print(std::ostream& os, int, bool, bool) const {
 }
 
 Location Continue::location() const {
-	return {{0, 0, 0}, {0, 0, 0}};
+	return {nullptr, {0, 0, 0}, {0, 0, 0}};
 }
 
 void Continue::analyze(SemanticAnalyzer* analyzer, const Type&) {
 
 	// continue must be in a loop
 	if (!analyzer->in_loop(deepness)) {
-		analyzer->add_error({Error::Type::CONTINUE_MUST_BE_IN_LOOP, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}}); // TODO location
+		analyzer->add_error({Error::Type::CONTINUE_MUST_BE_IN_LOOP, {nullptr, {0, 0, 0}, {0, 0, 0}}, {nullptr, {0, 0, 0}, {0, 0, 0}}}); // TODO location
 	}
 }
 

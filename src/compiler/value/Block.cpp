@@ -39,7 +39,7 @@ Location Block::location() const {
 	assert(instructions.size());
 	auto start = instructions.at(0)->location().start;
 	auto end = instructions.back()->location().end;
-	return {start, end};
+	return {instructions.at(0)->location().file, start, end};
 }
 
 void Block::analyze_global_functions(SemanticAnalyzer* analyzer) {
