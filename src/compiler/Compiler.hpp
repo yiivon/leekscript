@@ -91,7 +91,6 @@ public:
 	std::vector<std::map<std::string, value>> function_variables;
 	std::vector<std::map<std::string, value>> variables;
 	std::vector<std::vector<std::vector<catcher>>> catchers;
-	std::map<void*, std::string> literals;
 	std::map<std::string, function_entry> mappings;
 	std::stack<int> exception_line;
 	bool export_bitcode = false;

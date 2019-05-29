@@ -42,10 +42,6 @@ Compiler::Compiler(VM* vm) : vm(vm),
 				} else if (auto Err = Sym.takeError()) {
 					return std::move(Err);
 				}
-				auto i = mappings.find(Name);
-				if (i != mappings.end() && i->second.addr) {
-					return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
-				}
 				auto s = this->vm->resolve_symbol(Name);
 				if (s) {
 					return llvm::JITSymbol((llvm::JITTargetAddress) s, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
