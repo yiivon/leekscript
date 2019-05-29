@@ -75,4 +75,9 @@ void Test::test_files() {
 	code("include('test/code/include/car.class.leek') let ferrari = new Car() ferrari.price").equals("300000");
 	code("include('test/code/include/hypot.leek') hypot(3, 4)").equals("5");
 	code("include('test/code/include/folder/fact.leek')").equals("3628800");
+	code("include('test/code/include/exception.leek') except()").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
+		{"folder/crash.leek", "crash", 5},
+		{"test/code/include/exception.leek", "except", 4},
+		{"test", "main", 1}
+	});
 }

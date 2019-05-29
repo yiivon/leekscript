@@ -1,0 +1,6 @@
+
+
+
+function crash() {
+	2 % 0
+}
