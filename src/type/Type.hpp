@@ -187,6 +187,13 @@ public:
 	static std::shared_ptr<const Base_type> generate_new_placeholder_type();
 	static std::vector<std::shared_ptr<const Base_type>> placeholder_types;
 	static void clear_placeholder_types();
+
+	// Const types to be used to optimize return of references
+	static const std::vector<Type> empty_types;
+	static const Type void_type;
+	static const Type any_type;
+	static const Type integer_type;
+	static const Type string_type;
 };
 
 std::ostream& operator << (std::ostream&, const Type&);

@@ -58,6 +58,12 @@ void Type::clear_placeholder_types() {
 
 unsigned int Type::placeholder_counter = 0;
 
+const std::vector<Type> Type::empty_types = {};
+const Type Type::void_type = {};
+const Type Type::any_type = Type::any();
+const Type Type::integer_type = Type::integer();
+const Type Type::string_type = Type::string();
+
 Type::Type() {
 	native = false;
 }
