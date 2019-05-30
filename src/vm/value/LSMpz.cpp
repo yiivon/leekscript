@@ -196,7 +196,7 @@ LSValue* LSMpz::sub_eq(LSValue* v) {
 		LSValue::delete_temporary(v);
 		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 	}
-	auto boolean = static_cast<LSBoolean*>(v);
+	// auto boolean = static_cast<LSBoolean*>(v);
 	// value -= boolean->value;
 	return this;
 }
@@ -256,7 +256,7 @@ LSValue* LSMpz::mul_eq(LSValue* v) {
 		LSValue::delete_temporary(v);
 		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 	}
-	auto boolean = static_cast<LSBoolean*>(v);
+	// auto boolean = static_cast<LSBoolean*>(v);
 	// value *= boolean->value;
 	return this;
 }
@@ -294,7 +294,7 @@ LSValue* LSMpz::div(LSValue* v) {
 		// value = NAN;
 		return this;
 	}
-	return LSMpz::get(NAN);
+	return LSMpz::get(0);
 }
 
 LSValue* LSMpz::div_eq(LSValue* v) {
