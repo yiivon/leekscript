@@ -29,9 +29,9 @@ public:
 	Type(std::shared_ptr<const Base_type> raw_type, bool native = false, bool temporary = false, bool constant = false);
 
 	int id() const;
-	Type return_type() const;
-	const Type argument(size_t index) const;
-	const std::vector<Type> arguments() const;
+	const Type& return_type() const;
+	const Type& argument(size_t index) const;
+	const std::vector<Type>& arguments() const;
 	const Type element() const;
 	const Type key() const;
 	const Type member(int i) const;

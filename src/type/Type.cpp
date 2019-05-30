@@ -92,16 +92,16 @@ bool Type::must_manage_memory() const {
 	return is_polymorphic() and not native;
 }
 
-Type Type::return_type() const {
-	if (_types.size() == 0) { return {}; }
+const Type& Type::return_type() const {
+	if (_types.size() == 0) { return Type::void_type; }
 	return _types[0]->return_type();
 }
-const Type Type::argument(size_t index) const {
-	if (_types.size() == 0) { return {}; }
+const Type& Type::argument(size_t index) const {
+	if (_types.size() == 0) { return void_type; }
 	return _types[0]->argument(index);
 }
-const std::vector<Type> Type::arguments() const {
-	if (_types.size() == 0) { return {}; }
+const std::vector<Type>& Type::arguments() const {
+	if (_types.size() == 0) { return empty_types; }
 	return _types[0]->arguments();
 }
 const Type Type::element() const {

@@ -24,9 +24,9 @@ public:
 	virtual int distance(const Base_type* type) const override;
 	virtual bool compatible(const Base_type*) const override;
 	virtual bool castable(const Base_type*) const override;
-	virtual Type return_type() const override;
-	virtual std::vector<Type> arguments() const override;
-	virtual Type argument(size_t) const override;
+	virtual const Type& return_type() const override;
+	virtual const std::vector<Type>& arguments() const override;
+	virtual const Type& argument(size_t) const override;
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 

@@ -27,9 +27,9 @@ public:
 	bool castable(const Type&) const;
 	virtual int distance(const Base_type*) const;
 	virtual Type iterator() const;
-	virtual Type return_type() const;
-	virtual Type argument(size_t) const;
-	virtual std::vector<Type> arguments() const;
+	virtual const Type& return_type() const;
+	virtual const Type& argument(size_t) const;
+	virtual const std::vector<Type>& arguments() const;
 	virtual llvm::Type* llvm(const Compiler& c) const = 0;
 	virtual std::string clazz() const;
 	virtual std::ostream& print(std::ostream&) const;

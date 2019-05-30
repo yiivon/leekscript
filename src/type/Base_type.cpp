@@ -36,17 +36,17 @@ int Base_type::distance(const Base_type* type) const {
 Type Base_type::iterator() const {
 	assert(false && "No iterator available on this type");
 }
-Type Base_type::return_type() const {
+const Type& Base_type::return_type() const {
 	// assert(false && "No return type on this type");
-	return Type::any();
+	return Type::any_type;
 }
-Type Base_type::argument(size_t) const {
+const Type& Base_type::argument(size_t) const {
 	// assert(false && "No arguments on this type");
-	return Type::any();
+	return Type::any_type;
 }
-std::vector<Type> Base_type::arguments() const {
+const std::vector<Type>& Base_type::arguments() const {
 	// assert(false && "No arguments on this type");
-	return {};
+	return Type::empty_types;
 }
 std::string Base_type::clazz() const {
 	return "";

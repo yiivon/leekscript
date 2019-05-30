@@ -54,18 +54,18 @@ int Function_type::distance(const Base_type* type) const {
 	}
 	return -1;
 }
-Type Function_type::return_type() const {
+const Type& Function_type::return_type() const {
 	return _return_type;
 }
-std::vector<Type> Function_type::arguments() const {
+const std::vector<Type>& Function_type::arguments() const {
 	return _arguments;
 }
-Type Function_type::argument(size_t i) const {
+const Type& Function_type::argument(size_t i) const {
 	// assert(i < _arguments.size() && "Wrong argument() index");
 	if (i < _arguments.size()) {
 		return _arguments[i];
 	}
-	return Type::any();
+	return Type::any_type;
 }
 std::string Function_type::clazz() const {
 	return "Function";
