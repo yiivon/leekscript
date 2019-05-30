@@ -29,9 +29,9 @@ Type build(const Type& type) {
 	return type;
 }
 
-CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const {
+const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const {
 	// std::cout << "Callable::resolve(" << arguments << ")" << std::endl;
-	CallableVersion* best = nullptr;
+	const CallableVersion* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
 	for (auto& version : versions) {
 		if (version.flags == Module::LEGACY and not analyzer->vm->legacy) continue;
@@ -43,24 +43,24 @@ CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type>
 		auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
 
 		// Template resolution
-		auto version_type = version.type;
+		const CallableVersion* new_version = &version;
 		if (version.templates.size()) {
 			version.resolve_templates(analyzer, version_arguments);
-			version_type = build(version.type);
+			auto version_type = build(version.type);
 			// Reset template implementations
 			for (size_t i = 0; i < version.templates.size(); ++i) {
 				version.templates.at(i).implement({});
 			}
+			new_version = new CallableVersion(version);
+			((CallableVersion*) new_version)->type = version_type;
+			// std::cout << "Resolved version = " << version_type << std::endl;
 		}
-		CallableVersion* new_version = new CallableVersion(version);
-		new_version->type = version_type;
-		// std::cout << "Resolved version = " << version_type << std::endl;
 
 		bool valid = true;
-		for (size_t i = 0; i < version_type.arguments().size(); ++i) {
+		for (size_t i = 0; i < new_version->type.arguments().size(); ++i) {
 			if (i < version_arguments.size()) {
 				const auto& a = version_arguments.at(i);
-				const auto implem_arg = version_type.arguments().at(i);
+				const auto implem_arg = new_version->type.arguments().at(i);
 				if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
 					if (fun->function() and implem_arg.is_function()) {
 						auto version = implem_arg.arguments();
@@ -74,13 +74,13 @@ CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type>
 				valid = false;
 			}
 		}
-		if ((!valid or version_arguments.size() > version_type.arguments().size()) and not version.unknown) {
+		if ((!valid or version_arguments.size() > new_version->type.arguments().size()) and not version.unknown) {
 			continue;
 		}
 		int d = 0;
 		bool ok = true;
 		if (!version.unknown) {
-			for (size_t i = 0; i < version_type.arguments().size(); ++i) {
+			for (size_t i = 0; i < new_version->type.arguments().size(); ++i) {
 				auto type = [&]() { if (i < version_arguments.size()) {
 					return version_arguments.at(i);
 				} else if (f and f->defaultValues.at(i)) {
@@ -88,7 +88,7 @@ CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type>
 				} else {
 					assert(false);
 				}}();
-				auto di = type.distance(version_type.arguments().at(i));
+				auto di = type.distance(new_version->type.arguments().at(i));
 				// std::cout << type << " distance " << version_type.arguments().at(i) << " " << di << std::endl;
 				if (di < 0) { ok = false; break; };
 				d += di;
@@ -110,7 +110,7 @@ bool Callable::is_compatible(int argument_count) const {
 	return false;
 }
 
-void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments) {
+void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments) const {
 	std::vector<Value*> values;
 	if (object) values.push_back(object);
 	values.insert(values.end(), arguments.begin(), arguments.end());
@@ -166,9 +166,9 @@ void CallableVersion::resolve_templates(SemanticAnalyzer* analyzer, std::vector<
 	}
 }
 
-void CallableVersion::pre_compile_call(Compiler& c) {
+void CallableVersion::pre_compile_call(Compiler& c) const {
 	if (object) {
-		compiled_object = [&]() { if (object->isLeftValue()) {
+		((CallableVersion*) this)->compiled_object = [&]() { if (object->isLeftValue()) {
 			if (object->type.is_mpz_ptr()) {
 				return ((LeftValue*) object)->compile_l(c);
 			} else {

@@ -17,7 +17,7 @@ public:
 	Value* v2;
 	std::shared_ptr<Operator> op;
 	int operations;
-	CallableVersion* callable_version = nullptr;
+	const CallableVersion* callable_version = nullptr;
 
 	Expression();
 	Expression(Value*);

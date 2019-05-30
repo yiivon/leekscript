@@ -92,8 +92,6 @@ Callable* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_co
 	if (analyzer->vm->internal_vars.find(object_class_name) != analyzer->vm->internal_vars.end()) {
 		object_class = (LSClass*) analyzer->vm->internal_vars[object_class_name]->lsvalue;
 	}
-	
-	Callable* callable = nullptr;
 
 	// <class>.<field>
 	if (object->type.is_class() and vv != nullptr) {
@@ -101,27 +99,19 @@ Callable* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_co
 		// <class>.<method>
 		auto i = std_class->methods.find(field->content);
 		if (i != std_class->methods.end() and i->second.is_compatible(argument_count)) {
-			callable = &i->second;
-			for (auto& v : callable->versions) {
-				v.object = nullptr;
-			}
-			return callable;
+			return &i->second;
 		}
 		// Value.<method>
 		i = value_class->methods.find(field->content);
 		if (i != value_class->methods.end() and i->second.is_compatible(argument_count)) {
-			callable = &i->second;
-			for (auto& v : callable->versions) {
-				v.object = nullptr;
-			}
-			return callable;
+			return &i->second;
 		}
 	}
 	// <object>.<method>
 	if (object_class) {
 		auto i = object_class->methods.find(field->content);
 		if (i != object_class->methods.end()) {
-			callable = &i->second;
+			auto callable = new Callable(i->second);
 			for (auto& v : callable->versions) {
 				v.object = object;
 			}
@@ -130,20 +120,21 @@ Callable* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_co
 	}
 	auto i = value_class->methods.find(field->content);
 	if (i != value_class->methods.end() and i->second.is_compatible(argument_count + 1)) {
-		callable = &i->second;
+		auto callable = new Callable(i->second);
 		for (auto& v : callable->versions) {
 			v.object = object;
 		}
 		return callable;
 	}
-	if (!callable and not object->type.is_class()) {
-		callable = new Callable("?");
+	if (not object->type.is_class()) {
+		auto callable = new Callable("?");
 		std::ostringstream oss;
 		oss << object << "." << field->content;
 		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
 		callable->add_version({ oss.str(), type, this, {}, {}, object, true });
+		return callable;
 	}
-	return callable;
+	return nullptr;
 }
 
 void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {

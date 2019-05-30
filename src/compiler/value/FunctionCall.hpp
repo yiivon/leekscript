@@ -30,7 +30,7 @@ public:
 	std::vector<Type> arg_types;
 	std::string function_name;
 	Callable* callable = nullptr;
-	CallableVersion* callable_version;
+	const CallableVersion* callable_version;
 
 	FunctionCall(std::shared_ptr<Token> t);
 	virtual ~FunctionCall();
