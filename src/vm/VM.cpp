@@ -63,7 +63,7 @@ VM::VM(bool v1) : compiler(this), legacy(v1) {
 	add_module(new JsonSTD());
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
-	add_internal_var("ptr", ptr_type, nullptr, new Callable("?", {
+	add_internal_var("ptr", ptr_type, nullptr, new Callable({
 		{"Value.ptr", ptr_type }
 	}));
 }

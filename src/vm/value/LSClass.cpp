@@ -35,7 +35,6 @@ LSClass::~LSClass() {
 
 void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
 	methods.insert({name, impl});
-	methods.at(name).name = this->name + "." + name;
 	int i = 0;
 	for (auto& m : methods.at(name).versions) {
 		m.name = this->name + "." + name + "." + std::to_string(i++);
@@ -86,7 +85,7 @@ const Callable* LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& na
 	if (name == "is not") name = "!=";
 	if (name == "÷") name = "/";
 	if (name == "×") name = "*";
-	auto callable = new Callable(name);
+	auto callable = new Callable();
 	auto i = operators.find(name);
 	if (i != operators.end()) {
 		for (const auto& impl : i->second.versions) {

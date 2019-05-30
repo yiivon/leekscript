@@ -59,7 +59,7 @@ Location FunctionCall::location() const {
 }
 
 Callable* FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
-	auto callable = new Callable("<fc>");
+	auto callable = new Callable();
 	std::vector<Type> arguments_types;
 	for (const auto& argument : arguments) {
 		arguments_types.push_back(argument->type);

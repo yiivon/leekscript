@@ -278,7 +278,7 @@ namespace std {
 		return os;
 	}
 	std::ostream& operator << (std::ostream& os, const ls::Callable* callable) {
-		os << callable->name << " [" << std::endl;
+		os << "[" << std::endl;
 		for (const auto& v : callable->versions) {
 			os << "    " << v << std::endl;
 		}

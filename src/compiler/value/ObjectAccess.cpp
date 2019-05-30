@@ -127,7 +127,7 @@ Callable* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_co
 		return callable;
 	}
 	if (not object->type.is_class()) {
-		auto callable = new Callable("?");
+		auto callable = new Callable();
 		std::ostringstream oss;
 		oss << object << "." << field->content;
 		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});

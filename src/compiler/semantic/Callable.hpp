@@ -56,12 +56,10 @@ public:
 
 class Callable {
 public:
-	std::string name;
 	std::vector<CallableVersion> versions;
 
-	Callable(std::string name) : name(name) {}
-	Callable(std::string name, std::initializer_list<CallableVersion> versions) : name(name), versions(versions) {}
-	Callable(std::initializer_list<CallableVersion> versions) : name("?"), versions(versions) {}
+	Callable() {}
+	Callable(std::initializer_list<CallableVersion> versions) : versions(versions) {}
 	void add_version(CallableVersion v);
 	const CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 	bool is_compatible(int argument_count) const;

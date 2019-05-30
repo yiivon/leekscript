@@ -394,7 +394,7 @@ void Function::must_return_any(SemanticAnalyzer*) {
 }
 
 Callable* Function::get_callable(SemanticAnalyzer*, int argument_count) const {
-	auto callable = new Callable("<function>");
+	auto callable = new Callable();
 	int flags = default_version->body->throws ? Module::THROWS : 0;
 	callable->add_version({ "<default>", default_version->type, default_version, {}, {}, nullptr, false, false, false, flags });
 	for (const auto& version : versions) {

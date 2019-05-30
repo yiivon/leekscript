@@ -51,7 +51,7 @@ Location ArrayAccess::location() const {
 }
 
 Callable* ArrayAccess::get_callable(SemanticAnalyzer*, int argument_count) const {
-	auto callable = new Callable("<aa>");
+	auto callable = new Callable();
 	// std::cout << "Array access get callable " << type << std::endl;
 	if (type.is_function()) {
 		callable->add_version({ "<aa>", type, this });
