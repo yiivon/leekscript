@@ -6,7 +6,7 @@ namespace ls {
 
 Pointer_type::Pointer_type(Type type) : _type(type) {}
 
-Type Pointer_type::pointed() const {
+const Type& Pointer_type::pointed() const {
 	return _type;
 }
 bool Pointer_type::operator == (const Base_type* type) const {

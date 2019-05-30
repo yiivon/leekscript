@@ -48,7 +48,7 @@ public:
 	llvm::Type* llvm_type(const Compiler& c) const;
 	Type iterator() const;
 	Type pointer() const;
-	Type pointed() const;
+	const Type& pointed() const;
 	bool all(std::function<bool(std::shared_ptr<const Base_type>)>) const;
 	bool some(std::function<bool(std::shared_ptr<const Base_type>)>) const;
 	bool castable(Type type, bool strictCast = false) const;

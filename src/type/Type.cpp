@@ -253,7 +253,7 @@ Type Type::iterator() const {
 Type Type::pointer() const {
 	return { std::make_shared<Pointer_type>(*this) };
 }
-Type Type::pointed() const {
+const Type& Type::pointed() const {
 	assert(is_pointer());
 	if (_types.size() > 0) {
 		return dynamic_cast<const Pointer_type*>(_types[0].get())->pointed();

@@ -7,11 +7,11 @@
 namespace ls {
 
 class Pointer_type : public Base_type {
-	Type _type;
+	const Type _type;
 	llvm::Type* _llvm_type = nullptr;
 public:
 	Pointer_type(Type type);
-	Type pointed() const;
+	const Type& pointed() const;
 	virtual const std::string getName() const { return "pointer"; }
 	virtual const std::string getJsonName() const { return _type.getJsonName() + "*"; }
 	virtual bool operator == (const Base_type*) const override;
