@@ -46,7 +46,6 @@ public:
 	bool can_be_container() const;
 	Type not_temporary() const;
 	llvm::Type* llvm_type(const Compiler& c) const;
-	Type add_pointer() const;
 	Type iterator() const;
 	Type pointer() const;
 	Type pointed() const;

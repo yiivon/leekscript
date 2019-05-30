@@ -241,11 +241,6 @@ llvm::Type* Type::llvm_type(const Compiler& c) const {
 	return fold()._types[0]->llvm(c);
 }
 
-Type Type::add_pointer() const {
-	Type new_type = *this;
-	return new_type;
-}
-
 Type Type::iterator() const {
 	if (_types.size() > 0) {
 		return fold()._types[0]->iterator();
