@@ -129,7 +129,6 @@ Callable* VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_c
 				for (auto& m : cl->methods) {
 					if (m.first == name) {
 						for (auto& i : m.second.versions) {
-							i.object = nullptr;
 							callable->add_version(i);
 						}
 					}
