@@ -287,7 +287,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(std::string code) {
 						word = buff;
 					}
 				} else if (type == LetterType::QUOTE) {
-					if (ident) {file, 
+					if (ident) {
 						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), file, i, line, character, word));
 						ident = false;
 						string1 = true;
