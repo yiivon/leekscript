@@ -11,11 +11,11 @@
 
 namespace ls {
 
-Type Integer_type::key() const {
-	return Type::integer();
+const Type& Integer_type::key() const {
+	return Type::integer_type;
 }
-Type Integer_type::element() const {
-	return Type::integer();
+const Type& Integer_type::element() const {
+	return Type::integer_type;
 }
 Type Integer_type::iterator() const {
 	return Type::structure("int_iterator", {

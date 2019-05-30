@@ -33,10 +33,10 @@ Array_type::Array_type(Type element) : Pointer_type(Type { std::make_shared<cons
 }) }), _element(element) {
 }
 
-Type Array_type::key() const {
-	return Type::integer();
+const Type& Array_type::key() const {
+	return Type::integer_type;
 }
-Type Array_type::element() const {
+const Type& Array_type::element() const {
 	return _element;
 }
 bool Array_type::operator == (const Base_type* type) const {

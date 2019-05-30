@@ -6,10 +6,9 @@
 
 namespace ls {
 
-Struct_type::Struct_type(const std::string name, std::initializer_list<Type> types) : _name(name), _types(types) {
-	
-}
-Type Struct_type::member(int p) const {
+Struct_type::Struct_type(const std::string name, std::initializer_list<Type> types) : _name(name), _types(types) {}
+
+const Type& Struct_type::member(int p) const {
 	return _types.at(p);
 }
 bool Struct_type::operator == (const Base_type* type) const {

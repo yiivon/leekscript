@@ -104,19 +104,16 @@ const std::vector<Type>& Type::arguments() const {
 	if (_types.size() == 0) { return empty_types; }
 	return _types[0]->arguments();
 }
-const Type Type::element() const {
-	Type element;
-	for (const auto& type : _types) {
-		element += type->element();
-	}
-	return element;
+const Type& Type::element() const {
+	if (_types.size() == 0) { return Type::void_type; }
+	return _types[0]->element();
 }
-const Type Type::key() const {
-	if (_types.size() == 0) { return {}; }
+const Type& Type::key() const {
+	if (_types.size() == 0) { return Type::void_type; }
 	return _types[0]->key();
 }
-const Type Type::member(int i) const {
-	if (_types.size() == 0) { return {}; }
+const Type& Type::member(int i) const {
+	if (_types.size() == 0) { return Type::void_type; }
 	return _types[0]->member(i);
 }
 

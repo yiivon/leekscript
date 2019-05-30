@@ -15,11 +15,11 @@ String_type::String_type() : Pointer_type(Type { std::make_shared<const Struct_t
 	Type::boolean() // native
 }) }) {}
 
-Type String_type::key() const {
-	return Type::integer();
+const Type& String_type::key() const {
+	return Type::integer_type;
 }
-Type String_type::element() const {
-	return Type::string();
+const Type& String_type::element() const {
+	return Type::string_type;
 }
 Type String_type::iterator() const {
 	return Type::structure("string_iterator", {

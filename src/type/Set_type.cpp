@@ -23,10 +23,10 @@ Set_type::Set_type(Type element) : Pointer_type(Type {
 	})
 }), _element(element) {}
 
-Type Set_type::key() const {
-	return Type::integer();
+const Type& Set_type::key() const {
+	return Type::integer_type;
 }
-Type Set_type::element() const {
+const Type& Set_type::element() const {
 	return _element;
 }
 Type Set_type::iterator() const {

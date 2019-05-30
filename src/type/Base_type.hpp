@@ -18,9 +18,9 @@ public:
 	virtual bool iterable() const { return false; }
 	virtual bool callable() const { return false; }
 	virtual bool is_container() const { return false; }
-	virtual Type element() const;
-	virtual Type key() const;
-	virtual Type member(int) const;
+	virtual const Type& element() const;
+	virtual const Type& key() const;
+	virtual const Type& member(int) const;
 	virtual bool operator == (const Base_type*) const = 0;
 	virtual bool compatible(const Base_type*) const;
 	virtual bool castable(const Base_type*) const;

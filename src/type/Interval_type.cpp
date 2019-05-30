@@ -16,11 +16,11 @@ Interval_type::Interval_type() : Pointer_type(Type { std::make_shared<const Stru
 	Type::integer() // B
 }) }) {}
 
-Type Interval_type::key() const {
-	return Type::integer();
+const Type& Interval_type::key() const {
+	return Type::integer_type;
 }
-Type Interval_type::element() const {
-	return Type::integer();
+const Type& Interval_type::element() const {
+	return Type::integer_type;
 }
 Type Interval_type::iterator() const {
 	return Type::structure("interval_iterator", {

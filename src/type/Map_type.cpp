@@ -24,10 +24,10 @@ Map_type::Map_type(Type key, Type element) : Pointer_type(Type({
 	})
 })), _key(key), _element(element) {}
 
-Type Map_type::key() const {
+const Type& Map_type::key() const {
 	return _key;
 }
-Type Map_type::element() const {
+const Type& Map_type::element() const {
 	return _element;
 }
 Type Map_type::iterator() const {
