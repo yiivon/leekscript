@@ -86,7 +86,7 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 }
 
 const Callable* LSClass::getOperator(std::string& name) {
-	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
+	// std::cout << "getOperator(" << name << ")" << std::endl;
 	if (name == "is not") name = "!=";
 	else if (name == "÷") name = "/";
 	else if (name == "×") name = "*";
