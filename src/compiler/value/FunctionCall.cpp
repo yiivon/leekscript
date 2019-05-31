@@ -240,11 +240,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
 	assert(call && callable_version);
 
-	// Pre-compile the call (compile the potential object first)
-	call->pre_compile_call(c);
-
 	std::vector<LSValueType> types;
 	std::vector<Compiler::value> args;
+	// Pre-compile the call (compile the potential object first)
+	if (call->object) {
+		args.push_back(call->pre_compile_call(c));
+		types.push_back(args.at(0).t.id());
+	}
+
 	int offset = call->object ? 1 : 0;
 	auto fun = dynamic_cast<const Function_type*>(callable_version->type._types[0].get());
 	auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;

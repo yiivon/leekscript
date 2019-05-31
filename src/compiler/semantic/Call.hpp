@@ -15,7 +15,6 @@ class Call {
 public:
 	Callable* callable = nullptr;
 	Value* object = nullptr;
-	Compiler::value compiled_object;
 
 	Call();
 	Call(Callable* callable) : callable(callable) {}
@@ -26,7 +25,7 @@ public:
 
 	const CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 	void apply_mutators(SemanticAnalyzer* analyzer, const CallableVersion* version, std::vector<Value*> arguments) const;
-	void pre_compile_call(Compiler& c) const;
+	Compiler::value pre_compile_call(Compiler& c) const;
 	Compiler::value compile_call(Compiler& c, const CallableVersion* version, std::vector<Compiler::value> args, bool no_return) const;
 	
 };

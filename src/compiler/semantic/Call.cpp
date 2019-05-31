@@ -30,26 +30,21 @@ void Call::apply_mutators(SemanticAnalyzer* analyzer, const CallableVersion* ver
 	version->apply_mutators(analyzer, values);
 }
 
-void Call::pre_compile_call(Compiler& c) const {
-	if (object) {
-		((Call*) this)->compiled_object = [&]() { if (object->isLeftValue()) {
-			if (object->type.is_mpz_ptr()) {
-				return ((LeftValue*) object)->compile_l(c);
-			} else {
-				return c.insn_load(((LeftValue*) object)->compile_l(c));
-			}
+Compiler::value Call::pre_compile_call(Compiler& c) const {
+	assert(object != nullptr);
+	if (object->isLeftValue()) {
+		if (object->type.is_mpz_ptr()) {
+			return ((LeftValue*) object)->compile_l(c);
 		} else {
-			return object->compile(c);
-		}}();
+			return c.insn_load(((LeftValue*) object)->compile_l(c));
+		}
+	} else {
+		return object->compile(c);
 	}
 }
 
 Compiler::value Call::compile_call(Compiler& c, const CallableVersion* version, std::vector<Compiler::value> args, bool no_return) const {
 	// std::cout << "Call::compile_call(" << args << ")" << std::endl;
-	// Add the object if it's a method call
-	if (object) {
-		args.insert(args.begin(), compiled_object);
-	}
 	// Do the call
 	auto r = version->compile_call(c, args, no_return);
 	if (object) {
