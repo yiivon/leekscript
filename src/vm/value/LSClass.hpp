@@ -41,7 +41,7 @@ public:
 	std::map<std::string, field> static_fields;
 	std::map<std::string, Call> methods;
 	std::map<std::string, std::vector<CallableVersion>> operators;
-	std::map<std::string, Call*> operators_callables;
+	std::map<std::string, Callable*> operators_callables;
 
 	static LSValue* clazz;
 	static LSClass* constructor(char* name);
@@ -57,7 +57,7 @@ public:
 	void addOperator(std::string name, std::initializer_list<CallableVersion>, std::vector<Type> templates = {});
 
 	LSFunction* getDefaultMethod(const std::string& name);
-	const Call* getOperator(std::string& name);
+	const Callable* getOperator(std::string& name);
 
 	bool to_bool() const override;
 	virtual bool ls_not() const override;

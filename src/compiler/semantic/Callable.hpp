@@ -57,7 +57,7 @@ public:
 
 class Callable {
 public:
-	std::vector<CallableVersion> versions;
+	std::vector<const CallableVersion*> versions;
 
 	Callable() {}
 	Callable(std::initializer_list<CallableVersion> versions) : versions(versions) {}

@@ -169,10 +169,10 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 
 	if (v1_type.class_name().size()) {
 		auto object_class = (LSClass*) analyzer->vm->internal_vars.at(v1_type.class_name())->lsvalue;
-		auto call = object_class->getOperator(op->character);
+		auto callable = object_class->getOperator(op->character);
 
 		// std::cout << "Callable : " << callable << std::endl;
-		callable_version = call->resolve(analyzer, {v1_type, v2_type});
+		callable_version = callable->resolve(analyzer, {v1_type, v2_type});
 		if (callable_version) {
 			// std::cout << "Callable version : " << callable_version << std::endl;
 			throws |= callable_version->flags & Module::THROWS;

@@ -84,7 +84,7 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	}
 }
 
-const Call* LSClass::getOperator(std::string& name) {
+const Callable* LSClass::getOperator(std::string& name) {
 	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
 	if (name == "is not") name = "!=";
 	else if (name == "÷") name = "/";
@@ -93,24 +93,24 @@ const Call* LSClass::getOperator(std::string& name) {
 	if (o != operators_callables.end()) {
 		return o->second;
 	}
-	auto call = new Call();
+	auto callable = new Callable();
 	auto i = operators.find(name);
 	if (i != operators.end()) {
 		for (const auto& impl : i->second) {
-			call->add_version(&impl);
+			callable->add_version(&impl);
 		}
 	}
 	if (this->name != "Value") {
 		auto i = LSValue::ValueClass->operators.find(name);
 		if (i != LSValue::ValueClass->operators.end()) {
 			for (const auto& impl : i->second) {
-				call->add_version(&impl);
+				callable->add_version(&impl);
 			}
 		}
 	}
-	operators_callables.insert({ name, call });
+	operators_callables.insert({ name, callable });
 	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
-	return call;
+	return callable;
 }
 
 bool LSClass::to_bool() const {
