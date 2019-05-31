@@ -116,10 +116,7 @@ Call* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 	}
 	auto i = value_class->methods.find(field->content);
 	if (i != value_class->methods.end() and i->second.is_compatible(argument_count + 1)) {
-		auto call = new Call(&i->second);
-		call->object = object;
-		call->callable = &i->second;
-		return call;
+		return new Call(&i->second, object);
 	}
 	if (not object->type.is_class()) {
 		auto call = new Call();
