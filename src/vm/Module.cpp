@@ -7,6 +7,7 @@
 #include "value/LSClass.hpp"
 #include "value/LSNumber.hpp"
 #include "../compiler/semantic/Callable.hpp"
+#include "../compiler/semantic/CallableVersion.hpp"
 
 namespace ls {
 

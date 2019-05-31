@@ -6,6 +6,7 @@
 #include "../../type/Function_type.hpp"
 #include "../../compiler/semantic/Callable.hpp"
 #include "../../vm/VM.hpp"
+#include "../../compiler/semantic/CallableVersion.hpp"
 
 namespace ls {
 

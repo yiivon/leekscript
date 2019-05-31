@@ -28,6 +28,7 @@
 #include "standard/IntervalSTD.hpp"
 #include "standard/JsonSTD.hpp"
 #include "../compiler/semantic/Callable.hpp"
+#include "../compiler/semantic/CallableVersion.hpp"
 
 namespace ls {
 

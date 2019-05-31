@@ -5,6 +5,7 @@
 #include "../semantic/SemanticAnalyzer.hpp"
 #include "../../type/Function_type.hpp"
 #include "../value/LeftValue.hpp"
+#include "CallableVersion.hpp"
 
 namespace ls {
 

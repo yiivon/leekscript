@@ -2,6 +2,7 @@
 #include "Value.hpp"
 #include "../../type/Type.hpp"
 #include "../semantic/Callable.hpp"
+#include "../semantic/CallableVersion.hpp"
 
 namespace ls {
 

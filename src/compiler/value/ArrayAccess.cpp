@@ -7,6 +7,7 @@
 #include "../semantic/SemanticAnalyzer.hpp"
 #include "../error/Error.hpp"
 #include "../semantic/Callable.hpp"
+#include "../semantic/CallableVersion.hpp"
 
 namespace ls {
 

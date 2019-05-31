@@ -7,6 +7,7 @@
 #include "value/LSClass.hpp"
 #include "../compiler/Compiler.hpp"
 #include "TypeMutator.hpp"
+#include "../compiler/semantic/CallableVersion.hpp"
 
 namespace ls {
 
