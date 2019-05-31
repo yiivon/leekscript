@@ -14,7 +14,6 @@
 #include "../compiler/Compiler.hpp"
 #include "Exception.hpp"
 #include "OutputStream.hpp"
-#include "../compiler/semantic/Callable.hpp"
 
 #define OPERATION_LIMIT 10000000
 
