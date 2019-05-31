@@ -63,7 +63,6 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 		return { std::numeric_limits<int>::max(), nullptr };
 	}
 	int d = 0;
-	bool ok = true;
 	if (!unknown) {
 		for (size_t i = 0; i < new_version->type.arguments().size(); ++i) {
 			auto type = [&]() { if (i < arguments.size()) {
@@ -75,11 +74,10 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 			}}();
 			auto di = type.distance(new_version->type.arguments().at(i));
 			// std::cout << type << " distance " << version_type.arguments().at(i) << " " << di << std::endl;
-			if (di < 0) { ok = false; break; };
+			if (di < 0) return { std::numeric_limits<int>::max(), nullptr };
 			d += di;
 		}
 	}
-	if (!ok) return { std::numeric_limits<int>::max(), nullptr };
 	return { d, new_version };
 }
 
