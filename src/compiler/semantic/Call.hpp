@@ -19,6 +19,7 @@ public:
 
 	Call();
 	Call(Callable* callable) : callable(callable) {}
+	Call(Callable* callable, Value* object) : callable(callable), object(object) {}
 	Call(std::vector<const CallableVersion*> versions);
 	Call(std::initializer_list<const CallableVersion*> versions);
 	void add_version(const CallableVersion* v);

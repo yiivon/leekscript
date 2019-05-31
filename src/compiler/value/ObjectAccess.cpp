@@ -111,10 +111,7 @@ Call* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 	if (object_class) {
 		auto i = object_class->methods.find(field->content);
 		if (i != object_class->methods.end()) {
-			auto call = new Call();
-			call->object = object;
-			call->callable = &i->second;
-			return call;
+			return new Call(&i->second, object);
 		}
 	}
 	auto i = value_class->methods.find(field->content);
