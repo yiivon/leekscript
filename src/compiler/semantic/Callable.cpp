@@ -15,7 +15,6 @@ const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector
 	int best_score = std::numeric_limits<int>::max();
 	for (auto& version : versions) {
 		auto result = version->get_score(analyzer, arguments);
-		// std::cout << implementation.type.arguments() << " distance " << d << std::endl;
 		if (best == nullptr or result.first <= best_score) {
 			best_score = result.first;
 			best = result.second;
