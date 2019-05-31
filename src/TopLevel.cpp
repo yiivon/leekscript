@@ -18,6 +18,7 @@
 #include "util/Util.hpp"
 #include "../test/Test.hpp"
 #include "vm/Context.hpp"
+#include "compiler/resolver/File.hpp"
 
 void print_errors(ls::VM::Result& result, std::ostream& os, bool json);
 void print_result(ls::VM::Result& result, const std::string& output, bool json, bool display_time, bool ops);
@@ -162,7 +163,7 @@ void print_errors(ls::VM::Result& result, std::ostream& os, bool json) {
 	for (const auto& e : result.errors) {
 		if (!first) std::cout << std::endl;
 		os << C_RED << "❌ " << END_COLOR << e.message() << std::endl;
-		os << "    " << BOLD << "> " << e.location.file << ":" << e.location.start.line << END_COLOR << ": " << e.underline_code << std::endl;
+		os << "    " << BOLD << "> " << e.location.file->path << ":" << e.location.start.line << END_COLOR << ": " << e.underline_code << std::endl;
 		first = false;
 	}
 	if (result.exception.type != ls::vm::Exception::NO_EXCEPTION) {
