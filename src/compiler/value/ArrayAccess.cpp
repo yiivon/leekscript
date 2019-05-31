@@ -50,16 +50,14 @@ Location ArrayAccess::location() const {
 	return {close_bracket->location.file, array->location().start, close_bracket->location.end};
 }
 
-Call* ArrayAccess::get_callable(SemanticAnalyzer*, int argument_count) const {
-	auto call = new Call();
+Call ArrayAccess::get_callable(SemanticAnalyzer*, int argument_count) const {
 	// std::cout << "Array access get callable " << type << std::endl;
 	if (type.is_function()) {
-		call->add_version(new CallableVersion { "<aa>", type, this });
+		return { new Callable { new CallableVersion { "<aa>", type, this } } };
 	} else {
 		// The array is not homogeneous, so the function inside an array always returns any
-		call->add_version(new CallableVersion { "<aa>", Type::fun(Type::any(), {Type::any()}), this, {}, {}, false, true });
+		return { new Callable { new CallableVersion { "<aa>", Type::fun(Type::any(), {Type::any()}), this, {}, {}, false, true } } };
 	}
-	return call;
 }
 
 void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {

@@ -40,7 +40,7 @@ Location VariableValue::location() const {
 	return token->location;
 }
 
-Call* VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count) const {
+Call VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count) const {
 	if (name == "~") {
 		auto T = Type::template_("T");
 		auto R = Type::template_("R");
@@ -48,88 +48,87 @@ Call* VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count
 		auto fun = [&](Compiler& c, std::vector<Compiler::value> args, bool) {
 			return c.insn_call(args[1].t.return_type(), {args[0]}, args[1]);
 		};
-		return new Call { new CallableVersion { name, type, fun, {}, {R, T} } };
+		return { new CallableVersion { name, type, fun, {}, {R, T} } };
 	}
 	if (name == "Number") {
-		auto call = new Call();
-		call->add_version(new CallableVersion { "Number", Type::fun(Type::integer(), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
-			return c.new_integer(0);
-		} });
-		call->add_version(new CallableVersion { "Number", Type::fun(Type::real(), {Type::real()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
-			return c.to_real(args[0]);
-		} });
-		call->add_version(new CallableVersion { "Number", Type::fun(Type::tmp_mpz_ptr(), {Type::mpz_ptr()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
-			return args[0];
-		} });
-		return call;
+		return {
+			new CallableVersion { "Number", Type::fun(Type::integer(), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
+				return c.new_integer(0);
+			} },
+			new CallableVersion { "Number", Type::fun(Type::real(), {Type::real()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
+				return c.to_real(args[0]);
+			} },
+			new CallableVersion { "Number", Type::fun(Type::tmp_mpz_ptr(), {Type::mpz_ptr()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
+				return args[0];
+			} }
+		};
 	}
 	if (name == "Boolean") {
 		auto type = Type::fun(Type::boolean(), {});
-		return new Call({ new CallableVersion { "Boolean", type, [&](Compiler& c, std::vector<Compiler::value>, bool) {
+		return { new CallableVersion { "Boolean", type, [&](Compiler& c, std::vector<Compiler::value>, bool) {
 			return c.new_bool(false);
-		} } });
+		} } };
 	}
 	if (name == "String") {
-		auto call = new Call();
-		call->add_version(new CallableVersion { "String.new", Type::fun(Type::tmp_string(), {}) });
-		call->add_version(new CallableVersion { "String", Type::fun(Type::tmp_string(), {Type::string()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
-			return args[0];
-		} });
-		return call;
+		return {
+			new CallableVersion { "String.new", Type::fun(Type::tmp_string(), {}) },
+			new CallableVersion { "String", Type::fun(Type::tmp_string(), {Type::string()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
+				return args[0];
+			} }
+		};
 	}
 	if (name == "Array") {
-		return new Call { new CallableVersion { "Array", Type::fun(Type::array(Type::any()), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
+		return { new CallableVersion { "Array", Type::fun(Type::array(Type::any()), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
 			return c.new_array({}, {});
 		} } };
 	}
 	if (name == "Object") {
-		return new Call { new CallableVersion { "Object", Type::fun(Type::tmp_object(), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
+		return { new CallableVersion { "Object", Type::fun(Type::tmp_object(), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
 			return c.new_object();
 		} } };
 	}
 	if (name == "Set") {
-		return new Call { new CallableVersion { "Set.new", Type::fun(Type::tmp_set(Type::any()), {}) } };
+		return { new CallableVersion { "Set.new", Type::fun(Type::tmp_set(Type::any()), {}) } };
 	}
-	if (type == Type::clazz()) {
+	if (type.is_class()) {
 		auto type = Type::fun(Type::any(), {Type::clazz()});
-		auto call = new Call();
-		call->object = (Value*) this;
-		call->add_version({ new CallableVersion { name, type, [&](Compiler& c, std::vector<Compiler::value> args, bool) {
-			return c.new_object_class(args[0]);
-		}, {}, {} } });
-		return call;
+		return { new Callable {
+			{ new CallableVersion { name, type, [&](Compiler& c, std::vector<Compiler::value> args, bool) {
+				return c.new_object_class(args[0]);
+			} } }
+		}, (Value*) this };
 	}
 	if (var) {
-		if (var->call) return var->call;
+		if (var->call.callable) return var->call;
 		if (var->value) {
-			Call* call = new Call();
+			Call call { new Callable() };
 			auto c = var->value->get_callable(analyzer, argument_count);
-			for (const auto& v : c->callable->versions) {
+			for (const auto& v : c.callable->versions) {
 				auto nv = new CallableVersion { *v };
 				nv->value = this;
-				call->add_version(nv);
+				call.add_version(nv);
 			}
 			return call;
 		}
 	} else {
-		auto call = new Call();
+		Call call { new Callable() };
 		for (const auto& clazz : analyzer->vm->internal_vars) {
 			if (clazz.second->type().is_class()) {
 				const auto& cl = (LSClass*) clazz.second->lsvalue;
 				for (auto& m : cl->methods) {
 					if (m.first == name) {
 						for (auto& i : m.second.versions) {
-							call->add_version(i);
+							call.add_version(i);
 						}
 					}
 				}
 			}
 		}
-		if (call->callable->versions.size()) {
+		if (call.callable->versions.size()) {
 			return call;
 		}
 	}
-	return new Call();
+	return {};
 }
 
 void VariableValue::analyze(SemanticAnalyzer* analyzer) {
@@ -262,7 +261,7 @@ Type VariableValue::version_type(std::vector<Type> version) const {
 		return var->value->version_type(version);
 	}
 	if (var) {
-		for (const auto& v : var->call->callable->versions) {
+		for (const auto& v : var->call.callable->versions) {
 			if (v->type.arguments() == version) {
 				return v->type;
 			}

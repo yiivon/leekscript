@@ -8,7 +8,6 @@
 
 namespace ls {
 
-Call::Call() : callable(new Callable()) {}
 Call::Call(std::vector<const CallableVersion*> versions) : callable(new Callable(versions)) {}
 Call::Call(std::initializer_list<const CallableVersion*> versions) : callable(new Callable(versions)) {}
 

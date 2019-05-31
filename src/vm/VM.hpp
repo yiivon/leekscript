@@ -14,6 +14,7 @@
 #include "../compiler/Compiler.hpp"
 #include "Exception.hpp"
 #include "OutputStream.hpp"
+#include "../compiler/semantic/Call.hpp"
 
 #define OPERATION_LIMIT 10000000
 
@@ -88,7 +89,7 @@ public:
 
 	/** Add a module **/
 	void add_module(Module* m);
-	void add_internal_var(std::string name, Type type, LSValue* value, Call* callable = nullptr);
+	void add_internal_var(std::string name, Type type, LSValue* value, Call call = {});
 	void add_internal_var(std::string name, Type type, Function* function);
 	
 	void* resolve_symbol(std::string name);

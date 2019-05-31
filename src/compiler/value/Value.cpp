@@ -12,8 +12,9 @@ Value::Value() {
 
 Value::~Value() {}
 
-Call* Value::get_callable(SemanticAnalyzer*, int argument_count) const {
-	return new Call { new CallableVersion { "?", type, this, {}, {}, false, true } };
+Call Value::get_callable(SemanticAnalyzer*, int argument_count) const {
+	// TODO empty call ?
+	return { new CallableVersion { "?", type, this, {}, {}, false, true } };
 }
 
 void Value::analyze(SemanticAnalyzer*) {}

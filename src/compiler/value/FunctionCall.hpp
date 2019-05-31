@@ -29,7 +29,7 @@ public:
 	Type function_type;
 	std::vector<Type> arg_types;
 	std::string function_name;
-	const Call* call;
+	Call call;
 	const CallableVersion* callable_version;
 
 	FunctionCall(std::shared_ptr<Token> t);
@@ -38,7 +38,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual Call* get_callable(SemanticAnalyzer*, int argument_count) const override;
+	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const override;
 	virtual void analyze(SemanticAnalyzer*) override;
 	bool will_take(SemanticAnalyzer*, const std::vector<Type>& args, int level);
 	void set_version(const std::vector<Type>& args, int level) override;

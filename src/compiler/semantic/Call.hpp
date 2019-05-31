@@ -16,7 +16,7 @@ public:
 	Callable* callable = nullptr;
 	Value* object = nullptr;
 
-	Call();
+	Call() {}
 	Call(Callable* callable) : callable(callable) {}
 	Call(Callable* callable, Value* object) : callable(callable), object(object) {}
 	Call(std::vector<const CallableVersion*> versions);
