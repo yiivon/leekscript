@@ -39,7 +39,7 @@ public:
 
 	void set_version(const std::vector<Type>& args, int level) override;
 	bool will_take(SemanticAnalyzer*, const std::vector<Type>&, int level) override;
-	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const;
+	virtual Call* get_callable(SemanticAnalyzer*, int argument_count) const;
 	virtual Type version_type(std::vector<Type>) const override;
 	virtual void analyze(SemanticAnalyzer*) override;
 

@@ -58,14 +58,14 @@ Location FunctionCall::location() const {
 	return {closing_parenthesis->location.file, function->location().start, closing_parenthesis->location.end};
 }
 
-Call FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
-	Call call;
+Call* FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
+	auto call = new Call();
 	std::vector<Type> arguments_types;
 	for (const auto& argument : arguments) {
 		arguments_types.push_back(argument->type);
 	}
 	auto type = function->version_type(arguments_types);
-	call.add_version(new CallableVersion { "<fc>", type.return_type(), this, {}, {}, nullptr });
+	call->add_version(new CallableVersion { "<fc>", type.return_type(), this, {}, {}, nullptr });
 	return call;
 }
 
@@ -99,7 +99,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 	// std::cout << "Callable: " << callable << std::endl;
-	callable_version = call.resolve(analyzer, arguments_types);
+	callable_version = call->resolve(analyzer, arguments_types);
 	if (callable_version) {
 		// std::cout << "Version: " << callable_version << std::endl;
 		type = callable_version->type.return_type();

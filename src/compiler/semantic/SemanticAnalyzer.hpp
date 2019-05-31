@@ -22,6 +22,7 @@ class SemanticAnalyzer;
 class Token;
 class VariableDeclaration;
 class Callable;
+class Call;
 
 enum class VarScope {
 	INTERNAL, LOCAL, PARAMETER, CAPTURE
@@ -41,9 +42,9 @@ public:
 	std::vector<Type> version;
 	bool has_version = false;
 	LSValue* lsvalue = nullptr;
-	std::vector<CallableVersion> callable;
+	Call* callable;
 
-	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue, std::vector<CallableVersion> callable = {}) :
+	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue, Call* callable = {}) :
 		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), initial_type(type), lsvalue(lsvalue), callable(callable) {}
 
 	// TODO remove ?

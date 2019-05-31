@@ -63,8 +63,8 @@ VM::VM(bool v1) : compiler(this), legacy(v1) {
 	add_module(new JsonSTD());
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
-	add_internal_var("ptr", ptr_type, nullptr, {
-		{"Value.ptr", ptr_type }
+	add_internal_var("ptr", ptr_type, nullptr, new Call {
+		new CallableVersion {"Value.ptr", ptr_type }
 	});
 }
 
@@ -191,7 +191,7 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 	return result;
 }
 
-void VM::add_internal_var(std::string name, Type type, LSValue* value, std::vector<CallableVersion> callable) {
+void VM::add_internal_var(std::string name, Type type, LSValue* value, Call* callable) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
 	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr, value, callable) });
 	system_vars.push_back(value);

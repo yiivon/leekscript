@@ -46,7 +46,7 @@ public:
 	virtual void must_return_any(SemanticAnalyzer*);
 	virtual void set_version(const std::vector<Type>&, int level);
 	virtual Type version_type(std::vector<Type>) const;
-	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const;
+	virtual Call* get_callable(SemanticAnalyzer*, int argument_count) const;
 	virtual void analyze(SemanticAnalyzer*);
 
 	virtual Compiler::value compile(Compiler&) const = 0;
