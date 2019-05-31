@@ -42,13 +42,13 @@ public:
 	std::vector<Type> version;
 	bool has_version = false;
 	LSValue* lsvalue = nullptr;
-	Call* callable;
+	Call* call;
 
-	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue, Call* callable = {}) :
-		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), initial_type(type), lsvalue(lsvalue), callable(callable) {}
+	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue, Call* call = {}) :
+		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), initial_type(type), lsvalue(lsvalue), call(call) {}
 
 	// TODO remove ?
-	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), initial_type(o.type()), lsvalue(o.lsvalue), callable(o.callable) {}
+	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), initial_type(o.type()), lsvalue(o.lsvalue), call(o.call) {}
 
 	Type type() const;
 	void must_be_any(SemanticAnalyzer*);
