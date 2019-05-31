@@ -106,7 +106,7 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 	return { d, new_version };
 }
 
-bool Callable::is_compatible(std::vector<const CallableVersion*> versions, int argument_count) {
+bool Callable::is_compatible(int argument_count) {
 	for (const auto& version : versions) {
 		if (version->type.arguments().size() == (size_t) argument_count) return true;
 	}

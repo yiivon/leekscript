@@ -98,12 +98,12 @@ Call* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 		auto std_class = (LSClass*) analyzer->vm->internal_vars.at(vv->name)->lsvalue;
 		// <class>.<method>
 		auto i = std_class->methods.find(field->content);
-		if (i != std_class->methods.end() and Callable::is_compatible(i->second.versions, argument_count)) {
+		if (i != std_class->methods.end() and i->second.is_compatible(argument_count)) {
 			return new Call { &i->second };
 		}
 		// Value.<method>
 		i = value_class->methods.find(field->content);
-		if (i != value_class->methods.end() and Callable::is_compatible(i->second.versions, argument_count)) {
+		if (i != value_class->methods.end() and i->second.is_compatible(argument_count)) {
 			return new Call { &i->second };
 		}
 	}
@@ -115,7 +115,7 @@ Call* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 		}
 	}
 	auto i = value_class->methods.find(field->content);
-	if (i != value_class->methods.end() and Callable::is_compatible(i->second.versions, argument_count + 1)) {
+	if (i != value_class->methods.end() and i->second.is_compatible(argument_count + 1)) {
 		auto call = new Call(&i->second);
 		call->object = object;
 		call->callable = &i->second;
