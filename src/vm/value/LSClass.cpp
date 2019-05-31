@@ -34,11 +34,11 @@ LSClass::~LSClass() {
 }
 
 void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
-	Call call;
+	Callable callable;
 	for (const auto& v : impl) {
-		call.add_version(new CallableVersion { v });
+		callable.add_version(new CallableVersion { v });
 	}
-	methods.insert({name, call});
+	methods.insert({name, callable});
 	int i = 0;
 	for (auto& m : methods.at(name).versions) {
 		((CallableVersion*) m)->name = this->name + "." + name + "." + std::to_string(i++);

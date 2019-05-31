@@ -65,7 +65,7 @@ Call* FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
 		arguments_types.push_back(argument->type);
 	}
 	auto type = function->version_type(arguments_types);
-	call->add_version(new CallableVersion { "<fc>", type.return_type(), this, {}, {}, nullptr });
+	call->add_version(new CallableVersion { "<fc>", type.return_type(), this, {}, {} });
 	return call;
 }
 
@@ -94,19 +94,18 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "FC function " << function->version_type(arguments_types) << std::endl;
 
 	// Retrieve the callable version
-	auto call = function->get_callable(analyzer, arguments_types.size());
+	call = function->get_callable(analyzer, arguments_types.size());
 	if (not function->type.can_be_callable()) {
 		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
-	// std::cout << "Callable: " << callable << std::endl;
 	callable_version = call->resolve(analyzer, arguments_types);
 	if (callable_version) {
 		// std::cout << "Version: " << callable_version << std::endl;
 		type = callable_version->type.return_type();
 		throws |= callable_version->flags & Module::THROWS;
-		callable_version->apply_mutators(analyzer, arguments);
+		call->apply_mutators(analyzer, callable_version, arguments);
 		
-		int offset = callable_version->object ? 1 : 0;
+		int offset = call->object ? 1 : 0;
 		for (size_t a = 0; a < arguments.size(); ++a) {
 			auto argument_type = callable_version->type.argument(a + offset);
 			if (argument_type.is_function()) {
@@ -238,14 +237,14 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	c.mark_offset(location().start.line);
 
 	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
-	assert(callable_version);
+	assert(call && callable_version);
 
 	// Pre-compile the call (compile the potential object first)
-	callable_version->pre_compile_call(c);
+	call->pre_compile_call(c);
 
 	std::vector<LSValueType> types;
 	std::vector<Compiler::value> args;
-	int offset = callable_version->object ? 1 : 0;
+	int offset = call->object ? 1 : 0;
 	auto fun = dynamic_cast<const Function_type*>(callable_version->type._types[0].get());
 	auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
 
@@ -264,7 +263,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 	// Check arguments
 	c.insn_check_args(args, types);
-	auto r = callable_version->compile_call(c, args, false);
+	auto r = call->compile_call(c, callable_version, args, false);
 	c.inc_ops(1);
 	if (r.t.is_mpz()) {
 		auto r2 = c.create_entry("m", r.t);

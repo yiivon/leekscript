@@ -19,7 +19,7 @@ public:
 	std::string object_class_name;
 	std::string class_name;
 	bool class_method = false;
-	Call* callable = nullptr;
+	Call* call = nullptr;
 	bool class_field = false;
 	void* attr_addr = nullptr;
 	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;

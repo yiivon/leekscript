@@ -13,7 +13,7 @@ class CallableVersion {
 public:
 	std::string name;
 	Type type;
-	Value* object = nullptr;
+	bool object = false;
 	bool symbol = false;
 	const Value* value = nullptr;
 	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
@@ -25,17 +25,16 @@ public:
 	bool v2_addr = false;
 	int flags = 0;
 	void* addr = nullptr;
-	Compiler::value compiled_object;
 
-	CallableVersion(std::string name, Type type, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
+	CallableVersion(std::string name, Type type, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, bool object = false, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
 		: name(name), type(type), object(object), symbol(true), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {
 			assert(name.find(".") != std::string::npos);
 		}
-	CallableVersion(std::string name, Type type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
+	CallableVersion(std::string name, Type type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, bool object = false, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
 		: name(name), type(type), object(object), func(func), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
-	CallableVersion(std::string name, Type type, const Value* value, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
+	CallableVersion(std::string name, Type type, const Value* value, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, bool object = false, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
 		: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
-	CallableVersion(std::string name, Type type, Function::Version* f, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, Value* object = nullptr, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
+	CallableVersion(std::string name, Type type, Function::Version* f, std::vector<TypeMutator*> mutators = {}, std::vector<Type> templates = {}, bool object = false, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0)
 		: name(name), type(type), object(object), user_fun(f), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
 	
 	CallableVersion(Type return_type, std::initializer_list<Type> arguments, void* addr, int flags = 0, std::vector<TypeMutator*> mutators = {})
@@ -48,10 +47,10 @@ public:
 	CallableVersion(Type v1_type, Type v2_type, Type return_type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags = 0, std::vector<TypeMutator*> mutators = {}, bool v1_addr = false, bool v2_addr = false)
 		: type(Type::fun(return_type, {v1_type, v2_type})), func(func), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
 
+	std::pair<int, const CallableVersion*> get_score(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 	void apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments) const;
 	void resolve_templates(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 
-	void pre_compile_call(Compiler& c) const;
 	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args, bool no_return) const;
 };
 
@@ -60,8 +59,12 @@ public:
 	std::vector<const CallableVersion*> versions;
 
 	Callable() {}
-	Callable(std::initializer_list<CallableVersion> versions) : versions(versions) {}
+	Callable(std::vector<const CallableVersion*> versions) : versions(versions) {}
+	Callable(std::initializer_list<const CallableVersion*> versions) : versions(versions) {}
+
+	const CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
 	static bool is_compatible(std::vector<const CallableVersion*>, int argument_count);
+	void add_version(const CallableVersion* version);
 };
 
 }

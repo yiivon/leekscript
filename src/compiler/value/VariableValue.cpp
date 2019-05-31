@@ -48,65 +48,65 @@ Call* VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count
 		auto fun = [&](Compiler& c, std::vector<Compiler::value> args, bool) {
 			return c.insn_call(args[1].t.return_type(), {args[0]}, args[1]);
 		};
-		return new Call { new CallableVersion { name, type, fun, {}, {R, T}, nullptr } };
+		return new Call { new CallableVersion { name, type, fun, {}, {R, T} } };
 	}
 	if (name == "Number") {
 		auto call = new Call();
 		call->add_version(new CallableVersion { "Number", Type::fun(Type::integer(), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
 			return c.new_integer(0);
-		}, {}, {}, nullptr });
+		} });
 		call->add_version(new CallableVersion { "Number", Type::fun(Type::real(), {Type::real()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
 			return c.to_real(args[0]);
-		}, {}, {}, nullptr });
+		} });
 		call->add_version(new CallableVersion { "Number", Type::fun(Type::tmp_mpz_ptr(), {Type::mpz_ptr()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
 			return args[0];
-		}, {}, {}, nullptr });
+		} });
 		return call;
 	}
 	if (name == "Boolean") {
-		auto call = new Call();
 		auto type = Type::fun(Type::boolean(), {});
-		call->add_version(new CallableVersion { "Boolean", type, [&](Compiler& c, std::vector<Compiler::value>, bool) {
-			return c.new_bool(false);	
-		}, {}, {}, nullptr });
-		return call;
+		return new Call({ new CallableVersion { "Boolean", type, [&](Compiler& c, std::vector<Compiler::value>, bool) {
+			return c.new_bool(false);
+		} } });
 	}
 	if (name == "String") {
 		auto call = new Call();
 		call->add_version(new CallableVersion { "String.new", Type::fun(Type::tmp_string(), {}) });
 		call->add_version(new CallableVersion { "String", Type::fun(Type::tmp_string(), {Type::string()}), [&](Compiler& c, std::vector<Compiler::value> args, bool) {
 			return args[0];
-		}, {}, {}, nullptr });
+		} });
 		return call;
 	}
 	if (name == "Array") {
 		return new Call { new CallableVersion { "Array", Type::fun(Type::array(Type::any()), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
 			return c.new_array({}, {});
-		}, {}, {}, nullptr } };
+		} } };
 	}
 	if (name == "Object") {
 		return new Call { new CallableVersion { "Object", Type::fun(Type::tmp_object(), {}), [&](Compiler& c, std::vector<Compiler::value>, bool) {
 			return c.new_object();
-		}, {}, {}, nullptr } };
+		} } };
 	}
 	if (name == "Set") {
 		return new Call { new CallableVersion { "Set.new", Type::fun(Type::tmp_set(Type::any()), {}) } };
 	}
 	if (type == Type::clazz()) {
 		auto type = Type::fun(Type::any(), {Type::clazz()});
-		return new Call { new CallableVersion { name, type, [&](Compiler& c, std::vector<Compiler::value> args, bool) {
+		auto call = new Call();
+		call->object = (Value*) this;
+		call->add_version({ new CallableVersion { name, type, [&](Compiler& c, std::vector<Compiler::value> args, bool) {
 			return c.new_object_class(args[0]);
-		}, {}, {}, (Value*) this } };
+		}, {}, {} } });
+		return call;
 	}
 	if (var) {
-		if (var->callable) return var->callable;
+		if (var->call) return var->call;
 		if (var->value) {
 			Call* call = new Call();
 			auto c = var->value->get_callable(analyzer, argument_count);
-			for (const auto& v : c->versions) {
+			for (const auto& v : c->callable->versions) {
 				auto nv = new CallableVersion { *v };
 				nv->value = this;
-				nv->object = nullptr;
 				call->add_version(nv);
 			}
 			return call;
@@ -125,11 +125,11 @@ Call* VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count
 				}
 			}
 		}
-		if (call->versions.size()) {
+		if (call->callable->versions.size()) {
 			return call;
 		}
 	}
-	return {};
+	return new Call();
 }
 
 void VariableValue::analyze(SemanticAnalyzer* analyzer) {
@@ -262,7 +262,7 @@ Type VariableValue::version_type(std::vector<Type> version) const {
 		return var->value->version_type(version);
 	}
 	if (var) {
-		for (const auto& v : var->callable->versions) {
+		for (const auto& v : var->call->callable->versions) {
 			if (v->type.arguments() == version) {
 				return v->type;
 			}

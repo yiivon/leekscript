@@ -396,10 +396,10 @@ void Function::must_return_any(SemanticAnalyzer*) {
 Call* Function::get_callable(SemanticAnalyzer*, int argument_count) const {
 	auto call = new Call();
 	int flags = default_version->body->throws ? Module::THROWS : 0;
-	call->add_version(new CallableVersion { "<default>", default_version->type, default_version, {}, {}, nullptr, false, false, false, flags });
+	call->add_version(new CallableVersion { "<default>", default_version->type, default_version, {}, {}, false, false, false, false, flags });
 	for (const auto& version : versions) {
 		int flags = version.second->body->throws ? Module::THROWS : 0;
-		call->add_version(new CallableVersion { "<version>", version.second->type, version.second, {}, {}, nullptr, false, false, false, flags });
+		call->add_version(new CallableVersion { "<version>", version.second->type, version.second, {}, {}, false, false, false, false, flags });
 	}
 	return call;
 }

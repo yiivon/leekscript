@@ -29,6 +29,7 @@ public:
 	Type function_type;
 	std::vector<Type> arg_types;
 	std::string function_name;
+	const Call* call;
 	const CallableVersion* callable_version;
 
 	FunctionCall(std::shared_ptr<Token> t);

@@ -52,8 +52,8 @@ void ObjectAccess::set_version(const std::vector<Type>& args, int level) {
 	// std::cout << "ObjectAccess::set_version(" << args << ", " << level << ")" << std::endl;
 	version = args;
 	has_version = true;
-	if (callable) {
-		for (const auto& m : callable->versions) {
+	if (call) {
+		for (const auto& m : call->callable->versions) {
 			auto version = m->type.arguments();
 			if (version == args) {
 				type = Type::fun(m->type.return_type(), args, (const Value*) this);
@@ -64,8 +64,8 @@ void ObjectAccess::set_version(const std::vector<Type>& args, int level) {
 
 Type ObjectAccess::version_type(std::vector<Type> args) const {
 	// std::cout << "ObjectAccess::version_tyoe(" << args << ")" << std::endl;
-	if (callable) {
-		for (const auto& m : callable->versions) {
+	if (call) {
+		for (const auto& m : call->callable->versions) {
 			auto version = m->type.arguments();
 			if (version == args) {
 				return Type::fun(m->type.return_type(), args, (const Value*) this);
@@ -99,12 +99,12 @@ Call* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 		// <class>.<method>
 		auto i = std_class->methods.find(field->content);
 		if (i != std_class->methods.end() and Callable::is_compatible(i->second.versions, argument_count)) {
-			return &i->second;
+			return new Call { &i->second };
 		}
 		// Value.<method>
 		i = value_class->methods.find(field->content);
 		if (i != value_class->methods.end() and Callable::is_compatible(i->second.versions, argument_count)) {
-			return &i->second;
+			return new Call { &i->second };
 		}
 	}
 	// <object>.<method>
@@ -112,30 +112,25 @@ Call* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 		auto i = object_class->methods.find(field->content);
 		if (i != object_class->methods.end()) {
 			auto call = new Call();
-			for (auto v : i->second.versions) {
-				auto nv = new CallableVersion(*v);
-				call->add_version(nv);
-				nv->object = object;
-			}
+			call->object = object;
+			call->callable = &i->second;
 			return call;
 		}
 	}
 	auto i = value_class->methods.find(field->content);
 	if (i != value_class->methods.end() and Callable::is_compatible(i->second.versions, argument_count + 1)) {
-		auto call = new Call();
-		for (auto v : i->second.versions) {
-			auto nv = new CallableVersion(*v);
-			call->add_version(nv);
-			nv->object = object;
-		}
+		auto call = new Call(&i->second);
+		call->object = object;
+		call->callable = &i->second;
 		return call;
 	}
 	if (not object->type.is_class()) {
 		auto call = new Call();
+		call->object = object;
 		std::ostringstream oss;
 		oss << object << "." << field->content;
 		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
-		call->add_version(new CallableVersion { oss.str(), type, this, {}, {}, object, true });
+		call->add_version(new CallableVersion { oss.str(), type, this, {}, {}, true, true });
 		return call;
 	}
 	return new Call();
@@ -174,7 +169,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 			type = Type::fun(method.versions[0]->type.return_type(), method.versions[0]->type.arguments(), (ObjectAccess*) this);
 			default_version_fun = std_class->name + "." + field->content;
 			class_method = true;
-			callable = &method;
+			call = new Call { &method };
 			found = true;
 		}
 	}
