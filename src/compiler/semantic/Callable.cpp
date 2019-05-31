@@ -104,9 +104,9 @@ const CallableVersion* Call::resolve(SemanticAnalyzer* analyzer, std::vector<Typ
 	return best;
 }
 
-bool Callable::is_compatible(std::vector<CallableVersion> versions, int argument_count) {
+bool Callable::is_compatible(std::vector<const CallableVersion*> versions, int argument_count) {
 	for (const auto& version : versions) {
-		if (version.type.arguments().size() == (size_t) argument_count) return true;
+		if (version->type.arguments().size() == (size_t) argument_count) return true;
 	}
 	return false;
 }

@@ -118,8 +118,8 @@ Call* VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count
 				const auto& cl = (LSClass*) clazz.second->lsvalue;
 				for (auto& m : cl->methods) {
 					if (m.first == name) {
-						for (auto& i : m.second) {
-							call->add_version(&i);
+						for (auto& i : m.second.versions) {
+							call->add_version(i);
 						}
 					}
 				}
@@ -171,10 +171,10 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 				const auto& cl = (LSClass*) clazz.second->lsvalue;
 				for (const auto& m : cl->methods) {
 					if (m.first == name) {
-						type = m.second.at(0).type;
+						type = m.second.versions.at(0)->type;
 						found = true;
-						for (const auto& i : m.second) {
-							versions.insert({i.type.arguments(), clazz.first + "." + name});
+						for (const auto& i : m.second.versions) {
+							versions.insert({i->type.arguments(), clazz.first + "." + name});
 						}
 						class_method = true;
 						break;

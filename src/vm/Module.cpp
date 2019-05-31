@@ -112,7 +112,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";
-		impl[0].type.toJson(os);
+		impl.versions[0]->type.toJson(os);
 
 		if (translation_map.find(m.first) != translation_map.end()) {
 			Json json = translation_map[m.first];
@@ -132,7 +132,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";
-		impl[0].type.toJson(os);
+		impl.versions[0]->type.toJson(os);
 
 		if (translation_map.find(m.first) != translation_map.end()) {
 			Json json = translation_map[m.first];

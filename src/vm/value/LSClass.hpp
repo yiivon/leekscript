@@ -39,7 +39,7 @@ public:
 	std::string name;
 	std::map<std::string, field> fields;
 	std::map<std::string, field> static_fields;
-	std::map<std::string, std::vector<CallableVersion>> methods;
+	std::map<std::string, Call> methods;
 	std::map<std::string, std::vector<CallableVersion>> operators;
 	std::map<std::string, Call*> operators_callables;
 

@@ -61,7 +61,7 @@ public:
 
 	Callable() {}
 	Callable(std::initializer_list<CallableVersion> versions) : versions(versions) {}
-	static bool is_compatible(std::vector<CallableVersion>, int argument_count);
+	static bool is_compatible(std::vector<const CallableVersion*>, int argument_count);
 };
 
 }

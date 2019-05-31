@@ -34,12 +34,16 @@ LSClass::~LSClass() {
 }
 
 void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
-	methods.insert({name, impl});
+	Call call;
+	for (const auto& v : impl) {
+		call.add_version(new CallableVersion { v });
+	}
+	methods.insert({name, call});
 	int i = 0;
-	for (auto& m : methods.at(name)) {
-		m.name = this->name + "." + name + "." + std::to_string(i++);
+	for (auto& m : methods.at(name).versions) {
+		((CallableVersion*) m)->name = this->name + "." + name + "." + std::to_string(i++);
 		if (templates.size()) {
-			m.templates = templates;
+			((CallableVersion*) m)->templates = templates;
 		}
 	}
 	// Add first implementation as default method
