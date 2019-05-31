@@ -98,45 +98,46 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	if (not function->type.can_be_callable()) {
 		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
-	callable_version = call->resolve(analyzer, arguments_types);
-	if (callable_version) {
-		// std::cout << "Version: " << callable_version << std::endl;
-		type = callable_version->type.return_type();
-		throws |= callable_version->flags & Module::THROWS;
-		call->apply_mutators(analyzer, callable_version, arguments);
-		
-		int offset = call->object ? 1 : 0;
-		for (size_t a = 0; a < arguments.size(); ++a) {
-			auto argument_type = callable_version->type.argument(a + offset);
-			if (argument_type.is_function()) {
-				arguments.at(a)->will_take(analyzer, argument_type.arguments(), 1);
-				arguments.at(a)->set_version(argument_type.arguments(), 1);
-			}
-		}
-		if (callable_version->value) {
-			function->will_take(analyzer, arguments_types, 1);
-			function->set_version(arguments_types, 1);
-			function_type = function->version_type(arguments_types);
-			auto vv = dynamic_cast<VariableValue*>(function);
-			if (vv and vv->var and vv->var->value and vv->var->name == analyzer->current_function()->name) {
-				type = analyzer->current_function()->getReturnType();
-			} else {
-				type = function_type.return_type();
-			}
-		}
-		if (callable_version->unknown) {
-			for (const auto& arg : arguments) {
-				if (arg->type.is_function()) {
-					arg->must_return_any(analyzer);
+	if (call) {
+		callable_version = call->resolve(analyzer, arguments_types);
+		if (callable_version) {
+			// std::cout << "Version: " << callable_version << std::endl;
+			type = callable_version->type.return_type();
+			throws |= callable_version->flags & Module::THROWS;
+			call->apply_mutators(analyzer, callable_version, arguments);
+			
+			int offset = call->object ? 1 : 0;
+			for (size_t a = 0; a < arguments.size(); ++a) {
+				auto argument_type = callable_version->type.argument(a + offset);
+				if (argument_type.is_function()) {
+					arguments.at(a)->will_take(analyzer, argument_type.arguments(), 1);
+					arguments.at(a)->set_version(argument_type.arguments(), 1);
 				}
 			}
+			if (callable_version->value) {
+				function->will_take(analyzer, arguments_types, 1);
+				function->set_version(arguments_types, 1);
+				function_type = function->version_type(arguments_types);
+				auto vv = dynamic_cast<VariableValue*>(function);
+				if (vv and vv->var and vv->var->value and vv->var->name == analyzer->current_function()->name) {
+					type = analyzer->current_function()->getReturnType();
+				} else {
+					type = function_type.return_type();
+				}
+			}
+			if (callable_version->unknown) {
+				for (const auto& arg : arguments) {
+					if (arg->type.is_function()) {
+						arg->must_return_any(analyzer);
+					}
+				}
+			}
+			if (type.is_mpz()) {
+				type = type == Type::tmp_mpz() ? Type::tmp_mpz_ptr() : Type::mpz_ptr();
+			}
+			return;
 		}
-		if (type.is_mpz()) {
-			type = type == Type::tmp_mpz() ? Type::tmp_mpz_ptr() : Type::mpz_ptr();
-		}
-		return;
 	}
-
 	// Find the function object
 	function_object = dynamic_cast<Function*>(function);
 	if (!function_object) {

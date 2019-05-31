@@ -130,7 +130,7 @@ Call* ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 		call->add_version(new CallableVersion { oss.str(), type, this, {}, {}, true, true });
 		return call;
 	}
-	return new Call();
+	return nullptr;
 }
 
 void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
