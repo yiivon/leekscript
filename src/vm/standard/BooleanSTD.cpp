@@ -5,7 +5,7 @@
 
 namespace ls {
 
-BooleanSTD::BooleanSTD() : Module("Boolean") {
+BooleanSTD::BooleanSTD(VM* vm) : Module(vm, "Boolean") {
 
 	LSBoolean::clazz = clazz;
 

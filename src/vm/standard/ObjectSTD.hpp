@@ -9,7 +9,7 @@ class LSObject;
 
 class ObjectSTD : public Module {
 public:
-	ObjectSTD();
+	ObjectSTD(VM* vm);
 
 	static LSObject* readonly;
 	static LSNumber* readonly_value;

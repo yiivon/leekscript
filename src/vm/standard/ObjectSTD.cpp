@@ -8,7 +8,7 @@ namespace ls {
 LSObject* ObjectSTD::readonly = new LSObject();
 LSNumber* ObjectSTD::readonly_value = LSNumber::get(12);
 
-ObjectSTD::ObjectSTD() : Module("Object") {
+ObjectSTD::ObjectSTD(VM* vm) : Module(vm, "Object") {
 
 	LSObject::object_class = clazz;
 

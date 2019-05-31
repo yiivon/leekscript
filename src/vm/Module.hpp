@@ -14,6 +14,7 @@ namespace ls {
 class LSValue;
 class CallableVersion;
 class Module;
+class VM;
 
 class Template {
 public:
@@ -31,10 +32,11 @@ public:
 	static int THROWS;
 	static int LEGACY;
 
+	VM* vm;
 	std::string name;
 	LSClass* clazz;
 
-	Module(std::string name);
+	Module(VM* vm, std::string name);
 	virtual ~Module();
 
 	void operator_(std::string name, std::initializer_list<CallableVersion>, std::vector<Type> templates = {});
@@ -46,7 +48,7 @@ public:
 
 	void constructor_(std::initializer_list<CallableVersion> methods);
 
-	void method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<Type> templates = {});
+	void method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<Type> templates = {}, bool legacy = false);
 
 	void field(std::string name, Type type);
 	void field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);

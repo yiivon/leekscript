@@ -111,7 +111,7 @@ public:
 		ls::VM::Result result;
 		ls::Context* ctx = nullptr;
 
-		Input(Test* test, const std::string& label, const std::string& file_name, const std::string& code,	bool file = false, bool v1 = false, bool disabled = false) : test(test), label(label), file_name(file_name), code(code), file(file), v1(v1), disabled(disabled) {};
+		Input(Test* test, const std::string& label, const std::string& file_name, const std::string& code, bool file = false, bool v1 = false, bool disabled = false) : test(test), label(label), file_name(file_name), code(code), file(file), v1(v1), disabled(disabled) {};
 		void works();
 		void equals(std::string expected);
 		template <typename T>

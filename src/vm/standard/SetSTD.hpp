@@ -7,7 +7,7 @@ namespace ls {
 
 class SetSTD : public Module {
 public:
-	SetSTD();
+	SetSTD(VM* vm);
 
 	static Compiler::value in_any(Compiler& c, std::vector<Compiler::value> args, bool);
 	static Compiler::value set_add_eq(Compiler& c, std::vector<Compiler::value> args, bool);

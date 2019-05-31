@@ -50,14 +50,14 @@ public:
 
 	virtual ~LSClass();
 
-	void addMethod(std::string, std::initializer_list<CallableVersion>, std::vector<Type> templates = {});
+	void addMethod(std::string, std::initializer_list<CallableVersion>, std::vector<Type> templates = {}, bool legacy = false);
 	void addField(std::string, Type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
 	void addField(std::string, Type, void* fun);
 	void addStaticField(field f);
-	void addOperator(std::string name, std::initializer_list<CallableVersion>, std::vector<Type> templates = {});
+	void addOperator(std::string name, std::initializer_list<CallableVersion>, std::vector<Type> templates = {}, bool legacy = false);
 
 	LSFunction* getDefaultMethod(const std::string& name);
-	const Callable* getOperator(std::string& name);
+	const Callable* getOperator(SemanticAnalyzer* analyzer, std::string& name);
 
 	bool to_bool() const override;
 	virtual bool ls_not() const override;

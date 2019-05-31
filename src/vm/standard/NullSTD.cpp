@@ -3,7 +3,7 @@
 
 namespace ls {
 
-NullSTD::NullSTD() : Module("Null") {
+NullSTD::NullSTD(VM* vm) : Module(vm, "Null") {
 	LSNull::clazz = clazz;
 }
 

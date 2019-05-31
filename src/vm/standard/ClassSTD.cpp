@@ -3,7 +3,7 @@
 
 namespace ls {
 
-ClassSTD::ClassSTD() : Module("Class") {
+ClassSTD::ClassSTD(VM* vm) : Module(vm, "Class") {
 
 	LSClass::clazz = clazz;
 

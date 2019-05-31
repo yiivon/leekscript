@@ -7,6 +7,7 @@
 #include "../../compiler/semantic/Callable.hpp"
 #include "../../vm/VM.hpp"
 #include "../../compiler/semantic/CallableVersion.hpp"
+#include "../../compiler/semantic/SemanticAnalyzer.hpp"
 
 namespace ls {
 
@@ -34,9 +35,10 @@ LSClass::~LSClass() {
 	}
 }
 
-void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
+void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates, bool legacy) {
 	Callable callable;
 	for (const auto& v : impl) {
+		if ((v.flags & Module::LEGACY) and not legacy) continue;
 		callable.add_version(new CallableVersion { v });
 	}
 	methods.insert({name, callable});
@@ -64,8 +66,14 @@ void LSClass::addStaticField(field f) {
 	static_fields.insert({f.name, f});
 }
 
-void LSClass::addOperator(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
-	operators.insert({name, impl});
+void LSClass::addOperator(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates, bool legacy) {
+	std::vector<CallableVersion> versions;
+	for (const auto& v : impl) {
+		if ((v.flags & Module::LEGACY) and not legacy) continue;
+		versions.push_back(v);
+	}
+	if (not versions.size()) return;
+	operators.insert({name, versions});
 	int i = 0;
 	for (auto& m : operators.at(name)) {
 		m.name = this->name + ".operator" + name + "." + std::to_string(i++);
@@ -85,7 +93,7 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	}
 }
 
-const Callable* LSClass::getOperator(std::string& name) {
+const Callable* LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& name) {
 	// std::cout << "getOperator(" << name << ")" << std::endl;
 	if (name == "is not") name = "!=";
 	else if (name == "÷") name = "/";
@@ -102,16 +110,20 @@ const Callable* LSClass::getOperator(std::string& name) {
 		}
 	}
 	if (this->name != "Value") {
-		auto i = LSValue::ValueClass->operators.find(name);
-		if (i != LSValue::ValueClass->operators.end()) {
+		auto value_class = (LSClass*) analyzer->vm->internal_vars["Value"]->lsvalue;
+		auto i = value_class->operators.find(name);
+		if (i != value_class->operators.end()) {
 			for (const auto& impl : i->second) {
 				callable->add_version(&impl);
 			}
 		}
 	}
-	operators_callables.insert({ name, callable });
-	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
-	return callable;
+	if (callable->versions.size()) {
+		operators_callables.insert({ name, callable });
+		// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
+		return callable;
+	}
+	return nullptr;
 }
 
 bool LSClass::to_bool() const {

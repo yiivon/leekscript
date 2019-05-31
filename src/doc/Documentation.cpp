@@ -29,20 +29,20 @@ void Documentation::generate(VM* vm, std::ostream& os, std::string lang) {
 
 	std::vector<Module*> modules;
 
-	modules.push_back(new NullSTD());
-	modules.push_back(new BooleanSTD());
-	modules.push_back(new NumberSTD());
-	modules.push_back(new ArraySTD());
-	modules.push_back(new MapSTD());
-	modules.push_back(new ObjectSTD());
-	modules.push_back(new StringSTD());
-	modules.push_back(new IntervalSTD());
-	modules.push_back(new SetSTD());
+	modules.push_back(new NullSTD(vm));
+	modules.push_back(new BooleanSTD(vm));
+	modules.push_back(new NumberSTD(vm));
+	modules.push_back(new ArraySTD(vm));
+	modules.push_back(new MapSTD(vm));
+	modules.push_back(new ObjectSTD(vm));
+	modules.push_back(new StringSTD(vm));
+	modules.push_back(new IntervalSTD(vm));
+	modules.push_back(new SetSTD(vm));
 	modules.push_back(new SystemSTD(vm));
-	modules.push_back(new ClassSTD());
-	modules.push_back(new FunctionSTD());
-	modules.push_back(new JsonSTD());
-	modules.push_back(new ValueSTD());
+	modules.push_back(new ClassSTD(vm));
+	modules.push_back(new FunctionSTD(vm));
+	modules.push_back(new JsonSTD(vm));
+	modules.push_back(new ValueSTD(vm));
 
 	os << "{";
 

@@ -7,7 +7,7 @@
 
 namespace ls {
 
-SystemSTD::SystemSTD(const VM* vm) : Module("System") {
+SystemSTD::SystemSTD(VM* vm) : Module(vm, "System") {
 
 	static_field("version", Type::integer(), version);
 	static_field("operations", Type::integer(), (void*) &vm->operations);

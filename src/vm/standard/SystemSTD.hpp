@@ -7,7 +7,7 @@ namespace ls {
 
 class SystemSTD : public Module {
 public:
-	SystemSTD(const VM* vm);
+	SystemSTD(VM* vm);
 
 	static Compiler::value version(Compiler& c);
 	static long time();

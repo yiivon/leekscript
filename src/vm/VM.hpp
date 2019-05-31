@@ -78,7 +78,7 @@ public:
 	bool legacy;
 	Context* context = nullptr;
 
-	VM(bool v1 = false);
+	VM(bool legacy = false);
 	virtual ~VM();
 
 	static VM* current();

@@ -36,7 +36,7 @@ const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
 VM* VM::current_vm = nullptr;
 OutputStream* VM::default_output = new OutputStream();
 
-VM::VM(bool v1) : compiler(this), legacy(v1) {
+VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 
 	operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
@@ -48,20 +48,20 @@ VM::VM(bool v1) : compiler(this), legacy(v1) {
 	LSBoolean::set_false_value(this->false_value);
 
 	// Include STD modules
-	add_module(new ValueSTD());
-	add_module(new NullSTD());
-	add_module(new BooleanSTD());
-	add_module(new NumberSTD());
-	add_module(new StringSTD());
-	add_module(new ArraySTD());
-	add_module(new MapSTD());
-	add_module(new SetSTD());
-	add_module(new ObjectSTD());
-	add_module(new FunctionSTD());
-	add_module(new ClassSTD());
+	add_module(new ValueSTD(this));
+	add_module(new NullSTD(this));
+	add_module(new BooleanSTD(this));
+	add_module(new NumberSTD(this));
+	add_module(new StringSTD(this));
+	add_module(new ArraySTD(this));
+	add_module(new MapSTD(this));
+	add_module(new SetSTD(this));
+	add_module(new ObjectSTD(this));
+	add_module(new FunctionSTD(this));
+	add_module(new ClassSTD(this));
 	add_module(new SystemSTD(this));
-	add_module(new IntervalSTD());
-	add_module(new JsonSTD());
+	add_module(new IntervalSTD(this));
+	add_module(new JsonSTD(this));
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
 	add_internal_var("ptr", ptr_type, nullptr, {

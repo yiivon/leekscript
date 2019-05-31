@@ -68,7 +68,7 @@ LSString* iterator_get(unsigned int c, LSString* previous) {
 	return s;
 }
 
-StringSTD::StringSTD() : Module("String") {
+StringSTD::StringSTD(VM* vm) : Module(vm, "String") {
 
 	LSString::string_class = clazz;
 

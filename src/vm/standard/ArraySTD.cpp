@@ -7,7 +7,7 @@
 
 namespace ls {
 
-ArraySTD::ArraySTD() : Module("Array") {
+ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 
 	LSArray<LSValue*>::clazz = clazz;
 	LSArray<int>::clazz = clazz;

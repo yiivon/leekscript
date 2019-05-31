@@ -21,7 +21,7 @@ int mpz_log(__mpz_struct* n) {
 	return 64 * l + r + 1;
 }
 
-NumberSTD::NumberSTD() : Module("Number") {
+NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 
 	LSNumber::clazz = clazz;
 

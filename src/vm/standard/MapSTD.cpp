@@ -38,7 +38,7 @@ std::map<int, int>::iterator end(LSMap<int, int>* map) {
 	return map->end();
 }
 
-MapSTD::MapSTD() : Module("Map") {
+MapSTD::MapSTD(VM* vm) : Module(vm, "Map") {
 
 	LSMap<LSValue*, LSValue*>::clazz = clazz;
 	LSMap<LSValue*, int>::clazz = clazz;

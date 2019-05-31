@@ -8,13 +8,14 @@
 #include "value/LSNumber.hpp"
 #include "../compiler/semantic/Callable.hpp"
 #include "../compiler/semantic/CallableVersion.hpp"
+#include "VM.hpp"
 
 namespace ls {
 
 int Module::THROWS = 1;
 int Module::LEGACY = 2;
 
-Module::Module(std::string name) : name(name) {
+Module::Module(VM* vm, std::string name) : vm(vm), name(name) {
 	clazz = new LSClass(name);
 	if (name != "Value") {
 		clazz->parent = LSValue::ValueClass;
@@ -26,7 +27,7 @@ Module::~Module() {
 }
 
 void Module::operator_(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
-	clazz->addOperator(name, impl, templates);
+	clazz->addOperator(name, impl, templates, vm->legacy);
 }
 void Module::field(std::string name, Type type) {
 	clazz->addField(name, type, nullptr);
@@ -49,14 +50,14 @@ void Module::static_field_fun(std::string name, Type type, void* fun) {
 void Module::constructor_(std::initializer_list<CallableVersion> methods) {
 	clazz->addMethod("new", methods);
 }
-void Module::method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<Type> templates) {
-	clazz->addMethod(name, methods, templates);
+void Module::method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<Type> templates, bool legacy) {
+	clazz->addMethod(name, methods, templates, vm->legacy);
 }
 void Template::operator_(std::string name, std::initializer_list<CallableVersion> impl) {
-	module->clazz->addOperator(name, impl, templates);
+	module->clazz->addOperator(name, impl, templates, module->vm->legacy);
 }
 void Template::method(std::string name, std::initializer_list<CallableVersion> methods) {
-	module->method(name, methods, templates);
+	module->method(name, methods, templates, module->vm->legacy);
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {

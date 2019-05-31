@@ -7,7 +7,7 @@ namespace ls {
 
 class JsonSTD : public Module {
 public:
-	JsonSTD();
+	JsonSTD(VM* vm);
 
 	static Compiler::value encode(Compiler&, std::vector<Compiler::value>, bool);
 	static LSValue* decode(LSString* string);

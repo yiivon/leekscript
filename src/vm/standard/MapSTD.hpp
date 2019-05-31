@@ -7,7 +7,7 @@ namespace ls {
 
 class MapSTD : public Module {
 public:
-	MapSTD();
+	MapSTD(VM* vm);
 
 	static Compiler::value look(Compiler&, std::vector<Compiler::value>, bool);
 

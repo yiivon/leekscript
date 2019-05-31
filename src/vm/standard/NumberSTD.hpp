@@ -17,7 +17,7 @@ public:
 		}
 	};
 
-	NumberSTD();
+	NumberSTD(VM* vm);
 
 	/*
 	 * Operators

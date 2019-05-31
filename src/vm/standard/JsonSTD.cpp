@@ -7,7 +7,7 @@
 
 namespace ls {
 
-JsonSTD::JsonSTD() : Module("Json") {
+JsonSTD::JsonSTD(VM* vm) : Module(vm, "Json") {
 
 	method("encode", {
 		{Type::string(), {Type::const_any()}, encode}

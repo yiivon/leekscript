@@ -9,7 +9,7 @@
 
 namespace ls {
 
-ValueSTD::ValueSTD() : Module("Value") {
+ValueSTD::ValueSTD(VM* vm) : Module(vm, "Value") {
 
 	LSValue::ValueClass = clazz;
 

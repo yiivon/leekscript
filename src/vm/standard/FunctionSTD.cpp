@@ -5,7 +5,7 @@
 
 namespace ls {
 
-FunctionSTD::FunctionSTD() : Module("Function") {
+FunctionSTD::FunctionSTD(VM* vm) : Module(vm, "Function") {
 
 	LSFunction::clazz = clazz;
 

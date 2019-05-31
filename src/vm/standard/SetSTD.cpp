@@ -11,7 +11,7 @@ LSSet<int>::iterator iterator_inc(LSSet<int>::iterator it) {
 	return it;
 }
 
-SetSTD::SetSTD() : Module("Set") {
+SetSTD::SetSTD(VM* vm) : Module(vm, "Set") {
 
 	LSSet<LSValue*>::clazz = clazz;
 	LSSet<int>::clazz = clazz;

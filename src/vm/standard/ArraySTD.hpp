@@ -7,7 +7,7 @@ namespace ls {
 
 class ArraySTD : public Module {
 public:
-	ArraySTD();
+	ArraySTD(VM* vm);
 
 	static Compiler::value in(Compiler& c, std::vector<Compiler::value> args, bool);
 	static Compiler::value op_add(Compiler&, std::vector<Compiler::value>, bool);

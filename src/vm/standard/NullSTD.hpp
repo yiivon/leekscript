@@ -9,7 +9,7 @@ class LSNull;
 
 class NullSTD : public Module {
 public:
-	NullSTD();
+	NullSTD(VM* vm);
 };
 
 }

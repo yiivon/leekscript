@@ -5,7 +5,7 @@
 
 namespace ls {
 
-IntervalSTD::IntervalSTD() : Module("Interval") {
+IntervalSTD::IntervalSTD(VM* vm) : Module(vm, "Interval") {
 
 	LSInterval::clazz = clazz;
 
