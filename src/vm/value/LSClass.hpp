@@ -39,8 +39,8 @@ public:
 	std::string name;
 	std::map<std::string, field> fields;
 	std::map<std::string, field> static_fields;
-	std::map<std::string, Callable> methods;
-	std::map<std::string, Callable> operators;
+	std::map<std::string, std::vector<CallableVersion>> methods;
+	std::map<std::string, std::vector<CallableVersion>> operators;
 
 	static LSValue* clazz;
 	static LSClass* constructor(char* name);
@@ -56,7 +56,7 @@ public:
 	void addOperator(std::string name, std::initializer_list<CallableVersion>, std::vector<Type> templates = {});
 
 	LSFunction* getDefaultMethod(const std::string& name);
-	const Callable* getOperator(SemanticAnalyzer* analyzer, std::string& name, Type& object_type, Type& operand_type);
+	const Call getOperator(SemanticAnalyzer* analyzer, std::string& name, Type& object_type, Type& operand_type);
 
 	bool to_bool() const override;
 	virtual bool ls_not() const override;

@@ -58,15 +58,15 @@ Location FunctionCall::location() const {
 	return {closing_parenthesis->location.file, function->location().start, closing_parenthesis->location.end};
 }
 
-Callable* FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
-	auto callable = new Callable();
+Call FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
+	Call call;
 	std::vector<Type> arguments_types;
 	for (const auto& argument : arguments) {
 		arguments_types.push_back(argument->type);
 	}
 	auto type = function->version_type(arguments_types);
-	callable->add_version({ "<fc>", type.return_type(), this, {}, {}, nullptr });
-	return callable;
+	call.add_version(new CallableVersion { "<fc>", type.return_type(), this, {}, {}, nullptr });
+	return call;
 }
 
 void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
@@ -94,50 +94,48 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "FC function " << function->version_type(arguments_types) << std::endl;
 
 	// Retrieve the callable version
-	callable = function->get_callable(analyzer, arguments_types.size());
+	auto call = function->get_callable(analyzer, arguments_types.size());
 	if (not function->type.can_be_callable()) {
 		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
-	if (callable) {
-		// std::cout << "Callable: " << callable << std::endl;
-		callable_version = callable->resolve(analyzer, arguments_types);
-		if (callable_version) {
-			// std::cout << "Version: " << callable_version << std::endl;
-			type = callable_version->type.return_type();
-			throws |= callable_version->flags & Module::THROWS;
-			callable_version->apply_mutators(analyzer, arguments);
-			
-			int offset = callable_version->object ? 1 : 0;
-			for (size_t a = 0; a < arguments.size(); ++a) {
-				auto argument_type = callable_version->type.argument(a + offset);
-				if (argument_type.is_function()) {
-					arguments.at(a)->will_take(analyzer, argument_type.arguments(), 1);
-					arguments.at(a)->set_version(argument_type.arguments(), 1);
-				}
+	// std::cout << "Callable: " << callable << std::endl;
+	callable_version = call.resolve(analyzer, arguments_types);
+	if (callable_version) {
+		// std::cout << "Version: " << callable_version << std::endl;
+		type = callable_version->type.return_type();
+		throws |= callable_version->flags & Module::THROWS;
+		callable_version->apply_mutators(analyzer, arguments);
+		
+		int offset = callable_version->object ? 1 : 0;
+		for (size_t a = 0; a < arguments.size(); ++a) {
+			auto argument_type = callable_version->type.argument(a + offset);
+			if (argument_type.is_function()) {
+				arguments.at(a)->will_take(analyzer, argument_type.arguments(), 1);
+				arguments.at(a)->set_version(argument_type.arguments(), 1);
 			}
-			if (callable_version->value) {
-				function->will_take(analyzer, arguments_types, 1);
-				function->set_version(arguments_types, 1);
-				function_type = function->version_type(arguments_types);
-				auto vv = dynamic_cast<VariableValue*>(function);
-				if (vv and vv->var and vv->var->value and vv->var->name == analyzer->current_function()->name) {
-					type = analyzer->current_function()->getReturnType();
-				} else {
-					type = function_type.return_type();
-				}
-			}
-			if (callable_version->unknown) {
-				for (const auto& arg : arguments) {
-					if (arg->type.is_function()) {
-						arg->must_return_any(analyzer);
-					}
-				}
-			}
-			if (type.is_mpz()) {
-				type = type == Type::tmp_mpz() ? Type::tmp_mpz_ptr() : Type::mpz_ptr();
-			}
-			return;
 		}
+		if (callable_version->value) {
+			function->will_take(analyzer, arguments_types, 1);
+			function->set_version(arguments_types, 1);
+			function_type = function->version_type(arguments_types);
+			auto vv = dynamic_cast<VariableValue*>(function);
+			if (vv and vv->var and vv->var->value and vv->var->name == analyzer->current_function()->name) {
+				type = analyzer->current_function()->getReturnType();
+			} else {
+				type = function_type.return_type();
+			}
+		}
+		if (callable_version->unknown) {
+			for (const auto& arg : arguments) {
+				if (arg->type.is_function()) {
+					arg->must_return_any(analyzer);
+				}
+			}
+		}
+		if (type.is_mpz()) {
+			type = type == Type::tmp_mpz() ? Type::tmp_mpz_ptr() : Type::mpz_ptr();
+		}
+		return;
 	}
 
 	// Find the function object
@@ -240,7 +238,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	c.mark_offset(location().start.line);
 
 	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
-	assert(callable && callable_version);
+	assert(callable_version);
 
 	// Pre-compile the call (compile the potential object first)
 	callable_version->pre_compile_call(c);

@@ -36,7 +36,7 @@ LSClass::~LSClass() {
 void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
 	methods.insert({name, impl});
 	int i = 0;
-	for (auto& m : methods.at(name).versions) {
+	for (auto& m : methods.at(name)) {
 		m.name = this->name + "." + name + "." + std::to_string(i++);
 		if (templates.size()) {
 			m.templates = templates;
@@ -62,7 +62,7 @@ void LSClass::addStaticField(field f) {
 void LSClass::addOperator(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
 	operators.insert({name, impl});
 	int i = 0;
-	for (auto& m : operators.at(name).versions) {
+	for (auto& m : operators.at(name)) {
 		m.name = this->name + ".operator" + name + "." + std::to_string(i++);
 		if (templates.size()) {
 			m.templates = templates;
@@ -80,28 +80,28 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	}
 }
 
-const Callable* LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& name, Type& obj_type, Type& operand_type) {
+const Call LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& name, Type& obj_type, Type& operand_type) {
 	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
 	if (name == "is not") name = "!=";
 	if (name == "÷") name = "/";
 	if (name == "×") name = "*";
-	auto callable = new Callable();
+	Call call;
 	auto i = operators.find(name);
 	if (i != operators.end()) {
-		for (const auto& impl : i->second.versions) {
-			callable->add_version(impl);
+		for (const auto& impl : i->second) {
+			call.add_version(&impl);
 		}
 	}
-	if (name != "Value") {
+	if (this->name != "Value") {
 		auto i = LSValue::ValueClass->operators.find(name);
 		if (i != LSValue::ValueClass->operators.end()) {
-			for (const auto& impl : i->second.versions) {
-				callable->add_version(impl);
+			for (const auto& impl : i->second) {
+				call.add_version(&impl);
 			}
 		}
 	}
 	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
-	return callable;
+	return call;
 }
 
 bool LSClass::to_bool() const {

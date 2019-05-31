@@ -11,7 +11,7 @@
 
 namespace ls {
 
-void Callable::add_version(CallableVersion v) {
+void Call::add_version(const CallableVersion* v) {
 	versions.push_back(v);
 }
 
@@ -29,29 +29,30 @@ Type build(const Type& type) {
 	return type;
 }
 
-const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const {
+const CallableVersion* Call::resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const {
 	// std::cout << "Callable::resolve(" << arguments << ")" << std::endl;
 	const CallableVersion* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
 	for (auto& version : versions) {
-		if (version.flags == Module::LEGACY and not analyzer->vm->legacy) continue;
+		if (version->flags == Module::LEGACY and not analyzer->vm->legacy) continue;
 		std::vector<Type> version_arguments = arguments;
-		if (version.object) {
-			version_arguments.insert(version_arguments.begin(), version.object->type);
+		if (version->object) {
+			version_arguments.insert(version_arguments.begin(), version->object->type);
 		}
-		auto fun = dynamic_cast<const Function_type*>(version.type._types[0].get());
+		auto fun = dynamic_cast<const Function_type*>(version->type._types[0].get());
 		auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
 
 		// Template resolution
-		const CallableVersion* new_version = &version;
-		if (version.templates.size()) {
-			version.resolve_templates(analyzer, version_arguments);
-			auto version_type = build(version.type);
+		const CallableVersion* new_version = version;
+		if (version->templates.size()) {
+			version->resolve_templates(analyzer, version_arguments);
+			auto version_type = build(version->type);
 			// Reset template implementations
-			for (size_t i = 0; i < version.templates.size(); ++i) {
-				version.templates.at(i).implement({});
+			// TODO simplify loop
+			for (size_t i = 0; i < version->templates.size(); ++i) {
+				version->templates.at(i).implement({});
 			}
-			new_version = new CallableVersion(version);
+			new_version = new CallableVersion(*version);
 			((CallableVersion*) new_version)->type = version_type;
 			// std::cout << "Resolved version = " << version_type << std::endl;
 		}
@@ -74,12 +75,12 @@ const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector
 				valid = false;
 			}
 		}
-		if ((!valid or version_arguments.size() > new_version->type.arguments().size()) and not version.unknown) {
+		if ((!valid or version_arguments.size() > new_version->type.arguments().size()) and not version->unknown) {
 			continue;
 		}
 		int d = 0;
 		bool ok = true;
-		if (!version.unknown) {
+		if (!version->unknown) {
 			for (size_t i = 0; i < new_version->type.arguments().size(); ++i) {
 				auto type = [&]() { if (i < version_arguments.size()) {
 					return version_arguments.at(i);
@@ -103,7 +104,7 @@ const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector
 	return best;
 }
 
-bool Callable::is_compatible(int argument_count) const {
+bool Callable::is_compatible(std::vector<CallableVersion> versions, int argument_count) {
 	for (const auto& version : versions) {
 		if (version.type.arguments().size() == (size_t) argument_count) return true;
 	}

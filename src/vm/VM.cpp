@@ -63,9 +63,9 @@ VM::VM(bool v1) : compiler(this), legacy(v1) {
 	add_module(new JsonSTD());
 
 	auto ptr_type = Type::fun(Type::any(), {Type::any()});
-	add_internal_var("ptr", ptr_type, nullptr, new Callable({
+	add_internal_var("ptr", ptr_type, nullptr, {
 		{"Value.ptr", ptr_type }
-	}));
+	});
 }
 
 VM::~VM() {
@@ -191,7 +191,7 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 	return result;
 }
 
-void VM::add_internal_var(std::string name, Type type, LSValue* value, Callable* callable) {
+void VM::add_internal_var(std::string name, Type type, LSValue* value, std::vector<CallableVersion> callable) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
 	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr, value, callable) });
 	system_vars.push_back(value);
@@ -224,11 +224,11 @@ void* VM::resolve_symbol(std::string name) {
 			if (method.substr(0, 8) == "operator") {
 				const auto& op = method.substr(8);
 				const auto& implems = clazz->operators.at(op);
-				return implems.versions.at(version).addr;
+				return implems.at(version).addr;
 			} else {
 				if (clazz->methods.find(method) != clazz->methods.end()) {
 					const auto& implems = clazz->methods.at(method);
-					return implems.versions.at(version).addr;
+					return implems.at(version).addr;
 				} else if (clazz->static_fields.find(method) != clazz->static_fields.end()) {
 					if (clazz->static_fields.at(method).native_fun) {
 						return clazz->static_fields.at(method).native_fun;

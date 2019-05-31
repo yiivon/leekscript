@@ -2,11 +2,12 @@
 #define CALLABLE_HPP_
 
 #include "../../type/Type.hpp"
-#include "../value/Value.hpp"
-#include "../../vm/TypeMutator.hpp"
 #include "../value/Function.hpp"
 
 namespace ls {
+
+class TypeMutator;
+class Value;
 
 class CallableVersion {
 public:
@@ -60,9 +61,7 @@ public:
 
 	Callable() {}
 	Callable(std::initializer_list<CallableVersion> versions) : versions(versions) {}
-	void add_version(CallableVersion v);
-	const CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
-	bool is_compatible(int argument_count) const;
+	static bool is_compatible(std::vector<CallableVersion>, int argument_count);
 };
 
 }

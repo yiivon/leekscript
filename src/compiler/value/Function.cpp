@@ -393,15 +393,15 @@ void Function::must_return_any(SemanticAnalyzer*) {
 	generate_default_version = true;
 }
 
-Callable* Function::get_callable(SemanticAnalyzer*, int argument_count) const {
-	auto callable = new Callable();
+Call Function::get_callable(SemanticAnalyzer*, int argument_count) const {
+	Call call;
 	int flags = default_version->body->throws ? Module::THROWS : 0;
-	callable->add_version({ "<default>", default_version->type, default_version, {}, {}, nullptr, false, false, false, flags });
+	call.add_version(new CallableVersion { "<default>", default_version->type, default_version, {}, {}, nullptr, false, false, false, flags });
 	for (const auto& version : versions) {
 		int flags = version.second->body->throws ? Module::THROWS : 0;
-		callable->add_version({ "<version>", version.second->type, version.second, {}, {}, nullptr, false, false, false, flags });
+		call.add_version(new CallableVersion { "<version>", version.second->type, version.second, {}, {}, nullptr, false, false, false, flags });
 	}
-	return callable;
+	return call;
 }
 
 Compiler::value Function::compile(Compiler& c) const {

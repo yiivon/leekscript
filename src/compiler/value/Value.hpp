@@ -5,11 +5,11 @@
 #include <vector>
 #include "../Compiler.hpp"
 #include "../lexical/Location.hpp"
+#include "../semantic/Call.hpp"
 
 namespace ls {
 
 class SemanticAnalyzer;
-class Callable;
 
 class Value {
 public:
@@ -46,7 +46,7 @@ public:
 	virtual void must_return_any(SemanticAnalyzer*);
 	virtual void set_version(const std::vector<Type>&, int level);
 	virtual Type version_type(std::vector<Type>) const;
-	virtual Callable* get_callable(SemanticAnalyzer*, int argument_count) const;
+	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const;
 	virtual void analyze(SemanticAnalyzer*);
 
 	virtual Compiler::value compile(Compiler&) const = 0;
