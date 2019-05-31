@@ -80,26 +80,31 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	}
 }
 
-const Call LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& name, Type& obj_type, Type& operand_type) {
+const Call* LSClass::getOperator(std::string& name) {
 	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
 	if (name == "is not") name = "!=";
-	if (name == "÷") name = "/";
-	if (name == "×") name = "*";
-	Call call;
+	else if (name == "÷") name = "/";
+	else if (name == "×") name = "*";
+	auto o = operators_callables.find(name);
+	if (o != operators_callables.end()) {
+		return o->second;
+	}
+	auto call = new Call();
 	auto i = operators.find(name);
 	if (i != operators.end()) {
 		for (const auto& impl : i->second) {
-			call.add_version(&impl);
+			call->add_version(&impl);
 		}
 	}
 	if (this->name != "Value") {
 		auto i = LSValue::ValueClass->operators.find(name);
 		if (i != LSValue::ValueClass->operators.end()) {
 			for (const auto& impl : i->second) {
-				call.add_version(&impl);
+				call->add_version(&impl);
 			}
 		}
 	}
+	operators_callables.insert({ name, call });
 	// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
 	return call;
 }
