@@ -602,7 +602,7 @@ int ValueSTD::ls_bit_shift_uright_eq(LSValue** x, LSValue* y) {
 }
 
 Compiler::value ValueSTD::op_in(Compiler& c, std::vector<Compiler::value> args, bool) {
-	if (args[1].t == Type::integer()) {
+	if (args[1].t.is_integer()) {
 		return c.insn_invoke(Type::boolean(), args, "Value.in_i");
 	} else {
 		return c.insn_invoke(Type::boolean(), args, "Value.in");

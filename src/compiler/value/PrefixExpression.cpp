@@ -43,7 +43,7 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 	if (operatorr->type == TokenType::TILDE) {
 		type = expression->type;
 		throws |= expression->type.is_polymorphic();
-		if (type == Type::boolean()) {
+		if (type.is_bool()) {
 			type = Type::integer();
 		}
 	}

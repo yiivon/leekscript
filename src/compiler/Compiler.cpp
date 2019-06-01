@@ -175,9 +175,9 @@ Compiler::value Compiler::new_set() const {
 Compiler::value Compiler::new_array(Type element_type, std::vector<Compiler::value> elements) const {
 	auto folded_type = element_type.fold();
 	auto array_type = Type::tmp_array(element_type);
-	auto array = [&]() { if (folded_type == Type::integer()) {
+	auto array = [&]() { if (folded_type.is_integer()) {
 		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.0");
-	} else if (folded_type == Type::real()) {
+	} else if (folded_type.is_real()) {
 		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.1");
 	} else {
 		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.2");
@@ -244,7 +244,7 @@ Compiler::value Compiler::to_real(Compiler::value x) const {
 
 Compiler::value Compiler::to_long(Compiler::value v) const {
 	assert(v.t.llvm_type(*this) == v.v->getType());
-	if (v.t.not_temporary() == Type::long_()) {
+	if (v.t.not_temporary().is_long()) {
 		return v;
 	}
 	if (v.t.is_bool()) {
@@ -281,11 +281,11 @@ Compiler::value Compiler::insn_convert(Compiler::value v, Type t) const {
 		return r;
 	}
 	if (v.t.not_temporary() == t.not_temporary()) return v;
-	if (t == Type::real()) {
+	if (t.is_real()) {
 		return to_real(v);
-	} else if (t == Type::integer()) {
+	} else if (t.is_integer()) {
 		return to_int(v);
-	} else if (t == Type::long_()) {
+	} else if (t.is_long()) {
 		return to_long(v);
 	}
 	return v;
@@ -620,10 +620,10 @@ Compiler::value Compiler::insn_cmpl(Compiler::value a, Compiler::value b) const 
 Compiler::value Compiler::insn_log(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) {
+	if (x.t.is_integer()) {
 		return insn_call(Type::real(), {x}, "Number.m_log");
 	}
-	if (x.t == Type::long_()) {
+	if (x.t.is_long()) {
 		return insn_call(Type::real(), {x}, "Number.m_log.1");
 	}
 	return insn_call(Type::real(), {x}, "Number.m_log.2");
@@ -644,21 +644,21 @@ Compiler::value Compiler::insn_log10(Compiler::value x) const {
 Compiler::value Compiler::insn_ceil(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) return x;
+	if (x.t.is_integer()) return x;
 	return to_int(insn_call(Type::real(), {x}, "Number.m_ceil"));
 }
 
 Compiler::value Compiler::insn_round(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) return x;
+	if (x.t.is_integer()) return x;
 	return to_int(insn_call(Type::real(), {x}, "Number.m_round"));
 }
 
 Compiler::value Compiler::insn_floor(Compiler::value x) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(x.t.is_primitive());
-	if (x.t == Type::integer()) return x;
+	if (x.t.is_integer()) return x;
 	return to_int(insn_call(Type::real(), {x}, "Number.m_floor"));
 }
 
@@ -735,7 +735,7 @@ Compiler::value Compiler::insn_min(Compiler::value x, Compiler::value y) const {
 	assert(x.t.llvm_type(*this) == x.v->getType());
 	assert(y.t.llvm_type(*this) == y.v->getType());
 	assert(x.t.is_primitive() && y.t.is_primitive());
-	if (x.t == Type::integer() and y.t == Type::integer()) {
+	if (x.t.is_integer() and y.t.is_integer()) {
 		return insn_call(Type::integer(), {x, y}, "Number.m_min");
 	}
 	return insn_call(Type::real(), {to_real(x), to_real(y)}, "Number.m_min.2");
@@ -953,9 +953,9 @@ void Compiler::insn_push_array(Compiler::value array, Compiler::value value) con
 	assert(array.t.llvm_type(*this) == array.v->getType());
 	assert(value.t.llvm_type(*this) == value.v->getType());
 	auto element_type = array.t.element().fold();
-	if (element_type == Type::integer()) {
+	if (element_type.is_integer()) {
 		insn_call({}, {array, value}, "Array.vpush.0");
-	} else if (element_type == Type::real()) {
+	} else if (element_type.is_real()) {
 		value.t = Type::real();
 		insn_call({}, {array, value}, "Array.vpush.1");
 	} else {
@@ -1189,10 +1189,10 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 		auto end = insn_call(node.t, {v}, "Set.iterator_end");
 		return {builder.CreateICmpEQ(node.v, end.v), Type::boolean()};
 	}
-	else if (v.t == Type::integer()) {
+	else if (v.t.is_integer()) {
 		return insn_eq(insn_load_member(it, 1), new_integer(0));
 	}
-	else if (v.t == Type::long_()) {
+	else if (v.t.is_long()) {
 		return insn_eq(insn_load_member(it, 1), new_long(0));
 	}
 	return {nullptr, {}};
@@ -1219,10 +1219,10 @@ Compiler::value Compiler::iterator_rend(Compiler::value v, Compiler::value it) c
 	else if (v.t.is_set()) {
 		assert(false);
 	}
-	else if (v.t == Type::integer()) {
+	else if (v.t.is_integer()) {
 		assert(false);
 	}
-	else if (v.t == Type::long_()) {
+	else if (v.t.is_long()) {
 		assert(false);
 	}
 	return {nullptr, {}};

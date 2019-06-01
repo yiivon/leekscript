@@ -197,7 +197,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
 
 	// Don't use old stuff for boolean, /, and bit operators
-	if ((v1->type == Type::boolean() and op->type != TokenType::EQUAL) 
+	if ((v1->type.is_bool() and op->type != TokenType::EQUAL) 
 		or op->type == TokenType::TRIPLE_EQUAL
 		or op->type == TokenType::PLUS or op->type == TokenType::MINUS 
 		or op->type == TokenType::TIMES or op->type == TokenType::DIVIDE 
@@ -233,7 +233,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 				type = v2->type;
 			}
 		} else {
-			if (v1->type == Type::any() || v2->type == Type::any()) {
+			if (v1->type.is_any() || v2->type.is_any()) {
 				type = Type::any();
 			} else {
 				type = v1->type;

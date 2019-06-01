@@ -60,7 +60,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 
 		Type supported_type = {};
 		// Native elements types supported : integer, double
-		if (element_type == Type::integer() || element_type == Type::real()) {
+		if (element_type.is_integer() || element_type.is_real()) {
 			supported_type = element_type;
 		}
 		// For function, we store them as pointers
@@ -90,7 +90,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 			}
 			element_type += ex->type;
 		}
-		if (element_type == Type::boolean()) element_type = Type::any();
+		if (element_type.is_bool()) element_type = Type::any();
 		element_type.temporary = false;
 		type = Type::array(element_type);
 	}

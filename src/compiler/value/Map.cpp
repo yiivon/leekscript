@@ -60,12 +60,12 @@ void Map::analyze(SemanticAnalyzer* analyzer) {
 	}
 	value_type.temporary = false;
 
-	if (key_type == Type::integer() or key_type == Type::real()) {
+	if (key_type.is_integer() or key_type.is_real()) {
 	} else {
 		key_type = Type::any();
 		// key_type.setReturnType(Type::any());
 	}
-	if (value_type == Type::integer() || value_type == Type::real()) {
+	if (value_type.is_integer() || value_type.is_real()) {
 	} else {
 		value_type = Type::any();
 		// value_type.setReturnType(Type::any());

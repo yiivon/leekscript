@@ -201,26 +201,26 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			k = c.insn_convert(k, map_key_type);
 
 			std::string func;
-			if (map_key_type == Type::integer()) {
-				if (type == Type::integer()) {
+			if (map_key_type.is_integer()) {
+				if (type.is_integer()) {
 					func = "Map.at.0";
-				} else if (type == Type::real()) {
+				} else if (type.is_real()) {
 					func = "Map.at.1";
 				} else {
 					func = "Map.at.2";
 				}
-			} else if (map_key_type == Type::real()) {
-				if (type == Type::integer()) {
+			} else if (map_key_type.is_real()) {
+				if (type.is_integer()) {
 					func = "Map.at.3";
-				} else if (type == Type::real()) {
+				} else if (type.is_real()) {
 					func = "Map.at.4";
 				} else {
 					func = "Map.at.5";
 				}
 			} else {
-				if (type == Type::integer()) {
+				if (type.is_integer()) {
 					func = "Map.at.6";
-				} else if (type == Type::real()) {
+				} else if (type.is_real()) {
 					func = "Map.at.7";
 				} else {
 					func = "Map.at.8";

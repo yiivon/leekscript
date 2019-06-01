@@ -93,9 +93,9 @@ void Number::analyze(SemanticAnalyzer*) {
 }
 
 bool Number::is_zero() const {
-	if (type == Type::any() or type == Type::real()) {
+	if (type.is_any() or type.is_real()) {
 		return double_value == 0;
-	} else if (type == Type::long_()) {
+	} else if (type.is_long()) {
 		return long_value == 0;
 	} else if (type.is_mpz_ptr()) {
 		return mpz_cmp_ui(mpz_value, 0) == 0;
@@ -105,13 +105,13 @@ bool Number::is_zero() const {
 }
 
 Compiler::value Number::compile(Compiler& c) const {
-	if (type == Type::any()) {
+	if (type.is_any()) {
 		return c.insn_to_any(c.new_real(double_value));
 	}
-	if (type == Type::long_()) {
+	if (type.is_long()) {
 		return c.new_long(long_value);
 	}
-	if (type == Type::real()) {
+	if (type.is_real()) {
 		return c.new_real(double_value);
 	}
 	if (type.is_mpz_ptr()) {
