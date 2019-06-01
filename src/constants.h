@@ -4,3 +4,5 @@
 #define DEBUG_LEAKS 		1
 #define PRINT_TYPES_COLORS	1
 #define STACKTRACE_DETAILS	0
+// Disable asserts
+// #define NDEBUG
