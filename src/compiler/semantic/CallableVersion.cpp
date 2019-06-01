@@ -30,9 +30,8 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 		resolve_templates(analyzer, arguments);
 		auto version_type = build(type);
 		// Reset template implementations
-		// TODO simplify loop
-		for (size_t i = 0; i < templates.size(); ++i) {
-			templates.at(i).implement({});
+		for (const auto& t : templates) {
+			t.implement({});
 		}
 		new_version = new CallableVersion(*this);
 		((CallableVersion*) new_version)->type = version_type;
