@@ -122,9 +122,7 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 	auto program = new Program(code, file_name);
 
 	// Compile
-	auto compilation_start = std::chrono::high_resolution_clock::now();
-	VM::Result result = program->compile(*this, ctx, assembly, pseudo_code, execute_ir, execute_bitcode);
-	auto compilation_end = std::chrono::high_resolution_clock::now();
+	auto result = program->compile(*this, ctx, assembly, pseudo_code, execute_ir, execute_bitcode);
 
 	if (debug) {
 		std::cout << "main() " << result.program << std::endl; // LCOV_EXCL_LINE
@@ -150,15 +148,13 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 		}
 		auto exe_end = std::chrono::high_resolution_clock::now();
 
-		result.execution_time = std::chrono::duration_cast<std::chrono::nanoseconds>(exe_end - exe_start).count();
-		result.execution_time_ms = (((double) result.execution_time / 1000) / 1000);
+		auto execution_time = std::chrono::duration_cast<std::chrono::nanoseconds>(exe_end - exe_start).count();
+		result.execution_time = (((double) execution_time / 1000) / 1000);
 		result.value = value;
 		result.type = program->type;
 	}
 
 	// Set results
-	result.compilation_time = std::chrono::duration_cast<std::chrono::nanoseconds>(compilation_end - compilation_start).count();
-	result.compilation_time_ms = (((double) result.compilation_time / 1000) / 1000);
 	result.operations = VM::operations;
 
 	// Cleaning

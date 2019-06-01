@@ -28,6 +28,7 @@ private:
 	int total;
 	int success_count;
 	int disabled;
+	double parse_time;
 	double compilation_time;
 	double execution_time;
 	int obj_created;
@@ -105,8 +106,9 @@ public:
 		bool file;
 		bool v1;
 		bool disabled;
-		float compilation_time = 0;
-		float execution_time = 0;
+		double parse_time = 0;
+		double compilation_time = 0;
+		double execution_time = 0;
 		long int operation_limit = 0;
 		ls::VM::Result result;
 		ls::Context* ctx = nullptr;

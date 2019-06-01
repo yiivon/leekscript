@@ -53,14 +53,14 @@ int Test::all() {
 	test_doc();
 	test_utils();
 
-	double total_time = compilation_time + execution_time;
+	double total_time = parse_time + compilation_time + execution_time;
 	int errors = (total - success_count - disabled);
 	int leaks = (obj_created - obj_deleted);
 	int mpz_leaks = (mpz_obj_created - mpz_obj_deleted);
 
 	std::ostringstream line1, line2, line3, line4;
 	line1 << "Total: " << total << ", success: " << success_count << ", errors: " << errors << ", disabled: " << disabled;
-	line2 << "Total time: " << total_time << " ms (" << compilation_time << " ms + " << execution_time << " ms) (compil + exe)";
+	line2 << "Time: " << total_time << " ms (" << parse_time << " ms + " << compilation_time << " ms + " << execution_time << " ms)";
 	line3 << "Objects destroyed: " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
 	line4 << "MPZ objects destroyed: " << mpz_obj_deleted << " / " << mpz_obj_created << " (" << mpz_leaks << " leaked)";
 	unsigned w = std::max(line1.str().size(), std::max(line2.str().size(), std::max(line3.str().size(), line4.str().size())));
@@ -149,10 +149,12 @@ ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
 	test->mpz_obj_created += result.mpz_objects_created;
 	test->mpz_obj_deleted += result.mpz_objects_deleted;
 
-	compilation_time = round((float) result.compilation_time / 1000) / 1000;
-	execution_time = round((float) result.execution_time / 1000) / 1000;
-	test->compilation_time += compilation_time;
-	test->execution_time += execution_time;
+	parse_time = result.parse_time;
+	compilation_time = result.compilation_time;
+	execution_time = result.execution_time;
+	test->parse_time += result.parse_time;
+	test->compilation_time += result.compilation_time;
+	test->execution_time += result.execution_time;
 
 	if (display_errors) {
 		for (const auto& error : result.errors) {
@@ -171,7 +173,7 @@ void Test::Input::pass(std::string expected) {
 	if (v1) oss << C_BLUE << " [V1]" << END_COLOR;
 	oss <<  "  ===>  " << expected;
 	std::cout << oss.str();
-	std::cout <<  C_GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
+	std::cout <<  C_GREY << " (" << std::fixed << std::setprecision(2) << compilation_time << " ms + " << std::fixed << std::setprecision(2) << execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	test->success_count++;
 	if (result.objects_created != result.objects_deleted or result.mpz_objects_created != result.mpz_objects_deleted) {
@@ -189,7 +191,7 @@ void Test::Input::fail(std::string expected, std::string actual) {
 	if (v1) std::cout << C_BLUE << " [V1]" << END_COLOR;
 	oss << "  =/=>  " << expected << "  got  " << actual;
 	std::cout << oss.str();
-	std::cout << C_GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
+	std::cout << C_GREY << " (" << std::fixed << std::setprecision(2) << compilation_time << " ms + " << std::fixed << std::setprecision(2) << execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	if (result.objects_created != result.objects_deleted)
 		oss << C_RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;

@@ -45,10 +45,9 @@ public:
 		vm::ExceptionObj exception;
 		std::string program = "";
 		std::string value = "";
-		long compilation_time = 0;
-		long compilation_time_ms = 0;
-		long execution_time = 0;
-		long execution_time_ms = 0;
+		double parse_time = 0;
+		double compilation_time = 0;
+		double execution_time = 0;
 		long operations = 0;
 		int objects_created = 0;
 		int objects_deleted = 0;

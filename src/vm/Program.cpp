@@ -43,8 +43,9 @@ Program::~Program() {
 
 VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool pseudo_code) {
 
-	auto resolver = new Resolver();
+	auto parse_start = std::chrono::high_resolution_clock::now();
 
+	auto resolver = new Resolver();
 	VM::Result result;
 	main_file = new File(file_name, code, new FileContext());
 	SyntaxicAnalyzer syn { resolver };
@@ -86,6 +87,10 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 
 	main->compile(vm.compiler);
 
+	auto parse_end = std::chrono::high_resolution_clock::now();
+	auto parse_time = std::chrono::duration_cast<std::chrono::nanoseconds>(parse_end - parse_start).count();
+	result.parse_time = (((double) parse_time / 1000) / 1000);
+
 	if (pseudo_code) {
 		std::error_code EC2;
 		llvm::raw_fd_ostream ir(file_name + ".ll", EC2, llvm::sys::fs::F_None);
@@ -93,13 +98,18 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 		ir.flush();
 	}
 
+	auto compilation_start = std::chrono::high_resolution_clock::now();
+
 	module_handle = vm.compiler.addModule(std::unique_ptr<llvm::Module>(module), true, bitcode);
 	handle_created = true;
 	auto ExprSymbol = vm.compiler.findSymbol("main");
 	assert(ExprSymbol && "Function not found");
-
 	closure = (void*) cantFail(ExprSymbol.getAddress());
 	type = main->type.return_type().fold();
+
+	auto compilation_end = std::chrono::high_resolution_clock::now();
+	auto compilation_time = std::chrono::duration_cast<std::chrono::nanoseconds>(compilation_end - compilation_start).count();
+	result.compilation_time = (((double) compilation_time / 1000) / 1000);
 
 	result.compilation_success = true;
 

@@ -147,13 +147,11 @@ void print_result(ls::VM::Result& result, const std::string& output, bool json, 
 			std::cout << result.value << std::endl;
 		}
 		if (display_time) {
-			double compilation_time = round((float) result.compilation_time / 1000) / 1000;
-			double execution_time = round((float) result.execution_time / 1000) / 1000;
 			std::cout << C_GREY << "(";
 			if (ops) {
 				std::cout << result.operations << " ops, ";
 			}
-			std::cout << compilation_time << "ms + " << execution_time << "ms)" << END_COLOR << std::endl;
+			std::cout << result.parse_time << "ms + " << result.compilation_time << "ms + " << result.execution_time << "ms)" << END_COLOR << std::endl;
 		}
 	}
 }
