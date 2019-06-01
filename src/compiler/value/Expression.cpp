@@ -168,7 +168,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	auto v2_type = op->reversed ? v1->type : v2->type;
 
 	if (v1_type.class_name().size()) {
-		auto object_class = (LSClass*) analyzer->vm->internal_vars.at(v1_type.class_name())->lsvalue;
+		auto object_class = (LSClass*) analyzer->vm->internal_vars[v1_type.class_name()]->lsvalue;
 		auto callable = object_class->getOperator(analyzer, op->character);
 
 		// std::cout << "Callable : " << callable << std::endl;

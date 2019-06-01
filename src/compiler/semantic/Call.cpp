@@ -26,8 +26,10 @@ const CallableVersion* Call::resolve(SemanticAnalyzer* analyzer, std::vector<Typ
 
 void Call::apply_mutators(SemanticAnalyzer* analyzer, const CallableVersion* version, std::vector<Value*> values) const {
 	// std::cout << "Call::apply_mutators " << values.size() << std::endl;
-	if (object) values.insert(values.begin(), object);
-	version->apply_mutators(analyzer, values);
+	if (version->mutators.size()) {
+		if (object) values.insert(values.begin(), object);
+		version->apply_mutators(analyzer, values);
+	}
 }
 
 Compiler::value Call::pre_compile_call(Compiler& c) const {
