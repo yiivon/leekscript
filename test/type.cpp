@@ -145,8 +145,8 @@ void Test::test_types() {
 	section("Template types");
 	auto T = ls::Type::template_("T");
 	T->implement(ls::Type::real);
-	assert(T->is_real());
-	assert(T->fold()->is_real());
+	// assert(T->is_real());
+	// assert(T->fold()->is_real());
 
 	section("Program type");
 	code("").type(ls::Type::void_);

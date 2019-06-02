@@ -373,20 +373,20 @@ bool Type::can_be_number() const {
 bool Type::can_be_numeric() const {
 	return is_any() or can_be_bool() or can_be_number();
 }
-bool Type::is_real() const { return is_type<Real_type>(); }
-bool Type::is_integer() const { return is_type<Integer_type>(); }
-bool Type::is_long() const { return is_type<Long_type>(); }
+bool Type::is_real() const { return folded == Type::real; }
+bool Type::is_integer() const { return folded == Type::integer; }
+bool Type::is_long() const { return folded == Type::long_; }
 bool Type::is_mpz() const { return is_type<Mpz_type>(); }
-bool Type::is_mpz_ptr() const { return is_pointer() and pointed()->is_mpz(); }
-bool Type::is_string() const { return is_type<String_type>(); }
+bool Type::is_mpz_ptr() const { return folded == Type::mpz_ptr; }
+bool Type::is_string() const { return folded == Type::string; }
 bool Type::is_array() const { return is_type<Array_type>(); }
 bool Type::is_set() const { return is_type<Set_type>(); }
-bool Type::is_interval() const { return is_type<Interval_type>(); }
+bool Type::is_interval() const { return folded == Type::interval; }
 bool Type::is_map() const { return is_type<Map_type>(); }
 bool Type::is_function() const { return is_type<Function_type>(); }
-bool Type::is_object() const { return is_type<Object_type>(); }
-bool Type::is_never() const { return is_type<Never_type>(); }
-bool Type::is_null() const { return is_type<Null_type>(); }
+bool Type::is_object() const { return folded == Type::object; }
+bool Type::is_never() const { return folded == Type::never; }
+bool Type::is_null() const { return folded == Type::null; }
 bool Type::is_class() const { return is_type<Class_type>(); }
 bool Type::is_placeholder() const { return is_type<Placeholder_type>(); }
 bool Type::is_pointer() const { return is_type<Pointer_type>(); }
