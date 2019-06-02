@@ -103,7 +103,6 @@ public:
 	bool is_template() const;
 
 	bool compatible(const Type* type) const;
-	bool may_be_compatible(const Type* type) const;
 
 	void implement(const Type* type) const;
 	bool is_implemented(const Type* type) const;
