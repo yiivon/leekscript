@@ -216,16 +216,6 @@ const Type* Type::fold() const {
 	return folded;
 }
 
-std::shared_ptr<const Base_type> Type::base_union(std::shared_ptr<const Base_type> a, std::shared_ptr<const Base_type> b) {
-	if (a == b) return a;
-	auto d1 = a->distance(b.get());
-	auto d2 = b->distance(a.get());
-	if (d1 == -1 and d2 == -1) return raw_any();
-	if (d1 < 100) return a;
-	if (d2 < 100) return b;
-	return raw_any();
-}
-
 void Type::toJson(std::ostream& os) const {
 	os << "{\"type\":\"" << getJsonName() << "\"";
 

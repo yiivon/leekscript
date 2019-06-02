@@ -67,7 +67,6 @@ public:
 	void operator += (std::shared_ptr<const Base_type> type);
 	const Type* operator * (const Type* t2) const;
 	const Type* fold() const;
-	static std::shared_ptr<const Base_type> base_union(std::shared_ptr<const Base_type>, std::shared_ptr<const Base_type>);
 
 	template <class T> bool is_type() const;
 	template <class T> bool can_be_type() const;
