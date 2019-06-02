@@ -57,7 +57,7 @@ int Array_type::distance(const Base_type* type) const {
 		if (array->_element->is_void()) {
 			return 999;
 		}
-		return _element->distance(array->_element);
+		return _element->fold() == array->_element->fold() ? 0 : -1;
 	}
 	return -1;
 }

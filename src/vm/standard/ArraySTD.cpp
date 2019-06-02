@@ -210,11 +210,12 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	});
 
 	auto pT = Type::template_("T");
-	template_(pT).
+	auto pE = Type::template_("E");
+	template_(pT, pE).
 	method("push", {
 		{Type::array(Type::any), {Type::array(), Type::const_any}, (void*) &LSArray<LSValue*>::ls_push, 0, {new WillStoreMutator()}},
 		{Type::array(pT), {Type::array(Type::never), pT}, push, 0, {new WillStoreMutator()}},
-		{Type::array(pT), {Type::array(pT), Type::void_}, push, 0, {new WillStoreMutator()}},
+		{Type::array(pT), {Type::array(pT), pE}, push, 0, {new WillStoreMutator()}},
 	});
 
 	// void (LSArray<int>::*push_int)(int&&) = &LSArray<int>::push_back;
@@ -321,7 +322,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 		{Type::integer, {Type::any}, (void*) &LSArray<LSValue*>::ls_size}
 	});
 	method("inArray", {
-		{Type::boolean, {Type::array(Type::any), Type::any}, (void*) &LSArray<LSValue*>::ls_contains},
+		{Type::boolean, {Type::array(), Type::any}, (void*) &LSArray<LSValue*>::ls_contains},
 		{Type::boolean, {Type::array(Type::real), Type::real}, (void*) &LSArray<double>::ls_contains},
 		{Type::boolean, {Type::array(Type::integer), Type::integer}, (void*) &LSArray<int>::ls_contains}
 	});

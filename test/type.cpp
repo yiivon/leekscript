@@ -78,8 +78,6 @@ void Test::test_types() {
 	assert(ls::Type::array(ls::Type::integer)->castable(ls::Type::array(ls::Type::integer)));
 	assert(ls::Type::array(ls::Type::integer)->castable(ls::Type::array()));
 	assert(ls::Type::array(ls::Type::real)->castable(ls::Type::array()));
-	assert(ls::Type::array(ls::Type::real)->castable(ls::Type::array(ls::Type::integer)));
-	assert(ls::Type::array(ls::Type::integer)->castable(ls::Type::array(ls::Type::real)));
 	assert(ls::Type::map(ls::Type::any, ls::Type::any)->castable(ls::Type::map()));
 	assert(ls::Type::map(ls::Type::integer, ls::Type::any)->castable(ls::Type::map()));
 	assert(ls::Type::map(ls::Type::real, ls::Type::any)->castable(ls::Type::map()));
