@@ -29,12 +29,12 @@ Location ClassDeclaration::location() const {
 	return token->location;
 }
 
-void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
+void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 
 	var = analyzer->add_var(token.get(), Type::clazz(), nullptr, nullptr);
 
 	for (auto vd : fields) {
-		vd->analyze(analyzer, Type::any());
+		vd->analyze(analyzer, Type::any);
 	}
 }
 
@@ -48,7 +48,7 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 			auto default_value = vd->expressions.at(i)->compile(c);
 			default_value = c.insn_to_any(default_value);
 			auto field_name = c.new_const_string(vd->variables.at(i)->content);
-			c.insn_call({}, {clazz, field_name, default_value}, "Class.add_field");
+			c.insn_call(Type::void_, {clazz, field_name, default_value}, "Class.add_field");
 		}
 	}
 

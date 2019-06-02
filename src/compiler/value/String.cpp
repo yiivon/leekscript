@@ -5,8 +5,7 @@
 namespace ls {
 
 String::String(std::shared_ptr<Token> token) : token(token) {
-	type = Type::string();
-	type.temporary = true;
+	type = Type::tmp_string;
 	constant = true;
 }
 
@@ -23,16 +22,16 @@ Location String::location() const {
 	return token->location;
 }
 
-bool String::will_store(SemanticAnalyzer* analyzer, const Type& type) {
-	if (!type.is_string()) {
-		analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), location(), {this->type.to_string(), "=", type.to_string()}});
+bool String::will_store(SemanticAnalyzer* analyzer, const Type* type) {
+	if (!type->is_string()) {
+		analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), location(), {this->type->to_string(), "=", type->to_string()}});
 	}
 	return false;
 }
 
 Compiler::value String::compile(Compiler& c) const {
 	auto s = c.new_const_string(token->content);
-	return c.insn_call(Type::tmp_string(), {s}, "String.new.1");
+	return c.insn_call(Type::tmp_string, {s}, "String.new.1");
 }
 
 Value* String::clone() const {

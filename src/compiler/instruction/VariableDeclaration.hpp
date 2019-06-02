@@ -27,7 +27,7 @@ public:
 	virtual Location location() const override;
 
 	void analyze_global_functions(SemanticAnalyzer* analyzer);
-	virtual void analyze(SemanticAnalyzer*, const Type& req_type) override;
+	virtual void analyze(SemanticAnalyzer*, const Type* req_type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 

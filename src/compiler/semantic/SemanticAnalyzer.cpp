@@ -27,13 +27,6 @@ void SemanticVar::must_be_any(SemanticAnalyzer* analyzer) {
 		value->must_be_any(analyzer);
 	}
 }
-Type SemanticVar::type() const {
-	if (value != nullptr) {
-		if (value->type.is_mpz()) return value->type.not_temporary().pointer();
-		return value->type;
-	}
-	return initial_type;
-}
 
 void SemanticAnalyzer::analyze(Program* program, Context* context) {
 
@@ -96,7 +89,7 @@ bool SemanticAnalyzer::in_loop(int deepness) const {
 	return loops.top() >= deepness;
 }
 
-std::shared_ptr<SemanticVar> SemanticAnalyzer::add_parameter(Token* v, Type type) {
+std::shared_ptr<SemanticVar> SemanticAnalyzer::add_parameter(Token* v, const Type* type) {
 	auto arg = std::make_shared<SemanticVar>(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function(), nullptr);
 	parameters.back().insert({v->content, arg});
 	return arg;
@@ -135,8 +128,7 @@ std::shared_ptr<SemanticVar> SemanticAnalyzer::get_var(Token* v) {
 	return nullptr;
 }
 
-std::shared_ptr<SemanticVar> SemanticAnalyzer::add_var(Token* v, Type type, Value* value, VariableDeclaration* vd) {
-
+std::shared_ptr<SemanticVar> SemanticAnalyzer::add_var(Token* v, const Type* type, Value* value, VariableDeclaration* vd) {
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
@@ -162,8 +154,8 @@ std::map<std::string, std::shared_ptr<SemanticVar>>& SemanticAnalyzer::get_local
 
 std::shared_ptr<SemanticVar> SemanticAnalyzer::convert_var_to_any(std::shared_ptr<SemanticVar> var) {
 	// std::cout << "SemanticAnalyser::convert_var_to_any(" << var->name << ")" << std::endl;
-	if (var->type().is_polymorphic()) return var;
-	auto new_var = std::make_shared<SemanticVar>(var->name, var->scope, Type::any(), 0, nullptr, nullptr, var->function, nullptr);
+	if (var->type->is_polymorphic()) return var;
+	auto new_var = std::make_shared<SemanticVar>(var->name, var->scope, Type::any, 0, nullptr, nullptr, var->function, nullptr);
 	// Search recursively in the functions
 
 	int f = functions_stack.size() - 1;

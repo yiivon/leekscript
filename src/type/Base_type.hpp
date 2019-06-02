@@ -18,18 +18,18 @@ public:
 	virtual bool iterable() const { return false; }
 	virtual bool callable() const { return false; }
 	virtual bool is_container() const { return false; }
-	virtual const Type& element() const;
-	virtual const Type& key() const;
-	virtual const Type& member(int) const;
+	virtual const Type* element() const;
+	virtual const Type* key() const;
+	virtual const Type* member(int) const;
 	virtual bool operator == (const Base_type*) const = 0;
 	virtual bool compatible(const Base_type*) const;
 	virtual bool castable(const Base_type*) const;
 	bool castable(const Type&) const;
 	virtual int distance(const Base_type*) const;
-	virtual Type iterator() const;
-	virtual const Type& return_type() const;
-	virtual const Type& argument(size_t) const;
-	virtual const std::vector<Type>& arguments() const;
+	virtual const Type* iterator() const;
+	virtual const Type* return_type() const;
+	virtual const Type* argument(size_t) const;
+	virtual const std::vector<const Type*>& arguments() const;
 	virtual llvm::Type* llvm(const Compiler& c) const = 0;
 	virtual std::string clazz() const;
 	virtual std::ostream& print(std::ostream&) const;

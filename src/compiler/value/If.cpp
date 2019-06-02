@@ -12,7 +12,7 @@ If::If(bool ternary) {
 	elze = nullptr;
 	condition = nullptr;
 	then = nullptr;
-	type = {};
+	type = Type::void_;
 	this->ternary = ternary;
 }
 
@@ -66,19 +66,19 @@ void If::analyze(SemanticAnalyzer* analyzer) {
 	if (elze != nullptr) {
 		elze->is_void = is_void;
 		elze->analyze(analyzer);
-		if (type.is_void() and not elze->type.is_void() and not then->returning) {
-			type = Type::null();
+		if (type->is_void() and not elze->type->is_void() and not then->returning) {
+			type = Type::null;
 		}
-		type += elze->type;
-	} else if (not type.is_void() or then->returning) {
-		type += Type::null();
+		type = type->operator + (elze->type);
+	} else if (not type->is_void() or then->returning) {
+		type = type->operator + (Type::null);
 	}
-	if (is_void) type = {};
+	if (is_void) type = Type::void_;
 	throws |= then->throws or (elze != nullptr and elze->throws);
 	returning = then->returning and (elze != nullptr and elze->returning);
 	may_return = then->may_return or (elze != nullptr and elze->may_return);
-	return_type += then->return_type;
-	if (elze != nullptr) return_type += elze->return_type;
+	return_type = return_type->operator + (then->return_type);
+	if (elze != nullptr) return_type = return_type->operator + (elze->return_type);
 }
 
 Compiler::value If::compile(Compiler& c) const {
@@ -97,8 +97,8 @@ Compiler::value If::compile(Compiler& c) const {
 
 	c.insn_label(&label_then);
 
-	then_v = c.insn_convert(then->compile(c), type.fold());
-	if (!then_v.v) then_v = c.insn_convert(c.new_null(), type.fold());
+	then_v = c.insn_convert(then->compile(c), type->fold());
+	if (!then_v.v) then_v = c.insn_convert(c.new_null(), type->fold());
 	then->compile_end(c);
 
 	c.insn_branch(&label_end);
@@ -107,10 +107,10 @@ Compiler::value If::compile(Compiler& c) const {
 	c.insn_label(&label_else);
 
 	if (elze != nullptr) {
-		else_v = c.insn_convert(elze->compile(c), type.fold());
+		else_v = c.insn_convert(elze->compile(c), type->fold());
 		elze->compile_end(c);
-	} else if (not type.is_void()) {
-		else_v = c.insn_convert(c.new_null(), type.fold());
+	} else if (not type->is_void()) {
+		else_v = c.insn_convert(c.new_null(), type->fold());
 	}
 
 	c.insn_branch(&label_end);
@@ -118,7 +118,7 @@ Compiler::value If::compile(Compiler& c) const {
 
 	c.insn_label(&label_end);
 	
-	if (type.is_void()) {
+	if (type->is_void()) {
 		return {};
 	} else {
 		return c.insn_phi(type, then_v, label_then, else_v, label_else);

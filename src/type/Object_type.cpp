@@ -6,13 +6,13 @@
 
 namespace ls {
 
-Object_type::Object_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("object"), std::initializer_list<Type> {
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // refs
-	Type::boolean() // native
-}) }) {}
+Object_type::Object_type() : Pointer_type(Type::structure("object", {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // refs
+	Type::boolean // native
+})) {}
 
 bool Object_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Object_type*>(type);

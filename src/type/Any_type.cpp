@@ -6,13 +6,13 @@
 
 namespace ls {
 
-Any_type::Any_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("any"), std::initializer_list<Type> {
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // refs
-	Type::boolean() // native
-}) }) {}
+Any_type::Any_type() : Pointer_type(Type::structure("any", {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // refs
+	Type::boolean // native
+})) {}
 
 bool Any_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Any_type*>(type);

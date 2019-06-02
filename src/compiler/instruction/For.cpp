@@ -41,13 +41,13 @@ Location For::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}};
 }
 
-void For::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
+void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	// std::cout << "For::analyze() " << is_void << std::endl;
 
-	if (req_type.is_array()) {
+	if (req_type->is_array()) {
 		type = req_type;
 	} else {
-		type = {};
+		type = Type::void_;
 		body->is_void = true;
 	}
 
@@ -61,7 +61,7 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 		if (ins->may_return) {
 			returning = ins->returning;
 			may_return = ins->may_return;
-			return_type += ins->return_type;
+			return_type = return_type->operator + (ins->return_type);
 		}
 		if (ins->returning) {
 			analyzer->leave_block();
@@ -81,8 +81,8 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 	throws |= body->throws;
 	if (body->returning) returning = true;
 	if (body->may_return) may_return = true;
-	return_type += body->return_type;
-	if (req_type.is_array()) {
+	return_type = return_type->operator + (body->return_type);
+	if (req_type->is_array()) {
 		type = Type::array(body->type);
 	}
 	analyzer->leave_loop();
@@ -91,12 +91,12 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 	analyzer->enter_block();
 	for (Instruction* ins : increments) {
 		ins->is_void = true;
-		ins->analyze(analyzer, {});
+		ins->analyze(analyzer);
 		throws |= ins->throws;
 		if (ins->may_return) {
 			returning = ins->returning;
 			may_return = ins->may_return;
-			return_type += ins->return_type;
+			return_type = return_type->operator + (ins->return_type);
 		}
 		if (ins->returning) {
 			break;
@@ -113,8 +113,8 @@ Compiler::value For::compile(Compiler& c) const {
 	c.mark_offset(token->location.start.line);
 
 	Compiler::value output_v;
-	if (type.is_array()) {
-		output_v = c.new_array(type.element(), {});
+	if (type->is_array()) {
+		output_v = c.new_array(type->element(), {});
 		c.insn_inc_refs(output_v);
 		c.add_var("{output}", output_v); // Why create variable ? in case of `break 2` the output must be deleted
 	}

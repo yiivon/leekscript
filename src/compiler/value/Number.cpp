@@ -66,7 +66,7 @@ void Number::analyze(SemanticAnalyzer*) {
 			assert(false && "No support for mpf numbers yet");
 			// LCOV_EXCL_STOP
 		} else {
-			type = Type::real();
+			type = Type::real;
 		}
 	} else {
 		if (!mpz_value_initialized) {
@@ -74,30 +74,30 @@ void Number::analyze(SemanticAnalyzer*) {
 			mpz_value_initialized = true;
 		}
 		if (!mp_number and !long_number and mpz_fits_sint_p(mpz_value)) {
-			type = Type::integer();
+			type = Type::integer;
 			int_value = mpz_get_si(mpz_value);
 			double_value = int_value;
 		} else if (!mp_number and mpz_fits_slong_p(mpz_value)) {
-			type = Type::long_();
+			type = Type::long_;
 			long_value = mpz_get_si(mpz_value);
 			double_value = long_value;
 		} else {
-			type = Type::tmp_mpz_ptr();
+			type = Type::tmp_mpz_ptr;
 		}
 	}
 	if (pointer) {
-		type = Type::any();
+		type = Type::any;
 	}
 	// TODO ?
 	// type.constant = true;
 }
 
 bool Number::is_zero() const {
-	if (type.is_any() or type.is_real()) {
+	if (type->is_any() or type->is_real()) {
 		return double_value == 0;
-	} else if (type.is_long()) {
+	} else if (type->is_long()) {
 		return long_value == 0;
-	} else if (type.is_mpz_ptr()) {
+	} else if (type->is_mpz_ptr()) {
 		return mpz_cmp_ui(mpz_value, 0) == 0;
 	} else {
 		return int_value == 0;
@@ -105,19 +105,19 @@ bool Number::is_zero() const {
 }
 
 Compiler::value Number::compile(Compiler& c) const {
-	if (type.is_any()) {
+	if (type->is_any()) {
 		return c.insn_to_any(c.new_real(double_value));
 	}
-	if (type.is_long()) {
+	if (type->is_long()) {
 		return c.new_long(long_value);
 	}
-	if (type.is_real()) {
+	if (type->is_real()) {
 		return c.new_real(double_value);
 	}
-	if (type.is_mpz_ptr()) {
+	if (type->is_mpz_ptr()) {
 		auto s = c.new_const_string(clean_value);
-		auto r = c.create_entry("m", Type::tmp_mpz());
-		c.insn_call({}, {r, s, c.new_integer(base)}, "Number.mpz_init_str");
+		auto r = c.create_entry("m", Type::tmp_mpz);
+		c.insn_call(Type::void_, {r, s, c.new_integer(base)}, "Number.mpz_init_str");
 		c.increment_mpz_created();
 		return r;
 	}

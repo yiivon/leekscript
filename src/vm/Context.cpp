@@ -19,7 +19,7 @@ Context::Context(std::string ctx) {
 
 Context::~Context() {}
 
-void Context::add_variable(char* name, void* v, Type type) {
+void Context::add_variable(char* name, void* v, const Type* type) {
 	vars.insert({ name, { v, type } });
 }
 

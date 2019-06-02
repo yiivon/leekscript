@@ -6,9 +6,9 @@
 
 namespace ls {
 
-Struct_type::Struct_type(const std::string name, std::initializer_list<Type> types) : _name(name), _types(types) {}
+Struct_type::Struct_type(const std::string name, std::initializer_list<const Type*> types) : _name(name), _types(types) {}
 
-const Type& Struct_type::member(int p) const {
+const Type* Struct_type::member(int p) const {
 	return _types.at(p);
 }
 bool Struct_type::operator == (const Base_type* type) const {
@@ -30,7 +30,7 @@ llvm::Type* Struct_type::llvm(const Compiler& c) const {
 	if (_llvm_type == nullptr) {
 		std::vector<llvm::Type*> llvm_types;
 		for (const auto& type : _types) {
-			llvm_types.push_back(type.llvm_type(c));
+			llvm_types.push_back(type->llvm_type(c));
 		}
 		((Struct_type*) this)->_llvm_type = llvm::StructType::create(llvm_types, _name);
 	}

@@ -5,7 +5,7 @@ namespace ls {
 
 AbsoluteValue::AbsoluteValue() {
 	expression = nullptr;
-	type = Type::integer();
+	type = Type::integer;
 	throws = true;
 }
 
@@ -34,7 +34,7 @@ void AbsoluteValue::analyze(SemanticAnalyzer* analyzer) {
 Compiler::value AbsoluteValue::compile(Compiler& c) const {
 	auto ex = c.insn_to_any(expression->compile(c));
 	c.mark_offset(location().start.line);
-	auto abso = c.insn_invoke(Type::integer(), {ex}, "Value.absolute");
+	auto abso = c.insn_invoke(Type::integer, {ex}, "Value.absolute");
 	c.insn_delete_temporary(ex);
 	return abso;
 }

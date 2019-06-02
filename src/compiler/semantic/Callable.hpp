@@ -17,7 +17,7 @@ public:
 	Callable(std::vector<const CallableVersion*> versions) : versions(versions) {}
 	Callable(std::initializer_list<const CallableVersion*> versions) : versions(versions) {}
 
-	const CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
+	const CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<const Type*> arguments) const;
 	bool is_compatible(int argument_count);
 	void add_version(const CallableVersion* version);
 };

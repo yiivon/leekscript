@@ -9,9 +9,9 @@ namespace ls {
 class Template_type : public Any_type {
 	std::string _name;
 public:
-	Type _implementation;
+	const Type* _implementation = Type::void_;
 	Template_type(const std::string name) : _name(name) {}
-	void implement(Type type) const;
+	void implement(const Type* type) const;
 	virtual bool operator == (const Base_type*) const override;
 	virtual bool compatible(const Base_type*) const override;
 	virtual llvm::Type* llvm(const Compiler& c) const override;

@@ -7,13 +7,13 @@
 namespace ls {
 
 class Pointer_type : public Base_type {
-	const Type _type;
+	const Type* const _type;
 	llvm::Type* _llvm_type = nullptr;
 public:
-	Pointer_type(Type type);
-	const Type& pointed() const;
+	Pointer_type(const Type* type);
+	const Type* pointed() const;
 	virtual const std::string getName() const { return "pointer"; }
-	virtual const std::string getJsonName() const { return _type.getJsonName() + "*"; }
+	virtual const std::string getJsonName() const { return _type->getJsonName() + "*"; }
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;
 	virtual llvm::Type* llvm(const Compiler& c) const override;

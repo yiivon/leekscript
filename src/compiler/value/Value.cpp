@@ -7,7 +7,7 @@
 namespace ls {
 
 Value::Value() {
-	type = Type::any();
+	type = Type::any;
 	constant = false;
 }
 
@@ -19,35 +19,35 @@ Call Value::get_callable(SemanticAnalyzer*, int argument_count) const {
 
 void Value::analyze(SemanticAnalyzer*) {}
 
-bool Value::will_take(SemanticAnalyzer*, const std::vector<Type>& args, int) {
+bool Value::will_take(SemanticAnalyzer*, const std::vector<const Type*>& args, int) {
 	set_version(args, 1);
 	return false;
 }
 
-bool Value::will_store(SemanticAnalyzer*, const Type&) {
+bool Value::will_store(SemanticAnalyzer*, const Type*) {
 	return false;
 }
 
-bool Value::elements_will_store(SemanticAnalyzer*, const Type&, int level) {
+bool Value::elements_will_store(SemanticAnalyzer*, const Type*, int level) {
 	return false;
 }
 
 bool Value::must_be_any(SemanticAnalyzer*) {
-	if (type == Type::any()) {
+	if (type == Type::any) {
 		return false;
 	}
-	type = Type::any();
+	type = Type::any;
 	return true;
 }
 
 void Value::must_return_any(SemanticAnalyzer*) {}
 
-void Value::set_version(const std::vector<Type>& args, int) {
+void Value::set_version(const std::vector<const Type*>& args, int) {
 	version = args;
 	has_version = true;
 }
 
-Type Value::version_type(std::vector<Type>) const {
+const Type* Value::version_type(std::vector<const Type*>) const {
 	return type;
 }
 
@@ -59,7 +59,7 @@ bool Value::is_zero() const {
 	return false;
 }
 
-Compiler::value Value::compile_version(Compiler& c, std::vector<Type>) const {
+Compiler::value Value::compile_version(Compiler& c, std::vector<const Type*>) const {
 	return compile(c);
 }
 

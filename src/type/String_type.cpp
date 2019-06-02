@@ -7,23 +7,23 @@
 
 namespace ls {
 
-String_type::String_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("string"), std::initializer_list<Type> {
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // refs
-	Type::boolean() // native
-}) }) {}
+String_type::String_type() : Pointer_type(Type::structure("string", {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // refs
+	Type::boolean // native
+})) {}
 
-const Type& String_type::key() const {
-	return Type::integer_type;
+const Type* String_type::key() const {
+	return Type::integer;
 }
-const Type& String_type::element() const {
-	return Type::string_type;
+const Type* String_type::element() const {
+	return Type::string;
 }
-Type String_type::iterator() const {
+const Type* String_type::iterator() const {
 	return Type::structure("string_iterator", {
-		Type::any(), Type::integer(), Type::integer(), Type::integer(), Type::integer()
+		Type::any, Type::integer, Type::integer, Type::integer, Type::integer
 	});
 }
 bool String_type::operator == (const Base_type* type) const {

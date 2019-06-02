@@ -8,10 +8,10 @@ namespace ls {
 
 class Placeholder_type : public Any_type {
 	std::string _name;
-	Type _implementation;
+	const Type* _implementation = nullptr;
 public:
 	Placeholder_type(const std::string name) : _name(name) {}
-	void implement(Type type) const;
+	void implement(const Type* type) const;
 	virtual bool operator == (const Base_type*) const override;
 	virtual bool compatible(const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;

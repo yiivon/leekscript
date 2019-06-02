@@ -13,7 +13,7 @@ public:
 };
 class TypeExtractor {
 public:
-	virtual Type extract(SemanticAnalyzer*, std::vector<Value*> values) const;
+	virtual const Type* extract(SemanticAnalyzer*, std::vector<Value*> values) const;
 };
 
 class WillStoreMutator : public TypeMutator {
@@ -31,8 +31,8 @@ public:
 class WillTakeMutator : public TypeMutator {
 public:
 	int index;
-	std::vector<Type> types;
-	WillTakeMutator(int index, std::vector<Type> types) : index(index), types(types) {}
+	std::vector<const Type*> types;
+	WillTakeMutator(int index, std::vector<const Type*> types) : index(index), types(types) {}
 	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values) const override;
 };
 
@@ -40,13 +40,13 @@ class ElementExtractor : public TypeExtractor {
 public:
 	TypeExtractor* extractor;
 	ElementExtractor(TypeExtractor* extractor) : extractor(extractor) {}
-	virtual Type extract(SemanticAnalyzer*, std::vector<Value*> values) const override;
+	virtual const Type* extract(SemanticAnalyzer*, std::vector<Value*> values) const override;
 };
 class ArgumentExtractor : public TypeExtractor {
 public:
 	int index;
 	ArgumentExtractor(int index) : index(index) {}
-	virtual Type extract(SemanticAnalyzer*, std::vector<Value*> values) const override;
+	virtual const Type* extract(SemanticAnalyzer*, std::vector<Value*> values) const override;
 };
 
 }

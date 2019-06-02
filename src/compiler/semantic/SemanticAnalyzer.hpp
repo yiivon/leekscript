@@ -32,25 +32,24 @@ class SemanticVar {
 public:
 	std::string name;
 	VarScope scope;
-	std::map<std::string, Type> attr_types;
+	std::map<std::string, const Type*> attr_types;
 	int index;
 	int parent_index;
 	Value* value;
 	VariableDeclaration* vd;
 	Function* function; // In which function the variable is declared
-	Type initial_type;
-	std::vector<Type> version;
+	const Type* type = Type::void_;
+	std::vector<const Type*> version;
 	bool has_version = false;
 	LSValue* lsvalue = nullptr;
 	Call call;
 
-	SemanticVar(std::string name, VarScope scope, Type type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue, Call call = {}) :
-		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), initial_type(type), lsvalue(lsvalue), call(call) {}
+	SemanticVar(std::string name, VarScope scope, const Type* type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue, Call call = {}) :
+		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), type(type), lsvalue(lsvalue), call(call) {}
 
 	// TODO remove ?
-	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), initial_type(o.type()), lsvalue(o.lsvalue), call(o.call) {}
+	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), type(o.type), lsvalue(o.lsvalue), call(o.call) {}
 
-	Type type() const;
 	void must_be_any(SemanticAnalyzer*);
 };
 
@@ -85,8 +84,8 @@ public:
 	void leave_loop();
 	bool in_loop(int deepness) const;
 
-	std::shared_ptr<SemanticVar> add_var(Token*, Type, Value*, VariableDeclaration*);
-	std::shared_ptr<SemanticVar> add_parameter(Token*, Type);
+	std::shared_ptr<SemanticVar> add_var(Token*, const Type*, Value*, VariableDeclaration*);
+	std::shared_ptr<SemanticVar> add_parameter(Token*, const Type*);
 
 	std::shared_ptr<SemanticVar> get_var(Token* name);
 	std::map<std::string, std::shared_ptr<SemanticVar>>& get_local_vars();

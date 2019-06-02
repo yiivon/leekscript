@@ -48,34 +48,34 @@ Location ObjectAccess::location() const {
 	return {field->location.file, object->location().start, field->location.end};
 }
 
-void ObjectAccess::set_version(const std::vector<Type>& args, int level) {
+void ObjectAccess::set_version(const std::vector<const Type*>& args, int level) {
 	// std::cout << "ObjectAccess::set_version(" << args << ", " << level << ")" << std::endl;
 	version = args;
 	has_version = true;
 	if (call) {
 		for (const auto& m : call->callable->versions) {
-			auto version = m->type.arguments();
+			auto version = m->type->arguments();
 			if (version == args) {
-				type = Type::fun(m->type.return_type(), args, (const Value*) this);
+				type = Type::fun(m->type->return_type(), args, (const Value*) this);
 			}
 		}
 	}
 }
 
-Type ObjectAccess::version_type(std::vector<Type> args) const {
+const Type* ObjectAccess::version_type(std::vector<const Type*> args) const {
 	// std::cout << "ObjectAccess::version_tyoe(" << args << ")" << std::endl;
 	if (call) {
 		for (const auto& m : call->callable->versions) {
-			auto version = m->type.arguments();
+			auto version = m->type->arguments();
 			if (version == args) {
-				return Type::fun(m->type.return_type(), args, (const Value*) this);
+				return Type::fun(m->type->return_type(), args, (const Value*) this);
 			}
 		}
 	}
 	return type;
 }
 
-bool ObjectAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& args, int level) {
+bool ObjectAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "OA will take " << args << std::endl;
 	set_version(args, 1);
 	return false;
@@ -87,14 +87,14 @@ Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) 
 	auto vv = dynamic_cast<VariableValue*>(object);
 	auto value_class = (LSClass*) analyzer->vm->internal_vars["Value"]->lsvalue;
 
-	std::string object_class_name = object->type.class_name();
+	std::string object_class_name = object->type->class_name();
 	LSClass* object_class = nullptr;
 	if (analyzer->vm->internal_vars.find(object_class_name) != analyzer->vm->internal_vars.end()) {
 		object_class = (LSClass*) analyzer->vm->internal_vars[object_class_name]->lsvalue;
 	}
 
 	// <class>.<field>
-	if (object->type.is_class() and vv != nullptr) {
+	if (object->type->is_class() and vv != nullptr) {
 		auto std_class = (LSClass*) analyzer->vm->internal_vars[vv->name]->lsvalue;
 		// <class>.<method>
 		auto i = std_class->methods.find(field->content);
@@ -118,10 +118,10 @@ Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) 
 	if (i != value_class->methods.end() and i->second.is_compatible(argument_count + 1)) {
 		return { &i->second, object };
 	}
-	if (not object->type.is_class()) {
+	if (not object->type->is_class()) {
 		std::ostringstream oss;
 		oss << object << "." << field->content;
-		auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
+		auto type = Type::fun(Type::any, {Type::any, Type::any});
 		return { new Callable { new CallableVersion { oss.str(), type, this, {}, {}, true, true } }, object };
 	}
 	return {};
@@ -132,10 +132,10 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "ObjectAccess analyse " << this << std::endl;
 
 	object->analyze(analyzer);
-	type = Type::any();
+	type = Type::any;
 
 	// Get the object class : 12 => Number
-	object_class_name = object->type.class_name();
+	object_class_name = object->type->class_name();
 	LSClass* object_class = nullptr;
 	if (object_class_name != "Value" and analyzer->vm->internal_vars.find(object_class_name) != analyzer->vm->internal_vars.end()) {
 		object_class = (LSClass*) analyzer->vm->internal_vars[object_class_name]->lsvalue;
@@ -145,7 +145,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 	auto vv = dynamic_cast<VariableValue*>(object);
 
 	bool found = false;
-	if (object->type.is_class() and vv != nullptr) {
+	if (object->type->is_class() and vv != nullptr) {
 
 		auto std_class = (LSClass*) analyzer->vm->internal_vars[vv->name]->lsvalue;
 		
@@ -154,17 +154,17 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 			auto& method = std_class->methods[field->content];
 			int i = 0;
 			for (const auto& m : method.versions) {
-				versions.insert({m->type.arguments(), std_class->name + "." + field->content + "." + std::to_string(i)});
+				versions.insert({m->type->arguments(), std_class->name + "." + field->content + "." + std::to_string(i)});
 				i++;
 			}
-			type = Type::fun(method.versions[0]->type.return_type(), method.versions[0]->type.arguments(), (ObjectAccess*) this);
+			type = Type::fun(method.versions[0]->type->return_type(), method.versions[0]->type->arguments(), (ObjectAccess*) this);
 			default_version_fun = std_class->name + "." + field->content;
 			class_method = true;
 			call = new Call { &method };
 			found = true;
 		}
 	}
-	if (!found and object->type.is_class() and vv != nullptr) {
+	if (!found and object->type->is_class() and vv != nullptr) {
 
 		auto std_class = (LSClass*) analyzer->vm->internal_vars[vv->name]->lsvalue;
 
@@ -218,7 +218,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 				try {
 					for (const auto& m : object_class->methods.at(field->content).versions) {
 						if (!m->addr) continue;
-						versions.insert({m->type.arguments(), object_class->name + "." + field->content});
+						versions.insert({m->type->arguments(), object_class->name + "." + field->content});
 					}
 					type = object_class->methods.at(field->content).versions[0]->type;
 					default_version_fun = object_class->name + "." + field->content;
@@ -227,14 +227,14 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 					try {
 						for (const auto& m : value_class->methods.at(field->content).versions) {
 							if (!m->addr) continue;
-							versions.insert({m->type.arguments(), "Value." + field->content});
+							versions.insert({m->type->arguments(), "Value." + field->content});
 						}
 						type = value_class->methods.at(field->content).versions[0]->type;
 						default_version_fun = "Value." + field->content;
 						class_field = true;
 					} catch (...) {
 						if (object_class->name != "Object") {
-							if (object->type.is_class() and vv != nullptr) {
+							if (object->type->is_class() and vv != nullptr) {
 								analyzer->add_error({Error::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, vv->name}});
 							} else {
 								analyzer->add_error({Error::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, object_class->name}});
@@ -271,7 +271,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 		return c.insn_call(type, {obj}, native_access_function);
 	}
 	if (attr_addr) {
-		return c.insn_load(c.get_symbol(object->to_string() + "." + field->content, type.pointer()));
+		return c.insn_load(c.get_symbol(object->to_string() + "." + field->content, type->pointer()));
 	}
 
 	// Class method : 12.abs
@@ -287,7 +287,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	return c.insn_invoke(type, {o, k}, "Value.attr");
 }
 
-Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<Type> version) const {
+Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<const Type*> version) const {
 	if (class_method) {
 		return c.new_function(versions.at(version), Type::fun());
 	}
@@ -302,7 +302,7 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	}}();
 	object->compile_end(c);
 	auto k = c.new_const_string(field->content);
-	return c.insn_invoke(type.pointer(), {o, k}, "Value.attrL");
+	return c.insn_invoke(type->pointer(), {o, k}, "Value.attrL");
 }
 
 Value* ObjectAccess::clone() const {

@@ -9,7 +9,7 @@ void Callable::add_version(const CallableVersion* v) {
 	versions.push_back(v);
 }
 
-const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const {
+const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector<const Type*> arguments) const {
 	// std::cout << "Callable::resolve(" << arguments << ")" << std::endl;
 	const CallableVersion* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
@@ -25,7 +25,7 @@ const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector
 
 bool Callable::is_compatible(int argument_count) {
 	for (const auto& version : versions) {
-		if (version->type.arguments().size() == (size_t) argument_count) return true;
+		if (version->type->arguments().size() == (size_t) argument_count) return true;
 	}
 	return false;
 }

@@ -59,12 +59,12 @@ Location FunctionCall::location() const {
 }
 
 Call FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
-	std::vector<Type> arguments_types;
+	std::vector<const Type*> arguments_types;
 	for (const auto& argument : arguments) {
 		arguments_types.push_back(argument->type);
 	}
 	auto type = function->version_type(arguments_types);
-	return { new CallableVersion { "<fc>", type.return_type(), this, {}, {} } };
+	return { new CallableVersion { "<fc>", type->return_type(), this, {}, {} } };
 }
 
 void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
@@ -82,7 +82,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	}
 
 	// Perform a will_take to prepare eventual versions
-	std::vector<Type> arguments_types;
+	std::vector<const Type*> arguments_types;
 	for (const auto& argument : arguments) {
 		arguments_types.push_back(argument->type);
 	}
@@ -93,23 +93,23 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 
 	// Retrieve the callable version
 	call = function->get_callable(analyzer, arguments_types.size());
-	if (not function->type.can_be_callable()) {
+	if (not function->type->can_be_callable()) {
 		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 	if (call.callable) {
 		callable_version = call.resolve(analyzer, arguments_types);
 		if (callable_version) {
 			// std::cout << "Version: " << callable_version << std::endl;
-			type = callable_version->type.return_type();
+			type = callable_version->type->return_type();
 			throws |= callable_version->flags & Module::THROWS;
 			call.apply_mutators(analyzer, callable_version, arguments);
 			
 			int offset = call.object ? 1 : 0;
 			for (size_t a = 0; a < arguments.size(); ++a) {
-				auto argument_type = callable_version->type.argument(a + offset);
-				if (argument_type.is_function()) {
-					arguments.at(a)->will_take(analyzer, argument_type.arguments(), 1);
-					arguments.at(a)->set_version(argument_type.arguments(), 1);
+				auto argument_type = callable_version->type->argument(a + offset);
+				if (argument_type->is_function()) {
+					arguments.at(a)->will_take(analyzer, argument_type->arguments(), 1);
+					arguments.at(a)->set_version(argument_type->arguments(), 1);
 				}
 			}
 			if (callable_version->value) {
@@ -120,18 +120,18 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 				if (vv and vv->var and vv->var->value and vv->var->name == analyzer->current_function()->name) {
 					type = analyzer->current_function()->getReturnType();
 				} else {
-					type = function_type.return_type();
+					type = function_type->return_type();
 				}
 			}
 			if (callable_version->unknown) {
 				for (const auto& arg : arguments) {
-					if (arg->type.is_function()) {
+					if (arg->type->is_function()) {
 						arg->must_return_any(analyzer);
 					}
 				}
 			}
-			if (type.is_mpz()) {
-				type = type == Type::tmp_mpz() ? Type::tmp_mpz_ptr() : Type::mpz_ptr();
+			if (type->is_mpz()) {
+				type = type == Type::tmp_mpz ? Type::tmp_mpz_ptr : Type::mpz_ptr;
 			}
 			return;
 		}
@@ -152,9 +152,9 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	if (oa != nullptr) {
 		auto field_name = oa->field->content;
 		auto object_type = oa->object->type;
-		std::vector<Type> arg_types;
+		std::vector<const Type*> arg_types;
 		for (auto arg : arguments) {
-			arg_types.push_back(arg->type.fold());
+			arg_types.push_back(arg->type->fold());
 		}
 		std::string args_string = "";
 		for (unsigned i = 0; i < arg_types.size(); ++i) {
@@ -163,12 +163,12 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 			if (i > 0) args_string += ", ";
 			args_string += oss.str();
 		}
-		if (object_type.is_class()) { // String.size("salut")
+		if (object_type->is_class()) { // String.size("salut")
 			std::string clazz = ((VariableValue*) oa->object)->name;
 			analyzer->add_error({Error::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
 		} else {  // "salut".size()
 			bool has_unknown_argument = false;
-			if (!object_type.fold().is_any() && !has_unknown_argument) {
+			if (!object_type->fold()->is_any() && !has_unknown_argument) {
 				std::ostringstream obj_type_ss;
 				obj_type_ss << object_type;
 				analyzer->add_error({Error::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
@@ -183,11 +183,11 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	arg_types.clear();
 	auto arguments_count = arguments.size();
 	if (this_ptr != nullptr) arguments_count++;
-	bool arguments_valid = arguments_count <= function->type.arguments().size();
-	auto total_arguments_passed = std::max(arguments.size(), function->type.arguments().size());
+	bool arguments_valid = arguments_count <= function->type->arguments().size();
+	auto total_arguments_passed = std::max(arguments.size(), function->type->arguments().size());
 	int offset = this_ptr != nullptr ? 1 : 0;
 	size_t a = 0;
-	for (auto& argument_type : function->type.arguments()) {
+	for (auto& argument_type : function->type->arguments()) {
 		if (a == 0 and this_ptr != nullptr) {
 			// OK it's the object for method call
 		} else if (a < arguments_count) {
@@ -203,30 +203,30 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 		}
 		a++;
 	}
-	if (function->type.is_function() and !arguments_valid) {
+	if (function->type->is_function() and !arguments_valid) {
 		analyzer->add_error({Error::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
 			function->to_string(),
-			std::to_string(function->type.arguments().size()),
+			std::to_string(function->type->arguments().size()),
 			std::to_string(total_arguments_passed)
 		}});
 		return;
 	}
 }
 
-bool FunctionCall::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& args, int level) {
+bool FunctionCall::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "FC " << this << " will_take " << args << std::endl;
 	function->will_take(analyzer, args, level + 1);
 	return false;
 }
 
-void FunctionCall::set_version(const std::vector<Type>& args, int level) {
+void FunctionCall::set_version(const std::vector<const Type*>& args, int level) {
 	function->set_version(args, level + 1);
 }
 
-Type FunctionCall::version_type(std::vector<Type> version) const {
+const Type* FunctionCall::version_type(std::vector<const Type*> version) const {
 	// std::cout << "FunctionCall " << this << " ::version_type(" << version << ") " << std::endl;
 	auto function_type = function->version_type(function->version);
-	auto ft = dynamic_cast<const Function_type*>(function_type.return_type()._types[0].get());
+	auto ft = dynamic_cast<const Function_type*>(function_type->return_type()->_types[0].get());
 	assert(ft != nullptr);
 	return ft->function()->version_type(version);
 }
@@ -243,23 +243,23 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// Pre-compile the call (compile the potential object first)
 	if (call.object) {
 		args.push_back(call.pre_compile_call(c));
-		types.push_back(args.at(0).t.id());
+		types.push_back(args.at(0).t->id());
 	}
 
 	int offset = call.object ? 1 : 0;
-	auto fun = dynamic_cast<const Function_type*>(callable_version->type._types[0].get());
+	auto fun = dynamic_cast<const Function_type*>(callable_version->type->_types[0].get());
 	auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
 
-	for (unsigned i = 0; i < callable_version->type.arguments().size(); ++i) {
+	for (unsigned i = 0; i < callable_version->type->arguments().size(); ++i) {
 		if (i < arguments.size()) {
-			types.push_back((LSValueType) callable_version->type.argument(i + offset).id());
-			if (arguments.at(i)->type.is_primitive())
-				args.push_back(c.insn_convert(arguments.at(i)->compile(c), callable_version->type.argument(i + offset)));
+			types.push_back((LSValueType) callable_version->type->argument(i + offset)->id());
+			if (arguments.at(i)->type->is_primitive())
+				args.push_back(c.insn_convert(arguments.at(i)->compile(c), callable_version->type->argument(i + offset)));
 			else
 				args.push_back(arguments.at(i)->compile(c));
 			arguments.at(i)->compile_end(c);
 		} else if (f and f->defaultValues.at(i)) {
-			types.push_back((LSValueType) f->defaultValues.at(i)->type.id());
+			types.push_back((LSValueType) f->defaultValues.at(i)->type->id());
 			args.push_back(f->defaultValues.at(i)->compile(c));
 		}
 	}
@@ -267,7 +267,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	c.insn_check_args(args, types);
 	auto r = call.compile_call(c, callable_version, args, false);
 	c.inc_ops(1);
-	if (r.t.is_mpz()) {
+	if (r.t->is_mpz()) {
 		auto r2 = c.create_entry("m", r.t);
 		c.insn_store(r2, r);
 		r = r2;

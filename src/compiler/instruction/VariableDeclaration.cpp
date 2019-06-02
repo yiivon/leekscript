@@ -50,15 +50,15 @@ void VariableDeclaration::analyze_global_functions(SemanticAnalyzer* analyzer) {
 	}
 }
 
-void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
+void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 
-	type = {};
+	type = Type::void_;
 	throws = false;
 
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto& var = variables.at(i);
-		auto v = analyzer->add_var(var.get(), Type::any(), expressions.at(i), this);
+		auto v = analyzer->add_var(var.get(), Type::any, expressions.at(i), this);
 		if (v == nullptr) {
 			continue;
 		}
@@ -72,9 +72,12 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type&) {
 		} else {
 			v->value = new Nulll(std::shared_ptr<Token>(nullptr));
 		}
-		v->value->type.constant = constant;
-		if (v->type()._types.size() == 0) {
+		if (v->value->type->is_void()) {
 			analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
+		} else {
+			v->type = v->value->type;
+			if (v->type->is_mpz()) v->type = v->type->not_temporary()->pointer();
+			if (constant) v->type = v->type->add_constant();
 		}
 		vars.insert({var->content, v});
 	}
@@ -91,29 +94,29 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 
 			Value* ex = expressions[i];
 
-			if (dynamic_cast<Function*>(ex) and not ex->type.is_closure()) {
+			if (dynamic_cast<Function*>(ex) and not ex->type->is_closure()) {
 				continue;
 			}
 			auto val = ex->compile(c);
 			ex->compile_end(c);
 
 			auto val_type = ex->type;
-			if (val_type.is_mpz_ptr()) val_type = Type::mpz();
-			auto var = c.create_and_add_var(name, val_type.not_temporary());
+			if (val_type->is_mpz_ptr()) val_type = Type::mpz;
+			auto var = c.create_and_add_var(name, val_type->not_temporary());
 
-			if (!val.t.reference) {
+			if (!val.t->reference) {
 				val = c.insn_move_inc(val);
 			}
 			// TODO we don't add mpz values to function vars because function vars doesn't work properly yet
-			if (not val.t.is_mpz_ptr()) {
+			if (not val.t->is_mpz_ptr()) {
 				c.add_function_var(name, var);
 			}
-			if (ex->type.is_mpz_ptr()) {
+			if (ex->type->is_mpz_ptr()) {
 				val = c.insn_load(val);
 			}
 			c.insn_store(var, val);
 		} else {
-			auto var = c.create_and_add_var(name, Type::null());
+			auto var = c.create_and_add_var(name, Type::null);
 			c.insn_store(var, c.new_null());
 		}
 	}

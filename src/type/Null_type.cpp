@@ -7,13 +7,13 @@
 
 namespace ls {
 
-Null_type::Null_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("null"), std::initializer_list<Type> {
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // refs
-	Type::boolean() // native
-}) }) {}
+Null_type::Null_type() : Pointer_type(Type::structure("null", {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // refs
+	Type::boolean // native
+})) {}
 
 bool Null_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Null_type*>(type);

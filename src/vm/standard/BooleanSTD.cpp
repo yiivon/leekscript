@@ -13,37 +13,37 @@ BooleanSTD::BooleanSTD(VM* vm) : Module(vm, "Boolean") {
 	 * Constructors
 	 */
 	constructor_({
-		{Type::any(), {Type::boolean()}, (void*) LSBoolean::create}
+		{Type::any, {Type::boolean}, (void*) LSBoolean::create}
 	});
 
 	operator_("+", {
-		{Type::const_boolean(), Type::const_string(), Type::tmp_string(), (void*) add},
-		{Type::const_boolean(), Type::tmp_string(), Type::tmp_string(), (void*) add_tmp},
-		{Type::const_boolean(), Type::const_boolean(), Type::integer(), add_bool},
-		{Type::const_boolean(), Type::const_real(), Type::real(), add_bool},
-		{Type::const_boolean(), Type::const_integer(), Type::integer(), add_bool}
+		{Type::const_boolean, Type::const_string, Type::tmp_string, (void*) add},
+		{Type::const_boolean, Type::tmp_string, Type::tmp_string, (void*) add_tmp},
+		{Type::const_boolean, Type::const_boolean, Type::integer, add_bool},
+		{Type::const_boolean, Type::const_real, Type::real, add_bool},
+		{Type::const_boolean, Type::const_integer, Type::integer, add_bool}
 	});
 
 	operator_("-", {
-		{Type::const_boolean(), Type::const_boolean(), Type::integer(), sub_bool},
-		{Type::const_boolean(), Type::const_real(), Type::real(), sub_bool},
-		{Type::const_boolean(), Type::const_integer(), Type::integer(), sub_bool}
+		{Type::const_boolean, Type::const_boolean, Type::integer, sub_bool},
+		{Type::const_boolean, Type::const_real, Type::real, sub_bool},
+		{Type::const_boolean, Type::const_integer, Type::integer, sub_bool}
 	});
 
 	operator_("*", {
-		{Type::const_boolean(), Type::const_boolean(), Type::integer(), mul_bool},
-		{Type::const_boolean(), Type::const_real(), Type::real(), mul_bool},
-		{Type::const_boolean(), Type::const_integer(), Type::integer(), mul_bool}
+		{Type::const_boolean, Type::const_boolean, Type::integer, mul_bool},
+		{Type::const_boolean, Type::const_real, Type::real, mul_bool},
+		{Type::const_boolean, Type::const_integer, Type::integer, mul_bool}
 	});
 
 	method("compare", {
-		{Type::any(), {Type::const_any(), Type::const_any()}, (void*) compare_ptr_ptr_ptr},
-		{Type::integer(), {Type::const_boolean(), Type::const_any()}, compare_val_val}
+		{Type::any, {Type::const_any, Type::const_any}, (void*) compare_ptr_ptr_ptr},
+		{Type::integer, {Type::const_boolean, Type::const_any}, compare_val_val}
 	});
 
 	/** Internal **/
 	method("to_string", {
-		{Type::tmp_string(), {Type::boolean()}, (void*) to_string}
+		{Type::tmp_string, {Type::boolean}, (void*) to_string}
 	});
 }
 

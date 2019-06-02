@@ -20,12 +20,12 @@ Location ExpressionInstruction::location() const {
 	return value->location();
 }
 
-void ExpressionInstruction::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
+void ExpressionInstruction::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	// std::cout << "ExpressionInstruction::analyze() " << is_void << std::endl;
 	value->is_void = is_void;
 	value->analyze(analyzer);
-	if (req_type.is_void()) {
-		type = {};
+	if (req_type->is_void()) {
+		type = Type::void_;
 	} else {
 		type = value->type;
 	}
@@ -38,7 +38,7 @@ void ExpressionInstruction::analyze(SemanticAnalyzer* analyzer, const Type& req_
 Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 	auto v = value->compile(c);
 	value->compile_end(c);
-	assert(!v.v or v.t.llvm_type(c) == v.v->getType());
+	assert(!v.v or v.t->llvm_type(c) == v.v->getType());
 	return v;
 }
 

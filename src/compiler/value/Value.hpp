@@ -13,17 +13,17 @@ class SemanticAnalyzer;
 
 class Value {
 public:
-	Type type;
-	Type return_type;
+	const Type* type = Type::void_;
+	const Type* return_type = Type::void_;
 	bool returning = false;
 	bool may_return = false;
-	std::vector<Type> version;
+	std::vector<const Type*> version;
 	bool has_version = false;
-	std::map<std::string, Type> attr_types;
+	std::map<std::string, const Type*> attr_types;
 	bool constant;
 	bool parenthesis = false;
 	std::string default_version_fun;
-	std::map<std::vector<Type>, std::string> versions;
+	std::map<std::vector<const Type*>, std::string> versions;
 	bool is_void = false;
 	bool throws = false;
 
@@ -39,18 +39,18 @@ public:
 
 	virtual Location location() const = 0;
 
-	virtual bool will_take(SemanticAnalyzer*, const std::vector<Type>& args_type, int level);
-	virtual bool will_store(SemanticAnalyzer*, const Type&);
-	virtual bool elements_will_store(SemanticAnalyzer*, const Type&, int level);
+	virtual bool will_take(SemanticAnalyzer*, const std::vector<const Type*>& args_type, int level);
+	virtual bool will_store(SemanticAnalyzer*, const Type*);
+	virtual bool elements_will_store(SemanticAnalyzer*, const Type*, int level);
 	virtual bool must_be_any(SemanticAnalyzer*);
 	virtual void must_return_any(SemanticAnalyzer*);
-	virtual void set_version(const std::vector<Type>&, int level);
-	virtual Type version_type(std::vector<Type>) const;
+	virtual void set_version(const std::vector<const Type*>&, int level);
+	virtual const Type* version_type(std::vector<const Type*>) const;
 	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const;
 	virtual void analyze(SemanticAnalyzer*);
 
 	virtual Compiler::value compile(Compiler&) const = 0;
-	virtual Compiler::value compile_version(Compiler&, std::vector<Type>) const;
+	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*>) const;
 	virtual void compile_end(Compiler&) const {}
 
 	virtual Value* clone() const = 0;

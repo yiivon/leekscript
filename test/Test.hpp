@@ -125,7 +125,7 @@ public:
 		void exception(ls::vm::Exception, std::vector<ls::vm::exception_frame> frames = {{"test", "main", 1}});
 		void output(std::string expected);
 		void quine();
-		void type(ls::Type);
+		void type(const ls::Type*);
 		Input& timeout(int ms);
 		Input& ops_limit(long int ops);
 		Input& context(ls::Context* ctx);

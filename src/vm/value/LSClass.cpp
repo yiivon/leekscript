@@ -35,7 +35,7 @@ LSClass::~LSClass() {
 	}
 }
 
-void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates, bool legacy) {
+void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<const Type*> templates, bool legacy) {
 	Callable callable;
 	for (const auto& v : impl) {
 		if ((v.flags & Module::LEGACY) and not legacy) continue;
@@ -51,14 +51,14 @@ void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion>
 	}
 	// Add first implementation as default method
 	auto fun = new LSFunction(impl.begin()->addr);
-	Type type = impl.begin()->type;
+	auto type = impl.begin()->type;
 	static_fields.insert({name, {name, type, fun}});
 }
 
-void LSClass::addField(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
+void LSClass::addField(std::string name, const Type* type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
 	fields.insert({name, {name, type, fun, nullptr}});
 }
-void LSClass::addField(std::string name, Type type, void* fun) {
+void LSClass::addField(std::string name, const Type* type, void* fun) {
 	fields.insert({name, {name, type, fun, nullptr}});
 }
 
@@ -66,7 +66,7 @@ void LSClass::addStaticField(field f) {
 	static_fields.insert({f.name, f});
 }
 
-void LSClass::addOperator(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates, bool legacy) {
+void LSClass::addOperator(std::string name, std::initializer_list<CallableVersion> impl, std::vector<const Type*> templates, bool legacy) {
 	std::vector<CallableVersion> versions;
 	for (const auto& v : impl) {
 		if ((v.flags & Module::LEGACY) and not legacy) continue;

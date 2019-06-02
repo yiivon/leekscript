@@ -22,7 +22,7 @@ Location Continue::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}};
 }
 
-void Continue::analyze(SemanticAnalyzer* analyzer, const Type&) {
+void Continue::analyze(SemanticAnalyzer* analyzer, const Type*) {
 
 	// continue must be in a loop
 	if (!analyzer->in_loop(deepness)) {

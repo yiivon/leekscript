@@ -85,17 +85,17 @@ void Match::analyze(ls::SemanticAnalyzer* analyzer) {
 	}
 	if (!has_default) {
 		// Return type is always pointer because in the default case, null is return
-		type = Type::any();
+		type = Type::any;
 		for (Value* r : returns) {
 			r->analyze(analyzer);
 			throws |= r->throws;
 		}
 	} else {
-		type = {};
+		type = Type::void_;
 		for (Value* ret : returns) {
 			ret->analyze(analyzer);
 			throws |= ret->throws;
-			type = type * ret->type;
+			type = type->operator * (ret->type);
 		}
 	}
 }
@@ -141,7 +141,7 @@ Compiler::value Match::construct_branch(Compiler& c, Compiler::value v, size_t i
 
 Compiler::value Match::compile(Compiler& c) const {
 	auto v = value->compile(c);
-	v.t.temporary = false;
+	v.t = v.t->not_temporary();
 	c.insn_inc_refs(v);
 	auto res = construct_branch(c, v, 0);
 	c.insn_delete(v);

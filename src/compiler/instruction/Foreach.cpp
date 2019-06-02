@@ -25,10 +25,10 @@ void Foreach::print(std::ostream& os, int indent, bool debug, bool condensed) co
 	os << "for ";
 
 	if (key != nullptr) {
-		os << key->content << " " << container->type.key();
+		os << key->content << " " << container->type->key();
 		os << " : ";
 	}
-	os << value->content << " " << container->type.element();
+	os << value->content << " " << container->type->element();
 
 	os << " in ";
 	container->print(os, indent + 1, debug);
@@ -41,12 +41,12 @@ Location Foreach::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}};
 }
 
-void Foreach::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
+void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 
-	if (req_type.is_array()) {
+	if (req_type->is_array()) {
 		type = req_type;
 	} else {
-		type = {};
+		type = Type::void_;
 		body->is_void = true;
 	}
 	analyzer->enter_block();
@@ -54,13 +54,13 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 	container->analyze(analyzer);
 	throws = container->throws;
 
-	if (container->type._types.size() != 0 and not container->type.iterable() and not container->type.is_any()) {
-		analyzer->add_error({Error::Type::VALUE_NOT_ITERABLE, container->location(), container->location(), {container->to_string(), container->type.to_string()}});
+	if (container->type->_types.size() != 0 and not container->type->iterable() and not container->type->is_any()) {
+		analyzer->add_error({Error::Type::VALUE_NOT_ITERABLE, container->location(), container->location(), {container->to_string(), container->type->to_string()}});
 		return;
 	}
 
-	key_type = container->type.key();
-	value_type = container->type.element();
+	key_type = container->type->key();
+	value_type = container->type->element();
 	if (key != nullptr) {
 		key_var = analyzer->add_var(key.get(), key_type, nullptr, nullptr);
 	}
@@ -69,7 +69,7 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 	analyzer->enter_loop();
 	body->analyze(analyzer);
 	throws |= body->throws;
-	if (req_type.is_array()) {
+	if (req_type->is_array()) {
 		type = Type::tmp_array(body->type);
 	}
 	analyzer->leave_loop();
@@ -78,7 +78,7 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type& req_type) {
 
 Compiler::value Foreach::compile(Compiler& c) const {
 	auto container_v = container->compile(c);
-	return c.insn_foreach(container_v, type.element(), value->content, key ? key->content : "", [&](Compiler::value value, Compiler::value key) {
+	return c.insn_foreach(container_v, type->element(), value->content, key ? key->content : "", [&](Compiler::value value, Compiler::value key) {
 		return body->compile(c);
 	});
 }

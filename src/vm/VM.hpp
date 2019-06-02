@@ -55,7 +55,7 @@ public:
 		int mpz_objects_deleted = 0;
 		std::string assembly;
 		std::string pseudo_code;
-		Type type;
+		const Type* type;
 	};
 
 	std::vector<Module*> modules;
@@ -88,8 +88,8 @@ public:
 
 	/** Add a module **/
 	void add_module(Module* m);
-	void add_internal_var(std::string name, Type type, LSValue* value, Call call = {});
-	void add_internal_var(std::string name, Type type, Function* function);
+	void add_internal_var(std::string name, const Type* type, LSValue* value, Call call = {});
+	void add_internal_var(std::string name, const Type* type, Function* function);
 	
 	void* resolve_symbol(std::string name);
 };

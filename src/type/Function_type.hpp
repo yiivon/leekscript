@@ -8,12 +8,12 @@
 namespace ls {
 
 class Function_type : public Pointer_type {
-	Type _return_type;
-	std::vector<Type> _arguments;
+	const Type* const _return_type;
+	std::vector<const Type*> _arguments;
 	bool _closure;
 	const Value* _function;
 public:
-	Function_type(const Type&, const std::vector<Type>&, bool closure = false, const Value* function = nullptr);
+	Function_type(const Type*, const std::vector<const Type*>&, bool closure = false, const Value* function = nullptr);
 	bool closure() const { return _closure; }
 	const Value* function() const { return _function; }
 	virtual int id() const override { return 9; }
@@ -24,9 +24,9 @@ public:
 	virtual int distance(const Base_type* type) const override;
 	virtual bool compatible(const Base_type*) const override;
 	virtual bool castable(const Base_type*) const override;
-	virtual const Type& return_type() const override;
-	virtual const std::vector<Type>& arguments() const override;
-	virtual const Type& argument(size_t) const override;
+	virtual const Type* return_type() const override;
+	virtual const std::vector<const Type*>& arguments() const override;
+	virtual const Type* argument(size_t) const override;
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
 

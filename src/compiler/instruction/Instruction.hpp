@@ -13,8 +13,8 @@ class SemanticAnalyzer;
 class Instruction {
 public:
 
-	Type type;
-	Type return_type;
+	const Type* type = Type::void_;
+	const Type* return_type = Type::void_;
 	bool returning = false;
 	bool may_return = false;
 	bool is_void = false;
@@ -25,7 +25,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const = 0;
 	virtual Location location() const = 0;
 
-	virtual void analyze(SemanticAnalyzer* analyzer, const Type& type = Type::any()) = 0;
+	virtual void analyze(SemanticAnalyzer* analyzer, const Type* type = Type::any) = 0;
 
 	virtual Compiler::value compile(Compiler&) const;
 

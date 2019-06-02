@@ -10,7 +10,7 @@ namespace ls {
 class ContextVar {
 public:
 	void* value;
-	Type type;
+	const Type* type;
 };
 
 class Context {
@@ -22,7 +22,7 @@ public:
 
 	std::map<std::string, ContextVar> vars;
 
-	void add_variable(char* name, void* v, Type type);
+	void add_variable(char* name, void* v, const Type* type);
 };
 
 }

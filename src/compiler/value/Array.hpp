@@ -22,9 +22,9 @@ public:
 	virtual Location location() const override;
 
 	virtual void analyze(SemanticAnalyzer*) override;
-	void elements_will_take(SemanticAnalyzer*, const std::vector<Type>&, int level);
-	virtual bool will_store(SemanticAnalyzer* analyzer, const Type& type) override;
-	virtual bool elements_will_store(SemanticAnalyzer* analyzer, const Type& type, int level) override;
+	void elements_will_take(SemanticAnalyzer*, const std::vector<const Type*>&, int level);
+	virtual bool will_store(SemanticAnalyzer* analyzer, const Type* type) override;
+	virtual bool elements_will_store(SemanticAnalyzer* analyzer, const Type* type, int level) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 

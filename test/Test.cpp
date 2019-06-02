@@ -272,7 +272,7 @@ void Test::Input::quine() {
 	}
 }
 
-void Test::Input::type(ls::Type type) {
+void Test::Input::type(const ls::Type* type) {
 	if (disabled) return disable();
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	
@@ -284,6 +284,7 @@ void Test::Input::type(ls::Type type) {
 	std::ostringstream oss_actual;
 	oss_actual << result.type;
 
+	// std::cout << (void*) result.type << " " << (void*) type << std::endl;
 	if (result.type == type) {
 		pass(oss.str());
 	} else {

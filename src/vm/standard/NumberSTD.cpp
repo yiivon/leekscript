@@ -25,503 +25,503 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 
 	LSNumber::clazz = clazz;
 
-	static_field("pi", Type::real(), [](Compiler& c) { return c.new_real(3.14159265358979323846); });
-	static_field("e", Type::real(), [](Compiler& c) { return c.new_real(M_E); });
-	static_field("phi", Type::real(), [](Compiler& c) { return c.new_real(1.61803398874989484820); });
-	static_field("epsilon", Type::real(), [](Compiler& c) { return c.new_real(std::numeric_limits<double>::epsilon()); });
+	static_field("pi", Type::real, [](Compiler& c) { return c.new_real(3.14159265358979323846); });
+	static_field("e", Type::real, [](Compiler& c) { return c.new_real(M_E); });
+	static_field("phi", Type::real, [](Compiler& c) { return c.new_real(1.61803398874989484820); });
+	static_field("epsilon", Type::real, [](Compiler& c) { return c.new_real(std::numeric_limits<double>::epsilon()); });
 
 	/*
 	 * Constructors
 	 */
 	constructor_({
-		{Type::any(), {Type::integer()}, (void*) &LSNumber::get},
-		{Type::any(), {Type::tmp_mpz()}, (void*) &LSMpz::get_from_tmp},
-		{Type::any(), {Type::mpz()}, (void*) &LSMpz::get_from_mpz},
+		{Type::any, {Type::integer}, (void*) &LSNumber::get},
+		{Type::any, {Type::tmp_mpz}, (void*) &LSMpz::get_from_tmp},
+		{Type::any, {Type::mpz}, (void*) &LSMpz::get_from_mpz},
 	});
 
 	/*
 	 * Operators
 	 */
 	operator_("==", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::boolean(), eq_mpz_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::boolean(), eq_mpz_int},
-		{Type::integer(), Type::mpz_ptr(), Type::boolean(), eq_int_mpz},
+		{Type::mpz_ptr, Type::mpz_ptr, Type::boolean, eq_mpz_mpz},
+		{Type::mpz_ptr, Type::integer, Type::boolean, eq_mpz_int},
+		{Type::integer, Type::mpz_ptr, Type::boolean, eq_int_mpz},
 	});
 	operator_("+", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), add_mpz_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), add_mpz_int},
-		{Type::real(), Type::real(), Type::real(), add_real_real},
-		{Type::const_long(), Type::const_long(), Type::long_(), add_real_real},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), add_real_real},
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, add_mpz_mpz},
+		{Type::mpz_ptr, Type::integer, Type::tmp_mpz_ptr, add_mpz_int},
+		{Type::real, Type::real, Type::real, add_real_real},
+		{Type::long_, Type::long_, Type::long_, add_real_real},
+		{Type::const_integer, Type::const_integer, Type::integer, add_real_real},
 	});
 	operator_("+=", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), add_eq_mpz_mpz, 0, {new ChangeTypeMutator()}, true},
-		{Type::real(), Type::real(), Type::real(), add_eq_real, 0, {new ChangeTypeMutator()}, true},
-		{Type::integer(), Type::integer(), Type::integer(), add_eq_real, 0, {new ChangeTypeMutator()}, true}
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, add_eq_mpz_mpz, 0, {new ChangeTypeMutator()}, true},
+		{Type::real, Type::real, Type::real, add_eq_real, 0, {new ChangeTypeMutator()}, true},
+		{Type::integer, Type::integer, Type::integer, add_eq_real, 0, {new ChangeTypeMutator()}, true}
 	});
 	operator_("-", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), sub_mpz_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), sub_mpz_int},
-		{Type::const_real(), Type::const_real(), Type::const_real(), sub_real_real},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), sub_real_real},
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, sub_mpz_mpz},
+		{Type::mpz_ptr, Type::integer, Type::tmp_mpz_ptr, sub_mpz_int},
+		{Type::real, Type::real, Type::real, sub_real_real},
+		{Type::const_integer, Type::const_integer, Type::integer, sub_real_real},
 	});
 	operator_("-=", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), sub_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), sub_eq_real, 0, {}, true},
-		{Type::integer(), Type::integer(), Type::integer(), sub_eq_real, 0, {}, true}
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, sub_eq_mpz_mpz},
+		{Type::real, Type::real, Type::real, sub_eq_real, 0, {}, true},
+		{Type::integer, Type::integer, Type::integer, sub_eq_real, 0, {}, true}
 	});
 	operator_("*", {
-		{Type::const_real(), Type::const_real(), Type::const_real(), mul_real_real},
-		{Type::const_long(), Type::const_long(), Type::long_(), mul_real_real},
-		{Type::const_integer(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), mul_int_mpz},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), mul_mpz_int},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), mul_real_real},
-		{Type::const_integer(), Type::const_string(), Type::string(), (void*) mul_int_string},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), mul_mpz_mpz}
+		{Type::real, Type::real, Type::real, mul_real_real},
+		{Type::long_, Type::long_, Type::long_, mul_real_real},
+		{Type::const_integer, Type::mpz_ptr, Type::tmp_mpz_ptr, mul_int_mpz},
+		{Type::mpz_ptr, Type::integer, Type::tmp_mpz_ptr, mul_mpz_int},
+		{Type::const_integer, Type::const_integer, Type::integer, mul_real_real},
+		{Type::const_integer, Type::const_string, Type::string, (void*) mul_int_string},
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, mul_mpz_mpz}
 	});
 	operator_("**", {
-		{Type::const_real(), Type::const_real(), Type::real(), pow_real_real},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), pow_real_real},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), pow_mpz_mpz, THROWS},
-		{Type::mpz_ptr(), Type::integer(), Type::tmp_mpz_ptr(), pow_mpz_int, THROWS},
+		{Type::real, Type::real, Type::real, pow_real_real},
+		{Type::const_integer, Type::const_integer, Type::integer, pow_real_real},
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, pow_mpz_mpz, THROWS},
+		{Type::mpz_ptr, Type::integer, Type::tmp_mpz_ptr, pow_mpz_int, THROWS},
 	});
 	operator_("**=", {
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), pow_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), pow_eq_real, 0, {}, true},
-		{Type::integer(), Type::integer(), Type::integer(), pow_eq_real, 0, {}, true}
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, pow_eq_mpz_mpz},
+		{Type::real, Type::real, Type::real, pow_eq_real, 0, {}, true},
+		{Type::integer, Type::integer, Type::integer, pow_eq_real, 0, {}, true}
 	});
 	operator_("*=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), mul_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), mul_eq_real, 0, {}, true},
-		{Type::integer(), Type::integer(), Type::integer(), mul_eq_real, 0, {}, true}
+		{Type::mpz, Type::mpz, Type::tmp_mpz, mul_eq_mpz_mpz},
+		{Type::real, Type::real, Type::real, mul_eq_real, 0, {}, true},
+		{Type::integer, Type::integer, Type::integer, mul_eq_real, 0, {}, true}
 	});
 	operator_("/", {
-		{Type::const_number(), Type::const_number(), Type::real(), div_val_val}
+		{Type::number, Type::number, Type::real, div_val_val}
 	});
 	operator_("/=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), div_eq_mpz_mpz},
-		{Type::real(), Type::real(), Type::real(), div_eq_real, THROWS, {}, true}
+		{Type::mpz, Type::mpz, Type::tmp_mpz, div_eq_mpz_mpz},
+		{Type::real, Type::real, Type::real, div_eq_real, THROWS, {}, true}
 	});
 	operator_("\\", {
-		{Type::const_number(), Type::const_number(), Type::long_(), int_div_val_val},
-		{Type::integer(), Type::integer(), Type::integer(), int_div_val_val},
+		{Type::number, Type::number, Type::long_, int_div_val_val},
+		{Type::integer, Type::integer, Type::integer, int_div_val_val},
 	});
 	operator_("\\=", {
-		{Type::const_number(), Type::const_number(), Type::integer(), int_div_eq_val_val, 0, {}, true}
+		{Type::number, Type::number, Type::integer, int_div_eq_val_val, 0, {}, true}
 	});
 	operator_("<", {
-		{Type::number(), Type::number(), Type::boolean(), lt}
+		{Type::number, Type::number, Type::boolean, lt}
 	});
 	operator_("<=", {
-		{Type::number(), Type::number(), Type::boolean(), le}
+		{Type::number, Type::number, Type::boolean, le}
 	});
 	operator_(">", {
-		{Type::number(), Type::number(), Type::boolean(), gt}
+		{Type::number, Type::number, Type::boolean, gt}
 	});
 	operator_(">=", {
-		{Type::number(), Type::number(), Type::boolean(), ge}
+		{Type::number, Type::number, Type::boolean, ge}
 	});
 	operator_("%", {
-		{Type::const_real(), Type::const_real(), Type::real(), mod, THROWS},
-		{Type::const_long(), Type::const_long(), Type::long_(), mod, THROWS},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), mod, THROWS},
-		{Type::mpz_ptr(), Type::mpz_ptr(), Type::tmp_mpz_ptr(), mod_mpz_mpz, THROWS},
+		{Type::real, Type::real, Type::real, mod, THROWS},
+		{Type::long_, Type::long_, Type::long_, mod, THROWS},
+		{Type::const_integer, Type::const_integer, Type::integer, mod, THROWS},
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, mod_mpz_mpz, THROWS},
 	});
 	operator_("%%", {
-		{Type::const_real(), Type::const_real(), Type::real(), double_mod},
-		{Type::const_long(), Type::const_long(), Type::long_(), double_mod},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), double_mod},
+		{Type::real, Type::real, Type::real, double_mod},
+		{Type::long_, Type::long_, Type::long_, double_mod},
+		{Type::const_integer, Type::const_integer, Type::integer, double_mod},
 	});
 	operator_("%%=", {
-		{Type::const_real(), Type::const_real(), Type::real(), double_mod_eq, 0, {}, true},
-		{Type::const_long(), Type::const_long(), Type::long_(), double_mod_eq, 0, {}, true},
-		{Type::const_integer(), Type::const_integer(), Type::integer(), double_mod_eq, 0, {}, true},
+		{Type::real, Type::real, Type::real, double_mod_eq, 0, {}, true},
+		{Type::long_, Type::long_, Type::long_, double_mod_eq, 0, {}, true},
+		{Type::const_integer, Type::const_integer, Type::integer, double_mod_eq, 0, {}, true},
 	});
 	operator_("%=", {
-		{Type::mpz(), Type::mpz(), Type::tmp_mpz(), mod_eq_mpz_mpz, THROWS},
-		{Type::real(), Type::real(), Type::real(), mod_eq_real, THROWS, {}, true},
-		{Type::integer(), Type::integer(), Type::integer(), mod_eq_real, THROWS, {}, true},
-		{Type::integer(), Type::long_(), Type::integer(), mod_eq_real, THROWS, {}, true},
+		{Type::mpz, Type::mpz, Type::tmp_mpz, mod_eq_mpz_mpz, THROWS},
+		{Type::real, Type::real, Type::real, mod_eq_real, THROWS, {}, true},
+		{Type::integer, Type::integer, Type::integer, mod_eq_real, THROWS, {}, true},
+		{Type::integer, Type::long_, Type::integer, mod_eq_real, THROWS, {}, true},
 	});
 	operator_("&", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_and}
+		{Type::const_integer, Type::const_integer, Type::integer, bit_and}
 	});
 	operator_("&=", {
-		{Type::integer(), Type::const_integer(), Type::integer(), bit_and_eq, 0, {}, true}
+		{Type::integer, Type::const_integer, Type::integer, bit_and_eq, 0, {}, true}
 	});
 	operator_("|", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_or}
+		{Type::const_integer, Type::const_integer, Type::integer, bit_or}
 	});
 	operator_("|=", {
-		{Type::integer(), Type::const_integer(), Type::integer(), bit_or_eq, 0, {}, true}
+		{Type::integer, Type::const_integer, Type::integer, bit_or_eq, 0, {}, true}
 	});
 	operator_("^", {
-		{Type::const_integer(), Type::const_integer(), Type::integer(), bit_xor}
+		{Type::const_integer, Type::const_integer, Type::integer, bit_xor}
 	});
 	operator_("^=", {
-		{Type::integer(), Type::const_integer(), Type::integer(), bit_xor_eq, 0, {}, true}
+		{Type::integer, Type::const_integer, Type::integer, bit_xor_eq, 0, {}, true}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("copy", {
-		{Type::real(), {Type::const_real()}, ValueSTD::copy},
-		{Type::long_(), {Type::const_long()}, ValueSTD::copy},
-		{Type::integer(), {Type::const_integer()}, ValueSTD::copy},
-		{Type::mpz(), {Type::mpz()}, ValueSTD::copy},
+		{Type::real, {Type::real}, ValueSTD::copy},
+		{Type::long_, {Type::long_}, ValueSTD::copy},
+		{Type::integer, {Type::const_integer}, ValueSTD::copy},
+		{Type::mpz, {Type::mpz}, ValueSTD::copy},
 	});
 	method("int", {
-		{Type::integer(), {Type::any()}, _int},
-		{Type::integer(), {Type::real()}, _int}
+		{Type::integer, {Type::any}, _int},
+		{Type::integer, {Type::real}, _int}
 	});
 	method("long", {
-		{Type::long_(), {Type::any()}, _long},
+		{Type::long_, {Type::any}, _long},
 	});
 	method("abs", {
-		{Type::any(), {Type::any()}, (void*) abs_ptr},
-		{Type::real(), {Type::any()}, abs},
-		{Type::long_(), {Type::long_()}, abs},
-		{Type::integer(), {Type::integer()}, abs},
+		{Type::any, {Type::any}, (void*) abs_ptr},
+		{Type::real, {Type::any}, abs},
+		{Type::long_, {Type::long_}, abs},
+		{Type::integer, {Type::integer}, abs},
 	});
 	int (*abs_int)(int) = std::abs;
 	long (*abs_long)(long) = std::abs;
 	double (*abs_real)(double) = std::fabs;
 	method("m_abs", {
-		{Type::integer(), {Type::integer()}, (void*) abs_int},
-		{Type::long_(), {Type::long_()}, (void*) abs_long},
-		{Type::real(), {Type::real()}, (void*) abs_real},
+		{Type::integer, {Type::integer}, (void*) abs_int},
+		{Type::long_, {Type::long_}, (void*) abs_long},
+		{Type::real, {Type::real}, (void*) abs_real},
 	});
 	method("acos", {
-		{Type::real(), {Type::any()}, (void*) acos_ptr},
-		{Type::real(), {Type::real()}, acos_real},
+		{Type::real, {Type::any}, (void*) acos_ptr},
+		{Type::real, {Type::real}, acos_real},
 	});
 	method("asin", {
-		{Type::real(), {Type::any()}, (void*) asin_ptr},
-		{Type::real(), {Type::real()}, asin_real},
+		{Type::real, {Type::any}, (void*) asin_ptr},
+		{Type::real, {Type::real}, asin_real},
 	});
 	method("atan", {
-		{Type::real(), {Type::any()}, (void*) atan_ptr},
-		{Type::real(), {Type::real()}, atan_real},
+		{Type::real, {Type::any}, (void*) atan_ptr},
+		{Type::real, {Type::real}, atan_real},
 	});
 	method("atan2", {
-		{Type::any(), {Type::any(), Type::any()}, (void*) atan2_ptr_ptr},
-		{Type::real(), {Type::real(), Type::any()}, atan2},
-		{Type::real(), {Type::real(), Type::real()}, atan2},
+		{Type::any, {Type::any, Type::any}, (void*) atan2_ptr_ptr},
+		{Type::real, {Type::real, Type::any}, atan2},
+		{Type::real, {Type::real, Type::real}, atan2},
 	});
 	double (*cbrtreal)(double) = std::cbrt;
 	double (*cbrtint)(int) = std::cbrt;
 	method("cbrt", {
-		{Type::any(), {Type::any()}, (void*) cbrt_ptr},
-		{Type::real(), {Type::real()}, (void*) cbrtreal},
-		{Type::real(), {Type::integer()}, (void*) cbrtint},
+		{Type::any, {Type::any}, (void*) cbrt_ptr},
+		{Type::real, {Type::real}, (void*) cbrtreal},
+		{Type::real, {Type::integer}, (void*) cbrtint},
 	});
 	method("ceil", {
-		{Type::integer(), {Type::any()}, (void*) ceil_ptr},
-		{Type::integer(), {Type::real()}, ceil_real},
-		{Type::integer(), {Type::integer()}, ceil_int},
+		{Type::integer, {Type::any}, (void*) ceil_ptr},
+		{Type::integer, {Type::real}, ceil_real},
+		{Type::integer, {Type::integer}, ceil_int},
 	});
 	method("char", {
-		{Type::tmp_string(), {Type::const_any()}, (void*) char_ptr},
-		{Type::tmp_string(), {Type::const_real()}, (void*) char_real},
-		{Type::tmp_string(), {Type::const_integer()}, (void*) char_int},
+		{Type::tmp_string, {Type::const_any}, (void*) char_ptr},
+		{Type::tmp_string, {Type::real}, (void*) char_real},
+		{Type::tmp_string, {Type::const_integer}, (void*) char_int},
 	});
 	method("cos", {
-		{Type::any(), {Type::any()}, (void*) cos_ptr},
-		{Type::real(), {Type::real()}, cos_real},
+		{Type::any, {Type::any}, (void*) cos_ptr},
+		{Type::real, {Type::real}, cos_real},
 	});
 	method("exp", {
-		{Type::real(), {Type::any()}, (void*) exp_ptr},
-		{Type::real(), {Type::real()}, exp_real},
+		{Type::real, {Type::any}, (void*) exp_ptr},
+		{Type::real, {Type::real}, exp_real},
 	});
-	Type fold_fun_type = Type::fun(Type::any(), {Type::any(), Type::integer()});
+	auto fold_fun_type = Type::fun(Type::any, {Type::any, Type::integer});
 	auto fold_fun = &LSNumber::ls_fold<LSFunction*>;
 	method("fold", {
-		{Type::any(), {Type::any(), fold_fun_type, Type::any()}, (void*) fold_fun},
-		{Type::any(), {Type::any(), fold_fun_type, Type::any()}, fold}
+		{Type::any, {Type::any, fold_fun_type, Type::any}, (void*) fold_fun},
+		{Type::any, {Type::any, fold_fun_type, Type::any}, fold}
 	});
 	method("floor", {
-		{Type::integer(), {Type::any()}, (void*) floor_ptr},
-		{Type::integer(), {Type::any()}, (void*) floor_ptr},
-		{Type::integer(), {Type::real()}, floor_real},
-		{Type::integer(), {Type::integer()}, floor_int},
+		{Type::integer, {Type::any}, (void*) floor_ptr},
+		{Type::integer, {Type::any}, (void*) floor_ptr},
+		{Type::integer, {Type::real}, floor_real},
+		{Type::integer, {Type::integer}, floor_int},
 	});
 	method("hypot", {
-		{Type::real(), {Type::any(), Type::any()}, hypot_ptr_ptr},
-		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::hypot<int, int>},
-		{Type::real(), {Type::real(), Type::real()}, (void*) std::hypot<double, double>},
+		{Type::real, {Type::any, Type::any}, hypot_ptr_ptr},
+		{Type::real, {Type::integer, Type::integer}, (void*) std::hypot<int, int>},
+		{Type::real, {Type::real, Type::real}, (void*) std::hypot<double, double>},
 	});
 	method("log", {
-		{Type::real(), {Type::any()}, (void*) log_ptr},
-		{Type::real(), {Type::real()}, log_real},
+		{Type::real, {Type::any}, (void*) log_ptr},
+		{Type::real, {Type::real}, log_real},
 	});
 	method("log10", {
-		{Type::real(), {Type::any()}, (void*) log10_ptr},
-		{Type::real(), {Type::long_()}, log10_real},
-		{Type::real(), {Type::real()}, log10_real},
+		{Type::real, {Type::any}, (void*) log10_ptr},
+		{Type::real, {Type::long_}, log10_real},
+		{Type::real, {Type::real}, log10_real},
 	});
 	method("max", {
-		{Type::any(), {Type::any(), Type::any()}, (void*) max_ptr_ptr},
-		{Type::real(), {Type::real(), Type::any()}, (void*) max_float_ptr},
-		{Type::real(), {Type::integer(), Type::any()}, (void*) max_int_ptr},
-		{Type::real(), {Type::any(), Type::real()}, (void*) max_ptr_float},
-		{Type::real(), {Type::any(), Type::integer()}, (void*) max_ptr_int},
-		{Type::real(), {Type::real(), Type::real()}, max_float_float},
-		{Type::real(), {Type::real(), Type::integer()}, max_float_float},
-		{Type::real(), {Type::integer(), Type::real()}, max_float_float},
-		{Type::integer(), {Type::integer(), Type::integer()}, max_float_float}
+		{Type::any, {Type::any, Type::any}, (void*) max_ptr_ptr},
+		{Type::real, {Type::real, Type::any}, (void*) max_float_ptr},
+		{Type::real, {Type::integer, Type::any}, (void*) max_int_ptr},
+		{Type::real, {Type::any, Type::real}, (void*) max_ptr_float},
+		{Type::real, {Type::any, Type::integer}, (void*) max_ptr_int},
+		{Type::real, {Type::real, Type::real}, max_float_float},
+		{Type::real, {Type::real, Type::integer}, max_float_float},
+		{Type::real, {Type::integer, Type::real}, max_float_float},
+		{Type::integer, {Type::integer, Type::integer}, max_float_float}
 	});
 	method("min", {
-		{Type::real(), {Type::any(), Type::any()}, (void*) min_ptr_ptr},
-		{Type::real(), {Type::any(), Type::real()}, (void*) min_ptr_float},
-		{Type::real(), {Type::any(), Type::integer()}, (void*) min_ptr_int},
-		{Type::real(), {Type::real(), Type::any()}, (void*) min_float_ptr},
-		{Type::real(), {Type::real(), Type::real()}, min_float_float},
-		{Type::real(), {Type::real(), Type::integer()}, min_float_float},
-		{Type::real(), {Type::integer(), Type::any()}, (void*) min_int_ptr},
-		{Type::real(), {Type::integer(), Type::real()}, min_float_float},
-		{Type::integer(), {Type::integer(), Type::integer()}, min_float_float},
+		{Type::real, {Type::any, Type::any}, (void*) min_ptr_ptr},
+		{Type::real, {Type::any, Type::real}, (void*) min_ptr_float},
+		{Type::real, {Type::any, Type::integer}, (void*) min_ptr_int},
+		{Type::real, {Type::real, Type::any}, (void*) min_float_ptr},
+		{Type::real, {Type::real, Type::real}, min_float_float},
+		{Type::real, {Type::real, Type::integer}, min_float_float},
+		{Type::real, {Type::integer, Type::any}, (void*) min_int_ptr},
+		{Type::real, {Type::integer, Type::real}, min_float_float},
+		{Type::integer, {Type::integer, Type::integer}, min_float_float},
 	});
 	method("pow", {
-		{Type::real(), {Type::any(), Type::any()}, (void*) pow_ptr},
-		{Type::long_(), {Type::long_(), Type::integer()}, pow_int},
-		{Type::real(), {Type::long_(), Type::long_()}, pow_int},
+		{Type::real, {Type::any, Type::any}, (void*) pow_ptr},
+		{Type::long_, {Type::long_, Type::integer}, pow_int},
+		{Type::real, {Type::long_, Type::long_}, pow_int},
 	});
 	method("round", {
-		{Type::integer(), {Type::any()}, (void*) round_ptr},
-		{Type::integer(), {Type::any()}, (void*) round_ptr},
-		{Type::integer(), {Type::real()}, round_real},
-		{Type::integer(), {Type::integer()}, round_int}
+		{Type::integer, {Type::any}, (void*) round_ptr},
+		{Type::integer, {Type::any}, (void*) round_ptr},
+		{Type::integer, {Type::real}, round_real},
+		{Type::integer, {Type::integer}, round_int}
 	});
 	method("rand", {
-		{Type::real(), {}, (void*) rand01},
+		{Type::real, {}, (void*) rand01},
 	});
 	method("randInt", {
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) rand_int},
+		{Type::integer, {Type::integer, Type::integer}, (void*) rand_int},
 	});
 	method("randFloat", {
-		{Type::real(), {Type::real(), Type::real()}, (void*) rand_real},
+		{Type::real, {Type::real, Type::real}, (void*) rand_real},
 	});
 	method("signum", {
-		{Type::integer(), {Type::any()}, (void*) signum_ptr},
-		{Type::integer(), {Type::number()}, signum},
+		{Type::integer, {Type::any}, (void*) signum_ptr},
+		{Type::integer, {Type::number}, signum},
 	});
 	method("sin", {
-		{Type::real(), {Type::any()}, (void*) sin_ptr},
-		{Type::real(), {Type::any()}, (void*) sin_ptr},
-		{Type::real(), {Type::real()}, sin_real},
+		{Type::real, {Type::any}, (void*) sin_ptr},
+		{Type::real, {Type::any}, (void*) sin_ptr},
+		{Type::real, {Type::real}, sin_real},
 	});
 	double (*sqrt_real)(double) = std::sqrt;
 	method("sqrt", {
-		{Type::real(), {Type::any()}, (void*) sqrt_ptr},
-		{Type::tmp_mpz_ptr(), {Type::mpz_ptr()}, sqrt_mpz},
-		{Type::real(), {Type::real()}, (void*) sqrt_real},
-		{Type::real(), {Type::integer()}, (void*) std::sqrt<int>},
+		{Type::real, {Type::any}, (void*) sqrt_ptr},
+		{Type::tmp_mpz_ptr, {Type::mpz_ptr}, sqrt_mpz},
+		{Type::real, {Type::real}, (void*) sqrt_real},
+		{Type::real, {Type::integer}, (void*) std::sqrt<int>},
 	});
 	method("tan", {
-		{Type::real(), {Type::any()}, (void*) tan_ptr},
-		{Type::real(), {Type::any()}, (void*) tan_ptr},
-		{Type::real(), {Type::real()}, tan_real},
+		{Type::real, {Type::any}, (void*) tan_ptr},
+		{Type::real, {Type::any}, (void*) tan_ptr},
+		{Type::real, {Type::real}, tan_real},
 	});
 	method("toDegrees", {
-		{Type::any(), {Type::any()}, (void*) toDegrees_ptr},
-		{Type::real(), {Type::any()}, toDegrees},
+		{Type::any, {Type::any}, (void*) toDegrees_ptr},
+		{Type::real, {Type::any}, toDegrees},
 	});
 	method("toRadians", {
-		{Type::any(), {Type::any()}, (void*) toRadians_ptr},
-		{Type::real(), {Type::any()}, toRadians},
+		{Type::any, {Type::any}, (void*) toRadians_ptr},
+		{Type::real, {Type::any}, toRadians},
 	});
 	method("isInteger", {
-		{Type::any(), {Type::any()}, (void*) isInteger_ptr},
-		{Type::boolean(), {Type::any()}, isInteger},
+		{Type::any, {Type::any}, (void*) isInteger_ptr},
+		{Type::boolean, {Type::any}, isInteger},
 	});
 	method("isPrime", {
-		{Type::boolean(), {Type::integer()}, (void*) is_prime_number<int>},
-		{Type::integer(), {Type::mpz_ptr()}, is_prime},
-		{Type::boolean(), {Type::long_()}, (void*) is_prime_number<long>},
+		{Type::boolean, {Type::integer}, (void*) is_prime_number<int>},
+		{Type::integer, {Type::mpz_ptr}, is_prime},
+		{Type::boolean, {Type::long_}, (void*) is_prime_number<long>},
 	});
 
 	/** Internal **/
 	method("powdd", {
-		{Type::real(), {Type::real(), Type::real()}, (void*) std::pow<double, double>}
+		{Type::real, {Type::real, Type::real}, (void*) std::pow<double, double>}
 	});
 	method("powli", {
-		{Type::real(), {Type::long_(), Type::integer()}, (void*) std::pow<long, int>}
+		{Type::real, {Type::long_, Type::integer}, (void*) std::pow<long, int>}
 	});
 	method("powii", {
-		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::pow<int, int>}
+		{Type::real, {Type::integer, Type::integer}, (void*) std::pow<int, int>}
 	});
 	method("mpz_init", {
-		{{}, {Type::mpz().pointer()}, (void*) mpz_init}
+		{Type::void_, {Type::mpz_ptr}, (void*) mpz_init}
 	});
 	method("mpz_init_set", {
-		{{}, {Type::mpz().pointer()}, (void*) mpz_init_set}
+		{Type::void_, {Type::mpz_ptr}, (void*) mpz_init_set}
 	});
 	method("mpz_init_str", {
-		{{}, {Type::mpz().pointer(), Type::i8().pointer(), Type::integer()}, (void*) mpz_init_set_str}
+		{Type::void_, {Type::mpz_ptr, Type::i8->pointer(), Type::integer}, (void*) mpz_init_set_str}
 	});
 	method("mpz_get_ui", {
-		{{Type::long_()}, {Type::mpz().pointer()}, (void*) mpz_get_ui}
+		{{Type::long_}, {Type::mpz_ptr}, (void*) mpz_get_ui}
 	});
 	method("mpz_get_si", {
-		{{Type::long_()}, {Type::mpz().pointer()}, (void*) mpz_get_si}
+		{{Type::long_}, {Type::mpz_ptr}, (void*) mpz_get_si}
 	});
 	method("mpz_add", {
-		{{}, {Type::mpz_ptr(), Type::mpz_ptr(), Type::mpz_ptr()}, (void*) mpz_add}
+		{Type::void_, {Type::mpz_ptr, Type::mpz_ptr, Type::mpz_ptr}, (void*) mpz_add}
 	});
 	method("mpz_add_ui", {
-		{{}, {Type::mpz_ptr(), Type::long_(), Type::mpz_ptr()}, (void*) mpz_add_ui}
+		{Type::void_, {Type::mpz_ptr, Type::long_, Type::mpz_ptr}, (void*) mpz_add_ui}
 	});
 	method("mpz_sub", {
-		{{}, {Type::mpz_ptr(), Type::mpz_ptr(), Type::mpz_ptr()}, (void*) mpz_sub}
+		{Type::void_, {Type::mpz_ptr, Type::mpz_ptr, Type::mpz_ptr}, (void*) mpz_sub}
 	});
 	method("mpz_sub_ui", {
-		{{}, {Type::mpz_ptr(), Type::long_(), Type::mpz_ptr()}, (void*) mpz_sub_ui}
+		{Type::void_, {Type::mpz_ptr, Type::long_, Type::mpz_ptr}, (void*) mpz_sub_ui}
 	});
 	method("mpz_mul", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) mpz_mul}
+		{Type::void_, {Type::mpz_ptr, Type::mpz_ptr, Type::mpz_ptr}, (void*) mpz_mul}
 	});
 	method("mpz_mul_si", {
-		{{}, {Type::mpz().pointer(), Type::long_(), Type::mpz().pointer()}, (void*) mpz_mul_si}
+		{Type::void_, {Type::mpz_ptr, Type::long_, Type::mpz_ptr}, (void*) mpz_mul_si}
 	});
 	method("mpz_pow_ui", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::integer()}, (void*) mpz_pow_ui}
+		{Type::void_, {Type::mpz_ptr, Type::mpz_ptr, Type::integer}, (void*) mpz_pow_ui}
 	});
 	method("mpz_mod", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer(), Type::mpz().pointer()}, (void*) mpz_mod}
+		{Type::void_, {Type::mpz_ptr, Type::mpz_ptr, Type::mpz_ptr}, (void*) mpz_mod}
 	});
 	method("mpz_probab_prime_p", {
-		{Type::integer(), {Type::mpz().pointer(), Type::integer()}, (void*) mpz_probab_prime_p}
+		{Type::integer, {Type::mpz_ptr, Type::integer}, (void*) mpz_probab_prime_p}
 	});
 	method("mpz_neg", {
-		{{}, {Type::mpz().pointer(), Type::mpz().pointer()}, (void*) mpz_neg}
+		{Type::void_, {Type::mpz_ptr, Type::mpz_ptr}, (void*) mpz_neg}
 	});
 	method("mpz_log", {
-		{{Type::integer()}, {Type::mpz().pointer()}, (void*) mpz_log}
+		{{Type::integer}, {Type::mpz_ptr}, (void*) mpz_log}
 	});
 	method("mpz_cmp", {
-		{{Type::integer()}, {Type::mpz_ptr(), Type::mpz_ptr()}, (void*) mpz_cmp}
+		{{Type::integer}, {Type::mpz_ptr, Type::mpz_ptr}, (void*) mpz_cmp}
 	});
 	method("_mpz_cmp_si", {
-		{{Type::integer()}, {Type::mpz_ptr(), Type::long_()}, (void*) _mpz_cmp_si}
+		{{Type::integer}, {Type::mpz_ptr, Type::long_}, (void*) _mpz_cmp_si}
 	});
 	method("mpz_sqrt", {
-		{{}, {Type::mpz_ptr(), Type::mpz_ptr()}, (void*) mpz_sqrt}
+		{Type::void_, {Type::mpz_ptr, Type::mpz_ptr}, (void*) mpz_sqrt}
 	});
 	method("mpz_clear", {
-		{{}, {Type::mpz().pointer()}, (void*) mpz_clear}
+		{Type::void_, {Type::mpz_ptr}, (void*) mpz_clear}
 	});
 	method("int_to_string", {
-		{Type::tmp_string(), {Type::integer()}, (void*) int_to_string}
+		{Type::tmp_string, {Type::integer}, (void*) int_to_string}
 	});
 	method("long_to_string", {
-		{Type::tmp_string(), {Type::long_()}, (void*) long_to_string}
+		{Type::tmp_string, {Type::long_}, (void*) long_to_string}
 	});
 	method("real_to_string", {
-		{Type::tmp_string(), {Type::real()}, (void*) real_to_string}
+		{Type::tmp_string, {Type::real}, (void*) real_to_string}
 	});
 	method("mpz_to_string", {
-		{Type::tmp_string(), {Type::mpz_ptr()}, (void*) mpz_to_string}
+		{Type::tmp_string, {Type::mpz_ptr}, (void*) mpz_to_string}
 	});
 	double (*logreal)(double) = std::log;
 	method("m_log", {
-		{Type::real(), {Type::integer()}, (void*) std::log<int>},
-		{Type::real(), {Type::long_()}, (void*) std::log<long>},
-		{Type::real(), {Type::real()}, (void*) logreal},
+		{Type::real, {Type::integer}, (void*) std::log<int>},
+		{Type::real, {Type::long_}, (void*) std::log<long>},
+		{Type::real, {Type::real}, (void*) logreal},
 	});
 	double (*log10real)(double) = std::log10;
 	method("m_log10", {
-		{Type::real(), {Type::integer()}, (void*) std::log10<int>},
-		{Type::real(), {Type::long_()}, (void*) std::log10<long>},
-		{Type::real(), {Type::real()}, (void*) log10real},
+		{Type::real, {Type::integer}, (void*) std::log10<int>},
+		{Type::real, {Type::long_}, (void*) std::log10<long>},
+		{Type::real, {Type::real}, (void*) log10real},
 	});
 	double (*expreal)(double) = std::exp;
 	method("m_exp", {
-		{Type::integer(), {Type::integer()}, (void*) std::exp<int>},
-		{Type::real(), {Type::real()}, (void*) expreal},
+		{Type::integer, {Type::integer}, (void*) std::exp<int>},
+		{Type::real, {Type::real}, (void*) expreal},
 	});
 	double (*floorreal)(double) = std::floor;
 	method("m_floor", {
-		{Type::real(), {Type::real()}, (void*) floorreal},
+		{Type::real, {Type::real}, (void*) floorreal},
 	});
 	double (*roundreal)(double) = std::round;
 	method("m_round", {
-		{Type::real(), {Type::real()}, (void*) roundreal},
+		{Type::real, {Type::real}, (void*) roundreal},
 	});
 	double (*ceilreal)(double) = std::ceil;
 	method("m_ceil", {
-		{Type::real(), {Type::real()}, (void*) ceilreal},
+		{Type::real, {Type::real}, (void*) ceilreal},
 	});
 	method("m_max", {
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) max<int>},
-		{Type::long_(), {Type::long_(), Type::long_()}, (void*) max<long>},
-		{Type::real(), {Type::real(), Type::real()}, (void*) max<double>},
+		{Type::integer, {Type::integer, Type::integer}, (void*) max<int>},
+		{Type::long_, {Type::long_, Type::long_}, (void*) max<long>},
+		{Type::real, {Type::real, Type::real}, (void*) max<double>},
 	});
 	method("m_min", {
-		{Type::integer(), {Type::integer(), Type::integer()}, (void*) min<int>},
-		{Type::long_(), {Type::long_(), Type::long_()}, (void*) min<long>},
-		{Type::real(), {Type::real(), Type::real()}, (void*) min<double>},
+		{Type::integer, {Type::integer, Type::integer}, (void*) min<int>},
+		{Type::long_, {Type::long_, Type::long_}, (void*) min<long>},
+		{Type::real, {Type::real, Type::real}, (void*) min<double>},
 	});
 	double (*cosreal)(double) = std::cos;
 	method("m_cos", {
-		{Type::real(), {Type::integer()}, (void*) std::cos<int>},
-		{Type::real(), {Type::long_()}, (void*) std::cos<long>},
-		{Type::real(), {Type::real()}, (void*) cosreal},
+		{Type::real, {Type::integer}, (void*) std::cos<int>},
+		{Type::real, {Type::long_}, (void*) std::cos<long>},
+		{Type::real, {Type::real}, (void*) cosreal},
 	});
 	double (*sinreal)(double) = std::sin;
 	method("m_sin", {
-		{Type::real(), {Type::integer()}, (void*) std::sin<int>},
-		{Type::real(), {Type::long_()}, (void*) std::sin<long>},
-		{Type::real(), {Type::real()}, (void*) sinreal},
+		{Type::real, {Type::integer}, (void*) std::sin<int>},
+		{Type::real, {Type::long_}, (void*) std::sin<long>},
+		{Type::real, {Type::real}, (void*) sinreal},
 	});
 	double (*tanreal)(double) = std::tan;
 	method("m_tan", {
-		{Type::real(), {Type::integer()}, (void*) std::tan<int>},
-		{Type::real(), {Type::long_()}, (void*) std::tan<long>},
-		{Type::real(), {Type::real()}, (void*) tanreal},
+		{Type::real, {Type::integer}, (void*) std::tan<int>},
+		{Type::real, {Type::long_}, (void*) std::tan<long>},
+		{Type::real, {Type::real}, (void*) tanreal},
 	});
 	double (*acosreal)(double) = std::acos;
 	method("m_acos", {
-		{Type::real(), {Type::integer()}, (void*) std::acos<int>},
-		{Type::real(), {Type::long_()}, (void*) std::acos<long>},
-		{Type::real(), {Type::real()}, (void*) acosreal},
+		{Type::real, {Type::integer}, (void*) std::acos<int>},
+		{Type::real, {Type::long_}, (void*) std::acos<long>},
+		{Type::real, {Type::real}, (void*) acosreal},
 	});
 	double (*asinreal)(double) = std::asin;
 	method("m_asin", {
-		{Type::real(), {Type::integer()}, (void*) std::asin<int>},
-		{Type::real(), {Type::long_()}, (void*) std::asin<long>},
-		{Type::real(), {Type::real()}, (void*) asinreal},
+		{Type::real, {Type::integer}, (void*) std::asin<int>},
+		{Type::real, {Type::long_}, (void*) std::asin<long>},
+		{Type::real, {Type::real}, (void*) asinreal},
 	});
 	double (*atanreal)(double) = std::atan;
 	method("m_atan", {
-		{Type::real(), {Type::integer()}, (void*) std::atan<int>},
-		{Type::real(), {Type::long_()}, (void*) std::atan<long>},
-		{Type::real(), {Type::real()}, (void*) atanreal},
+		{Type::real, {Type::integer}, (void*) std::atan<int>},
+		{Type::real, {Type::long_}, (void*) std::atan<long>},
+		{Type::real, {Type::real}, (void*) atanreal},
 	});
 	double (*atan2real)(double, double) = std::atan2;
 	method("m_atan2", {
-		{Type::real(), {Type::integer(), Type::integer()}, (void*) std::atan2<int, int>},
-		{Type::real(), {Type::long_(), Type::long_()}, (void*) std::atan2<long, long>},
-		{Type::real(), {Type::real(), Type::real()}, (void*) atan2real},
+		{Type::real, {Type::integer, Type::integer}, (void*) std::atan2<int, int>},
+		{Type::real, {Type::long_, Type::long_}, (void*) std::atan2<long, long>},
+		{Type::real, {Type::real, Type::real}, (void*) atan2real},
 	});
 	method("m_isint", {
-		{Type::boolean(), {Type::any()}, (void*) isint},
+		{Type::boolean, {Type::any}, (void*) isint},
 	});
 }
 
 Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto r = c.insn_eq(c.insn_call(Type::integer(), args, "Number.mpz_cmp"), c.new_integer(0));
+	auto r = c.insn_eq(c.insn_call(Type::integer, args, "Number.mpz_cmp"), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
 Compiler::value NumberSTD::eq_int_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto r = c.insn_eq(c.insn_call(Type::integer(), {args[1], args[0]}, "Number._mpz_cmp_si"), c.new_integer(0));
+	auto r = c.insn_eq(c.insn_call(Type::integer, {args[1], args[0]}, "Number._mpz_cmp_si"), c.new_integer(0));
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
 Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto r = c.insn_eq(c.insn_call(Type::integer(), args, "Number._mpz_cmp_si"), c.new_integer(0));
+	auto r = c.insn_eq(c.insn_call(Type::integer, args, "Number._mpz_cmp_si"), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	return r;
 }
@@ -536,23 +536,23 @@ LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
 
 Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
+		if (args[0].t->temporary) return args[0];
+		if (args[1].t->temporary) return args[1];
 		return c.new_mpz();
 	}();
-	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_add");
+	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_add");
 	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
 
 Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
-	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_add_ui");
+	auto r = args[0].t->temporary ? args[0] : c.new_mpz();
+	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_add_ui");
 	return r;
 }
 
 Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool no_return) {
-	c.insn_call({}, {args[0], args[0], args[1]}, "Number.mpz_add");
+	c.insn_call(Type::void_, {args[0], args[0], args[1]}, "Number.mpz_add");
 	c.insn_delete_temporary(args[1]);
 	return no_return ? Compiler::value() : c.insn_clone_mpz(args[0]);
 }
@@ -570,11 +570,11 @@ Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::valu
 
 Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
+		if (args[0].t->temporary) return args[0];
+		if (args[1].t->temporary) return args[1];
 		return c.new_mpz();
 	}();
-	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_sub");
+	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_sub");
 	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
@@ -593,28 +593,28 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	c.insn_label(&label_then);
 	auto neg_b = c.insn_neg(b);
 	auto r1 = c.new_mpz();
-	c.insn_call({}, {r1, a, neg_b}, "Number.mpz_add_ui");
+	c.insn_call(Type::void_, {r1, a, neg_b}, "Number.mpz_add_ui");
 	c.insn_branch(&label_end);
 	label_then.block = c.builder.GetInsertBlock();
 
 	c.insn_label(&label_else);
 	auto r2 = c.new_mpz();
-	c.insn_call({}, {r2, a, b}, "Number.mpz_sub_ui");
+	c.insn_call(Type::void_, {r2, a, b}, "Number.mpz_sub_ui");
 	c.insn_branch(&label_end);
 	label_else.block = c.builder.GetInsertBlock();
 	
 	c.insn_label(&label_end);
-	auto PN = c.builder.CreatePHI(Type::mpz_ptr().llvm_type(c), 2);
+	auto PN = c.builder.CreatePHI(Type::mpz_ptr->llvm_type(c), 2);
 	PN->addIncoming(r1.v, label_then.block);
 	PN->addIncoming(r2.v, label_else.block);
 	c.insn_delete_temporary(a);
-	return {PN, Type::tmp_mpz_ptr()};
+	return {PN, Type::tmp_mpz_ptr};
 }
 
 Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
-	// c.insn_call({}, {a_addr, a_addr, b_addr}, &mpz_sub);
+	// c.insn_call(Type::void_, {a_addr, a_addr, b_addr}, &mpz_sub);
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -630,14 +630,14 @@ Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::valu
 }
 
 Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto r = args[1].t.temporary ? args[1] : c.new_mpz();
-	c.insn_call({}, {r, args[1], args[0]}, "Number.mpz_mul_si");
+	auto r = args[1].t->temporary ? args[1] : c.new_mpz();
+	c.insn_call(Type::void_, {r, args[1], args[0]}, "Number.mpz_mul_si");
 	return r;
 }
 
 Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
-	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_mul_si");
+	auto r = args[0].t->temporary ? args[0] : c.new_mpz();
+	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_mul_si");
 	return r;
 }
 
@@ -647,11 +647,11 @@ LSValue* NumberSTD::mul_int_string(int a, LSString* b) {
 
 Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
+		if (args[0].t->temporary) return args[0];
+		if (args[1].t->temporary) return args[1];
 		return c.new_mpz();
 	}();
-	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_mul");
+	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_mul");
 	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
@@ -659,7 +659,7 @@ Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
-	// c.insn_call({}, {a_addr, a_addr, b_addr}, &mpz_mul);
+	// c.insn_call(Type::void_, {a_addr, a_addr, b_addr}, &mpz_mul);
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -676,7 +676,7 @@ Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value>
 
 Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_pow(args[0], args[1]);
-	if (args[0].t.is_integer() && args[1].t.is_integer()) {
+	if (args[0].t->is_integer() && args[1].t->is_integer()) {
 		r = c.to_int(r);
 	}
 	return r;
@@ -685,7 +685,7 @@ Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::valu
 Compiler::value NumberSTD::div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
-	// c.insn_call({}, {a_addr, a_addr, b_addr}, &mpz_div);
+	// c.insn_call(Type::void_, {a_addr, a_addr, b_addr}, &mpz_div);
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -707,20 +707,20 @@ Compiler::value NumberSTD::int_div_eq_val_val(Compiler& c, std::vector<Compiler:
 }
 
 Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto ui = c.insn_call(Type::long_(), {args[1]}, "Number.mpz_get_ui");
+	auto ui = c.insn_call(Type::long_, {args[1]}, "Number.mpz_get_ui");
 	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
+		if (args[0].t->temporary) return args[0];
+		if (args[1].t->temporary) return args[1];
 		return c.new_mpz();
 	}();
-	c.insn_call({}, {r, args[0], ui}, "Number.mpz_pow_ui");
+	c.insn_call(Type::void_, {r, args[0], ui}, "Number.mpz_pow_ui");
 	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
 
 Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// Check: mpz_log(a) * b <= 10000
-	auto a_size = c.insn_call(Type::integer(), {args[0]}, "Number.mpz_log");
+	auto a_size = c.insn_call(Type::integer, {args[0]}, "Number.mpz_log");
 	auto r_size = c.insn_mul(a_size, args[1]);
 	auto cond = c.insn_gt(r_size, c.new_integer(10000));
 	auto label_then = c.insn_init_label("then");
@@ -741,8 +741,8 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	// Ops: size of the theorical result
 	c.inc_ops_jit(r_size);
 
-	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
-	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_pow_ui");
+	auto r = args[0].t->temporary ? args[0] : c.new_mpz();
+	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_pow_ui");
 	return r;
 }
 
@@ -764,11 +764,11 @@ Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args, b
 }
 Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = [&]() {
-		if (args[0].t.temporary) return args[0];
-		if (args[1].t.temporary) return args[1];
+		if (args[0].t->temporary) return args[0];
+		if (args[1].t->temporary) return args[1];
 		return c.new_mpz();
 	}();
-	c.insn_call({}, {r, args[0], args[1]}, "Number.mpz_mod");
+	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_mod");
 	if (args[1] != r) c.insn_delete_temporary(args[1]);
 	return r;
 }
@@ -776,7 +776,7 @@ Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
-	// c.insn_call({}, {a_addr, a_addr, b_addr}, &mpz_mod);
+	// c.insn_call(Type::void_, {a_addr, a_addr, b_addr}, &mpz_mod);
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -886,10 +886,10 @@ LSValue* NumberSTD::atan2_ptr_ptr(LSNumber* x, LSNumber* y) {
 	return r;
 }
 Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args, bool) {
-	if (!args[0].t.is_polymorphic() and !args[1].t.is_polymorphic()) {
+	if (!args[0].t->is_polymorphic() and !args[1].t->is_polymorphic()) {
 		return c.insn_atan2(args[0], args[1]);
 	} else {
-		auto r = c.insn_call(Type::real(), {c.to_real(args[0]), c.to_real(args[1])}, "Number.m_atan2.2");
+		auto r = c.insn_call(Type::real, {c.to_real(args[0]), c.to_real(args[1])}, "Number.m_atan2.2");
 		c.insn_delete_temporary(args[0]);
 		c.insn_delete_temporary(args[1]);
 		return r;
@@ -1064,8 +1064,8 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 }
 
 Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto r = args[0].t.temporary ? args[0] : c.new_mpz();
-	c.insn_call({}, {r, args[0]}, "Number.mpz_sqrt");
+	auto r = args[0].t->temporary ? args[0] : c.new_mpz();
+	c.insn_call(Type::void_, {r, args[0]}, "Number.mpz_sqrt");
 	return r;
 }
 
@@ -1080,7 +1080,7 @@ Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> arg
 }
 
 Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
-	c.insn_call({}, {args[0], args[0], args[1]}, "Number.mpz_pow_ui");
+	c.insn_call(Type::void_, {args[0], args[0], args[1]}, "Number.mpz_pow_ui");
 	return c.insn_clone_mpz(args[0]);
 }
 
@@ -1093,7 +1093,7 @@ Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value>
 
 Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto reps = c.new_integer(15);
-	auto res = c.insn_call(Type::integer(), {args[0], reps}, "Number.mpz_probab_prime_p");
+	auto res = c.insn_call(Type::integer, {args[0], reps}, "Number.mpz_probab_prime_p");
 	c.insn_delete_temporary(args[0]);
 	return res;
 }
@@ -1112,7 +1112,7 @@ int NumberSTD::is_prime_number(T n) {
 }
 
 Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto r = c.insn_call(Type::real(), {c.to_real(args[0]), c.to_real(args[1])}, "Number.hypot.2");
+	auto r = c.insn_call(Type::real, {c.to_real(args[0]), c.to_real(args[1])}, "Number.hypot.2");
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
@@ -1156,7 +1156,7 @@ double NumberSTD::rand_real(double min, double max) {
 
 Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto ap = c.insn_to_any(args[0]);
-	auto r = c.insn_call(Type::integer(), {ap}, "Number.signum");
+	auto r = c.insn_call(Type::integer, {ap}, "Number.signum");
 	c.insn_dec_refs(ap);
 	return r;
 }
@@ -1174,7 +1174,7 @@ double NumberSTD::toDegrees_ptr(LSNumber* x) {
 	return d;
 }
 Compiler::value NumberSTD::toDegrees(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::real(), {c.insn_to_any(args[0])}, "Number.toDegrees");
+	return c.insn_call(Type::real, {c.insn_to_any(args[0])}, "Number.toDegrees");
 }
 double NumberSTD::toRadians_ptr(LSNumber* x) {
 	double r = (x->value * M_PI) / 180;
@@ -1182,7 +1182,7 @@ double NumberSTD::toRadians_ptr(LSNumber* x) {
 	return r;
 }
 Compiler::value NumberSTD::toRadians(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::real(), {c.insn_to_any(args[0])}, "Number.toRadians");
+	return c.insn_call(Type::real, {c.insn_to_any(args[0])}, "Number.toRadians");
 }
 
 LSValue* NumberSTD::isInteger_ptr(LSNumber* x) {
@@ -1191,18 +1191,18 @@ LSValue* NumberSTD::isInteger_ptr(LSNumber* x) {
 	return is;
 }
 Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto type = args[0].t.fold();
-	if (type.is_integer() or type.is_long()) {
+	auto type = args[0].t->fold();
+	if (type->is_integer() or type->is_long()) {
 		return c.new_bool(true);
-	} else if (type.is_primitive()) {
+	} else if (type->is_primitive()) {
 		return c.insn_eq(c.to_int(args[0]), args[0]);
 	} else {
-		return c.insn_call(Type::boolean(), args, "Number.m_isint");
+		return c.insn_call(Type::boolean, args, "Number.m_isint");
 	}
 }
 
 Compiler::value NumberSTD::fold(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::any(), {c.insn_to_any(args[0]), args[1], c.insn_to_any(args[2])}, "Number.fold");
+	return c.insn_call(Type::any, {c.insn_to_any(args[0]), args[1], c.insn_to_any(args[2])}, "Number.fold");
 }
 
 LSValue* NumberSTD::int_to_string(int x) {

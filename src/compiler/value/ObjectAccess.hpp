@@ -26,7 +26,7 @@ public:
 	std::function<Compiler::value(Compiler&, Compiler::value)> access_function = nullptr;
 	std::string native_access_function = "";
 	std::string native_static_access_function = "";
-	Type field_type;
+	const Type* field_type;
 	LSFunction* ls_function = nullptr;
 
 	ObjectAccess(std::shared_ptr<Token> token);
@@ -37,14 +37,14 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	void set_version(const std::vector<Type>& args, int level) override;
-	bool will_take(SemanticAnalyzer*, const std::vector<Type>&, int level) override;
+	void set_version(const std::vector<const Type*>& args, int level) override;
+	bool will_take(SemanticAnalyzer*, const std::vector<const Type*>&, int level) override;
 	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const;
-	virtual Type version_type(std::vector<Type>) const override;
+	virtual const Type* version_type(std::vector<const Type*>) const override;
 	virtual void analyze(SemanticAnalyzer*) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
-	virtual Compiler::value compile_version(Compiler& c, std::vector<Type> version) const;
+	virtual Compiler::value compile_version(Compiler& c, std::vector<const Type*> version) const;
 	virtual Compiler::value compile_l(Compiler&) const override;
 
 	virtual Value* clone() const override;

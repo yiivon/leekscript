@@ -21,7 +21,7 @@ void Return::print(std::ostream& os, int indent, bool debug, bool condensed) con
 	}
 }
 
-void Return::analyze(SemanticAnalyzer* analyzer, const Type&) {
+void Return::analyze(SemanticAnalyzer* analyzer, const Type*) {
 	if (expression != nullptr) {
 		expression->analyze(analyzer);
 		return_type = expression->type;

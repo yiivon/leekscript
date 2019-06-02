@@ -16,8 +16,8 @@ void Call::add_version(const CallableVersion* v) {
 	callable->add_version(v);
 }
 
-const CallableVersion* Call::resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const {
-	// std::cout << "Call::resolve(" << arguments << ") object = " << (object ? object->type : Type()) << std::endl;
+const CallableVersion* Call::resolve(SemanticAnalyzer* analyzer, std::vector<const Type*> arguments) const {
+	// std::cout << "Call::resolve(" << arguments << ") object = " << (object ? object->type : Type::void_) << std::endl;
 	if (object) {
 		arguments.insert(arguments.begin(), object->type);
 	}
@@ -35,7 +35,7 @@ void Call::apply_mutators(SemanticAnalyzer* analyzer, const CallableVersion* ver
 Compiler::value Call::pre_compile_call(Compiler& c) const {
 	assert(object != nullptr);
 	if (object->isLeftValue()) {
-		if (object->type.is_mpz_ptr()) {
+		if (object->type->is_mpz_ptr()) {
 			return ((LeftValue*) object)->compile_l(c);
 		} else {
 			return c.insn_load(((LeftValue*) object)->compile_l(c));

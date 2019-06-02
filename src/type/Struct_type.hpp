@@ -8,13 +8,13 @@ namespace ls {
 
 class Struct_type : public Base_type {
 	std::string _name;
-	std::vector<Type> _types;
+	std::vector<const Type*> _types;
 	llvm::StructType* _llvm_type = nullptr;
 public:
-	Struct_type(const std::string name, std::initializer_list<Type> types);
+	Struct_type(const std::string name, std::initializer_list<const Type*> types);
 	virtual const std::string getName() const { return "struct"; }
 	virtual const std::string getJsonName() const { return _name; }
-	virtual const Type& member(int) const override;
+	virtual const Type* member(int) const override;
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;
 	virtual llvm::Type* llvm(const Compiler& c) const override;

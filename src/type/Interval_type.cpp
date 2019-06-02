@@ -6,25 +6,25 @@
 
 namespace ls {
 
-Interval_type::Interval_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("_interval"), std::initializer_list<Type> {
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::boolean(), // native
-	Type::integer(), // A
-	Type::integer() // B
-}) }) {}
+Interval_type::Interval_type() : Pointer_type(Type::structure("interval", {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::boolean, // native
+	Type::integer, // A
+	Type::integer // B
+})) {}
 
-const Type& Interval_type::key() const {
-	return Type::integer_type;
+const Type* Interval_type::key() const {
+	return Type::integer;
 }
-const Type& Interval_type::element() const {
-	return Type::integer_type;
+const Type* Interval_type::element() const {
+	return Type::integer;
 }
-Type Interval_type::iterator() const {
+const Type* Interval_type::iterator() const {
 	return Type::structure("interval_iterator", {
-		Type::interval(), Type::integer()
+		Type::interval, Type::integer
 	});
 }
 bool Interval_type::operator == (const Base_type* type) const {

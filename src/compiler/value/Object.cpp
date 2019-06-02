@@ -6,8 +6,7 @@
 namespace ls {
 
 Object::Object() {
-	type = Type::tmp_object();
-	type.temporary = true;
+	type = Type::tmp_object;
 }
 
 Object::~Object() {
@@ -47,7 +46,7 @@ Compiler::value Object::compile(Compiler& c) const {
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		auto k = c.new_const_string(keys.at(i)->content);
 		auto v = c.insn_to_any(values[i]->compile(c));
-		c.insn_call({}, {object, k, v}, "Object.add_field");
+		c.insn_call(Type::void_, {object, k, v}, "Object.add_field");
 	}
 	return object;
 }

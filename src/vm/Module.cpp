@@ -26,31 +26,31 @@ Module::~Module() {
 	//delete clazz;
 }
 
-void Module::operator_(std::string name, std::initializer_list<CallableVersion> impl, std::vector<Type> templates) {
+void Module::operator_(std::string name, std::initializer_list<CallableVersion> impl, std::vector<const Type*> templates) {
 	clazz->addOperator(name, impl, templates, vm->legacy);
 }
-void Module::field(std::string name, Type type) {
+void Module::field(std::string name, const Type* type) {
 	clazz->addField(name, type, nullptr);
 }
-void Module::field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
+void Module::field(std::string name, const Type* type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
 	clazz->addField(name, type, fun);
 }
-void Module::field(std::string name, Type type, void* fun) {
+void Module::field(std::string name, const Type* type, void* fun) {
 	clazz->addField(name, type, fun);
 }
-void Module::static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun) {
+void Module::static_field(std::string name, const Type* type, std::function<Compiler::value(Compiler&)> fun) {
 	clazz->addStaticField({name, type, fun});
 }
-void Module::static_field(std::string name, Type type, void* addr) {
+void Module::static_field(std::string name, const Type* type, void* addr) {
 	clazz->addStaticField({name, type, addr, true});
 }
-void Module::static_field_fun(std::string name, Type type, void* fun) {
+void Module::static_field_fun(std::string name, const Type* type, void* fun) {
 	clazz->addStaticField({name, type, fun, nullptr});
 }
 void Module::constructor_(std::initializer_list<CallableVersion> methods) {
 	clazz->addMethod("new", methods);
 }
-void Module::method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<Type> templates, bool legacy) {
+void Module::method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<const Type*> templates, bool legacy) {
 	clazz->addMethod(name, methods, templates, vm->legacy);
 }
 void Template::operator_(std::string name, std::initializer_list<CallableVersion> impl) {
@@ -101,7 +101,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
 		if (e > 0) os << ",";
 		os << "\"" << f.first << "\":{\"type\":";
-		a.type.toJson(os);
+		a.type->toJson(os);
 		//os << ",\"value\":\"" << a.value << "\"";
 		os << ",\"desc\":\"" << desc << "\"";
 		os << "}";
@@ -114,7 +114,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";
-		impl.versions[0]->type.toJson(os);
+		impl.versions[0]->type->toJson(os);
 
 		if (translation_map.find(m.first) != translation_map.end()) {
 			Json json = translation_map[m.first];
@@ -134,7 +134,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";
-		impl.versions[0]->type.toJson(os);
+		impl.versions[0]->type->toJson(os);
 
 		if (translation_map.find(m.first) != translation_map.end()) {
 			Json json = translation_map[m.first];

@@ -5,7 +5,7 @@
 
 namespace ls {
 
-void Placeholder_type::implement(Type implementation) const {
+void Placeholder_type::implement(const Type* implementation) const {
 	((Placeholder_type*) this)->_implementation = implementation;
 }
 bool Placeholder_type::operator == (const Base_type* type) const {
@@ -19,7 +19,7 @@ int Placeholder_type::distance(const Base_type* type) const {
 }
 std::ostream& Placeholder_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << _name;
-	if (_implementation._types.size()) {
+	if (_implementation != nullptr) {
 		os << "." << _implementation;
 	}
 	os << END_COLOR;

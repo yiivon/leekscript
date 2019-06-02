@@ -11,17 +11,17 @@
 
 namespace ls {
 
-const Type& Integer_type::key() const {
-	return Type::integer_type;
+const Type* Integer_type::key() const {
+	return Type::integer;
 }
-const Type& Integer_type::element() const {
-	return Type::integer_type;
+const Type* Integer_type::element() const {
+	return Type::integer;
 }
-Type Integer_type::iterator() const {
+const Type* Integer_type::iterator() const {
 	return Type::structure("int_iterator", {
-		Type::integer(),
-		Type::integer(),
-		Type::integer()
+		Type::integer,
+		Type::integer,
+		Type::integer
 	});
 }
 bool Integer_type::operator == (const Base_type* type) const {

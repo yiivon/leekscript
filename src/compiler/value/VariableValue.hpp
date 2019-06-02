@@ -33,15 +33,15 @@ public:
 
 	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const override;
 	virtual void analyze(SemanticAnalyzer*) override;
-	virtual bool will_take(SemanticAnalyzer* analyzer, const std::vector<Type>&, int level) override;
-	void set_version(const std::vector<Type>& args, int level) override;
-	virtual bool will_store(SemanticAnalyzer* analyzer, const Type& type) override;
-	virtual bool elements_will_store(SemanticAnalyzer* analyzer, const Type& type, int level) override;
+	virtual bool will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>&, int level) override;
+	void set_version(const std::vector<const Type*>& args, int level) override;
+	virtual bool will_store(SemanticAnalyzer* analyzer, const Type* type) override;
+	virtual bool elements_will_store(SemanticAnalyzer* analyzer, const Type* type, int level) override;
 	virtual void change_value(SemanticAnalyzer*, Value* value) override;
-	virtual Type version_type(std::vector<Type>) const override;
+	virtual const Type* version_type(std::vector<const Type*>) const override;
 
 	virtual Compiler::value compile(Compiler&) const override;
-	virtual Compiler::value compile_version(Compiler&, std::vector<Type> version) const override;
+	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*> version) const override;
 	virtual Compiler::value compile_l(Compiler&) const override;
 
 	virtual Value* clone() const override;

@@ -63,7 +63,7 @@ VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 	add_module(new IntervalSTD(this));
 	add_module(new JsonSTD(this));
 
-	auto ptr_type = Type::fun(Type::any(), {Type::any()});
+	auto ptr_type = Type::fun(Type::any, {Type::any});
 	add_internal_var("ptr", ptr_type, nullptr, {
 		new CallableVersion {"Value.ptr", ptr_type }
 	});
@@ -94,8 +94,7 @@ void VM::static_init() {
 
 void VM::add_module(Module* m) {
 	modules.push_back(m);
-	Type const_class = Type::clazz(m->name);
-	const_class.constant = true;
+	auto const_class = Type::const_class(m->name);
 	add_internal_var(m->name, const_class, m->clazz);
 }
 
@@ -188,13 +187,13 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 	return result;
 }
 
-void VM::add_internal_var(std::string name, Type type, LSValue* value, Call call) {
+void VM::add_internal_var(std::string name, const Type* type, LSValue* value, Call call) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
 	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr, value, call) });
 	system_vars.push_back(value);
 }
 
-void VM::add_internal_var(std::string name, Type type, Function* function) {
+void VM::add_internal_var(std::string name, const Type* type, Function* function) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
 	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, function, nullptr, function, nullptr) });
 }

@@ -6,7 +6,7 @@ namespace ls {
 Boolean::Boolean(std::shared_ptr<Token> token) {
 	this->token = token;
 	this->value = token->type == TokenType::TRUE;
-	type = Type::boolean();
+	type = Type::boolean;
 	constant = true;
 }
 

@@ -6,7 +6,7 @@
 namespace ls {
 
 Interval::Interval() {
-	type = Type::interval();
+	type = Type::interval;
 }
 
 Interval::~Interval() {
@@ -31,8 +31,7 @@ Location Interval::location() const {
 
 void Interval::analyze(SemanticAnalyzer* analyzer) {
 	constant = true;
-	type = Type::interval();
-	type.temporary = true;
+	type = Type::tmp_interval;
 	start->analyze(analyzer);
 	end->analyze(analyzer);
 }
@@ -42,7 +41,7 @@ Compiler::value Interval::compile(Compiler& c) const {
 	auto b = end->compile(c);
 	auto int_a = c.to_int(a);
 	auto int_b = c.to_int(b);
-	auto interval = c.insn_call(Type::tmp_interval(), {int_a, int_b}, "Interval.new");
+	auto interval = c.insn_call(Type::tmp_interval, {int_a, int_b}, "Interval.new");
 	c.insn_delete_temporary(a);
 	c.insn_delete_temporary(b);
 	return interval;

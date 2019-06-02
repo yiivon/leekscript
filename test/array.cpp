@@ -130,7 +130,7 @@ void Test::test_arrays() {
 	code("let v = [['a', 'b'], 12] v[0][true]").equals("'b'");
 	code("[['a', 'b'], 12][0][['yolo', 1][0]]").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	code("[['a', 'b'], 12][0][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
+	DISABLED_code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
 	code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let a = [[12], [1..10]][1] a[5]").equals("6");
 
@@ -216,7 +216,7 @@ void Test::test_arrays() {
 	code("let f = x -> x + 10 let g = x -> x ** 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
 	code("[1, 2, 3] ~~ Number.sqrt").equals("[1, 1.41421, 1.73205]");
 	code("[1, 2, 3] ~~ x -> [x, x]").equals("[[1, 1], [2, 2], [3, 3]]");
-	code("[1, 2, 3] ~~ System.print").output("1\n2\n3\n");
+	DISABLED_code("[1, 2, 3] ~~ System.print").output("1\n2\n3\n");
 	code("var s = '0' let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("'01234'");
 	code("var s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
 

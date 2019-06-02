@@ -16,8 +16,8 @@ public:
 	Value* container;
 	Block* body;
 	
-	Type key_type;
-	Type value_type;
+	const Type* key_type;
+	const Type* value_type;
 	std::shared_ptr<SemanticVar> value_var;
 	std::shared_ptr<SemanticVar> key_var;
 
@@ -27,7 +27,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyze(SemanticAnalyzer*, const Type& req_type) override;
+	virtual void analyze(SemanticAnalyzer*, const Type* req_type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 

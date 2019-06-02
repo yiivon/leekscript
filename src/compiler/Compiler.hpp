@@ -53,15 +53,15 @@ class Compiler {
 public:
 	struct value {
 		llvm::Value* v;
-		Type t;
+		const Type* t;
 		bool operator == (const value& o) const {
 			return v == o.v and t == o.t;
 		}
 		bool operator != (const value& o) const {
 			return v != o.v or t != o.t;
 		}
-		value() : v(nullptr), t() {}
-		value(llvm::Value* v, Type t) : v(v), t(t) {}
+		value() : v(nullptr), t(Type::void_) {}
+		value(llvm::Value* v, const Type* t) : v(v), t(t) {}
 	};
 	struct label {
 		llvm::BasicBlock* block = nullptr;
@@ -156,22 +156,22 @@ public:
 	value new_mpz() const;
 	value new_const_string(std::string s) const;
 	value new_null_pointer() const;
-	value new_function(Type type) const;
-	value new_function(llvm::Function* f, Type type) const;
-	value new_function(std::string name, Type type) const;
-	value new_closure(llvm::Function* f, Type type, std::vector<value> captures) const;
+	value new_function(const Type* type) const;
+	value new_function(llvm::Function* f, const Type* type) const;
+	value new_function(std::string name, const Type* type) const;
+	value new_closure(llvm::Function* f, const Type* type, std::vector<value> captures) const;
 	value new_class(std::string name) const;
 	value new_object() const;
 	value new_object_class(value clazz) const;
 	value new_set() const;
-	value create_entry(const std::string& name, Type type) const;
-	value get_symbol(const std::string& name, Type type) const;
+	value create_entry(const std::string& name, const Type* type) const;
+	value get_symbol(const std::string& name, const Type* type) const;
 
 	// Conversions
 	value to_int(value) const;
 	value to_real(value) const;
 	value to_long(value) const;
-	value insn_convert(value, Type) const;
+	value insn_convert(value, const Type*) const;
 
 	// Operators wrapping
 	value insn_not(value) const;
@@ -231,8 +231,8 @@ public:
 	value insn_class_of(value v) const;
 	void  insn_delete(value v) const;
 	void  insn_delete_temporary(value v) const;
-	value insn_get_capture(int index, Type type) const;
-	value insn_get_capture_l(int index, Type type) const;
+	value insn_get_capture(int index, const Type* type) const;
+	value insn_get_capture_l(int index, const Type* type) const;
 	value insn_move_inc(value) const;
 	value insn_clone_mpz(value mpz) const;
 	void  insn_delete_mpz(value mpz) const;
@@ -244,7 +244,7 @@ public:
 	value insn_get_argument(const std::string& name) const;
 
 	// Arrays
-	value new_array(Type type, std::vector<value> elements) const;
+	value new_array(const Type* type, std::vector<value> elements) const;
 	value insn_array_size(value v) const;
 	void  insn_push_array(value array, value element) const;
 	value insn_array_at(value array, value index) const;
@@ -255,13 +255,13 @@ public:
 	value iterator_rbegin(value v) const;
 	value iterator_end(value v, value it) const;
 	value iterator_rend(value v, value it) const;
-	value iterator_get(Type collectionType, value it, value previous) const;
-	value iterator_rget(Type collectionType, value it, value previous) const;
+	value iterator_get(const Type* collectionType, value it, value previous) const;
+	value iterator_rget(const Type* collectionType, value it, value previous) const;
 	value iterator_key(value v, value it, value previous) const;
 	value iterator_rkey(value v, value it, value previous) const;
-	void iterator_increment(Type collectionType, value it) const;
-	void iterator_rincrement(Type collectionType, value it) const;
-	value insn_foreach(value v, Type output, const std::string var, const std::string key, std::function<value(value, value)>, bool reversed = false);
+	void iterator_increment(const Type* collectionType, value it) const;
+	void iterator_rincrement(const Type* collectionType, value it) const;
+	value insn_foreach(value v, const Type* output, const std::string var, const std::string key, std::function<value(value, value)>, bool reversed = false);
 
 	// Controls
 	label insn_init_label(std::string name) const;
@@ -274,15 +274,15 @@ public:
 	void insn_branch(label* l) const;
 	void insn_return(value v) const;
 	void insn_return_void() const;
-	value insn_phi(Type type, value v1, label l1, value v2, label l2) const;
+	value insn_phi(const Type* type, value v1, label l1, value v2, label l2) const;
 
 	// Call functions
-	value insn_invoke(Type return_type, std::vector<value> args, std::string name) const;
-	value insn_invoke(Type return_type, std::vector<value> args, value func) const;
-	value insn_invoke(Type return_type, std::vector<value> args, llvm::Function* fun) const;
-	value insn_call(Type return_type, std::vector<value> args, value fun) const;
-	value insn_call(Type return_type, std::vector<value> args, llvm::Function* fun) const;
-	value insn_call(Type return_type, std::vector<value> args, std::string name) const;
+	value insn_invoke(const Type* return_type, std::vector<value> args, std::string name) const;
+	value insn_invoke(const Type* return_type, std::vector<value> args, value func) const;
+	value insn_invoke(const Type* return_type, std::vector<value> args, llvm::Function* fun) const;
+	value insn_call(const Type* return_type, std::vector<value> args, value fun) const;
+	value insn_call(const Type* return_type, std::vector<value> args, llvm::Function* fun) const;
+	value insn_call(const Type* return_type, std::vector<value> args, std::string name) const;
 	void function_add_capture(value fun, value capture) const;
 	void log(const std::string&& str) const;
 
@@ -299,8 +299,8 @@ public:
 
 	// Variables
 	value add_var(const std::string& name, value value);
-	value add_external_var(const std::string& name, Type type);
-	value create_and_add_var(const std::string& name, Type type);
+	value add_external_var(const std::string& name, const Type* type);
+	value create_and_add_var(const std::string& name, const Type* type);
 	void add_function_var(const std::string& name, value value);
 	void remove_function_var(value value);
 	void export_context_variable(const std::string& name, Compiler::value v) const;

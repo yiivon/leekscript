@@ -23,7 +23,7 @@ public:
 	Call(std::initializer_list<const CallableVersion*> versions);
 	void add_version(const CallableVersion* v);
 
-	const CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<Type> arguments) const;
+	const CallableVersion* resolve(SemanticAnalyzer* analyzer, std::vector<const Type*> arguments) const;
 	void apply_mutators(SemanticAnalyzer* analyzer, const CallableVersion* version, std::vector<Value*> arguments) const;
 	Compiler::value pre_compile_call(Compiler& c) const;
 	Compiler::value compile_call(Compiler& c, const CallableVersion* version, std::vector<Compiler::value> args, bool no_return) const;

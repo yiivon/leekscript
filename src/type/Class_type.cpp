@@ -6,13 +6,13 @@
 
 namespace ls {
 
-Class_type::Class_type(std::string name) : Pointer_type(Type { std::make_shared<const Struct_type>(name, std::initializer_list<Type> {
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // ?
-	Type::integer(), // refs
-	Type::boolean() // native
-}) }) {}
+Class_type::Class_type(std::string name) : Pointer_type(Type::structure(name, {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // refs
+	Type::boolean // native
+})) {}
 
 bool Class_type::operator == (const Base_type* type) const {
 	return dynamic_cast<const Class_type*>(type);

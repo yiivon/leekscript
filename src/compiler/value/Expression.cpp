@@ -102,7 +102,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "Expression::analyze()" << std::endl;
 
 	operations = 1;
-	type = Type::any();
+	type = Type::any;
 
 	// No operator : just analyze v1 and return
 	if (op == nullptr) {
@@ -119,7 +119,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	throws = v1->throws or v2->throws;
 
 	// in operator : v1 must be a container
-	if (op->type == TokenType::IN and not v2->type.can_be_container()) {
+	if (op->type == TokenType::IN and not v2->type->can_be_container()) {
 		analyzer->add_error({Error::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
 		return;
 	}
@@ -131,7 +131,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		or op->type == TokenType::BIT_AND_EQUALS or op->type == TokenType::BIT_OR_EQUALS or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::POWER_EQUAL or op->type == TokenType::INT_DIV_EQUAL) {
 		// TODO other operators like |= ^= &=
-		if (v1->type.constant) {
+		if (v1->type->constant) {
 			analyzer->add_error({Error::Type::CANT_MODIFY_CONSTANT_VALUE, location(), op->token->location, {v1->to_string()}});
 			return; // don't analyze more
 		}
@@ -142,10 +142,10 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		}
 		// Change the type of x for operator =
 		if (op->type == TokenType::EQUAL) {
-			if (v2->type._types.size() == 0) {
+			if (v2->type->is_void()) {
 				analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
-			if (v1->type.not_temporary() != v2->type.not_temporary()) {
+			if (v1->type->not_temporary() != v2->type->not_temporary()) {
 				((LeftValue*) v1)->change_value(analyzer, v2);
 			}
 		}
@@ -167,8 +167,8 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	auto v1_type = op->reversed ? v2->type : v1->type;
 	auto v2_type = op->reversed ? v1->type : v2->type;
 
-	if (v1_type.class_name().size()) {
-		auto object_class = (LSClass*) analyzer->vm->internal_vars[v1_type.class_name()]->lsvalue;
+	if (v1_type->class_name().size()) {
+		auto object_class = (LSClass*) analyzer->vm->internal_vars[v1_type->class_name()]->lsvalue;
 		auto callable = object_class->getOperator(analyzer, op->character);
 
 		// std::cout << "Callable : " << callable << std::endl;
@@ -179,15 +179,15 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 				throws |= callable_version->flags & Module::THROWS;
 				callable_version->apply_mutators(analyzer, {v1, v2});
 				// For placeholder types, keep them no matter the operator
-				auto return_type = callable_version->type.return_type();
+				auto return_type = callable_version->type->return_type();
 				if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES or op->type == TokenType::MODULO) {
-					if (v1->type.is_placeholder()) { return_type = v1_type; }
-					if (v2->type.is_placeholder()) { return_type = v2_type; }
+					if (v1->type->is_placeholder()) { return_type = v1_type; }
+					if (v2->type->is_placeholder()) { return_type = v2_type; }
 				}
-				type = is_void ? Type() : return_type;
-				if (v2_type.is_function() and callable_version->type.argument(1).is_function()) {
-					v2->will_take(analyzer, callable_version->type.argument(1).arguments(), 1);
-					v2->set_version(callable_version->type.argument(1).arguments(), 1);
+				type = is_void ? Type::void_ : return_type;
+				if (v2_type->is_function() and callable_version->type->argument(1)->is_function()) {
+					v2->will_take(analyzer, callable_version->type->argument(1)->arguments(), 1);
+					v2->set_version(callable_version->type->argument(1)->arguments(), 1);
 				}
 				// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
 				return;
@@ -197,7 +197,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
 
 	// Don't use old stuff for boolean, /, and bit operators
-	if ((v1->type.is_bool() and op->type != TokenType::EQUAL) 
+	if ((v1->type->is_bool() and op->type != TokenType::EQUAL) 
 		or op->type == TokenType::TRIPLE_EQUAL
 		or op->type == TokenType::PLUS or op->type == TokenType::MINUS 
 		or op->type == TokenType::TIMES or op->type == TokenType::DIVIDE 
@@ -205,7 +205,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
-		analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type.to_string(), op->character, v2->type.to_string()}});
+		analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type->to_string(), op->character, v2->type->to_string()}});
 		return;
 	}
 
@@ -228,27 +228,27 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		auto vv = dynamic_cast<VariableValue*>(v1);
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
 			if (is_void) {
-				type = {};
+				type = Type::void_;
 			} else {
 				type = v2->type;
 			}
 		} else {
-			if (v1->type.is_any() || v2->type.is_any()) {
-				type = Type::any();
+			if (v1->type->is_any() || v2->type->is_any()) {
+				type = Type::any;
 			} else {
 				type = v1->type;
 			}
 		}
-		if (type.is_void() and not is_void) {
+		if (type->is_void() and not is_void) {
 			type = v2_type;
 		}
-		type.reference = false;
-		type.temporary = true;
+		// type.reference = false;
+		type = type->add_temporary();
 	}
 
 	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
-		type = v1->type * v2->type;
+		type = v1->type->operator * (v2->type);
 	}
 }
 
@@ -279,7 +279,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return ((LeftValue*) v1)->compile_l(c);
 		} else {
 			auto v = v1->compile(c);
-			if (callable_version->symbol and v.t.is_primitive() and callable_version->type.argument(0).is_any()) {
+			if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(0)->is_any()) {
 				v = c.insn_to_any(v);
 			}
 			return v;
@@ -288,7 +288,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return ((LeftValue*) v2)->compile_l(c);
 		} else {
 			auto v = v2->compile(c);
-			if (callable_version->symbol and v.t.is_primitive() and callable_version->type.argument(1).is_any()) {
+			if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(1)->is_any()) {
 				v = c.insn_to_any(v);
 			}
 			return v;
@@ -307,7 +307,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
 				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
-				return c.insn_invoke(Type::any(), {x_addr, y}, "Value.operator+=");
+				return c.insn_invoke(Type::any, {x_addr, y}, "Value.operator+=");
 			}
 			// Normal a = b operator
 			auto vv = dynamic_cast<VariableValue*>(v1);
@@ -320,9 +320,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 			// Move the object
 			y = c.insn_move_inc(y);
-			y.t = y.t.not_temporary();
+			y.t = y.t->not_temporary();
 			// Delete previous variable reference
-			if (x_addr.t.is_mpz_ptr()) {
+			if (x_addr.t->is_mpz_ptr()) {
 				c.insn_delete_mpz(x_addr);
 			} else {
 				c.insn_delete(c.insn_load(x_addr));
@@ -336,7 +336,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (is_void) {
 				return {};
 			} else {
-				if (y.t.is_mpz_ptr()) {
+				if (y.t->is_mpz_ptr()) {
 					return c.insn_clone_mpz(y);
 				} else {
 					return y;
@@ -351,7 +351,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 			auto x = c.insn_convert(v1->compile(c), type);
 			v1->compile_end(c);
-			auto condition = c.insn_call(Type::boolean(), {x}, "Value.is_null");
+			auto condition = c.insn_call(Type::boolean, {x}, "Value.is_null");
 			c.insn_if_new(condition, &label_then, &label_else);
 
 			c.insn_label(&label_then);
@@ -365,7 +365,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			label_else.block = c.builder.GetInsertBlock();
 
 			c.insn_label(&label_end);
-			auto PN = c.builder.CreatePHI(type.llvm_type(c), 2);
+			auto PN = c.builder.CreatePHI(type->llvm_type(c), 2);
 			PN->addIncoming(y.v, label_then.block);
 			PN->addIncoming(x.v, label_else.block);
 			return {PN, type};
@@ -375,13 +375,13 @@ Compiler::value Expression::compile(Compiler& c) const {
 			c.insn_try_catch([&]() {
 				auto v1_value = v1->compile(c);
 				if (v1_value.v) { // can be void
-					c.insn_store(r, c.insn_convert(v1_value, type.fold()));
+					c.insn_store(r, c.insn_convert(v1_value, type->fold()));
 				}
 				v1->compile_end(c);
 			}, [&]() {
 				auto y = v2->compile(c);
 				v2->compile_end(c);
-				c.insn_store(r, c.insn_convert(y, type.fold()));
+				c.insn_store(r, c.insn_convert(y, type->fold()));
 			});
 			return c.insn_load(r);
 			break;

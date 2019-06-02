@@ -5,7 +5,7 @@
 namespace ls {
 
 Array::Array() {
-	type = Type::array(Type::never());
+	type = Type::array(Type::never);
 }
 
 Array::~Array() {
@@ -40,7 +40,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 
 	if (expressions.size() > 0) {
 
-		Type element_type = {};
+		const Type* element_type = Type::void_;
 		auto homogeneous = true;
 
 		// First analyze pass
@@ -52,53 +52,52 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 
 			constant &= ex->constant;
 			throws |= ex->throws;
-			if (element_type._types.size() and element_type != ex->type) {
+			if (element_type->_types.size() and element_type != ex->type) {
 				homogeneous = false;
 			}
-			element_type = element_type * ex->type;
+			element_type = element_type->operator * (ex->type);
 		}
 
-		Type supported_type = {};
-		// Native elements types supported : integer, double
-		if (element_type.is_integer() || element_type.is_real()) {
-			supported_type = element_type;
-		}
-		// For function, we store them as pointers
-		else if (element_type.is_function()) {
-			supported_type = element_type;
-		} else {
-			supported_type = Type::any();
-		}
+		// const Type* supported_type;
+		// // Native elements types supported : integer, double
+		// if (element_type->is_integer() || element_type->is_real()) {
+		// 	supported_type = element_type;
+		// }
+		// // For function, we store them as pointers
+		// else if (element_type->is_function()) {
+		// 	supported_type = element_type;
+		// } else {
+		// 	supported_type = Type::any;
+		// }
 		// Re-analyze expressions with the supported type
 		// and second computation of the array type
-		element_type = {};
+		const Type* new_element_type = Type::void_;
 		for (size_t i = 0; i < expressions.size(); ++i) {
 			auto ex = expressions[i];
-			if (!homogeneous and ex->type.is_array()) {
+			if (!homogeneous and ex->type->is_array()) {
 				// If the array stores other arrays of different types,
 				// force those arrays to store pointers. (To avoid having unknown array<int> inside arrays.
-				ex->will_store(analyzer, Type::any());
+				ex->will_store(analyzer, Type::any);
 			}
-			if (ex->type.is_function()) {
-				std::vector<Type> types;
-				for (unsigned p = 0; p < ex->type.arguments().size(); ++p) {
-					types.push_back(Type::any());
+			if (ex->type->is_function()) {
+				std::vector<const Type*> types;
+				for (unsigned p = 0; p < ex->type->arguments().size(); ++p) {
+					types.push_back(Type::any);
 				}
 				if (types.size() > 0) {
 					ex->will_take(analyzer, types, 1);
 				}
 			}
-			element_type += ex->type;
+			new_element_type = new_element_type-> operator + (ex->type);
 		}
-		if (element_type.is_bool()) element_type = Type::any();
-		element_type.temporary = false;
-		type = Type::array(element_type);
+		if (new_element_type->is_bool()) type = Type::array(Type::any);
+		else type = Type::array(new_element_type->not_temporary());
 	}
-	type.temporary = true;
-	// std::cout << "Array type : " << type << std::endl;
+	type = type->add_temporary();
+	// std::cout << "Array type : " << type << " " << type->element()->fold() << std::endl;
 }
 
-void Array::elements_will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& arg_types, int level) {
+void Array::elements_will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& arg_types, int level) {
 
 	// std::cout << "Array::elements_will_take " << arg_types << " at " << level << std::endl;
 
@@ -111,49 +110,49 @@ void Array::elements_will_take(SemanticAnalyzer* analyzer, const std::vector<Typ
 		}
 	}
 	// Computation of the new array type
-	Type element_type;
+	const Type* element_type = Type::void_;
 	for (unsigned i = 0; i < expressions.size(); ++i) {
 		Value* ex = expressions[i];
 		if (i == 0) {
 			element_type = ex->type;
 		} else {
-			element_type = element_type * ex->type;
+			element_type = element_type->operator * (ex->type);
 		}
 	}
 	this->type = Type::array(element_type);
 	// std::cout << "Array::elements_will_take type after " << this->type << std::endl;
 }
 
-bool Array::will_store(SemanticAnalyzer* analyzer, const Type& type) {
+bool Array::will_store(SemanticAnalyzer* analyzer, const Type* type) {
 
 	// std::cout << "Array::will_store " << this->type << " " << type << std::endl;
 
-	Type added_type = type;
-	if (added_type.is_array() or added_type.is_set()) {
-		added_type = added_type.element();
+	auto added_type = type;
+	if (added_type->is_array() or added_type->is_set()) {
+		added_type = added_type->element();
 	}
-	Type current_type = this->type.element();
+	auto current_type = this->type->element();
 	if (expressions.size() == 0) {
-		current_type = added_type;
+		this->type = Type::array(added_type);
 	} else {
-		current_type += added_type;
+		this->type = Type::array(current_type->operator + (added_type));
 	}
-	this->type = Type::array(current_type);
+	
 	return false;
 }
 
-bool Array::elements_will_store(SemanticAnalyzer* analyzer, const Type& type, int level) {
+bool Array::elements_will_store(SemanticAnalyzer* analyzer, const Type* type, int level) {
 	for (auto& element : expressions) {
 		element->will_store(analyzer, type);
 	}
 	// Computation of the new array type
-	Type element_type;
+	const Type* element_type = Type::void_;
 	for (unsigned i = 0; i < expressions.size(); ++i) {
 		Value* ex = expressions[i];
 		if (i == 0) {
 			element_type = ex->type;
 		} else {
-			element_type = element_type * ex->type;
+			element_type = element_type->operator * (ex->type);
 		}
 	}
 	this->type = Type::array(element_type);
@@ -167,7 +166,7 @@ Compiler::value Array::compile(Compiler& c) const {
 		val->compile_end(c);
 		elements.push_back(v);
 	}
-	return c.new_array(type.element(), elements);
+	return c.new_array(type->element(), elements);
 }
 
 Value* Array::clone() const {

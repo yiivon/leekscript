@@ -158,9 +158,9 @@ void Test::test_loops() {
 	// code("for x in ['hello', 12345][0] { print(x) }").equals("h\ne\nl\nl\no\n");
 
 	header("Foreach - not iterable");
-	code("for x in null {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::null().to_string()});
-	code("for x in true {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::boolean().to_string()});
-	code("for x in Number {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::const_class().to_string()});
+	code("for x in null {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"null", ls::Type::null->to_string()});
+	code("for x in true {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"true", ls::Type::boolean->to_string()});
+	code("for x in Number {}").error(ls::Error::Type::VALUE_NOT_ITERABLE, {"Number", ls::Type::const_class()->to_string()});
 
 	/*
 	 * Array For

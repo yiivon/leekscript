@@ -105,7 +105,9 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 	auto ExprSymbol = vm.compiler.findSymbol("main");
 	assert(ExprSymbol && "Function not found");
 	closure = (void*) cantFail(ExprSymbol.getAddress());
-	type = main->type.return_type().fold();
+	// std::cout << "program type " << main->type->return_type() << std::endl;
+	type = main->type->return_type()->fold();
+	// std::cout << "program type " << type << std::endl;
 
 	auto compilation_end = std::chrono::high_resolution_clock::now();
 	auto compilation_time = std::chrono::duration_cast<std::chrono::nanoseconds>(compilation_end - compilation_start).count();
@@ -131,12 +133,12 @@ VM::Result Program::compile_ir_file(VM& vm) {
 	auto symbol = vm.compiler.findSymbol("main");
 	closure = (void*) cantFail(symbol.getAddress());
 
-	type = llvm_type->isPointerTy() ? Type::any() : (llvm_type->isStructTy() ? Type::mpz() : Type::integer());
+	type = llvm_type->isPointerTy() ? Type::any : (llvm_type->isStructTy() ? Type::mpz : Type::integer);
 
 	result.compilation_success = true;
 	std::ostringstream oss;
 	oss << llvm_type;
-	result.program = type.to_string() + " " + oss.str();
+	result.program = type->to_string() + " " + oss.str();
 	return result;
 }
 
@@ -155,12 +157,12 @@ VM::Result Program::compile_bitcode_file(VM& vm) {
 	auto symbol = vm.compiler.findSymbol("main");
 	closure = (void*) cantFail(symbol.getAddress());
 
-	type = llvm_type->isPointerTy() ? Type::any() : (llvm_type->isStructTy() ? Type::mpz() : Type::integer());
+	type = llvm_type->isPointerTy() ? Type::any : (llvm_type->isStructTy() ? Type::mpz : Type::integer);
 
 	result.compilation_success = true;
 	std::ostringstream oss;
 	oss << llvm_type;
-	result.program = type.to_string() + " " + oss.str();
+	result.program = type->to_string() + " " + oss.str();
 	return result;
 }
 
@@ -199,9 +201,8 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 	ex->v1 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, main_file, 0, 1, 0, "x"));
 	ex->v2 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, main_file, 2, 1, 2, "y"));
 	ex->op = std::make_shared<Operator>(new Token(token_types.at(std::distance(ops.begin(), o)), main_file, 1, 1, 1, name));
-	f->body->instructions.push_back( new ExpressionInstruction(ex));
-	auto type = Type::fun(Type::any(), {Type::any(), Type::any()});
-	type.native = true;
+	f->body->instructions.push_back(new ExpressionInstruction(ex));
+	auto type = Type::fun(Type::any, {Type::any, Type::any});
 
 	auto var = std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, f, nullptr, f, nullptr);
 	operators.insert({name, var});
@@ -217,24 +218,24 @@ void Program::analyze(SemanticAnalyzer* analyzer) {
 
 std::string Program::execute(VM& vm) {
 
-	assert(!type.reference && "Program return type shouldn't be a reference!");
+	assert(!type->reference && "Program return type shouldn't be a reference!");
 
-	if (type._types.size() == 0) {
+	if (type->is_void()) {
 		auto fun = (void (*)()) closure;
 		fun();
 		return "(void)";
 	}
-	if (type.not_temporary().is_bool()) {
+	if (type->not_temporary()->is_bool()) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
 		return res ? "true" : "false";
 	}
-	if (type.not_temporary().is_integer()) {
+	if (type->not_temporary()->is_integer()) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
 		return std::to_string(res);
 	}
-	if (type.not_temporary() == Type::mpz()) {
+	if (type->is_mpz()) {
 		auto fun = (__mpz_struct (*)()) closure;
 		auto ret = fun();
 		char buff[1000000];
@@ -243,12 +244,12 @@ std::string Program::execute(VM& vm) {
 		vm.mpz_deleted++;
 		return std::string(buff);
 	}
-	if (type.not_temporary().is_real()) {
+	if (type->not_temporary()->is_real()) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
 		return LSNumber::print(res);
 	}
-	if (type.not_temporary().is_long()) {
+	if (type->not_temporary()->is_long()) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
 		return std::to_string(res);

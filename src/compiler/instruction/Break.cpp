@@ -21,7 +21,7 @@ Location Break::location() const {
 	return token->location;
 }
 
-void Break::analyze(SemanticAnalyzer* analyzer, const Type&) {
+void Break::analyze(SemanticAnalyzer* analyzer, const Type*) {
 
 	// break must be in a loop
 	if (!analyzer->in_loop(deepness)) {

@@ -54,14 +54,14 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 	if (defaultValue) default_values_count++;
 }
 
-Type Function::getReturnType() {
-	if (current_version->type.return_type()._types.size() == 0) {
+const Type* Function::getReturnType() {
+	if (current_version->type->return_type()->is_void()) {
 		if (!placeholder_type) {
 			placeholder_type = Type::generate_new_placeholder_type();
 		}
-		return { placeholder_type };
+		return placeholder_type;
 	} else {
-		return current_version->type.return_type();
+		return current_version->type->return_type();
 	}
 }
 
@@ -74,7 +74,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, bool cond
 		os << "[";
 		for (unsigned c = 0; c < captures.size(); ++c) {
 			if (c > 0) os << ", ";
-			os << captures[c]->name << " " << captures[c]->type();
+			os << captures[c]->name << " " << captures[c]->type;
 		}
 		os << "] ";
 	}
@@ -85,7 +85,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, bool cond
 		if (i > 0) os << ", ";
 		os << arguments.at(i)->content;
 		if (debug)
-			os << " " << version->type.arguments().at(i);
+			os << " " << version->type->arguments().at(i);
 
 		if (defaultValues.at(i) != nullptr) {
 			os << " = ";
@@ -108,7 +108,7 @@ void Function::print_version(std::ostream& os, int indent, bool debug, bool cond
 		for (const auto& v : versions) {
 			if (i > 0) os << ", ";
 			if (v.second == version) os << "$";
-			os << v.first << " => " << v.second->type.return_type();
+			os << v.first << " => " << v.second->type->return_type();
 			i++;
 		}
 		os << ">";
@@ -166,7 +166,7 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 		analyzer->add_function(this);
 		function_added = true;
 	}
-	std::vector<Type> args;
+	std::vector<const Type*> args;
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
 		if (defaultValues[i] != nullptr) {
 			defaultValues[i]->analyze(analyzer);
@@ -176,7 +176,7 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 		}
 		args.push_back(placeholder_type);
 	}
-	type = Type::fun({}, args, this);
+	type = Type::fun(Type::void_, args, this);
 
 	if (!default_version) {
 		default_version = new Function::Version();
@@ -191,7 +191,7 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 	}
 	analyzed = true;
 
-	analyze_body(analyzer, type.arguments(), default_version);
+	analyze_body(analyzer, type->arguments(), default_version);
 
 	// Re-analyze each version
 	for (auto v : versions) {
@@ -203,7 +203,7 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "Function type: " << type << std::endl;
 }
 
-void Function::create_version(SemanticAnalyzer* analyzer, std::vector<Type> args) {
+void Function::create_version(SemanticAnalyzer* analyzer, std::vector<const Type*> args) {
 	// std::cout << "Function::create_version(" << args << ")" << std::endl;
 	// TODO should be ==
 	// assert(args.size() >= arguments.size());
@@ -215,7 +215,7 @@ void Function::create_version(SemanticAnalyzer* analyzer, std::vector<Type> args
 	analyze_body(analyzer, args, version);
 }
 
-bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& args, int level) {
+bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "Function " << " ::will_take " << args << " level " << level << std::endl;
 	if (!analyzed) {
 		analyze(analyzer);
@@ -230,7 +230,7 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& ar
 		}
 		if (versions.find(version) == versions.end()) {
 			for (const auto& t : version) {
-				if (t.is_placeholder()) return false;
+				if (t->is_placeholder()) return false;
 			}
 			create_version(analyzer, version);
 			return true;
@@ -243,16 +243,16 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& ar
 
 				analyzer->enter_function(this);
 				for (unsigned i = 0; i < arguments.size(); ++i) {
-					analyzer->add_parameter(arguments[i].get(), v->type.argument(i));
+					analyzer->add_parameter(arguments[i].get(), v->type->argument(i));
 				}
 				f->will_take(analyzer, args, level - 1);
 
 				analyzer->leave_function();
 
 				if (captures.size()) {
-					v->type = Type::closure(f->version_type(args), v->type.arguments(), this);
+					v->type = Type::closure(f->version_type(args), v->type->arguments(), this);
 				} else {
-					v->type = Type::fun(f->version_type(args), v->type.arguments(), this);
+					v->type = Type::fun(f->version_type(args), v->type->arguments(), this);
 				}
 			}
 		}
@@ -260,11 +260,11 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<Type>& ar
 	return false;
 }
 
-void Function::set_version(const std::vector<Type>& args, int level) {
+void Function::set_version(const std::vector<const Type*>& args, int level) {
 	// std::cout << "Function::set_version " << args << " " << level << std::endl;
 	if (level == 1) {
 		for (const auto& t : args) {
-			if (t.is_placeholder()) return;
+			if (t->is_placeholder()) return;
 		}
 		version = args;
 		// Fill with defaultValues
@@ -284,7 +284,7 @@ void Function::set_version(const std::vector<Type>& args, int level) {
 	}
 }
 
-void Function::analyze_body(SemanticAnalyzer* analyzer, std::vector<Type> args, Version* version) {
+void Function::analyze_body(SemanticAnalyzer* analyzer, std::vector<const Type*> args, Version* version) {
 
 	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
 
@@ -299,36 +299,33 @@ void Function::analyze_body(SemanticAnalyzer* analyzer, std::vector<Type> args, 
 		version->type = Type::fun(getReturnType(), args, this);
 	}
 
-	std::vector<Type> arg_types;
+	std::vector<const Type*> arg_types;
 	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() && defaultValues.at(i) != nullptr ? defaultValues.at(i)->type : Type::any());
+		auto type = i < args.size() ? args.at(i) : (i < defaultValues.size() && defaultValues.at(i) != nullptr ? defaultValues.at(i)->type : Type::any);
 		analyzer->add_parameter(arguments.at(i).get(), type);
 		arg_types.push_back(type);
 	}
+
 	version->body->analyze(analyzer);
 	if (captures.size()) {
 		version->type = Type::closure(version->body->type, arg_types, this);
 	} else {
 		version->type = Type::fun(version->body->type, arg_types, this);
 	}
-	Type return_type;
+	auto return_type = Type::void_;
 	// std::cout << "version->body->type " << version->body->type << std::endl;
 	// std::cout << "version->body->return_type " << version->body->return_type << std::endl;
-	for (const auto& t : version->body->type._types) {
-		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
-			return_type += t;
-		}
-	}
-	if (version->body->type.temporary) return_type.temporary = true;
-	for (const auto& t : version->body->return_type._types) {
-		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
-			return_type += t;
-		}
-	}
-	if (version->body->return_type.temporary) return_type.temporary = true;
+	auto v_type = version->body->type->without_placeholders();
+	return_type = return_type->operator + (v_type);
+
+	// if (version->body->type->temporary) return_type = return_type->add_temporary();
+	auto v_rtype = version->body->return_type->without_placeholders();
+	return_type = return_type->operator + (v_rtype);
+
+	if (version->body->return_type->temporary) return_type = return_type->add_temporary();
 	// Default version of the function, the return type must be any
-	if (not return_type.is_void() and not is_main_function and version == default_version and generate_default_version) {
-		return_type = Type::any();
+	if (not return_type->is_void() and not is_main_function and version == default_version and generate_default_version) {
+		return_type = Type::any;
 	}
 	// std::cout << "return_type " << return_type << std::endl;
 	version->body->type = return_type;
@@ -352,11 +349,11 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 	// std::cout << "Function::capture " << var->name << std::endl;
 
 	// Function become a closure
-	default_version->type = Type::closure(default_version->type.return_type(), default_version->type.arguments(), this);
+	default_version->type = Type::closure(default_version->type->return_type(), default_version->type->arguments(), this);
 	for (auto& version : versions) {
-		version.second->type = Type::closure(version.second->type.return_type(), version.second->type.arguments(), this);
+		version.second->type = Type::closure(version.second->type->return_type(), version.second->type->arguments(), this);
 	}
-	type = Type::closure(type.return_type(), type.arguments(), this);
+	type = Type::closure(type->return_type(), type->arguments(), this);
 
 	for (size_t i = 0; i < captures.size(); ++i) {
 		if (captures[i]->name == var->name)
@@ -374,7 +371,7 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 	return captures.size() - 1;
 }
 
-Type Function::version_type(std::vector<Type> version) const {
+const Type* Function::version_type(std::vector<const Type*> version) const {
 	// std::cout << "Function " << this << " ::version_type(" << version << ") " << std::endl;
 	// Add default values types if needed
 	for (size_t i = version.size(); i < arguments.size(); ++i) {
@@ -429,7 +426,7 @@ Compiler::value Function::compile(Compiler& c) const {
 	return c.new_function(default_version->type);
 }
 
-Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) const {
+Compiler::value Function::compile_version(Compiler& c, std::vector<const Type*> args) const {
 	// std::cout << "Function " << name << "::compile_version(" << args << ")" << std::endl;
 
 	// Fill with default arguments
@@ -487,14 +484,14 @@ void Function::Version::create_function(Compiler& c) {
 
 	std::vector<llvm::Type*> args;
 	if (parent->captures.size()) {
-		args.push_back(Type::any().llvm_type(c)); // first arg is the function pointer
+		args.push_back(Type::any->llvm_type(c)); // first arg is the function pointer
 	}
-	for (auto& t : this->type.arguments()) {
-		args.push_back(t.llvm_type(c));
+	for (auto& t : this->type->arguments()) {
+		args.push_back(t->llvm_type(c));
 	}
 
 	// const int id = id_counter++;
-	auto llvm_return_type = this->type.return_type().llvm_type(c);
+	auto llvm_return_type = this->type->return_type()->llvm_type(c);
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
 	auto fun_name = parent->is_main_function ? "main" : parent->name;
 	f = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
@@ -519,10 +516,10 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 
 		std::vector<llvm::Type*> args;
 		if (parent->captures.size()) {
-			args.push_back(Type::any().llvm_type(c)); // first arg is the function pointer
+			args.push_back(Type::any->llvm_type(c)); // first arg is the function pointer
 		}
-		for (auto& t : this->type.arguments()) {
-			args.push_back(t.llvm_type(c));
+		for (auto& t : this->type->arguments()) {
+			args.push_back(t->llvm_type(c));
 		}
 		// Create the llvm function
 		create_function(c);
@@ -545,11 +542,11 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 		for (auto& arg : f->args()) {
 			if (offset + index < parent->arguments.size()) {
 				const auto name = parent->arguments.at(offset + index)->content;
-				const auto type = this->type.arguments().at(offset + index).not_temporary();
+				const auto type = this->type->arguments().at(offset + index)->not_temporary();
 				arg.setName(name);
-				auto var_type = type.is_mpz_ptr() ? Type::mpz() : type;
+				auto var_type = type->is_mpz_ptr() ? Type::mpz : type;
 				auto var = c.create_entry(name, var_type);
-				if (type.is_mpz_ptr()) {
+				if (type->is_mpz_ptr()) {
 					c.insn_store(var, c.insn_load({&arg, type}));
 				} else {
 					c.insn_store(var, {&arg, type});
@@ -572,11 +569,11 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 			// TODO : here, we delete all the function variables, even some variables that may already be destroyed
 			// TODO : To fix, create a landing pad for every call that can throw
 			c.delete_function_variables();
-			Compiler::value exception = {c.builder.CreateLoad(exception_slot), Type::long_()};
-			Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_()};
+			Compiler::value exception = {c.builder.CreateLoad(exception_slot), Type::long_};
+			Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_};
 			auto file = c.new_const_string(c.fun->token->location.file->path);
 			auto function_name = c.new_const_string(c.fun->name);
-			c.insn_call({}, {exception, file, function_name, exception_line}, "System.throw.1");
+			c.insn_call(Type::void_, {exception, file, function_name, exception_line}, "System.throw.1");
 			c.fun->compile_return(c, {});
 		}
 
@@ -603,18 +600,18 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 								jit_cap = f->compile_default_version(c);
 							}
 						} else {
-							if (cap->type().is_mpz_ptr()) {
+							if (cap->type->is_mpz_ptr()) {
 								jit_cap = c.get_var(cap->name);
 							} else {
 								jit_cap = c.insn_load(c.get_var(cap->name));
 							}
 						}
 					} else if (cap->scope == VarScope::CAPTURE) {
-						jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);
+						jit_cap = c.insn_get_capture(cap->parent_index, cap->type);
 					} else {
 						jit_cap = c.insn_load(c.insn_get_argument(cap->name));
 					}
-					assert(jit_cap.t.is_polymorphic());
+					assert(jit_cap.t->is_polymorphic());
 					captures.push_back(jit_cap);
 				}
 			}
@@ -629,10 +626,10 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_variables) const {
 	c.assert_value_ok(v);
 	// Delete temporary mpz arguments
-	for (size_t i = 0; i < current_version->type.arguments().size(); ++i) {
+	for (size_t i = 0; i < current_version->type->arguments().size(); ++i) {
 		const auto& name = arguments.at(i)->content;
 		const auto& arg = ((Compiler&) c).arguments.top().at(name);
-		if (current_version->type.argument(i) == Type::tmp_mpz_ptr()) {
+		if (current_version->type->argument(i) == Type::tmp_mpz_ptr) {
 			c.insn_delete_mpz(arg);
 		}
 	}
@@ -641,16 +638,16 @@ void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_
 		c.delete_function_variables();
 	}
 	// Return the value
-	if (current_version->type.return_type().is_void()) {
+	if (current_version->type->return_type()->is_void()) {
 		c.insn_return_void();
 	} else {
-		auto return_type = c.fun->getReturnType().fold();
-		if (v.t.is_void()) {
-			if (return_type.is_bool()) v = c.new_bool(false);
-			else if (return_type.is_real()) v = c.new_real(0);
+		auto return_type = c.fun->getReturnType()->fold();
+		if (v.t->is_void()) {
+			if (return_type->is_bool()) v = c.new_bool(false);
+			else if (return_type->is_real()) v = c.new_real(0);
 			else v = c.new_integer(0);
 		}
-		if (return_type.is_any()) {
+		if (return_type->is_any()) {
 			v = c.insn_convert(v, return_type);
 		}
 		c.assert_value_ok(v);

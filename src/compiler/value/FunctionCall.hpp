@@ -19,15 +19,15 @@ public:
 	std::vector<Value*> arguments;
 	std::shared_ptr<Token> closing_parenthesis;
 	bool is_native = false;
-	Type return_type;
+	const Type* return_type;
 	void* std_func;
 	Value* this_ptr;
 	bool is_native_method = false;
 	bool is_unknown_method = false;
 	Value* object = nullptr;
 	Function* function_object;
-	Type function_type;
-	std::vector<Type> arg_types;
+	const Type* function_type;
+	std::vector<const Type*> arg_types;
 	std::string function_name;
 	Call call;
 	const CallableVersion* callable_version;
@@ -40,9 +40,9 @@ public:
 
 	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const override;
 	virtual void analyze(SemanticAnalyzer*) override;
-	bool will_take(SemanticAnalyzer*, const std::vector<Type>& args, int level);
-	void set_version(const std::vector<Type>& args, int level) override;
-	virtual Type version_type(std::vector<Type>) const override;
+	bool will_take(SemanticAnalyzer*, const std::vector<const Type*>& args, int level);
+	void set_version(const std::vector<const Type*>& args, int level) override;
+	virtual const Type* version_type(std::vector<const Type*>) const override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 

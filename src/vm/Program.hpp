@@ -17,7 +17,7 @@ private:
 public:
 
 	Function* main;
-	Type type;
+	const Type* type;
 	std::vector<Function*> functions;
 	std::string file_name;
 	VM* vm;

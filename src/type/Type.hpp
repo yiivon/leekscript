@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <set>
 #include <iostream>
 #include <cassert>
 #include "llvm/IR/Type.h"
@@ -16,25 +17,26 @@ class Value;
 class Compiler;
 
 class Type {
+
+	Type();
+	Type(std::set<std::shared_ptr<const Base_type>>, const Type* folded);
+	Type(std::shared_ptr<const Base_type> raw_type, bool native = false);
+
 public:
 	std::vector<std::shared_ptr<const Base_type>> _types;
-	bool native; // A C++ object, memory management is done outside the language
+	const Type* folded;
+	bool native = false; // A C++ object, memory management is done outside the language
 	bool temporary = false;
 	bool constant = false;
 	bool reference = false;
 
-	Type();
-	Type(std::initializer_list<std::shared_ptr<const Base_type>>);
-	Type(std::initializer_list<Type> types);
-	Type(std::shared_ptr<const Base_type> raw_type, bool native = false, bool temporary = false, bool constant = false);
-
 	int id() const;
-	const Type& return_type() const;
-	const Type& argument(size_t index) const;
-	const std::vector<Type>& arguments() const;
-	const Type& element() const;
-	const Type& key() const;
-	const Type& member(int i) const;
+	const Type* return_type() const;
+	const Type* argument(size_t index) const;
+	const std::vector<const Type*>& arguments() const;
+	const Type* element() const;
+	const Type* key() const;
+	const Type* member(int i) const;
 
 	void toJson(std::ostream&) const;
 	std::string getJsonName() const;
@@ -44,21 +46,28 @@ public:
 	bool iterable() const;
 	bool is_container() const;
 	bool can_be_container() const;
-	Type not_temporary() const;
+	const Type* add_temporary() const;
+	const Type* not_temporary() const;
+	const Type* add_constant() const;
+	const Type* not_constant() const;
 	llvm::Type* llvm_type(const Compiler& c) const;
-	Type iterator() const;
-	Type pointer() const;
-	const Type& pointed() const;
+	const Type* iterator() const;
+	const Type* pointer() const;
+	const Type* pointed() const;
 	bool all(std::function<bool(std::shared_ptr<const Base_type>)>) const;
 	bool some(std::function<bool(std::shared_ptr<const Base_type>)>) const;
-	bool castable(Type type, bool strictCast = false) const;
-	bool strictCastable(Type type) const;
-	int distance(Type type) const;
+	bool castable(const Type* type, bool strictCast = false) const;
+	bool strictCastable(const Type* type) const;
+	int distance(const Type* type) const;
+	const Type* without_placeholders() const;
 
-	void operator += (const Type type);
+	const Type* operator + (std::shared_ptr<const Base_type>) const;
+	const Type* operator + (const Type* type) const;
+	void operator += (const Type* type);
 	void operator += (std::shared_ptr<const Base_type> type);
-	Type operator * (const Type& t2) const;
-	Type fold() const;
+	const Type* operator * (const Type* t2) const;
+	const Type* fold() const;
+	static std::shared_ptr<const Base_type> base_union(std::shared_ptr<const Base_type>, std::shared_ptr<const Base_type>);
 
 	template <class T> bool is_type() const;
 	template <class T> bool can_be_type() const;
@@ -94,65 +103,62 @@ public:
 	bool is_void() const;
 	bool is_template() const;
 
-	bool operator ==(const Type& type) const;
-	inline bool operator !=(const Type& type) const { return !(*this == type); }
+	bool compatible(const Type* type) const;
+	bool may_be_compatible(const Type* type) const;
 
-	bool operator < (const Type& type) const;
-
-	bool compatible(const Type& type) const;
-	bool may_be_compatible(const Type& type) const;
-
-	void implement(const Type& type) const;
-	bool is_implemented(const Type& type) const;
+	void implement(const Type* type) const;
+	bool is_implemented(const Type* type) const;
 
 	/*
 	 * Static part
 	 */
 	static unsigned int placeholder_counter;
 
-	static Type never();
-	static Type null();
-	static Type any();
-	static Type const_any();
-	static Type boolean();
-	static Type const_boolean();
-	static Type number();
-	static Type const_number();
-	static Type i8();
-	static Type integer();
-	static Type const_integer();
-	static Type long_();
-	static Type const_long();
-	static Type mpz();
-	static Type tmp_mpz();
-	static Type const_mpz();
-	static Type mpz_ptr();
-	static Type tmp_mpz_ptr();
-	static Type string();
-	static Type tmp_string();
-	static Type const_string();
-	static Type real();
-	static Type const_real();
-	static Type array(const Type = {});
-	static Type const_array(const Type = {});
-	static Type tmp_array(const Type = {});
-	static Type object();
-	static Type tmp_object();
-	static Type set(const Type = {});
-	static Type const_set(const Type = {});
-	static Type tmp_set(const Type = {});
-	static Type map(const Type = {}, const Type = {});
-	static Type tmp_map(const Type = {}, const Type = {});
-	static Type const_map(const Type = {}, const Type = {});
-	static Type interval();
-	static Type const_interval();
-	static Type tmp_interval();
-	static Type fun(Type return_type = {}, std::vector<Type> arguments = {}, const Value* function = nullptr);
-	static Type closure(Type return_type = {}, std::vector<Type> arguments = {}, const Value* function = nullptr);
-	static Type structure(const std::string name, std::initializer_list<Type> types);
-	static Type clazz(const std::string name = "class?");
-	static Type const_class(const std::string name = "class?");
-	static Type template_(std::string name);
+	static const Type* const void_;
+	static const Type* const never;
+	static const Type* const any;
+	static const Type* const null;
+	static const Type* const const_any;
+	static const Type* const boolean;
+	static const Type* const const_boolean;
+	static const Type* const number;
+	static const Type* const const_number;
+	static const Type* const i8;
+	static const Type* const integer;
+	static const Type* const const_integer;
+	static const Type* const long_;
+	static const Type* const const_long;
+	static const Type* const mpz;
+	static const Type* const tmp_mpz;
+	static const Type* const const_mpz;
+	static const Type* const mpz_ptr;
+	static const Type* const tmp_mpz_ptr;
+	static const Type* const tmp_string;
+	static const Type* const const_string;
+	static const Type* const real;
+	static const Type* const const_real;
+	static const Type* const string;
+	static const Type* array(const Type* = Type::void_);
+	static const Type* const_array(const Type* = Type::void_);
+	static const Type* tmp_array(const Type* = Type::void_);
+	static const Type* const object;
+	static const Type* const tmp_object;
+	static const Type* set(const Type* = Type::void_);
+	static const Type* const_set(const Type* = Type::void_);
+	static const Type* tmp_set(const Type* = Type::void_);
+	static const Type* map(const Type* = Type::void_, const Type* = Type::void_);
+	static const Type* tmp_map(const Type* = Type::void_, const Type* = Type::void_);
+	static const Type* const_map(const Type* = Type::void_, const Type* = Type::void_);
+	static const Type* const interval;
+	static const Type* const const_interval;
+	static const Type* const tmp_interval;
+	static const Type* fun(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
+	static const Type* closure(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
+	static const Type* structure(const std::string name, std::initializer_list<const Type*> types);
+	static const Type* clazz(const std::string name = "class?");
+	static const Type* const_class(const std::string name = "class?");
+	static const Type* template_(std::string name);
+	static const Type* compound(std::initializer_list<const Type*> types);
 
 	static std::shared_ptr<Base_type> _raw_never;
 	static std::shared_ptr<Base_type> _raw_null;
@@ -165,7 +171,6 @@ public:
 	static std::shared_ptr<Base_type> _raw_real;
 	static std::shared_ptr<Base_type> _raw_string;
 	static std::shared_ptr<Base_type> _raw_mpz;
-	static std::shared_ptr<Base_type> _raw_mpz_ptr;
 	static std::shared_ptr<Base_type> _raw_interval;
 	static std::shared_ptr<Base_type> _raw_object;
 	static std::map<std::string, std::shared_ptr<Base_type>> _raw_class;
@@ -179,25 +184,35 @@ public:
 	static const std::shared_ptr<Base_type> raw_long();
 	static const std::shared_ptr<Base_type> raw_real();
 	static const std::shared_ptr<Base_type> raw_mpz();
-	static const std::shared_ptr<Base_type> raw_mpz_ptr();
 	static const std::shared_ptr<Base_type> raw_string();
 	static const std::shared_ptr<Base_type> raw_interval();
 	static const std::shared_ptr<Base_type> raw_object();
 	
-	static std::shared_ptr<const Base_type> generate_new_placeholder_type();
+	static const Type* generate_new_placeholder_type();
 	static std::vector<std::shared_ptr<const Base_type>> placeholder_types;
 	static void clear_placeholder_types();
 
 	// Const types to be used to optimize return of references
-	static const std::vector<Type> empty_types;
-	static const Type void_type;
-	static const Type any_type;
-	static const Type integer_type;
-	static const Type string_type;
+	static const std::vector<const Type*> empty_types;
+	static std::map<std::set<std::shared_ptr<const Base_type>>, const Type*> compound_types;
+	static std::map<const Type*, const Type*> array_types;
+	static std::map<const Type*, const Type*> const_array_types;
+	static std::map<const Type*, const Type*> tmp_array_types;
+	static std::map<const Type*, const Type*> set_types;
+	static std::map<const Type*, const Type*> const_set_types;
+	static std::map<const Type*, const Type*> tmp_set_types;
+	static std::map<std::pair<const Type*, const Type*>, const Type*> map_types;
+	static std::map<std::pair<const Type*, const Type*>, const Type*> const_map_types;
+	static std::map<std::pair<const Type*, const Type*>, const Type*> tmp_map_types;
+	static std::map<const Type*, const Type*> pointer_types;
+	static std::map<const Type*, const Type*> temporary_types;
+	static std::map<const Type*, const Type*> not_temporary_types;
+	static std::map<const Type*, const Type*> const_types;
+	static std::map<const Type*, const Type*> not_const_types;
 };
 
-std::ostream& operator << (std::ostream&, const Type&);
-std::ostream& operator << (std::ostream&, const std::vector<Type>&);
+std::ostream& operator << (std::ostream&, const Type*);
+std::ostream& operator << (std::ostream&, const std::vector<const Type*>&);
 std::ostream& operator << (std::ostream&, const llvm::Type*);
 
 }

@@ -7,35 +7,33 @@
 
 namespace ls {
 
-Map_type::Map_type(Type key, Type element) : Pointer_type(Type({
-	std::make_shared<const Struct_type>(std::string("_map"), std::initializer_list<Type> {
-		Type::integer(), // ?
-		Type::integer(), // ?
-		Type::integer(), // ?
-		Type::integer(), // ?
-		Type::boolean(), // native
-		element.pointer(),
-		element.pointer(),
-		element.pointer(),
-		Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> {
-			Type::long_(), Type::long_(), Type::long_(), Type::long_(),
-			element	
-		}) }).pointer()
-	})
+Map_type::Map_type(const Type* key, const Type* element) : Pointer_type(Type::structure("map", {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::boolean, // native
+	element->pointer(),
+	element->pointer(),
+	element->pointer(),
+	Type::structure("map_node", {
+		Type::long_, Type::long_, Type::long_, Type::long_,
+		element	
+	})->pointer()
 })), _key(key), _element(element) {}
 
-const Type& Map_type::key() const {
+const Type* Map_type::key() const {
 	return _key;
 }
-const Type& Map_type::element() const {
+const Type* Map_type::element() const {
 	return _element;
 }
-Type Map_type::iterator() const {
-	const auto key_merged = _key.fold();
-	const auto element_merged = _element.fold();
-	return Type({ std::make_shared<const Struct_type>("map_node", std::initializer_list<Type> {
-		Type::long_(), Type::long_(), Type::long_(), Type::long_(), key_merged, element_merged
-	}) }).pointer();
+const Type* Map_type::iterator() const {
+	const auto key_merged = _key->fold();
+	const auto element_merged = _element->fold();
+	return Type::structure("map_node", {
+		Type::long_, Type::long_, Type::long_, Type::long_, key_merged, element_merged
+	})->pointer();
 }
 bool Map_type::operator == (const Base_type* type) const {
 	if (auto map = dynamic_cast<const Map_type*>(type)) {
@@ -45,17 +43,17 @@ bool Map_type::operator == (const Base_type* type) const {
 }
 bool Map_type::compatible(const Base_type* type) const {
 	if (auto map = dynamic_cast<const Map_type*>(type)) {
-		return _element.compatible(map->_element) && _key.compatible(map->_key);
+		return _element->compatible(map->_element) && _key->compatible(map->_key);
 	}
 	return false;
 }
 int Map_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
 	if (auto map = dynamic_cast<const Map_type*>(type)) {
-		if (map->element()._types.size() == 0 or map->key()._types.size() == 0) {
+		if (map->element()->is_void() or map->key()->is_void()) {
 			return 999;
 		}
-		return _element.distance(map->_element) + _key.distance(map->_key);
+		return _element->distance(map->_element) + _key->distance(map->_key);
 	}
 	return -1;
 }

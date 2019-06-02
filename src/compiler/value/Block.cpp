@@ -8,9 +8,7 @@
 
 namespace ls {
 
-Block::Block(bool is_function_block) : is_function_block(is_function_block) {
-	type = {};
-}
+Block::Block(bool is_function_block) : is_function_block(is_function_block) {}
 
 Block::~Block() {
 	for (Instruction* instruction : instructions) {
@@ -62,7 +60,7 @@ void Block::analyze(SemanticAnalyzer* analyzer) {
 	analyzer->enter_block();
 	throws = false;
 
-	type = {};
+	type = Type::void_;
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 		const auto& instruction = instructions.at(i);
@@ -75,7 +73,7 @@ void Block::analyze(SemanticAnalyzer* analyzer) {
 		}
 		if (instruction->may_return) may_return = true;
 		if (instruction->throws) throws = true;
-		return_type += instruction->return_type;
+		return_type = return_type->operator + (instruction->return_type);
 		if (instruction->returning) {
 			returning = true;
 			break; // no need to analyze after a return
@@ -84,16 +82,20 @@ void Block::analyze(SemanticAnalyzer* analyzer) {
 
 	analyzer->leave_block();
 
-	if (type == Type::mpz()) {
-		type = Type::tmp_mpz();
-	} else if (type == Type::tmp_mpz()) {
+	type = type->not_constant();
+
+	// std::cout << "Block type " << type << std::endl;
+
+	if (type == Type::mpz) {
+		type = Type::tmp_mpz;
+	} else if (type == Type::tmp_mpz) {
 		temporary_mpz = true;
-	} else if (type == Type::tmp_mpz_ptr()) {
-		type = Type::tmp_mpz();
+	} else if (type == Type::tmp_mpz_ptr) {
+		type = Type::tmp_mpz;
 		temporary_mpz = true;
 		mpz_pointer = true;
-	} else if (type == Type::mpz_ptr()) {
-		type = Type::tmp_mpz();
+	} else if (type == Type::mpz_ptr) {
+		type = Type::tmp_mpz;
 		mpz_pointer = true;
 	}
 }
@@ -117,18 +119,18 @@ Compiler::value Block::compile(Compiler& c) const {
 			return {};
 		}
 		if (i < instructions.size() - 1) {
-			if (val.v != nullptr && !instructions[i]->type.is_void()) {
+			if (val.v != nullptr && !instructions[i]->type->is_void()) {
 				c.insn_delete_temporary(val);
 			}
 		} else {
 			auto return_value = [&]() {
 				if (not val.v) {
 					return val;
-				} else if (type.must_manage_memory() and val.v != nullptr) {
+				} else if (type->must_manage_memory() and val.v != nullptr) {
 					return c.insn_move(val);
 				} else if (mpz_pointer) {
 					return c.insn_load(temporary_mpz ? val : c.insn_clone_mpz(val));
-				} else if (type.is_mpz()) {
+				} else if (type->is_mpz()) {
 					return temporary_mpz ? val : c.insn_clone_mpz(val);
 				} else {
 					return val;
