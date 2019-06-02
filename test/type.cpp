@@ -114,14 +114,15 @@ void Test::test_types() {
 	assert(not ls::Type::array()->is_callable());
 
 	section("operator *");
-	assert(ls::Type::void_->operator * (ls::Type::void_) == ls::Type::void_);
-	assert(ls::Type::any->operator * (ls::Type::any) == ls::Type::any);
-	assert(ls::Type::void_->operator * (ls::Type::integer) == ls::Type::integer);
-	assert(ls::Type::any->operator * (ls::Type::integer) == ls::Type::any);
-	assert(ls::Type::integer->operator * (ls::Type::real) == ls::Type::real);
-	assert(ls::Type::integer->operator * (ls::Type::string) == ls::Type::any);
-	assert(ls::Type::integer->operator * (ls::Type::boolean) == ls::Type::any);
-	assert(ls::Type::any->operator * (ls::Type::fun(ls::Type::void_, {})) == ls::Type::any);
+	test("void * void", ls::Type::void_->operator * (ls::Type::void_), ls::Type::void_);
+	test("any * any", ls::Type::any->operator * (ls::Type::any), ls::Type::any);
+	test("void * int", ls::Type::void_->operator * (ls::Type::integer), ls::Type::integer);
+	test("any * int", ls::Type::any->operator * (ls::Type::integer), ls::Type::any);
+	test("int * real", ls::Type::integer->operator * (ls::Type::real), ls::Type::real);
+	test("int * string", ls::Type::integer->operator * (ls::Type::string), ls::Type::any);
+	test("int * bool", ls::Type::integer->operator * (ls::Type::boolean), ls::Type::any);
+	test("any * fun", ls::Type::any->operator * (ls::Type::fun(ls::Type::void_, {})), ls::Type::any);
+	test("array<int> * array<real>", ls::Type::array(ls::Type::integer)->operator * (ls::Type::array(ls::Type::real)), ls::Type::any);
 
 	section("fold");
 	assert(ls::Type::void_->fold() == ls::Type::void_);
