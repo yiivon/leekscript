@@ -58,17 +58,6 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 			element_type = element_type->operator * (ex->type);
 		}
 
-		// const Type* supported_type;
-		// // Native elements types supported : integer, double
-		// if (element_type->is_integer() || element_type->is_real()) {
-		// 	supported_type = element_type;
-		// }
-		// // For function, we store them as pointers
-		// else if (element_type->is_function()) {
-		// 	supported_type = element_type;
-		// } else {
-		// 	supported_type = Type::any;
-		// }
 		// Re-analyze expressions with the supported type
 		// and second computation of the array type
 		const Type* new_element_type = Type::void_;
