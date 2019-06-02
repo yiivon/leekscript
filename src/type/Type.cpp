@@ -170,10 +170,6 @@ void Type::operator += (const Type* type) {
 	}
 }
 void Type::operator += (std::shared_ptr<const Base_type> type) {
-	for (const auto& t : _types) {
-		if (type->operator == (t.get()))
-			return;
-	}
 	_types.push_back(type);
 }
 const Type* Type::operator * (const Type* t2) const {
