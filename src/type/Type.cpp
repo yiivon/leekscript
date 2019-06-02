@@ -213,11 +213,7 @@ const Type* Type::operator * (const Type* t2) const {
 const Type* Type::fold() const {
 	assert(folded != nullptr);
 	if (_types.size() <= 1) return this;
-	// std::cout << "fold() " << this << " " << folded << std::endl;
 	return folded;
-	// return std::accumulate(_types.begin(), _types.end(), (const Type*) new Type(), [](const Type* type, std::shared_ptr<const Base_type> t) {
-	// 	return type->operator * (new Type(t));
-	// });
 }
 
 std::shared_ptr<const Base_type> Type::base_union(std::shared_ptr<const Base_type> a, std::shared_ptr<const Base_type> b) {
