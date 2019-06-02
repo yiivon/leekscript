@@ -173,15 +173,8 @@ void Type::operator += (std::shared_ptr<const Base_type> type) {
 	_types.push_back(type);
 }
 const Type* Type::operator * (const Type* t2) const {
-	if (is_void()) {
-		return t2;
-	}
-	if (t2->is_void()) {
-		return this;
-	}
-	if (this == t2) {
-		return this;
-	}
+	if (this == void_) return t2;
+	if (t2 == void_ or this == t2) return this;
 	if (is_polymorphic() and t2->is_primitive()) {
 		return any;
 	}
