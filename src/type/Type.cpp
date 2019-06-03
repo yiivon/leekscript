@@ -197,8 +197,6 @@ const Type* Type::operator * (const Type* t2) const {
 }
 
 const Type* Type::fold() const {
-	assert(folded != nullptr);
-	if (_types.size() <= 1) return this;
 	return folded;
 }
 
@@ -259,6 +257,11 @@ const Type* Type::add_temporary() const {
 	if (i != temporary_types.end()) return i->second;
 	auto type = new Type { *this };
 	type->temporary = true;
+	if (type->_types.size() > 1) {
+		type->folded = type->folded->add_temporary();
+	} else {
+		type->folded = type;
+	}
 	temporary_types.insert({ this, type });
 	not_temporary_types.insert({ type, this });
 	return type;
@@ -269,6 +272,11 @@ const Type* Type::not_temporary() const {
 	if (i != not_temporary_types.end()) return i->second;
 	auto type = new Type { *this };
 	type->temporary = false;
+	if (type->_types.size() > 1) {
+		type->folded = type->folded->not_temporary();
+	} else {
+		type->folded = type;
+	}
 	not_temporary_types.insert({ this, type });
 	temporary_types.insert({ type, this });
 	return type;
@@ -280,6 +288,11 @@ const Type* Type::add_constant() const {
 	if (i != const_types.end()) return i->second;
 	auto type = new Type { *this };
 	type->constant = true;
+	if (type->_types.size() > 1) {
+		type->folded = type->folded->add_constant();
+	} else {
+		type->folded = type;
+	}
 	const_types.insert({ this, type });
 	not_const_types.insert({ type, this });
 	return type;
@@ -290,6 +303,11 @@ const Type* Type::not_constant() const {
 	if (i != not_const_types.end()) return i->second;
 	auto type = new Type { *this };
 	type->constant = false;
+	if (type->_types.size() > 1) {
+		type->folded = type->folded->not_constant();
+	} else {
+		type->folded = type;
+	}
 	not_const_types.insert({ this, type });
 	const_types.insert({ type, this });
 	return type;

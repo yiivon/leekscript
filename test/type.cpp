@@ -124,13 +124,22 @@ void Test::test_types() {
 	test("int * fun", ls::Type::integer->operator * (ls::Type::fun()), ls::Type::any);
 
 	section("fold");
-	assert(ls::Type::void_->fold() == ls::Type::void_);
-	assert(ls::Type::null->fold() == ls::Type::null);
-	assert(ls::Type::compound({ls::Type::integer})->fold() == ls::Type::integer);
-	assert(ls::Type::compound({ls::Type::integer, ls::Type::integer})->fold() == ls::Type::integer);
-	assert(ls::Type::compound({ls::Type::integer, ls::Type::real})->fold() == ls::Type::real);
-	assert(ls::Type::compound({ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real)})->fold() == ls::Type::any);
-	assert(ls::Type::tmp_string->fold() == ls::Type::tmp_string);
+	test("void.fold()", ls::Type::void_->fold(), ls::Type::void_);
+	test("null.fold()", ls::Type::null->fold(), ls::Type::null);
+	test("{int}.fold()", ls::Type::compound({ls::Type::integer})->fold(), ls::Type::integer);
+	test("{int, int}.fold()", ls::Type::compound({ls::Type::integer, ls::Type::integer})->fold(), ls::Type::integer);
+	test("{int, real}.fold()", ls::Type::compound({ls::Type::integer, ls::Type::real})->fold(), ls::Type::real);
+	test("{array<int>, array<real>}.fold()", ls::Type::compound({ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real)})->fold(), ls::Type::any);
+	test("string&&.fold()", ls::Type::tmp_string->fold(), ls::Type::tmp_string);
+	test("mpz.fold", ls::Type::mpz->fold(), ls::Type::mpz);
+	test("mpz*.fold", ls::Type::mpz_ptr->fold(), ls::Type::mpz_ptr);
+	test("mpz&&.fold", ls::Type::tmp_mpz->fold(), ls::Type::tmp_mpz);
+	test("mpz*&&.fold", ls::Type::tmp_mpz_ptr->fold(), ls::Type::tmp_mpz_ptr);
+
+	section("temporary");
+	test("int&&", ls::Type::integer->add_temporary(), ls::Type::integer->add_temporary());
+	test("string&&", ls::Type::string->add_temporary(), ls::Type::tmp_string);
+	test("(int | string)&&.fold", ls::Type::compound({ls::Type::integer, ls::Type::string})->add_temporary()->fold(), ls::Type::any->add_temporary());
 
 	section("LLVM type");
 	// assert(ls::Type()->llvm_type() == llvm::Type::getVoidTy(ls::Compiler::context));
