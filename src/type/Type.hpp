@@ -129,6 +129,7 @@ public:
 	static const Type* const const_mpz;
 	static const Type* const mpz_ptr;
 	static const Type* const tmp_mpz_ptr;
+	static const Type* const const_mpz_ptr;
 	static const Type* const tmp_string;
 	static const Type* const const_string;
 	static const Type* const real;

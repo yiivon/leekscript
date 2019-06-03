@@ -89,6 +89,7 @@ const Type* const Type::tmp_mpz = Type::mpz->add_temporary();
 const Type* const Type::const_mpz = Type::mpz->add_constant();
 const Type* const Type::mpz_ptr = Type::mpz->pointer();
 const Type* const Type::tmp_mpz_ptr = Type::mpz_ptr->add_temporary();
+const Type* const Type::const_mpz_ptr = Type::mpz_ptr->add_constant();
 
 const Type* const Type::never = new Type { raw_never(), false };
 const Type* const Type::any = new Type { raw_any(), false };
