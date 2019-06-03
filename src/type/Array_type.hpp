@@ -19,7 +19,6 @@ public:
 	virtual const Type* key() const override;
 	virtual const Type* element() const override;
 	virtual bool operator == (const Base_type*) const override;
-	virtual bool compatible(const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;
 	virtual const Type* iterator() const override;
 	virtual std::string clazz() const override;

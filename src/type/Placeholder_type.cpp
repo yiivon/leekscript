@@ -11,9 +11,6 @@ void Placeholder_type::implement(const Type* implementation) const {
 bool Placeholder_type::operator == (const Base_type* type) const {
 	return this == type;
 }
-bool Placeholder_type::compatible(const Base_type* type) const {
-	return false;
-}
 int Placeholder_type::distance(const Base_type* type) const {
 	return 0;
 }

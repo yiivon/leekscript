@@ -183,7 +183,6 @@ const Type* Type::operator * (const Type* t2) const {
 	if (b->is_polymorphic() and a->is_primitive()) {
 		return any;
 	}
-	// Temporary, to be removed when compatible() is removed
 	if ((a->is_bool() and b->is_integer()) or (a->is_integer() and b->is_bool())) {
 		return any;
 	}
@@ -431,47 +430,6 @@ bool Type::is_void() const {
 	return this == Type::void_;
 }
 bool Type::is_template() const { return is_type<Template_type>(); }
-
-bool Type::compatible(const Type* type) const {
-	if (is_void() or type->is_void()) {
-		return true;
-	}
-	if (is_any()) {
-		return true;
-	}
-	if (this->is_primitive() && type->is_polymorphic()) {
-		return false;
-	}
-	if (this->temporary and not type->temporary) {
-		return false; // type not compatible with type&&
-	}
-	if (not this->constant and type->constant) {
-		return false; // 'const type' not compatible with 'type'
-	}
-	if ((is_array() && type->is_array()) || (is_set() && type->is_set()) || (is_map() && type->is_map()) || (is_function() && type->is_function())) {
-		return _types[0]->compatible(type->_types[0].get());
-	}
-	if (_types[0] != type->_types[0]) {
-		// 'Integer' is compatible with 'Float'
-		if (this->is_real() and type->is_integer()) {
-			return true;
-		}
-		// 'Boolean' is compatible with 'Integer'
-		if (this->is_integer() and type->is_bool()) {
-			return true;
-		}
-		// 'Integer' is compatible with 'Long'
-		if (this->is_long() and type->is_integer()) {
-			return true;
-		}
-		// All numbers types are compatible with the base 'Number' type
-		if (dynamic_cast<const Number_type*>(_types[0].get()) and (type->is_integer() or type->is_long() or type->is_real())) {
-			return true;
-		}
-		return false;
-	}
-	return true;
-}
 
 void Type::implement(const Type* type) const {
 	if (auto t = dynamic_cast<const Template_type*>(_types[0].get())) {

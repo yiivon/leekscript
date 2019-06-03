@@ -102,8 +102,6 @@ public:
 	bool is_void() const;
 	bool is_template() const;
 
-	bool compatible(const Type* type) const;
-
 	void implement(const Type* type) const;
 	bool is_implemented(const Type* type) const;
 

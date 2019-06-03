@@ -14,10 +14,6 @@ bool Template_type::operator == (const Base_type* type) const {
 	if (_implementation == Type::void_) return false;
 	return _implementation->_types[0]->operator == (type);
 }
-bool Template_type::compatible(const Base_type* type) const {
-	if (_implementation == Type::void_) return false;
-	return _implementation->_types[0]->compatible(type);
-}
 llvm::Type* Template_type::llvm(const Compiler& c) const {
 	// assert(_implementation._types.size() > 0);
 	// return _implementation._types[0]->llvm();

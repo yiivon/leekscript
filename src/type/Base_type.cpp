@@ -19,9 +19,6 @@ const Type* Base_type::member(int) const {
 bool Base_type::operator == (const Base_type*) const {
 	return false;
 }
-bool Base_type::compatible(const Base_type*) const {
-	return false;
-}
 bool Base_type::castable(const Base_type*) const {
 	return false;
 }

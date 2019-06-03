@@ -22,13 +22,6 @@ bool Function_type::operator == (const Base_type* type) const {
 	}
 	return false;
 }
-bool Function_type::compatible(const Base_type* type) const {
-	if (auto fun = dynamic_cast<const Function_type*>(type)) {
-		if (_closure != fun->_closure or _arguments.size() < fun->_arguments.size()) return false;
-		return _return_type->compatible(fun->_return_type);
-	}
-	return false;
-}
 bool Function_type::castable(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type) != nullptr) { return true; }
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {

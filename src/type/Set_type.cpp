@@ -49,12 +49,6 @@ bool Set_type::operator == (const Base_type* type) const {
 	}
 	return false;
 }
-bool Set_type::compatible(const Base_type* type) const {
-	if (auto set = dynamic_cast<const Set_type*>(type)) {
-		return _element->compatible(set->_element);
-	}
-	return false;
-}
 int Set_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
 	if (auto set = dynamic_cast<const Set_type*>(type)) {

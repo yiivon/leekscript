@@ -41,12 +41,6 @@ bool Map_type::operator == (const Base_type* type) const {
 	}
 	return false;
 }
-bool Map_type::compatible(const Base_type* type) const {
-	if (auto map = dynamic_cast<const Map_type*>(type)) {
-		return _element->compatible(map->_element) && _key->compatible(map->_key);
-	}
-	return false;
-}
 int Map_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
 	if (auto map = dynamic_cast<const Map_type*>(type)) {

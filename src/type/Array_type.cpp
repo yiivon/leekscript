@@ -45,12 +45,6 @@ bool Array_type::operator == (const Base_type* type) const {
 	}
 	return false;
 }
-bool Array_type::compatible(const Base_type* type) const {
-	if (auto array = dynamic_cast<const Array_type*>(type)) {
-		return _element->is_void() or _element->fold() == array->_element->fold();
-	}
-	return false;
-}
 int Array_type::distance(const Base_type* type) const {
 	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
 	if (auto array = dynamic_cast<const Array_type*>(type)) {

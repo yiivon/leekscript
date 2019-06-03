@@ -22,7 +22,6 @@ public:
 	virtual bool callable() const override { return true; }
 	virtual bool operator == (const Base_type*) const override;
 	virtual int distance(const Base_type* type) const override;
-	virtual bool compatible(const Base_type*) const override;
 	virtual bool castable(const Base_type*) const override;
 	virtual const Type* return_type() const override;
 	virtual const std::vector<const Type*>& arguments() const override;
