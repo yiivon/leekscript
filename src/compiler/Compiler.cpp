@@ -1122,7 +1122,8 @@ Compiler::value Compiler::iterator_begin(Compiler::value v) const {
 		// jit_insn_store_relative(F, addr, 32, new_long(0).v);
 		// return it;
 	}
-	return {};
+	std::cout << "Collection type: " << v.t << std::endl;
+	assert(false);
 }
 
 Compiler::value Compiler::iterator_rbegin(Compiler::value v) const {
@@ -1158,7 +1159,7 @@ Compiler::value Compiler::iterator_rbegin(Compiler::value v) const {
 	else if (v.t->is_mpz()) {
 		assert(false);
 	}
-	return {};
+	assert(false);
 }
 
 Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) const {
@@ -1192,7 +1193,7 @@ Compiler::value Compiler::iterator_end(Compiler::value v, Compiler::value it) co
 	else if (v.t->is_long()) {
 		return insn_eq(insn_load_member(it, 1), new_long(0));
 	}
-	return {};
+	assert(false);
 }
 
 Compiler::value Compiler::iterator_rend(Compiler::value v, Compiler::value it) const {
@@ -1222,7 +1223,7 @@ Compiler::value Compiler::iterator_rend(Compiler::value v, Compiler::value it) c
 	else if (v.t->is_long()) {
 		assert(false);
 	}
-	return {};
+	assert(false);
 }
 
 Compiler::value Compiler::iterator_get(const Type* collectionType, Compiler::value it, Compiler::value previous) const {
@@ -1268,7 +1269,7 @@ Compiler::value Compiler::iterator_get(const Type* collectionType, Compiler::val
 	else if (collectionType->is_long()) {
 		return to_int(insn_int_div(insn_load_member(it, 0), insn_load_member(it, 1)));
 	}
-	return {};
+	assert(false);
 }
 
 Compiler::value Compiler::iterator_rget(const Type* collectionType, Compiler::value it, Compiler::value previous) const {
@@ -1322,7 +1323,7 @@ Compiler::value Compiler::iterator_rget(const Type* collectionType, Compiler::va
 	else if (collectionType->is_long()) {
 		return to_int(insn_int_div(insn_load_member(it, 0), insn_load_member(it, 1)));
 	}
-	return {};
+	assert(false);
 }
 
 Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Compiler::value previous) const {
@@ -1361,7 +1362,7 @@ Compiler::value Compiler::iterator_key(Compiler::value v, Compiler::value it, Co
 	else if (v.t->is_long()) {
 		return insn_load_member(it, 2);
 	}
-	return {};
+	assert(false);
 }
 
 Compiler::value Compiler::iterator_rkey(Compiler::value v, Compiler::value it, Compiler::value previous) const {
@@ -1400,7 +1401,7 @@ Compiler::value Compiler::iterator_rkey(Compiler::value v, Compiler::value it, C
 	else if (v.t->is_long()) {
 		return insn_load_member(it, 2);
 	}
-	return {};
+	assert(false);
 }
 
 void Compiler::iterator_increment(const Type* collectionType, Compiler::value it) const {
@@ -1447,6 +1448,7 @@ void Compiler::iterator_increment(const Type* collectionType, Compiler::value it
 		insn_store_member(it, 1, insn_int_div(p, new_long(10)));
 		insn_store_member(it, 2, insn_add(i, new_integer(1)));
 	}
+	assert(false);
 }
 
 void Compiler::iterator_rincrement(const Type* collectionType, Compiler::value it) const {
@@ -1477,6 +1479,7 @@ void Compiler::iterator_rincrement(const Type* collectionType, Compiler::value i
 	else if (collectionType->is_long()) {
 		assert(false);
 	}
+	assert(false);
 }
 
 Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* output, const std::string var, const std::string key, std::function<Compiler::value(Compiler::value, Compiler::value)> body, bool reversed) {
