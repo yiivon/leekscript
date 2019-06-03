@@ -189,12 +189,6 @@ const Type* Type::operator * (const Type* t2) const {
 	if ((a->is_bool() and b->is_real()) or (a->is_real() and b->is_bool())) {
 		return any;
 	}
-	if (a->is_array() and b->is_array()) {
-		if (a->element()->is_polymorphic() and t2->element()->is_polymorphic()) {
-			return array(any);
-		}
-		return any;
-	}
 	auto d1 = a->distance(b);
 	auto d2 = b->distance(a);
 	if (d1 >= 0 and d1 < 100000 and d2 >= 0 and d2 < 100000) {
