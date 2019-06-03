@@ -173,28 +173,34 @@ void Type::operator += (std::shared_ptr<const Base_type> type) {
 	_types.push_back(type);
 }
 const Type* Type::operator * (const Type* t2) const {
-	if (this == void_) return t2;
-	if (t2 == void_ or this == t2) return this;
-	if (is_polymorphic() and t2->is_primitive()) {
+	auto a = this->fold();
+	auto b = t2->fold();
+	if (a == void_) return b;
+	if (b == void_ or a == b) return a;
+	if (a->is_polymorphic() and b->is_primitive()) {
 		return any;
 	}
-	if (t2->is_polymorphic() and is_primitive()) {
+	if (b->is_polymorphic() and a->is_primitive()) {
 		return any;
 	}
 	// Temporary, to be removed when compatible() is removed
-	if ((is_bool() and t2->is_integer()) or (is_integer() and t2->is_bool())) {
+	if ((a->is_bool() and b->is_integer()) or (a->is_integer() and b->is_bool())) {
 		return any;
 	}
-	if (t2->compatible(this)) {
-		return t2;
+	if ((a->is_bool() and b->is_real()) or (a->is_real() and b->is_bool())) {
+		return any;
 	}
-	if (compatible(t2)) {
-		return this;
-	}
-	if (is_array() and t2->is_array()) {
-		if (element()->is_polymorphic() and t2->element()->is_polymorphic()) {
+	if (a->is_array() and b->is_array()) {
+		if (a->element()->is_polymorphic() and t2->element()->is_polymorphic()) {
 			return array(any);
 		}
+		return any;
+	}
+	auto d1 = a->distance(b);
+	auto d2 = b->distance(a);
+	if (d1 >= 0 and d1 < 100000 and d2 >= 0 and d2 < 100000) {
+		if (d1 < d2) return b;
+		else return a;
 	}
 	return any;
 }

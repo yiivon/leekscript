@@ -121,6 +121,7 @@ void Test::test_types() {
 	test("int * bool", ls::Type::integer->operator * (ls::Type::boolean), ls::Type::any);
 	test("any * fun", ls::Type::any->operator * (ls::Type::fun(ls::Type::void_, {})), ls::Type::any);
 	test("array<int> * array<real>", ls::Type::array(ls::Type::integer)->operator * (ls::Type::array(ls::Type::real)), ls::Type::any);
+	test("int * fun", ls::Type::integer->operator * (ls::Type::fun()), ls::Type::any);
 
 	section("fold");
 	assert(ls::Type::void_->fold() == ls::Type::void_);
