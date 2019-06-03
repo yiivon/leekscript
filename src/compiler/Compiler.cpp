@@ -1439,6 +1439,7 @@ void Compiler::iterator_increment(const Type* collectionType, Compiler::value it
 		insn_store_member(it, 0, insn_mod(n, p));
 		insn_store_member(it, 1, insn_int_div(p, new_integer(10)));
 		insn_store_member(it, 2, insn_add(i, new_integer(1)));
+		return;
 	}
 	else if (collectionType->is_long()) {
 		auto n = insn_load_member(it, 0);
@@ -1447,6 +1448,7 @@ void Compiler::iterator_increment(const Type* collectionType, Compiler::value it
 		insn_store_member(it, 0, insn_mod(n, p));
 		insn_store_member(it, 1, insn_int_div(p, new_long(10)));
 		insn_store_member(it, 2, insn_add(i, new_integer(1)));
+		return;
 	}
 	assert(false);
 }
