@@ -183,10 +183,7 @@ const Type* Type::operator * (const Type* t2) const {
 	if (b->is_polymorphic() and a->is_primitive()) {
 		return any;
 	}
-	if ((a->is_bool() and b->is_integer()) or (a->is_integer() and b->is_bool())) {
-		return any;
-	}
-	if ((a->is_bool() and b->is_real()) or (a->is_real() and b->is_bool())) {
+	if (a->is_bool() or b->is_bool()) {
 		return any;
 	}
 	auto d1 = a->distance(b);
