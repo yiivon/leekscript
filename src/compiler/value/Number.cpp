@@ -114,7 +114,7 @@ Compiler::value Number::compile(Compiler& c) const {
 	if (type->is_real()) {
 		return c.new_real(double_value);
 	}
-	if (type->is_mpz_ptr()) {
+	if (type == Type::tmp_mpz_ptr) {
 		auto s = c.new_const_string(clean_value);
 		auto r = c.create_entry("m", Type::tmp_mpz);
 		c.insn_call(Type::void_, {r, s, c.new_integer(base)}, "Number.mpz_init_str");

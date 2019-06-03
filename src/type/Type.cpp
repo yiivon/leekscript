@@ -380,12 +380,12 @@ bool Type::can_be_numeric() const {
 bool Type::is_real() const { return folded == Type::real; }
 bool Type::is_integer() const { return folded == Type::integer; }
 bool Type::is_long() const { return folded == Type::long_; }
-bool Type::is_mpz() const { return is_type<Mpz_type>(); }
-bool Type::is_mpz_ptr() const { return folded == Type::mpz_ptr; }
-bool Type::is_string() const { return folded == Type::string; }
+bool Type::is_mpz() const { return folded == Type::mpz or folded == Type::tmp_mpz or folded == Type::const_mpz; }
+bool Type::is_mpz_ptr() const { return folded == Type::mpz_ptr or folded == Type::tmp_mpz_ptr or folded == Type::const_mpz_ptr; }
+bool Type::is_string() const { return folded == Type::string or folded == Type::tmp_string or folded == Type::const_string; }
 bool Type::is_array() const { return is_type<Array_type>(); }
 bool Type::is_set() const { return is_type<Set_type>(); }
-bool Type::is_interval() const { return folded == Type::interval; }
+bool Type::is_interval() const { return folded == Type::interval or folded == Type::tmp_interval or folded == Type::const_interval; }
 bool Type::is_map() const { return is_type<Map_type>(); }
 bool Type::is_function() const { return is_type<Function_type>(); }
 bool Type::is_object() const { return folded == Type::object; }
