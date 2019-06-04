@@ -193,6 +193,8 @@ public:
 	// Const types to be used to optimize return of references
 	static const std::vector<const Type*> empty_types;
 	static std::map<std::set<std::shared_ptr<const Base_type>>, const Type*> compound_types;
+	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> function_types;
+	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> closure_types;
 	static std::map<const Type*, const Type*> array_types;
 	static std::map<const Type*, const Type*> const_array_types;
 	static std::map<const Type*, const Type*> tmp_array_types;

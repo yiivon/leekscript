@@ -59,6 +59,8 @@ unsigned int Type::placeholder_counter = 0;
 
 const std::vector<const Type*> Type::empty_types;
 std::map<std::set<std::shared_ptr<const Base_type>>, const Type*> Type::compound_types;
+std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::function_types;
+std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::closure_types;
 std::map<const Type*, const Type*> Type::array_types;
 std::map<const Type*, const Type*> Type::const_array_types;
 std::map<const Type*, const Type*> Type::tmp_array_types;
@@ -553,14 +555,34 @@ const Type* Type::tmp_map(const Type* key, const Type* element) {
 	return type;
 }
 const Type* Type::fun(const Type* return_type, std::vector<const Type*> arguments, const Value* function) {
-	auto t = new Type { std::make_shared<Function_type>(return_type, arguments, false, function), true };
-	t->constant = true;
-	return t;
+	if (function == nullptr) {
+		std::pair<const Type*, std::vector<const Type*>> key { return_type, arguments };
+		auto i = function_types.find(key);
+		if (i != function_types.end()) return i->second;
+		auto type = new Type { std::make_shared<Function_type>(return_type, arguments), true };
+		type->constant = true;
+		function_types.insert({ key, type });
+		return type;
+	} else {
+		auto t = new Type { std::make_shared<Function_type>(return_type, arguments, false, function), true };
+		t->constant = true;
+		return t;
+	}
 }
 const Type* Type::closure(const Type* return_type, std::vector<const Type*> arguments, const Value* function) {
-	auto t = new Type { std::make_shared<Function_type>(return_type, arguments, true, function), true };
-	t->constant = true;
-	return t;
+	if (function == nullptr) {
+		std::pair<const Type*, std::vector<const Type*>> key { return_type, arguments };
+		auto i = closure_types.find(key);
+		if (i != closure_types.end()) return i->second;
+		auto type = new Type { std::make_shared<Function_type>(return_type, arguments, true), true };
+		type->constant = true;
+		closure_types.insert({ key, type });
+		return type;
+	} else {
+		auto t = new Type { std::make_shared<Function_type>(return_type, arguments, true, function), true };
+		t->constant = true;
+		return t;
+	}
 }
 const Type* Type::structure(const std::string name, std::initializer_list<const Type*> types) {
 	return new Type { std::make_shared<Struct_type>(name, types), false };
