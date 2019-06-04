@@ -3,6 +3,7 @@
 #include "../../vm/LSValue.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
 #include "../error/Error.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

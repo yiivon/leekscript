@@ -38,7 +38,6 @@
 #include "llvm/Support/DynamicLibrary.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
-#include "../type/Type.hpp"
 #include "../vm/Exception.hpp"
 #include "../vm/LSValue.hpp"
 #include <gmp.h>
@@ -48,6 +47,7 @@ namespace ls {
 class Program;
 class VM;
 class Function;
+class Type;
 
 class Compiler {
 public:
@@ -60,7 +60,7 @@ public:
 		bool operator != (const value& o) const {
 			return v != o.v or t != o.t;
 		}
-		value() : v(nullptr), t(Type::void_) {}
+		value();
 		value(llvm::Value* v, const Type* t) : v(v), t(t) {}
 	};
 	struct label {

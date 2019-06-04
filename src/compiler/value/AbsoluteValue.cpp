@@ -1,5 +1,6 @@
 #include "AbsoluteValue.hpp"
 #include "../../vm/LSValue.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

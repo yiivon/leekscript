@@ -6,16 +6,18 @@
 namespace ls {
 
 class Class_type : public Pointer_type {
+	std::string name;
 public:
 	Class_type(std::string name);
 	virtual int id() const override { return 11; }
-	virtual const std::string getName() const { return "class"; }
+	virtual const std::string getName() const override { return "class " + name; }
 	virtual const std::string getJsonName() const { return "class"; }
-	virtual bool operator == (const Base_type*) const override;
+	virtual bool operator == (const Type*) const override;
 	virtual bool callable() const override { return true; }
-	virtual int distance(const Base_type* type) const override;
-	virtual std::string clazz() const override;
+	virtual int distance(const Type* type) const override;
+	virtual std::string class_name() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
+	virtual Type* clone() const override;
 };
 
 }

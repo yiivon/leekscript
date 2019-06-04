@@ -1,5 +1,6 @@
 #include "Boolean.hpp"
 #include "../../vm/value/LSBoolean.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

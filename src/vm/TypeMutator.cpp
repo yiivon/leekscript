@@ -1,5 +1,6 @@
 #include "TypeMutator.hpp"
 #include "../compiler/value/LeftValue.hpp"
+#include "../type/Type.hpp"
 
 namespace ls {
 

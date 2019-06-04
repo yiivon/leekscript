@@ -5,6 +5,7 @@
 #include "LeftValue.hpp"
 #include "Value.hpp"
 #include "../lexical/Token.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

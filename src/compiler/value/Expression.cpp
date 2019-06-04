@@ -365,7 +365,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			label_else.block = c.builder.GetInsertBlock();
 
 			c.insn_label(&label_end);
-			auto PN = c.builder.CreatePHI(type->llvm_type(c), 2);
+			auto PN = c.builder.CreatePHI(type->llvm(c), 2);
 			PN->addIncoming(y.v, label_then.block);
 			PN->addIncoming(x.v, label_else.block);
 			return {PN, type};

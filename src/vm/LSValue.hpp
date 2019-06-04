@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <map>
 #include "../../lib/json.hpp"
-#include "../type/Type.hpp"
 #include "../constants.h"
 
 namespace ls {
@@ -23,6 +22,7 @@ class LSFunction;
 class LSObject;
 class LSClass;
 class Context;
+class Type;
 
 typedef u_int8_t LSValueType;
 

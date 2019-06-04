@@ -13,8 +13,8 @@ class SemanticAnalyzer;
 
 class Value {
 public:
-	const Type* type = Type::void_;
-	const Type* return_type = Type::void_;
+	const Type* type;
+	const Type* return_type;
 	bool returning = false;
 	bool may_return = false;
 	std::vector<const Type*> version;

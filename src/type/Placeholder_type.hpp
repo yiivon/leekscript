@@ -2,9 +2,10 @@
 #define PLACEHOLDER_TYPE_HPP
 
 #include "Any_type.hpp"
-#include "Type.hpp"
 
 namespace ls {
+
+class Type;
 
 class Placeholder_type : public Any_type {
 	std::string _name;
@@ -12,9 +13,10 @@ class Placeholder_type : public Any_type {
 public:
 	Placeholder_type(const std::string name) : _name(name) {}
 	void implement(const Type* type) const;
-	virtual bool operator == (const Base_type*) const override;
-	virtual int distance(const Base_type* type) const override;
+	virtual bool operator == (const Type*) const override;
+	virtual int distance(const Type* type) const override;
 	virtual std::ostream& print(std::ostream& os) const override;
+	virtual Type* clone() const override;
 };
 
 }

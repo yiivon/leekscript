@@ -6,6 +6,7 @@
 #include "../constants.h"
 #include "../colors.h"
 #include "../../lib/utf8.h"
+#include "Void_type.hpp"
 #include "Any_type.hpp"
 #include "Array_type.hpp"
 #include "Set_type.hpp"
@@ -29,36 +30,20 @@
 #include "Pointer_type.hpp"
 #include "Template_type.hpp"
 #include "Never_type.hpp"
+#include "Compound_type.hpp"
 #include "../compiler/value/Function.hpp"
 #include "../compiler/value/Value.hpp"
 
 namespace ls {
 
-Base_type* Type::_raw_never = nullptr;
-Base_type* Type::_raw_null = nullptr;
-Base_type* Type::_raw_any = nullptr;
-Base_type* Type::_raw_boolean = nullptr;
-Base_type* Type::_raw_i8 = nullptr;
-Base_type* Type::_raw_integer = nullptr;
-Base_type* Type::_raw_number = nullptr;
-Base_type* Type::_raw_long = nullptr;
-Base_type* Type::_raw_real = nullptr;
-Base_type* Type::_raw_mpz = nullptr;
-Base_type* Type::_raw_string = nullptr;
-Base_type* Type::_raw_interval = nullptr;
-Base_type* Type::_raw_object = nullptr;
-std::map<std::string, const Base_type*> Type::_raw_class;
-
-std::vector<const Base_type*> Type::placeholder_types;
-
+std::vector<const Type*> Type::placeholder_types;
 void Type::clear_placeholder_types() {
 	placeholder_types.clear();
 }
-
 unsigned int Type::placeholder_counter = 0;
 
 const std::vector<const Type*> Type::empty_types;
-std::map<std::set<const Base_type*>, const Type*> Type::compound_types;
+std::map<std::set<const Type*>, const Type*> Type::compound_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::function_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::closure_types;
 std::map<const Type*, const Type*> Type::array_types;
@@ -75,54 +60,43 @@ std::map<const Type*, const Type*> Type::temporary_types;
 std::map<const Type*, const Type*> Type::not_temporary_types;
 std::map<const Type*, const Type*> Type::const_types;
 std::map<const Type*, const Type*> Type::not_const_types;
+std::map<std::string, const Type*> Type::class_types;
+std::map<std::string, const Type*> Type::structure_types;
 
-const Type* const Type::void_ = new Type {};
-const Type* const Type::boolean = new Type { raw_boolean(), true };
+const Type* const Type::void_ = new Void_type {};
+const Type* const Type::boolean = new Bool_type {};
 const Type* const Type::const_boolean = Type::boolean->add_constant();
-const Type* const Type::number = new Type { raw_number(), false };
+const Type* const Type::number = new Number_type {};
 const Type* const Type::const_number = Type::number->add_constant();
-const Type* const Type::i8 = new Type { raw_i8(), false };
-const Type* const Type::integer = new Type { raw_integer(), false };
+const Type* const Type::i8 = new I8_type {};
+const Type* const Type::integer = new Integer_type {};
 const Type* const Type::const_integer = Type::integer->add_constant();
-const Type* const Type::long_ = new Type { raw_long(), false };
+const Type* const Type::long_ = new Long_type {};
 const Type* const Type::const_long = Type::long_->add_constant();
-const Type* const Type::mpz = new Type { raw_mpz(), false };
+const Type* const Type::mpz = new Mpz_type {};
 const Type* const Type::tmp_mpz = Type::mpz->add_temporary();
 const Type* const Type::const_mpz = Type::mpz->add_constant();
 const Type* const Type::mpz_ptr = Type::mpz->pointer();
 const Type* const Type::tmp_mpz_ptr = Type::mpz_ptr->add_temporary();
 const Type* const Type::const_mpz_ptr = Type::mpz_ptr->add_constant();
 
-const Type* const Type::never = new Type { raw_never(), false };
-const Type* const Type::any = new Type { raw_any(), false };
+const Type* const Type::never = new Never_type {};
+const Type* const Type::any = new Any_type {};
 const Type* const Type::const_any = Type::any->add_constant();
-const Type* const Type::null = new Type { raw_null(), true };
-const Type* const Type::string = new Type { raw_string(), false };
+const Type* const Type::null = new Null_type {};
+const Type* const Type::string = new String_type {};
 const Type* const Type::tmp_string = Type::string->add_temporary();
 const Type* const Type::const_string = Type::string->add_constant();
-const Type* const Type::real = new Type { raw_real(), false };
+const Type* const Type::real = new Real_type {};
 const Type* const Type::const_real = Type::real->add_constant();
-const Type* const Type::interval = new Type { raw_interval(), false };
+const Type* const Type::interval = new Interval_type {};
 const Type* const Type::const_interval = Type::interval->add_constant();
 const Type* const Type::tmp_interval = Type::interval->add_temporary();
-const Type* const Type::object = new Type { raw_object(), false };
+const Type* const Type::object = new Object_type {};
 const Type* const Type::tmp_object = Type::object->add_temporary();
 
-Type::Type() {
+Type::Type(bool native) : native(native) {
 	folded = this;
-}
-Type::Type(std::set<const Base_type*> types, const Type* folded) : folded(folded) {
-	for (const auto& t : types) _types.push_back(t);
-}
-Type::Type(const Base_type* raw_type, bool native) {
-	_types.push_back(raw_type);
-	this->native = native;
-	folded = this;
-}
-
-int Type::id() const {
-	if (is_void()) { return 0; }
-	return fold()->_types[0]->id();
 }
 
 bool Type::must_manage_memory() const {
@@ -130,50 +104,10 @@ bool Type::must_manage_memory() const {
 	return is_polymorphic() and not native;
 }
 
-const Type* Type::return_type() const {
-	if (is_void()) { return Type::void_; }
-	return _types[0]->return_type();
-}
-const Type* Type::argument(size_t index) const {
-	if (is_void()) { return void_; }
-	return _types[0]->argument(index);
-}
-const std::vector<const Type*>& Type::arguments() const {
-	if (is_void()) { return empty_types; }
-	return _types[0]->arguments();
-}
-const Type* Type::element() const {
-	if (is_void()) { return Type::void_; }
-	if (_types.size() == 1) return _types[0]->element();
-	return fold()->element();
-}
-const Type* Type::key() const {
-	if (is_void()) { return Type::void_; }
-	return _types[0]->key();
-}
-const Type* Type::member(int i) const {
-	if (is_void()) { return Type::void_; }
-	return _types[0]->member(i);
-}
-
-const Type* Type::operator + (const Base_type* type) const {
-	auto t = new Type();
-	t->operator += (this);
-	t->operator += (type);
-	return t;
-}
 const Type* Type::operator + (const Type* type) const {
 	if (is_void()) return type;
 	if (type->is_void()) return this;
 	return Type::compound({this, type});
-}
-void Type::operator += (const Type* type) {
-	for (const auto& t : type->_types) {
-		operator += (t);
-	}
-}
-void Type::operator += (const Base_type* type) {
-	_types.push_back(type);
 }
 const Type* Type::operator * (const Type* t2) const {
 	auto a = this->fold();
@@ -217,12 +151,6 @@ void Type::toJson(std::ostream& os) const {
 	}
 	os << "}";
 }
-std::string Type::getJsonName() const {
-	if (is_void()) {
-		return "?";
-	}
-	return _types[0]->getJsonName();
-}
 
 std::string Type::to_string() const {
 	std::ostringstream oss;
@@ -230,36 +158,14 @@ std::string Type::to_string() const {
 	return oss.str();
 }
 
-std::string Type::class_name() const {
-	if (is_void()) { return ""; }
-	return fold()->_types[0]->clazz();
-}
-
-bool Type::iterable() const {
-	return std::all_of(begin(_types), end(_types), [](auto& type) {
-		return type->iterable();
-	});
-}
-
-bool Type::is_container() const {
-	return std::all_of(begin(_types), end(_types), [](auto& type) {
-		return type->is_container();
-	});
-}
-bool Type::can_be_container() const {
-	return is_any() or is_placeholder() or std::any_of(begin(_types), end(_types), [](auto& type) {
-		return type->is_container();
-	});
-}
-
 const Type* Type::add_temporary() const {
 	if (temporary) return this;
 	if (constant) return not_constant()->add_temporary();
 	auto i = temporary_types.find(this);
 	if (i != temporary_types.end()) return i->second;
-	auto type = new Type { *this };
+	auto type = this->clone();
 	type->temporary = true;
-	if (type->_types.size() > 1) {
+	if (this != folded) {
 		type->folded = type->folded->add_temporary();
 	} else {
 		type->folded = type;
@@ -272,9 +178,9 @@ const Type* Type::not_temporary() const {
 	if (not temporary) return this;
 	auto i = not_temporary_types.find(this);
 	if (i != not_temporary_types.end()) return i->second;
-	auto type = new Type { *this };
+	auto type = this->clone();
 	type->temporary = false;
-	if (type->_types.size() > 1) {
+	if (this != folded) {
 		type->folded = type->folded->not_temporary();
 	} else {
 		type->folded = type;
@@ -288,9 +194,9 @@ const Type* Type::add_constant() const {
 	if (temporary) return not_temporary()->add_constant();
 	auto i = const_types.find(this);
 	if (i != const_types.end()) return i->second;
-	auto type = new Type { *this };
+	auto type = this->clone();
 	type->constant = true;
-	if (type->_types.size() > 1) {
+	if (this != folded) {
 		type->folded = type->folded->add_constant();
 	} else {
 		type->folded = type;
@@ -303,9 +209,9 @@ const Type* Type::not_constant() const {
 	if (not constant) return this;
 	auto i = not_const_types.find(this);
 	if (i != not_const_types.end()) return i->second;
-	auto type = new Type { *this };
+	auto type = this->clone();
 	type->constant = false;
-	if (type->_types.size() > 1) {
+	if (this != folded) {
 		type->folded = type->folded->not_constant();
 	} else {
 		type->folded = type;
@@ -315,19 +221,6 @@ const Type* Type::not_constant() const {
 	return type;
 }
 
-llvm::Type* Type::llvm_type(const Compiler& c) const {
-	if (is_void()) {
-		return llvm::Type::getVoidTy(c.getContext());
-	}
-	return fold()->_types[0]->llvm(c);
-}
-
-const Type* Type::iterator() const {
-	if (_types.size() > 0) {
-		return fold()->_types[0]->iterator();
-	}
-	assert(false && "No iterator for void");
-}
 const Type* Type::pointer() const {
 	auto i = pointer_types.find(this);
 	if (i != pointer_types.end()) return i->second;
@@ -340,41 +233,64 @@ const Type* Type::pointer() const {
 		pointer_types.insert({ this, type });
 		return type;
 	} else {
-		auto type = new Type { new Pointer_type(this) };
+		auto type = new Pointer_type(this);
 		pointer_types.insert({ this, type });
 		return type;
 	}
 }
-const Type* Type::pointed() const {
-	assert(is_pointer());
-	if (_types.size() > 0) {
-		return dynamic_cast<const Pointer_type*>(_types[0])->pointed();
-	}
-	assert(false && "Void type is not pointer");
-}
 
-template <class T> bool Type::is_type() const {
-	return _types.size() && all([&](const Base_type* type) {
-		if (dynamic_cast<const T*>(type) != nullptr) return true;
-		if (auto t = dynamic_cast<const Template_type*>(type)) {
-			return t->_implementation->is_type<T>();
-		}
-		return false;
-	});
+template <class T>
+bool Type::is_type() const {
+	if (dynamic_cast<const T*>(this) != nullptr) return true;
+	if (auto t = dynamic_cast<const Template_type*>(this)) {
+		return t->_implementation->is_type<T>();
+	}
+	if (auto c = dynamic_cast<const Compound_type*>(this)) {
+		return c->all([&](const Type* t) {
+			return dynamic_cast<const T*>(t) != nullptr;
+		});
+	}
+	return false;
 }
 template <class T> bool Type::can_be_type() const {
-	return _types.size() && some([&](const Base_type* type) {
-		return dynamic_cast<const T*>(type) != nullptr;
-	});
+	if (dynamic_cast<const T*>(this) != nullptr) return true;
+	if (auto t = dynamic_cast<const Template_type*>(this)) {
+		return t->_implementation->is_type<T>();
+	}
+	if (auto c = dynamic_cast<const Compound_type*>(this)) {
+		return c->some([&](const Type* t) {
+			return dynamic_cast<const T*>(t) != nullptr;
+		});
+	}
+	return false;
 }
 bool Type::is_any() const { return is_type<Any_type>(); }
 bool Type::is_bool() const { return is_type<Bool_type>(); }
 bool Type::can_be_bool() const { return can_be_type<Bool_type>(); }
 bool Type::is_number() const { return castable(Type::number, true); }
 bool Type::can_be_number() const {
-	return some([&](const Base_type* type) {
-		return type->distance(Type::number->_types[0]) >= 0;
-	});
+	if (auto c = dynamic_cast<const Compound_type*>(this)) {
+		return c->some([&](const Type* type) {
+			return type->distance(Type::number) >= 0;
+		});
+	}
+	return distance(Type::number) >= 0;
+}
+bool Type::can_be_container() const {
+	if (auto c = dynamic_cast<const Compound_type*>(this)) {
+		return c->some([&](const Type* type) {
+			return type->container();
+		});
+	}
+	return is_any() or container();
+}
+bool Type::can_be_callable() const {
+	if (auto c = dynamic_cast<const Compound_type*>(this)) {
+		return c->some([&](const Type* type) {
+			return type->callable();
+		});
+	}
+	return is_any() or callable();
 }
 bool Type::can_be_numeric() const {
 	return is_any() or can_be_bool() or can_be_number();
@@ -398,84 +314,44 @@ bool Type::is_placeholder() const { return is_type<Placeholder_type>(); }
 bool Type::is_pointer() const { return is_type<Pointer_type>(); }
 bool Type::is_struct() const { return is_type<Struct_type>(); }
 bool Type::is_closure() const {
-	return _types.size() && all([&](const Base_type* type) {
-		auto f = dynamic_cast<const Function_type*>(type);
-		return f && f->closure();
-	});
+	if (auto f = dynamic_cast<const Function_type*>(folded)) {
+		return f->closure();
+	}
+	return false;
 }
 bool Type::is_polymorphic() const {
 	// TODO extends all polymorphic types from Polymorphic_type (Any_type) to improve check
-	return _types.size() and fold()->all([&](const Base_type* t) {
-		return dynamic_cast<const String_type*>(t) != nullptr
-			or dynamic_cast<const Array_type*>(t) != nullptr
-			or dynamic_cast<const Set_type*>(t) != nullptr
-			or dynamic_cast<const Map_type*>(t) != nullptr
-			or dynamic_cast<const Interval_type*>(t) != nullptr
-			or dynamic_cast<const Any_type*>(t) != nullptr
-			or dynamic_cast<const Function_type*>(t) != nullptr
-			or dynamic_cast<const Class_type*>(t) != nullptr
-			or dynamic_cast<const Object_type*>(t) != nullptr
-			or dynamic_cast<const Null_type*>(t) != nullptr;
-	});
+	return dynamic_cast<const String_type*>(folded) != nullptr
+		or dynamic_cast<const Array_type*>(folded) != nullptr
+		or dynamic_cast<const Set_type*>(folded) != nullptr
+		or dynamic_cast<const Map_type*>(folded) != nullptr
+		or dynamic_cast<const Interval_type*>(folded) != nullptr
+		or dynamic_cast<const Any_type*>(folded) != nullptr
+		or dynamic_cast<const Function_type*>(folded) != nullptr
+		or dynamic_cast<const Class_type*>(folded) != nullptr
+		or dynamic_cast<const Object_type*>(folded) != nullptr
+		or dynamic_cast<const Null_type*>(folded) != nullptr;
 }
 bool Type::is_primitive() const {
-	return _types.size() && all([&](const Base_type* t) {
-		return dynamic_cast<const Integer_type*>(t) != nullptr
-			or dynamic_cast<const Mpz_type*>(t) != nullptr 
-			or dynamic_cast<const Long_type*>(t) != nullptr 
-			or dynamic_cast<const Real_type*>(t) != nullptr 
-			or dynamic_cast<const Bool_type*>(t) != nullptr
-			or (dynamic_cast<const Pointer_type*>(t) != nullptr and ((Pointer_type*) t)->pointed()->is_mpz());
-	});
-}
-bool Type::is_callable() const {
-	return _types.size() && all([&](const Base_type* t) {
-		return t->callable();
-	});
-}
-bool Type::can_be_callable() const {
-	return is_any() or (_types.size() and some([&](const Base_type* t) {
-		return t->callable();
-	}));
+	return dynamic_cast<const Integer_type*>(folded) != nullptr
+		or dynamic_cast<const Mpz_type*>(folded) != nullptr 
+		or dynamic_cast<const Long_type*>(folded) != nullptr 
+		or dynamic_cast<const Real_type*>(folded) != nullptr 
+		or dynamic_cast<const Bool_type*>(folded) != nullptr
+		or (dynamic_cast<const Pointer_type*>(folded) != nullptr and ((Pointer_type*) folded)->pointed()->is_mpz());
 }
 bool Type::is_void() const {
 	return this == Type::void_;
 }
 bool Type::is_template() const { return is_type<Template_type>(); }
 
-void Type::implement(const Type* type) const {
-	if (auto t = dynamic_cast<const Template_type*>(_types[0])) {
-		t->implement(type);
-	}
-}
-bool Type::is_implemented(const Type* type) const {
-	return _types.size() and all([&](const Base_type* t) {
-		if (auto tpl = dynamic_cast<const Template_type*>(t)) {
-			return not tpl->_implementation->is_void();
-		}
-		return false;
-	});
-}
-
 bool Type::castable(const Type* type, bool strictCast) const {
-	if (!_types.size()) return false;
 	auto d = distance(type);
 	return d >= 0 and (!strictCast or d < 100000);
 }
 bool Type::strictCastable(const Type* type) const {
-	if (!_types.size()) return false;
 	auto d = distance(type);
 	return d >= 0 and d < 100;
-}
-int Type::distance(const Type* type) const {
-	if (is_void() and type->is_void()) return 0;
-	if (is_void() or type->is_void()) return -1;
-	if (not temporary and type->temporary) return -1;
-	auto f1 { fold() };
-	auto f2 { type->fold() };
-	const auto& t1 = f1->_types[0];
-	const auto& t2 = f2->_types[0];
-	return t1->distance(t2);
 }
 const Type* Type::without_placeholders() const {
 	return this;
@@ -488,13 +364,13 @@ const Type* Type::generate_new_placeholder_type() {
 	auto type = new Placeholder_type(std::string { buff });
 	placeholder_counter++;
 	Type::placeholder_types.push_back(type);
-	return new Type { type };
+	return type;
 }
 
 const Type* Type::array(const Type* element) {
 	auto i = array_types.find(element);
 	if (i != array_types.end()) return i->second;
-	auto type = new Type { Array_type::create(element), false };
+	auto type = new Array_type(element);
 	array_types.insert({element, type});
 	return type;
 }
@@ -515,7 +391,7 @@ const Type* Type::tmp_array(const Type* element) {
 const Type* Type::set(const Type* element) {
 	auto i = set_types.find(element);
 	if (i != set_types.end()) return i->second;
-	auto type = new Type { Set_type::create(element), false };
+	auto type = new Set_type(element);
 	set_types.insert({element, type});
 	return type;
 }
@@ -536,7 +412,7 @@ const Type* Type::tmp_set(const Type* element) {
 const Type* Type::map(const Type* key, const Type* element) {
 	auto i = map_types.find({key, element});
 	if (i != map_types.end()) return i->second;
-	auto type = new Type { new Map_type(key, element), false };
+	auto type = new Map_type(key, element);
 	map_types.insert({{key, element}, type});
 	return type;
 }
@@ -559,12 +435,12 @@ const Type* Type::fun(const Type* return_type, std::vector<const Type*> argument
 		std::pair<const Type*, std::vector<const Type*>> key { return_type, arguments };
 		auto i = function_types.find(key);
 		if (i != function_types.end()) return i->second;
-		auto type = new Type { new Function_type(return_type, arguments), true };
+		auto type = new Function_type(return_type, arguments);
 		type->constant = true;
 		function_types.insert({ key, type });
 		return type;
 	} else {
-		auto t = new Type { new Function_type(return_type, arguments, false, function), true };
+		auto t = new Function_type(return_type, arguments, false, function);
 		t->constant = true;
 		return t;
 	}
@@ -574,118 +450,61 @@ const Type* Type::closure(const Type* return_type, std::vector<const Type*> argu
 		std::pair<const Type*, std::vector<const Type*>> key { return_type, arguments };
 		auto i = closure_types.find(key);
 		if (i != closure_types.end()) return i->second;
-		auto type = new Type { new Function_type(return_type, arguments, true), true };
+		auto type = new Function_type(return_type, arguments, true);
 		type->constant = true;
 		closure_types.insert({ key, type });
 		return type;
 	} else {
-		auto t = new Type { new Function_type(return_type, arguments, true, function), true };
+		auto t = new Function_type(return_type, arguments, true, function);
 		t->constant = true;
 		return t;
 	}
 }
 const Type* Type::structure(const std::string name, std::initializer_list<const Type*> types) {
-	return new Type { new Struct_type(name, types), false };
+	auto i = structure_types.find(name);
+	if (i != structure_types.end()) return i->second;
+	auto type = new Struct_type(name, types);
+	structure_types.insert({ name, type });
+	return type;
 }
 const Type* Type::clazz(const std::string name) {
-	if (_raw_class.find(name) == _raw_class.end()) {
-		_raw_class.insert({name, new Class_type(name) });
-	}
-	return new Type { _raw_class.at(name), true };
+	auto i = class_types.find(name);
+	if (i != class_types.end()) return i->second;
+	auto type = new Class_type(name);
+	class_types.insert({ name, type });
+	return type;
 }
 const Type* Type::const_class(const std::string name) {
 	return clazz(name)->add_constant();
 }
 const Type* Type::template_(std::string name) {
-	return new Type { new Template_type(name), false };
+	return new Template_type(name);
 }
 const Type* Type::compound(std::initializer_list<const Type*> types) {
 	if (types.size() == 1) return *types.begin();
-	std::set<const Base_type*> base;
+	std::set<const Type*> base;
 	auto folded = Type::void_;
 	for (const auto& t : types) {
-		for (const auto& bt : t->_types) base.insert(bt);
+		if (auto c = dynamic_cast<const Compound_type*>(t)) {
+			for (const auto& bt : c->types) base.insert(bt);
+		} else {
+			base.insert(t);
+		}
 		folded = folded->operator * (t);
 	}
 	if (base.size() == 1) return *types.begin();
 	auto i = compound_types.find(base);
 	if (i != compound_types.end()) return i->second;
-	auto type = new Type { base, folded };
+	auto type = new Compound_type { base, folded };
 	compound_types.insert({ base, type });
 	return type;
 }
-bool Type::all(std::function<bool(const Base_type*)> fun) const {
-	return std::all_of(_types.begin(), _types.end(), fun);
-}
-bool Type::some(std::function<bool(const Base_type*)> fun) const {
-	return std::any_of(_types.begin(), _types.end(), fun);
-}
-
-const Base_type* Type::raw_never() {
-	if (!_raw_never) _raw_never = new Never_type();
-	return _raw_never;
-}
-const Base_type* Type::raw_null() {
-	if (!_raw_null) _raw_null = new Null_type();
-	return _raw_null;
-}
-const Base_type* Type::raw_any() {
-	if (!_raw_any) _raw_any = new Any_type();
-	return _raw_any;
-}
-const Base_type* Type::raw_boolean() {
-	if (!_raw_boolean) _raw_boolean = new Bool_type();
-	return _raw_boolean;
-}
-const Base_type* Type::raw_number() {
-	if (!_raw_number) _raw_number = new Number_type();
-	return _raw_number;
-}
-const Base_type* Type::raw_i8() {
-	if (!_raw_i8) _raw_i8 = new I8_type();
-	return _raw_i8;
-}
-const Base_type* Type::raw_integer() {
-	if (!_raw_integer) _raw_integer = new Integer_type();
-	return _raw_integer;
-}
-const Base_type* Type::raw_long() {
-	if (!_raw_long) _raw_long = new Long_type();
-	return _raw_long;
-}
-const Base_type* Type::raw_real() {
-	if (!_raw_real) _raw_real = new Real_type();
-	return _raw_real;
-}
-const Base_type* Type::raw_mpz() {
-	if (!_raw_mpz) _raw_mpz = new Mpz_type();
-	return _raw_mpz;
-}
-const Base_type* Type::raw_string() {
-	if (!_raw_string) _raw_string = new String_type();
-	return _raw_string;
-}
-const Base_type* Type::raw_interval() {
-	if (!_raw_interval) _raw_interval = new Interval_type();
-	return _raw_interval;
-}
-const Base_type* Type::raw_object() {
-	if (!_raw_object) _raw_object = new Object_type();
-	return _raw_object;
-}
 
 std::ostream& operator << (std::ostream& os, const Type* type) {
-	if (type->is_void()) {
-		os << C_GREY << "void" << END_COLOR;
-		return os;
-	}
 	if (type->constant) {
 		os << BLUE_BOLD << "const:" << END_COLOR;
 	}
-	for (size_t i = 0; i < type->_types.size(); ++i) {
-		if (i > 0) { os << " | "; }
-		type->_types[i]->print(os);
-	}
+	type->print(os);
 	if (type->temporary) {
 		os << BLUE_BOLD << "&&" << END_COLOR;
 	} else if (type->reference) {

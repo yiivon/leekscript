@@ -13,22 +13,26 @@ Null_type::Null_type() : Pointer_type(Type::structure("null", {
 	Type::integer, // ?
 	Type::integer, // refs
 	Type::boolean // native
-})) {}
+}), true) {}
 
-bool Null_type::operator == (const Base_type* type) const {
+bool Null_type::operator == (const Type* type) const {
 	return dynamic_cast<const Null_type*>(type);
 }
-int Null_type::distance(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type)) { return 1; }
-	if (dynamic_cast<const Null_type*>(type)) { return 0; }
+int Null_type::distance(const Type* type) const {
+	if (not temporary and type->temporary) return -1;
+	if (dynamic_cast<const Any_type*>(type->folded)) { return 1; }
+	if (dynamic_cast<const Null_type*>(type->folded)) { return 0; }
 	return -1;
 }
-std::string Null_type::clazz() const {
+std::string Null_type::class_name() const {
 	return "Null";
 }
 std::ostream& Null_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "null" << END_COLOR;
 	return os;
+}
+Type* Null_type::clone() const {
+	return new Null_type {};
 }
 
 }

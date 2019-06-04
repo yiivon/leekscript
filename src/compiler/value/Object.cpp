@@ -2,6 +2,7 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSString.hpp"
 #include "../../vm/value/LSObject.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

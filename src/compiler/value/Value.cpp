@@ -6,10 +6,7 @@
 
 namespace ls {
 
-Value::Value() {
-	type = Type::any;
-	constant = false;
-}
+Value::Value() : type(Type::any), return_type(Type::void_), constant(false) {}
 
 Value::~Value() {}
 

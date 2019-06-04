@@ -4,6 +4,7 @@
 #include <ostream>
 #include "../Compiler.hpp"
 #include "../lexical/Token.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

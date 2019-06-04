@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include "../type/Type.hpp"
 #include "value/LSClass.hpp"
 #include "../compiler/Compiler.hpp"
 #include "TypeMutator.hpp"
@@ -15,6 +14,7 @@ class LSValue;
 class CallableVersion;
 class Module;
 class VM;
+class Type;
 
 class Template {
 public:

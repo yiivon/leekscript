@@ -138,7 +138,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		case TokenType::NOT: {
 			if (expression->type->is_primitive()) {
 				auto x = expression->compile(c);
-				assert(x.t->llvm_type(c) == x.v->getType());
+				assert(x.t->llvm(c) == x.v->getType());
 				return c.insn_not_bool(x);
 			} else {
 				auto arg = expression->compile(c);

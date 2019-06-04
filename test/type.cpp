@@ -5,54 +5,51 @@
 void Test::test_types() {
 
 	auto p1 = ls::Type::generate_new_placeholder_type();
-	auto p2 = ls::Type::generate_new_placeholder_type();
-	auto p3 = ls::Type::generate_new_placeholder_type();
 
 	header("Types");
 	section("JSON name");
-	assert(ls::Type::long_->getJsonName() == "number");
-	assert(ls::Type::map()->getJsonName() == "map");
-	assert(ls::Type::interval->getJsonName() == "interval");
-	assert(ls::Type::object->getJsonName() == "object");
-	assert(ls::Type::clazz()->getJsonName() == "class");
-	assert(ls::Type::set()->getJsonName() == "set");
-	assert(ls::Type::null->getJsonName() == "null");
-	assert(ls::Type::fun()->getJsonName() == "function");
+	test("long", ls::Type::long_->getJsonName(), "number");
+	test("any", ls::Type::map()->getJsonName(), "map");
+	test("interval", ls::Type::interval->getJsonName(), "interval");
+	test("object", ls::Type::object->getJsonName(), "object");
+	test("class", ls::Type::clazz()->getJsonName(), "class");
+	test("set", ls::Type::set()->getJsonName(), "set");
+	test("null", ls::Type::null->getJsonName(), "null");
+	test("fun", ls::Type::fun()->getJsonName(), "function");
 
 	section("print");
-	auto assert_print = [&](const ls::Type* type, const std::string& result) {
-		std::ostringstream oss;	oss << type;
-		std::cout << oss.str() << std::endl;
-		assert(oss.str() == result);
+	auto pt = [&](const ls::Type* type) {
+		std::ostringstream oss;
+		oss << type;
+		return oss.str();
 	};
-	assert_print(ls::Type::void_, C_GREY "void" END_COLOR);
-	assert_print(ls::Type::any, BLUE_BOLD "any" END_COLOR);
-	assert_print(ls::Type::null, BLUE_BOLD "null" END_COLOR);
-	assert_print(ls::Type::boolean, BLUE_BOLD "bool" END_COLOR);
-	assert_print(ls::Type::integer, BLUE_BOLD "int" END_COLOR);
-	assert_print(ls::Type::real, BLUE_BOLD "real" END_COLOR);
-	assert_print(ls::Type::long_, BLUE_BOLD "long" END_COLOR);
-	assert_print(ls::Type::mpz, BLUE_BOLD "mpz" END_COLOR);
-	assert_print(ls::Type::array(ls::Type::integer), BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "int" END_COLOR ">");
-	assert_print(ls::Type::array(ls::Type::real), BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "real" END_COLOR ">");
-	assert_print(ls::Type::array(ls::Type::any), BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "any" END_COLOR ">");
-	assert_print(ls::Type::object, BLUE_BOLD "object" END_COLOR);
+	test("void", pt(ls::Type::void_), C_GREY "void" END_COLOR);
+	test("any", pt(ls::Type::any), BLUE_BOLD "any" END_COLOR);
+	test("null", pt(ls::Type::null), BLUE_BOLD "null" END_COLOR);
+	test("bool", pt(ls::Type::boolean), BLUE_BOLD "bool" END_COLOR);
+	test("integer", pt(ls::Type::integer), BLUE_BOLD "int" END_COLOR);
+	test("real", pt(ls::Type::real), BLUE_BOLD "real" END_COLOR);
+	test("long", pt(ls::Type::long_), BLUE_BOLD "long" END_COLOR);
+	test("mpz", pt(ls::Type::mpz), BLUE_BOLD "mpz" END_COLOR);
+	test("array<int>", pt(ls::Type::array(ls::Type::integer)), BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "int" END_COLOR ">");
+	test("array<real>", pt(ls::Type::array(ls::Type::real)), BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "real" END_COLOR ">");
+	test("array<any>", pt(ls::Type::array(ls::Type::any)), BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "any" END_COLOR ">");
+	test("object", pt(ls::Type::object), BLUE_BOLD "object" END_COLOR);
 	//assert_print(ls::Type::array(ls::Type::integer).iterator(), BLUE_BOLD "iterator" END_COLOR "<" BLUE_BOLD "array" END_COLOR "<" BLUE_BOLD "int" END_COLOR ">>");
-	assert_print(ls::Type::compound({ls::Type::integer, ls::Type::string}), BLUE_BOLD "int" END_COLOR " | " BLUE_BOLD "string" END_COLOR);
+	test("integer | string", pt(ls::Type::compound({ls::Type::integer, ls::Type::string})), BLUE_BOLD "int" END_COLOR " | " BLUE_BOLD "string" END_COLOR);
 
 	section("operator ==");
-	assert(ls::Type::void_ == ls::Type::void_);
-	assert(ls::Type::any == ls::Type::any);
-	assert(ls::Type::integer == ls::Type::integer);
-	assert(ls::Type::array(ls::Type::integer) == ls::Type::array(ls::Type::integer));
-	assert(ls::Type::array(ls::Type::real) == ls::Type::array(ls::Type::real));
-	assert(ls::Type::map(ls::Type::any, ls::Type::any) == ls::Type::map(ls::Type::any, ls::Type::any));
-	assert(ls::Type::compound({ls::Type::integer, ls::Type::string}) != ls::Type::integer);
-	assert(ls::Type::compound({ls::Type::integer, ls::Type::string}) == ls::Type::compound({ls::Type::integer, ls::Type::string}));
-	assert(ls::Type::fun(ls::Type::null, {})->return_type() == ls::Type::null);
-	assert(ls::Type::mpz->pointer() == ls::Type::mpz_ptr);
-	assert(ls::Type::mpz_ptr->pointed() == ls::Type::mpz);
-	assert(ls::Type::mpz->pointer()->add_temporary() == ls::Type::tmp_mpz_ptr);
+	test("void", ls::Type::void_, ls::Type::void_);
+	test("any", ls::Type::any, ls::Type::any);
+	test("integer", ls::Type::integer, ls::Type::integer);
+	test("array<int>", ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::integer));
+	test("array<real>", ls::Type::array(ls::Type::real), ls::Type::array(ls::Type::real));
+	test("map<any, any>", ls::Type::map(ls::Type::any, ls::Type::any), ls::Type::map(ls::Type::any, ls::Type::any));
+	test("integer | string", ls::Type::compound({ls::Type::integer, ls::Type::string}), ls::Type::compound({ls::Type::integer, ls::Type::string}));
+	test("(-> null).return", ls::Type::fun(ls::Type::null, {})->return_type(), ls::Type::null);
+	test("mpz*", ls::Type::mpz->pointer(), ls::Type::mpz_ptr);
+	test("mpz*.pointed", ls::Type::mpz_ptr->pointed(), ls::Type::mpz);
+	test("mpz*&&", ls::Type::mpz->pointer()->add_temporary(), ls::Type::tmp_mpz_ptr);
 	assert(ls::Type::mpz->add_temporary()->pointer() == ls::Type::tmp_mpz_ptr);
 	assert(ls::Type::mpz_ptr->add_temporary() == ls::Type::tmp_mpz_ptr);
 	assert(ls::Type::tmp_mpz->pointer() == ls::Type::tmp_mpz_ptr);
@@ -63,53 +60,71 @@ void Test::test_types() {
 	assert(ls::Type::mpz->add_constant()->add_temporary() == ls::Type::tmp_mpz);
 
 	section("is_array");
-	assert(ls::Type::void_->is_array() == false);
-	assert(ls::Type::any->is_array() == false);
-	assert(ls::Type::integer->is_array() == false);
-	assert(ls::Type::array()->is_array() == true);
-	assert(ls::Type::array(ls::Type::any)->is_array() == true);
-	assert(ls::Type::array(ls::Type::integer)->is_array() == true);
-	assert(ls::Type::array(ls::Type::real)->is_array() == true);
-	assert(ls::Type::compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::integer) })->is_array() == true);
-	// assert((new ls::Type({ std::make_shared<ls::Array_type>(ls::Type::integer), ls::Type::raw_integer }))->is_array() == false);
+	test("void", ls::Type::void_->is_array(), false);
+	test("any", ls::Type::any->is_array(), false);
+	test("integer", ls::Type::integer->is_array(), false);
+	test("array", ls::Type::array()->is_array(), true);
+	test("array<any>", ls::Type::array(ls::Type::any)->is_array(), true);
+	test("array<integer>", ls::Type::array(ls::Type::integer)->is_array(), true);
+	test("array<real>", ls::Type::array(ls::Type::real)->is_array(), true);
+	test("array<integer> | array<real>", ls::Type::compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real) })->is_array(), true);
+	test("array<integer> | set<real>", ls::Type::compound({ ls::Type::array(ls::Type::integer), ls::Type::set(ls::Type::real) })->is_array(), false);
 
 	section("castable");
-	assert(ls::Type::real->castable(ls::Type::integer));
-	assert(ls::Type::array(ls::Type::integer)->castable(ls::Type::array(ls::Type::integer)));
-	assert(ls::Type::array(ls::Type::integer)->castable(ls::Type::array()));
-	assert(ls::Type::array(ls::Type::real)->castable(ls::Type::array()));
-	assert(ls::Type::map(ls::Type::any, ls::Type::any)->castable(ls::Type::map()));
-	assert(ls::Type::map(ls::Type::integer, ls::Type::any)->castable(ls::Type::map()));
-	assert(ls::Type::map(ls::Type::real, ls::Type::any)->castable(ls::Type::map()));
-	assert(ls::Type::any->castable(p1));
-	assert(ls::Type::number->castable(ls::Type::boolean));
-	assert(ls::Type::boolean->castable(ls::Type::number));
-	assert(ls::Type::array(ls::Type::real)->castable(ls::Type::any));
-	assert(ls::Type::array(ls::Type::real)->castable(ls::Type::const_any));
+	test("real -> int", ls::Type::real->castable(ls::Type::integer), true);
+	test("array<int> -> array<int>", ls::Type::array(ls::Type::integer)->castable(ls::Type::array(ls::Type::integer)), true);
+	test("array<int> -> array", ls::Type::array(ls::Type::integer)->castable(ls::Type::array()), true);
+	test("array<real> -> array", ls::Type::array(ls::Type::real)->castable(ls::Type::array()), true);
+	test("map<any, any> -> map", ls::Type::map(ls::Type::any, ls::Type::any)->castable(ls::Type::map()), true);
+	test("map<integer, any> -> map", ls::Type::map(ls::Type::integer, ls::Type::any)->castable(ls::Type::map()), true);
+	test("map<real, any> -> map", ls::Type::map(ls::Type::real, ls::Type::any)->castable(ls::Type::map()), true);
+	test("any -> p1", ls::Type::any->castable(p1), true);
+	test("number -> boolean", ls::Type::number->castable(ls::Type::boolean), true);
+	test("boolean -> number", ls::Type::boolean->castable(ls::Type::number), true);
+	test("array<real> -> any", ls::Type::array(ls::Type::real)->castable(ls::Type::any), true);
+	test("array<real> -> const:any", ls::Type::array(ls::Type::real)->castable(ls::Type::const_any), true);
 
 	section("Distance");
-	assert(ls::Type::number->distance(ls::Type::any) == 1);
-	assert(ls::Type::mpz_ptr->distance(ls::Type::any) == 2);
+	test("number <=> any", ls::Type::number->distance(ls::Type::any), 1);
+	test("mpz* <=> any", ls::Type::mpz_ptr->distance(ls::Type::any), 2);
+	test("integer | real <=> real", ls::Type::compound({ ls::Type::integer, ls::Type::real })->distance(ls::Type::real), 0);
+	test("real <=> integer | real", ls::Type::real->distance(ls::Type::compound({ ls::Type::integer, ls::Type::real })), 0);
+	test("integer | real <=> integer | real", ls::Type::compound({ ls::Type::integer, ls::Type::real })->distance(ls::Type::compound({ ls::Type::integer, ls::Type::real })), 0);
+	test("const:string <=> string&&", ls::Type::const_string->distance(ls::Type::tmp_string), -1);
+	test("string <=> number", ls::Type::string->distance(ls::Type::number), -1);
 
 	section("is_number");
-	assert(ls::Type::number->is_number());
-	assert(ls::Type::long_->is_number());
-	assert(ls::Type::mpz->is_number());
-	assert(ls::Type::integer->is_number());
-	assert(ls::Type::real->is_number());
-	assert(ls::Type::boolean->is_number());
-	assert(not ls::Type::string->is_number());
-	assert(not ls::Type::any->is_number());
-	assert(not ls::Type::array()->is_number());
-	assert(not ls::Type::map()->is_number());
-	assert(not ls::Type::void_->is_number());
+	test("number", ls::Type::number->is_number(), true);
+	test("long", ls::Type::long_->is_number(), true);
+	test("mpz", ls::Type::mpz->is_number(), true);
+	test("integer", ls::Type::integer->is_number(), true);
+	test("real", ls::Type::real->is_number(), true);
+	test("boolean", ls::Type::boolean->is_number(), true);
+	test("string", ls::Type::string->is_number(), false);
+	test("any", ls::Type::any->is_number(), false);
+	test("array", ls::Type::array()->is_number(), false);
+	test("map", ls::Type::map()->is_number(), false);
+	test("void", ls::Type::void_->is_number(), false);
 
-	section("is_callable");
-	assert(ls::Type::any->is_callable());
-	assert(ls::Type::fun()->is_callable());
-	assert(ls::Type::clazz()->is_callable());
-	assert(not ls::Type::integer->is_callable());
-	assert(not ls::Type::array()->is_callable());
+	section("callable()");
+	test("any", ls::Type::any->callable(), true);
+	test("fun", ls::Type::fun()->callable(), true);
+	test("class", ls::Type::clazz()->callable(), true);
+	test("integer", ls::Type::integer->callable(), false);
+	test("array", ls::Type::array()->callable(), false);
+
+	section("container()");
+	test("array", ls::Type::array()->container(), true);
+	test("string", ls::Type::string->container(), true);
+	test("set", ls::Type::set()->container(), true);
+	test("interval", ls::Type::interval->container(), true);
+	test("map", ls::Type::map()->container(), true);
+	test("object", ls::Type::object->container(), true);
+	test("array | string", ls::Type::compound({ls::Type::string, ls::Type::array()})->container(), true);
+
+	section("operator +");
+	test("void + int", ls::Type::void_->operator + (ls::Type::integer), ls::Type::integer);
+	test("int + real", ls::Type::integer->operator + (ls::Type::real), ls::Type::compound({ls::Type::integer, ls::Type::real}));
 
 	section("operator *");
 	test("void * void", ls::Type::void_->operator * (ls::Type::void_), ls::Type::void_);
@@ -140,22 +155,15 @@ void Test::test_types() {
 	test("int&&", ls::Type::integer->add_temporary(), ls::Type::integer->add_temporary());
 	test("string&&", ls::Type::string->add_temporary(), ls::Type::tmp_string);
 	test("(int | string)&&.fold", ls::Type::compound({ls::Type::integer, ls::Type::string})->add_temporary()->fold(), ls::Type::any->add_temporary());
+	test("(const:int)&&", ls::Type::integer->add_constant()->add_temporary(), ls::Type::integer->add_temporary());
 
 	section("LLVM type");
-	// assert(ls::Type()->llvm_type() == llvm::Type::getVoidTy(ls::Compiler::context));
-	// assert(ls::Type::integer->llvm_type() == llvm::Type::getInt32Ty(ls::Compiler::context));
-	// assert(ls::Type::boolean->llvm_type() == llvm::Type::getInt1Ty(ls::Compiler::context));
-	// assert(ls::Type::real->llvm_type() == llvm::Type::getDoubleTy(ls::Compiler::context));
-	// assert(ls::Type({ls::Type::integer, ls::Type::real})->llvm_type() == llvm::Type::getDoubleTy(ls::Compiler::context));
-
-	section("Placeholder types");
-	// assert(p1->is_any());
-
-	section("Template types");
-	auto T = ls::Type::template_("T");
-	T->implement(ls::Type::real);
-	// assert(T->is_real());
-	// assert(T->fold()->is_real());
+	test("void", ls::Type::void_->llvm(vm.compiler), llvm::Type::getVoidTy(vm.compiler.getContext()));
+	test("integer", ls::Type::integer->llvm(vm.compiler), llvm::Type::getInt32Ty(vm.compiler.getContext()));
+	test("boolean", ls::Type::boolean->llvm(vm.compiler), llvm::Type::getInt1Ty(vm.compiler.getContext()));
+	test("real", ls::Type::real->llvm(vm.compiler), llvm::Type::getDoubleTy(vm.compiler.getContext()));
+	test("integer | real", ls::Type::compound({ls::Type::integer, ls::Type::real})->llvm(vm.compiler), llvm::Type::getDoubleTy(vm.compiler.getContext()));
+	test("string&&", ls::Type::string->add_temporary()->llvm(vm.compiler), ls::Type::string->llvm(vm.compiler));
 
 	section("Program type");
 	code("").type(ls::Type::void_);
@@ -167,7 +175,9 @@ void Test::test_types() {
 	code("[1]").type(ls::Type::tmp_array(ls::Type::integer));
 	code("[1, 2.5]").type(ls::Type::tmp_array(ls::Type::compound({ls::Type::integer, ls::Type::real})));
 	code("['a']").type(ls::Type::tmp_array(ls::Type::string));
-	code("[[1]]").type(ls::Type::tmp_array(ls::Type::array(ls::Type::integer)));
-	code("[[1, 2.5]]").type(ls::Type::tmp_array(ls::Type::array(ls::Type::compound({ls::Type::integer, ls::Type::real}))));
-	code("[['a']]").type(ls::Type::tmp_array(ls::Type::array(ls::Type::string)));
+	code("[[1]]").type(ls::Type::tmp_array(ls::Type::array(ls::Type::compound({ ls::Type::integer, ls::Type::any }))));
+	code("[[1, 2.5]]").type(ls::Type::tmp_array(ls::Type::array(ls::Type::compound({ls::Type::integer, ls::Type::real, ls::Type::any}))));
+	code("[['a']]").type(ls::Type::tmp_array(ls::Type::array(ls::Type::compound({ls::Type::string, ls::Type::any}))));
+
+	if (success_count != total) assert(false && "Type tests failed!");
 }

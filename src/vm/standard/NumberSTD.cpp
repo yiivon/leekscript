@@ -607,7 +607,7 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	label_else.block = c.builder.GetInsertBlock();
 	
 	c.insn_label(&label_end);
-	auto PN = c.builder.CreatePHI(Type::mpz_ptr->llvm_type(c), 2);
+	auto PN = c.builder.CreatePHI(Type::mpz_ptr->llvm(c), 2);
 	PN->addIncoming(r1.v, label_then.block);
 	PN->addIncoming(r2.v, label_else.block);
 	c.insn_delete_temporary(a);

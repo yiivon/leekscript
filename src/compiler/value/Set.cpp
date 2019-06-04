@@ -1,5 +1,6 @@
 #include "Set.hpp"
 #include "../../vm/value/LSSet.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

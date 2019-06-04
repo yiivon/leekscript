@@ -27,20 +27,24 @@ const Type* Interval_type::iterator() const {
 		Type::interval, Type::integer
 	});
 }
-bool Interval_type::operator == (const Base_type* type) const {
+bool Interval_type::operator == (const Type* type) const {
 	return dynamic_cast<const Interval_type*>(type);
 }
-int Interval_type::distance(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type)) { return 1; }
-	if (dynamic_cast<const Interval_type*>(type)) { return 0; }
+int Interval_type::distance(const Type* type) const {
+	if (not temporary and type->temporary) return -1;
+	if (dynamic_cast<const Any_type*>(type->folded)) { return 1; }
+	if (dynamic_cast<const Interval_type*>(type->folded)) { return 0; }
 	return -1;
 }
-std::string Interval_type::clazz() const {
+std::string Interval_type::class_name() const {
 	return "Interval";
 }
 std::ostream& Interval_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "interval" << END_COLOR;
 	return os;
+}
+Type* Interval_type::clone() const {
+	return new Interval_type {};
 }
 
 }

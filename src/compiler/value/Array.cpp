@@ -1,5 +1,6 @@
 #include "Array.hpp"
 #include "../../vm/value/LSArray.hpp"
+#include "../../type/Type.hpp"
 #include <math.h>
 
 namespace ls {
@@ -52,7 +53,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 
 			constant &= ex->constant;
 			throws |= ex->throws;
-			if (element_type->_types.size() and element_type != ex->type) {
+			if (element_type->is_void() and element_type != ex->type) {
 				homogeneous = false;
 			}
 			element_type = element_type->operator * (ex->type);

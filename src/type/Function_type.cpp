@@ -14,25 +14,18 @@ Function_type::Function_type(const Type* ret, const std::vector<const Type*>& ar
 	Type::integer, // refs
 	Type::boolean, // native
 	Type::long_->pointer() // pointer to the function
-})), _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
+}), true), _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
 
-bool Function_type::operator == (const Base_type* type) const {
+bool Function_type::operator == (const Type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
 		return _return_type == fun->_return_type && _arguments == fun->_arguments;
 	}
 	return false;
 }
-bool Function_type::castable(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type) != nullptr) { return true; }
-	if (auto fun = dynamic_cast<const Function_type*>(type)) {
-		if (_closure != fun->_closure or _arguments.size() > fun->_arguments.size()) return false;
-		return fun->_return_type->castable(_return_type);
-	}
-	return false;
-}
-int Function_type::distance(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type)) { return 1; }
-	if (auto fun = dynamic_cast<const Function_type*>(type)) {
+int Function_type::distance(const Type* type) const {
+	if (not temporary and type->temporary) return -1;
+	if (dynamic_cast<const Any_type*>(type->folded)) { return 1; }
+	if (auto fun = dynamic_cast<const Function_type*>(type->folded)) {
 		if (_arguments.size() > fun->_arguments.size()) return -1;
 		int d = 0;
 		for (size_t i = 0; i < _arguments.size(); ++i) {
@@ -60,7 +53,7 @@ const Type* Function_type::argument(size_t i) const {
 	}
 	return Type::any;
 }
-std::string Function_type::clazz() const {
+std::string Function_type::class_name() const {
 	return "Function";
 }
 std::ostream& Function_type::print(std::ostream& os) const {
@@ -71,6 +64,9 @@ std::ostream& Function_type::print(std::ostream& os) const {
 	}
 	os << BLUE_BOLD << ") => " << _return_type;
 	return os;
+}
+Type* Function_type::clone() const {
+	return new Function_type { _return_type, _arguments, _closure, _function };
 }
 
 }

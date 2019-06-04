@@ -8,20 +8,7 @@
 
 namespace ls {
 
-std::map<const Type*, const Array_type*> Array_type::cache;
-
-const Array_type* Array_type::create(const Type* element) {
-	auto i = cache.find(element->not_temporary());
-	if (i != cache.end()) {
-		return i->second;
-	} else {
-		const auto a = new Array_type(element);
-		cache.insert({element->not_temporary(), a});
-		return a;
-	}
-}
-
-Array_type::Array_type(const Type* element) : Pointer_type(Type::structure("array<" + element->getJsonName() + ">", {
+Array_type::Array_type(const Type* element) : Pointer_type(Type::structure("array<" + element->getName() + ">", {
 	Type::integer, // ?
 	Type::integer, // ?
 	Type::integer, // ?
@@ -39,15 +26,16 @@ const Type* Array_type::key() const {
 const Type* Array_type::element() const {
 	return _element;
 }
-bool Array_type::operator == (const Base_type* type) const {
+bool Array_type::operator == (const Type* type) const {
 	if (auto array = dynamic_cast<const Array_type*>(type)) {
 		return _element == array->_element;
 	}
 	return false;
 }
-int Array_type::distance(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
-	if (auto array = dynamic_cast<const Array_type*>(type)) {
+int Array_type::distance(const Type* type) const {
+	if (not temporary and type->temporary) return -1;
+	if (dynamic_cast<const Any_type*>(type->folded)) { return 1000; }
+	if (auto array = dynamic_cast<const Array_type*>(type->folded)) {
 		if (array->_element->is_void()) {
 			return 999;
 		}
@@ -61,12 +49,18 @@ const Type* Array_type::iterator() const {
 	if (merged->is_real()) return Type::real->pointer();
 	return Type::any->pointer();
 }
-std::string Array_type::clazz() const {
+std::string Array_type::class_name() const {
 	return "Array";
+}
+const std::string Array_type::getName() const {
+	return "array<" + _element->getName() + ">";
 }
 std::ostream& Array_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
 	return os;
+}
+Type* Array_type::clone() const {
+	return new Array_type { _element };
 }
 
 }

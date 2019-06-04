@@ -11,63 +11,62 @@
 
 namespace ls {
 
-class Base_type;
+class Type;
 class Function;
 class Value;
 class Compiler;
 
 class Type {
-	Type();
-	Type(std::set<const Base_type*>, const Type* folded);
-
 public:
 
-	Type(const Base_type* raw_type, bool native = false);
+	Type(bool native = false);
+	Type(const Type* raw_type, bool native = false);
+	Type(std::set<const Type*>, const Type* folded);
+	virtual ~Type() {}
 
-	std::vector<const Base_type*> _types;
 	const Type* folded;
 	bool native = false; // A C++ object, memory management is done outside the language
 	bool temporary = false;
 	bool constant = false;
 	bool reference = false;
 
-	int id() const;
-	const Type* return_type() const;
-	const Type* argument(size_t index) const;
-	const std::vector<const Type*>& arguments() const;
-	const Type* element() const;
-	const Type* key() const;
-	const Type* member(int i) const;
+	virtual int id() const { return 0; }
+	virtual const Type* return_type() const { return Type::any; }
+	virtual const Type* argument(size_t index) const { return Type::any; }
+	virtual const std::vector<const Type*>& arguments() const { return Type::empty_types; }
+	virtual const Type* element() const { return Type::any; }
+	virtual const Type* key() const { return Type::any; }
+	virtual const Type* member(int i) const { return Type::any; }
 
 	void toJson(std::ostream&) const;
-	std::string getJsonName() const;
-	std::string to_string() const;
-	std::string class_name() const;
+	virtual const std::string getJsonName() const = 0;
+	virtual std::string to_string() const;
+	virtual std::string class_name() const = 0;
+	virtual const std::string getName() const = 0;
+	virtual std::ostream& print(std::ostream& os) const = 0;
+
 	bool must_manage_memory() const;
-	bool iterable() const;
-	bool is_container() const;
-	bool can_be_container() const;
-	const Type* add_temporary() const;
-	const Type* not_temporary() const;
-	const Type* add_constant() const;
-	const Type* not_constant() const;
-	llvm::Type* llvm_type(const Compiler& c) const;
-	const Type* iterator() const;
+	virtual bool iterable() const { return false; }
+	virtual bool container() const { return false; }
+	virtual bool callable() const { return false; }
+	virtual const Type* add_temporary() const;
+	virtual const Type* not_temporary() const;
+	virtual const Type* add_constant() const;
+	virtual const Type* not_constant() const;
+	virtual llvm::Type* llvm(const Compiler& c) const = 0;
+	virtual const Type* iterator() const { assert(false); }
 	const Type* pointer() const;
-	const Type* pointed() const;
-	bool all(std::function<bool(const Base_type*)>) const;
-	bool some(std::function<bool(const Base_type*)>) const;
+	virtual const Type* pointed() const { assert(false); }
 	bool castable(const Type* type, bool strictCast = false) const;
 	bool strictCastable(const Type* type) const;
-	int distance(const Type* type) const;
+	virtual int distance(const Type* type) const = 0;
 	const Type* without_placeholders() const;
 
-	const Type* operator + (const Base_type*) const;
 	const Type* operator + (const Type* type) const;
 	void operator += (const Type* type);
-	void operator += (const Base_type* type);
 	const Type* operator * (const Type* t2) const;
 	const Type* fold() const;
+	virtual bool operator == (const Type*) const = 0;
 
 	template <class T> bool is_type() const;
 	template <class T> bool can_be_type() const;
@@ -75,6 +74,8 @@ public:
 	bool is_number() const;
 	bool can_be_number() const;
 	bool can_be_numeric() const;
+	bool can_be_container() const;
+	bool can_be_callable() const;
 	bool is_integer() const;
 	bool is_bool() const;
 	bool can_be_bool() const;
@@ -98,13 +99,12 @@ public:
 	bool is_struct() const;
 	bool is_polymorphic() const;
 	bool is_primitive() const;
-	bool is_callable() const;
-	bool can_be_callable() const;
 	bool is_void() const;
 	bool is_template() const;
 
-	void implement(const Type* type) const;
-	bool is_implemented(const Type* type) const;
+	virtual void implement(const Type* type) const {}
+
+	virtual Type* clone() const = 0;
 
 	/*
 	 * Static part
@@ -157,42 +157,14 @@ public:
 	static const Type* const_class(const std::string name = "class?");
 	static const Type* template_(std::string name);
 	static const Type* compound(std::initializer_list<const Type*> types);
-
-	static Base_type* _raw_never;
-	static Base_type* _raw_null;
-	static Base_type* _raw_any;
-	static Base_type* _raw_boolean;
-	static Base_type* _raw_i8;
-	static Base_type* _raw_integer;
-	static Base_type* _raw_number;
-	static Base_type* _raw_long;
-	static Base_type* _raw_real;
-	static Base_type* _raw_string;
-	static Base_type* _raw_mpz;
-	static Base_type* _raw_interval;
-	static Base_type* _raw_object;
-	static std::map<std::string, const Base_type*> _raw_class;
-	static const Base_type* raw_never();
-	static const Base_type* raw_null();
-	static const Base_type* raw_any();
-	static const Base_type* raw_boolean();
-	static const Base_type* raw_i8();
-	static const Base_type* raw_integer();
-	static const Base_type* raw_number();
-	static const Base_type* raw_long();
-	static const Base_type* raw_real();
-	static const Base_type* raw_mpz();
-	static const Base_type* raw_string();
-	static const Base_type* raw_interval();
-	static const Base_type* raw_object();
 	
 	static const Type* generate_new_placeholder_type();
-	static std::vector<const Base_type*> placeholder_types;
+	static std::vector<const Type*> placeholder_types;
 	static void clear_placeholder_types();
 
 	// Const types to be used to optimize return of references
 	static const std::vector<const Type*> empty_types;
-	static std::map<std::set<const Base_type*>, const Type*> compound_types;
+	static std::map<std::set<const Type*>, const Type*> compound_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> function_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> closure_types;
 	static std::map<const Type*, const Type*> array_types;
@@ -209,6 +181,8 @@ public:
 	static std::map<const Type*, const Type*> not_temporary_types;
 	static std::map<const Type*, const Type*> const_types;
 	static std::map<const Type*, const Type*> not_const_types;
+	static std::map<std::string, const Type*> class_types;
+	static std::map<std::string, const Type*> structure_types;
 };
 
 std::ostream& operator << (std::ostream&, const Type*);

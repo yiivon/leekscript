@@ -6,7 +6,6 @@
 #include <map>
 
 #include "../../vm/VM.hpp"
-#include "../../type/Type.hpp"
 #include "../error/Error.hpp"
 #include "../semantic/Call.hpp"
 
@@ -38,7 +37,7 @@ public:
 	Value* value;
 	VariableDeclaration* vd;
 	Function* function; // In which function the variable is declared
-	const Type* type = Type::void_;
+	const Type* type;
 	std::vector<const Type*> version;
 	bool has_version = false;
 	LSValue* lsvalue = nullptr;

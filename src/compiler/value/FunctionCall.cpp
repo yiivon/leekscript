@@ -226,7 +226,7 @@ void FunctionCall::set_version(const std::vector<const Type*>& args, int level) 
 const Type* FunctionCall::version_type(std::vector<const Type*> version) const {
 	// std::cout << "FunctionCall " << this << " ::version_type(" << version << ") " << std::endl;
 	auto function_type = function->version_type(function->version);
-	auto ft = dynamic_cast<const Function_type*>(function_type->return_type()->_types[0]);
+	auto ft = dynamic_cast<const Function_type*>(function_type->return_type());
 	assert(ft != nullptr);
 	return ft->function()->version_type(version);
 }
@@ -247,7 +247,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 
 	int offset = call.object ? 1 : 0;
-	auto fun = dynamic_cast<const Function_type*>(callable_version->type->_types[0]);
+	auto fun = dynamic_cast<const Function_type*>(callable_version->type);
 	auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
 
 	for (unsigned i = 0; i < callable_version->type->arguments().size(); ++i) {

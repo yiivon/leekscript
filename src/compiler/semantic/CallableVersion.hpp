@@ -1,7 +1,6 @@
 #ifndef CALLABLE_VERSION_HPP
 #define CALLABLE_VERSION_HPP
 
-#include "../../type/Type.hpp"
 #include <vector>
 #include "../Compiler.hpp"
 #include "../value/Function.hpp"
@@ -12,6 +11,7 @@ class TypeMutator;
 class SemanticAnalyzer;
 class CallableVersion;
 class Callable;
+class Type;
 
 class CallableVersion {
 public:

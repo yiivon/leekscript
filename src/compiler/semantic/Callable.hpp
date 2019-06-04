@@ -1,13 +1,15 @@
 #ifndef CALLABLE_HPP_
 #define CALLABLE_HPP_
 
-#include "../../type/Type.hpp"
+#include <vector>
+#include <iostream>
 
 namespace ls {
 
 class Value;
 class CallableVersion;
 class SemanticAnalyzer;
+class Type;
 
 class Callable {
 public:

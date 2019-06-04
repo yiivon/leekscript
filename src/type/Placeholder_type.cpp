@@ -8,10 +8,10 @@ namespace ls {
 void Placeholder_type::implement(const Type* implementation) const {
 	((Placeholder_type*) this)->_implementation = implementation;
 }
-bool Placeholder_type::operator == (const Base_type* type) const {
+bool Placeholder_type::operator == (const Type* type) const {
 	return this == type;
 }
-int Placeholder_type::distance(const Base_type* type) const {
+int Placeholder_type::distance(const Type* type) const {
 	return 0;
 }
 std::ostream& Placeholder_type::print(std::ostream& os) const {
@@ -21,6 +21,9 @@ std::ostream& Placeholder_type::print(std::ostream& os) const {
 	}
 	os << END_COLOR;
 	return os;
+}
+Type* Placeholder_type::clone() const {
+	return new Placeholder_type { _name };
 }
 
 }

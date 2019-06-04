@@ -4,7 +4,6 @@
 #include <string>
 #include <map>
 #include "../LSValue.hpp"
-#include "../../type/Type.hpp"
 #include "../../compiler/Compiler.hpp"
 #include "../TypeMutator.hpp"
 #include "../../compiler/semantic/Callable.hpp"
@@ -13,6 +12,7 @@ namespace ls {
 
 class Method;
 class ModuleStaticField;
+class Type;
 
 class LSClass : public LSValue {
 public:

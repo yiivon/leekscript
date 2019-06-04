@@ -1,4 +1,5 @@
 #include "Test.hpp"
+#include "../src/type/Type.hpp"
 
 void Test::test_strings() {
 

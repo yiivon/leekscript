@@ -1,6 +1,7 @@
 #include "Test.hpp"
 #include "../src/vm/Context.hpp"
 #include "../src/vm/value/LSString.hpp"
+#include "../src/type/Type.hpp"
 
 void Test::test_toplevel() {
 	header("Top-level");

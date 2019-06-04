@@ -484,14 +484,14 @@ void Function::Version::create_function(Compiler& c) {
 
 	std::vector<llvm::Type*> args;
 	if (parent->captures.size()) {
-		args.push_back(Type::any->llvm_type(c)); // first arg is the function pointer
+		args.push_back(Type::any->llvm(c)); // first arg is the function pointer
 	}
 	for (auto& t : this->type->arguments()) {
-		args.push_back(t->llvm_type(c));
+		args.push_back(t->llvm(c));
 	}
 
 	// const int id = id_counter++;
-	auto llvm_return_type = this->type->return_type()->llvm_type(c);
+	auto llvm_return_type = this->type->return_type()->llvm(c);
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
 	auto fun_name = parent->is_main_function ? "main" : parent->name;
 	f = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
@@ -516,10 +516,10 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 
 		std::vector<llvm::Type*> args;
 		if (parent->captures.size()) {
-			args.push_back(Type::any->llvm_type(c)); // first arg is the function pointer
+			args.push_back(Type::any->llvm(c)); // first arg is the function pointer
 		}
 		for (auto& t : this->type->arguments()) {
-			args.push_back(t->llvm_type(c));
+			args.push_back(t->llvm(c));
 		}
 		// Create the llvm function
 		create_function(c);

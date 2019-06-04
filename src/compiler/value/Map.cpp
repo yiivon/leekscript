@@ -1,5 +1,6 @@
 #include "Map.hpp"
 #include "../../vm/value/LSMap.hpp"
+#include "../../type/Type.hpp"
 #include <cmath>
 
 namespace ls {

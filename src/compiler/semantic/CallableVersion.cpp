@@ -8,7 +8,7 @@
 namespace ls {
 
 const Type* build(const Type* type) {
-	if (type->is_template()) return ((Template_type*) type->_types[0])->_implementation;
+	if (type->is_template()) return ((Template_type*) type)->_implementation;
 	if (type->is_array()) return Type::array(build(type->element()));
 	if (type->is_map()) return Type::map(build(type->key()), build(type->element()));
 	if (type->is_function()) {
@@ -38,14 +38,14 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 		// std::cout << "Resolved version = " << version_type << std::endl;
 	}
 
-	auto fun = dynamic_cast<const Function_type*>(type->_types[0]);
+	auto fun = dynamic_cast<const Function_type*>(type);
 	auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
 	bool valid = true;
 	for (size_t i = 0; i < new_version->type->arguments().size(); ++i) {
 		if (i < arguments.size()) {
 			const auto& a = arguments.at(i);
 			const auto implem_arg = new_version->type->arguments().at(i);
-			if (auto fun = dynamic_cast<const Function_type*>(a->_types[0])) {
+			if (auto fun = dynamic_cast<const Function_type*>(a)) {
 				if (fun->function() and implem_arg->is_function()) {
 					auto version = implem_arg->arguments();
 					((Value*) fun->function())->will_take(analyzer, version, 1);
@@ -94,7 +94,7 @@ void solve(SemanticAnalyzer* analyzer, const Type* t1, const Type* t2) {
 		solve(analyzer, t1->element(), t2->element());
 	}
 	else if (t1->is_function() and t2->is_function()) {
-		auto fun = dynamic_cast<const Function_type*>(t2->_types[0]);
+		auto fun = dynamic_cast<const Function_type*>(t2);
 		if (fun) {
 			auto f = (Value*) fun->function();
 			if (f) {
