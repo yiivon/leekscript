@@ -1,6 +1,6 @@
 var n = 50000
 var N = 500
-var d = []
+var d = [0]
 d.fill(0, n + 2)
 
 for (var i = 1; i <= n + 1; i++) {
