@@ -10,6 +10,7 @@
 #include "type/Integer_type.hpp"
 #include "type/Object_type.hpp"
 #include "compiler/semantic/Callable.hpp"
+#include "compiler/resolver/File.hpp"
 
 namespace ls {
 	#define init() VM::static_init()

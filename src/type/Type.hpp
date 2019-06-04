@@ -17,12 +17,13 @@ class Value;
 class Compiler;
 
 class Type {
-
 	Type();
 	Type(std::set<std::shared_ptr<const Base_type>>, const Type* folded);
+	
+public:
+
 	Type(std::shared_ptr<const Base_type> raw_type, bool native = false);
 
-public:
 	std::vector<std::shared_ptr<const Base_type>> _types;
 	const Type* folded;
 	bool native = false; // A C++ object, memory management is done outside the language
