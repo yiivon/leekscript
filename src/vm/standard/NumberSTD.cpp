@@ -340,6 +340,9 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::integer, {Type::mpz_ptr}, is_prime},
 		{Type::boolean, {Type::long_}, (void*) is_prime_number<long>},
 	});
+	method("isPalindrome", {
+		{Type::boolean, {Type::integer}, (void*) is_palindrome<int>}
+	});
 
 	/** Internal **/
 	method("powdd", {
@@ -1109,6 +1112,17 @@ int NumberSTD::is_prime_number(T n) {
 		}
 	}
 	return true;
+}
+
+template<typename T>
+bool NumberSTD::is_palindrome(T n) {
+	T x = n, a, tmp = 0;
+	while (n > 0) {
+		a = n % 10;
+		n = n / 10;
+		tmp = tmp * 10 + a;
+	}
+	return tmp == x;
 }
 
 Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args, bool) {

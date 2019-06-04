@@ -169,6 +169,9 @@ public:
 	template<typename T>
 	static int is_prime_number(T n);
 
+	template<typename T>
+	static bool is_palindrome(T n);
+
 	static Compiler::value hypot_ptr_ptr(Compiler&, std::vector<Compiler::value>, bool);
 
 	static double log_ptr(LSNumber* x);
