@@ -50,16 +50,21 @@ Location ObjectAccess::location() const {
 
 void ObjectAccess::set_version(const std::vector<const Type*>& args, int level) {
 	// std::cout << "ObjectAccess::set_version(" << args << ", " << level << ")" << std::endl;
-	version = args;
 	has_version = true;
 	if (call) {
 		for (const auto& m : call->callable->versions) {
-			auto version = m->type->arguments();
-			if (version == args) {
-				type = Type::fun(m->type->return_type(), args, (const Value*) this);
+			auto v = m->type->arguments();
+			bool equals = v.size() == args.size() and std::equal(v.begin(), v.end(), args.begin(), [](const Type* a, const Type* b) {
+				return a->operator == (b);
+			});
+			if (equals) {
+				type = Type::fun(m->type->return_type(), v, (const Value*) this);
+				version = v;
+				return;
 			}
 		}
 	}
+	version = args;
 }
 
 const Type* ObjectAccess::version_type(std::vector<const Type*> args) const {
@@ -67,7 +72,10 @@ const Type* ObjectAccess::version_type(std::vector<const Type*> args) const {
 	if (call) {
 		for (const auto& m : call->callable->versions) {
 			auto version = m->type->arguments();
-			if (version == args) {
+			bool equals = version.size() == args.size() and std::equal(version.begin(), version.end(), args.begin(), [](const Type* a, const Type* b) {
+				return a->operator == (b);
+			});
+			if (equals) {
 				return Type::fun(m->type->return_type(), args, (const Value*) this);
 			}
 		}
