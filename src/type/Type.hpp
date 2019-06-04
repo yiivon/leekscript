@@ -19,7 +19,7 @@ class Compiler;
 class Type {
 	Type();
 	Type(std::set<std::shared_ptr<const Base_type>>, const Type* folded);
-	
+
 public:
 
 	Type(std::shared_ptr<const Base_type> raw_type, bool native = false);

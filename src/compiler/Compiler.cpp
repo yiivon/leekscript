@@ -1725,8 +1725,8 @@ Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compile
 	auto fun_to_ptr = builder.CreatePointerCast(func.v, convert_type->llvm_type(*this));
 	auto f = builder.CreateStructGEP(convert_type->llvm_type(*this)->getPointerElementType(), fun_to_ptr, 5);
 	auto fun_type = llvm::FunctionType::get(return_type->llvm_type(*this), llvm_types, false);
-	value function = { builder.CreateLoad(f), convert_type };
-	auto fun_conv = builder.CreatePointerCast(function.v, fun_type->getPointerTo());
+	auto function = builder.CreateLoad(f);
+	auto fun_conv = builder.CreatePointerCast(function, fun_type->getPointerTo());
 	auto r = builder.CreateCall(fun_type, fun_conv, llvm_args);
 	if (return_type->is_void()) {
 		return {};
@@ -1802,8 +1802,8 @@ Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compi
 	auto fun_to_ptr = builder.CreatePointerCast(func.v, convert_type->llvm_type(*this));
 	auto f = builder.CreateStructGEP(convert_type->llvm_type(*this)->getPointerElementType(), fun_to_ptr, 5);
 	auto fun_type = llvm::FunctionType::get(return_type->llvm_type(*this), llvm_types, false);
-	value function = { builder.CreateLoad(f), convert_type };
-	auto fun_conv = builder.CreatePointerCast(function.v, fun_type->getPointerTo());
+	auto function = builder.CreateLoad(f);
+	auto fun_conv = builder.CreatePointerCast(function, fun_type->getPointerTo());
 	auto continueBlock = llvm::BasicBlock::Create(getContext(), "cont", F);
 	auto r = builder.CreateInvoke(fun_conv, continueBlock, fun->get_landing_pad(*this), llvm_args);
 	builder.SetInsertPoint(continueBlock);
