@@ -6,16 +6,16 @@
 
 namespace ls {
 
-std::map<const Type*, std::shared_ptr<Set_type>> Set_type::cache;
+std::map<const Type*, const Set_type*> Set_type::cache;
 std::map<const Type*, const Type*> Set_type::nodes;
 std::map<const Type*, const Type*> Set_type::iterators;
 
-std::shared_ptr<Set_type> Set_type::create(const Type* element) {
+const Set_type* Set_type::create(const Type* element) {
 	auto i = cache.find(element->not_temporary());
 	if (i != cache.end()) {
 		return i->second;
 	} else {
-		const auto a = std::make_shared<Set_type>(element);
+		const auto a = new Set_type(element);
 		cache.insert({element->not_temporary(), a});
 		return a;
 	}

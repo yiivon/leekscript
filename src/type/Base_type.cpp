@@ -23,8 +23,8 @@ bool Base_type::castable(const Base_type*) const {
 	return false;
 }
 bool Base_type::castable(const Type& type) const {
-	return type.all([&](std::shared_ptr<const Base_type> t) {
-		return castable(t.get());
+	return type.all([&](const Base_type* t) {
+		return castable(t);
 	});
 }
 int Base_type::distance(const Base_type* type) const {

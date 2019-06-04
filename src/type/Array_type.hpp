@@ -24,8 +24,8 @@ public:
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream&) const override;
 
-	static std::map<const Type*, std::shared_ptr<Array_type>> cache;
-	static std::shared_ptr<Array_type> create(const Type* element);
+	static std::map<const Type*, const Array_type*> cache;
+	static const Array_type* create(const Type* element);
 };
 
 }

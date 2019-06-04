@@ -23,10 +23,10 @@ public:
 	virtual std::string clazz() const override;
 	virtual std::ostream& print(std::ostream&) const override;
 
-	static std::map<const Type*, std::shared_ptr<Set_type>> cache;
+	static std::map<const Type*, const Set_type*> cache;
 	static std::map<const Type*, const Type*> nodes;
 	static std::map<const Type*, const Type*> iterators;
-	static std::shared_ptr<Set_type> create(const Type* element);
+	static const Set_type* create(const Type* element);
 	static const Type* get_node_type(const Type* element);
 	static const Type* get_iterator(const Type* element);
 };

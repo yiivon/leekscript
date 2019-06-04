@@ -18,13 +18,13 @@ class Compiler;
 
 class Type {
 	Type();
-	Type(std::set<std::shared_ptr<const Base_type>>, const Type* folded);
+	Type(std::set<const Base_type*>, const Type* folded);
 
 public:
 
-	Type(std::shared_ptr<const Base_type> raw_type, bool native = false);
+	Type(const Base_type* raw_type, bool native = false);
 
-	std::vector<std::shared_ptr<const Base_type>> _types;
+	std::vector<const Base_type*> _types;
 	const Type* folded;
 	bool native = false; // A C++ object, memory management is done outside the language
 	bool temporary = false;
@@ -55,17 +55,17 @@ public:
 	const Type* iterator() const;
 	const Type* pointer() const;
 	const Type* pointed() const;
-	bool all(std::function<bool(std::shared_ptr<const Base_type>)>) const;
-	bool some(std::function<bool(std::shared_ptr<const Base_type>)>) const;
+	bool all(std::function<bool(const Base_type*)>) const;
+	bool some(std::function<bool(const Base_type*)>) const;
 	bool castable(const Type* type, bool strictCast = false) const;
 	bool strictCastable(const Type* type) const;
 	int distance(const Type* type) const;
 	const Type* without_placeholders() const;
 
-	const Type* operator + (std::shared_ptr<const Base_type>) const;
+	const Type* operator + (const Base_type*) const;
 	const Type* operator + (const Type* type) const;
 	void operator += (const Type* type);
-	void operator += (std::shared_ptr<const Base_type> type);
+	void operator += (const Base_type* type);
 	const Type* operator * (const Type* t2) const;
 	const Type* fold() const;
 
@@ -158,41 +158,41 @@ public:
 	static const Type* template_(std::string name);
 	static const Type* compound(std::initializer_list<const Type*> types);
 
-	static std::shared_ptr<Base_type> _raw_never;
-	static std::shared_ptr<Base_type> _raw_null;
-	static std::shared_ptr<Base_type> _raw_any;
-	static std::shared_ptr<Base_type> _raw_boolean;
-	static std::shared_ptr<Base_type> _raw_i8;
-	static std::shared_ptr<Base_type> _raw_integer;
-	static std::shared_ptr<Base_type> _raw_number;
-	static std::shared_ptr<Base_type> _raw_long;
-	static std::shared_ptr<Base_type> _raw_real;
-	static std::shared_ptr<Base_type> _raw_string;
-	static std::shared_ptr<Base_type> _raw_mpz;
-	static std::shared_ptr<Base_type> _raw_interval;
-	static std::shared_ptr<Base_type> _raw_object;
-	static std::map<std::string, std::shared_ptr<Base_type>> _raw_class;
-	static const std::shared_ptr<Base_type> raw_never();
-	static const std::shared_ptr<Base_type> raw_null();
-	static const std::shared_ptr<Base_type> raw_any();
-	static const std::shared_ptr<Base_type> raw_boolean();
-	static const std::shared_ptr<Base_type> raw_i8();
-	static const std::shared_ptr<Base_type> raw_integer();
-	static const std::shared_ptr<Base_type> raw_number();
-	static const std::shared_ptr<Base_type> raw_long();
-	static const std::shared_ptr<Base_type> raw_real();
-	static const std::shared_ptr<Base_type> raw_mpz();
-	static const std::shared_ptr<Base_type> raw_string();
-	static const std::shared_ptr<Base_type> raw_interval();
-	static const std::shared_ptr<Base_type> raw_object();
+	static Base_type* _raw_never;
+	static Base_type* _raw_null;
+	static Base_type* _raw_any;
+	static Base_type* _raw_boolean;
+	static Base_type* _raw_i8;
+	static Base_type* _raw_integer;
+	static Base_type* _raw_number;
+	static Base_type* _raw_long;
+	static Base_type* _raw_real;
+	static Base_type* _raw_string;
+	static Base_type* _raw_mpz;
+	static Base_type* _raw_interval;
+	static Base_type* _raw_object;
+	static std::map<std::string, const Base_type*> _raw_class;
+	static const Base_type* raw_never();
+	static const Base_type* raw_null();
+	static const Base_type* raw_any();
+	static const Base_type* raw_boolean();
+	static const Base_type* raw_i8();
+	static const Base_type* raw_integer();
+	static const Base_type* raw_number();
+	static const Base_type* raw_long();
+	static const Base_type* raw_real();
+	static const Base_type* raw_mpz();
+	static const Base_type* raw_string();
+	static const Base_type* raw_interval();
+	static const Base_type* raw_object();
 	
 	static const Type* generate_new_placeholder_type();
-	static std::vector<std::shared_ptr<const Base_type>> placeholder_types;
+	static std::vector<const Base_type*> placeholder_types;
 	static void clear_placeholder_types();
 
 	// Const types to be used to optimize return of references
 	static const std::vector<const Type*> empty_types;
-	static std::map<std::set<std::shared_ptr<const Base_type>>, const Type*> compound_types;
+	static std::map<std::set<const Base_type*>, const Type*> compound_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> function_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> closure_types;
 	static std::map<const Type*, const Type*> array_types;
