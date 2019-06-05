@@ -39,7 +39,7 @@ void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Val
 
 }
 
-namespace ls {
+namespace std {
 	std::ostream& operator << (std::ostream& os, const ls::Callable* callable) {
 		os << "[" << std::endl;
 		for (const auto& v : callable->versions) {
