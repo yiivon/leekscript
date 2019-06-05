@@ -103,7 +103,7 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::real, Type::real, Type::real, div_eq_real, THROWS, {}, true}
 	});
 	operator_("\\", {
-		{Type::number, Type::number, Type::long_, int_div_val_val},
+		{Type::long_, Type::long_ , Type::long_, int_div_val_val},
 		{Type::integer, Type::integer, Type::integer, int_div_val_val},
 	});
 	operator_("\\=", {
@@ -178,11 +178,11 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 	method("long", {
 		{Type::long_, {Type::any}, _long},
 	});
+	auto absT = Type::template_("T");
+	template_(absT).
 	method("abs", {
 		{Type::any, {Type::any}, (void*) abs_ptr},
-		{Type::real, {Type::any}, abs},
-		{Type::long_, {Type::long_}, abs},
-		{Type::integer, {Type::integer}, abs},
+		{absT, {absT}, abs}
 	});
 	int (*abs_int)(int) = std::abs;
 	long (*abs_long)(long) = std::abs;
