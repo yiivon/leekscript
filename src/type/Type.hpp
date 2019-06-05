@@ -157,6 +157,8 @@ public:
 	static const Type* const_class(const std::string name = "class?");
 	static const Type* template_(std::string name);
 	static const Type* compound(std::initializer_list<const Type*> types);
+
+	static const Type* meta_mul(const Type* t1, const Type* t2);
 	
 	static const Type* generate_new_placeholder_type();
 	static std::vector<const Type*> placeholder_types;

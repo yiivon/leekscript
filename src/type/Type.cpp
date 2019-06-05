@@ -31,6 +31,7 @@
 #include "Template_type.hpp"
 #include "Never_type.hpp"
 #include "Compound_type.hpp"
+#include "Meta_mul_type.hpp"
 #include "../compiler/value/Function.hpp"
 #include "../compiler/value/Value.hpp"
 
@@ -500,6 +501,9 @@ const Type* Type::compound(std::initializer_list<const Type*> types) {
 	return type;
 }
 
+const Type* Type::meta_mul(const Type* t1, const Type* t2) {
+	return new Meta_mul_type(t1, t2);
+}
 std::ostream& operator << (std::ostream& os, const Type* type) {
 	if (type->constant) {
 		os << BLUE_BOLD << "const:" << END_COLOR;
