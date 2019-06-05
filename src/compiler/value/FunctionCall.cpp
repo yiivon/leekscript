@@ -97,6 +97,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
 	if (call.callable) {
+		// std::cout << "Callable: " << call.callable << std::endl;
 		callable_version = call.resolve(analyzer, arguments_types);
 		if (callable_version) {
 			// std::cout << "Version: " << callable_version << std::endl;
