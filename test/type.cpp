@@ -72,6 +72,7 @@ void Test::test_types() {
 
 	section("castable");
 	test("real -> int", ls::Type::real->castable(ls::Type::integer), true);
+	test("int -> real", ls::Type::integer->castable(ls::Type::real), true);
 	test("array<int> -> array<int>", ls::Type::array(ls::Type::integer)->castable(ls::Type::array(ls::Type::integer)), true);
 	test("array<int> -> array", ls::Type::array(ls::Type::integer)->castable(ls::Type::array()), true);
 	test("array<real> -> array", ls::Type::array(ls::Type::real)->castable(ls::Type::array()), true);
@@ -83,6 +84,10 @@ void Test::test_types() {
 	test("boolean -> number", ls::Type::boolean->castable(ls::Type::number), true);
 	test("array<real> -> any", ls::Type::array(ls::Type::real)->castable(ls::Type::any), true);
 	test("array<real> -> const:any", ls::Type::array(ls::Type::real)->castable(ls::Type::const_any), true);
+
+	section("strictCastable");
+	test("int -> real", ls::Type::integer->strictCastable(ls::Type::real), true);
+	test("real -> int", ls::Type::real->strictCastable(ls::Type::integer), false);
 
 	section("Distance");
 	test("number <=> any", ls::Type::number->distance(ls::Type::any), 1);
