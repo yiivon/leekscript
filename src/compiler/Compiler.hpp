@@ -172,6 +172,7 @@ public:
 	value to_real(value) const;
 	value to_long(value) const;
 	value insn_convert(value, const Type*) const;
+	value to_numeric(value) const;
 
 	// Operators wrapping
 	value insn_not(value) const;

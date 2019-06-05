@@ -290,6 +290,14 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t) const {
 	return v;
 }
 
+Compiler::value Compiler::to_numeric(Compiler::value v) const {
+	if (v.t->is_primitive()) return v;
+	if (v.t->is_any()) {
+		return insn_invoke(Type::real, {v}, "Value.real");
+	}
+	insn_throw_object(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
+}
+
 // Operators wrapping
 Compiler::value Compiler::insn_not(Compiler::value v) const {
 	assert(v.t->llvm(*this) == v.v->getType());
