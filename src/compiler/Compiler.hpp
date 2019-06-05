@@ -169,9 +169,9 @@ public:
 
 	// Conversions
 	value to_int(value) const;
-	value to_real(value) const;
+	value to_real(value, bool delete_temporary = false) const;
 	value to_long(value) const;
-	value insn_convert(value, const Type*) const;
+	value insn_convert(value, const Type*, bool delete_temporary = false) const;
 	value to_numeric(value) const;
 
 	// Operators wrapping

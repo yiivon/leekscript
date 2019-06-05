@@ -255,6 +255,9 @@ ValueSTD::ValueSTD(VM* vm) : Module(vm, "Value") {
 	method("real", {
 		{Type::real, {Type::const_any}, (void*) real}
 	});
+	method("real_delete", {
+		{Type::real, {Type::const_any}, (void*) real_delete}
+	});
 	method("long", {
 		{Type::long_, {Type::const_any}, (void*) long_}
 	});
@@ -779,7 +782,18 @@ double ValueSTD::real(const LSValue* x) {
 		return boolean->value ? 1.0 : 0.0;
 	}
 	LSValue::delete_temporary(x);
-	throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
+	throw vm::ExceptionObj(vm::Exception::WRONG_ARGUMENT_TYPE);
+}
+double ValueSTD::real_delete(const LSValue* x) {
+	if (auto number = dynamic_cast<const LSNumber*>(x)) {
+		auto v = number->value;
+		LSValue::delete_temporary(x);
+		return v;
+	} else if (auto boolean = dynamic_cast<const LSBoolean*>(x)) {
+		return boolean->value ? 1.0 : 0.0;
+	}
+	LSValue::delete_temporary(x);
+	throw vm::ExceptionObj(vm::Exception::WRONG_ARGUMENT_TYPE);
 }
 long ValueSTD::long_(const LSValue* x) {
 	if (auto number = dynamic_cast<const LSNumber*>(x)) {

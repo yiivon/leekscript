@@ -229,10 +229,14 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 	return { builder.CreateIntCast(v.v, Type::integer->llvm(*this), true), Type::integer };
 }
 
-Compiler::value Compiler::to_real(Compiler::value x) const {
+Compiler::value Compiler::to_real(Compiler::value x, bool delete_temporary) const {
 	assert(x.t->llvm(*this) == x.v->getType());
 	if (x.t->is_polymorphic()) {
-		return insn_invoke(Type::real, {x}, "Value.real");
+		if (delete_temporary) {
+			return insn_invoke(Type::real, {x}, "Value.real_delete");
+		} else {
+			return insn_invoke(Type::real, {x}, "Value.real");
+		}
 	}
 	if (x.t->is_real()) {
 		return x;
@@ -264,7 +268,7 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 	return v;
 }
 
-Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t) const {
+Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool delete_temporary) const {
 	// std::cout << "convert " << v.t << " " << t->is_primitive() << " to " << t << " " << t->is_polymorphic() << std::endl;
 	// assert(v.t->llvm(*this) == v.v->getType());
 	if (!v.v) { return v; }
@@ -281,7 +285,7 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t) const {
 	}
 	if (v.t->not_temporary() == t->not_temporary()) return v;
 	if (t->is_real()) {
-		return to_real(v);
+		return to_real(v, delete_temporary);
 	} else if (t->is_integer()) {
 		return to_int(v);
 	} else if (t->is_long()) {
