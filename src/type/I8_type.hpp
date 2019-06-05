@@ -1,16 +1,14 @@
 #ifndef I8_TYPE_HPP
 #define I8_TYPE_HPP
 
-#include "Type.hpp"
+#include "Number_type.hpp"
 
 namespace ls {
 
-class I8_type : public Type {
+class I8_type : public Number_type {
 public:
 	I8_type() {}
-	virtual int id() const override { return 3; }
 	virtual const std::string getName() const override { return "i8"; }
-	virtual const std::string getJsonName() const { return "number"; }
 	virtual bool operator == (const Type*) const;
 	virtual int distance(const Type* type) const override;
 	virtual llvm::Type* llvm(const Compiler& c) const override;
