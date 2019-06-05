@@ -34,6 +34,7 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 			t->implement(Type::void_);
 		}
 		new_version = new CallableVersion(*this);
+		((CallableVersion*) new_version)->templates = {};
 		((CallableVersion*) new_version)->type = version_type;
 		// std::cout << "Resolved version = " << version_type << std::endl;
 	}
