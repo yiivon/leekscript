@@ -103,6 +103,7 @@ public:
 	bool is_template() const;
 
 	virtual void implement(const Type* type) const {}
+	virtual void reset() const {}
 
 	virtual Type* clone() const = 0;
 

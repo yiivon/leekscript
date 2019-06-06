@@ -6,6 +6,9 @@
 
 namespace ls {
 
+void Template_type::reset() const {
+	((Template_type*) this)->_implementation = Type::void_;
+}
 void Template_type::implement(const Type* implementation) const {
 	((Template_type*) this)->_implementation = implementation;
 }

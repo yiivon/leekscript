@@ -46,7 +46,7 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 		auto version_type = build(type);
 		// Reset template implementations
 		for (const auto& t : templates) {
-			t->implement(Type::void_);
+			t->reset();
 		}
 		new_version = new CallableVersion(*this);
 		((CallableVersion*) new_version)->templates = {};
