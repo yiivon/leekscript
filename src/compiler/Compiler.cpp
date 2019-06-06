@@ -258,6 +258,9 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 	if (v.t->is_integer()) {
 		return {builder.CreateIntCast(v.v, Type::long_->llvm(*this), true), Type::long_};
 	}
+	if (v.t->is_bool()) {
+		return {builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::long_};
+	}
 	if (v.t->is_real()) {
 		return {builder.CreateFPToSI(v.v, Type::long_->llvm(*this)), Type::long_};
 	}
