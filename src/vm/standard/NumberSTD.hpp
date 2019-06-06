@@ -133,12 +133,8 @@ public:
 	static Compiler::value isInteger(Compiler&, std::vector<Compiler::value>, bool);
 
 	static LSValue* max_ptr_ptr(LSNumber* x, LSNumber* y);
-	static double max_ptr_float(LSNumber* x, double y);
-	static double max_ptr_int(LSNumber* x, int y);
-	static double max_float_ptr(double x, LSNumber* y);
-	static Compiler::value max_float_float(Compiler&, std::vector<Compiler::value>, bool);
-	static double max_int_ptr(int x, LSNumber* y);
-	template<class T> static T max(T a, T b) { return a < b ? b : a; }
+	static Compiler::value max(Compiler&, std::vector<Compiler::value>, bool);
+	template<class T> static T max_fun(T a, T b) { return a < b ? b : a; }
 
 	static double min_ptr_ptr(LSNumber* x, LSNumber* y);
 	static double min_ptr_float(LSNumber* x, double y);

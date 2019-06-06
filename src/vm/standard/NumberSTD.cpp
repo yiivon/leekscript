@@ -260,17 +260,17 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::real, {Type::long_}, log10_real},
 		{Type::real, {Type::real}, log10_real},
 	});
+
+	// template<T1 : number, T2 : number>
+	// T1 × T2 max(T1 x, T2 y)
+	auto maxT1 = Type::meta_base_of(Type::template_("T1"), Type::number);
+	auto maxT2 = Type::meta_base_of(Type::template_("T2"), Type::number);
+	template_(maxT1, maxT2).
 	method("max", {
-		{Type::any, {Type::any, Type::any}, (void*) max_ptr_ptr},
-		{Type::real, {Type::real, Type::any}, (void*) max_float_ptr},
-		{Type::real, {Type::integer, Type::any}, (void*) max_int_ptr},
-		{Type::real, {Type::any, Type::real}, (void*) max_ptr_float},
-		{Type::real, {Type::any, Type::integer}, (void*) max_ptr_int},
-		{Type::real, {Type::real, Type::real}, max_float_float},
-		{Type::real, {Type::real, Type::integer}, max_float_float},
-		{Type::real, {Type::integer, Type::real}, max_float_float},
-		{Type::integer, {Type::integer, Type::integer}, max_float_float}
+		{Type::any, {Type::any, Type::any}, (void*) max_ptr_ptr, DEFAULT},
+		{Type::meta_mul(maxT1, maxT2), {maxT1, maxT2}, max},
 	});
+
 	method("min", {
 		{Type::real, {Type::any, Type::any}, (void*) min_ptr_ptr},
 		{Type::real, {Type::any, Type::real}, (void*) min_ptr_float},
@@ -456,9 +456,9 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::real, {Type::real}, (void*) ceilreal},
 	});
 	method("m_max", {
-		{Type::integer, {Type::integer, Type::integer}, (void*) max<int>},
-		{Type::long_, {Type::long_, Type::long_}, (void*) max<long>},
-		{Type::real, {Type::real, Type::real}, (void*) max<double>},
+		{Type::integer, {Type::integer, Type::integer}, (void*) max_fun<int>},
+		{Type::long_, {Type::long_, Type::long_}, (void*) max_fun<long>},
+		{Type::real, {Type::real, Type::real}, (void*) max_fun<double>},
 	});
 	method("m_min", {
 		{Type::integer, {Type::integer, Type::integer}, (void*) min<int>},
@@ -979,28 +979,13 @@ LSValue* NumberSTD::max_ptr_ptr(LSNumber* x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return max;
 }
-double NumberSTD::max_ptr_float(LSNumber* x, double y) {
-	double max = fmax(x->value, y);
-	LSValue::delete_temporary(x);
-	return max;
-}
-double NumberSTD::max_ptr_int(LSNumber* x, int y) {
-	double max = fmax(x->value, y);
-	LSValue::delete_temporary(x);
-	return max;
-}
-double NumberSTD::max_float_ptr(double x, LSNumber* y) {
-	double max = fmax(x, y->value);
-	LSValue::delete_temporary(y);
-	return max;
-}
-double NumberSTD::max_int_ptr(int x, LSNumber* y) {
-	double max = fmax(x, y->value);
-	LSValue::delete_temporary(y);
-	return max;
-}
-Compiler::value NumberSTD::max_float_float(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_max(args[0], args[1]);
+Compiler::value NumberSTD::max(Compiler& c, std::vector<Compiler::value> args, bool) {
+	auto a = c.to_numeric(args[0]);
+	auto b = c.to_numeric(args[1]);
+	auto t = a.t->operator * (b.t);
+	a = c.insn_convert(a, t);
+	b = c.insn_convert(b, t);
+	return c.insn_max(a, b);
 }
 
 double NumberSTD::min_ptr_ptr(LSNumber* x, LSNumber* y) {
