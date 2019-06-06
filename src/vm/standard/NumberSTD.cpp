@@ -271,17 +271,16 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::meta_mul(maxT1, maxT2), {maxT1, maxT2}, max},
 	});
 
+	// template<T1 : number, T2 : number>
+	// T1 × T2 min(T1 x, T2 y)
+	auto minT1 = Type::meta_base_of(Type::template_("T1"), Type::number);
+	auto minT2 = Type::meta_base_of(Type::template_("T2"), Type::number);
+	template_(minT1, minT2).
 	method("min", {
-		{Type::real, {Type::any, Type::any}, (void*) min_ptr_ptr},
-		{Type::real, {Type::any, Type::real}, (void*) min_ptr_float},
-		{Type::real, {Type::any, Type::integer}, (void*) min_ptr_int},
-		{Type::real, {Type::real, Type::any}, (void*) min_float_ptr},
-		{Type::real, {Type::real, Type::real}, min_float_float},
-		{Type::real, {Type::real, Type::integer}, min_float_float},
-		{Type::real, {Type::integer, Type::any}, (void*) min_int_ptr},
-		{Type::real, {Type::integer, Type::real}, min_float_float},
-		{Type::integer, {Type::integer, Type::integer}, min_float_float},
+		{Type::real, {Type::any, Type::any}, (void*) min_ptr_ptr, DEFAULT},
+		{Type::meta_mul(minT1, minT2), {minT1, minT2}, min},
 	});
+
 	method("pow", {
 		{Type::real, {Type::any, Type::any}, (void*) pow_ptr},
 		{Type::long_, {Type::long_, Type::integer}, pow_int},
@@ -461,9 +460,9 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::real, {Type::real, Type::real}, (void*) max_fun<double>},
 	});
 	method("m_min", {
-		{Type::integer, {Type::integer, Type::integer}, (void*) min<int>},
-		{Type::long_, {Type::long_, Type::long_}, (void*) min<long>},
-		{Type::real, {Type::real, Type::real}, (void*) min<double>},
+		{Type::integer, {Type::integer, Type::integer}, (void*) min_fun<int>},
+		{Type::long_, {Type::long_, Type::long_}, (void*) min_fun<long>},
+		{Type::real, {Type::real, Type::real}, (void*) min_fun<double>},
 	});
 	double (*cosreal)(double) = std::cos;
 	method("m_cos", {
@@ -994,28 +993,13 @@ double NumberSTD::min_ptr_ptr(LSNumber* x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return min;
 }
-double NumberSTD::min_ptr_float(LSNumber* x, double y) {
-	double min = fmin(x->value, y);
-	LSValue::delete_temporary(x);
-	return min;
-}
-double NumberSTD::min_ptr_int(LSNumber* x, int y) {
-	double min = fmin(x->value, y);
-	LSValue::delete_temporary(x);
-	return min;
-}
-double NumberSTD::min_float_ptr(double x, LSNumber* y) {
-	double min = fmin(x, y->value);
-	LSValue::delete_temporary(y);
-	return min;
-}
-double NumberSTD::min_int_ptr(int x, LSNumber* y) {
-	double min = fmin(x, y->value);
-	LSValue::delete_temporary(y);
-	return min;
-}
-Compiler::value NumberSTD::min_float_float(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_min(args[0], args[1]);
+Compiler::value NumberSTD::min(Compiler& c, std::vector<Compiler::value> args, bool) {
+	auto a = c.to_numeric(args[0]);
+	auto b = c.to_numeric(args[1]);
+	auto t = a.t->operator * (b.t);
+	a = c.insn_convert(a, t);
+	b = c.insn_convert(b, t);
+	return c.insn_min(a, b);
 }
 
 LSValue* NumberSTD::cos_ptr(LSNumber* x) {
