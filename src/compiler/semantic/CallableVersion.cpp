@@ -27,10 +27,15 @@ const Type* build(const Type* type) {
 		if (baseof->result) return baseof->result;
 		auto t = build(baseof->type);
 		auto d = t->distance(baseof->base);
-		if (d < 100) {
+		if (d == -1) {
+			return ((Meta_baseof_type*) baseof)->result = baseof->base;
+		} else if (d < 100) {
 			return ((Meta_baseof_type*) baseof)->result = t;
 		} else {
-			return ((Meta_baseof_type*) baseof)->result = Type::real;
+			return ((Meta_baseof_type*) baseof)->result = [&]() {
+				if (t == Type::boolean) return Type::integer;
+				return Type::real;
+			}();
 		}
 	}
 	return type;
