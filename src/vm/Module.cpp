@@ -14,6 +14,7 @@ namespace ls {
 
 int Module::THROWS = 1;
 int Module::LEGACY = 2;
+int Module::DEFAULT = 4;
 
 Module::Module(VM* vm, std::string name) : vm(vm), name(name) {
 	clazz = new LSClass(name);

@@ -31,6 +31,7 @@ class Module {
 public:
 	static int THROWS;
 	static int LEGACY;
+	static int DEFAULT;
 
 	VM* vm;
 	std::string name;

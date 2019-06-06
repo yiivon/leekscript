@@ -14,6 +14,7 @@ const CallableVersion* Callable::resolve(SemanticAnalyzer* analyzer, std::vector
 	const CallableVersion* best = nullptr;
 	int best_score = std::numeric_limits<int>::max();
 	for (auto& version : versions) {
+		if ((version->flags & Module::DEFAULT) != 0) continue;
 		auto result = version->get_score(analyzer, arguments);
 		// std::cout << "version " << version << " score " << result.first << std::endl;
 		if (best == nullptr or result.first <= best_score) {
