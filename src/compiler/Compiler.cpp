@@ -752,6 +752,9 @@ Compiler::value Compiler::insn_min(Compiler::value x, Compiler::value y) const {
 	if (x.t->is_integer() and y.t->is_integer()) {
 		return insn_call(Type::integer, {x, y}, "Number.m_min");
 	}
+	if (x.t->is_long() and y.t->is_long()) {
+		return insn_call(Type::long_, {x, y}, "Number.m_min.1");
+	}
 	return insn_call(Type::real, {to_real(x), to_real(y)}, "Number.m_min.2");
 }
 
@@ -761,6 +764,9 @@ Compiler::value Compiler::insn_max(Compiler::value x, Compiler::value y) const {
 	assert(x.t->is_primitive() && y.t->is_primitive());
 	if (x.t->is_integer() and y.t->is_integer()) {
 		return insn_call(Type::integer, {x, y}, "Number.m_max");
+	}
+	if (x.t->is_long() and y.t->is_long()) {
+		return insn_call(Type::long_, {x, y}, "Number.m_max.1");
 	}
 	return insn_call(Type::real, {to_real(x), to_real(y)}, "Number.m_max.2");
 }
