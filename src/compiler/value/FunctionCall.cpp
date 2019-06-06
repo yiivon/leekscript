@@ -254,11 +254,17 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	for (unsigned i = 0; i < callable_version->type->arguments().size(); ++i) {
 		if (i < arguments.size()) {
 			types.push_back((LSValueType) callable_version->type->argument(i + offset)->id());
-			if (arguments.at(i)->type->is_primitive())
-				args.push_back(c.insn_convert(arguments.at(i)->compile(c), callable_version->type->argument(i + offset)));
-			else
-				args.push_back(arguments.at(i)->compile(c));
-			arguments.at(i)->compile_end(c);
+			auto arg = arguments.at(i)->compile(c);
+			if (arguments.at(i)->type->is_primitive()) {
+				args.push_back(c.insn_convert(arg, callable_version->type->argument(i + offset)));
+				arguments.at(i)->compile_end(c);
+			} else if (arguments.at(i)->type->is_polymorphic() and callable_version->type->argument(i + offset)->is_primitive()) {
+				arguments.at(i)->compile_end(c);
+				args.push_back(c.insn_convert(arg, callable_version->type->argument(i + offset), true));
+			} else {
+				args.push_back(arg);
+				arguments.at(i)->compile_end(c);
+			}
 		} else if (f and f->defaultValues.at(i)) {
 			types.push_back((LSValueType) f->defaultValues.at(i)->type->id());
 			args.push_back(f->defaultValues.at(i)->compile(c));
